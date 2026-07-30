@@ -20,6 +20,7 @@ import {
   saveTheme,
   deleteSavedTheme,
 } from '../../utils/themeStudio';
+import ThemePreviewModal from '../../components/display/ThemePreviewModal';
 
 // ── Section wrapper for the component preview ──
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -347,6 +348,7 @@ export default function ThemeStudio() {
   const [_showExportDialog, setShowExportDialog] = useState(false);
   const [exportCSS, setExportCSS] = useState('');
   const [copied, setCopied] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const saveDialogRef = useRef<HTMLDialogElement>(null);
   const exportDialogRef = useRef<HTMLDialogElement>(null);
 
@@ -583,6 +585,15 @@ export default function ThemeStudio() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => setShowPreview(true)}
+                  className="btn btn-ghost btn-sm gap-1.5"
+                  title="Preview theme components"
+                >
+                  <span className="icon-[tabler--eye] w-4 h-4" />
+                  <span className="hidden sm:inline">Preview</span>
+                </button>
+                <button
+                  type="button"
                   onClick={openExportDialog}
                   className="btn btn-ghost btn-sm gap-1.5"
                   title="Export as CSS theme block"
@@ -808,6 +819,9 @@ export default function ThemeStudio() {
           </div>
         </div>
       </div>
+
+      {/* ── Theme Preview Modal ── */}
+      <ThemePreviewModal isOpen={showPreview} onClose={() => setShowPreview(false)} />
     </PageLayout>
   );
 }
