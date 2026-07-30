@@ -36,6 +36,23 @@ function getCategoryColor(cat: string | null | undefined): string {
   return CATEGORY_COLORS[cat.toLowerCase()] || 'badge-ghost';
 }
 
+
+function getCategoryBorder(cat: string | null | undefined): string {
+  if (!cat) return 'border-l-base-300';
+  const borders: Record<string, string> = {
+    general: 'border-l-base-300',
+    idea: 'border-l-primary',
+    task: 'border-l-warning',
+    recipe: 'border-l-success',
+    inventory: 'border-l-info',
+    staff: 'border-l-secondary',
+    finance: 'border-l-accent',
+    customer: 'border-l-error',
+    other: 'border-l-base-300',
+  };
+  return borders[cat.toLowerCase()] || 'border-l-base-300';
+}
+
 function getCategoryLabel(cat: string | null | undefined): string {
   if (!cat) return 'General';
   const found = NOTE_CATEGORIES.find(c => c.value === cat.toLowerCase());
@@ -68,16 +85,16 @@ function getContentPreview(body: string, maxLines = 3): string {
   return preview || '—';
 }
 
-function getNoteEmoji(cat: string | null | undefined): string {
+function getNoteIconClass(cat: string | null | undefined): string {
   switch ((cat || '').toLowerCase()) {
-    case 'idea': return '💡';
-    case 'task': return '✅';
-    case 'recipe': return '🍳';
-    case 'inventory': return '📦';
-    case 'staff': return '👥';
-    case 'finance': return '💰';
-    case 'customer': return '🤝';
-    default: return '📝';
+    case 'idea': return 'icon-[tabler--bulb] w-3 h-3';
+    case 'task': return 'icon-[tabler--checkbox] w-3 h-3';
+    case 'recipe': return 'icon-[tabler--chef-hat] w-3 h-3';
+    case 'inventory': return 'icon-[tabler--packages] w-3 h-3';
+    case 'staff': return 'icon-[tabler--users] w-3 h-3';
+    case 'finance': return 'icon-[tabler--cash] w-3 h-3';
+    case 'customer': return 'icon-[tabler--handshake] w-3 h-3';
+    default: return 'icon-[tabler--notes] w-3 h-3';
   }
 }
 
@@ -493,17 +510,17 @@ export default function Notes() {
             )}
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredNotes.map((note, idx) => (
               <motion.div
                 key={note.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.03, 0.3) }}
-                className="group bg-base-100/70 backdrop-blur-sm border border-base-300/30
+                className={`group bg-base-100/70 backdrop-blur-sm border border-base-300/30 border-l-4
                   rounded-xl p-4 hover:shadow-lg hover:shadow-base-300/20
                   hover:border-primary/30 hover:bg-base-100/90
-                  transition-all duration-200 cursor-pointer relative"
+                  transition-all duration-200 cursor-pointer relative ${note.category ? getCategoryBorder(note.category) : 'border-l-base-300'}`}
                 onClick={() => handleEdit(note)}
               >
                 {/* Pin indicator */}
@@ -517,7 +534,7 @@ export default function Notes() {
                 <div className="flex flex-wrap items-center gap-1.5 mb-2">
                   {note.category && (
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getCategoryColor(note.category)}`}>
-                      {getNoteEmoji(note.category)} {getCategoryLabel(note.category)}
+                      <span className={getNoteIconClass(note.category)} /> {getCategoryLabel(note.category)}
                     </span>
                   )}
                   {note.use_as_template && (

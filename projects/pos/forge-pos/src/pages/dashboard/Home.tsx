@@ -328,8 +328,7 @@ export default function Home() {
                       hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]
                       group disabled:opacity-60"
                   >
-              {/* Category Color accent strip */}
-                    <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl ${menuItem.colorClass.split(' ')[0]} opacity-60`} />
+
                     {isLoading ? (
                       <div className="w-full flex items-center justify-center py-4">
                         <motion.div

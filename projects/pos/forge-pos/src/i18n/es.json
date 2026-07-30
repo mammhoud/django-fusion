@@ -52,7 +52,7 @@
     "kitchen": "Pantalla de Cocina",
     "schedule": "Horario",
     "payroll": "Nómina",
-    "notes": "Plantillas de Recibos",
+    "notes": "Notas",
     "invoice": "Factura",
     "taxReports": "Informes Fiscales",
     "roles": "Roles",
@@ -1049,7 +1049,7 @@
     "noPayrolls": "No hay registros de nómina."
   },
   "notes": {
-    "title": "Plantillas de Recibos",
+    "title": "Notas",
     "addTemplate": "Añadir Plantilla",
     "name": "Nombre de la Plantilla",
     "body": "Cuerpo de la Plantilla",

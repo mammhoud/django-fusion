@@ -52,7 +52,7 @@
     "kitchen": "Küchenanzeige",
     "schedule": "Zeitplan",
     "payroll": "Gehaltsabrechnung",
-    "notes": "Belegvorlagen",
+    "notes": "Notizen",
     "invoice": "Rechnung",
     "taxReports": "Steuerberichte",
     "roles": "Rollen",
@@ -1049,7 +1049,7 @@
     "noPayrolls": "Keine Gehaltsabrechnungen."
   },
   "notes": {
-    "title": "Belegvorlagen",
+    "title": "Notizen",
     "addTemplate": "Vorlage hinzufügen",
     "name": "Vorlagenname",
     "body": "Vorlagentext",
