@@ -35,42 +35,42 @@ function resolveColor(color?: string): string {
   return GRADIENT_TO_SEMANTIC[color] || 'text-primary';
 }
 
-export interface StatCardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+// ── Discriminated union: when loading=true, title+value are optional ──
+// This lets <StatCard loading /> work without placeholder props.
+type StatCardBase = Omit<HTMLAttributes<HTMLDivElement>, 'title'> & {
+  desc?: string;
+  icon?: React.ReactNode;
+  /** Color theme: gradient name, semantic name, or text class. Default: 'primary' */
+  color?: string;
+  /** Show a left border indicator via CSS variable border-l-4. */
+  border?: boolean;
+  /** Enable entrance animation. */
+  animated?: boolean;
+  /** Optional click handler — makes the card interactive with cursor-pointer and hover effects. */
+  onClick?: () => void;
+  /** Optional click handler for the desc/delta text. */
+  onDescClick?: () => void;
+  /** Optional sparkline data — renders a tiny Recharts AreaChart in the stat-figure area. */
+  sparklineData?: { value: number }[];
+  /** Compact mode — reduced padding and font sizes for denser grids. */
+  compact?: boolean;
+};
+
+type StatCardLoading = StatCardBase & {
+  loading: true;
+  title?: string;
+  value?: string | number;
+};
+
+type StatCardNormal = StatCardBase & {
+  loading?: false;
   /** Stat label (shown in stat-title) */
   title: string;
   /** Primary value (shown in stat-value) */
   value: string | number;
-  /** Optional description / delta (shown in stat-desc) */
-  desc?: string;
-  /** Optional icon node (shown in stat-figure) */
-  icon?: React.ReactNode;
-  /**
-   * Color theme: gradient name ('from-teal-500 to-emerald-600'),
-   * semantic name ('primary', 'accent'), or text class ('text-info').
-   * Default: 'primary'
-   */
-  color?: string;
-  /** Show a left border indicator via CSS variable border-l-4. */
-  border?: boolean;
-  /** Enable entrance animation (motion.div). */
-  animated?: boolean;
-  /** Optional click handler — makes the card interactive with cursor-pointer and hover effects. */
-  onClick?: () => void;
-  /** Optional click handler for the desc/delta text — makes it clickable separately from the card. */
-  onDescClick?: () => void;
-  /** Optional sparkline data — renders a tiny Recharts AreaChart in the stat-figure area. */
-  sparklineData?: { value: number }[];
-  /**
-   * Compact mode — reduced padding and font sizes for denser grids.
-   * Swaps stat-value from text-2xl → text-lg and stat-title from text-xs → text-[11px].
-   */
-  compact?: boolean;
-  /**
-   * Loading state — renders an animated skeleton placeholder instead of real content.
-   * All other content props are ignored when loading is true.
-   */
-  loading?: boolean;
-}
+};
+
+export type StatCardProps = StatCardLoading | StatCardNormal;
 
 /**
  * StatCard — FlyonUI `.stat` component wrapper.
@@ -90,29 +90,12 @@ export interface StatCardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'tit
  *   color="primary"
  * />
  */
-export default function StatCard({
-  title,
-  value,
-  desc,
-  icon,
-  color,
-  border,
-  animated = true,
-  onClick,
-  onDescClick,
-  sparklineData,
-  compact = false,
-  loading = false,
-  className = ''
-}: StatCardProps) {
-  const semanticColor = resolveColor(color);
-  const sparkColor = semanticColor.replace('text-', '');
-  const hasValidSparkColor = SEMANTIC_COLORS.has(sparkColor);
+export default function StatCard(props: StatCardProps) {
+  const { animated = true, compact = false, className = '' } = props;
 
-  const clickableClass = onClick ? ' cursor-pointer hover:bg-white/10 transition-colors duration-200' : '';
-
-  // ── Skeleton loading state ──
-  if (loading) {
+  // ── Skeleton loading state — early return so rest of the function
+  //     sees narrowed StatCardNormal with required title/value. ──
+  if (props.loading) {
     const skeleton = (
       <div className={`stat bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 animate-pulse ${compact ? 'p-3' : ''} ${className}`.trim()}>
         <div className={`stat-title ${compact ? 'mb-0.5' : ''}`}>
@@ -139,6 +122,15 @@ export default function StatCard({
     }
     return skeleton;
   }
+
+  // After the loading early-return, TypeScript narrows to StatCardNormal.
+  const { title, value, desc, icon, color, border, onClick, onDescClick, sparklineData } = props;
+
+  const semanticColor = resolveColor(color);
+  const sparkColor = semanticColor.replace('text-', '');
+  const hasValidSparkColor = SEMANTIC_COLORS.has(sparkColor);
+
+  const clickableClass = onClick ? ' cursor-pointer hover:bg-white/10 transition-colors duration-200' : '';
 
   // ── Border-left via CSS variable ──
   // Uses var(--color-*) so the border tracks the active FlyonUI theme palette.

@@ -230,7 +230,7 @@ export default function Home() {
           {kpisLoading ? (
             <>
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <StatCard key={i} title="" value={0} loading />
+                <StatCard key={i} loading />
               ))}
             </>
           ) : (
