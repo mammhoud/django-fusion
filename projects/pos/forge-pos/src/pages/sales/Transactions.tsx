@@ -811,7 +811,7 @@ export default function Transactions() {
                             })}
                           </h3>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right tabular-nums">
                         <p className="text-sm text-base-content/50">{group.orderCount} {t('transactions.orders')}</p>
                         <p className="text-lg font-bold text-primary">
                           {transactions[0]?.currency || ''} {group.totalRevenue.toFixed(2)}
@@ -1236,7 +1236,7 @@ export default function Transactions() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right tabular-nums">
                       <p className="text-lg font-bold text-primary">
                         {product.invoices[0]?.currency || transactions[0]?.currency || ''} {product.totalRev.toFixed(2)}
                       </p>
@@ -1292,9 +1292,9 @@ export default function Transactions() {
                             <td className="py-2 px-3 text-sm font-medium text-base-content">#{inv.id}</td>
                             <td className="py-2 px-3 text-sm text-base-content/70">{inv.date}</td>
                             <td className="py-2 px-3 text-sm text-base-content/70">{inv.time}</td>
-                            <td className="py-2 px-3 text-sm text-right text-base-content">{inv.quantity}</td>
-                            <td className="py-2 px-3 text-sm text-right text-base-content">{inv.currency} {inv.price.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-sm text-right font-bold text-primary">{inv.currency} {inv.total.toFixed(2)}</td>
+                            <td className="py-2 px-3 text-sm text-right text-base-content tabular-nums">{inv.quantity}</td>
+                            <td className="py-2 px-3 text-sm text-right text-base-content tabular-nums">{inv.currency} {inv.price.toFixed(2)}</td>
+                            <td className="py-2 px-3 text-sm text-right font-bold text-primary tabular-nums">{inv.currency} {inv.total.toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>

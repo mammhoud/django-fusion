@@ -342,12 +342,12 @@ export default function Employees() {
                     </div>
                     <div className="flex gap-1">
                       <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
-                        className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
+                        className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
                         <span className="icon-[tabler--pencil] w-4 h-4" />
                       </button>
                       {emp.is_active && (
                         <button onClick={() => setShowDeleteEmployee(emp)}
-                          className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
+                          className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
                           <span className="icon-[tabler--trash] w-4 h-4" />
                         </button>
                       )}
@@ -361,7 +361,7 @@ export default function Employees() {
                     </div>
                     {emp.phone && (
                       <div className="flex items-center gap-2 text-base-content/60">
-                        <span className="icon-[tabler--phone] text-blue-400 w-3.5 h-3.5" />
+                        <span className="icon-[tabler--phone] text-info/70 w-3.5 h-3.5" />
                         <span>{emp.phone}</span>
                       </div>
                     )}
@@ -380,7 +380,7 @@ export default function Employees() {
                   </div>
 
                   {!emp.is_active && (
-                    <div className="mt-2 px-2 py-1 bg-red-100 dark:bg-red-900/20 rounded-lg text-xs text-red-500 font-medium text-center">
+                    <div className="mt-2 px-2 py-1 bg-error/20 rounded-lg text-xs text-error font-medium text-center">
                       {t('employees.inactive')}
                     </div>
                   )}
@@ -434,12 +434,12 @@ export default function Employees() {
                       </div>
                       <div className="flex gap-1">
                         <button onClick={() => { setShowEditType(et); setEditType({ ...et }); }}
-                          className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
+                          className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
                           <span className="icon-[tabler--pencil] w-4 h-4" />
                         </button>
                         {et.is_active && (
                           <button onClick={() => setShowDeleteType(et)}
-                            className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
+                            className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
                             <span className="icon-[tabler--trash] w-4 h-4" />
                           </button>
                         )}
