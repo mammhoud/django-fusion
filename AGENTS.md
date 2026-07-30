@@ -583,12 +583,26 @@ Response → Nginx (static/media) or direct HTTP response
 ## CI & GitHub Actions
 
 - CI workflows live in `.github/workflows/`. See [`.github/AGENTS.md`](.github/AGENTS.md) for workflow-specific agent instructions.
-- The monorepo uses `pytest-core.yml` (Python), `js-test.yml` (Vitest/Playwright), `check-extras.yml`, and `deploy-ci.yml`.
+- The monorepo uses `pytest-core.yml` (Python), `js-test.yml` (Vitest/Playwright), `check-extras.yml`, `deploy-ci.yml`, `fusion-ci.yml`, and `lint-quality.yml`.
 - Reusable composite action: `.github/actions/deploy-preflight/action.yml` runs `make deploy-ci`.
 - When adding a workflow or composite action, document it in `.github/README.md` and add `workflow_dispatch:` and `timeout-minutes:`.
 - Validate YAML after editing:
   ```bash
   python3 -c "import yaml; yaml.safe_load(open('.github/workflows/<name>.yml'))"
+  ```
+
+### Typo & Dead-Code Linter (`lint-quality`)
+
+- **Script**: `applications/scripts/dev/check_typos_and_deadcode.py`
+- **Pre-commit hook**: `.githooks/pre-commit` (already configured via `git config core.hooksPath .githooks`) — runs in `--staged` mode for fast feedback
+- **CI workflow**: `.github/workflows/lint-quality.yml` — runs on PR + push, scans the full repo in 5 min
+- **Patterns**: 18 common typos (`fuson` → `fusion`, `recieved` → `received`, `seperate` → `separate`, etc.) + 3 dead-code markers (`TODO: remove`, `FIXME: delete`, `XXX: remove`)
+- **Inline allowlist**: any line containing `lint-disable-line` is skipped (works across Python/JS/HTML/SCSS comment styles)
+- **Bypass**: `SKIP_LINT=1 git commit ...` (also `SKIP_TESTS=1` for pre-push compat)
+- **Run locally**:
+  ```bash
+  python3 applications/scripts/dev/check_typos_and_deadcode.py            # full repo
+  python3 applications/scripts/dev/check_typos_and_deadcode.py --staged   # staged files only
   ```
 
 ---

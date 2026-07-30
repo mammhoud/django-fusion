@@ -278,11 +278,6 @@ class SiteConfigTests(SimpleTestCase):
         assert 'parser.add_argument("--include-dumps"' in populator
         assert 'base / "dump-data.json"' in populator
 
-    def test_setup_wagtail_home_is_idempotent_without_page_fixtures(self):
-        # setup_wagtail_home is now handled by the shared entrypoint; per-site
-        # management commands for it are no longer required.
-        pytest.skip("setup_wagtail_home management command removed during monorepo restructuring")
-
 
 class AssetHealthTests(SimpleTestCase):
     @override_settings(ROOT_URLCONF="tests.websites.urls")
