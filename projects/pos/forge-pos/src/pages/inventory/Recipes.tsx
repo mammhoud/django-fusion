@@ -6,6 +6,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonCard, SkeletonList } from '../../components/layout/Skeleton';
 import { useTranslation } from 'react-i18next';
 import Card from '../../components/layout/Card';
+import StatCard from '../../components/data/StatCard';
 import Modal from '../../components/layout/Modal';
 import ConfirmDialog from '../../components/display/ConfirmDialog';
 import StatusToast from '../../components/data/StatusToast';
@@ -401,38 +402,34 @@ export default function Recipes() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Card padding="md" hover>
-              <h2 className="text-sm font-semibold text-base-content/80">{t('recipes.totalRecipes')}</h2>
-              <p className="text-2xl font-bold text-base-content">{recipes.filter(r => r.is_active).length}</p>
-            </Card>
-          </div>
-          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card padding="md" hover>
-              <h2 className="text-sm font-semibold text-base-content/80">{t('recipes.productsUsed')}</h2>
-              <p className="text-2xl font-bold text-warning">{new Set(recipes.filter(r => r.is_active).map(r => r.product_id)).size}</p>
-            </Card>
-          </div>
-          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card padding="md" hover>
-              <h2 className="text-sm font-semibold text-base-content/80">{t('recipes.avgCostPerRecipe')}</h2>
-              <p className="text-2xl font-bold text-error">
-              {recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
-                ? Math.round(recipesWithDetails.filter(r => r.recipe.is_active).reduce((s, r) => s + r.totalCost, 0) / recipesWithDetails.filter(r => r.recipe.is_active).length)
-                : 0}
-            </p>
-            </Card>
-          </div>
-          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Card padding="md" hover>
-              <h2 className="text-sm font-semibold text-base-content/80">{t('recipes.avgProfitMargin')}</h2>
-              <p className="text-2xl font-bold text-success">
-              {recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
-                ? `${Math.round(recipesWithDetails.filter(r => r.recipe.is_active).reduce((s, r) => s + profitMargin(r), 0) / recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length)}%`
-                : 'N/A'}
-            </p>
-            </Card>
-          </div>
+          <StatCard
+            title={t('recipes.totalRecipes')}
+            value={recipes.filter(r => r.is_active).length}
+            icon={<span className="icon-[tabler--flask] w-6 h-6" />}
+            color="info"
+          />
+          <StatCard
+            title={t('recipes.productsUsed')}
+            value={new Set(recipes.filter(r => r.is_active).map(r => r.product_id)).size}
+            icon={<span className="icon-[tabler--apps] w-6 h-6" />}
+            color="warning"
+          />
+          <StatCard
+            title={t('recipes.avgCostPerRecipe')}
+            value={recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
+              ? Math.round(recipesWithDetails.filter(r => r.recipe.is_active).reduce((s, r) => s + r.totalCost, 0) / recipesWithDetails.filter(r => r.recipe.is_active).length)
+              : 0}
+            icon={<span className="icon-[tabler--coin] w-6 h-6" />}
+            color="error"
+          />
+          <StatCard
+            title={t('recipes.avgProfitMargin')}
+            value={recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
+              ? `${Math.round(recipesWithDetails.filter(r => r.recipe.is_active).reduce((s, r) => s + profitMargin(r), 0) / recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length)}%`
+              : 'N/A'}
+            icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+            color="success"
+          />
         </div>
 
         {/* Filters & Actions */}

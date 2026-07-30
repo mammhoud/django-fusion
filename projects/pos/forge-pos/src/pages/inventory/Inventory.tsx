@@ -7,6 +7,7 @@ import { useCurrency } from '../../contexts/CurrencyContext';
 import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonTable, SkeletonList, SkeletonCard } from '../../components/layout/Skeleton';
 import Card from '../../components/layout/Card';
+import StatCard from '../../components/data/StatCard';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../components/layout/Modal';
 import ConfirmDialog from '../../components/display/ConfirmDialog';
@@ -323,32 +324,34 @@ export default function Inventory() {
           <div className="space-y-6">
             {/* Compact Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <Card padding="sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-base-content/60">{t('inventory.totalIngredients')}</span>
-                  <span className="text-lg font-bold text-base-content">{activeIngredients.length}</span>
-                </div>
-              </Card>
-              <Card padding="sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-base-content/60">{t('inventory.stockValue')}</span>
-                  <span className="text-lg font-bold text-primary">
-                    {formatPrice(totalStockValue)}
-                  </span>
-                </div>
-              </Card>
-              <Card padding="sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-base-content/60">{t('inventory.avgCost')}</span>
-                  <span className="text-lg font-bold text-base-content">{formatPrice(avgCost)}</span>
-                </div>
-              </Card>
-              <Card padding="sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-base-content/60">{t('inventory.lowStockItems')}</span>
-                  <span className="text-lg font-bold text-warning">{lowStockCount}</span>
-                </div>
-              </Card>
+              <StatCard
+                title={t('inventory.totalIngredients')}
+                value={activeIngredients.length}
+                icon={<span className="icon-[tabler--package] w-5 h-5" />}
+                color="info"
+                compact
+              />
+              <StatCard
+                title={t('inventory.stockValue')}
+                value={formatPrice(totalStockValue)}
+                icon={<span className="icon-[tabler--moneybag] w-5 h-5" />}
+                color="primary"
+                compact
+              />
+              <StatCard
+                title={t('inventory.avgCost')}
+                value={formatPrice(avgCost)}
+                icon={<span className="icon-[tabler--calculator] w-5 h-5" />}
+                color="secondary"
+                compact
+              />
+              <StatCard
+                title={t('inventory.lowStockItems')}
+                value={lowStockCount}
+                icon={<span className="icon-[tabler--alert-triangle] w-5 h-5" />}
+                color="warning"
+                compact
+              />
             </div>
 
             {/* Inline heading + search + add button */}
