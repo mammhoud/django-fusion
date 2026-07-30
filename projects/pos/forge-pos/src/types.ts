@@ -60,6 +60,7 @@ export interface Settings {
   dine_in_tables?: number;
   delivery_fee?: number;
   delivery_fee_per_km?: number;
+  mcp_enabled?: boolean;
 }
 
 export interface DeliveryZone {
