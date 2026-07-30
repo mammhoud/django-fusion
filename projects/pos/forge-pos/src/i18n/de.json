@@ -642,7 +642,8 @@
     "periodTrend": "Zeitraumtrend",
     "periodBreakdown": "Zeitraumaufschlüsselung",
     "tableWeek": "Woche",
-    "tableMonth": "Monat"
+    "tableMonth": "Monat",
+    "tabsLabel": "Bericht-Registerkarten"
   },
   "settings": {
     "title": "Einstellungen",

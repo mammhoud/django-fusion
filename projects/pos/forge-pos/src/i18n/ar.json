@@ -644,7 +644,8 @@
     "periodTrend": "اتجاه الفترات",
     "periodBreakdown": "تفصيل الفترات",
     "tableWeek": "الأسبوع",
-    "tableMonth": "الشهر"
+    "tableMonth": "الشهر",
+    "tabsLabel": "علامات تبويب التقارير"
   },
   "settings": {
     "title": "الإعدادات",

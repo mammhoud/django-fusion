@@ -598,7 +598,7 @@ export default function KitchenDisplay() {
                     type="button"
                     onClick={closeDetail}
                     className="btn btn-ghost btn-sm btn-square"
-                    aria-label="Close"
+                    aria-label={t('common.closeButton') || 'Close'}
                   >
                     <span className="icon-[tabler--x] w-4 h-4" />
                   </button>

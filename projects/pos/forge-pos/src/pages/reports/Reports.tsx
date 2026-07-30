@@ -929,7 +929,7 @@ export default function Reports() {
         </Card>
 
         {/* Tab Navigation */}
-        <nav className="tabs tabs-boxed gap-1 mb-8 overflow-x-auto" aria-label="Report tabs" role="tablist" data-tab-prefix="reports-tab" onKeyDown={onReportsTabKeyDown}>
+        <nav className="tabs tabs-boxed gap-1 mb-8 overflow-x-auto" aria-label={t('reports.tabsLabel') || 'Report tabs'} role="tablist" data-tab-prefix="reports-tab" onKeyDown={onReportsTabKeyDown}>
           {tabs.map(tab => (
             <button
               key={tab.key}
