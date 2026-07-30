@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import StatusToast from '../../components/data/StatusToast';
 import { iconClass } from '../../lib/icons';
 
@@ -31,6 +32,7 @@ const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = 
 
 export default function Sale() {
   const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -688,20 +690,20 @@ export default function Sale() {
                             Distance exceeds {selectedZone.name} max ({selectedZone.max_distance} km) — fee capped at max distance
                           </p>
                           <p className="text-xs text-base-content/50 mt-0.5">
-                            Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {selectedZone.max_distance}km × {selectedZone.fee_per_km.toFixed(2)} = <span className="font-semibold text-primary dark:text-primary/80">{settings.currency} {deliveryFee.toFixed(2)}</span>
+                            Fee: {formatPrice(selectedZone.base_fee)} + {selectedZone.max_distance}km × {formatPrice(selectedZone.fee_per_km)} = <span className="font-semibold text-primary dark:text-primary/80">{formatPrice(deliveryFee)}</span>
                             <span className="line-through text-slate-400 ml-2">({settings.currency} {(selectedZone.base_fee + (deliveryDistance * selectedZone.fee_per_km)).toFixed(2)})</span>
                           </p>
                         </>
                       ) : (
                         <p className="text-xs text-base-content/50">
-                          Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {deliveryDistance}km × {selectedZone.fee_per_km.toFixed(2)} = <span className="font-semibold text-primary dark:text-primary/80">{settings.currency} {deliveryFee.toFixed(2)}</span>
+                          Fee: {formatPrice(selectedZone.base_fee)} + {deliveryDistance}km × {formatPrice(selectedZone.fee_per_km)} = <span className="font-semibold text-primary dark:text-primary/80">{formatPrice(deliveryFee)}</span>
                         </p>
                       )}
                     </div>
                   )}
                   {!selectedZone && deliveryFee > 0 && (
                     <p className="text-xs text-base-content/50 ml-8">
-                      Delivery fee: {settings.currency} {deliveryFee.toFixed(2)}
+                      Delivery fee: {formatPrice(deliveryFee)}
                     </p>
                   )}
                 </div>
@@ -732,7 +734,7 @@ export default function Sale() {
                   </p>
                   {deliveryFee > 0 && (
                     <p className="text-xs text-base-content/50 mt-1">
-                      ({settings.currency} {totalAmount.toFixed(2)} + {settings.currency} {deliveryFee.toFixed(2)} delivery)
+                      ({formatPrice(totalAmount)} + {formatPrice(deliveryFee)} delivery)
                     </p>
                   )}
                 </div>
@@ -902,7 +904,7 @@ export default function Sale() {
                           {cartItem.quantity}
                         </span>
                         <span className="text-base-content/60 text-[10px] sm:text-xs">
-                          {settings.currency} {(cartItem.quantity * product.price).toFixed(2)}
+                          {formatPrice(cartItem.quantity * product.price)}
                         </span>
                       </div>
                       <button
@@ -956,7 +958,7 @@ export default function Sale() {
                         <span>
                           {item.name} × {item.quantity} {item.unit === 'item' ? 'item(s)' : item.unit}
                         </span>
-                        <span>{settings.currency} {(item.price * item.quantity).toFixed(2)}</span>
+                        <span>{formatPrice(item.price * item.quantity)}</span>
                       </div>
                       {/* Item notes customization */}
                       <div className="flex items-center gap-2 mt-0.5">
@@ -984,19 +986,19 @@ export default function Sale() {
                 <div className="border-t border-base-300/50 pt-2 mt-2 flex justify-between items-center">
                   <span className="text-base-content font-semibold">{t('sale.subtotal')}</span>
                   <span className="text-base-content font-semibold">
-                    {settings.currency} {totalAmount.toFixed(2)}
+                    {formatPrice(totalAmount)}
                   </span>
                 </div>
                 {deliveryFee > 0 && (
                   <div className="flex justify-between items-center text-slate-600 dark:text-gray-400 text-sm">
                     <span>{t('sale.deliveryFee')}</span>
-                    <span>{settings.currency} {deliveryFee.toFixed(2)}</span>
+                    <span>{formatPrice(deliveryFee)}</span>
                   </div>
                 )}
                 <div className="border-t border-base-300/50 pt-2 mt-2 flex justify-between items-center">
                   <span className="text-base-content font-bold">{t('sale.total')}</span>
                   <span className="text-primary dark:text-primary/80 font-bold">
-                    {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
+                    {formatPrice(totalAmount + deliveryFee)}
                   </span>
                 </div>
               </div>
@@ -1048,11 +1050,11 @@ export default function Sale() {
                   {t('sale.itemsSelected', { count: cart.length })}
                 </p>
                 <p className="text-lg font-bold text-primary dark:text-primary/80">
-                  {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
+                  {formatPrice(totalAmount + deliveryFee)}
                 </p>
                 {deliveryFee > 0 && (
                   <p className="text-[10px] text-slate-400 dark:text-gray-500">
-                    {t('sale.deliveryFee')}: {settings.currency} {deliveryFee.toFixed(2)}
+                    {t('sale.deliveryFee')}: {formatPrice(deliveryFee)}
                   </p>
                 )}
               </div>
@@ -1194,7 +1196,7 @@ export default function Sale() {
                               Exceeds {selectedZone.max_distance} km max — capped
                             </p>
                             <p className="text-[11px] text-base-content/50">
-                              Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {selectedZone.max_distance}km × {selectedZone.fee_per_km.toFixed(2)} = {settings.currency} {deliveryFee.toFixed(2)}
+                              Fee: {formatPrice(selectedZone.base_fee)} + {selectedZone.max_distance}km × {formatPrice(selectedZone.fee_per_km)} = {formatPrice(deliveryFee)}
                             </p>
                           </>
                         ) : (
@@ -1206,7 +1208,7 @@ export default function Sale() {
                     )}
                     {!selectedZone && deliveryFee > 0 && (
                       <p className="text-[11px] text-base-content/50">
-                        Fee: {settings.currency} {deliveryFee.toFixed(2)}
+                        Fee: {formatPrice(deliveryFee)}
                       </p>
                     )}
                   </div>
@@ -1284,7 +1286,7 @@ export default function Sale() {
                 </p>
                 {deliveryFee > 0 && (
                   <p className="text-[11px] text-base-content/50">
-                    Subtotal: {settings.currency} {totalAmount.toFixed(2)} + Delivery: {settings.currency} {deliveryFee.toFixed(2)}
+                    Subtotal: {formatPrice(totalAmount)} + Delivery: {formatPrice(deliveryFee)}
                   </p>
                 )}
                 <div className="text-xs text-base-content/50 mt-2">
@@ -1300,7 +1302,7 @@ export default function Sale() {
                     {cart.map(item => (
                       <div key={item.id} className="flex justify-between text-xs text-slate-700 dark:text-white/70">
                         <span className="truncate mr-2">{item.name} ×{item.quantity}</span>
-                        <span className="font-medium flex-shrink-0">{settings.currency} {(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-medium flex-shrink-0">{formatPrice(item.price * item.quantity)}</span>
                       </div>
                     ))}
                   </div>

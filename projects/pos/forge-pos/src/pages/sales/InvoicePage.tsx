@@ -20,6 +20,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -71,7 +72,8 @@ export default function InvoicePage() {
   const [invoiceNumber, setInvoiceNumber] = useState(`INV-${Date.now().toString().slice(-6)}`);
   const [date, setDate]                 = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate]           = useState('');
-  const [currency, setCurrency]         = useState('USD');
+  const { currency: defaultCurrency, formatPrice } = useCurrency();
+  const [currency, setCurrency] = useState(defaultCurrency);
   const [taxRate, setTaxRate]           = useState(0);
   const [notes, setNotes]               = useState('');
   const [footer, setFooter]             = useState('Thank you for your business!');
@@ -527,7 +529,7 @@ export default function InvoicePage() {
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-500">Estimated Total</span>
                       <span className="font-bold text-primary">
-                        {currency} {(sub + tax).toFixed(2)}
+                        {formatPrice(sub + tax)}
                       </span>
                     </div>
                   );

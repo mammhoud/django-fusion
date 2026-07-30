@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { KitchenTicket, Sale } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hooks/useKDSNotification';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 // Type from the Rust SaleItem model (mirrored here for the ticket detail modal)
 interface SaleItemData {
@@ -81,6 +82,7 @@ function saveClickRecord(record: ClickRecord): ClickRecord[] {
 
 export default function KitchenDisplay() {
   const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [tickets, setTickets] = useState<KitchenTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('pending');
@@ -686,13 +688,13 @@ export default function KitchenDisplay() {
                               </span>
                               <span className="font-medium text-base-content truncate">{item.product_name}</span>
                             </div>
-                            <span className="text-base-content/60 shrink-0 ml-2">${(item.price * item.quantity).toFixed(2)}</span>
+                            <span className="text-base-content/60 shrink-0 ml-2">{formatPrice(item.price * item.quantity)}</span>
                           </div>
                         ))}
                         {/* Total */}
                         <div className="flex items-center justify-between py-2 px-2 mt-1 border-t border-base-200/50 text-xs font-bold text-base-content">
                           <span>Total</span>
-                          <span>${saleItems.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2)}</span>
+                          <span>{formatPrice(saleItems.reduce((sum, i) => sum + i.price * i.quantity, 0))}</span>
                         </div>
                       </div>
                     )}
