@@ -21,6 +21,11 @@ interface RecipeWithDetails {
   costPerServing: number;
 }
 
+// ── Module-level notes cache to avoid repeated full fetches ──
+let notesCache: Note[] | null = null;
+let notesCacheTimestamp = 0;
+const NOTES_CACHE_TTL = 30000; // 30 seconds
+
 export default function Recipes() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -58,6 +63,7 @@ export default function Recipes() {
   const [recipeNotes, setRecipeNotes] = useState<Note[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [newNoteForm, setNewNoteForm] = useState({ name: '', category: 'preparation' as string, template_body: '' });
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   // Note category definitions with color coding
   const NOTE_CATEGORIES: { id: string; label: string; badge: string }[] = [
@@ -81,9 +87,14 @@ export default function Recipes() {
   const fetchRecipeNotes = async (recipeId: number) => {
     setNotesLoading(true);
     try {
-      const allNotes = await invoke<Note[]>('get_notes');
+      // Use cache if still valid
+      const now = Date.now();
+      if (!notesCache || (now - notesCacheTimestamp) > NOTES_CACHE_TTL) {
+        notesCache = await invoke<Note[]>('get_notes');
+        notesCacheTimestamp = now;
+      }
       // Filter to only notes linked to this recipe
-      const notes = allNotes.filter(n => n.recipe_id === recipeId);
+      const notes = (notesCache || []).filter(n => n.recipe_id === recipeId);
       setRecipeNotes(notes);
     } catch (e) { 
       setRecipeNotes([]); 
@@ -106,6 +117,7 @@ export default function Recipes() {
         }
       });
       setNewNoteForm({ name: '', category: 'preparation', template_body: '' });
+      notesCache = null; // invalidate cache after mutation
       await fetchRecipeNotes(showNotesModal.recipe.id);
       showStatus('success', 'Note added!');
     } catch (e) { 
@@ -118,6 +130,7 @@ export default function Recipes() {
     if (!showNotesModal) return;
     try {
       await invoke('delete_note', { id: noteId });
+      notesCache = null; // invalidate cache after mutation
       await fetchRecipeNotes(showNotesModal.recipe.id);
       showStatus('success', 'Note deleted');
     } catch (e) { 
@@ -126,8 +139,30 @@ export default function Recipes() {
     }
   };
 
+  const handleUpdateNote = async () => {
+    if (!editingNote || !showNotesModal) return;
+    try {
+      await invoke('update_note', {
+        id: editingNote.id,
+        update: {
+          name: editingNote.name,
+          template_body: editingNote.template_body,
+          category: editingNote.category || null,
+        }
+      });
+      setEditingNote(null);
+      notesCache = null; // invalidate cache after mutation
+      await fetchRecipeNotes(showNotesModal.recipe.id);
+      showStatus('success', 'Note updated!');
+    } catch (e) {
+      console.error('Error updating note:', e);
+      showStatus('error', String(e));
+    }
+  };
+
   const openNotesModal = async (rd: RecipeWithDetails) => {
     setShowNotesModal(rd);
+    setEditingNote(null);
     await fetchRecipeNotes(rd.recipe.id);
   };
 
@@ -800,28 +835,72 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
               <div className="space-y-2">
                 {recipeNotes.map(note => (
                   <div key={note.id} className="bg-base-200/50 rounded-lg p-3">
-                    <div className="flex items-start justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="icon-[tabler--note] w-4 h-4 text-info" />
-                        <h4 className="text-sm font-semibold text-base-content">{note.name}</h4>
-                        <span className={`badge badge-xs ${getNoteCategoryBadge(note.category)}`}>
-                          {getNoteCategoryLabel(note.category)}
-                        </span>
+                    {editingNote?.id === note.id ? (
+                      /* ── Edit Mode ── */
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={editingNote.name}
+                          onChange={e => setEditingNote({ ...editingNote, name: e.target.value })}
+                          className="input input-bordered input-sm w-full text-sm"
+                          placeholder="Note title"
+                        />
+                        <select
+                          value={editingNote.category || ''}
+                          onChange={e => setEditingNote({ ...editingNote, category: e.target.value })}
+                          className="select select-bordered select-sm w-full"
+                        >
+                          {NOTE_CATEGORIES.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.label}</option>
+                          ))}
+                        </select>
+                        <textarea
+                          value={editingNote.template_body}
+                          onChange={e => setEditingNote({ ...editingNote, template_body: e.target.value })}
+                          rows={3}
+                          className="textarea textarea-bordered textarea-sm w-full text-sm"
+                        />
+                        <div className="flex gap-2 justify-end">
+                          <button onClick={() => setEditingNote(null)} className="btn btn-ghost btn-xs">Cancel</button>
+                          <button onClick={handleUpdateNote} className="btn btn-primary btn-xs">Save</button>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="text-error/60 hover:text-error p-0.5 rounded hover:bg-error/10 transition-colors"
-                        title="Delete note"
-                      >
-                        <span className="icon-[tabler--trash] w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <p className="text-xs text-base-content/70 whitespace-pre-wrap leading-relaxed">
-                      {note.template_body}
-                    </p>
-                    <p className="text-[10px] text-base-content/30 mt-1.5">
-                      {new Date(note.created_at).toLocaleDateString()} · {new Date(note.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                    ) : (
+                      /* ── View Mode ── */
+                      <>
+                        <div className="flex items-start justify-between mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="icon-[tabler--note] w-4 h-4 text-info" />
+                            <h4 className="text-sm font-semibold text-base-content">{note.name}</h4>
+                            <span className={`badge badge-xs ${getNoteCategoryBadge(note.category)}`}>
+                              {getNoteCategoryLabel(note.category)}
+                            </span>
+                          </div>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => setEditingNote({ ...note })}
+                              className="text-info/60 hover:text-info p-0.5 rounded hover:bg-info/10 transition-colors"
+                              title="Edit note"
+                            >
+                              <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteNote(note.id)}
+                              className="text-error/60 hover:text-error p-0.5 rounded hover:bg-error/10 transition-colors"
+                              title="Delete note"
+                            >
+                              <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-base-content/70 whitespace-pre-wrap leading-relaxed">
+                          {note.template_body}
+                        </p>
+                        <p className="text-[10px] text-base-content/30 mt-1.5">
+                          {new Date(note.created_at).toLocaleDateString()} · {new Date(note.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

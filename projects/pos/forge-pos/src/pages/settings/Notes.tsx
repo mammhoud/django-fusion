@@ -12,6 +12,10 @@ const CATEGORY_COLORS: Record<string, string> = {
   idea: 'badge-primary',
   task: 'badge-warning',
   recipe: 'badge-success',
+  preparation: 'badge-info',
+  'chef-tips': 'badge-warning',
+  allergen: 'badge-error',
+  plating: 'badge-success',
   inventory: 'badge-info',
   staff: 'badge-secondary',
   finance: 'badge-accent',
@@ -24,6 +28,10 @@ const NOTE_CATEGORIES = [
   { value: 'idea', label: 'Idea', color: 'badge-primary' },
   { value: 'task', label: 'Task', color: 'badge-warning' },
   { value: 'recipe', label: 'Recipe', color: 'badge-success' },
+  { value: 'preparation', label: 'Preparation Steps', color: 'badge-info' },
+  { value: 'chef-tips', label: 'Chef Tips', color: 'badge-warning' },
+  { value: 'allergen', label: 'Allergen Info', color: 'badge-error' },
+  { value: 'plating', label: 'Plating Guide', color: 'badge-success' },
   { value: 'inventory', label: 'Inventory', color: 'badge-info' },
   { value: 'staff', label: 'Staff', color: 'badge-secondary' },
   { value: 'finance', label: 'Finance', color: 'badge-accent' },
@@ -44,6 +52,10 @@ function getCategoryBorder(cat: string | null | undefined): string {
     idea: 'border-l-primary',
     task: 'border-l-warning',
     recipe: 'border-l-success',
+    preparation: 'border-l-info',
+    'chef-tips': 'border-l-warning',
+    allergen: 'border-l-error',
+    plating: 'border-l-success',
     inventory: 'border-l-info',
     staff: 'border-l-secondary',
     finance: 'border-l-accent',
@@ -90,6 +102,10 @@ function getNoteIconClass(cat: string | null | undefined): string {
     case 'idea': return 'icon-[tabler--bulb] w-3 h-3';
     case 'task': return 'icon-[tabler--checkbox] w-3 h-3';
     case 'recipe': return 'icon-[tabler--chef-hat] w-3 h-3';
+    case 'preparation': return 'icon-[tabler--list-check] w-3 h-3';
+    case 'chef-tips': return 'icon-[tabler--bulb] w-3 h-3';
+    case 'allergen': return 'icon-[tabler--alert-triangle] w-3 h-3';
+    case 'plating': return 'icon-[tabler--palette] w-3 h-3';
     case 'inventory': return 'icon-[tabler--packages] w-3 h-3';
     case 'staff': return 'icon-[tabler--users] w-3 h-3';
     case 'finance': return 'icon-[tabler--cash] w-3 h-3';
@@ -114,6 +130,8 @@ export default function Notes() {
     isPending: isFiltering,
   } = useDebouncedSearch();
   const [sortKey, setSortKey] = useState<'name-asc' | 'name-desc' | 'newest' | 'oldest' | 'pinned'>('pinned');
+  const [selectedNotes, setSelectedNotes] = useState<Set<number>>(new Set());
+  const [duplicatingId, setDuplicatingId] = useState<number | null>(null);
 
   useEffect(() => {
     loadNotes();
@@ -185,6 +203,7 @@ export default function Notes() {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
       await invoke('delete_note', { id });
+      setSelectedNotes(prev => { const next = new Set(prev); next.delete(id); return next; });
       loadNotes({ quiet: true });
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -202,6 +221,88 @@ export default function Notes() {
     } catch (error) {
       console.error('Error toggling pin:', error);
     }
+  };
+
+  const handleDuplicate = async (note: Note) => {
+    setDuplicatingId(note.id);
+    try {
+      await invoke<Note>('add_note', {
+        template: {
+          name: `${note.name} (copy)`,
+          template_body: note.template_body,
+          category: note.category || null,
+          use_as_template: note.use_as_template,
+        }
+      });
+      loadNotes({ quiet: true });
+    } catch (error) {
+      console.error('Error duplicating note:', error);
+    } finally {
+      setDuplicatingId(null);
+    }
+  };
+
+  // ── Bulk actions ──
+  const toggleSelect = (id: number) => {
+    setSelectedNotes(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    if (selectedNotes.size === filteredNotes.length) {
+      setSelectedNotes(new Set());
+    } else {
+      setSelectedNotes(new Set(filteredNotes.map(n => n.id)));
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (selectedNotes.size === 0) return;
+    if (!confirm(`Delete ${selectedNotes.size} note(s)?`)) return;
+    try {
+      for (const id of selectedNotes) {
+        await invoke('delete_note', { id });
+      }
+      setSelectedNotes(new Set());
+      loadNotes({ quiet: true });
+    } catch (error) {
+      console.error('Error bulk deleting:', error);
+    }
+  };
+
+  const bulkPin = async (pinned: boolean) => {
+    if (selectedNotes.size === 0) return;
+    try {
+      for (const id of selectedNotes) {
+        await invoke('update_note', { id, update: { is_default: pinned } });
+      }
+      setSelectedNotes(new Set());
+      loadNotes({ quiet: true });
+    } catch (error) {
+      console.error('Error bulk pinning:', error);
+    }
+  };
+
+  // ── E6: Export filtered notes as JSON ──
+  const handleExport = () => {
+    const data = filteredNotes.map(n => ({
+      name: n.name,
+      category: n.category || '',
+      body: n.template_body,
+      pinned: n.is_default,
+      template: n.use_as_template,
+    }));
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `notes-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const resetForm = () => {
@@ -249,6 +350,17 @@ export default function Notes() {
     return sorted;
   }, [notes, q, categoryFilter, sortKey]);
 
+  // Clear selectedNotes when filtered notes change (search/category filter)
+  useEffect(() => {
+    const visibleIds = new Set(filteredNotes.map(n => n.id));
+    setSelectedNotes(prev => {
+      const filtered = new Set([...prev].filter(id => visibleIds.has(id)));
+      // Only update state if something was removed (avoids infinite loops)
+      if (filtered.size === prev.size) return prev;
+      return filtered;
+    });
+  }, [filteredNotes]);
+
   const pinnedCount = notes.filter(n => n.is_default).length;
 
   return (
@@ -266,13 +378,24 @@ export default function Notes() {
               {pinnedCount > 0 && ` · ${pinnedCount} pinned`}
             </p>
           </div>
-          <button
-            onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false }); setShowForm(true); }}
-            className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
-          >
-            <span className="icon-[tabler--plus]" />
-            {t('notes.addTemplate') || 'New Note'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExport}
+              disabled={filteredNotes.length === 0}
+              className="btn btn-ghost btn-sm gap-1.5"
+              title="Export filtered notes as JSON"
+            >
+              <span className="icon-[tabler--download] w-4 h-4" />
+              Export
+            </button>
+            <button
+              onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false }); setShowForm(true); }}
+              className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
+            >
+              <span className="icon-[tabler--plus]" />
+              {t('notes.addTemplate') || 'New Note'}
+            </button>
+          </div>
         </div>
 
         {/* ── Search + Sort + Category Filter Bar ── */}
@@ -344,6 +467,15 @@ export default function Notes() {
               </select>
             )}
 
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={filteredNotes.length > 0 && selectedNotes.size === filteredNotes.length}
+                onChange={selectAll}
+                className="checkbox checkbox-primary checkbox-xs"
+              />
+              <span className="text-[10px] text-base-content/40">All</span>
+            </label>
             <span className="text-xs text-base-content/40 whitespace-nowrap px-2">
               {filteredNotes.length} / {notes.length}
             </span>
@@ -475,6 +607,29 @@ export default function Notes() {
           )}
         </AnimatePresence>
 
+        {/* ── Bulk Actions Bar ── */}
+        {selectedNotes.size > 0 && (
+          <div className="bg-primary/10 border border-primary/30 rounded-xl p-3 flex items-center justify-between gap-3">
+            <span className="text-sm font-medium text-primary">
+              {selectedNotes.size} selected
+            </span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => bulkPin(true)} className="btn btn-ghost btn-xs gap-1">
+                <span className="icon-[tabler--pin] w-3.5 h-3.5" /> Pin all
+              </button>
+              <button onClick={() => bulkPin(false)} className="btn btn-ghost btn-xs gap-1">
+                <span className="icon-[tabler--pin-off] w-3.5 h-3.5" /> Unpin all
+              </button>
+              <button onClick={bulkDelete} className="btn btn-ghost btn-xs gap-1 text-error">
+                <span className="icon-[tabler--trash] w-3.5 h-3.5" /> Delete
+              </button>
+              <button onClick={() => setSelectedNotes(new Set())} className="btn btn-ghost btn-xs">
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ── Notes Grid ── */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -520,9 +675,18 @@ export default function Notes() {
                 className={`group bg-base-100/70 backdrop-blur-sm border border-base-300/30 border-l-4
                   rounded-xl p-4 hover:shadow-lg hover:shadow-base-300/20
                   hover:border-primary/30 hover:bg-base-100/90
-                  transition-all duration-200 cursor-pointer relative ${note.category ? getCategoryBorder(note.category) : 'border-l-base-300'}`}
-                onClick={() => handleEdit(note)}
+                  transition-all duration-200 relative ${note.category ? getCategoryBorder(note.category) : 'border-l-base-300'}`}
               >
+                {/* Selection checkbox */}
+                <div className="absolute top-2 left-2 z-10" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={selectedNotes.has(note.id)}
+                    onChange={() => toggleSelect(note.id)}
+                    className="checkbox checkbox-primary checkbox-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
+                <div className="cursor-pointer" onClick={() => handleEdit(note)}>
                 {/* Pin indicator */}
                 {note.is_default && (
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
@@ -555,12 +719,21 @@ export default function Notes() {
                   {getContentPreview(note.template_body)}
                 </div>
 
+                </div>
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-2 border-t border-base-300/20">
                   <span className="text-[10px] text-base-content/30">
                     {formatDate(note.updated_at || note.created_at)}
                   </span>
                   <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDuplicate(note); }}
+                      disabled={duplicatingId === note.id}
+                      className="p-1.5 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      title="Duplicate note"
+                    >
+                      <span className="icon-[tabler--copy] w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleTogglePin(note); }}
                       className={`p-1.5 rounded-lg transition-colors ${
