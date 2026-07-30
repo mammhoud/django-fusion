@@ -28,11 +28,11 @@ interface MenuItem {
 }
 
 const MENU_CATEGORIES: MenuCategory[] = [
-  { id: 'sales', label: 'nav.categorySales', icon: <span className={iconClass('lucide:shopping-cart', 'w-5 h-5')} />, color: 'text-success' },
-  { id: 'products', label: 'nav.categoryProducts', icon: <span className={iconClass('lucide:package', 'w-5 h-5')} />, color: 'text-info' },
-  { id: 'staff', label: 'nav.categoryStaff', icon: <span className={iconClass('lucide:users', 'w-5 h-5')} />, color: 'text-secondary' },
-  { id: 'reports', label: 'nav.categoryReports', icon: <span className={iconClass('lucide:bar-chart-3', 'w-5 h-5')} />, color: 'text-error' },
-  { id: 'system', label: 'nav.categorySystem', icon: <span className={iconClass('lucide:layout-dashboard', 'w-5 h-5')} />, color: 'text-base-content/50' },
+  { id: 'sales', label: 'nav.categorySales', icon: <span className={iconClass('lucide:shopping-cart', 'w-6 h-6')} />, color: 'text-success' },
+  { id: 'products', label: 'nav.categoryProducts', icon: <span className={iconClass('lucide:package', 'w-6 h-6')} />, color: 'text-info' },
+  { id: 'staff', label: 'nav.categoryStaff', icon: <span className={iconClass('lucide:users', 'w-6 h-6')} />, color: 'text-secondary' },
+  { id: 'reports', label: 'nav.categoryReports', icon: <span className={iconClass('lucide:bar-chart-3', 'w-6 h-6')} />, color: 'text-error' },
+  { id: 'system', label: 'nav.categorySystem', icon: <span className={iconClass('lucide:layout-dashboard', 'w-6 h-6')} />, color: 'text-base-content/50' },
 ];
 
 const MENU_ITEMS: Record<string, MenuItem[]> = {
@@ -209,9 +209,9 @@ export default function Home() {
                   bg-linear-to-br ${qa.gradient} text-white shadow-lg
                   group-hover:scale-110 transition-transform duration-200`}
                 >
-                  <span className={iconClass(qa.icon, 'w-4 h-4')} />
+                  <span className={iconClass(qa.icon, 'w-6 h-6')} />
                 </div>
-                <span className="text-xs font-semibold text-base-content/80 text-center leading-tight relative z-10">{t(qa.label)}</span>
+                <span className="text-xs font-semibold text-base-content/60 text-center leading-tight relative z-10">{t(qa.label)}</span>
                 <span className="text-[10px] text-base-content/50 text-center mt-0.5 leading-tight line-clamp-1 relative z-10">{t(qa.desc)}</span>
               </button>
             ))}
@@ -358,7 +358,7 @@ export default function Home() {
                         ${menuItem.colorClass} shadow-md mx-auto
                         group-hover:scale-110 transition-transform duration-300`}
                       >
-                        <Icon className="w-5 h-5" />
+                        <Icon className="w-6 h-6" />
                       </div>
                     )}
 
