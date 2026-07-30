@@ -41,7 +41,7 @@ function ProfileDropdown({
           flex items-center justify-center text-white font-bold shrink-0 shadow-sm`}>
           {initials}
         </div>
-        <span className="hidden sm:block text-xs font-medium text-base-content/70 max-w-[120px] truncate">
+        <span className="hidden sm:block text-xs font-medium text-base-content/60 max-w-[120px] truncate">
           {user.email}
         </span>
         <span className={`icon-[tabler--chevron-down] w-4 h-4 text-base-content/50 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />

@@ -193,7 +193,7 @@ export default function StatCard(props: StatCardProps) {
       <div className={`stat-value ${semanticColor} ${compactValueClass}`.trim()}>{value}</div>
       {desc && (
         <div
-          className={`stat-desc ${compactDescClass} ${onDescClick ? 'cursor-pointer hover:text-primary hover:underline transition-colors' : ''}`.trim()}
+          className={`stat-desc ${semanticColor}/70 ${compactDescClass} ${onDescClick ? 'cursor-pointer hover:text-primary hover:underline transition-colors' : ''}`.trim()}
           onClick={(e) => {
             if (onDescClick) {
               e.stopPropagation();
