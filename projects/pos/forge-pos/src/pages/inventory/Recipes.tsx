@@ -428,17 +428,17 @@ export default function Recipes() {
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="bg-base-100/50 rounded-lg p-2.5 text-center">
                     <p className="text-xs text-base-content/50">{t('recipes.productPrice')}</p>
-                    <p className="text-sm font-bold text-base-content">{rd.productPrice.toLocaleString()}</p>
+                    <p className="text-sm font-bold text-base-content tabular-nums">{rd.productPrice.toLocaleString()}</p>
                   </div>
                   <div className="bg-base-100/50 rounded-lg p-2.5 text-center">
                     <p className="text-xs text-base-content/50">{t('recipes.totalCost')}</p>
-                    <p className={`text-sm font-bold ${rd.totalCost > rd.productPrice ? 'text-red-500' : 'text-success'}`}>
+                    <p className={`text-sm font-bold tabular-nums ${rd.totalCost > rd.productPrice ? 'text-error' : 'text-success'}`}>
                       {rd.totalCost.toFixed(0)}
                     </p>
                   </div>
                   <div className="bg-base-100/50 rounded-lg p-2.5 text-center">
                     <p className="text-xs text-base-content/50">{t('recipes.costPerServing')}</p>
-                    <p className="text-sm font-bold text-info">{rd.costPerServing.toFixed(1)}</p>
+                    <p className="text-sm font-bold text-info tabular-nums">{rd.costPerServing.toFixed(1)}</p>
                   </div>
                 </div>
 
@@ -447,14 +447,14 @@ export default function Recipes() {
                   <div className="mb-3">
                     <div className="flex justify-between text-xs text-base-content/50 mb-1">
                       <span>{t('recipes.totalCost')} ({((rd.totalCost / rd.productPrice) * 100).toFixed(0)}%)</span>
-                      <span className={profitMargin(rd) >= 0 ? 'text-success' : 'text-red-500'}>
+                      <span className={profitMargin(rd) >= 0 ? 'text-success' : 'text-error'}>
                         {profitMargin(rd) >= 0 ? '+' : ''}{profitMargin(rd).toFixed(0)}% {t('recipes.margin')}
                       </span>
                     </div>
                     <div className="w-full bg-base-300/50 rounded-full h-2 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }} animate={{ width: `${Math.min((rd.totalCost / rd.productPrice) * 100, 100)}%` }}
-                        className={`h-full rounded-full ${rd.totalCost <= rd.productPrice ? 'bg-success' : 'bg-red-500'}`}
+                        className={`h-full rounded-full ${rd.totalCost <= rd.productPrice ? 'bg-success' : 'bg-error'}`}
                       />
                     </div>
                   </div>
@@ -470,7 +470,7 @@ export default function Recipes() {
                       </span>
                       <span>
                         {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
-                        <span className="text-slate-400 ml-1">({calcIngredientCost(ri.ingredient_id, ri.quantity).toFixed(0)})</span>
+                        <span className="text-base-content/40 ml-1">({calcIngredientCost(ri.ingredient_id, ri.quantity).toFixed(0)})</span>
                       </span>
                     </div>
                   ))}

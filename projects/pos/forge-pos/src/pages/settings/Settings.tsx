@@ -1323,7 +1323,8 @@ export default function Settings() {
 
       {/* Address */}
       <div>
-        <label className={labelClass}>{t('settings.address')}</label>              <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="textarea textarea-bordered w-full" />
+        <label className={labelClass}>{t('settings.address')}</label>
+              <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="textarea textarea-bordered w-full" />
       </div>
     </div>
   );

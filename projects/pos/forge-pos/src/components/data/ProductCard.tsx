@@ -96,12 +96,12 @@ const ProductCard = memo(function ProductCard({
       </h3>
 
       {/* Price row */}
-      <div className={`font-semibold text-xs ${isSelected ? 'text-primary dark:text-primary/80' : color.initial}`}>
+      <div className={`font-semibold text-xs tabular-nums ${isSelected ? 'text-primary dark:text-primary/80' : color.initial}`}>
         {currency} {product.price.toFixed(2)}
       </div>
 
       {/* Unit label */}
-      <span className={`text-[9px] ${isSelected ? 'text-primary/70 dark:text-primary/70' : (color.icon || color.initial)} opacity-50 uppercase tracking-wider`}>
+      <span className={`text-[9px] tabular-nums ${isSelected ? 'text-primary/70 dark:text-primary/70' : (color.icon || color.initial)} opacity-50 uppercase tracking-wider`}>
         / {product.unit}
       </span>
 
