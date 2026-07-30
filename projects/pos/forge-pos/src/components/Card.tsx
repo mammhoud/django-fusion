@@ -3,6 +3,7 @@ import { type HTMLAttributes, forwardRef } from 'react';
 // ── Style presets ──
 
 const paddingClasses = {
+  xs: 'p-2',
   sm: 'p-3',
   md: 'p-4',
   lg: 'p-5',
@@ -13,7 +14,7 @@ const paddingClasses = {
 
 const radiusClasses = {
   lg: 'rounded-lg',
-  xl: 'rounded-xl',
+  xl: '',
   '2xl': 'rounded-2xl',
   none: '',
 } as const;
@@ -35,7 +36,7 @@ const borderClasses = {
 const hoverClasses = 'hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** Padding preset: sm(p-3), md(p-4), lg(p-5), xl(p-6), 2xl(p-8). Default: md */
+  /** Padding preset: xs(p-2), sm(p-3), md(p-4), lg(p-5), xl(p-6), 2xl(p-8). Default: md */
   padding?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none';
   /** Border radius: lg, xl, 2xl. Default: xl */
   radius?: 'lg' | 'xl' | '2xl' | 'none';

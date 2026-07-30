@@ -273,30 +273,27 @@ export default function InvoicePage() {
 
           {/* Action buttons */}
           <div className="grid grid-cols-3 gap-2">
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
+            <button
               onClick={handlePrint}
-              className="flex flex-col items-center gap-1 py-3 rounded-xl bg-slate-800 text-white text-xs font-semibold shadow hover:bg-slate-700"
+              className="flex flex-col items-center gap-1 py-3 rounded-xl bg-slate-800 text-white text-xs font-semibold shadow hover:bg-slate-700 active:scale-[0.96] transition-all"
             >
               <span className="icon-[tabler--printer] w-5 h-5" />
               Print
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
+            </button>
+            <button
               onClick={handlePdfExport}
               disabled={isExporting}
-              className="flex flex-col items-center gap-1 py-3 rounded-xl bg-primary text-white text-xs font-semibold shadow hover:bg-teal-700 disabled:opacity-60"
+              className="flex flex-col items-center gap-1 py-3 rounded-xl bg-primary text-white text-xs font-semibold shadow hover:bg-teal-700 disabled:opacity-60 active:scale-[0.96] transition-all"
             >
               {isExporting
                 ? <span className="icon-[tabler--refresh] w-5 h-5 animate-spin" />
                 : <span className="icon-[tabler--download] w-5 h-5" />}
               {isExporting ? 'Saving…' : 'PDF'}
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
+            </button>
+            <button
               onClick={handleOpenSidecar}
               title={!sidecarRunning ? 'Sidecar not running' : 'Open in browser'}
-              className={`flex flex-col items-center gap-1 py-3 rounded-xl text-xs font-semibold shadow ${
+              className={`flex flex-col items-center gap-1 py-3 rounded-xl text-xs font-semibold shadow active:scale-[0.96] transition-all ${
                 sidecarRunning
                   ? 'bg-info text-white hover:bg-indigo-700'
                   : 'bg-slate-200 text-slate-400 dark:bg-slate-700 cursor-not-allowed'
@@ -304,7 +301,7 @@ export default function InvoicePage() {
             >
               <span className="icon-[tabler--external-link] w-5 h-5" />
               Preview
-            </motion.button>
+            </button>
           </div>
 
           {/* Sidecar status badge */}
@@ -471,13 +468,12 @@ export default function InvoicePage() {
             <Card spaceY="3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Line Items ({items.length})</span>
-                <motion.button
-                  whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.93 }}
+                <button
                   onClick={addItem}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold active:scale-[0.93] transition-all"
                 >
                   <span className="icon-[tabler--plus] w-4 h-4" /> Add Item
-                </motion.button>
+                </button>
               </div>
               <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
                 {items.map((item, idx) => (

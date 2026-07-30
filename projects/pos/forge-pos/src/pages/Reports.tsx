@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import StatCard from '../components/StatCard';
 import ComparisonTable, { type ComparisonFilter } from '../components/ComparisonTable';
-import { invoke } from '@tauri-apps/api/core';
+import { useApiQueries } from '../hooks/useApi';
 import {
   Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction,
   Recipe, Employee, Product, Transaction, DeliveryType, DeliveryZone
@@ -53,9 +53,6 @@ export default function Reports() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('sales');
-  const [currency, setCurrency] = useState('USD');
-  const [restaurantName, setRestaurantName] = useState('Forge POS');
-  const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   // Date range filter for sales
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
@@ -63,18 +60,6 @@ export default function Reports() {
     end: '',
   });
   const [activePreset, setActivePreset] = useState<string | null>(null);
-
-  // Raw data
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [inventoryTxns, setInventoryTxns] = useState<InventoryTransaction[]>([]);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
-  const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
   const [zoneFilterId, setZoneFilterId] = useState<number | null>(null);
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>('');
   const [comparisonFilter, setComparisonFilter] = useState<ComparisonFilter | null>(null);
@@ -84,50 +69,44 @@ export default function Reports() {
     setComparisonFilter(null);
   }, [activeTab]);
 
-  useEffect(() => {
-    const loadAll = async () => {
-      try {
-        const [
-          settingsRes, analyticsRes, salesRes,
-          ingredientsRes, invTxnsRes, recipesRes,
-          productsRes,          employeesRes,
-          transactionsRes,
-          deliveryTypesRes,
-          deliveryZonesRes
-        ] = await Promise.all([
-          invoke<Settings>('get_settings'),
-          invoke<AnalyticsData>('get_analytics').catch(() => null),
-          invoke<Sale[]>('get_sales'),
-          invoke<Ingredient[]>('get_ingredients', { includeInactive: true }),
-          invoke<InventoryTransaction[]>('get_inventory_transactions', { ingredientId: null }),
-          invoke<Recipe[]>('get_recipes', { includeInactive: true }),
-          invoke<Product[]>('get_products'),
-          invoke<Employee[]>('get_employees', { includeInactive: true }),
-          invoke<Transaction[]>('get_transactions'),
-          invoke<DeliveryType[]>('get_delivery_types', { includeInactive: true }),
-          invoke<DeliveryZone[]>('get_delivery_zones', { includeInactive: true }),
-        ]);
+  // ── Data fetching via shared useApiQueries hook ──
+  const {
+    data: [
+      settingsRes, analyticsRes, salesRes,
+      ingredientsRes, invTxnsRes, recipesRes,
+      productsRes, employeesRes,
+      transactionsRes,
+      deliveryTypesRes,
+      deliveryZonesRes,
+    ],
+    isLoading: loading,
+  } = useApiQueries([
+    { command: 'get_settings' },
+    { command: 'get_analytics' },
+    { command: 'get_sales' },
+    { command: 'get_ingredients', params: { includeInactive: true } },
+    { command: 'get_inventory_transactions', params: { ingredientId: null } },
+    { command: 'get_recipes', params: { includeInactive: true } },
+    { command: 'get_products' },
+    { command: 'get_employees', params: { includeInactive: true } },
+    { command: 'get_transactions' },
+    { command: 'get_delivery_types', params: { includeInactive: true } },
+    { command: 'get_delivery_zones', params: { includeInactive: true } },
+  ]);
 
-        setCurrency(settingsRes?.currency || 'USD');
-        setRestaurantName(settingsRes?.restaurant_name || 'Forge POS');
-        setAnalytics(analyticsRes);
-        setSales(Array.isArray(salesRes) ? salesRes : []);
-        setIngredients(Array.isArray(ingredientsRes) ? ingredientsRes : []);
-        setInventoryTxns(Array.isArray(invTxnsRes) ? invTxnsRes : []);
-        setRecipes(Array.isArray(recipesRes) ? recipesRes : []);
-        setProducts(Array.isArray(productsRes) ? productsRes : []);
-        setEmployees(Array.isArray(employeesRes) ? employeesRes : []);
-        setTransactions(Array.isArray(transactionsRes) ? transactionsRes : []);
-        setDeliveryTypes(Array.isArray(deliveryTypesRes) ? deliveryTypesRes : []);
-        setDeliveryZones(Array.isArray(deliveryZonesRes) ? deliveryZonesRes : []);
-      } catch (error) {
-        console.error('Error loading report data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadAll();
-  }, []);
+  const settings = (settingsRes as Settings | undefined) ?? null;
+  const currency = settings?.currency || 'USD';
+  const restaurantName = settings?.restaurant_name || 'Forge POS';
+  const analytics = (analyticsRes as AnalyticsData | null) ?? null;
+  const sales = (Array.isArray(salesRes) ? (salesRes as Sale[]) : []) as Sale[];
+  const ingredients = (Array.isArray(ingredientsRes) ? (ingredientsRes as Ingredient[]) : []) as Ingredient[];
+  const inventoryTxns = (Array.isArray(invTxnsRes) ? (invTxnsRes as InventoryTransaction[]) : []) as InventoryTransaction[];
+  const recipes = (Array.isArray(recipesRes) ? (recipesRes as Recipe[]) : []) as Recipe[];
+  const products = (Array.isArray(productsRes) ? (productsRes as Product[]) : []) as Product[];
+  const employees = (Array.isArray(employeesRes) ? (employeesRes as Employee[]) : []) as Employee[];
+  const transactions = (Array.isArray(transactionsRes) ? (transactionsRes as Transaction[]) : []) as Transaction[];
+  const deliveryTypes = (Array.isArray(deliveryTypesRes) ? (deliveryTypesRes as DeliveryType[]) : []) as DeliveryType[];
+  const deliveryZones = (Array.isArray(deliveryZonesRes) ? (deliveryZonesRes as DeliveryZone[]) : []) as DeliveryZone[];
 
   // ---- Help Modal State ----
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
@@ -810,56 +789,32 @@ export default function Reports() {
       background="bg-linear-to-br from-slate-100 via-indigo-50 to-slate-100 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900"
       padding="py-10"
     >
-      {/* Export Buttons */}
-      <div className="flex justify-end gap-3 mb-4">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+      {/* Export Buttons — FlyonUI btn variants */}
+      <div className="flex justify-end gap-2 mb-4">
+        <button
           onClick={handleExportExcel}
           disabled={exporting}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400
-            text-white px-4 py-2 rounded-lg transition-colors duration-300"
+          className="btn btn-success gap-1.5"
         >
           {exporting ? (
-            <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-              />
-              <span>{t('reports.exporting')}</span>
-            </>
+            <span className="loading loading-spinner loading-sm" />
           ) : (
-            <>
-              <span className="icon-[tabler--download] w-5 h-5" />
-              <span>{t('reports.exportExcel')}</span>
-            </>
+            <span className="icon-[tabler--download] w-4 h-4" />
           )}
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          {exporting ? t('reports.exporting') : t('reports.exportExcel')}
+        </button>
+        <button
           onClick={exportPDF}
           disabled={exporting}
-          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400
-            text-white px-4 py-2 rounded-lg transition-colors duration-300"
+          className="btn btn-error gap-1.5"
         >
           {exporting ? (
-            <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-              />
-              <span>{t('reports.exporting')}</span>
-            </>
+            <span className="loading loading-spinner loading-sm" />
           ) : (
-            <>
-              <span className="icon-[tabler--file-type-pdf] w-5 h-5" />
-              <span>{t('reports.exportPDF')}</span>
-            </>
+            <span className="icon-[tabler--file-type-pdf] w-4 h-4" />
           )}
-        </motion.button>
+          {exporting ? t('reports.exporting') : t('reports.exportPDF')}
+        </button>
       </div>
 
         {/* Active Date Range Indicator */}

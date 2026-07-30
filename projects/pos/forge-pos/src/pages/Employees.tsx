@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { Employee, NewEmployee, EmployeeType, NewEmployeeType } from '../types';
 import PageLayout from '../components/PageLayout';
 import { SkeletonList, SkeletonTable } from '../components/Skeleton';
@@ -91,6 +92,14 @@ export default function Employees() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // ── Real-time employee updates from other windows ──
+  useEffect(() => {
+    const unlisten = listen('employees-updated', () => {
+      loadData({ quiet: true });
+    });
+    return () => { unlisten.then(fn => fn()); };
+  }, []);
 
   const showStatus = (type: 'success' | 'error', msg: string) => {
     setToast({ type, message: msg });
@@ -246,18 +255,17 @@ export default function Employees() {
         {/* Tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto">
           {getTabItems().map(tab => (
-            <motion.button
+            <button
               key={tab.key}
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-200 shrink-0 ${
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] shrink-0 ${
                 activeTab === tab.key
                   ? 'bg-info text-white shadow-lg'
                   : 'bg-base-100/70 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
               }`}
             >
               {tab.icon} {tab.label}
-            </motion.button>
+            </button>
           ))}
         </div>
 
@@ -303,13 +311,12 @@ export default function Employees() {
                   ))}
                 </div>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => setShowAddEmployee(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
                 <span className="icon-[tabler--plus]" /> {t('employees.addEmployee')}
-              </motion.button>
+              </button>
             </div>
 
             {/* Employee Grid */}
@@ -393,13 +400,12 @@ export default function Employees() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-base-content">{t('employees.employeeTypes')}</h2>
-              <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => setShowAddType(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
                 <span className="icon-[tabler--plus]" /> {t('employees.addType')}
-              </motion.button>
+              </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">

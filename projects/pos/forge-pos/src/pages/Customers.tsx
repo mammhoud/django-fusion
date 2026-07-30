@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { Customer } from '../types';
@@ -32,6 +33,14 @@ export default function Customers() {
 
   useEffect(() => {
     loadCustomers();
+  }, []);
+
+  // ── Real-time customer updates from other windows ──
+  useEffect(() => {
+    const unlisten = listen('customers-updated', () => {
+      loadCustomers({ quiet: true });
+    });
+    return () => { unlisten.then(fn => fn()); };
   }, []);
 
   const loadCustomers = async (opts: { quiet?: boolean } = {}) => {
@@ -106,54 +115,41 @@ export default function Customers() {
   return (
     <PageLayout title={t('customers.title')}>
       <div className="space-y-4">
-        <div className="flex justify-between items-center gap-3">
-          <h1 className="text-2xl font-bold text-base-content">{t('customers.title')}</h1>
-          <motion.button
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', phone: '', email: '', notes: '' }); }}
-            className="btn btn-primary gap-2 shrink-0"
-          >
-            <span className="icon-[tabler--plus]" /> {t('customers.addCustomer')}
-          </motion.button>
-        </div>
-
-        {/* ── Search bar (debounced async UX) ── */}
-        <Card padding="sm">
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('customers.searchPlaceholder') || 'Search customers...'}
-                aria-label={t('customers.searchPlaceholder') || 'Search customers'}
-                className="input input-bordered w-full pl-10"
-              />
-              {isFiltering ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  aria-label="filtering"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                    border-2 border-teal-400 border-t-transparent rounded-full"
-                />
-              ) : search ? (
-                <button
-                  onClick={() => setSearch('')}
-                  aria-label={t('common.clear')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-                >
-                  <span className="icon-[tabler--x] w-4 h-4" />
-                </button>
-              ) : null}
-            </div>
-            <span className="text-xs text-base-content/50 whitespace-nowrap">
-              {filteredCustomers.length} / {customers.length}
-            </span>
+        {/* ── Title row with inline search + add button ── */}
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-bold text-base-content shrink-0">{t('customers.title')}</h1>
+          <div className="relative flex-1 max-w-64">
+            <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('customers.searchPlaceholder') || 'Search...'}
+              aria-label={t('customers.searchPlaceholder') || 'Search customers'}
+              className="input input-bordered w-full h-8 text-xs pl-8"
+            />
+            {isFiltering ? (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            ) : search ? (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <span className="icon-[tabler--x] w-3 h-3" />
+              </button>
+            ) : null}
           </div>
-        </Card>
+          <span className="text-[11px] text-base-content/40 whitespace-nowrap shrink-0">
+            {filteredCustomers.length}/{customers.length}
+          </span>
+          <button
+            onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', phone: '', email: '', notes: '' }); }}
+            className="btn btn-primary btn-sm gap-1 shrink-0"
+          >
+            <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+            <span className="text-xs">{t('customers.addCustomer')}</span>
+          </button>
+        </div>
 
         {showForm && (
           <motion.form

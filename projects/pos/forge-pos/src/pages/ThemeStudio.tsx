@@ -344,7 +344,7 @@ export default function ThemeStudio() {
   const [_showSaveDialog, setShowSaveDialog] = useState(false); // eslint-disable-line
   const [saveName, setSaveName] = useState('');
   const [showSavedDropdown, setShowSavedDropdown] = useState(false);
-  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [_showExportDialog, setShowExportDialog] = useState(false);
   const [exportCSS, setExportCSS] = useState('');
   const [copied, setCopied] = useState(false);
   const saveDialogRef = useRef<HTMLDialogElement>(null);
@@ -761,7 +761,7 @@ export default function ThemeStudio() {
                 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-3 flex items-center gap-2 w-full text-left"
               >
                 <span className={`icon-[tabler--chevron-right] w-4 h-4 transition-transform ${showSurfaces ? 'rotate-90' : ''}`} />
-                <span className="icon-[tabler--layers] w-4 h-4" />
+                <span className="icon-[tabler--stack-2] w-4 h-4" />
                 Surface Colors
               </button>
               {showSurfaces && (

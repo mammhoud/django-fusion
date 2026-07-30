@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useState, useRef } from 'react';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+import { useState, useRef, memo } from 'react';
 function Ic(name: string): React.ComponentType<{ className?: string }> {
-  return ({ className = '' }) => <span className={`icon-[tabler--${name}] ${className}`} />;
+  const iconClass = 'icon-[tabler--' + name + ']';
+  return ({ className = '' }) => <span className={iconClass + ' ' + className} />;
 }
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -11,6 +11,33 @@ import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import { preloadRoute } from '../utils/preloadRoutes';
+
+// ── Role-based nav visibility ──
+// Which routes each role can see. 'manager' sees everything.
+// 'employee' sees only operational pages — no settings, reports, or admin.
+export const ROLE_ROUTES: Record<string, Set<string>> = {
+  manager: new Set([
+    '/dashboard', '/sale', '/kitchen', '/transactions', '/invoice',
+    '/products', '/manager', '/inventory', '/recipes', '/suppliers',
+    '/employees', '/schedule', '/payroll', '/customers', '/roles',
+    '/analytics', '/reports', '/tax-reports',
+    '/settings', '/receipt-templates', '/support-chat', '/theme-showcase', '/theme-studio', '/about',
+  ]),
+  employee: new Set([
+    '/dashboard', '/sale', '/kitchen', '/transactions', '/inventory',
+  ]),
+};
+
+function filterNavByRole(categories: NavCategory[], role: string): NavCategory[] {
+  const allowed = ROLE_ROUTES[role] || ROLE_ROUTES.manager;
+  return categories
+    .map(cat => ({
+      ...cat,
+      items: cat.items.filter(item => allowed.has(item.route)),
+    }))
+    .filter(cat => cat.items.length > 0);
+}
 
 // ── Category definitions with section headers ──
 interface NavItem {
@@ -108,7 +135,7 @@ function CategoryHeader({
 }) {
   const content = (
     <div className="flex items-center gap-2 px-2.5 py-2 mt-1 first:mt-0 w-full">
-      <span className={`icon-[tabler--${category.icon}] w-3.5 h-3.5 text-base-content/40 shrink-0`} />
+      <span className={'icon-[tabler--' + category.icon + '] w-3.5 h-3.5 text-base-content/40 shrink-0'} />
       {isExpanded && (
         <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 truncate">
           {category.label}
@@ -119,15 +146,13 @@ function CategoryHeader({
 
   if (isClickable && onClick) {
     return (
-      <motion.button
+      <button
         type="button"
         onClick={onClick}
-        whileHover={{ x: 2 }}
-        whileTap={{ scale: 0.97 }}
-        className="w-full text-left cursor-pointer hover:bg-base-200/30 rounded-xl transition-colors"
+        className="w-full text-left cursor-pointer hover:bg-base-200/30 rounded-xl transition-all active:scale-[0.97]"
       >
         {content}
-      </motion.button>
+      </button>
     );
   }
 
@@ -139,23 +164,21 @@ function NavItemButton({
   item,
   isActive,
   isExpanded,
-  isRtl,
   onClick,
 }: {
   item: NavItem;
   isActive: boolean;
   isExpanded: boolean;
-  isRtl: boolean;
   onClick: () => void;
 }) {
   const Icon = item.icon;
   return (
-    <motion.button
-      whileHover={{ x: isExpanded ? (isRtl ? -4 : 4) : 0 }}
-      whileTap={{ scale: 0.98 }}
+    <button
       onClick={onClick}
+      onMouseEnter={() => preloadRoute(item.route)}
+      onFocus={() => preloadRoute(item.route)}
       className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm
-        transition-all duration-200 group whitespace-nowrap ${
+        transition-all duration-200 group whitespace-nowrap active:scale-[0.98] ${
         isActive
           ? 'bg-base-200/70 dark:bg-white/10 text-base-content font-semibold shadow-sm'
           : 'text-base-content/60 hover:text-base-content hover:bg-base-200/40 dark:hover:bg-white/5 font-medium'
@@ -182,7 +205,7 @@ function NavItemButton({
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
         />
       )}
-    </motion.button>
+    </button>
   );
 }
 
@@ -191,7 +214,6 @@ function NavCategorySection({
   category,
   currentRoute,
   isExpanded,
-  isRtl,
   onNavigate,
   onHeaderClick,
   isCollapsed,
@@ -199,7 +221,6 @@ function NavCategorySection({
   category: NavCategory;
   currentRoute: string;
   isExpanded: boolean;
-  isRtl: boolean;
   onNavigate: (route: string) => void;
   onHeaderClick?: () => void;
   isCollapsed?: boolean;
@@ -223,7 +244,6 @@ function NavCategorySection({
               item={item}
               isActive={currentRoute === item.route}
               isExpanded={isExpanded}
-              isRtl={isRtl}
               onClick={() => onNavigate(item.route)}
             />
           ))}
@@ -236,10 +256,8 @@ function NavCategorySection({
 // ── Persistent (hover-expand) sidebar for ultra-wide screens ──
 function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
   const navigate = useNavigate();
-  const { isAuthRequired, logout } = useAuth();
-  const { language } = useLanguage();
+  const { isAuthRequired, logout, user } = useAuth();
   const { t } = useTranslation();
-  const isRtl = language === 'ar';
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -257,6 +275,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
   };
 
   const expanded = isHovered || isPinned;
+  const userRole = user?.role || 'manager';
 
   const handleNavigate = (route: string) => {
     navigate(route);
@@ -287,38 +306,34 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               {t('nav.navigation')}
             </span>
           )}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+          <button
             onClick={() => setIsPinned(!isPinned)}
             className="p-1.5 rounded-lg text-base-content/40 hover:text-base-content/70
-              hover:bg-base-200/50 dark:hover:bg-white/10 transition-colors"
+              hover:bg-base-200/50 dark:hover:bg-white/10 transition-all active:scale-[0.9]"
             title={isPinned ? 'Unpin sidebar' : 'Pin sidebar'}
           >
             <span className={`icon-[tabler--pin] w-4 h-4 transition-transform duration-200 ${isPinned ? 'rotate-45 text-primary' : ''}`} />
-          </motion.button>
+          </button>
         </div>
 
         {/* Home button always visible */}
         <div className="px-3 pt-2 pb-1">
           <NavItemButton
-            item={{ label: 'nav.home', route: '/', icon: Ic('dashboard'), gradient: 'from-teal-400 to-teal-500' }}
-            isActive={currentRoute === '/'}
+            item={{ label: 'nav.home', route: '/dashboard', icon: Ic('dashboard'), gradient: 'from-teal-400 to-teal-500' }}
+            isActive={currentRoute === '/dashboard'}
             isExpanded={expanded}
-            isRtl={isRtl}
-            onClick={() => handleNavigate('/')}
+            onClick={() => handleNavigate('/dashboard')}
           />
         </div>
 
-        {/* Nav categories — scrollable */}
+        {/* Nav categories — scrollable, filtered by role */}
         <nav className="px-2 pb-2 space-y-1 flex-1 overflow-y-auto overflow-x-hidden">
-          {navCategories.map(cat => (
+          {filterNavByRole(navCategories, userRole).map(cat => (
             <NavCategorySection
               key={cat.id}
               category={cat}
               currentRoute={currentRoute}
               isExpanded={expanded}
-              isRtl={isRtl}
               onNavigate={handleNavigate}
               onHeaderClick={() => toggleCategory(cat.id)}
               isCollapsed={collapsedCategories.has(cat.id)}
@@ -329,13 +344,11 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
         {/* Footer */}
         <div className="p-3 border-t border-base-300/50 mt-auto">
           {isAuthRequired && (
-            <motion.button
+            <button
               onClick={handleLogout}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
               className="w-full flex items-center justify-center gap-2 px-2 py-2 mb-2
                 bg-error/10 hover:bg-error/20 text-error
-                rounded-xl text-sm font-medium transition-colors"
+                rounded-xl text-sm font-medium transition-all active:scale-[0.97]"
               title={!expanded ? t('auth.signOut') : undefined}
             >
               <span className="icon-[tabler--logout] w-4 h-4 shrink-0" />
@@ -346,16 +359,14 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               >
                 {expanded && t('auth.signOut')}
               </motion.span>
-            </motion.button>
+            </button>
           )}
 
-          <motion.button
+          <button
             onClick={() => setShowShortcuts(true)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
             className="w-full flex items-center justify-center gap-2 px-2 py-2 mb-2
               bg-base-200/50 dark:bg-white/5 hover:bg-base-200 dark:hover:bg-white/10
-              text-base-content/60 rounded-xl text-sm font-medium transition-colors"
+              text-base-content/60 rounded-xl text-sm font-medium transition-all active:scale-[0.97]"
             title={!expanded ? t('transactions.shortcutHelp') : undefined}
           >
             <span className="icon-[tabler--help-circle] w-4 h-4 shrink-0" />
@@ -366,7 +377,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
             >
               {expanded && <>{t('transactions.shortcutHelp')} <kbd className="px-1 py-0.5 text-[10px] font-mono rounded bg-base-200 dark:bg-white/10">?</kbd></>}
             </motion.span>
-          </motion.button>
+          </button>
 
           <div className="flex items-center justify-center gap-3 mb-1">
             <LanguageToggle />
@@ -375,8 +386,17 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
             <ThemeToggle />
           </div>
 
+          {expanded && user && (
+            <div className="flex items-center justify-center gap-1.5 mt-2 mb-1">
+              <span className="icon-[tabler--user-check] w-3 h-3 text-base-content/40" />
+              <span className="text-[10px] font-medium text-base-content/50 capitalize">
+                {user.role || 'Manager'}
+              </span>
+            </div>
+          )}
+
           {expanded && (
-            <p className="text-[10px] text-base-content/30 text-center mt-2">
+            <p className="text-[10px] text-base-content/30 text-center mt-1">
               {t('nav.footer')}
             </p>
           )}
@@ -388,17 +408,18 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
   );
 }
 
-export default function SideNav({ isOpen = false, onClose = () => {}, currentRoute, persistent = false }: SideNavProps) {
+const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, currentRoute, persistent = false }: SideNavProps) {
   if (persistent) {
     return <PersistentSidebar currentRoute={currentRoute} />;
   }
   const navigate = useNavigate();
-  const { isAuthRequired, logout } = useAuth();
+  const { isAuthRequired, logout, user } = useAuth();
   const { language } = useLanguage();
   const { t } = useTranslation();
   const isRtl = language === 'ar';
   const [showShortcuts, setShowShortcuts] = useState(false);
   const navContainerRef = useRef<HTMLDivElement | null>(null);
+  const userRole = user?.role || 'manager';
 
   const scrollToCategory = (catId: string) => {
     const el = document.getElementById(`sidenav-cat-${catId}`);
@@ -450,26 +471,24 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
               <span className="text-sm font-semibold text-base-content/50 uppercase tracking-wider">
                 {t('nav.navigation')}
               </span>
-              <motion.button
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
+              <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg text-base-content/40 hover:text-base-content
-                  hover:bg-base-200/50 dark:hover:bg-white/10 transition-colors"
+                  hover:bg-base-200/50 dark:hover:bg-white/10 transition-all active:scale-[0.9]"
               >
                 <span className="icon-[tabler--x] w-5 h-5" />
-              </motion.button>
+              </button>
             </div>
 
             {/* Home link */}
             <div className="px-4 pt-3 pb-1">
-              <motion.button
-                whileHover={{ x: isRtl ? -4 : 4 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleNavigate('/')}
+              <button
+                onClick={() => handleNavigate('/dashboard')}
+                onMouseEnter={() => preloadRoute('/dashboard')}
+                onFocus={() => preloadRoute('/dashboard')}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
-                  transition-all duration-200 group ${
-                  currentRoute === '/'
+                  transition-all duration-200 group active:scale-[0.98] ${
+                  currentRoute === '/dashboard'
                     ? 'bg-base-200/70 dark:bg-white/10 text-base-content font-semibold shadow-sm'
                     : 'text-base-content/60 hover:text-base-content hover:bg-base-200/40 dark:hover:bg-white/5 font-medium'
                 }`}
@@ -480,25 +499,24 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
                   <span className="icon-[tabler--dashboard] w-4 h-4" />
                 </div>
                 <span className="font-semibold">{t('nav.home')}</span>
-                {currentRoute === '/' && (
+                {currentRoute === '/dashboard' && (
                   <motion.div
                     layoutId="sidenav-active"
                     className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-primary"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
-              </motion.button>
+              </button>
             </div>
 
-            {/* Nav Categories — clickable headers scroll to section */}
+            {/* Nav Categories — clickable headers scroll to section, filtered by role */}
             <nav ref={navContainerRef} className="p-3 space-y-1 flex-1 overflow-y-auto">
-              {navCategories.map(cat => (
+              {filterNavByRole(navCategories, userRole).map(cat => (
                 <NavCategorySection
                   key={cat.id}
                   category={cat}
                   currentRoute={currentRoute}
                   isExpanded={true}
-                  isRtl={isRtl}
                   onNavigate={handleNavigate}
                   onHeaderClick={() => scrollToCategory(cat.id)}
                 />
@@ -508,27 +526,23 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
             {/* Footer */}
             <div className="p-4 border-t border-base-300/50 mt-auto">
               {isAuthRequired && (
-                <motion.button
+                <button
                   onClick={handleLogout}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-3 
                     bg-error/10 hover:bg-error/20 text-error 
-                    rounded-xl text-sm font-medium transition-colors 
+                    rounded-xl text-sm font-medium transition-all active:scale-[0.97] 
                     border border-error/20"
                 >
                   <span className="icon-[tabler--logout] w-4 h-4" />
                   {t('auth.signOut')}
-                </motion.button>
+                </button>
               )}
 
-              <motion.button
+              <button
                 onClick={() => setShowShortcuts(true)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 mb-3
                   bg-base-200/50 dark:bg-white/5 hover:bg-base-200 dark:hover:bg-white/10
-                  text-base-content/60 rounded-xl text-sm font-medium transition-colors
+                  text-base-content/60 rounded-xl text-sm font-medium transition-all active:scale-[0.97]
                   border border-base-300/50"
               >
                 <span className="icon-[tabler--help-circle] w-4 h-4" />
@@ -537,7 +551,7 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
                   bg-base-200 dark:bg-white/10 text-base-content/50">
                   ?
                 </kbd>
-              </motion.button>
+              </button>
 
               <div className="flex items-center justify-center gap-4 mb-2">
                 <LanguageToggle />
@@ -545,6 +559,14 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
               <div className="flex items-center justify-center mb-2">
                 <ThemeToggle />
               </div>
+              {user && (
+                <div className="flex items-center justify-center gap-1.5 mt-2 mb-1">
+                  <span className="icon-[tabler--user-check] w-3 h-3 text-base-content/40" />
+                  <span className="text-[10px] font-medium text-base-content/50 capitalize">
+                    {user.role || 'Manager'}
+                  </span>
+                </div>
+              )}
               <p className="text-[10px] text-base-content/30 text-center mt-3">
                 {t('nav.footer')}
               </p>
@@ -556,4 +578,6 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
       )}
     </AnimatePresence>
   );
-}
+});
+
+export default SideNav;

@@ -19,7 +19,7 @@ import {
   KeyboardEvent, FormEvent,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 import { invoke } from '@tauri-apps/api/core';
 import { createChatWs } from '../api/chat';
 import tickets from '../api/tickets';
@@ -233,12 +233,10 @@ export default function ChatSupport({
     <>
       {/* FLOATING TRIGGER BUTTON */}
       {showTrigger && (
-        <motion.button
+        <button
           aria-label={isOpen ? 'Close support chat' : 'Open support chat'}
           onClick={() => setIsOpen(o => !o)}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.93 }}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-xl flex items-center justify-center"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-xl flex items-center justify-center active:scale-[0.93] transition-transform"
         >
           <AnimatePresence mode="wait" initial={false}>
             {isOpen ? (
@@ -254,7 +252,7 @@ export default function ChatSupport({
           {!isOpen && messages.filter(m => m.sender !== 'user' && m.type === 'message').length > 0 && (
             <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-error border-2 border-white" />
           )}
-        </motion.button>
+        </button>
       )}
 
       {/* CHAT PANEL */}
@@ -441,15 +439,14 @@ export default function ChatSupport({
                 aria-label="Chat message"
               />
 
-              <motion.button
-                whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.9 }}
+              <button
                 onClick={sendMessage}
                 disabled={!draft.trim()}
                 aria-label="Send message"
-                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shrink-0 active:scale-[0.9] transition-transform"
               >
                 <span className="icon-[tabler--send] w-4 h-4" />
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         )}
