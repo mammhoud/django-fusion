@@ -5,8 +5,8 @@
 @import "../node_modules/flyonui/variants.css";
 
 /* ── Base Design Tokens ──────────────────────────────────────── */
-@import "./styles/base/_variables.css";
-@import "./styles/base/_reset.css";
+@import "../assets/styles/base/_variables.css";
+@import "../assets/styles/base/_reset.css";
 
 /* ── FlyonUI Component Library ───────────────────────────────── */
 /* Theme configuration: enable specific themes with defaults.
