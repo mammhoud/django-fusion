@@ -317,51 +317,26 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
 };
 
 // ── Live Theme Preview ─────────────────────────────────────────────
-function ThemePreview({ variant, previewMode, isActive, onApply, onPreviewModeChange }: {
+function ThemePreview({ variant, isActive, onApply }: {
   variant: ThemeVariant;
-  previewMode: 'light' | 'dark';
   isActive: boolean;
   onApply: () => void;
-  onPreviewModeChange: (mode: 'light' | 'dark') => void;
 }) {
   const { t } = useTranslation();
+  const { mode } = useTheme();
+
+  const previewLabel = mode === 'dark'
+    ? `${variant} — ${t('settings.appearanceTab.darkMode') || 'Dark'}`
+    : `${variant} — ${t('settings.appearanceTab.lightMode') || 'Light'}`;
 
   return (
     <div className="bg-base-100 text-base-content border border-base-300 rounded-2xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <span className="icon-[tabler--eye] w-4 h-4" />
-          {t('settings.appearanceTab.previewTitle') || `${variant} — ${previewMode}`}
+          {t('settings.appearanceTab.previewTitle') || previewLabel}
         </h3>
         <div className="flex items-center gap-3">
-          {/* Light/Dark toggle within preview — does NOT change global mode */}
-          <span className="text-[10px] text-base-content/40 font-medium mr-1" title="Preview mode only — does not change app theme">{t('settings.appearanceTab.previewModeLabel') || 'Preview'}</span>
-          <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5">
-            <button
-              type="button"
-              onClick={() => onPreviewModeChange('light')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                previewMode === 'light'
-                  ? 'bg-base-100 text-base-content shadow-sm'
-                  : 'text-base-content/50 hover:text-base-content'
-              }`}
-              title={t('settings.appearanceTab.lightMode')}
-            >
-              <span className="icon-[tabler--sun] w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => onPreviewModeChange('dark')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                previewMode === 'dark'
-                  ? 'bg-base-100 text-base-content shadow-sm'
-                  : 'text-base-content/50 hover:text-base-content'
-              }`}
-              title={t('settings.appearanceTab.darkMode')}
-            >
-              <span className="icon-[tabler--moon] w-3.5 h-3.5" />
-            </button>
-          </div>
           <button
             type="button"
             onClick={onApply}
@@ -502,11 +477,8 @@ export default function Settings() {
   // Theme preview state (for hover + click-to-pin preview in Appearance tab)
   const [previewVariant, setPreviewVariant] = useState<ThemeVariant | null>(null);
   const [savedCustomThemes, setSavedCustomThemes] = useState<SavedTheme[]>(() => loadSavedThemes());
-  const [previewMode, setPreviewMode] = useState<'light' | 'dark'>(mode);
-  const [previewLocked, setPreviewLocked] = useState(false);
   const activePreviewVariant = previewVariant ?? variant;
-  const activePreviewMode = (previewLocked ? previewMode : mode);
-  const previewThemeValue = THEME_MAP[activePreviewVariant]?.[activePreviewMode] ?? 'light';
+  const previewThemeValue = THEME_MAP[activePreviewVariant]?.[mode] ?? 'light';
 
   // Password change state
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
@@ -1378,7 +1350,7 @@ export default function Settings() {
 
       {/* Theme Variant Selector — wrap cards + preview in parent */}
       {/* onMouseLeave only clears hover when not locked (pinned by click) */}
-      <div onMouseLeave={() => { if (!previewLocked) setPreviewVariant(null); }}>
+      <div onMouseLeave={() => setPreviewVariant(null)}>
         <div className="card bg-base-200 border border-base-300 p-6">
           <div className="flex items-center gap-3 mb-5">
             <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
@@ -1399,19 +1371,18 @@ export default function Settings() {
                   key={v.id}
                   type="button"
                   onClick={() => {
-                    if (previewVariant === v.id && previewLocked) {
-                      // Click again on the pinned variant → unlock
-                      setPreviewLocked(false);
+                    // Toggle: click again on active variant to close, otherwise select
+                    if (activePreviewVariant === v.id) {
                       setPreviewVariant(null);
                     } else {
-                      // Click on a new variant → lock preview open
-                      setPreviewLocked(true);
                       setPreviewVariant(v.id);
-                      setPreviewMode(mode);
                     }
                   }}
                   onMouseEnter={() => {
-                    if (!previewLocked) setPreviewVariant(v.id);
+                    // Hover preview only when no variant is actively selected
+                    if (previewVariant === null || previewVariant === v.id) {
+                      setPreviewVariant(v.id);
+                    }
                   }}
                   className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive || previewVariant === v.id ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10' : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600'}`}
                 >
@@ -1517,10 +1488,8 @@ export default function Settings() {
             >
               <ThemePreview
                 variant={previewVariant}
-                previewMode={activePreviewMode}
                 isActive={variant === previewVariant}
-                onApply={() => { setVariant(previewVariant); setPreviewVariant(null); setPreviewLocked(false); }}
-                onPreviewModeChange={(m) => { setPreviewMode(m); setPreviewLocked(true); }}
+                onApply={() => { setVariant(previewVariant); setPreviewVariant(null); }}
               />
             </motion.div>
           )}

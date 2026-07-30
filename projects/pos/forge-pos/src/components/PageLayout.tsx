@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 import SideNav from './SideNav';
 import { useAuth, AuthUser } from '../contexts/AuthContext';
 import { pageSlideUp, dropdownMenu, toastSlideIn, iconSpring } from '../utils/pageTransitions';

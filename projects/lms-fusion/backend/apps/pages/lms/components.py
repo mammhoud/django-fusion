@@ -92,8 +92,8 @@ class StaticPageFragment(FragmentComponent):
 
     def get_fragment_context(self, **kwargs):
         context = super().get_fragment_context(**kwargs)
-        from apps.pages.pages.content import STATIC_PAGES
-        context["page"] = STATIC_PAGES.get(self._slug, {})
+        # Page data now comes from Wagtail API, not STATIC_PAGES
+        context["page"] = {"slug": self._slug, "title": self._slug.replace("-", " ").title()}
         return context
 
 

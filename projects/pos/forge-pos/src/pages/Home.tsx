@@ -1,4 +1,4 @@
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 function Ic(name: string): React.ComponentType<{ className?: string }> {
   const iconClass = 'icon-[tabler--' + name + ']';
   return ({ className = '' }) => <span className={iconClass + ' ' + className} />;

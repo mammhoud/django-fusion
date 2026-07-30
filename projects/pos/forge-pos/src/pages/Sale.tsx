@@ -72,7 +72,7 @@ export default function Sale() {
   const [sidebarHovered, setSidebarHovered] = useState(false);
   // ── Live-update indicator — briefly pulses green when product-updated event fires ──
   const [showLiveBadge, setShowLiveBadge] = useState(false);
-  const liveBadgeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const liveBadgeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   // AJAX-style debounced search: 250 ms idle window with isSearching flag for
   // the spinner. Shared hook — see src/hooks/useDebouncedSearch.ts.
   // We rename-destructure so the rest of this file keeps using the original
@@ -1073,6 +1073,7 @@ export default function Sale() {
         >
           <motion.div
             initial={false}
+            animate={{
               width: (sidebarOpen || sidebarHovered) ? 280 : 0,
               opacity: (sidebarOpen || sidebarHovered) ? 1 : 0,
             }}

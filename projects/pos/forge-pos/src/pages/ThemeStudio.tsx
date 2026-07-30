@@ -344,7 +344,7 @@ export default function ThemeStudio() {
   const [_showSaveDialog, setShowSaveDialog] = useState(false); // eslint-disable-line
   const [saveName, setSaveName] = useState('');
   const [showSavedDropdown, setShowSavedDropdown] = useState(false);
-  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [_showExportDialog, setShowExportDialog] = useState(false);
   const [exportCSS, setExportCSS] = useState('');
   const [copied, setCopied] = useState(false);
   const saveDialogRef = useRef<HTMLDialogElement>(null);

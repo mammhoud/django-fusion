@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 
 export interface Column<T> {
   key: string;

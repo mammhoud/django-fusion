@@ -85,6 +85,18 @@ INSTALLED_APPS += LOCAL_APPS
 # through django-fusion / ceptor-ai and do not need the legacy shared worker.
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
 
+# Register fusion_layout template tag library as both a builtin and library.
+# - builtin:  allows {% fusion_layout %} and {% fusion_render_first_flag %} without {% load %}
+# - library:  allows {% load fusion_layout %} in templates like base.html
+# The shared configs/base/templates.py already has both, but /app/configs/ is
+# read-only in the container, so we duplicate the registration here.
+TEMPLATES[0]["OPTIONS"]["builtins"].append(
+    "django_fusion.comp.templatetags.fusion_layout"
+)
+TEMPLATES[0]["OPTIONS"]["libraries"]["fusion_layout"] = (
+    "django_fusion.comp.templatetags.fusion_layout"
+)
+
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "apps.pages.branding.context_processors.fusion_branding_context"
@@ -119,7 +131,9 @@ FUSION_BOLT = {
     "auth_backends": ["jwt"],
     "serializer_format": "dict",
     "cors_origins": [
+        "http://localhost:3001",
         "http://localhost:3002",
+        "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
     ],
     "component_auto_register": True,
@@ -188,3 +202,23 @@ FUSION_ASSETS = {
         "inline_js": [],
     },
 }
+
+# ═══════════════════════════════════════════════════════════════════
+# CORS — allow frontend origins to access the API
+# ═══════════════════════════════════════════════════════════════════
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:3002",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# ═══════════════════════════════════════════════════════════════════
+# CORS — force-enable cortheaders since configs/base may be read-only
+# ═══════════════════════════════════════════════════════════════════
+if "corsheaders" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("corsheaders")
+if "corsheaders.middleware.CorsMiddleware" not in MIDDLEWARE:
+    idx = next((i for i, m in enumerate(MIDDLEWARE) if m.startswith("django.middleware.security")), 0) + 1
+    MIDDLEWARE.insert(idx, "corsheaders.middleware.CorsMiddleware")

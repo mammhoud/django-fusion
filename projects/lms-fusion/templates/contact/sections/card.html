@@ -1,0 +1,26 @@
+{% load i18n wagtailcore_tags wagtailimages_tags %}
+
+{# ── Contact Section: Card ───────────────────────────────────── #}
+<section class="contact-card-section py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-12 col-lg-6">
+                <div class="contact-card-section__info">
+                    {% if block.value.title %}
+                    <h2 class="display-6 fw-bold">{{ block.value.title }}</h2>
+                    {% endif %}
+                    {% if block.value.description %}
+                    <div class="mt-3">{{ block.value.description|richtext }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                {% if block.value.show_contact_form %}
+                <div class="card border-0 shadow-lg p-4">
+                    <h3 class="h4 fw-bold">{{ block.value.form_title|default:_("Contact Us") }}</h3>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>

@@ -124,11 +124,13 @@ const ProductCard = memo(function ProductCard({
       {children}
     </motion.div>
   );
-}
+});
 
 interface ProductCardSkeletonProps {
   className?: string;
 }
+
+export default ProductCard;
 
 export function ProductCardSkeleton({ className = '' }: ProductCardSkeletonProps) {
   return (

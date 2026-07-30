@@ -1,0 +1,112 @@
+{% load i18n wagtailcore_tags wagtailimages_tags static %}
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us section py-5 py-lg-6 position-relative overflow-hidden">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <!-- Left Column: Content -->
+            <div class="col-12 col-lg-6" data-aos="fade-right">
+                <div class="why-choose-us__content">
+                    {% if block.value.subtitle %}
+                    <span class="why-choose-us__subtitle badge bg-primary bg-opacity-10 text-primary fs-7 px-3 py-2 mb-3">
+                        {{ block.value.subtitle }}
+                    </span>
+                    {% endif %}
+
+                    {% if block.value.title %}
+                    <h2 class="why-choose-us__title display-5 fw-bold mb-4">
+                        {{ block.value.title }}
+                    </h2>
+                    {% endif %}
+
+                    {% if block.value.description %}
+                    <p class="why-choose-us__description lead text-muted mb-4">
+                        {{ block.value.description }}
+                    </p>
+                    {% endif %}
+
+                    {% if block.value.highlight_text %}
+                    <div class="why-choose-us__highlight bg-primary bg-opacity-10 border-start border-4 border-primary rounded-1 p-4 mb-4">
+                        <p class="why-choose-us__highlight-text fw-medium mb-0 fs-5">
+                            <i class="fas fa-quote-left text-primary me-2 opacity-50"></i>
+                            {{ block.value.highlight_text }}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    {% if block.value.methods %}
+                    <div class="why-choose-us__methods row g-3 mb-4">
+                        {% for method in block.value.methods %}
+                        <div class="why-choose-us__method col-12 col-sm-6">
+                            <div class="why-choose-us__method-item d-flex align-items-center gap-3">
+                                <div class="why-choose-us__method-icon flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <span class="why-choose-us__method-text fw-medium">{{ method }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if block.value.button %}
+                    <div class="why-choose-us__actions mt-4">
+                        <a href="{% if block.value.button.page %}{{ block.value.button.page.url }}{% else %}#{% endif %}"
+                           class="why-choose-us__button btn btn-primary btn-lg px-5 rounded-pill"
+                           {% if block.value.button.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                            {% if block.value.button.icon %}
+                            <i class="{{ block.value.button.icon }} me-2"></i>
+                            {% endif %}
+                            {{ block.value.button.link_text|default:_("Learn More") }}
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Column: Image -->
+            <div class="col-12 col-lg-6" data-aos="fade-left">
+                {% if block.value.image %}
+                    {% image block.value.image fill-600x500 as why_img %}
+                <div class="why-choose-us__image-wrapper position-relative">
+                    <img src="{{ why_img.url }}"
+                         alt="{{ block.value.title|default:'Why Choose Us' }}"
+                         class="why-choose-us__image img-fluid rounded-4 shadow-lg w-100"
+                         loading="lazy"
+                         style="object-fit: cover; min-height: 400px;">
+
+                    <!-- Floating Stat Card -->
+                    <div class="why-choose-us__stat-card position-absolute bottom-0 start-0 bg-white rounded-3 shadow-lg p-4 m-4 d-none d-lg-block"
+                         style="max-width: 200px;">
+                        <div class="why-choose-us__stat-number display-6 fw-bold text-primary">
+                            {{ block.value.methods|length|default:"0" }}+
+                        </div>
+                        <div class="why-choose-us__stat-label text-muted small">
+                            {% trans "Features & Benefits" %}
+                        </div>
+                    </div>
+
+                    <!-- Decorative Element -->
+                    <div class="why-choose-us__decorative position-absolute top-0 end-0 translate-middle-y d-none d-lg-block"
+                         style="width: 100px; height: 100px; background: var(--bs-primary, #0d6efd); opacity: 0.1; border-radius: 50%;">
+                    </div>
+                </div>
+                {% else %}
+                <div class="why-choose-us__image-placeholder bg-light rounded-4 d-flex align-items-center justify-content-center"
+                     style="min-height: 400px;">
+                    <div class="text-center text-muted">
+                        <div class="display-1 mb-3">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="fw-medium">{% trans "Why Choose Us" %}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
