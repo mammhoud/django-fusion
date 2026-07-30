@@ -901,6 +901,31 @@ export default function Settings() {
         <span className="text-base-content/30">/</span>
         <span className="text-base-content/70 font-medium">{t('settings.themeTab.title') || 'Theme'}</span>
       </nav>
+
+      {/* ── Theme Section Navigation ── */}
+      <div className="sticky top-0 z-10 bg-base-100/95 backdrop-blur-sm border-b border-base-300/50 -mx-1 px-1 py-2 overflow-x-auto">
+        <div className="flex items-center gap-1">
+          {[
+            { id: 'theme-section-appearance', label: 'Appearance', icon: 'tabler--paint' },
+            { id: 'theme-section-studio', label: 'Theme Studio', icon: 'tabler--palette' },
+            { id: 'theme-section-preview', label: 'Preview', icon: 'tabler--eye' },
+            { id: 'theme-section-active', label: 'Active Theme', icon: 'tabler--info-circle' },
+          ].map(item => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                text-base-content/60 hover:text-base-content hover:bg-base-200/50
+                transition-colors duration-200 whitespace-nowrap"
+            >
+              <span className={`icon-[${item.icon}] w-3.5 h-3.5`} />
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* ── Theme Mode Toggle ── */}
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center justify-between gap-4">
@@ -933,7 +958,8 @@ export default function Settings() {
         </p>
       </div>
 
-      {/* ── Theme Variant Selector ── */}
+      {/* ── Theme Variant Selector (Appearance) ── */}
+      <div id="theme-section-appearance" className="scroll-mt-20" />
       <div onMouseLeave={() => setPreviewVariant(null)}>
         <div className="card bg-base-200 border border-base-300 p-6">
           <div className="flex items-center gap-3 mb-5">
@@ -1073,6 +1099,7 @@ export default function Settings() {
 
 
       {/* Theme Studio Card */}
+      <div id="theme-section-studio" className="scroll-mt-20" />
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-purple-100 dark:bg-purple-800/30 rounded-full p-2.5">
@@ -1094,6 +1121,7 @@ export default function Settings() {
       </div>
 
       {/* Theme Preview Card */}
+      <div id="theme-section-preview" className="scroll-mt-20" />
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
@@ -1115,6 +1143,7 @@ export default function Settings() {
       </div>
 
       {/* Current Theme Info */}
+      <div id="theme-section-active" className="scroll-mt-20" />
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-info/10 dark:bg-info/20 rounded-full p-2.5">
