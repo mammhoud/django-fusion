@@ -8,6 +8,7 @@ import { KitchenTicket, Sale } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hooks/useKDSNotification';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import StatCard from '../../components/data/StatCard';
 
 // Type from the Rust SaleItem model (mirrored here for the ticket detail modal)
 interface SaleItemData {
@@ -451,6 +452,26 @@ export default function KitchenDisplay() {
             </div>
           </div>
         )}
+
+        {/* ── Ticket Stats Row ── */}
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard
+            title={t('kitchen.activeTickets', 'Active')}
+            value={tickets.filter(t => t.status !== 'delivered').length}
+            desc={`${tickets.filter(t => isOverdue(t)).length} ${t('kitchen.overdue', 'overdue')}`}
+            color="warning"
+            loading={isLoading}
+            compact
+          />
+          <StatCard
+            title={t('kitchen.completedTickets', 'Completed')}
+            value={tickets.filter(t => t.status === 'delivered').length}
+            desc={`${tickets.filter(t => t.status === 'ready').length} ${t('kitchen.ready', 'ready')}`}
+            color="success"
+            loading={isLoading}
+            compact
+          />
+        </div>
 
         {/* ── Ticket count ── */}
         {filteredTickets.length > 0 && (
