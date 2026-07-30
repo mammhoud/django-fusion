@@ -6,7 +6,7 @@ import { iconClass } from '../../lib/icons';
 import { useTranslation } from 'react-i18next';
 import { KitchenTicket, Sale } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
-import { useKDSNotification } from '../../hooks/useKDSNotification';
+import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hooks/useKDSNotification';
 
 // Type from the Rust SaleItem model (mirrored here for the ticket detail modal)
 interface SaleItemData {
@@ -90,6 +90,10 @@ export default function KitchenDisplay() {
     try { return (localStorage.getItem('kds-sort-order') as 'newest' | 'overdue-first') || 'newest'; }
     catch { return 'newest'; }
   });
+  const [chimeVariant, setChimeVariant] = useState<ChimeVariant>(() => {
+    try { return (localStorage.getItem('kds-chime-variant') as ChimeVariant) || 'chime1'; }
+    catch { return 'chime1'; }
+  });
   const [mutedUntil, setMutedUntil] = useState<number | null>(() => {
     try {
       const saved = localStorage.getItem('kds-muted-until');
@@ -135,7 +139,7 @@ export default function KitchenDisplay() {
   } = useDebouncedSearch();
 
   // ── Sound + tab-title flash for new pending tickets ──
-  useKDSNotification(tickets, mutedUntil);
+  useKDSNotification(tickets, mutedUntil, chimeVariant);
 
   useEffect(() => {
     loadTickets({ quiet: false });
@@ -362,6 +366,22 @@ export default function KitchenDisplay() {
               <span className={iconClass('lucide:alert-triangle', `w-3.5 h-3.5 ${sortOrder === 'overdue-first' ? 'text-error' : ''}`)} />
               <span className="hidden sm:inline">{sortOrder === 'overdue-first' ? 'Overdue' : 'Newest'}</span>
             </button>
+            {/* Chime sound dropdown */}
+            <select
+              value={chimeVariant}
+              onChange={(e) => {
+                const v = e.target.value as ChimeVariant;
+                setChimeVariant(v);
+                localStorage.setItem('kds-chime-variant', v);
+              }}
+              className="select select-ghost select-xs text-xs max-w-[140px]"
+              title="Notification sound"
+              aria-label="Notification sound"
+            >
+              {CHIME_VARIANTS.map(c => (
+                <option key={c.id} value={c.id}>{c.label}</option>
+              ))}
+            </select>
             {/* Mute 30min button */}
             <button
               type="button"
