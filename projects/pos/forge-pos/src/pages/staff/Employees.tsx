@@ -233,19 +233,19 @@ export default function Employees() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <Card>
-            <h2 className="text-base-content/60 text-sm">{t('employees.totalEmployees')}</h2>
+            <h2 className="text-base-content/80 text-sm">{t('employees.totalEmployees')}</h2>
             <p className="text-2xl font-bold text-base-content">{employees.filter(e => e.is_active).length}</p>
           </Card>
           <Card>
-            <h2 className="text-base-content/60 text-sm">{t('employees.employeeTypes')}</h2>
+            <h2 className="text-base-content/80 text-sm">{t('employees.employeeTypes')}</h2>
             <p className="text-2xl font-bold text-info">{employeeTypes.filter(t => t.is_active).length}</p>
           </Card>
           <Card>
-            <h2 className="text-base-content/60 text-sm">{t('employees.monthlySalary')}</h2>
+            <h2 className="text-base-content/80 text-sm">{t('employees.monthlySalary')}</h2>
             <p className="text-2xl font-bold text-success">{monthlySalaryTotal.toLocaleString()}</p>
           </Card>
           <Card>
-            <h2 className="text-base-content/60 text-sm">{t('employees.avgSalary')}</h2>
+            <h2 className="text-base-content/80 text-sm">{t('employees.avgSalary')}</h2>
             <p className="text-2xl font-bold text-blue-500">
               {employees.filter(e => e.is_active).length > 0
                 ? Math.round(monthlySalaryTotal / employees.filter(e => e.is_active).length).toLocaleString()
