@@ -30,6 +30,7 @@ const shadowClasses = {
 const borderClasses = {
   'base-200': 'border border-base-200',
   'base-300': 'border border-base-300',
+  'theme': 'border border-[var(--color-border)]',
   none: '',
 } as const;
 
@@ -42,8 +43,8 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   radius?: 'lg' | 'xl' | '2xl' | 'none';
   /** Shadow depth. Default: sm */
   shadow?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
-  /** Theme-adaptive border. Default: no border */
-  border?: 'base-200' | 'base-300' | 'none';
+  /** Theme-adaptive border: base-200, base-300, theme (uses --color-border), or none */
+  border?: 'base-200' | 'base-300' | 'theme' | 'none';
   /** Enable hover lift effect (-translate-y + shadow-lg) */
   hover?: boolean;
   /** Center text content */

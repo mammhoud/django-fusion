@@ -76,7 +76,7 @@ export default function StatCard({
   className = ''
 }: StatCardProps) {
   const semanticColor = resolveColor(color);
-  const borderClass = border ? ` border-l-4 border-${semanticColor.replace('text-', '')}` : '';
+  const borderClass = border ? ` border-l-4 border-${semanticColor.replace('text-', '')} rtl:border-l-0 rtl:border-r-4` : '';
   const clickableClass = onClick ? ' cursor-pointer hover:bg-white/10 transition-colors duration-200' : '';
   const classes = `stat${borderClass}${clickableClass} ${className}`.trim();
 

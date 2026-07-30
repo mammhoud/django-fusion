@@ -200,7 +200,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                             value={monthSearch}
                             onChange={(e) => setMonthSearch(e.target.value)}
                             placeholder={t('datePicker.searchMonth')}
-                            className="input input-bordered input-sm w-full"
+                            className="input input-bordered input-sm w-full rtl:text-right"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -219,7 +219,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                                     setShowMonthDropdown(false);
                                     setMonthSearch('');
                                   }}
-                                  className={`w-full px-3 py-2 text-left text-sm hover:bg-primary/20 
+                                  className={`w-full px-3 py-2 text-left rtl:text-right text-sm hover:bg-primary/20 
                                     dark:hover:bg-primary/30 transition-colors
                                     ${selectedMonth === originalIdx 
                                       ? 'bg-primary text-white hover:bg-teal-600' 
@@ -290,7 +290,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                               }
                             }}
                             placeholder={t('datePicker.typeYear')}
-                            className="input input-bordered input-sm w-full"
+                            className="input input-bordered input-sm w-full rtl:text-right"
                             onClick={(e) => e.stopPropagation()}
                           />
                           {yearSearch && (
@@ -312,7 +312,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                                   setShowYearDropdown(false);
                                   setYearSearch('');
                                 }}
-                                className={`w-full px-3 py-2 text-left text-sm hover:bg-primary/20 
+                                className={`w-full px-3 py-2 text-left rtl:text-right text-sm hover:bg-primary/20 
                                   dark:hover:bg-primary/30 transition-colors
                                   ${selectedYear === year 
                                     ? 'bg-primary text-white hover:bg-teal-600' 

@@ -578,7 +578,7 @@ export default function Sale() {
               transition-all duration-300 z-10 active:scale-[0.92]"
             aria-label={sidebarOpen ? 'Hide order panel' : 'Show order panel'}
           >
-            {sidebarOpen ? <span className="icon-[tabler--chevron-right] w-5 h-5" /> : <span className="icon-[tabler--chevron-left] w-5 h-5" />}
+            {sidebarOpen ? <span className={iconClass('lucide:chevron-right', 'w-5 h-5')} /> : <span className={iconClass('lucide:chevron-left', 'w-5 h-5')} />}
           </button>
         </div>
 
@@ -745,7 +745,7 @@ export default function Sale() {
             <Card padding="sm" className="sm:p-4 mb-4">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <span className={iconClass('lucide:search', 'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 rtl:left-auto rtl:right-3')} />
                 <input
                   type="text"
                   value={searchQuery}
@@ -758,13 +758,13 @@ export default function Sale() {
                 {isSearching ? (
                   <div
                     aria-label="searching"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rtl:right-auto rtl:left-3
                       border-2 border-teal-400 border-t-transparent rounded-full pointer-events-none animate-spin"
                   />
                 ) : searchQuery ? (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors rtl:right-auto rtl:left-3"
                     aria-label={t('common.clear')}
                   >
                     <span className="icon-[tabler--x] w-4 h-4" />

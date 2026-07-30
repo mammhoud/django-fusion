@@ -53,7 +53,7 @@ function ProfileDropdown({
             animate="visible"
             exit="exit"
             className="absolute right-0 mt-1 w-64 bg-base-100 rounded-2xl shadow-xl
-              border border-base-300/50 overflow-hidden z-50"
+              border border-base-300/50 overflow-hidden z-50 rtl:right-auto rtl:left-0"
           >
             {/* User info header */}              <div className="px-4 py-3 border-b border-base-300/30">
               <div className="flex items-center gap-3">

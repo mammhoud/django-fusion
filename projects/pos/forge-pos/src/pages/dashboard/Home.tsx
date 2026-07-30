@@ -29,11 +29,11 @@ interface MenuItem {
 }
 
 const MENU_CATEGORIES: MenuCategory[] = [
-  { id: 'sales', label: 'nav.categorySales', icon: <span className="icon-[tabler--shopping-cart] w-5 h-5" />, color: 'text-success' },
-  { id: 'products', label: 'nav.categoryProducts', icon: <span className="icon-[tabler--package] w-5 h-5" />, color: 'text-info' },
-  { id: 'staff', label: 'nav.categoryStaff', icon: <span className="icon-[tabler--users] w-5 h-5" />, color: 'text-secondary' },
-  { id: 'reports', label: 'nav.categoryReports', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" />, color: 'text-error' },
-  { id: 'system', label: 'nav.categorySystem', icon: <span className="icon-[tabler--dashboard] w-5 h-5" />, color: 'text-base-content/70' },
+  { id: 'sales', label: 'nav.categorySales', icon: <span className={iconClass('lucide:shopping-cart', 'w-5 h-5')} />, color: 'text-success' },
+  { id: 'products', label: 'nav.categoryProducts', icon: <span className={iconClass('lucide:package', 'w-5 h-5')} />, color: 'text-info' },
+  { id: 'staff', label: 'nav.categoryStaff', icon: <span className={iconClass('lucide:users', 'w-5 h-5')} />, color: 'text-secondary' },
+  { id: 'reports', label: 'nav.categoryReports', icon: <span className={iconClass('lucide:bar-chart-3', 'w-5 h-5')} />, color: 'text-error' },
+  { id: 'system', label: 'nav.categorySystem', icon: <span className={iconClass('lucide:layout-dashboard', 'w-5 h-5')} />, color: 'text-base-content/50' },
 ];
 
 const MENU_ITEMS: Record<string, MenuItem[]> = {
@@ -185,7 +185,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
         style={{ animationDelay: '0.1s' }}
       >
-        <Card padding="sm" className="shadow-sm border border-base-300/30">
+        <Card padding="sm" border="theme" className="shadow-sm">
           <div className="grid grid-cols-4 gap-2">
             {QUICK_ACCESS.map((qa, i) => (
               <button
@@ -203,8 +203,8 @@ export default function Home() {
                 >
                   <span className={iconClass(qa.icon, 'w-4 h-4')} />
                 </div>
-                <span className="text-xs font-semibold text-base-content text-center leading-tight">{t(qa.label)}</span>
-                <span className="text-[9px] text-base-content/40 text-center mt-0.5 leading-tight line-clamp-1">{t(qa.desc)}</span>
+                <span className="text-xs font-semibold text-base-content/70 text-center leading-tight">{t(qa.label)}</span>
+                <span className="text-[9px] text-base-content/30 text-center mt-0.5 leading-tight line-clamp-1">{t(qa.desc)}</span>
               </button>
             ))}
           </div>
@@ -215,7 +215,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
         style={{ animationDelay: '0.2s' }}
       >
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           {kpisLoading ? (
             <>
               {[1, 2, 3, 4, 5, 6].map(i => (
@@ -232,7 +232,7 @@ export default function Home() {
                 title={t('home.todaySales', 'Today Sales')}
                 value={todayStats.orders}
                 desc={`${todayStats.orders === 1 ? '1 order' : `${todayStats.orders} orders`} today — ${orderDelta.pct} vs yesterday`}
-                icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                icon={<span className={iconClass('lucide:shopping-cart', 'w-6 h-6')} />}
                 sparklineData={sparklines?.orders}
                 color="primary"
                 onClick={() => handleNavigation('/transactions')}
@@ -243,7 +243,7 @@ export default function Home() {
                 desc={todayStats.revenue > 0
                   ? `${currency}${(todayStats.revenue / (todayStats.orders || 1)).toFixed(2)} avg — ${revDelta.pct} vs yesterday`
                   : 'No revenue yet'}
-                icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                icon={<span className={iconClass('lucide:banknote', 'w-6 h-6')} />}
                 sparklineData={sparklines?.revenue}
                 color="info"
                 onClick={() => handleNavigation('/reports')}
@@ -252,7 +252,7 @@ export default function Home() {
                 title={t('home.openTables', 'Open Tables')}
                 value={kpis?.openTables ?? 0}
                 desc={kpis?.openTables === 0 ? 'All clear' : `${kpis?.openTables} table${kpis?.openTables !== 1 ? 's' : ''} in service`}
-                icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
+                icon={<span className={iconClass('lucide:utensils', 'w-6 h-6')} />}
                 color="warning"
                 onClick={() => handleNavigation('/sale')}
               />
@@ -260,7 +260,7 @@ export default function Home() {
                 title={t('home.staff', 'Active Staff')}
                 value={kpis?.activeEmployees ?? 0}
                 desc={`${kpis?.activeEmployees === 1 ? '1 employee' : `${kpis?.activeEmployees ?? 0} employees`} on payroll`}
-                icon={<span className="icon-[tabler--users] w-6 h-6" />}
+                icon={<span className={iconClass('lucide:users', 'w-6 h-6')} />}
                 color="secondary"
                 onClick={() => handleNavigation('/staff')}
               />
@@ -268,7 +268,7 @@ export default function Home() {
                 title={t('home.lowStock', 'Low Stock')}
                 value={kpis?.lowStockCount ?? 0}
                 desc={kpis?.lowStockCount === 0 ? 'All stocked' : `${kpis?.lowStockCount} item${kpis?.lowStockCount !== 1 ? 's' : ''} below reorder level`}
-                icon={<span className="icon-[tabler--alert-triangle] w-6 h-6" />}
+                icon={<span className={iconClass('lucide:alert-triangle', 'w-6 h-6')} />}
                 color={kpis?.lowStockCount && kpis.lowStockCount > 0 ? 'error' : 'success'}
                 onClick={() => handleNavigation('/inventory')}
               />
@@ -276,7 +276,7 @@ export default function Home() {
                 title={t('home.kitchenTickets', 'Kitchen Tickets')}
                 value={kpis?.activeKitchenTickets ?? 0}
                 desc={kpis?.activeKitchenTickets === 0 ? 'No active orders' : `${kpis?.activeKitchenTickets} ticket${kpis?.activeKitchenTickets !== 1 ? 's' : ''} in progress`}
-                icon={<span className="icon-[tabler--tools-kitchen-2] w-6 h-6" />}
+                icon={<span className={iconClass('lucide:chef-hat', 'w-6 h-6')} />}
                 color={kpis?.activeKitchenTickets && kpis.activeKitchenTickets > 0 ? 'warning' : 'success'}
                 onClick={() => handleNavigation('/kitchen')}
               />
@@ -300,7 +300,7 @@ export default function Home() {
               <h2 className={`text-sm font-semibold uppercase tracking-wider ${cat.color}`}>
                 {t(cat.label)}
               </h2>
-              <div className={`flex-1 h-px bg-gradient-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30`} />
+              <div className={`flex-1 h-px bg-gradient-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30 rtl:bg-gradient-to-l`} />
             </div>
 
             {/* Category Items — staggered children */}
@@ -348,10 +348,10 @@ export default function Home() {
                       </div>
                     )}
 
-                    <span className="text-sm font-semibold text-base-content/80 text-center leading-tight">
+                    <span className="text-sm font-semibold text-base-content/70 text-center leading-tight">
                       {t(menuItem.label)}
                     </span>
-                    <span className="text-[10px] text-base-content/40 mt-0.5 text-center leading-tight max-w-[100px]">
+                    <span className="text-[10px] text-base-content/30 mt-0.5 text-center leading-tight max-w-[100px]">
                       {t(menuItem.label + 'Desc')}
                     </span>
                   </button>

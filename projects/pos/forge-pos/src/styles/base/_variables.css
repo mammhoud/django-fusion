@@ -49,6 +49,14 @@
   --animation-delay-200: 200ms;
   --animation-delay-300: 300ms;
   --animation-delay-400: 400ms;
+
+  /* ── Theme-adaptive tokens (Section 1.1) ── */
+  /* Reference FlyonUI's active data-theme so every component adapts
+     automatically when switching theme variants (default / corporate /
+     luxury / pastel / cyberpunk). Used by Card, Modal, SideNav. */
+  --color-border: color-mix(in oklch, var(--color-base-300) 50%, transparent);
+  --color-category-title: color-mix(in oklch, var(--color-base-content) 50%, transparent);
+
 }
 
 html.dark {
