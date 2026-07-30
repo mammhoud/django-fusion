@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, memo } from 'react';
-import ThemeToggle from '../display/ThemeToggle';
 import LanguageToggle from '../display/LanguageToggle';
 import KeyboardShortcutsModal from '../shared/KeyboardShortcutsModal';
 import { useAuth } from '../../contexts/AuthContext';
@@ -378,9 +377,6 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
           <div className="flex items-center justify-center gap-3 mb-1">
             <LanguageToggle />
           </div>
-          <div className="flex items-center justify-center mb-1">
-            <ThemeToggle />
-          </div>
 
           {expanded && user && (
             <div className="flex items-center justify-center gap-1.5 mt-2 mb-1">
@@ -551,9 +547,6 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
 
               <div className="flex items-center justify-center gap-4 mb-2">
                 <LanguageToggle />
-              </div>
-              <div className="flex items-center justify-center mb-2">
-                <ThemeToggle />
               </div>
               {user && (
                 <div className="flex items-center justify-center gap-1.5 mt-2 mb-1">
