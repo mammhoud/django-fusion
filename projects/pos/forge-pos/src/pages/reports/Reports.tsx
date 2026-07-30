@@ -1295,7 +1295,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--chart-bar] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--chart-bar] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noProductSales')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noProductSalesHint')}</p>
                 </Card>
@@ -1408,7 +1408,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--receipt] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--receipt] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noInvoices')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noInvoicesHint')}</p>
                 </Card>
@@ -1870,7 +1870,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--building-store] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--building-store] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noDeliveries')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noDeliveriesHint')}</p>
                 </Card>
@@ -2123,7 +2123,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--menu-2] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--menu-2] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noRecipes')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noRecipesHint')}</p>
                 </Card>
@@ -2244,7 +2244,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--calendar] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--calendar] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('transactions.noTransactions')}</p>
                 </Card>
               )}
@@ -2354,7 +2354,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--users] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--users] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noEmployeeSales')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noEmployeeSalesHint')}</p>
                 </Card>

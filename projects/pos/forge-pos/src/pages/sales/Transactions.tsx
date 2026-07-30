@@ -898,7 +898,7 @@ export default function Transactions() {
             {productStats.length > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
                 <div className="relative flex-1 max-w-xs">
-                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
                   <input
                     type="text"
                     value={productSearch}
@@ -1111,7 +1111,7 @@ export default function Transactions() {
             {productInvoices.length > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
                 <div className="relative flex-1 max-w-xs">
-                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
                   <input
                     type="text"
                     value={relatedSearch}

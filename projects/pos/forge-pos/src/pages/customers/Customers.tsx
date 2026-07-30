@@ -119,7 +119,7 @@ export default function Customers() {
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-bold text-base-content shrink-0">{t('customers.title')}</h1>
           <div className="relative flex-1 max-w-64">
-            <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
             <input
               type="text"
               value={search}
