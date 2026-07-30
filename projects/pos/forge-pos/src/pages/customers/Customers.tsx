@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import PageLayout from '../../components/layout/PageLayout';
@@ -154,7 +153,7 @@ export default function Customers() {
         </div>
 
         {showForm && (
-          <motion.form
+          <form
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
@@ -200,12 +199,12 @@ export default function Customers() {
               </button>
             </div>
             </Card>
-          </motion.form>
+          </form>
         )}
 
         {isLoading ? (
           <Card padding="2xl" center>
-            <motion.div
+            <div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
@@ -221,7 +220,7 @@ export default function Customers() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {filteredCustomers.map(customer => (
-              <motion.div
+              <div
                 key={customer.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -254,7 +253,7 @@ export default function Customers() {
                   {customer.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {customer.email}</div>}
                 </div>
               </Card>
-            </motion.div>
+            </div>
             ))}
           </div>
         )}

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
@@ -718,7 +717,7 @@ export default function Transactions() {
 
       {/* Filters */}
       {showFilters && (
-        <motion.div
+        <div
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
         >
@@ -747,11 +746,11 @@ export default function Transactions() {
               </div>
             )}
           </Card>
-        </motion.div>
+        </div>
       )}
 
       {/* ── Tab Content ── */}
-      <motion.div
+      <div
         key={activeTab}
         role="tabpanel"
         id={`tx-panel-${activeTab}`}
@@ -1377,7 +1376,7 @@ export default function Transactions() {
             )}
             {filteredTransactions.length > 0 ? (
               sortedInvoices.map((transaction) => (
-                <motion.div
+                <div
                   key={transaction.id}
                   exit={{ opacity: 0, x: 20 }}
                 >
@@ -1469,7 +1468,7 @@ export default function Transactions() {
                     </span>
                   </div>
                 </Card>
-                </motion.div>
+                </div>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
@@ -1479,18 +1478,18 @@ export default function Transactions() {
             )}
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Receipt Dialog */}
       {showReceiptDialog && (
-        <motion.div
+        <div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-neutral/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
           onClick={() => setShowReceiptDialog(null)}
         >
-          <motion.div
+          <div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -1579,8 +1578,8 @@ export default function Transactions() {
                 </>
               )}
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Keyboard Shortcut Help Modal */}

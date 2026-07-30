@@ -1,6 +1,5 @@
 
 import { Ic, iconClass } from '../../lib/icons';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { Settings, Sale, Ingredient, Employee, KitchenTicket } from '../../types';
@@ -150,13 +149,12 @@ export default function Home() {
           animate-slide-up provides a gentle entrance for the header content
           without duplicating framer-motion entry animations. */}
       <div className="text-center mb-10 md:mb-12 animate-slide-up">
-        <motion.div
-          variants={iconSpring}
+        <div
           initial="initial"
           animate="animate"
           whileHover={{ rotate: 360 }}
           transition={{ duration: 0.6 }}
-          className="bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5"
+          className={`${iconSpring} bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5`}
         >
           <img
             src={defaultLogo}
@@ -164,7 +162,7 @@ export default function Home() {
             className="w-14 h-14 md:w-18 md:h-18 object-contain"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
-        </motion.div>
+        </div>
         <h1
           className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text
             bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600
@@ -282,9 +280,8 @@ export default function Home() {
       </div>
 
       {/* ── Categorized Menu Grid — single stagger animation ── */}
-      <motion.div
-        className="max-w-6xl mx-auto px-2 space-y-8"
-        variants={staggerContainer}
+      <div
+        className={`max-w-6xl mx-auto px-2 space-y-8 ${staggerContainer}`}
         initial="hidden"
         animate="visible"
       >
@@ -300,7 +297,7 @@ export default function Home() {
             </div>
 
             {/* Category Items — staggered children */}
-            <motion.div
+            <div
               className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 gap-3 md:gap-4"
               variants={{
                 hidden: { opacity: 0 },
@@ -328,7 +325,7 @@ export default function Home() {
 
                     {isLoading ? (
                       <div className="w-full flex items-center justify-center py-4">
-                        <motion.div
+                        <div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           className="w-7 h-7 border-3 border-base-300 border-t-primary rounded-full"
@@ -352,10 +349,10 @@ export default function Home() {
                   </button>
                 );
               })}
-            </motion.div>
+            </div>
           </div>
         ))}
-      </motion.div>
+      </div>
     </PageLayout>
   );
 }

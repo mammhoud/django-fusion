@@ -1,5 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
-
+import AnimatePresence from '../../components/utils/AnimatePresence';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,7 +30,7 @@ export default function Modal({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <motion.div
+          <div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
@@ -53,7 +52,7 @@ export default function Modal({
             </div>
             <div className="space-y-4">{children}</div>
             {footer && <div className="flex gap-3 pt-4 mt-2 border-t border-base-300/50">{footer}</div>}
-          </motion.div>
+          </div>
         </div>
       )}
     </AnimatePresence>

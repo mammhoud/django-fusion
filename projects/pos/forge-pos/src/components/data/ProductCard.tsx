@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, memo } from 'react';
 import { Product } from '../../types';
 
@@ -54,7 +53,7 @@ const ProductCard = memo(function ProductCard({
     : `${color.bg} ${color.border}`;
 
   return (
-    <motion.div
+    <div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: (index ?? 0) * 0.04 }}
@@ -119,7 +118,7 @@ const ProductCard = memo(function ProductCard({
       )}
 
       {children}
-    </motion.div>
+    </div>
   );
 });
 

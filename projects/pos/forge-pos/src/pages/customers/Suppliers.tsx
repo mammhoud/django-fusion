@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -142,7 +141,7 @@ export default function Suppliers() {
                 className="input input-bordered w-full pl-10"
               />
               {isFiltering ? (
-                <motion.div
+                <div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   aria-label="filtering"
@@ -176,7 +175,7 @@ export default function Suppliers() {
         </div>
 
         {showForm && (
-          <motion.form
+          <form
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
@@ -195,12 +194,12 @@ export default function Suppliers() {
               <button type="submit" className="btn btn-primary">{editing ? t('common.update') : t('common.save')}</button>
               <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
-          </motion.form>
+          </form>
         )}
 
         {isLoading ? (
           <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center">
-            <motion.div
+            <div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
@@ -216,7 +215,7 @@ export default function Suppliers() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {sorted.map(supplier => (
-              <motion.div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
+              <div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -237,7 +236,7 @@ export default function Suppliers() {
                   {supplier.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {supplier.email}</div>}
                   {supplier.address && <div className="flex items-center gap-1"><span className="icon-[tabler--map-pin]" /> {supplier.address}</div>}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
@@ -9,6 +8,7 @@ import BackButton from '../../components/layout/BackButton';
 import Card from '../../components/layout/Card';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 interface SupportMessage {
   name: string;
@@ -122,21 +122,21 @@ export default function About() {
       padding="py-16 md:py-20"
     >
         {/* Header */}
-        <motion.div
+        <div
           className="text-center mb-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <motion.div
+          <div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="bg-base-100/20 backdrop-blur-sm rounded-full p-6 w-fit mx-auto mb-6"
           >
             <span className="icon-[tabler--heart] w-16 h-16 md:w-20 md:h-20 text-teal-500 dark:text-teal-400" />
-          </motion.div>
-          <motion.h1
+          </div>
+          <h1
             className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text
               bg-linear-to-r from-teal-600 to-purple-600 dark:from-teal-400 dark:to-purple-400 py-2"
             initial={{ opacity: 0 }}
@@ -144,14 +144,14 @@ export default function About() {
             transition={{ delay: 0.3 }}
           >
             {t('about.title')}
-          </motion.h1>
+          </h1>
           <p className="text-base-content/70 mt-4 text-lg transition-colors duration-300">
             {t('about.subtitle')}
           </p>
-        </motion.div>
+        </div>
 
         {/* Main Content */}
-        <motion.div
+        <div
           className="max-w-4xl mx-auto space-y-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -303,7 +303,7 @@ export default function About() {
                       transition-colors flex items-center gap-1.5 disabled:opacity-50"
                   >
                     {isUploading ? (
-                      <motion.div
+                      <div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full"
@@ -356,7 +356,7 @@ export default function About() {
               >
                 {isSubmitting ? (
                   <>
-                    <motion.div
+                    <div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
@@ -408,7 +408,7 @@ export default function About() {
           </Card>
 
           {/* Developed by mammhoud */}
-          <motion.div
+          <div
             className="text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -420,18 +420,18 @@ export default function About() {
                 <span className="text-base-content font-semibold text-lg">Structa Cloud</span>
               </Card>
             </div>
-          </motion.div>
+          </div>
 
           {/* Back Button */}
           <div className="flex justify-center">
             <BackButton onClick={handleBackNavigation} disabled={isNavigating} text={t('common.backToHome')} />
           </div>
-        </motion.div>
+        </div>
 
       {/* Success Toast */}
       <AnimatePresence>
         {submitStatus === 'success' && (
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
@@ -439,11 +439,11 @@ export default function About() {
           >
             <span className="icon-[tabler--check] text-xl" />
             {t('about.successToast')}
-          </motion.div>
+          </div>
         )}
 
         {submitStatus === 'error' && (
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
@@ -451,7 +451,7 @@ export default function About() {
           >
             <span className="icon-[tabler--alert-triangle] text-xl" />
             <span>{errorMessage}</span>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </PageLayout>

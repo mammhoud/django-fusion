@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import PageLayout from '../../components/layout/PageLayout';
 import Card from '../../components/layout/Card';
 import ColorSlider from '../../components/display/ColorSlider';
@@ -807,14 +806,14 @@ export default function ThemeStudio() {
                 </h2>
                 <span className="badge badge-soft badge-primary badge-sm font-mono">{selectedTheme}</span>
               </div>
-              <motion.div
+              <div
                 key={selectedTheme}
                 initial={{ opacity: 0.6, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
               >
                 <ComponentPreview themeKey={selectedTheme} customVars={customCSSVars} />
-              </motion.div>
+              </div>
             </Card>
           </div>
         </div>

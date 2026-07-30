@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import Card from '../../components/layout/Card';
@@ -64,6 +63,7 @@ const tabs: TabDefinition[] = [
 ];
 
 import { pageSlideRight } from '../../utils/pageTransitions';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 const currencyOptions = [
   { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
@@ -1082,7 +1082,7 @@ export default function Settings() {
         {/* ── Live Theme Preview ── */}
         <AnimatePresence>
           {previewVariant && (
-            <motion.div
+            <div
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden mt-6"
               data-theme={previewThemeValue}
@@ -1092,7 +1092,7 @@ export default function Settings() {
                 isActive={variant === previewVariant}
                 onApply={() => { setVariant(previewVariant); setPreviewVariant(null); }}
               />
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>
@@ -1711,7 +1711,7 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isImporting ? (
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
             ) : (
               <><span className="icon-[tabler--file-import] text-lg" />{t('settings.importDatabase')}</>
@@ -1726,7 +1726,7 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isExporting ? (
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
             ) : (
               <><span className="icon-[tabler--file-export] text-lg" />{t('settings.exportDatabase')}</>
@@ -1759,7 +1759,7 @@ export default function Settings() {
           >
             {isResetting ? (
               <>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
                 <span>{t('settings.resetting') || 'Resetting...'}</span>
               </>
@@ -1792,26 +1792,26 @@ export default function Settings() {
       padding="py-10 md:py-16"
     >
       {/* Header */}
-      <motion.div
+      <div
         className="text-center mb-10"
         transition={{ duration: 0.5 }}
       >
-        <motion.div
+        <div
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-fit mx-auto mb-4"
         >
           <span className="icon-[tabler--settings] w-12 h-12 md:w-14 md:h-14 text-primary/80" />
-        </motion.div>
-        <motion.h1
+        </div>
+        <h1
           className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-purple-400"
           transition={{ delay: 0.3 }}
         >
           {t('settings.title')}
-        </motion.h1>
-      </motion.div>
+        </h1>
+      </div>
 
       {/* Tab Navigation */}
-      <motion.div
+      <div
         className="bg-base-100/60 backdrop-blur-md rounded-2xl p-1.5 mb-6 border border-slate-200/50 dark:border-gray-700/50"
         transition={{ delay: 0.1 }}
       >
@@ -1843,7 +1843,7 @@ export default function Settings() {
                   <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" title={t('settings.unsavedChanges')} />
                 )}
                 {isActive && (
-                  <motion.div
+                  <div
                     layoutId="activeTab"
                     className="absolute inset-0 rounded-xl bg-white dark:bg-white/10 -z-10"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -1853,16 +1853,16 @@ export default function Settings() {
             );
           })}
         </nav>
-      </motion.div>
+      </div>
 
       {/* Settings Form */}
-      <motion.form
+      <form
         onSubmit={handleSubmit}
         transition={{ delay: 0.2 }}
       >
         {/* Persistent Error Banner — shows when there are inline validation errors */}
         {Object.keys(errors).length > 0 && (
-          <motion.div
+          <div
             role="alert" className="alert alert-error mb-6 items-start"
           >
             <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-1.5 flex-shrink-0 mt-0.5">
@@ -1882,18 +1882,18 @@ export default function Settings() {
                 ))}
               </ul>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Tab Content */}
         <Card padding="xl" transitional className="md:p-8 mb-6 min-h-[320px]">
           <AnimatePresence mode="wait">
-            <motion.div
+            <div
               key={activeTab}
               role="tabpanel"
               id={`settings-panel-${activeTab}`}
               aria-labelledby={`settings-tab-${activeTab}`}
-              variants={pageSlideRight}
+              className={pageSlideRight}
               initial="enter"
               animate="center"
               exit="exit"
@@ -1906,7 +1906,7 @@ export default function Settings() {
               {activeTab === 'employees' && renderEmployeesTab()}
               {activeTab === 'database' && renderDatabaseTab()}
               {activeTab === 'theme' && renderThemeTab()}
-            </motion.div>
+            </div>
           </AnimatePresence>
         </Card>
 
@@ -1934,7 +1934,7 @@ export default function Settings() {
           >
             {isSaving ? (
               <>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
                 <span>{t('settings.saving')}</span>
               </>
@@ -1943,26 +1943,26 @@ export default function Settings() {
             )}
           </button>
         </div>
-      </motion.form>        {/* Success Toast */}
+      </form>        {/* Success Toast */}
         {submitStatus === 'success' && isSuccess && (
-          <motion.div
+          <div
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success shadow-lg"
           >
             <span className="icon-[tabler--check] text-lg" />
             {t('settings.successMessage')}
-          </motion.div>
+          </div>
         )}
 
         {/* Error Toast — only for API/save errors, not for validation errors (shown inline) */}
         {submitStatus === 'error' && errorMessage && Object.keys(errors).length === 0 && (
-          <motion.div
+          <div
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error shadow-lg max-w-md"
           >
             <span className="icon-[tabler--alert-triangle] text-lg" />
             <span>{errorMessage}</span>
-          </motion.div>
+          </div>
         )}
       {/* Theme Preview Modal */}
       <ThemePreviewModal isOpen={showThemePreview} onClose={() => setShowThemePreview(false)} />

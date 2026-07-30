@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 // ── Category color mapping ──
 const CATEGORY_COLORS: Record<string, string> = {
@@ -416,7 +416,7 @@ export default function Notes() {
                   focus:outline-none focus:border-primary transition-colors text-sm"
               />
               {isFiltering ? (
-                <motion.div
+                <div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   aria-label="filtering"
@@ -485,7 +485,7 @@ export default function Notes() {
         {/* ── Create/Edit Note Form (slide-up) ── */}
         <AnimatePresence>
           {showForm && (
-            <motion.form
+            <form
               initial={{ opacity: 0, y: -10, scaleY: 0.95 }}
               animate={{ opacity: 1, y: 0, scaleY: 1 }}
               exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
@@ -603,7 +603,7 @@ export default function Notes() {
                   </button>
                 </div>
               </div>
-            </motion.form>
+            </form>
           )}
         </AnimatePresence>
 
@@ -634,7 +634,7 @@ export default function Notes() {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-3">
-              <motion.div
+              <div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
                 className="w-8 h-8 border-[3px] border-primary border-t-transparent rounded-full"
@@ -643,7 +643,7 @@ export default function Notes() {
             </div>
           </div>
         ) : filteredNotes.length === 0 ? (
-          <motion.div
+          <div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center py-20 text-base-content/40"
@@ -663,11 +663,11 @@ export default function Notes() {
                 {t('notes.addTemplate') || 'Create your first note'}
               </button>
             )}
-          </motion.div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredNotes.map((note, idx) => (
-              <motion.div
+              <div
                 key={note.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -754,7 +754,7 @@ export default function Notes() {
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

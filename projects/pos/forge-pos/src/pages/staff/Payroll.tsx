@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -70,7 +69,7 @@ export default function Payroll() {
         </div>
 
         {showForm && (
-          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
+          <form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <select value={form.employee_id} onChange={e => setForm({ ...form, employee_id: Number(e.target.value) })} required className="select select-bordered w-full">
                 <option value={0}>{t('payroll.selectEmployee')}</option>
@@ -86,7 +85,7 @@ export default function Payroll() {
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>
               <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
-          </motion.form>
+          </form>
         )}
 
         {isLoading ? (
@@ -96,7 +95,7 @@ export default function Payroll() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {payrolls.map(payroll => (
-              <motion.div key={payroll.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
+              <div key={payroll.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">
@@ -115,7 +114,7 @@ export default function Payroll() {
                   <p>{t('payroll.overtimeHours')}: {payroll.overtime_hours}</p>
                   <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {formatPrice(payroll.total_pay)}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

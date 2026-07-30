@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 import { useTranslation } from 'react-i18next';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 interface DatePickerProps {
   value: string;
@@ -158,7 +157,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
 
         <AnimatePresence>
           {isOpen && (
-            <motion.div
+            <div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -184,7 +183,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                   
                   <AnimatePresence>
                     {showMonthDropdown && (
-                      <motion.div
+                      <div
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
@@ -236,7 +235,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                             </div>
                           )}
                         </div>
-                      </motion.div>
+                      </div>
                     )}
                   </AnimatePresence>
                 </div>
@@ -258,7 +257,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                   
                   <AnimatePresence>
                     {showYearDropdown && (
-                      <motion.div
+                      <div
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
@@ -328,7 +327,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                             </div>
                           )}
                         </div>
-                      </motion.div>
+                      </div>
                     )}
                   </AnimatePresence>
                 </div>
@@ -385,7 +384,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                   {t('datePicker.done')}
                 </button>
               </div>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>

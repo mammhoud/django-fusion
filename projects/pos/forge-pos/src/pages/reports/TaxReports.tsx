@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -121,7 +120,7 @@ export default function TaxReports() {
                   focus:outline-none focus:border-primary transition-colors text-sm"
               />
               {isFiltering ? (
-                <motion.div
+                <div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   aria-label="filtering"
@@ -158,7 +157,7 @@ export default function TaxReports() {
         </div>
 
         {showForm && (
-          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
+          <form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input input-bordered w-full" />
               <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input input-bordered w-full" />
@@ -170,7 +169,7 @@ export default function TaxReports() {
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>
               <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
-          </motion.form>
+          </form>
         )}
 
         {isLoading ? (
@@ -184,7 +183,7 @@ export default function TaxReports() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {filteredReports.map(report => (
-              <motion.div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
+              <div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">
@@ -201,7 +200,7 @@ export default function TaxReports() {
                   <p>{t('taxReports.totalSales')}: {formatPrice(report.total_sales)}</p>
                   <p>{t('taxReports.totalTax')}: {formatPrice(report.total_tax)}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

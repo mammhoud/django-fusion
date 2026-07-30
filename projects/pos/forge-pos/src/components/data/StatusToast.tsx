@@ -1,5 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
-
+import AnimatePresence from '../../components/utils/AnimatePresence';
 interface StatusToastProps {
   type: 'success' | 'error';
   message: string;
@@ -11,7 +10,7 @@ export default function StatusToast({ type, message, visible, onDismiss }: Statu
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
+        <div
           role="alert"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -24,7 +23,7 @@ export default function StatusToast({ type, message, visible, onDismiss }: Statu
             ? <span className="icon-[tabler--check] text-xl" /> 
             : <span className="icon-[tabler--alert-triangle] text-xl" />}
           <span>{message}</span>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

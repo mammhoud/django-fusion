@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, memo } from 'react';
 import ThemeToggle from '../display/ThemeToggle';
@@ -9,6 +8,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { preloadRoute } from '../../utils/preloadRoutes';
 import { Ic, iconClass } from '../../lib/icons';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 // ── Role-based nav visibility ──
 // Which routes each role can see. 'manager' sees everything.
@@ -187,15 +187,15 @@ function NavItemButton({
       >
         <Icon className="w-3.5 h-3.5" />
       </div>
-      <motion.span
+      <span
         animate={{ opacity: isExpanded ? 1 : 0, width: isExpanded ? 'auto' : 0 }}
         transition={{ duration: 0.12 }}
         className="overflow-hidden truncate text-left"
       >
         {item.label}
-      </motion.span>
+      </span>
       {isActive && isExpanded && (
-        <motion.div
+        <div
           layoutId="sidenav-persistent-active"
           className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-primary shrink-0"
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -283,7 +283,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
 
   return (
     <>
-      <motion.aside
+      <aside
         className="fixed left-0 top-0 h-full z-30
           bg-base-100/95 backdrop-blur-xl
           border-r border-base-300/50
@@ -348,13 +348,13 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               title={!expanded ? t('auth.signOut') : undefined}
             >
               <span className="icon-[tabler--logout] w-4 h-4 shrink-0" />
-              <motion.span
+              <span
                 animate={{ opacity: expanded ? 1 : 0 }}
                 transition={{ duration: 0.12 }}
                 className="overflow-hidden truncate"
               >
                 {expanded && t('auth.signOut')}
-              </motion.span>
+              </span>
             </button>
           )}
 
@@ -366,13 +366,13 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
             title={!expanded ? t('transactions.shortcutHelp') : undefined}
           >
             <span className="icon-[tabler--help-circle] w-4 h-4 shrink-0" />
-            <motion.span
+            <span
               animate={{ opacity: expanded ? 1 : 0 }}
               transition={{ duration: 0.12 }}
               className="overflow-hidden truncate flex items-center gap-1"
             >
               {expanded && <>{t('transactions.shortcutHelp')} <kbd className="px-1 py-0.5 text-[10px] font-mono rounded bg-base-200 dark:bg-white/10">?</kbd></>}
-            </motion.span>
+            </span>
           </button>
 
           <div className="flex items-center justify-center gap-3 mb-1">
@@ -397,7 +397,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
             </p>
           )}
         </div>
-      </motion.aside>
+      </aside>
 
       <KeyboardShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
     </>
@@ -439,7 +439,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <div
             key="sidenav-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -450,7 +450,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
           />
 
           {/* Panel */}
-          <motion.aside
+          <aside
             key="sidenav-panel"
             initial={{ x: isRtl ? '100%' : '-100%' }}
             animate={{ x: 0 }}
@@ -496,7 +496,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                 </div>
                 <span className="font-semibold">{t('nav.home')}</span>
                 {currentRoute === '/dashboard' && (
-                  <motion.div
+                  <div
                     layoutId="sidenav-active"
                     className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-primary"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -569,7 +569,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
             </div>
 
             <KeyboardShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
-          </motion.aside>
+          </aside>
         </>
       )}
     </AnimatePresence>

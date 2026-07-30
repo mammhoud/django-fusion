@@ -371,3 +371,27 @@
 .animate-scale-in {
   animation: scale-in 0.3s ease-out both;
 }
+
+/* ── FlyonUI animation utilities (replaces framer-motion) ── */
+@keyframes slide-down  { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slide-right { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slide-left  { from{opacity:0;transform:translateX(12px)}  to{opacity:1;transform:translateX(0)} }
+@keyframes dialog-scale{ from{opacity:0;transform:scale(.95) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+@keyframes dropdown-in { from{opacity:0;transform:translateY(-4px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes toast-in    { from{opacity:0;transform:translateY(-20px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes stagger-in  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fade-out    { from{opacity:1} to{opacity:0} }
+@keyframes slide-up-out{ from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-12px)} }
+@keyframes scale-out   { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(.95)} }
+.animate-slide-down{animation:slide-down .3s ease-out both}
+.animate-slide-right{animation:slide-right .25s ease-out both}
+.animate-slide-left{animation:slide-left .25s ease-out both}
+.animate-dialog-in{animation:dialog-scale .25s ease-out both}
+.animate-dropdown-in{animation:dropdown-in .2s ease-out both}
+.animate-toast-in{animation:toast-in .35s ease-out both}
+.animate-stagger-item{animation:stagger-in .35s ease-out both}
+.animate-fade-out{animation:fade-out .15s ease-in both}
+.animate-slide-up-out{animation:slide-up-out .15s ease-in both}
+.animate-scale-out{animation:scale-out .15s ease-in both}
+.animate-dialog-out{animation:scale-out .12s ease-in both}
+.anim-delay-1{animation-delay:.05s}.anim-delay-2{animation-delay:.1s}.anim-delay-3{animation-delay:.15s}.anim-delay-4{animation-delay:.2s}.anim-delay-5{animation-delay:.25s}.anim-delay-6{animation-delay:.3s}.anim-delay-7{animation-delay:.35s}.anim-delay-8{animation-delay:.4s}.anim-delay-9{animation-delay:.45s}.anim-delay-10{animation-delay:.5s}

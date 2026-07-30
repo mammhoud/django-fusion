@@ -11,8 +11,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
+import AnimatePresence from '../../components/utils/AnimatePresence';
 /** Read the support email from Vite env vars at build time */
 const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL as string | undefined;
 
@@ -54,13 +53,13 @@ export default function ChatSupport({
         >
           <AnimatePresence mode="wait" initial={false}>
             {isOpen ? (
-              <motion.span key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
+              <span key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
                 <span className="icon-[tabler--x] w-6 h-6" />
-              </motion.span>
+              </span>
             ) : (
-              <motion.span key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
+              <span key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
                 <span className="icon-[tabler--message] w-6 h-6" />
-              </motion.span>
+              </span>
             )}
           </AnimatePresence>
         </button>
@@ -69,7 +68,7 @@ export default function ChatSupport({
       {/* Support panel */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <div
             role="dialog"
             aria-label="Support contact"
             initial={{ opacity: 0, y: 32, scale: 0.95 }}
@@ -148,7 +147,7 @@ export default function ChatSupport({
                 Powered by Forge POS &mdash; structa.cloud
               </p>
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>
