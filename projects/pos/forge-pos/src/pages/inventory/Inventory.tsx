@@ -340,7 +340,7 @@ export default function Inventory() {
               <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.avgCost')}</span>
-                  <span className="text-lg font-bold text-base-content">{avgCost.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-base-content">{formatPrice(avgCost)}</span>
                 </div>
               </Card>
               <Card padding="sm">
@@ -424,7 +424,7 @@ export default function Inventory() {
                       <div className="sm:hidden text-sm text-base-content/60 space-y-1 mb-2">
                         <div className="flex justify-between">
                           <span>{t('inventory.stock')}: <strong>{ing.current_quantity} {ing.unit}</strong></span>
-                          <span>{t('inventory.costPerUnit')}: {ing.cost_per_unit.toFixed(2)}</span>
+                          <span>{t('inventory.costPerUnit')}: {formatPrice(ing.cost_per_unit)}</span>
                         </div>
                       </div>
                       <div className="sm:hidden flex gap-2 mb-1">
@@ -444,7 +444,7 @@ export default function Inventory() {
                       <div className="hidden sm:block col-span-1 text-center text-base-content/60">{ing.unit}</div>
                       <div className="hidden sm:block col-span-2 text-right text-base-content font-medium">{ing.current_quantity}</div>
                       <div className="hidden sm:block col-span-2 text-right text-base-content/60">{ing.reorder_level}</div>
-                      <div className="hidden sm:block col-span-2 text-right text-base-content/60">{ing.cost_per_unit.toFixed(2)}</div>
+                      <div className="hidden sm:block col-span-2 text-right text-base-content/60">{formatPrice(ing.cost_per_unit)}</div>
                       <div className="hidden sm:flex col-span-2 items-center justify-center gap-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
                           {status.label}
