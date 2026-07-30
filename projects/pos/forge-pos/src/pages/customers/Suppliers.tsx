@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Supplier } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
-import StatusToast from '../../components/data/StatusToast';
+import StatusToast from '../../components/ui/StatusToast';
 
 type SortKey = 'name-asc' | 'name-desc' | 'newest';
 

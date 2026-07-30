@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTheme, THEME_VARIANTS, type ThemeVariant } from '../../contexts/ThemeContext';
-import AnimatePresence from '../utils/AnimatePresence';
+import AnimatePresence from '../ui/AnimatePresence';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 

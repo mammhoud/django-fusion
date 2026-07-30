@@ -3,12 +3,12 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { Employee, NewEmployee, EmployeeType, NewEmployeeType } from '../../types';
 import PageLayout from '../../components/layout/PageLayout';
-import { SkeletonList, SkeletonTable } from '../../components/layout/Skeleton';
+import { SkeletonList, SkeletonTable } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
-import Modal from '../../components/layout/Modal';
-import ConfirmDialog from '../../components/display/ConfirmDialog';
-import StatusToast from '../../components/data/StatusToast';
-import Card from '../../components/layout/Card';
+import Modal from '../../components/ui/Modal';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import StatusToast from '../../components/ui/StatusToast';
+import Card from '../../components/ui/Card';
 
 type Tab = 'employees' | 'types';
 

@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
  * 4 s) and can also be dismissed manually via the returned `dismiss` callback,
  * which is wired to the toast's click handler.
  *
- * Each page still renders `StatusToast` (from `src/components/data/StatusToast.tsx`)
+ * Each page still renders `StatusToast` (from `src/components/ui/StatusToast.tsx`)
  * directly with the returned `status` and `dismiss`. The component handles
  * enter/exit animation via framer-motion AnimatePresence.
  *

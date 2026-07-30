@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import Notes from '../../pages/settings/Notes';
+import Notes from '../../pages/admin/Notes';
 
 const mockTemplates = [
   { id: 1, name: 'Standard Receipt', template_body: 'Receipt #{{num}}\nTotal: {{total}}', is_default: true },

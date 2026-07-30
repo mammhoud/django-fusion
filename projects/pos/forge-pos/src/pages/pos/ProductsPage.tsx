@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { iconClass } from '../../lib/icons';
 import ProductManager from './ProductManager';
-import Inventory from './Inventory';
-import Recipes from './Recipes';
+import Inventory from '../kitchen/Inventory';
+import Recipes from '../kitchen/Recipes';
 
 type ProductsTab = 'manager' | 'inventory' | 'recipes';
 

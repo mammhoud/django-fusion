@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import PageLayout from '../../components/layout/PageLayout';
-import Card from '../../components/layout/Card';
-import ColorSlider from '../../components/display/ColorSlider';
+import Card from '../../components/ui/Card';
+import ColorSlider from '../../components/ui/ColorSlider';
 import {
   type OKLCHValue,
   type ThemeColorSet,

@@ -7,7 +7,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { preloadRoute } from '../../utils/preloadRoutes';
 import { Ic, iconClass } from '../../lib/icons';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 // ── Role-based nav visibility ──
 // Which routes each role can see. 'manager' sees everything.

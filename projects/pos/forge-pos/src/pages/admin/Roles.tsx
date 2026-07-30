@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Card from '../../components/layout/Card';
+import Card from '../../components/ui/Card';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { iconClass } from '../../lib/icons';

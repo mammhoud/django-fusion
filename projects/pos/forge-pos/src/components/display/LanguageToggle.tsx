@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 const langOptions = [
   { value: 'en' as const, label: 'English', flag: '🇬🇧' },

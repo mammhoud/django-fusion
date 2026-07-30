@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import TaxReports from '../../pages/reports/TaxReports';
+import TaxReports from '../../pages/analytics/TaxReports';
 
 const mockReports = [
   { id: 1, period_start: '2026-01-01', period_end: '2026-01-31', total_sales: 12000, total_tax: 1560, transaction_count: 240 },

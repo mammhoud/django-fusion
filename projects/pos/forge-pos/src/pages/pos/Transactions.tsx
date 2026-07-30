@@ -2,19 +2,19 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
 import { Transaction, Settings } from '../../types';
-import DatePicker from '../../components/display/DatePicker';
+import DatePicker from '../../components/ui/DatePicker';
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
 import { downloadInvoicePDF } from '../../utils/invoicePdf';
 import jsPDF from 'jspdf';
 import PageLayout from '../../components/layout/PageLayout';
 import { useStatusToast } from '../../hooks/useStatusToast';
-import StatusToast from '../../components/data/StatusToast';
-import { SkeletonTable, SkeletonList } from '../../components/layout/Skeleton';
+import StatusToast from '../../components/ui/StatusToast';
+import { SkeletonTable, SkeletonList } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
-import Card from '../../components/layout/Card';
-import StatCard from '../../components/data/StatCard';
+import Card from '../../components/ui/Card';
+import StatCard from '../../components/ui/StatCard';
 
 type TabId = 'timeTotal' | 'productStats' | 'relatedProducts' | 'invoices';
 

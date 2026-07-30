@@ -7,8 +7,8 @@ import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
 import { downloadInvoicePDF } from '../../utils/invoicePdf';
-import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/data/ProductCard';
-import Card from '../../components/layout/Card';
+import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
+import Card from '../../components/ui/Card';
 import jsPDF from 'jspdf';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsMod
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import StatusToast from '../../components/data/StatusToast';
+import StatusToast from '../../components/ui/StatusToast';
 import { iconClass } from '../../lib/icons';
 
 type OrderType = 'dine-in' | 'takeaway' | 'delivery' | 'extra-order' | 'dated-order';

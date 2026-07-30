@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTheme, THEME_VARIANTS, THEME_MAP, type ThemeVariant } from '../../contexts/ThemeContext';
-import Card from '../layout/Card';
+import Card from '../ui/Card';
 
 // ── Section wrapper ──
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

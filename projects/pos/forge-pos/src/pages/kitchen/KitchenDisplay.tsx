@@ -8,7 +8,7 @@ import { KitchenTicket, Sale } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hooks/useKDSNotification';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import StatCard from '../../components/data/StatCard';
+import StatCard from '../../components/ui/StatCard';
 
 // Type from the Rust SaleItem model (mirrored here for the ticket detail modal)
 interface SaleItemData {
