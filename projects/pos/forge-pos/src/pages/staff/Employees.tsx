@@ -134,6 +134,7 @@ export default function Employees() {
     if (!newEmployee.name.trim() || newEmployee.employee_type_id === 0) return;
     try {
       await invoke('add_employee', { employee: newEmployee });
+      window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'add' } }));
       setShowAddEmployee(false);
       setNewEmployee({ ...initialNewEmployee });
       loadData({ quiet: true });
@@ -154,6 +155,7 @@ export default function Employees() {
           salary: editEmployee.salary,
         }
       });
+      window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'update', id: editEmployee.id } }));
       setShowEditEmployee(null);
       setEditEmployee(null);
       loadData({ quiet: true });
@@ -165,6 +167,7 @@ export default function Employees() {
     if (!showDeleteEmployee) return;
     try {
       await invoke('soft_delete_employee', { id: showDeleteEmployee.id });
+      window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'delete', id: showDeleteEmployee.id } }));
       setShowDeleteEmployee(null);
       loadData({ quiet: true });
       showStatus('success', 'Employee deactivated.');

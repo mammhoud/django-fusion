@@ -1,11 +1,19 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { KitchenTicket } from '../types';
 
+export type ChimeVariant = 'chime1' | 'chime2' | 'chime3';
+
+export const CHIME_VARIANTS: { id: ChimeVariant; label: string }[] = [
+  { id: 'chime1', label: 'Classic (C↗E)' },
+  { id: 'chime2', label: 'Bright (G↗C)' },
+  { id: 'chime3', label: 'Deep (A↘E)' },
+];
+
 /**
- * Two-tone chime generated via the Web Audio API.
+ * Play a chime via the Web Audio API. Three variants available.
  * No external audio files needed.
  */
-function playChime() {
+function playChime(variant: ChimeVariant = 'chime1') {
   try {
     const ctx = new AudioContext();
     const osc = ctx.createOscillator();
@@ -14,15 +22,36 @@ function playChime() {
     gain.connect(ctx.destination);
 
     osc.type = 'sine';
-    // C5 → E5  (pleasant major-third ascending)
-    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12);
 
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.35);
+    switch (variant) {
+      case 'chime2':
+        // Bright: G4 → C5  (perfect-fourth ascending, brighter feel)
+        osc.frequency.setValueAtTime(392.00, ctx.currentTime);
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime + 0.10);
+        gain.gain.setValueAtTime(0.22, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.30);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.30);
+        break;
+      case 'chime3':
+        // Deep: A3 → E3  (descending perfect-fourth, deeper alert)
+        osc.frequency.setValueAtTime(220.00, ctx.currentTime);
+        osc.frequency.setValueAtTime(164.81, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.28, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.40);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.40);
+        break;
+      case 'chime1':
+      default:
+        // Classic: C5 → E5  (pleasant major-third ascending)
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.35);
+    }
   } catch {
     // Web Audio API unavailable — silently skip
   }
@@ -83,7 +112,7 @@ function showNativeNotification(ticket: KitchenTicket) {
  * @param tickets - Current array of kitchen tickets from the backend poll.
  * @param mutedUntil - Timestamp (ms) until which notifications are muted.
  */
-export function useKDSNotification(tickets: KitchenTicket[], mutedUntil: number | null = null) {
+export function useKDSNotification(tickets: KitchenTicket[], mutedUntil: number | null = null, chimeVariant: ChimeVariant = 'chime1') {
   // Keep a set of all known ticket IDs across renders
   const knownIdsRef = useRef<Set<number>>(new Set());
   // Interval handle for the title flash
@@ -145,7 +174,7 @@ export function useKDSNotification(tickets: KitchenTicket[], mutedUntil: number 
     //   - Notifications are not muted
     const isMuted = mutedUntil && mutedUntil > Date.now();
     if (foundNew && !wasEmpty && !isMuted) {
-      playChime();
+      playChime(chimeVariant);
       startFlash();
       // If the window is minimized or in the background, fire a native OS
       // notification as well (the tab-title flash won't be visible).

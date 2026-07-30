@@ -64,8 +64,10 @@ export default function Customers() {
     try {
       if (editing) {
         await invoke('update_customer', { id: editing.id, update: form });
+      window.dispatchEvent(new CustomEvent('customer-updated', { detail: { action: 'update', id: editing.id } }));
       } else {
         await invoke('add_customer', { customer: form });
+      window.dispatchEvent(new CustomEvent('customer-updated', { detail: { action: 'add' } }));
       }
       setShowForm(false);
       setEditing(null);
