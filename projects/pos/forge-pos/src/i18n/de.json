@@ -46,7 +46,7 @@
     "kitchen": "Küchenanzeige",
     "schedule": "Zeitplan",
     "payroll": "Gehaltsabrechnung",
-    "receiptTemplates": "Belegvorlagen",
+    "notes": "Belegvorlagen",
     "invoice": "Rechnung",
     "taxReports": "Steuerberichte",
     "roles": "Rollen",
@@ -65,7 +65,7 @@
     "kitchenDesc": "Küchenbestellanzeige",
     "scheduleDesc": "Mitarbeiterplanung",
     "payrollDesc": "Gehaltsabrechnung verwalten",
-    "receiptTemplatesDesc": "Belege anpassen",
+    "notesDesc": "Belege anpassen",
     "taxReportsDesc": "Steuer- & Finanzberichte",
     "invoiceDesc": "Rechnungen erstellen",
     "rolesDesc": "Rollenberechtigungen",
@@ -745,6 +745,10 @@
       "deliveryFee": "Liefergebühr",
       "perKmFee": "Pro-km-Gebühr"
     },
+    "backToSettings": "Einstellungen",
+    "themeTab": {
+      "title": "Design"
+    },
     "languageNote": "Wechseln Sie zwischen Deutsch, Englisch, Französisch, Arabisch und Spanisch. RTL-Unterstützung ist automatisch."
   },
   "supportChat": {
@@ -868,7 +872,17 @@
     "validationPasswordMatch": "Passwörter stimmen nicht überein",
     "rememberMe": "Angemeldet bleiben",
     "showPassword": "Passwort anzeigen",
-    "hidePassword": "Passwort ausblenden"
+    "hidePassword": "Passwort ausblenden",
+    "forgotPassword": "Passwort vergessen?",
+    "forgotPasswordDesc": "Geben Sie Ihre E-Mail ein, um einen Reset-Code zu erhalten",
+    "sendResetCode": "Reset-Code senden",
+    "resetCodeSent": "Reset-Code gesendet! Überprüfen Sie Ihre E-Mail.",
+    "resetPassword": "Passwort zurücksetzen",
+    "resetPasswordDesc": "Geben Sie den Code und Ihr neues Passwort ein für",
+    "newPassword": "Neues Passwort",
+    "resetPasswordBtn": "Passwort zurücksetzen",
+    "backToLogin": "Zurück zum Login",
+    "passwordResetSuccess": "Passwort erfolgreich zurückgesetzt! Weiterleitung..."
   },
   "confirmDialog": {
     "cancel": "Abbrechen",
@@ -988,7 +1002,7 @@
     "totalPay": "Gesamtvergütung",
     "noPayrolls": "Keine Gehaltsabrechnungen."
   },
-  "receiptTemplates": {
+  "notes": {
     "title": "Belegvorlagen",
     "addTemplate": "Vorlage hinzufügen",
     "name": "Vorlagenname",

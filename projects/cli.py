@@ -119,7 +119,6 @@ SITE_ALIASES = {
 
 LIBS = {
     "django-fusion": REPO_ROOT / "libs" / "django-fusion",
-    "ceptor-ai": REPO_ROOT / "libs" / "ceptor-ai",
 }
 
 SKIPPED_MAKE_TARGETS = {
@@ -618,7 +617,6 @@ class SiteCLI:
 
         repo_map = {
             "django-fusion": "django-fusion",
-            "ceptor-ai": "ceptor-ai",
         }
 
         for lock_path in lock_files:

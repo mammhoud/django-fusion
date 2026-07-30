@@ -23,20 +23,20 @@ class TestFusionHealthAPI(TestCase):
 
     def test_health_returns_200(self):
         """GET /api/fusion/health returns HTTP 200."""
-        response = self.client.get("/api/fusion/health")
+        response = self.client.get("/api/fusion/health/")
         assert response.status_code == 200, (
             f"Expected 200, got {response.status_code}: {response.content[:200]}"
         )
 
     def test_health_returns_valid_json(self):
         """Response is parseable JSON."""
-        response = self.client.get("/api/fusion/health")
+        response = self.client.get("/api/fusion/health/")
         data = json.loads(response.content)
         assert isinstance(data, dict)
 
     def test_health_contains_expected_keys(self):
         """Response contains status, data.fusion_render_first, and data.reason keys."""
-        response = self.client.get("/api/fusion/health")
+        response = self.client.get("/api/fusion/health/")
         data = json.loads(response.content)
         assert data["status"] == 200
         assert data["message"] == "Success"
@@ -44,6 +44,29 @@ class TestFusionHealthAPI(TestCase):
         assert "fusion_render_first" in inner
         assert "reason" in inner
         assert isinstance(inner["fusion_render_first"], bool)
+
+
+@override_settings(ROOT_URLCONF="tests.urls")
+class TestFusionBrandingAPI(TestCase):
+    """Verify the /api/fusion/branding/ endpoint."""
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_branding_returns_200(self):
+        """GET /api/fusion/branding/ returns HTTP 200."""
+        response = self.client.get("/api/fusion/branding/")
+        assert response.status_code == 200, (
+            f"Expected 200, got {response.status_code}: {response.content[:200]}"
+        )
+
+    def test_branding_returns_valid_json(self):
+        """Response is parseable JSON with expected keys."""
+        response = self.client.get("/api/fusion/branding/")
+        data = json.loads(response.content)
+        assert isinstance(data, dict)
+        assert "site_name" in data
+        assert "primary_color" in data
 
 
 @override_settings(ROOT_URLCONF="tests.urls")
@@ -117,14 +140,14 @@ class TestBlogAPI(TestCase):
 
     def test_blog_categories_returns_200(self):
         """GET /api/blog/categories returns HTTP 200."""
-        response = self.client.get("/api/blog/categories")
+        response = self.client.get("/api/blog/categories/")
         assert response.status_code == 200, (
             f"Expected 200, got {response.status_code}"
         )
 
     def test_blog_tags_returns_200(self):
         """GET /api/blog/tags returns HTTP 200."""
-        response = self.client.get("/api/blog/tags")
+        response = self.client.get("/api/blog/tags/")
         assert response.status_code == 200, (
             f"Expected 200, got {response.status_code}"
         )
@@ -161,14 +184,14 @@ class TestCoursesAPI(TestCase):
 
     def test_courses_filters_returns_200(self):
         """GET /api/courses/filters returns HTTP 200."""
-        response = self.client.get("/api/courses/filters")
+        response = self.client.get("/api/courses/filters/")
         assert response.status_code == 200, (
             f"Expected 200, got {response.status_code}"
         )
 
     def test_course_detail_unknown_returns_404(self):
         """GET /api/courses/nonexistent returns 404."""
-        response = self.client.get("/api/courses/nonexistent-course")
+        response = self.client.get("/api/courses/nonexistent-course/")
         assert response.status_code == 404, (
             f"Expected 404, got {response.status_code}"
         )
@@ -212,7 +235,7 @@ class TestBlogDetailAPI(TestCase):
 
     def test_blog_detail_unknown_returns_404(self):
         """GET /api/blog/nonexistent-post returns 404."""
-        response = self.client.get("/api/blog/nonexistent-post-slug")
+        response = self.client.get("/api/blog/nonexistent-post-slug/")
         assert response.status_code == 404, (
             f"Expected 404, got {response.status_code}"
         )

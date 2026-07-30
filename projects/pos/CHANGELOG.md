@@ -5,6 +5,30 @@
 
 ---
 
+## v1.3.0 — 30 July 2026
+
+> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [pos-solo](pos-solo/CHANGELOG.md) · [pos-full](pos-full/CHANGELOG.md)
+
+### Added (forge-pos)
+- **Settings → Theme tab** — New tab with Theme Studio link, "Preview Theme Components" modal, and active theme info
+- **ThemePreviewModal** — Modal previewing all components across 5 theme variants
+- **Email-based Support Chat** — Using `VITE_SUPPORT_EMAIL` env var with mailto links; removed WebSocket/sidecar/ticket deps
+- **Per-edition CHANGELOGs** — `forge-pos/`, `pos-solo/`, `pos-full/` each with edition-specific history
+
+### Changed (forge-pos)
+- **ThemeShowcase page deleted** — Merged into ThemePreviewModal (Settings → Theme)
+- **Dashboard text dimming** — Menu labels, descriptions, and accent strips use reduced opacity
+- **SupportChat simplified** — No longer depends on sidecar health check or ticket system
+
+### Changed (pos-full)
+- **Django Bolt API** — `bolt_api.py` sidecar module with BoltAPI integration
+- **Bolt tests** — `test_bolt_api.py` and `bolt_urlconf.py` for URL routing verification
+
+### Changed (pos-solo)
+- **Plans documented** — Django Fusion enhancements and solo enhancement plans in `docs/plans/pos/`
+
+---
+
 ## v1.2.0 — 20 July 2026
 
 ### Added

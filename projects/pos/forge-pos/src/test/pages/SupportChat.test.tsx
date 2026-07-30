@@ -5,13 +5,11 @@ import {
   waitFor,
 } from '../test-utils';
 import { resetInvokeMocks } from '../mocks/tauri';
-import SupportChat from '../../pages/SupportChat';
+import SupportChat from '../../pages/settings/SupportChat';
 
 // Use vi.hoisted() to define mock fns BEFORE the vi.mock factory uses them
-const { mockTicketsList, mockHealthCheck, mockCreateChatWs } = vi.hoisted(() => ({
-  mockTicketsList: vi.fn().mockResolvedValue({ data: [], ok: true }),
+const { mockHealthCheck } = vi.hoisted(() => ({
   mockHealthCheck: vi.fn().mockResolvedValue(true),
-  mockCreateChatWs: vi.fn().mockReturnValue({ close: vi.fn(), send: vi.fn() }),
 }));
 
 vi.mock('../../api/sidecar', () => ({
@@ -25,22 +23,6 @@ vi.mock('../../api/sidecar', () => ({
   },
 }));
 
-vi.mock('../../api/tickets', () => ({
-  default: {
-    list: mockTicketsList,
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
-
-vi.mock('../../api/chat', () => ({
-  createChatWs: mockCreateChatWs,
-  chat: {
-    getHistory: vi.fn().mockResolvedValue({ data: [], ok: true }),
-    postMessage: vi.fn(),
-  },
-}));
-
 vi.mock('../../api', () => ({
   sidecar: {
     healthCheck: mockHealthCheck,
@@ -48,29 +30,17 @@ vi.mock('../../api', () => ({
     post: vi.fn(),
     patch: vi.fn(),
   },
-  tickets: {
-    list: mockTicketsList,
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-  chat: {
-    getHistory: vi.fn().mockResolvedValue({ data: [], ok: true }),
-    createChatWs: mockCreateChatWs,
-  },
   data: {
     listSales: vi.fn().mockResolvedValue({ data: [], ok: true }),
     getSale: vi.fn(),
     getInvoiceUrl: vi.fn(),
   },
-  createChatWs: mockCreateChatWs,
 }));
 
 beforeEach(() => {
   resetInvokeMocks();
   vi.clearAllMocks();
-  mockTicketsList.mockResolvedValue({ data: [], ok: true });
   mockHealthCheck.mockResolvedValue(true);
-  mockCreateChatWs.mockReturnValue({ close: vi.fn(), send: vi.fn() });
 });
 
 describe('SupportChat Page', () => {
@@ -126,31 +96,5 @@ describe('SupportChat Page', () => {
     });
   });
 
-  it('shows ticket list when sidecar returns tickets', async () => {
-    mockTicketsList.mockResolvedValue({
-      data: [
-        { id: '1', name: 'Customer 1', email: 'c1@test.com', subject: 'Issue with order', message: 'My order was wrong', status: 'open', created_at: '2026-01-15T10:00:00Z', updated_at: '2026-01-15T10:00:00Z' },
-      ],
-      ok: true,
-    });
 
-    renderWithRouter(<SupportChat />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Issue with order')).toBeInTheDocument();
-    });
-  });
-
-  it('shows empty state when no tickets exist', async () => {
-    mockTicketsList.mockResolvedValue({
-      data: [],
-      ok: true,
-    });
-
-    renderWithRouter(<SupportChat />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/No support tickets yet/)).toBeInTheDocument();
-    });
-  });
 });

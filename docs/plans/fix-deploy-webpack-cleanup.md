@@ -1,4 +1,5 @@
 # Website Fix, Webpack Workspace, and Component Cleanup Plan
+> **Tags:** #deploy #webpack #fix
 
 ## Status: ✅ Completed / 📋 Planned / 🔄 In Progress
 

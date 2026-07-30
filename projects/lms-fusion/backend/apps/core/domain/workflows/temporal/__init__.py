@@ -1,5 +1,5 @@
 """
-Django ceptor Temporal Integration.
+Fusion Temporal Integration.
 
 Provides Temporal.io workflow and activity support for Django applications.
 This module enables async workflow orchestration using Temporal.

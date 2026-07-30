@@ -5,7 +5,7 @@ import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/t
 import { ThemeProvider } from '../../contexts/ThemeContext';
 import { LanguageProvider } from '../../contexts/LanguageContext';
 import { AuthProvider } from '../../contexts/AuthContext';
-import Settings from '../../pages/Settings';
+import Settings from '../../pages/settings/Settings';
 
 const mockSettings = {
   restaurant_name: 'Test Restaurant',

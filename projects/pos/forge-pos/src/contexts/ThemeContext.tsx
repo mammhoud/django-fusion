@@ -4,11 +4,11 @@ type Mode = 'light' | 'dark';
 export type ThemeVariant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk';
 
 export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; description: string }[] = [
-  { id: 'default', label: 'Default', icon: '🎨', description: 'Clean slate & indigo' },
-  { id: 'corporate', label: 'Corporate', icon: '💼', description: 'Professional blue tones' },
-  { id: 'luxury', label: 'Luxury', icon: '👑', description: 'Rich gold & warm hues' },
-  { id: 'pastel', label: 'Pastel', icon: '🌸', description: 'Soft candy colors' },
-  { id: 'cyberpunk', label: 'Cyberpunk', icon: '⚡', description: 'Neon futuristic glow' },
+  { id: 'default', label: 'Default', icon: 'tabler--palette', description: 'Clean slate & indigo' },
+  { id: 'corporate', label: 'Corporate', icon: 'tabler--briefcase', description: 'Professional blue tones' },
+  { id: 'luxury', label: 'Luxury', icon: 'tabler--crown', description: 'Rich gold & warm hues' },
+  { id: 'pastel', label: 'Pastel', icon: 'tabler--flower', description: 'Soft candy colors' },
+  { id: 'cyberpunk', label: 'Cyberpunk', icon: 'tabler--bolt', description: 'Neon futuristic glow' },
 ];
 
 /**

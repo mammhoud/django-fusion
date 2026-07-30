@@ -208,7 +208,7 @@ class TestFixtureContent(TestCase):
     # ── API connectivity ────────────────────────────────────────────
 
     def test_fusion_health_returns_ok(self):
-        response = self.client.get("/api/fusion/health")
+        response = self.client.get("/api/fusion/health/")
         assert response.status_code == 200
         data = json.loads(response.content)
         assert data["status"] == 200
@@ -227,14 +227,14 @@ class TestFixtureContent(TestCase):
 
     def test_render_first_is_boolean(self):
         """render_first is always reported as a boolean."""
-        response = self.client.get("/api/fusion/health")
+        response = self.client.get("/api/fusion/health/")
         data = json.loads(response.content)
         assert isinstance(data["data"]["fusion_render_first"], bool)
 
     def test_render_first_header_changes_value(self):
         """X-Fusion-Render-First: true header sets render_first to True."""
         response = self.client.get(
-            "/api/fusion/health",
+            "/api/fusion/health/",
             HTTP_X_FUSION_RENDER_FIRST="true",
         )
         data = json.loads(response.content)

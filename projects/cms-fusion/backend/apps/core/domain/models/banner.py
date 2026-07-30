@@ -8,7 +8,7 @@ Provides admin-modifiable banner at the top of all pages with:
 - Customizable colors (background, text, accent)
 - Active/inactive toggle
 
-Part of TechBridgesSnippetGroup in django-ceptor.
+Part of TechBridgesSnippetGroup.
 """
 from colorfield.fields import ColorField
 from django.db import models

@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import ProductManager from '../../pages/ProductManager';
+import ProductManager from '../../pages/inventory/ProductManager';
 
 const mockProducts = [
   { id: 1, name: 'Chicken Burger', price: 350, unit: 'item',  category_id: 1, product_type: 'product' },

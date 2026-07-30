@@ -17,7 +17,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
-
+*.sqlite3
 # ── Generated / runtime ──────────────────────────────────────────────
 logs/
 *.log
@@ -29,10 +29,13 @@ safe_loaddata.py
 
 # ── Docs artifacts & archives ────────────────────────────────────────
 .archives/
-
+archives/
+backups/
 # ── macOS ────────────────────────────────────────────────────────────
 .DS_Store
 
-# ── Project-level patterns are in projects/.gitignore ─────────────────
+# ── Project-level patterns ───────────────────────────────────────────
 libs/django-bolt
 libs/ceptor-ai
+
+.freebuff

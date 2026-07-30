@@ -126,11 +126,10 @@ class CeptorAIService:
     ) -> str:
         """Generate a non-streaming completion."""
         try:
-            from ceptor_ai.ai.integrations import AIIntegrationRegistry
+            from ..ceptor_stubs import AIIntegrationRegistry
         except ImportError:
             raise ImportError(
-                "ceptor-ai is not installed. "
-                "Install it with: pip install ceptor-ai"
+                "ceptor-ai stubs are not available."
             )
 
         inst_kwargs = {**kwargs}
@@ -148,11 +147,10 @@ class CeptorAIService:
     ):
         """Stream completion tokens."""
         try:
-            from ceptor_ai.ai.integrations import AIIntegrationRegistry
+            from ..ceptor_stubs import AIIntegrationRegistry
         except ImportError:
             raise ImportError(
-                "ceptor-ai is not installed. "
-                "Install it with: pip install ceptor-ai"
+                "ceptor-ai stubs are not available."
             )
 
         inst_kwargs = {**kwargs}
@@ -164,7 +162,7 @@ class CeptorAIService:
     def list_backends(self) -> list[str]:
         """Return available AI integration backends."""
         try:
-            from ceptor_ai.ai.integrations import AIIntegrationRegistry
+            from ..ceptor_stubs import AIIntegrationRegistry
 
             return AIIntegrationRegistry.list_integrations()
         except ImportError:
@@ -196,7 +194,7 @@ class CeptorMCPService:
             return self._server
 
         try:
-            from ceptor_ai.mcp.server import server as mcp_server_instance
+            from ..ceptor_stubs import server as mcp_server_instance
 
             self._server = mcp_server_instance
             return self._server
@@ -261,7 +259,7 @@ class CeptorChatService:
     def is_available(self) -> bool:
         """Check if the ceptor-ai chat server is reachable."""
         try:
-            from ceptor_ai.chat.client import CraftsClient
+            from ..ceptor_stubs import CraftsClient
 
             client = CraftsClient(
                 base_url=self.server_url, timeout=self.timeout
@@ -277,7 +275,7 @@ class CeptorChatService:
     ) -> dict[str, Any]:
         """Send a message and return the reply as a dict."""
         try:
-            from ceptor_ai.chat.client import ChatBubble
+            from ..ceptor_stubs import ChatBubble
 
             bubble = ChatBubble(
                 server_url=self.server_url,

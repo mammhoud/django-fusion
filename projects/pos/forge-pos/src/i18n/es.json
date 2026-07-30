@@ -46,7 +46,7 @@
     "kitchen": "Pantalla de Cocina",
     "schedule": "Horario",
     "payroll": "Nómina",
-    "receiptTemplates": "Plantillas de Recibos",
+    "notes": "Plantillas de Recibos",
     "invoice": "Factura",
     "taxReports": "Informes Fiscales",
     "roles": "Roles",
@@ -65,7 +65,7 @@
     "kitchenDesc": "Pantalla de pedidos de cocina",
     "scheduleDesc": "Programación de empleados",
     "payrollDesc": "Gestionar nóminas",
-    "receiptTemplatesDesc": "Personalizar recibos",
+    "notesDesc": "Personalizar recibos",
     "taxReportsDesc": "Informes fiscales y tributarios",
     "invoiceDesc": "Generar facturas",
     "rolesDesc": "Permisos de roles",
@@ -743,6 +743,10 @@
       "deliveryFee": "Costo de Envío",
       "perKmFee": "Tarifa por KM"
     },
+    "backToSettings": "Configuración",
+    "themeTab": {
+      "title": "Tema"
+    },
     "languageNote": "Cambie entre inglés, árabe, francés, alemán y español. El soporte RTL es automático."
   },
   "supportChat": {
@@ -866,7 +870,17 @@
     "validationPasswordMatch": "Las contraseñas no coinciden",
     "rememberMe": "Recordarme",
     "showPassword": "Mostrar contraseña",
-    "hidePassword": "Ocultar contraseña"
+    "hidePassword": "Ocultar contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "forgotPasswordDesc": "Ingresa tu email para recibir un código de restablecimiento",
+    "sendResetCode": "Enviar código",
+    "resetCodeSent": "¡Código enviado! Revisa tu email.",
+    "resetPassword": "Restablecer contraseña",
+    "resetPasswordDesc": "Ingresa el código y tu nueva contraseña para",
+    "newPassword": "Nueva contraseña",
+    "resetPasswordBtn": "Restablecer contraseña",
+    "backToLogin": "Volver al inicio de sesión",
+    "passwordResetSuccess": "¡Contraseña restablecida! Redirigiendo..."
   },
   "confirmDialog": {
     "cancel": "Cancelar",
@@ -986,7 +1000,7 @@
     "totalPay": "Pago Total",
     "noPayrolls": "No hay registros de nómina."
   },
-  "receiptTemplates": {
+  "notes": {
     "title": "Plantillas de Recibos",
     "addTemplate": "Añadir Plantilla",
     "name": "Nombre de la Plantilla",

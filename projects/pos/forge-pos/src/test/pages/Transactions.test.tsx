@@ -5,7 +5,7 @@ import {
   waitFor,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
-import Transactions from '../../pages/Transactions';
+import Transactions from '../../pages/sales/Transactions';
 
 const mockTransactions = [
   {

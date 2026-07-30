@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
-import About from '../../pages/About';
+import About from '../../pages/settings/About';
 
 beforeEach(() => {
   resetInvokeMocks();

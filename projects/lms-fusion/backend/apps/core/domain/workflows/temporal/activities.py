@@ -1,5 +1,5 @@
 """
-Temporal Activities for Django ceptor.
+Temporal Activities for Fusion.
 
 Activities are the building blocks of Temporal workflows. They encapsulate
 business logic that can interact with external systems, databases, and APIs.

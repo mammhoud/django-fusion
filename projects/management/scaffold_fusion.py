@@ -78,8 +78,8 @@ def scaffold_backend(name: str, display_name: str, target: Path) -> None:
         replace_in_file(settings_file, "module=\"LMS\"", "module=\"FUSION\"")
         replace_in_file(
             settings_file,
-            '"ceptor_ai",\n    "django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",\n]\nINSTALLED_APPS += LOCAL_APPS',
-            '"ceptor_ai",\n    "django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",\n    "plugins.branding.apps.BrandingConfig",\n]\nINSTALLED_APPS += LOCAL_APPS\n\n# Dynamic branding context processor\nTEMPLATES[0]["OPTIONS"]["context_processors"].append(\n    "plugins.branding.context_processors.fusion_branding_context"\n)',
+            '"django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",\n]\nINSTALLED_APPS += LOCAL_APPS',
+            '"django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",\n    "plugins.branding.apps.BrandingConfig",\n]\nINSTALLED_APPS += LOCAL_APPS\n\n# Dynamic branding context processor\nTEMPLATES[0]["OPTIONS"]["context_processors"].append(\n    "plugins.branding.context_processors.fusion_branding_context"\n)',
         )
     for env_file in (backend_dst / "__main__.py", backend_dst / "server.py"):
         if env_file.exists():

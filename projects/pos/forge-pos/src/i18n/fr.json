@@ -46,7 +46,7 @@
     "kitchen": "Affichage Cuisine",
     "schedule": "Planning",
     "payroll": "Paie",
-    "receiptTemplates": "Modèles de Reçus",
+    "notes": "Modèles de Reçus",
     "invoice": "Facture",
     "taxReports": "Rapports Fiscaux",
     "roles": "Rôles",
@@ -69,7 +69,7 @@
     "kitchenDesc": "Affichage des commandes cuisine",
     "scheduleDesc": "Planification des employés",
     "payrollDesc": "Gérer la paie",
-    "receiptTemplatesDesc": "Personnaliser les reçus",
+    "notesDesc": "Personnaliser les reçus",
     "taxReportsDesc": "Rapports fiscaux",
     "invoiceDesc": "Générer des factures",
     "rolesDesc": "Permissions des rôles",
@@ -759,6 +759,10 @@
       "deliveryFee": "Frais de livraison",
       "perKmFee": "Frais/km"
     },
+    "backToSettings": "Paramètres",
+    "themeTab": {
+      "title": "Thème"
+    },
     "languageNote": "Basculer entre l'anglais, l'arabe et le français. Support RTL automatique."
   },
   "supportChat": {
@@ -882,7 +886,17 @@
     "validationPasswordMatch": "Les mots de passe ne correspondent pas",
     "rememberMe": "Se souvenir de moi",
     "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "hidePassword": "Masquer le mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "forgotPasswordDesc": "Entrez votre email pour recevoir un code de réinitialisation",
+    "sendResetCode": "Envoyer le code",
+    "resetCodeSent": "Code envoyé ! Vérifiez votre email.",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "resetPasswordDesc": "Entrez le code et votre nouveau mot de passe pour",
+    "newPassword": "Nouveau mot de passe",
+    "resetPasswordBtn": "Réinitialiser",
+    "backToLogin": "Retour à la connexion",
+    "passwordResetSuccess": "Mot de passe réinitialisé ! Redirection..."
   },
   "confirmDialog": {
     "cancel": "Annuler",
@@ -1002,7 +1016,7 @@
     "totalPay": "Salaire Total",
     "noPayrolls": "Aucun bulletin de paie."
   },
-  "receiptTemplates": {
+  "notes": {
     "title": "Modèles de Reçus",
     "addTemplate": "Ajouter un Modèle",
     "name": "Nom du Modèle",

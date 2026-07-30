@@ -352,6 +352,7 @@ diesel::table! {
         template_body -> Text,
         category -> Nullable<Text>,
         is_default -> Bool,
+        use_as_template -> Bool,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }

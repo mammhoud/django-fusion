@@ -827,34 +827,38 @@ pub struct NewLoyaltyTransaction {
     pub reason: String,
 }
 
-// ---- ReceiptTemplate ----
+// ---- Note (DB table: receipt_templates) ----
 #[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = crate::db::schema::receipt_templates)]
-pub struct ReceiptTemplate {
+pub struct Note {
     pub id: i32,
     pub name: String,
     pub template_body: String,
     pub category: Option<String>,
     pub is_default: bool,
+    pub use_as_template: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Insertable, Deserialize)]
 #[diesel(table_name = crate::db::schema::receipt_templates)]
-pub struct NewReceiptTemplate {
+pub struct NewNote {
     pub name: String,
     pub template_body: String,
     pub category: Option<String>,
+    #[serde(default)]
+    pub use_as_template: bool,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
 #[diesel(table_name = crate::db::schema::receipt_templates)]
-pub struct UpdateReceiptTemplate {
+pub struct UpdateNote {
     pub name: Option<String>,
     pub template_body: Option<String>,
     pub category: Option<Option<String>>,
     pub is_default: Option<bool>,
+    pub use_as_template: Option<bool>,
 }
 
 // ---- TaxReport ----

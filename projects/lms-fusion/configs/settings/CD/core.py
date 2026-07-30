@@ -159,17 +159,3 @@ DEV_GOALS = {
     "QUICK_ITERATION": True,
     "MINIMAL_DEPS": True,
 }
-
-# from ceptor_ai.contrib.debug_tools import quick_setup
-
-# config = quick_setup(
-#     installed_apps=INSTALLED_APPS,
-#     middleware=MIDDLEWARE,
-#     debug=DEBUG,
-#     sentry_dsn=os.getenv("SENTRY_DSN"),
-#     print_status=False,
-# )
-
-# INSTALLED_APPS = config["installed_apps"]
-# MIDDLEWARE = config["middleware"]
-#

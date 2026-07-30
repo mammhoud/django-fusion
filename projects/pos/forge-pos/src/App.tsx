@@ -1,43 +1,43 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect, Suspense, lazy } from 'react';
-import Auth from './pages/Auth';
-import ChatSupport from './components/ChatSupport';
+import Auth from './pages/auth/Auth';
+import ChatSupport from './components/pos/ChatSupport';
 import { useAuth } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
 import { useNavigationPredictor } from './hooks/useNavigationPredictor';
-import { ROLE_ROUTES } from './components/SideNav';
+import { ROLE_ROUTES } from './components/layout/SideNav';
 
 // ── Lazy-loaded pages (code-split by route) ──
 // These chunks load on first navigation, not on initial page load.
 // The largest pages (Reports: 2438 lines, Settings: 1841, Transactions: 1642,
 // Sale: 1551) are the biggest beneficiaries — they bundle heavy deps like
 // Recharts, jsPDF, and Excel export utilities only when visited.
-const Home = lazy(() => import('./pages/Home'));
-const ProductManager = lazy(() => import('./pages/ProductManager'));
-const Sale = lazy(() => import('./pages/Sale'));
-const Analytics = lazy(() => import('./pages/Analytics'));
-const Transactions = lazy(() => import('./pages/Transactions'));
-const Inventory = lazy(() => import('./pages/Inventory'));
-const Employees = lazy(() => import('./pages/Employees'));
-const Recipes = lazy(() => import('./pages/Recipes'));
-const Reports = lazy(() => import('./pages/Reports'));
-const Settings = lazy(() => import('./pages/Settings'));
-const About = lazy(() => import('./pages/About'));
-const Customers = lazy(() => import('./pages/Customers'));
-const Suppliers = lazy(() => import('./pages/Suppliers'));
-const KitchenDisplay = lazy(() => import('./pages/KitchenDisplay'));
-const EmployeeSchedule = lazy(() => import('./pages/EmployeeSchedule'));
-const Payroll = lazy(() => import('./pages/Payroll'));
-const ReceiptTemplates = lazy(() => import('./pages/ReceiptTemplates'));
-const TaxReports = lazy(() => import('./pages/TaxReports'));
-const Roles = lazy(() => import('./pages/Roles'));
-const SupportChat = lazy(() => import('./pages/SupportChat'));
-const InvoicePage = lazy(() => import('./pages/InvoicePage'));
-const ThemeShowcase = lazy(() => import('./pages/ThemeShowcase'));
-const ThemeStudio = lazy(() => import('./pages/ThemeStudio'));
-const StaffPage = lazy(() => import('./pages/StaffPage'));
-const ProductsPage = lazy(() => import('./pages/ProductsPage'));
+const Home = lazy(() => import('./pages/dashboard/Home'));
+const ProductManager = lazy(() => import('./pages/inventory/ProductManager'));
+const Sale = lazy(() => import('./pages/sales/Sale'));
+const Analytics = lazy(() => import('./pages/reports/Analytics'));
+const Transactions = lazy(() => import('./pages/sales/Transactions'));
+const Inventory = lazy(() => import('./pages/inventory/Inventory'));
+const Employees = lazy(() => import('./pages/staff/Employees'));
+const Recipes = lazy(() => import('./pages/inventory/Recipes'));
+const Reports = lazy(() => import('./pages/reports/Reports'));
+const Settings = lazy(() => import('./pages/settings/Settings'));
+const About = lazy(() => import('./pages/settings/About'));
+const Customers = lazy(() => import('./pages/customers/Customers'));
+const Suppliers = lazy(() => import('./pages/customers/Suppliers'));
+const KitchenDisplay = lazy(() => import('./pages/kitchen/KitchenDisplay'));
+const EmployeeSchedule = lazy(() => import('./pages/staff/EmployeeSchedule'));
+const Payroll = lazy(() => import('./pages/staff/Payroll'));
+const Notes = lazy(() => import('./pages/settings/Notes'));
+const TaxReports = lazy(() => import('./pages/reports/TaxReports'));
+const Roles = lazy(() => import('./pages/staff/Roles'));
+const SupportChat = lazy(() => import('./pages/settings/SupportChat'));
+const InvoicePage = lazy(() => import('./pages/sales/InvoicePage'));
+// const ThemeShowcase = lazy(() => import('./pages/ThemeShowcase')); // merged into ThemePreviewModal (Settings > Theme)
+const ThemeStudio = lazy(() => import('./pages/settings/ThemeStudio'));
+const StaffPage = lazy(() => import('./pages/staff/StaffPage'));
+const ProductsPage = lazy(() => import('./pages/inventory/ProductsPage'));
 
 // ── Employee-accessible routes (shared with SideNav filtering) ──
 const EMPLOYEE_ROUTES = ROLE_ROUTES.employee;
@@ -154,7 +154,7 @@ function AnimatedRoutes() {
     <div className="relative min-h-screen bg-base-100">
       <Suspense fallback={PageFallback}>
         <Routes location={location} key={location.pathname}>
-          {/* Root route: show Auth if not authenticated, otherwise redirect to dashboard */}
+          {/* Root route: Auth/Login is the first page for unauthenticated users */}
           <Route path="/" element={
             !isAuthenticated ? <Auth /> : <Navigate to="/dashboard" replace />
           } />
@@ -174,12 +174,11 @@ function AnimatedRoutes() {
           <Route path="/kitchen" element={<KitchenDisplay />} />
           <Route path="/schedule" element={<EmployeeSchedule />} />
           <Route path="/payroll" element={<Payroll />} />
-          <Route path="/receipt-templates" element={<ReceiptTemplates />} />
+          <Route path="/notes" element={<Notes />} />
           <Route path="/tax-reports" element={<TaxReports />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/support-chat" element={<SupportChat />} />
           <Route path="/invoice" element={<InvoicePage />} />
-          <Route path="/theme-showcase" element={<ThemeShowcase />} />
           <Route path="/theme-studio" element={<ThemeStudio />} />
           <Route path="/staff" element={<StaffPage />} />
           <Route path="/products" element={<ProductsPage />} />

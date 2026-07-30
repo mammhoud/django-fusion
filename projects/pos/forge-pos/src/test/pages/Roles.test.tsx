@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import Roles from '../../pages/Roles';
+import Roles from '../../pages/staff/Roles';
 
 const mockRoles = [
   { id: 3, name: 'Manager',  permissions: '["read","write","delete"]', is_active: true },
