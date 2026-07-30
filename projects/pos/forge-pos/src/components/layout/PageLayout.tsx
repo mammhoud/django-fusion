@@ -106,7 +106,7 @@ export default function PageLayout({
   children,
   showNav = true,
   title,
-  background = 'bg-base-200/40',
+  background = 'bg-texture',
   containerWidth = 'max-w-[100rem] xl:max-w-[110rem] 3xl:max-w-[130rem] 4xl:max-w-[150rem]',
   padding = 'py-12 md:py-16 lg:py-12',
 }: PageLayoutProps) {
