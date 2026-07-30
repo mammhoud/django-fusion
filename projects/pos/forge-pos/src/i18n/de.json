@@ -29,7 +29,13 @@
     "csv": "CSV",
     "selected": "{count} ausgewählt",
     "previous": "‹",
-    "next": "›"
+    "next": "›",
+    "openNavigation": "Navigation öffnen",
+    "userProfile": "Benutzerprofil",
+    "closeButton": "Schließen",
+    "removeItem": "Element entfernen",
+    "filterByCategory": "Nach Kategorie filtern",
+    "clearFilter": "Filter löschen"
   },
   "nav": {
     "supportChat": "Support-Chat",
@@ -79,7 +85,22 @@
     "categoryProducts": "Inventar & Produkte",
     "categoryStaff": "Personal & Kunden",
     "categoryReports": "Berichte & Analysen",
-    "categorySystem": "Einstellungen & System"
+    "categorySystem": "Einstellungen & System",
+    "sales": "Verkäufe & Bestellungen",
+    "products": "Produkte & Inventar",
+    "staff": "Mitarbeiterverwaltung",
+    "system": "System",
+    "staffDesc": "Mitarbeiter, Zeitplan & Gehaltsabrechnung",
+    "productsMerged": "Produkte",
+    "productsMergedDesc": "Verwaltung, Inventar & Rezepte",
+    "salesMerged": "Verkäufe",
+    "salesMergedDesc": "Bestellungen, Transaktionen & Rechnungen",
+    "reportsMerged": "Berichte",
+    "reportsMergedDesc": "Analysen & Steuerberichte",
+    "themeShowcase": "Design-Vorschau",
+    "themeShowcaseDesc": "Komponentenvorschau über Designs",
+    "themeStudio": "Design-Studio",
+    "themeStudioDesc": "Farben mit Live-Vorschau anpassen"
   },
   "home": {
     "title": "Forge POS",
@@ -108,7 +129,10 @@
     "errorToast": "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
     "copyright": "© {year} Structa Cloud. Alle Rechte vorbehalten.",
     "versionLabel": "Version",
-    "registeredUsers": "Registrierte Benutzer"
+    "registeredUsers": "Registrierte Benutzer",
+    "attachFile": "Datei Anhängen",
+    "attachments": "Anhänge",
+    "forwardReport": "Bericht Weiterleiten"
   },
   "productManager": {
     "title": "Produktverwaltung",
@@ -161,7 +185,8 @@
     "sortNameDesc": "Name (Z→A)",
     "sortPriceAsc": "Preis (niedrig→hoch)",
     "sortPriceDesc": "Preis (hoch→niedrig)",
-    "filteredCount": "Sichtbar"
+    "filteredCount": "Sichtbar",
+    "descriptionPlaceholder": "Produktbeschreibung für Menü und Tickets..."
   },
   "sale": {
     "title": "Neuer Verkauf",
@@ -201,7 +226,14 @@
     "viewCart": "Warenkorb anzeigen",
     "editCart": "Warenkorb bearbeiten",
     "zone": "Zone",
-    "distance": "Entfernung (km)"
+    "distance": "Entfernung (km)",
+    "addNote": "Notiz hinzufügen...",
+    "orderNotesPlaceholder": "Besondere Anweisungen, Allergien, Notizen...",
+    "productTypeLabel": "Produkttyp",
+    "allTypes": "Alle Typen",
+    "typeProduct": "Produkte",
+    "typeCombo": "Kombinationen",
+    "typeAddon": "Ergänzungen"
   },
   "analytics": {
     "title": "Analyse-Dashboard",
@@ -326,7 +358,6 @@
     "status": "Status",
     "inStock": "Auf Lager",
     "lowStock": "Niedriger Bestand",
-    "outOfStock": "Nicht vorrätig",
     "noIngredients": "Noch keine Zutaten. Fügen Sie Ihre erste hinzu!",
     "transactionLog": "Transaktionsprotokoll",
     "allIngredientsFilter": "Alle Zutaten",
@@ -403,8 +434,7 @@
     "employees": "Mitarbeiter",
     "employeeCount_one": "{count} Mitarbeiter",
     "employeeCount_other": "{count} Mitarbeiter",
-    "namePlaceholder": "Mitarbeiternamen eingeben",
-    "typeNamePlaceholder": "z.B. Sous-Chef, Gastgeber, Barkeeper"
+    "namePlaceholder": "Mitarbeiternamen eingeben"
   },
   "recipes": {
     "title": "Rezeptverwaltung",
@@ -749,7 +779,8 @@
     "themeTab": {
       "title": "Design"
     },
-    "languageNote": "Wechseln Sie zwischen Deutsch, Englisch, Französisch, Arabisch und Spanisch. RTL-Unterstützung ist automatisch."
+    "languageNote": "Wechseln Sie zwischen Sprachen. RTL-Unterstützung ist automatisch.",
+    "unsavedChanges": "Ungespeicherte Änderungen"
   },
   "supportChat": {
     "title": "Support & Kunden-Chat",
@@ -938,7 +969,9 @@
     "notes": "Notizen",
     "taxId": "Steuer-ID",
     "poweredBy": "Bereitgestellt von Structa Cloud",
-    "shippingFee": "Versandkosten"
+    "shippingFee": "Versandkosten",
+    "itemNamePlaceholder": "Artikelname",
+    "searchOrTypePlaceholder": "Suchen oder neu eingeben..."
   },
   "statusToast": {
     "dismiss": "Schließen"
@@ -1015,7 +1048,9 @@
     "sortDefaultFirst": "Standard zuerst",
     "sortNameAsc": "Name (A→Z)",
     "sortNameDesc": "Name (Z→A)",
-    "sortNewest": "Neueste"
+    "sortNewest": "Neueste",
+    "titlePlaceholder": "Notiztitel...",
+    "bodyPlaceholder": "Schreiben Sie Ihre Notizen hier..."
   },
   "taxReports": {
     "title": "Steuerberichte",

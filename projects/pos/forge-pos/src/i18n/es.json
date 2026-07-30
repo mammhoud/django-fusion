@@ -29,7 +29,13 @@
     "csv": "CSV",
     "selected": "{count} seleccionados",
     "previous": "‹",
-    "next": "›"
+    "next": "›",
+    "openNavigation": "Abrir navegación",
+    "userProfile": "Perfil de usuario",
+    "closeButton": "Cerrar",
+    "removeItem": "Eliminar elemento",
+    "filterByCategory": "Filtrar por categoría",
+    "clearFilter": "Limpiar filtro"
   },
   "nav": {
     "supportChat": "Chat de Soporte",
@@ -79,7 +85,22 @@
     "categoryProducts": "Inventario y Productos",
     "categoryStaff": "Personal y Clientes",
     "categoryReports": "Informes y Análisis",
-    "categorySystem": "Configuración y Sistema"
+    "categorySystem": "Configuración y Sistema",
+    "sales": "Ventas y Pedidos",
+    "products": "Productos e Inventario",
+    "staff": "Gestión de Personal",
+    "system": "Sistema",
+    "staffDesc": "Empleados, Horario y Nómina",
+    "productsMerged": "Productos",
+    "productsMergedDesc": "Gestión, Inventario y Recetas",
+    "salesMerged": "Ventas",
+    "salesMergedDesc": "Pedidos, Transacciones y Facturas",
+    "reportsMerged": "Informes",
+    "reportsMergedDesc": "Análisis e Informes Fiscales",
+    "themeShowcase": "Escaparate de Temas",
+    "themeShowcaseDesc": "Vista previa de componentes en temas",
+    "themeStudio": "Estudio de Temas",
+    "themeStudioDesc": "Personalizar colores con vista previa"
   },
   "home": {
     "title": "Forge POS",
@@ -108,7 +129,10 @@
     "errorToast": "Error al enviar el mensaje. Por favor, inténtelo de nuevo.",
     "copyright": "© {year} Structa Cloud. Todos los derechos reservados.",
     "versionLabel": "Versión",
-    "registeredUsers": "Usuarios Registrados"
+    "registeredUsers": "Usuarios Registrados",
+    "attachFile": "Adjuntar Archivo",
+    "attachments": "Archivos Adjuntos",
+    "forwardReport": "Reenviar Informe"
   },
   "productManager": {
     "title": "Gestión de Productos",
@@ -161,7 +185,8 @@
     "sortNameDesc": "Nombre (Z→A)",
     "sortPriceAsc": "Precio (bajo→alto)",
     "sortPriceDesc": "Precio (alto→bajo)",
-    "filteredCount": "Visibles"
+    "filteredCount": "Visibles",
+    "descriptionPlaceholder": "Descripción del producto para menú y tickets..."
   },
   "sale": {
     "title": "Nueva Venta",
@@ -201,7 +226,14 @@
     "viewCart": "Ver Carrito",
     "editCart": "Editar Carrito",
     "zone": "Zona",
-    "distance": "Distancia (km)"
+    "distance": "Distancia (km)",
+    "addNote": "Añadir nota...",
+    "orderNotesPlaceholder": "Instrucciones especiales, alergias, notas...",
+    "productTypeLabel": "Tipo de producto",
+    "allTypes": "Todos los tipos",
+    "typeProduct": "Productos",
+    "typeCombo": "Combos",
+    "typeAddon": "Complementos"
   },
   "analytics": {
     "title": "Panel de Análisis",
@@ -747,7 +779,8 @@
     "themeTab": {
       "title": "Tema"
     },
-    "languageNote": "Cambie entre inglés, árabe, francés, alemán y español. El soporte RTL es automático."
+    "languageNote": "Cambie entre idiomas. El soporte RTL es automático.",
+    "unsavedChanges": "Cambios sin guardar"
   },
   "supportChat": {
     "title": "Chat de Soporte y Clientes",
@@ -936,7 +969,9 @@
     "notes": "Notas",
     "taxId": "NIF/CIF",
     "poweredBy": "Desarrollado por Structa Cloud",
-    "shippingFee": "Gastos de Envío"
+    "shippingFee": "Gastos de Envío",
+    "itemNamePlaceholder": "Nombre del artículo",
+    "searchOrTypePlaceholder": "Buscar o escribir nuevo..."
   },
   "statusToast": {
     "dismiss": "Descartar"
@@ -1013,7 +1048,9 @@
     "sortDefaultFirst": "Predeterminadas primero",
     "sortNameAsc": "Nombre (A→Z)",
     "sortNameDesc": "Nombre (Z→A)",
-    "sortNewest": "Más recientes"
+    "sortNewest": "Más recientes",
+    "titlePlaceholder": "Título de la nota...",
+    "bodyPlaceholder": "Escriba sus notas aquí..."
   },
   "taxReports": {
     "title": "Informes Fiscales",

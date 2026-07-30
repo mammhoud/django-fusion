@@ -29,7 +29,13 @@
     "csv": "CSV",
     "selected": "{count} sélectionné(s)",
     "previous": "‹",
-    "next": "›"
+    "next": "›",
+    "openNavigation": "Ouvrir la navigation",
+    "userProfile": "Profil utilisateur",
+    "closeButton": "Fermer",
+    "removeItem": "Supprimer l'élément",
+    "filterByCategory": "Filtrer par catégorie",
+    "clearFilter": "Effacer le filtre"
   },
   "nav": {
     "supportChat": "Chat d'assistance",
@@ -40,7 +46,7 @@
     "inventory": "Inventaire",
     "employees": "Employés",
     "recipes": "Recettes",
-    "reports": "Rapports",
+    "reports": "Rapports et analyses",
     "customers": "Clients",
     "suppliers": "Fournisseurs",
     "kitchen": "Affichage Cuisine",
@@ -87,7 +93,6 @@
     "sales": "Ventes et commandes",
     "products": "Produits et inventaire",
     "staff": "Gestion du personnel",
-    "reports": "Rapports et analyses",
     "system": "Système",
     "staffDesc": "Employés, planning et paie",
     "productsMerged": "Produits",
@@ -124,7 +129,10 @@
     "errorToast": "Échec de l'envoi du message. Veuillez réessayer.",
     "copyright": "© {year} Structa Cloud. Tous droits réservés.",
     "versionLabel": "Version",
-    "registeredUsers": "Utilisateurs Enregistrés"
+    "registeredUsers": "Utilisateurs Enregistrés",
+    "attachFile": "Joindre un fichier",
+    "attachments": "Pièces jointes",
+    "forwardReport": "Transférer le rapport"
   },
   "productManager": {
     "title": "Gestion des produits",
@@ -177,7 +185,8 @@
     "sortNameDesc": "Nom (Z→A)",
     "sortPriceAsc": "Prix (croissant)",
     "sortPriceDesc": "Prix (décroissant)",
-    "filteredCount": "Visibles"
+    "filteredCount": "Visibles",
+    "descriptionPlaceholder": "Description du produit pour menus et tickets..."
   },
   "sale": {
     "title": "Nouvelle vente",
@@ -217,7 +226,14 @@
     "viewCart": "Voir le panier",
     "editCart": "Modifier le panier",
     "zone": "Zone",
-    "distance": "Distance (km)"
+    "distance": "Distance (km)",
+    "addNote": "Ajouter une note...",
+    "orderNotesPlaceholder": "Instructions spéciales, allergies, notes...",
+    "productTypeLabel": "Type de produit",
+    "allTypes": "Tous les types",
+    "typeProduct": "Produits",
+    "typeCombo": "Combos",
+    "typeAddon": "Suppléments"
   },
   "analytics": {
     "title": "Tableau de bord analytique",
@@ -952,7 +968,9 @@
     "notes": "Notes",
     "taxId": "N° de taxe",
     "poweredBy": "Propulsé par Structa Cloud",
-    "shippingFee": "Frais d'expédition"
+    "shippingFee": "Frais d'expédition",
+    "itemNamePlaceholder": "Nom de l'article",
+    "searchOrTypePlaceholder": "Rechercher ou taper nouveau..."
   },
   "statusToast": {
     "dismiss": "Ignorer"
@@ -1029,7 +1047,9 @@
     "sortDefaultFirst": "Par défaut en premier",
     "sortNameAsc": "Nom (A→Z)",
     "sortNameDesc": "Nom (Z→A)",
-    "sortNewest": "Plus récents"
+    "sortNewest": "Plus récents",
+    "titlePlaceholder": "Titre de la note...",
+    "bodyPlaceholder": "Écrivez vos notes ici..."
   },
   "taxReports": {
     "title": "Rapports Fiscaux",

@@ -368,7 +368,7 @@ export default function Notes() {
                     type="text"
                     value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
-                    placeholder="Note title..."
+                    placeholder={t('notes.titlePlaceholder') || 'Note title...'}
                     required
                     className="input input-bordered w-full"
                     autoFocus
@@ -402,7 +402,7 @@ export default function Notes() {
                 <textarea
                   value={form.template_body}
                   onChange={e => setForm({ ...form, template_body: e.target.value })}
-                  placeholder="Write your notes here..."
+                  placeholder={t('notes.bodyPlaceholder') || 'Write your notes here...'}
                   rows={6}
                   required
                   className="textarea textarea-bordered w-full text-sm leading-relaxed resize-y min-h-[120px]"

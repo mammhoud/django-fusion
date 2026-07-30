@@ -29,7 +29,13 @@
     "csv": "CSV",
     "selected": "{count} selected",
     "previous": "‹",
-    "next": "›"
+    "next": "›",
+    "openNavigation": "Open navigation",
+    "userProfile": "User profile",
+    "closeButton": "Close",
+    "removeItem": "Remove item",
+    "filterByCategory": "Filter by category",
+    "clearFilter": "Clear filter"
   },
   "nav": {
     "supportChat": "Support Chat",
@@ -180,7 +186,8 @@
     "sortNameDesc": "Name (Z→A)",
     "sortPriceAsc": "Price (low→high)",
     "sortPriceDesc": "Price (high→low)",
-    "filteredCount": "Visible"
+    "filteredCount": "Visible",
+    "descriptionPlaceholder": "Product description for menu & tickets..."
   },
   "sale": {
     "title": "New Sale",
@@ -220,7 +227,14 @@
     "viewCart": "View Cart",
     "editCart": "Edit Cart",
     "zone": "Zone",
-    "distance": "Distance (km)"
+    "distance": "Distance (km)",
+    "addNote": "Add note...",
+    "orderNotesPlaceholder": "Special instructions, allergies, notes...",
+    "productTypeLabel": "Product type",
+    "allTypes": "All Types",
+    "typeProduct": "Products",
+    "typeCombo": "Combos",
+    "typeAddon": "Add-ons"
   },
   "analytics": {
     "title": "Analytics Dashboard",
@@ -940,7 +954,9 @@
     "notes": "Notes",
     "taxId": "Tax ID",
     "poweredBy": "Powered by Structa Cloud",
-    "shippingFee": "Shipping Fee"
+    "shippingFee": "Shipping Fee",
+    "itemNamePlaceholder": "Item name",
+    "searchOrTypePlaceholder": "Search or type new..."
   },
   "statusToast": {
     "dismiss": "Dismiss"
@@ -1017,7 +1033,9 @@
     "sortDefaultFirst": "Default first",
     "sortNameAsc": "Name (A\u2192Z)",
     "sortNameDesc": "Name (Z\u2192A)",
-    "sortNewest": "Newest"
+    "sortNewest": "Newest",
+    "titlePlaceholder": "Note title...",
+    "bodyPlaceholder": "Write your notes here..."
   },
   "taxReports": {
     "title": "Tax Reports",

@@ -29,7 +29,13 @@
     "csv": "CSV",
     "selected": "{count} محدد",
     "previous": "‹",
-    "next": "›"
+    "next": "›",
+    "openNavigation": "فتح التنقل",
+    "userProfile": "الملف الشخصي",
+    "closeButton": "إغلاق",
+    "removeItem": "إزالة العنصر",
+    "filterByCategory": "تصفية حسب الفئة",
+    "clearFilter": "مسح التصفية"
   },
   "nav": {
     "supportChat": "دعم المحادثة",
@@ -40,7 +46,7 @@
     "inventory": "المخزون",
     "employees": "الموظفون",
     "recipes": "الوصفات",
-    "reports": "التقارير",
+    "reports": "التقارير والتحليلات",
     "customers": "العملاء",
     "suppliers": "الموردون",
     "kitchen": "شاشة المطبخ",
@@ -87,7 +93,6 @@
     "sales": "المبيعات والطلبات",
     "products": "المنتجات والمخزون",
     "staff": "إدارة الموظفين",
-    "reports": "التقارير والتحليلات",
     "system": "النظام",
     "staffDesc": "الموظفون والجدول والرواتب",
     "productsMerged": "المنتجات",
@@ -124,7 +129,10 @@
     "errorToast": "فشل إرسال الرسالة. حاول مرة أخرى.",
     "copyright": "© {year} Structa Cloud. جميع الحقوق محفوظة.",
     "versionLabel": "الإصدار",
-    "registeredUsers": "المستخدمون المسجلون"
+    "registeredUsers": "المستخدمون المسجلون",
+    "attachFile": "إرفاق ملف",
+    "attachments": "المرفقات",
+    "forwardReport": "إعادة توجيه التقرير"
   },
   "productManager": {
     "title": "إدارة المنتجات",
@@ -177,7 +185,8 @@
     "sortNameDesc": "الاسم (ي→أ)",
     "sortPriceAsc": "السعر (تصاعدي)",
     "sortPriceDesc": "السعر (تنازلي)",
-    "filteredCount": "مرئي"
+    "filteredCount": "مرئي",
+    "descriptionPlaceholder": "وصف المنتج للقائمة والتذاكر..."
   },
   "sale": {
     "title": "بيع جديد",
@@ -217,7 +226,14 @@
     "viewCart": "عرض السلة",
     "editCart": "تعديل السلة",
     "zone": "المنطقة",
-    "distance": "المسافة (كم)"
+    "distance": "المسافة (كم)",
+    "addNote": "أضف ملاحظة...",
+    "orderNotesPlaceholder": "تعليمات خاصة، حساسية، ملاحظات...",
+    "productTypeLabel": "نوع المنتج",
+    "allTypes": "جميع الأنواع",
+    "typeProduct": "منتجات",
+    "typeCombo": "مجموعات",
+    "typeAddon": "إضافات"
   },
   "analytics": {
     "title": "لوحة التحليلات",
@@ -765,7 +781,8 @@
     "themeTab": {
       "title": "السمة"
     },
-    "languageNote": "التبديل بين الإنجليزية والعربية والفرنسية. دعم RTL تلقائي."
+    "languageNote": "التبديل بين الإنجليزية والعربية والفرنسية. دعم RTL تلقائي.",
+    "unsavedChanges": "تغييرات غير محفوظة"
   },
   "supportChat": {
     "title": "دعم المحادثة",
@@ -954,7 +971,9 @@
     "notes": "ملاحظات",
     "taxId": "الرقم الضريبي",
     "poweredBy": "مدعوم من Structa Cloud",
-    "shippingFee": "رسوم الشحن"
+    "shippingFee": "رسوم الشحن",
+    "itemNamePlaceholder": "اسم العنصر",
+    "searchOrTypePlaceholder": "ابحث أو اكتب جديداً..."
   },
   "statusToast": {
     "dismiss": "تجاهل"
@@ -1031,7 +1050,9 @@
     "sortDefaultFirst": "الافتراضي أولاً",
     "sortNameAsc": "الاسم (أ→ي)",
     "sortNameDesc": "الاسم (ي→أ)",
-    "sortNewest": "الأحدث"
+    "sortNewest": "الأحدث",
+    "titlePlaceholder": "عنوان الملاحظة...",
+    "bodyPlaceholder": "اكتب ملاحظاتك هنا..."
   },
   "taxReports": {
     "title": "التقارير الضريبية",
