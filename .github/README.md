@@ -14,6 +14,7 @@
 | `check-extras.yml` | check-extras | PR, push, manual | 1 | ✅ Active |
 | `fusion-ci.yml` | Fusion CI (cms-fusion + lms-fusion) | PR, push, manual | 8 | ✅ Active |
 | `deploy-ci.yml` | deploy-ci (preflight + docs validation) | PR, push, manual | 2 | ✅ Active |
+| `lint-quality.yml` | lint-quality (typo + dead-code check) | PR, push, manual | 1 | ✅ Active |
 
 ---
 
@@ -129,6 +130,32 @@ The `homepage-content.spec.ts` tests at `projects/<project>/frontend/tests/e2e/h
 
 1. `docker version` — verify Docker daemon is available
 2. `make deploy-ci` — runs `deploy-preflight → preflight-network → check-docker + validate-deploy-order + create-networks`
+
+---
+
+## `lint-quality.yml` — Typo + Dead-Code Linter
+
+**Triggers:** PR + push on all source files (`.py`, `.ts`, `.tsx`, `.js`, `.jsx`, `.html`, `.scss`, `.md`, `.yaml`, `.yml`, `.sh`), the linter script itself, the pre-commit hook, and this workflow file.
+
+### Job
+
+| Job | Runs | Timeout |
+|-----|------|:------:|
+| `check-typos-and-deadcode` | `python3 applications/scripts/dev/check_typos_and_deadcode.py` (full repo) + sanity-check on `--staged` mode | 5m |
+
+### Companion Pre-Commit Hook
+
+The same script is wired into `.githooks/pre-commit` (already configured via `git config core.hooksPath .githooks`). The hook runs in `--staged` mode so it only scans files about to be committed — fast enough to run on every commit. Bypass with `SKIP_LINT=1 git commit ...`.
+
+### Patterns
+
+- **Typos** (18 patterns, case-insensitive): `fuson` → `fusion`, `fussion` → `fusion`, `fuction` → `function`, `recieved` → `received`, `seperate` → `separate`, `occured` → `occurred`, `definately` → `definitely`, `sucess` → `success`, `thier` → `their`, `accomodate` → `accommodate`, `dependant` → `dependent`, `existant` → `existent`, `maintainence` → `maintenance`, `neccessary` → `necessary`, `noticable` → `noticeable`, `priviledge` → `privilege`, `publically` → `publicly`, `untill` → `until`
+- **Dead code** (3 patterns, case-insensitive): `TODO:\s*remove`, `FIXME:\s*delete`, `XXX:\s*remove`
+- **Allowlist**: any line containing `lint-disable-line` is ignored
+
+### Excluded Paths
+
+Submodules (`libs/django-fusion/`, `libs/ceptor-ai/`, `libs/django-bolt/`), backups (`backups/`, `archives/`), lockfiles (`uv.lock`, `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`), fixture dumps (`dump-data.json`, `fixtures/`, `test-data/`, `snapshots/`), build artifacts (`dist/`, `build/`, `.next/`, `node_modules/`, `.venv/`, `__pycache__/`).
 
 ---
 

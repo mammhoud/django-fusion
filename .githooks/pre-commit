@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────
+# pre-commit hook — runs typo + dead-code linter on staged files.
+#
+# Behavior (controlled by env vars):
+#   SKIP_LINT=1     → bypass the check (emergency override)
+#   SKIP_TESTS=1    → also bypassed (pre-push compat)
+#
+# Install:
+#   git config core.hooksPath .githooks
+#   chmod +x .githooks/pre-commit
+#
+# Or run: make setup-githooks
+# ─────────────────────────────────────────────────────────────────────
+
+set -euo pipefail
+
+# ── Colors ──────────────────────────────────────────────────────────
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# ── Bypass handling ─────────────────────────────────────────────────
+if [ "${SKIP_LINT:-}" = "1" ] || [ "${SKIP_TESTS:-}" = "1" ]; then
+    echo -e "${YELLOW}⚠ SKIP_LINT=1 — bypassing pre-commit lint check${NC}"
+    exit 0
+fi
+
+# ── Repo root ───────────────────────────────────────────────────────
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+LINT_SCRIPT="$REPO_ROOT/applications/scripts/dev/check_typos_and_deadcode.py"
+
+if [ ! -f "$LINT_SCRIPT" ]; then
+    echo -e "${RED}ERROR: lint script not found at $LINT_SCRIPT${NC}"
+    echo "       Run 'make setup-githooks' or update the path."
+    exit 0  # Don't block the commit on a missing script.
+fi
+
+# ── Header ──────────────────────────────────────────────────────────
+echo -e "${CYAN}▶ pre-commit: running typo + dead-code linter on staged files${NC}"
+
+# ── Run the lint check (--staged mode scans only staged files) ──────
+if python3 "$LINT_SCRIPT" --staged; then
+    echo -e "${GREEN}✓ pre-commit lint: passed${NC}"
+    exit 0
+else
+    echo ""
+    echo -e "${RED}✗ pre-commit lint: failed${NC}"
+    echo -e "  ${YELLOW}Fix the issues above, or use ${NC}${CYAN}SKIP_LINT=1 git commit ...${NC}${YELLOW} to bypass.${NC}"
+    exit 1
+fi
