@@ -95,12 +95,12 @@ const ProductCard = memo(function ProductCard({
       </h3>
 
       {/* Price row */}
-      <div className={`font-semibold text-xs tabular-nums ${isSelected ? 'text-primary dark:text-primary/80' : color.initial}`}>
+      <div className={`font-semibold text-sm tabular-nums ${isSelected ? 'text-primary dark:text-primary/80' : color.initial}`}>
         {currency} {product.price.toFixed(2)}
       </div>
 
       {/* Unit label */}
-      <span className={`text-[9px] tabular-nums ${isSelected ? 'text-primary/70 dark:text-primary/70' : (color.icon || color.initial)} opacity-50 uppercase tracking-wider`}>
+      <span className={`text-[10px] tabular-nums ${isSelected ? 'text-primary/70 dark:text-primary/70' : (color.icon || color.initial)} opacity-50 uppercase tracking-wider`}>
         / {product.unit}
       </span>
 
@@ -108,7 +108,7 @@ const ProductCard = memo(function ProductCard({
       {product.barcode && (
         <span
           title={`SKU: ${product.barcode}`}
-          className="text-[8px] mt-0.5 px-1.5 py-[1px] rounded-full
+          className="text-[10px] mt-0.5 px-1.5 py-[1px] rounded-full
             bg-base-content/10 text-base-content/40
             group-hover:opacity-100 opacity-0 transition-opacity duration-200
             font-mono tracking-wider truncate max-w-full"

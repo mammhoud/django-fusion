@@ -201,8 +201,8 @@ export default function Home() {
                 >
                   <span className={iconClass(qa.icon, 'w-4 h-4')} />
                 </div>
-                <span className="text-xs font-semibold text-base-content/70 text-center leading-tight">{t(qa.label)}</span>
-                <span className="text-[9px] text-base-content/30 text-center mt-0.5 leading-tight line-clamp-1">{t(qa.desc)}</span>
+                <span className="text-xs font-semibold text-base-content/80 text-center leading-tight">{t(qa.label)}</span>
+                <span className="text-[10px] text-base-content/50 text-center mt-0.5 leading-tight line-clamp-1">{t(qa.desc)}</span>
               </button>
             ))}
           </div>
@@ -340,10 +340,10 @@ export default function Home() {
                       </div>
                     )}
 
-                    <span className="text-sm font-semibold text-base-content/70 text-center leading-tight">
+                    <span className="text-sm font-semibold text-base-content/80 text-center leading-tight">
                       {t(menuItem.label)}
                     </span>
-                    <span className="text-[10px] text-base-content/30 mt-0.5 text-center leading-tight max-w-[100px]">
+                    <span className="text-[10px] text-base-content/50 mt-0.5 text-center leading-tight max-w-[100px]">
                       {t(menuItem.label + 'Desc')}
                     </span>
                   </button>
