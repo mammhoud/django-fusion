@@ -37,7 +37,7 @@ function ProfileDropdown({
         aria-expanded={open}
       >
         <div className={`${compact ? 'w-8 h-8 text-sm' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm'}
-          rounded-full bg-gradient-to-br from-teal-500 to-teal-700
+          rounded-full bg-linear-to-br from-primary to-primary/70
           flex items-center justify-center text-white font-bold shrink-0 shadow-sm`}>
           {initials}
         </div>
@@ -59,7 +59,7 @@ function ProfileDropdown({
           >
             {/* User info header */}              <div className="px-4 py-3 border-b border-base-300/30">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-700
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-primary/70
                   flex items-center justify-center text-white font-bold shadow-sm shrink-0">
                   {initials}
                 </div>

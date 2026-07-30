@@ -49,7 +49,7 @@ export default function ChatSupport({
         <button
           aria-label={isOpen ? 'Close support panel' : 'Open support'}
           onClick={() => setIsOpen(o => !o)}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-xl flex items-center justify-center active:scale-[0.93] transition-transform hover:shadow-2xl"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-linear-to-br from-primary to-primary/70 text-white shadow-xl flex items-center justify-center active:scale-[0.93] transition-transform hover:shadow-2xl"
         >
           <AnimatePresence mode="wait" initial={false}>
             {isOpen ? (
@@ -78,7 +78,7 @@ export default function ChatSupport({
             className="fixed bottom-24 right-6 z-50 w-[340px] max-w-[calc(100vw-1.5rem)] rounded-2xl shadow-2xl overflow-hidden border border-base-300 bg-base-100"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-slate-900 to-primary/90 text-white px-4 py-4">
+            <div className="bg-linear-to-r from-base-300 to-primary/90 text-white px-4 py-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                   <span className="icon-[tabler--headset] w-5 h-5" />

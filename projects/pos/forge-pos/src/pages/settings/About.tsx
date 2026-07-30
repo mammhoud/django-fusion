@@ -118,7 +118,7 @@ export default function About() {
 
   return (
     <PageLayout
-      background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-primary/10 to-base-200"
       padding="py-16 md:py-20"
     >
         {/* Header */}
@@ -138,7 +138,7 @@ export default function About() {
           </div>
           <h1
             className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text
-              bg-linear-to-r from-teal-600 to-purple-600 dark:from-teal-400 dark:to-purple-400 py-2"
+              bg-linear-to-r from-primary to-secondary py-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -351,7 +351,7 @@ export default function About() {
 
               <button
                 type="submit"
-                className="btn btn-primary w-full bg-linear-to-r from-teal-400 to-purple-400 border-0 gap-2 active:scale-[0.98] transition-all"
+                className="btn btn-primary w-full bg-linear-to-r from-primary to-secondary border-0 gap-2 active:scale-[0.98] transition-all"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

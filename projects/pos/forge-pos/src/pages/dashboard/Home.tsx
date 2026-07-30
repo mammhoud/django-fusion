@@ -69,10 +69,10 @@ const MENU_ITEMS: Record<string, MenuItem[]> = {
 
 /** Quick-access merged page cards shown at the top of the home page */
 const QUICK_ACCESS = [
-  { label: 'nav.staff', desc: 'nav.staffDesc', route: '/staff', icon: 'users', gradient: 'from-fuchsia-500 to-pink-500' },
-  { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: 'apps', gradient: 'from-blue-500 to-indigo-500' },
-  { label: 'nav.salesMerged', desc: 'nav.salesMergedDesc', route: '/sale', icon: 'shopping-cart', gradient: 'from-emerald-500 to-teal-500' },
-  { label: 'nav.reportsMerged', desc: 'nav.reportsMergedDesc', route: '/reports', icon: 'chart-bar', gradient: 'from-amber-500 to-orange-500' },
+  { label: 'nav.staff', desc: 'nav.staffDesc', route: '/staff', icon: 'users', gradient: 'from-secondary to-primary' },
+  { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: 'apps', gradient: 'from-info to-primary' },
+  { label: 'nav.salesMerged', desc: 'nav.salesMergedDesc', route: '/sale', icon: 'shopping-cart', gradient: 'from-success to-primary' },
+  { label: 'nav.reportsMerged', desc: 'nav.reportsMergedDesc', route: '/reports', icon: 'chart-bar', gradient: 'from-warning to-secondary' },
 ];
 
 export default function Home() {
@@ -141,7 +141,7 @@ export default function Home() {
   return (
     <PageLayout
       showNav={false}
-      background="bg-linear-to-br from-slate-50 via-info/5 to-slate-50 dark:from-slate-950 dark:via-info/10 dark:to-slate-950"
+      background="bg-linear-to-br from-base-200 via-primary/5 to-base-200"
       padding="py-12 md:py-16 lg:py-12"
     >
       {/* ── Header — CSS animated section entry ── */}
@@ -165,8 +165,8 @@ export default function Home() {
         </div>
         <h1
           className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text
-            bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600
-            dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 py-2 animate-fade-in"
+            bg-linear-to-r from-primary via-secondary to-accent
+            py-2 animate-fade-in"
           style={{ animationDelay: '0.15s' }}
         >
           {restaurantName}
@@ -293,7 +293,7 @@ export default function Home() {
               <h2 className={`text-sm font-semibold uppercase tracking-wider ${cat.color}`}>
                 {t(cat.label)}
               </h2>
-              <div className={`flex-1 h-px bg-gradient-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30 rtl:bg-gradient-to-l`} />
+              <div className={`flex-1 h-px bg-linear-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30 rtl:bg-linear-to-l`} />
             </div>
 
             {/* Category Items — staggered children */}

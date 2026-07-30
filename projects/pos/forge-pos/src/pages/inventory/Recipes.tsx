@@ -396,7 +396,7 @@ export default function Recipes() {
   return (
     <PageLayout
       title={<><span className="icon-[tabler--menu-2] text-warning" /> Recipes</>}
-      background="bg-linear-to-br from-slate-100 via-orange-100 to-slate-100 dark:from-slate-900 dark:via-orange-950 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-warning/10 to-base-200"
     >
 
         {/* Summary Cards */}
