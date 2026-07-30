@@ -3,15 +3,19 @@
  * =========================================
  * Lightweight floating support button that opens the user's default email client.
  *
- * Visibility logic:
- *   - If VITE_SUPPORT_EMAIL is set: show the floating button
- *   - If VITE_SUPPORT_EMAIL is NOT set: hidden entirely (returns null)
+ * Visibility logic (per Section 15 of UI enhancement plan):
+ *   - If VITE_SUPPORT_EMAIL is set AND MCP is NOT configured: show email chat
+ *   - If MCP is configured (settings.mcp_enabled): hide email chat (MCP takes priority)
+ *   - If neither is set: hidden entirely (returns null)
  *
  * No WebSocket, no sidecar, no API calls needed.
  */
 
 import { useState, useEffect } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { useTranslation } from 'react-i18next';
 import AnimatePresence from '../../components/utils/AnimatePresence';
+
 /** Read the support email from Vite env vars at build time */
 const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL as string | undefined;
 
@@ -24,10 +28,21 @@ export default function ChatSupport({
   showTrigger = true,
   defaultOpen = false,
 }: ChatSupportProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [mcpConfigured, setMcpConfigured] = useState<boolean | null>(null);
 
-  // Hide entirely if no support email configured
-  if (!SUPPORT_EMAIL) return null;
+  // Check MCP settings on mount — MCP takes priority over email support
+  useEffect(() => {
+    invoke<{ mcp_enabled?: boolean }>('get_settings')
+      .then(s => setMcpConfigured(!!s.mcp_enabled))
+      .catch(() => setMcpConfigured(false));
+  }, []);
+
+  // Hide while checking MCP status (prevents flash of email panel)
+  if (mcpConfigured === null) return null;
+  // Hide entirely if no support email configured, or if MCP takes priority
+  if (!SUPPORT_EMAIL || mcpConfigured) return null;
 
   const subject = encodeURIComponent('Forge POS — Support Request');
   const mailtoUrl = `mailto:${SUPPORT_EMAIL}?subject=${subject}`;
@@ -99,8 +114,11 @@ export default function ChatSupport({
             {/* Body */}
             <div className="p-5 space-y-4">
               <p className="text-sm text-base-content/70 leading-relaxed">
-                Send us an email and we'll get back to you as soon as possible.
+                Send us an email and we&apos;ll get back to you as soon as possible.
                 Describe your issue, question, or feedback.
+              </p>
+              <p className="text-xs text-base-content/40 italic">
+                {t('support.mcpHint') || 'Want faster help? Enable MCP support in Settings → General for AI-powered assistance.'}
               </p>
 
               {/* Email info */}

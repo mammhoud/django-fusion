@@ -1350,6 +1350,22 @@ export default function Settings() {
         {errors.email && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.email}</p>}
       </div>
 
+      {/* MCP Support Toggle */}
+      <div>
+        <label className="flex items-center justify-between cursor-pointer">
+          <span className={labelClass + ' mb-0'}>{t('settings.mcpEnabled') || 'MCP Support'}</span>
+          <input
+            type="checkbox"
+            className="toggle toggle-primary"
+            checked={!!settings.mcp_enabled}
+            onChange={(e) => setSettings(prev => ({ ...prev, mcp_enabled: e.target.checked }))}
+          />
+        </label>
+        <p className="mt-1 text-xs text-base-content/40">
+          {t('settings.mcpDescription') || 'When enabled, MCP takes priority over email support chat'}
+        </p>
+      </div>
+
       {/* Address */}
       <div>
         <label className={labelClass}>{t('settings.address')}</label>
