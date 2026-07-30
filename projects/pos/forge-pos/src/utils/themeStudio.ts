@@ -496,16 +496,16 @@ export function computeContrast(
 
 /** Available theme key names for the studio selector */
 export const STUDIO_THEMES = [
-  { id: 'light', label: 'Default Light', icon: '☀️' },
-  { id: 'dark', label: 'Default Dark', icon: '🌙' },
-  { id: 'corporate-light', label: 'Corporate Light', icon: '💼' },
-  { id: 'corporate-dark', label: 'Corporate Dark', icon: '💼' },
-  { id: 'luxury-light', label: 'Luxury Light', icon: '👑' },
-  { id: 'luxury-dark', label: 'Luxury Dark', icon: '👑' },
-  { id: 'pastel-light', label: 'Pastel Light', icon: '🌸' },
-  { id: 'pastel-dark', label: 'Pastel Dark', icon: '🌸' },
-  { id: 'cyberpunk-light', label: 'Cyberpunk Light', icon: '⚡' },
-  { id: 'cyberpunk', label: 'Cyberpunk Dark', icon: '⚡' },
+  { id: 'light', label: 'Default Light', icon: 'tabler--sun' },
+  { id: 'dark', label: 'Default Dark', icon: 'tabler--moon' },
+  { id: 'corporate-light', label: 'Corporate Light', icon: 'tabler--briefcase' },
+  { id: 'corporate-dark', label: 'Corporate Dark', icon: 'tabler--briefcase' },
+  { id: 'luxury-light', label: 'Luxury Light', icon: 'tabler--crown' },
+  { id: 'luxury-dark', label: 'Luxury Dark', icon: 'tabler--crown' },
+  { id: 'pastel-light', label: 'Pastel Light', icon: 'tabler--flower' },
+  { id: 'pastel-dark', label: 'Pastel Dark', icon: 'tabler--flower' },
+  { id: 'cyberpunk-light', label: 'Cyberpunk Light', icon: 'tabler--bolt' },
+  { id: 'cyberpunk', label: 'Cyberpunk Dark', icon: 'tabler--bolt' },
 ];
 
 /** Get the default content-color luminance based on a token name's semantic role */

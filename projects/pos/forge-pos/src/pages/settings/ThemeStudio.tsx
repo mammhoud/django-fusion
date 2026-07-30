@@ -511,7 +511,7 @@ export default function ThemeStudio() {
                         : 'text-base-content/50 hover:text-base-content'
                     }`}
                   >
-                    {t.icon} {t.label.split(' ')[0]}
+                    <span className={`icon-[${t.icon}] w-3.5 h-3.5 mr-1`} />{t.label.split(' ')[0]}
                   </button>
                 ))}
               </div>
@@ -528,7 +528,7 @@ export default function ThemeStudio() {
                         : 'text-base-content/50 hover:text-base-content'
                     }`}
                   >
-                    {t.icon} {t.label.split(' ')[0]}
+                    <span className={`icon-[${t.icon}] w-3.5 h-3.5 mr-1`} />{t.label.split(' ')[0]}
                   </button>
                 ))}
               </div>
