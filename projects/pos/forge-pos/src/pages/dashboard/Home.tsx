@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { Settings, Sale, Ingredient, Employee, KitchenTicket } from '../../types';
 import PageLayout from '../../components/layout/PageLayout';
 import StatCard from '../../components/data/StatCard';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import Card from '../../components/layout/Card';
 import { useDashboardDeltas } from '../../hooks/useDashboardDeltas';
 import { useApiQueries } from '../../hooks/useApi';
@@ -99,7 +100,7 @@ export default function Home() {
 
   const settings = (settingsRes as Settings | undefined) ?? null;
   const restaurantName = settings?.restaurant_name || 'Forge POS';
-  const currency = settings?.currency || '$';
+  const { formatPrice, currencySymbol } = useCurrency();
   const sales = (Array.isArray(salesRes) ? (salesRes as Sale[]) : []) as Sale[];
 
   const { todayStats, revDelta, orderDelta } = useDashboardDeltas(sales);
@@ -238,9 +239,9 @@ export default function Home() {
               />
               <StatCard
                 title={t("home.todayRevenue", "Today's Revenue")}
-                value={`${currency} ${todayStats.revenue.toLocaleString()}`}
+                value={`${currencySymbol} ${todayStats.revenue.toLocaleString()}`}
                 desc={todayStats.revenue > 0
-                  ? `${currency}${(todayStats.revenue / (todayStats.orders || 1)).toFixed(2)} avg — ${revDelta.pct} vs yesterday`
+                  ? `${formatPrice(todayStats.revenue / (todayStats.orders || 1))} avg — ${revDelta.pct} vs yesterday`
                   : 'No revenue yet'}
                 icon={<span className={iconClass('lucide:banknote', 'w-6 h-6')} />}
                 sparklineData={sparklines?.revenue}

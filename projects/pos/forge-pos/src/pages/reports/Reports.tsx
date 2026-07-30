@@ -9,6 +9,7 @@ import Card from '../../components/layout/Card';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import StatCard from '../../components/data/StatCard';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import ComparisonTable, { type ComparisonFilter } from '../../components/data/ComparisonTable';
 import { useApiQueries } from '../../hooks/useApi';
 import {
@@ -95,7 +96,7 @@ export default function Reports() {
   ]);
 
   const settings = (settingsRes as Settings | undefined) ?? null;
-  const currency = settings?.currency || 'USD';
+  const { formatPrice, currency } = useCurrency();
   const restaurantName = settings?.restaurant_name || 'Forge POS';
   const analytics = (analyticsRes as AnalyticsData | null) ?? null;
   const sales = (Array.isArray(salesRes) ? (salesRes as Sale[]) : []) as Sale[];
@@ -535,9 +536,9 @@ export default function Reports() {
       // Sales Summary
       if (analytics?.summary) {
         addSection('Sales Summary');
-        addText('Total Revenue', `${currency} ${analytics.summary.total_revenue.toFixed(2)}`);
+        addText('Total Revenue', `${formatPrice(analytics.summary.total_revenue)}`);
         addText('Total Orders', analytics.summary.total_orders.toString());
-        addText('Average Order Value', `${currency} ${analytics.summary.average_order_value.toFixed(2)}`);
+        addText('Average Order Value', `${formatPrice(analytics.summary.average_order_value)}`);
         y += 5;
       }
 
@@ -1042,7 +1043,7 @@ export default function Reports() {
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">                <StatCard 
                   title={t('reports.totalRevenue')}
-                  value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
+                  value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   desc={`${salesRevDelta.direction === 'up' ? '▲' : salesRevDelta.direction === 'down' ? '▼' : '→'} ${salesRevDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
@@ -1222,7 +1223,7 @@ export default function Reports() {
                   color="from-blue-500 to-indigo-600"
                 /><StatCard 
                   title={t('reports.productRevenue')}
-                  value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
+                  value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 /><StatCard 
@@ -1334,12 +1335,12 @@ export default function Reports() {
                   color="from-blue-500 to-indigo-600"
                 /><StatCard 
                   title={t('reports.totalRevenue')}
-                  value={`${currency} ${filteredSales.reduce((s, s2) => s + s2.total_amount, 0).toFixed(2)}`}
+                  value={formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0))}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 /><StatCard 
                   title={t('reports.avgOrderValue')}
-                  value={`${currency} ${filteredSales.length > 0 ? (filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length).toFixed(2) : '0.00'}`}
+                  value={filteredSales.length > 0 ? formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length) : formatPrice(0)}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 /><StatCard 

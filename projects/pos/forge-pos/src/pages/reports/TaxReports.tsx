@@ -4,10 +4,12 @@ import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { TaxReport } from '../../types';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 
 export default function TaxReports() {
   const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [reports, setReports] = useState<TaxReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -196,8 +198,8 @@ export default function TaxReports() {
                   <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                 </div>
                 <div className="mt-3 text-sm text-base-content/60 space-y-1">
-                  <p>{t('taxReports.totalSales')}: {report.total_sales.toFixed(2)}</p>
-                  <p>{t('taxReports.totalTax')}: {report.total_tax.toFixed(2)}</p>
+                  <p>{t('taxReports.totalSales')}: {formatPrice(report.total_sales)}</p>
+                  <p>{t('taxReports.totalTax')}: {formatPrice(report.total_tax)}</p>
                 </div>
               </motion.div>
             ))}

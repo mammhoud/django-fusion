@@ -4,9 +4,11 @@ import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { Payroll as PayrollType, Employee } from '../../types';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 export default function Payroll() {
   const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [payrolls, setPayrolls] = useState<PayrollType[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,7 +113,7 @@ export default function Payroll() {
                   <p>{payroll.period_start} - {payroll.period_end}</p>
                   <p>{t('payroll.regularHours')}: {payroll.regular_hours}</p>
                   <p>{t('payroll.overtimeHours')}: {payroll.overtime_hours}</p>
-                  <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {payroll.total_pay.toFixed(2)}</p>
+                  <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {formatPrice(payroll.total_pay)}</p>
                 </div>
               </motion.div>
             ))}
