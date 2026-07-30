@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Card from '../layout/Card';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../contexts/LanguageContext';
 export interface Column<T> {
   key: string;
   label: string;
@@ -99,6 +100,8 @@ export default function DataTable<T>({
   onEditSave,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
+  const { language } = useLanguage();
+  const isRtl = language === 'ar';
   const emptyMsg = emptyMessage ?? t('common.noDataFound');
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -279,7 +282,7 @@ export default function DataTable<T>({
 
       {/* Desktop Header */}
       <div
-        className="hidden sm:grid gap-4 p-4 border-b border-base-300"
+        className="hidden sm:grid gap-4 p-4 border-b border-base-300 rtl:text-right"
         style={{ gridTemplateColumns: gridTemplateWithCheckbox }}
       >
         {allColumns.map((item) => {
@@ -302,7 +305,7 @@ export default function DataTable<T>({
           return (
             <div
               key={col.key}
-              className={`flex items-center gap-1 text-base-content font-semibold text-sm
+              className={`flex items-center gap-1 text-base-content font-semibold text-sm rtl:text-right
                 ${col.className || ''} ${col.hideOnMobile ? 'hidden sm:flex' : ''}`}
             >
               {col.sortable ? (
@@ -339,7 +342,7 @@ export default function DataTable<T>({
           return (
             <div
               key={rowKey}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: isRtl ? 20 : -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: _idx * 0.02 }}
               className={`transition-colors border-b border-base-300 last:border-b-0
@@ -375,7 +378,7 @@ export default function DataTable<T>({
                   return (
                     <div
                       key={col.key}
-                      className={`text-base-content text-sm relative
+                      className={`text-base-content text-sm relative rtl:text-right
                         ${col.className || ''}
                         ${col.hideOnMobile ? 'hidden sm:block' : ''}
                         ${col.editable ? 'cursor-pointer group' : ''}`}
