@@ -43,9 +43,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
         <span className="icon-[tabler--language] w-4 h-4 shrink-0 opacity-70" />
         <span className="flex-1 text-left">{current.flag} {current.label}</span>
         <svg
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="w-3.5 h-3.5 opacity-50"
+          className={`w-3.5 h-3.5 opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
