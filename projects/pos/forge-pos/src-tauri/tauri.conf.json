@@ -35,14 +35,14 @@
     "homepage": "https://structa.cloud",
     "licenseFile": "../LICENSE",
     "icon": [
-      "icons/icon.png",
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/256x256.png",
-      "icons/512x512.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
+      "../assets/icons/icon.png",
+      "../assets/icons/32x32.png",
+      "../assets/icons/128x128.png",
+      "../assets/icons/128x128@2x.png",
+      "../assets/icons/256x256.png",
+      "../assets/icons/512x512.png",
+      "../assets/icons/icon.icns",
+      "../assets/icons/icon.ico"
     ],
     "externalBin": [
       "binaries/pos-sidecar"
@@ -54,7 +54,7 @@
     "windows": {
       "digestAlgorithm": "sha256",
       "nsis": {
-        "installerIcon": "icons/icon.ico"
+        "installerIcon": "../assets/icons/icon.ico"
       }
     },
     "linux": {
