@@ -42,7 +42,7 @@ function ProfileDropdown({
         <span className="hidden sm:block text-xs font-medium text-base-content/70 max-w-[120px] truncate">
           {user.email}
         </span>
-        <span className={`icon-[tabler--chevron-down] w-4 h-4 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <span className={`icon-[tabler--chevron-down] w-4 h-4 text-base-content/50 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>

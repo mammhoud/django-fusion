@@ -613,7 +613,7 @@ export default function Sale() {
                 <div
                   className="flex items-center gap-3 mt-3 pt-3 border-t border-base-300/50"
                 >
-                  <span className="iconClass('lucide:door-open', 'text-slate-400')" />
+                  <span className="iconClass('lucide:door-open', 'text-base-content/50')" />
                   <label className="text-sm text-base-content/80">{t('sale.table')}</label>
                   <select
                     value={tableNumber}
@@ -632,7 +632,7 @@ export default function Sale() {
                   className="space-y-3 mt-3 pt-3 border-t border-base-300/50"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="iconClass('lucide:truck', 'text-slate-400')" />
+                    <span className="iconClass('lucide:truck', 'text-base-content/50')" />
                     <label className="text-sm text-base-content/80">{t('sale.deliveryType')}</label>
                     <select
                       value={deliveryTypeId}
@@ -648,7 +648,7 @@ export default function Sale() {
                   {/* Delivery Zone selector */}
                   {deliveryZones.length > 0 && (
                     <div className="flex items-center gap-3">
-                      <span className="iconClass('lucide:map-pin', 'text-slate-400')" />
+                      <span className="iconClass('lucide:map-pin', 'text-base-content/50')" />
                       <label className="text-sm text-base-content/80">{t('sale.zone')}</label>
                       <select
                         value={selectedZoneId}
@@ -664,7 +664,7 @@ export default function Sale() {
                   )}
                   {/* Distance input */}
                   <div className="flex items-center gap-3">
-                    <span className="iconClass('lucide:ruler', 'text-slate-400')" />
+                    <span className="iconClass('lucide:ruler', 'text-base-content/50')" />
                     <label className="text-sm text-base-content/80">{t('sale.distance')}</label>
                     <div className="flex items-center gap-1 flex-1">
                       <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
@@ -674,7 +674,7 @@ export default function Sale() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="iconClass('lucide:map-pin', 'text-slate-400')" />
+                    <span className="iconClass('lucide:map-pin', 'text-base-content/50')" />
                     <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                       placeholder={t('sale.deliveryAddress')} disabled={isLoading}
                       className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
@@ -711,7 +711,7 @@ export default function Sale() {
             {/* Employee Assignment — mobile */}
               <div className="mb-4">
               <div className="flex items-center gap-3">
-                <span className="iconClass('lucide:user-check', 'text-slate-400')" />
+                <span className="iconClass('lucide:user-check', 'text-base-content/50')" />
                 <label className="text-sm text-base-content/80">{t('sale.assignTo')}</label>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
                   className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
@@ -745,7 +745,7 @@ export default function Sale() {
             <Card padding="sm" className="sm:p-4 mb-4">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <span className={iconClass('lucide:search', 'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 rtl:left-auto rtl:right-3')} />
+                <span className={iconClass('lucide:search', 'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50 rtl:left-auto rtl:right-3')} />
                 <input
                   type="text"
                   value={searchQuery}
@@ -1132,7 +1132,7 @@ export default function Sale() {
                   <div
                     className="flex items-center gap-2 mt-3 pt-3 border-t border-base-300/30"
                   >
-                    <span className="iconClass('lucide:door-open', 'text-slate-400 text-sm')" />
+                    <span className="iconClass('lucide:door-open', 'text-base-content/50 text-sm')" />
                     <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
                       className="select select-bordered flex-1"
                     >
@@ -1149,7 +1149,7 @@ export default function Sale() {
                     className="space-y-2 mt-3 pt-3 border-t border-base-300/30"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="iconClass('lucide:truck', 'text-slate-400 text-sm')" />
+                      <span className="iconClass('lucide:truck', 'text-base-content/50 text-sm')" />
                       <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
                         className="select select-bordered flex-1"
                       >
@@ -1161,7 +1161,7 @@ export default function Sale() {
                     {/* Desktop: Delivery Zone selector */}
                     {deliveryZones.filter(z => z.is_active).length > 0 && (
                       <div className="flex items-center gap-2">
-                        <span className="iconClass('lucide:map-pin', 'text-slate-400 text-sm')" />
+                        <span className="iconClass('lucide:map-pin', 'text-base-content/50 text-sm')" />
                         <select value={selectedZoneId} onChange={e => setSelectedZoneId(Number(e.target.value))} disabled={isLoading}
                           className="select select-bordered flex-1 text-xs"
                         >
@@ -1173,14 +1173,14 @@ export default function Sale() {
                     )}
                     {/* Desktop: Distance input */}
                     <div className="flex items-center gap-2">
-                      <span className="iconClass('lucide:ruler', 'text-slate-400 text-sm')" />
+                      <span className="iconClass('lucide:ruler', 'text-base-content/50 text-sm')" />
                       <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
                         placeholder="0" min="0" step="0.5" disabled={isLoading}
                         className="input input-bordered flex-1" />
                       <span className="text-xs text-base-content/50 w-5">km</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="iconClass('lucide:map-pin', 'text-slate-400 text-sm')" />
+                      <span className="iconClass('lucide:map-pin', 'text-base-content/50 text-sm')" />
                       <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                         placeholder={t('sale.deliveryAddress')} disabled={isLoading}
                         className="input input-bordered flex-1" />
@@ -1216,7 +1216,7 @@ export default function Sale() {
               {/* Employee Assignment Card */}
                 <Card>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="iconClass('lucide:user-check', 'text-slate-400')" />
+                  <span className="iconClass('lucide:user-check', 'text-base-content/50')" />
                   <label className="text-sm font-medium text-base-content/80">{t('sale.assignTo')}</label>
                 </div>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
@@ -1230,7 +1230,7 @@ export default function Sale() {
               {/* Order Notes Card */}
                 <Card>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="iconClass('lucide:sticky-note', 'text-slate-400')" />
+                  <span className="iconClass('lucide:sticky-note', 'text-base-content/50')" />
                   <label className="text-sm font-medium text-base-content/80">Order Notes</label>
                 </div>
                 <textarea
@@ -1252,7 +1252,7 @@ export default function Sale() {
               {templateNotes.length > 0 && (
                 <Card>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="iconClass('lucide:receipt', 'text-slate-400')" />
+                    <span className="iconClass('lucide:receipt', 'text-base-content/50')" />
                     <label className="text-sm font-medium text-base-content/80">Receipt Template</label>
                   </div>
                   <select
