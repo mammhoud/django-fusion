@@ -219,11 +219,7 @@ export default function Home() {
           {kpisLoading ? (
             <>
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="stat bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 animate-pulse">
-                  <div className="stat-title"><div className="h-3 w-16 rounded bg-base-300/50" /></div>
-                  <div className="stat-value"><div className="h-7 w-20 rounded bg-base-300/50 mt-1" /></div>
-                  <div className="stat-desc"><div className="h-2.5 w-24 rounded bg-base-300/50 mt-1" /></div>
-                </div>
+                <StatCard key={i} title="" value={0} loading />
               ))}
             </>
           ) : (
