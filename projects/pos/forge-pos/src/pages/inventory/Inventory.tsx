@@ -4,6 +4,7 @@ import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { Ingredient, NewIngredient, InventoryTransaction, NewInventoryTransaction, InventoryAdjustment } from '../../types';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonTable, SkeletonList, SkeletonCard } from '../../components/layout/Skeleton';
 import Card from '../../components/layout/Card';
@@ -26,6 +27,7 @@ const TRANSACTION_TYPES = [
 
 export default function Inventory() {
   const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [activeTab, setActiveTab] = useState<Tab>('stock');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -332,7 +334,7 @@ export default function Inventory() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.stockValue')}</span>
                   <span className="text-lg font-bold text-primary">
-                    {totalStockValue.toFixed(2)}
+                    {formatPrice(totalStockValue)}
                   </span>
                 </div>
               </Card>

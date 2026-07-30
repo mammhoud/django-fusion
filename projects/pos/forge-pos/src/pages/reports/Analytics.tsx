@@ -8,8 +8,9 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import { invoke } from '@tauri-apps/api/core';
-import { AnalyticsData, Settings } from '../../types';
+import { AnalyticsData } from '../../types';
 import { useStatusToast } from '../../hooks/useStatusToast';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import StatusToast from '../../components/data/StatusToast';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -22,7 +23,7 @@ export default function Analytics() {
     product_distribution: [],
     summary: { total_orders: 0, total_revenue: 0, average_order_value: 0 }
   });
-  const [currency, setCurrency] = useState('USD');
+  const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
 
@@ -50,9 +51,8 @@ export default function Analytics() {
     const { quiet = false } = opts;
     if (!quiet) setLoading(true);
     try {
-      const [analyticsRes, settingsRes] = await Promise.all([
+      const [analyticsRes] = await Promise.all([
         invoke<AnalyticsData>('get_analytics'),
-        invoke<Settings>('get_settings')
       ]);
 
       // Ensure we have valid data structure
@@ -66,7 +66,6 @@ export default function Analytics() {
           average_order_value: 0
         }
       });
-      setCurrency(settingsRes?.currency || 'USD');
     } catch (error) {
       console.error('Error loading analytics data:', error);
       // Even when the load is quiet, the failure must be visible — silent
@@ -121,7 +120,7 @@ export default function Analytics() {
                 <div>
                   <p className="text-base-content/60">{t('analytics.totalRevenue')}</p>
                   <p className="text-2xl font-bold text-base-content">
-                    {currency} {data.summary.total_revenue.toFixed(2)}
+                    {formatPrice(data.summary.total_revenue)}
                   </p>
                 </div>
               </div>
@@ -165,7 +164,7 @@ export default function Analytics() {
                 <div>
                   <p className="text-base-content/60">{t('analytics.avgOrderValue')}</p>
                   <p className="text-2xl font-bold text-base-content">
-                    {currency} {data.summary.average_order_value.toFixed(2)}
+                    {formatPrice(data.summary.average_order_value)}
                   </p>
                 </div>
               </div>
