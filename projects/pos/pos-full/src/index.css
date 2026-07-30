@@ -1,13 +1,13 @@
 @import "tailwindcss";
 @import "./styles/themes.css";
 @import "./styles/theme-overrides.css";
-@import "../../assets/css/base/_variables.css";
-@import "../../assets/css/base/_reset.css";
-@import "../../assets/css/components/_card.css";
-@import "../../assets/css/components/_receipt.css";
-@import "../../assets/css/utilities/_rtl.css";
-@import "../../assets/css/utilities/_animations.css";
-@import "../../assets/css/utilities/_scrollbar.css";
+@import "./styles/base/_variables.css";
+@import "./styles/base/_reset.css";
+@import "./styles/components/_card.css";
+@import "./styles/components/_receipt.css";
+@import "./styles/utilities/_rtl.css";
+@import "./styles/utilities/_animations.css";
+@import "./styles/utilities/_scrollbar.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
