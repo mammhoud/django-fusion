@@ -765,8 +765,8 @@ export default function Transactions() {
               <div
               >
                 <Card padding="md" hover>
-                  <h2 className="text-lg text-base-content mb-2">{t('transactions.allTimeTotal')}</h2>
-                  <p className="text-2xl font-bold text-primary">
+                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.allTimeTotal')}</h2>
+                  <p className="text-2xl font-bold text-base-content">
                     {transactions[0]?.currency || ''} {totalAllTime.toFixed(2)}
                   </p>
                 </Card>
@@ -775,8 +775,8 @@ export default function Transactions() {
               <div
               >
                 <Card padding="md" hover>
-                  <h2 className="text-lg text-base-content mb-2">{t('transactions.filteredTotal')}</h2>
-                  <p className="text-2xl font-bold text-primary">
+                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.filteredTotal')}</h2>
+                  <p className="text-2xl font-bold text-base-content">
                     {transactions[0]?.currency || ''} {totalFiltered.toFixed(2)}
                   </p>
                 </Card>
@@ -785,8 +785,8 @@ export default function Transactions() {
               <div
               >
                 <Card padding="md" hover>
-                  <h2 className="text-lg text-base-content mb-2">{t('transactions.filteredTransactions')}</h2>
-                  <p className="text-2xl font-bold text-primary">
+                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.filteredTransactions')}</h2>
+                  <p className="text-2xl font-bold text-base-content">
                     {filteredTransactions.length}
                   </p>
                 </Card>
@@ -867,8 +867,8 @@ export default function Transactions() {
               <div
               >
                 <Card padding="md" hover>
-                  <h2 className="text-lg text-base-content mb-2">{t('reports.totalProductsSold')}</h2>
-                  <p className="text-2xl font-bold text-primary">
+                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('reports.totalProductsSold')}</h2>
+                  <p className="text-2xl font-bold text-base-content">
                     {productStats.reduce((s, p) => s + p.count, 0)}
                   </p>
                 </Card>
@@ -876,8 +876,8 @@ export default function Transactions() {
               <div
               >
                 <Card padding="md" hover>
-                  <h2 className="text-lg text-base-content mb-2">{t('transactions.revenue')}</h2>
-                  <p className="text-2xl font-bold text-primary">
+                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.revenue')}</h2>
+                  <p className="text-2xl font-bold text-base-content">
                     {transactions[0]?.currency || ''} {productStats.reduce((s, p) => s + p.totalAmount, 0).toFixed(2)}
                   </p>
                 </Card>
@@ -885,8 +885,8 @@ export default function Transactions() {
               <div
               >
                 <Card padding="md" hover>
-                  <h2 className="text-lg text-base-content mb-2">{t('transactions.uniqueProducts')}</h2>
-                  <p className="text-2xl font-bold text-primary">
+                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.uniqueProducts')}</h2>
+                  <p className="text-2xl font-bold text-base-content">
                     {productStats.length}
                   </p>
               </Card>

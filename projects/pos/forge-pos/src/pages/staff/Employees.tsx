@@ -246,7 +246,7 @@ export default function Employees() {
           </Card>
           <Card>
             <h2 className="text-base-content/80 text-sm">{t('employees.avgSalary')}</h2>
-            <p className="text-2xl font-bold text-blue-500">
+            <p className="text-2xl font-bold text-secondary">
               {employees.filter(e => e.is_active).length > 0
                 ? Math.round(monthlySalaryTotal / employees.filter(e => e.is_active).length).toLocaleString()
                 : 0}
