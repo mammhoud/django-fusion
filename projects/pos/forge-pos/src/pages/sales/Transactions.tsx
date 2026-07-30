@@ -14,6 +14,7 @@ import { SkeletonTable, SkeletonList } from '../../components/layout/Skeleton';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import Card from '../../components/layout/Card';
+import StatCard from '../../components/data/StatCard';
 
 type TabId = 'timeTotal' | 'productStats' | 'relatedProducts' | 'invoices';
 
@@ -762,35 +763,24 @@ export default function Transactions() {
           <div className="space-y-6">
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div
-              >
-                <Card padding="md" hover>
-                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.allTimeTotal')}</h2>
-                  <p className="text-2xl font-bold text-base-content">
-                    {transactions[0]?.currency || ''} {totalAllTime.toFixed(2)}
-                  </p>
-                </Card>
-              </div>
-
-              <div
-              >
-                <Card padding="md" hover>
-                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.filteredTotal')}</h2>
-                  <p className="text-2xl font-bold text-base-content">
-                    {transactions[0]?.currency || ''} {totalFiltered.toFixed(2)}
-                  </p>
-                </Card>
-              </div>
-
-              <div
-              >
-                <Card padding="md" hover>
-                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.filteredTransactions')}</h2>
-                  <p className="text-2xl font-bold text-base-content">
-                    {filteredTransactions.length}
-                  </p>
-                </Card>
-              </div>
+              <StatCard
+                title={t('transactions.allTimeTotal')}
+                value={`${transactions[0]?.currency || ''} ${totalAllTime.toFixed(2)}`}
+                icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                color="primary"
+              />
+              <StatCard
+                title={t('transactions.filteredTotal')}
+                value={`${transactions[0]?.currency || ''} ${totalFiltered.toFixed(2)}`}
+                icon={<span className="icon-[tabler--filter] w-6 h-6" />}
+                color="info"
+              />
+              <StatCard
+                title={t('transactions.filteredTransactions')}
+                value={filteredTransactions.length}
+                icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
+                color="secondary"
+              />
             </div>
 
             {/* Time-based Groups */}
@@ -864,33 +854,24 @@ export default function Transactions() {
           <div className="space-y-6">
             {/* Summary cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div
-              >
-                <Card padding="md" hover>
-                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('reports.totalProductsSold')}</h2>
-                  <p className="text-2xl font-bold text-base-content">
-                    {productStats.reduce((s, p) => s + p.count, 0)}
-                  </p>
-                </Card>
-              </div>
-              <div
-              >
-                <Card padding="md" hover>
-                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.revenue')}</h2>
-                  <p className="text-2xl font-bold text-base-content">
-                    {transactions[0]?.currency || ''} {productStats.reduce((s, p) => s + p.totalAmount, 0).toFixed(2)}
-                  </p>
-                </Card>
-              </div>
-              <div
-              >
-                <Card padding="md" hover>
-                  <h2 className="text-sm font-semibold text-base-content/80 mb-2">{t('transactions.uniqueProducts')}</h2>
-                  <p className="text-2xl font-bold text-base-content">
-                    {productStats.length}
-                  </p>
-              </Card>
-              </div>
+              <StatCard
+                title={t('reports.totalProductsSold')}
+                value={productStats.reduce((s, p) => s + p.count, 0)}
+                icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
+                color="info"
+              />
+              <StatCard
+                title={t('transactions.revenue')}
+                value={`${transactions[0]?.currency || ''} ${productStats.reduce((s, p) => s + p.totalAmount, 0).toFixed(2)}`}
+                icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                color="primary"
+              />
+              <StatCard
+                title={t('transactions.uniqueProducts')}
+                value={productStats.length}
+                icon={<span className="icon-[tabler--apps] w-6 h-6" />}
+                color="secondary"
+              />
             </div>
 
             {/* Search + CSV Export */}
