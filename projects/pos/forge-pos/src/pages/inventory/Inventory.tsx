@@ -17,10 +17,10 @@ import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsMod
 type Tab = 'stock' | 'transactions' | 'adjustments';
 
 const TRANSACTION_TYPES = [
-  { value: 'purchase', label: 'Purchase', color: 'bg-green-500' },
-  { value: 'usage', label: 'Usage', color: 'bg-blue-500' },
-  { value: 'waste', label: 'Waste', color: 'bg-red-500' },
-  { value: 'adjustment', label: 'Adjustment', color: 'bg-yellow-500' },
+  { value: 'purchase', label: 'Purchase', color: 'bg-success' },
+  { value: 'usage', label: 'Usage', color: 'bg-info' },
+  { value: 'waste', label: 'Waste', color: 'bg-error' },
+  { value: 'adjustment', label: 'Adjustment', color: 'bg-warning' },
   { value: 'return', label: 'Return', color: 'bg-secondary' },
 ];
 
@@ -232,13 +232,13 @@ export default function Inventory() {
   };
 
   const getTransactionColor = (type: string) => {
-    return TRANSACTION_TYPES.find(t => t.value === type)?.color || 'bg-gray-500';
+    return TRANSACTION_TYPES.find(t => t.value === type)?.color || 'bg-base-content/20';
   };
 
   const getStockStatus = (ing: Ingredient) => {
-    if (ing.current_quantity <= 0) return { color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/20', label: t('inventory.outOfStock') };
-    if (ing.current_quantity <= ing.reorder_level) return { color: 'text-yellow-500', bg: 'bg-yellow-100 dark:bg-yellow-900/20', label: t('inventory.lowStock') };
-    return { color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/20', label: t('inventory.inStock') };
+    if (ing.current_quantity <= 0) return { color: 'text-error', bg: 'bg-error/20', label: t('inventory.outOfStock') };
+    if (ing.current_quantity <= ing.reorder_level) return { color: 'text-warning', bg: 'bg-warning/20', label: t('inventory.lowStock') };
+    return { color: 'text-success', bg: 'bg-success/20', label: t('inventory.inStock') };
   };
 
   const filteredTransactions = ingredientFilter
@@ -249,25 +249,25 @@ export default function Inventory() {
     {
       key: 'type', label: 'Type', colSpan: 2,
       render: (tx) => {
-        const colors: Record<string, string> = { purchase: 'bg-green-500', usage: 'bg-blue-500', waste: 'bg-red-500', adjustment: 'bg-yellow-500', return: 'bg-secondary' };
+        const colors: Record<string, string> = { purchase: 'bg-success', usage: 'bg-info', waste: 'bg-error', adjustment: 'bg-warning', return: 'bg-secondary' };
         const ing = ingredients.find(i => i.id === tx.ingredient_id);
-        return <div className="flex items-center gap-2"><span className={`w-2 h-2 rounded-full ${colors[tx.transaction_type] || 'bg-gray-500'}`} /><span className="capitalize font-medium">{tx.transaction_type}</span><span className="text-slate-500 text-sm ml-1">— {ing?.name || `#${tx.ingredient_id}`}</span></div>;
+        return <div className="flex items-center gap-2"><span className={`w-2 h-2 rounded-full ${colors[tx.transaction_type] || 'bg-base-content/20'}`} /><span className="capitalize font-medium">{tx.transaction_type}</span><span className="text-base-content/50 text-sm ml-1">— {ing?.name || `#${tx.ingredient_id}`}</span></div>;
       }
     },
     {
       key: 'quantity', label: 'Qty', colSpan: 1, sortable: true,
       render: (tx) => {
         const ing = ingredients.find(i => i.id === tx.ingredient_id);
-        return <span className={`font-semibold ${tx.quantity_change >= 0 ? 'text-green-500' : 'text-red-500'}`}>{tx.quantity_change >= 0 ? '+' : ''}{tx.quantity_change} {ing?.unit || ''}</span>;
+        return <span className={`font-semibold ${tx.quantity_change >= 0 ? 'text-success' : 'text-error'}`}>{tx.quantity_change >= 0 ? '+' : ''}{tx.quantity_change} {ing?.unit || ''}</span>;
       }
     },
     {
       key: 'note', label: 'Note', colSpan: 1, hideOnMobile: true,
-      render: (tx) => tx.note ? <span className="text-slate-500 italic text-sm">"{tx.note}"</span> : <span className="text-slate-400 text-sm">—</span>
+      render: (tx) => tx.note ? <span className="text-base-content/50 italic text-sm">"{tx.note}"</span> : <span className="text-base-content/40 text-sm">—</span>
     },
     {
       key: 'date', label: 'Date', colSpan: 1, sortable: true,
-      render: (tx) => <span className="text-slate-400 text-xs">{new Date(tx.created_at).toLocaleDateString()}</span>
+      render: (tx) => <span className="text-base-content/40 text-xs">{new Date(tx.created_at).toLocaleDateString()}</span>
     },
   ], [ingredients]);
 
@@ -286,7 +286,7 @@ export default function Inventory() {
   return (
     <PageLayout
       title={<><span className="icon-[tabler--package] text-success" /> {t('inventory.title')}</>}
-      background="bg-linear-to-br from-slate-100 via-success/10 to-slate-100 dark:from-slate-900 dark:via-success/10 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-success/10 to-base-200"
     >
       {/* Tab Navigation — matching Transactions page pattern */}
       <nav className="tabs tabs-boxed gap-1 mb-6 overflow-x-auto" aria-label="Inventory tabs" role="tablist" data-tab-prefix="inv-tab" onKeyDown={onInvTabKeyDown}>
@@ -345,7 +345,7 @@ export default function Inventory() {
               <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.lowStockItems')}</span>
-                  <span className="text-lg font-bold text-yellow-500">{lowStockCount}</span>
+                  <span className="text-lg font-bold text-warning">{lowStockCount}</span>
                 </div>
               </Card>
             </div>
@@ -365,7 +365,7 @@ export default function Inventory() {
                 {stockSearch && (
                   <button
                     onClick={() => setStockSearch('')}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                   >
                     <span className="icon-[tabler--x] w-3 h-3" />
                   </button>
@@ -393,7 +393,7 @@ export default function Inventory() {
                 </button>
               </div>
             ) : (
-              <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
+              <div className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl overflow-hidden">
                 {/* Header */}
                 <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-base-300/50 text-base-content font-semibold text-sm">
                   <div className="col-span-3">{t('inventory.name')}</div>
@@ -537,15 +537,15 @@ export default function Inventory() {
                     <div className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${getTransactionColor(tx.transaction_type)}`} />
                       <span className="font-medium capitalize text-base-content">{tx.transaction_type}</span>
-                      <span className="text-slate-500 text-sm">— {ing?.name || `ID: ${tx.ingredient_id}`}</span>
+                      <span className="text-base-content/50 text-sm">— {ing?.name || `ID: ${tx.ingredient_id}`}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className={`font-semibold ${tx.quantity_change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <span className={`font-semibold ${tx.quantity_change >= 0 ? 'text-success' : 'text-error'}`}>
                         {tx.quantity_change >= 0 ? '+' : ''}{tx.quantity_change} {ing?.unit || ''}
                       </span>
-                      <span className="text-slate-400 text-xs">{new Date(tx.created_at).toLocaleDateString()}</span>
+                      <span className="text-base-content/40 text-xs">{new Date(tx.created_at).toLocaleDateString()}</span>
                     </div>
-                    {tx.note && <span className="text-slate-500 italic text-xs">"{tx.note}"</span>}
+                    {tx.note && <span className="text-base-content/50 italic text-xs">"{tx.note}"</span>}
                   </div>
                 );
               }}
@@ -573,7 +573,7 @@ export default function Inventory() {
             <h2 className="text-lg font-semibold text-base-content">{t('inventory.manualAdjustments')}</h2>
             <div className="space-y-3">
               {adjustments.length === 0 && (
-                <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
+                <div className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl p-8 text-center text-base-content/60">
                   {t('inventory.noAdjustments')}
                 </div>
               )}
@@ -583,7 +583,7 @@ export default function Inventory() {
                   <motion.div
                     key={adj.id}
                     initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                    className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4"
+                    className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl p-4"
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -593,9 +593,9 @@ export default function Inventory() {
                         </div>
                         <p className="text-sm text-base-content/50 mt-1 italic">"{adj.reason}"</p>
                       </div>
-                      <div className="text-right text-xs text-slate-400">
+                      <div className="text-right text-xs text-base-content/40">
                         <div>{new Date(adj.created_at).toLocaleDateString()}</div>
-                        {adj.created_by && <div className="mt-1 text-slate-500">by {adj.created_by}</div>}
+                        {adj.created_by && <div className="mt-1 text-base-content/50">by {adj.created_by}</div>}
                       </div>
                     </div>
                   </motion.div>
@@ -613,7 +613,7 @@ export default function Inventory() {
         footer={<>
           <button onClick={() => setShowAddIngredient(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddIngredient} disabled={!newIngredient.name.trim()}
-            className="flex-1 py-2.5 rounded-lg bg-success text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-success text-success-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
             <span className="icon-[tabler--device-floppy]" /> {t('inventory.addIngredient')}
           </button>
         </>}
@@ -693,7 +693,7 @@ export default function Inventory() {
         footer={<>
           <button onClick={() => setShowAddTransaction(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddTransaction} disabled={newTransaction.ingredient_id === 0 || newTransaction.quantity_change === 0}
-            className="flex-1 py-2.5 rounded-lg bg-success text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('inventory.recordTransaction')}</button>
+            className="flex-1 py-2.5 rounded-lg bg-success text-success-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('inventory.recordTransaction')}</button>
         </>}
       >
         <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.ingredient')} *</label>

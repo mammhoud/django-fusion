@@ -100,14 +100,14 @@ export default function Analytics() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex items-center justify-center transition-colors duration-300">
+      <div className="min-h-screen bg-base-200 flex items-center justify-center transition-colors duration-300">
         <div className="text-base-content">{t('analytics.title')}...</div>
       </div>
     );
   }  return (
     <PageLayout
       title={t('analytics.title')}
-      background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-secondary/15 to-base-200"
     >
 
         {/* Summary Cards */}
@@ -116,7 +116,7 @@ export default function Analytics() {
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-primary/20 rounded-lg">
-                  <span className="icon-[tabler--moneybag] w-6 h-6 text-teal-600 dark:text-teal-500" />
+                  <span className="icon-[tabler--moneybag] w-6 h-6 text-info" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.totalRevenue')}</p>
@@ -131,8 +131,8 @@ export default function Analytics() {
           <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-500/20 rounded-lg">
-                  <span className="icon-[tabler--trending-up] w-6 h-6 text-blue-600 dark:text-blue-500" />
+                <div className="p-3 bg-info/20 rounded-lg">
+                  <span className="icon-[tabler--trending-up] w-6 h-6 text-info" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.growthRate')}</p>
@@ -145,8 +145,8 @@ export default function Analytics() {
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-500/20 rounded-lg">
-                  <span className="icon-[tabler--shopping-cart] w-6 h-6 text-purple-600 dark:text-purple-500" />
+                <div className="p-3 bg-secondary/20 rounded-lg">
+                  <span className="icon-[tabler--shopping-cart] w-6 h-6 text-secondary" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.totalOrders')}</p>
@@ -159,8 +159,8 @@ export default function Analytics() {
           <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-orange-500/20 rounded-lg">
-                  <span className="icon-[tabler--moneybag] w-6 h-6 text-orange-600 dark:text-orange-500" />
+                <div className="p-3 bg-warning/20 rounded-lg">
+                  <span className="icon-[tabler--moneybag] w-6 h-6 text-warning" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.avgOrderValue')}</p>
@@ -178,7 +178,7 @@ export default function Analytics() {
           <div className="animate-fade-in">
             <Card padding="2xl" center transitional className="mb-8">
               <div className="text-base-content/60 text-lg mb-2">{t('analytics.noData')}</div>
-              <div className="text-slate-500 dark:text-white/40">
+              <div className="text-base-content/50">
                 {t('analytics.noDataHint')}
               </div>
             </Card>
@@ -219,7 +219,7 @@ export default function Analytics() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noRevenueData')}</p>
+                    <p className="text-base-content/50">{t('analytics.noRevenueData')}</p>
                   </div>
                 )}
               </div>
@@ -246,7 +246,7 @@ export default function Analytics() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noProductData')}</p>
+                    <p className="text-base-content/50">{t('analytics.noProductData')}</p>
                   </div>
                 )}
               </div>
@@ -290,7 +290,7 @@ export default function Analytics() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noDistributionData')}</p>
+                    <p className="text-base-content/50">{t('analytics.noDistributionData')}</p>
                   </div>
                 )}
               </div>
@@ -322,7 +322,7 @@ export default function Analytics() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noOrdersData')}</p>
+                    <p className="text-base-content/50">{t('analytics.noOrdersData')}</p>
                   </div>
                 )}
               </div>
