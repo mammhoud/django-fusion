@@ -972,21 +972,22 @@ export default function Reports() {
                   value={filteredSales.length.toString()}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
                   icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
                   color="warning"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
                   icon={<span className="icon-[tabler--users] w-6 h-6" />}
                   color="secondary"
+                compact
                 />
               </div>
 
@@ -1021,19 +1022,19 @@ export default function Reports() {
                 <StatCard title={t('reports.lowStockItems')}
                   value={lowStockItems.length}
                   desc={t('reports.needReordering')}
-                  color="error" border animated={false} />
+                  color="error" border animated={false} compact />
                 <StatCard title={t('reports.orderTypes')}
                   value={orderTypeBreakdown.length}
                   desc={orderTypeBreakdown.map(o => o.type).join(', ') || t('reports.none')}
-                  color="info" border animated={false} />
+                  color="info" border animated={false} compact />
                 <StatCard title={t('reports.products')}
                   value={products.length}
                   desc={t('reports.haveRecipes', { count: products.filter(p => recipes.some(r => r.product_id === p.id && r.is_active)).length })}
-                  color="success" border animated={false} />
+                  color="success" border animated={false} compact />
                 <StatCard title={t('reports.monthlySalary')}
                   value={`${currency} ${employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0).toFixed(0)}`}
                   desc={t('reports.activeEmployeesCount', { count: employees.filter(e => e.is_active).length })}
-                  color="warning" border animated={false} />
+                  color="warning" border animated={false} compact />
               </div>
             </div>
           )}
@@ -1048,25 +1049,26 @@ export default function Reports() {
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.totalOrders')}
                   value={(filteredSales.length).toString()}
                   desc={`${salesOrderDelta.direction === 'up' ? '▲' : salesOrderDelta.direction === 'down' ? '▼' : '→'} ${salesOrderDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="info"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${analytics?.summary.average_order_value.toFixed(2) || '0.00'}`}
                   desc={`${salesAvgDelta.direction === 'up' ? '▲' : salesAvgDelta.direction === 'down' ? '▼' : '→'} Avg ${salesAvgDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.orderTypes')}
                   value={orderTypeBreakdown.length.toString()}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="warning"
+                compact
                 />
               </div>
 
@@ -1221,21 +1223,22 @@ export default function Reports() {
                   value={analytics?.summary?.total_orders?.toString() || '0'}
                   icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.productRevenue')}
                   value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.bestSellingCategory')}
                   value={bestSellingCategory}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="warning"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.avgItemsPerOrder')}
                   value={avgItemsPerOrder}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="secondary"
+                compact
                 />
               </div>
 
@@ -1333,21 +1336,22 @@ export default function Reports() {
                   value={filteredSales.length.toString()}
                   icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.totalRevenue')}
                   value={formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0))}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={filteredSales.length > 0 ? formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length) : formatPrice(0)}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.completedOrders')}
                   value={filteredSales.filter(s => s.status === 'completed').length.toString()}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="success"
+                compact
                 />
               </div>
 
@@ -1427,21 +1431,21 @@ export default function Reports() {
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.todayOrders')}
                   value={todayStats.orders.toString()}
                   desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="info"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.todayAvgOrder')}
                   value={`${currency} ${todayStats.avgOrder.toFixed(2)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} Avg ${revDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.todayItemsSold')}
                   value={todayStats.orders > 0 ? (todayStats.orders * (parseFloat(avgItemsPerOrder) || 1)).toFixed(0) : '0'}
                   desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
@@ -1472,6 +1476,7 @@ export default function Reports() {
                       desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs ${currency} ${yesterdayStats.revenue.toFixed(2)}`}
                       color={revDelta.direction === 'up' ? 'green-500' : revDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                     <StatCard
                       title={t('reports.todayOrders')}
@@ -1479,6 +1484,7 @@ export default function Reports() {
                       desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs ${yesterdayStats.orders}`}
                       color={orderDelta.direction === 'up' ? 'green-500' : orderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                   </div>
                 </Card>
@@ -1493,6 +1499,7 @@ export default function Reports() {
                       desc={`${wkRevDelta.direction === 'up' ? '▲' : wkRevDelta.direction === 'down' ? '▼' : '→'} ${wkRevDelta.pct} vs ${currency} ${lastWeekStats.revenue.toFixed(2)}`}
                       color={wkRevDelta.direction === 'up' ? 'green-500' : wkRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                     <StatCard
                       title={t('reports.todayOrders')}
@@ -1500,6 +1507,7 @@ export default function Reports() {
                       desc={`${wkOrderDelta.direction === 'up' ? '▲' : wkOrderDelta.direction === 'down' ? '▼' : '→'} ${wkOrderDelta.pct} vs ${lastWeekStats.orders}`}
                       color={wkOrderDelta.direction === 'up' ? 'green-500' : wkOrderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                   </div>
                 </Card>
@@ -1655,7 +1663,7 @@ export default function Reports() {
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
                     : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
                   )}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.currentPeriodOrders')}
                   value={currentStats.orders.toString()}
                   desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs previous`}
@@ -1665,7 +1673,7 @@ export default function Reports() {
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
                     : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
                   )}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.currentPeriodAvg')}
                   value={`${currency} ${currentStats.avgOrder.toFixed(2)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} Avg ${periodRevDelta.pct} vs previous`}
@@ -1675,12 +1683,13 @@ export default function Reports() {
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
                     : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
                   )}
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.previousPeriod')}
                   value={`${currency} ${previousStats.revenue.toFixed(2)}`}
                   desc={`${currentStats.revenue > previousStats.revenue ? '▲ Up' : currentStats.revenue < previousStats.revenue ? '▼ Down' : '→ Flat'} from current`}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="neutral"
+                compact
                 />
               </div>
 
@@ -1704,6 +1713,7 @@ export default function Reports() {
                       desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs ${currency} ${previousStats.revenue.toFixed(2)}`}
                       color={periodRevDelta.direction === 'up' ? 'green-500' : periodRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                     <StatCard
                       title={t('reports.previousPeriodShort')}
@@ -1711,6 +1721,7 @@ export default function Reports() {
                       desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs current`}
                       color={periodRevDelta.direction === 'up' ? 'green-500' : periodRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                   </div>
                 </Card>
@@ -1723,6 +1734,7 @@ export default function Reports() {
                       desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs ${previousStats.orders}`}
                       color={periodOrderDelta.direction === 'up' ? 'green-500' : periodOrderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                     <StatCard
                       title={t('reports.previousPeriodShort')}
@@ -1730,6 +1742,7 @@ export default function Reports() {
                       desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs current`}
                       color={periodOrderDelta.direction === 'up' ? 'green-500' : periodOrderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
+                    compact
                     />
                   </div>
                 </Card>
@@ -1792,21 +1805,22 @@ export default function Reports() {
                   value={deliveryStats.totalOrders.toString()}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="primary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${deliveryStats.totalRevenue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${deliveryStats.avgOrderValue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.deliveryCompleted')}
                   value={`${deliveryStats.completedOrders} / ${deliveryStats.pendingOrders}`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="warning"
+                compact
                 />
               </div>
 
@@ -1887,21 +1901,22 @@ export default function Reports() {
                   value={`${currency} ${stockValue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="success"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.activeIngredients')}
                   value={ingredients.filter(i => i.is_active).length.toString()}
                   icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.lowStockItems')}
                   value={lowStockItems.length.toString()}
                   icon={<span className="icon-[tabler--alert-triangle] w-6 h-6" />}
                   color="error"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('transactions.title')}
                   value={inventoryTxns.length.toString()}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="secondary"
+                compact
                 />
               </div>
 
@@ -2057,21 +2072,22 @@ export default function Reports() {
                   value={recipePerformance.length.toString()}
                   icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
                   color="warning"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.activeProducts')}
                   value={products.length.toString()}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="success"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.avgProductPrice')}
                   value={`${currency} ${products.length > 0 ? (products.reduce((s, p) => s + p.price, 0) / products.length).toFixed(2) : '0.00'}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
+                compact
                 />
               </div>
 
@@ -2181,21 +2197,22 @@ export default function Reports() {
                   value={`${currency} ${transactions.reduce((s, t) => s + t.total_amount, 0).toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.totalOrders')}
                   value={transactions.length.toString()}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${transactions.length > 0 ? (transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length).toFixed(2) : '0.00'}`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.transactionItems')}
                   value={transactions.reduce((s, t) => s + t.items.length, 0).toString()}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="warning"
+                compact
                 />
               </div>
 
@@ -2260,21 +2277,22 @@ export default function Reports() {
                   value={employees.filter(e => e.is_active).length.toString()}
                   icon={<span className="icon-[tabler--users] w-6 h-6" />}
                   color="secondary"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.employeesWithSales')}
                   value={employeePerformance.length.toString()}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="info"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.totalOrders')}
                   value={employeePerformance.reduce((s, e) => s + e.orderCount, 0).toString()}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="success"
-                /><StatCard 
+                 compact/><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${employeePerformance.reduce((s, e) => s + e.revenue, 0).toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="warning"
+                compact
                 />
               </div>
 
