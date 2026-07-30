@@ -642,7 +642,8 @@
     "periodTrend": "Tendencia del Período",
     "periodBreakdown": "Desglose del Período",
     "tableWeek": "Semana",
-    "tableMonth": "Mes"
+    "tableMonth": "Mes",
+    "tabsLabel": "Pestañas de informes"
   },
   "settings": {
     "title": "Configuración",

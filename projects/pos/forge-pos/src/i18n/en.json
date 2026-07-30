@@ -46,7 +46,7 @@
     "inventory": "Inventory",
     "employees": "Employees",
     "recipes": "Recipes",
-    "reports": "Reports",
+    "reports": "Reports & Analytics",
     "customers": "Customers",
     "suppliers": "Suppliers",
     "kitchen": "Kitchen Display",
@@ -73,7 +73,6 @@
     "sales": "Sales & Orders",
     "products": "Products & Inventory",
     "staff": "Staff Management",
-    "reports": "Reports & Analytics",
     "system": "System",
     "staffDesc": "Employees, Schedule & Payroll",
     "productsMerged": "Products",
@@ -264,8 +263,6 @@
     "allTimeTotal": "All Time Total",
     "filteredTotal": "Filtered Period Total",
     "filteredTransactions": "Filtered Transactions",
-    "productStats": "Product Statistics",
-    "statsBreakdown": "Stats Breakdown",
     "totalSold": "Total Sold",
     "revenue": "Revenue",
     "avgPrice": "Avg. Price",
@@ -334,7 +331,8 @@
     "sortDate": "Date",
     "sortAmount": "Amount",
     "sortType": "Type"
-  },"inventory": {
+  },
+  "inventory": {
     "title": "Inventory Management",
     "totalIngredients": "Total Ingredients",
     "lowStockItems": "Low Stock Items",
@@ -360,7 +358,6 @@
     "status": "Status",
     "inStock": "In Stock",
     "lowStock": "Low Stock",
-    "outOfStock": "Out of Stock",
     "noIngredients": "No ingredients yet. Add your first one!",
     "transactionLog": "Transaction Log",
     "allIngredientsFilter": "All Ingredients",
@@ -437,8 +434,7 @@
     "employees": "employees",
     "employeeCount_one": "{count} employee",
     "employeeCount_other": "{count} employees",
-    "namePlaceholder": "Enter employee name",
-    "typeNamePlaceholder": "e.g., Sous Chef, Host, Bartender"
+    "namePlaceholder": "Enter employee name"
   },
   "recipes": {
     "title": "Recipe Manager",
@@ -547,8 +543,6 @@
     "noProducts": "No products found",
     "activeEmployees": "Active Employees",
     "employeesWithSales": "Employees with Sales",
-    "totalOrders": "Total Orders",
-    "totalRevenue": "Total Revenue",
     "employeePerformance": "Employee Sales Performance",
     "noEmployeeSales": "No employee sales data",
     "noEmployeeSalesHint": "Assign employees to sales to see performance metrics",
@@ -648,7 +642,8 @@
     "periodTrend": "Period Trend",
     "periodBreakdown": "Period Breakdown",
     "tableWeek": "Week",
-    "tableMonth": "Month"
+    "tableMonth": "Month",
+    "tabsLabel": "Report tabs"
   },
   "settings": {
     "title": "Settings",
@@ -865,8 +860,29 @@
     "noYears": "No years found",
     "clear": "Clear",
     "done": "Done",
-    "months": ["January","February","March","April","May","June","July","August","September","October","November","December"],
-    "daysShort": ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "daysShort": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ]
   },
   "auth": {
     "createAccount": "Create Account",
@@ -1044,8 +1060,8 @@
     "searchPlaceholder": "Search templates...",
     "sortBy": "Sort by",
     "sortDefaultFirst": "Default first",
-    "sortNameAsc": "Name (A\u2192Z)",
-    "sortNameDesc": "Name (Z\u2192A)",
+    "sortNameAsc": "Name (A→Z)",
+    "sortNameDesc": "Name (Z→A)",
     "sortNewest": "Newest",
     "titlePlaceholder": "Note title...",
     "bodyPlaceholder": "Write your notes here..."
@@ -1062,8 +1078,8 @@
     "sortBy": "Sort by",
     "sortNewest": "Period (newest)",
     "sortOldest": "Period (oldest)",
-    "sortSalesDesc": "Sales (high \u2192 low)",
-    "sortSalesAsc": "Sales (low \u2192 high)"
+    "sortSalesDesc": "Sales (high → low)",
+    "sortSalesAsc": "Sales (low → high)"
   },
   "roles": {
     "title": "User Roles",
@@ -1074,7 +1090,7 @@
     "searchPlaceholder": "Search roles...",
     "sortBy": "Sort by",
     "sortNewest": "Newest",
-    "sortNameAsc": "Name (A\u2192Z)",
-    "sortNameDesc": "Name (Z\u2192A)"
+    "sortNameAsc": "Name (A→Z)",
+    "sortNameDesc": "Name (Z→A)"
   }
 }

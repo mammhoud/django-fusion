@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import SideNav from '../layout/SideNav';
 import { useAuth, AuthUser } from '../../contexts/AuthContext';
@@ -25,13 +26,14 @@ function ProfileDropdown({
   compact?: boolean;
 }) {
   const initials = (user.name?.charAt(0) || user.email.charAt(0)).toUpperCase();
+  const { t } = useTranslation();
 
   return (
     <div className="relative">
       <button              onClick={onToggle}
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-100/70 backdrop-blur-md border border-base-300/30
                 hover:shadow-md transition-all active:scale-[0.97]"
-        aria-label="User profile"
+        aria-label={t('common.userProfile') || 'User profile'}
         aria-expanded={open}
       >
         <div className={`${compact ? 'w-8 h-8 text-sm' : 'w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm'}
@@ -116,6 +118,7 @@ export default function PageLayout({
   const profileRef = useRef<HTMLDivElement>(null);
 
   const { user, isAuthRequired, logout, inactivityWarning, dismissInactivityWarning } = useAuth();
+  const { t } = useTranslation();
 
   // Close profile dropdown on outside click
   useEffect(() => {
@@ -194,7 +197,7 @@ export default function PageLayout({
               <button
                 onClick={() => setIsNavOpen(true)}
                 className="btn btn-square btn-ghost"
-                aria-label="Open navigation"
+                aria-label={t('common.openNavigation') || 'Open navigation'}
               >
                 <span className="icon-[tabler--menu-2] w-5 h-5" />
               </button>
@@ -202,7 +205,7 @@ export default function PageLayout({
                 onClick={handleBackNavigation}
                 disabled={isNavigating}
                 className="btn btn-square btn-ghost disabled:opacity-50"
-                aria-label="Back to home"
+                aria-label={t('common.backToHome') || 'Back to home'}
               >
                 <span className="icon-[tabler--arrow-back] w-4 h-4 rtl:scale-x-[-1]" />
               </button>
@@ -249,7 +252,7 @@ export default function PageLayout({
               <button
                 onClick={() => setIsNavOpen(true)}
                 className="btn btn-square btn-ghost shrink-0"
-                aria-label="Open navigation"
+                aria-label={t('common.openNavigation') || 'Open navigation'}
               >
                 <span className="icon-[tabler--menu-2] w-5 h-5" />
               </button>

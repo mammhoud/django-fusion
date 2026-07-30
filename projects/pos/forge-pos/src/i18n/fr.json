@@ -642,7 +642,8 @@
     "periodTrend": "Tendance des périodes",
     "periodBreakdown": "Répartition des périodes",
     "tableWeek": "Semaine",
-    "tableMonth": "Mois"
+    "tableMonth": "Mois",
+    "tabsLabel": "Onglets des rapports"
   },
   "settings": {
     "title": "Paramètres",
