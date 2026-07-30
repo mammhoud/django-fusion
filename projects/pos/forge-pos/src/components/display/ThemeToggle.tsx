@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { iconClass } from '../../lib/icons';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -10,9 +11,9 @@ interface ModeOption {
 }
 
 const MODE_OPTIONS: ModeOption[] = [
-  { value: 'light', label: 'Light', icon: 'tabler--sun' },
-  { value: 'dark', label: 'Dark', icon: 'tabler--moon' },
-  { value: 'system', label: 'System', icon: 'tabler--device-desktop' },
+  { value: 'light', label: 'Light', icon: 'lucide:sun' },
+  { value: 'dark', label: 'Dark', icon: 'lucide:moon' },
+  { value: 'system', label: 'System', icon: 'lucide:monitor' },
 ];
 
 export default function ThemeToggle() {
@@ -57,9 +58,9 @@ export default function ThemeToggle() {
           transition-all active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-primary/50"
         aria-label={`Theme: ${activeOption.label}`}
       >
-        <span className={`icon-[${activeOption.icon}] w-4 h-4`} />
+        <span className={iconClass(activeOption.icon, 'w-4 h-4')} />
         <span className="text-xs font-medium hidden sm:inline">{activeOption.label}</span>
-        <span className={`icon-[tabler--chevron-down] w-3.5 h-3.5 transition-transform duration-200 ml-0.5 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className={iconClass('lucide:chevron-down', `w-3.5 h-3.5 transition-transform duration-200 ml-0.5 ${isOpen ? 'rotate-180' : ''}`)} />
       </button>
 
       {isOpen && (
@@ -75,10 +76,10 @@ export default function ThemeToggle() {
                   : 'text-base-content/70 hover:bg-base-200/50 hover:text-base-content'
                 }`}
             >
-              <span className={`icon-[${option.icon}] w-4 h-4`} />
+              <span className={iconClass(option.icon, 'w-4 h-4')} />
               <span>{option.label}</span>
               {option.value === currentMode && (
-                <span className="icon-[tabler--check] w-3.5 h-3.5 ml-auto" />
+                <span className={iconClass('lucide:check', 'w-3.5 h-3.5 ml-auto')} />
               )}
             </button>
           ))}

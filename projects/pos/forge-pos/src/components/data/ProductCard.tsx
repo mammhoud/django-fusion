@@ -13,16 +13,13 @@ export interface ProductCardColor {
 export const PRODUCT_SKELETON_COUNT = 14;
 
 export const PRODUCT_CARD_COLORS: ProductCardColor[] = [
-  { bg: 'bg-rose-100/70 dark:bg-rose-900/20', border: 'border-rose-300 dark:border-rose-700/50', initial: 'text-rose-500 dark:text-rose-300', badge: 'bg-rose-500', icon: 'text-rose-400' },
-  { bg: 'bg-sky-100/70 dark:bg-sky-900/20', border: 'border-sky-300 dark:border-sky-700/50', initial: 'text-sky-500 dark:text-sky-300', badge: 'bg-sky-500', icon: 'text-sky-400' },
-  { bg: 'bg-amber-100/70 dark:bg-amber-900/20', border: 'border-amber-300 dark:border-amber-700/50', initial: 'text-amber-500 dark:text-amber-300', badge: 'bg-amber-500', icon: 'text-amber-400' },
-  { bg: 'bg-emerald-100/70 dark:bg-emerald-900/20', border: 'border-emerald-300 dark:border-emerald-700/50', initial: 'text-emerald-500 dark:text-emerald-300', badge: 'bg-emerald-500', icon: 'text-emerald-400' },
-  { bg: 'bg-violet-100/70 dark:bg-violet-900/20', border: 'border-violet-300 dark:border-violet-700/50', initial: 'text-violet-500 dark:text-violet-300', badge: 'bg-violet-500', icon: 'text-violet-400' },
-  { bg: 'bg-orange-100/70 dark:bg-orange-900/20', border: 'border-orange-300 dark:border-orange-700/50', initial: 'text-orange-500 dark:text-orange-300', badge: 'bg-orange-500', icon: 'text-orange-400' },
-  { bg: 'bg-primary/10', border: 'border-primary/30', initial: 'text-primary', badge: 'bg-primary', icon: 'text-teal-400' },
-  { bg: 'bg-indigo-100/70 dark:bg-indigo-900/20', border: 'border-indigo-300 dark:border-indigo-700/50', initial: 'text-indigo-500 dark:text-indigo-300', badge: 'bg-indigo-500', icon: 'text-indigo-400' },
-  { bg: 'bg-pink-100/70 dark:bg-pink-900/20', border: 'border-pink-300 dark:border-pink-700/50', initial: 'text-pink-500 dark:text-pink-300', badge: 'bg-pink-500', icon: 'text-pink-400' },
-  { bg: 'bg-lime-100/70 dark:bg-lime-900/20', border: 'border-lime-300 dark:border-lime-700/50', initial: 'text-lime-500 dark:text-lime-300', badge: 'bg-lime-500', icon: 'text-lime-400' },
+  { bg: 'bg-primary/10 dark:bg-primary/15', border: 'border-primary/30 dark:border-primary/40', initial: 'text-primary dark:text-primary/80', badge: 'bg-primary', icon: 'text-primary/60' },
+  { bg: 'bg-secondary/10 dark:bg-secondary/15', border: 'border-secondary/30 dark:border-secondary/40', initial: 'text-secondary dark:text-secondary/80', badge: 'bg-secondary', icon: 'text-secondary/60' },
+  { bg: 'bg-accent/10 dark:bg-accent/15', border: 'border-accent/30 dark:border-accent/40', initial: 'text-accent dark:text-accent/80', badge: 'bg-accent', icon: 'text-accent/60' },
+  { bg: 'bg-info/10 dark:bg-info/15', border: 'border-info/30 dark:border-info/40', initial: 'text-info dark:text-info/80', badge: 'bg-info', icon: 'text-info/60' },
+  { bg: 'bg-success/10 dark:bg-success/15', border: 'border-success/30 dark:border-success/40', initial: 'text-success dark:text-success/80', badge: 'bg-success', icon: 'text-success/60' },
+  { bg: 'bg-warning/10 dark:bg-warning/15', border: 'border-warning/30 dark:border-warning/40', initial: 'text-warning dark:text-warning/80', badge: 'bg-warning', icon: 'text-warning/60' },
+  { bg: 'bg-error/10 dark:bg-error/15', border: 'border-error/30 dark:border-error/40', initial: 'text-error dark:text-error/80', badge: 'bg-error', icon: 'text-error/60' },
 ];
 
 interface ProductCardProps {
@@ -137,7 +134,7 @@ export function ProductCardSkeleton({ className = '' }: ProductCardSkeletonProps
     <div
       data-testid="product-card-skeleton"
       className={`rounded-lg p-2 flex flex-col items-center text-center
-        border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm
+        border border-base-300/30 dark:border-base-300/20 backdrop-blur-sm
         bg-base-200/50 animate-pulse min-h-[120px] ${className}`}
       aria-hidden="true"
     >
