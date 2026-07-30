@@ -473,7 +473,20 @@
     "standard": "قياسي",
     "successCreated": "تم إنشاء الوصفة بنجاح!",
     "successUpdated": "تم تحديث الوصفة!",
-    "successDeleted": "تم إلغاء تنشيط الوصفة."
+    "successDeleted": "تم إلغاء تنشيط الوصفة.",
+    "notesTitle": "ملاحظات",
+    "addNote": "إضافة ملاحظة",
+    "noteTitlePlaceholder": "عنوان الملاحظة...",
+    "noteBodyPlaceholder": "اكتب ملاحظاتك هنا...",
+    "noNotes": "لا توجد ملاحظات بعد. أضف ملاحظتك الأولى أعلاه!",
+    "loadingNotes": "جاري تحميل الملاحظات...",
+    "deleteNote": "حذف الملاحظة",
+    "insertTemplate": "قالب",
+    "noteCategoryPreperation": "خطوات التحضير",
+    "noteCategoryChefTips": "نصائح الشيف",
+    "noteCategoryAllergen": "معلومات الحساسية",
+    "noteCategoryPlating": "دليل التقديم",
+    "noteCategoryGeneral": "عام"
   },
   "reports": {
     "title": "التقارير",

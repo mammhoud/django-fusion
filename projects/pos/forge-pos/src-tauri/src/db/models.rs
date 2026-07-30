@@ -835,6 +835,7 @@ pub struct Note {
     pub name: String,
     pub template_body: String,
     pub category: Option<String>,
+    pub recipe_id: Option<i32>,
     pub is_default: bool,
     pub use_as_template: bool,
     pub created_at: NaiveDateTime,
@@ -847,6 +848,7 @@ pub struct NewNote {
     pub name: String,
     pub template_body: String,
     pub category: Option<String>,
+    pub recipe_id: Option<i32>,
     #[serde(default)]
     pub use_as_template: bool,
 }
@@ -857,6 +859,7 @@ pub struct UpdateNote {
     pub name: Option<String>,
     pub template_body: Option<String>,
     pub category: Option<Option<String>>,
+    pub recipe_id: Option<Option<i32>>,
     pub is_default: Option<bool>,
     pub use_as_template: Option<bool>,
 }
