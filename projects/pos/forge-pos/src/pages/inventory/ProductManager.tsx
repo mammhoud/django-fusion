@@ -1019,7 +1019,7 @@ export default function ProductManager() {
                   value={newProduct.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   className="textarea textarea-bordered w-full text-sm resize-none"
-                  placeholder="Product description for menu & tickets..."
+                  placeholder={t('productManager.descriptionPlaceholder') || 'Product description for menu & tickets...'}
                   rows={2}
                   disabled={isSubmitting}
                 />

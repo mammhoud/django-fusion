@@ -787,12 +787,12 @@ export default function Sale() {
                 value={productTypeFilter}
                 onChange={e => setProductTypeFilter(e.target.value)}
                 className="select select-bordered disabled:opacity-60 disabled:cursor-not-allowed sm:w-36"
-                aria-label="Product type"
+                aria-label={t('sale.productTypeLabel') || 'Product type'}
               >
-                <option value="all">All Types</option>
-                <option value="product">Products</option>
-                <option value="combo">Combos</option>
-                <option value="addon">Add-ons</option>
+                <option value="all">{t('sale.allTypes') || 'All Types'}</option>
+                <option value="product">{t('sale.typeProduct') || 'Products'}</option>
+                <option value="combo">{t('sale.typeCombo') || 'Combos'}</option>
+                <option value="addon">{t('sale.typeAddon') || 'Add-ons'}</option>
               </select>
               {/* Live-update indicator badge */}
               <span
@@ -964,7 +964,7 @@ export default function Sale() {
                           type="text"
                           value={note}
                           onChange={e => setItemNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
-                          placeholder="Add note..."
+                          placeholder={t('sale.addNote') || 'Add note...'}
                           className="text-[11px] bg-transparent border-0 border-b border-dashed border-base-300/50
                             text-base-content/50 placeholder:text-base-content/20
                             focus:outline-none focus:border-primary/50 w-full py-0.5"
@@ -1236,7 +1236,7 @@ export default function Sale() {
                 <textarea
                   value={orderNotes}
                   onChange={e => setOrderNotes(e.target.value)}
-                  placeholder="Special instructions, allergies, notes..."
+                  placeholder={t('sale.orderNotesPlaceholder') || 'Special instructions, allergies, notes...'}
                   rows={3}
                   disabled={isLoading}
                   className="textarea textarea-bordered w-full text-sm resize-none"
