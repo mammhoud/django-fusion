@@ -428,13 +428,13 @@ export default function Inventory() {
                       </div>
                       <div className="sm:hidden flex gap-2 mb-1">
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
-                          className="text-blue-500 hover:text-blue-400 p-1"><span className="icon-[tabler--pencil]" /></button>
+                          className="text-primary hover:text-primary/70 p-1"><span className="icon-[tabler--pencil]" /></button>
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
                         }} className="text-success hover:text-success/80 p-1"><span className="icon-[tabler--plus]" /></button>
                         {ing.is_active && (
-                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1"><span className="icon-[tabler--trash]" /></button>
+                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1"><span className="icon-[tabler--trash]" /></button>
                         )}
                       </div>
 
@@ -449,13 +449,13 @@ export default function Inventory() {
                           {status.label}
                         </span>
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
-                          className="text-blue-500 hover:text-blue-400 p-1" title={t('common.edit')}><span className="icon-[tabler--pencil]" /></button>
+                          className="text-primary hover:text-primary/70 p-1" title={t('common.edit')}><span className="icon-[tabler--pencil]" /></button>
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
                         }} className="text-success hover:text-success/80 p-1" title={t('inventory.recordTransaction')}><span className="icon-[tabler--plus]" /></button>
                         {ing.is_active && (
-                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1" title={t('common.deactivate')}><span className="icon-[tabler--trash]" /></button>
+                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1" title={t('common.deactivate')}><span className="icon-[tabler--trash]" /></button>
                         )}
                       </div>
                     </motion.div>
@@ -648,7 +648,7 @@ export default function Inventory() {
         title={t('inventory.editIngredientTitle')}
         footer={<>
           <button onClick={() => { setShowEditIngredient(null); setEditForm(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
+          <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-primary text-primary-content font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editForm && (<>
