@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
-import InvoicePage from '../../pages/InvoicePage';
+import InvoicePage from '../../pages/sales/InvoicePage';
 
 const mockSettings = {
   restaurant_name: 'Test Restaurant',

@@ -5,7 +5,7 @@ import {
   waitFor,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
-import Analytics from '../../pages/Analytics';
+import Analytics from '../../pages/reports/Analytics';
 
 const mockAnalyticsData = {
   daily_revenue: [

@@ -253,6 +253,69 @@ pub fn login(db_path: &PathBuf, email_address: String, password: String) -> Resu
     Ok(user)
 }
 
+/// Request a password reset — sends a confirmation code to the email.
+/// Verifies the user exists before sending.
+pub fn request_password_reset(db_path: &PathBuf, email_address: String) -> Result<(), String> {
+    // Verify the user exists
+    let mut conn = open_conn(db_path)?;
+    use crate::db::schema::users::dsl::*;
+    let user_exists = users
+        .filter(email.eq(&email_address))
+        .first::<User>(&mut conn)
+        .is_ok();
+
+    if !user_exists {
+        return Err("No account found with this email address.".to_string());
+    }
+
+    send_confirmation_code(email_address)
+}
+
+/// Reset password using confirmation code (no old password required).
+pub fn reset_password(
+    db_path: &PathBuf,
+    email_address: String,
+    code: String,
+    new_password: String,
+) -> Result<(), String> {
+    // Verify the code
+    let mut store = CONFIRMATION_CODES.lock().map_err(|e| e.to_string())?;
+    let entry = store.remove(&email_address)
+        .ok_or_else(|| "No reset code found. Please request a new one.".to_string())?;
+
+    let (stored_code, timestamp) = entry;
+    if Instant::now().duration_since(timestamp) > Duration::from_secs(CODE_EXPIRY_SECS) {
+        return Err("Reset code has expired. Please request a new one.".to_string());
+    }
+
+    if stored_code != code.trim() {
+        return Err("Invalid reset code. Please try again.".to_string());
+    }
+
+    if new_password.len() < 6 {
+        return Err("New password must be at least 6 characters long.".to_string());
+    }
+
+    // Hash the new password
+    let new_hash = bcrypt::hash(&new_password, bcrypt::DEFAULT_COST)
+        .map_err(|e| format!("Failed to hash password: {}", e))?;
+
+    // Update the user's password
+    let mut conn = open_conn(db_path)?;
+    use crate::db::schema::users::dsl::*;
+
+    let affected = diesel::update(users.filter(email.eq(&email_address)))
+        .set(password_hash.eq(new_hash))
+        .execute(&mut conn)
+        .map_err(|e| format!("Failed to update password: {}", e))?;
+
+    if affected == 0 {
+        return Err("User not found.".to_string());
+    }
+
+    Ok(())
+}
+
 /// Change password for a user
 pub fn change_password(
     db_path: &PathBuf,

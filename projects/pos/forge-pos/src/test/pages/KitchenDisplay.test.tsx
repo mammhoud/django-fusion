@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import KitchenDisplay from '../../pages/KitchenDisplay';
+import KitchenDisplay from '../../pages/kitchen/KitchenDisplay';
 
 const mockTickets = [
   { id: 1, sale_id: 100, status: 'pending', notes: 'No onions',      created_at: '2026-01-15T10:00:00' },

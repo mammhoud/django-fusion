@@ -46,7 +46,7 @@
     "kitchen": "Kitchen Display",
     "schedule": "Schedule",
     "payroll": "Payroll",
-    "receiptTemplates": "Receipt Templates",
+    "notes": "Receipt Templates",
     "invoice": "Invoice",
     "taxReports": "Tax Reports",
     "roles": "Roles",
@@ -81,7 +81,7 @@
     "kitchenDesc": "Kitchen order display",
     "scheduleDesc": "Employee scheduling",
     "payrollDesc": "Manage payroll",
-    "receiptTemplatesDesc": "Customize receipts",
+    "notesDesc": "Customize receipts",
     "taxReportsDesc": "Tax & fiscal reports",
     "invoiceDesc": "Generate invoices",
     "rolesDesc": "Role permissions",
@@ -767,6 +767,11 @@
       "deliveryFee": "Delivery Fee",
       "perKmFee": "Per-Km Fee"
     },
+    "backToSettings": "Settings",
+    "themeTab": {
+      "title": "Theme"
+    },
+    "unsavedChanges": "Unsaved changes",
     "languageNote": "Switch between English, Arabic, and French. RTL support is automatic."
   },
   "supportChat": {
@@ -869,7 +874,17 @@
     "validationPasswordMatch": "Passwords do not match",
     "rememberMe": "Remember me",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "forgotPassword": "Forgot Password?",
+    "forgotPasswordDesc": "Enter your email to receive a reset code",
+    "sendResetCode": "Send Reset Code",
+    "resetCodeSent": "Reset code sent! Check your email.",
+    "resetPassword": "Reset Password",
+    "resetPasswordDesc": "Enter the code and your new password for",
+    "newPassword": "New Password",
+    "resetPasswordBtn": "Reset Password",
+    "backToLogin": "Back to Login",
+    "passwordResetSuccess": "Password reset successfully! Redirecting to login..."
   },
   "confirmDialog": {
     "cancel": "Cancel",
@@ -989,14 +1004,14 @@
     "totalPay": "Total Pay",
     "noPayrolls": "No payroll records."
   },
-  "receiptTemplates": {
+  "notes": {
     "title": "Receipt Templates",
     "addTemplate": "Add Template",
     "name": "Template Name",
     "body": "Template Body",
     "setAsDefault": "Set as default",
     "default": "Default",
-    "noTemplates": "No receipt templates.",
+    "noTemplates": "No notes.",
     "searchPlaceholder": "Search templates...",
     "sortBy": "Sort by",
     "sortDefaultFirst": "Default first",

@@ -1,5 +1,54 @@
 # Changelog
 
+## 2026-07-30 — ceptor-ai migration complete + enhanced test coverage + plan consolidation
+
+### ceptor-ai dependency: fully removed across all 6 projects
+
+**ctc-research** (~90 files, 44 imports, Phases 1-4 complete):
+- Created local package `plugins/core/` with models (DefaultBase, ContentBase, Organization,
+  Contact, ContactEmail, ContactPhone, Team, Workspace, CachingStorage, TokenService),
+  middleware (PrivacyConsentMiddleware), services (dispatch_job), and site mixins
+- Person → AUTH_USER_MODEL across 25+ files; blocks → Wagtail-native `plugins/blocks/`
+- PersonTag/PersonTagCategory stubs; CachingStorage classmethod signatures fixed
+- 3 peoples.py User.ProfileType safe fallbacks added
+- Contact.added_company CASCADE → SET_NULL fix
+- 0 ceptor_ai imports remaining; project moved to `archives/ctc-research/`
+
+**cms-fusion & lms-fusion**: Already clean (0 imports); newsletter native from start
+
+**cypercloud**: 6 AI/MCP/chat imports → local `ceptor_stubs.py` (AIIntegrationRegistry,
+  _StubMCPServer, CraftsClient, ChatBubble with relative imports `from ..ceptor_stubs`)
+
+**ceptor-ai library**: Removed from `libs/`, `.gitmodules`, and `INSTALLED_APPS`
+
+### test: cms-fusion + lms-fusion — 113 tests each, 0 failures
+
+- Existing: 86 tests (smoke, API, domain models, fixture content)
+- Enhanced: `test_enhanced_api.py` — 27 new tests across 10 classes
+  - CORS headers, HTMX handling (HX-Request), error handling (404/405/400)
+  - Trailing slash redirects for all endpoints
+  - Branding detail validation (hex colors, site_name)
+  - Pages fragment/data sub-endpoints
+  - Courses filters structure, Content-Type verification
+  - Security headers (X-Content-Type-Options), fusion assets endpoint
+- Fixed: 3 trailing-slash failures in test_fixture_content.py
+
+### docs: plan file consolidation
+
+- 24 plan .md files consolidated into `docs/plans/` organized by project:
+  - `docs/plans/cms-fusion/` — 8 plans (migration, dashboard, frontend, flyonui, etc.)
+  - `docs/plans/lms-fusion/` — 1 plan (migration)
+  - `docs/plans/pos/` — 7 plans (forge-pos, pos-solo, cloud, django-fusion)
+  - `docs/plans/legacy/` — 2 plans (cleanup, merge)
+  - Top-level: ceptor-ai cleanup, ctc-research migration, webpack, worker
+- `docs/plans/README.md` — plan index (was `docs/plans.md`)
+- Per-project CHANGELOGs created: `projects/cms-fusion/CHANGELOG.md`,
+  `projects/lms-fusion/CHANGELOG.md`
+
+  → See also: [`projects/cms-fusion/CHANGELOG.md`](projects/cms-fusion/CHANGELOG.md),
+  [`projects/lms-fusion/CHANGELOG.md`](projects/lms-fusion/CHANGELOG.md),
+  [`docs/plans/`](docs/plans/) — consolidated plan index with status
+
 ## 2026-07-19 — infrastructure restructuring + POS-KO gaming center + project documentation
 
 ### restructure: `core/` → `projects/` + `libs/` move to repo root

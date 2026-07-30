@@ -122,12 +122,17 @@ if _has_bolt and bolt is not None:
         return fusion_json_response(data=pointer, status=200)
 
     # ═══════════════════════════════════════════════════════════════════
-    # Branding API
+    # Branding (mounted via api/urls.py → fusion_branding.py)
     # ═══════════════════════════════════════════════════════════════════
 
     @bolt.get("/fusion/branding")
     def branding(request):
-        """GET /api/fusion/branding — Dynamic site branding."""
+        """GET /api/fusion/branding — Dynamic site branding.
+
+        NOTE: This bolt-registered route is superseded by the standalone
+        ``fusion_branding.py`` view mounted directly in ``apps.core.api.urls``.
+        The standalone view is the canonical source; this bolt version exists
+        only for backward compatibility if bolt.urls is ever mounted separately."""
         try:
             from apps.pages.branding.context_processors import fusion_branding_context
 

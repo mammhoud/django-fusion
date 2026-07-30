@@ -1,4 +1,5 @@
 # Django-Fusion: Fix & Enhancement Plan
+> **Tags:** #django-fusion #webpack
 
 **Date:** July 28, 2026
 **Status:** Phase 1 ✅ Complete, Phase 2 ✅ Complete, Phase 3 🔜 Planned

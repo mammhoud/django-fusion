@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ProductCard, { ProductCardSkeleton, PRODUCT_CARD_COLORS } from '../../components/ProductCard';
+import ProductCard, { ProductCardSkeleton, PRODUCT_CARD_COLORS } from '../../components/data/ProductCard';
 import { Product } from '../../types';
 
 const mockProduct: Product = {

@@ -82,7 +82,7 @@ INSTALLED_APPS += LOCAL_APPS
 # but the fusion projects have their own site-local `www` package that shadows
 # the workspace one, so `www.worker` cannot be imported here. Remove it from
 # the fusion app registry; the fusion sites run their own task/worker stack
-# through django-fusion / ceptor-ai and do not need the legacy shared worker.
+# through django-fusion and do not need the legacy shared worker.
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
 
 # Register fusion_layout template tag library as both a builtin and library.

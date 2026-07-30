@@ -46,7 +46,7 @@
     "kitchen": "شاشة المطبخ",
     "schedule": "الجدول الزمني",
     "payroll": "الرواتب",
-    "receiptTemplates": "قوالب الإيصالات",
+    "notes": "قوالب الإيصالات",
     "invoice": "فاتورة",
     "taxReports": "التقارير الضريبية",
     "roles": "الأدوار",
@@ -69,7 +69,7 @@
     "kitchenDesc": "شاشة عرض طلبات المطبخ",
     "scheduleDesc": "جدولة الموظفين",
     "payrollDesc": "إدارة الرواتب",
-    "receiptTemplatesDesc": "تخصيص الإيصالات",
+    "notesDesc": "تخصيص الإيصالات",
     "taxReportsDesc": "التقارير الضريبية والمالية",
     "invoiceDesc": "إنشاء الفواتير",
     "rolesDesc": "صلاحيات الأدوار",
@@ -761,6 +761,10 @@
       "deliveryFee": "رسوم التوصيل",
       "perKmFee": "رسوم لكل كم"
     },
+    "backToSettings": "الإعدادات",
+    "themeTab": {
+      "title": "السمة"
+    },
     "languageNote": "التبديل بين الإنجليزية والعربية والفرنسية. دعم RTL تلقائي."
   },
   "supportChat": {
@@ -884,7 +888,17 @@
     "validationPasswordMatch": "كلمات المرور غير متطابقة",
     "rememberMe": "تذكرني",
     "showPassword": "إظهار كلمة المرور",
-    "hidePassword": "إخفاء كلمة المرور"
+    "hidePassword": "إخفاء كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "forgotPasswordDesc": "أدخل بريدك الإلكتروني لاستلام رمز إعادة التعيين",
+    "sendResetCode": "إرسال رمز إعادة التعيين",
+    "resetCodeSent": "تم إرسال رمز إعادة التعيين! تحقق من بريدك الإلكتروني.",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "resetPasswordDesc": "أدخل الرمز وكلمة المرور الجديدة لـ",
+    "newPassword": "كلمة المرور الجديدة",
+    "resetPasswordBtn": "إعادة تعيين كلمة المرور",
+    "backToLogin": "العودة لتسجيل الدخول",
+    "passwordResetSuccess": "تم إعادة تعيين كلمة المرور بنجاح! جاري التحويل لتسجيل الدخول..."
   },
   "confirmDialog": {
     "cancel": "إلغاء",
@@ -1004,7 +1018,7 @@
     "totalPay": "إجمالي الدفع",
     "noPayrolls": "لا توجد سجلات رواتب بعد."
   },
-  "receiptTemplates": {
+  "notes": {
     "title": "قوالب الإيصالات",
     "addTemplate": "إضافة قالب",
     "name": "الاسم",

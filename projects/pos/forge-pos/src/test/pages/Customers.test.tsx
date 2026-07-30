@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
-import Customers from '../../pages/Customers';
+import Customers from '../../pages/customers/Customers';
 
 const mockCustomers = [
   { id: 1, name: 'Alice Smith', phone: '03001111111', email: 'alice@example.com', notes: 'VIP', loyalty_points: 120 },

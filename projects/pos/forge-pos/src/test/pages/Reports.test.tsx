@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import Reports from '../../pages/Reports';
+import Reports from '../../pages/reports/Reports';
 
 const mockSettings = {
   restaurant_name: 'Test Restaurant',

@@ -412,6 +412,23 @@ fn login_user(
 }
 
 #[tauri::command]
+fn request_password_reset(app: AppHandle, email: String) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    auth::request_password_reset(&db_path, email)
+}
+
+#[tauri::command]
+fn reset_password_cmd(
+    app: AppHandle,
+    email: String,
+    code: String,
+    new_password: String,
+) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    auth::reset_password(&db_path, email, code, new_password)
+}
+
+#[tauri::command]
 fn change_password_cmd(
     app: AppHandle,
     email: String,
@@ -620,33 +637,33 @@ fn add_loyalty_transaction(app: AppHandle, transaction: db::models::NewLoyaltyTr
 
 // ---- Receipt Templates commands ----
 #[tauri::command]
-fn get_receipt_templates(app: AppHandle) -> Result<Vec<db::models::ReceiptTemplate>, String> {
+fn get_notes(app: AppHandle) -> Result<Vec<db::models::Note>, String> {
     let db_path = get_db_path(&app)?;
-    receipt_templates::get_receipt_templates(&db_path)
+    notes::get_notes(&db_path)
 }
 
 #[tauri::command]
-fn get_default_receipt_template(app: AppHandle) -> Result<db::models::ReceiptTemplate, String> {
+fn get_default_note(app: AppHandle) -> Result<db::models::Note, String> {
     let db_path = get_db_path(&app)?;
-    receipt_templates::get_default_receipt_template(&db_path)
+    notes::get_default_note(&db_path)
 }
 
 #[tauri::command]
-fn add_receipt_template(app: AppHandle, template: db::models::NewReceiptTemplate) -> Result<db::models::ReceiptTemplate, String> {
+fn add_note(app: AppHandle, template: db::models::NewNote) -> Result<db::models::Note, String> {
     let db_path = get_db_path(&app)?;
-    receipt_templates::add_receipt_template(&db_path, template)
+    notes::add_note(&db_path, template)
 }
 
 #[tauri::command]
-fn update_receipt_template(app: AppHandle, id: i32, update: db::models::UpdateReceiptTemplate) -> Result<db::models::ReceiptTemplate, String> {
+fn update_note(app: AppHandle, id: i32, update: db::models::UpdateNote) -> Result<db::models::Note, String> {
     let db_path = get_db_path(&app)?;
-    receipt_templates::update_receipt_template(&db_path, id, update)
+    notes::update_note(&db_path, id, update)
 }
 
 #[tauri::command]
-fn delete_receipt_template(app: AppHandle, id: i32) -> Result<(), String> {
+fn delete_note(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
-    receipt_templates::delete_receipt_template(&db_path, id)
+    notes::delete_note(&db_path, id)
 }
 
 // ---- Tax Reports commands ----
@@ -1076,6 +1093,8 @@ pub fn run() {
             setup_account,
             login_user,
             change_password_cmd,
+            request_password_reset,
+            reset_password_cmd,
             get_superuser_email,
             // Email
             send_support_email,
@@ -1114,11 +1133,11 @@ pub fn run() {
             get_loyalty_transactions,
             add_loyalty_transaction,
             // Receipt Templates
-            get_receipt_templates,
-            get_default_receipt_template,
-            add_receipt_template,
-            update_receipt_template,
-            delete_receipt_template,
+            get_notes,
+            get_default_note,
+            add_note,
+            update_note,
+            delete_note,
             // Tax Reports
             get_tax_reports,
             add_tax_report,

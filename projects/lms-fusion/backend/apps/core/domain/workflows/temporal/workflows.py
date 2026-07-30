@@ -1,5 +1,5 @@
 """
-Temporal Workflows for Django ceptor.
+Temporal Workflows for Fusion.
 
 Workflows are the orchestration layer for Temporal. They coordinate activities
 and handle the business logic flow.

@@ -452,12 +452,13 @@ export const INVOICE_CATEGORIES: InvoiceCategory[] = [
   { id: 'transfer_out', direction: 'payment', label: 'Transfer Goods Out', description: 'Goods transfer sent' },
 ];
 
-export interface ReceiptTemplate {
+export interface Note {
   id: number;
   name: string;
   template_body: string;
   category?: string | null;
   is_default: boolean;
+  use_as_template: boolean;
   created_at: string;
   updated_at: string;
 }
