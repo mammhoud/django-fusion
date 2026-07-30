@@ -5,7 +5,7 @@ import {
   waitFor,
 } from '../test-utils';
 import { resetInvokeMocks } from '../mocks/tauri';
-import SupportChat from '../../pages/settings/SupportChat';
+import SupportChat from '../../pages/admin/SupportChat';
 
 // Use vi.hoisted() to define mock fns BEFORE the vi.mock factory uses them
 const { mockHealthCheck } = vi.hoisted(() => ({

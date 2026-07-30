@@ -7,7 +7,7 @@ import LanguageToggle from '../../components/display/LanguageToggle';
 import ThemeToggle from '../../components/display/ThemeToggle';
 import { invoke } from '@tauri-apps/api/core';
 import { iconClass } from '../../lib/icons';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login' | 'forgotPassword' | 'resetPassword';
 

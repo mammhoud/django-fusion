@@ -4,7 +4,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 // ── Category color mapping ──
 const CATEGORY_COLORS: Record<string, string> = {

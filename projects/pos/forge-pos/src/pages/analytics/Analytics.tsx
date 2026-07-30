@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import PageLayout from '../../components/layout/PageLayout';
-import Card from '../../components/layout/Card';
+import Card from '../../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import {
@@ -11,7 +11,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { AnalyticsData } from '../../types';
 import { useStatusToast } from '../../hooks/useStatusToast';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import StatusToast from '../../components/data/StatusToast';
+import StatusToast from '../../components/ui/StatusToast';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 

@@ -14,29 +14,29 @@ import { ROLE_ROUTES } from './components/layout/SideNav';
 // Sale: 1551) are the biggest beneficiaries — they bundle heavy deps like
 // Recharts, jsPDF, and Excel export utilities only when visited.
 const Home = lazy(() => import('./pages/dashboard/Home'));
-const ProductManager = lazy(() => import('./pages/inventory/ProductManager'));
-const Sale = lazy(() => import('./pages/sales/Sale'));
-const Analytics = lazy(() => import('./pages/reports/Analytics'));
-const Transactions = lazy(() => import('./pages/sales/Transactions'));
-const Inventory = lazy(() => import('./pages/inventory/Inventory'));
-const Employees = lazy(() => import('./pages/staff/Employees'));
-const Recipes = lazy(() => import('./pages/inventory/Recipes'));
-const Reports = lazy(() => import('./pages/reports/Reports'));
-const Settings = lazy(() => import('./pages/settings/Settings'));
-const About = lazy(() => import('./pages/settings/About'));
+const ProductManager = lazy(() => import('./pages/pos/ProductManager'));
+const Sale = lazy(() => import('./pages/pos/Sale'));
+const Analytics = lazy(() => import('./pages/analytics/Analytics'));
+const Transactions = lazy(() => import('./pages/pos/Transactions'));
+const Inventory = lazy(() => import('./pages/kitchen/Inventory'));
+const Employees = lazy(() => import('./pages/admin/Employees'));
+const Recipes = lazy(() => import('./pages/kitchen/Recipes'));
+const Reports = lazy(() => import('./pages/analytics/Reports'));
+const Settings = lazy(() => import('./pages/admin/Settings'));
+const About = lazy(() => import('./pages/admin/About'));
 const Customers = lazy(() => import('./pages/customers/Customers'));
 const Suppliers = lazy(() => import('./pages/customers/Suppliers'));
 const KitchenDisplay = lazy(() => import('./pages/kitchen/KitchenDisplay'));
-const EmployeeSchedule = lazy(() => import('./pages/staff/EmployeeSchedule'));
-const Payroll = lazy(() => import('./pages/staff/Payroll'));
-const Notes = lazy(() => import('./pages/settings/Notes'));
-const TaxReports = lazy(() => import('./pages/reports/TaxReports'));
-const Roles = lazy(() => import('./pages/staff/Roles'));
-const SupportChat = lazy(() => import('./pages/settings/SupportChat'));
+const EmployeeSchedule = lazy(() => import('./pages/admin/EmployeeSchedule'));
+const Payroll = lazy(() => import('./pages/admin/Payroll'));
+const Notes = lazy(() => import('./pages/admin/Notes'));
+const TaxReports = lazy(() => import('./pages/analytics/TaxReports'));
+const Roles = lazy(() => import('./pages/admin/Roles'));
+const SupportChat = lazy(() => import('./pages/admin/SupportChat'));
 // const ThemeShowcase = lazy(() => import('./pages/ThemeShowcase')); // merged into ThemePreviewModal (Settings > Theme)
-const ThemeStudio = lazy(() => import('./pages/settings/ThemeStudio'));
-const StaffPage = lazy(() => import('./pages/staff/StaffPage'));
-const ProductsPage = lazy(() => import('./pages/inventory/ProductsPage'));
+const ThemeStudio = lazy(() => import('./pages/admin/ThemeStudio'));
+const StaffPage = lazy(() => import('./pages/admin/StaffPage'));
+const ProductsPage = lazy(() => import('./pages/pos/ProductsPage'));
 
 // ── Employee-accessible routes (shared with SideNav filtering) ──
 const EMPLOYEE_ROUTES = ROLE_ROUTES.employee;

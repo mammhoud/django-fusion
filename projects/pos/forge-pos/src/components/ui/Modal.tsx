@@ -1,4 +1,4 @@
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;

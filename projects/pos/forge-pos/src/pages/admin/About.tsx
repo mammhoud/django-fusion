@@ -4,11 +4,11 @@ import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
 import packageJson from '../../../package.json';
-import BackButton from '../../components/layout/BackButton';
-import Card from '../../components/layout/Card';
+import BackButton from '../../components/ui/BackButton';
+import Card from '../../components/ui/Card';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 interface SupportMessage {
   name: string;

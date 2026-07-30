@@ -8,7 +8,7 @@ import { pageSlideUp, dropdownMenu, toastSlideIn, iconSpring } from '../../utils
 // Built-in Forge POS crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
 import defaultLogo from '../../assets/pos-crest.svg';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
-import Card from '../../components/layout/Card';
+import Card from '../../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import { EmployeeSchedule as EmployeeScheduleType, Employee } from '../../types';
 

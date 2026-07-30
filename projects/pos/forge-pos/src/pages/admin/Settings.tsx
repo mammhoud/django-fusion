@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
-import Card from '../../components/layout/Card';
+import Card from '../../components/ui/Card';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { readFile, writeFile } from '@tauri-apps/plugin-fs';
 import { Settings as SettingsType, Employee, DeliveryZone } from '../../types';
-import BackButton from '../../components/layout/BackButton';
+import BackButton from '../../components/ui/BackButton';
 import PageLayout from '../../components/layout/PageLayout';
 import LanguageToggle from '../../components/display/LanguageToggle';
-import ConfirmDialog from '../../components/display/ConfirmDialog';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
@@ -63,7 +63,7 @@ const tabs: TabDefinition[] = [
 ];
 
 import { pageSlideRight } from '../../utils/pageTransitions';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 const currencyOptions = [
   { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },

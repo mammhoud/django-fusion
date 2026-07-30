@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient, Product, Ingredient, Note } from '../../types';
 import PageLayout from '../../components/layout/PageLayout';
-import { SkeletonCard, SkeletonList } from '../../components/layout/Skeleton';
+import { SkeletonCard, SkeletonList } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
-import Card from '../../components/layout/Card';
-import StatCard from '../../components/data/StatCard';
-import Modal from '../../components/layout/Modal';
-import ConfirmDialog from '../../components/display/ConfirmDialog';
-import StatusToast from '../../components/data/StatusToast';
+import Card from '../../components/ui/Card';
+import StatCard from '../../components/ui/StatCard';
+import Modal from '../../components/ui/Modal';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import StatusToast from '../../components/ui/StatusToast';
 
 interface RecipeWithDetails {
   recipe: Recipe;

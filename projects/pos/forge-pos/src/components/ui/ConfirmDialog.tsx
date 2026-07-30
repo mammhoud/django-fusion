@@ -1,4 +1,4 @@
-import Modal from '../layout/Modal';
+import Modal from './Modal';
 import { useTranslation } from 'react-i18next';
 
 interface ConfirmDialogProps {

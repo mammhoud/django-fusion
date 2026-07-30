@@ -3,13 +3,13 @@ import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { useDashboardDeltas } from '../../hooks/useDashboardDeltas';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
-import { SkeletonTable, SkeletonCard } from '../../components/layout/Skeleton';
-import Card from '../../components/layout/Card';
+import { SkeletonTable, SkeletonCard } from '../../components/ui/Skeleton';
+import Card from '../../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
-import StatCard from '../../components/data/StatCard';
+import StatCard from '../../components/ui/StatCard';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import ComparisonTable, { type ComparisonFilter } from '../../components/data/ComparisonTable';
+import ComparisonTable, { type ComparisonFilter } from '../../components/ui/ComparisonTable';
 import { useApiQueries } from '../../hooks/useApi';
 import {
   Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction,
@@ -2430,6 +2430,6 @@ const PIE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b
 
 // ---- Subcomponents ----
 
-// ── Subcomponents (StatCard now imported from ../components/data/StatCard) ──
+// ── Subcomponents (StatCard now imported from ../components/ui/StatCard) ──
 
 

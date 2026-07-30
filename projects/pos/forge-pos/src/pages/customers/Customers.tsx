@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Customer } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
-import Card from '../../components/layout/Card';
-import StatusToast from '../../components/data/StatusToast';
+import Card from '../../components/ui/Card';
+import StatusToast from '../../components/ui/StatusToast';
 
 export default function Customers() {
   const { t } = useTranslation();

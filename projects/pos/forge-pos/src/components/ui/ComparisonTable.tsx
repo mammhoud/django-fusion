@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Sale } from '../../types';
-import Card from '../layout/Card';
+import Card from './Card';
 import { useTranslation } from 'react-i18next';
 
 // ── Types ──

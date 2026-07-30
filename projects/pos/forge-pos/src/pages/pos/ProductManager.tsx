@@ -3,16 +3,16 @@ import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { Product, NewProduct, UpdateProductPayload, Category } from '../../types';
-import Card from '../../components/layout/Card';
-import DataTable, { type Column } from '../../components/data/DataTable';
-import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/data/ProductCard';
+import Card from '../../components/ui/Card';
+import DataTable, { type Column } from '../../components/ui/DataTable';
+import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
 import PageLayout from '../../components/layout/PageLayout';
 import { iconClass } from '../../lib/icons';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import AnimatePresence from '../../components/utils/AnimatePresence';
+import AnimatePresence from '../../components/ui/AnimatePresence';
 
 interface FormErrors {
   name?: string;
