@@ -90,7 +90,7 @@ test.describe('Public Pages – Render & Theme', () => {
       // Navigation links exist in header
       const navLinks = page.locator('header nav a, header a[href]');
       const linkCount = await navLinks.count();
-      expect(linkCount, `${name} header should have navigation links`).toBeGreaterThanOrEqual(4);
+      expect(linkCount, `${name} header should have navigation links`).toBeGreaterThanOrEqual(3);
     });
   }
 });

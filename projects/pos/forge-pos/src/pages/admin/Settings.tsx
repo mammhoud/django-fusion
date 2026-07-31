@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import ThemeToggle from '../../components/display/ThemeToggle';
-import { useTheme, THEME_VARIANTS, THEME_MAP, type ThemeVariant } from '../../contexts/ThemeContext';
-import { loadSavedThemes, deleteSavedTheme, type SavedTheme } from '../../utils/themeStudio';
+import { useTheme, THEME_VARIANTS, THEME_MAP } from '../../contexts/ThemeContext';
+
 import ThemePreviewModal from '../../components/display/ThemePreviewModal';
 import { Ic } from '../../lib/icons';
 
@@ -62,8 +62,7 @@ const tabs: TabDefinition[] = [
   { id: 'theme', label: 'Theme', icon: Ic('palette') },
 ];
 
-import { pageSlideRight } from '../../utils/pageTransitions';
-import AnimatePresence from '../../components/ui/AnimatePresence';
+
 
 const currencyOptions = [
   { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
@@ -259,7 +258,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        onClick={() => setIsOpen(!isOpen)}              className="select select-bordered w-full cursor-pointer flex items-center justify-between"
+        onClick={() => setIsOpen(!isOpen)}              className="input__field input__field--select w-full cursor-pointer flex items-center justify-between"
       >
         <span>
           {selectedCurrency ? (
@@ -271,14 +270,16 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 bg-base-100 border border-slate-300 dark:border-gray-600 rounded-lg shadow-xl">
           <div className="p-2">
-            <input
-              type="text"
-              placeholder={t('settings.searchCurrency')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="input input-bordered w-full"
-              onClick={(e) => e.stopPropagation()}
-            />
+            <div className="input">
+              <input
+                type="text"
+                placeholder={t('settings.searchCurrency')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input__field w-full"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
           </div>
           <div className="max-h-60 overflow-y-auto scrollbar-thumb-gray-600 scrollbar-track-transparent">
             {filteredOptions.map((currency) => (
@@ -312,114 +313,6 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
     </div>
   );
 };
-
-// ── Live Theme Preview ─────────────────────────────────────────────
-function ThemePreview({ variant, isActive, onApply }: {
-  variant: ThemeVariant;
-  isActive: boolean;
-  onApply: () => void;
-}) {
-  const { t } = useTranslation();
-  const { mode } = useTheme();
-
-  const previewLabel = mode === 'dark'
-    ? `${variant} — ${t('settings.appearanceTab.darkMode') || 'Dark'}`
-    : `${variant} — ${t('settings.appearanceTab.lightMode') || 'Light'}`;
-
-  return (
-    <div className="bg-base-100 text-base-content border border-base-300 rounded-2xl p-6 shadow-lg">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="font-semibold text-sm flex items-center gap-2">
-          <span className="icon-[tabler--eye] w-4 h-4" />
-          {t('settings.appearanceTab.previewTitle') || previewLabel}
-        </h3>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onApply}
-            disabled={isActive}
-            className="btn btn-primary btn-sm gap-2"
-          >
-            {isActive ? (
-              <><span className="icon-[tabler--check] w-4 h-4" /> {t('settings.appearanceTab.activeLabel')}</>
-            ) : (
-              <><span className="icon-[tabler--device-floppy] w-4 h-4" /> {t('settings.appearanceTab.applyTheme') || 'Apply Theme'}</>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Sample Card */}
-      <div className="card bg-base-200 shadow-sm mb-4">
-        <div className="card-body">
-          <h2 className="card-title">
-            <span className="icon-[tabler--shopping-cart] w-5 h-5" />
-            {t('settings.appearanceTab.previewOrder') || 'Sample Order'}
-          </h2>
-          <p className="text-sm">{t('settings.appearanceTab.previewOrderItem1') || 'Classic Burger × 2 — $24.00'}</p>
-          <p className="text-sm">{t('settings.appearanceTab.previewOrderItem2') || 'French Fries × 1 — $6.50'}</p>
-          <hr className="border-base-300 my-1" />
-          <div className="flex justify-between font-semibold">
-            <span>{t('common.total') || 'Total'}</span>
-            <span className="text-primary">$30.50</span>
-          </div>
-          <div className="card-actions mt-3">
-            <button className="btn btn-primary btn-sm">{t('common.pay') || 'Pay Now'}</button>
-            <button className="btn btn-ghost btn-sm">{t('common.cancel') || 'Cancel'}</button>
-          </div>
-        </div>
-      </div>
-
-      {/* Sample Form Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="label">
-            <span className="label-text">{t('settings.appearanceTab.previewItemName') || 'Item Name'}</span>
-          </label>
-          <input type="text" className="input input-bordered w-full" placeholder="e.g. Cappuccino" defaultValue="Cappuccino" />
-        </div>
-        <div>
-          <label className="label">
-            <span className="label-text">{t('settings.appearanceTab.previewPrice') || 'Price'}</span>
-          </label>
-          <input type="number" className="input input-bordered w-full" placeholder="0.00" defaultValue="5.50" />
-        </div>
-      </div>
-
-      {/* Sample Tabs */}
-      <div className="tabs tabs-boxed gap-1 mb-4" role="tablist">
-        <button type="button" role="tab" className="tab tab-active">{t('common.all') || 'All Items'}</button>
-        <button type="button" role="tab" className="tab">{t('common.beverages') || 'Beverages'}</button>
-        <button type="button" role="tab" className="tab">{t('common.food') || 'Food'}</button>
-      </div>
-
-      {/* Sample Badges */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <span className="badge badge-primary">{t('common.new') || 'New'}</span>
-        <span className="badge badge-secondary">{t('common.sale') || 'Sale'}</span>
-        <span className="badge badge-accent">{t('common.popular') || 'Popular'}</span>
-        <span className="badge badge-success">{t('common.paid') || 'Paid'}</span>
-        <span className="badge badge-warning">{t('common.pending') || 'Pending'}</span>
-        <span className="badge badge-error">{t('common.cancelled') || 'Cancelled'}</span>
-        <span className="badge badge-neutral">{t('common.draft') || 'Draft'}</span>
-      </div>
-
-      {/* Sample Alerts */}
-      <div role="alert" className="alert alert-info mb-3">
-        <span className="icon-[tabler--info-circle] w-5 h-5" />
-        <span>{t('settings.appearanceTab.previewAlertInfo') || 'Info alert with theme colors'}</span>
-      </div>
-      <div role="alert" className="alert alert-success mb-3">
-        <span className="icon-[tabler--check] w-5 h-5" />
-        <span>{t('settings.appearanceTab.previewAlertSuccess') || 'Success — order completed'}</span>
-      </div>
-      <div role="alert" className="alert alert-error">
-        <span className="icon-[tabler--alert-triangle] w-5 h-5" />
-        <span>{t('settings.appearanceTab.previewAlertError') || 'Error — payment failed'}</span>
-      </div>
-    </div>
-  );
-}
 
 
 export default function Settings() {
@@ -480,12 +373,8 @@ export default function Settings() {
   const [deleteZoneId, setDeleteZoneId] = useState<number | null>(null);
   const [isSavingZone, setIsSavingZone] = useState(false);
 
-  // Theme preview state (for hover + click-to-pin preview in Appearance tab)
-  const [previewVariant, setPreviewVariant] = useState<ThemeVariant | null>(null);
-  const [savedCustomThemes, setSavedCustomThemes] = useState<SavedTheme[]>(() => loadSavedThemes());
+
   const [showThemePreview, setShowThemePreview] = useState(false);
-  const activePreviewVariant = previewVariant ?? variant;
-  const previewThemeValue = THEME_MAP[activePreviewVariant]?.[mode] ?? 'light';
 
   // Password change state
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
@@ -876,14 +765,13 @@ export default function Settings() {
   }, [loadSettings, loadEmployeeStats, loadZones]);
 
   // ---- Shared Input Classes (FlyonUI) ----
-  const inputClass = (fieldName?: keyof FormErrors) =>
-    `input input-bordered w-full
-    ${fieldName && errors[fieldName]
-      ? 'input-error'
-      : ''}`;
-
-  const labelClass = 'block text-sm font-medium text-base-content/80 mb-1.5';
-  const errorClass = 'mt-1 text-sm text-red-400 flex items-center gap-1.5';
+  // BEM input helpers — maps flyonui classes to standardized BEM tokens
+  const BEM = {
+    field: 'input__field w-full',
+    label: 'input__label',
+    msg: 'input__message',
+    wrap: (hasError?: boolean) => hasError ? 'input input--error' : 'input',
+  };
 
   // ---- Tab: Theme ----
   const renderThemeTab = () => (
@@ -960,9 +848,9 @@ export default function Settings() {
 
       {/* ── Theme Variant Selector (Appearance) ── */}
       <div id="theme-section-appearance" className="scroll-mt-20" />
-      <div onMouseLeave={() => setPreviewVariant(null)}>
-        <div className="card bg-base-200 border border-base-300 p-6">
-          <div className="flex items-center gap-3 mb-5">
+      <div className="card bg-base-200 border border-base-300 p-6">
+        <div className="flex items-center justify-between gap-3 mb-5">
+          <div className="flex items-center gap-3">
             <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
               <span className="icon-[tabler--paint] w-5 h-5 text-primary dark:text-primary/80" />
             </div>
@@ -971,130 +859,51 @@ export default function Settings() {
               <p className="text-sm text-base-content/50">{t('settings.appearanceTab.description')}</p>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {THEME_VARIANTS.map((v) => {
-              const isActive = variant === v.id;
-              const descKey = `settings.appearanceTab.${v.id}Desc`;
-              return (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => {
-                    if (activePreviewVariant === v.id) {
-                      setPreviewVariant(null);
-                    } else {
-                      setPreviewVariant(v.id);
-                    }
-                  }}
-                  onMouseEnter={() => {
-                    if (previewVariant === null || previewVariant === v.id) {
-                      setPreviewVariant(v.id);
-                    }
-                  }}
-                  className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive || previewVariant === v.id ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10' : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600'}`}
-                >
-                  <span className={`icon-[${v.icon}] w-5 h-5`} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-base-content text-sm">
-                        {t(`settings.appearanceTab.theme${v.label}`, v.label)}
-                      </span>
-                      {(isActive || previewVariant === v.id) && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 dark:bg-teal-800/40 text-teal-700 dark:text-primary/70">
-                          {previewVariant === v.id && !isActive ? t('settings.appearanceTab.previewLabel') || 'Preview' : t('settings.appearanceTab.activeLabel')}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-base-content/50 mt-0.5">
-                      {t(descKey, v.description)}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowThemePreview(true)}
+            className="btn btn-primary btn-sm gap-2"
+          >
+            <span className="icon-[tabler--eye] w-4 h-4" />
+            {t('settings.appearanceTab.previewTitle') || 'Preview Theme'}
+          </button>
         </div>
 
-        {/* ── Saved Custom Themes ── */}
-        {savedCustomThemes.length > 0 && (
-          <div className="card bg-base-200 border border-base-300 p-6 mt-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-secondary/10 dark:bg-secondary/30 rounded-full p-2.5">
-                <span className="icon-[tabler--bookmark] w-5 h-5 text-secondary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-base-content">Saved Custom Themes</h3>
-                <p className="text-sm text-base-content/50">Custom themes created in Theme Studio</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {savedCustomThemes.map(t => (
-                <div
-                  key={t.name}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-base-300/50 bg-base-100/50 hover:bg-base-100 transition-all"
-                >
-                  <div className="flex -space-x-1.5 shrink-0">
-                    <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.primary.l}% ${t.colors.primary.c} ${t.colors.primary.h})` }} />
-                    <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.secondary.l}% ${t.colors.secondary.c} ${t.colors.secondary.h})` }} />
-                    <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.accent.l}% ${t.colors.accent.c} ${t.colors.accent.h})` }} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {THEME_VARIANTS.map((v) => {
+            const isActive = variant === v.id;
+            const descKey = `settings.appearanceTab.${v.id}Desc`;
+            return (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setVariant(v.id)}
+                className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${
+                  isActive
+                    ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10'
+                    : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600 hover:shadow-sm'
+                }`}
+              >
+                <span className={`icon-[${v.icon}] w-5 h-5 animate-scale-in`} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-base-content text-sm">
+                      {t(`settings.appearanceTab.theme${v.label}`, v.label)}
+                    </span>
+                    {isActive && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 dark:bg-teal-800/40 text-teal-700 dark:text-primary/70">
+                        {t('settings.appearanceTab.activeLabel')}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-base-content truncate">{t.name}</p>
-                    <p className="text-[10px] text-base-content/50">Based on {t.baseThemeKey}</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const root = document.documentElement;
-                        for (const [key, val] of Object.entries(t.colors)) {
-                          const v = val as { l: number; c: number; h: number };
-                          root.style.setProperty(`--color-${key}`, `oklch(${v.l.toFixed(2)}% ${v.c.toFixed(4)} ${v.h.toFixed(2)})`);
-                        }
-                        localStorage.setItem('theme-studio-custom', JSON.stringify(t.colors));
-                        localStorage.setItem('theme-studio-key', t.baseThemeKey);
-                      }}
-                      className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-primary"
-                      title="Apply this theme"
-                    >
-                      <span className="icon-[tabler--check] w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (window.confirm(`Delete saved theme "${t.name}"?`)) {
-                          setSavedCustomThemes(deleteSavedTheme(t.name));
-                        }
-                      }}
-                      className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error"
-                      title={`Delete "${t.name}"`}
-                    >
-                      <span className="icon-[tabler--trash] w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  <p className="text-xs text-base-content/50 mt-0.5">
+                    {t(descKey, v.description)}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Live Theme Preview ── */}
-        <AnimatePresence>
-          {previewVariant && (
-            <div
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden mt-6"
-              data-theme={previewThemeValue}
-            >
-              <ThemePreview
-                variant={previewVariant}
-                isActive={variant === previewVariant}
-                onApply={() => { setVariant(previewVariant); setPreviewVariant(null); }}
-              />
-            </div>
-          )}
-        </AnimatePresence>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
 
@@ -1177,7 +986,7 @@ export default function Settings() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Logo */}
       <div className="md:col-span-2">
-        <label className={labelClass}>{t('settings.businessLogo') || 'Business Logo (appears on invoices & receipts)'}</label>
+        <label className={BEM.label}>{t('settings.businessLogo') || 'Business Logo (appears on invoices & receipts)'}</label>
         <div className="flex items-center gap-6">
           {logoPreview && (
             <div className="relative w-24 h-24 shrink-0">
@@ -1221,15 +1030,17 @@ export default function Settings() {
 
       {/* Restaurant Name */}
       <div>
-        <label className={labelClass}>{t('settings.restaurantName')} <span className="text-red-400">*</span></label>
-        <input type="text" name="restaurant_name" value={settings.restaurant_name} onChange={handleChange}
-          className={inputClass('restaurant_name')} />
-        {errors.restaurant_name && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.restaurant_name}</p>}
+        <div className={BEM.wrap(!!errors.restaurant_name)}>
+          <label className={BEM.label}>{t('settings.restaurantName')} <span className="text-red-400">*</span></label>
+          <input type="text" name="restaurant_name" value={settings.restaurant_name} onChange={handleChange}
+            className={BEM.field} />
+          {errors.restaurant_name && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.restaurant_name}</p>}
+        </div>
       </div>
 
       {/* Language */}
       <div>
-        <label className={labelClass}>{t('settings.generalTab.languageLabel')}</label>
+        <label className={BEM.label}>{t('settings.generalTab.languageLabel')}</label>
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-base-100/50 border border-slate-300 dark:border-gray-600">
           <span className="text-sm text-base-content flex-1">
             {i18n.language === 'ar' ? t('settings.generalTab.languageValueAr') : i18n.language === 'fr' ? t('settings.generalTab.languageValueFr') : i18n.language === 'de' ? t('settings.generalTab.languageValueDe') : i18n.language === 'es' ? t('settings.generalTab.languageValueEs') : t('settings.generalTab.languageValueEn')}
@@ -1256,7 +1067,7 @@ export default function Settings() {
               <select
                 value={pendingInactivityTimeout}
                 onChange={(e) => setPendingInactivityTimeout(e.target.value)}
-                className="select select-bordered w-full"
+                className="input__field input__field--select w-full"
               >
                 <option value="never">{t('settings.timeoutNever')}</option>
                 <option value="5">{t('settings.timeout5min')}</option>
@@ -1297,24 +1108,24 @@ export default function Settings() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className={labelClass}>{t('settings.currentPassword')}</label>
+              <div className="input">
+                <label className={BEM.label}>{t('settings.currentPassword')}</label>
             <input
               type="password"
               value={passwordOld}
               onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
               placeholder="••••••••"
-              className="input input-bordered w-full"
+              className="input__field w-full"
             />
               </div>
-              <div>
-                <label className={labelClass}>{t('settings.newPassword')}</label>
+              <div className="input">
+                <label className={BEM.label}>{t('settings.newPassword')}</label>
             <input
               type="password"
               value={passwordNew}
               onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
               placeholder="••••••••"
-              className="input input-bordered w-full"
+              className="input__field w-full"
             />
               </div>
               <div className="flex items-end">
@@ -1338,38 +1149,42 @@ export default function Settings() {
 
       {/* Phone */}
       <div>
-        <label className={labelClass}>{t('settings.phone')}</label>
-        <input type="tel" name="phone" value={settings.phone} onChange={handleChange} className={inputClass('phone')} />
-        {errors.phone && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.phone}</p>}
+        <div className={BEM.wrap(!!errors.phone)}>
+          <label className={BEM.label}>{t('settings.phone')}</label>
+          <input type="tel" name="phone" value={settings.phone} onChange={handleChange} className={BEM.field} />
+          {errors.phone && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.phone}</p>}
+        </div>
       </div>
 
       {/* Email */}
       <div>
-        <label className={labelClass}>{t('settings.email')}</label>
-        <input type="email" name="email" value={settings.email} onChange={handleChange} className={inputClass('email')} />
-        {errors.email && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.email}</p>}
+        <div className={BEM.wrap(!!errors.email)}>
+          <label className={BEM.label}>{t('settings.email')}</label>
+          <input type="email" name="email" value={settings.email} onChange={handleChange} className={BEM.field} />
+          {errors.email && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.email}</p>}
+        </div>
       </div>
 
       {/* MCP Support Toggle */}
-      <div>
-        <label className="flex items-center justify-between cursor-pointer">
-          <span className={labelClass + ' mb-0'}>{t('settings.mcpEnabled') || 'MCP Support'}</span>
+      <div className="input">
+        <label className="input-choice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <span className="input-choice__label">{t('settings.mcpEnabled') || 'MCP Support'}</span>
           <input
             type="checkbox"
-            className="toggle toggle-primary"
+            className="input-choice__control"
             checked={!!settings.mcp_enabled}
             onChange={(e) => setSettings(prev => ({ ...prev, mcp_enabled: e.target.checked }))}
           />
         </label>
-        <p className="mt-1 text-xs text-base-content/40">
+        <p className="input__message">
           {t('settings.mcpDescription') || 'When enabled, MCP takes priority over email support chat'}
         </p>
       </div>
 
       {/* Address */}
-      <div>
-        <label className={labelClass}>{t('settings.address')}</label>
-              <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="textarea textarea-bordered w-full" />
+      <div className="input">
+        <label className={BEM.label}>{t('settings.address')}</label>
+        <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="input__field input__field--textarea w-full" />
       </div>
     </div>
   );
@@ -1378,44 +1193,50 @@ export default function Settings() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Tax Rate */}
       <div>
-        <label className={labelClass}>{t('settings.taxRate')}</label>
-        <input type="number" name="tax_rate" value={settings.tax_rate} onChange={handleChange}
-          step="0.01" min="0" max="100" className={inputClass('tax_rate')} />
-        {errors.tax_rate && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.tax_rate}</p>}
+        <div className={BEM.wrap(!!errors.tax_rate)}>
+          <label className={BEM.label}>{t('settings.taxRate')}</label>
+          <input type="number" name="tax_rate" value={settings.tax_rate} onChange={handleChange}
+            step="0.01" min="0" max="100" className={BEM.field} />
+          {errors.tax_rate && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.tax_rate}</p>}
+        </div>
       </div>
 
       {/* Tax ID */}
-      <div>
-        <label className={labelClass}>{t('settings.taxId') || 'Tax ID'}</label>
+      <div className="input">
+        <label className={BEM.label}>{t('settings.taxId') || 'Tax ID'}</label>
         <input type="text" name="tax_id" value={settings.tax_id || ''} onChange={handleChange}
-          placeholder="e.g. NTN-1234567" className="input input-bordered w-full" />
+          placeholder="e.g. NTN-1234567" className="input__field w-full" />
       </div>
 
       {/* Currency */}
       <div>
-        <label className={labelClass}>{t('settings.currency')}</label>
+        <label className={BEM.label}>{t('settings.currency')}</label>
         <CurrencyDropdown value={settings.currency || 'USD'} onChange={(v) => setSettings(prev => ({ ...prev, currency: v }))} />
       </div>
 
       {/* Opening Time */}
       <div>
-        <label className={labelClass}>{t('settings.openingTime')}</label>
-        <input type="time" name="opening_time" value={settings.opening_time} onChange={handleChange} className={inputClass('opening_time')} />
-        {errors.opening_time && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.opening_time}</p>}
+        <div className={BEM.wrap(!!errors.opening_time)}>
+          <label className={BEM.label}>{t('settings.openingTime')}</label>
+          <input type="time" name="opening_time" value={settings.opening_time} onChange={handleChange} className={BEM.field} />
+          {errors.opening_time && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.opening_time}</p>}
+        </div>
       </div>
 
       {/* Closing Time */}
       <div>
-        <label className={labelClass}>{t('settings.closingTime')}</label>
-        <input type="time" name="closing_time" value={settings.closing_time} onChange={handleChange} className={inputClass('closing_time')} />
-        {errors.closing_time && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.closing_time}</p>}
+        <div className={BEM.wrap(!!errors.closing_time)}>
+          <label className={BEM.label}>{t('settings.closingTime')}</label>
+          <input type="time" name="closing_time" value={settings.closing_time} onChange={handleChange} className={BEM.field} />
+          {errors.closing_time && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.closing_time}</p>}
+        </div>
       </div>
 
       {/* Receipt Footer */}
-      <div className="md:col-span-2">
-        <label className={labelClass}>{t('settings.receiptFooter')}</label>
+      <div className="input md:col-span-2">
+        <label className={BEM.label}>{t('settings.receiptFooter')}</label>
         <textarea name="receipt_footer" value={settings.receipt_footer} onChange={handleChange}
-          rows={3} className="textarea textarea-bordered w-full"
+          rows={3} className="input__field input__field--textarea w-full"
           placeholder={t('settings.receiptFooterPlaceholder')} />
       </div>
     </div>
@@ -1433,11 +1254,11 @@ export default function Settings() {
             <p className="text-sm text-base-content/50">{t('settings.diningTab.description')}</p>
           </div>
         </div>
-        <div>
-          <label className={labelClass}>{t('settings.numberOfTables')}</label>
+        <div className="input">
+          <label className={BEM.label}>{t('settings.numberOfTables')}</label>
           <input type="number" name="dine_in_tables" value={settings.dine_in_tables ?? 0}
             onChange={handleChange} min="0"
-            className="input input-bordered w-full" />
+            className="input__field w-full" />
           <p className="mt-1.5 text-xs text-base-content/50">
             {t('settings.diningTab.zeroToDisable')}
           </p>
@@ -1475,14 +1296,14 @@ export default function Settings() {
         </div>
         <div className="space-y-6">
           <div>
-            <label className={labelClass}>{t('settings.deliveryFeeFlat', { currency: settings.currency || 'USD' })}</label>
+            <label className={BEM.label}>{t('settings.deliveryFeeFlat', { currency: settings.currency || 'USD' })}</label>
             <input type="number" name="delivery_fee" value={settings.delivery_fee ?? 0}
-              onChange={handleChange} min="0" step="0.5" className={inputClass()} />
+              onChange={handleChange} min="0" step="0.5" className={BEM.field} />
           </div>
           <div>
-            <label className={labelClass}>{t('settings.deliveryFeePerKm', { currency: settings.currency || 'USD' })}</label>
+            <label className={BEM.label}>{t('settings.deliveryFeePerKm', { currency: settings.currency || 'USD' })}</label>
             <input type="number" name="delivery_fee_per_km" value={settings.delivery_fee_per_km ?? 0}
-              onChange={handleChange} min="0" step="0.1" className={inputClass()} />
+              onChange={handleChange} min="0" step="0.1" className={BEM.field} />
             <p className="mt-1.5 text-xs text-base-content/50">
               {t('settings.deliveryTab.perKmDescription')}
             </p>
@@ -1566,27 +1387,27 @@ export default function Settings() {
                 {editingZone ? `Edit Zone: ${editingZone.name}` : 'Add Delivery Zone'}
               </h3>
               <div className="space-y-4">
-                <div>
-                  <label className={labelClass}>Zone Name *</label>
+                <div className="input">
+                  <label className={BEM.label}>Zone Name *</label>
                   <input type="text" value={zoneForm.name} onChange={e => setZoneForm(p => ({ ...p, name: e.target.value }))}
-                    className="input input-bordered w-full" placeholder="e.g. Downtown" />
+                    className="input__field w-full" placeholder="e.g. Downtown" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Base Fee ({settings.currency})</label>
+                  <div className="input">
+                    <label className={BEM.label}>Base Fee ({settings.currency})</label>
                     <input type="number" value={zoneForm.base_fee} onChange={e => setZoneForm(p => ({ ...p, base_fee: Number(e.target.value) }))}
-                      min="0" step="0.5" className="input input-bordered w-full" />
+                      min="0" step="0.5" className="input__field w-full" />
                   </div>
-                  <div>
-                    <label className={labelClass}>Fee Per KM</label>
+                  <div className="input">
+                    <label className={BEM.label}>Fee Per KM</label>
                     <input type="number" value={zoneForm.fee_per_km} onChange={e => setZoneForm(p => ({ ...p, fee_per_km: Number(e.target.value) }))}
-                      min="0" step="0.1" className="input input-bordered w-full" />
+                      min="0" step="0.1" className="input__field w-full" />
                   </div>
                 </div>
-                <div>
-                  <label className={labelClass}>Max Distance (km)</label>
+                <div className="input">
+                  <label className={BEM.label}>Max Distance (km)</label>
                   <input type="number" value={zoneForm.max_distance} onChange={e => setZoneForm(p => ({ ...p, max_distance: Number(e.target.value) }))}
-                    min="0" step="1" className="input input-bordered w-full" />
+                    min="0" step="1" className="input__field w-full" />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
@@ -1903,27 +1724,20 @@ export default function Settings() {
 
         {/* Tab Content */}
         <Card padding="xl" transitional className="md:p-8 mb-6 min-h-[320px]">
-          <AnimatePresence mode="wait">
-            <div
-              key={activeTab}
-              role="tabpanel"
-              id={`settings-panel-${activeTab}`}
-              aria-labelledby={`settings-tab-${activeTab}`}
-              className={pageSlideRight}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2 }}
-            >
-              {activeTab === 'general' && renderGeneralTab()}
-              {activeTab === 'business' && renderBusinessTab()}
-              {activeTab === 'dining' && renderDiningTab()}
-              {activeTab === 'delivery' && renderDeliveryTab()}
-              {activeTab === 'employees' && renderEmployeesTab()}
-              {activeTab === 'database' && renderDatabaseTab()}
-              {activeTab === 'theme' && renderThemeTab()}
-            </div>
-          </AnimatePresence>
+          <div
+            key={activeTab}
+            role="tabpanel"
+            id={`settings-panel-${activeTab}`}
+            aria-labelledby={`settings-tab-${activeTab}`}
+          >
+            {activeTab === 'general' && renderGeneralTab()}
+            {activeTab === 'business' && renderBusinessTab()}
+            {activeTab === 'dining' && renderDiningTab()}
+            {activeTab === 'delivery' && renderDeliveryTab()}
+            {activeTab === 'employees' && renderEmployeesTab()}
+            {activeTab === 'database' && renderDatabaseTab()}
+            {activeTab === 'theme' && renderThemeTab()}
+          </div>
         </Card>
 
         {/* Action Buttons */}

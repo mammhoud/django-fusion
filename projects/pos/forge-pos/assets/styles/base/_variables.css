@@ -1,67 +1,217 @@
-/* ── CSS Custom Properties ───────────────────────────────────────── */
-/* Centralized design tokens for easy customization of themes,          */
-/* components, and utilities. Override these in :root or html.dark.      */
+/* ═══════════════════════════════════════════════════════════════════
+   Base Design Tokens & CSS Custom Properties
+   ═══════════════════════════════════════════════════════════════════
+   Naming: BEM-inspired block__element--modifier
+   All tokens reference FlyonUI's data-theme variables so every
+   component adapts automatically when switching theme variants.
+   ═══════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Safe area insets */
+  /* ── Safe Area Insets ──────────────────────────────────────── */
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-right: env(safe-area-inset-right, 0px);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
 
-  /* Theme: Light (default) */
-  --color-bg-body: #f8fafc;
-  --color-text-body: #0f172a;
-  --color-bg-dark: #0f172a;
-  --color-text-dark: #f8fafc;
+  /* ═══════════════════════════════════════════════════════════════
+     Color Palette — Theme-Aware (BEM: color__role--variant)
+     Uses FlyonUI's data-theme CSS variables so every token
+     adapts to the current theme variant automatically.
+     ═══════════════════════════════════════════════════════════════ */
+  
+  /* ── Surface & Text (color__surface--*) ──────────────────── */
+  --color__surface--page:   oklch(var(--color-base-100));
+  --color__surface--card:   oklch(var(--color-base-200));
+  --color__surface--raised: oklch(var(--color-base-300));
+  --color__surface--overlay: oklch(0 0 0 / 0.5);
+  --color__text--primary:   oklch(var(--color-base-content));
+  --color__text--secondary: color-mix(in oklch, oklch(var(--color-base-content)) 60%, transparent);
+  --color__text--disabled:  color-mix(in oklch, oklch(var(--color-base-content)) 30%, transparent);
 
-  /* Brand / Accent */
-  --color-primary: #667eea;
-  --color-primary-dark: #764ba2;
-  --color-focus-ring: #667eea;
+  /* ── Semantic Colors (color__semantic--*) ────────────────── */
+  --color__semantic--primary:      oklch(var(--color-primary));
+  --color__semantic--primary-hover: color-mix(in oklch, oklch(var(--color-primary)) 80%, black);
+  --color__semantic--secondary:    oklch(var(--color-secondary));
+  --color__semantic--accent:       oklch(var(--color-accent));
+  --color__semantic--info:         oklch(var(--color-info));
+  --color__semantic--success:      oklch(var(--color-success));
+  --color__semantic--warning:      oklch(var(--color-warning));
+  --color__semantic--error:        oklch(var(--color-error));
+  --color__semantic--neutral:      oklch(var(--color-neutral));
 
-  /* Card modifiers */
-  --card-glass-bg: rgba(255, 255, 255, 0.7);
-  --card-glass-border: rgba(255, 255, 255, 0.2);
-  --card-glass-bg-dark: rgba(255, 255, 255, 0.1);
-  --card-glass-border-dark: rgba(255, 255, 255, 0.08);
-  --card-hover-translate: -2px;
-  --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  --card-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
-  --card-transition-duration: 0.3s;
+  /* ── Semantic Content Colors (color__semantic-content--*) ── */
+  --color__semantic-content--primary:   oklch(var(--color-primary-content));
+  --color__semantic-content--secondary: oklch(var(--color-secondary-content));
+  --color__semantic-content--accent:    oklch(var(--color-accent-content));
+  --color__semantic-content--info:      oklch(var(--color-info-content));
+  --color__semantic-content--success:   oklch(var(--color-success-content));
+  --color__semantic-content--warning:   oklch(var(--color-warning-content));
+  --color__semantic-content--error:     oklch(var(--color-error-content));
+  --color__semantic-content--neutral:   oklch(var(--color-neutral-content));
 
-  /* Shimmer effect */
-  --shimmer-color: rgba(255, 255, 255, 0.2);
-  --shimmer-duration: 1.5s;
+  /* ── Border Colors (color__border--*) ────────────────────── */
+  --color__border--subtle:   color-mix(in oklch, oklch(var(--color-base-300)) 30%, transparent);
+  --color__border--default:  color-mix(in oklch, oklch(var(--color-base-300)) 50%, transparent);
+  --color__border--emphasis: color-mix(in oklch, oklch(var(--color-base-content)) 20%, transparent);
+  --color__border--primary:  oklch(var(--color-primary) / 0.3);
+  --color__border--error:    oklch(var(--color-error) / 0.3);
+  --color__border--focus:    oklch(var(--color-primary) / 0.5);
 
-  /* Scrollbar */
-  --scrollbar-width: 8px;
-  --scrollbar-thumb: rgba(100, 116, 139, 0.3);
-  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.5);
+  /* ═══════════════════════════════════════════════════════════════
+     Typography Scale (typography__size--*)
+     ═══════════════════════════════════════════════════════════════ */
+  --typography__size--xs:   0.625rem;   /* 10px */
+  --typography__size--sm:   0.75rem;    /* 12px */
+  --typography__size--base: 0.875rem;   /* 14px */
+  --typography__size--md:   1rem;       /* 16px */
+  --typography__size--lg:   1.125rem;   /* 18px */
+  --typography__size--xl:   1.25rem;    /* 20px */
+  --typography__size--2xl:  1.5rem;     /* 24px */
+  --typography__size--3xl:  1.875rem;   /* 30px */
+  --typography__line-height--tight:  1.25;
+  --typography__line-height--normal: 1.5;
+  --typography__line-height--relaxed: 1.75;
+  --typography__weight--normal:  400;
+  --typography__weight--medium:  500;
+  --typography__weight--semibold: 600;
+  --typography__weight--bold:    700;
 
-  /* Focus ring */
-  --focus-ring-width: 2px;
-  --focus-ring-offset: 2px;
-  --focus-ring-radius: 4px;
+  /* ═══════════════════════════════════════════════════════════════
+     Spacing Scale (spacing--*)
+     ═══════════════════════════════════════════════════════════════ */
+  --spacing--xs:   0.25rem;   /*  4px */
+  --spacing--sm:   0.5rem;    /*  8px */
+  --spacing--md:   0.75rem;   /* 12px */
+  --spacing--lg:   1rem;      /* 16px */
+  --spacing--xl:   1.5rem;    /* 24px */
+  --spacing--2xl:  2rem;      /* 32px */
+  --spacing--3xl:  3rem;      /* 48px */
 
-  /* Animation delays */
-  --animation-delay-100: 100ms;
-  --animation-delay-200: 200ms;
-  --animation-delay-300: 300ms;
-  --animation-delay-400: 400ms;
+  /* ═══════════════════════════════════════════════════════════════
+     Border Radius Scale (radius--*)
+     ═══════════════════════════════════════════════════════════════ */
+  --radius--none:   0;
+  --radius--sm:     var(--radius-selector);
+  --radius--md:     var(--radius-field);
+  --radius--lg:     var(--radius-box);
+  --radius--xl:     0.75rem;
+  --radius--2xl:    1rem;
+  --radius--full:   9999px;
 
-  /* ── Theme-adaptive tokens (Section 1.1) ── */
-  /* Reference FlyonUI's active data-theme so every component adapts
-     automatically when switching theme variants (default / corporate /
-     luxury / pastel / cyberpunk). Used by Card, Modal, SideNav. */
-  --color-border: color-mix(in oklch, var(--color-base-300) 50%, transparent);
-  --color-category-title: color-mix(in oklch, var(--color-base-content) 50%, transparent);
+  /* ═══════════════════════════════════════════════════════════════
+     Shadow Scale (shadow--*)
+     ═══════════════════════════════════════════════════════════════ */
+  --shadow--none:        none;
+  --shadow--sm:          0 1px 2px oklch(0 0 0 / 0.05);
+  --shadow--md:          0 1px 3px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow--lg:          0 4px 12px oklch(0 0 0 / 0.08);
+  --shadow--xl:          0 8px 24px oklch(0 0 0 / 0.1);
+  --shadow--elevated:    0 12px 36px oklch(0 0 0 / 0.12);
+  --shadow--colored:     0 4px 12px oklch(var(--color-primary) / 0.15);
 
+  /* ═══════════════════════════════════════════════════════════════
+     Animation System (animation__*)
+     ═══════════════════════════════════════════════════════════════ */
+  
+  /* ── Duration (animation__duration--*) ────────────────────── */
+  --animation__duration--instant:  0ms;
+  --animation__duration--fast:     100ms;
+  --animation__duration--normal:   200ms;
+  --animation__duration--slow:     300ms;
+  --animation__duration--slower:   400ms;
+  --animation__duration--slowest:  500ms;
+
+  /* ── Easing (animation__easing--*) ────────────────────────── */
+  --animation__easing--default:   cubic-bezier(0.4, 0, 0.2, 1);
+  --animation__easing--linear:    cubic-bezier(0, 0, 1, 1);
+  --animation__easing--in:        cubic-bezier(0.4, 0, 1, 1);
+  --animation__easing--out:       cubic-bezier(0, 0, 0.2, 1);
+  --animation__easing--spring:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animation__easing--bounce:    cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animation__easing--smooth:    cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Animation shorthand (animation__*─*) ─────────────────── */
+  --animation__transition--fast:   all var(--animation__duration--fast) var(--animation__easing--default);
+  --animation__transition--normal: all var(--animation__duration--normal) var(--animation__easing--default);
+  --animation__transition--slow:   all var(--animation__duration--slow) var(--animation__easing--default);
+  --animation__transition--spring: all var(--animation__duration--normal) var(--animation__easing--spring);
+
+  /* ── Stagger delays (animation__stagger--*) ────────────────── */
+  --animation__stagger--1:  50ms;
+  --animation__stagger--2:  100ms;
+  --animation__stagger--3:  150ms;
+  --animation__stagger--4:  200ms;
+  --animation__stagger--5:  250ms;
+  --animation__stagger--6:  300ms;
+  --animation__stagger--7:  350ms;
+  --animation__stagger--8:  400ms;
+  --animation__stagger--9:  450ms;
+  --animation__stagger--10: 500ms;
+
+  /* ═══════════════════════════════════════════════════════════════
+     Input Component (input__*)
+     ═══════════════════════════════════════════════════════════════ */
+  --input__height:       2.5rem;
+  --input__height--sm:   2rem;
+  --input__height--lg:   3rem;
+  --input__padding-x:    0.75rem;
+  --input__border-width: 1px;
+  --input__border-color: var(--color__border--default);
+  --input__border-color--hover: var(--color__border--emphasis);
+  --input__border-color--focus: var(--color__border--focus);
+  --input__border-color--error: var(--color__border--error);
+  --input__bg:           oklch(var(--color-base-100));
+  --input__bg--disabled: color-mix(in oklch, oklch(var(--color-base-200)) 50%, transparent);
+  --input__text-color:   var(--color__text--primary);
+  --input__text-color--disabled: var(--color__text--disabled);
+  --input__placeholder-color: var(--color__text--disabled);
+  --input__radius:       var(--radius--md);
+  --input__shadow--focus: 0 0 0 3px oklch(var(--color-primary) / 0.15);
+
+  /* ── Legacy forge compatibility tokens ──────────────────── */
+  --forge-card-padding: 1rem;
+  --forge-card-gap: 0.75rem;
+  --forge-grid-gap: 1rem;
+  --forge-section-gap: 1.5rem;
+  --forge-input-height: var(--input__height);
+  --forge-btn-height: 2.25rem;
+  --forge-radius-card: 0.75rem;
+  --forge-radius-btn: 0.5rem;
+  --forge-shadow-card: 0 1px 3px oklch(0 0 0 / 0.06);
+  --forge-shadow-hover: 0 4px 12px oklch(0 0 0 / 0.08);
+  --forge-shadow-elevated: 0 8px 24px oklch(0 0 0 / 0.1);
+  --forge-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --forge-transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-html.dark {
-  --color-bg-body: var(--color-bg-dark);
-  --color-text-body: var(--color-text-dark);
-  --card-glass-bg: var(--card-glass-bg-dark);
-  --card-glass-border: var(--card-glass-border-dark);
+/* ── Compact mode override ───────────────────────────────── */
+.forge-compact {
+  --spacing--lg: 0.75rem;
+  --spacing--xl: 1rem;
+  --forge-card-padding: 0.75rem;
+  --forge-card-gap: 0.5rem;
+  --forge-grid-gap: 0.75rem;
+  --forge-section-gap: 1rem;
+  --input__height: 2rem;
+  --forge-btn-height: 1.75rem;
+}
+
+/* ── Reduced motion accessibility ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation__duration--instant: 0ms !important;
+    --animation__duration--fast: 0ms !important;
+    --animation__duration--normal: 0ms !important;
+    --animation__duration--slow: 0ms !important;
+    --animation__duration--slower: 0ms !important;
+    --animation__duration--slowest: 0ms !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0ms !important;
+  }
 }

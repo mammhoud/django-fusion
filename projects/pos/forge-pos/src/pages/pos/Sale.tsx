@@ -620,7 +620,7 @@ export default function Sale() {
                     value={tableNumber}
                     onChange={e => setTableNumber(Number(e.target.value))}
                     disabled={isLoading}
-                    className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
                       <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
@@ -639,7 +639,7 @@ export default function Sale() {
                       value={deliveryTypeId}
                       onChange={e => setDeliveryTypeId(Number(e.target.value))}
                       disabled={isLoading}
-                      className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {deliveryTypes.map(dt => (
                         <option key={dt.id} value={dt.id}>{dt.name} {dt.fee_multiplier > 1 ? `(${dt.fee_multiplier}x fee)` : ''}</option>
@@ -655,7 +655,7 @@ export default function Sale() {
                         value={selectedZoneId}
                         onChange={e => setSelectedZoneId(Number(e.target.value))}
                         disabled={isLoading}
-                        className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {deliveryZones.filter(z => z.is_active).map(z => (
                           <option key={z.id} value={z.id}>{z.name} ({z.base_fee.toFixed(2)} + {z.fee_per_km.toFixed(2)}/km)</option>
@@ -670,7 +670,7 @@ export default function Sale() {
                     <div className="flex items-center gap-1 flex-1">
                       <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
                         placeholder="0" min="0" step="0.5" disabled={isLoading}
-                        className="input input-bordered w-full disabled:opacity-60 disabled:cursor-not-allowed" />
+                        className="input__field w-full disabled:opacity-60 disabled:cursor-not-allowed" />
                       <span className="text-xs text-base-content/50">km</span>
                     </div>
                   </div>
@@ -678,7 +678,7 @@ export default function Sale() {
                     <span className={iconClass('lucide:map-pin', 'text-base-content/50')} />
                     <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                       placeholder={t('sale.deliveryAddress')} disabled={isLoading}
-                      className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
+                      className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
                   </div>
                   {selectedZone && deliveryFee > 0 && (
                     <div className="ml-8">
@@ -715,7 +715,7 @@ export default function Sale() {
                 <span className={iconClass('lucide:user-check', 'text-base-content/50')} />
                 <label className="text-sm text-base-content/80">{t('sale.assignTo')}</label>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
-                  className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <option value={0}>{t('sale.noAssignment')}</option>
                   {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
@@ -754,7 +754,7 @@ export default function Sale() {
                   placeholder={t('sale.searchProducts')}
                   aria-label={t('sale.searchProducts')}
                   disabled={isLoading}
-                  className="input input-bordered w-full pl-10 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="input__field w-full pl-10 disabled:opacity-60 disabled:cursor-not-allowed"
                 />
                 {isSearching ? (
                   <div
@@ -777,7 +777,7 @@ export default function Sale() {
                 onChange={e => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                 disabled={isLoading || categories.length === 0}
                 aria-label={t('sale.categoryFilter')}
-                className="select select-bordered disabled:opacity-60 disabled:cursor-not-allowed sm:w-44"
+                className="input__field input__field--select disabled:opacity-60 disabled:cursor-not-allowed sm:w-44"
               >
                 <option value="all">{t('sale.allCategories')}</option>
                 {categories.map(category => (
@@ -787,7 +787,7 @@ export default function Sale() {
               <select
                 value={productTypeFilter}
                 onChange={e => setProductTypeFilter(e.target.value)}
-                className="select select-bordered disabled:opacity-60 disabled:cursor-not-allowed sm:w-36"
+                className="input__field input__field--select disabled:opacity-60 disabled:cursor-not-allowed sm:w-36"
                 aria-label={t('sale.productTypeLabel') || 'Product type'}
               >
                 <option value="all">{t('sale.allTypes') || 'All Types'}</option>
@@ -1135,7 +1135,7 @@ export default function Sale() {
                   >
                     <span className={iconClass('lucide:door-open', 'text-base-content/50 text-sm')} />
                     <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
-                      className="select select-bordered flex-1"
+                      className="input__field input__field--select flex-1"
                     >
                       {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
                         <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
@@ -1152,7 +1152,7 @@ export default function Sale() {
                     <div className="flex items-center gap-2">
                       <span className={iconClass('lucide:truck', 'text-base-content/50 text-sm')} />
                       <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
-                        className="select select-bordered flex-1"
+                        className="input__field input__field--select flex-1"
                       >
                         {deliveryTypes.map(dt => (
                           <option key={dt.id} value={dt.id}>{dt.name}</option>
@@ -1164,7 +1164,7 @@ export default function Sale() {
                       <div className="flex items-center gap-2">
                         <span className={iconClass('lucide:map-pin', 'text-base-content/50 text-sm')} />
                         <select value={selectedZoneId} onChange={e => setSelectedZoneId(Number(e.target.value))} disabled={isLoading}
-                          className="select select-bordered flex-1 text-xs"
+                          className="input__field input__field--select flex-1 text-xs"
                         >
                           {deliveryZones.filter(z => z.is_active).map(z => (
                             <option key={z.id} value={z.id}>{z.name}</option>
@@ -1177,14 +1177,14 @@ export default function Sale() {
                       <span className={iconClass('lucide:ruler', 'text-base-content/50 text-sm')} />
                       <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
                         placeholder="0" min="0" step="0.5" disabled={isLoading}
-                        className="input input-bordered flex-1" />
+                        className="input__field flex-1" />
                       <span className="text-xs text-base-content/50 w-5">km</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={iconClass('lucide:map-pin', 'text-base-content/50 text-sm')} />
                       <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                         placeholder={t('sale.deliveryAddress')} disabled={isLoading}
-                        className="input input-bordered flex-1" />
+                        className="input__field flex-1" />
                     </div>
                     {selectedZone && deliveryFee > 0 && (
                       <div>
@@ -1221,7 +1221,7 @@ export default function Sale() {
                   <label className="text-sm font-medium text-base-content/80">{t('sale.assignTo')}</label>
                 </div>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
-                  className="select select-bordered w-full"
+                  className="input__field input__field--select w-full"
                 >
                   <option value={0}>{t('sale.noAssignment')}</option>
                   {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
@@ -1240,7 +1240,7 @@ export default function Sale() {
                   placeholder={t('sale.orderNotesPlaceholder') || 'Special instructions, allergies, notes...'}
                   rows={3}
                   disabled={isLoading}
-                  className="textarea textarea-bordered w-full text-sm resize-none"
+                  className="input__field input__field--textarea w-full text-sm resize-none"
                 />
                 {orderNotes && (
                   <p className="text-[10px] text-primary mt-1">
@@ -1260,7 +1260,7 @@ export default function Sale() {
                     value={selectedTemplateId}
                     onChange={e => setSelectedTemplateId(Number(e.target.value))}
                     disabled={isLoading}
-                    className="select select-bordered w-full text-sm"
+                    className="input__field input__field--select w-full text-sm"
                   >
                     <option value={0}>None</option>
                     {templateNotes.map(note => (
@@ -1395,7 +1395,7 @@ export default function Sale() {
                 <select
                   value={invoiceType}
                   onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}
-                  className="select select-bordered w-full"
+                  className="input__field input__field--select w-full"
                 >
                   <option value="tax">{t('invoice.typeTax')}</option>
                   <option value="commercial">{t('invoice.typeCommercial')}</option>

@@ -1,22 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { HiMenu, HiX } from 'react-icons/hi';
 import { fusionApi } from '@/lib/api-client';
 import type { FusionBranding } from '@/lib/fusion-types';
 import LanguageSwitcher from './LanguageSwitcher';
 
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/services', label: 'Services' },
+  { href: '/contact', label: 'Contact' },
+];
+
 export default function Header() {
-  const [branding, setBranding] = React.useState<FusionBranding>({
-    site_name: 'Fusion LMS',
-    company_name: 'Fusion Inc.',
-    creator_name: 'Fusion Team',
-    primary_color: '#7c3aed',
-  });
+  const [branding, setBranding] = React.useState<FusionBranding | null>(null);
   const [language, setLanguage] = React.useState('en');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   React.useEffect(() => {
-    fusionApi.fetchBranding().then(setBranding).catch(() => {});
+    fusionApi.fetchBranding().then((data) => {
+      if (data && typeof data.primary_color === 'string') {
+        setBranding(data);
+      }
+    }).catch(() => {});
   }, []);
 
   const handleLanguageChange = (code: string) => {
@@ -37,34 +45,65 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ backgroundColor: branding.primary_color }}
+              style={{ backgroundColor: branding?.primary_color ?? '#7c3aed' }}
             >
               F
             </div>
             <span className="font-semibold text-lg text-gray-900">
-              {branding.site_name}
+              {branding?.site_name ?? 'Fusion LMS'}
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-gray-600 hover:text-fu-primary transition-colors">
-              Home
-            </Link>
-            <Link href="/about" className="text-gray-600 hover:text-fu-primary transition-colors">
-              About
-            </Link>
-            <Link href="/services" className="text-gray-600 hover:text-fu-primary transition-colors">
-              Services
-            </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-fu-primary transition-colors">
-              Contact
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-gray-600 hover:text-fu-primary transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
             <LanguageSwitcher
               currentLanguage={language}
               onLanguageChange={handleLanguageChange}
             />
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-gray-600 hover:text-fu-primary"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur">
+          <div className="px-4 py-3 space-y-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block px-3 py-2 text-gray-600 hover:text-fu-primary hover:bg-fu-primary/5 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <hr className="my-2 border-gray-200" />
+            <div className="px-3 py-2">
+              <LanguageSwitcher
+                currentLanguage={language}
+                onLanguageChange={handleLanguageChange}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

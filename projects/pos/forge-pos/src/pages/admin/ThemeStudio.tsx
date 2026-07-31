@@ -220,22 +220,22 @@ function ComponentPreview({ themeKey, customVars }: { themeKey: string; customVa
       <Section title="Forms">
         <Card>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="label"><span className="label-text">Text Input</span></label>
-              <input type="text" className="input input-bordered w-full" placeholder="Sample" defaultValue="Editable text" />
+            <div className="input">
+              <label className="input__label">Text Input</label>
+              <input type="text" className="input__field w-full" placeholder="Sample" defaultValue="Editable text" />
             </div>
-            <div>
-              <label className="label"><span className="label-text">Select</span></label>
-              <select className="select select-bordered w-full">
+            <div className="input">
+              <label className="input__label">Select</label>
+              <select className="input__field input__field--select w-full">
                 <option>Option 1</option>
                 <option>Option 2</option>
               </select>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            <label className="flex items-center gap-2"><input type="checkbox" className="checkbox checkbox-primary" defaultChecked /><span className="text-sm">Checkbox</span></label>
-            <label className="flex items-center gap-2"><input type="radio" name="studio-radio" className="radio radio-primary" defaultChecked /><span className="text-sm">Radio</span></label>
-            <label className="flex items-center gap-2"><span className="text-sm">Toggle</span><input type="checkbox" className="toggle toggle-primary" defaultChecked /></label>
+            <label className="input-choice"><input type="checkbox" className="input-choice__control" defaultChecked /><span className="input-choice__label">Checkbox</span></label>
+            <label className="input-choice"><input type="radio" name="studio-radio" className="input-choice__control" defaultChecked /><span className="input-choice__label">Radio</span></label>
+            <label className="input-choice"><span className="input-choice__label">Toggle</span><input type="checkbox" className="input-choice__control" defaultChecked /></label>
           </div>
         </Card>
       </Section>
@@ -648,16 +648,14 @@ export default function ThemeStudio() {
               Save Custom Theme
             </h3>
             <div className="space-y-4">
-              <div>
-                <label className="label">
-                  <span className="label-text font-medium">Theme Name</span>
-                </label>
+              <div className="input">
+                <label className="input__label">Theme Name</label>
                 <input
                   type="text"
                   value={saveName}
                   onChange={e => setSaveName(e.target.value)}
                   placeholder="e.g. My Warm Theme"
-                  className="input input-bordered w-full"
+                  className="input__field w-full"
                   autoFocus
                   onKeyDown={e => e.key === 'Enter' && handleSaveConfirm()}
                 />
@@ -706,12 +704,14 @@ export default function ThemeStudio() {
               <code className="text-primary font-mono text-xs"> index.css</code> to register this as a permanent FlyonUI theme variant.
             </p>
             <div className="relative">
+            <div className="input">
               <textarea
                 readOnly
                 value={exportCSS}
-                className="textarea textarea-bordered w-full font-mono text-xs leading-relaxed p-4 h-80"
+                className="input__field input__field--textarea w-full font-mono text-xs leading-relaxed p-4 h-80"
                 onClick={e => (e.target as HTMLTextAreaElement).select()}
               />
+            </div>
               <button
                 type="button"
                 onClick={handleCopyCSS}

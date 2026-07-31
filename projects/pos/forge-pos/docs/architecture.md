@@ -114,7 +114,7 @@ import "flyonui/flyonui";
 | **Button Styles** | `btn-soft`, `btn-gradient`, `btn-text`, `btn-active`, `btn-disabled` | Button style variants |
 | **Button Sizes** | `btn-xs`, `btn-sm`, `btn-md`, `btn-lg`, `btn-xl` | Size variants |
 | **Button Modifiers** | `glass`, `btn-wide`, `btn-block`, `btn-circle`, `btn-square` | Shape/layout modifiers |
-| **Icons** | `icon-[tabler--icon-name]` | Tabler icons via Iconify |
+| **Icons** | `icon-[tabler--settings]` | Tabler icons via Iconify |
 
 > **Note:** Forge POS primarily uses **React state** for interactivity rather than FlyonUI's data-attribute-driven JS. FlyonUI's CSS classes (badge, btn) are used via semantic class names, while complex interactive components (modals, toasts) use React components. See [Styling & UI Package Reference](styling.md) for the full details including icon catalog, Framer Motion patterns, and bundle size analysis.
 

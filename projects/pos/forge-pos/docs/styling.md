@@ -65,7 +65,7 @@ Forge POS uses Tailwind v4's new **CSS-first configuration** model. Theme varian
 | `@plugin "flyonui"` | Registers FlyonUI's component classes + theme list |
 | `@plugin "flyonui/theme"` | Defines a single theme variant's OKLCH color tokens |
 | `@source "../node_modules/flyonui/dist/index.js"` | Tells Tailwind's JIT to scan FlyonUI JS for class usage |
-| `@plugin "@iconify/tailwind4"` | Enables `icon-[tabler--name]` syntax |
+| `@plugin "@iconify/tailwind4"` | Enables `icon-[tabler--settings]` syntax |
 | `@custom-variant dark` | Tailwind's dark: variant (via `.dark` class) |
 | `@custom-variant rtl` | Custom RTL variant |
 
@@ -170,7 +170,7 @@ async function reinitFlyonUI() {
 
 ### Usage
 
-Icons use the `icon-[tabler--name]` utility class syntax:
+Icons use the `icon-[tabler--settings]` utility class syntax:
 
 ```tsx
 <span className="icon-[tabler--settings]" />

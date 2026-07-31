@@ -137,6 +137,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check Playwright browser compatibility
+        run: |
+          echo "Checking @playwright/test version compatibility..."
+          npx playwright install --dry-run 2>&1 || {
+            echo "::warning::Playwright browser compatibility check failed."
+            echo "The @playwright/test version in package.json may not support"
+            echo "the current runner OS (${{ runner.os }} ${{ runner.arch }})."
+            echo "Run 'npx playwright install --dry-run' locally to debug."
+          }
+
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
@@ -305,6 +315,16 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Check Playwright browser compatibility
+        run: |
+          echo "Checking @playwright/test version compatibility..."
+          npx playwright install --dry-run 2>&1 || {
+            echo "::warning::Playwright browser compatibility check failed."
+            echo "The @playwright/test version in package.json may not support"
+            echo "the current runner OS (${{ runner.os }} ${{ runner.arch }})."
+            echo "Run 'npx playwright install --dry-run' locally to debug."
+          }
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps

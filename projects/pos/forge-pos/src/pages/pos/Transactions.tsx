@@ -915,7 +915,7 @@ export default function Transactions() {
                     value={productSearch}
                     onChange={e => { setProductPage(1); setProductSearch(e.target.value); }}
                     placeholder={t('transactions.searchProduct')}
-                    className="input input-bordered w-full text-xs pl-9"
+                    className="input__field w-full text-xs pl-9"
                   />
                   {productSearch && (
                     <button
@@ -1128,7 +1128,7 @@ export default function Transactions() {
                     value={relatedSearch}
                     onChange={e => setRelatedSearch(e.target.value)}
                     placeholder={t('transactions.searchProduct')}
-                    className="input input-bordered w-full text-xs pl-9"
+                    className="input__field w-full text-xs pl-9"
                   />
                   {relatedSearch && (
                     <button
@@ -1525,7 +1525,7 @@ export default function Transactions() {
               </label>
               <select
                 value={invoiceType}
-                onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}className="select select-bordered w-full"
+                onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}className="input__field input__field--select w-full"
               >
                 <option value="tax">{t('invoice.typeTax')}</option>
                 <option value="commercial">{t('invoice.typeCommercial')}</option>

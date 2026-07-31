@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 import SideNav from '../layout/SideNav';
 import { useAuth, AuthUser } from '../../contexts/AuthContext';
-import { pageSlideUp, dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
+import AnimatePresence from '../ui/AnimatePresence';
+import { dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
 // Built-in Forge POS crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
 import defaultLogo from '../../assets/pos-crest.svg';
-import AnimatePresence from '../../components/ui/AnimatePresence';
+
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
 
@@ -255,17 +256,9 @@ export default function PageLayout({
           </div>
         )}
 
-        <AnimatePresence mode="wait">
-          <div
-            key={location.pathname}
-            className={pageSlideUp}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            {children}
-          </div>
-        </AnimatePresence>
+        <div key={location.pathname}>
+          {children}
+        </div>
       </div>
     </div>
   );

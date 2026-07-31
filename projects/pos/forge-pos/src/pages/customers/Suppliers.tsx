@@ -132,14 +132,16 @@ export default function Suppliers() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
               <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('suppliers.searchPlaceholder') || 'Search suppliers...'}
-                aria-label={t('suppliers.searchPlaceholder') || 'Search suppliers'}
-                className="input input-bordered w-full pl-10"
-              />
+              <div className="input">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('suppliers.searchPlaceholder') || 'Search suppliers...'}
+                  aria-label={t('suppliers.searchPlaceholder') || 'Search suppliers'}
+                  className="input__field w-full pl-10"
+                />
+              </div>
               {isFiltering ? (
                 <div
                   animate={{ rotate: 360 }}
@@ -158,16 +160,18 @@ export default function Suppliers() {
                 </button>
               ) : null}
             </div>
-            <select
-              value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as SortKey)}
-              aria-label={t('suppliers.sortBy') || 'Sort by'}
-              className="select select-bordered sm:w-44"
-            >
+            <div className="input">
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+                aria-label={t('suppliers.sortBy') || 'Sort by'}
+                className="input__field input__field--select sm:w-44"
+              >
               <option value="newest">{t('suppliers.sortNewest') || 'Newest'}</option>
               <option value="name-asc">{t('suppliers.sortNameAsc') || 'Name (A→Z)'}</option>
               <option value="name-desc">{t('suppliers.sortNameDesc') || 'Name (Z→A)'}</option>
             </select>
+            </div>
             <span className="text-xs text-base-content/50 whitespace-nowrap px-2">
               {sorted.length} / {suppliers.length}
             </span>
@@ -182,13 +186,13 @@ export default function Suppliers() {
             className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="input input-bordered w-full" />
-              <input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="input input-bordered w-full" />
-              <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="input input-bordered w-full" />
-              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="input input-bordered w-full" />
-              <input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="input input-bordered w-full" />
-              <input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="input input-bordered w-full" />
-              <input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="input input-bordered w-full sm:col-span-2" />
+              <div className="input"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="input__field w-full" /></div>
+              <div className="input"><input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="input__field w-full" /></div>
+              <div className="input"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="input__field w-full" /></div>
+              <div className="input"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="input__field w-full" /></div>
+              <div className="input"><input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="input__field w-full" /></div>
+              <div className="input"><input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="input__field w-full" /></div>
+              <div className="input sm:col-span-2"><input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="input__field w-full" /></div>
             </div>
             <div className="flex gap-2">
               <button type="submit" className="btn btn-primary">{editing ? t('common.update') : t('common.save')}</button>

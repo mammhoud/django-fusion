@@ -49,9 +49,9 @@ async function reinitFlyonUI() {
   setTimeout(() => window.HSStaticMethods?.autoInit(), 100);
 }
 
-// Route transitions are handled by the AnimatePresence + motion.div
-// inside PageLayout. Each page inherits a consistent fade+slide-up entrance
-// via the shared pageSlideUp variant from utils/pageTransitions.ts.
+// Page-level transitions removed — only component-level animations remain.
+// Individual components use FlyonUI's built-in animation classes
+// (animate-scale-in, animate-fade-in, etc.) for micro-interactions.
 
 function AnimatedRoutes() {
   const location = useLocation();

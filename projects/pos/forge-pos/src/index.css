@@ -8,6 +8,11 @@
 @import "../assets/styles/base/_variables.css";
 @import "../assets/styles/base/_reset.css";
 
+/* ── BEM Component Library ──────────────────────────────────────── */
+@import "../assets/styles/components/_card.css";
+@import "../assets/styles/components/_modal.css";
+@import "../assets/styles/components/_receipt.css";
+
 /* ── FlyonUI Component Library ───────────────────────────────── */
 /* Theme configuration: enable specific themes with defaults.
  *   light --default        → default light mode theme
@@ -230,7 +235,6 @@
 }
 
 /* ── Cyberpunk — neon on dark, high-contrast futuristic ──────────── */
-/* (Dark variant is the primary cyberpunk experience) */
 @plugin "flyonui/theme" {
   name: "cyberpunk";
   color-scheme: dark;
@@ -319,152 +323,181 @@
  *   pastel + dark  → data-theme="pastel-dark"
  *   cyberpunk + light → data-theme="cyberpunk-light"
  *   cyberpunk + dark  → data-theme="cyberpunk"
- *
- * The .dark / .light class on <html> controls Tailwind's dark: variant.
  */
 
-/* ── Page Entry Animations (CSS replaces framer-motion in PageWrapper) ── */
-/* These trigger on route change via key={location.pathname} on <Routes>.
- * The Suspense loading screen guarantees the chunk is loaded before the
- * animation fires, so there's no flash of empty content. */
-@keyframes page-slide-right {
-  from { opacity: 0; transform: translateX(40px) scale(0.97); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
+/* ═══════════════════════════════════════════════════════════════════
+   Animation System — Keyframes & Utility Classes
+   ═══════════════════════════════════════════════════════════════════
+   Duration and easing are controlled via CSS variables in _variables.css.
+   All classes follow BEM naming: .animate--{name}
+   ═══════════════════════════════════════════════════════════════════ */
 
-@keyframes page-slide-left {
-  from { opacity: 0; transform: translateX(-40px) scale(0.97); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
+/* ── Entrance ── */
+@keyframes animate--fade-in      { from { opacity: 0; } to { opacity: 1; } }
+@keyframes animate--slide-up     { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes animate--slide-down   { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes animate--slide-right  { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes animate--slide-left   { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes animate--scale-in     { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes animate--dialog       { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes animate--dropdown     { from { opacity: 0; transform: translateY(-4px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes animate--toast        { from { opacity: 0; transform: translateY(-20px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes animate--stagger      { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+/* ── Exit ── */
+@keyframes animate--fade-out     { from { opacity: 1; } to { opacity: 0; } }
+@keyframes animate--slide-up-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-12px); } }
+@keyframes animate--scale-out    { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.95); } }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* ── Legacy page animations (kept for backward compat) ────────── */
+@keyframes page-slide-right { from { opacity: 0; transform: translateX(40px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+@keyframes page-slide-left  { from { opacity: 0; transform: translateX(-40px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
 
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
+/* ── Entrance classes ── */
+.animate--fade-in      { animation: animate--fade-in      var(--animation__duration--slow)    var(--animation__easing--out) both; }
+.animate--slide-up     { animation: animate--slide-up     var(--animation__duration--slow)    var(--animation__easing--out) both; }
+.animate--slide-down   { animation: animate--slide-down   var(--animation__duration--slow)    var(--animation__easing--out) both; }
+.animate--slide-right  { animation: animate--slide-right  var(--animation__duration--normal)  var(--animation__easing--out) both; }
+.animate--slide-left   { animation: animate--slide-left   var(--animation__duration--normal)  var(--animation__easing--out) both; }
+.animate--scale-in     { animation: animate--scale-in     var(--animation__duration--normal)  var(--animation__easing--spring) both; }
+.animate--dialog       { animation: animate--dialog       var(--animation__duration--slow)    var(--animation__easing--spring) both; }
+.animate--dropdown     { animation: animate--dropdown     var(--animation__duration--fast)    var(--animation__easing--out) both; }
+.animate--toast        { animation: animate--toast        var(--animation__duration--slow)    var(--animation__easing--spring) both; }
+.animate--stagger      { animation: animate--stagger      var(--animation__duration--slow)    var(--animation__easing--out) both; }
 
-.animate-page-slide-right {
-  animation: page-slide-right 0.35s ease-out both;
-}
+/* ── Exit classes ── */
+.animate--fade-out     { animation: animate--fade-out     var(--animation__duration--fast)   var(--animation__easing--in) both; }
+.animate--slide-up-out { animation: animate--slide-up-out var(--animation__duration--fast)   var(--animation__easing--in) both; }
+.animate--scale-out    { animation: animate--scale-out    var(--animation__duration--fast)   var(--animation__easing--in) both; }
 
-.animate-page-slide-left {
-  animation: page-slide-left 0.35s ease-out both;
-}
+/* ── Legacy animation classes (kept for backward compat) ────────── */
+.animate-page-slide-right { animation: page-slide-right 0.35s ease-out both; }
+.animate-page-slide-left  { animation: page-slide-left 0.35s ease-out both; }
+.animate-fade-in      { animation: animate--fade-in 0.3s ease-out both; }
+.animate-slide-up     { animation: animate--slide-up 0.4s ease-out both; }
+.animate-scale-in     { animation: animate--scale-in 0.3s ease-out both; }
+.animate-slide-down   { animation: animate--slide-down .3s ease-out both; }
+.animate-slide-right  { animation: animate--slide-right .25s ease-out both; }
+.animate-slide-left   { animation: animate--slide-left .25s ease-out both; }
+.animate-dialog-in    { animation: animate--dialog .25s ease-out both; }
+.animate-dropdown-in  { animation: animate--dropdown .2s ease-out both; }
+.animate-toast-in     { animation: animate--toast .35s ease-out both; }
+.animate-stagger-item { animation: animate--stagger .35s ease-out both; }
+.animate-fade-out     { animation: animate--fade-out .15s ease-in both; }
+.animate-slide-up-out { animation: animate--slide-up-out .15s ease-in both; }
+.animate-scale-out    { animation: animate--scale-out .15s ease-in both; }
+.animate-dialog-out   { animation: animate--scale-out .12s ease-in both; }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out both;
-}
+/* ── Stagger delay utilities (BEM: .animate__stagger--{n}) ────── */
+.animate__stagger--1  { animation-delay: var(--animation__stagger--1);  }
+.animate__stagger--2  { animation-delay: var(--animation__stagger--2);  }
+.animate__stagger--3  { animation-delay: var(--animation__stagger--3);  }
+.animate__stagger--4  { animation-delay: var(--animation__stagger--4);  }
+.animate__stagger--5  { animation-delay: var(--animation__stagger--5);  }
+.animate__stagger--6  { animation-delay: var(--animation__stagger--6);  }
+.animate__stagger--7  { animation-delay: var(--animation__stagger--7);  }
+.animate__stagger--8  { animation-delay: var(--animation__stagger--8);  }
+.animate__stagger--9  { animation-delay: var(--animation__stagger--9);  }
+.animate__stagger--10 { animation-delay: var(--animation__stagger--10); }
 
-.animate-slide-up {
-  animation: slide-up 0.4s ease-out both;
-}
+/* ── Legacy stagger delays ── */
+.anim-delay-1  { animation-delay: .05s; }
+.anim-delay-2  { animation-delay: .1s; }
+.anim-delay-3  { animation-delay: .15s; }
+.anim-delay-4  { animation-delay: .2s; }
+.anim-delay-5  { animation-delay: .25s; }
+.anim-delay-6  { animation-delay: .3s; }
+.anim-delay-7  { animation-delay: .35s; }
+.anim-delay-8  { animation-delay: .4s; }
+.anim-delay-9  { animation-delay: .45s; }
+.anim-delay-10 { animation-delay: .5s; }
 
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out both;
-}
+/* ═══════════════════════════════════════════════════════════════════
+   BEM Utility Classes — Design System Utilities
+   ═══════════════════════════════════════════════════════════════════
+   Naming convention: .{block}--{modifier} or .{block}__{element}--{modifier}
+   ═══════════════════════════════════════════════════════════════════ */
 
-/* ── FlyonUI animation utilities (replaces framer-motion) ── */
-@keyframes slide-down  { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
-@keyframes slide-right { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
-@keyframes slide-left  { from{opacity:0;transform:translateX(12px)}  to{opacity:1;transform:translateX(0)} }
-@keyframes dialog-scale{ from{opacity:0;transform:scale(.95) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
-@keyframes dropdown-in { from{opacity:0;transform:translateY(-4px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-@keyframes toast-in    { from{opacity:0;transform:translateY(-20px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
-@keyframes stagger-in  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-@keyframes fade-out    { from{opacity:1} to{opacity:0} }
-@keyframes slide-up-out{ from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-12px)} }
-@keyframes scale-out   { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(.95)} }
-.animate-slide-down{animation:slide-down .3s ease-out both}
-.animate-slide-right{animation:slide-right .25s ease-out both}
-.animate-slide-left{animation:slide-left .25s ease-out both}
-.animate-dialog-in{animation:dialog-scale .25s ease-out both}
-.animate-dropdown-in{animation:dropdown-in .2s ease-out both}
-.animate-toast-in{animation:toast-in .35s ease-out both}
-.animate-stagger-item{animation:stagger-in .35s ease-out both}
-.animate-fade-out{animation:fade-out .15s ease-in both}
-.animate-slide-up-out{animation:slide-up-out .15s ease-in both}
-.animate-scale-out{animation:scale-out .15s ease-in both}
-.animate-dialog-out{animation:scale-out .12s ease-in both}
-.anim-delay-1{animation-delay:.05s}.anim-delay-2{animation-delay:.1s}.anim-delay-3{animation-delay:.15s}.anim-delay-4{animation-delay:.2s}.anim-delay-5{animation-delay:.25s}.anim-delay-6{animation-delay:.3s}.anim-delay-7{animation-delay:.35s}.anim-delay-8{animation-delay:.4s}.anim-delay-9{animation-delay:.45s}.anim-delay-10{animation-delay:.5s}
+/* ── Block: .glass (glassmorphism backdrop utility) ───────────── */
+.glass--primary   { background: oklch(var(--color-primary) / 0.08);   backdrop-filter: blur(8px); }
+.glass--secondary { background: oklch(var(--color-secondary) / 0.08); backdrop-filter: blur(8px); }
+.glass--accent    { background: oklch(var(--color-accent) / 0.08);    backdrop-filter: blur(8px); }
+.glass--success   { background: oklch(var(--color-success) / 0.08);   backdrop-filter: blur(8px); }
+.glass--warning   { background: oklch(var(--color-warning) / 0.08);   backdrop-filter: blur(8px); }
+.glass--error     { background: oklch(var(--color-error) / 0.08);     backdrop-filter: blur(8px); }
+.glass--info      { background: oklch(var(--color-info) / 0.08);      backdrop-filter: blur(8px); }
 
-/* ═══════════════════════════════════════════════════════════════
-   Forge POS — Compact Design System & Enhanced Utilities
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ── Compact design tokens (activated via .forge-compact class) ── */
-:root {
-  --forge-card-padding: 1rem;
-  --forge-card-gap: 0.75rem;
-  --forge-grid-gap: 1rem;
-  --forge-section-gap: 1.5rem;
-  --forge-input-height: 2.5rem;
-  --forge-btn-height: 2.25rem;
-  --forge-radius-card: 0.75rem;
-  --forge-radius-btn: 0.5rem;
-  --forge-shadow-card: 0 1px 3px oklch(0 0 0 / 0.06);
-  --forge-shadow-hover: 0 4px 12px oklch(0 0 0 / 0.08);
-  --forge-shadow-elevated: 0 8px 24px oklch(0 0 0 / 0.1);
-  --forge-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --forge-transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ── Compact mode (reduced spacing, tighter layouts) ── */
-.forge-compact {
-  --forge-card-padding: 0.75rem;
-  --forge-card-gap: 0.5rem;
-  --forge-grid-gap: 0.75rem;
-  --forge-section-gap: 1rem;
-  --forge-input-height: 2rem;
-  --forge-btn-height: 1.75rem;
-}
-
-/* ── Stable FlyonUI color opacity extension ──────────────────── */
-/* Provides consistent bg-X/5, bg-X/10, text-X/70 etc. opacity
-   variants that adapt to every theme via CSS variables. */
-
-/* Primary opacity variants */
-.bg-primary-glass { background: oklch(var(--color-primary) / 0.08); backdrop-filter: blur(8px); }
+/* ── Legacy glass names ── */
+.bg-primary-glass   { background: oklch(var(--color-primary) / 0.08);   backdrop-filter: blur(8px); }
 .bg-secondary-glass { background: oklch(var(--color-secondary) / 0.08); backdrop-filter: blur(8px); }
-.bg-accent-glass { background: oklch(var(--color-accent) / 0.08); backdrop-filter: blur(8px); }
-.bg-success-glass { background: oklch(var(--color-success) / 0.08); backdrop-filter: blur(8px); }
-.bg-warning-glass { background: oklch(var(--color-warning) / 0.08); backdrop-filter: blur(8px); }
-.bg-error-glass { background: oklch(var(--color-error) / 0.08); backdrop-filter: blur(8px); }
-.bg-info-glass { background: oklch(var(--color-info) / 0.08); backdrop-filter: blur(8px); }
+.bg-accent-glass    { background: oklch(var(--color-accent) / 0.08);    backdrop-filter: blur(8px); }
+.bg-success-glass   { background: oklch(var(--color-success) / 0.08);   backdrop-filter: blur(8px); }
+.bg-warning-glass   { background: oklch(var(--color-warning) / 0.08);   backdrop-filter: blur(8px); }
+.bg-error-glass     { background: oklch(var(--color-error) / 0.08);     backdrop-filter: blur(8px); }
+.bg-info-glass      { background: oklch(var(--color-info) / 0.08);      backdrop-filter: blur(8px); }
 
-/* ── Clean border styles ── */
-.border-subtle { border-color: oklch(var(--color-base-content) / 0.1); }
+/* ── Block: .border (border color utilities) ───────────────────── */
+.border--subtle   { border-color: var(--color__border--subtle); }
+.border--default  { border-color: var(--color__border--default); }
+.border--emphasis { border-color: var(--color__border--emphasis); }
+.border--card     { border: 1px solid var(--color__border--subtle); }
+
+/* ── Legacy border names ── */
+.border-subtle   { border-color: oklch(var(--color-base-content) / 0.1); }
 .border-emphasis { border-color: oklch(var(--color-base-content) / 0.2); }
-.border-card { border: 1px solid oklch(var(--color-base-content) / 0.08); }
+.border-card     { border: 1px solid oklch(var(--color-base-content) / 0.08); }
 
-/* ── Clean shadow utilities ── */
-.shadow-card { box-shadow: var(--forge-shadow-card); }
-.shadow-card-hover { box-shadow: var(--forge-shadow-hover); }
+/* ── Block: .shadow (shadow depth utilities) ────────────────────── */
+.shadow--sm       { box-shadow: var(--shadow--sm); }
+.shadow--md       { box-shadow: var(--shadow--md); }
+.shadow--lg       { box-shadow: var(--shadow--lg); }
+.shadow--xl       { box-shadow: var(--shadow--xl); }
+.shadow--elevated { box-shadow: var(--shadow--elevated); }
+.shadow--colored  { box-shadow: var(--shadow--colored); }
+
+/* ── Legacy shadow names ── */
+.shadow-card         { box-shadow: var(--forge-shadow-card); }
+.shadow-card-hover   { box-shadow: var(--forge-shadow-hover); }
 .shadow-card-elevated { box-shadow: var(--forge-shadow-elevated); }
 
-/* ── Smooth transition presets ── */
-.transition-fast { transition: all var(--forge-transition-fast); }
-.transition-smooth { transition: all var(--forge-transition-smooth); }
+/* ── Block: .transition (transition timing utilities) ──────────── */
+.transition--fast   { transition: all var(--animation__transition--fast); }
+.transition--normal { transition: all var(--animation__transition--normal); }
+.transition--slow   { transition: all var(--animation__transition--slow); }
+.transition--spring { transition: all var(--animation__transition--spring); }
+.transition--colors { transition: color, background-color, border-color var(--animation__duration--fast) var(--animation__easing--default); }
+
+/* ── Legacy transition names ── */
+.transition-fast        { transition: all var(--forge-transition-fast); }
+.transition-smooth      { transition: all var(--forge-transition-smooth); }
 .transition-colors-fast { transition: color, background-color, border-color var(--forge-transition-fast); }
 
-/* ── Compact card/layout utilities ── */
-.card-compact { padding: var(--forge-card-padding); border-radius: var(--forge-radius-card); }
-.gap-compact { gap: var(--forge-card-gap); }
+/* ── Layout utilities ── */
+.card-compact   { padding: var(--forge-card-padding); border-radius: var(--forge-radius-card); }
+.gap-compact    { gap: var(--forge-card-gap); }
 .section-compact { margin-bottom: var(--forge-section-gap); }
-.input-compact { height: var(--forge-input-height); }
+.input-compact  { height: var(--forge-input-height); }
 
 /* ── Focus ring — stable, accessible, theme-aware ── */
 .focus-ring:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px oklch(var(--color-base-100)), 0 0 0 4px oklch(var(--color-primary) / 0.4);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .animate--fade-in, .animate--slide-up, .animate--slide-down,
+  .animate--slide-right, .animate--slide-left, .animate--scale-in,
+  .animate--dialog, .animate--dropdown, .animate--toast, .animate--stagger,
+  .animate--fade-out, .animate--slide-up-out, .animate--scale-out,
+  .animate-fade-in, .animate-slide-up, .animate-scale-in,
+  .animate-dialog-in, .animate-dropdown-in, .animate-toast-in,
+  .animate-stagger-item, .animate-fade-out, .animate-slide-up-out,
+  .animate-scale-out, .animate-dialog-out {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* ── RTL-aware utilities ── */
@@ -478,11 +511,9 @@
 [dir="rtl"] textarea::placeholder { text-align: right; }
 [dir="rtl"] input[type="number"] { text-align: left; direction: ltr; }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════
    Background Texture System — leather/surface grain
-   Uses bg-texture.svg with currentColor fed via ::before pseudo-element.
-   The pseudo-element prevents color inheritance into child content.
-   ═══════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════ */
 
 .bg-texture {
   position: relative;
@@ -499,21 +530,6 @@
   background-repeat: repeat;
 }
 
-/* Light mode — warm cream/beige base */
-@media (prefers-color-scheme: light) {
-  .bg-texture::before {
-    background-color: oklch(97% 0.006 85);
-  }
-}
-
-/* Dark mode — deep warm espresso base */
-@media (prefers-color-scheme: dark) {
-  .bg-texture::before {
-    background-color: oklch(16% 0.012 60);
-  }
-}
-
-/* Theme toggle overrides — FlyonUI sets data-theme on <html> */
 [data-theme*="light"] .bg-texture::before {
   background-color: oklch(97% 0.006 85);
 }
@@ -523,7 +539,6 @@
   background-color: oklch(16% 0.012 60);
 }
 
-/* Explicit utility classes for manual light/dark use */
 .bg-texture-light {
   position: relative;
 }

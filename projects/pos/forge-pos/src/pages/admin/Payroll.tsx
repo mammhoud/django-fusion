@@ -71,15 +71,15 @@ export default function Payroll() {
         {showForm && (
           <form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <select value={form.employee_id} onChange={e => setForm({ ...form, employee_id: Number(e.target.value) })} required className="select select-bordered w-full">
+              <select value={form.employee_id} onChange={e => setForm({ ...form, employee_id: Number(e.target.value) })} required className="input__field input__field--select w-full">
                 <option value={0}>{t('payroll.selectEmployee')}</option>
                 {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
               </select>
-              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input input-bordered w-full" />
-              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input input-bordered w-full" />
-              <input type="number" step="0.1" value={form.regular_hours} onChange={e => setForm({ ...form, regular_hours: Number(e.target.value) })} placeholder={t('payroll.regularHours')} className="input input-bordered w-full" />
-              <input type="number" step="0.1" value={form.overtime_hours} onChange={e => setForm({ ...form, overtime_hours: Number(e.target.value) })} placeholder={t('payroll.overtimeHours')} className="input input-bordered w-full" />
-              <input type="number" step="0.01" value={form.total_pay} onChange={e => setForm({ ...form, total_pay: Number(e.target.value) })} placeholder={t('payroll.totalPay')} required className="input input-bordered w-full" />
+              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input__field w-full" />
+              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input__field w-full" />
+              <input type="number" step="0.1" value={form.regular_hours} onChange={e => setForm({ ...form, regular_hours: Number(e.target.value) })} placeholder={t('payroll.regularHours')} className="input__field w-full" />
+              <input type="number" step="0.1" value={form.overtime_hours} onChange={e => setForm({ ...form, overtime_hours: Number(e.target.value) })} placeholder={t('payroll.overtimeHours')} className="input__field w-full" />
+              <input type="number" step="0.01" value={form.total_pay} onChange={e => setForm({ ...form, total_pay: Number(e.target.value) })} placeholder={t('payroll.totalPay')} required className="input__field w-full" />
             </div>
             <div className="flex gap-2">
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>
