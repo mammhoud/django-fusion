@@ -31,7 +31,7 @@
  *
  *   // Get all possible icon classes for a name (for disambiguation UI):
  *   getAllIconClasses('search')
- *   // ["icon-[tabler--search]", "icon-[lucide--search]", "icon-[ph--search]", ...]
+ *   // ["icon-[tabler--search]", "icon-[lucide--search]", ...]
  *
  *   // Legacy — same as old Ic():
  *   tabs = [{ icon: Ic('globe'), ... }]
@@ -189,7 +189,7 @@ export function iconClass(fullName: string, extraClasses: string = ''): string {
  *
  * @example
  *   getAllIconClasses('search')
- *   → ["icon-[tabler--search]", "icon-[lucide--search]", "icon-[ph--search]", ...]
+ *   → ["icon-[tabler--search]", "icon-[lucide--search]", ...]
  */
 export function getAllIconClasses(name: string): string[] {
   const cleanName = name.includes(':') ? name.split(':')[1] : name;

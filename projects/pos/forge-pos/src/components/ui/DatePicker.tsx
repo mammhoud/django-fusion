@@ -145,7 +145,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="input input-bordered w-full cursor-pointer flex items-center justify-between"
+          className="input__field w-full cursor-pointer flex items-center justify-between"
         >
           <span className={value ? 'text-base-content' : 'text-gray-500 dark:text-gray-400'}>
             {formatDate(value)}
@@ -175,7 +175,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       setShowYearDropdown(false);
                       setMonthSearch('');
                     }}
-                    className="select select-bordered w-full text-sm flex items-center justify-between"
+                    className="input__field input__field--select w-full text-sm flex items-center justify-between"
                   >
                     <span>{months[selectedMonth]}</span>
                     <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
@@ -199,7 +199,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                             value={monthSearch}
                             onChange={(e) => setMonthSearch(e.target.value)}
                             placeholder={t('datePicker.searchMonth')}
-                            className="input input-bordered input-sm w-full rtl:text-right"
+                            className="input__field input-sm w-full rtl:text-right"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -249,7 +249,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       setShowMonthDropdown(false);
                       setYearSearch('');
                     }}
-                    className="select select-bordered text-sm flex items-center justify-between gap-2 min-w-[100px]"
+                    className="input__field input__field--select text-sm flex items-center justify-between gap-2 min-w-[100px]"
                   >
                     <span>{selectedYear}</span>
                     <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
@@ -289,7 +289,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                               }
                             }}
                             placeholder={t('datePicker.typeYear')}
-                            className="input input-bordered input-sm w-full rtl:text-right"
+                            className="input__field input-sm w-full rtl:text-right"
                             onClick={(e) => e.stopPropagation()}
                           />
                           {yearSearch && (

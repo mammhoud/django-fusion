@@ -194,27 +194,29 @@ export default function Roles() {
         <Card padding="sm">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Search */}
-            <div className="relative flex-1">
-              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('roles.searchPlaceholder') || 'Search roles...'}
-                aria-label={t('roles.searchPlaceholder') || 'Search roles'}
-                className="input input-bordered w-full pl-10 pr-9"
-              />
-              {isFiltering ? (
-                <span className="loading loading-spinner loading-xs absolute right-3 top-1/2 -translate-y-1/2 text-primary" />
-              ) : search ? (
-                <button
-                  onClick={() => setSearch('')}
-                  aria-label={t('common.clear')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
-                >
-                  <span className="icon-[tabler--x] w-4 h-4" />
-                </button>
-              ) : null}
+            <div className="input input--sm flex-1">
+              <div className="input__wrapper">
+                <span className="input__icon icon-[tabler--search]" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('roles.searchPlaceholder') || 'Search roles...'}
+                  aria-label={t('roles.searchPlaceholder') || 'Search roles'}
+                  className="input__field input__field--with-icon-left"
+                />
+                {isFiltering ? (
+                  <span className="input__icon input__icon--right loading loading-spinner loading-xs text-primary" />
+                ) : search ? (
+                  <button
+                    onClick={() => setSearch('')}
+                    aria-label={t('common.clear')}
+                    className="input__icon input__icon--right"
+                  >
+                    <span className="icon-[tabler--x]" />
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             {/* Sort */}
@@ -222,7 +224,7 @@ export default function Roles() {
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as 'newest' | 'name-asc' | 'name-desc')}
               aria-label={t('roles.sortBy') || 'Sort by'}
-              className="select select-bordered sm:w-44"
+              className="input__field input__field--select sm:w-44"
             >
               <option value="newest">{t('roles.sortNewest') || 'Newest'}</option>
               <option value="name-asc">{t('roles.sortNameAsc') || 'Name (A→Z)'}</option>
@@ -255,7 +257,7 @@ export default function Roles() {
                   onChange={e => setFormName(e.target.value)}
                   placeholder="e.g. Manager, Cashier, Chef"
                   required
-                  className="input input-bordered w-full"
+                  className="input__field w-full"
                   autoFocus
                 />
               </div>
@@ -318,7 +320,7 @@ export default function Roles() {
                   value={customPermissions}
                   onChange={e => setCustomPermissions(e.target.value)}
                   placeholder="e.g. manage:reports, view:audit"
-                  className="input input-bordered w-full font-mono text-sm"
+                  className="input__field w-full font-mono text-sm"
                 />
                 <p className="text-xs text-base-content/40 mt-1">
                   Add custom permission keys not listed above, separated by commas.

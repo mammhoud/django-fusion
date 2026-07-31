@@ -1,51 +1,62 @@
 import { type HTMLAttributes, forwardRef } from 'react';
 
-// ── Style presets ──
+// ── BEM style presets ──
+
+const bemModifiers: Record<string, string> = {
+  glass: 'card--glass',
+  elevated: 'card--elevated',
+  bordered: 'card--bordered',
+  flat: 'card--flat',
+  interactive: 'card--interactive',
+  primary: 'card--primary',
+  compact: 'card--compact',
+};
 
 const paddingClasses = {
   xs: 'p-2',
   sm: 'p-3',
-  md: 'p-4',
+  md: 'p-4',          // BEM default padding via --card__padding-x/y, p-4 as fallback
   lg: 'p-5',
   xl: 'p-6',
   '2xl': 'p-8',
-  none: '',
+  none: 'p-0',
 } as const;
 
 const radiusClasses = {
   lg: 'rounded-lg',
-  xl: '',
+  xl: '',             // BEM default uses --radius--lg
   '2xl': 'rounded-2xl',
-  none: '',
+  none: 'rounded-none',
 } as const;
 
 const shadowClasses = {
-  sm: 'shadow-sm',
+  sm: '',             // BEM default has --shadow--sm
   md: 'shadow-md',
   lg: 'shadow-lg',
-  xl: 'shadow-xl',
-  none: '',
+  xl: '',             // use card--elevated for xl shadow
+  none: 'shadow-none',
 } as const;
 
-const borderClasses = {
-  'base-200': 'border border-base-200',
-  'base-300': 'border border-base-300',
-  'theme': 'border border-[var(--color-border)]',
-  none: '',
-} as const;
-
-const hoverClasses = 'hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300';
+/** Map old `border` prop values to BEM variant, for backward compat */
+const borderToVariant: Record<string, string> = {
+  'base-200': 'bordered',
+  'base-300': 'bordered',
+  'theme': 'bordered',
+};
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** Padding preset: xs(p-2), sm(p-3), md(p-4), lg(p-5), xl(p-6), 2xl(p-8). Default: md */
-  padding?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none';
-  /** Border radius: lg, xl, 2xl. Default: xl */
+  children: React.ReactNode;
+  /** Padding preset. Default: md (p-4 + BEM variable) */
+  padding?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none';
+  /** Border radius. Default: xl (uses BEM --radius--lg) */
   radius?: 'lg' | 'xl' | '2xl' | 'none';
-  /** Shadow depth. Default: sm */
+  /** Shadow depth. Default: sm (BEM default shadow) */
   shadow?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
-  /** Theme-adaptive border: base-200, base-300, theme (uses --color-border), or none */
+  /** BEM card modifier — applies a preset card class */
+  variant?: 'glass' | 'elevated' | 'bordered' | 'flat' | 'interactive' | 'primary' | 'compact';
+  /** Legacy border prop — maps to variant='bordered'. Kept for backward compat. */
   border?: 'base-200' | 'base-300' | 'theme' | 'none';
-  /** Enable hover lift effect (-translate-y + shadow-lg) */
+  /** Enable hover lift effect (card--hover) */
   hover?: boolean;
   /** Center text content */
   center?: boolean;
@@ -63,7 +74,8 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       padding = 'md',
       radius = 'xl',
       shadow = 'sm',
-      border = 'none',
+      variant,
+      border,
       hover,
       center,
       transitional,
@@ -72,14 +84,16 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     },
     ref,
   ) => {
+    // Derive variant from legacy border prop if no explicit variant
+    const resolvedVariant = variant || (border && borderToVariant[border]);
+
     const classes = [
       'card',
-      'bg-base-100',
+      hover && 'card--hover',
+      resolvedVariant && bemModifiers[resolvedVariant],
       shadowClasses[shadow],
       radiusClasses[radius],
       paddingClasses[padding],
-      border !== 'none' && borderClasses[border],
-      hover && hoverClasses,
       center && 'text-center',
       transitional && 'transition-colors duration-300',
       spaceY && `space-y-${spaceY}`,

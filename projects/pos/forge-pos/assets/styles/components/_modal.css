@@ -1,0 +1,310 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Modal Component — BEM Architecture
+   ═══════════════════════════════════════════════════════════════════
+   Block: .modal
+   Elements: .modal__overlay, .modal__content, .modal__header,
+             .modal__body, .modal__footer, .modal__title, .modal__close
+   Modifiers (block-level):
+     .modal--enter     — entrance animation (scale + fade)
+     .modal--exit      — exit animation (scale + fade out)
+     .modal--sm        — small width
+     .modal--md        — medium width (default)
+     .modal--lg        — large width
+     .modal--xl        — extra large width
+     .modal--full      — near-full viewport width
+     .modal--nopad     — remove default content padding
+     .modal--scroll    — allow modal body to scroll independently
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Base Block: .modal (overlay + dialog container) ───────────── */
+.modal {
+  --modal__width--sm:   24rem;   /* max-w-sm  */
+  --modal__width--md:   32rem;   /* max-w-lg  */
+  --modal__width--lg:   40rem;   /* max-w-xl  */
+  --modal__width--xl:   56rem;   /* max-w-4xl */
+  --modal__width--full: 72rem;   /* max-w-6xl */
+
+  --modal__padding-x:   1.5rem;
+  --modal__padding-y:   1.5rem;
+  --modal__gap:         1rem;
+  --modal__radius:      var(--radius--lg);
+  --modal__shadow:      var(--shadow--xl);
+
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* ── Element: .modal__overlay ──────────────────────────────────── */
+.modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color__surface--overlay);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: -1;
+  transition:
+    opacity var(--animation__duration--normal) var(--animation__easing--default);
+}
+
+/* ── Element: .modal__content ──────────────────────────────────── */
+.modal__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--modal__width--md);
+  max-height: calc(100vh - 2rem);
+  background: var(--color__surface--page);
+  color: var(--color__text--primary);
+  border-radius: var(--modal__radius);
+  box-shadow: var(--modal__shadow);
+  border: 1px solid var(--color__border--subtle);
+  overflow: hidden;
+  transition:
+    opacity var(--animation__duration--normal) var(--animation__easing--out),
+    transform var(--animation__duration--normal) var(--animation__easing--spring);
+}
+
+/* ── Size Modifiers ──────────────────────────────────────────────── */
+
+.modal--sm .modal__content {
+  max-width: var(--modal__width--sm);
+}
+
+.modal--md .modal__content {
+  max-width: var(--modal__width--md);
+}
+
+.modal--lg .modal__content {
+  max-width: var(--modal__width--lg);
+}
+
+.modal--xl .modal__content {
+  max-width: var(--modal__width--xl);
+}
+
+.modal--full .modal__content {
+  max-width: var(--modal__width--full);
+  min-height: 60vh;
+}
+
+/* ── Animation Modifiers ─────────────────────────────────────────── */
+
+/* Entrance: scale up from 0.95 + fade in */
+.modal--enter .modal__content {
+  animation: modal-enter var(--animation__duration--normal) var(--animation__easing--spring) both;
+}
+
+/* Exit: scale down to 0.95 + fade out */
+.modal--exit .modal__content {
+  animation: modal-exit var(--animation__duration--fast) var(--animation__easing--in) both;
+}
+
+/* ── Modifier: .modal--nopad (remove default content padding) ──── */
+.modal--nopad .modal__content {
+  --modal__padding-x: 0;
+  --modal__padding-y: 0;
+}
+
+/* ── Modifier: .modal--scroll (body scrolls independently) ──────── */
+.modal--scroll .modal__body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.modal--scroll .modal__content {
+  max-height: calc(100vh - 2rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Modal Elements
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Element: .modal__header ────────────────────────────────────── */
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--modal__gap);
+  padding: var(--modal__padding-y) var(--modal__padding-x) 0;
+  flex-shrink: 0;
+}
+
+.modal__header + .modal__body {
+  padding-top: calc(var(--modal__padding-y) * 0.5);
+}
+
+/* ── Element: .modal__title ─────────────────────────────────────── */
+.modal__title {
+  font-size: var(--typography__size--xl);
+  font-weight: var(--typography__weight--semibold);
+  color: var(--color__text--primary);
+  line-height: var(--typography__line-height--tight);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Element: .modal__close ─────────────────────────────────────── */
+.modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius--sm);
+  border: none;
+  background: transparent;
+  color: var(--color__text--secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color var(--animation__duration--fast) var(--animation__easing--default),
+    color var(--animation__duration--fast) var(--animation__easing--default);
+}
+
+.modal__close:hover {
+  background-color: color-mix(in oklch, oklch(var(--color-base-300)) 30%, transparent);
+  color: var(--color__text--primary);
+}
+
+.modal__close:active {
+  transform: scale(0.9);
+}
+
+.modal__close .modal__close-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ── Element: .modal__body ──────────────────────────────────────── */
+.modal__body {
+  padding: var(--modal__padding-y) var(--modal__padding-x);
+  /* overflow-y is added by .modal--scroll modifier — off by default */
+}
+
+.modal__header + .modal__body,
+.modal__body:first-child {
+  padding-top: var(--modal__padding-y);
+}
+
+.modal__body:last-child {
+  padding-bottom: var(--modal__padding-y);
+}
+
+/* When body has no explicit sibling spacing */
+.modal__body + .modal__footer {
+  padding-top: 0;
+}
+
+/* ── Element: .modal__footer ────────────────────────────────────── */
+.modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--modal__gap);
+  padding: var(--modal__padding-y) var(--modal__padding-x);
+  border-top: 1px solid var(--color__border--subtle);
+  flex-shrink: 0;
+}
+
+.modal__footer--start {
+  justify-content: flex-start;
+}
+
+.modal__footer--between {
+  justify-content: space-between;
+}
+
+.modal__footer--center {
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Modal Animations (@keyframes)
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-exit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Reduced Motion
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .modal--enter .modal__content,
+  .modal--exit .modal__content {
+    animation: none;
+  }
+
+  .modal--enter .modal__content {
+    opacity: 1;
+    transform: none;
+  }
+
+  .modal--exit .modal__content {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Usage Example:
+   ═══════════════════════════════════════════════════════════════════
+   <div class="modal modal--enter modal--lg">
+     <div class="modal__overlay" onclick="closeModal()"></div>
+     <div class="modal__content">
+       <div class="modal__header">
+         <h2 class="modal__title">Dialog Title</h2>
+         <button class="modal__close" onclick="closeModal()">
+           <svg class="modal__close-icon">...</svg>
+         </button>
+       </div>
+       <div class="modal__body">
+         <p>Main content goes here.</p>
+       </div>
+       <div class="modal__footer modal__footer--between">
+         <button class="btn btn-ghost">Cancel</button>
+         <button class="btn btn-primary">Confirm</button>
+       </div>
+     </div>
+   </div>
+
+   <!-- Native <dialog> variant (no overlay element needed): -->
+   <dialog class="modal modal--enter modal--md">
+     <div class="modal__content">
+       <div class="modal__body">Content</div>
+     </div>
+     <form method="dialog" class="modal__overlay">
+       <button>close</button>
+     </form>
+   </dialog>
+*/

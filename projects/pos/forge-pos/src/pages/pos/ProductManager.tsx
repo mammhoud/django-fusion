@@ -606,34 +606,38 @@ export default function ProductManager() {
       <div className="flex flex-col gap-3 mb-4">
         {/* Search + sort + add — single row */}
         <div className="flex items-center gap-2">
-          <div className="relative flex-1 max-w-xs">
-            <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('productManager.searchPlaceholder') || 'Search...'}
-              aria-label={t('productManager.searchPlaceholder') || 'Search products'}
-              data-testid="pm-search-input"
-              className="input input-bordered w-full pl-8 h-9 text-xs"
-            />
-            {isFiltering && (
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            )}
+          <div className="input input--sm flex-1 max-w-xs">
+            <div className="input__wrapper">
+              <span className="input__icon icon-[tabler--search]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('productManager.searchPlaceholder') || 'Search...'}
+                aria-label={t('productManager.searchPlaceholder') || 'Search products'}
+                data-testid="pm-search-input"
+                className="input__field input__field--with-icon-left"
+              />
+              {isFiltering && (
+                <span className="input__icon input__icon--right w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              )}
+            </div>
           </div>
           {viewMode === 'grid' && (
-            <select
-              value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as SortKey)}
-              aria-label={t('productManager.sortBy') || 'Sort by'}
-              className="select select-bordered h-9 text-xs w-36"
-            >
-              <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
+            <div className="input input--sm w-36">
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+                aria-label={t('productManager.sortBy') || 'Sort by'}
+                className="input__field input__field--select"
+              >
+                <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
               <option value="name-asc">A→Z</option>
               <option value="name-desc">Z→A</option>
               <option value="price-asc">$↑</option>
               <option value="price-desc">$↓</option>
             </select>
+            </div>
           )}
           {/* View toggle: grid vs table */}
           <button
@@ -856,23 +860,19 @@ export default function ProductManager() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-base-content mb-2">{t('productManager.productName')}</label>
+              <div className={`input ${errors.name ? 'input--error' : ''}`}>
+                <label className="input__label">{t('productManager.productName')}</label>
                 <input
                   type="text"
                   value={newProduct.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   data-testid="pm-name-input"
-                  className={`input input-bordered w-full ${
-                      errors.name
-                        ? 'input-error'
-                        : ''
-                    }`}
+                  className="input__field w-full"
                   placeholder={t('productManager.namePlaceholder')}
                   disabled={isSubmitting}
                 />
                 {errors.name && (
-                  <p className="text-red-500 dark:text-red-400 text-sm mt-1">{errors.name}</p>
+                  <p className="input__message">{errors.name}</p>
                 )}
               </div>
 
@@ -911,8 +911,8 @@ export default function ProductManager() {
 
               {/* Price + Unit in a 2-column row */}
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-base-content mb-1.5 text-xs font-medium">
+                <div className={`input ${errors.price ? 'input--error' : ''}`}>
+                  <label className="input__label input__label--sm">
                     <span className="icon-[tabler--currency-dollar] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
                     Price ({currencySymbol})
                   </label>
@@ -921,23 +921,19 @@ export default function ProductManager() {
                     value={newProduct.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
                     data-testid="pm-price-input"
-                    className={`input input-bordered w-full h-9 text-sm ${
-                        errors.price
-                          ? 'input-error'
-                          : ''
-                      }`}
+                    className="input__field w-full h-9 text-sm"
                     placeholder="0.00"
                     step="0.01"
                     min="0"
                     disabled={isSubmitting}
                   />
                   {errors.price && (
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-0.5">{errors.price}</p>
+                    <p className="input__message">{errors.price}</p>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-base-content mb-1.5 text-xs font-medium">
+                <div className={`input ${errors.unit ? 'input--error' : ''}`}>
+                  <label className="input__label input__label--sm">
                     <span className="icon-[tabler--cube] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
                     Unit
                   </label>
@@ -946,16 +942,12 @@ export default function ProductManager() {
                     value={newProduct.unit}
                     onChange={(e) => handleInputChange('unit', e.target.value)}
                     data-testid="pm-unit-input"
-                    className={`input input-bordered w-full h-9 text-sm ${
-                        errors.unit
-                          ? 'input-error'
-                          : ''
-                      }`}
+                    className="input__field w-full h-9 text-sm"
                     placeholder="item, kg, pcs"
                     disabled={isSubmitting}
                   />
                   {errors.unit && (
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-0.5">{errors.unit}</p>
+                    <p className="input__message">{errors.unit}</p>
                   )}
                 </div>
               </div>
@@ -971,7 +963,7 @@ export default function ProductManager() {
                     type="number"
                     value={newProduct.prepare_time_minutes}
                     onChange={(e) => handleInputChange('prepare_time_minutes', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="input input-bordered w-24 h-9 text-sm"
+                    className="input__field w-24 h-9 text-sm"
                     placeholder="0"
                     min="0"
                     step="1"
@@ -991,7 +983,7 @@ export default function ProductManager() {
                   type="text"
                   value={newProduct.barcode}
                   onChange={(e) => handleInputChange('barcode', e.target.value)}
-                  className="input input-bordered w-full h-9 text-sm"
+                  className="input__field w-full h-9 text-sm"
                   placeholder="e.g. 8901234567890"
                   disabled={isSubmitting}
                 />
@@ -1005,7 +997,7 @@ export default function ProductManager() {
                 <textarea
                   value={newProduct.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="textarea textarea-bordered w-full text-sm resize-none"
+                  className="input__field input__field--textarea w-full text-sm resize-none"
                   placeholder={t('productManager.descriptionPlaceholder') || 'Product description for menu & tickets...'}
                   rows={2}
                   disabled={isSubmitting}
@@ -1023,7 +1015,7 @@ export default function ProductManager() {
                     value={newProduct.category_id ? String(newProduct.category_id) : ''}
                     onChange={(e) => handleInputChange('category_id', e.target.value ? Number(e.target.value) : 0)}
                     disabled={isSubmitting}
-                    className="select select-bordered w-full h-9 text-sm"
+                    className="input__field input__field--select w-full h-9 text-sm"
                   >
                     <option value="">{t('productManager.noCategory') || '— No category —'}</option>
                     {categories.map(c => (

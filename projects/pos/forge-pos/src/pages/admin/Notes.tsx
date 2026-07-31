@@ -113,7 +113,7 @@ function getNoteIconClass(cat: string | null | undefined): string {
     case 'inventory': return 'icon-[tabler--packages] w-3 h-3';
     case 'staff': return 'icon-[tabler--users] w-3 h-3';
     case 'finance': return 'icon-[tabler--cash] w-3 h-3';
-    case 'customer': return 'icon-[tabler--handshake] w-3 h-3';
+    case 'customer': return 'icon-[tabler--user-circle] w-3 h-3';
     default: return 'icon-[tabler--notes] w-3 h-3';
   }
 }
@@ -406,69 +406,64 @@ export default function Notes() {
         <div className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-3 shadow-sm">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Search */}
-            <div className="relative flex-1">
-              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('notes.searchPlaceholder') || 'Search notes...'}
-                aria-label={t('notes.searchPlaceholder') || 'Search notes'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-base-200/50
-                  border border-base-300/50 text-base-content
-                  placeholder:text-base-content/40
-                  focus:outline-none focus:border-primary transition-colors text-sm"
-              />
-              {isFiltering ? (
-                <div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  aria-label="filtering"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                    border-2 border-primary border-t-transparent rounded-full"
+            <div className="input input--sm flex-1">
+              <div className="input__wrapper">
+                <span className="input__icon icon-[tabler--search]" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('notes.searchPlaceholder') || 'Search notes...'}
+                  aria-label={t('notes.searchPlaceholder') || 'Search notes'}
+                  className="input__field input__field--with-icon-left"
                 />
-              ) : search ? (
-                <button
-                  onClick={() => setSearch('')}
-                  aria-label={t('common.clear')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
-                >
-                  <span className="icon-[tabler--x] w-4 h-4" />
-                </button>
-              ) : null}
+                {isFiltering ? (
+                  <div className="input__icon input__icon--right">
+                    <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : search ? (
+                  <button
+                    onClick={() => setSearch('')}
+                    aria-label={t('common.clear')}
+                    className="input__icon input__icon--right"
+                  >
+                    <span className="icon-[tabler--x]" />
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             {/* Sort */}
-            <select
-              value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as typeof sortKey)}
-              aria-label={t('notes.sortBy') || 'Sort by'}
-              className="px-3 py-2 rounded-lg bg-base-200/50
-                border border-base-300/50 text-base-content
-                text-sm focus:outline-none focus:border-primary transition-colors sm:w-40"
-            >
-              <option value="pinned">{t('notes.sortPinned') || 'Pinned first'}</option>
-              <option value="newest">{t('notes.sortNewest') || 'Newest'}</option>
-              <option value="oldest">{t('notes.sortOldest') || 'Oldest'}</option>
-              <option value="name-asc">{t('notes.sortNameAsc') || 'Name (A→Z)'}</option>
-              <option value="name-desc">{t('notes.sortNameDesc') || 'Name (Z→A)'}</option>
-            </select>
+            <div className="input input--sm sm:w-40">
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as typeof sortKey)}
+                aria-label={t('notes.sortBy') || 'Sort by'}
+                className="input__field input__field--select"
+              >
+                <option value="pinned">{t('notes.sortPinned') || 'Pinned first'}</option>
+                <option value="newest">{t('notes.sortNewest') || 'Newest'}</option>
+                <option value="oldest">{t('notes.sortOldest') || 'Oldest'}</option>
+                <option value="name-asc">{t('notes.sortNameAsc') || 'Name (A→Z)'}</option>
+                <option value="name-desc">{t('notes.sortNameDesc') || 'Name (Z→A)'}</option>
+              </select>
+            </div>
 
             {/* Category filter */}
             {availableCategories.length > 0 && (
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                aria-label="Filter by category"
-                className="px-3 py-2 rounded-lg bg-base-200/50
-                  border border-base-300/50 text-base-content
-                  text-sm focus:outline-none focus:border-primary transition-colors sm:w-36"
-              >
-                <option value="">All categories</option>
-                {availableCategories.map(cat => (
-                  <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-                ))}
-              </select>
+              <div className="input input--sm sm:w-36">
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  aria-label="Filter by category"
+                  className="input__field input__field--select"
+                >
+                  <option value="">All categories</option>
+                  {availableCategories.map(cat => (
+                    <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
+                  ))}
+                </select>
+              </div>
             )}
 
             <label className="flex items-center gap-1.5 cursor-pointer select-none">
@@ -523,7 +518,7 @@ export default function Notes() {
                     onChange={e => setForm({ ...form, name: e.target.value })}
                     placeholder={t('notes.titlePlaceholder') || 'Note title...'}
                     required
-                    className="input input-bordered w-full"
+                    className="input__field w-full"
                     autoFocus
                   />
                 </div>
@@ -536,7 +531,7 @@ export default function Notes() {
                   <select
                     value={form.category}
                     onChange={e => setForm({ ...form, category: e.target.value })}
-                    className="select select-bordered w-full"
+                    className="input__field input__field--select w-full"
                   >
                     {NOTE_CATEGORIES.map(cat => (
                       <option key={cat.value} value={cat.value}>
@@ -558,7 +553,7 @@ export default function Notes() {
                   placeholder={t('notes.bodyPlaceholder') || 'Write your notes here...'}
                   rows={6}
                   required
-                  className="textarea textarea-bordered w-full text-sm leading-relaxed resize-y min-h-[120px]"
+                  className="input__field input__field--textarea w-full text-sm leading-relaxed resize-y min-h-[120px]"
                 />
               </div>
 
@@ -622,7 +617,7 @@ export default function Notes() {
                 <span className="icon-[tabler--pin] w-3.5 h-3.5" /> Pin all
               </button>
               <button onClick={() => bulkPin(false)} className="btn btn-ghost btn-xs gap-1">
-                <span className="icon-[tabler--pin-off] w-3.5 h-3.5" /> Unpin all
+                <span className="icon-[tabler--pin] w-3.5 h-3.5 rotate-45" /> Unpin all
               </button>
               <button onClick={bulkDelete} className="btn btn-ghost btn-xs gap-1 text-error">
                 <span className="icon-[tabler--trash] w-3.5 h-3.5" /> Delete

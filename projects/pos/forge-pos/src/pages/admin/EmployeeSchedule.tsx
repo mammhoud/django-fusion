@@ -71,13 +71,13 @@ export default function EmployeeSchedule() {
           <Card spaceY="3">
             <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <select value={form.employee_id} onChange={e => setForm({ ...form, employee_id: Number(e.target.value) })} required className="select select-bordered w-full">
+              <select value={form.employee_id} onChange={e => setForm({ ...form, employee_id: Number(e.target.value) })} required className="input__field input__field--select w-full">
                 <option value={0}>{t('schedule.selectEmployee')}</option>
                 {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
               </select>
-              <input type="datetime-local" value={form.shift_start} onChange={e => setForm({ ...form, shift_start: e.target.value })} required className="input input-bordered w-full" />
-              <input type="datetime-local" value={form.shift_end} onChange={e => setForm({ ...form, shift_end: e.target.value })} required className="input input-bordered w-full" />
-              <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={t('schedule.notes')} className="input input-bordered w-full" />
+              <input type="datetime-local" value={form.shift_start} onChange={e => setForm({ ...form, shift_start: e.target.value })} required className="input__field w-full" />
+              <input type="datetime-local" value={form.shift_end} onChange={e => setForm({ ...form, shift_end: e.target.value })} required className="input__field w-full" />
+              <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={t('schedule.notes')} className="input__field w-full" />
             </div>
             <div className="flex gap-2">
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>

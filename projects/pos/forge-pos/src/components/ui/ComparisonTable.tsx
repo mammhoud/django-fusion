@@ -62,7 +62,7 @@ export default function ComparisonTable({
     .reduce((s, r) => s + r.total_amount, 0);
 
   return (
-    <Card border="base-200" className="overflow-hidden">
+    <Card variant="bordered" className="overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-base-300 bg-info/5">
         <div className="flex items-center gap-3">

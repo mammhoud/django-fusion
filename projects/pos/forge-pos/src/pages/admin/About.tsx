@@ -183,57 +183,45 @@ export default function About() {
 
             <form onSubmit={handleSupportSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-base-content/80 mb-1.5 text-sm font-medium">{t('about.supportName')}</label>
+                <div className={`input ${formErrors.name ? 'input--error' : ''}`}>
+                  <label className="input__label">{t('about.supportName')}</label>
                   <input
                     type="text"
                     name="name"
                     value={supportForm.name}
                     onChange={handleSupportChange}
-                    className={`input input-bordered w-full ${
-                        formErrors.name
-                          ? 'input-error'
-                          : ''
-                      }`}
+                    className="input__field w-full"
                     disabled={isSubmitting}
                     placeholder={t('support.namePlaceholder')}
                   />
-                  {formErrors.name && <p className="text-red-400 text-sm mt-1">{formErrors.name}</p>}
+                  {formErrors.name && <p className="input__message">{formErrors.name}</p>}
                 </div>
-                <div>
-                  <label className="block text-base-content/80 mb-1.5 text-sm font-medium">{t('about.supportEmail')}</label>
+                <div className={`input ${formErrors.email ? 'input--error' : ''}`}>
+                  <label className="input__label">{t('about.supportEmail')}</label>
                   <input
                     type="email"
                     name="email"
                     value={supportForm.email}
                     onChange={handleSupportChange}
-                    className={`input input-bordered w-full ${
-                        formErrors.email
-                          ? 'input-error'
-                          : ''
-                      }`}
+                    className="input__field w-full"
                     disabled={isSubmitting}
                     placeholder={t('support.emailPlaceholder')}
                   />
-                  {formErrors.email && <p className="text-red-400 text-sm mt-1">{formErrors.email}</p>}
+                  {formErrors.email && <p className="input__message">{formErrors.email}</p>}
                 </div>
               </div>
 
-              <div>
-                <label className="block text-base-content/80 mb-1.5 text-sm font-medium">{t('about.supportSubject')}</label>
+              <div className={`input ${formErrors.subject ? 'input--error' : ''}`}>
+                <label className="input__label">{t('about.supportSubject')}</label>
                 <input
                   type="text"
                   name="subject"
                   value={supportForm.subject}
-                  onChange={handleSupportChange}                    className={`input input-bordered w-full ${
-                        formErrors.subject
-                          ? 'input-error'
-                          : ''
-                      }`}
+                  onChange={handleSupportChange}                    className="input__field w-full"
                   disabled={isSubmitting}
                   placeholder={t('support.subjectPlaceholder')}
                 />
-                {formErrors.subject && <p className="text-red-400 text-sm mt-1">{formErrors.subject}</p>}
+                {formErrors.subject && <p className="input__message">{formErrors.subject}</p>}
               </div>
 
               {/* ── Attachment area ── */}

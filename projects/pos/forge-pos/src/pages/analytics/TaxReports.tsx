@@ -106,50 +106,43 @@ export default function TaxReports() {
         {/* ── Search + sort bar (debounced async UX) ── */}
         <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <div className="relative flex-1">
-              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('taxReports.searchPlaceholder') || 'Search by period or amount...'}
-                aria-label={t('taxReports.searchPlaceholder') || 'Search tax reports'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-base-100/50
-                  border border-slate-300 dark:border-gray-600 text-base-content
-                  placeholder:text-slate-400 dark:placeholder:text-gray-500
-                  focus:outline-none focus:border-primary transition-colors text-sm"
-              />
-              {isFiltering ? (
-                <div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  aria-label="filtering"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                    border-2 border-primary border-t-transparent rounded-full"
+            <div className="input input--sm flex-1">
+              <div className="input__wrapper">
+                <span className="input__icon icon-[tabler--search]" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('taxReports.searchPlaceholder') || 'Search by period or amount...'}
+                  aria-label={t('taxReports.searchPlaceholder') || 'Search tax reports'}
+                  className="input__field input__field--with-icon-left"
                 />
-              ) : search ? (
-                <button
-                  onClick={() => setSearch('')}
-                  aria-label={t('common.clear')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-                >
-                  <span className="icon-[tabler--x] w-4 h-4" />
-                </button>
-              ) : null}
+                {isFiltering ? (
+                  <span className="input__icon input__icon--right w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-label="filtering" />
+                ) : search ? (
+                  <button
+                    onClick={() => setSearch('')}
+                    aria-label={t('common.clear')}
+                    className="input__icon input__icon--right"
+                  >
+                    <span className="icon-[tabler--x]" />
+                  </button>
+                ) : null}
+              </div>
             </div>
-            <select
-              value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as 'newest' | 'oldest' | 'sales-desc' | 'sales-asc')}
-              aria-label={t('taxReports.sortBy') || 'Sort by'}
-              className="px-3 py-2 rounded-lg bg-base-100/50
-                border border-slate-300 dark:border-gray-600 text-base-content
-                text-sm focus:outline-none focus:border-primary transition-colors sm:w-48"
-            >
-              <option value="newest">{t('taxReports.sortNewest') || 'Period (newest)'}</option>
-              <option value="oldest">{t('taxReports.sortOldest') || 'Period (oldest)'}</option>
-              <option value="sales-desc">{t('taxReports.sortSalesDesc') || 'Sales (high → low)'}</option>
-              <option value="sales-asc">{t('taxReports.sortSalesAsc') || 'Sales (low → high)'}</option>
+            <div className="input input--sm sm:w-48">
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as 'newest' | 'oldest' | 'sales-desc' | 'sales-asc')}
+                aria-label={t('taxReports.sortBy') || 'Sort by'}
+                className="input__field input__field--select"
+              >
+                <option value="newest">{t('taxReports.sortNewest') || 'Period (newest)'}</option>
+                <option value="oldest">{t('taxReports.sortOldest') || 'Period (oldest)'}</option>
+                <option value="sales-desc">{t('taxReports.sortSalesDesc') || 'Sales (high → low)'}</option>
+                <option value="sales-asc">{t('taxReports.sortSalesAsc') || 'Sales (low → high)'}</option>
             </select>
+            </div>
             <span className="text-xs text-base-content/50 whitespace-nowrap px-2">
               {filteredReports.length} / {reports.length}
             </span>
@@ -159,11 +152,11 @@ export default function TaxReports() {
         {showForm && (
           <form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input input-bordered w-full" />
-              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input input-bordered w-full" />
-              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="input input-bordered w-full" />
-              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="input input-bordered w-full" />
-              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="input input-bordered w-full sm:col-span-2" />
+              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input__field w-full" />
+              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input__field w-full" />
+              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="input__field w-full" />
+              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="input__field w-full" />
+              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="input__field w-full sm:col-span-2" />
             </div>
             <div className="flex gap-2">
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>

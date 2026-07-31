@@ -6,16 +6,24 @@ import { fusionApi } from '@/lib/api-client';
 import type { FusionBranding } from '@/lib/fusion-types';
 
 export default function Footer() {
-  const [branding, setBranding] = React.useState<FusionBranding>({
+  const [branding, setBranding] = React.useState<FusionBranding | null>(null);
+
+  const defaults = {
     site_name: 'Fusion LMS',
     company_name: 'mammhoud',
     creator_name: 'Mahmoud Ezzat',
     primary_color: '#00a1b3',
-  });
+  };
 
   React.useEffect(() => {
-    fusionApi.fetchBranding().then(setBranding).catch(() => {});
+    fusionApi.fetchBranding().then((data) => {
+      if (data && typeof data.site_name === 'string') {
+        setBranding(data);
+      }
+    }).catch(() => {});
   }, []);
+
+  const b = branding ?? defaults;
 
   return (
     <footer className="bg-gray-900 text-gray-300 mt-auto">
@@ -23,10 +31,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-white font-semibold text-lg mb-3">
-              {branding.site_name}
+              {b.site_name}
             </h3>
             <p className="text-sm text-gray-400">
-              {branding.company_name} — Powered by django-fusion &amp; django-bolt
+              {b.company_name} — Powered by django-fusion &amp; django-bolt
             </p>
           </div>
           <div>
@@ -41,7 +49,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-medium mb-3">Contact</h4>
             <p className="text-sm">
-              Created by {branding.creator_name}
+              Created by {b.creator_name}
             </p>
           </div>
         </div>

@@ -33,7 +33,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
 
   return (
     <dialog open className="modal modal-open">
-      <div className="modal-box w-11/12 max-w-6xl max-h-[90vh] overflow-y-auto" data-theme={currentTheme}>
+      <div className="modal-box w-11/12 max-w-6xl max-h-[90vh] overflow-y-auto animate-dialog-in" data-theme={currentTheme}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sticky top-0 z-10 bg-base-100/95 backdrop-blur-sm py-3 -mx-1 px-1 border-b border-base-300/50">
           <div className="flex items-center gap-3">
@@ -132,22 +132,22 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
         <Section title="Form Controls">
           <Card>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="label"><span className="label-text">Text Input</span></label>
-                <input type="text" className="input input-bordered w-full" placeholder="Sample" defaultValue="Editable" />
+              <div className="input">
+                <label className="input__label">Text Input</label>
+                <input type="text" className="input__field w-full" placeholder="Sample" defaultValue="Editable" />
               </div>
-              <div>
-                <label className="label"><span className="label-text">Select</span></label>
-                <select className="select select-bordered w-full">
+              <div className="input">
+                <label className="input__label">Select</label>
+                <select className="input__field input__field--select w-full">
                   <option>Option 1</option>
                   <option>Option 2</option>
                 </select>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <label className="flex items-center gap-2"><input type="checkbox" className="checkbox checkbox-primary" defaultChecked /><span className="text-sm">Checkbox</span></label>
-              <label className="flex items-center gap-2"><input type="radio" name="preview-radio" className="radio radio-primary" defaultChecked /><span className="text-sm">Radio</span></label>
-              <label className="flex items-center gap-2"><span className="text-sm">Toggle</span><input type="checkbox" className="toggle toggle-primary" defaultChecked /></label>
+              <label className="input-choice"><input type="checkbox" className="input-choice__control" defaultChecked /><span className="input-choice__label">Checkbox</span></label>
+              <label className="input-choice"><input type="radio" name="preview-radio" className="input-choice__control" defaultChecked /><span className="input-choice__label">Radio</span></label>
+              <label className="input-choice"><span className="input-choice__label">Toggle</span><input type="checkbox" className="input-choice__control" defaultChecked /></label>
             </div>
           </Card>
         </Section>
@@ -233,7 +233,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
                 <button type="button" className="btn btn-soft btn-info btn-sm">Learn More</button>
               </div>
             </Card>
-            <Card border="base-200">
+            <Card variant="bordered">
               <h3 className="card-title text-primary">Bordered Card</h3>
               <p className="text-sm text-base-content/70">With accent border.</p>
               <div className="card-actions mt-3">

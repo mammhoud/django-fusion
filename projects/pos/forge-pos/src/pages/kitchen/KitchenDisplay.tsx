@@ -302,37 +302,41 @@ export default function KitchenDisplay() {
           <h1 className="text-lg font-bold text-base-content">{t('kitchen.title')}</h1>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             {/* Search */}
-            <div className="relative flex-1 sm:w-48">
-              <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/40 w-3.5 h-3.5" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('kitchen.searchPlaceholder') || 'Search...'}
-                aria-label={t('kitchen.searchPlaceholder') || 'Search kitchen tickets'}
-                className="input input-bordered w-full pl-8 h-9 text-xs"
-              />
-              {isFiltering ? (
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              ) : search ? (
-                <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content">
-                  <span className="icon-[tabler--x] w-3.5 h-3.5" />
-                </button>
-              ) : null}
+            <div className="input input--sm flex-1 sm:w-48">
+              <div className="input__wrapper">
+                <span className="input__icon icon-[tabler--search]" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('kitchen.searchPlaceholder') || 'Search...'}
+                  aria-label={t('kitchen.searchPlaceholder') || 'Search kitchen tickets'}
+                  className="input__field input__field--with-icon-left"
+                />
+                {isFiltering ? (
+                  <div className="input__icon input__icon--right w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                ) : search ? (
+                  <button onClick={() => setSearch('')} className="input__icon input__icon--right">
+                    <span className="icon-[tabler--x]" />
+                  </button>
+                ) : null}
+              </div>
             </div>
             {/* Status filter */}
-            <select
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
-              aria-label={t('kitchen.statusFilter') || 'Filter by status'}
-              className="select select-bordered w-full sm:w-36 h-9 text-xs"
-            >
-              <option value="all">{t('kitchen.allTickets')}</option>
-              <option value="pending">{t('kitchen.pending')}</option>
-              <option value="preparing">{t('kitchen.preparing')}</option>
-              <option value="ready">{t('kitchen.ready')}</option>
-              <option value="delivered">{t('kitchen.delivered')}</option>
+            <div className="input input--sm w-full sm:w-36">
+              <select
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+                aria-label={t('kitchen.statusFilter') || 'Filter by status'}
+                className="input__field input__field--select"
+              >
+                <option value="all">{t('kitchen.allTickets')}</option>
+                <option value="pending">{t('kitchen.pending')}</option>
+                <option value="preparing">{t('kitchen.preparing')}</option>
+                <option value="ready">{t('kitchen.ready')}</option>
+                <option value="delivered">{t('kitchen.delivered')}</option>
             </select>
+            </div>
             {/* Chef Report button */}
             <button
               type="button"

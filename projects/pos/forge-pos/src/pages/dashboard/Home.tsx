@@ -183,7 +183,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
         style={{ animationDelay: '0.1s' }}
       >
-        <Card padding="sm" border="theme" className="shadow-sm">
+        <Card padding="sm" variant="bordered" className="shadow-sm">
           <div className="grid grid-cols-4 gap-2">
             {QUICK_ACCESS.map((qa, i) => (
               <button

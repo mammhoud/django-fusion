@@ -284,13 +284,13 @@ export default function Employees() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder={t('employees.searchPlaceholder')}
-                    className="input input-bordered w-48 pl-9"
+                    className="input__field w-48 pl-9"
                   />
                 </div>
                 <select
                   value={typeFilter ?? ''}
                   onChange={e => setTypeFilter(e.target.value ? Number(e.target.value) : null)}
-                  className="select select-bordered"
+                  className="input__field input__field--select"
                 >
                   <option value="">{t('employees.allTypes')}</option>
                   {employeeTypes.filter(t => t.is_active).map(t => (
@@ -486,27 +486,27 @@ export default function Employees() {
           <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')} *</label>
           <input type="text" value={newEmployee.name} onChange={e => setNewEmployee(p => ({ ...p, name: e.target.value }))}
             placeholder={t('employees.namePlaceholder') || 'Enter employee name'}
-            className="input input-bordered w-full" />
+            className="input__field w-full" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
             <input type="tel" value={newEmployee.phone || ''} onChange={e => setNewEmployee(p => ({ ...p, phone: e.target.value || null }))}
               placeholder="03XX-XXXXXXX"
-              className="input input-bordered w-full" />
+              className="input__field w-full" />
           </div>
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
             <input type="email" value={newEmployee.email || ''} onChange={e => setNewEmployee(p => ({ ...p, email: e.target.value || null }))}
               placeholder={t('employees.email')}
-              className="input input-bordered w-full" />
+              className="input__field w-full" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')} *</label>
             <select value={newEmployee.employee_type_id} onChange={e => setNewEmployee(p => ({ ...p, employee_type_id: Number(e.target.value) }))}
-              className="select select-bordered w-full">
+              className="input__field input__field--select w-full">
               <option value={0}>{t('employees.selectType')}</option>
               {employeeTypes.filter(t => t.is_active).map(t => (
                 <option key={t.id} value={t.id}>{t.name}</option>
@@ -517,7 +517,7 @@ export default function Employees() {
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')} *</label>
             <input type="number" step="1000" min="0" value={newEmployee.salary} onChange={e => setNewEmployee(p => ({ ...p, salary: Number(e.target.value) }))}
               placeholder="0"
-              className="input input-bordered w-full" />
+              className="input__field w-full" />
           </div>
         </div>
       </Modal>
@@ -535,25 +535,25 @@ export default function Employees() {
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')}</label>
             <input type="text" value={editEmployee.name} onChange={e => setEditEmployee(p => ({ ...p!, name: e.target.value }))}
-              className="input input-bordered w-full" />
+              className="input__field w-full" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
               <input type="tel" value={editEmployee.phone || ''} onChange={e => setEditEmployee(p => ({ ...p!, phone: e.target.value || undefined }))}
-                className="input input-bordered w-full" />
+                className="input__field w-full" />
             </div>
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
               <input type="email" value={editEmployee.email || ''} onChange={e => setEditEmployee(p => ({ ...p!, email: e.target.value || undefined }))}
-                className="input input-bordered w-full" />
+                className="input__field w-full" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')}</label>
               <select value={editEmployee.employee_type_id} onChange={e => setEditEmployee(p => ({ ...p!, employee_type_id: Number(e.target.value) }))}
-                className="select select-bordered w-full">
+                className="input__field input__field--select w-full">
                 {employeeTypes.filter(t => t.is_active || t.id === editEmployee.employee_type_id).map(t => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
@@ -562,7 +562,7 @@ export default function Employees() {
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')}</label>
               <input type="number" step="1000" value={editEmployee.salary} onChange={e => setEditEmployee(p => ({ ...p!, salary: Number(e.target.value) }))}
-                className="input input-bordered w-full" />
+                className="input__field w-full" />
             </div>
           </div>
         </>)}
@@ -594,14 +594,14 @@ export default function Employees() {
         <div>            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')} *</label>
           <input type="text" value={newType.name} onChange={e => setNewType(p => ({ ...p, name: e.target.value }))}
             placeholder={t('employees.typeNamePlaceholder')}
-            className="input input-bordered w-full" />
+            className="input__field w-full" />
         </div>
         <div>
           <label className="block text-base-content/80 mb-1 text-sm">{t('employees.descriptionOptional')}</label>
           <textarea value={newType.description || ''} onChange={e => setNewType(p => ({ ...p, description: e.target.value || null }))}
             placeholder={t('employees.descPlaceholder')}
             rows={3}
-            className="textarea textarea-bordered w-full resize-none" />
+            className="input__field input__field--textarea w-full resize-none" />
         </div>
       </Modal>
 
@@ -619,13 +619,13 @@ export default function Employees() {
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')}</label>
             <input type="text" value={editType.name} onChange={e => setEditType(p => ({ ...p!, name: e.target.value }))}
-              className="input input-bordered w-full" />
+              className="input__field w-full" />
           </div>
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeDescription')}</label>
             <textarea value={editType.description || ''}onChange={e => setEditType(p => ({ ...p!, description: e.target.value || undefined }))}
               rows={3}
-              className="textarea textarea-bordered w-full resize-none" />
+              className="input__field input__field--textarea w-full resize-none" />
           </div>
         </>)}
       </Modal>

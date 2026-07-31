@@ -53,13 +53,20 @@ def fusion_before_serve(page, request, serve_args, serve_kwargs):
 
     Ensures that ``fusion_branding`` and ``fusion_render_first`` are always
     available in the template context when serving a FusionPage.
-    """
-    # Only act on FusionPage subclasses
-    from apps.pages.pages.models import FusionPage
 
-    if isinstance(page, FusionPage):
-        # Ensure session has fusion_render_first set
-        if "fusion_render_first" not in request.session:
-            request.session["fusion_render_first"] = page.fusion_render_first
+    Gracefully degrades on non-default locale pages where FusionPage
+    may not be available (e.g., Wagtail i18n /fr/ routes).
+    """
+    try:
+        from apps.pages.pages.models import FusionPage
+
+        if isinstance(page, FusionPage):
+            # Ensure session has fusion_render_first set
+            if "fusion_render_first" not in request.session:
+                request.session["fusion_render_first"] = page.fusion_render_first
+    except Exception:
+        # Gracefully degrade for non-FusionPage types or locale variants
+        # that may not have PageSubscription.route available.
+        pass
 
     return None  # Don't modify the response — just setting up context

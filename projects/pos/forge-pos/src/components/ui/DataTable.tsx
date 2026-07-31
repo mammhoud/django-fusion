@@ -233,7 +233,7 @@ export default function DataTable<T>({
   // ── Empty state ──
   if (data.length === 0 && !exportable) {
     return (
-      <Card padding="2xl" center border="base-200" className="text-base-content/60">
+      <Card padding="2xl" center variant="bordered" className="text-base-content/60">
         {emptyMsg}
       </Card>
     );
@@ -256,7 +256,7 @@ export default function DataTable<T>({
     : gridTemplate;
 
   return (
-    <Card border="base-200" className="overflow-hidden">
+    <Card variant="bordered" className="overflow-hidden">
       {/* Toolbar */}
       {(selectable || exportable) && (
         <div className="flex items-center justify-between px-4 py-2 border-b border-base-300">
@@ -400,7 +400,7 @@ export default function DataTable<T>({
                               if (e.key === 'Escape') cancelEditing();
                             }}
                             onBlur={confirmEditing}
-                            className="input input-bordered input-sm w-full"
+                            className="input__field input-sm w-full"
                             onClick={(e) => e.stopPropagation()}
                             step={col.editType === 'number' ? 'any' : undefined}
                           />
