@@ -2,7 +2,7 @@
 
 /**
  * FusionAssets — dynamically loads bottom (body-end) JS assets from the
- * django-fusion backend's ``/fusion/assets/manifest/`` endpoint.
+ * django-fusion backend's ``/apis/assets/manifest/`` endpoint.
  *
  * Top assets (CSS, fonts) are handled at build time via static imports in
  * layout.tsx (``fusion-theme.scss``, ``globals.css``). This component only
@@ -34,7 +34,7 @@ export default function FusionAssets() {
     }
 
     fusionApi
-      .fetchJson<AssetManifest>('/fusion/assets/manifest')
+      .fetchJson<AssetManifest>('/apis/assets/manifest')
       .then((envelope) => {
         setManifest(envelope.data as AssetManifest);
       })

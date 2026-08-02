@@ -206,7 +206,7 @@ EMAIL:
 
 ### In settings.py
 ```python
-from django_fusion.config.dynaconf_loader import (
+from django_fusion.config.loader import (
     DynaconfSettings,
     ModelsRegistry,
     TemplateRegistry,
@@ -401,7 +401,7 @@ SECRET_KEY = dynaconf_settings.get("DJANGO.secret_key")
 
 - **Dynaconf Docs**: https://www.dynaconf.com/
 - **Django Settings**: https://docs.djangoproject.com/en/5.2/topics/settings/
-- **django-fusion**: See `django_fusion.config.dynaconf_loader` module
+- **django-fusion**: See `django_fusion.config.loader` module
 
 ## Environment Files Reference
 

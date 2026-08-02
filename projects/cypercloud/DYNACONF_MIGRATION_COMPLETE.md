@@ -62,7 +62,7 @@ Successfully completed Task 2: Migrated Tinker's configuration system to **Dynac
 
 ### 3. **Enhanced django-fusion with Dynaconf Module** ✅
 
-**File**: `/home/structa.cloud/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py` (280+ lines)
+**File**: `/home/structa.cloud/libs/django-fusion/src/django_fusion/config/loader.py` (280+ lines)
 
 **Classes**:
 - **DynaconfSettings**: Wrapper with Django utilities
@@ -152,7 +152,7 @@ Updated help section to include configuration management.
 ✅ /home/structa.cloud/projects/cypercloud/.env.development
 ✅ /home/structa.cloud/projects/cypercloud/.env.production.example
 ✅ /home/structa.cloud/projects/cypercloud/DYNACONF_SETUP.md
-✅ /home/structa.cloud/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py
+✅ /home/structa.cloud/libs/django-fusion/src/django_fusion/config/loader.py
 ```
 
 ### Modified Files
@@ -195,7 +195,7 @@ The Dynaconf system is now a reusable django-fusion module:
 
 ### Available for All Structa Sites
 ```python
-from django_fusion.config.dynaconf_loader import (
+from django_fusion.config.loader import (
     DynaconfSettings,
     ModelsRegistry,
     TemplateRegistry,
@@ -468,7 +468,7 @@ source .env.development
 **High Priority**:
 - `/home/structa.cloud/projects/cypercloud/settings.py` - New Dynaconf-enabled settings
 - `/home/structa.cloud/projects/cypercloud/configs/settings.yml` - Base configuration
-- `/home/structa.cloud/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py` - New module
+- `/home/structa.cloud/libs/django-fusion/src/django_fusion/config/loader.py` - New module
 - `/home/structa.cloud/projects/cypercloud/DYNACONF_SETUP.md` - Full documentation
 
 **Reference**:

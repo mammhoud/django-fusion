@@ -63,11 +63,11 @@ WAGTAIL_SITE_NAME = "Fusion LMS"
 # here would register the same app label twice and Django would raise
 # `ImproperlyConfigured: Application labels aren't unique`.
 LOCAL_APPS = [
-    "apps.core.domain",
+    "apps.domain",
     "apps.core",
-    "apps.core.content.apps.ContentConfig",
+    "apps.content.apps.ContentConfig",
     "apps.pages.pages.apps.PagesConfig",
-    "apps.core.handlers.apps.AccountsConfig",
+    "apps.handlers.apps.AccountsConfig",
     "apps.pages.accounts.apps.AccountsConfig",
     "apps.pages.lms.apps.LmsConfig",
     "apps.pages.blog.apps.BlogConfig",
@@ -99,7 +99,7 @@ TEMPLATES[0]["OPTIONS"]["libraries"]["fusion_layout"] = (
 
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
-    "apps.pages.branding.context_processors.fusion_branding_context"
+    "django_fusion.contrib.branding.context_processors.fusion_branding_context"
 )
 
 # ============================================================
@@ -117,7 +117,7 @@ PROFILE_MODEL = "auth.User"
 # TeamMembership ordering check is fixed in domain models.
 SILENCED_SYSTEM_CHECKS = [
     "treebeard.E001",
-    # ceptor_ai ↔ shared model clashes (legacy duplicate apps)
+    # Legacy duplicated app/model clashes from removed framework apps
     "models.E028",  # db_table clashes
     "models.E030",  # index name clashes
     "models.E032",  # constraint name clashes
@@ -222,8 +222,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3002",
     "http://127.0.0.1:3001",
     "http://127.0.0.1:3002",
+    "http://localhost:3458",
+    "http://127.0.0.1:3458",
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# Allow the custom fusion headers used for render-first negotiation.
+from corsheaders.defaults import default_headers  # noqa: E402
+
+CORS_ALLOW_HEADERS = [*default_headers, "x-fusion-render-first"]
 
 # ═══════════════════════════════════════════════════════════════════
 # CORS — force-enable cortheaders since configs/base may be read-only

@@ -2,8 +2,8 @@
 """
 Service for complex person operations.
 
-Delegates to apps.core.domain.services.PersonServiceBase
-Canonical import: from django_fusion.services.infrastructure import BaseService
+Delegates to apps.domain.services.PersonServiceBase
+Canonical import: from django_fusion.services.base import BaseService
 """
 
 import logging
@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 
-from apps.core.domain.models.users.users import Person
+from apps.domain.models.users.users import Person
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

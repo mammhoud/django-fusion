@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/api';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/apis';
 
 interface BlogPostDetail {
   id: number; title: string; slug: string; content: string; excerpt: string;
@@ -28,7 +28,7 @@ export default function BlogPostPage() {
   React.useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/api'}/blog/${slug}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/apis'}/blog/${slug}`);
         if (!res.ok) throw new Error(`Post not found (${res.status})`);
         const data = await res.json();
         setPost(data);

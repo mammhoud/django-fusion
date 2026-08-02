@@ -1,23 +1,31 @@
-"""CMS Fusion REST API — URL configuration."""
+"""CMS Fusion REST API — URL configuration.
+
+Mounted under ``/apis/`` (see www/urls.py).
+
+HTMX action fragments are registered in their related app's ``Application``
+viewsets (LMSApp, BlogApp, EventsApp, CoreApp) under each app's own prefix
+(e.g. ``/lms/courses/grid/``) — there is no separate ``/actions/`` tree.
+"""
 
 from django.urls import path, register_converter
 
-from django_fusion.routes import UnicodeSlugConverter
+from django_fusion.routes.core.converters import UnicodeSlugConverter
 
 register_converter(UnicodeSlugConverter, "unislug")
+
+from django_fusion.contrib.api import branding, health, layouts
 
 from apps.pages.blog import api as blog
 from apps.pages.lms.api import courses
 from apps.pages.pages import api as pages
 from apps.pages.products import api as products
 
-from . import fusion_branding, fusion_health
-
-app_name = "api"
+app_name = "apis"
 
 urlpatterns = [
-    path("fusion/health/", fusion_health.fusion_health, name="fusion_health"),
-    path("fusion/branding/", fusion_branding.fusion_branding, name="fusion_branding"),
+    path("health/", health, name="health"),
+    path("branding/", branding, name="branding"),
+    path("layouts/", layouts, name="layouts"),
     path("pages/", pages.page_list, name="page_list"),
     path("pages/<unislug:slug>/", pages.page_detail, name="page_detail"),
     path("pages/<unislug:slug>/fragment/", pages.page_fragment, name="page_fragment"),

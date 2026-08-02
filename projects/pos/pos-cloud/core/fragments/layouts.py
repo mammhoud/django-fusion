@@ -8,7 +8,7 @@ Usage:
     {% comp "core.layouts.crm_page_layout" title="CRM" / %}
 """
 
-from django_fusion.routes import FragmentComponent
+from django_fusion.routes.components.fragments import FragmentComponent
 
 
 class DashboardLayout(FragmentComponent):

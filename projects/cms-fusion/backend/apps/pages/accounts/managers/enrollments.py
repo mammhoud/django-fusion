@@ -10,12 +10,12 @@ from django.db import transaction
 from django.db.models import Avg, Count, F, Max, Min, Q
 from django.db.models.aggregates import Sum
 from django.utils import timezone
-from django_fusion.core.managers import CachedManager
+from django_fusion.management.managers.base import CachedManager
 
 from apps.pages.lms.models import Course, Enrollment, Lesson, Module
 
 try:
-    from apps.core.domain.models.users.users import Person as Profile
+    from apps.domain.models.users.users import Person as Profile
 except ImportError:
     Profile = None  # type: ignore[assignment,misc]
 

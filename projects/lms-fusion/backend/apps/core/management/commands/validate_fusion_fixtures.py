@@ -266,7 +266,7 @@ class Command(BaseCommand):
             help="Exit on first error instead of collecting all.",
         )
         parser.add_argument(
-            "-v", "--verbose",
+            "--verbose",
             action="store_true",
             help="Verbose output with per-entry details.",
         )

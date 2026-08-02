@@ -13,7 +13,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/api';
+  const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/apis';
 
   React.useEffect(() => {
     (async () => {

@@ -5,8 +5,8 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
-from django_fusion.site.interface.notifications import NotificationMixin
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.http.notifications import NotificationMixin
+from django_fusion.routes.pages.handler import PageHandler
 
 logger = logging.getLogger(__name__)
 from apps.pages.lms.management.services.courses import CourseService

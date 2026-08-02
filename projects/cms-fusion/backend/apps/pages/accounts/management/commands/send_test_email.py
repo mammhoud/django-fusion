@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django_fusion.site.management.commands.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 
 from apps.pages.accounts.management.services.email.service import email_service
 

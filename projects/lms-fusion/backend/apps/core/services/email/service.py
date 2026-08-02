@@ -142,7 +142,7 @@ class EmailService:
         """
         Queue an email for async sending via django-rq.
         """
-        from django_fusion.services.infrastructure.jobs import dispatch_job
+        from django_fusion.services.jobs import dispatch_job
 
         from apps.core.services.email.tasks import send_email_task
 

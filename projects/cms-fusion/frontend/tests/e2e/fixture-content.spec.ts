@@ -85,9 +85,9 @@ interface PageMeta {
 /** Fetch the page list from the CMS backend API */
 async function fetchPageList(): Promise<PageMeta[]> {
   try {
-    const resp = await fetch(`${API_URL}/api/pages/`);
+    const resp = await fetch(`${API_URL}/apis/pages/`);
     if (!resp.ok) {
-      console.warn(`API returned ${resp.status} for /api/pages/`);
+      console.warn(`API returned ${resp.status} for /apis/pages/`);
       return [];
     }
     const data = await resp.json() as { pages: PageMeta[]; total: number };
@@ -102,9 +102,9 @@ async function fetchPageList(): Promise<PageMeta[]> {
 /** Fetch page data from the unified page data endpoint */
 async function fetchPageData(slug: string): Promise<Record<string, unknown> | null> {
   try {
-    const resp = await fetch(`${API_URL}/api/pages/${slug}/data/`);
+    const resp = await fetch(`${API_URL}/apis/pages/${slug}/data/`);
     if (!resp.ok) {
-      console.warn(`API returned ${resp.status} for /api/pages/${slug}/data/`);
+      console.warn(`API returned ${resp.status} for /apis/pages/${slug}/data/`);
       return null;
     }
     const body = await resp.json() as { data: { encoded?: string } };
@@ -151,7 +151,7 @@ function contentAppears(bodyText: string, text: string): boolean {
 /** Check if the CMS backend is reachable */
 async function checkBackend(): Promise<boolean> {
   try {
-    const resp = await fetch(`${API_URL}/api/pages/`, { signal: AbortSignal.timeout(5000) });
+    const resp = await fetch(`${API_URL}/apis/pages/`, { signal: AbortSignal.timeout(5000) });
     return resp.ok;
   } catch {
     return false;
@@ -542,7 +542,7 @@ test.describe('Navigation Between Fixture Pages', () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 //
 // Course detail pages (e.g., /course-details/1) are rendered by the frontend
-// using data fetched from /api/courses/<id>/. These tests verify that fixture
+// using data fetched from /apis/courses/<id>/. These tests verify that fixture
 // course data (titles, descriptions, prices, instructor names) renders in the
 // browser when the backend API is available.
 //
@@ -563,7 +563,7 @@ test.describe('Course Detail Pages — Fixture Data Rendering', () => {
     if (backendAvailable) {
       for (const id of COURSE_DETAIL_IDS) {
         try {
-          const resp = await fetch(`${API_URL}/api/courses/${id}/`);
+          const resp = await fetch(`${API_URL}/apis/courses/${id}/`);
           if (resp.ok) {
             courseDetailCache[id] = await resp.json() as Record<string, unknown>;
           }

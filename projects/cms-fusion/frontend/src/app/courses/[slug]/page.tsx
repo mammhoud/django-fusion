@@ -27,7 +27,7 @@ export default function CourseDetailPage() {
   React.useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/api'}/courses/${slug}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/apis'}/courses/${slug}`);
         if (!res.ok) throw new Error(`Course not found (${res.status})`);
         const data = await res.json();
         setCourse(data);

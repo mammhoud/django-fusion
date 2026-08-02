@@ -29,3 +29,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.test_settings")
 
 # ── Bootstrap Django ────────────────────────────────────────────────────────
 django.setup()
+
+# Person is a legacy shared-table model.  The test settings disable migrations
+# so Django builds the test schema from model metadata, but unmanaged models
+# are otherwise skipped by the test database setup.  Enable it only in the
+# test process; production keeps the model's managed=False contract.
+from apps.domain.models.users.users import Person  # noqa: E402
+
+Person._meta.managed = True

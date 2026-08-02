@@ -2,7 +2,7 @@
  * Unit tests for the FusionAssets component.
  *
  * Covers:
- * - Fetches asset manifest from /fusion/assets/manifest
+ * - Fetches asset manifest from /apis/assets/manifest
  * - Renders JS script tags with `defer` attribute
  * - Renders inline JS via `dangerouslySetInnerHTML`
  * - Graceful degradation on fetch failure (renders null)
@@ -127,7 +127,7 @@ describe('FusionAssets — manifest fetch and render', () => {
     });
 
     expect(mockFetchJson).toHaveBeenCalledTimes(1);
-    expect(mockFetchJson).toHaveBeenCalledWith('/fusion/assets/manifest');
+    expect(mockFetchJson).toHaveBeenCalledWith('/apis/assets/manifest');
   });
 
   it('renders JS script tags with defer attribute from manifest', async () => {

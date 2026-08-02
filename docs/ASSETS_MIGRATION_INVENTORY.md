@@ -62,7 +62,7 @@ relocated.
 - `docs/changelogs/README.md`
 - `docs/customization/customization-methods.md`
 - `docs/design/README.md`
-- `docs/plans.md`
+- `docs/plans/README.md`
 - `docs/projects/libs/django-tags.md`
 - `docs/projects/libs/python-readme.md`
 - `docs/projects/libs/templates-architecture.md`
@@ -289,7 +289,7 @@ anything:
 - [x] Run repo-wide docs scan and add findings to section 1.1.
 - [x] Move app-specific templates from `cms-fusion/backend/templates/` and
   `lms-fusion/backend/templates/` into the appropriate
-  `plugins/<app>/templates/` directories. (completed — see `docs/plans.md`
+  `plugins/<app>/templates/` directories. (completed — see `docs/plans/README.md`
   for the old-path → new-path report)
 - [ ] Run runtime disconnect for `cms-fusion` and append the dependency list to this file.
 - [ ] Run runtime disconnect for `lms-fusion` and append the dependency list to this file.
@@ -310,5 +310,5 @@ The app-specific template move for both fusion projects is complete.
 admin overrides. All app templates are under `plugins/<app>/templates/` and
 resolve through Django's app-directories loader (`APP_DIRS=True`).
 
-See `docs/plans.md` (Phase 2) for the old-path → new-path report and the
+See `docs/plans/README.md` (Phase 2) for the old-path → new-path report and the
 validation note on the remaining workspace entry-point blockers.

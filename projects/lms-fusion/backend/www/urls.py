@@ -21,8 +21,8 @@ try:
     from django_fusion.core.assets import urls as assets_urls
 except ImportError:
     assets_urls = None
-from django_fusion.core.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
-from django_fusion.site.interface.utils import get_root_redirect_pattern
+from django_fusion.core.health.views import AssetsHealthView, DatabaseHealthView, HealthCheckView
+from django_fusion.core.utils import get_root_redirect_pattern
 from apps.core.routes import site
 
 # ── Optional tooling ────────────────────────────────────────────────────────
@@ -111,8 +111,6 @@ urlpatterns = [
 if assets_urls is not None:
     urlpatterns += [
         path("fusion/assets/", include(assets_urls)),
-        path("apis/fusion/assets/", include(assets_urls)),
-        path("api/fusion/assets/", include(assets_urls)),
     ]
 
 if apps.is_installed("django.contrib.admin"):
@@ -151,7 +149,7 @@ urlpatterns += i18n_patterns(
 
 # ── Privacy & Terms ──────────────────────────────────────────────────────
 urlpatterns += i18n_patterns(
-    path("legal/", include("apps.core.handlers.urls", namespace="legal")),
+    path("legal/", include("apps.handlers.urls", namespace="legal")),
     prefix_default_language=False,
 )
 

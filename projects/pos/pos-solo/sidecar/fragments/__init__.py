@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from django_fusion.routes import FragmentComponent  # noqa: F401 — re-export base
+from django_fusion.routes.components.fragments import FragmentComponent
 
 logger = logging.getLogger("pos.fragments")
 

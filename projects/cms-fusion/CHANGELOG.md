@@ -1,5 +1,20 @@
 # CMS Fusion — Changelog
 
+## [Unreleased]
+
+### Added
+
+- Unified the CMS Fusion django-fusion asset pipeline: webpack bundle metadata,
+  component manifests, and explicit top/bottom links now share one deduplicated
+  public-link contract through `FUSION_ASSET_PIPELINE`.
+- Documented the source → webpack → collectstatic → browser-link workflow and
+  added asset contract coverage for settings, fixtures, media, CSS, and JS.
+
+### Fixed
+
+- CMS fixture loading now resolves directly from `cms-fusion/assets/fixtures`.
+
+
 ## 2026-07-30 — ceptor-ai cleanup + enhanced test coverage
 
 ### ceptor-ai dependency fully removed

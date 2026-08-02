@@ -135,3 +135,31 @@ class ChatBubble:
             role="assistant",
             session_id=self.session_id or "",
         )
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Default stub backends — register standard provider names so
+#  ``list_integrations()`` reports them and API endpoints can route
+#  through the inline stubs instead of rejecting every backend.
+# ═══════════════════════════════════════════════════════════════
+
+def _make_stub_backend(name: str) -> type[_StubAIBackend]:
+    """Return a _StubAIBackend subclass that bakes in its backend name.
+
+    ``AIIntegrationRegistry.get()`` instantiates registered backends with
+    only ``**inst_kwargs`` (no ``backend`` positional), so each default
+    backend needs its name bound at class creation time.
+    """
+
+    class _NamedStubBackend(_StubAIBackend):
+        def __init__(self, **kwargs: Any):
+            super().__init__(name, **kwargs)
+
+    _NamedStubBackend.__name__ = f"_Stub{name.title()}Backend"
+    return _NamedStubBackend
+
+
+for _stub_backend_name in ("openai", "claude", "gemini"):
+    AIIntegrationRegistry.register(
+        _stub_backend_name, _make_stub_backend(_stub_backend_name)
+    )

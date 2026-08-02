@@ -49,7 +49,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 # ── Fixture directory (relative to this command file) ────────────────
 # Navigate up from apps/core/management/commands/ to the fusion project root.
-# commands → management → core → apps → backend → cms-fusion (5 parents)
+# commands → management → core → apps → backend → cms-fusion (parents[5])
 FIXTURE_DIR = Path(__file__).resolve().parents[5] / "assets" / "fixtures"
 
 

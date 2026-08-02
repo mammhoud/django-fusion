@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
-from django_fusion.site.interface.notifications import NotificationMixin
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.http.notifications import NotificationMixin
+from django_fusion.routes.pages.handler import PageHandler
 
 from apps.pages.accounts.management.services import MessageService
 

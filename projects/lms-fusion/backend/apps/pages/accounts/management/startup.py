@@ -78,9 +78,9 @@ def _check_secret_key() -> None:
 def _check_duplicate_settings() -> None:
     """Detect duplicate settings keys defined across multiple YAML config files."""
     # Resolve project root: this file lives at
-    # <project_root>/apps/accounts/startup.py
-    # parents: [0]=accounts, [1]=apps, [2]=project_root
-    project_root = Path(__file__).resolve().parents[2]
+    # <project_root>/apps/pages/accounts/management/startup.py
+    # parents: [0]=management, [1]=accounts, [2]=pages, [3]=apps, [4]=backend, [5]=project_root
+    project_root = Path(__file__).resolve().parents[5]
     configs_dir = project_root / "configs"
 
     if not configs_dir.exists():
@@ -99,6 +99,19 @@ def _check_duplicate_settings() -> None:
     key_sources: dict[str, list[str]] = {}
 
     for yaml_file in configs_dir.rglob("*.yml"):
+        # Environment profiles (e.g. configs/settings/ENV/_development.yml) are
+        # mutually exclusive — only the active environment's file is loaded, so
+        # a key defined across several profiles is NOT a duplicate and auditing
+        # them together only produces false-positive warnings on every boot.
+        # _core.yml is the base config (applies to every environment) and stays
+        # audited.
+        rel_file = yaml_file.relative_to(project_root)
+        if (
+            "ENV" in rel_file.parts
+            and yaml_file.stem.startswith("_")
+            and yaml_file.stem != "_core"
+        ):
+            continue
         try:
             with yaml_file.open() as fh:
                 data = yaml.safe_load(fh)
@@ -114,7 +127,7 @@ def _check_duplicate_settings() -> None:
         for section in sections:
             for key in _AUDITED_KEYS:
                 if key in section:
-                    rel = str(yaml_file.relative_to(project_root))
+                    rel = str(rel_file)
                     key_sources.setdefault(key, [])
                     if rel not in key_sources[key]:
                         key_sources[key].append(rel)

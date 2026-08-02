@@ -2,7 +2,7 @@ import logging
 
 # from apps.pages.accounts.models import Company
 try:
-    from apps.core.handlers.models.manage.company import Company
+    from apps.handlers.models.manage.company import Company
 except ImportError:
     Company = None  # type: ignore[assignment,misc]
 

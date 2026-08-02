@@ -1,7 +1,7 @@
 [project]
-name = "ctc-research"
+name = "lms-fusion"
 version = "1.0.3"
-description = "CTC Research website — part of Structa Cloud workspace"
+description = "Structa Cloud LMS Fusion website backend"
 requires-python = ">=3.11"
 dependencies = []
 

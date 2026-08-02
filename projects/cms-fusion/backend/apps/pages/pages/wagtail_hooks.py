@@ -15,7 +15,7 @@ from wagtail import hooks
 
 
 @hooks.register("insert_global_admin_css")
-def fusion_admin_css():
+def admin_css():
     """Inject fusion admin CSS for page layout previews in the Wagtail admin."""
     return format_html(
         """<style>
@@ -48,7 +48,7 @@ def fusion_admin_css():
 
 
 @hooks.register("before_serve_page")
-def fusion_before_serve(page, request, serve_args, serve_kwargs):
+def before_serve(page, request, serve_args, serve_kwargs):
     """Inject fusion_context before serving any FusionPage.
 
     Ensures that ``fusion_branding`` and ``fusion_render_first`` are always

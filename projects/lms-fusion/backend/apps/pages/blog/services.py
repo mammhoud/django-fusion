@@ -7,7 +7,10 @@ django_fusion.services.tagging so it can be reused across apps.
 """
 
 from django.db.models import Count, Q
-from django_fusion.core.services import PostFilterServiceBase, TagServiceBase
+from django_fusion.management.handlers.tagging import (
+    PostFilterServiceBase,
+    TagServiceBase,
+)
 
 from .models import BlogPost, BlogTag
 

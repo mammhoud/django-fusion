@@ -7,7 +7,7 @@ const nextConfig = {
     typedRoutes: false,
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/api',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/apis',
     NEXT_PUBLIC_FUSION_SITE_NAME: process.env.NEXT_PUBLIC_FUSION_SITE_NAME || 'Fusion CMS',
   },
 };

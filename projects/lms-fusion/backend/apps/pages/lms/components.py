@@ -14,7 +14,8 @@ Usage::
 from __future__ import annotations
 
 from django.db.models import Q
-from django_fusion.routes import FragmentComponent, RoutableComponent
+from django_fusion.routes.components.fragments import FragmentComponent
+from django_fusion.routes.components.routable import RoutableComponent
 
 
 class DashboardComponent(RoutableComponent):

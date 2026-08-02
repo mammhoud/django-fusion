@@ -119,6 +119,10 @@ function manage(site, args) {
   run(pythonBin(), ['manage.py', `--site=${site}`, ...args], { cwd: workspaceRoot, env: { PROJECT_PATH: site, DJANGO_SITE: site, WEBSITE: site } });
 }
 
+function generateAssetManifest(site) {
+  manage(site, ['generate_asset_manifest']);
+}
+
 function clean(site) {
   for (const selected of selectedSites(site)) {
     const dirs = cleanDirs[selected] || [`${siteDirs[selected] || selected}/assets/bundles/${selected}`];
@@ -225,7 +229,10 @@ switch (command) {
   case 'collectstatic':
     for (const selected of selectedSites(site)) {
       if (isTinker(selected)) { tinkerCollectstatic(); }
-      else { manage(selected, ['collectstatic', '--noinput', ...extra]); }
+      else {
+        manage(selected, ['collectstatic', '--noinput', ...extra]);
+        generateAssetManifest(selected);
+      }
     }
     break;
   case 'build-collect':
@@ -234,6 +241,7 @@ switch (command) {
       else {
         webpack(selected, 'production');
         manage(selected, ['collectstatic', '--noinput', ...extra]);
+        generateAssetManifest(selected);
       }
     }
     break;

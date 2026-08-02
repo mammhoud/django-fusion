@@ -10,10 +10,7 @@ try:
 except ImportError:
     AuthenticationError = Exception  # type: ignore[assignment,misc]
 
-try:
-    # Token model moved — import from django_fusion or apps.core.domain as needed  # type: ignore[import]
-except ImportError:
-    Token = None  # type: ignore[assignment,misc]
+from apps.core.auth_app.models.token import Token
 
 
 class AuthenticationException(AuthenticationError):

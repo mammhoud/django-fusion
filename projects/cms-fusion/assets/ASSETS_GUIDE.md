@@ -4,6 +4,43 @@ Reference for the shared frontend build system used across all three sites.
 
 ---
 
+## Canonical CMS Fusion asset tree
+
+For CMS Fusion, `projects/cms-fusion/assets/` is the project-owned source and
+runtime asset tree. Keep these boundaries stable:
+
+| Path | Role | Process |
+|------|------|---------|
+| `styles/` | SCSS/design-token source | Edit here, then compile into static CSS |
+| `static/js/` | JavaScript source consumed by Django/frontend | Keep application modules here; build bundles separately |
+| `static/styles/` | CSS/SCSS static source | Keep runtime styles here; do not mix generated `staticfiles/` |
+| `fixtures/` | Categorized JSON data | Load with `load_fusion_fixtures` in dependency order |
+| `media/` | User-uploaded/runtime files | Store and serve via `MEDIA_ROOT`; never compile or commit generated uploads |
+
+Use `backend/tests/test_assets_contract.py` when changing this layout. The
+fixture command and Django settings must resolve these paths directly; do not
+create duplicate asset roots, path aliases, or compatibility shims.
+
+### Unified django-fusion link pipeline
+
+CMS Fusion enables `FUSION_ASSET_PIPELINE` in `configs/base/assets.py`. Webpack
+writes `bundles/<site>/bundles.json`; django-fusion reads that generated manifest
+alongside `FUSION_ASSETS` and the component manifest, deduplicates CSS/JS links,
+and exposes one result through the asset API and `{% fusion_top_assets %}` /
+`{% fusion_bottom_assets %}` tags. The process is:
+
+1. Edit source under `assets/styles/` or `assets/static/`.
+2. Run `node assets/scripts/workspace.mjs build --site cms-fusion`.
+3. Validate `assets/bundles/cms-fusion/bundles.json`.
+4. Run `python manage.py collectstatic --noinput` (or `build-collect`).
+5. Render links through django-fusion; never link directly to source files.
+
+`STATIC_ROOT` is generated output and remains a sibling of source assets. The
+webpack stats file is metadata consumed by the merge layer, not a second source
+root.
+
+---
+
 ## How the Webpack Build Works
 
 All JavaScript and CSS for the workspace is managed by a single Webpack setup located in `assets/`.

@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
-from apps.core.domain.models.users.users import Person
+from apps.domain.models.users.users import Person
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -346,7 +346,7 @@ class PersonService:
         Returns:
             Dict with invitation details
         """
-        from apps.core.services.invitation import InvitationService
+        from apps.domain.services.communication.invitation_service import InvitationService
 
         try:
             # Check if person already exists

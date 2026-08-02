@@ -26,7 +26,7 @@
 - **[requirements.txt](requirements.txt)** - Dependencies (added dynaconf, pydantic)
 
 ### 📦 django-fusion Extension (Reusable Module)
-- **[../../../libs/django-fusion/src/django_fusion/config/dynaconf_loader.py](../../../libs/django-fusion/src/django_fusion/config/dynaconf_loader.py)** - Dynaconf loader module (280+ lines)
+- **[../../../libs/django-fusion/src/django_fusion/config/loader.py](../../../libs/django-fusion/src/django_fusion/config/loader.py)** - Dynaconf loader module (280+ lines)
 - **[../../../libs/django-fusion/src/django_fusion/config/__init__.py](../../../libs/django-fusion/src/django_fusion/config/__init__.py)** - Updated exports
 
 ### 📋 Project Documentation
@@ -156,7 +156,7 @@ Configuration:
 
 Code:
   settings.py                          9 KB (315 lines)
-  dynaconf_loader.py                  11 KB (280+ lines)
+  loader.py                  11 KB (280+ lines)
   Makefile                            15 KB (new commands)
 
 Total Documentation:               50 KB

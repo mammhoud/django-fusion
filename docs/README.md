@@ -135,6 +135,7 @@ Each project has a dedicated documentation page in [`docs/sites/`](sites/) with:
 ## Quick Links
 
 - [📚 Guides](guides/) — step-by-step tutorials
+- [🗺️ Plans](plans/) — consolidated implementation plans and status
 - [🚀 Getting Started](getting-started/)
 - [🔄 Recent Changes](recent-changes.md)
 - [🎯 Features Index](features/) — capabilities by project

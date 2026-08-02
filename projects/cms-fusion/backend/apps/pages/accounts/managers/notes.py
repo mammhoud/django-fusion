@@ -3,7 +3,7 @@ import logging
 from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
-from django_fusion.core.managers import BaseManager, cached_method
+from django_fusion.management.managers.base import BaseManager, cached_method
 
 logger = logging.getLogger(__name__)
 

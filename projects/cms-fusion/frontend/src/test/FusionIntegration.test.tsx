@@ -43,7 +43,7 @@ vi.mock('@/store/api/endpoints/pages', () => ({
 const HOME_PAGE_ENCODED =
   'fusion_v1:eyJzbHVnIjoiaG9tZSIsInRpdGxlIjoiTGVhcm4gV2l0aG91dCBMaW1pdHMiLCJzZW8iOnsidGl0bGUiOiJMTVMgUGxhdGZvcm0gfCBMZWFybiBXaXRob3V0IExpbWl0cyIsImRlc2NyaXB0aW9uIjoiTWFzdGVyIG5ldyBza2lsbHMgd2l0aCBleHBlcnQtbGVkIGNvdXJzZXMsIGludGVyYWN0aXZlIGNvbnRlbnQsIGFuZCBhIGNvbW11bml0eSBvZiBsZWFybmVycy4ifSwiYmxvY2tzIjpbeyJ0eXBlIjoiaGVybyIsImhlYWRpbmciOiJMZWFybiBXaXRob3V0IExpbWl0cyIsImludHJvIjoiTWFzdGVyIG5ldyBza2lsbHMgd2l0aCBleHBlcnQtbGVkIGNvdXJzZXMsIGludGVyYWN0aXZlIGNvbnRlbnQsIGFuZCBhIGNvbW11bml0eSBvZiBsZWFybmVycy4iLCJjdGFzIjpbeyJsYWJlbCI6IkV4cGxvcmUgQ291cnNlcyIsImhyZWYiOiIvY291cnNlcyIsInZhcmlhbnQiOiJwcmltYXJ5In0seyJsYWJlbCI6IkdldCBTdGFydGVkIEZyZWUiLCJocmVmIjoiL3JlZ2lzdHJhdGlvbiIsInZhcmlhbnQiOiJzZWNvbmRhcnkifV19LHsidHlwZSI6InN0YXRzIiwiaXRlbXMiOlt7ImxhYmVsIjoiU3R1ZGVudHMiLCJ2YWx1ZSI6IjVLKyJ9LHsibGFiZWwiOiJSZXZpZXdzIiwidmFsdWUiOiIxMksrIn1dfSx7InR5cGUiOiJzZWN0aW9uX2hlYWRlciIsImtleSI6ImZlYXR1cmVkX2NvdXJzZXMiLCJoZWFkaW5nIjoiRmVhdHVyZWQgQ291cnNlcyIsImludHJvIjoiTW9zdCBwb3B1bGFyIGNvdXJzZXMgcGlja2VkIGZvciB5b3UiLCJjdGEiOnsibGFiZWwiOiJWaWV3IEFsbCIsImhyZWYiOiIvY291cnNlcyIsInZhcmlhbnQiOiJsaW5rIn19LHsidHlwZSI6ImN0YSIsImhlYWRpbmciOiJTdGFydCBMZWFybmluZyBUb2RheSIsImludHJvIjoiSm9pbiB0aG91c2FuZHMgb2Ygc3R1ZGVudHMgYnVpbGRpbmcgc2tpbGxzIGZvciB0aGVpciBuZXh0IG9wcG9ydHVuaXR5LiIsImN0YXMiOlt7ImxhYmVsIjoiQ3JlYXRlIEZyZWUgQWNjb3VudCIsImhyZWYiOiIvcmVnaXN0cmF0aW9uIn1dfV19';
 
-/** Simulated health check response matching /fusion/health endpoint. */
+/** Simulated health check response matching /apis/health/ endpoint. */
 const HEALTH_RESPONSE_WITH_FRAGMENTS = {
   status: 200,
   message: 'Success',
@@ -95,7 +95,7 @@ describe('Health check → session → middleware mode', () => {
   });
 
   it('health response with fusion_render_first=true → fragment mode', async () => {
-    // Simulate: frontend calls /fusion/health and stores result
+    // Simulate: frontend calls /apis/health/ and stores result
     const healthData = HEALTH_RESPONSE_WITH_FRAGMENTS.data;
     fusionDecoder.initSession(healthData.fusion_render_first);
 

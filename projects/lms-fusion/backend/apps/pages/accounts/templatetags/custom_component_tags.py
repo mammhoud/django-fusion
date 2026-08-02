@@ -1,6 +1,6 @@
 from django import template
 
-from apps.pages.accounts.renderers import dynamic_renderer
+from apps.pages.accounts.management.renderers import dynamic_renderer
 
 register = template.Library()
 

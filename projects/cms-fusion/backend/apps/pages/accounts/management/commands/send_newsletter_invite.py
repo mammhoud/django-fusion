@@ -21,7 +21,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django_fusion.site.management.commands.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 

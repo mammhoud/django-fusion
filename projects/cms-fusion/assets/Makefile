@@ -1,5 +1,5 @@
 # v1/assets/Makefile – Frontend build and CSS tools
-.PHONY: help install build production watch start purge analyze clean clean-site build-all build-ctc build-structa build-vresume collectstatic-site build-collect-site
+.PHONY: help install build production watch start purge analyze clean clean-site build-all build-ctc build-structa build-vresume collectstatic-site generate-asset-manifest build-collect-site
 
 .DEFAULT_GOAL := help
 
@@ -68,8 +68,12 @@ build-vresume: ## Build VResume assets
 build-all: install ## Build all project asset bundles
 	@$(NPM) run build:all
 
-collectstatic-site: ## Collect static for PROJECT_PATH/DJANGO_SITE
+collectstatic-site: ## Collect static and generate the component manifest for PROJECT_PATH/DJANGO_SITE
 	@cd .. && $(PYTHON) manage.py --site=$(DJANGO_SITE) collectstatic --noinput
+	@cd .. && $(PYTHON) manage.py --site=$(DJANGO_SITE) generate_asset_manifest
+
+generate-asset-manifest: ## Generate the django-fusion component manifest
+	@cd .. && $(PYTHON) manage.py --site=$(DJANGO_SITE) generate_asset_manifest
 
 build-collect-site: build collectstatic-site clean-bundles-site ## Build assets, collect static, and clean bundles for PROJECT_PATH
 

@@ -51,9 +51,20 @@ class Conversation(models.Model):
         """Get the most recent message in this conversation"""
         return self.messages.last()
     
-    def get_context_messages(self, limit=10):
-        """Get recent messages for context"""
-        return list(self.messages.all()[:limit])
+    def get_context_messages(self, limit=10, exclude_id=None):
+        """Return the most recent messages in chronological order.
+
+        The database ordering is oldest-first so replies render naturally,
+        but context windows should be bounded from the newest end first.
+        ``exclude_id`` lets prompt builders avoid repeating the active message.
+        """
+        if limit <= 0:
+            return []
+        queryset = self.messages.order_by("-timestamp")
+        if exclude_id is not None:
+            queryset = queryset.exclude(pk=exclude_id)
+        messages = list(queryset[:limit])
+        return list(reversed(messages))
 
 
 class Message(models.Model):

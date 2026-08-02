@@ -1,7 +1,8 @@
 import { api, PaginatedResponse } from '../baseApi';
 
 export interface Event {
-  id: number;
+  // The Event model uses a UUID primary key (fixture pks are UUIDs).
+  id: string;
   title: string;
   slug: string;
   description: string;
@@ -22,8 +23,8 @@ export interface Event {
 }
 
 export interface EventRegistration {
-  id: number;
-  event: number;
+  id: string;
+  event: string;
   event_title: string;
   full_name: string;
   email: string;
@@ -42,11 +43,11 @@ export const eventsApi = api.injectEndpoints({
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Event' as const, id })), { type: 'Event', id: 'LIST' }] : [{ type: 'Event', id: 'LIST' }],
     }),
-    getEvent: builder.query<Event, number>({
+    getEvent: builder.query<Event, string>({
       query: (id) => `/events/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Event', id }],
     }),
-    registerForEvent: builder.mutation<EventRegistration, { event_id: number; full_name: string; email: string; phone?: string }>({
+    registerForEvent: builder.mutation<EventRegistration, { event_id: string; full_name: string; email: string; phone?: string }>({
       query: (body) => ({ url: '/events/register/', method: 'POST', body }),
       invalidatesTags: [{ type: 'EventRegistration', id: 'LIST' }],
     }),

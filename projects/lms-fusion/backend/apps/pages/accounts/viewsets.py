@@ -13,7 +13,7 @@ Usage::
 
 from __future__ import annotations
 
-from django_fusion.routes import ModelViewset
+from django_fusion.routes.models.crud import ModelViewset
 
 
 class EventViewset(ModelViewset):

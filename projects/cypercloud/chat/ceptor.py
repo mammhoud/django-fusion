@@ -1,23 +1,18 @@
-"""
-ceptor_ai integration for TemplateTinker — wraps ceptor-ai features as APIs.
+"""Stub-backed AI/MCP/chat services for TemplateTinker.
 
 Provides:
-    CeptorAPIClient   — HTTP client for the ceptor-ai REST API
-    CeptorAIService   — AI completion/streaming via ceptor_ai.ai.integrations
-    CeptorMCPService  — MCP tool execution via ceptor_ai.mcp.server
-    CeptorConfigLoader — Configuration preloader for ceptor-ai configs
-    CeptorChatService — High-level chat interface using ceptor_ai.chat
+    CeptorAIService   — AI completion/streaming via the local ceptor_stubs AIIntegrationRegistry
+    CeptorMCPService  — MCP tool execution via the local ceptor_stubs MCP server
+    CeptorConfigLoader — Configuration preloader
+    CeptorChatService — High-level chat interface using the local ceptor_stubs ChatBubble
 """
 
 from __future__ import annotations
 
 import json
 import logging
-import os
 from pathlib import Path
 from typing import Any
-
-import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -101,13 +96,14 @@ class CeptorConfigLoader:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  AI Service — using ceptor_ai.ai.integrations
+#  AI Service — using the local ceptor_stubs AIIntegrationRegistry
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorAIService:
-    """AI completions via ceptor_ai.ai.integrations (OpenAI, Claude, etc.).
+    """AI completions via the local ceptor_stubs AIIntegrationRegistry.
 
-    Automatically resolves API keys from environment variables.
+    Stub-backed — real provider integrations can be registered on the
+    registry when they become available.
 
     Usage::
 
@@ -125,12 +121,7 @@ class CeptorAIService:
         **kwargs: Any,
     ) -> str:
         """Generate a non-streaming completion."""
-        try:
-            from ..ceptor_stubs import AIIntegrationRegistry
-        except ImportError:
-            raise ImportError(
-                "ceptor-ai stubs are not available."
-            )
+        from ceptor_stubs import AIIntegrationRegistry
 
         inst_kwargs = {**kwargs}
         if model:
@@ -146,12 +137,7 @@ class CeptorAIService:
         **kwargs: Any,
     ):
         """Stream completion tokens."""
-        try:
-            from ..ceptor_stubs import AIIntegrationRegistry
-        except ImportError:
-            raise ImportError(
-                "ceptor-ai stubs are not available."
-            )
+        from ceptor_stubs import AIIntegrationRegistry
 
         inst_kwargs = {**kwargs}
         if model:
@@ -161,20 +147,17 @@ class CeptorAIService:
 
     def list_backends(self) -> list[str]:
         """Return available AI integration backends."""
-        try:
-            from ..ceptor_stubs import AIIntegrationRegistry
+        from ceptor_stubs import AIIntegrationRegistry
 
-            return AIIntegrationRegistry.list_integrations()
-        except ImportError:
-            return []
+        return AIIntegrationRegistry.list_integrations()
 
 
 # ═══════════════════════════════════════════════════════════════
-#  MCP Service — using ceptor_ai.mcp.server
+#  MCP Service — using the local ceptor_stubs MCP server
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorMCPService:
-    """MCP tool execution via ceptor_ai.mcp.server.
+    """MCP tool execution via the local ceptor_stubs MCP server.
 
     Usage::
 
@@ -189,20 +172,14 @@ class CeptorMCPService:
         self._server = None
 
     def _get_server(self):
-        """Lazy-load the MCP server."""
+        """Lazy-load the stub MCP server."""
         if self._server is not None:
             return self._server
 
-        try:
-            from ..ceptor_stubs import server as mcp_server_instance
+        from ceptor_stubs import server as mcp_server_instance
 
-            self._server = mcp_server_instance
-            return self._server
-        except ImportError:
-            raise ImportError(
-                "ceptor-ai MCP is not available. "
-                "Install ceptor-ai[mcp] for MCP support."
-            )
+        self._server = mcp_server_instance
+        return self._server
 
     def run_tool(self, tool_name: str, **kwargs: Any) -> Any:
         """Execute a named MCP tool."""
@@ -235,11 +212,11 @@ class CeptorMCPService:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Chat Service — using ceptor_ai.chat
+#  Chat Service — using the local ceptor_stubs ChatBubble
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorChatService:
-    """High-level chat interface using ceptor_ai.chat.ChatBubble.
+    """High-level chat interface using the local ceptor_stubs ChatBubble.
 
     Usage::
 
@@ -257,16 +234,14 @@ class CeptorChatService:
         self.timeout = timeout
 
     def is_available(self) -> bool:
-        """Check if the ceptor-ai chat server is reachable."""
+        """Check if the stub chat client can reach the chat server."""
         try:
-            from ..ceptor_stubs import CraftsClient
+            from ceptor_stubs import CraftsClient
 
             client = CraftsClient(
                 base_url=self.server_url, timeout=self.timeout
             )
             return client.health()
-        except ImportError:
-            return False
         except Exception:
             return False
 
@@ -275,7 +250,7 @@ class CeptorChatService:
     ) -> dict[str, Any]:
         """Send a message and return the reply as a dict."""
         try:
-            from ..ceptor_stubs import ChatBubble
+            from ceptor_stubs import ChatBubble
 
             bubble = ChatBubble(
                 server_url=self.server_url,
@@ -289,11 +264,6 @@ class CeptorChatService:
                 "session_id": reply.session_id,
                 "metadata": reply.metadata,
             }
-        except ImportError:
-            raise ImportError(
-                "ceptor-ai is not installed. "
-                "Install it with: pip install ceptor-ai"
-            )
         except Exception as exc:
             logger.error("CeptorChatService.send error: %s", exc)
             return {

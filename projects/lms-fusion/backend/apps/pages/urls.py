@@ -17,7 +17,7 @@ class NewsletterSubscribeView(View):
         if not email:
             return JsonResponse({"status": "error", "message": "Email is required."}, status=400)
 
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         subscriber, created = Subscriber.objects.get_or_create(
             email=email,
@@ -42,7 +42,7 @@ class NewsletterSubscribeView(View):
 
         # Send confirmation email (best-effort)
         try:
-            from apps.core.domain.services.communication.newsletter import send_confirmation_email
+            from apps.domain.services.communication.newsletter import send_confirmation_email
             send_confirmation_email(subscriber.id)
         except Exception:
             pass  # Non-blocking — subscription is still saved
@@ -57,7 +57,7 @@ class NewsletterConfirmView(View):
     """Confirm newsletter subscription via token link from email."""
 
     def get(self, request, token, *args, **kwargs):
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         subscriber = get_object_or_404(Subscriber, confirmation_token=token)
 
@@ -82,7 +82,7 @@ class NewsletterUnsubscribeView(View):
     """
 
     def get(self, request, token, *args, **kwargs):
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         subscriber = get_object_or_404(Subscriber, unsubscribe_token=token)
 
@@ -97,7 +97,7 @@ class NewsletterUnsubscribeView(View):
         })
 
     def post(self, request, token, *args, **kwargs):
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         subscriber = get_object_or_404(Subscriber, unsubscribe_token=token)
         subscriber.unsubscribe()

@@ -110,7 +110,7 @@ describe('useCheckout [integration]', function () {
 
   // ── Free course ────────────────────────────────────────────────
   it('transitions idle → enrolling → enrolled_free for free course', async function () {
-    mockApiResponse('POST', '/apis/enrollments', freeEnrolledData);
+    mockApiResponse('POST', '/enrollments', freeEnrolledData);
 
     var result = renderCheckout({ price: 0, isFree: true }).result;
     expect(result.current.step).toBe('idle');
@@ -124,7 +124,7 @@ describe('useCheckout [integration]', function () {
 
   // ── Paid course ────────────────────────────────────────────────
   it('transitions idle → enrolling → enrolled_paid for paid course', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -137,8 +137,8 @@ describe('useCheckout [integration]', function () {
 
   // ── Stripe inline payment ──────────────────────────────────────
   it('transitions enrolled_paid → processing_payment → stripe_form for Stripe', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', stripeInitData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', stripeInitData);
 
     var result = renderCheckout().result;
 
@@ -155,8 +155,8 @@ describe('useCheckout [integration]', function () {
 
   // ── PayPal redirect ────────────────────────────────────────────
   it('redirects to PayPal URL and sets step to redirecting', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', paypalInitData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', paypalInitData);
 
     var orig = captureWindowLocation();
     var result = renderCheckout().result;
@@ -173,8 +173,8 @@ describe('useCheckout [integration]', function () {
 
   // ── Paymo redirect ─────────────────────────────────────────────
   it('redirects via payment_url for Paymo', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', paymoInitData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', paymoInitData);
 
     var orig = captureWindowLocation();
     var result = renderCheckout().result;
@@ -189,8 +189,8 @@ describe('useCheckout [integration]', function () {
 
   // ── Fallback redirect ──────────────────────────────────────────
   it('redirects to success page when no redirect_url or client_secret', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', fallbackInitData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', fallbackInitData);
 
     var orig = captureWindowLocation();
     var result = renderCheckout().result;
@@ -205,8 +205,8 @@ describe('useCheckout [integration]', function () {
 
   // ── Payment init error ─────────────────────────────────────────
   it('shows error when initPayment rejects with API message', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiError('POST', '/apis/enrollments/1/payment/init', { message: 'Insufficient funds' });
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiError('POST', '/enrollments/1/payment/init', { message: 'Insufficient funds' });
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -217,8 +217,8 @@ describe('useCheckout [integration]', function () {
   });
 
   it('shows generic error when initPayment fails with no message', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiError('POST', '/apis/enrollments/1/payment/init', {});
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiError('POST', '/enrollments/1/payment/init', {});
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -238,7 +238,7 @@ describe('useCheckout [integration]', function () {
 
   // ── Enrollment error ───────────────────────────────────────────
   it('shows already-enrolled error when API says Already enrolled', async function () {
-    mockApiError('POST', '/apis/enrollments', { message: 'Already enrolled in this course' });
+    mockApiError('POST', '/enrollments', { message: 'Already enrolled in this course' });
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -248,7 +248,7 @@ describe('useCheckout [integration]', function () {
   });
 
   it('shows generic error for other enrollment failures', async function () {
-    mockApiError('POST', '/apis/enrollments', { message: 'Server error' });
+    mockApiError('POST', '/enrollments', { message: 'Server error' });
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -259,8 +259,8 @@ describe('useCheckout [integration]', function () {
 
   // ── onStripeSuccess ────────────────────────────────────────────
   it('redirects to success page when transactionId is set', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', stripeInitData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', stripeInitData);
 
     var orig = captureWindowLocation();
     var result = renderCheckout().result;
@@ -284,8 +284,8 @@ describe('useCheckout [integration]', function () {
 
   // ── onStripeError ──────────────────────────────────────────────
   it('returns to enrolled_paid with error and clears clientSecret', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', stripeInitData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', stripeInitData);
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -301,7 +301,7 @@ describe('useCheckout [integration]', function () {
 
   // ── Reset ──────────────────────────────────────────────────────
   it('resets state back to idle defaults from any step', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
 
     var result = renderCheckout().result;
     await act(function () { return result.current.enroll(); });
@@ -315,7 +315,7 @@ describe('useCheckout [integration]', function () {
   });
 
   it('can restart flow after reset', async function () {
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
 
     var result = renderCheckout().result;
 
@@ -326,7 +326,7 @@ describe('useCheckout [integration]', function () {
     expect(result.current.step).toBe('idle');
 
     // Enroll again with different data
-    mockApiResponse('POST', '/apis/enrollments', { ...enrolledData, id: 10 });
+    mockApiResponse('POST', '/enrollments', { ...enrolledData, id: 10 });
     await act(function () { return result.current.enroll(); });
     expect(result.current.step).toBe('enrolled_paid');
     expect(result.current.enrollment?.id).toBe(10);
@@ -335,7 +335,7 @@ describe('useCheckout [integration]', function () {
   // ── Double-click guard ─────────────────────────────────────────
   it('ignores second enroll() call while already enrolling', async function () {
     // Use a deferred response so the first call is in-flight
-    mockApiResponse('POST', '/apis/enrollments', enrolledData);
+    mockApiResponse('POST', '/enrollments', enrolledData);
 
     var result = renderCheckout().result;
 
@@ -360,7 +360,7 @@ describe('useCheckout [integration]', function () {
   });
 
   it('processes payment directly when enrollment is pre-provided', async function () {
-    mockApiResponse('POST', '/apis/enrollments/1/payment/init', stripeInitData);
+    mockApiResponse('POST', '/enrollments/1/payment/init', stripeInitData);
 
     var result = renderHookWithStore(function () {
       return useCheckout({ courseId: 42, price: 49.99, enrollment: enrolledData });

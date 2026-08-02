@@ -9,12 +9,12 @@ new routable-components routing system.
 Usage::
 
     from apps.pages.blog.viewsets import BlogPostViewset
-    # Register in apps/projects/routes.py → BlogApp.viewsets
+    # Register in apps/pages/blog/application.py → BlogApp.viewsets
 """
 
 from __future__ import annotations
 
-from django_fusion.routes import ModelViewset
+from django_fusion.routes.models.crud import ModelViewset
 
 
 class BlogPostViewset(ModelViewset):

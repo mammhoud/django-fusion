@@ -8,7 +8,7 @@ Usage:
     {% comp "core.reports.report_filter_bar" report_type=type / %}
 """
 
-from django_fusion.routes import FragmentComponent
+from django_fusion.routes.components.fragments import FragmentComponent
 
 
 class InventoryReportView(FragmentComponent):

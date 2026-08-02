@@ -257,7 +257,7 @@ class PrivacyPageFragment(RoutableComponent):
 ### 4.2 Standardized JSON Renderer
 
 ```python
-from django_fusion.routes.renderers import fusion_json_response
+from django_fusion.routes.rendering.renderers import fusion_json_response
 ```
 
 The response envelope:

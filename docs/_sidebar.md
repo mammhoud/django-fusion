@@ -50,6 +50,7 @@
   - [Libs](projects/libs/)
     - [Configuration](projects/libs/configuration.md)
     - [django-fusion](projects/libs/django-fusion.md)
+- [🧩 Fusion Assets & Health](guides/09-fusion-assets-health.md)
     - [ceptor-ai](projects/libs/python-readme.md)
 - [🏗️ Infrastructure](infrastructure/)
   - [Proxy & SSL](infrastructure/proxy.md)

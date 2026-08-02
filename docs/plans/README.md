@@ -1,6 +1,10 @@
 # Structa Cloud — Plans Index
 
-> **Last updated:** 2026-07-30 | **Branch:** `generic`
+> **Last updated:** 2026-08-01 | **Branch:** `generic`
+
+All active, migrated, and historical repository plans live below this directory.
+`docs/Anytype/plans/` remains a separate Anytype knowledge graph and is not
+part of this index.
 
 This directory consolidates all implementation plans for the Structa Cloud monorepo, organized by project. Each plan includes a status indicator showing whether the work is completed, in progress, or not started.
 
@@ -18,9 +22,9 @@ This directory consolidates all implementation plans for the Structa Cloud monor
 | **fusion-assets-templates-cleanup** | ✅ Done | 100% | Phases 0-7 complete; Phase 8 deferred (deployment) |
 | **django-fusion-webpack-integration** | ✅ Done | 100% | SCSS pipeline configured |
 | **fix-deploy-webpack-cleanup** | ✅ Done | 100% | Deployment fixes applied |
-| **legacy-cleanup | 🟡 Partial | 25% | Only ctc-research archived; 5 candidates remain
-| **merge-cleanup | 🟡 Partial | 20% | File inventory done; actual cleanup not started
-| **migration-cleanup-master | 🟡 Partial | 70% | Fusion migrations done; legacy sites + cleanup remain
+| **legacy-cleanup** | 🟡 Partial | 25% | Only ctc-research archived; 5 candidates remain |
+| **merge-cleanup** | 🟡 Partial | 20% | File inventory done; actual cleanup not started |
+| **migration-cleanup-master** | 🟡 Partial | 70% | Fusion migrations done; legacy sites + cleanup remain |
 | **worker-consolidation** | ⬜ Not Started | 0% | Worker task module consolidation |
 | **cms-fusion frontend-enhancement-master** | ⬜ Not Started | 0% | UI enhancement umbrella plan |
 | **cms-fusion flyonui-integration** | ⬜ Not Started | 0% | FlyonUI component integration |
@@ -155,9 +159,9 @@ Each plan file is tagged at the top with relevant project tags. Use these to fil
 
 ## Related
 
-- [`../CHANGELOG.md`](../CHANGELOG.md) — root changelog
-- [`projects/cms-fusion/CHANGELOG.md`](../../projects/cms-fusion/CHANGELOG.md)
-- [`projects/lms-fusion/CHANGELOG.md`](../../projects/lms-fusion/CHANGELOG.md)
+- [`../../CHANGELOG.md`](../../CHANGELOG.md) — root changelog
+- [`../../projects/cms-fusion/CHANGELOG.md`](../../projects/cms-fusion/CHANGELOG.md)
+- [`../../projects/lms-fusion/CHANGELOG.md`](../../projects/lms-fusion/CHANGELOG.md)
 - [`fusion-assets-templates-cleanup.md`](fusion-assets-templates-cleanup.md) — detailed Phase 0-8 spec
 
 ### Duplicate Task Resolution

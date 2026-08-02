@@ -53,8 +53,9 @@ services:
       - ./configs:/app/configs:ro
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
-      - cms-fusion-static:/app/cms-fusion/static:rw
-      - cms-fusion-media:/app/cms-fusion/media:rw
+      # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
+      - cms-fusion-static:/app/cms-fusion/assets/staticfiles:rw
+      - cms-fusion-media:/app/cms-fusion/assets/media:rw
     networks:
       - common
       - traefik-net

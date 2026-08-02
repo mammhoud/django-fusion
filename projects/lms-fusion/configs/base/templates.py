@@ -65,7 +65,7 @@ if importlib.util.find_spec("heroicons") is not None:
     _TEMPLATE_BUILTINS.append("heroicons.templatetags.heroicons")
 # Register django_fusion component tags (comp, slot, prop, var, css, js) as builtins
 # so templates can use {% comp %} without needing {% load components %} every time.
-# Avoid importing django_fusion.comp.configuration.conf here. That module
+# Avoid importing django_fusion.config.conf here. That module
 # imports django.conf.settings and reads settings.DEBUG at import time; because
 # this file is itself imported while Django settings are still being built,
 # touching settings.DEBUG creates a circular import that re-enters the site

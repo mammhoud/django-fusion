@@ -78,9 +78,9 @@ def _check_secret_key() -> None:
 def _check_duplicate_settings() -> None:
     """Detect duplicate settings keys defined across multiple YAML config files."""
     # Resolve project root: this file lives at
-    # <project_root>/apps/accounts/startup.py
-    # parents: [0]=accounts, [1]=apps, [2]=project_root
-    project_root = Path(__file__).resolve().parents[2]
+    # <project_root>/apps/pages/accounts/management/startup.py
+    # parents: [0]=management, [1]=accounts, [2]=pages, [3]=apps, [4]=backend, [5]=project_root
+    project_root = Path(__file__).resolve().parents[5]
     configs_dir = project_root / "configs"
 
     if not configs_dir.exists():

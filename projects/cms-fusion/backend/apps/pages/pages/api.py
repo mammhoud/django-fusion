@@ -10,7 +10,9 @@ import logging
 from django.http import JsonResponse
 
 from apps.pages.pages.content import normalize_slug
-from django_fusion.routes import fusion_json_response, FusionCodec
+from django_fusion.routes.rendering.session import FusionCodec
+from django_fusion.routes.rendering.renderers import fusion_json_response
+from django_fusion.routes.rendering.renderers import fusion_response
 
 logger = logging.getLogger(__name__)
 
@@ -118,8 +120,6 @@ def page_fragment(request, slug):
         wagtail_page = _get_wagtail_page(slug)
         if wagtail_page is None:
             return fusion_json_response({"error": "Page not found"}, status=404)
-
-        from apps.core.api.data_adapter import fusion_response
 
         page_info = _wagtail_page_to_dict(wagtail_page)
         fragment_name = page_info.get("fragment_name") or f"pages.{normalized.replace('-', '_')}"

@@ -26,8 +26,8 @@ class TestCORSHeaders(TestCase):
         self.client = Client()
 
     def test_health_has_cors_header(self):
-        """GET /api/fusion/health/ includes Access-Control-Allow-Origin."""
-        response = self.client.get("/api/fusion/health/")
+        """GET /apis/health/ includes Access-Control-Allow-Origin."""
+        response = self.client.get("/apis/health/")
         # CORS may be configured; test passes if header exists OR response is 200
         assert response.status_code == 200
         if "Access-Control-Allow-Origin" in response:
@@ -44,7 +44,7 @@ class TestHTMXHandling(TestCase):
     def test_health_with_htmx_header(self):
         """Health endpoint works with HX-Request header."""
         response = self.client.get(
-            "/api/fusion/health/",
+            "/apis/health/",
             HTTP_HX_REQUEST="true",
         )
         assert response.status_code == 200
@@ -52,7 +52,7 @@ class TestHTMXHandling(TestCase):
     def test_pages_with_htmx_header(self):
         """Pages endpoint works with HX-Request header."""
         response = self.client.get(
-            "/api/pages/",
+            "/apis/pages/",
             HTTP_HX_REQUEST="true",
         )
         assert response.status_code == 200
@@ -60,7 +60,7 @@ class TestHTMXHandling(TestCase):
     def test_htmx_trigger_header_present(self):
         """Some endpoints may include HX-Trigger header for HTMX events."""
         response = self.client.get(
-            "/api/blog/",
+            "/apis/blog/",
             HTTP_HX_REQUEST="true",
         )
         assert response.status_code == 200
@@ -74,25 +74,25 @@ class TestErrorHandling(TestCase):
         self.client = Client()
 
     def test_404_on_nonexistent_endpoint(self):
-        """GET /api/nonexistent/ returns 404."""
-        response = self.client.get("/api/nonexistent/")
+        """GET /apis/nonexistent/ returns 404."""
+        response = self.client.get("/apis/nonexistent/")
         assert response.status_code == 404
 
     def test_405_method_not_allowed(self):
         """POST to GET-only endpoint returns 405."""
-        response = self.client.post("/api/fusion/health/")
+        response = self.client.post("/apis/health/")
         assert response.status_code != 500, (
             f"Expected non-500, got {response.status_code}"
         )
 
     def test_empty_query_params_still_works(self):
         """Endpoints work fine with empty query params."""
-        response = self.client.get("/api/blog/?q=")
+        response = self.client.get("/apis/blog/?q=")
         assert response.status_code == 200
 
     def test_invalid_page_number_handled(self):
         """Non-integer page parameter doesn't crash."""
-        response = self.client.get("/api/blog/?page=abc")
+        response = self.client.get("/apis/blog/?page=abc")
         assert response.status_code in (200, 400, 404), (
             f"Expected 200/400/404, got {response.status_code}"
         )
@@ -106,30 +106,30 @@ class TestTrailingSlashBehavior(TestCase):
         self.client = Client()
 
     def test_health_without_slash_redirects(self):
-        """GET /api/fusion/health (no slash) → 301 to /api/fusion/health/."""
-        response = self.client.get("/api/fusion/health")
+        """GET /apis/health (no slash) → 301 to /apis/health/."""
+        response = self.client.get("/apis/health")
         assert response.status_code in (200, 301), (
             f"Expected 200 or 301, got {response.status_code}"
         )
 
     def test_branding_without_slash_redirects(self):
-        """GET /api/fusion/branding → 301 to /api/fusion/branding/."""
-        response = self.client.get("/api/fusion/branding")
+        """GET /apis/branding → 301 to /apis/branding/."""
+        response = self.client.get("/apis/branding")
         assert response.status_code in (200, 301)
 
     def test_pages_without_slash_redirects(self):
-        """GET /api/pages → 301 to /api/pages/."""
-        response = self.client.get("/api/pages")
+        """GET /apis/pages → 301 to /apis/pages/."""
+        response = self.client.get("/apis/pages")
         assert response.status_code in (200, 301)
 
     def test_blog_without_slash_redirects(self):
-        """GET /api/blog → 301 to /api/blog/."""
-        response = self.client.get("/api/blog")
+        """GET /apis/blog → 301 to /apis/blog/."""
+        response = self.client.get("/apis/blog")
         assert response.status_code in (200, 301)
 
     def test_courses_without_slash_redirects(self):
-        """GET /api/courses → 301 to /api/courses/."""
-        response = self.client.get("/api/courses")
+        """GET /apis/courses → 301 to /apis/courses/."""
+        response = self.client.get("/apis/courses")
         assert response.status_code in (200, 301)
 
 
@@ -142,7 +142,7 @@ class TestBrandingDetails(TestCase):
 
     def test_branding_has_color_values(self):
         """Branding response contains color hex values."""
-        response = self.client.get("/api/fusion/branding/")
+        response = self.client.get("/apis/branding/")
         data = json.loads(response.content)
         assert "primary_color" in data
         # Colors should be valid hex strings or CSS values
@@ -152,7 +152,7 @@ class TestBrandingDetails(TestCase):
 
     def test_branding_has_logo_info(self):
         """Branding response includes logo/icon fields."""
-        response = self.client.get("/api/fusion/branding/")
+        response = self.client.get("/apis/branding/")
         data = json.loads(response.content)
         has_logo = any(
             k in data for k in ("logo_url", "logo", "icon_url", "favicon_url")
@@ -168,15 +168,15 @@ class TestPagesFragmentDataEndpoints(TestCase):
         self.client = Client()
 
     def test_pages_fragment_unknown_returns_404(self):
-        """GET /api/pages/nonexistent/fragment/ returns 404."""
-        response = self.client.get("/api/pages/nonexistent-frag/fragment/")
+        """GET /apis/pages/nonexistent/fragment/ returns 404."""
+        response = self.client.get("/apis/pages/nonexistent-frag/fragment/")
         assert response.status_code in (200, 400, 404), (
             f"Expected 200/400/404, got {response.status_code}"
         )
 
     def test_pages_data_unknown_returns_404(self):
-        """GET /api/pages/nonexistent/data/ returns 404."""
-        response = self.client.get("/api/pages/nonexistent-data/data/")
+        """GET /apis/pages/nonexistent/data/ returns 404."""
+        response = self.client.get("/apis/pages/nonexistent-data/data/")
         assert response.status_code in (200, 400, 404), (
             f"Expected 200/400/404, got {response.status_code}"
         )
@@ -190,15 +190,15 @@ class TestCoursesFiltersStructure(TestCase):
         self.client = Client()
 
     def test_filters_returns_valid_json(self):
-        """GET /api/courses/filters/ returns valid JSON."""
-        response = self.client.get("/api/courses/filters/")
+        """GET /apis/courses/filters/ returns valid JSON."""
+        response = self.client.get("/apis/courses/filters/")
         assert response.status_code == 200
         data = json.loads(response.content)
         assert isinstance(data, dict)
 
     def test_filters_without_trailing_slash_handled(self):
-        """GET /api/courses/filters works with or without slash."""
-        response = self.client.get("/api/courses/filters")
+        """GET /apis/courses/filters works with or without slash."""
+        response = self.client.get("/apis/courses/filters")
         assert response.status_code in (200, 301)
 
 
@@ -211,31 +211,31 @@ class TestContentTypeHeaders(TestCase):
 
     def test_health_content_type_is_json(self):
         """Health endpoint returns application/json."""
-        response = self.client.get("/api/fusion/health/")
+        response = self.client.get("/apis/health/")
         content_type = response.get("Content-Type", "")
         assert "application/json" in content_type
 
     def test_pages_content_type_is_json(self):
         """Pages endpoint returns application/json."""
-        response = self.client.get("/api/pages/")
+        response = self.client.get("/apis/pages/")
         content_type = response.get("Content-Type", "")
         assert "application/json" in content_type
 
     def test_branding_content_type_is_json(self):
         """Branding endpoint returns application/json."""
-        response = self.client.get("/api/fusion/branding/")
+        response = self.client.get("/apis/branding/")
         content_type = response.get("Content-Type", "")
         assert "application/json" in content_type
 
     def test_blog_content_type_is_json(self):
         """Blog endpoint returns application/json."""
-        response = self.client.get("/api/blog/")
+        response = self.client.get("/apis/blog/")
         content_type = response.get("Content-Type", "")
         assert "application/json" in content_type
 
     def test_courses_content_type_is_json(self):
         """Courses endpoint returns application/json."""
-        response = self.client.get("/api/courses/")
+        response = self.client.get("/apis/courses/")
         content_type = response.get("Content-Type", "")
         assert "application/json" in content_type
 
@@ -249,7 +249,7 @@ class TestRateLimitHeaders(TestCase):
 
     def test_health_response_has_headers(self):
         """Health response has some security-related headers."""
-        response = self.client.get("/api/fusion/health/")
+        response = self.client.get("/apis/health/")
         # X-Content-Type-Options is standard Django security header
         assert response.has_header("X-Content-Type-Options"), (
             "Expected X-Content-Type-Options security header"
@@ -258,20 +258,20 @@ class TestRateLimitHeaders(TestCase):
     def test_multiple_requests_dont_fail(self):
         """Multiple rapid requests don't trigger 429."""
         for _ in range(5):
-            response = self.client.get("/api/fusion/health/")
+            response = self.client.get("/apis/health/")
             assert response.status_code == 200
 
 
 @override_settings(ROOT_URLCONF="tests.urls")
 class TestFusionAssetsEndpoint(TestCase):
-    """Verify the /api/fusion/assets/ endpoint if mounted."""
+    """Verify the /apis/assets/ endpoint if mounted."""
 
     def setUp(self):
         self.client = Client()
 
     def test_assets_endpoint_accessible(self):
-        """GET /api/fusion/assets/ returns a response (may be 404 if not mounted)."""
-        response = self.client.get("/api/fusion/assets/")
+        """GET /apis/assets/ returns a response (may be 404 if not mounted)."""
+        response = self.client.get("/apis/assets/")
         assert response.status_code in (200, 301, 404), (
             f"Expected 200/301/404, got {response.status_code}"
         )

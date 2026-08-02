@@ -5,10 +5,10 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django_fusion.site.interface.notifications import NotificationMixin
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.http.notifications import NotificationMixin
+from django_fusion.routes.pages.handler import PageHandler
 
-from apps.core.domain.models.users.users import Person
+from apps.domain.models.users.users import Person
 from apps.pages.accounts.management.services import PersonService
 
 from ..forms import (
@@ -25,7 +25,7 @@ _Person_cache = None
 def _get_person_model():
     global _Person_cache
     if _Person_cache is None:
-        from apps.core.domain.models.users.users import Person
+        from apps.domain.models.users.users import Person
         _Person_cache = Person
     return _Person_cache
 
@@ -36,7 +36,7 @@ _BASES_CACHE: dict = {}
 def _settings_bases():
     """Return (PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin) lazily."""
     if not _BASES_CACHE:
-        from apps.core.domain.site.mixins import ProfileContextMixin, ProfileOperationsMixin
+        from apps.domain.site.mixins import ProfileContextMixin, ProfileOperationsMixin
         _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin
         _BASES_CACHE["ProfileOperationsMixin"] = ProfileOperationsMixin
     return (

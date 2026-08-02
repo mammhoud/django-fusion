@@ -2,21 +2,22 @@
 
 from django.urls import path, register_converter
 
-from django_fusion.routes import UnicodeSlugConverter
+from django_fusion.routes.core.converters import UnicodeSlugConverter
 
 register_converter(UnicodeSlugConverter, "unislug")
 
+from django_fusion.contrib.api import branding, health
+
 from apps.pages.blog import api as blog
-from apps.pages.lms.api import courses
+from apps.pages.lms.api import courses, events
 from apps.pages.pages import api as pages
 from apps.pages.products import api as products
-from . import fusion_branding, fusion_health
 
 app_name = "api"
 
 urlpatterns = [
-    path("fusion/health/", fusion_health.fusion_health, name="fusion_health"),
-    path("fusion/branding/", fusion_branding.fusion_branding, name="fusion_branding"),
+    path("health/", health, name="health"),
+    path("branding/", branding, name="branding"),
     path("pages/", pages.page_list, name="page_list"),
     path("pages/<unislug:slug>/", pages.page_detail, name="page_detail"),
     path("pages/<unislug:slug>/fragment/", pages.page_fragment, name="page_fragment"),
@@ -25,6 +26,12 @@ urlpatterns = [
     path("courses/", courses.list_courses, name="courses_list"),
     path("courses/filters/", courses.course_filters, name="courses_filters"),
     path("courses/<unislug:slug>/", courses.course_detail, name="courses_detail"),
+    # Events
+    path("events/", events.list_events, name="events_list"),
+    path("events/upcoming/", events.upcoming_events, name="events_upcoming"),
+    # Event model uses a UUID primary key (fixture pks are UUIDs), so the
+    # detail converter must accept non-integer keys.
+    path("events/<str:pk>/", events.event_detail, name="events_detail"),
     # Blog
     path("blog/", blog.list_blog_posts, name="blog_list"),
     path("blog/categories/", blog.blog_categories, name="blog_categories"),

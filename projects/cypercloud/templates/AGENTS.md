@@ -35,17 +35,17 @@ This directory (`cypercloud/templates/`) contains Cypercloud-specific templates:
 ## AI Chat Integration
 
 ```python
-# cypercloud/chat/views.py
-from ceptor_ai.chat.client import CeptorClient
+# cypercloud/chat/ceptor.py — stub-backed (ceptor_stubs replaces the removed ceptor-ai lib)
+from ceptor_stubs import ChatBubble
 
-client = CeptorClient(server_url=settings.AI_SERVER_URL)
+bubble = ChatBubble(server_url=settings.AI_SERVER_URL)
 
 async def chat_stream(request):
     """SSE-based streaming chat endpoint."""
     prompt = request.POST.get("prompt")
     model = request.POST.get("model", "gemma3:4b")
-    async for chunk in client.stream_chat(prompt, model=model):
-        yield f"data: {json.dumps(chunk)}\n\n"
+    reply = bubble.send(prompt)
+    yield f"data: {json.dumps({'content': reply.text})}\n\n"
 ```
 
 ---

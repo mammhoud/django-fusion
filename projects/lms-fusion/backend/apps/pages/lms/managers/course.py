@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.db.models import Count, Q, QuerySet
 from django.db.models.functions import TruncDate
 from django.utils import timezone
-from django_fusion.core.managers import CachedManager
+from django_fusion.management.managers.base import CachedManager
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

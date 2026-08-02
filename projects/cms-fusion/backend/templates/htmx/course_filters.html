@@ -1,0 +1,35 @@
+{% load i18n %}
+{# htmx/course_filters.html — HTMX fragment for course filter sidebar #}
+<div id="course-filters" class="htmx-course-filters">
+  <h3 class="htmx-course-filters__title">{% trans "Filters" %}</h3>
+
+  {% if difficulties %}
+    <fieldset class="htmx-course-filters__group">
+      <legend class="htmx-course-filters__group-title">{% trans "Difficulty" %}</legend>
+      {% for diff in difficulties %}
+        <label class="htmx-course-filters__label">
+          <input type="radio"
+                 name="difficulty"
+                 value="{{ diff }}"
+                 hx-get="{% url 'lms:course-grid' %}?difficulty={{ diff }}"
+                 hx-target="#course-grid"
+                 hx-swap="outerHTML"
+                 hx-trigger="change"
+                 class="htmx-course-filters__radio" />
+          <span>{{ diff }}</span>
+        </label>
+      {% endfor %}
+      <label class="htmx-course-filters__label">
+        <input type="radio"
+               name="difficulty"
+               value=""
+               hx-get="{% url 'lms:course-grid' %}"
+               hx-target="#course-grid"
+               hx-swap="outerHTML"
+               hx-trigger="change"
+               class="htmx-course-filters__radio" />
+        <span>{% trans "All" %}</span>
+      </label>
+    </fieldset>
+  {% endif %}
+</div>

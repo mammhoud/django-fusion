@@ -2,7 +2,7 @@
  * Site content adapter — bridges STATIC_PAGES from the Django backend
  * to the Next.js frontend for pages like About, Team, Services, Contact.
  *
- * These pages are fetched via /api/pages/<slug>/ and rendered by the
+ * These pages are fetched via /apis/pages/<slug>/ and rendered by the
  * FusionProxy component with site-content-specific block rendering.
  */
 

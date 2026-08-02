@@ -3,7 +3,7 @@
 
 ## Status: ✅ Complete
 
-The CMS Fusion core integration is complete. Remaining cleanup work (assets, templates, legacy directories) is tracked in [`docs/plans.md`](../../../docs/plans.md).
+The CMS Fusion core integration is complete. Remaining cleanup work (assets, templates, legacy directories) is tracked in [`docs/plans/README.md`](../README.md).
 
 The CMS Fusion project is a complete, full-featured content management system built on django-fusion + django-bolt + Wagtail with a Next.js frontend. It absorbs all features from the legacy fusion-cms project (now backed up at `projects/cms/fusion-cms.bak`).
 
@@ -129,9 +129,9 @@ cms-fusion/
 
 ## Related Plans
 
-- [LMS Fusion Migration Plan](../lms-fusion/plan/MIGRATION_PLAN.md)
-- [Django Fusion Bolt Integration](../../libs/django-fusion/src/django_fusion/bolt/)
-- [POS Full Enhancement Plan](../../pos/pos-full/plan/README.md)
+- [LMS Fusion Migration Plan](../lms-fusion/migration-plan.md)
+- [Django Fusion Bolt Integration](../../../libs/django-fusion/src/django_fusion/plugins/bolt/)
+- [POS Full Enhancement Plan](../pos/forge-pos-enhancement.md)
 
 ---
 

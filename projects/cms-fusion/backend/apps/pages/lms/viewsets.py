@@ -9,12 +9,13 @@ new routable-components routing system.
 Usage::
 
     from apps.pages.lms.viewsets import CourseViewset, EnrollmentViewset
-    # Register in apps/projects/routes.py → LMSApp.viewsets
+    # Register in apps/pages/lms/application.py → LMSApp.viewsets
 """
 
 from __future__ import annotations
 
-from django_fusion.routes import ModelViewset, ReadonlyModelViewset
+from django_fusion.routes.models.crud import ModelViewset
+from django_fusion.routes.models.crud import ReadonlyModelViewset
 
 
 def _get_course_model():

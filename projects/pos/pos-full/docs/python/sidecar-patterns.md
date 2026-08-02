@@ -43,7 +43,7 @@ async def list_products(request: Request):
 ## Fusion Response Pattern
 
 ```python
-from django_fusion.routes.renderers import fusion_json_response
+from django_fusion.routes.rendering.renderers import fusion_json_response
 
 @app.get("/api/products/<int:product_id>/")
 async def get_product(request: Request, product_id: int):

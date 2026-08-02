@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from apps.core.domain.models.users.users import Person
+from apps.domain.models.users.users import Person
 
 
 class PreferencesSettingsForm(forms.Form):

@@ -22,7 +22,7 @@ User = get_user_model()
 class MessageService:
     """
     Service for message operations.
-    Delegates to apps.core.domain.services.communication.message.MessageServiceBase
+    Delegates to apps.domain.services.communication.message.MessageServiceBase
     """
 
     @staticmethod

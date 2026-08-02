@@ -13,7 +13,7 @@ from decimal import Decimal
 from typing import Any, Dict
 
 from django.http import HttpRequest
-from django_fusion.core.services import CartServiceBase
+from django_fusion.services.cart import CartServiceBase
 
 from apps.pages.products.models.cart import Cart, CartItem
 

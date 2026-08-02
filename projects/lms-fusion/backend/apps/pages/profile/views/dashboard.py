@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.aggregates import Count
 from django.http import HttpRequest
 from django.utils import timezone
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.pages.handler import PageHandler
 from django_fusion.models.tags import (
     PersonTag,
 )

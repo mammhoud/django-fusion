@@ -42,12 +42,17 @@ services:
       - ../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
       - ../projects/lms/assets/staticfiles:/var/www/sites/lms/static:ro
       - ../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
+      - cms-fusion-static:/var/www/sites/cms-fusion/static:ro
+      - lms-fusion-static:/var/www/sites/lms-fusion/static:ro
       # Shared application static files
       - ../projects/assets/static:/var/www/static:ro
       # Site-specific media uploads
       - ../projects/ctc-research/assets/media:/var/www/media/ctc-research:ro
       - ../projects/lms/assets/media:/var/www/media/lms:ro
       - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
+      # Fusion media volumes are created by the site compose files.
+      - cms-fusion-media:/var/www/media/cms-fusion:ro
+      - lms-fusion-media:/var/www/media/lms-fusion:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
     networks:
       - traefik-net
@@ -61,3 +66,17 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
+
+volumes:
+  cms-fusion-static:
+    external: true
+    name: cms-fusion-static
+  lms-fusion-static:
+    external: true
+    name: lms-fusion-static
+  cms-fusion-media:
+    external: true
+    name: cms-fusion-media
+  lms-fusion-media:
+    external: true
+    name: lms-fusion-media

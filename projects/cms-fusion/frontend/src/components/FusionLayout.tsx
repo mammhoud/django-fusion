@@ -27,7 +27,7 @@ export default function FusionLayout({ children, layout = 'default' }: FusionLay
   const [activeLayout, setActiveLayout] = useState(layout);
 
   useEffect(() => {
-    fusionApi.fetchJson<LayoutInfo>('/fusion/layouts')
+    fusionApi.fetchJson<LayoutInfo>('/layouts/')
       .then((envelope) => {
         const data = envelope.data;
         if (data && data.available) {

@@ -26,7 +26,7 @@ const CODEC_PREFIX_RE = /^fusion_v(\d+):(.+)$/;
 
 /**
  * Parse and decode a ``fusion_v<version>:<base64>`` string.
- * This mirrors ``django_fusion.routes.session.FusionCodec.decode()``.
+ * This mirrors ``django_fusion.routes.rendering.session.FusionCodec.decode()``.
  *
  * @param {string} encoded - The codec-encoded string.
  * @returns {unknown} The decoded JSON data.
@@ -65,7 +65,7 @@ function decode(encoded) {
 
 /**
  * Encode a value into ``fusion_v<version>:<base64>`` format.
- * This mirrors ``django_fusion.routes.session.FusionCodec.encode()``.
+ * This mirrors ``django_fusion.routes.rendering.session.FusionCodec.encode()``.
  *
  * @param {unknown} data - The data to encode.
  * @param {string} [version='1'] - Codec version number.
@@ -161,7 +161,7 @@ function testInvalidInputs() {
  *
  * To regenerate this value from Python:
  *
- *   from django_fusion.routes.session import FusionCodec
+ *   from django_fusion.routes.rendering.session import FusionCodec
  *   print(repr(FusionCodec.encode({"component": "pages.privacy"})))
  */
 function testCrossLanguageCompatibility() {
