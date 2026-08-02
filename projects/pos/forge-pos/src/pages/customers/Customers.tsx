@@ -121,14 +121,14 @@ export default function Customers() {
           <h1 className="text-lg font-bold text-base-content shrink-0">{t('customers.title')}</h1>
           <div className="relative flex-1 max-w-64">
             <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
-            <div className="input">
+            <div className="field">
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('customers.searchPlaceholder') || 'Search...'}
                 aria-label={t('customers.searchPlaceholder') || 'Search customers'}
-                className="input__field w-full h-8 text-xs pl-8"
+                className="input w-full h-8 text-xs pl-8"
               />
             </div>
             {isFiltering ? (
@@ -162,10 +162,10 @@ export default function Customers() {
           >
             <Card padding="md" className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="input"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('customers.name')} required className="input__field w-full" /></div>
-              <div className="input"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('customers.phone')} className="input__field w-full" /></div>
-              <div className="input"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('customers.email')} className="input__field w-full" /></div>
-              <div className="input"><input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={t('customers.notes')} className="input__field w-full" /></div>
+              <div className="field"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('customers.name')} required className="input w-full" /></div>
+              <div className="field"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('customers.phone')} className="input w-full" /></div>
+              <div className="field"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('customers.email')} className="input w-full" /></div>
+              <div className="field"><input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={t('customers.notes')} className="input w-full" /></div>
             </div>
             <div className="flex gap-2">
               <button type="submit" className="btn btn-primary">

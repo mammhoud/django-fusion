@@ -377,10 +377,13 @@ SUPERUSER_EMAIL=admin@example.com
 SUPERUSER_PASSWORD=securepassword123
 
 # SMTP (for support emails)
-SMTP_HOST=smtp.example.com
+SMTP_SERVER=smtp.example.com
 SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASS=password
+SMTP_USERNAME=user@example.com
+SMTP_PASSWORD=password
+SMTP_RECIPIENT=support@example.com
+SMTP_FROM_NAME=Forge POS
+SMTP_FROM_EMAIL=no-reply@example.com
 ```
 
 ### Data Directory

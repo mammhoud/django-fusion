@@ -2,32 +2,34 @@
 @import "tailwindcss";
 
 /* ── FlyonUI theme variants ────────────────────────────────────── */
-@import "../node_modules/flyonui/variants.css";
+@import "flyonui/variants.css";
 
 /* ── Base Design Tokens ──────────────────────────────────────── */
-@import "../assets/styles/base/_variables.css";
-@import "../assets/styles/base/_reset.css";
+@import "./base/_variables.css";
+@import "./base/_reset.css";
 
 /* ── BEM Component Library ──────────────────────────────────────── */
-@import "../assets/styles/components/_card.css";
-@import "../assets/styles/components/_modal.css";
-@import "../assets/styles/components/_receipt.css";
+@import "./components/_components.css";
+@import "./components/_flyonui.css";
+@import "./components/_card.css";
+@import "./components/_modal.css";
+@import "./components/_receipt.css";
 
 /* ── FlyonUI Component Library ───────────────────────────────── */
 /* Theme configuration: enable specific themes with defaults.
- *   light --default        → default light mode theme
- *   dark --prefersdark     → default dark mode (system preference)
+ *   perplexity --default       → default light mode theme
+ *   pastel-dark --prefersdark  → default dark mode (system preference)
+ *   light, dark            → also enabled (Default variant in picker)
  *   corporate-light/dark   → blue professional variant
  *   luxury-light/dark      → rich gold/warm variant
- *   pastel-light/dark      → soft candy colors variant
- *   cyberpunk-light/dark   → neon futuristic variant
+ *   cyberpunk              → neon futuristic variant (single theme)
  */
 @plugin "flyonui" {
-  themes: light --default, dark --prefersdark,
+  themes: perplexity --default, pastel-dark --prefersdark,
+          light, dark,
           corporate-light, corporate-dark,
           luxury-light, luxury-dark,
-          pastel-light, pastel-dark,
-          cyberpunk-light, cyberpunk;
+          cyberpunk;
 }
 
 /* ── Corporate Light — clean, professional, blue-toned ────────── */
@@ -303,7 +305,7 @@
 }
 
 /* ── FlyonUI source scanning ──────────────────────────────────── */
-@source "../node_modules/flyonui/dist/index.js";
+@source "flyonui/dist/index.js";
 
 /* ── Iconify / Tabler Icons for FlyonUI ──────────────────────── */
 @plugin "@iconify/tailwind4";
@@ -477,6 +479,15 @@
 .gap-compact    { gap: var(--forge-card-gap); }
 .section-compact { margin-bottom: var(--forge-section-gap); }
 .input-compact  { height: var(--forge-input-height); }
+
+/* ── Block: .grid (auto-fill card grids — BEM size modifiers) ──
+   Use these instead of hand-written responsive column classes when you
+   want a grid that always fills the container and naturally grows with
+   the widened page container. `.grid--auto` keeps ≥4 columns on wide
+   screens, collapsing to fewer automatically on narrow ones. */
+.grid--auto    { display: grid; gap: var(--forge-card-gap, 0.75rem); grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
+.grid--auto-sm { display: grid; gap: var(--forge-card-gap, 0.75rem); grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr)); }
+.grid--auto-lg { display: grid; gap: var(--forge-card-gap, 0.75rem); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
 
 /* ── Focus ring — stable, accessible, theme-aware ── */
 .focus-ring:focus-visible {

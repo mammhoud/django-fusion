@@ -37,7 +37,7 @@ describe('Suppliers page', () => {
       expect(screen.getAllByText('Alpha Meats').length).toBeGreaterThanOrEqual(1);
     });
 
-    const searchInput = screen.getByLabelText(/suppliers\.searchPlaceholder/);
+    const searchInput = screen.getByLabelText(/suppliers\.searchPlaceholder|Search suppliers/);
     await userEvent.type(searchInput, 'mango');
 
     await waitFor(
@@ -58,7 +58,7 @@ describe('Suppliers page', () => {
     });
 
     // Newest (default) order → Zebra, Alpha, Mango (by id desc)
-    const sortSelect = screen.getByLabelText(/suppliers\.sortBy/);
+    const sortSelect = screen.getByLabelText(/suppliers\.sortBy|Sort by/);
     await userEvent.selectOptions(sortSelect, 'name-asc');
 
     await waitFor(() => {
@@ -76,5 +76,41 @@ describe('Suppliers page', () => {
     await waitFor(() => {
       expect(screen.getByText(/Network unreachable/i)).toBeInTheDocument();
     });
+  });
+
+  it('opens the add form and saves a new supplier via add_supplier', async () => {
+    mockInvokeSuccess('add_supplier', { id: 4 });
+    renderWithRouter(<Suppliers />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Alpha Meats').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Supplier/i }));
+
+    await userEvent.type(screen.getByPlaceholderText('Company Name'), 'Green Farms');
+    await userEvent.type(screen.getByPlaceholderText('Contact Name'), 'Gina');
+    await userEvent.type(screen.getByPlaceholderText('Phone'), '4');
+
+    await userEvent.click(screen.getByRole('button', { name: /Save/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Saved/i)).toBeInTheDocument();
+    });
+  });
+
+  it('cancels the add form without saving', async () => {
+    renderWithRouter(<Suppliers />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Alpha Meats').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Supplier/i }));
+    expect(screen.getByPlaceholderText('Company Name')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+
+    expect(screen.queryByPlaceholderText('Company Name')).not.toBeInTheDocument();
   });
 });

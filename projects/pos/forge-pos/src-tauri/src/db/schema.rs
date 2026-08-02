@@ -19,6 +19,14 @@ diesel::table! {
         dine_in_tables -> Integer,
         delivery_fee -> Double,
         delivery_fee_per_km -> Double,
+        unique_card_colors -> Bool,
+        smtp_server -> Nullable<Text>,
+        smtp_port -> Nullable<Integer>,
+        smtp_username -> Nullable<Text>,
+        smtp_password -> Nullable<Text>,
+        smtp_recipient -> Nullable<Text>,
+        smtp_from_name -> Nullable<Text>,
+        smtp_from_email -> Nullable<Text>,
     }
 }
 
@@ -26,6 +34,7 @@ diesel::table! {
     categories (id) {
         id -> Integer,
         name -> Text,
+        color -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
@@ -43,6 +52,7 @@ diesel::table! {
         prepare_time_minutes -> Integer,
         barcode -> Nullable<Text>,
         description -> Nullable<Text>,
+        available_order_types -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
@@ -354,6 +364,24 @@ diesel::table! {
         recipe_id -> Nullable<Integer>,
         is_default -> Bool,
         use_as_template -> Bool,
+        selectable -> Bool,
+        steps -> Nullable<Text>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
+    support_messages (id) {
+        id -> Integer,
+        name -> Text,
+        email -> Text,
+        phone -> Nullable<Text>,
+        subject -> Nullable<Text>,
+        category -> Nullable<Text>,
+        priority -> Text,
+        message -> Text,
+        status -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
@@ -456,4 +484,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     employee_schedules,
     payrolls,
     delivery_zones,
+    support_messages,
 );

@@ -96,16 +96,16 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.overview|Overview/)).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Overview/ })).toBeInTheDocument();
     });
-    expect(screen.getByText(/reports\.inventory|Inventory/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.recipes|Recipes/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.employees|Employees/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.transactions|Transaction History/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.productsSales|Products Sales/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.invoices|Invoices/)).toBeInTheDocument();
-    // 'Sales' appears in both 'Sales' and 'Products Sales' text — use getAllByText
-    const salesMatches = screen.getAllByText(/reports\.sales|Sales/);
+    expect(screen.getByRole('tab', { name: /Inventory/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Recipes/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Employees/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Transaction History/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Products Sales/ })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Invoices/ })).toBeInTheDocument();
+    // 'Sales' matches both the 'Sales' tab and the 'Products Sales' tab
+    const salesMatches = screen.getAllByRole('tab', { name: /Sales/ });
     expect(salesMatches.length).toBe(2); // Both 'Sales' tab and 'Products Sales' tab
   });
 
@@ -165,10 +165,10 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.inventory|Inventory/)).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Inventory/ })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText(/reports\.inventory|Inventory/));
+    await userEvent.click(screen.getByRole('tab', { name: /Inventory/ }));
 
     await waitFor(() => {
       expect(screen.getByText(/reports\.stockValueLabel|Stock Value/)).toBeInTheDocument();
@@ -181,10 +181,10 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.recipes|Recipes/)).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Recipes/ })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText(/reports\.recipes|Recipes/));
+    await userEvent.click(screen.getByRole('tab', { name: /Recipes/ }));
 
     await waitFor(() => {
       expect(screen.getByText(/reports\.totalRecipes|Total Recipes/)).toBeInTheDocument();
@@ -196,10 +196,10 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.employees|Employees/)).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Employees/ })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText(/reports\.employees|Employees/));
+    await userEvent.click(screen.getByRole('tab', { name: /Employees/ }));
 
     await waitFor(() => {
       const activeEmpElements = screen.getAllByText(/reports\.activeEmployees|Active Employees/);
@@ -225,7 +225,7 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/common\.period|Period/)).toBeInTheDocument();
+      expect(screen.getAllByText(/common\.period|Period/).length).toBeGreaterThanOrEqual(1);
     });
     expect(screen.getByText(/reports\.dateToday|Today/)).toBeInTheDocument();
     expect(screen.getByText(/reports\.date7Days|7 Days/)).toBeInTheDocument();

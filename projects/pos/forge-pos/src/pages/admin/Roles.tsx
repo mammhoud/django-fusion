@@ -6,6 +6,7 @@ import { iconClass } from '../../lib/icons';
 import { useTranslation } from 'react-i18next';
 import { Role } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
+import SearchInput from '../../components/ui/SearchInput';
 
 // ── Permission definition (returned from Rust backend) ──
 interface PermissionDef {
@@ -62,7 +63,7 @@ export default function Roles() {
     setCatalogError(false);
     try {
       const catalog = await invoke<PermissionDef[]>('get_permission_catalog');
-      setPermissionCatalog(catalog);
+      setPermissionCatalog(catalog ?? []);
     } catch (error) {
       console.error('Error loading permission catalog from backend:', error);
       setCatalogError(true);
@@ -194,37 +195,22 @@ export default function Roles() {
         <Card padding="sm">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Search */}
-            <div className="input input--sm flex-1">
-              <div className="input__wrapper">
-                <span className="input__icon icon-[tabler--search]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('roles.searchPlaceholder') || 'Search roles...'}
-                  aria-label={t('roles.searchPlaceholder') || 'Search roles'}
-                  className="input__field input__field--with-icon-left"
-                />
-                {isFiltering ? (
-                  <span className="input__icon input__icon--right loading loading-spinner loading-xs text-primary" />
-                ) : search ? (
-                  <button
-                    onClick={() => setSearch('')}
-                    aria-label={t('common.clear')}
-                    className="input__icon input__icon--right"
-                  >
-                    <span className="icon-[tabler--x]" />
-                  </button>
-                ) : null}
-              </div>
-            </div>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('roles.searchPlaceholder') || 'Search roles...'}
+              ariaLabel={t('roles.searchPlaceholder') || 'Search roles'}
+              testId="roles-search-input"
+              loading={isFiltering}
+              className="flex-1"
+            />
 
             {/* Sort */}
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as 'newest' | 'name-asc' | 'name-desc')}
               aria-label={t('roles.sortBy') || 'Sort by'}
-              className="input__field input__field--select sm:w-44"
+              className="select sm:w-44"
             >
               <option value="newest">{t('roles.sortNewest') || 'Newest'}</option>
               <option value="name-asc">{t('roles.sortNameAsc') || 'Name (A→Z)'}</option>
@@ -257,7 +243,7 @@ export default function Roles() {
                   onChange={e => setFormName(e.target.value)}
                   placeholder="e.g. Manager, Cashier, Chef"
                   required
-                  className="input__field w-full"
+                  className="input w-full"
                   autoFocus
                 />
               </div>
@@ -320,7 +306,7 @@ export default function Roles() {
                   value={customPermissions}
                   onChange={e => setCustomPermissions(e.target.value)}
                   placeholder="e.g. manage:reports, view:audit"
-                  className="input__field w-full font-mono text-sm"
+                  className="input w-full font-mono text-sm"
                 />
                 <p className="text-xs text-base-content/40 mt-1">
                   Add custom permission keys not listed above, separated by commas.

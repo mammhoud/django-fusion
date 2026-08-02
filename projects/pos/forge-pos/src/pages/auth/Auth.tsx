@@ -4,10 +4,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme, type ThemeVariant } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../../components/display/LanguageToggle';
-import ThemeToggle from '../../components/display/ThemeToggle';
 import { invoke } from '@tauri-apps/api/core';
 import { iconClass } from '../../lib/icons';
 import AnimatePresence from '../../components/ui/AnimatePresence';
+import posCrest from '../../../assets/images/pos-crest.svg';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login' | 'forgotPassword' | 'resetPassword';
 
@@ -37,6 +37,7 @@ const ILLUSTRATION_GRADIENTS: Record<ThemeVariant, string> = {
   luxury:    'from-warning via-warning/80 to-warning/70',
   pastel:    'from-secondary via-accent to-primary',
   cyberpunk: 'from-secondary via-accent to-primary/80',
+  perplexity: 'from-info via-primary to-secondary',
 };
 
 export default function Auth() {
@@ -171,26 +172,19 @@ export default function Auth() {
     }
   };
 
-  const handleQuickLogin = async (role: 'manager' | 'employee') => {
+  // Selecting a role only pre-fills demo credentials — the actual login
+  // happens via the Sign In button, so the page never reloads/navigates away.
+  const selectRole = (role: 'manager' | 'employee') => {
     clearMessages();
-    // Try the superuser email first, fall back to demo credentials
-    let loginEmail = email || (await invoke<string | null>('get_superuser_email')) || 'manager@restaurant.com';
-    let loginPassword = password || 'secret123';
-
+    setSelectedRole(role);
     if (role === 'employee') {
-      // Employee login — use demo credentials
-      loginEmail = 'employee@restaurant.com';
-      loginPassword = 'secret123';
-    }
-
-    setEmail(loginEmail);
-    setPassword(loginPassword);
-
-    try {
-      await login(loginEmail, loginPassword, true, role);
-    } catch (err) {
-      // If quick login fails, just show the form with pre-filled credentials
-      setError(err instanceof Error ? err.message : String(err));
+      // Employee — use demo credentials
+      setEmail('employee@restaurant.com');
+      setPassword('secret123');
+    } else {
+      // Manager — keep the current email (or superuser email if already loaded)
+      setEmail(email || 'manager@restaurant.com');
+      setPassword(password || 'secret123');
     }
   };
 
@@ -467,11 +461,11 @@ export default function Auth() {
     </>
   );
 
-  // ── Brand Logo chip ──
+  // ── Brand Logo chip — uses the pos-crest.svg crest (same as app chrome) ──
   const BrandLogo = () => (
     <div className="flex items-center gap-2.5 mb-4">
-      <div className={`bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-2 shadow-lg`}>
-        <span className="icon-[tabler--shield] w-5 h-5 text-white" />
+      <div className={`bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-1.5 shadow-lg`}>
+        <img src={posCrest} alt="Forge POS" className="w-6 h-6 object-contain rounded-md" />
       </div>
       <span className={`text-lg font-bold ${isDark ? 'text-white/80' : 'text-slate-800'}`}>Forge POS</span>
     </div>
@@ -501,7 +495,6 @@ export default function Auth() {
       {/* Top-right toggles */}
       <div className="fixed top-4 right-4 flex items-center gap-3 z-50">
         <LanguageToggle dropdownUp={false} />
-        <ThemeToggle />
       </div>
 
       {/* Illustration Panel */}
@@ -813,30 +806,36 @@ export default function Auth() {
                 {/* FlyonUI-style "Sign in" header */}
                 <AuthHeader title={t('auth.welcomeBack')} desc={t('auth.loginDesc')} />
 
-                {/* Role-based quick-login segmented switcher */}
-                <div className={`flex p-1 rounded-xl border mb-6 gap-1 ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-slate-200'}`}>
-                  {(['manager', 'employee'] as const).map((role) => (
-                    <button
-                      key={role}
-                      onClick={() => {
-                        setSelectedRole(role);
-                        handleQuickLogin(role);
-                      }}
-                      disabled={isLoading}
-                      className={`flex-1 min-w-[120px] px-3 py-2.5 rounded-lg text-sm font-medium
-                        flex items-center justify-center gap-2 transition-all duration-200
-                        disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]
-                        ${selectedRole === role
-                          ? 'bg-linear-to-r from-primary/30 to-primary/20 shadow-lg shadow-primary/10 text-white border border-primary/40'
-                          : isDark
-                            ? 'text-white/50 hover:text-white/70 hover:bg-white/5'
-                            : 'text-slate-500 hover:text-slate-700 hover:bg-white'
-                        }`}
-                    >
-                      <span className={iconClass(role === 'manager' ? 'user-check' : 'user-circle', 'w-4 h-4')} />
-                      <span>{role === 'manager' ? 'Manager' : 'Employee'}</span>
-                    </button>
-                  ))}
+                {/* Role choice cards — select manager or employee; the active role is lit up */}
+                <div className="grid grid-cols-2 gap-2 mb-6" role="group" aria-label={t('auth.roleLabel') || 'Sign in as'}>
+                  {(['manager', 'employee'] as const).map((role) => {
+                    const isActive = selectedRole === role;
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => selectRole(role)}
+                        disabled={isLoading}
+                        aria-pressed={isActive}
+                        className={`relative flex items-center justify-center gap-2 px-3 py-3 rounded-xl border text-sm font-medium transition-all duration-200
+                          disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]
+                          ${isActive
+                            ? 'bg-linear-to-r from-primary to-primary/80 text-white border-primary shadow-lg shadow-primary/25 ring-1 ring-primary/40'
+                            : isDark
+                              ? 'border-white/10 bg-white/5 text-white/60 hover:text-white/80 hover:border-white/25'
+                              : 'border-slate-200 bg-slate-50 text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                          }`}
+                      >
+                        <span className={iconClass(role === 'manager' ? 'user-check' : 'user-circle', 'w-4 h-4')} />
+                        <span>{role === 'manager' ? (t('auth.roleManager') || 'Manager') : (t('auth.roleEmployee') || 'Employee')}</span>
+                        {isActive && (
+                          <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
+                            <span className="icon-[tabler--check] w-3 h-3 text-primary" />
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Divider */}

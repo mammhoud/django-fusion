@@ -82,3 +82,41 @@ pub fn get_inventory_adjustments(
         .load::<InventoryAdjustment>(&mut conn)
         .map_err(|e| e.to_string())
 }
+
+/// Delete a manual inventory adjustment and reverse its effect on the
+/// ingredient's stock level. The stock delta this adjustment originally
+/// applied (`new_quantity - previous_quantity`) is subtracted back off the
+/// current quantity, then the adjustment record is removed.
+pub fn delete_inventory_adjustment(db_path: &PathBuf, adjustment_id: i32) -> Result<(), String> {
+    let mut conn = open_conn(db_path)?;
+    conn.transaction(|conn| {
+        use crate::db::schema::inventory_adjustments::dsl as adj_dsl;
+
+        let adj: InventoryAdjustment = adj_dsl::inventory_adjustments
+            .find(adjustment_id)
+            .first::<InventoryAdjustment>(conn)
+            .map_err(|_| diesel::result::Error::NotFound)?;
+
+        // Delta this adjustment applied to stock; reversing restores the
+        // pre-adjustment quantity (net of any other transactions since).
+        let delta = adj.new_quantity - adj.previous_quantity;
+        let ing: Ingredient = ingredients::table
+            .find(adj.ingredient_id)
+            .first::<Ingredient>(conn)?;
+
+        let restored = ing.current_quantity - delta;
+        if restored < 0.0 {
+            return Err(diesel::result::Error::RollbackTransaction);
+        }
+
+        diesel::update(ingredients::table.find(adj.ingredient_id))
+            .set(ingredients::current_quantity.eq(restored))
+            .execute(conn)?;
+
+        diesel::delete(adj_dsl::inventory_adjustments.find(adjustment_id))
+            .execute(conn)?;
+
+        Ok(())
+    })
+    .map_err(|e: diesel::result::Error| e.to_string())
+}

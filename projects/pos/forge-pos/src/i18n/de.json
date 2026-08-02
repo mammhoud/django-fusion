@@ -385,6 +385,7 @@
     "employeesDesc": "Mitarbeiter verwalten",
     "footer": "Forge POS Restaurantverwaltung",
     "home": "Startseite",
+    "homeDesc": "Zurück zum Dashboard",
     "inventory": "Inventar",
     "inventoryDesc": "Lagerbestände verfolgen",
     "invoice": "Rechnung",
@@ -429,8 +430,6 @@
     "taxReportsDesc": "Steuer- & Finanzberichte",
     "themeShowcase": "Design-Vorschau",
     "themeShowcaseDesc": "Komponentenvorschau über Designs",
-    "themeStudio": "Design-Studio",
-    "themeStudioDesc": "Farben mit Live-Vorschau anpassen",
     "transactions": "Transaktionsverlauf",
     "transactionsDesc": "Transaktionsverlauf durchsuchen"
   },
@@ -526,7 +525,24 @@
     "validationPrice": "Bitte geben Sie einen Preis ein",
     "validationPricePositive": "Der Preis muss eine positive Zahl sein",
     "validationUnit": "Bitte geben Sie eine Einheit ein",
-    "viaIngredients": "Zutaten"
+    "viaIngredients": "Zutaten",
+    "manageCategories": "Kategorien verwalten",
+    "addCategory": "Kategorie hinzufügen",
+    "editCategory": "Kategorie bearbeiten",
+    "deleteCategory": "Kategorie löschen",
+    "categoryName": "Kategoriename",
+    "categoryNamePlaceholder": "z. B. Burger, Beilagen...",
+    "categoryColor": "Farbe",
+    "categoryCustomColor": "Benutzerdefinierte Farbe",
+    "categoryValidationName": "Bitte Kategorienamen eingeben",
+    "categorySuccessAdded": "Kategorie hinzugefügt",
+    "categorySuccessUpdated": "Kategorie aktualisiert",
+    "categorySuccessDeleted": "Kategorie gelöscht",
+    "colorPreview": "Vorschau",
+    "saving": "Speichern...",
+    "existingCategories": "Vorhandene Kategorien",
+    "deleteCategoryConfirm": "Diese Kategorie löschen?",
+    "deleteCategoryWarning": "Produkte dieser Kategorie werden ohne Kategorie."
   },
   "receipt": {
     "date": "Datum:",
@@ -814,6 +830,8 @@
     "title": "Mitarbeiterplan"
   },
   "settings": {
+    "uniqueCardColors": "Eindeutige Kartenfarben",
+    "uniqueCardColorsDescription": "Verleihen Sie jeder Produktkarte und jedem Küchenbeleg-Element eine eigene Farbe für schnelleres visuelles Scannen",
     "address": "Adresse",
     "appearanceTab": {
       "activeLabel": "Aktiv",
@@ -951,6 +969,17 @@
     "searchCurrency": "Währung suchen...",
     "selectCurrency": "Währung auswählen",
     "successMessage": "Einstellungen erfolgreich gespeichert!",
+    "emailTab": {
+      "description": "SMTP-Server (STARTTLS, Port 587) für Support-E-Mails und Authentifizierungsbestätigungen konfigurieren. In den Einstellungen statt .env gespeichert.",
+      "fromName": "Absendername",
+      "password": "Passwort",
+      "port": "SMTP-Port",
+      "recipient": "Support-Empfänger",
+      "recipientHint": "Postfach, das Support-Nachrichten empfängt",
+      "server": "SMTP-Server",
+      "title": "E-Mail / SMTP",
+      "username": "Benutzername"
+    },
     "tabs": {
       "appearance": "Design",
       "business": "Geschäft",
@@ -958,11 +987,16 @@
       "delivery": "Lieferung",
       "dining": "Speisesaal",
       "employees": "Mitarbeiter",
-      "general": "Allgemein"
+      "general": "Allgemein",
+      "theme": "Design"
     },
     "taxId": "Steuernummer",
     "taxRate": "Steuersatz (%)",
     "themeTab": {
+      "activeTheme": "Aktives Design",
+      "appearance": "Erscheinungsbild",
+      "preview": "Vorschau",
+      "studio": "Design-Studio",
       "title": "Design"
     },
     "timeout15min": "15 Minuten",

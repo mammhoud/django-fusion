@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "./index.css";
+import "../assets/styles/index.css";
 import "./i18n";
 
 // FlyonUI interactive components (modals, dropdowns, toggles, etc.)
@@ -10,6 +10,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CurrencyProvider } from "./contexts/CurrencyContext";
+import { ModalProvider } from "./components/ui/ModalProvider";
 // API stores: import { useProducts } from "./stores/products";
 
 // Set initial dir/lang from saved language
@@ -31,7 +32,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <CurrencyProvider>
         <LanguageProvider>
           <AuthProvider>
-            <App />
+            <ModalProvider>
+              <App />
+            </ModalProvider>
           </AuthProvider>
         </LanguageProvider>
       </CurrencyProvider>

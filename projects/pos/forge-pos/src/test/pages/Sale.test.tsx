@@ -15,8 +15,8 @@ const mockProducts = [
 ];
 
 const mockCategories = [
-  { id: 1, name: 'Burgers' },
-  { id: 2, name: 'Sides' },
+  { id: 1, name: 'Burgers', color: '#f97316' },
+  { id: 2, name: 'Sides', color: '#10b981' },
 ];
 
 const mockSettings = {
@@ -46,8 +46,10 @@ beforeEach(() => {
   mockInvokeSuccess('get_products', mockProducts);
   mockInvokeSuccess('get_settings', mockSettings);
   mockInvokeSuccess('get_delivery_types', mockDeliveryTypes);
+  mockInvokeSuccess('get_delivery_zones', []);
   mockInvokeSuccess('get_employees', mockEmployees);
   mockInvokeSuccess('get_categories', mockCategories);
+  mockInvokeSuccess('get_notes', []);
   mockInvokeSuccess('check_auth_required', false);
 });
 
@@ -259,21 +261,115 @@ describe('Sale Page', () => {
     });
   });
 
-  it('filters products by category', async () => {
+  it('falls back to palette colors when unique card colors are disabled', async () => {
+    resetInvokeMocks();
+    // Lemonade has no category → no category color to fall back on, so the
+    // rotating palette must be used (no inline accent on the add button).
+    mockInvokeSuccess('get_products', [...mockProducts, { id: 9, name: 'Lemonade', price: 50, unit: 'glass' }]);
+    mockInvokeSuccess('get_settings', { ...mockSettings, unique_card_colors: false });
+    mockInvokeSuccess('get_delivery_types', mockDeliveryTypes);
+    mockInvokeSuccess('get_delivery_zones', []);
+    mockInvokeSuccess('get_employees', mockEmployees);
+    mockInvokeSuccess('get_categories', mockCategories);
+    mockInvokeSuccess('get_notes', []);
+    mockInvokeSuccess('check_auth_required', false);
+
+    renderWithRouter(<Sale />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Lemonade')).toBeInTheDocument();
+    });
+
+    // The card itself is role="button", so target the inner add button
+    // directly (same pattern as clickAddToCart).
+    const lemonadeCard = screen.getByText('Lemonade').closest('[class*="rounded-xl"]') as HTMLElement | null;
+    const addBtn = lemonadeCard!.querySelector('button') as HTMLButtonElement | null;
+    expect(addBtn).not.toBeNull();
+    // No generated per-product accent → no inline background color.
+    expect(addBtn!.style.backgroundColor).toBe('');
+  });
+
+  it('applies a generated accent to category-less products when unique colors are on', async () => {
+    resetInvokeMocks();
+    mockInvokeSuccess('get_products', [...mockProducts, { id: 9, name: 'Lemonade', price: 50, unit: 'glass' }]);
+    mockInvokeSuccess('get_settings', mockSettings); // unique_card_colors absent → on
+    mockInvokeSuccess('get_delivery_types', mockDeliveryTypes);
+    mockInvokeSuccess('get_delivery_zones', []);
+    mockInvokeSuccess('get_employees', mockEmployees);
+    mockInvokeSuccess('get_categories', mockCategories);
+    mockInvokeSuccess('get_notes', []);
+    mockInvokeSuccess('check_auth_required', false);
+
+    renderWithRouter(<Sale />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Lemonade')).toBeInTheDocument();
+    });
+
+    const lemonadeCard = screen.getByText('Lemonade').closest('[class*="rounded-xl"]') as HTMLElement | null;
+    const addBtn = lemonadeCard!.querySelector('button') as HTMLButtonElement | null;
+    expect(addBtn).not.toBeNull();
+    expect(addBtn!.style.backgroundColor).not.toBe('');
+  });
+
+  it('filters products by category via colored tag pills', async () => {
     renderWithRouter(<Sale />);
 
     await waitFor(() => {
       expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
     });
 
-    const categorySelect = screen.getByLabelText(/sale\.categoryFilter|Filter by category/);
-    await userEvent.selectOptions(categorySelect, '2');
+    // Category filter is now a row of colored tag pills — click the 'Sides' pill (id 2)
+    const sidesPill = screen.getByTestId('sale-category-filter-2');
+    expect(sidesPill).toHaveClass('tag');
+    // Category color dot is rendered inside the pill
+    // jsdom normalizes hex → rgb(), so assert the computed background color
+    const colorDot = sidesPill.querySelector('span[style]');
+    expect(colorDot).not.toBeNull();
+    expect(colorDot).toHaveStyle({ backgroundColor: 'rgb(16, 185, 129)' }); // #10b981
+    // Product-count badge renders inside the pill (1 product → category 2)
+    const badge = sidesPill.querySelector('.badge');
+    expect(badge).not.toBeNull();
+    expect(badge!.textContent).toBe('1');
+    await userEvent.click(sidesPill);
 
     await waitFor(() => {
       expect(screen.queryByText('Chicken Burger')).not.toBeInTheDocument();
       expect(screen.queryByText('Beef Burger')).not.toBeInTheDocument();
       expect(screen.getByText('French Fries')).toBeInTheDocument();
     });
+  });
+
+  it('shows the category color legend with per-category product counts', async () => {
+    renderWithRouter(<Sale />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
+    });
+
+    // The legend panel starts collapsed
+    expect(screen.queryByTestId('sale-category-filter-legend')).not.toBeInTheDocument();
+
+    // Pills carry a native tooltip with the product count
+    const burgersPill = screen.getByTestId('sale-category-filter-1');
+    expect(burgersPill).toHaveAttribute('title', expect.stringContaining('Burgers'));
+    const sidesPill = screen.getByTestId('sale-category-filter-2');
+    expect(sidesPill).toHaveAttribute('title', expect.stringContaining('Sides'));
+
+    // Open the legend via the palette toggle
+    await userEvent.click(screen.getByTestId('sale-category-filter-legend-toggle'));
+
+    const legend = screen.getByTestId('sale-category-filter-legend');
+    expect(legend).toBeInTheDocument();
+
+    // Legend rows list each category with its color swatch, name, and count
+    const rows = legend.querySelectorAll('li');
+    expect(rows.length).toBe(2);
+    // Burgers (id 1) → Chicken Burger + Beef Burger = 2 ; Sides (id 2) → French Fries = 1
+    expect(rows[0].textContent).toContain('Burgers');
+    expect(rows[0].textContent).toContain('2');
+    expect(rows[1].textContent).toContain('Sides');
+    expect(rows[1].textContent).toContain('1');
   });
 
   it('resets category filter to show all products', async () => {
@@ -283,14 +379,14 @@ describe('Sale Page', () => {
       expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
     });
 
-    const categorySelect = screen.getByLabelText(/sale\.categoryFilter|Filter by category/);
-    await userEvent.selectOptions(categorySelect, '2');
+    // Click the 'Sides' pill (id 2), then the 'All categories' pill to reset
+    await userEvent.click(screen.getByTestId('sale-category-filter-2'));
 
     await waitFor(() => {
       expect(screen.queryByText('Chicken Burger')).not.toBeInTheDocument();
     });
 
-    await userEvent.selectOptions(categorySelect, 'all');
+    await userEvent.click(screen.getByTestId('sale-category-filter-all'));
 
     await waitFor(() => {
       expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
@@ -310,6 +406,90 @@ describe('Sale Page', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Backend timed out/i)).toBeInTheDocument();
+    });
+  });
+
+  // ── Cart operations ──
+  it('increments and decrements cart quantity with the +/- controls', async () => {
+    renderWithRouter(<Sale />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Chicken Burger').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await clickAddToCart('Chicken Burger');
+
+    // Cart line shows quantity 1 (appears in sidebar + mobile bar)
+    await waitFor(() => {
+      expect(screen.getAllByText(/Chicken Burger\s*×\s*1/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Chicken Burger unit is 'piece' → +/- steps by 0.5 (only 'item' steps by 1)
+    const increaseBtns = screen.getAllByLabelText(/sale\.increaseQuantity|Increase/);
+    await userEvent.click(increaseBtns[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/Chicken Burger\s*×\s*1\.5/).length).toBeGreaterThanOrEqual(1);
+      // 1.5 × 350 = 525
+      expect(screen.getAllByText(/525\.00/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Decrease → back to 1
+    await userEvent.click(screen.getAllByLabelText(/sale\.decreaseQuantity|Decrease/)[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/Chicken Burger\s*×\s*1/).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('removes an item from the cart when quantity drops below the minimum', async () => {
+    renderWithRouter(<Sale />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Chicken Burger').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await clickAddToCart('Chicken Burger');
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/Chicken Burger\s*×\s*1/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // 'piece' steps by 0.5: 1 → 0.5 → 0 (below min 0.5) → item removed
+    const decreaseBtns = screen.getAllByLabelText(/sale\.decreaseQuantity|Decrease/);
+    await userEvent.click(decreaseBtns[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/Chicken Burger\s*×\s*0\.5/).length).toBeGreaterThanOrEqual(1);
+    });
+    await userEvent.click(screen.getAllByLabelText(/sale\.decreaseQuantity|Decrease/)[0]);
+
+    await waitFor(() => {
+      // Cart line gone + +/- controls gone (add button is back)
+      expect(screen.queryAllByText(/Chicken Burger\s*×/).length).toBe(0);
+      expect(screen.queryAllByLabelText(/sale\.increaseQuantity/).length).toBe(0);
+    });
+  });
+
+  it('tracks the cart total as items are added and quantity changes', async () => {
+    renderWithRouter(<Sale />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Chicken Burger').length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Add two different products: 350 + 150 = 500
+    await clickAddToCart('Chicken Burger');
+    await clickAddToCart('French Fries');
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/500\.00/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Remove the fries (decrease twice for 'plate' unit) → back to 350
+    const decreaseBtns = screen.getAllByLabelText(/sale\.decreaseQuantity|Decrease/);
+    // Fries card control — second occurrence (fries render after the burger)
+    await userEvent.click(decreaseBtns[decreaseBtns.length - 1]);
+    await userEvent.click(screen.getAllByLabelText(/sale\.decreaseQuantity|Decrease/)[decreaseBtns.length - 1]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/350\.00/).length).toBeGreaterThanOrEqual(1);
     });
   });
 });

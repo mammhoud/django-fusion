@@ -114,7 +114,7 @@ describe('Home Page', () => {
     renderWithRouter(<Home />);
 
     await waitFor(() => {
-      const descs = screen.getAllByText(/Desc/);
+      const descs = screen.getAllByText(/Employees, Schedule|Manager, Inventory|Orders, Transactions|Analytics & Tax/);
       expect(descs.length).toBeGreaterThan(0);
     });
   });

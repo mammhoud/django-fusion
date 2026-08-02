@@ -23,4 +23,5 @@ pub mod tax_reports;
 pub mod employee_schedules;
 pub mod payrolls;
 pub mod reports;
+pub mod support_messages;
 pub mod sidecar;

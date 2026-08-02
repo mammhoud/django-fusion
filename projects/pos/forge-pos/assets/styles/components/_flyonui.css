@@ -1,0 +1,244 @@
+/* ═══════════════════════════════════════════════════════════════════
+   FlyonUI BEM Customization Layer
+   ═══════════════════════════════════════════════════════════════════
+   Bridges FlyonUI's component classes to the BEM design tokens from
+   _variables.css. Every rule uses the theme-aware custom properties so
+   FlyonUI primitives follow the same color/radius/shadow language as
+   the BEM components (_.card, .input, .tag, .modal, ...).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   Buttons (.btn)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.btn {
+  border-radius: var(--radius--md);
+  font-weight: var(--typography__weight--medium);
+  transition:
+    transform var(--animation__duration--fast) var(--animation__easing--spring),
+    box-shadow var(--animation__duration--fast) var(--animation__easing--default),
+    background-color var(--animation__duration--fast) var(--animation__easing--default),
+    border-color var(--animation__duration--fast) var(--animation__easing--default),
+    color var(--animation__duration--fast) var(--animation__easing--default);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: oklch(var(--color-primary));
+  color: oklch(var(--color-primary-content));
+  box-shadow: var(--shadow--colored);
+}
+
+.btn-primary:hover {
+  background: var(--color__semantic--primary-hover);
+}
+
+.btn-ghost:hover {
+  background: oklch(var(--color-base-200) / 0.7);
+}
+
+/* ── Icon-only nav buttons: trusted theme color on normal state ──
+   Used by the topbar menu/back buttons (PageLayout) so the icon is
+   visible with the theme primary color instead of muted base-content. */
+.btn-icon {
+  color: var(--color__semantic--primary);
+}
+
+.btn-icon:hover {
+  color: var(--color__semantic--primary-hover);
+  background: oklch(var(--color-base-200) / 0.7);
+}
+
+.btn-icon:disabled {
+  color: var(--color__text--disabled);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Badges (.badge)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.badge {
+  font-weight: var(--typography__weight--medium);
+  border-radius: var(--radius--full);
+}
+
+.badge-soft {
+  border-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Form controls (.input, .select, .textarea)
+   ── align FlyonUI primitives with the BEM .input__field language ──
+   ═══════════════════════════════════════════════════════════════════ */
+
+.label-text {
+  font-size: var(--typography__size--sm);
+  font-weight: var(--typography__weight--medium);
+  color: var(--color__text--secondary);
+  line-height: var(--typography__line-height--normal);
+  transition: color var(--animation__duration--fast) var(--animation__easing--default);
+}
+
+.helper-text {
+  font-size: var(--typography__size--xs);
+  line-height: var(--typography__line-height--normal);
+  color: var(--color__text--disabled);
+  min-height: 1em;
+  transition: color var(--animation__duration--fast) var(--animation__easing--default);
+}
+
+.input,
+.select,
+.textarea {
+  border-radius: var(--input__radius);
+  border-color: var(--input__border-color);
+  background-color: var(--input__bg);
+  color: var(--input__text-color);
+  font-size: var(--typography__size--base);
+  transition:
+    border-color var(--animation__duration--fast) var(--animation__easing--default),
+    box-shadow var(--animation__duration--fast) var(--animation__easing--default);
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover {
+  border-color: var(--input__border-color--hover);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--input__border-color--focus);
+  box-shadow: var(--input__shadow--focus);
+  outline: none;
+}
+
+.input.is-invalid,
+.select.is-invalid,
+.textarea.is-invalid {
+  border-color: var(--input__border-color--error);
+}
+
+.input.is-invalid:focus,
+.select.is-invalid:focus,
+.textarea.is-invalid:focus {
+  border-color: var(--input__border-color--error);
+  box-shadow: 0 0 0 3px oklch(var(--color-error) / 0.15);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--input__placeholder-color);
+}
+
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  background-color: var(--input__bg--disabled);
+  color: var(--input__text-color--disabled);
+}
+
+
+.input-sm,
+.select-sm {
+  height: var(--input__height--sm);
+  font-size: var(--typography__size--sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Dropdown & Menu
+   ═══════════════════════════════════════════════════════════════════ */
+
+.dropdown-menu {
+  background: oklch(var(--color-base-100));
+  border: 1px solid var(--color__border--subtle);
+  border-radius: var(--radius--lg);
+  box-shadow: var(--shadow--lg);
+  color: var(--color__text--primary);
+}
+
+.dropdown-menu .menu-item,
+.menu .menu-item {
+  border-radius: var(--radius--md);
+  color: var(--color__text--secondary);
+  transition:
+    background-color var(--animation__duration--fast) var(--animation__easing--default),
+    color var(--animation__duration--fast) var(--animation__easing--default);
+}
+
+.dropdown-menu .menu-item:hover,
+.menu .menu-item:hover {
+  background: oklch(var(--color-base-200) / 0.8);
+  color: var(--color__text--primary);
+}
+
+.menu-item.is-active,
+.menu-item.active {
+  background: oklch(var(--color-primary) / 0.12);
+  color: oklch(var(--color-primary));
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Modal
+   ═══════════════════════════════════════════════════════════════════ */
+
+.modal-box {
+  background: oklch(var(--color-base-100));
+  border-radius: var(--radius--2xl);
+  border: 1px solid var(--color__border--subtle);
+  box-shadow: var(--shadow--elevated);
+  color: var(--color__text--primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Tables
+   ═══════════════════════════════════════════════════════════════════ */
+
+.table :where(th, td) {
+  border-color: var(--color__border--subtle);
+}
+
+.table :where(thead th) {
+  color: var(--color__text--secondary);
+  font-weight: var(--typography__weight--semibold);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Tooltip
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tooltip {
+  border-radius: var(--radius--md);
+  background: oklch(var(--color-base-content));
+  color: oklch(var(--color-base-100));
+  box-shadow: var(--shadow--md);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Loading spinner
+   ═══════════════════════════════════════════════════════════════════ */
+
+.loading {
+  color: oklch(var(--color-primary));
+}
+
+.loading-spinner {
+  border-color: currentcolor;
+  border-top-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Divider & Skeleton
+   ═══════════════════════════════════════════════════════════════════ */
+
+.divider {
+  border-color: var(--color__border--subtle);
+}
+
+.skeleton {
+  background-color: oklch(var(--color-base-200) / 0.7);
+}

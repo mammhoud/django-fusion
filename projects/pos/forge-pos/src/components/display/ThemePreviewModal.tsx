@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useTheme, THEME_VARIANTS, THEME_MAP, type ThemeVariant } from '../../contexts/ThemeContext';
+import { useTheme, THEME_VARIANTS } from '../../contexts/ThemeContext';
 import Card from '../ui/Card';
+import Modal from '../ui/Modal';
 
 // ── Section wrapper ──
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -21,81 +22,94 @@ interface ThemePreviewModalProps {
 }
 
 export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModalProps) {
-  const { mode } = useTheme();
-  const [previewVariant, setPreviewVariant] = useState<ThemeVariant>('default');
-  const [previewMode, setPreviewMode] = useState<'light' | 'dark'>(mode);
+  const { mode, setMode, variant, setVariant, followSystem, setFollowSystem, resolvedTheme } = useTheme();
   const [activeTab, setActiveTab] = useState(0);
   const tabs = ['All Items', 'Beverages', 'Food', 'Specials'];
-
-  const currentTheme = THEME_MAP[previewVariant]?.[previewMode] ?? 'light';
 
   if (!isOpen) return null;
 
   return (
-    <dialog open className="modal modal-open">
-      <div className="modal-box w-11/12 max-w-6xl max-h-[90vh] overflow-y-auto animate-dialog-in" data-theme={currentTheme}>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 sticky top-0 z-10 bg-base-100/95 backdrop-blur-sm py-3 -mx-1 px-1 border-b border-base-300/50">
-          <div className="flex items-center gap-3">
-            <span className="icon-[tabler--palette] w-6 h-6 text-primary" />
-            <div>
-              <h3 className="font-bold text-lg">Theme Component Preview</h3>
-              <p className="text-xs text-base-content/50">
-                Preview all components across every theme variant
-              </p>
-            </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Theme Component Preview"
+      subtitle="Switch between light & dark and pick a variant — changes apply live"
+      headerIcon={<span className="icon-[tabler--palette] w-5 h-5 text-primary" />}
+      size="full"
+      scroll
+      footer={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="icon-[tabler--check] w-4 h-4 text-success" />
+          <span className="text-xs text-base-content/60">
+            {followSystem
+              ? 'Following system preference — changes apply instantly'
+              : `${mode === 'dark' ? 'Dark' : 'Light'} mode · ${variant} — changes apply instantly`}
+          </span>
+        </div>
+      }
+    >
+      <div data-theme={resolvedTheme}>
+        {/* Header toolbar — variant + mode + theme badge */}
+        <div className="flex items-center gap-3 flex-wrap mb-6">
+          {/* Variant selector */}
+          <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5">
+            {THEME_VARIANTS.map(v => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setVariant(v.id)}
+                className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  variant === v.id
+                    ? 'bg-base-100 text-base-content shadow-sm'
+                    : 'text-base-content/50 hover:text-base-content'
+                }`}
+              >
+                <span className={`icon-[${v.icon}] w-3.5 h-3.5 mr-1`} />
+                {v.label}
+              </button>
+            ))}
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            {/* Variant selector */}
-            <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5">
-              {THEME_VARIANTS.map(v => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => setPreviewVariant(v.id)}
-                  className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    previewVariant === v.id
-                      ? 'bg-base-100 text-base-content shadow-sm'
-                      : 'text-base-content/50 hover:text-base-content'
-                  }`}
-                >
-                  <span className={`icon-[${v.icon}] w-3.5 h-3.5 mr-1`} />
-                  {v.label}
-                </button>
-              ))}
-            </div>
-            {/* Mode toggle */}
-            <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5">
-              <button
-                type="button"
-                onClick={() => setPreviewMode('light')}
-                className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  previewMode === 'light'
-                    ? 'bg-base-100 text-base-content shadow-sm'
-                    : 'text-base-content/50 hover:text-base-content'
-                }`}
-              >
-                <span className="icon-[tabler--sun] w-3.5 h-3.5" /> Light
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreviewMode('dark')}
-                className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  previewMode === 'dark'
-                    ? 'bg-base-100 text-base-content shadow-sm'
-                    : 'text-base-content/50 hover:text-base-content'
-                }`}
-              >
-                <span className="icon-[tabler--moon] w-3.5 h-3.5" /> Dark
-              </button>
-            </div>
-            {/* Theme badge */}
-            <span className="badge badge-soft badge-primary text-xs font-mono">{currentTheme}</span>
-            {/* Close */}
-            <button onClick={onClose} className="btn btn-ghost btn-sm btn-square ml-2">
-              <span className="icon-[tabler--x] w-4 h-4" />
+          {/* Mode switcher — Light / Dark toggle bound to the live theme */}
+          <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5" role="group" aria-label="Color mode">
+            <button
+              type="button"
+              onClick={() => { setFollowSystem(false); setMode('light'); }}
+              aria-pressed={mode === 'light' && !followSystem}
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                mode === 'light' && !followSystem
+                  ? 'bg-base-100 text-base-content shadow-sm'
+                  : 'text-base-content/50 hover:text-base-content'
+              }`}
+            >
+              <span className="icon-[tabler--sun] w-3.5 h-3.5" /> Light
+            </button>
+            <button
+              type="button"
+              onClick={() => { setFollowSystem(false); setMode('dark'); }}
+              aria-pressed={mode === 'dark' && !followSystem}
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                mode === 'dark' && !followSystem
+                  ? 'bg-base-100 text-base-content shadow-sm'
+                  : 'text-base-content/50 hover:text-base-content'
+              }`}
+            >
+              <span className="icon-[tabler--moon] w-3.5 h-3.5" /> Dark
+            </button>
+            <button
+              type="button"
+              onClick={() => setFollowSystem(true)}
+              aria-pressed={followSystem}
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                followSystem
+                  ? 'bg-base-100 text-base-content shadow-sm'
+                  : 'text-base-content/50 hover:text-base-content'
+              }`}
+            >
+              <span className="icon-[tabler--device-desktop] w-3.5 h-3.5" /> System
             </button>
           </div>
+          {/* Theme badge */}
+          <span className="badge badge-soft badge-primary text-xs font-mono">{resolvedTheme}</span>
         </div>
 
         {/* ── Buttons ── */}
@@ -132,13 +146,13 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
         <Section title="Form Controls">
           <Card>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="input">
-                <label className="input__label">Text Input</label>
-                <input type="text" className="input__field w-full" placeholder="Sample" defaultValue="Editable" />
+              <div className="field">
+                <label className="label-text">Text Input</label>
+                <input type="text" className="input w-full" placeholder="Sample" defaultValue="Editable" />
               </div>
-              <div className="input">
-                <label className="input__label">Select</label>
-                <select className="input__field input__field--select w-full">
+              <div className="field">
+                <label className="label-text">Select</label>
+                <select className="select w-full">
                   <option>Option 1</option>
                   <option>Option 2</option>
                 </select>
@@ -262,13 +276,10 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
         {/* Footer */}
         <div className="text-center py-3 mt-4 border-t border-base-300/50">
           <p className="text-xs text-base-content/40">
-            All components rendered using <span className="font-semibold text-base-content/60">{currentTheme}</span> via <code className="text-primary font-mono text-xs">data-theme</code> attribute.
+            All components rendered using <span className="font-semibold text-base-content/60">{resolvedTheme}</span> via <code className="text-primary font-mono text-xs">data-theme</code> attribute.
           </p>
         </div>
       </div>
-      <form method="dialog" className="modal-backdrop">
-        <button type="button" onClick={onClose}>close</button>
-      </form>
-    </dialog>
+    </Modal>
   );
 }

@@ -11,7 +11,7 @@ import { useDashboardDeltas } from '../../hooks/useDashboardDeltas';
 import { useApiQueries } from '../../hooks/useApi';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, iconSpring } from '../../utils/pageTransitions';
-import defaultLogo from '../../assets/pos-crest.svg';
+import defaultLogo from '../../../assets/images/pos-crest.svg';
 
 interface MenuCategory {
   id: string;
@@ -31,39 +31,39 @@ const MENU_CATEGORIES: MenuCategory[] = [
   { id: 'sales', label: 'nav.categorySales', icon: <span className={iconClass('lucide:shopping-cart', 'w-6 h-6')} />, color: 'text-success' },
   { id: 'products', label: 'nav.categoryProducts', icon: <span className={iconClass('lucide:package', 'w-6 h-6')} />, color: 'text-info' },
   { id: 'staff', label: 'nav.categoryStaff', icon: <span className={iconClass('lucide:users', 'w-6 h-6')} />, color: 'text-secondary' },
-  { id: 'reports', label: 'nav.categoryReports', icon: <span className={iconClass('lucide:bar-chart-3', 'w-6 h-6')} />, color: 'text-error' },
+  { id: 'reports', label: 'nav.categoryReports', icon: <span className={iconClass('lucide:chart-pie', 'w-6 h-6')} />, color: 'text-error' },
   { id: 'system', label: 'nav.categorySystem', icon: <span className={iconClass('lucide:layout-dashboard', 'w-6 h-6')} />, color: 'text-base-content/50' },
 ];
 
 const MENU_ITEMS: Record<string, MenuItem[]> = {
+  // Each section's items share the section's accent color as the icon background
   sales: [
     { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success text-white' },
-    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-info text-white' },
-    { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-info/70 text-white' },
-    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral/70 text-neutral-content' },
+    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-success text-white' },
+    { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-success text-white' },
+    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-success text-white' },
   ],
   products: [
     { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-info text-white' },
-    { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), colorClass: 'bg-accent text-white' },
-    { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-secondary text-white' },
-    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-secondary/70 text-white' },
+    { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), colorClass: 'bg-info text-white' },
+    { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-info text-white' },
+    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-info text-white' },
   ],
   staff: [
     { label: 'nav.staff', route: '/staff', icon: Ic('users'), colorClass: 'bg-secondary text-white' },
-    { label: 'nav.customers', route: '/customers', icon: Ic('users'), colorClass: 'bg-warning text-white' },
-    { label: 'nav.roles', route: '/roles', icon: Ic('shield'), colorClass: 'bg-error text-white' },
+    { label: 'nav.customers', route: '/customers', icon: Ic('users'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.roles', route: '/roles', icon: Ic('shield'), colorClass: 'bg-secondary text-white' },
   ],
   reports: [
-    { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), colorClass: 'bg-error text-white' },
-    { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), colorClass: 'bg-warning text-white' },
-    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), colorClass: 'bg-warning/70 text-white' },
+    { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-dots'), colorClass: 'bg-error text-white' },
+    { label: 'nav.reports', route: '/reports', icon: Ic('report-money'), colorClass: 'bg-error text-white' },
+    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('receipt-tax'), colorClass: 'bg-error text-white' },
   ],
   system: [
-    { label: 'nav.settings', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral text-neutral-content' },
-    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral/70 text-neutral-content' },
-    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-success text-white' },
-    { label: 'nav.themeStudio', route: '/theme-studio', icon: Ic('paint'), colorClass: 'bg-secondary text-white' },
-    { label: 'nav.about', route: '/about', icon: Ic('heart'), colorClass: 'bg-error text-white' },
+    { label: 'nav.settings', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.about', route: '/about', icon: Ic('heart'), colorClass: 'bg-neutral text-white' },
   ],
 };
 
@@ -72,7 +72,7 @@ const QUICK_ACCESS = [
   { label: 'nav.staff', desc: 'nav.staffDesc', route: '/staff', icon: 'users', gradient: 'from-secondary to-primary' },
   { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: 'apps', gradient: 'from-info to-primary' },
   { label: 'nav.salesMerged', desc: 'nav.salesMergedDesc', route: '/sale', icon: 'shopping-cart', gradient: 'from-success to-primary' },
-  { label: 'nav.reportsMerged', desc: 'nav.reportsMergedDesc', route: '/reports', icon: 'chart-bar', gradient: 'from-warning to-secondary' },
+  { label: 'nav.reportsMerged', desc: 'nav.reportsMergedDesc', route: '/reports', icon: 'chart-pie', gradient: 'from-warning to-secondary' },
 ];
 
 export default function Home() {
@@ -238,7 +238,9 @@ export default function Home() {
               <StatCard
                 title={t('home.todaySales', 'Today Sales')}
                 value={todayStats.orders}
-                desc={`${todayStats.orders === 1 ? '1 order' : `${todayStats.orders} orders`} today — ${orderDelta.pct} vs yesterday`}
+                desc={todayStats.orders === 1
+                  ? t('home.oneOrderToday', '1 order today') + ` — ${orderDelta.pct} ` + t('home.vsYesterday', 'vs yesterday')
+                  : `${todayStats.orders} ${t('home.ordersToday', 'orders today')} — ${orderDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`}
                 icon={<span className={iconClass('lucide:shopping-cart', 'w-6 h-6')} />}
                 sparklineData={sparklines?.orders}
                 color="primary"
@@ -248,8 +250,8 @@ export default function Home() {
                 title={t("home.todayRevenue", "Today's Revenue")}
                 value={`${currencySymbol} ${todayStats.revenue.toLocaleString()}`}
                 desc={todayStats.revenue > 0
-                  ? `${formatPrice(todayStats.revenue / (todayStats.orders || 1))} avg — ${revDelta.pct} vs yesterday`
-                  : 'No revenue yet'}
+                  ? `${formatPrice(todayStats.revenue / (todayStats.orders || 1))} ${t('home.avg', 'avg')} — ${revDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`
+                  : t('home.noRevenueYet', 'No revenue yet')}
                 icon={<span className={iconClass('lucide:banknote', 'w-6 h-6')} />}
                 sparklineData={sparklines?.revenue}
                 color="info"
@@ -258,7 +260,9 @@ export default function Home() {
               <StatCard
                 title={t('home.openTables', 'Open Tables')}
                 value={kpis?.openTables ?? 0}
-                desc={kpis?.openTables === 0 ? 'All clear' : `${kpis?.openTables} table${kpis?.openTables !== 1 ? 's' : ''} in service`}
+                desc={kpis?.openTables === 0
+                  ? t('home.allClear', 'All clear')
+                  : `${kpis?.openTables} ${kpis?.openTables === 1 ? t('home.table', 'table') : t('home.tables', 'tables')} ${t('home.inService', 'in service')}`}
                 icon={<span className={iconClass('lucide:utensils', 'w-6 h-6')} />}
                 color="warning"
                 onClick={() => handleNavigation('/sale')}
@@ -266,7 +270,9 @@ export default function Home() {
               <StatCard
                 title={t('home.staff', 'Active Staff')}
                 value={kpis?.activeEmployees ?? 0}
-                desc={`${kpis?.activeEmployees === 1 ? '1 employee' : `${kpis?.activeEmployees ?? 0} employees`} on payroll`}
+                desc={kpis?.activeEmployees === 1
+                  ? `1 ${t('home.employee', 'employee')} ${t('home.onPayroll', 'on payroll')}`
+                  : `${kpis?.activeEmployees ?? 0} ${t('home.employees', 'employees')} ${t('home.onPayroll', 'on payroll')}`}
                 icon={<span className={iconClass('lucide:users', 'w-6 h-6')} />}
                 color="secondary"
                 onClick={() => handleNavigation('/staff')}
@@ -274,7 +280,9 @@ export default function Home() {
               <StatCard
                 title={t('home.lowStock', 'Low Stock')}
                 value={kpis?.lowStockCount ?? 0}
-                desc={kpis?.lowStockCount === 0 ? 'All stocked' : `${kpis?.lowStockCount} item${kpis?.lowStockCount !== 1 ? 's' : ''} below reorder level`}
+                desc={kpis?.lowStockCount === 0
+                  ? t('home.allStocked', 'All stocked')
+                  : `${kpis?.lowStockCount} ${kpis?.lowStockCount === 1 ? t('home.item', 'item') : t('home.items', 'items')} ${t('home.belowReorder', 'below reorder level')}`}
                 icon={<span className={iconClass('lucide:alert-triangle', 'w-6 h-6')} />}
                 color={kpis?.lowStockCount && kpis.lowStockCount > 0 ? 'error' : 'success'}
                 onClick={() => handleNavigation('/inventory')}
@@ -282,7 +290,9 @@ export default function Home() {
               <StatCard
                 title={t('home.kitchenTickets', 'Kitchen Tickets')}
                 value={kpis?.activeKitchenTickets ?? 0}
-                desc={kpis?.activeKitchenTickets === 0 ? 'No active orders' : `${kpis?.activeKitchenTickets} ticket${kpis?.activeKitchenTickets !== 1 ? 's' : ''} in progress`}
+                desc={kpis?.activeKitchenTickets === 0
+                  ? t('home.noActiveOrders', 'No active orders')
+                  : `${kpis?.activeKitchenTickets} ${kpis?.activeKitchenTickets === 1 ? t('home.ticket', 'ticket') : t('home.tickets', 'tickets')} ${t('home.inProgress', 'in progress')}`}
                 icon={<span className={iconClass('lucide:chef-hat', 'w-6 h-6')} />}
                 color={kpis?.activeKitchenTickets && kpis.activeKitchenTickets > 0 ? 'warning' : 'success'}
                 onClick={() => handleNavigation('/kitchen')}
@@ -338,7 +348,8 @@ export default function Home() {
                       p-3 rounded-2xl transition-all duration-300
                       hover:shadow-card-hover hover:-translate-y-0.5 active:scale-[0.98]
                       focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none
-                      group disabled:opacity-60 overflow-hidden"
+                      group disabled:opacity-60 overflow-hidden
+                      flex flex-col items-center justify-center text-center"
                   >
                     {/* Hover glow effect */}
                     <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500
@@ -355,17 +366,17 @@ export default function Home() {
                       </div>
                     ) : (
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-2
-                        ${menuItem.colorClass} shadow-md mx-auto
+                        ${menuItem.colorClass} shadow-md
                         group-hover:scale-110 transition-transform duration-300`}
                       >
                         <Icon className="w-6 h-6" />
                       </div>
                     )}
 
-                    <span className="text-sm font-semibold text-base-content/80 text-center leading-tight">
+                    <span className="text-sm font-semibold text-base-content/80 leading-tight">
                       {t(menuItem.label)}
                     </span>
-                    <span className="text-[10px] text-base-content/50 mt-0.5 text-center leading-tight max-w-[100px]">
+                    <span className="text-[10px] text-base-content/50 mt-0.5 leading-tight max-w-[100px] mx-auto">
                       {t(menuItem.label + 'Desc')}
                     </span>
                   </button>

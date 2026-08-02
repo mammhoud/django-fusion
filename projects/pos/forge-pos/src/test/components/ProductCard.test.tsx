@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ProductCard, { ProductCardSkeleton, PRODUCT_CARD_COLORS } from '../../components/pos/ProductCard';
+import ProductCard, { ProductCardSkeleton, PRODUCT_CARD_COLORS, productAccentColor, accentColorFromSeed } from '../../components/pos/ProductCard';
 import { Product } from '../../types';
 
 const mockProduct: Product = {
@@ -65,7 +65,7 @@ describe('ProductCard', () => {
     render(<ProductCard product={mockProduct} color={PRODUCT_CARD_COLORS[0]} isSelected />);
 
     const card = screen.getByText('Chicken Burger').closest('[class*="rounded-xl"]');
-    expect(card).toHaveClass('border-teal-500');
+    expect(card).toHaveClass('border-primary');
   });
 
   it('renders children inside the card', () => {
@@ -76,6 +76,38 @@ describe('ProductCard', () => {
     );
 
     expect(screen.getByTestId('child')).toBeInTheDocument();
+  });
+});
+
+describe('productAccentColor', () => {
+  it('is deterministic — same product always yields the same color', () => {
+    expect(productAccentColor(mockProduct)).toBe(productAccentColor(mockProduct));
+    expect(productAccentColor(mockProductWithImage)).toBe(productAccentColor(mockProductWithImage));
+  });
+
+  it('returns a valid #rrggbb hex string', () => {
+    expect(productAccentColor(mockProduct)).toMatch(/^#[0-9a-fA-F]{6}$/);
+  });
+
+  it('yields distinct colors for distinct products', () => {
+    const a = productAccentColor(mockProduct);
+    const b = productAccentColor(mockProductWithImage);
+    // Different id + name seeds must not collide for the fixture set.
+    expect(a).not.toBe(b);
+  });
+
+  it('productAccentColor and accentColorFromSeed agree on the same seed', () => {
+    expect(accentColorFromSeed(`${mockProduct.id}:${mockProduct.name}`))
+      .toBe(productAccentColor(mockProduct));
+  });
+
+  it('accentColorFromSeed is deterministic and distinct for different seeds', () => {
+    const a = accentColorFromSeed('Chicken Burger');
+    const b = accentColorFromSeed('French Fries');
+    expect(a).toMatch(/^#[0-9a-fA-F]{6}$/);
+    expect(b).toMatch(/^#[0-9a-fA-F]{6}$/);
+    expect(accentColorFromSeed('Chicken Burger')).toBe(a);
+    expect(a).not.toBe(b);
   });
 });
 

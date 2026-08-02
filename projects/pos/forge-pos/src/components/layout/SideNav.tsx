@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useRef, memo } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import LanguageToggle from '../display/LanguageToggle';
 import KeyboardShortcutsModal from '../shared/KeyboardShortcutsModal';
 import { useAuth } from '../../contexts/AuthContext';
@@ -7,7 +7,6 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { preloadRoute } from '../../utils/preloadRoutes';
 import { Ic, iconClass } from '../../lib/icons';
-import AnimatePresence from '../../components/ui/AnimatePresence';
 
 // ── Role-based nav visibility ──
 // Which routes each role can see. 'manager' sees everything.
@@ -18,7 +17,7 @@ export const ROLE_ROUTES: Record<string, Set<string>> = {
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
     '/employees', '/schedule', '/payroll', '/customers', '/roles',
     '/analytics', '/reports', '/tax-reports',
-    '/settings', '/notes', '/support-chat', '/theme-studio', '/about',
+    '/settings', '/notes', '/support-chat', '/about',
   ]),
   employee: new Set([
     '/dashboard', '/sale', '/kitchen', '/transactions', '/inventory',
@@ -38,6 +37,7 @@ function filterNavByRole(categories: NavCategory[], role: string): NavCategory[]
 // ── Category definitions with section headers ──
 interface NavItem {
   label: string;
+  desc: string;
   route: string;
   icon: React.ComponentType<{ className?: string }>;
   colorClass: string;
@@ -47,6 +47,8 @@ interface NavCategory {
   id: string;
   label: string;
   icon: string;
+  /** Text accent color for the category header — mirrors the dashboard's MENU_CATEGORIES palette. */
+  color: string;
   items: NavItem[];
 }
 
@@ -55,56 +57,60 @@ const navCategories: NavCategory[] = [
     id: 'sales',
     label: 'nav.sales',
     icon: 'shopping-cart',
+    color: 'text-success',
     items: [
-      { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success' },
-      { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-info' },
-      { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-info/70' },
-
+      { label: 'nav.newSale', desc: 'nav.newSaleDesc', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success' },
+      { label: 'nav.kitchen', desc: 'nav.kitchenDesc', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-success' },
+      { label: 'nav.transactions', desc: 'nav.transactionsDesc', route: '/transactions', icon: Ic('history'), colorClass: 'bg-success' },
     ],
-  },    {
+  },
+  {
     id: 'products',
     label: 'nav.products',
     icon: 'package',
+    color: 'text-info',
     items: [
-      { label: 'nav.productsMerged', route: '/products', icon: Ic('apps'), colorClass: 'bg-info' },
-      { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-accent' },
-      { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), colorClass: 'bg-secondary' },
-      { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-secondary/70' },
-      { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-info/70' },
+      { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: Ic('apps'), colorClass: 'bg-info' },
+      { label: 'nav.productManager', desc: 'nav.productManagerDesc', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-info' },
+      { label: 'nav.inventory', desc: 'nav.inventoryDesc', route: '/inventory', icon: Ic('package'), colorClass: 'bg-info' },
+      { label: 'nav.recipes', desc: 'nav.recipesDesc', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-info' },
+      { label: 'nav.suppliers', desc: 'nav.suppliersDesc', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-info' },
     ],
   },
   {
     id: 'staff',
     label: 'nav.staff',
     icon: 'users',
+    color: 'text-secondary',
     items: [
-      { label: 'nav.employees', route: '/employees', icon: Ic('users'), colorClass: 'bg-secondary' },
-      { label: 'nav.schedule', route: '/schedule', icon: Ic('calendar-event'), colorClass: 'bg-secondary/70' },
-      { label: 'nav.payroll', route: '/payroll', icon: Ic('moneybag'), colorClass: 'bg-error' },
-      { label: 'nav.customers', route: '/customers', icon: Ic('users'), colorClass: 'bg-warning' },
-      { label: 'nav.roles', route: '/roles', icon: Ic('shield'), colorClass: 'bg-error/70' },
+      { label: 'nav.employees', desc: 'nav.employeesDesc', route: '/employees', icon: Ic('users'), colorClass: 'bg-secondary' },
+      { label: 'nav.schedule', desc: 'nav.scheduleDesc', route: '/schedule', icon: Ic('calendar-clock'), colorClass: 'bg-secondary' },
+      { label: 'nav.payroll', desc: 'nav.payrollDesc', route: '/payroll', icon: Ic('moneybag'), colorClass: 'bg-secondary' },
+      { label: 'nav.customers', desc: 'nav.customersDesc', route: '/customers', icon: Ic('users'), colorClass: 'bg-secondary' },
+      { label: 'nav.roles', desc: 'nav.rolesDesc', route: '/roles', icon: Ic('shield'), colorClass: 'bg-secondary' },
     ],
   },
   {
     id: 'reports',
     label: 'nav.reports',
     icon: 'chart-bar',
+    color: 'text-error',
     items: [
-      { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), colorClass: 'bg-error' },
-      { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), colorClass: 'bg-warning' },
-      { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), colorClass: 'bg-warning/70' },
+      { label: 'nav.analytics', desc: 'nav.analyticsDesc', route: '/analytics', icon: Ic('chart-dots'), colorClass: 'bg-error' },
+      { label: 'nav.reports', desc: 'nav.reportsDesc', route: '/reports', icon: Ic('report-money'), colorClass: 'bg-error' },
+      { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/tax-reports', icon: Ic('receipt-tax'), colorClass: 'bg-error' },
     ],
   },
   {
     id: 'system',
     label: 'nav.system',
     icon: 'dashboard',
+    color: 'text-base-content/50',
     items: [
-      { label: 'nav.settings', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral' },
-      { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral/70' },
-      { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-success' },
-      { label: 'nav.themeStudio', route: '/theme-studio', icon: Ic('paint'), colorClass: 'bg-secondary' },
-      { label: 'nav.about', route: '/about', icon: Ic('heart'), colorClass: 'bg-error' },
+      { label: 'nav.settings', desc: 'nav.settingsDesc', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral' },
+      { label: 'nav.notes', desc: 'nav.notesDesc', route: '/notes', icon: Ic('clipboard-text'), colorClass: 'bg-neutral' },
+      { label: 'nav.supportChat', desc: 'nav.supportChatDesc', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-neutral' },
+      { label: 'nav.about', desc: 'nav.aboutDesc', route: '/about', icon: Ic('heart'), colorClass: 'bg-neutral' },
     ],
   },
 ];
@@ -128,12 +134,15 @@ function CategoryHeader({
   isClickable?: boolean;
   onClick?: () => void;
 }) {
+  const { t } = useTranslation();
   const content = (
     <div className="flex items-center gap-2 px-2.5 py-2 mt-1 first:mt-0 w-full">
-      <span className={iconClass(category.icon, 'w-3.5 h-3.5 text-base-content/40 shrink-0')} />
+      <span className={`${category.color}`}>
+        <span className={iconClass(category.icon, 'w-3.5 h-3.5 shrink-0')} />
+      </span>
       {isExpanded && (
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 truncate">
-          {category.label}
+        <span className={`text-[10px] font-semibold uppercase tracking-wider truncate ${category.color}`}>
+          {t(category.label)}
         </span>
       )}
     </div>
@@ -144,7 +153,7 @@ function CategoryHeader({
       <button
         type="button"
         onClick={onClick}
-        className="w-full text-left cursor-pointer hover:bg-base-200/30 rounded-xl transition-all active:scale-[0.97]"
+        className="w-full text-start cursor-pointer hover:bg-base-200/30 rounded-xl transition-all active:scale-[0.97]"
       >
         {content}
       </button>
@@ -166,6 +175,7 @@ function NavItemButton({
   isExpanded: boolean;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const Icon = item.icon;
   return (
     <button
@@ -178,7 +188,7 @@ function NavItemButton({
           ? 'bg-base-200/70 dark:bg-white/10 text-base-content font-semibold shadow-sm'
           : 'text-base-content/60 hover:text-base-content hover:bg-base-200/40 dark:hover:bg-white/5 font-medium'
       }`}
-      title={!isExpanded ? item.label : undefined}
+      title={!isExpanded ? t(item.label) : undefined}
     >
       <div className={`w-7 h-7 min-w-[1.75rem] rounded-lg flex items-center justify-center text-white text-xs
         ${item.colorClass} shadow-sm
@@ -186,19 +196,20 @@ function NavItemButton({
       >
         <Icon className="w-3.5 h-3.5" />
       </div>
-      <span
-        animate={{ opacity: isExpanded ? 1 : 0, width: isExpanded ? 'auto' : 0 }}
-        transition={{ duration: 0.12 }}
-        className="overflow-hidden truncate text-left"
-      >
-        {item.label}
-      </span>
+      <div className="flex flex-col items-start overflow-hidden">
+        <span
+          className={`overflow-hidden truncate text-start w-full transition-opacity duration-150 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}
+        >
+          {t(item.label)}
+        </span>
+        {isExpanded && item.desc && (
+          <span className="text-[10px] text-base-content/40 truncate w-full leading-tight mt-0.5">
+            {t(item.desc)}
+          </span>
+        )}
+      </div>
       {isActive && isExpanded && (
-        <div
-          layoutId="sidenav-persistent-active"
-          className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-primary shrink-0"
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-        />
+        <div className="ms-auto w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
       )}
     </button>
   );
@@ -283,21 +294,21 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
   return (
     <>
       <aside
-        className="fixed left-0 top-0 h-full z-30
+        className={`fixed left-0 top-0 h-full z-30
           bg-base-100/95 backdrop-blur-xl
           border-r border-base-300/50
           shadow-xl flex flex-col overflow-hidden
           hidden 4xl:flex
-          rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l"
-        animate={{ width: expanded ? 280 : 64 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+          rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l
+          transition-[width] duration-200 ease-out
+          ${expanded ? 'w-[280px]' : 'w-16'}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => { if (!isPinned) setIsHovered(false); }}
       >
         {/* Header — logo + pin toggle */}
         <div className="flex items-center justify-end p-3 border-b border-base-300/50 min-h-[52px]">
           {expanded && (
-            <span className="text-xs font-semibold text-base-content/50 uppercase tracking-wider flex-1 truncate pl-0.5">
+            <span className="text-xs font-semibold text-base-content/50 uppercase tracking-wider flex-1 truncate ps-0.5">
               {t('nav.navigation')}
             </span>
           )}
@@ -314,7 +325,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
         {/* Home button always visible */}
         <div className="px-3 pt-2 pb-1">
           <NavItemButton
-            item={{ label: 'nav.home', route: '/dashboard', icon: Ic('dashboard'), colorClass: 'bg-info' }}
+            item={{ label: 'nav.home', desc: 'nav.homeDesc', route: '/dashboard', icon: Ic('dashboard'), colorClass: 'bg-info' }}
             isActive={currentRoute === '/dashboard'}
             isExpanded={expanded}
             onClick={() => handleNavigate('/dashboard')}
@@ -348,9 +359,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
             >
               <span className="icon-[tabler--logout] w-4 h-4 shrink-0" />
               <span
-                animate={{ opacity: expanded ? 1 : 0 }}
-                transition={{ duration: 0.12 }}
-                className="overflow-hidden truncate"
+                className={`overflow-hidden truncate transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0'}`}
               >
                 {expanded && t('auth.signOut')}
               </span>
@@ -366,9 +375,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
           >
             <span className="icon-[tabler--help-circle] w-4 h-4 shrink-0" />
             <span
-              animate={{ opacity: expanded ? 1 : 0 }}
-              transition={{ duration: 0.12 }}
-              className="overflow-hidden truncate flex items-center gap-1"
+              className={`overflow-hidden truncate flex items-center gap-1 transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0'}`}
             >
               {expanded && <>{t('transactions.shortcutHelp')} <kbd className="px-1 py-0.5 text-[10px] font-mono rounded bg-base-200 dark:bg-white/10">?</kbd></>}
             </span>
@@ -410,8 +417,43 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
   const { t } = useTranslation();
   const isRtl = language === 'ar';
   const [showShortcuts, setShowShortcuts] = useState(false);
+  // Self-contained closing state — guarantees the drawer unmounts even when CSS
+  // exit animations are disabled (reduced motion) or interrupted.
+  const [closing, setClosing] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
   const navContainerRef = useRef<HTMLDivElement | null>(null);
   const userRole = user?.role || 'manager';
+
+  // Reset closing state whenever the drawer is re-opened.
+  useEffect(() => {
+    if (isOpen) setClosing(false);
+  }, [isOpen]);
+
+  // Clean up any pending close timer on unmount.
+  useEffect(() => () => {
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+  }, []);
+
+  const requestCloseRef = useRef<(() => void) | null>(null);
+  const requestClose = () => {
+    if (closing) return;
+    setClosing(true);
+    closeTimerRef.current = window.setTimeout(() => {
+      setClosing(false);
+      onClose();
+    }, 200); // matches the drawer-out animation duration (--duration--normal)
+  };
+  requestCloseRef.current = requestClose;
+
+  // Close on Escape (standard drawer a11y affordance).
+  useEffect(() => {
+    if (!isOpen || closing) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') requestCloseRef.current?.();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, closing]);
 
   const scrollToCategory = (catId: string) => {
     const el = document.getElementById(`sidenav-cat-${catId}`);
@@ -421,42 +463,35 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
   };
 
   const handleNavigate = (route: string) => {
-    onClose();
+    requestClose();
     navigate(route);
   };
 
   const handleLogout = () => {
-    onClose();
+    requestClose();
     logout();
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+      {(isOpen || closing) && (
         <>
           {/* Backdrop */}
           <div
-            key="sidenav-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-            onClick={onClose}
+            className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 ${closing ? 'animate--fade-out' : 'animate--fade-in'}`}
+            onClick={requestClose}
           />
 
           {/* Panel */}
           <aside
-            key="sidenav-panel"
-            initial={{ x: isRtl ? '100%' : '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: isRtl ? '100%' : '-100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 h-full w-80 max-w-[90vw] z-50
+            className={`fixed top-0 left-0 h-full w-80 max-w-[90vw] z-50
               bg-base-100/90 backdrop-blur-xl
               border-r border-base-300/50
               shadow-2xl flex flex-col
-              rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l"
+              rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l
+              ${closing
+                ? (isRtl ? 'animate--drawer-out-right' : 'animate--drawer-out-left')
+                : (isRtl ? 'animate--drawer-in-right' : 'animate--drawer-in-left')}`}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-base-300/50">
@@ -484,17 +519,21 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                     ? 'bg-base-200/70 dark:bg-white/10 text-base-content font-semibold shadow-sm'
                     : 'text-base-content/60 hover:text-base-content hover:bg-base-200/40 dark:hover:bg-white/5 font-medium'
                 }`}
+                title={t('nav.home')}
               >
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm
                   bg-info shadow-sm shrink-0
                   group-hover:scale-105 transition-transform">
                   <span className="icon-[tabler--dashboard] w-4 h-4" />
                 </div>
-                <span className="font-semibold">{t('nav.home')}</span>
+                <div className="flex flex-col items-start">
+                  <span className="font-semibold">{t('nav.home')}</span>
+                  <span className="text-[10px] text-base-content/40 leading-tight">{t('nav.homeDesc')}</span>
+                </div>
                 {currentRoute === '/dashboard' && (
                   <div
                     layoutId="sidenav-active"
-                    className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-primary"
+                    className="ms-auto w-1.5 h-1.5 rounded-full bg-primary"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -539,7 +578,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
               >
                 <span className="icon-[tabler--help-circle] w-4 h-4" />
                 <span>{t('transactions.shortcutHelp')}</span>
-                <kbd className="ml-1 px-1.5 py-0.5 text-[10px] font-mono rounded
+                <kbd className="ms-1 px-1.5 py-0.5 text-[10px] font-mono rounded
                   bg-base-200 dark:bg-white/10 text-base-content/50">
                   ?
                 </kbd>
@@ -565,7 +604,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
           </aside>
         </>
       )}
-    </AnimatePresence>
+    </>
   );
 });
 

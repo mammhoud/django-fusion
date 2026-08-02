@@ -184,11 +184,11 @@ export default function Analytics() {
           </div>
         )}
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-5 md:gap-6">
+        {/* Charts Grid — medium card padding with tiny margins between cells */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-2 sm:gap-2 md:gap-3">
           {/* Revenue Trend */}
           <div className="animate-fade-in">
-            <Card padding="md" transitional className="sm:p-6">
+            <Card padding="md" transitional className="p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.revenueTrend')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
                 {data.daily_revenue.length > 0 ? (
@@ -227,7 +227,7 @@ export default function Analytics() {
 
           {/* Top Products */}
           <div className="animate-fade-in">
-            <Card padding="md" transitional className="sm:p-6">
+            <Card padding="md" transitional className="p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.topProducts')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
                 {data.top_products.length > 0 ? (
@@ -254,7 +254,7 @@ export default function Analytics() {
 
           {/* Product Distribution */}
           <div className="animate-fade-in">
-            <Card padding="md" transitional className="sm:p-6">
+            <Card padding="md" transitional className="p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.productDistribution')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
                 {data.product_distribution.length > 0 ? (
@@ -298,7 +298,7 @@ export default function Analytics() {
 
           {/* Daily Orders Trend */}
           <div className="animate-fade-in">
-            <Card padding="md" transitional className="sm:p-6">
+            <Card padding="md" transitional className="p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.dailyOrders')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
                 {data.daily_revenue.length > 0 ? (

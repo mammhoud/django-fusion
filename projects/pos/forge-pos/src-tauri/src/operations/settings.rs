@@ -60,6 +60,7 @@ pub fn save_settings(db_path: &PathBuf, update: UpdateSettings) -> Result<Settin
 mod tests {
     use super::*;
     use crate::db::run_migrations;
+    use std::env;
     use std::path::PathBuf;
 
     use std::sync::atomic::{AtomicU32, Ordering};
@@ -123,6 +124,7 @@ mod tests {
             phone: None,
             email: None,
             tax_rate: None,
+            tax_id: None,
             currency: None,
             opening_time: None,
             closing_time: None,
@@ -132,6 +134,14 @@ mod tests {
             dine_in_tables: None,
             delivery_fee: None,
             delivery_fee_per_km: None,
+            unique_card_colors: None,
+            smtp_server: None,
+            smtp_port: None,
+            smtp_username: None,
+            smtp_password: None,
+            smtp_recipient: None,
+            smtp_from_name: None,
+            smtp_from_email: None,
         };
 
         let result = save_settings(&db_path, update).expect("save_settings should succeed");
@@ -213,6 +223,86 @@ mod tests {
 
         let stored = get_logo(&db_path);
         assert_eq!(stored, Some("logo_v2_replacement".to_string()), "logo should be replaced");
+    }
+
+    #[test]
+    fn test_unique_card_colors_round_trip() {
+        let db_path = setup_test_db();
+
+        // Default is ON (column default = 1)
+        let initial = get_settings(&db_path).expect("get_settings should succeed");
+        assert!(initial.unique_card_colors, "unique_card_colors should default to true");
+
+        // Turn it off
+        save_settings(&db_path, UpdateSettings {
+            unique_card_colors: Some(false),
+            ..Default::default()
+        }).expect("disable unique card colors should succeed");
+        let result = get_settings(&db_path).expect("get_settings should succeed");
+        assert!(!result.unique_card_colors, "unique_card_colors should be false after toggle");
+
+        // Turn it back on
+        save_settings(&db_path, UpdateSettings {
+            unique_card_colors: Some(true),
+            ..Default::default()
+        }).expect("re-enable unique card colors should succeed");
+        let result = get_settings(&db_path).expect("get_settings should succeed");
+        assert!(result.unique_card_colors, "unique_card_colors should be true after re-enable");
+    }
+
+    #[test]
+    fn test_smtp_settings_round_trip() {
+        let db_path = setup_test_db();
+
+        // Save SMTP settings via UpdateSettings (the same path the UI uses)
+        save_settings(&db_path, UpdateSettings {
+            smtp_server: Some("smtp.example.com".to_string()),
+            smtp_port: Some(2525),
+            smtp_username: Some("user@example.com".to_string()),
+            smtp_password: Some("hunter2".to_string()),
+            smtp_recipient: Some("support@example.com".to_string()),
+            smtp_from_name: Some("My Restaurant".to_string()),
+            smtp_from_email: Some("no-reply@example.com".to_string()),
+            ..Default::default()
+        }).expect("save SMTP settings should succeed");
+
+        // load_smtp_config must return the DB values (DB wins over env/defaults)
+        let cfg = crate::email::load_smtp_config(&db_path);
+        assert_eq!(cfg.server, "smtp.example.com");
+        assert_eq!(cfg.port, 2525);
+        assert_eq!(cfg.username, "user@example.com");
+        assert_eq!(cfg.password, "hunter2");
+        assert_eq!(cfg.recipient, "support@example.com");
+        assert_eq!(cfg.from_name, "My Restaurant");
+        assert_eq!(cfg.from_email, "no-reply@example.com");
+        assert!(cfg.is_configured(), "credentials present → configured");
+        assert!(cfg.has_recipient(), "recipient present → has_recipient");
+    }
+
+    #[test]
+    fn test_smtp_empty_db_falls_back_to_env_defaults() {
+        // Deterministic: set known env values for fields that no other test
+        // module mutates (auth.rs tests touch only SMTP_USERNAME/SMTP_PASSWORD).
+        // With an empty settings row, load_smtp_config must use these values.
+        env::set_var("SMTP_SERVER", "smtp.test-env.com");
+        env::set_var("SMTP_PORT", "2525");
+        env::set_var("SMTP_FROM_NAME", "Env Sender");
+        env::set_var("SMTP_FROM_EMAIL", "env@test-env.com");
+
+        let db_path = setup_test_db();
+
+        // Nothing saved → env values apply
+        let cfg = crate::email::load_smtp_config(&db_path);
+        assert_eq!(cfg.server, "smtp.test-env.com");
+        assert_eq!(cfg.port, 2525);
+        assert_eq!(cfg.from_name, "Env Sender");
+        assert_eq!(cfg.from_email, "env@test-env.com");
+
+        // Clean up so we don't leak env into other tests in this process
+        env::remove_var("SMTP_SERVER");
+        env::remove_var("SMTP_PORT");
+        env::remove_var("SMTP_FROM_NAME");
+        env::remove_var("SMTP_FROM_EMAIL");
     }
 
     #[test]

@@ -72,6 +72,9 @@
     "resetPassword": "إعادة تعيين كلمة المرور",
     "resetPasswordBtn": "إعادة تعيين كلمة المرور",
     "resetPasswordDesc": "أدخل الرمز وكلمة المرور الجديدة لـ",
+    "roleEmployee": "موظف",
+    "roleLabel": "تسجيل الدخول باسم",
+    "roleManager": "مدير",
     "sendCode": "إرسال رمز التأكيد",
     "sendResetCode": "إرسال رمز إعادة التعيين",
     "showPassword": "إظهار كلمة المرور",
@@ -240,12 +243,38 @@
     "totalEmployees": "إجمالي الموظفين",
     "typeDescription": "الوصف",
     "typeName": "اسم النوع",
-    "typeNamePlaceholder": "مثال: طباخ مساعد، مضيف، ساقي"
+    "typeNamePlaceholder": "مثال: طباخ مساعد، مضيف، ساقي",
+    "gridView": "عرض شبكي",
+    "listView": "عرض قائمة",
+    "name": "الاسم",
+    "type": "النوع",
+    "status": "الحالة",
+    "actions": "إجراءات"
   },
   "home": {
     "dashboard": "لوحة القيادة",
     "loading": "جاري التحميل...",
-    "title": "Forge POS"
+    "title": "Forge POS",
+    "oneOrderToday": "طلب واحد اليوم",
+    "ordersToday": "طلب اليوم",
+    "vsYesterday": "مقارنة بالأمس",
+    "avg": "متوسط",
+    "noRevenueYet": "لا توجد إيرادات بعد",
+    "allClear": "كل شيء واضح",
+    "table": "طاولة",
+    "tables": "طاولات",
+    "inService": "في الخدمة",
+    "noActiveOrders": "لا توجد طلبات نشطة",
+    "ticket": "تذكرة",
+    "tickets": "تذاكر",
+    "inProgress": "قيد التنفيذ",
+    "employee": "موظف",
+    "employees": "موظفون",
+    "onPayroll": "في كشف الرواتب",
+    "allStocked": "المخزون مكتمل",
+    "item": "صنف",
+    "items": "أصناف",
+    "belowReorder": "أقل من حد إعادة الطلب"
   },
   "inventory": {
     "addIngredient": "إضافة مكون",
@@ -297,7 +326,15 @@
     "transactions": "المعاملات",
     "type": "النوع",
     "uniqueIngredients": "المكونات الفريدة",
-    "unit": "الوحدة"
+    "unit": "الوحدة",
+    "currentQuantity": "الكمية الحالية",
+    "reorderQty": "كمية إعادة الطلب",
+    "byUser": "بواسطة {user}",
+    "addAdjustment": "إضافة تسوية",
+    "successAdjustmentDeleted": "تم حذف التسوية — تمت استعادة المخزون.",
+    "deleteAdjustmentTitle": "حذف التسوية؟",
+    "deleteAdjustmentConfirm": "سيؤدي هذا إلى إزالة التسوية واستعادة مخزون المكوّن.",
+    "deleteAdjustmentDesc": "سيتم عكس تغيير الكمية على المكوّن."
   },
   "invoice": {
     "amount": "المبلغ",
@@ -344,6 +381,7 @@
     "unitPrice": "سعر الوحدة"
   },
   "kitchen": {
+    "allCategories": "جميع الفئات",
     "allTickets": "جميع التذاكر",
     "deliver": "تسليم",
     "delivered": "مُسلَّم",
@@ -355,8 +393,13 @@
     "searchPlaceholder": "بحث برقم التذكرة أو الملاحظة…",
     "startPreparing": "بدء التحضير",
     "statusFilter": "الحالة",
+    "categoryFilter": "تصفية حسب الفئة",
     "ticket": "تذكرة",
-    "title": "شاشة المطبخ"
+    "title": "شاشة المطبخ",
+    "prepSteps": "خطوات التحضير",
+    "attachNotes": "إرفاق ملاحظة",
+    "quickNotes": "ملاحظات سريعة",
+    "addNote": "إضافة ملاحظة"
   },
   "language": {
     "ar": "العربية",
@@ -387,6 +430,7 @@
     "employeesDesc": "إدارة الموظفين",
     "footer": "إدارة مطعم Forge POS",
     "home": "الرئيسية",
+    "homeDesc": "العودة إلى لوحة القيادة",
     "inventory": "المخزون",
     "inventoryDesc": "تتبع مستويات المخزون",
     "invoice": "فاتورة",
@@ -431,8 +475,6 @@
     "taxReportsDesc": "التقارير الضريبية والمالية",
     "themeShowcase": "معرض السمات",
     "themeShowcaseDesc": "معاينة المكونات عبر السمات",
-    "themeStudio": "استوديو السمات",
-    "themeStudioDesc": "تخصيص الألوان مع معاينة حية",
     "transactions": "سجل المعاملات",
     "transactionsDesc": "تصفح سجل المعاملات"
   },
@@ -456,7 +498,15 @@
     "title": "ملاحظات",
     "titlePlaceholder": "عنوان الملاحظة...",
     "totalNotes": "ملاحظات",
-    "useAsReceiptTemplate": "استخدام كقالب إيصال"
+    "useAsReceiptTemplate": "استخدام كقالب إيصال",
+    "selectable": "تحديد سريع في شاشة المطبخ والبيع",
+    "selectableFilterHint": "ملاحظات التحديد السريع فقط",
+    "stepsTitle": "خطوات التحضير",
+    "addStep": "إضافة خطوة",
+    "noSteps": "لا توجد خطوات بعد — أضف أول خطوة تحضير.",
+    "stepTitlePlaceholder": "عنوان الخطوة {n}...",
+    "stepDetailsPlaceholder": "التفاصيل — الوقت، الحرارة، التقنية...",
+    "preparationHint": "ستظهر الخطوات المنظمة أدناه كقائمة تحقق في شاشة المطبخ."
   },
   "payroll": {
     "addPayroll": "إضافة راتب",
@@ -528,7 +578,26 @@
     "validationPrice": "الرجاء إدخال السعر",
     "validationPricePositive": "يجب أن يكون السعر رقماً موجباً",
     "validationUnit": "الرجاء إدخال الوحدة",
-    "viaIngredients": "المكونات"
+    "viaIngredients": "المكونات",
+    "manageCategories": "إدارة الفئات",
+    "addCategory": "إضافة فئة",
+    "editCategory": "تعديل الفئة",
+    "deleteCategory": "حذف الفئة",
+    "categoryName": "اسم الفئة",
+    "categoryNamePlaceholder": "مثال: برجر، مقبلات...",
+    "categoryColor": "اللون",
+    "categoryCustomColor": "لون مخصص",
+    "categoryValidationName": "يرجى إدخال اسم الفئة",
+    "categorySuccessAdded": "تمت إضافة الفئة",
+    "categorySuccessUpdated": "تم تحديث الفئة",
+    "categorySuccessDeleted": "تم حذف الفئة",
+    "colorPreview": "معاينة",
+    "saving": "جارٍ الحفظ...",
+    "existingCategories": "الفئات الحالية",
+    "deleteCategoryConfirm": "حذف هذه الفئة؟",
+    "deleteCategoryWarning": "ستصبح المنتجات في هذه الفئة بدون فئة.",
+    "availableOrderTypes": "أنواع الطلبات المتاحة",
+    "availableOrderTypesHint": "يتم إخفاء المنتجات من أنواع الطلبات غير المحددة"
   },
   "receipt": {
     "date": "التاريخ:",
@@ -767,7 +836,9 @@
     "allTypes": "جميع الأنواع",
     "assignTo": "تعيين إلى",
     "cartSummary": "ملخص السلة",
+    "categoryCount": "{count} منتج",
     "categoryFilter": "تصفية حسب الفئة",
+    "categoryLegend": "مفتاح الألوان",
     "completeSale": "إتمام البيع",
     "delivery": "توصيل",
     "deliveryAddress": "عنوان التوصيل...",
@@ -806,7 +877,17 @@
     "typeCombo": "مجموعات",
     "typeProduct": "منتجات",
     "viewCart": "عرض السلة",
-    "zone": "المنطقة"
+    "zone": "المنطقة",
+    "quickNotes": "ملاحظات سريعة",
+    "quickNotesHint": "اضغط على ملاحظة لإضافتها للطلب",
+    "newNote": "ملاحظة جديدة",
+    "newNotePlaceholder": "نص الملاحظة...",
+    "quickAddNote": "إضافة للطلب",
+    "addToCartLabel": "أضف {product}",
+    "sortBy": "ترتيب حسب",
+    "sortNewest": "الأحدث",
+    "extraOrder": "طلب إضافي",
+    "datedOrder": "طلب مؤجل"
   },
   "schedule": {
     "addShift": "إضافة وردية",
@@ -816,6 +897,8 @@
     "title": "الجدول الزمني"
   },
   "settings": {
+    "uniqueCardColors": "ألوان بطاقات فريدة",
+    "uniqueCardColorsDescription": "امنح كل بطاقة منتج وعنصر تذكرة المطبخ لونًا مميزًا لمسح بصري أسرع",
     "address": "العنوان",
     "appearanceTab": {
       "activeLabel": "نشط",
@@ -953,6 +1036,18 @@
     "searchCurrency": "ابحث عن عملة...",
     "selectCurrency": "اختر العملة",
     "successMessage": "تم حفظ الإعدادات بنجاح!",
+    "emailTab": {
+      "description": "قم بتكوين خادم SMTP (STARTTLS، المنفذ 587) المستخدم لرسائل الدعم وتأكيدات المصادقة. يُخزَّن في الإعدادات بدلاً من ملف .env.",
+      "fromName": "اسم المرسل",
+      "password": "كلمة المرور",
+      "port": "منفذ SMTP",
+      "recipient": "مستلم الدعم",
+      "recipientHint": "صندوق الوارد الذي يستقبل رسائل الدعم",
+      "server": "خادم SMTP",
+      "title": "البريد الإلكتروني / SMTP",
+      "username": "اسم المستخدم",
+      "fromEmail": "البريد المرسل"
+    },
     "tabs": {
       "appearance": "المظهر",
       "business": "الأعمال",
@@ -960,11 +1055,18 @@
       "delivery": "التوصيل",
       "dining": "قاعة الطعام",
       "employees": "الموظفون",
-      "general": "عام"
+      "general": "عام",
+      "theme": "السمة",
+      "profile": "الملف الشخصي",
+      "email": "البريد الإلكتروني"
     },
     "taxId": "الرقم الضريبي",
     "taxRate": "نسبة الضريبة (%)",
     "themeTab": {
+      "activeTheme": "السمة النشطة",
+      "appearance": "المظهر",
+      "preview": "معاينة",
+      "studio": "استوديو السمات",
       "title": "السمة"
     },
     "timeout15min": "15 دقيقة",
@@ -985,7 +1087,14 @@
     "validationPasswordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     "validationPhone": "الرجاء إدخال رقم هاتف صحيح",
     "validationTaxNumber": "يجب أن تكون نسبة الضريبة رقماً",
-    "validationTaxRange": "يجب أن تكون نسبة الضريبة بين 0 و 100"
+    "validationTaxRange": "يجب أن تكون نسبة الضريبة بين 0 و 100",
+    "profileTab": {
+      "title": "الملف الشخصي والحساب",
+      "description": "إدارة تفاصيل حسابك وأمانك",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "noUser": "لا يوجد حساب مسجل."
+    }
   },
   "statusToast": {
     "dismiss": "تجاهل"
@@ -1017,7 +1126,7 @@
     "otherHelp": "طرق أخرى للحصول على المساعدة",
     "send": "إرسال الرسالة",
     "sendMessage": "أرسل لنا رسالة",
-    "sending": "جاري الإرسال...",
+    "sending": "جارٍ الإرسال…",
     "subject": "الموضوع",
     "subjectPlaceholder": "كيف يمكننا مساعدتك؟",
     "subtitle": "تحتاج مساعدة؟ لديك أسئلة؟ نحن هنا لمساعدتك!",
@@ -1031,7 +1140,32 @@
     "validationSubject": "الرجاء إدخال الموضوع",
     "websiteText": "قم بزيارة موقعنا الرسمي على",
     "yourEmail": "بريدك الإلكتروني",
-    "yourName": "اسمك"
+    "yourName": "اسمك",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "category": "الفئة",
+    "priority": "الأولوية",
+    "submit": "إرسال",
+    "errorsName": "يرجى إدخال اسمك",
+    "errorsEmail": "يرجى إدخال بريد إلكتروني صحيح",
+    "errorsMessage": "يرجى إدخال رسالة",
+    "success": "تم إرسال الرسالة!",
+    "successBody": "سوف نعود إليك في أقرب وقت ممكن.",
+    "sendAnother": "إرسال رسالة أخرى",
+    "categories": {
+      "general": "عام",
+      "billing": "الفواتير",
+      "technical": "تقني",
+      "feature": "طلب ميزة",
+      "feedback": "ملاحظات"
+    },
+    "priorities": {
+      "low": "منخفضة",
+      "normal": "عادية",
+      "high": "عالية",
+      "urgent": "عاجلة"
+    }
   },
   "supportChat": {
     "connectionError": "تعذر الاتصال بخادم الدعم.",

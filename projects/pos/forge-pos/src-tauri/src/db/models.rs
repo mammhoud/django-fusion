@@ -42,6 +42,17 @@ pub struct Settings {
     pub dine_in_tables: i32,
     pub delivery_fee: f64,
     pub delivery_fee_per_km: f64,
+    /// When true (default), product cards + KDS items get a deterministic
+    /// unique per-product accent color. When false, cards fall back to the
+    /// rotating palette (category colors still apply).
+    pub unique_card_colors: bool,
+    pub smtp_server: Option<String>,
+    pub smtp_port: Option<i32>,
+    pub smtp_username: Option<String>,
+    pub smtp_password: Option<String>,
+    pub smtp_recipient: Option<String>,
+    pub smtp_from_name: Option<String>,
+    pub smtp_from_email: Option<String>,
 }
 
 #[derive(Debug, Insertable, AsChangeset, Deserialize, Default)]
@@ -67,6 +78,14 @@ pub struct UpdateSettings {
     pub tax_id: Option<Option<String>>,
     pub delivery_fee: Option<f64>,
     pub delivery_fee_per_km: Option<f64>,
+    pub unique_card_colors: Option<bool>,
+    pub smtp_server: Option<String>,
+    pub smtp_port: Option<i32>,
+    pub smtp_username: Option<String>,
+    pub smtp_password: Option<String>,
+    pub smtp_recipient: Option<String>,
+    pub smtp_from_name: Option<String>,
+    pub smtp_from_email: Option<String>,
 }
 
 // ---- Category ----
@@ -75,6 +94,7 @@ pub struct UpdateSettings {
 pub struct Category {
     pub id: i32,
     pub name: String,
+    pub color: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
@@ -83,12 +103,15 @@ pub struct Category {
 #[diesel(table_name = crate::db::schema::categories)]
 pub struct NewCategory {
     pub name: String,
+    #[serde(default)]
+    pub color: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
 #[diesel(table_name = crate::db::schema::categories)]
 pub struct UpdateCategory {
     pub name: Option<String>,
+    pub color: Option<Option<String>>,
 }
 
 // ---- Product ----
@@ -105,6 +128,7 @@ pub struct Product {
     pub prepare_time_minutes: i32,
     pub barcode: Option<String>,
     pub description: Option<String>,
+    pub available_order_types: String,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
@@ -128,6 +152,10 @@ pub struct NewProduct {
     pub barcode: Option<String>,
     #[serde(default)]
     pub description: Option<String>,
+    /// Comma-separated list of order types this product is available for.
+    /// Empty string = available for all order types.
+    #[serde(default)]
+    pub available_order_types: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -142,6 +170,7 @@ pub struct UpdateProduct {
     pub prepare_time_minutes: Option<i32>,
     pub barcode: Option<Option<String>>,
     pub description: Option<Option<String>>,
+    pub available_order_types: Option<String>,
     pub uploaded: Option<bool>,
 }
 
@@ -763,6 +792,15 @@ pub struct NewKitchenTicket {
     pub notes: Option<String>,
 }
 
+/// A category that appears on a kitchen ticket (resolved via its sale items).
+#[derive(Debug, Clone, Serialize)]
+pub struct KitchenTicketCategory {
+    pub ticket_id: i32,
+    pub category_id: i32,
+    pub name: String,
+    pub color: Option<String>,
+}
+
 #[derive(Debug, AsChangeset, Deserialize)]
 #[diesel(table_name = crate::db::schema::kitchen_tickets)]
 pub struct UpdateKitchenTicket {
@@ -838,6 +876,8 @@ pub struct Note {
     pub recipe_id: Option<i32>,
     pub is_default: bool,
     pub use_as_template: bool,
+    pub selectable: bool,
+    pub steps: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
@@ -851,6 +891,10 @@ pub struct NewNote {
     pub recipe_id: Option<i32>,
     #[serde(default)]
     pub use_as_template: bool,
+    #[serde(default)]
+    pub selectable: bool,
+    #[serde(default)]
+    pub steps: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -862,6 +906,55 @@ pub struct UpdateNote {
     pub recipe_id: Option<Option<i32>>,
     pub is_default: Option<bool>,
     pub use_as_template: Option<bool>,
+    pub selectable: Option<bool>,
+    pub steps: Option<Option<String>>,
+}
+
+// ---- SupportMessage (DB table: support_messages) ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::support_messages)]
+pub struct SupportMessage {
+    pub id: i32,
+    pub name: String,
+    pub email: String,
+    pub phone: Option<String>,
+    pub subject: Option<String>,
+    pub category: Option<String>,
+    pub priority: String,
+    pub message: String,
+    pub status: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::support_messages)]
+pub struct NewSupportMessage {
+    pub name: String,
+    pub email: String,
+    pub phone: Option<String>,
+    pub subject: Option<String>,
+    pub category: Option<String>,
+    #[serde(default = "default_support_priority")]
+    pub priority: String,
+    pub message: String,
+    #[serde(default = "default_support_status")]
+    pub status: String,
+}
+
+#[derive(Debug, AsChangeset, Deserialize)]
+#[diesel(table_name = crate::db::schema::support_messages)]
+pub struct UpdateSupportMessage {
+    pub status: Option<String>,
+    pub priority: Option<String>,
+}
+
+fn default_support_priority() -> String {
+    "normal".to_string()
+}
+
+fn default_support_status() -> String {
+    "new".to_string()
 }
 
 // ---- TaxReport ----

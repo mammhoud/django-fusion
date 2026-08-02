@@ -13,22 +13,43 @@ use tauri::menu::{MenuBuilder, MenuItemBuilder};
 
 // Load environment variables at startup.
 // dotenvy::dotenv() looks in cwd, but Tauri runs from src-tauri/ or the
-// app bundle — not the project root where .env lives.  Search multiple
-// locations relative to the executable to cover dev + bundled modes.
+// app bundle — not the project root where .env lives.  Search the cwd and
+// every ancestor of the executable (target/debug → target → src-tauri →
+// project root) and MERGE every `.env` found.  `dotenvy::from_path` never
+// overrides an already-set variable, so the project-root `.env` (auth/SMTP
+// credentials) and a closer `src-tauri/.env` (e.g. DATABASE_URL) combine
+// instead of one shadowing the other.
 fn load_env() {
     let exe_dir = std::env::current_exe()
         .ok()
         .and_then(|e| e.parent().map(|p| p.to_path_buf()));
 
-    let candidates: Vec<std::path::PathBuf> = [
-        std::env::current_dir().ok().map(|d| d.join(".env")),
-        exe_dir.clone().map(|d| d.join(".env")),
-        exe_dir.clone().and_then(|d| d.parent().map(|p| p.join(".env"))),
-        exe_dir.and_then(|d| d.parent().and_then(|p| p.parent()).map(|p| p.join(".env"))),
-    ]
-    .into_iter()
-    .flatten()
-    .collect();
+    let mut candidates: Vec<std::path::PathBuf> = Vec::new();
+    if let Ok(cwd) = std::env::current_dir() {
+        candidates.push(cwd.join(".env"));
+    }
+
+    // Walk up from the exe dir, bounded so we never read stray `~/.env` or
+    // `/.env` files outside the project. In dev the exe lives at
+    // src-tauri/target/debug/, so depth 0-3 covers target, src-tauri and the
+    // project root (forge-pos) where the credentials .env lives.
+    let home = std::env::var_os("HOME").map(std::path::PathBuf::from);
+    let mut dir = exe_dir;
+    let mut depth = 0u32;
+    while let Some(d) = dir {
+        let at_home = home.as_ref().map_or(false, |h| d == *h);
+        if at_home || depth >= 6 {
+            break;
+        }
+        candidates.push(d.join(".env"));
+        dir = d.parent().map(|p| p.to_path_buf());
+        depth += 1;
+    }
+
+    // Load root-most first so closer files only add, never clobber.
+    candidates.reverse();
+    let mut seen = std::collections::HashSet::new();
+    candidates.retain(|p| seen.insert(p.clone()));
 
     let mut loaded = false;
     for path in &candidates {
@@ -37,7 +58,6 @@ fn load_env() {
                 Ok(_) => {
                     loaded = true;
                     eprintln!("[env] loaded {}", path.display());
-                    break;
                 }
                 Err(e) => eprintln!("[env] failed {}: {}", path.display(), e),
             }
@@ -327,6 +347,16 @@ fn get_inventory_adjustments(
 }
 
 #[tauri::command]
+fn delete_inventory_adjustment(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    let result = inventory_transactions::delete_inventory_adjustment(&db_path, id)?;
+    if let Err(e) = app.emit("inventory-changed", serde_json::json!({"type": "adjustment-deleted", "id": id})) {
+        eprintln!("[events] failed to emit inventory-changed: {e}");
+    }
+    Ok(result)
+}
+
+#[tauri::command]
 fn add_inventory_transaction(
     app: AppHandle,
     transaction: db::models::NewInventoryTransaction,
@@ -385,8 +415,9 @@ fn start_support_sidecar(app: AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn send_auth_confirmation_code(email: String) -> Result<(), String> {
-    auth::send_confirmation_code(email)
+fn send_auth_confirmation_code(app: AppHandle, email: String) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    auth::send_confirmation_code(&db_path, email)
 }
 
 #[tauri::command]
@@ -556,6 +587,12 @@ fn get_kitchen_tickets(app: AppHandle, status: Option<String>) -> Result<Vec<db:
 }
 
 #[tauri::command]
+fn get_kitchen_ticket_categories(app: AppHandle, status: Option<String>) -> Result<Vec<db::models::KitchenTicketCategory>, String> {
+    let db_path = get_db_path(&app)?;
+    kitchen_tickets::get_kitchen_ticket_categories(&db_path, status)
+}
+
+#[tauri::command]
 fn add_kitchen_ticket(app: AppHandle, ticket: db::models::NewKitchenTicket) -> Result<db::models::KitchenTicket, String> {
     let db_path = get_db_path(&app)?;
     kitchen_tickets::add_kitchen_ticket(&db_path, ticket)
@@ -640,6 +677,12 @@ fn add_loyalty_transaction(app: AppHandle, transaction: db::models::NewLoyaltyTr
 fn get_notes(app: AppHandle) -> Result<Vec<db::models::Note>, String> {
     let db_path = get_db_path(&app)?;
     notes::get_notes(&db_path)
+}
+
+#[tauri::command]
+fn get_selectable_notes(app: AppHandle) -> Result<Vec<db::models::Note>, String> {
+    let db_path = get_db_path(&app)?;
+    notes::get_selectable_notes(&db_path)
 }
 
 #[tauri::command]
@@ -770,23 +813,107 @@ fn delete_report_metadata(app: AppHandle, id: i32) -> Result<(), String> {
 // ---- Support email ----
 #[tauri::command]
 fn send_support_email(
+    app: AppHandle,
     name: String,
     email: String,
     subject: String,
     message: String,
 ) -> Result<(), String> {
-    email::send_support_email(name, email, subject, message)
+    let db_path = get_db_path(&app)?;
+    email::send_support_email(&db_path, name, email, subject, message)
 }
 
 #[tauri::command]
-fn get_smtp_config() -> Result<serde_json::Value, String> {
-    let smtp_configured = std::env::var("SMTP_USERNAME").is_ok()
-        && std::env::var("SMTP_PASSWORD").is_ok();
-    let support_email = std::env::var("SMTP_RECIPIENT").ok();
+fn get_smtp_config(app: AppHandle) -> Result<serde_json::Value, String> {
+    let db_path = get_db_path(&app)?;
+    let cfg = email::load_smtp_config(&db_path);
+    // NOTE: username/password are deliberately not exposed to the frontend.
     Ok(serde_json::json!({
-        "configured": smtp_configured,
-        "support_email": support_email,
+        "configured": cfg.is_configured(),
+        "support_email": if cfg.has_recipient() { Some(cfg.recipient) } else { None },
+        "server": cfg.server,
+        "port": cfg.port,
+        "from_name": cfg.from_name,
     }))
+}
+
+// ---- Support messages (contact/ticket persistence) ----
+#[tauri::command]
+fn get_support_messages(app: AppHandle) -> Result<Vec<db::models::SupportMessage>, String> {
+    let db_path = get_db_path(&app)?;
+    support_messages::get_support_messages(&db_path)
+}
+
+#[tauri::command]
+fn submit_support_message(
+    app: AppHandle,
+    name: String,
+    email: String,
+    phone: Option<String>,
+    subject: Option<String>,
+    category: Option<String>,
+    priority: Option<String>,
+    message: String,
+) -> Result<db::models::SupportMessage, String> {
+    let db_path = get_db_path(&app)?;
+
+    let priority = priority.unwrap_or_else(|| "normal".to_string());
+    let subject = subject.unwrap_or_else(|| "Forge POS — Support Request".to_string());
+    let status = "new".to_string();
+
+    let new_message = db::models::NewSupportMessage {
+        name: name.clone(),
+        email: email.clone(),
+        phone,
+        subject: Some(subject.clone()),
+        category,
+        priority: priority.clone(),
+        message: message.clone(),
+        status: status.clone(),
+    };
+
+    // Persist first — the DB is the source of truth for the ticket.
+    let saved = support_messages::add_support_message(&db_path, new_message)?;
+
+    // Then best-effort email notification (failure is non-fatal; ticket is saved).
+    if let Err(e) = email::send_support_ticket_email(
+        &db_path,
+        name,
+        email,
+        None,
+        saved.category.clone(),
+        saved.priority.clone(),
+        saved.subject.clone().unwrap_or_default(),
+        saved.message.clone(),
+        saved.status.clone(),
+    ) {
+        eprintln!("[support] email send failed (message saved): {e}");
+    }
+
+    Ok(saved)
+}
+
+#[tauri::command]
+fn update_support_message_status(
+    app: AppHandle,
+    id: i32,
+    status: String,
+) -> Result<db::models::SupportMessage, String> {
+    let db_path = get_db_path(&app)?;
+    support_messages::update_support_message(
+        &db_path,
+        id,
+        db::models::UpdateSupportMessage {
+            status: Some(status),
+            priority: None,
+        },
+    )
+}
+
+#[tauri::command]
+fn delete_support_message(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    support_messages::delete_support_message(&db_path, id)
 }
 
 // ---- Database commands (import/export/reset) ----
@@ -1090,6 +1217,7 @@ pub fn run() {
             get_inventory_transactions,
             get_inventory_adjustments,
             add_inventory_transaction,
+            delete_inventory_adjustment,
             // Dump
             dump_database,
             // Database
@@ -1112,6 +1240,11 @@ pub fn run() {
             // Email
             send_support_email,
             get_smtp_config,
+            // Support messages (contact/ticket persistence)
+            get_support_messages,
+            submit_support_message,
+            update_support_message_status,
+            delete_support_message,
             // Permission Catalog
             get_permission_catalog,
             // Roles
@@ -1135,6 +1268,7 @@ pub fn run() {
             delete_purchase_order,
             // Kitchen Tickets
             get_kitchen_tickets,
+            get_kitchen_ticket_categories,
             add_kitchen_ticket,
             update_kitchen_ticket,
             delete_kitchen_ticket,
@@ -1147,6 +1281,7 @@ pub fn run() {
             add_loyalty_transaction,
             // Receipt Templates
             get_notes,
+            get_selectable_notes,
             get_default_note,
             add_note,
             update_note,

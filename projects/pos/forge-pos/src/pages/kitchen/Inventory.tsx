@@ -52,6 +52,7 @@ export default function Inventory() {
   const [showEditIngredient, setShowEditIngredient] = useState<Ingredient | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<Ingredient | null>(null);
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [showDeleteAdjustment, setShowDeleteAdjustment] = useState<InventoryAdjustment | null>(null);
   const [ingredientFilter, setIngredientFilter] = useState<number | null>(null);
 
   // Search states
@@ -237,6 +238,17 @@ export default function Inventory() {
     return TRANSACTION_TYPES.find(t => t.value === type)?.color || 'bg-base-content/20';
   };
 
+  // ── Delete a manual adjustment (reverses stock delta on the ingredient) ──
+  const handleDeleteAdjustment = async () => {
+    if (!showDeleteAdjustment) return;
+    try {
+      await invoke('delete_inventory_adjustment', { id: showDeleteAdjustment.id });
+      setShowDeleteAdjustment(null);
+      loadData({ quiet: true });
+      showStatus('success', t('inventory.successAdjustmentDeleted'));
+    } catch (e) { showStatus('error', String(e)); }
+  };
+
   const getStockStatus = (ing: Ingredient) => {
     if (ing.current_quantity <= 0) return { color: 'text-error', bg: 'bg-error/20', label: t('inventory.outOfStock') };
     if (ing.current_quantity <= ing.reorder_level) return { color: 'text-warning', bg: 'bg-warning/20', label: t('inventory.lowStock') };
@@ -364,7 +376,7 @@ export default function Inventory() {
                   value={stockSearch}
                   onChange={e => setStockSearch(e.target.value)}
                   placeholder={t('inventory.searchIngredient')}
-                  className="input__field w-full h-8 text-xs pl-8"
+                  className="input w-full h-8 text-xs pl-8"
                 />
                 {stockSearch && (
                   <button
@@ -420,7 +432,7 @@ export default function Inventory() {
                       {/* Mobile */}
                       <div className="sm:hidden flex justify-between items-center mb-2">
                         <span className="font-semibold text-base-content">{ing.name}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
+                        <span className={`tag tag--sm ${status.color.includes('error') ? 'tag--error' : status.color.includes('warning') ? 'tag--warning' : 'tag--success'}`}>
                           {status.label}
                         </span>
                       </div>
@@ -449,7 +461,7 @@ export default function Inventory() {
                       <div className="hidden sm:block col-span-2 text-right text-base-content/60">{ing.reorder_level}</div>
                       <div className="hidden sm:block col-span-2 text-right text-base-content/60">{formatPrice(ing.cost_per_unit)}</div>
                       <div className="hidden sm:flex col-span-2 items-center justify-center gap-2">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
+                        <span className={`tag tag--sm ${status.color.includes('error') ? 'tag--error' : status.color.includes('warning') ? 'tag--warning' : 'tag--success'}`}>
                           {status.label}
                         </span>
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
@@ -574,7 +586,15 @@ export default function Inventory() {
               </Card>
             </div>
 
-            <h2 className="text-lg font-semibold text-base-content">{t('inventory.manualAdjustments')}</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-base-content">{t('inventory.manualAdjustments')}</h2>
+              <button
+                onClick={() => { setNewTransaction({ ingredient_id: 0, transaction_type: 'adjustment', quantity_change: 0 }); setAdjustmentReason(''); setCreatedBy(''); setShowAddTransaction(true); }}
+                className="flex items-center gap-2 px-3 py-2 bg-warning text-warning-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all shadow-sm"
+              >
+                <span className="icon-[tabler--plus] w-4 h-4" /> {t('inventory.addAdjustment')}
+              </button>
+            </div>
             <div className="space-y-3">
               {adjustments.length === 0 && (
                 <div className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl p-8 text-center text-base-content/60">
@@ -583,23 +603,40 @@ export default function Inventory() {
               )}
               {adjustments.map((adj) => {
                 const ing = ingredients.find(i => i.id === adj.ingredient_id);
+                const delta = adj.new_quantity - adj.previous_quantity;
                 return (
                   <div
                     key={adj.id}
                     initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                     className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl p-4"
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="text-base-content font-medium">{ing?.name || `ID: ${adj.ingredient_id}`}</span>
-                        <div className="text-sm text-base-content/60 mt-1">
-                          {adj.previous_quantity} → <strong>{adj.new_quantity}</strong> {ing?.unit || ''}
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-base-content font-medium">{ing?.name || `ID: ${adj.ingredient_id}`}</span>
+                          <span className={`badge badge-xs badge-soft ${delta >= 0 ? 'badge-success' : 'badge-error'}`}>
+                            {delta >= 0 ? '+' : ''}{delta.toFixed(2)} {ing?.unit || ''}
+                          </span>
+                        </div>
+                        <div className="text-sm text-base-content/60 mt-1 flex items-center gap-2">
+                          <span className="line-through opacity-60">{adj.previous_quantity}</span>
+                          <span className="icon-[tabler--arrow-right] w-3.5 h-3.5 rtl:rotate-180" />
+                          <strong>{adj.new_quantity}</strong> {ing?.unit || ''}
                         </div>
                         <p className="text-sm text-base-content/50 mt-1 italic">"{adj.reason}"</p>
                       </div>
-                      <div className="text-right text-xs text-base-content/40">
-                        <div>{new Date(adj.created_at).toLocaleDateString()}</div>
-                        {adj.created_by && <div className="mt-1 text-base-content/50">by {adj.created_by}</div>}
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <div className="text-right text-xs text-base-content/40">
+                          <div>{new Date(adj.created_at).toLocaleDateString()}</div>
+                          {adj.created_by && <div className="mt-1 text-base-content/50">{t('inventory.byUser', { user: adj.created_by })}</div>}
+                        </div>
+                        <button
+                          onClick={() => setShowDeleteAdjustment(adj)}
+                          className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10 transition-colors"
+                          title={t('common.delete')}
+                        >
+                          <span className="icon-[tabler--trash] w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -622,27 +659,27 @@ export default function Inventory() {
           </button>
         </>}
       >
-        <div><label className="block text-base-content/80 mb-1 text-sm">Name *</label>
+        <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.name')} *</label>
           <input type="text" value={newIngredient.name} onChange={e => setNewIngredient(p => ({ ...p, name: e.target.value }))}
-            className="input__field w-full" /></div>
+            className="input w-full" /></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-base-content/80 mb-1 text-sm">Unit *</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.unit')} *</label>
             <input type="text" value={newIngredient.unit} onChange={e => setNewIngredient(p => ({ ...p, unit: e.target.value }))}
-              className="input__field w-full" /></div>
-          <div><label className="block text-base-content/80 mb-1 text-sm">Current Quantity</label>
+              className="input w-full" /></div>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.currentQuantity')}</label>
             <input type="number" step="0.1" min="0" value={newIngredient.current_quantity} onChange={e => setNewIngredient(p => ({ ...p, current_quantity: Number(e.target.value) }))}
-              className="input__field w-full" /></div>
+              className="input w-full" /></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Level</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.reorderLevel')}</label>
             <input type="number" step="0.1" min="0" value={newIngredient.reorder_level} onChange={e => setNewIngredient(p => ({ ...p, reorder_level: Number(e.target.value) }))}
-              className="input__field w-full" /></div>
-          <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Qty</label>
+              className="input w-full" /></div>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.reorderQty')}</label>
             <input type="number" step="0.1" min="0" value={newIngredient.reorder_quantity} onChange={e => setNewIngredient(p => ({ ...p, reorder_quantity: Number(e.target.value) }))}
-              className="input__field w-full" /></div>
-          <div><label className="block text-base-content/80 mb-1 text-sm">Cost/Unit</label>
+              className="input w-full" /></div>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.costPerUnit')}</label>
             <input type="number" step="0.01" min="0" value={newIngredient.cost_per_unit} onChange={e => setNewIngredient(p => ({ ...p, cost_per_unit: Number(e.target.value) }))}
-              className="input__field w-full" /></div>
+              className="input w-full" /></div>
         </div>
       </Modal>
 
@@ -656,27 +693,27 @@ export default function Inventory() {
         </>}
       >
         {editForm && (<>
-          <div><label className="block text-base-content/80 mb-1 text-sm">Name</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.name')}</label>
             <input type="text" value={editForm.name} onChange={e => setEditForm(p => ({ ...p!, name: e.target.value }))}
-              className="input__field w-full" /></div>
+              className="input w-full" /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="block text-base-content/80 mb-1 text-sm">Unit</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.unit')}</label>
               <input type="text" value={editForm.unit} onChange={e => setEditForm(p => ({ ...p!, unit: e.target.value }))}
-                className="input__field w-full" /></div>
-            <div><label className="block text-base-content/80 mb-1 text-sm">Stock</label>
+                className="input w-full" /></div>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.stock')}</label>
               <input type="number" step="0.1" value={editForm.current_quantity} onChange={e => setEditForm(p => ({ ...p!, current_quantity: Number(e.target.value) }))}
-                className="input__field w-full" /></div>
+                className="input w-full" /></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Level</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.reorderLevel')}</label>
               <input type="number" step="0.1" value={editForm.reorder_level} onChange={e => setEditForm(p => ({ ...p!, reorder_level: Number(e.target.value) }))}
-                className="input__field w-full" /></div>
-            <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Qty</label>
+                className="input w-full" /></div>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.reorderQty')}</label>
               <input type="number" step="0.1" value={editForm.reorder_quantity} onChange={e => setEditForm(p => ({ ...p!, reorder_quantity: Number(e.target.value) }))}
-                className="input__field w-full" /></div>
-            <div><label className="block text-base-content/80 mb-1 text-sm">Cost/Unit</label>
+                className="input w-full" /></div>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.costPerUnit')}</label>
               <input type="number" step="0.01" value={editForm.cost_per_unit} onChange={e => setEditForm(p => ({ ...p!, cost_per_unit: Number(e.target.value) }))}
-                className="input__field w-full" /></div>
+                className="input w-full" /></div>
           </div>
         </>)}
       </Modal>
@@ -688,6 +725,16 @@ export default function Inventory() {
         title={t('inventory.deactivateTitle')}
         message={t('inventory.deactivateConfirm')}
         itemName={showDeleteConfirm?.name || ''}
+      />
+
+      <ConfirmDialog
+        isOpen={!!showDeleteAdjustment}
+        onClose={() => setShowDeleteAdjustment(null)}
+        onConfirm={handleDeleteAdjustment}
+        title={t('inventory.deleteAdjustmentTitle')}
+        message={t('inventory.deleteAdjustmentConfirm')}
+        itemName={ingredients.find(i => i.id === showDeleteAdjustment?.ingredient_id)?.name || ''}
+        description={t('inventory.deleteAdjustmentDesc')}
       />
 
       <Modal
@@ -702,7 +749,7 @@ export default function Inventory() {
       >
         <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.ingredient')} *</label>
           <select value={newTransaction.ingredient_id} onChange={e => setNewTransaction(p => ({ ...p, ingredient_id: Number(e.target.value) }))}
-            className="input__field w-full">
+            className="input w-full">
             <option value={0}>{t('inventory.selectIngredient')}</option>
             {ingredients.filter(i => i.is_active).map(ing => (
               <option key={ing.id} value={ing.id}>{ing.name} ({ing.current_quantity} {ing.unit})</option>
@@ -711,28 +758,28 @@ export default function Inventory() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.type')} *</label>
             <select value={newTransaction.transaction_type} onChange={e => setNewTransaction(p => ({ ...p, transaction_type: e.target.value }))}
-              className="input__field w-full">
+              className="input w-full">
               {TRANSACTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select></div>
           <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.quantityChange')} *</label>
             <input type="number" step="0.1" value={newTransaction.quantity_change}
               onChange={e => setNewTransaction(p => ({ ...p, quantity_change: Number(e.target.value) }))}
               placeholder={t('inventory.quantityPlaceholder')}
-              className="input__field w-full" />
+              className="input w-full" />
             <p className="text-xs text-base-content/50 mt-1">{t('inventory.positiveHint')}</p>
           </div>
         </div>
         <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.note')}</label>
           <input type="text" value={newTransaction.note || ''} onChange={e => setNewTransaction(p => ({ ...p, note: e.target.value || null }))}
-            className="input__field w-full" /></div>
+            className="input w-full" /></div>
         {newTransaction.transaction_type === 'adjustment' && (
           <>
             <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.adjustmentReason')} *</label>
               <input type="text" value={adjustmentReason} onChange={e => setAdjustmentReason(e.target.value)}
-                className="input__field w-full" /></div>
+                className="input w-full" /></div>
             <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.createdBy')}</label>
               <input type="text" value={createdBy} onChange={e => setCreatedBy(e.target.value)}
-                className="input__field w-full" /></div>
+                className="input w-full" /></div>
           </>
         )}
       </Modal>

@@ -93,6 +93,110 @@
   min-height: 60vh;
 }
 
+/* ── Position Modifiers ────────────────────────────────────────────
+   center (default) — flexbox aligns to center already.
+   top/bottom        — pinned to the top/bottom edge, still centered X.
+   left/right        — full-height side sheets, sliding in from the edge.
+   ═══════════════════════════════════════════════════════════════════ */
+.modal--top {
+  align-items: flex-start;
+  padding-top: 1rem;
+}
+
+.modal--bottom {
+  align-items: flex-end;
+  padding-bottom: 1rem;
+}
+
+.modal--left {
+  justify-content: flex-start;
+  padding-left: 0;
+}
+
+.modal--right {
+  justify-content: flex-end;
+  padding-right: 0;
+}
+
+.modal--left .modal__content,
+.modal--right .modal__content {
+  height: 100%;
+  max-height: 100vh;
+  max-width: min(var(--modal__width--md), 92vw);
+  border-radius: 0;
+}
+
+.modal--left .modal__content {
+  border-radius: 0 var(--modal__radius) var(--modal__radius) 0;
+  border-left: none;
+}
+
+.modal--right .modal__content {
+  border-radius: var(--modal__radius) 0 0 var(--modal__radius);
+  border-right: none;
+}
+
+.modal--top .modal__content,
+.modal--bottom .modal__content {
+  max-height: calc(90vh - 2rem);
+}
+
+/* ── Side-sheet entrance animations ─────────────────────────────── */
+.modal--left.modal--enter .modal__content {
+  animation: modal-enter-left var(--animation__duration--normal) var(--animation__easing--out) both;
+}
+
+.modal--right.modal--enter .modal__content {
+  animation: modal-enter-right var(--animation__duration--normal) var(--animation__easing--out) both;
+}
+
+.modal--top.modal--enter .modal__content {
+  animation: modal-enter-top var(--animation__duration--normal) var(--animation__easing--out) both;
+}
+
+.modal--bottom.modal--enter .modal__content {
+  animation: modal-enter-bottom var(--animation__duration--normal) var(--animation__easing--out) both;
+}
+
+/* ── Variant Modifiers — semantic accent (danger/warning/success/info) ──
+   Adds a colored top accent + icon/text tint via the shared semantic
+   tokens so each theme variant resolves correctly in light and dark. */
+.modal--variant--danger .modal__content {
+  border-top: 4px solid var(--color__semantic--error);
+}
+
+.modal--variant--danger .modal__title,
+.modal--variant--danger .modal__header .icon {
+  color: var(--color__semantic--error);
+}
+
+.modal--variant--warning .modal__content {
+  border-top: 4px solid var(--color__semantic--warning);
+}
+
+.modal--variant--warning .modal__title,
+.modal--variant--warning .modal__header .icon {
+  color: var(--color__semantic--warning);
+}
+
+.modal--variant--success .modal__content {
+  border-top: 4px solid var(--color__semantic--success);
+}
+
+.modal--variant--success .modal__title,
+.modal--variant--success .modal__header .icon {
+  color: var(--color__semantic--success);
+}
+
+.modal--variant--info .modal__content {
+  border-top: 4px solid var(--color__semantic--info);
+}
+
+.modal--variant--info .modal__title,
+.modal--variant--info .modal__header .icon {
+  color: var(--color__semantic--info);
+}
+
 /* ── Animation Modifiers ─────────────────────────────────────────── */
 
 /* Entrance: scale up from 0.95 + fade in */
@@ -149,6 +253,17 @@
   margin: 0;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Element: .modal__subtitle ─────────────────────────────────── */
+.modal__subtitle {
+  font-size: var(--typography__size--sm);
+  color: var(--color__text--secondary);
+  margin: 0.125rem 0 0;
+  line-height: var(--typography__line-height--normal);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -244,6 +359,50 @@
   }
 }
 
+@keyframes modal-enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes modal-enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes modal-enter-top {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-enter-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes modal-exit {
   from {
     opacity: 1;
@@ -261,7 +420,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .modal--enter .modal__content,
-  .modal--exit .modal__content {
+  .modal--exit .modal__content,
+  .modal--left.modal--enter .modal__content,
+  .modal--right.modal--enter .modal__content,
+  .modal--top.modal--enter .modal__content,
+  .modal--bottom.modal--enter .modal__content {
     animation: none;
   }
 

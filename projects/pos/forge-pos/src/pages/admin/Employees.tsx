@@ -52,6 +52,8 @@ export default function Employees() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('active');
+  // Grid / list view toggle
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Modal states - Employee
   const [showAddEmployee, setShowAddEmployee] = useState(false);
@@ -284,13 +286,13 @@ export default function Employees() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder={t('employees.searchPlaceholder')}
-                    className="input__field w-48 pl-9"
+                    className="input w-48 pl-9"
                   />
                 </div>
                 <select
                   value={typeFilter ?? ''}
                   onChange={e => setTypeFilter(e.target.value ? Number(e.target.value) : null)}
-                  className="input__field input__field--select"
+                  className="select"
                 >
                   <option value="">{t('employees.allTypes')}</option>
                   {employeeTypes.filter(t => t.is_active).map(t => (
@@ -312,6 +314,31 @@ export default function Employees() {
                     </button>
                   ))}
                 </div>
+                {/* Grid / List view toggle */}
+                <div className="flex rounded-lg overflow-hidden border border-slate-300 dark:border-gray-600">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    title={t('employees.gridView') || 'Grid view'}
+                    className={`px-3 py-1.5 text-xs font-medium ${
+                      viewMode === 'grid'
+                        ? 'bg-info text-white'
+                        : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
+                    }`}
+                  >
+                    <span className="icon-[tabler--layout-grid] w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    title={t('employees.listView') || 'List view'}
+                    className={`px-3 py-1.5 text-xs font-medium ${
+                      viewMode === 'list'
+                        ? 'bg-info text-white'
+                        : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
+                    }`}
+                  >
+                    <span className="icon-[tabler--list] w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
               <button
                 onClick={() => setShowAddEmployee(true)}
@@ -321,79 +348,152 @@ export default function Employees() {
               </button>
             </div>
 
-            {/* Employee Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-              {filteredEmployees.map(emp => (
-                <div
-                  key={emp.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className={`bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
-                    ${!emp.is_active ? 'opacity-60' : 'hover:border-info/70 dark:hover:border-info/30'} transition-all`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold
-                        ${getTypeColor(getTypeName(emp.employee_type_id))}`}>
-                        {emp.name.charAt(0).toUpperCase()}
+            {viewMode === 'list' ? (
+              /* ── Employee List (table) view ── */
+              <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-white/10 text-left text-xs uppercase tracking-wider text-base-content/50">
+                      <th className="px-4 py-3 font-medium">{t('employees.name') || 'Name'}</th>
+                      <th className="px-4 py-3 font-medium">{t('employees.type') || 'Type'}</th>
+                      <th className="px-4 py-3 font-medium">{t('employees.phone')}</th>
+                      <th className="px-4 py-3 font-medium">{t('employees.email')}</th>
+                      <th className="px-4 py-3 font-medium text-right">{t('employees.salary')}</th>
+                      <th className="px-4 py-3 font-medium">{t('employees.status') || 'Status'}</th>
+                      <th className="px-4 py-3 font-medium text-right">{t('common.actions') || 'Actions'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEmployees.map(emp => (
+                      <tr
+                        key={emp.id}
+                        className={`border-b border-slate-100 dark:border-white/5 hover:bg-info/5 transition-colors ${!emp.is_active ? 'opacity-60' : ''}`}
+                      >
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0
+                              ${getTypeColor(getTypeName(emp.employee_type_id))}`}>
+                              {emp.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-medium text-base-content">{emp.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-base-content/70">{getTypeName(emp.employee_type_id)}</td>
+                        <td className="px-4 py-3 text-base-content/70">{emp.phone || '—'}</td>
+                        <td className="px-4 py-3 text-base-content/70">{emp.email || '—'}</td>
+                        <td className="px-4 py-3 text-right tabular-nums text-base-content">{emp.salary.toLocaleString()}</td>
+                        <td className="px-4 py-3">
+                          {emp.is_active ? (
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
+                              {t('common.active')}
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-error/15 text-error">
+                              {t('common.inactive')}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-1">
+                            <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
+                              className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
+                              <span className="icon-[tabler--pencil] w-4 h-4" />
+                            </button>
+                            {emp.is_active && (
+                              <button onClick={() => setShowDeleteEmployee(emp)}
+                                className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
+                                <span className="icon-[tabler--trash] w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredEmployees.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-base-content/60">
+                          {t('employees.noEmployees')}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              /* ── Employee Grid (cards) view ── */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                {filteredEmployees.map(emp => (
+                  <div
+                    key={emp.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
+                      ${!emp.is_active ? 'opacity-60' : 'hover:border-info/70 dark:hover:border-info/30'} transition-all`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold
+                          ${getTypeColor(getTypeName(emp.employee_type_id))}`}>
+                          {emp.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-base-content">{emp.name}</h3>
+                          <span className="text-xs text-base-content/50">{getTypeName(emp.employee_type_id)}</span>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-base-content">{emp.name}</h3>
-                        <span className="text-xs text-base-content/50">{getTypeName(emp.employee_type_id)}</span>
+                      <div className="flex gap-1">
+                        <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
+                          className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
+                          <span className="icon-[tabler--pencil] w-4 h-4" />
+                        </button>
+                        {emp.is_active && (
+                          <button onClick={() => setShowDeleteEmployee(emp)}
+                            className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
+                            <span className="icon-[tabler--trash] w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
-                    <div className="flex gap-1">
-                      <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
-                        className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
-                        <span className="icon-[tabler--pencil] w-4 h-4" />
-                      </button>
-                      {emp.is_active && (
-                        <button onClick={() => setShowDeleteEmployee(emp)}
-                          className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
-                          <span className="icon-[tabler--trash] w-4 h-4" />
-                        </button>
+
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex items-center gap-2 text-base-content/60">
+                        <span className="icon-[tabler--moneybag] text-success w-3.5 h-3.5" />
+                        <span>{t('employees.salary')}: <strong className="text-base-content">{emp.salary.toLocaleString()}</strong></span>
+                      </div>
+                      {emp.phone && (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <span className="icon-[tabler--phone] text-info/70 w-3.5 h-3.5" />
+                          <span>{emp.phone}</span>
+                        </div>
+                      )}
+                      {emp.email && (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <span className="icon-[tabler--mail] text-secondary/80 w-3.5 h-3.5" />
+                          <span className="truncate">{emp.email}</span>
+                        </div>
+                      )}
+                      {emp.joined_at && (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <span className="icon-[tabler--calendar] text-info/80 w-3.5 h-3.5" />
+                          <span>{t('employees.joined')} {emp.joined_at}</span>
+                        </div>
                       )}
                     </div>
-                  </div>
 
-                  <div className="space-y-1.5 text-sm">
-                    <div className="flex items-center gap-2 text-base-content/60">
-                      <span className="icon-[tabler--moneybag] text-success w-3.5 h-3.5" />
-                      <span>{t('employees.salary')}: <strong className="text-base-content">{emp.salary.toLocaleString()}</strong></span>
-                    </div>
-                    {emp.phone && (
-                      <div className="flex items-center gap-2 text-base-content/60">
-                        <span className="icon-[tabler--phone] text-info/70 w-3.5 h-3.5" />
-                        <span>{emp.phone}</span>
-                      </div>
-                    )}
-                    {emp.email && (
-                      <div className="flex items-center gap-2 text-base-content/60">
-                        <span className="icon-[tabler--mail] text-secondary/80 w-3.5 h-3.5" />
-                        <span className="truncate">{emp.email}</span>
-                      </div>
-                    )}
-                    {emp.joined_at && (
-                      <div className="flex items-center gap-2 text-base-content/60">
-                        <span className="icon-[tabler--calendar] text-info/80 w-3.5 h-3.5" />
-                        <span>{t('employees.joined')} {emp.joined_at}</span>
+                    {!emp.is_active && (
+                      <div className="mt-2 px-2 py-1 bg-error/20 rounded-lg text-xs text-error font-medium text-center">
+                        {t('employees.inactive')}
                       </div>
                     )}
                   </div>
-
-                  {!emp.is_active && (
-                    <div className="mt-2 px-2 py-1 bg-error/20 rounded-lg text-xs text-error font-medium text-center">
-                      {t('employees.inactive')}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {filteredEmployees.length === 0 && (
-                <div className="col-span-full bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
-                  {t('employees.noEmployees')}
-                </div>
-              )}
-            </div>
+                ))}
+                {filteredEmployees.length === 0 && (
+                  <div className="col-span-full bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
+                    {t('employees.noEmployees')}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -486,27 +586,27 @@ export default function Employees() {
           <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')} *</label>
           <input type="text" value={newEmployee.name} onChange={e => setNewEmployee(p => ({ ...p, name: e.target.value }))}
             placeholder={t('employees.namePlaceholder') || 'Enter employee name'}
-            className="input__field w-full" />
+            className="input w-full" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
             <input type="tel" value={newEmployee.phone || ''} onChange={e => setNewEmployee(p => ({ ...p, phone: e.target.value || null }))}
               placeholder="03XX-XXXXXXX"
-              className="input__field w-full" />
+              className="input w-full" />
           </div>
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
             <input type="email" value={newEmployee.email || ''} onChange={e => setNewEmployee(p => ({ ...p, email: e.target.value || null }))}
               placeholder={t('employees.email')}
-              className="input__field w-full" />
+              className="input w-full" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')} *</label>
             <select value={newEmployee.employee_type_id} onChange={e => setNewEmployee(p => ({ ...p, employee_type_id: Number(e.target.value) }))}
-              className="input__field input__field--select w-full">
+              className="select w-full">
               <option value={0}>{t('employees.selectType')}</option>
               {employeeTypes.filter(t => t.is_active).map(t => (
                 <option key={t.id} value={t.id}>{t.name}</option>
@@ -517,7 +617,7 @@ export default function Employees() {
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')} *</label>
             <input type="number" step="1000" min="0" value={newEmployee.salary} onChange={e => setNewEmployee(p => ({ ...p, salary: Number(e.target.value) }))}
               placeholder="0"
-              className="input__field w-full" />
+              className="input w-full" />
           </div>
         </div>
       </Modal>
@@ -535,25 +635,25 @@ export default function Employees() {
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')}</label>
             <input type="text" value={editEmployee.name} onChange={e => setEditEmployee(p => ({ ...p!, name: e.target.value }))}
-              className="input__field w-full" />
+              className="input w-full" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
               <input type="tel" value={editEmployee.phone || ''} onChange={e => setEditEmployee(p => ({ ...p!, phone: e.target.value || undefined }))}
-                className="input__field w-full" />
+                className="input w-full" />
             </div>
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
               <input type="email" value={editEmployee.email || ''} onChange={e => setEditEmployee(p => ({ ...p!, email: e.target.value || undefined }))}
-                className="input__field w-full" />
+                className="input w-full" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')}</label>
               <select value={editEmployee.employee_type_id} onChange={e => setEditEmployee(p => ({ ...p!, employee_type_id: Number(e.target.value) }))}
-                className="input__field input__field--select w-full">
+                className="select w-full">
                 {employeeTypes.filter(t => t.is_active || t.id === editEmployee.employee_type_id).map(t => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
@@ -562,7 +662,7 @@ export default function Employees() {
             <div>
               <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')}</label>
               <input type="number" step="1000" value={editEmployee.salary} onChange={e => setEditEmployee(p => ({ ...p!, salary: Number(e.target.value) }))}
-                className="input__field w-full" />
+                className="input w-full" />
             </div>
           </div>
         </>)}
@@ -594,14 +694,14 @@ export default function Employees() {
         <div>            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')} *</label>
           <input type="text" value={newType.name} onChange={e => setNewType(p => ({ ...p, name: e.target.value }))}
             placeholder={t('employees.typeNamePlaceholder')}
-            className="input__field w-full" />
+            className="input w-full" />
         </div>
         <div>
           <label className="block text-base-content/80 mb-1 text-sm">{t('employees.descriptionOptional')}</label>
           <textarea value={newType.description || ''} onChange={e => setNewType(p => ({ ...p, description: e.target.value || null }))}
             placeholder={t('employees.descPlaceholder')}
             rows={3}
-            className="input__field input__field--textarea w-full resize-none" />
+            className="textarea w-full resize-none" />
         </div>
       </Modal>
 
@@ -619,13 +719,13 @@ export default function Employees() {
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')}</label>
             <input type="text" value={editType.name} onChange={e => setEditType(p => ({ ...p!, name: e.target.value }))}
-              className="input__field w-full" />
+              className="input w-full" />
           </div>
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeDescription')}</label>
             <textarea value={editType.description || ''}onChange={e => setEditType(p => ({ ...p!, description: e.target.value || undefined }))}
               rows={3}
-              className="input__field input__field--textarea w-full resize-none" />
+              className="textarea w-full resize-none" />
           </div>
         </>)}
       </Modal>

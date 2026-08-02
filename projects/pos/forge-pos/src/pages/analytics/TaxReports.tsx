@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { TaxReport } from '../../types';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
+import SearchInput from '../../components/ui/SearchInput';
 
 export default function TaxReports() {
   const { t } = useTranslation();
@@ -106,36 +107,21 @@ export default function TaxReports() {
         {/* ── Search + sort bar (debounced async UX) ── */}
         <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <div className="input input--sm flex-1">
-              <div className="input__wrapper">
-                <span className="input__icon icon-[tabler--search]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('taxReports.searchPlaceholder') || 'Search by period or amount...'}
-                  aria-label={t('taxReports.searchPlaceholder') || 'Search tax reports'}
-                  className="input__field input__field--with-icon-left"
-                />
-                {isFiltering ? (
-                  <span className="input__icon input__icon--right w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-label="filtering" />
-                ) : search ? (
-                  <button
-                    onClick={() => setSearch('')}
-                    aria-label={t('common.clear')}
-                    className="input__icon input__icon--right"
-                  >
-                    <span className="icon-[tabler--x]" />
-                  </button>
-                ) : null}
-              </div>
-            </div>
-            <div className="input input--sm sm:w-48">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('taxReports.searchPlaceholder') || 'Search by period or amount...'}
+              ariaLabel={t('taxReports.searchPlaceholder') || 'Search tax reports'}
+              testId="tax-search-input"
+              loading={isFiltering}
+              className="flex-1"
+            />
+            <div className="field field--sm sm:w-48">
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as 'newest' | 'oldest' | 'sales-desc' | 'sales-asc')}
                 aria-label={t('taxReports.sortBy') || 'Sort by'}
-                className="input__field input__field--select"
+                className="select"
               >
                 <option value="newest">{t('taxReports.sortNewest') || 'Period (newest)'}</option>
                 <option value="oldest">{t('taxReports.sortOldest') || 'Period (oldest)'}</option>
@@ -152,11 +138,11 @@ export default function TaxReports() {
         {showForm && (
           <form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input__field w-full" />
-              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input__field w-full" />
-              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="input__field w-full" />
-              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="input__field w-full" />
-              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="input__field w-full sm:col-span-2" />
+              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input w-full" />
+              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input w-full" />
+              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="input w-full" />
+              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="input w-full" />
+              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="input w-full sm:col-span-2" />
             </div>
             <div className="flex gap-2">
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>

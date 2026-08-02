@@ -441,7 +441,7 @@ export default function Recipes() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={t('recipes.searchPlaceholder')}
-              className="input__field w-64 pl-9"
+              className="input w-64 pl-9"
             />
           </div>
           <button
@@ -582,7 +582,7 @@ export default function Recipes() {
       >
         <div>            <label className="block text-base-content/80 mb-1 text-sm">{t('recipes.product')} *</label>
           <select value={newRecipe.product_id} onChange={e => setNewRecipe(p => ({ ...p, product_id: Number(e.target.value) }))}
-            className="input__field input__field--select w-full">
+            className="select w-full">
             <option value={0}>{t('recipes.selectProduct')}</option>
             {products.map(p => (
               <option key={p.id} value={p.id}>{p.name} ({p.price}/ {p.unit})</option>
@@ -592,7 +592,7 @@ export default function Recipes() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-base-content/80 mb-1 text-sm">{t('recipes.recipeType')}</label>              <select value={newRecipe.recipe_type_id} onChange={e => setNewRecipe(p => ({ ...p, recipe_type_id: Number(e.target.value) }))}
-              className="input__field input__field--select w-full">
+              className="select w-full">
               <option value={1}>{t('recipes.standard')}</option>
             </select>
           </div>
@@ -600,7 +600,7 @@ export default function Recipes() {
             <label className="block text-base-content/80 mb-1 text-sm">{t('recipes.yieldQuantity')} *</label>
             <input type="number" step="0.1" min="0.1" value={newRecipe.yield_quantity}
               onChange={e => setNewRecipe(p => ({ ...p, yield_quantity: Number(e.target.value) }))}
-              className="input__field w-full" />
+              className="input w-full" />
           </div>
         </div>
 
@@ -611,7 +611,7 @@ export default function Recipes() {
           <div className="grid grid-cols-12 gap-2 mb-2">
             <div className="col-span-5">
               <select value={newIngredientInput.ingredient_id} onChange={e => setNewIngredientInput(p => ({ ...p, ingredient_id: Number(e.target.value), unit: getIngredientUnit(Number(e.target.value)) }))}
-                className="input__field input__field--select w-full text-xs">
+                className="select w-full text-xs">
                 <option value={0}>Ingredient...</option>
                 {ingredients.filter(i => i.is_active).map(ing => (
                   <option key={ing.id} value={ing.id}>{ing.name} ({ing.cost_per_unit}/{ing.unit})</option>
@@ -622,16 +622,18 @@ export default function Recipes() {
               <input type="number" step="0.01" min="0" value={newIngredientInput.quantity || ''}
                 onChange={e => setNewIngredientInput(p => ({ ...p, quantity: Number(e.target.value) }))}
                 placeholder={t('recipes.qty')}
-                className="input__field w-full text-xs" />
+                className="input w-full text-xs" />
             </div>
             <div className="col-span-2">
               <input type="text" value={newIngredientInput.unit}
                 onChange={e => setNewIngredientInput(p => ({ ...p, unit: e.target.value }))}
                 placeholder={t('recipes.unit')}
-                className="input__field w-full text-xs" />
+                className="input w-full text-xs" />
             </div>
             <div className="col-span-2">
               <button onClick={handleAddNewIngredient} disabled={newIngredientInput.ingredient_id === 0 || newIngredientInput.quantity === 0}
+                data-testid="add-ingredient"
+                aria-label={t('recipes.addIngredient')}
                 className="w-full h-full flex items-center justify-center bg-warning text-white rounded-lg disabled:opacity-50 text-xs font-bold">
                 <span className="icon-[tabler--plus] w-4 h-4" />
               </button>
@@ -677,7 +679,7 @@ export default function Recipes() {
           <label className="block text-base-content/80 mb-1 text-sm">{t('recipes.yieldQuantity')}</label>
           <input type="number" step="0.1" min="0.1" value={editYield}
             onChange={e => setEditYield(Number(e.target.value))}
-            className="input__field w-full" />
+            className="input w-full" />
         </div>
 
         <div className="border-t border-base-300/50 pt-4">
@@ -695,7 +697,7 @@ export default function Recipes() {
             <div className="grid grid-cols-12 gap-2 mb-3 p-2 bg-base-100/30 rounded-lg">
               <div className="col-span-5">
                 <select value={editIngredientInput.ingredient_id} onChange={e => setEditIngredientInput(p => ({ ...p, ingredient_id: Number(e.target.value), unit: getIngredientUnit(Number(e.target.value)) }))}
-                  className="input__field input__field--select w-full text-xs">
+                  className="select w-full text-xs">
                   <option value={0}>Select...</option>
                   {ingredients.filter(i => i.is_active).map(ing => (
                     <option key={ing.id} value={ing.id}>{ing.name}</option>
@@ -706,16 +708,18 @@ export default function Recipes() {
                 <input type="number" step="0.01" value={editIngredientInput.quantity || ''}
                   onChange={e => setEditIngredientInput(p => ({ ...p, quantity: Number(e.target.value) }))}
                   placeholder={t('recipes.qty')}
-                  className="input__field w-full text-xs" />
+                  className="input w-full text-xs" />
               </div>
               <div className="col-span-2">
                 <input type="text" value={editIngredientInput.unit}
                   onChange={e => setEditIngredientInput(p => ({ ...p, unit: e.target.value }))}
                   placeholder={t('recipes.unit')}
-                  className="input__field w-full text-xs" />
+                  className="input w-full text-xs" />
               </div>
               <div className="col-span-2">
                 <button onClick={handleAddEditIngredient} disabled={editIngredientInput.ingredient_id === 0 || editIngredientInput.quantity === 0}
+                  data-testid="add-edit-ingredient"
+                  aria-label={t('recipes.addIngredient')}
                   className="w-full h-full flex items-center justify-center bg-warning text-white rounded-lg disabled:opacity-50 text-xs font-bold">
                   <span className="icon-[tabler--plus]" />
                 </button>
@@ -794,13 +798,13 @@ export default function Recipes() {
                   value={newNoteForm.name}
                   onChange={e => setNewNoteForm(f => ({ ...f, name: e.target.value }))}
                   placeholder={t('recipes.noteTitlePlaceholder') || 'Note title...'}
-                  className="input__field input-sm w-full"
+                  className="input input-sm w-full"
                 />
                 <div className="flex gap-2">
                   <select
                     value={newNoteForm.category}
                     onChange={e => setNewNoteForm(f => ({ ...f, category: e.target.value }))}
-                    className="input__field input__field--select select-sm w-44"
+                    className="select select-sm w-44"
                   >
                     {NOTE_CATEGORIES.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.label}</option>
@@ -840,7 +844,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                   onChange={e => setNewNoteForm(f => ({ ...f, template_body: e.target.value }))}
                   placeholder={t('recipes.noteBodyPlaceholder') || 'Write your notes here...'}
                   rows={3}
-                  className="input__field input__field--textarea textarea-sm w-full"
+                  className="textarea textarea-sm w-full"
                 />
                 <button
                   onClick={handleAddNote}
@@ -875,13 +879,13 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                           type="text"
                           value={editingNote.name}
                           onChange={e => setEditingNote({ ...editingNote, name: e.target.value })}
-                          className="input__field input-sm w-full text-sm"
+                          className="input input-sm w-full text-sm"
                           placeholder="Note title"
                         />
                         <select
                           value={editingNote.category || ''}
                           onChange={e => setEditingNote({ ...editingNote, category: e.target.value })}
-                          className="input__field input__field--select select-sm w-full"
+                          className="select select-sm w-full"
                         >
                           {NOTE_CATEGORIES.map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.label}</option>
@@ -891,7 +895,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                           value={editingNote.template_body}
                           onChange={e => setEditingNote({ ...editingNote, template_body: e.target.value })}
                           rows={3}
-                          className="input__field input__field--textarea textarea-sm w-full text-sm"
+                          className="textarea textarea-sm w-full text-sm"
                         />
                         <div className="flex gap-2 justify-end">
                           <button onClick={() => setEditingNote(null)} className="btn btn-ghost btn-xs">Cancel</button>

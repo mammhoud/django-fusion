@@ -45,6 +45,7 @@ const KNOWN_COMMANDS = [
   'add_recipe_ingredient', 'delete_recipe_ingredient',
   'get_transactions', 'delete_transaction',
   'send_support_email',
+  'get_support_messages', 'submit_support_message', 'update_support_message_status', 'delete_support_message',
 ] as const;
 
 describe('Tauri Invoke Mock Infrastructure', () => {

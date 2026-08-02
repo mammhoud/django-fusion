@@ -4,8 +4,10 @@ import {
   screen,
   waitFor,
   userEvent,
+  within,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
+import { getInvokeHistory, clearInvokeHistory } from '../setup';
 import Inventory from '../../pages/kitchen/Inventory';
 
 const mockIngredients = [
@@ -26,6 +28,7 @@ const mockAdjustments = [
 beforeEach(() => {
   resetInvokeMocks();
   vi.clearAllMocks();
+  clearInvokeHistory();
   mockInvokeSuccess('get_ingredients', mockIngredients);
   mockInvokeSuccess('get_inventory_transactions', mockTransactions);
   mockInvokeSuccess('get_inventory_adjustments', mockAdjustments);
@@ -166,5 +169,77 @@ describe('Inventory Page', () => {
     });
     const zeros = screen.getAllByText('0', { exact: true });
     expect(zeros.length).toBeGreaterThanOrEqual(1);
+  });
+
+  // ── Adjustments: POST a manual adjustment ──
+  it('posts a manual adjustment with reason via the transaction modal', async () => {
+    mockInvokeSuccess('add_inventory_transaction', { id: 3 });
+    renderWithRouter(<Inventory />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/inventory\.adjustments|Adjustments/)).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText(/inventory\.adjustments|Adjustments/));
+    await waitFor(() => {
+      expect(screen.getByText(/inventory\.manualAdjustments|Manual Adjustments/)).toBeInTheDocument();
+    });
+
+    // Add Adjustment button opens the transaction modal pre-set to 'adjustment'
+    await userEvent.click(screen.getByText(/inventory\.addAdjustment|Add Adjustment/));
+
+    const dialog = screen.getByRole('dialog', { name: /Record Transaction/ });
+    const combos = within(dialog).getAllByRole('combobox');
+    await userEvent.selectOptions(combos[0], '1'); // Chicken Breast
+    await userEvent.selectOptions(combos[1], 'adjustment');
+
+    // Quantity change input (placeholder from inventory.quantityPlaceholder)
+    await userEvent.type(within(dialog).getByPlaceholderText(/Positive = add/), '5');
+
+    // Text inputs appear in DOM order: note, then (adjustment-only) reason + createdBy
+    const textboxes = within(dialog).getAllByRole('textbox');
+    await userEvent.type(textboxes[1], 'Stock count correction'); // reason
+    await userEvent.type(textboxes[2], 'Manager'); // created by
+
+    await userEvent.click(within(dialog).getByRole('button', { name: /Record Transaction/ }));
+
+    await waitFor(() => {
+      const call = getInvokeHistory().find(h => h.cmd === 'add_inventory_transaction');
+      expect(call).toBeDefined();
+      const tx = call!.args!.transaction as Record<string, unknown>;
+      expect(tx.transaction_type).toBe('adjustment');
+      expect(tx.ingredient_id).toBe(1);
+      expect(tx.quantity_change).toBe(5);
+      expect(call!.args!.adjustmentReason).toBe('Stock count correction');
+      expect(call!.args!.createdBy).toBe('Manager');
+    });
+    expect(await screen.findByText(/Transaction recorded/)).toBeInTheDocument();
+  });
+
+  // ── Adjustments: DELETE reverses the stock delta ──
+  it('deletes a manual adjustment through the confirm dialog', async () => {
+    mockInvokeSuccess('delete_inventory_adjustment', {});
+    renderWithRouter(<Inventory />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/inventory\.adjustments|Adjustments/)).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText(/inventory\.adjustments|Adjustments/));
+    await waitFor(() => {
+      expect(screen.getByText(/Inventory count correction/)).toBeInTheDocument();
+    });
+
+    // Trash button on the adjustment card (title='Delete')
+    const deleteBtn = screen.getAllByTitle('Delete')[0];
+    await userEvent.click(deleteBtn);
+
+    const dialog = screen.getByRole('dialog');
+    await userEvent.click(within(dialog).getByRole('button', { name: /Delete|Deactivate/ }));
+
+    await waitFor(() => {
+      const deleteCall = getInvokeHistory().find(h => h.cmd === 'delete_inventory_adjustment');
+      expect(deleteCall).toBeDefined();
+      expect(deleteCall!.args!.id).toBe(1);
+    });
+    expect(await screen.findByText(/Adjustment deleted/)).toBeInTheDocument();
   });
 });

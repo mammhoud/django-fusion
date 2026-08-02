@@ -49,6 +49,15 @@ export function mockInvokeError(command: string, errorMessage: string) {
 }
 
 /**
+ * Configure `invoke` to stay pending forever for a specific command.
+ * Useful for asserting transient loading/checking states (e.g. Auth's
+ * "Checking authentication..." step) before any async work resolves.
+ */
+export function mockInvokePending(command: string) {
+  handlers.set(command, () => new Promise<never>(() => {}));
+}
+
+/**
  * Configure `invoke` to resolve for all commands (no registered handler) with a default result.
  */
 export function mockInvokeSuccessAll<T>(result: T) {

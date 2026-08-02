@@ -15,6 +15,12 @@ Forge POS is a lightweight, offline-first Point of Sale desktop application buil
 |----------|-------------|
 | **[Architecture](architecture.md)** | System design, data flow diagrams, FlyonUI integration, theme system |
 | **[Styling & UI Packages](styling.md)** | Full styling catalog — Tailwind v4, FlyonUI, Iconify, Framer Motion, themes, bundle analysis |
+| **[Color Palette](color-palette.md)** | Theme variants, OKLCH tokens, custom actions/choices at color themes, references |
+| **[Forms & Inputs](forms.md)** | BEM `.field` system, inputs, selects, validation states |
+| **[Tables & Grids](tables-grid.md)** | `DataTable` component + responsive grid utilities |
+| **[Page Options](pages-options.md)** | What search/filter/sort/view options each page has |
+| **[Shared Components](shared-components.md)** | The shared compact search bar (`ProductFilterBar`) and how to add it anywhere |
+| **[Modals](modals.md)** | Extended `Modal` + `useModal`/`ModalProvider`, and the htmx / Alpine.js option |
 | **[Database Schema](database.md)** | ERD, table reference, migration guide, seed presets |
 | **[Invoke Methods](invoke-methods.md)** | Complete Tauri `invoke()` catalog — frontend calls & Rust handlers |
 | **[File Structure](file-structure.md)** | Full project tree with descriptions |

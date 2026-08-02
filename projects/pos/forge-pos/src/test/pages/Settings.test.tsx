@@ -25,6 +25,8 @@ const mockSettings = {
 beforeEach(() => {
   resetInvokeMocks();
   vi.clearAllMocks();
+  localStorage.clear(); // theme-variant leaks between tests via ThemeContext
+  sessionStorage.clear();
   mockInvokeSuccess('get_settings', mockSettings);
   mockInvokeSuccess('get_employees', [
     { id: 1, name: 'John Doe', phone: '1234567890', email: 'john@example.com', employee_type_id: 1, salary: 3000, is_active: true, joined_at: '2024-01-15' },
@@ -65,7 +67,7 @@ describe('Settings Page', () => {
     const empElements = screen.getAllByText('Employees');
     expect(empElements.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Database')).toBeInTheDocument();
-    expect(screen.getByText('Appearance')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Theme' })).toBeInTheDocument();
   });
 
   it('shows save settings button', async () => {
@@ -75,6 +77,18 @@ describe('Settings Page', () => {
     expect(saveBtn).toBeInTheDocument();
   });
 
+  it('shows the Unique Card Colors toggle and toggles it off', async () => {
+    renderWithProviders(<Settings />);
+
+    const toggle = await screen.findByRole('checkbox', { name: /Unique Card Colors/ });
+    expect(toggle).toBeInTheDocument();
+    // Defaults to on when the setting is absent (column default = 1)
+    expect(toggle).toBeChecked();
+
+    fireEvent.click(toggle);
+    expect(toggle).not.toBeChecked();
+  });
+
   it('shows phone and email fields', async () => {
     renderWithProviders(<Settings />);
 
@@ -82,8 +96,10 @@ describe('Settings Page', () => {
     const phoneLabel = await screen.findByText('Phone');
     expect(phoneLabel).toBeInTheDocument();
 
-    const emailLabel = screen.getByText('Email');
-    expect(emailLabel).toBeInTheDocument();
+    // 'Email' matches both the Email settings tab and the field label —
+    // assert at least one is present.
+    const emailElements = screen.getAllByText('Email');
+    expect(emailElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it('handles API failure gracefully', async () => {
@@ -146,14 +162,10 @@ describe('Settings Page', () => {
   it('switches to Employees tab and shows stats', async () => {
     renderWithProviders(<Settings />);
 
-    // 'Employees' appears in both the persistent sidebar and the tab nav
-    // Filter out the fixed-position sidebar button, keep the tab button
-    const allEmployeesButtons = screen.getAllByRole('button').filter(b =>
-      b.textContent?.includes('Employees') &&
-      b.closest('[class*="fixed"]') === null // exclude fixed-position sidebar
-    );
-    const tabButton = allEmployeesButtons[allEmployeesButtons.length - 1];
-    fireEvent.click(tabButton);
+    // Settings tab buttons use role="tab" (sidebar nav items are role="button"),
+    // so a role-scoped query matches only the settings Employees tab.
+    const employeesTab = screen.getByRole('tab', { name: /Employees/ });
+    fireEvent.click(employeesTab);
 
     await waitFor(() => {
       const totalElements = screen.getAllByText('Total Employees');
@@ -166,16 +178,18 @@ describe('Settings Page', () => {
   it('switches to Appearance tab and shows theme options', async () => {
     renderWithProviders(<Settings />);
 
-    const appearanceTab = await screen.findByText('Appearance');
+    const appearanceTab = await screen.findByRole('tab', { name: 'Theme' });
     fireEvent.click(appearanceTab);
 
     await waitFor(() => {
       expect(screen.getByText('Theme Customization')).toBeInTheDocument();
     });
-    // Light / Dark / Auto buttons are hardcoded
+    // Mode options (Light / Dark / System) render inside the ThemeToggle
+    // dropdown — open it to reveal them.
+    fireEvent.click(screen.getByRole('button', { name: /Theme:/ }));
     expect(screen.getByText('Light')).toBeInTheDocument();
     expect(screen.getByText('Dark')).toBeInTheDocument();
-    expect(screen.getByText('Auto')).toBeInTheDocument();
+    expect(screen.getByText('System')).toBeInTheDocument();
   });
 
   it('switches through multiple tabs in succession', async () => {
@@ -194,7 +208,7 @@ describe('Settings Page', () => {
     await waitFor(() => expect(screen.getByText('Delivery Fee (flat) (USD)')).toBeInTheDocument());
 
     // Delivery → Appearance
-    fireEvent.click(screen.getByText('Appearance'));
+    fireEvent.click(screen.getByRole('tab', { name: 'Theme' }));
     await waitFor(() => expect(screen.getByText('Theme Customization')).toBeInTheDocument());
 
     // Appearance → General (back to first tab)
@@ -237,7 +251,7 @@ describe('Settings Page', () => {
     renderWithProviders(<Settings />);
 
     // Navigate to Appearance tab
-    const appearanceTab = await screen.findByText('Appearance');
+    const appearanceTab = await screen.findByRole('tab', { name: 'Theme' });
     fireEvent.click(appearanceTab);
 
     // Wait for theme variant buttons to render
@@ -245,8 +259,9 @@ describe('Settings Page', () => {
       expect(screen.getByText('Corporate')).toBeInTheDocument();
     });
 
-    // Click the Corporate theme variant
-    const corporateButton = screen.getByText('Corporate');
+    // Click the Corporate variant card (scoped to its title span — the
+    // ThemeToggle button also renders the active variant label).
+    const corporateButton = screen.getByText('Corporate', { selector: 'span.font-semibold' });
     fireEvent.click(corporateButton);
 
     // After clicking Corporate, it should show the Active label
@@ -262,17 +277,17 @@ describe('Settings Page', () => {
     renderWithProviders(<Settings />);
 
     // Navigate to Appearance tab
-    fireEvent.click(await screen.findByText('Appearance'));
-    await waitFor(() => expect(screen.getByText('Corporate')).toBeInTheDocument());
+    fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
+    await waitFor(() => expect(screen.getByText('Corporate', { selector: 'span.font-semibold' })).toBeInTheDocument());
 
     // Select Corporate
-    fireEvent.click(screen.getByText('Corporate'));
+    fireEvent.click(screen.getByText('Corporate', { selector: 'span.font-semibold' }));
 
     // Now switch to Pastel
     await waitFor(() => {
-      expect(screen.getByText('Pastel')).toBeInTheDocument();
+      expect(screen.getByText('Pastel', { selector: 'span.font-semibold' })).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByText('Pastel'));
+    fireEvent.click(screen.getByText('Pastel', { selector: 'span.font-semibold' }));
 
     // Pastel description should be visible
     await waitFor(() => {
@@ -285,31 +300,39 @@ describe('Settings Page', () => {
   it('shows all 5 theme variant options', async () => {
     renderWithProviders(<Settings />);
 
-    fireEvent.click(await screen.findByText('Appearance'));
+    fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
     await waitFor(() => expect(screen.getByText('Theme Customization')).toBeInTheDocument());
 
-    // All 5 variants should be present
-    expect(screen.getByText('Default')).toBeInTheDocument();
-    expect(screen.getByText('Corporate')).toBeInTheDocument();
-    expect(screen.getByText('Luxury')).toBeInTheDocument();
-    expect(screen.getByText('Pastel')).toBeInTheDocument();
-    expect(screen.getByText('Cyberpunk')).toBeInTheDocument();
+    // All 5 variants should be present (scoped to variant card titles — the
+    // ThemeToggle button also renders the active variant label).
+    expect(screen.getByText('Default', { selector: 'span.font-semibold' })).toBeInTheDocument();
+    expect(screen.getByText('Corporate', { selector: 'span.font-semibold' })).toBeInTheDocument();
+    expect(screen.getByText('Luxury', { selector: 'span.font-semibold' })).toBeInTheDocument();
+    expect(screen.getByText('Pastel', { selector: 'span.font-semibold' })).toBeInTheDocument();
+    expect(screen.getByText('Cyberpunk', { selector: 'span.font-semibold' })).toBeInTheDocument();
   });
 
-  it('toggles between Light, Dark, and Auto mode in Appearance tab', async () => {
+  it('toggles between Light, Dark, and System mode in Appearance tab', async () => {
     renderWithProviders(<Settings />);
 
-    fireEvent.click(await screen.findByText('Appearance'));
-    await waitFor(() => expect(screen.getByText('Light')).toBeInTheDocument());
+    fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
+    await waitFor(() => expect(screen.getByText('Theme Customization')).toBeInTheDocument());
 
-    // Click Dark mode button
+    // Mode options live inside the ThemeToggle dropdown — open it first
+    const toggleBtn = screen.getByRole('button', { name: /Theme:/ });
+    fireEvent.click(toggleBtn);
+    expect(screen.getByText('Light')).toBeInTheDocument();
+    expect(screen.getByText('Dark')).toBeInTheDocument();
+    expect(screen.getByText('System')).toBeInTheDocument();
+
+    // Selecting a mode closes the dropdown — reopen between switches
     fireEvent.click(screen.getByText('Dark'));
-
-    // After switching to Dark, the Dark button should show its active indicator
-    // The theme mode updates global state — clicking back to Light
+    fireEvent.click(screen.getByRole('button', { name: /Theme:.*Dark/ }));
     fireEvent.click(screen.getByText('Light'));
+    fireEvent.click(screen.getByRole('button', { name: /Theme:.*Light/ }));
+    fireEvent.click(screen.getByText('System'));
 
-    // Click Auto (System) mode
-    fireEvent.click(screen.getByText('Auto'));
+    // After switching to System, the toggle reports the system mode
+    expect(screen.getByRole('button', { name: /Theme:.*System/ })).toBeInTheDocument();
   });
 });

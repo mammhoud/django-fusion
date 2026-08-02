@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 
 type Mode = 'light' | 'dark';
-export type ThemeVariant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk';
+export type ThemeVariant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk' | 'perplexity';
 
 export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; description: string }[] = [
   { id: 'default', label: 'Default', icon: 'tabler--palette', description: 'Clean slate & indigo' },
@@ -9,6 +9,7 @@ export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; de
   { id: 'luxury', label: 'Luxury', icon: 'tabler--crown', description: 'Rich gold & warm hues' },
   { id: 'pastel', label: 'Pastel', icon: 'tabler--flower', description: 'Soft candy colors' },
   { id: 'cyberpunk', label: 'Cyberpunk', icon: 'tabler--bolt', description: 'Neon futuristic glow' },
+  { id: 'perplexity', label: 'Perplexity', icon: 'tabler--sparkles', description: 'Minimal & intelligent' },
 ];
 
 /**
@@ -20,8 +21,12 @@ export const THEME_MAP: Record<ThemeVariant, Record<Mode, string>> = {
   default:   { light: 'light', dark: 'dark' },
   corporate: { light: 'corporate-light', dark: 'corporate-dark' },
   luxury:    { light: 'luxury-light',    dark: 'luxury-dark' },
-  pastel:    { light: 'pastel-light',    dark: 'pastel-dark' },
-  cyberpunk: { light: 'cyberpunk-light', dark: 'cyberpunk' },
+  // Pastel light resolves to the built-in Perplexity theme (default light),
+  // pastel-dark stays the dark counterpart. Cyberpunk is a single theme.
+  pastel:    { light: 'perplexity',     dark: 'pastel-dark' },
+  cyberpunk: { light: 'cyberpunk',      dark: 'cyberpunk' },
+  // Perplexity is a single built-in theme (no separate dark variant)
+  perplexity: { light: 'perplexity', dark: 'perplexity' },
 };
 
 interface ThemeContextType {
@@ -70,7 +75,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [variant, setVariantState] = useState<ThemeVariant>(() => {
     const saved = localStorage.getItem('theme-variant') as ThemeVariant | null;
     if (saved && THEME_VARIANTS.some(v => v.id === saved)) return saved;
-    return 'default';
+    // Default to the pastel variant (soft candy colors) for both light and
+    // dark modes — matches the FlyonUI `--default` / `--prefersdark` setup
+    // in index.css where pastel-light / pastel-dark are the default themes.
+    return 'pastel';
   });
 
   // Resolve the FlyonUI data-theme value
