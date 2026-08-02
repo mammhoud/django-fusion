@@ -59,8 +59,8 @@ usual.
 
 ### Q: Do `TimeStampedModel` and `CachedManager` work together?
 
-A: Yes, both come from `django_fusion.core.models` and
-`django_fusion.core.managers` respectively. Stack freely.
+A: Yes, both come from `django_fusion.models` and
+`django_fusion.management.managers` respectively. Stack freely.
 
 ## Settings
 

@@ -1,85 +1,64 @@
-"""Views for django-fusion assets endpoints.
+"""JSON views for the django-fusion asset manifest.
 
-Provides JSON endpoints that describe which CSS, font, and JS assets
-should be loaded by the frontend.
-
-* ``AssetsTopView`` — CSS links and font preloads for ``<head>``
-* ``AssetsBottomView`` — JS scripts for ``</body>``
-* ``AssetsManifestView`` — combined top + bottom manifest
+This module is intentionally framework-level. Site-specific webpack output
+paths remain configured by each Django project's ``FUSION_ASSETS`` setting.
 """
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
-from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
 
+from django_fusion.config.manifest import load_merged_asset_manifest
+
+
+_DEFAULT_ASSETS: dict[str, dict[str, list[Any]]] = {
+    "top": {
+        "css": [],
+        "fonts": [],
+        "preconnect": [],
+        "inline_css": [],
+    },
+    "bottom": {
+        "js": [],
+        "inline_js": [],
+    },
+}
+
 
 def _get_assets_config() -> dict[str, Any]:
-    """Read ``FUSION_ASSETS`` from Django settings with sensible defaults."""
-    defaults: dict[str, Any] = {
-        "top": {
-            "css": [],
-            "fonts": [],
-            "preconnect": [],
-            "inline_css": [],
-        },
-        "bottom": {
-            "js": [],
-            "inline_js": [],
-        },
-    }
-    configured = getattr(settings, "FUSION_ASSETS", {})
-    # Deep-merge top-level keys
-    result = defaults.copy()
+    """Return a defensive merged config for API and template consumers."""
+    merged = load_merged_asset_manifest()
+    result: dict[str, Any] = deepcopy(_DEFAULT_ASSETS)
     for section in ("top", "bottom"):
-        if section in configured:
-            result[section].update(configured[section])
+        values = merged.get(section, {}) or {}
+        if isinstance(values, dict):
+            result[section].update(values)
+    for key in ("version", "components", "webpack"):
+        if key in merged:
+            result[key] = deepcopy(merged[key])
     return result
 
 
 class AssetsTopView(View):
-    """GET /fusion/assets/top/
+    """Return CSS links, font preloads, and preconnect hints."""
 
-    Returns CSS links, font preloads, and preconnect hints for ``<head>``.
-    """
-
-    def get(self, request, *args, **kwargs):
-        config = _get_assets_config()
-        return JsonResponse({
-            "status": "ok",
-            "data": config["top"],
-        })
+    def get(self, request, *args: Any, **kwargs: Any) -> JsonResponse:
+        return JsonResponse({"status": "ok", "data": _get_assets_config()["top"]})
 
 
 class AssetsBottomView(View):
-    """GET /fusion/assets/bottom/
+    """Return deferred JavaScript assets for the end of the document."""
 
-    Returns JS scripts for before ``</body>``.
-    """
-
-    def get(self, request, *args, **kwargs):
-        config = _get_assets_config()
-        return JsonResponse({
-            "status": "ok",
-            "data": config["bottom"],
-        })
+    def get(self, request, *args: Any, **kwargs: Any) -> JsonResponse:
+        return JsonResponse({"status": "ok", "data": _get_assets_config()["bottom"]})
 
 
 class AssetsManifestView(View):
-    """GET /fusion/assets/manifest/
+    """Return the complete top/bottom asset manifest."""
 
-    Returns the complete assets manifest (top + bottom).
-    """
-
-    def get(self, request, *args, **kwargs):
-        config = _get_assets_config()
-        return JsonResponse({
-            "status": "ok",
-            "data": {
-                "top": config["top"],
-                "bottom": config["bottom"],
-            },
-        })
+    def get(self, request, *args: Any, **kwargs: Any) -> JsonResponse:
+        return JsonResponse({"status": "ok", "data": _get_assets_config()})

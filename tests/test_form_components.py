@@ -1,7 +1,7 @@
 """Smoke tests for django-fusion form component templates.
 
 Pins that the canonical form component templates in
-``django_fusion/comp/templates/components/form/`` are discoverable
+``django_fusion/templates/components/form/`` are discoverable
 by Django's template loader AND by the django-fusion ``{% comp %}``
 tag after the templates were consolidated into the django-fusion
 package.
@@ -13,7 +13,7 @@ import pytest
 from django.conf import settings
 from django.template import engines
 from django.template.loader import get_template
-from django_fusion.comp.fragment._init import components
+from django_fusion.comp._init import components
 
 
 @pytest.fixture(autouse=True)
@@ -26,9 +26,8 @@ def _ensure_builtin_components_registered():
     """
     from django_fusion.comp.apps import _register_builtin_component_paths
 
-    # Ensure the new django_fusion/templates/ directory is in DIRS so
-    # both canonical ``fusion/components/...`` and legacy stub paths
-    # (``components/form/...``) resolve.
+    # Ensure the package template directory is in DIRS so canonical
+    # ``components/...`` paths resolve.
     templates_dir = Path(django_fusion.__file__).parent / "templates"
     templates = list(settings.TEMPLATES)
     dirs = list(templates[0].get("DIRS", []))
@@ -50,7 +49,7 @@ def test_form_block_loads_via_template_loader():
     was moved from
     ``applications/assets/templates/components/form/form_block.html``
     to
-    ``applications/libs/django-fusion/src/django_fusion/comp/templates/components/form/form_block.html``.
+    ``libs/django-fusion/src/django_fusion/templates/components/form/form_block.html``.
     """
     template = get_template("components/form/form_block.html")
     assert template is not None

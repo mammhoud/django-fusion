@@ -1,18 +1,27 @@
-"""Health-check endpoint for Django deployments.
+"""Reusable health checks for Django deployments.
 
-Provides a lightweight ``/health/`` view that returns ``200 OK`` with a JSON
-payload listing database, cache, and custom check results. Integrates with
-Docker HEALTHCHECK, Kubernetes liveness probes, and CI smoke tests.
-
-Usage — add to root URLs::
-
-    from django_fusion.core.health import urls as health_urls
-    urlpatterns += [path("health/", include(health_urls))]
+The package provides lightweight application, database, media, and asset
+probes.  Project-specific infrastructure checks can wrap the canonical
+functions from :mod:`django_fusion.core.health.checks`.
 """
 
-from .views import (  # noqa: F401
+from .checks import asset_health_check, media_health_check
+from .views import (
+    AssetHealthView,
     AssetsHealthView,
     DatabaseHealthView,
     HealthCheckView,
+    MediaHealthView,
     health_check,
 )
+
+__all__ = [
+    "AssetHealthView",
+    "AssetsHealthView",
+    "DatabaseHealthView",
+    "HealthCheckView",
+    "MediaHealthView",
+    "asset_health_check",
+    "health_check",
+    "media_health_check",
+]

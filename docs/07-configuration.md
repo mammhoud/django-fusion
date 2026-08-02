@@ -1,7 +1,7 @@
 # Configuration — DF-007
 
 > Source of truth: `src/django_fusion/config/conf.py`, `conf_utils.py`,
-> `constants.py`, `dynaconf_loader.py`, `pyproject.toml`,
+> `constants.py`, `loader.py`, `pyproject.toml`,
 > `src/django_fusion/projects/middlewares.py`.
 
 ## Required `INSTALLED_APPS`
@@ -14,7 +14,7 @@
 | `django_fusion.infrastructure` | Management commands, scripts, locale |
 | `django_fusion.site` | Allauth adapter, context processors, auth mixins |
 | `django_fusion.web` | Allauth adapters, view mixins |
-| `django_fusion.health` *(optional)* | `/health/`, `/health/db/`, `/health/assets/` |
+| `django_fusion.core.health` *(optional)* | `/health/`, `/health/db/`, `/health/assets/` |
 | `django_fusion.analyzer` *(optional)* | `{% comp %}` usage scanner |
 | `django_fusion.wagtail` *(if using Wagtail)* | Blocks, snippets, viewsets |
 | `django_fusion.contrib` *(optional)* | Admin, privacy, debug tools |
@@ -25,7 +25,7 @@ Only `DJANGO_DEBUG_CONFTEST` is registered as an opt-in diagnostic
 at this version (see the comment block under `[tool.pytest.ini_options]`
 in `pyproject.toml`). All other configuration flows through
 `INSTALLED_APPS`, `MIDDLEWARE`, and the per-key overrides in
-`dynaconf_loader.py` — there is **no canonical `DJANGO_FUSION_*`
+`loader.py` — there is **no canonical `DJANGO_FUSION_*`
 settings table** at v0.2.0.
 
 | Setting | Default | Purpose |
@@ -36,9 +36,46 @@ settings table** at v0.2.0.
 > update this table from `src/django_fusion/config/constants.py` —
 > never invent names that aren't present in source.
 
+## Unified asset pipeline
+
+The package exposes a single resolved asset contract through
+`django_fusion.config.assets.AssetPipelineOptions`. Sites configure source,
+webpack, and collected-static paths independently; django-fusion merges their
+public links without copying generated files into source directories.
+
+```python
+FUSION_ASSET_PIPELINE = {
+    "enabled": True,
+    "static_url": "/static/",
+    "webpack": {
+        "enabled": True,
+        "stats_file": "/site/assets/bundles/site/bundles.json",
+        "bundle_dir": "bundles/site/",
+    },
+    "components": {
+        "enabled": True,
+        "manifest_path": "/site/assets/staticfiles/components/manifest.json",
+    },
+}
+```
+
+`FUSION_ASSETS` remains the explicit top/bottom link configuration. The merged
+manifest adds valid CSS/JS entries from webpack `bundles.json`, deduplicates
+links while preserving order, and is consumed by the asset API and
+`fusion_assets` template tags. Import the implementation directly:
+
+```python
+from django_fusion.config.assets import AssetPipelineOptions, get_asset_pipeline_options
+from django_fusion.config.manifest import load_merged_asset_manifest
+```
+
+Keep `assets/` source files, webpack bundles, and `STATIC_ROOT` as separate
+filesystem locations. Do not expose source assets directly or create duplicate
+static roots.
+
 ## Dynaconf multi-environment YAML
 
-`django_fusion.config.dynaconf_loader.load_dynaconf_settings()` reads
+`django_fusion.config.loader.load_dynaconf_settings()` reads
 YAML files from any of these locations (first found wins):
 
 ```text
@@ -70,14 +107,14 @@ DJANGO_ENV=production python manage.py runserver
 ```
 
 `DynaconfSettings` is a thin schema wrapper declared in
-`dynaconf_loader.py`. `ModelsRegistry` and `TemplateRegistry` are the
+`loader.py`. `ModelsRegistry` and `TemplateRegistry` are the
 companion registries used by `comp.routes.model.ModelViewset` for
 runtime model kwargs.
 
 ### Imports
 
 ```python
-from django_fusion.config.dynaconf_loader import (
+from django_fusion.config.loader import (
     DynaconfSettings, ModelsRegistry, TemplateRegistry,
     load_dynaconf_settings,
 )
@@ -115,7 +152,7 @@ MIDDLEWARE = [
 
 ## Cache backends
 
-`django_fusion.comp.cache` exports `ComponentMappingCache` (a
+`django_fusion.comp.cache` exports `ComponentMapCache` (a
 component-name → template-path cache) and `get_component_map_cache()`
 (singleton accessor). The module relies on Django's standard `cache`
 framework and falls back to the default backend if Redis is unavailable
@@ -133,7 +170,7 @@ CACHES = {
 }
 ```
 
-> Remark: `ComponentMappingCache` does not require the third-party
+> Remark: `ComponentMapCache` does not require the third-party
 > `cachetools` library at this version — its in-memory behaviour comes
 > from Django's standard cache framework. If you change `CACHES`,
 > nothing else needs to be updated — it follows Django.

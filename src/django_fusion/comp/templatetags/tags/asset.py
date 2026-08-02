@@ -8,8 +8,8 @@ from django.conf import settings
 from django.template.base import Parser, Token
 from django.template.context import Context
 
-from django_fusion.comp.configuration.asset_tag import AssetTag
-from django_fusion.comp.configuration.manifest import load_asset_manifest, normalize_path
+from django_fusion.config.asset_tag import AssetTag
+from django_fusion.config.manifest import load_asset_manifest, normalize_path
 
 
 def do_asset(_parser: Parser, token: Token) -> AssetNode:
@@ -28,8 +28,8 @@ class AssetNode(template.Node):
         self.asset_tag = asset_tag
 
     def render(self, context: Context) -> str:
-        from django_fusion.comp.fragment._init import components
-        from django_fusion.comp.configuration.staticfiles import Asset, get_component_assets
+        from django_fusion.comp._init import components
+        from django_fusion.config.staticfiles import Asset, get_component_assets
 
         template = getattr(context, "template", None)
         if not template:

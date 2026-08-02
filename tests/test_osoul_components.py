@@ -290,20 +290,19 @@ _FUSION_TEMPLATES_DIR = (
     / "src"
     / "django_fusion"
     / "templates"
-    / "fusion"
 )
 
 
 def test_table_template_exists():
-    assert (_FUSION_TEMPLATES_DIR / "components" / "table.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "table.html").is_file()
 
 
 def test_pagination_template_exists():
-    assert (_FUSION_TEMPLATES_DIR / "components" / "pagination" / "pagination.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "pagination" / "pagination.html").is_file()
 
 
 def test_search_template_exists():
-    assert (_FUSION_TEMPLATES_DIR / "components" / "search.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "search.html").is_file()
 
 
 def test_form_template_exists():
@@ -312,7 +311,7 @@ def test_form_template_exists():
 
 def test_routable_pagination_template_exists():
     """Pagination lives at fusion/components/pagination/pagination.html."""
-    assert (_FUSION_TEMPLATES_DIR / "components" / "pagination" / "pagination.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "pagination" / "pagination.html").is_file()
 
 
 

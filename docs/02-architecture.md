@@ -8,18 +8,20 @@
 ```
 django_fusion/
 ├── analyzer/        # Scanner + parser → JSON tracking of {% comp %} usage
-├── comp/            # Component system: tag, registry, routing, generic CBVs
-│   ├── registry.py
-│   ├── routes/      # Site, Application, ModelViewset, RoutableComponent, FragmentComponent
-│   ├── generic.py   # ListModelView, CreateModelView, …, TableView
-│   ├── forms/       # FormMixin, TableMixin, FormTableMixin (legacy helpers)
-│   ├── loaders.py   # component_loader / lazy HTMX-safe loader decorator
-│   ├── cache.py     # ComponentMapping cache (Redis fallback)
+├── comp/            # Component tag, registry, props, loader, cache, templates
+│   ├── _init.py     # Component, BoundComponent, ComponentRegistry
+│   ├── registry.py  # Include-path registration and alias policy
+│   ├── loader/      # Template discovery and HTMX-safe loader
+│   ├── cache.py     # ComponentMapCache (portable backend fallback)
 │   └── templatetags/
-├── config/          # conf, conf_utils, constants, dynaconf_loader
+├── fragments/       # Generic views, forms, tables, and fragment helpers
+├── config/          # conf, conf_utils, constants, loader
 ├── contrib/         # admin, cache utils, debug_tools, email_config, privacy
-├── projects/            # Handlers, managers, models, services, cache, middlewares
-├── health/          # /health/, /health/db/, /health/assets/
+├── routes/          # Site/Application routing, views, pages, fragments
+├── management/      # Managers and shared management helpers
+├── models/          # Shared abstract and concrete model infrastructure
+├── services/        # Service and token APIs
+├── core/health/     # /health/, /health/database/, /health/assets/
 ├── infrastructure/  # Management commands, scripts, template tags, locale
 ├── site/            # Allauth adapter, context processors, notifications, paginators
 └── wagtail/         # blocks.py, snippets.py, viewsets.py
@@ -29,15 +31,15 @@ django_fusion/
 
 | Layer | Module(s) | Responsibility |
 |-------|-----------|---------------|
-| Foundation | `core.{models, managers, services, cache}` | TimeStampedModel, group-aware managers, CRUD service base, pluggable cache |
-| Request-handling | `core.handlers`, `core.middlewares` | `PageHandler` base, error tracker, privacy, language |
-| Routing | `comp.routes`, `comp.generic` | `Site` / `Application` / `ModelViewset` plus HTMX-aware `FragmentComponent` |
-| Components | `comp.registry`, `comp.routes.{components,fragments}`, `comp.templatetags` | Registry, fragment detection, `{% comp %}` tag, `register_default_partials()` |
-| Forms / Tables | `comp.routes.forms_tables` (legacy) | `FormMixin`, `TableMixin`, `FormTableMixin` — see DF-006 |
+| Foundation | `models`, `management.managers`, `services`, `comp.cache` | Models, managers, service base, and component cache |
+| Request-handling | `routes.page_handler`, `core.middlewares` | `PageHandler`, error tracking, privacy, language |
+| Routing | `routes` | `Site` / `Application` / `ModelViewset` and HTMX-aware components |
+| Components | `comp`, `fragments` | Registry, fragment detection, `{% comp %}` tag, generic views, forms, tables |
+| Forms / Tables | `fragments.forms`, `fragments.tables` | `FormMixin`, `TableMixin`, `FormTableMixin` |
 | Site-level | `site.*`), `web.*` | Allauth flows, context processors, template rendering helpers |
 | CMS | `wagtail.*` | StreamField blocks, `AuthEmailTemplate` snippet, snippet viewsets |
-| Ops | `health`, `contrib.{cache,debug_tools,privacy}` | `/health/`, monitoring, consent |
-| Config | `config.{conf,dynaconf_loader}`, `infrastructure` | Multi-env YAML settings |
+| Ops | `core.health`, `contrib.{cache,debug_tools,privacy}` | `/health/`, monitoring, consent |
+| Config | `config.{conf,loader}`, `infrastructure` | Multi-env YAML settings |
 | Analysis | `analyzer` | Static analysis of `{% comp %}` usage across templates |
 
 ## Request flow (Mermaid)
@@ -61,9 +63,9 @@ flowchart LR
 
 ## When would I touch this?
 
-- **`projects/`** — when adding a foundational manager, model, or service that
-  every app reuses (rare).
-- **`comp/`** — when extending the component system (most feature work).
+- **`models/`, `management/managers/`, or `services/`** — when adding shared
+  framework infrastructure reused by multiple apps.
+- **`comp/` or `fragments/`** — when extending the component and rendering systems.
 - **`site/` / `web/`** — when adding an auth flow or new context processor.
 - **`wagtail/`** — when adding a new StreamField block or snippet viewset.
 - **`contrib/`** — when shipping opt-in Django tools (privacy, debug,
@@ -76,21 +78,46 @@ flowchart LR
 Per `AGENTS.md`:
 
 ```python
-from django_fusion.routes import (
-    Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path,
-    IndexViewMixin, viewprop,
-    BaseModelViewset, ModelViewset, ReadonlyModelViewset,
-    ListBulkActionsMixin, CreateViewMixin, UpdateViewMixin,
-    DeleteViewMixin, DetailViewMixin,
-    Application, AppMenuMixin, Site,
-    RoutableComponent, FragmentComponent,
-    FragmentDetector, FragmentDetectionMixin,
+from django_fusion.routes.core.base import (
+    Viewset,
+    BaseViewset,
+    ViewsetMeta,
+    Route,
+    route,
+    menu_path,
+    IndexViewMixin,
 )
-from django_fusion.components.generic import (
-    Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
-    DetailModelView, ListModelView, UpdateModelView,
-    BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
+from django_fusion.core.utils import viewprop
+from django_fusion.routes.models.base import BaseModelViewset
+from django_fusion.routes.models.crud import (
+    ModelViewset,
+    ReadonlyModelViewset,
+    ListBulkActionsMixin,
+    CreateViewMixin,
+    UpdateViewMixin,
+    DeleteViewMixin,
+    DetailViewMixin,
 )
+from django_fusion.routes.core.sites import (
+    Application,
+    AppMenuMixin,
+    Site,
+)
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.routes.components.fragments import FragmentComponent
+from django_fusion.routes.http.detection import (
+    FragmentDetector,
+    FragmentDetectionMixin,
+)
+from django_fusion.fragments.generic.base import Action
+from django_fusion.fragments.generic.list import BaseListModelView, ListModelView
+from django_fusion.fragments.generic.detail import DetailModelView
+from django_fusion.fragments.generic.actions import BaseBulkActionView, DeleteBulkActionView
+from django_fusion.fragments.forms.create import CreateModelView
+from django_fusion.fragments.forms.update import UpdateModelView
+from django_fusion.fragments.forms.delete import DeleteModelView
+from django_fusion.fragments.forms.search import SearchableViewMixin
+from django_fusion.fragments.tables.table import TableView
 ```
 
 See DF-008 for the full per-module docstring reference.

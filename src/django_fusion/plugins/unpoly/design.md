@@ -6,7 +6,7 @@ Unpoly plugin for django-fusion fragments
 
 ## Directory
 
-Path: `django_fusion/comp/fragment/plugins/unpoly`
+Path: `django_fusion/plugins/unpoly`
 
 
 ### Modules
@@ -17,7 +17,7 @@ Path: `django_fusion/comp/fragment/plugins/unpoly`
 
 ```mermaid
 flowchart LR
-    Request --> comp.fragment.plugins.unpoly
+    Request --> django_fusion.plugins.unpoly
     {package_name} --> Response
 ```
 ## Request Flow
@@ -29,10 +29,9 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.comp.fragment.plugins.unpoly import example_function
+from django_fusion.plugins.unpoly import DjangoAdapter
 
-# Replace example_function with a real symbol from this package
-result = example_function()
+adapter = DjangoAdapter(request)
 ```
 
 ## Commands / Entry Points

@@ -18,7 +18,8 @@ Usage::
     adapter.register(CategoryViewSet)
 
     # Or mount a whole Application:
-    from django_fusion.routes import Application, ModelViewset
+    from django_fusion.routes.core.sites import Application
+    from django_fusion.routes.models.crud import ModelViewset
 
     class POSApi(Application):
         @viewprop
@@ -85,7 +86,7 @@ class RobynAdapter:
 
         Usage::
 
-            from django_fusion.routes import Application
+            from django_fusion.routes.core.sites import Application
 
             class MyApp(Application):
                 @viewprop

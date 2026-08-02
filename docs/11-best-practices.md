@@ -41,7 +41,7 @@ when `HX-Request: true`.
   dotted `fragment_name`. Don't add per-instance cache; you'll only
   slow the registry down.
 - **Queryset caching** — use `CachedManager` from
-  `django_fusion.core.managers` for querysets heavier than ~5 joins or
+  `django_fusion.management.managers` for querysets heavier than ~5 joins or
   that fire on every page render.
 - **HTMX response caching** — keep responses served above ~200 ms out
   of the inner cache and rely on a CDN or reverse proxy.

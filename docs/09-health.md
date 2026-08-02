@@ -1,46 +1,49 @@
 # Health Checks — DF-009
 
-> Source of truth: `src/django_fusion/health/views.py`,
-> `src/django_fusion/health/urls.py`.
+> Source of truth: `src/django_fusion/core/health/views.py`,
+> `src/django_fusion/core/health/checks.py`, and
+> `src/django_fusion/core/health/urls.py`.
 
 ## Views
 
 | Class | URL | Returns | Status codes |
 |-------|-----|---------|--------------|
-| `HealthCheckView` | `/health/` (via `health_urlpatterns`) | `{"status": "ok"}` | `200` healthy, `503` unhealthy |
-| `DatabaseHealthView` | `/health/db/` | `{"status": "ok"}` / `{"status": <error|degraded>, "error": str(exc)}` | `200` ok, `503` connection failed |
-| `AssetsHealthView` | `/health/assets/` | similar per-checks pattern | `200` ok, `503` missing |
+| `HealthCheckView` | `/health/` (via `django_fusion.core.health.urls`) | `{"status": "ok"}` | `200` healthy |
+| `DatabaseHealthView` | `/health/database/` | `{"status": "ok"}` / `{"status": "error", "error": str(exc)}` | `200` ok, `503` connection failed |
+| `AssetHealthView` | `/health/assets/` | static/media/webpack checks | `200` ok or degraded, `503` unhealthy |
+| `MediaHealthView` | `/health/media/` | media root and writability checks | `200` ok or degraded, `503` unhealthy |
 
 ## Wiring
 
 ```python
 # urls.py
-from django_fusion.health.urls import health_urlpatterns
+from django_fusion.core.health import urls as health_urls
 
 urlpatterns = [
     # ...
-    path("health/", include((health_urlpatterns, "health"))),
+    path("health/", include((health_urls.urlpatterns, "health"))),
 ]
 ```
 
 or inline:
 
 ```python
-from django_fusion.health.views import (
-    HealthCheckView, DatabaseHealthView, AssetsHealthView,
+from django_fusion.core.health import (
+    AssetHealthView, DatabaseHealthView, HealthCheckView, MediaHealthView,
 )
 
 urlpatterns = [
-    path("health/",        HealthCheckView.as_view(),   name="health"),
-    path("health/db/",     DatabaseHealthView.as_view(), name="health-db"),
-    path("health/assets/", AssetsHealthView.as_view(),  name="health-assets"),
+    path("health/",          HealthCheckView.as_view(),  name="health"),
+    path("health/database/", DatabaseHealthView.as_view(), name="health-db"),
+    path("health/assets/",   AssetHealthView.as_view(), name="health-assets"),
+    path("health/media/",    MediaHealthView.as_view(), name="health-media"),
 ]
 ```
 
 ## Response shape (JSON)
 
 The default view responses are intentionally minimal — per
-`src/django_fusion/health/views.py`:
+`src/django_fusion/core/health/checks.py` and `views.py`:
 
 Healthy:
 
@@ -96,7 +99,7 @@ By default the health endpoints are **unauthenticated** so probes work.
 If your deployment must hide them, gate behind a header check:
 
 ```python
-from django_fusion.health.views import HealthCheckView
+from django_fusion.core.health import HealthCheckView
 from django.http import HttpResponseForbidden
 from django.urls import path
 

@@ -1,0 +1,131 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
+
+from django import template
+from django.template.context import Context
+from django.utils.safestring import SafeString, mark_safe
+
+from django_fusion.comp.templatetags.tags.block import METADATA_ARGUMENTS, BlockNode
+from django_fusion.comp.templatetags.tags.prop import PropNode
+
+if TYPE_CHECKING:
+    from django_fusion.comp._init import Component
+
+
+@dataclass
+class Params:
+    attrs: list[Param] = field(default_factory=list)
+    props: list[Param] = field(default_factory=list)
+    metadata: list[Param] = field(default_factory=list)
+
+    def render_props(self, component: Component, context: Context) -> dict[str, Any]:
+        """Resolve component props without mutating the bound parameters.
+
+        A component definition can be rendered repeatedly across requests.
+        Prop resolution therefore returns a fresh mapping for each render;
+        it must not append to ``self.props`` or remove entries from
+        ``self.attrs``.
+        """
+        if component.nodelist is None:
+            return {}
+
+        props: list[Param] = []
+        for node in component.nodelist:
+            if not isinstance(node, PropNode):
+                continue
+
+            value = Value(node.default)
+            for attr in self.attrs:
+                if node.name == attr.name and attr.value.resolve(context) is not None:
+                    value = attr.value
+                    break
+            props.append(Param(name=node.name, value=value))
+
+        return {prop.name: prop.render_prop(context) for prop in props}
+
+    def render_metadata(self, context: Context) -> dict[str, Any]:
+        return {param.name: param.value.resolve(context) for param in self.metadata}
+
+    def render_attrs(
+        self,
+        context: Context,
+        *,
+        exclude: set[str] | frozenset[str] = frozenset(),
+        extra: tuple[Param, ...] = (),
+    ) -> SafeString:
+        """Render attributes from a fresh per-render view of the params."""
+        attrs = [attr for attr in self.attrs if attr.name not in exclude]
+        rendered = " ".join(
+            attr.render_attr(context) for attr in (*attrs, *extra)
+        )
+        return mark_safe(rendered)
+
+    @classmethod
+    def from_node(cls, node: BlockNode) -> Params:
+        params = [Param.from_bit(bit) for bit in node.attrs]
+        metadata = [param for param in params if param.name in METADATA_ARGUMENTS]
+        attrs = [param for param in params if param.name not in METADATA_ARGUMENTS]
+        return cls(attrs=attrs, props=[], metadata=metadata)
+
+
+@dataclass
+class Param:
+    name: str
+    value: Value
+
+    def render_attr(self, context: Context) -> str:
+        value = self.value.resolve(context)
+        if value is None:
+            return ""
+        name = self.name.replace("_", "-")
+        if value is True:
+            return name
+        return f'{name}="{value}"'
+
+    def render_prop(self, context: Context) -> str | bool | None:
+        return self.value.resolve(context)
+
+    @classmethod
+    def from_bit(cls, bit: str) -> Param:
+        if "=" in bit:
+            name, raw_value = bit.split("=", 1)
+            value = Value(raw_value.strip())
+        else:
+            name, value = bit, Value(True)
+        return cls(name, value)
+
+
+@dataclass
+class Value:
+    raw: str | bool | None
+
+    def resolve(self, context: Context | dict[str, Any]) -> Any:
+        match (self.raw, self.is_quoted):
+            case (None, _):
+                return None
+
+            case (str(raw_str), False) if raw_str == "False":
+                return False
+            case (str(raw_str), False) if raw_str == "True":
+                return True
+
+            case (bool(b), _):
+                return b
+
+            case (str(raw_str), False):
+                try:
+                    return template.Variable(raw_str).resolve(context)
+                except template.VariableDoesNotExist:
+                    return raw_str
+
+            case (_, True):
+                return str(self.raw)[1:-1]
+
+    @property
+    def is_quoted(self) -> bool:
+        if self.raw is None or isinstance(self.raw, bool):
+            return False
+
+        return self.raw.startswith(("'", '"')) and self.raw.endswith(self.raw[0])

@@ -1,6 +1,8 @@
 """
 django_fusion models — base models and mixins for Django applications.
 """
+from django.conf import settings as _django_settings
+
 from .auth import Role, UserRole  # noqa: F401
 from .base import BaseModel, TimeStampedModel, UUIDModel  # noqa: F401
 from .datatoken import (  # noqa: F401
@@ -14,6 +16,17 @@ from .datatoken import (  # noqa: F401
     untag_by_entity,
 )
 from .email import EmailLog, EmailTemplate, UserGroup  # noqa: F401
+from .certification import AbstractCertificationTemplate  # noqa: F401
+from .coupon import AbstractCoupon, AbstractCouponUsage  # noqa: F401
+from .newsletter import AbstractNewsletter  # noqa: F401
+from .settings import (
+    AbstractBrandSettings,
+    AbstractEmailSettings,
+    AbstractGlobalSettings,
+    AbstractLocalizedSettings,
+    AbstractNewsletterSubscription,
+)  # noqa: F401
+from .workspace import AbstractWorkspace  # noqa: F401
 from .integrations import Integration
 try:
     from .default import ContentBase  # noqa: F401
@@ -27,9 +40,14 @@ try:
     from .cache_storage import CachingStorage  # noqa: F401
 except ImportError:
     CachingStorage = None  # type: ignore
-try:
+if any(
+    app == "wagtail" or app.startswith("wagtail.")
+    for app in _django_settings.INSTALLED_APPS
+):
     from .tags import BaseTag, BaseTagCategory, PersonTag, Tag  # noqa: F401
-except ImportError:
+else:
+    # Tag models are an optional Wagtail integration. Keep the core model
+    # package importable in Django projects that do not install Wagtail.
     BaseTag = None  # type: ignore
     BaseTagCategory = None  # type: ignore
     PersonTag = None  # type: ignore
@@ -65,12 +83,8 @@ except Exception:
         UUIDPrimaryKeyModel,
     )
 
-# Alias for backward compatibility
-DefaultBase = BaseModel
-
 __all__ = [
     "BaseModel",
-    "DefaultBase",
     "TimeStampedModel",
     "UUIDModel",
     "SoftDeleteMixin",
@@ -89,6 +103,17 @@ __all__ = [
     "EmailLog",
     "EmailTemplate",
     "UserGroup",
+    # Shared domain model bases
+    "AbstractWorkspace",
+    "AbstractCoupon",
+    "AbstractCouponUsage",
+    "AbstractCertificationTemplate",
+    "AbstractNewsletter",
+    "AbstractLocalizedSettings",
+    "AbstractBrandSettings",
+    "AbstractEmailSettings",
+    "AbstractGlobalSettings",
+    "AbstractNewsletterSubscription",
     # Auth models
     "UserRole",
     "Role",

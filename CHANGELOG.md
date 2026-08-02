@@ -5,6 +5,31 @@ All notable changes to django-fusion are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Unified asset pipeline options** via `AssetPipelineOptions` and
+  `FUSION_ASSET_PIPELINE`, merging explicit `FUSION_ASSETS`, component
+  manifests, and webpack `bundles.json` links for API and template-tag use.
+- **Canonical asset-link deduplication** for top CSS and bottom JS entries,
+  preserving source/generated filesystem boundaries.
+
+### Removed
+
+- Removed the unused `django_fusion.plugins.webpack.assets` forwarding package;
+  asset views and URL patterns now have one canonical source under
+  `django_fusion.core.assets`.
+- Removed the LMS-only `/api/fusion/assets/` and `/apis/fusion/assets/` URL
+  aliases. Sites should expose one project-owned mount of
+  `django_fusion.core.assets.urls` (LMS uses `/fusion/assets/`; CMS uses
+  `/apis/assets/`). Existing external clients must update their asset API URL.
+
+### Fixed
+
+- `generate_asset_manifest` now imports the canonical implementation from
+  `django_fusion.config.manifest` without a duplicate `comp.manifest` path.
+
 ## [0.4.0] — 2026-07-28
 
 ### Added

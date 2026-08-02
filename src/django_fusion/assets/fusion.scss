@@ -31,12 +31,12 @@
 // ── Component Styles ────────────────────────────────────────────────────────
 // Each component's SCSS partial is imported below.  The import path mirrors
 // the component's Python module location under ``django_fusion/comp/``.
-@import '../comp/button/button';
-@import '../comp/card/card';
-@import '../comp/modal/modal';
-@import '../comp/form/form';
-@import '../comp/table/table';
-@import '../comp/navigation/nav';
+@import './button/button';
+@import './card/card';
+@import './modal/modal';
+@import './form/form';
+@import './table/table';
+@import './navigation/nav';
 
 // ── Utility classes ─────────────────────────────────────────────────────────
 // Shared utility classes used across fusion components.

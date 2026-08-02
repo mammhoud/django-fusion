@@ -6,7 +6,7 @@ verifying that the dynamic registration in
 ``django_fusion.comp.registry`` produces the same render output as the
 Django builtin include machinery.
 
-NOTE on import order: ``django_fusion.comp.configuration.conf`` touches
+NOTE on import order: ``django_fusion.config.conf`` touches
 ``settings.DEBUG`` at MODULE IMPORT TIME (it's a dataclass field
 default), so we must configure Django BEFORE importing any
 ``django_fusion.comp`` submodule. The fixture below enforces that.
@@ -18,7 +18,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from unittest.mock import patch
+
 import pytest
+from django.template.exceptions import TemplateDoesNotExist
 
 
 def _boot_django(test_templates_dir: Path) -> None:
@@ -106,17 +109,19 @@ def _boot_django(test_templates_dir: Path) -> None:
         engines.__dict__.pop("templates", None)
 
 
-_test_templates_dir = Path(__file__).resolve().parent / "test_templates_comp_registry"
-
-
 @pytest.fixture(scope="module", autouse=True)
-def _boot_django_for_module():
-    partials = _test_templates_dir / "partials"
+def _boot_django_for_module(tmp_path_factory):
+    test_templates_dir = tmp_path_factory.mktemp("comp_registry")
+    partials = test_templates_dir / "partials"
     partials.mkdir(parents=True, exist_ok=True)
     target = partials / "auth_buttons.html"
     if not target.exists():
         target.write_text('<span class="auth">auth</span>', encoding="utf-8")
-    _boot_django(_test_templates_dir)
+    for suffix in (".css", ".js"):
+        sidecar = target.with_suffix(suffix)
+        if not sidecar.exists():
+            sidecar.write_text("/* component sidecar */", encoding="utf-8")
+    _boot_django(test_templates_dir)
     # Force ``django.template.engines`` to lazy-initialise the ``django``
     # backend via a probe. Several Django versions defer the
     # template-tag-modules enumeration until the first ``engines[alias]``
@@ -131,7 +136,7 @@ def _boot_django_for_module():
 @pytest.fixture(autouse=True)
 def reset_components():
     from django_fusion.comp.apps import _register_builtin_component_paths
-    from django_fusion.comp.fragment._init import components  # imports after settings
+    from django_fusion.comp._init import components  # imports after settings
 
     # Reset and re-populate the component registry so each test in
     # this module starts with the same state Django built at startup.
@@ -157,7 +162,7 @@ def test_comp_path_renders_same_as_include():
 
 def test_comp_path_records_render_history_with_full_path_as_name():
     _render('{% comp "partials/auth_buttons.html" /%}')
-    from django_fusion.comp.fragment._init import components
+    from django_fusion.comp._init import components
 
     history = components.get_render_history()
     assert len(history) == 1
@@ -169,19 +174,89 @@ def test_register_include_path_under_root_returns_list():
 
     cached = register_include_paths(["partials/auth_buttons.html"])
     assert cached == ["partials/auth_buttons.html"]
-    from django_fusion.comp.fragment._init import components
+    from django_fusion.comp._init import components
 
     assert "partials/auth_buttons.html" in components._components
 
 
+def test_include_path_discovers_sidecar_assets_lazily():
+    from django_fusion.comp._init import components
+    from django_fusion.comp.registry import register_include_path
+
+    register_include_path("partials/auth_buttons.html")
+    component = components.get_component("partials/auth_buttons.html")
+
+    assets = {asset.path.suffix for asset in component.assets}
+    assert assets == {".css", ".js"}
+
+    _render('{% comp "partials/auth_buttons.html" /%}')
+    metadata = components.get_render_history()[-1]
+    assert {Path(path).suffix for path in metadata.assets} == {".css", ".js"}
+
+
 def test_register_include_path_idempotent():
     from django_fusion.comp.registry import register_include_path
-    from django_fusion.comp.fragment._init import components
+    from django_fusion.comp._init import components
 
     register_include_path("partials/auth_buttons.html")
     first_id = id(components._components["partials/auth_buttons.html"])
     register_include_path("partials/auth_buttons.html")
     second_id = id(components._components["partials/auth_buttons.html"])
     assert first_id == second_id
+
+
+def test_include_aliases_share_one_component_and_reject_collisions():
+    from django_fusion.comp.cache import get_component_map_cache
+    from django_fusion.comp.registry import register_include_paths
+    from django_fusion.comp._init import components
+
+    cache = get_component_map_cache()
+    cache.invalidate_component("card")
+    register_include_paths(["admin/card.html", "shop/card.html"])
+
+    assert "card" not in components._components
+    assert components.is_ambiguous_alias("card") is True
+    assert cache.get_component("card") is None
+    with pytest.raises(TemplateDoesNotExist, match="Ambiguous component alias"):
+        components.get_component("card")
+
+
+def test_bulk_registration_repairs_alias_for_existing_path():
+    from django_fusion.comp.registry import register_include_path, register_include_paths
+    from django_fusion.comp._init import components
+
+    register_include_path("partials/auth_buttons.html")
+    component = components._components.pop("auth_buttons")
+
+    register_include_paths(["partials/auth_buttons.html"])
+
+    assert components._components["auth_buttons"] is component
+
+
+def test_component_cache_supports_exact_portable_invalidation():
+    from django_fusion.comp.cache import ComponentMapCache
+
+    cache = ComponentMapCache(enabled=False)
+    cache.set_component("card", "components/card.html")
+
+    assert cache.invalidate_component("card") is True
+    assert cache.get_component("card") is None
+    assert cache.invalidate_component("card") is False
+
+    cache.set_component("card", "components/card.html")
+    assert cache.invalidate(f"{cache.COMPONENT_KEY_PREFIX}card") == 1
+    assert cache.get_component("card") is None
+
+
+def test_component_cache_exact_invalidation_uses_public_enabled_backend_api():
+    from django_fusion.comp.cache import ComponentMapCache
+
+    cache = ComponentMapCache(enabled=True)
+    with patch("django_fusion.comp.cache.cache.delete", return_value=True) as delete:
+        assert cache.invalidate_component("card") is True
+    delete.assert_called_once_with("comp:component:card")
+
+    with pytest.warns(DeprecationWarning, match="Wildcard component cache invalidation"):
+        assert cache.invalidate("comp:component:*") == 0
 
 

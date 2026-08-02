@@ -2,11 +2,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from django.template import TemplateSyntaxError, engines
+from django.template import Context, TemplateSyntaxError, engines
 from django.template.exceptions import TemplateDoesNotExist
 from django.test import override_settings
 
-from django_fusion.comp.fragment._init import components
+from django_fusion.comp._init import components
+from django_fusion.comp.templatetags.tags.prop import PropNode
+from django_fusion.config.params import Param, Params, Value
 
 _test_templates_dir = Path(__file__).resolve().parent / "test_templates"
 
@@ -34,6 +36,17 @@ def render(source, context=None):
     return engines["django"].from_string(source).render(context or {}).strip()
 
 
+def test_false_values_are_preserved_for_literal_and_bound_props():
+    assert Value(False).resolve(Context({})) is False
+    assert Value("False").resolve(Context({})) is False
+
+    prop = PropNode("enabled", "True", [])
+    component = SimpleNamespace(nodelist=[prop])
+    params = Params(attrs=[Param("enabled", Value(False))])
+
+    assert params.render_props(component, Context({})) == {"enabled": False}
+
+
 @override_settings(TEMPLATES=TEMPLATES)
 def test_static_component_name_renders_standalone_tag():
     output = render('{% load components %}{% comp "components/static.html" %}')
@@ -57,6 +70,25 @@ def test_context_and_metadata_arguments_are_exposed_to_component_context():
     assert components.get_render_history()[-1].source == "pages"
     assert components.get_render_history()[-1].requested_by == "/pages/about/"
     assert components.get_render_history()[-1].fragment_name == "page_card"
+
+
+@override_settings(TEMPLATES=TEMPLATES)
+def test_repeated_component_renders_keep_props_isolated_per_context():
+    first = render(
+        '{% load components %}'
+        '{% comp "components/cards/page.html" page=page source="first" %}',
+        {"page": SimpleNamespace(title="First")},
+    )
+    second = render(
+        '{% load components %}'
+        '{% comp "components/cards/page.html" page=page source="second" %}',
+        {"page": SimpleNamespace(title="Second")},
+    )
+
+    assert "card:First|first" in first
+    assert "card:Second|second" in second
+    assert "First" not in second
+    assert "Second" not in first
 
 
 @override_settings(TEMPLATES=TEMPLATES)

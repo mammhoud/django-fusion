@@ -10,14 +10,22 @@ Path: `django_fusion/routes`
 
 
 ### Modules
-- `base.py`
-- `components.py`
-- `detection.py`
-- `fragments.py`
-- `model.py`
-- `other.py`
-- `sites.py`
-- `template_resolver.py`
+- `core/base.py`
+- `core/converters.py`
+- `core/sites.py`
+- `components/routable.py`
+- `components/fragments.py`
+- `components/dual_mode.py`
+- `models/base.py`
+- `models/crud.py`
+- `pages/handler.py`
+- `pages/views.py`
+- `pages/paginators.py`
+- `http/detection.py`
+- `http/response.py`
+- `http/notifications.py`
+- `rendering/renderers.py`
+- `rendering/template_resolver.py`
 
 ## Architecture / Class Diagram
 
@@ -98,7 +106,7 @@ classDiagram
 ## Usage Example
 
 ```python
-from django_fusion.routes import BaseModelViewset
+from django_fusion.routes.models.base import BaseModelViewset
 
 # Wire into urls.py
 from django.urls import path

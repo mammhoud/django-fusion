@@ -5,8 +5,9 @@
 forms/tables mixins, allauth auth, and a Wagtail integration layer** —
 the toolkit Structa Cloud sites are built on.
 
-It is the merged successor of the previous standalone `django_fusion`
-package (shim retained for back-compat, dropped in v0.3.0).
+It is the canonical `django_fusion` package. Import framework symbols from
+`django_fusion.*` directly; the former standalone compatibility package is no
+longer part of the supported runtime.
 
 ## What it gives you
 
@@ -201,6 +202,7 @@ is numbered with stable `DF-0NN` IDs.
 | [DF-014](./docs/14-faq.md) | FAQ | `docs/14-faq.md` |
 | [DF-015](./docs/15-viewflow-mapping.md) | Viewflow / django-material mapping | `docs/15-viewflow-mapping.md` |
 | [DF-016](./docs/16-assets.md) | Asset pipeline & webpack | `docs/16-assets.md` |
+| [DF-017](./docs/17-integration-modes.md) | Integration modes and project organization | `docs/17-integration-modes.md` |
 
 ## Citation
 

@@ -6,7 +6,7 @@ HTMX plugin for django-fusion fragments
 
 ## Directory
 
-Path: `django_fusion/comp/fragment/plugins/htmx`
+Path: `django_fusion/plugins/htmx`
 
 
 ### Modules
@@ -16,7 +16,7 @@ Path: `django_fusion/comp/fragment/plugins/htmx`
 
 ```mermaid
 flowchart LR
-    Request --> comp.fragment.plugins.htmx
+    Request --> django_fusion.plugins.htmx
     {package_name} --> Response
 ```
 ## Request Flow
@@ -28,10 +28,9 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.comp.fragment.plugins.htmx import example_function
+from django_fusion.plugins.htmx import is_htmx_request
 
-# Replace example_function with a real symbol from this package
-result = example_function()
+result = is_htmx_request(request)
 ```
 
 ## Commands / Entry Points

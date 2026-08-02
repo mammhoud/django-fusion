@@ -29,7 +29,10 @@ HTMX fragment behaviour via the FragmentDetector.
 ```python
 # mysite/urls.py
 from django.urls import path
-from django_fusion.routes import Site, Application
+from django_fusion.routes.core.sites import (
+    Site,
+    Application,
+)
 
 blog_app = Application(
     title="Blog",
@@ -56,7 +59,7 @@ urlpatterns = [path("", site.urls)]
 
 ```python
 # myapp/viewsets.py
-from django_fusion.routes import ModelViewset
+from django_fusion.routes.models.crud import ModelViewset
 
 class PostViewset(ModelViewset):
     model = Post
@@ -64,7 +67,7 @@ class PostViewset(ModelViewset):
     template_name = "blog/post"   # resolves _list, _detail, _form
 
 # myapp/urls.py
-from django_fusion.routes import Application
+from django_fusion.routes.core.sites import Application
 from myapp.viewsets import PostViewset
 
 blog = Application(
@@ -88,8 +91,11 @@ Override any of them by setting `urlpatterns = [...]` on the viewset.
 ## Pick-and-mix CRUD with `BaseModelViewset` + mixins
 
 ```python
-from django_fusion.routes import (
-    BaseModelViewset, DetailViewMixin, UpdateViewMixin, DeleteViewMixin,
+from django_fusion.routes.models.base import BaseModelViewset
+from django_fusion.routes.models.crud import (
+    DetailViewMixin,
+    UpdateViewMixin,
+    DeleteViewMixin,
 )
 
 class ReadOnlyWithDelete(BaseModelViewset,
@@ -107,7 +113,12 @@ delete action, archive-then-soft-delete, etc.).
 For viewsets without a `model` (e.g. dashboards, settings pages):
 
 ```python
-from django_fusion.routes import Viewset, Route, route, menu_path
+from django_fusion.routes.core.base import (
+    Viewset,
+    Route,
+    route,
+    menu_path,
+)
 
 class DashboardViewset(Viewset):
     route_name = "dashboard"

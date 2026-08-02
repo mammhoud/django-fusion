@@ -28,7 +28,7 @@ dotted fragment identifier. The resolution order is:
        # → template: "components/dashboard.html"
 
 This default links the component to the package's ``components/`` template
-directory (``django_fusion/comp/templates/components/``), which is registered
+directory (``src/django_fusion/templates/components/``), which is registered
 via ``APP_DIRS`` and ``COMPONENT_DIRS`` in the project template configuration.
 
 The dotted string maps to a template path by replacing dots with slashes and
@@ -41,7 +41,7 @@ Both ``template_name`` and ``fragment_name`` work together:
 - ``fragment_name`` (or ``get_fragment_name()``): Fragment template (used when
   ``strategy == "fragment"``, i.e. HTMX/Unpoly requests)
 
-If neither is set, ``template_name`` defaults to ``"base_page.html
+If neither is set, ``template_name`` defaults to ``base_page.html``.
 
 ### Forms & Tables
 - **FormMixin**: Render forms with template cascading
@@ -69,7 +69,7 @@ If neither is set, ``template_name`` defaults to ``"base_page.html
 ### Basic Routing
 
 ```python
-from django_fusion.routes import RoutableComponent
+from django_fusion.routes.components.routable import RoutableComponent
 
 class DashboardComponent(RoutableComponent):
     route_name = "dashboard"
@@ -94,7 +94,8 @@ class ProfileComponent(RoutableComponent):
 ### Form Component
 
 ```python
-from django_fusion.routes import RoutableComponent, FormMixin
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.fragments.forms import FormMixin
 
 class UserCreateComponent(RoutableComponent, FormMixin):
     route_name = "user_create"
@@ -109,7 +110,8 @@ class UserCreateComponent(RoutableComponent, FormMixin):
 ### Table Component
 
 ```python
-from django_fusion.routes import RoutableComponent, TableMixin
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.fragments.tables import TableMixin
 
 class UserListComponent(RoutableComponent, TableMixin):
     route_name = "user_list"
@@ -126,7 +128,8 @@ class UserListComponent(RoutableComponent, TableMixin):
 ### Combined Form & Table
 
 ```python
-from django_fusion.routes import RoutableComponent, FormTableMixin
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.fragments.forms import FormTableMixin
 
 class UserManagementComponent(RoutableComponent, FormTableMixin):
     route_name = "users_manage"
@@ -144,25 +147,27 @@ class UserManagementComponent(RoutableComponent, FormTableMixin):
 
 ## Template Cascade
 
-Templates are resolved in priority order:
+Templates are resolved from the consuming project's configured template
+``DIRS`` and installed apps. Project and shared-asset templates can override
+package defaults without importing or copying route implementations.
 
-```
-1. Site-specific        → applications/<site>/templates/
-2. Shared assets        → applications/assets/templates/
-3. Django-fusion        → django_fusion/...
-```
-
-This allows each site to customize templates while maintaining shared defaults.
+The package-owned templates live under ``src/django_fusion/templates``:
 
 ### Form Templates
-- `components/form/{form_name}.html`
-- `components/form/form.html` (canonical generic form)
-- `django_fusion/comp/routes/templates/routable_components/forms/form.html` (fallback)
+- ``components/form/{form_name}.html`` — site-specific or shared form override
+- ``components/form/form.html`` — canonical generic form
+- ``components/form/form_field.html`` — canonical field renderer
 
-### Table Templates
-- `plugins/tables/{table_name}.html`
-- `components/table.html` (canonical generic table)
-- `django_fusion/comp/routes/templates/routable_components/tables/table.html` (fallback)
+### Component Templates
+- ``fusion/components/...`` — legacy-compatible component template namespace
+- ``components/...`` — canonical component namespace for new templates
+
+Route implementations are organized by responsibility under
+``django_fusion.routes``: ``core`` (base routing and sites), ``components``
+(routable/fragment views), ``models`` (CRUD viewsets), ``pages`` (page
+handlers/views), ``http`` (request/response helpers), and ``rendering``.
+Import from those concrete modules rather than relying on a package-level
+route barrel.
 
 ## Documentation
 
@@ -173,27 +178,30 @@ This allows each site to customize templates while maintaining shared defaults.
 ## File Organization
 
 ```
-django_fusion/comp/routes/
-├── __init__.py                      # Exports all public APIs
-├── base.py                          # BaseViewset, Viewset, Route
-├── components.py                    # RoutableComponent
-├── detection.py                     # Fragment detection
-├── fragments.py                     # FragmentComponent
-├── forms_tables.py                  # FormMixin, TableMixin, FormTableMixin
-├── model.py                         # BaseModelViewset
-├── other.py                         # Model mixins, concrete viewsets
-├── sites.py                         # Site, Application, AppMenuMixin
-├── template_resolver.py             # TemplateResolverMixin
-└── templates/
-    └── routable_components/
-        ├── forms/
-        │   └── form.html            # Generic form template
-        ├── tables/
-        │   └── table.html           # Generic table template
-        ├── menu/
-        │   └── site_menu.html
-        ├── breadcrumbs.html
-        └── pagination.html
+django_fusion/routes/
+├── __init__.py                  # Documentation only; no aggregate exports
+├── core/
+│   ├── base.py                  # BaseViewset, Viewset, Route, descriptors
+│   ├── converters.py            # URL converters
+│   └── sites.py                 # Site, Application, AppMenuMixin
+├── components/
+│   ├── routable.py              # RoutableComponent
+│   ├── fragments.py             # FragmentComponent
+│   └── dual_mode.py             # Dual rendering mixins
+├── models/
+│   ├── base.py                  # BaseModelViewset
+│   └── crud.py                  # CRUD viewsets and mixins
+├── pages/
+│   ├── handler.py               # ComponentViews and PageHandler
+│   ├── views.py                 # Wagtail page views
+│   └── paginators.py            # Pagination helpers
+├── http/
+│   ├── detection.py             # Fragment detection
+│   ├── response.py              # Response helpers
+│   └── notifications.py         # Notification mixins
+└── rendering/
+    ├── renderers.py             # Rendering pipeline
+    └── template_resolver.py     # Template resolution
 ```
 
 ## Integration Paths

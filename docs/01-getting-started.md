@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     "django_fusion.web",             # Allauth adapters, view mixins
 
     # django-fusion — optional, only when used
-    "django_fusion.health",          # /health/ endpoints
+    "django_fusion.core.health",     # /health/ endpoints
     "django_fusion.analyzer",        # {% comp %} usage scanner
     "django_fusion.wagtail",         # Wagtail integration (only if Wagtail)
     "django_fusion.contrib",         # Admin, cache utils, privacy
@@ -103,7 +103,7 @@ TEMPLATES = [
 
 ```python
 # urls.py
-from django_fusion.health.urls import health_urlpatterns
+from django_fusion.core.health.urls import urlpatterns as health_urlpatterns
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -111,7 +111,7 @@ urlpatterns = [
 ]
 ```
 
-`/health/`, `/health/db/`, and `/health/assets/` each return JSON
+`/health/`, `/health/database/`, and `/health/assets/` each return JSON
 (see DF-009).
 
 ## Your first component
@@ -165,7 +165,7 @@ or a full page), inherit from `RoutableComponent`:
 
 ```python
 # myapp/components.py
-from django_fusion.routes import RoutableComponent
+from django_fusion.routes.components.routable import RoutableComponent
 
 class PricingRows(RoutableComponent):
     route_name = "pricing_rows"
@@ -178,7 +178,10 @@ Register via an `Application` and a `Site`:
 
 ```python
 # myapp/urls.py
-from django_fusion.routes import Site, Application
+from django_fusion.routes.core.sites import (
+    Site,
+    Application,
+)
 
 pricing_app = Application(
     title="Pricing",

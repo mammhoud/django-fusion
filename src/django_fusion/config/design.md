@@ -13,7 +13,7 @@ Path: `django_fusion/config`
 - `conf.py`
 - `conf_utils.py`
 - `constants.py`
-- `dynaconf_loader.py`
+- `loader.py`
 - `logging.py`
 
 ## Architecture

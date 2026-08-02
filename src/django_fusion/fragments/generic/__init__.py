@@ -1,24 +1,8 @@
-from .actions import BaseBulkActionView, DeleteBulkActionView
-from .base import Action, FormLayoutMixin
-from .create import CreateModelView
-from .delete import DeleteModelView
-from .detail import DetailModelView
-from .list import BaseListModelView, ListModelView
-from .search import SearchableViewMixin
-from .table import TableView
-from .update import UpdateModelView
+"""Generic model views kept in their canonical implementation modules.
 
-__all__ = [
-    "Action",
-    "BaseBulkActionView",
-    "BaseListModelView",
-    "CreateModelView",
-    "DeleteBulkActionView",
-    "DeleteModelView",
-    "DetailModelView",
-    "FormLayoutMixin",
-    "ListModelView",
-    "SearchableViewMixin",
-    "TableView",
-    "UpdateModelView",
-]
+Import concrete views directly from ``django_fusion.fragments.generic``
+submodules (for example, ``generic.list`` or ``generic.detail``). Moved
+form and search views live under ``fragments.forms`` and table views under
+``fragments.tables``; this package intentionally exports no compatibility
+aliases.
+"""

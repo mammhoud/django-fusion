@@ -8,9 +8,8 @@ from django.http import HttpResponse, HttpResponseBadRequest, StreamingHttpRespo
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 
-from django_fusion.site.interface._context_mixins import is_htmx_request, is_fragment_request
-
-from .sse import SSHTMXFragmentStreamer
+from django_fusion.plugins.htmx import is_fragment_request, is_htmx_request
+from django_fusion.plugins.htmx.sse import SSHTMXFragmentStreamer
 
 
 # Allowed characters in a dotted fragment name: alphanumerics, underscore, dash, dot.

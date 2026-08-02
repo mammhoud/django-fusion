@@ -47,14 +47,14 @@ from __future__ import annotations
 
 import logging
 import warnings
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Set
 from pathlib import Path
 from typing import Final
 
 from django.template.loader import select_template
 from django.template.backends.django import Template as DjangoTemplate
 
-from django_fusion.comp.fragment._init import Component, components
+from django_fusion.comp._init import Component, components
 from django_fusion.comp.cache import get_component_map_cache
 
 logger = logging.getLogger(__name__)
@@ -90,14 +90,11 @@ class _LazyIncludeTemplate:
         return self._resolved
 
     @property
-    def template(self) -> "django.template.Template":
-        # Expose the INNER ``django.template.Template`` so
-        # ``Component.nodelist`` (``self.template.template.nodelist``)
-        # and ``BoundComponent.render`` (``self.component.template.template.render``)
-        # land on the right object. Returning the outer
-        # ``DjangoTemplate`` here puts ``Component`` one level shallower
-        # than expected and triggers ``AttributeError: 'Template'
-        # object has no attribute 'nodelist'`` on first render.
+    def template(self):
+        # Component accesses ``self.template.template.nodelist`` and
+        # ``self.template.template.render(...)``.  Expose the inner
+        # Django template here so the lazy wrapper has the same shape as
+        # the object returned by ``DjangoTemplate.template``.
         return self._get_resolved().template
 
     def __getattr__(self, name: str):  # for duck-typed DjangoTemplate attrs
@@ -107,6 +104,46 @@ class _LazyIncludeTemplate:
         # treat ``_LazyIncludeTemplate`` as a ``DjangoTemplate`` (e.g.
         # legacy code accessing ``.origin`` / ``.engine``) working.
         return getattr(self._get_resolved(), name)
+
+
+class _LazyAssetSet(Set):
+    """Resolve sidecar assets only when a path-style component is used."""
+
+    __slots__ = ("_template", "_assets")
+
+    def __init__(self, template: _LazyIncludeTemplate) -> None:
+        self._template = template
+        self._assets = None
+
+    def _resolve(self):
+        if self._assets is None:
+            from django_fusion.plugins.manager import pm
+
+            origin = self._template.template.origin
+            origin_name = getattr(origin, "name", None)
+            if not origin_name or origin_name == "<unknown>":
+                self._assets = frozenset()
+                return self._assets
+
+            template_path = Path(origin_name)
+            asset_groups = pm.hook.collect_component_assets(
+                template_path=template_path
+            )
+            self._assets = frozenset(
+                asset
+                for assets in asset_groups
+                for asset in assets
+            )
+        return self._assets
+
+    def __contains__(self, value) -> bool:
+        return value in self._resolve()
+
+    def __iter__(self):
+        return iter(self._resolve())
+
+    def __len__(self) -> int:
+        return len(self._resolve())
 
 
 class IncludePathComponent(Component):
@@ -142,20 +179,20 @@ class IncludePathComponent(Component):
             partial references tag libraries (e.g. wagtail) not
             installed in the active settings.
         """
-        return cls(name=path, template=_LazyIncludeTemplate(path), assets=frozenset())
+        template = _LazyIncludeTemplate(path)
+        return cls(name=path, template=template, assets=_LazyAssetSet(template))
 
 
 def register_include_path(path: str) -> str:
     """Pre-register one template path as a path-style component.
 
-    Raises
-    ------
-    django.template.exceptions.TemplateDoesNotExist
-        If no engine directory resolves ``path``. Re-raised so callers
-        detect a missing template at startup rather than silently
-        ignoring it (the lazy-fallback path silently returned ``[]``,
-        which made ``{% comp "..." %}`` resolve through
-        ``Component.from_name`` later and not through the eager cache).
+    Template resolution
+    -------------------
+    The path is intentionally resolved lazily. This allows application
+    startup to register components whose template tag libraries are only
+    available after the complete Django app registry is ready. A missing
+    template raises ``TemplateDoesNotExist`` on first render, matching
+    Django's normal template-loader behavior.
 
     Returns
     -------
@@ -163,15 +200,27 @@ def register_include_path(path: str) -> str:
         The registry key under which the component is cached (verbatim
         include path). Useful for logging / chaining.
     """
-    if path in components._components:
-        return path
-    
-    components._components[path] = IncludePathComponent.from_include_path(path)
-    
-    # Cache in Redis/in-memory
+    component = components._components.get(path)
+    if component is None:
+        component = IncludePathComponent.from_include_path(path)
+        components.register(component, name=path)
+
+    alias = Path(path).stem
     cache = get_component_map_cache()
+    if alias and alias != path:
+        if components.register_alias(alias, component):
+            cache.set_component(alias, path)
+        else:
+            cache.invalidate_component(alias)
+            logger.warning(
+                "Ambiguous component alias %r for include path %r; use full paths",
+                alias,
+                path,
+            )
+
+    # The literal include path always remains resolvable.
     cache.set_component(path, path)
-    
+
     logger.debug("Registering include-path component: %s", path)
     return path
 
@@ -194,7 +243,21 @@ def register_include_paths(paths: Iterable[str]) -> list[str]:
     for path in paths:
         if path not in components._components:
             try:
-                components._components[path] = IncludePathComponent.from_include_path(path)
+                component = IncludePathComponent.from_include_path(path)
+                components.register(component, name=path)
+                alias = Path(path).stem
+                if alias and alias != path:
+                    if components.register_alias(alias, component):
+                        batch_mapping[alias] = path
+                    else:
+                        batch_mapping.pop(alias, None)
+                        get_component_map_cache().invalidate_component(alias)
+                        logger.warning(
+                            "Ambiguous component alias %r for include path %r; "
+                            "use full paths",
+                            alias,
+                            path,
+                        )
                 cached.append(path)
                 batch_mapping[path] = path
             except Exception as e:
@@ -204,6 +267,23 @@ def register_include_paths(paths: Iterable[str]) -> list[str]:
                     stacklevel=3,
                 )
         else:
+            # An earlier registration may predate alias support. Repair the
+            # missing bare alias while preserving collision safety.
+            component = components._components[path]
+            alias = Path(path).stem
+            if alias and alias != path:
+                if components.register_alias(alias, component):
+                    batch_mapping[alias] = path
+                else:
+                    batch_mapping.pop(alias, None)
+                    cache.invalidate_component(alias)
+                    logger.warning(
+                        "Ambiguous component alias %r for include path %r; "
+                        "use full paths",
+                        alias,
+                        path,
+                    )
+            batch_mapping[path] = path
             cached.append(path)
     
     # Batch cache all at once

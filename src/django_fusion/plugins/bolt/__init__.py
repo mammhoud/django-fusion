@@ -29,6 +29,10 @@ except ImportError:
 if _HAS_BOLT:
     from django_fusion.plugins.bolt.api import FusionBoltAPI, register_fusion_assets_bolt
     from django_fusion.plugins.bolt.decorators import fusion_endpoint
+    from django_fusion.plugins.bolt.mixins import (
+        FUSION_BOLT_AWARE_ATTR,
+        FusionBoltDualModeMixin,
+    )
     from django_fusion.plugins.bolt.serializers import component_serializer
     from django_fusion.plugins.bolt.auth import FusionBoltAuthBackend
 
@@ -36,6 +40,8 @@ if _HAS_BOLT:
         "FusionBoltAPI",
         "register_fusion_assets_bolt",
         "fusion_endpoint",
+        "FusionBoltDualModeMixin",
+        "FUSION_BOLT_AWARE_ATTR",
         "component_serializer",
         "FusionBoltAuthBackend",
     ]
@@ -60,6 +66,21 @@ else:
 
     FusionBoltAPI = _NoopBoltAPI  # type: ignore[misc]
 
+    # No-op stubs for bolt-aware mixin — inherits dual-mode behaviour.
+    from django_fusion.routes.components.dual_mode import FusionDualModeMixin as _FusionDualModeMixin
+
+    class FusionBoltDualModeMixin(_FusionDualModeMixin):  # type: ignore[no-redef]
+        """Placeholder when django_bolt is not installed.
+
+        Inherits ``FusionDualModeMixin`` behaviour unchanged — no
+        bolt-specific attributes or methods are added.
+        ``get_bolt_data_payload()`` is only available when ``django_bolt``
+        is installed; guard calls with ``hasattr`` or check ``_HAS_BOLT``.
+        """
+        pass
+
+    FUSION_BOLT_AWARE_ATTR = "_fusion_bolt_aware"
+
     def fusion_endpoint(*args, **kwargs):  # type: ignore[misc]
         """No-op decorator when django_bolt is not installed."""
         return lambda f: f
@@ -80,6 +101,8 @@ else:
     __all__ = [
         "FusionBoltAPI",
         "fusion_endpoint",
+        "FusionBoltDualModeMixin",
+        "FUSION_BOLT_AWARE_ATTR",
         "component_serializer",
         "FusionBoltAuthBackend",
     ]

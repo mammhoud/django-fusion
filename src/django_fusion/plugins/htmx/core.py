@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import warnings
 from typing import Any, Literal, TypeVar
 from urllib.parse import unquote
 
@@ -30,8 +31,21 @@ def is_htmx_request(request: HttpRequest) -> bool:
     return request.headers.get("HX-Request") == "true"
 
 
+def is_fragment_request(request: HttpRequest) -> bool:
+    """Return ``True`` for HTMX or Unpoly fragment requests."""
+    return is_htmx_request(request) or "X-Up-Version" in request.headers
+
+
 def supports_htmx(request: HttpRequest) -> bool:
-    """Check if request came from HTMX."""
+    """Check HTMX support and warn callers to use ``is_htmx_request``.
+
+    Deprecated since the canonical predicate is ``is_htmx_request``.
+    """
+    warnings.warn(
+        "supports_htmx() is deprecated; use is_htmx_request() instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return is_htmx_request(request)
 
 

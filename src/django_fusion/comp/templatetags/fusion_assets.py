@@ -16,8 +16,8 @@ from __future__ import annotations
 from django import template
 from django.utils.html import format_html, mark_safe
 
-# Use the canonical _get_assets_config() from the views module to avoid
-# code duplication and keep template tags in sync with the API endpoints.
+# Use the canonical merged config from the views module to keep template
+# tags and API endpoints on exactly one asset-link contract.
 from django_fusion.core.assets.views import _get_assets_config
 
 register = template.Library()

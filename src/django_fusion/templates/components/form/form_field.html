@@ -1,0 +1,101 @@
+{% load static i18n %}
+
+{% with form_block=block field_class=class_field|default:'form-field' input_group_class=class_input_group|default:'form-input-group' icon_class=class_icon|default:'form-icon' label_class=class_label|default:'form-label' control_class=class_control|default:'form-control' textarea_class=class_textarea|default:'form-textarea' select_class=class_select|default:'form-select' checkbox_group_class=class_checkbox_group|default:'form-checkbox-group' checkbox_class=class_checkbox|default:'form-checkbox' checkbox_label_class=class_checkbox_label|default:'form-checkbox-label' radio_group_class=class_radio_group|default:'form-radio-group' radio_item_class=class_radio_item|default:'form-radio-item' radio_class=class_radio|default:'form-radio' radio_label_class=class_radio_label|default:'form-radio-label' file_class=class_file|default:'form-file' input_class=class_input|default:'form-input' help_text_class=class_help_text|default:'form-help-text' error_class=class_error|default:'form-error' %}
+<div class="{{ field_class }} form-field--{{ field_config.field_width|default:'full' }}{% if form_block.value.layout == 'two-column' %} col-md-6{% elif form_block.value.layout == 'split' and field_config.field_type == 'textarea' %} full-width{% endif %}">
+
+    <div class="{{ input_group_class }}{% if form_block.value.show_icons %} has-icon icon-{{ form_block.value.icon_style|default:'inside' }}{% endif %}">
+        {% if form_block.value.show_icons %}
+        <div class="{{ icon_class }}">
+            {% block field_icon %}
+            <i class="fas fa-{{ field_config.icon|default:'edit' }}"></i>
+            {% endblock field_icon %}
+        </div>
+        {% endif %}
+
+        {% block field_label %}
+        {% if form_block.value.show_labels and field_config.label and field_config.field_type != 'checkbox' %}
+        <label for="field-{{ form_block.id }}-{{ field_config.name }}" class="{{ label_class }}">
+            {{ field_config.label }}
+            {% if field_config.required %}<span class="required">*</span>{% endif %}
+        </label>
+        {% endif %}
+        {% endblock field_label %}
+
+        <div class="{{ control_class }}">
+            {% block field_input %}
+            {% if field_config.field_type == 'textarea' %}
+            <textarea class="{{ textarea_class }}" id="field-{{ form_block.id }}-{{ field_config.name }}"
+                      name="{{ field_config.name }}"
+                      placeholder="{% if form_block.value.show_placeholders %}{{ field_config.placeholder|default:field_config.label }}{% endif %}"
+                      rows="4"
+                      {% if field_config.required %}required{% endif %}
+                      {% if field_config.min_length %}minlength="{{ field_config.min_length }}"{% endif %}
+                      {% if field_config.max_length %}maxlength="{{ field_config.max_length }}"{% endif %}
+                      {% if field_config.pattern %}pattern="{{ field_config.pattern }}"{% endif %}>{{ field_config.default_value|default:'' }}</textarea>
+
+            {% elif field_config.field_type == 'select' or field_config.field_type == 'dropdown' %}
+            <select class="{{ select_class }}" id="field-{{ form_block.id }}-{{ field_config.name }}"
+                    name="{{ field_config.name }}" {% if field_config.required %}required{% endif %}>
+                <option value="" disabled selected>{{ field_config.placeholder|default:field_config.label }}</option>
+                {% for choice in field_config.choices %}
+                <option value="{{ choice.value }}">{{ choice.label }}</option>
+                {% endfor %}
+            </select>
+
+            {% elif field_config.field_type == 'checkbox' %}
+            <div class="{{ checkbox_group_class }}">
+                <input class="{{ checkbox_class }}" type="checkbox"
+                       id="field-{{ form_block.id }}-{{ field_config.name }}"
+                       name="{{ field_config.name }}" value="true"
+                       {% if field_config.required %}required{% endif %}>
+                <label class="{{ checkbox_label_class }}" for="field-{{ form_block.id }}-{{ field_config.name }}">
+                    {{ field_config.label }}
+                    {% if field_config.required %}<span class="required">*</span>{% endif %}
+                </label>
+            </div>
+
+            {% elif field_config.field_type == 'radio' %}
+            <div class="{{ radio_group_class }}">
+                {% for choice in field_config.choices %}
+                <div class="{{ radio_item_class }}">
+                    <input class="{{ radio_class }}" type="radio"
+                           id="field-{{ form_block.id }}-{{ field_config.name }}-{{ forloop.counter }}"
+                           name="{{ field_config.name }}" value="{{ choice.value }}"
+                           {% if field_config.required %}required{% endif %}>
+                    <label class="{{ radio_label_class }}"
+                           for="field-{{ form_block.id }}-{{ field_config.name }}-{{ forloop.counter }}">{{ choice.label }}</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% elif field_config.field_type == 'file' %}
+            <input class="{{ file_class }}" type="file"
+                   id="field-{{ form_block.id }}-{{ field_config.name }}"
+                   name="{{ field_config.name }}"
+                   {% if field_config.required %}required{% endif %}
+                   accept="{% for ext in form_block.value.allowed_file_types %}.{{ ext }},{% endfor %}">
+
+            {% else %}
+            <input class="{{ input_class }}" type="{{ field_config.field_type }}"
+                   id="field-{{ form_block.id }}-{{ field_config.name }}"
+                   name="{{ field_config.name }}"
+                   value="{{ field_config.default_value|default:'' }}"
+                   placeholder="{% if form_block.value.show_placeholders %}{{ field_config.placeholder|default:field_config.label }}{% endif %}"
+                   {% if field_config.required %}required{% endif %}
+                   {% if field_config.min_length %}minlength="{{ field_config.min_length }}"{% endif %}
+                   {% if field_config.max_length %}maxlength="{{ field_config.max_length }}"{% endif %}
+                   {% if field_config.min_value %}min="{{ field_config.min_value }}"{% endif %}
+                   {% if field_config.max_value %}max="{{ field_config.max_value }}"{% endif %}
+                   {% if field_config.pattern %}pattern="{{ field_config.pattern }}"{% endif %}>
+            {% endif %}
+            {% endblock field_input %}
+        </div>
+
+        {% if field_config.help_text %}
+        <div class="{{ help_text_class }}">{{ field_config.help_text }}</div>
+        {% endif %}
+        <div class="{{ error_class }}" id="error-{{ form_block.id }}-{{ field_config.name }}"
+             data-field="{{ field_config.name }}"></div>
+    </div>
+</div>
+{% endwith %}

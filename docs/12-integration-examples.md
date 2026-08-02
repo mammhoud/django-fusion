@@ -16,7 +16,7 @@ search box and a tier filter; HTMX swaps the list fragment.
 
 ```python
 # myapp/models.py
-from django_fusion.core.models import TimeStampedModel
+from django_fusion.models import TimeStampedModel
 from django.db import models
 
 class Plan(TimeStampedModel):
@@ -38,7 +38,7 @@ class Plan(TimeStampedModel):
 
 ```python
 # myapp/views.py
-from django_fusion.routes import ModelViewset
+from django_fusion.routes.models.crud import ModelViewset
 from .models import Plan
 
 class PlanViewset(ModelViewset):
@@ -128,7 +128,8 @@ class User(TimeStampedModel):
 ### Viewset
 
 ```python
-from django_fusion.routes import ModelViewset, ViewsetMeta
+from django_fusion.routes.models.crud import ModelViewset
+from django_fusion.routes.core.base import ViewsetMeta
 from django.contrib.auth import get_user_model
 
 class UserViewset(ModelViewset):
@@ -204,7 +205,7 @@ button appears for any selected rows.
 
 ```python
 # myapp/models.py
-from django_fusion.core.managers import CachedManager
+from django_fusion.management.managers import CachedManager
 
 class Article(TimeStampedModel):
     title = models.CharField(max_length=160)

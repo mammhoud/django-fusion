@@ -31,7 +31,7 @@ class PageHandlerMiddleware:
     pass
 
 
-from .error_tracker import ErrorTrackerMiddleware  # noqa: E402
+from .errors import ErrorTrackerMiddleware  # noqa: E402
 from .access import RoleBasedAccessMiddleware  # noqa: E402
 
 __all__ = [

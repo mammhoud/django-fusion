@@ -55,7 +55,7 @@ conftest's `settings.configure(...)` is the supported path — see the
 comment in `pyproject.toml` under `[tool.pytest.ini_options]` and
 `tests/test_django_settings_configure_contract.py`.
 
-## `ComponentMappingCache` falls back unexpectedly
+## `ComponentMapCache` falls back unexpectedly
 
 **Symptom:** All requests feel `O(n)` for component lookups; Redis
 hits `0`.

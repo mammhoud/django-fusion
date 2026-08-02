@@ -17,9 +17,8 @@ output::
   :func:`django_fusion.comp.registry.register_include_path`.
 - R3 is the ``{% comp %}`` tag invoked by *component_name* — the
   bare Python identifier; the canonical "use the component by name"
-  form. The dual-key wiring in this test is the spec that the
-  production rollout must wire into :func:`register_include_path`
-  (or its alias-API successor); until then R3 fails.
+  form. The public registration API must create both identities
+  and point them at one canonical component instance.
 
 The lone test in this module is the assertion:
 ``r_include == r_comp_template_name == r_comp_component_name``.
@@ -182,7 +181,7 @@ def _reset_components():
     """Wipe registry state before AND after each test for isolation."""
     # Imports AFTER Django is configured (comp.core touches settings
     # at module-import time).
-    from django_fusion.comp.fragment._init import components
+    from django_fusion.comp._init import components
 
     components.reset()
     yield
@@ -218,28 +217,18 @@ def test_register_include_path_renders_identical_via_include_and_both_comp_invoc
        the eager cache.
     2. The same call (or a sibling aliasing helper) MUST also
        populate the bare component-name key (``auth_buttons``) so
-       R3 resolves through the same cache. The current
-       implementation populates only the verbatim key; the second
-       registration below in the test body is the spec-rollout
-       contract. Until (2) lands in production rollout, R3 fails
-       and migration is blocked.
+       R3 resolves through the same canonical component instance.
     """
     # Imports AFTER fixtures have run.
-    from django_fusion.comp.fragment._init import components
+    from django_fusion.comp._init import components
     from django_fusion.comp.registry import register_include_path
 
-    # Step 1 — exercise the existing public API. After this call,
-    # ``components._components['partials/auth_buttons.html']`` is
-    # populated; the bare-name key is NOT.
+    # The public registration API creates both identities and shares
+    # one canonical component instance under them.
     register_include_path("partials/auth_buttons.html")
 
-    # Step 2 — wire the dual-key spec. The same IncludePathComponent
-    # instance is shared under both keys; production rollout must
-    # move this into ``register_include_path`` (or its alias-API
-    # successor).
     path_key = "partials/auth_buttons.html"
     name_key = "auth_buttons"
-    components._components[name_key] = components._components[path_key]
     # Pin the spec: both registry keys MUST point to the SAME
     # IncludePathComponent instance so render-history metadata stays
     # verbatim across both invocation routes. A regression that drops

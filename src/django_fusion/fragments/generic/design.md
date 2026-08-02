@@ -2,11 +2,11 @@
 
 ## Overview
 
-This package (`components.generic`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
+This package (`fragments.generic`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
 
 ## Directory
 
-Path: `django_fusion/components/generic`
+Path: `django_fusion/fragments/generic`
 
 
 ### Modules
@@ -102,7 +102,7 @@ classDiagram
 ## Usage Example
 
 ```python
-from django_fusion.components.generic import TableView
+from django_fusion.fragments.tables.table import TableView
 
 # Wire into urls.py
 from django.urls import path

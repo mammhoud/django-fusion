@@ -20,7 +20,7 @@ from functools import cached_property
 ViewProp = cached_property
 
 
-# ── Utility functions (re-exported from django_fusion.site.interface) ──────────────────
+# ── Utility functions (re-exported from django_fusion.routes) ──────────────────
 
 def camel_case_to_underscore(name: str) -> str:
     """Convert CamelCase to underscore_case.
@@ -123,13 +123,13 @@ def __getattr__(name: str):
 
     if name in _lazy_site_classes:
         if name == "NotificationMixin":
-            from django_fusion.site.interface.notifications import NotificationMixin
+            from django_fusion.routes.http.notifications import NotificationMixin
             return NotificationMixin
         elif name == "ComponentViews":
-            from django_fusion.site.interface.page_handler import ComponentViews
+            from django_fusion.routes.pages.handler import ComponentViews
             return ComponentViews
         elif name == "PageHandler":
-            from django_fusion.site.interface.page_handler import PageHandler
+            from django_fusion.routes.pages.handler import PageHandler
             return PageHandler
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

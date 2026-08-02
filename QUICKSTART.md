@@ -10,12 +10,12 @@ tree is mounted there.
 ## 1. Import Mixins
 
 ```python
-from django_fusion.routes import (
-    RoutableComponent,
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.fragments.forms import (
     FormMixin,
-    TableMixin,
     FormTableMixin,
 )
+from django_fusion.fragments.tables import TableMixin
 ```
 
 ## 2. Create Component

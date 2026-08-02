@@ -18,6 +18,7 @@ Usage::
 from .core import (
     HtmxDetails,
     ServerSentEvent,
+    is_fragment_request,
     SSEMixin,
     is_htmx_request,
     push_url,
@@ -30,6 +31,7 @@ from .core import (
 __all__ = [
     "HtmxDetails",
     "ServerSentEvent",
+    "is_fragment_request",
     "SSEMixin",
     "is_htmx_request",
     "push_url",

@@ -51,8 +51,8 @@ def template_dir():
 
 @pytest.fixture
 def registered_component(template_settings):
-    from django_fusion.routes.components import RoutableComponent
-    from django_fusion.routes.fragments import FragmentComponent
+    from django_fusion.routes.components.routable import RoutableComponent
+    from django_fusion.routes.components.fragments import FragmentComponent
 
     class DemoComponent(FragmentComponent):
         route_name = "demo"

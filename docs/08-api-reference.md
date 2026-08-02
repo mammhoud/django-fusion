@@ -16,15 +16,36 @@
 ## Routing — `django_fusion.routes`
 
 ```python
-from django_fusion.routes import (
-    Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path,
-    IndexViewMixin, viewprop,
-    BaseModelViewset, ModelViewset, ReadonlyModelViewset,
-    ListBulkActionsMixin, CreateViewMixin, UpdateViewMixin,
-    DeleteViewMixin, DetailViewMixin,
-    Application, AppMenuMixin, Site,
-    RoutableComponent, FragmentComponent,
-    FragmentDetector, FragmentDetectionMixin,
+from django_fusion.routes.core.base import (
+    Viewset,
+    BaseViewset,
+    ViewsetMeta,
+    Route,
+    route,
+    menu_path,
+    IndexViewMixin,
+)
+from django_fusion.core.utils import viewprop
+from django_fusion.routes.models.base import BaseModelViewset
+from django_fusion.routes.models.crud import (
+    ModelViewset,
+    ReadonlyModelViewset,
+    ListBulkActionsMixin,
+    CreateViewMixin,
+    UpdateViewMixin,
+    DeleteViewMixin,
+    DetailViewMixin,
+)
+from django_fusion.routes.core.sites import (
+    Application,
+    AppMenuMixin,
+    Site,
+)
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.routes.components.fragments import FragmentComponent
+from django_fusion.routes.http.detection import (
+    FragmentDetector,
+    FragmentDetectionMixin,
 )
 ```
 
@@ -44,14 +65,18 @@ from django_fusion.routes import (
 
 See [DF-005 Routing](./05-routing.md) for the full breakdown.
 
-## Generic CBVs — `django_fusion.components.generic`
+## Generic CBVs — concrete `django_fusion.fragments` modules
 
 ```python
-from django_fusion.components.generic import (
-    Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
-    DetailModelView, ListModelView, UpdateModelView,
-    BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
-)
+from django_fusion.fragments.generic.base import Action
+from django_fusion.fragments.generic.list import BaseListModelView, ListModelView
+from django_fusion.fragments.generic.detail import DetailModelView
+from django_fusion.fragments.generic.actions import BaseBulkActionView, DeleteBulkActionView
+from django_fusion.fragments.forms.create import CreateModelView
+from django_fusion.fragments.forms.update import UpdateModelView
+from django_fusion.fragments.forms.delete import DeleteModelView
+from django_fusion.fragments.forms.search import SearchableViewMixin
+from django_fusion.fragments.tables.table import TableView
 ```
 
 | Symbol | Role |
@@ -63,27 +88,25 @@ from django_fusion.components.generic import (
 | `SearchableViewMixin` | Adds `?q=...` filter wiring. |
 | `TableView` | Auto-renders through `components/table.html` when paired with `table_headers`. |
 
-## Handlers / Managers / Models / Services — `django_fusion.core`
+## Handlers / Managers / Models / Services
 
 ```python
-from django_fusion.core.handlers import PageHandler       # base CBV mixin
-from django_fusion.core.managers import CachedManager     # cache-aware manager
-from django_fusion.core.models import TimeStampedModel    # created/updated_at
-from django_fusion.core.services import BaseService       # CRUD-with-events base
-from django_fusion.core.cache import CacheService         # singleton cache API
-# middlewares: see src/django_fusion/projects/middlewares.py
+from django_fusion.routes.pages.handler import PageHandler
+from django_fusion.management.managers import CachedManager
+from django_fusion.models import TimeStampedModel
+from django_fusion.services.base import BaseService
+from django_fusion.comp.cache import ComponentMapCache, get_component_map_cache
+from django_fusion.core.middlewares.errors import ErrorTrackerMiddleware
 ```
 
-> See `src/django_fusion/projects/{handlers.py,managers.py,models.py,services.py,cache.py,middlewares.py}`
-> for the full class list. Each top-level module exports a small public
-> surface; everything else is considered internal and may move without
-> notice.
+These are the concrete maintained modules. Import from them directly rather
+than relying on historical package barrels.
 
 ## Filters / Views / Loaders — `django_fusion.web` and `django_fusion.comp.loaders`
 
 ```python
 from django_fusion.web.views import FilterMixin, SearchMixin
-from django_fusion.comp.fragment.loader import component_loader
+from django_fusion.comp.loader.htmx import component_loader
 ```
 
 | Symbol | Role |
@@ -102,13 +125,13 @@ from django_fusion.wagtail.viewsets  import export_to_csv, BaseSnippetViewSet
 
 See [DF-010 Wagtail](./10-wagtail-integration.md).
 
-## Health — `django_fusion.health`
+## Health — `django_fusion.core.health`
 
 ```python
-from django_fusion.health.views import (
+from django_fusion.core.health.views import (
     HealthCheckView, DatabaseHealthView, AssetsHealthView,
 )
-from django_fusion.health.urls   import health_urlpatterns
+from django_fusion.core.health.urls import urlpatterns as health_urlpatterns
 ```
 
 See [DF-009 Health](./09-health.md).
@@ -120,7 +143,7 @@ from django_fusion.config.conf             import ImportStrategy, import_attribu
 from django_fusion.config.conf_utils       import (
     ImportStrategy, import_model, import_form, import_adapter,
 )
-from django_fusion.config.dynaconf_loader import (
+from django_fusion.config.loader import (
     DynaconfSettings, ModelsRegistry, TemplateRegistry, load_dynaconf_settings,
 )
 ```
@@ -134,11 +157,11 @@ not a public re-export barrel.
 
 ```python
 from django_fusion.comp.cache import (
-    ComponentMappingCache, get_component_map_cache,
+    ComponentMapCache, get_component_map_cache,
 )
 ```
 
 | Symbol | Role |
 |--------|------|
-| `ComponentMappingCache` | Maps dotted `fragment_name` → template path. |
+| `ComponentMapCache` | Maps component names → template paths. |
 | `get_component_map_cache()` | Singleton accessor. Returns the active cache instance. |

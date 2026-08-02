@@ -4,12 +4,12 @@ Package layout
 --------------
 django_fusion.comp           Server-side component system (slots, props, HTMX loaders).
   .cache                    Redis-backed component mapping cache with fallback.
-  .configuration            Component manifest, options, and config schema.
+  .config                    Component manifest, options, and config schema.
   .core                     Component bootstrap and lifecycle.
   .forms                    Form layout helpers for component rendering.
-  .loaders                  Lazy/HTMX-safe ``component_loader`` decorator.
+  .loader                    Lazy/HTMX-safe ``component_loader`` decorator.
   .payloads                 JSON payload service for HTMX component responses.
-  .plugins                  Pluggy-based hook system for extending components.
+  .plugins                   Pluggy-based hook system for extending components.
   .static                   Static file discovery and asset manifest helpers.
   .templates                Template discovery, URL routing, and rendering engine.
   .templatetags             ``comp``, ``slot``, ``prop``, ``var``, ``css``, ``js``,
@@ -19,7 +19,7 @@ django_fusion.fragments     Reusable component mixins and generic CBVs.
   .tables                   Table rendering mixins and row generators.
   .generic                  Generic CBVs: list, create, update, delete, search.
 django_fusion.config         Package-level configuration constants and conf helpers.
-  .dynaconf_loader          Multi-environment YAML configuration with Dynaconf.
+  .loader          Multi-environment YAML configuration with Dynaconf.
 django_fusion.contrib        Shared admin, cache utils, debug tools, and privacy helpers.
 django_fusion.core           Foundational layer — models, managers, services, utils.
   .cache                    Pluggable cache manager base classes.
@@ -47,7 +47,7 @@ django_fusion.core           Core layer — models, managers, services, utils, v
 django_fusion.routes         Declarative, class-based URL routing for Django projects.
 django_fusion.site           Unified site layer.
   .management               Management commands and scripts.
-  .interface                 Site interface layer (formerly ci) — pagination, context, auth.
+  .auth                     Authentication mixins and adapters.
     .adapters                 Site-level allauth adapter.
     .auth                     Auth forms, role/token models, allauth adapters.
     .choices                  Choice enums: cart, contact, message, styles, token.
@@ -57,28 +57,32 @@ django_fusion.site           Unified site layer.
     .schemas                  Pydantic response schemas, serializers, user schemas.
     .views                    Site-level views: notifications, tag management.
 django_fusion.wagtail        Wagtail integration: blocks, snippets, viewsets.
-django_fusion.web            Web layer: allauth adapters (shim for core.adapters), auth backends (shim for core.backends), view mixins (shim for core.views).
+django_fusion  .web            Web layer: allauth adapters, auth backends, and view mixins.
   .adapters                 django-allauth account and social adapters.
   .backends                 Custom authentication backends.
   .views                    FilterMixin, SearchMixin for class-based views.
 
 Canonical import paths
 -----------------------
-Routing:           from django_fusion.routes import Viewset, Site, ...
-Generic CBVs:      from django_fusion.fragments.generic import ListModelView, ...
+Routing:           from django_fusion.routes.core.base import Viewset
+                   from django_fusion.routes.core.sites import Site
+Generic CBVs:      from django_fusion.fragments.generic.list import ListModelView
+                   from django_fusion.fragments.forms.create import CreateModelView
+                   from django_fusion.fragments.forms.search import SearchableViewMixin
+                   from django_fusion.fragments.tables.table import TableView
 Forms/Tables:      from django_fusion.fragments.forms import FormMixin
                    from django_fusion.fragments.tables import TableMixin
 Health:            from django_fusion.core.health import HealthCheckView, DatabaseHealthView
 Assets:            from django_fusion.core.assets import AssetsTopView, AssetsBottomView, AssetsManifestView
 Middlewares:       from django_fusion.core.middlewares import ErrorTrackerMiddleware, DefaultLanguageMiddleware
-Handlers:          from django_fusion.core.handlers import ...
-Managers:          from django_fusion.core.managers import ...
-Models:            from django_fusion.core.models import ...
-Services:          from django_fusion.core.services import ...
+Handlers:          from django_fusion.routes.pages.handler import ...
+Managers:          from django_fusion.management.managers import ...
+Models:            from django_fusion.models import ...
+Services:          from django_fusion.services import ...
 Views:             from django_fusion.web.views import ...
-Loaders:           from django_fusion.comp.fragment.loaders import ...
-Cache:             from django_fusion.core.cache import ...
-Dynaconf Config:   from django_fusion.config.dynaconf_loader import DynaconfSettings
+Loaders:           from django_fusion.comp.loader import ...
+Cache:             from django_fusion.comp.cache import ...
+Dynaconf Config:   from django_fusion.config.loader import DynaconfSettings
 """
 
 __version__ = "0.1.0"

@@ -12,50 +12,77 @@ All imports use the re-export-free canonical paths below.
 ### Routing (`comp.routes`)
 
 ```python
-from django_fusion.routes import (
-    Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path, IndexViewMixin,
-    viewprop,  # Descriptor
-    BaseModelViewset, ModelViewset, ReadonlyModelViewset,
-    ListBulkActionsMixin, CreateViewMixin, UpdateViewMixin, DeleteViewMixin, DetailViewMixin,
-    Application, AppMenuMixin, Site,
-    RoutableComponent, FragmentComponent,
-    FragmentDetector, FragmentDetectionMixin,
+from django_fusion.routes.core.base import (
+    Viewset,
+    BaseViewset,
+    ViewsetMeta,
+    Route,
+    route,
+    menu_path,
+    IndexViewMixin,
+)
+from django_fusion.core.utils import viewprop
+from django_fusion.routes.models.crud import (
+    ModelViewset,
+    ReadonlyModelViewset,
+    ListBulkActionsMixin,
+    CreateViewMixin,
+    UpdateViewMixin,
+    DeleteViewMixin,
+    DetailViewMixin,
+)
+from django_fusion.routes.core.sites import (
+    Application,
+    AppMenuMixin,
+    Site,
+)
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.routes.components.fragments import FragmentComponent
+from django_fusion.routes.http.detection import (
+    FragmentDetector,
+    FragmentDetectionMixin,
 )
 ```
 
-### Generic CBVs (`comp.generic`)
+### Generic CBVs (`fragments`)
+
+Import each view from its concrete implementation module:
 
 ```python
-from django_fusion.components.generic import (
-    Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
-    DetailModelView, ListModelView, UpdateModelView,
-    BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
-)
+from django_fusion.fragments.generic.base import Action
+from django_fusion.fragments.generic.list import BaseListModelView, ListModelView
+from django_fusion.fragments.generic.detail import DetailModelView
+from django_fusion.fragments.generic.actions import BaseBulkActionView, DeleteBulkActionView
+from django_fusion.fragments.forms.create import CreateModelView
+from django_fusion.fragments.forms.update import UpdateModelView
+from django_fusion.fragments.forms.delete import DeleteModelView
+from django_fusion.fragments.forms.search import SearchableViewMixin
+from django_fusion.fragments.tables.table import TableView
 ```
 
-### Forms & Tables (`comp.contrib`)
+### Forms & Tables (`fragments`)
 
 ```python
-from django_fusion.contrib.tables import TableMixin, RowGenerator
-from django_fusion.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
+from django_fusion.fragments.forms import FormMixin
+from django_fusion.fragments.tables import TableMixin
 ```
 
-Legacy imports from ``django_fusion.routes.forms_tables`` still work
-but are forwarded to ``comp.contrib`` internally.
+Use these concrete canonical modules directly; the package does not provide
+legacy forwarding shims.
 
 ### Other Canonical Paths
 
 | Module | Canonical Path |
 |--------|---------------|
-| Handlers | `django_fusion.core.handlers` |
-| Managers | `django_fusion.core.managers` |
-| Models | `django_fusion.core.models` |
-| Services | `django_fusion.core.services` |
+| Handlers | `django_fusion.management.handlers` |
+| Managers | `django_fusion.management.managers` |
+| Models | `django_fusion.models` |
+| Services | `django_fusion.services` |
 | Views (FilterMixin, SearchMixin) | `django_fusion.web.views` |
-| Loaders | `django_fusion.comp.loaders` |
+| Loaders | `django_fusion.comp.loader` |
 | Middlewares | `django_fusion.core.middlewares` |
-| Cache | `django_fusion.core.cache` |
-| Dynaconf config | `django_fusion.config.dynaconf_loader` |
+| Cache | `django_fusion.comp.cache` |
+| Dynaconf config | `django_fusion.config.loader` |
 
 ## Component Tag (`{% comp %}`)
 
@@ -75,10 +102,10 @@ django_fusion/
 │   ├── routes/      # Site, Application, ModelViewset, RoutableComponent, FragmentComponent
 │   ├── generic.py   # ListModelView, CreateModelView, DeleteModelView, TableView
 │   ├── forms/       # FormMixin, TableMixin, FormTableMixin
-│   ├── loaders.py   # component_loader decorator
+│   ├── loader/      # component_loader decorator and HTMX loader helpers
 │   ├── cache.py     # ComponentMapping cache (Redis fallback)
 │   └── templatetags/ # {% comp %}, {% slot %}, {% prop %}, {% var %}
-├── config/          # Configuration (dynaconf_loader, constants)
+├── config/          # Configuration (loader, constants)
 ├── contrib/         # admin, cache, debug_tools, email_config, privacy
 ├── projects/            # Handlers, managers, models, services, cache, middlewares
 ├── health/          # HealthCheckView, DatabaseHealthView, AssetsHealthView
@@ -147,7 +174,7 @@ register_include_path("shared/components")
 `RoutableComponent` and `FragmentComponent` derive `fragment_name` from class/module names. Override `get_fragment_name()` or set `fragment_name` explicitly to control the rendered fragment.
 
 ```python
-from django_fusion.routes import RoutableComponent
+from django_fusion.routes.components.routable import RoutableComponent
 
 class MyPage(RoutableComponent):
     fragment_name = "pages.my_custom_page"
@@ -196,5 +223,35 @@ Stable doc IDs — equally valid from the standalone repo or the submodule.
 | DF-013 | Troubleshooting | `docs/13-troubleshooting.md` |
 | DF-014 | FAQ | `docs/14-faq.md` |
 | DF-015 | Viewflow mapping | `docs/15-viewflow-mapping.md` |
+
+## Asset pipeline configuration and integration
+
+Use `django_fusion.config.assets.AssetPipelineOptions` and
+`get_asset_pipeline_options()` for resolved asset settings. Sites may define
+`FUSION_ASSET_PIPELINE` with `webpack.stats_file`, `webpack.bundle_dir`, and
+`components.manifest_path`, while `FUSION_ASSETS` supplies explicit top/bottom
+links. The API views and `fusion_assets` template tags consume the merged
+manifest; do not create separate link builders.
+
+Keep source assets, webpack bundles, and `STATIC_ROOT` separate. Merge public
+links and deduplicate them at manifest time. Validate the webpack build before
+collectstatic, then serve only generated/static URLs to the browser.
+
+## Configuration and loader migration technique
+
+- Keep the config package organized by responsibility; use `config/loader.py` as the canonical Dynaconf implementation module.
+- Rename internal `*_loader.py` modules to `loader.py` only when the module is owned by django-fusion. Do not rename third-party package paths such as `webpack_loader`, template-loader APIs, or loader function names.
+- Update every active Python import, docstring example, Make target, and documentation link in the same change.
+- Do not add compatibility re-exports, alias modules, `sys.modules` shims, or duplicate files. Consumers must import the canonical module directly.
+- After a rename, run a repository scan for the old path and validate imports, compilation, package tests, and the consuming site's checks.
+
+## CMS Fusion asset process
+
+The CMS Fusion project owns its asset source tree at `projects/cms-fusion/assets/`.
+Its required process directories are `styles/` (design/SCSS source),
+`static/js/` and `static/styles/` (Django runtime static source/output),
+`fixtures/` (categorized data), and `media/` (runtime uploads). Keep generated
+`staticfiles/` and site bundles separate from source directories. Add or update
+asset contract tests when changing this layout.
 
 # @tested django-fusion - Component system, routing, forms/tables, all canonical import paths verified with pytest

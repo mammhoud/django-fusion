@@ -6,7 +6,7 @@ django_fusion.components.forms — Form integration with tag generation.
 
 ## Directory
 
-Path: `django_fusion/components/forms`
+Path: `django_fusion/fragments/forms`
 
 
 ### Modules
@@ -32,7 +32,7 @@ classDiagram
 ## Usage Example
 
 ```python
-from django_fusion.components.forms import FormTableMixin
+from django_fusion.fragments.forms import FormTableMixin
 
 # Use the mixin in your own view/component class
 class MyView(FormTableMixin, TemplateView):

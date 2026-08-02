@@ -1,4 +1,4 @@
-# `django_fusion.comp.fragment.plugins.unpoly`
+# `django_fusion.plugins.unpoly`
 
 Unpoly plugin for django-fusion fragments.
 
@@ -12,7 +12,7 @@ Unpoly plugin for django-fusion fragments.
 ## Example
 
 ```python
-from django_fusion.comp.fragment.plugins.unpoly import DjangoAdapter
+from django_fusion.plugins.unpoly import DjangoAdapter
 
 
 def my_view(request):
@@ -22,9 +22,5 @@ def my_view(request):
         request.up.layer.accept()
 ```
 
-## Backward compatibility
-
-- `django_fusion.comp.loader.up.Unpoly`
-- `django_fusion.ci.adapters.main.DjangoAdapter`
-
-still work. New code should prefer the paths above.
+Use the canonical `django_fusion.plugins.unpoly` imports above. Legacy package
+paths are not part of the public API.

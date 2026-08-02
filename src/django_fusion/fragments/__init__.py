@@ -33,7 +33,7 @@ from .registry import (
     register_fragment_component,
     unregister_fragment_component,
 )
-from .sse import SSHTMXFragmentStreamer
+from django_fusion.plugins.htmx.sse import SSHTMXFragmentStreamer
 from .views import FragmentRequestView
 
 __all__ = [

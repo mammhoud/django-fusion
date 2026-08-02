@@ -126,7 +126,7 @@ automatically and the endpoint routes to that component instead of a plain
 template.
 
 ```python
-from django_fusion.routes.fragments import FragmentComponent
+from django_fusion.routes.components.fragments import FragmentComponent
 
 class HeroComponent(FragmentComponent):
     fragment_name = "components.home.hero"
@@ -179,8 +179,8 @@ templates).
 ### Application with a landing layout
 
 ```python
-from django_fusion.routes.sites import Application, Site
-from django_fusion.routes.components import RoutableComponent
+from django_fusion.routes.core.sites import Application, Site
+from django_fusion.routes.components.routable import RoutableComponent
 
 class HomeComponent(RoutableComponent):
     route_name = "home"
@@ -203,7 +203,7 @@ site.register(MyApp)
 ### Fragment component used on multiple pages
 
 ```python
-from django_fusion.routes.fragments import FragmentComponent
+from django_fusion.routes.components.fragments import FragmentComponent
 
 class HeroFragment(FragmentComponent):
     fragment_name = "myapp.home.hero"
@@ -229,7 +229,7 @@ A ``RoutableComponent`` can also expose context that fragments on the same
 page will receive via ``get_context_data``::
 
 ```python
-from django_fusion.routes.components import RoutableComponent
+from django_fusion.routes.components.routable import RoutableComponent
 
 class HomePage(RoutableComponent):
     route_name = "home"

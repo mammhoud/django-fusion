@@ -8,10 +8,10 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from modelcluster.contrib.taggit import ClusterTaggableManager
-from wagtail.admin.panels import (
-    FieldPanel,
-    MultiFieldPanel,
-)
+if "wagtail" in settings.INSTALLED_APPS:
+    from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+else:
+    FieldPanel = MultiFieldPanel = None
 
 logger = logging.getLogger(__name__)
 
@@ -88,35 +88,39 @@ class DefaultBase(models.Model):
         help_text=_("Description for search engines and social sharing"),
     )
 
-    # Promote panels for Wagtail admin
-    promote_panels = [
-        MultiFieldPanel(
-            [
-                FieldPanel("search_description"),
-            ],
-            heading=_("For search engines"),
-        ),
-        MultiFieldPanel(
-            [
-                FieldPanel("live"),
-                FieldPanel("first_published_at"),
-                FieldPanel("last_published_at"),
-            ],
-            heading=_("Publishing"),
-        ),
-    ]
-
-    # Settings panels
-    settings_panels = [
-        MultiFieldPanel(
-            [
-                FieldPanel("is_active"),
-                FieldPanel("created_by"),
-                FieldPanel("updated_by"),
-            ],
-            heading=_("Settings"),
-        ),
-    ]
+    # Wagtail admin panels are only built when the Wagtail app is installed.
+    promote_panels = (
+        [
+            MultiFieldPanel(
+                [FieldPanel("search_description")],
+                heading=_("For search engines"),
+            ),
+            MultiFieldPanel(
+                [
+                    FieldPanel("live"),
+                    FieldPanel("first_published_at"),
+                    FieldPanel("last_published_at"),
+                ],
+                heading=_("Publishing"),
+            ),
+        ]
+        if FieldPanel is not None
+        else []
+    )
+    settings_panels = (
+        [
+            MultiFieldPanel(
+                [
+                    FieldPanel("is_active"),
+                    FieldPanel("created_by"),
+                    FieldPanel("updated_by"),
+                ],
+                heading=_("Settings"),
+            )
+        ]
+        if FieldPanel is not None
+        else []
+    )
 
     class Meta:
         app_label = "shared"
@@ -453,17 +457,21 @@ class ContentBase(EnhancedBase):
         help_text=_("Additional internal notes about the content."),
     )
     
-    # Content panels for Wagtail admin
-    content_panels = [
-        FieldPanel("title"),
-        FieldPanel("subtitle"),
-        FieldPanel("description"),
-        FieldPanel("excerpt"),
-        FieldPanel("order"),
-        FieldPanel("is_published"),
-        FieldPanel("published_at"),
-        FieldPanel("notes"),
-    ]
+    # Content panels for Wagtail admin, when Wagtail is installed.
+    content_panels = (
+        [
+            FieldPanel("title"),
+            FieldPanel("subtitle"),
+            FieldPanel("description"),
+            FieldPanel("excerpt"),
+            FieldPanel("order"),
+            FieldPanel("is_published"),
+            FieldPanel("published_at"),
+            FieldPanel("notes"),
+        ]
+        if FieldPanel is not None
+        else []
+    )
 
     class Meta:
         abstract = True

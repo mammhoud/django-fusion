@@ -69,6 +69,7 @@ from __future__ import annotations
 
 import json
 import logging
+import warnings
 from typing import Any, Optional
 from functools import wraps
 
@@ -444,36 +445,48 @@ class ComponentMapCache:
         from datetime import datetime
         return datetime.utcnow().isoformat()
     
-    def invalidate(self, pattern: str) -> int:
-        """Invalidate cache entries matching a pattern.
-        
-        Parameters
-        ----------
-        pattern : str
-            Cache key pattern (e.g., "comp:component:*")
-        
-        Returns
-        -------
-        int
-            Number of keys invalidated
+    def invalidate_component(self, name: str) -> bool:
+        """Delete one component mapping through Django's public cache API.
+
+        Alias collision handling knows the exact component name, so it must
+        not depend on Redis-only pattern/key APIs. This works consistently
+        with Redis, database, filesystem, and local-memory backends.
         """
+        key = f"{self.COMPONENT_KEY_PREFIX}{name}"
+        if self._enabled:
+            try:
+                return bool(cache.delete(key))
+            except Exception as exc:
+                logger.warning("Failed to invalidate component %r: %s", name, exc)
+                return False
+        return self._in_memory_cache.pop(key, None) is not None
+
+    def invalidate(self, pattern: str) -> int:
+        """Invalidate an exact component key or an in-memory pattern.
+
+        Exact component keys (``comp:component:<name>``) are portable and
+        are deleted through :meth:`invalidate_component`. Wildcard scans are
+        retained only for the in-memory fallback; enabled backends reject
+        them because Django's public cache API has no portable key scan.
+        Callers should prefer :meth:`invalidate_component`.
+        """
+        prefix = self.COMPONENT_KEY_PREFIX
+        if pattern.startswith(prefix) and not any(char in pattern for char in "*?[]"):
+            return int(self.invalidate_component(pattern.removeprefix(prefix)))
+
         if not self._enabled:
-            # For in-memory, just remove matching keys
-            keys_to_delete = [k for k in self._in_memory_cache.keys() if pattern in k]
+            keys_to_delete = [key for key in self._in_memory_cache if pattern in key]
             for key in keys_to_delete:
                 del self._in_memory_cache[key]
             return len(keys_to_delete)
-        
-        try:
-            # Redis pattern deletion
-            client = cache._cache
-            keys = client.keys(pattern)
-            if keys:
-                client.delete(*keys)
-            return len(keys) if keys else 0
-        except Exception as e:
-            logger.warning(f"Failed to invalidate pattern {pattern}: {e}")
-            return 0
+
+        warnings.warn(
+            "Wildcard component cache invalidation is unsupported on portable "
+            "cache backends; use invalidate_component(name)",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return 0
 
 
 # Singleton instance

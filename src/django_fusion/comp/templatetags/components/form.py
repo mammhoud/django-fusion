@@ -14,7 +14,7 @@ from typing import Any
 from django_fusion.comp.templatetags.components import register
 
 
-@register.inclusion_tag("fusion/components/form/form.html", takes_context=False)
+@register.inclusion_tag("components/form/form.html", takes_context=False)
 def form(
     form: Any = None,
     hx_post: str = "",

@@ -1,6 +1,6 @@
 """Stub tag library for wagtailcore_tags in the django-fusion test environment.
 
-The canonical django_fusion/comp/templates/components/form/form_block.html
+The canonical django_fusion/templates/components/form/form_block.html
 template loads wagtailcore_tags for production use (Wagtail richtext rendering).
 The test environment doesn't have Wagtail installed, so this stub provides
 an empty Library plus a pass-through `richtext` filter so get_template()

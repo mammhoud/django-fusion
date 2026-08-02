@@ -7,7 +7,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 from urllib.parse import parse_qs, urlencode
 
-from django_fusion.comp.configuration.options import Options
+from django_fusion.config.options import Options
 
 from .adapter import BaseAdapter
 

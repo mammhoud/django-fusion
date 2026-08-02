@@ -42,10 +42,7 @@ def _section_id(template_path: str, section_name: str) -> str:
     """
     return f"sec--{_slug(template_path)}--{_slug(section_name)}"
 
-# Re-exported for backward compat -- moved to scanner.py so the depth cap
-# applies regardless of whether callers go through the view or call scan()
-# directly. New callers should import MAX_DEPTH from scanner.
-__all__ = ["AnalyzeView", "MAX_DEPTH"]
+__all__ = ["AnalyzeView"]
 
 
 def _coerce_depth(raw: object) -> int:

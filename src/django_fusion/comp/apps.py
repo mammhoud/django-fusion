@@ -9,7 +9,7 @@ class CoreExtAppConfig(AppConfig):
 
     def ready(self):
         from django_fusion.plugins import pm
-        from .configuration.staticfiles import asset_types
+        from django_fusion.config.staticfiles import asset_types
 
         for pre_ready in pm.hook.pre_ready():
             pre_ready()
@@ -19,7 +19,7 @@ class CoreExtAppConfig(AppConfig):
         # Register django-fusion built-in component templates.
         _register_builtin_component_paths()
 
-        from django_fusion.plugins.webpack_compat import _patch_webpack_loader
+        from django_fusion.plugins.webpack.webpack_compat import _patch_webpack_loader
 
         _patch_webpack_loader()
 
@@ -71,8 +71,7 @@ def _register_builtin_component_paths():
         "fusion/components/cookies/cookie-policy.html",
         "fusion/components/cookies/privacy-policy.html",
     ]
-    # Form components: canonical fusion/ paths plus legacy aliases.
+    # Form components use the package-wide canonical components/ namespace.
     for _name in ("form", "form_block", "form_field", "form_simple"):
-        built_in.append(f"fusion/components/form/{_name}.html")
         built_in.append(f"components/form/{_name}.html")
     register_include_paths(built_in)

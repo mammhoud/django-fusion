@@ -97,15 +97,11 @@ TEST_SETTINGS: dict = {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
             # Django's `APP_DIRS` only scans `<app>/templates/` (top
             # level). django-fusion ships canonical templates under
-            # `django_fusion/templates/` (the new `fusion/` component
-            # namespace) and also keeps some backward-compatible stubs
-            # under `django_fusion/comp/templates/`. Add both explicitly
-            # so `get_template()` can resolve paths like
-            # "components/form/form_block.html" and
-            # "fusion/components/form/form_block.html".
+            # `django_fusion/templates/` (the package component
+            # namespace). Add it explicitly so `get_template()` can
+            # resolve paths like "components/form/form_block.html".
             "DIRS": [
                 os.path.join(os.path.dirname(django_fusion.__file__), "templates"),
-                os.path.join(os.path.dirname(django_fusion.__file__), "comp", "templates"),
             ],
             "APP_DIRS": True,
             "OPTIONS": {

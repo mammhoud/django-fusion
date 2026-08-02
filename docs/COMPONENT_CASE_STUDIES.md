@@ -1382,7 +1382,7 @@ or sidebar, with per-app sub-menus.
 ```python
 # views.py
 from django_fusion.web.rendering import TemplateRenderer
-from django_fusion.routes import Site
+from django_fusion.routes.core.sites import Site
 
 def render_main_menu(request) -> str:
     site = Site.get_current(request)
@@ -1483,7 +1483,7 @@ automatically registered under the same component name.
 string:
 
 ```python
-from django_fusion.routes import FragmentComponent
+from django_fusion.routes.components.fragments import FragmentComponent
 from django_fusion.web.rendering import TemplateRenderer
 
 class PostPreviewFragment(FragmentComponent):

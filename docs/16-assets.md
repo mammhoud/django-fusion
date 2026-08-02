@@ -45,6 +45,33 @@ This exposes three endpoints:
 
 ## Configuration
 
+`FUSION_ASSET_PIPELINE` controls how generated webpack output and component
+manifests are merged with explicit top/bottom links. It is resolved by
+`AssetPipelineOptions`; the API and template tags use the same merged result.
+
+```python
+FUSION_ASSET_PIPELINE = {
+    "enabled": True,
+    "static_url": "/static/",
+    "webpack": {
+        "enabled": True,
+        "stats_file": "/srv/site/assets/bundles/cms-fusion/bundles.json",
+        "bundle_dir": "bundles/cms-fusion/",
+    },
+    "components": {
+        "enabled": True,
+        "manifest_path": "/srv/site/assets/staticfiles/components/manifest.json",
+    },
+}
+```
+
+The pipeline reads webpack `chunks` (and legacy `assets` maps), converts CSS
+and JS outputs into `STATIC_URL` links, and removes duplicate links. It never
+moves or serves `assets/` source files directly. Run `collectstatic` after the
+webpack build, then run `generate_asset_manifest` (the CMS Fusion `collectstatic`
+target and workspace `build-collect` flow do this automatically) so generated
+bundles and component manifests are available from `STATIC_ROOT`.
+
 Configure via `FUSION_ASSETS` in Django settings:
 
 ```python
@@ -198,4 +225,4 @@ Key behaviors:
 
 - [DF-009 Health Checks](./09-health.md) — the health module beside which assets lives
 - [DF-003 Component System](./03-component-system.md) — template tags and component loading
-- [DF-007 Configuration](./07-configuration.md) — `FUSION_ASSETS` setting
+- [DF-007 Configuration](./07-configuration.md) — `FUSION_ASSETS` and `FUSION_ASSET_PIPELINE`

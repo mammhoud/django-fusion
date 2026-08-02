@@ -26,7 +26,7 @@ from django_fusion.contrib import TableMixin, RowGenerator, FormMixin, FormTagGe
 
 ```python
 from django_fusion.routes.forms_tables import TableMixin  # → forwarded to contrib
-from django_fusion.routes import FormMixin                 # → forwarded to contrib
+from django_fusion.fragments.forms import FormMixin
 ```
 
 ## Table Usage
@@ -34,7 +34,7 @@ from django_fusion.routes import FormMixin                 # → forwarded to co
 ### Basic — Auto-generated from Model
 
 ```python
-from django_fusion.routes import RoutableComponent
+from django_fusion.routes.components.routable import RoutableComponent
 from django_fusion.contrib.tables import TableMixin
 
 class ProductList(RoutableComponent, TableMixin):
@@ -103,7 +103,7 @@ gen = RowGenerator(
 ### Basic — Auto-ModelForm from Model
 
 ```python
-from django_fusion.routes import RoutableComponent
+from django_fusion.routes.components.routable import RoutableComponent
 from django_fusion.contrib.forms import FormMixin
 
 class ProductCreate(RoutableComponent, FormMixin):

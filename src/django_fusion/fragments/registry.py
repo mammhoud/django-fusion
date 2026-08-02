@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
     # Avoid circular imports at module load time.
-    from django_fusion.routes.fragments import FragmentComponent
+    from django_fusion.routes.components.fragments import FragmentComponent
 
 
 # Mapping of dotted fragment identifiers to component classes.

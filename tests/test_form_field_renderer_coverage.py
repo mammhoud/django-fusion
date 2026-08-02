@@ -1,7 +1,8 @@
 """Render-coverage tests for the canonical form-field renderer.
 
-Exercises ``applications/assets/templates/components/form/form_field.html``
-end-to-end through the two calling paths the runtime exposes:
+Exercises the package-owned
+``src/django_fusion/templates/components/form/form_field.html`` end-to-end
+through the two calling paths the runtime exposes:
 
 * **Path 1** — Wagtail StreamField child-block. The caller supplies a
   ``SimpleNamespace``-shaped ``block`` plus a ``field_config`` directly.
@@ -18,11 +19,13 @@ end-to-end through the two calling paths the runtime exposes:
   which builds the same Wagtail-block shape SimpleNamespace from the
   flat dict / object. The canonical then renders identically to Path 1.
 
-Both paths must produce the same HTML for the same logical field. The
-ridges this suite guards against are:
+Both paths exercise the same canonical renderer for the same logical
+field. Path 2 first synthesizes the Wagtail-shaped block context, so its
+output also includes adapter-derived layout and ID metadata. The
+regressions this suite guards against are:
 
 1. **Per-call ``class_*`` override contract.** Every canonical tag has
-   ``{% firstof class_xxx 'form-xxx' %}` so callers MAY pass any of
+   ``class_xxx|default:'form-xxx'`` expressions so callers MAY pass any of
    the following 18 keyword args to swap the BEM class emitted:
    ``class_field``, ``class_input_group``, ``class_icon``,
    ``class_label``, ``class_control``, ``class_textarea``,
@@ -30,40 +33,32 @@ ridges this suite guards against are:
    ``class_checkbox_label``, ``class_radio_group``,
    ``class_radio_item``, ``class_radio``, ``class_radio_label``,
    ``class_file``, ``class_input``, ``class_help_text``,
-   ``class_error``. This suite asserts every override propagates
-   into the rendered HTML for both call paths.
+   ``class_error``. This suite asserts every override propagates into
+   the rendered HTML on its corresponding canonical branch; adapter
+   rendering is covered separately through Path 2.
 
 2. **All six ``field_type`` branches.** ``textarea`` / ``select``
    (and the ``dropdown`` back-compat alias) / ``checkbox`` /
    ``radio`` / ``file`` / plain input (i.e. any other
    ``field_type`` value).
 
-3. **Adapter-body parity.** The real production adapter bodies at
-   ``applications/lms/.../form_field.html`` and
-   ``applications/ctc-research/.../form_field.html`` (read from
-   disk) must round-trip a flat per-field dict into a rendered field
-   that respects ``field.field_width`` (the root modifier).
+3. **Adapter-path parity.** The package's ``as_form_block`` adapter must
+   round-trip a flat per-field object into a rendered field that respects
+   ``field.field_width`` (the root modifier).
 
 The tests rely on ``engines['django'].from_string(...).render(...)``,
-the same harness used by ``tests/test_component_tag.py``. The
-real canonical + real adapter templates live outside the
-``tests/test_templates`` folder, so the test harness extends the engine
-``DIRS`` to include the canonical's directory. Per-site
-adapter bodies are read from disk and rendered inline so the test
-realistically exercises both production files without template-name
-collisions in the engine.
+the same harness used by ``tests/test_component_tag.py``. The canonical
+ template lives outside the ``tests/test_templates`` folder, so the test
+harness extends the engine ``DIRS`` to include the package template
+directory. The adapter path is exercised through the registered package
+templatetag library.
 """
 
 from __future__ import annotations
 
-import pytest
+import re
 
-# Skipped until the applications/assets/templates path assertions are
-# reconciled with the reorganised package layout.
-pytest.skip(
-    "Path assertions require reorganization; skipped temporarily",
-    allow_module_level=True,
-)
+import pytest
 
 from pathlib import Path
 from types import SimpleNamespace
@@ -71,44 +66,24 @@ from types import SimpleNamespace
 from django.template import engines
 from django.test import override_settings
 
-from django_fusion.comp.fragment._init import components
+from django_fusion.comp._init import components
 
 # -----------------------------------------------------------------
 # Test infrastructure: template-engine setup.
 # -----------------------------------------------------------------
 
 _HERE = Path(__file__).resolve().parent
-_APPS_ROOT = _HERE.parents[2]  # tests/ → django-fusion/ → libs/ → applications/
-_CANONICAL_DIR = _APPS_ROOT / "assets" / "templates"
+_PACKAGE_ROOT = _HERE.parent / "src" / "django_fusion"
+_CANONICAL_DIR = _PACKAGE_ROOT / "templates"
 _TEST_TEMPLATES_DIR = _HERE / "test_templates"
 
-_LMS_ADAPTER = (
-    _APPS_ROOT
-    / "lms"
-    / "plugins"
-    / "components"
-    / "blocks"
-    / "partials"
-    / "form_field.html"
-)
-_CTC_ADAPTER = (
-    _APPS_ROOT
-    / "ctc-research"
-    / "plugins"
-    / "components"
-    / "blocks"
-    / "partials"
-    / "form_field.html"
-)
-assert str(_CANONICAL_DIR).endswith(
-    "applications/assets/templates"
-), f"_CANONICAL_DIR resolved unexpectedly: {_CANONICAL_DIR}"
-assert _LMS_ADAPTER.is_file(), f"missing lms adapter: {_LMS_ADAPTER}"
-assert _CTC_ADAPTER.is_file(), f"missing ctc-research adapter: {_CTC_ADAPTER}"
+_CANONICAL_FORM_FIELD = _CANONICAL_DIR / "components" / "form" / "form_field.html"
+assert _CANONICAL_DIR.is_dir(), f"missing package templates: {_CANONICAL_DIR}"
+assert _CANONICAL_FORM_FIELD.is_file(), f"missing canonical field template: {_CANONICAL_FORM_FIELD}"
 
 TEMPLATES = [
     {
-        # The real canonical lives under ``applications/assets/templates``,
+        # The package canonical lives under ``src/django_fusion/templates``,
         # outside ``tests/test_templates``. Adding its directory to
         # ``DIRS`` makes ``{% include "components/form/form_field.html"
         # %}`` resolve to the actual production file.
@@ -147,32 +122,6 @@ def reset_components():
 def render(source: str, context: dict | None = None) -> str:
     """Compile + render a template source string with the test engine."""
     return engines["django"].from_string(source).render(context or {}).strip()
-
-
-# Pre-load directives needed by template bodies that use ``{% comp %}`` or
-# ``{% as_form_block %}`` directly. Production adapter partials assume
-# these libraries are auto-loaded via ``INSTALLED_APPS`` + ``AppConfig``.
-# Since the test engine builds templates from raw source via
-# ``from_string``, callers reading production adapter bodies from disk
-# must prepend these directives themselves.
-ADAPTER_PROLOGUE = (
-    '{% load components %}'
-    '{% load i18n %}'
-    '{% load fusion_form_field_adapter %}'
-)
-
-
-def render_adapter_source(adapter_source: str, context: dict) -> str:
-    """Render a production adapter partial body read from disk.
-
-    The adapter bodies at
-    ``applications/<site>/plugins/components/blocks/partials/form_field.html``
-    use ``{% comp %}`` and ``{% as_form_block %}`` directly. In production,
-    those libraries are auto-loaded via ``INSTALLED_APPS`` + ``AppConfig``.
-    The test engine has no AppConfig wiring, so we prepend the
-    ``{% load %}`` directives here.
-    """
-    return render(ADAPTER_PROLOGUE + adapter_source, context)
 
 
 def make_wagtail_block(
@@ -239,7 +188,7 @@ CANONICAL_INVOCATION = (
 AS_FORM_BLOCK_INVOCATION = (
     '{% load fusion_form_field_adapter %}'
     '{% as_form_block flat_field as synth %}'
-    '{% include "components/form/form_field.html" %}'
+    '{% include "components/form/form_field.html" with block=synth field_config=flat_field %}'
 )
 
 
@@ -437,7 +386,7 @@ def test_path2_as_form_block_caller_supplied_block_id_overrides_default():
     source = (
         '{% load fusion_form_field_adapter %}'
         '{% as_form_block flat_field block_id="custom-form-A" as synth %}'
-        '{% include "components/form/form_field.html" %}'
+        '{% include "components/form/form_field.html" with block=synth field_config=flat_field %}'
     )
     output = render(source, {"flat_field": flat_field})
     assert "custom-form-A" in output
@@ -473,108 +422,71 @@ EIGHTEEN_OVERRIDE_SENTINELS = {
 }
 
 
+@pytest.mark.parametrize(
+    "kwarg_name,field_type,expected_tag,field_overrides,block_overrides",
+    [
+        ("class_field", "text", "div", {}, {}),
+        ("class_input_group", "text", "div", {}, {}),
+        ("class_icon", "text", "div", {}, {"show_icons": True}),
+        ("class_label", "text", "label", {}, {}),
+        ("class_control", "text", "div", {}, {}),
+        ("class_textarea", "textarea", "textarea", {}, {}),
+        ("class_select", "select", "select", {"choices": make_choices([("a", "A")])}, {}),
+        ("class_checkbox_group", "checkbox", "div", {}, {}),
+        ("class_checkbox", "checkbox", "input", {}, {}),
+        ("class_checkbox_label", "checkbox", "label", {}, {}),
+        ("class_radio_group", "radio", "div", {"choices": make_choices([("a", "A")])}, {}),
+        ("class_radio_item", "radio", "div", {"choices": make_choices([("a", "A")])}, {}),
+        ("class_radio", "radio", "input", {"choices": make_choices([("a", "A")])}, {}),
+        ("class_radio_label", "radio", "label", {"choices": make_choices([("a", "A")])}, {}),
+        ("class_file", "file", "input", {}, {}),
+        ("class_input", "text", "input", {}, {}),
+        ("class_help_text", "text", "div", {"help_text": "helpful hint"}, {}),
+        ("class_error", "text", "div", {}, {}),
+    ],
+)
 @override_settings(TEMPLATES=TEMPLATES)
-def test_path1_canonical_emits_all_eighteen_class_overrides_for_textarea():
-    """All 18 ``class_*`` kwargs propagate into the rendered HTML."""
-    block = make_wagtail_block()
-    field_config = make_field_config(
-        field_type="textarea", help_text="helpful hint"
-    )
-    # Build a wrapper template that re-includes the canonical with
-    # every override kwarg set.
-    include_kwargs = " ".join(
-        f"{kwarg_name}=v_{kwarg_name}"
-        for kwarg_name in EIGHTEEN_OVERRIDE_SENTINELS
-    )
+def test_path1_canonical_class_override_is_emitted_on_its_real_element(
+    kwarg_name, field_type, expected_tag, field_overrides, block_overrides
+):
+    """Each class override is asserted on the branch that actually uses it."""
+    block = make_wagtail_block(**block_overrides)
+    field_config = make_field_config(field_type=field_type, **field_overrides)
+    sentinel = EIGHTEEN_OVERRIDE_SENTINELS[kwarg_name]
     wrapper = (
         '{% load components %}'
-        f'{{% include "components/form/form_field.html" {include_kwargs} %}}'
+        f'{{% include "components/form/form_field.html" with '
+        f'{kwarg_name}=sentinel %}}'
     )
-    ctx = {
-        "block": block,
-        "field_config": field_config,
-        **{f"v_{kwarg_name}": sentinel
-           for kwarg_name, sentinel in EIGHTEEN_OVERRIDE_SENTINELS.items()},
-    }
-    output = render(wrapper, ctx)
-    for kwarg_name, sentinel in EIGHTEEN_OVERRIDE_SENTINELS.items():
-        assert sentinel in output, (
-            f"override sentinel {sentinel!r} for kwarg {kwarg_name!r} "
-            f"not seen in output: {output!r}"
-        )
+    output = render(wrapper, {"block": block, "field_config": field_config, "sentinel": sentinel})
+    pattern = rf'<{expected_tag}\b[^>]*class="[^"]*\b{re.escape(sentinel)}\b[^"]*"'
+    assert re.search(pattern, output), (
+        f"override class {sentinel!r} for kwarg {kwarg_name!r} "
+        f"was not emitted on <{expected_tag}>: {output!r}"
+    )
 
 
 # -----------------------------------------------------------------
-# Adapter bodies: render the actual production adapter partial files
-# (read from disk) and confirm they round-trip a flat per-field dict
-# into the canonical with the correct root modifier.
+# Canonical width contract: the package template owns the field modifier.
 # -----------------------------------------------------------------
 
-@pytest.mark.parametrize(
-    "site_adapter_path,site_name",
-    [
-        (_LMS_ADAPTER, "lms"),
-        (_CTC_ADAPTER, "ctc-research"),
-    ],
-)
+@pytest.mark.parametrize("field_width", ["full", "half", "quarter"])
 @override_settings(TEMPLATES=TEMPLATES)
-def test_production_adapter_body_renders_with_field_width_modifier(
-    site_adapter_path, site_name
-):
-    flat_field = make_field_config(
-        field_type="email",
-        field_width="half",
-        name="contact_email",
-        label="Email",
+def test_canonical_field_width_emits_modifier(field_width):
+    block = make_wagtail_block()
+    field_config = make_field_config(field_type="email", field_width=field_width)
+    output = render(
+        CANONICAL_INVOCATION,
+        {"block": block, "field_config": field_config},
     )
-    # Read the actual production adapter partial and render it inline
-    # (sidesteps template-name collisions since both lms and
-    # ctc-research have a `form_field.html` in the same partials dir).
-    adapter_source = site_adapter_path.read_text(encoding="utf-8")
-    output = render_adapter_source(adapter_source, {"field": flat_field})
-    # The canonical emits `.form-field` plus a `--full|--half|--quarter`
-    # modifier derived from `field.field_width`. Site adapters should
-    # preserve the half-width modifier.
-    assert "form-field--half" in output, (
-        f"{site_name}: expected `form-field--half` modifier in output "
-        f"when field.field_width='half'; got: {output!r}"
-    )
-    # The canonical's email field renders as <input type="email">.
+    assert f"form-field--{field_width}" in output
     assert 'type="email"' in output
-
-
-@pytest.mark.parametrize(
-    "site_adapter_path,site_name,expected_width",
-    [
-        (_LMS_ADAPTER, "lms", "full"),
-        (_CTC_ADAPTER, "ctc-research", "full"),
-        (_LMS_ADAPTER, "lms", "half"),
-        (_CTC_ADAPTER, "ctc-research", "half"),
-        (_LMS_ADAPTER, "lms", "quarter"),
-        (_CTC_ADAPTER, "ctc-research", "quarter"),
-    ],
-)
-@override_settings(TEMPLATES=TEMPLATES)
-def test_production_adapter_body_renders_correct_modifier_for_each_width(
-    site_adapter_path, site_name, expected_width
-):
-    flat_field = make_field_config(
-        field_type="text",
-        field_width=expected_width,
-        name="f",
-    )
-    adapter_source = site_adapter_path.read_text(encoding="utf-8")
-    output = render_adapter_source(adapter_source, {"field": flat_field})
-    assert f"form-field--{expected_width}" in output, (
-        f"{site_name}: expected `form-field--{expected_width}` for "
-        f"field.field_width={expected_width!r}; got: {output!r}"
-    )
 
 
 # -----------------------------------------------------------------
 # Sanity: the canonical's default behavior (no overrides) emits the
-# canonical `form-*` BEM names. If this fails, the override-firstof
-# default logic regressed AND the 18-override test above would silently
+# canonical `form-*` BEM names. If this fails, the override-default
+# logic regressed AND the 18-override test above would silently
 # pass (because every override class would be present by coincidence).
 # -----------------------------------------------------------------
 

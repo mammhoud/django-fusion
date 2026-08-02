@@ -1,4 +1,4 @@
-"""Tests for django_fusion.routes.renderers and configurable fusion_render_first."""
+"""Tests for django_fusion.routes.rendering.renderers and configurable fusion_render_first."""
 
 import json
 from unittest import mock
@@ -7,15 +7,13 @@ import pytest
 
 import base64
 
-from django_fusion.routes import (
-    FusionFragmentPointer,
-    FusionFragmentSchema,
-    FusionJSONEncoder,
-    FusionJSONRenderer,
-    fusion_json_response,
-)
-from django_fusion.routes.renderers import RESPONSE_CODE_GROUPS, _status_to_message
-from django_fusion.routes.session import FusionCodec, FusionSessionChecker
+from django_fusion.routes.rendering.renderers import FusionFragmentPointer
+from django_fusion.routes.rendering.renderers import FusionFragmentSchema
+from django_fusion.routes.rendering.renderers import FusionJSONEncoder
+from django_fusion.routes.rendering.renderers import FusionJSONRenderer
+from django_fusion.routes.rendering.renderers import fusion_json_response
+from django_fusion.routes.rendering.renderers import RESPONSE_CODE_GROUPS, _status_to_message
+from django_fusion.routes.rendering.session import FusionCodec, FusionSessionChecker
 
 
 class TestResponseCodeGroups:
@@ -384,7 +382,7 @@ class TestFusionCodecRoundTrip:
 
 class TestFusionRenderFirstSetting:
     def test_default_is_false(self):
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class DummyComponent(RoutableComponent):
             pass
@@ -392,7 +390,7 @@ class TestFusionRenderFirstSetting:
         assert DummyComponent.get_fusion_render_first() is False
 
     def test_per_class_override(self):
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class TrueComponent(RoutableComponent):
             fusion_render_first = True
@@ -400,8 +398,8 @@ class TestFusionRenderFirstSetting:
         assert TrueComponent.get_fusion_render_first() is True
 
     def test_setting_fallback(self, settings):
-        from django_fusion.routes import RoutableComponent
-        from django_fusion.comp.configuration.conf import get_settings
+        from django_fusion.routes.components.routable import RoutableComponent
+        from django_fusion.config.conf import get_settings
 
         class FallbackComponent(RoutableComponent):
             fusion_render_first = None

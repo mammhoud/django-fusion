@@ -33,8 +33,9 @@ from django.http import HttpRequest
 from django_bolt import BoltAPI
 from django_bolt.auth import AllowAny
 
-from django_fusion.routes import FusionSessionChecker
-from django_fusion.routes.renderers import fusion_json_response
+from django_fusion.plugins.bolt.mixins import FUSION_BOLT_AWARE_ATTR
+from django_fusion.routes.rendering.session import FusionSessionChecker
+from django_fusion.routes.rendering.renderers import fusion_json_response
 
 logger = logging.getLogger("django_fusion.bolt")
 
@@ -110,7 +111,7 @@ class FusionBoltAPI(BoltAPI):
         @self.get("/fusion/layouts", guards=[AllowAny()], auth=[])
         def fusion_layouts(request) -> dict:
             """GET /fusion/layouts — available layout options."""
-            from django_fusion.comp.configuration.conf import get_settings
+            from django_fusion.config.conf import get_settings
 
             comp_settings = get_settings()
             return {
@@ -182,6 +183,8 @@ class FusionBoltAPI(BoltAPI):
             render_first_default = False
 
         comp_cls = component_cls  # capture for closure
+        # ---- Determine if the component is bolt-aware (FusionBoltDualModeMixin) ----
+        is_bolt_aware = getattr(component_cls, FUSION_BOLT_AWARE_ATTR, False)
 
         @self.get(
             route_path_final,
@@ -189,18 +192,21 @@ class FusionBoltAPI(BoltAPI):
             auth=[],
         )
         def component_endpoint(
-            request, *args, _comp=comp_cls, _rf=render_first_default, **kwargs
+            request, *args, _comp=comp_cls, _rf=render_first_default,
+            _bolt_aware=is_bolt_aware, **kwargs
         ):
-            """Auto-generated endpoint for a fusion component."""
-            import json
+            """Auto-generated endpoint for a fusion component.
+
+            When the component uses ``FusionBoltDualModeMixin`` (``_bolt_aware``),
+            data mode serves the full ``get_fragment_data()`` payload (codec-encoded)
+            instead of a bare fragment pointer.  Render-first mode still delegates
+            to the component's Django view.
+            """
 
             # Determine render mode from request
             render_first = _rf
-            has_request = hasattr(request, "headers")
-            if has_request:
-                hdr = getattr(request, "headers", {}).get(
-                    "X-Fusion-Render-First", ""
-                )
+            if hasattr(request, "headers"):
+                hdr = request.headers.get("X-Fusion-Render-First", "")
                 if hdr.lower() == "true":
                     render_first = True
                 elif hdr.lower() == "false":
@@ -224,7 +230,8 @@ class FusionBoltAPI(BoltAPI):
             }
 
             if render_first:
-                # Return HTML fragment via fusion renderer
+                # Dispatch to the component's Django view (runs the full
+                # template pipeline — fragment HTML or full page).
                 try:
                     return _comp.as_view()(request, *args, **kwargs)
                 except Exception as exc:
@@ -234,8 +241,27 @@ class FusionBoltAPI(BoltAPI):
                         "message": f"Fragment rendering failed: {exc}",
                         "data": pointer,
                     }
-            else:
-                return {"status": 200, "message": "Success", "data": pointer}
+
+            # ---- Data mode ----
+            if _bolt_aware:
+                # Instantiate the component and call get_bolt_data_payload()
+                # to get the full codec-encoded payload (same shape as
+                # FusionDualModeMixin.render_data_response()).
+                try:
+                    instance = _comp()
+                    instance.request = request
+                    payload = instance.get_bolt_data_payload(request)
+                    return {"status": 200, "message": "Success", "data": payload}
+                except Exception as exc:
+                    logger.exception("Bolt data mode failed for %s", _comp.__name__)
+                    return {
+                        "status": 500,
+                        "message": f"Data mode failed: {exc}",
+                        "data": pointer,
+                    }
+
+            # Fallback: non-bolt-aware component → return fragment pointer
+            return {"status": 200, "message": "Success", "data": pointer}
 
         self._registered_components[route_path_final] = component_cls
         logger.info(
@@ -250,7 +276,7 @@ class FusionBoltAPI(BoltAPI):
     def autodiscover(self) -> int:
         """Auto-discover and register all ``RoutableComponent`` subclasses.
 
-        Scans ``django_fusion.routes.components`` for registered
+        Scans ``django_fusion.routes.components.routable`` for registered
         components and calls ``register_component()`` for each.
 
         Returns the number of components registered.
@@ -268,7 +294,7 @@ class FusionBoltAPI(BoltAPI):
 
         count = 0
         try:
-            from django_fusion.routes import RoutableComponent
+            from django_fusion.routes.components.routable import RoutableComponent
 
             # Find all subclasses of RoutableComponent
             for subclass in _find_routable_components(RoutableComponent):

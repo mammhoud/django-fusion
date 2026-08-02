@@ -1,11 +1,11 @@
-# `django_fusion.comp.fragment.plugins.htmx`
+# `django_fusion.plugins.htmx`
 
 HTMX plugin for django-fusion fragments.
 
 ## API
 
 - `is_htmx_request(request)` — True when the request carries `HX-Request: true`.
-- `supports_htmx(request)` — Alias for `is_htmx_request`.
+- `supports_htmx(request)` — Deprecated alias for `is_htmx_request`; emits `DeprecationWarning`. Prefer `is_htmx_request(request)`.
 - `supports_sse(request)` — True when `Accept: text/event-stream`.
 - `HtmxDetails` — Request wrapper exposing `target`, `trigger`, `boosted`, etc.
 - `ServerSentEvent`, `SSEMixin` — SSE helpers.
@@ -15,7 +15,7 @@ HTMX plugin for django-fusion fragments.
 ## Example
 
 ```python
-from django_fusion.comp.fragment.plugins.htmx import is_htmx_request, HtmxDetails
+from django_fusion.plugins.htmx import is_htmx_request, HtmxDetails
 
 
 def article_list(request):
@@ -24,6 +24,5 @@ def article_list(request):
         ...
 ```
 
-## Backward compatibility
-
-`django_fusion.ci.plugins` still re-exports these symbols.
+Use the canonical `django_fusion.plugins.htmx` imports above. Legacy package
+paths are not part of the public API.
