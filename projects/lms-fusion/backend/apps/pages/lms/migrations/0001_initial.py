@@ -5,7 +5,7 @@ import django.core.validators
 import django.db.models.deletion
 import django_fusion.models.default
 import django_fusion.models.model_cache
-import django_fusion.site.interface._context_mixins
+import django_fusion.core.context._context_mixins
 import embed_video.fields
 import modelcluster.fields
 import modelsearch.index
@@ -170,7 +170,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Courses Page',
                 'verbose_name_plural': 'Courses Pages',
             },
-            bases=(django_fusion.site.interface._context_mixins.WagtailPageMixin, 'wagtailcore.page'),
+            bases=(django_fusion.routes.pages.mixins.WagtailPageMixin, 'wagtailcore.page'),
         ),
         migrations.CreateModel(
             name='Enrollment',

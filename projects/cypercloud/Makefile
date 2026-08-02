@@ -261,7 +261,7 @@ db-reset:
 config-check:
 	@echo "✅ Checking Dynaconf configuration…"
 	@$(PYTHON) -c "\
-		from django_fusion.config.dynaconf_loader import load_dynaconf_settings;\
+		from django_fusion.config.loader import load_dynaconf_settings;\
 		settings = load_dynaconf_settings(config_dir='configs/');\
 		settings.load();\
 		print('✅ Configuration loaded successfully');\
@@ -273,7 +273,7 @@ config-validate:
 	@echo "🔍 Validating configuration structure…"
 	@$(PYTHON) -c "\
 		from django.conf import settings;\
-		from django_fusion.config.dynaconf_loader import load_dynaconf_settings, ModelsRegistry, TemplateRegistry;\
+		from django_fusion.config.loader import load_dynaconf_settings, ModelsRegistry, TemplateRegistry;\
 		dynaconf = load_dynaconf_settings(config_dir='configs/').load();\
 		models = ModelsRegistry(dynaconf);\
 		templates = TemplateRegistry(dynaconf);\
@@ -288,7 +288,7 @@ config-show:
 	@echo ""
 	@echo "Django Settings:"
 	@$(PYTHON) -c "\
-		from django_fusion.config.dynaconf_loader import load_dynaconf_settings;\
+		from django_fusion.config.loader import load_dynaconf_settings;\
 		s = load_dynaconf_settings(config_dir='configs/').load();\
 		print(f'  Secret Key: ***{s.get(\"DJANGO.secret_key\", \"not-set\")[-8:]}');\
 		print(f'  Debug: {s.get(\"DJANGO.debug\")}');\
@@ -296,14 +296,14 @@ config-show:
 	@echo ""
 	@echo "Database:"
 	@$(PYTHON) -c "\
-		from django_fusion.config.dynaconf_loader import load_dynaconf_settings;\
+		from django_fusion.config.loader import load_dynaconf_settings;\
 		s = load_dynaconf_settings(config_dir='configs/').load();\
 		db = s.get('DATABASE', {});\
 		print(f'  Engine: {db.get(\"engine\", \"sqlite3\")}')" 2>&1
 	@echo ""
 	@echo "AI Models:"
 	@$(PYTHON) -c "\
-		from django_fusion.config.dynaconf_loader import load_dynaconf_settings, ModelsRegistry;\
+		from django_fusion.config.loader import load_dynaconf_settings, ModelsRegistry;\
 		s = load_dynaconf_settings(config_dir='configs/').load();\
 		m = ModelsRegistry(s);\
 		for model in m.list_models()[:3]:\

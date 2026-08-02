@@ -9,7 +9,7 @@
  *   vi.mock('@/store/api/baseApi', () => import('@/test/mockApi'));
  *
  *   // Then register expected API responses
- *   mockApiResponse('POST', '/apis/enrollments', { id: 1, ... });
+ *   mockApiResponse('POST', '/enrollments', { id: 1, ... });
  *
  *   // Render hook with the test store
  *   const { result } = renderHookWithStore(() => useCheckout({ courseId: 42, price: 49.99 }));

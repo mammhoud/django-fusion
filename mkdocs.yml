@@ -104,6 +104,7 @@ nav:
   - Projects:
     - Overview: projects/README.md
     - LMS: projects/lms/README.md
+    - LMS Fusion: projects/lms-fusion/README.md
     - Portfolio: projects/portfolio/README.md
     - Cypercloud:
         - Overview: projects/cypercloud/README.md
@@ -125,6 +126,11 @@ nav:
   - Customization: customization/README.md
   - Databases: databases/README.md
   - Testing: tests/README.md
+  - Plans:
+    - Index: plans/README.md
+    - LMS Fusion: plans/lms-fusion/migration-plan.md
+    - CMS Fusion: plans/cms-fusion/migration-plan.md
+    - Asset & template cleanup: plans/fusion-assets-templates-cleanup.md
   - Features:
     - Overview: features/README.md
     - Feature Roadmap: features/feature-roadmap.md

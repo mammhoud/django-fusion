@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 import httpx
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
@@ -11,8 +12,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
-
-import os
 
 from .constants import ERROR_MESSAGES, get_model
 from .models import Conversation, Message
@@ -47,12 +46,16 @@ class StreamChatView(SingleObjectMixin, View):
             Message, id=message_id, conversation=conversation, is_user=True
         )
 
-        # Build conversation context
-        messages_qs = list(conversation.messages.all().order_by("timestamp"))
+        # Build the bounded context window in chronological order.
         api_messages = []
-        for msg in messages_qs[-10:]:
+        for msg in conversation.get_context_messages(
+            10, exclude_id=user_message.id
+        ):
             role = "user" if msg.is_user else "assistant"
             api_messages.append({"role": role, "content": msg.content})
+        # The active message is excluded from history above, then appended
+        # exactly once as the provider's latest user prompt.
+        api_messages.append({"role": "user", "content": user_message.content})
 
         def generate():
             full_response = ""
@@ -79,7 +82,6 @@ class StreamChatView(SingleObjectMixin, View):
                 headers = {"Content-Type": "application/json"}
                 api_key_env = model_cfg.get("api_key_env")
                 if api_key_env:
-                    import os
                     api_key = os.environ.get(api_key_env)
                     if api_key:
                         headers["Authorization"] = f"Bearer {api_key}"
@@ -88,6 +90,7 @@ class StreamChatView(SingleObjectMixin, View):
                     with client.stream(
                         "POST", endpoint, json=payload, headers=headers
                     ) as response:
+                        response.raise_for_status()
                         for line in response.iter_lines():
                             if not line:
                                 continue
@@ -146,16 +149,16 @@ class StreamChatView(SingleObjectMixin, View):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Ceptor AI Stream — uses ceptor_ai.ai.integrations (OpenAI/Claude)
+#  Ceptor AI Stream — uses CeptorAIService (ceptor_stubs-backed)
 # ═══════════════════════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CeptorAIStreamChatView(SingleObjectMixin, View):
     """SSE endpoint that streams completions via CeptorAIService.
 
-    Uses ``ceptor_ai.ai.integrations`` to call OpenAI, Claude, Gemini, etc.
-    directly — no external chat server required.  Model is selected
-    via the ``model_id`` query parameter:
+    Uses the local ``ceptor_stubs`` AIIntegrationRegistry to call OpenAI,
+    Claude, Gemini, etc. directly — no external chat server required.
+    Model is selected via the ``model_id`` query parameter:
 
     - ``ceptor-openai`` → OpenAI (requires ``OPENAI_API_KEY`` env var)
     - ``ceptor-claude`` → Claude (requires ``ANTHROPIC_API_KEY`` env var)
@@ -199,10 +202,11 @@ class CeptorAIStreamChatView(SingleObjectMixin, View):
 
                 ai = get_ai_service()
 
-                # Build conversation context
-                messages_qs = list(conversation.messages.all().order_by("timestamp"))
+                # Build the bounded context window in chronological order.
                 context_parts: list[str] = []
-                for msg in messages_qs[-10:]:
+                for msg in conversation.get_context_messages(
+                    10, exclude_id=user_message.id
+                ):
                     role = "User" if msg.is_user else "Assistant"
                     context_parts.append(f"{role}: {msg.content}")
                 context_str = "\n".join(context_parts) if context_parts else ""
@@ -214,7 +218,7 @@ class CeptorAIStreamChatView(SingleObjectMixin, View):
                         f"User: {user_message.content}\nAssistant:"
                     )
 
-                # Stream tokens from ceptor_ai
+                # Stream tokens from the stub-backed AI service
                 for chunk in ai.stream(backend, prompt):
                     if chunk:
                         full_response += chunk
@@ -264,14 +268,14 @@ class RenderMarkdownView(View):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Ceptor-AI Chat Stream — routes messages through ceptor_ai.chat
+#  Ceptor-AI Chat Stream — routes messages through CeptorChatService
 # ═══════════════════════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CeptorStreamChatView(SingleObjectMixin, View):
-    """SSE endpoint that proxies messages through ceptor_ai.chat.ChatBubble.
+    """SSE endpoint that proxies messages through CeptorChatService.
 
-    Sends the conversation to the ceptor-ai chat server (configurable via
+    Sends the conversation to the chat server (configurable via
     ``CEPTOR_CHAT_SERVER_URL`` env var, default ``http://localhost:8765``),
     streams the reply back as SSE tokens.
     """
@@ -307,13 +311,14 @@ class CeptorStreamChatView(SingleObjectMixin, View):
 
                 # Check server availability first
                 if not chat.is_available():
-                    yield f"data: {json.dumps({'type': 'error', 'content': f'Ceptor chat server unreachable at {server_url}. Start it with: python -m ceptor_ai.mcp.server'})}\n\n"
+                    yield f"data: {json.dumps({'type': 'error', 'content': f'Ceptor chat server unreachable at {server_url}.'})}\n\n"
                     return
 
-                # Build conversation context from prior messages
-                messages_qs = list(conversation.messages.all().order_by("timestamp"))
+                # Build the bounded context window in chronological order.
                 context_parts: list[str] = []
-                for msg in messages_qs[-10:]:
+                for msg in conversation.get_context_messages(
+                    10, exclude_id=user_message.id
+                ):
                     role = "User" if msg.is_user else "Assistant"
                     context_parts.append(f"{role}: {msg.content}")
                 context_str = "\n".join(context_parts) if context_parts else ""
@@ -341,7 +346,7 @@ class CeptorStreamChatView(SingleObjectMixin, View):
                     yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
 
             except ImportError:
-                yield f"data: {json.dumps({'type': 'error', 'content': 'ceptor-ai is not installed. Install it with: pip install ceptor-ai'})}\n\n"
+                yield f"data: {json.dumps({'type': 'error', 'content': 'ceptor-stubs are not available.'})}\n\n"
                 return
             except Exception as e:
                 yield f"data: {json.dumps({'type': 'error', 'content': f'Ceptor chat error: {str(e)}'})}\n\n"
@@ -363,8 +368,3 @@ class CeptorStreamChatView(SingleObjectMixin, View):
         response["Cache-Control"] = "no-cache"
         response["X-Accel-Buffering"] = "no"
         return response
-
-
-# ═══════════════════════════════════════════════════════════════
-#  Ceptor AI Stream — uses ceptor_ai.ai.integrations (OpenAI/Claude)
-# ═══════════════════════════════════════════════════════════════

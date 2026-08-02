@@ -2,17 +2,17 @@ import logging
 
 # from apps.core.company.models import Company
 # from commons.contact.models import Contact, ContactEmail, ContactPhone
-# NOTE: commons.contact is not a local module; these models come from apps.core.domain.contrib.models
-# Importing from apps.core.domain when available, with a fallback stub for environments without it.
+# NOTE: commons.contact is not a local module; these models come from apps.domain.contrib.models
+# Importing from apps.domain when available, with a fallback stub for environments without it.
 try:
-    from apps.core.domain.contrib.models import Contact, ContactEmail, ContactPhone
+    from apps.domain.contrib.models import Contact, ContactEmail, ContactPhone
 except ImportError:
     Contact = None  # type: ignore[assignment,misc]
     ContactEmail = None  # type: ignore[assignment,misc]
     ContactPhone = None  # type: ignore[assignment,misc]
 
 try:
-    from apps.core.handlers.models.manage.company import Company
+    from apps.handlers.models.manage.company import Company
 except ImportError:
     Company = None  # type: ignore[assignment,misc]
 

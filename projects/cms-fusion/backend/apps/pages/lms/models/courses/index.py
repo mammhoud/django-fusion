@@ -10,7 +10,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 
 logger = logging.getLogger(__name__)
-from apps.core.content.models.pages.base import BaseIndexPage
+from apps.content.models.pages.base import BaseIndexPage
 from apps.pages.lms.models.courses.detail import Specialization
 from apps.pages.lms.models.courses.info import Course
 from apps.pages.lms.models.courses.tag import CourseTag

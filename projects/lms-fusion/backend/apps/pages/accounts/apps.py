@@ -12,7 +12,7 @@ class AccountsConfig(AppConfig):
 
     def ready(self):
         from . import admin  # noqa: F401
-        from .startup import run_startup_checks
+        from .management.startup import run_startup_checks
         run_startup_checks()
 
         # Registration signals (merged from apps.pages.accounts.registration)

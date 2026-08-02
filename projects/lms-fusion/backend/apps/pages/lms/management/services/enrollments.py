@@ -15,8 +15,8 @@ from django.db import models, transaction
 from django.db.models import F, Q
 from django.db.models.aggregates import Avg, Count
 from django.utils import timezone
-from django_fusion.services.infrastructure.base import BaseService
-from django_fusion.services.infrastructure.token import TokenService
+from django_fusion.services.base import BaseService
+from django_fusion.services.token import TokenService
 
 logger = logging.getLogger(__name__)
 

@@ -8,8 +8,8 @@ from django.db import models
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-from django_fusion.services.infrastructure.base import BaseService
-from django_fusion.services.infrastructure.token import TokenService
+from django_fusion.services.base import BaseService
+from django_fusion.services.token import TokenService
 
 from apps.pages.lms.models import Lesson
 

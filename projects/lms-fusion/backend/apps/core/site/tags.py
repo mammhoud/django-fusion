@@ -8,8 +8,8 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
 logger = logging.getLogger(__name__)
-from django_fusion.site.interface.notifications import NotificationMixin
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.http.notifications import NotificationMixin
+from django_fusion.routes.pages.handler import PageHandler
 
 from apps.core.models import (
     PersonTag,

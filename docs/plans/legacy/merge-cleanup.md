@@ -2,7 +2,7 @@
 > **Tags:** #legacy #cleanup
 
 > **Context:** `projects/lms-fusion/` + `projects/cms-fusion/`  
-> **References:** [`docs/plans.md`](./plans.md), [`docs/ASSETS_MIGRATION_INVENTORY.md`](./ASSETS_MIGRATION_INVENTORY.md)  
+> **References:** [`docs/plans/README.md`](../README.md), [`docs/ASSETS_MIGRATION_INVENTORY.md`](../../ASSETS_MIGRATION_INVENTORY.md)
 > **Date:** 2026-07-26  
 > **Status:** Planning phase
 

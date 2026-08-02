@@ -148,8 +148,8 @@ after verifying the fusion projects no longer need it. Verify that
 ### 4. Implementation Steps
 
 #### Phase 0 — Preparation
-- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
-- [x] Finalize the repo-wide docs scan for `projects/assets/` references. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
+- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`. (see `docs/../ASSETS_MIGRATION_INVENTORY.md`)
+- [x] Finalize the repo-wide docs scan for `projects/assets/` references. (see `docs/../ASSETS_MIGRATION_INVENTORY.md`)
 - [ ] Generate a file matrix: `cms-fusion/backend` vs `cms/cms-full`, `lms-fusion/backend` vs `cms/lms-full` and `lms/cms`.
 - [ ] Identify exact duplicates, near-duplicates, and diverged files.
 - [ ] Back up or tag any data-only files before deletion.
@@ -354,10 +354,10 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 
 ### 8. Related
 
-- `projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
-- `projects/cms-fusion/plan/MIGRATION_PLAN.md`
-- `projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
-- `projects/lms-fusion/plan/MIGRATION_PLAN.md`
-- `projects/docs/MIGRATION_AND_CLEANUP_MASTER_PLAN.md`
+- `docs/plans/migrated/projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
+- `docs/plans/migrated/projects/cms-fusion/plan/MIGRATION_PLAN.md`
+- `docs/plans/migrated/projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
+- `docs/plans/migrated/projects/lms-fusion/plan/MIGRATION_PLAN.md`
+- `docs/plans/migrated/projects/MIGRATION_AND_CLEANUP_MASTER_PLAN.md`
 - `libs/django-fusion/AGENTS.md`
 - `projects/assets/templates/AGENTS.md`

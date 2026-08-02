@@ -84,28 +84,19 @@ class InstructorDashboardComponent(RoutableComponent):
 - `fusion_render_first` — boolean flag
 - `fragment_name` — dotted fragment identifier
 
-### 2. Bolt API: expose the fragment pointer
+### 2. API: expose the fragment pointer
 
-In your bolt view, return the component context instead of serializing
-everything to JSON:
+Use `fusion_response()` from `django_fusion.routes` to build the canonical
+fragment-pointer payload (component, `fusion_render_first`, `fragment_name`,
+`fragment_url`) instead of serializing everything to JSON:
 
 ```python
-from www.api.data_adapter import bolt_view
-from django_fusion.routes import RoutableComponent
+from django_fusion.routes import RoutableComponent, fusion_response
 
 
-@bolt_view
 def instructor_dashboard_view(request):
     component = InstructorDashboardComponent()
-    component.setup(request)
-    context = component.get_context_data()
-
-    return {
-        "component": "InstructorDashboard",
-        "fusion_render_first": context["fusion_render_first"],
-        "fragment_name": context["fragment_name"],
-        "fragment_url": f"/fragments/{context['fragment_name'].replace('.', '/')}/",
-    }
+    return fusion_response(component, request)
 ```
 
 ### 3. Next.js: consume the fallback

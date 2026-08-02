@@ -28,9 +28,9 @@ _BASES_CACHE: dict = {}
 def _profile_bases():
     """Return (PageHandler, ProfileContextMixin, ProfileOperationsMixin) lazily."""
     if not _BASES_CACHE:
-        from django_fusion.site.interface.page_handler import PageHandler
+        from django_fusion.routes.pages.handler import PageHandler
 
-        from apps.core.domain.site.mixins import ProfileContextMixin, ProfileOperationsMixin
+        from apps.domain.site.mixins import ProfileContextMixin, ProfileOperationsMixin
         _BASES_CACHE["PageHandler"] = PageHandler
         _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin
         _BASES_CACHE["ProfileOperationsMixin"] = ProfileOperationsMixin
@@ -42,7 +42,7 @@ def _profile_bases():
 
 
 def _person_model():
-    from apps.core.domain.models.users.users import Person
+    from apps.domain.models.users.users import Person
     return Person
 
 

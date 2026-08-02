@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.crypto import get_random_string
-from django_fusion.site.management.commands.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 

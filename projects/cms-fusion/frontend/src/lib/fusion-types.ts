@@ -12,7 +12,7 @@
 
 // ─── Envelope types ────────────────────────────────────────────────
 
-/** Top-level response envelope matching ``django_fusion.routes.renderers``. */
+/** Top-level response envelope matching ``django_fusion.routes.rendering.renderers``. */
 export interface FusionEnvelope<T = unknown> {
   status: number;
   message: string;
@@ -45,21 +45,21 @@ export type FusionMode = 'fragment' | 'data' | 'loading';
 
 // ─── Page data response types ─────────────────────────────────────
 
-/** Response from /api/pages/<slug>/data/ */
+/** Response from /apis/pages/<slug>/data/ */
 export interface PageDataResponse {
   slug: string;
   title: string;
   encoded: string;
 }
 
-/** Response from /api/fusion/health */
+/** Response from /apis/health/ */
 export interface HealthResponse {
   fusion_render_first: boolean;
   reason: string;
   session_cached: boolean;
 }
 
-/** Branding response from /api/fusion/branding */
+/** Branding response from /apis/branding/ */
 export interface FusionBranding {
   site_name: string;
   company_name: string;
@@ -96,7 +96,7 @@ export interface FusionPageChild {
   title: string;
 }
 
-/** Response from GET /api/pages/ */
+/** Response from GET /apis/pages/ */
 export interface PageListResponse {
   pages: FusionWagtailPage[];
   total: number;

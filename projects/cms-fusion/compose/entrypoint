@@ -102,12 +102,18 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
     if [ "$SHOULD_BUILD_ASSETS" = "true" ]; then
-        echo "[SETUP] Collecting/building static files..."
+        echo "[SETUP] Building frontend assets..."
         if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
-            if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
-                echo "[WARN] static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
-            fi
+            echo "[WARN] frontend asset build failed (non-fatal); see ${LOG_DIR}/build_assets.log"
         fi
+    fi
+
+    echo "[SETUP] Collecting static files and generating component manifest..."
+    if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
+        echo "[WARN] static collection failed (non-fatal); see ${LOG_DIR}/collectstatic.log"
+    fi
+    if ! run_logged generate_asset_manifest python manage.py --site "$SITE_NAME" generate_asset_manifest; then
+        echo "[WARN] component asset manifest generation failed (non-fatal); see ${LOG_DIR}/generate_asset_manifest.log"
     fi
 
 

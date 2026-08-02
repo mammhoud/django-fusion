@@ -2,7 +2,7 @@
 > **Tags:** #lms-fusion #fusion #backend
 
 > **Site:** `lms-fusion` | **Path:** `projects/lms-fusion/` | **Last updated:** 2026-07-26  
-> **Status:** ✅ Complete — core integration done. Remaining cleanup work is tracked in [`docs/plans.md`](../../../docs/plans.md).
+> **Status:** ✅ Complete — core integration done. Remaining cleanup work is tracked in [`docs/plans/README.md`](../README.md).
 
 ---
 
@@ -101,6 +101,6 @@ make check && make test && python3 manage.py showmigrations
 
 > **Note:** Core integration is complete. Remaining verification (Django checks,
 > site tests, frontend builds, template-resolution audit, and smoke tests) is
-> tracked in [`docs/plans.md`](../../../docs/plans.md) under Phases 1–5 and 8.
+> tracked in [`docs/plans/README.md`](../README.md) under Phases 1–5 and 8.
 
-See [`projects/docs/DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../docs/DJANGO_BOLT_FUSION_CASE_STUDY.md) for full analysis.
+See [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../DJANGO_BOLT_FUSION_CASE_STUDY.md) for full analysis.

@@ -9,17 +9,25 @@ Template convention: ``fragment_name`` uses dotted notation.
 
 from __future__ import annotations
 
+import logging
+
 from django import forms
 from django.db.models import Q
 from django.http import HttpResponse
-from django_fusion.routes import FragmentComponent
+from django_fusion.routes.components.fragments import FragmentComponent
+from django_fusion.routes.components.dual_mode import FusionDualModeMixin
+
+logger = logging.getLogger(__name__)
 
 
-class BlogPostListFragment(FragmentComponent):
+class BlogPostListFragment(FusionDualModeMixin, FragmentComponent):
     """
     Blog post list as HTMX fragment with pagination and search.
 
-    URL: /osoul/blog/posts/list-fragment/
+    URL: /blog/posts/list-fragment/
+
+    Dual-mode: ``fusion_render_first=True`` renders the HTML fragment;
+    ``False`` returns codec-encoded JSON with Site navigation.
     """
 
     route_name = "post-list-fragment"
@@ -62,12 +70,45 @@ class BlogPostListFragment(FragmentComponent):
         context["post_count"] = BlogPost.objects.filter(status="published").count()
         return context
 
+    def get_fragment_data(self) -> dict:
+        """Serialise the post list for data mode (fusion_render_first=False)."""
+        from apps.pages.blog.models import BlogCategory, BlogPost
+
+        qs = self.get_queryset()
+        page = max(1, int(self.request.GET.get("page", 1)))
+        per_page = self.paginate_by or 10
+        total = qs.count()
+        posts = qs[(page - 1) * per_page : page * per_page]
+
+        return {
+            "posts": [
+                {
+                    "id": p.pk, "title": p.title, "slug": getattr(p, "slug", ""),
+                    "excerpt": getattr(p, "excerpt", ""),
+                    "author": p.author.get_full_name() if p.author else "",
+                    "published_date": p.published_date.isoformat() if p.published_date else None,
+                    "category": getattr(p, "category", None) and p.category.name or "",
+                }
+                for p in posts
+            ],
+            "categories": [
+                {"slug": c.slug, "name": c.name} for c in BlogCategory.objects.all()
+            ],
+            "pagination": {
+                "page": page, "per_page": per_page, "total": total,
+                "total_pages": max(1, (total + per_page - 1) // per_page),
+            },
+            "search_query": self.request.GET.get("q", ""),
+            "selected_category": self.request.GET.get("category", ""),
+            "post_count": BlogPost.objects.filter(status="published").count(),
+        }
+
 
 class BlogPostCreateFragment(FragmentComponent):
     """
     Blog post creation form as HTMX fragment.
 
-    URL: /osoul/blog/posts/create-fragment/
+    URL: /blog/posts/create-fragment/
     """
 
     route_name = "post-create-fragment"
@@ -145,3 +186,77 @@ def _get_blog_post_form_class():
             return slug
 
     return BlogPostForm
+
+
+# ─── Blog post list (HTMX action fragment) ─────────────────────────
+
+
+class ActionBlogPostListFragment(FusionDualModeMixin, FragmentComponent):
+    """GET /blog/posts/ — Paginated blog post list with search/filter.
+
+    Registered in ``BlogApp.viewsets`` (app_name="blog"), so the
+    ``route_path`` is relative to the ``blog/`` app prefix.
+    This is the richer dual-mode version; the Site-routed version
+    ``BlogPostListFragment`` (``posts/list-fragment/``) lives in the same module.
+    """
+
+    route_name = "blog-posts"
+    route_path = "posts/"
+    fragment_name = "htmx.blog_post_list"
+    htmx_only = True
+
+    def get_queryset(self):
+        from apps.pages.blog.models import BlogPost
+
+        qs = BlogPost.objects.filter(status="published").order_by("-published_date")
+
+        q = self.request.GET.get("q", "")
+        if q:
+            qs = qs.filter(title__icontains=q)
+
+        category = self.request.GET.get("category", "")
+        if category:
+            qs = qs.filter(categories__slug=category)
+
+        tag = self.request.GET.get("tag", "")
+        if tag:
+            qs = qs.filter(tags__slug=tag)
+
+        return qs
+
+    def get_fragment_context(self, **kwargs):
+        context = super().get_fragment_context(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        return context
+
+    def get_fragment_data(self) -> dict:
+        """Serialise the blog post list for data mode (fusion_render_first=False)."""
+        qs = self.get_queryset()
+        page = max(1, int(self.request.GET.get("page", 1)))
+        per_page = 12
+        total = qs.count()
+        posts = qs[(page - 1) * per_page : page * per_page]
+
+        return {
+            "posts": [
+                {
+                    "id": p.pk, "title": p.title, "slug": p.slug,
+                    "excerpt": p.excerpt,
+                    "author": p.author.get_full_name() if p.author else "",
+                    "published_date": p.published_date.isoformat() if p.published_date else None,
+                    "featured_image_url": (
+                        p.featured_image.get_rendition("fill-800x400").url
+                        if p.featured_image else None
+                    ),
+                    "categories": [{"slug": c.slug, "name": c.name} for c in p.categories.all()],
+                    "tags": [{"slug": t.slug, "name": t.name} for t in p.tags.all()],
+                    "reading_time": p.get_reading_time() if hasattr(p, "get_reading_time") else 5,
+                }
+                for p in posts
+            ],
+            "pagination": {
+                "page": page, "per_page": per_page, "total": total,
+                "total_pages": max(1, (total + per_page - 1) // per_page),
+            },
+            "q": self.request.GET.get("q", ""),
+        }

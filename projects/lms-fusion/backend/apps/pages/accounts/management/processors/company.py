@@ -2,8 +2,8 @@ import logging
 
 from django.core.exceptions import FieldError
 from django.db.models import Q
-from apps.core.domain.contrib.models import Contact, ContactEmail, ContactPhone
-from apps.core.domain.contrib.models import Corporate as Company
+from apps.domain.contrib.models import Contact, ContactEmail, ContactPhone
+from apps.domain.contrib.models import Corporate as Company
 
 # from commons.contact.models.profile import Company
 

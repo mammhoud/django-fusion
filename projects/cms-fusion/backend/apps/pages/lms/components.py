@@ -8,20 +8,30 @@ These provide partial HTML responses for dynamic page updates.
 Usage::
 
     from apps.pages.lms.components import CourseListFragment
-    # Register in apps/projects/routes.py → LMSApp.viewsets
+    # Register in apps/pages/lms/application.py → LMSApp.viewsets
 """
 
 from __future__ import annotations
 
+import logging
+
 from django.db.models import Q
-from django_fusion.routes import FragmentComponent, RoutableComponent
+from django_fusion.routes.components.fragments import FragmentComponent
+from django_fusion.routes.components.dual_mode import FusionDualModeMixin
+from django_fusion.routes.components.routable import RoutableComponent
+
+logger = logging.getLogger(__name__)
 
 
-class DashboardComponent(RoutableComponent):
+class DashboardComponent(FusionDualModeMixin, RoutableComponent):
     """
-    LMS Dashboard — full-page routable component.
+    LMS Dashboard — full-page routable component with dual-mode rendering.
 
     URL: /app/lms/dashboard/
+
+    * ``fusion_render_first=True``  → renders ``lms/dashboard.html`` (HTML).
+    * ``fusion_render_first=False`` → returns codec-encoded JSON with the
+      dashboard stats + Site navigation encapsulation.
     """
 
     route_name = "dashboard"
@@ -42,6 +52,17 @@ class DashboardComponent(RoutableComponent):
             "recent_enrollments": self._get_recent_enrollments(),
         })
         return context
+
+    def get_fragment_data(self) -> dict:
+        """Serialise dashboard data for data mode (fusion_render_first=False)."""
+        return {
+            "stats": self._get_stats(),
+            "recent_enrollments": list(
+                self._get_recent_enrollments().values(
+                    "id", "enrolled_at", "student__username", "course__title"
+                )
+            ),
+        }
 
     def _get_stats(self):
         from apps.pages.lms.models.courses import Course
@@ -164,3 +185,185 @@ class CourseListFragment(FragmentComponent):
         context["search_query"] = self.request.GET.get("q", "")
         context["selected_category"] = self.request.GET.get("category", "")
         return context
+
+
+# ─── Course grid (HTMX action fragment) ────────────────────────────
+
+
+class CourseGridFragment(FusionDualModeMixin, FragmentComponent):
+    """GET /lms/courses/grid/ — Filtered course grid with pagination.
+
+    Query params:
+      q          — search query
+      difficulty — difficulty level filter
+      featured   — "true" to filter featured only
+      page       — page number (default 1)
+
+    Registered in ``LMSApp.viewsets`` (app_name="lms"), so the ``route_path``
+    is relative to the ``lms/`` app prefix.
+    """
+
+    route_name = "course-grid"
+    route_path = "courses/grid/"
+    fragment_name = "htmx.course_grid"
+    htmx_only = True
+
+    def get_queryset(self):
+        from django.db import models
+        from apps.pages.lms.models import Course
+
+        qs = Course.objects.filter(is_published=True, is_active=True).order_by(
+            "-is_featured", "-created_at"
+        )
+
+        q = self.request.GET.get("q", "")
+        if q:
+            qs = qs.filter(
+                models.Q(title__icontains=q)
+                | models.Q(short_description__icontains=q)
+            )
+
+        difficulty = self.request.GET.get("difficulty", "")
+        if difficulty:
+            qs = qs.filter(difficulty_level=difficulty)
+
+        featured = self.request.GET.get("featured", "")
+        if featured == "true":
+            qs = qs.filter(is_featured=True)
+
+        return qs
+
+    def get_fragment_context(self, **kwargs):
+        context = super().get_fragment_context(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        return context
+
+    def get_fragment_data(self) -> dict:
+        """Serialise the course grid for data mode (fusion_render_first=False)."""
+        qs = self.get_queryset()
+        page = max(1, int(self.request.GET.get("page", 1)))
+        per_page = 12
+        total = qs.count()
+        courses = qs[(page - 1) * per_page : page * per_page]
+
+        return {
+            "courses": [
+                {
+                    "id": c.pk, "title": c.title, "slug": c.slug,
+                    "short_description": getattr(c, "short_description", ""),
+                    "image_url": c.image.file.url if getattr(c, "image", None) else None,
+                    "instructor": c.instructor.get_full_name() if getattr(c, "instructor", None) else "",
+                    "price": float(getattr(c, "current_price", 0)),
+                    "original_price": float(getattr(c, "original_price", 0))
+                    if getattr(c, "original_price", 0) else None,
+                    "difficulty": getattr(c, "difficulty_level", ""),
+                    "rating": float(getattr(c, "average_rating", 0)),
+                    "is_featured": getattr(c, "is_featured", False),
+                }
+                for c in courses
+            ],
+            "pagination": {
+                "page": page, "per_page": per_page, "total": total,
+                "total_pages": max(1, (total + per_page - 1) // per_page),
+            },
+            "q": self.request.GET.get("q", ""),
+        }
+
+
+class CourseFiltersFragment(FusionDualModeMixin, FragmentComponent):
+    """GET /lms/courses/filters/ — Course filter sidebar controls."""
+
+    route_name = "course-filters"
+    route_path = "courses/filters/"
+    fragment_name = "htmx.course_filters"
+    htmx_only = True
+
+    def get_fragment_context(self, **kwargs):
+        context = super().get_fragment_context(**kwargs)
+        filters = self.get_fragment_data()
+        context["languages"] = filters["languages"]
+        context["difficulties"] = filters["difficulties"]
+        return context
+
+    def get_fragment_data(self) -> dict:
+        try:
+            from apps.pages.lms.models import Course
+
+            qs = Course.objects.filter(is_published=True, is_active=True)
+            languages = list(qs.values_list("language", flat=True).distinct().order_by("language"))
+            difficulties = list(qs.values_list("difficulty_level", flat=True).distinct())
+            return {
+                "languages": [l for l in languages if l],
+                "difficulties": [d for d in difficulties if d],
+            }
+        except Exception:
+            logger.exception("Error loading course filters")
+            return {"languages": [], "difficulties": []}
+
+
+# ─── Dashboard KPIs (HTMX action fragment) ─────────────────────────
+
+
+class DashboardKPIsFragment(FusionDualModeMixin, FragmentComponent):
+    """GET /lms/dashboard/kpis/ — KPI metric cards for the dashboard.
+
+    Registered in ``LMSApp.viewsets`` (app_name="lms"), so the ``route_path``
+    is relative to the ``lms/`` app prefix.
+    """
+
+    route_name = "dashboard-kpis"
+    route_path = "dashboard/kpis/"
+    fragment_name = "htmx.dashboard_kpis"
+    htmx_only = True
+
+    def get_fragment_context(self, **kwargs):
+        context = super().get_fragment_context(**kwargs)
+        context["kpis"] = self.get_fragment_data().get("kpis", [])
+        return context
+
+    def get_fragment_data(self) -> dict:
+        kpis = []
+
+        try:
+            if not self.request.user.is_authenticated:
+                return {"kpis": kpis}
+
+            from apps.pages.lms.models import Course
+            from apps.pages.blog.models.post import BlogPost
+
+            kpis.append({
+                "icon": "book-open",
+                "label": "Published Courses",
+                "value": Course.objects.filter(is_published=True, is_active=True).count(),
+                "color": "primary",
+            })
+            kpis.append({
+                "icon": "newspaper",
+                "label": "Blog Posts",
+                "value": BlogPost.objects.filter(status="published").count(),
+                "color": "accent",
+            })
+
+            student_enrollments = 0
+            try:
+                from apps.pages.lms.models import Enrollment
+                student_enrollments = Enrollment.objects.count()
+            except Exception:
+                pass
+
+            kpis.append({
+                "icon": "users",
+                "label": "Total Enrollments",
+                "value": student_enrollments,
+                "color": "secondary",
+            })
+            kpis.append({
+                "icon": "trending-up",
+                "label": "Active Students",
+                "value": max(0, student_enrollments),
+                "color": "success",
+            })
+        except Exception:
+            logger.exception("Error loading dashboard KPIs")
+
+        return {"kpis": kpis}

@@ -36,7 +36,7 @@ from .views.cart import EnrollView
 # Lazy load payment views to avoid import conflicts
 def _get_payment_urls():
     try:
-        from apps.core.domain.site.payments import (
+        from apps.domain.site.payments import (
             CartPayPalInitView,
             CartStripeInitView,
             PayPalInitView,

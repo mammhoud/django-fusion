@@ -1,7 +1,8 @@
 """POS Cloud — REST API views with django-fusion viewsets + filters."""
 
-from django_fusion.routes import ModelViewset, viewprop
-from django_fusion.fragments.generic import SearchableViewMixin
+from django_fusion.routes.models.crud import ModelViewset
+from django_fusion.routes.core.base import viewprop
+from django_fusion.fragments.forms.search import SearchableViewMixin
 from django_filters import rest_framework as filters
 
 from .models import (

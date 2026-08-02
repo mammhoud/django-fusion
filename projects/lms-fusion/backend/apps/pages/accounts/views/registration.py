@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.pages.handler import PageHandler
 
 from ..emails import send_registration_email
 from ..forms.registration import PasswordCreationForm, RegistrationForm
@@ -447,7 +447,7 @@ class RegistrationSuccessView(View):
 def _ensure_profile_exists(user):
     """Create a Person profile for the user if it doesn't exist."""
     try:
-        from apps.core.domain.models.users.users import Person
+        from apps.domain.models.users.users import Person
 
         _profile, created = Person.objects.get_or_create(
             user=user,

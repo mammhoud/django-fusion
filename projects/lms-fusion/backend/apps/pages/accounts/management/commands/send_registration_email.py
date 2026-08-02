@@ -14,7 +14,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
-from django_fusion.site.management.commands.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 from django.urls import reverse
 
 logger = logging.getLogger("apps.registration")

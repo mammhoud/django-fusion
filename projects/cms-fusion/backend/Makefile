@@ -6,7 +6,7 @@
         lint fix fix-unused shell debug db-shell reset-db clean-migrations \
         reset-migrations clean-python clean env-show \
         frontend-install frontend-build frontend-watch frontend-production build-assets main-assets assets \
-        workspace-assets workspace-test scripts workspace-script css-purge css-analyze frontend-clean assets-setup webpack-validate
+        workspace-assets workspace-test scripts workspace-script css-purge css-analyze frontend-clean assets-setup generate-asset-manifest webpack-validate
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -171,7 +171,7 @@ setup: ## Full setup (frontend, migrations, static, checks, superuser, data)
 	@echo -e "$(GREEN)✅ Migrations done$(NC)"
 	@echo ""
 	@echo -e "$(BLUE)Collecting static (includes webpack bundles)...$(NC)"
-	@$(MANAGE) collectstatic --noinput
+	@$(MAKE) collectstatic
 	@echo -e "$(GREEN)✅ Static collected$(NC)"
 	@echo ""
 	@echo -e "$(BLUE)Django checks...$(NC)"
@@ -197,10 +197,14 @@ migrate: ## Run migrations
 
 static: collectstatic ## Alias for collectstatic
 
-collectstatic: ## Collect static
+generate-asset-manifest: ## Generate the django-fusion component manifest in STATIC_ROOT
+	@$(MANAGE) generate_asset_manifest
+
+collectstatic: ## Collect static and generate the component manifest
 	@echo -e "$(BLUE)Collecting static...$(NC)"
 	@$(MANAGE) collectstatic --noinput
-	@echo -e "$(GREEN)✅ Static collected$(NC)"
+	@$(MAKE) generate-asset-manifest
+	@echo -e "$(GREEN)✅ Static and component manifest collected$(NC)"
 
 superuser: ## Create superuser (interactive)
 	@$(MANAGE) createsuperuser

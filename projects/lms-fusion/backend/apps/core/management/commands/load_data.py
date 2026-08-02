@@ -11,6 +11,7 @@ Usage::
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from django.apps import apps
@@ -29,9 +30,18 @@ class Command(BaseCommand):
             action="store_true",
             help="Preview without loading.",
         )
+        parser.add_argument(
+            "--replace",
+            action="store_true",
+            help=(
+                "Replace existing Wagtail images, sites, and child pages before "
+                "loading fixtures. Omit for a non-destructive load."
+            ),
+        )
 
     def handle(self, **options):
         dry_run = options["dry_run"]
+        replace_existing = options["replace"]
 
         # Navigate: commands/ → management/ → core/ → apps/ → backend/
         backend_dir = Path(__file__).resolve().parents[4]
@@ -41,7 +51,10 @@ class Command(BaseCommand):
             self.style.MIGRATE_HEADING("\n📦 load_data — dump-data.json loader\n")
         )
         self.stdout.write(f"  Fixture: {fixture_path}")
-        self.stdout.write(f"  Dry-run: {'✅' if dry_run else '❌'}\n")
+        self.stdout.write(f"  Dry-run: {'✅' if dry_run else '❌'}")
+        self.stdout.write(
+            f"  Replace existing content: {'✅' if replace_existing else '❌'}\n"
+        )
 
         if not Path(fixture_path).exists():
             raise CommandError(f"Fixture not found: {fixture_path}")
@@ -69,15 +82,24 @@ class Command(BaseCommand):
             from django.contrib.auth import get_user_model
 
             User = get_user_model()
-            if not User.objects.filter(username="admin").exists():
+            username = os.environ.get("SUPERUSER_USERNAME", "admin")
+            password = os.environ.get("SUPERUSER_PASSWORD")
+            email = os.environ.get("SUPERUSER_EMAIL", "")
+            if User.objects.filter(username=username).exists():
+                self.stdout.write(self.style.SUCCESS("✅ exists"))
+            elif password:
                 User.objects.create_superuser(
-                    username="admin",
-                    email="admin@example.com",
-                    password="admin123",
+                    username=username,
+                    email=email,
+                    password=password,
                 )
                 self.stdout.write(self.style.SUCCESS("✅ created"))
             else:
-                self.stdout.write(self.style.SUCCESS("✅ exists"))
+                self.stdout.write(
+                    self.style.WARNING(
+                        "⚠️ skipped (set SUPERUSER_PASSWORD to create an admin user)"
+                    )
+                )
         else:
             self.stdout.write(self.style.WARNING("🔍 (skipped)"))
 
@@ -86,7 +108,11 @@ class Command(BaseCommand):
         if not dry_run:
             from wagtail.models import Collection
 
-            root = Collection.get_first_root_node()
+            root = Collection.objects.filter(name="Root").first()
+            if root is None:
+                # Fresh DB (e.g. syncdb without migrations) has no Root
+                # collection yet — create the tree root first.
+                root = Collection.add_root(name="Root")
             children = root.get_children()
             media = children.filter(name="Media").first()
             if not media:
@@ -99,12 +125,18 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING("🔍 (skipped)"))
 
-        # ── Step 4: Clear auto-created data ─────────────────────
+        # ── Step 4: Optionally clear existing data ──────────────
         self.stdout.write(
-            self.style.HTTP_INFO("⏳ Clearing default pages/sites/images … "),
+            self.style.HTTP_INFO("⏳ Existing content … "),
             ending="",
         )
-        if not dry_run:
+        if dry_run:
+            self.stdout.write(
+                self.style.WARNING(
+                    "🔍 (would replace)" if replace_existing else "✅ (preserved)"
+                )
+            )
+        elif replace_existing:
             from django.db.utils import OperationalError
             from wagtail.models import Page, Site
             from wagtail.images.models import Image as WagtailImage
@@ -115,9 +147,9 @@ class Command(BaseCommand):
             except OperationalError:
                 pass  # wagtailredirects table may not exist
             Page.objects.filter(depth__gt=1).delete()
-            self.stdout.write(self.style.SUCCESS("✅"))
+            self.stdout.write(self.style.SUCCESS("✅ replaced"))
         else:
-            self.stdout.write(self.style.WARNING("🔍 (skipped)"))
+            self.stdout.write(self.style.SUCCESS("✅ preserved"))
 
         # ── Step 5: Load fixture ────────────────────────────────
         self.stdout.write(self.style.HTTP_INFO("📥 Loading fixture … "), ending="")
@@ -136,6 +168,37 @@ class Command(BaseCommand):
         except Exception as exc:
             self.stdout.write(self.style.ERROR(f"❌\n"))
             raise CommandError(f"Failed to load fixture: {exc}") from exc
+
+        # ── Step 5b: LMS app fixtures (courses, events, …) ─────
+        self.stdout.write(
+            self.style.HTTP_INFO("⏳ LMS app fixtures … "), ending=""
+        )
+        if not dry_run:
+            app_fixtures = [
+                backend_dir / "apps" / "pages" / "lms" / "fixtures" / name
+                for name in (
+                    "specializations.json",
+                    "course_tags.json",
+                    "courses.json",
+                    "events.json",
+                )
+            ]
+            loaded = 0
+            for path in app_fixtures:
+                if not path.exists():
+                    continue
+                try:
+                    call_command("loaddata", str(path), verbosity=0)
+                    loaded += 1
+                except Exception as exc:
+                    self.stdout.write(
+                        self.style.WARNING(f"⚠️ {path.name}: {exc}; ")
+                    )
+            self.stdout.write(
+                self.style.SUCCESS(f"✅ ({loaded} fixture files)\n")
+            )
+        else:
+            self.stdout.write(self.style.WARNING("🔍 (skipped)"))
 
         # ── Step 6: Default Wagtail Site ────────────────────────
         self.stdout.write(self.style.HTTP_INFO("⏳ Default Site … "), ending="")
@@ -160,9 +223,11 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.MIGRATE_HEADING("\n📊 Summary\n"))
         self.stdout.write("  • Content types: synced\n")
-        self.stdout.write("  • Admin user: created\n")
+        self.stdout.write("  • Admin user: ensured when SUPERUSER_PASSWORD is set\n")
         self.stdout.write("  • Collections: created\n")
-        self.stdout.write("  • Default data: cleared\n")
-        self.stdout.write("  • Fixture: loaded\n")
+        self.stdout.write(
+            f"  • Existing data: {'replaced' if replace_existing else 'preserved'}\n"
+        )
+        self.stdout.write("  • Fixture: loaded (dump-data + LMS app fixtures)\n")
         self.stdout.write("  • Wagtail Site: configured\n")
         self.stdout.write(self.style.SUCCESS("🎉 Done!\n"))

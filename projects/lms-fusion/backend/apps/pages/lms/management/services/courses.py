@@ -13,7 +13,7 @@ from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-from django_fusion.services.infrastructure.base import BaseService
+from django_fusion.services.base import BaseService
 
 from apps.pages.lms.models.courses import Course, Lesson, Module
 

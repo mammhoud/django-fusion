@@ -13,9 +13,9 @@ from django.core.cache import cache
 from django.db import models, transaction
 from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
-from apps.core.domain.models.users.users import Person as Profile
-from django_fusion.services.infrastructure.base import BaseService
-from django_fusion.services.infrastructure.token import TokenService
+from apps.domain.models.users.users import Person as Profile
+from django_fusion.services.base import BaseService
+from django_fusion.services.token import TokenService
 
 logger = logging.getLogger(__name__)
 

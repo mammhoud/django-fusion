@@ -4,9 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import sys
-from importlib.util import module_from_spec, spec_from_file_location
-from pathlib import Path
 
 import httpx
 from django.utils import timezone
@@ -24,21 +21,41 @@ from .constants import (
 from .exceptions import OllamaConnectionError, OllamaResponseError
 from .models import Conversation, Message
 
-# ── Shared ceptor_ai Ollama adapter ────────────────────────
-_CEPTOR_PATH = (
-    Path(__file__).resolve().parents[2]
-    / "libs"
-    / "ceptor-ai"
-    / "src"
-    / "ceptor_ai"
-    / "services"
-    / "ollama.py"
-)
-_CEPTOR_SPEC = spec_from_file_location("ceptor_ai_ollama_service", str(_CEPTOR_PATH.resolve()))
-_CEPTOR_MODULE = module_from_spec(_CEPTOR_SPEC)
-sys.modules[_CEPTOR_SPEC.name] = _CEPTOR_MODULE
-_CEPTOR_SPEC.loader.exec_module(_CEPTOR_MODULE)
-CeptorOllamaService = _CEPTOR_MODULE.OllamaService
+# ── Minimal Ollama service — inline replacement for the former
+#    external Ollama adapter (removed with ceptor-ai) ──
+
+class OllamaService:
+    """Minimal Ollama chat client talking directly to the Ollama HTTP API.
+
+    Replaces the former external Ollama adapter that was removed along
+    with the ceptor-ai package.
+    """
+
+    def __init__(
+        self,
+        default_model: str = "llama3",
+        timeout: float = 300.0,
+        base_url: str = "http://localhost:11434",
+    ):
+        self.default_model = default_model
+        self.timeout = timeout
+        self.base_url = base_url
+
+    def chat(self, messages: list[dict]) -> str:
+        """Send a non-streaming chat request and return the reply text."""
+        endpoint = f"{self.base_url.rstrip('/')}/api/chat"
+        with httpx.Client(timeout=self.timeout) as client:
+            response = client.post(
+                endpoint,
+                json={
+                    "model": self.default_model,
+                    "messages": messages,
+                    "stream": False,
+                },
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data.get("message", {}).get("content", "")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -94,9 +111,10 @@ class AIService:
 # ═══════════════════════════════════════════════════════════════
 
 def _ollama_chat(model: dict, messages: list[dict]) -> str:
-    service = CeptorOllamaService(
+    service = OllamaService(
         default_model=model["model"],
         timeout=float(model.get("timeout", OLLAMA_TIMEOUT)),
+        base_url=model.get("base_url", "http://localhost:11434"),
     )
     try:
         return service.chat(messages)
@@ -128,6 +146,7 @@ def _ollama_stream(model: dict, messages: list[dict]):
                         "stream": True,
                     },
                 ) as response:
+                    response.raise_for_status()
                     for line in response.iter_lines():
                         if line:
                             try:
@@ -157,7 +176,7 @@ def _ollama_stream(model: dict, messages: list[dict]):
                 {"type": "error", "content": ERROR_MESSAGES["NO_RESPONSE"]}
             )
 
-    return generate
+    return generate()
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -220,6 +239,7 @@ def _openai_compatible_stream(model: dict, messages: list[dict]):
                     },
                     headers=headers,
                 ) as response:
+                    response.raise_for_status()
                     for line in response.iter_lines():
                         if line and line.startswith("data:"):
                             chunk = line.removeprefix("data:").strip()
@@ -256,7 +276,7 @@ def _openai_compatible_stream(model: dict, messages: list[dict]):
                 {"type": "error", "content": ERROR_MESSAGES["NO_RESPONSE"]}
             )
 
-    return generate
+    return generate()
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -272,9 +292,13 @@ class ConversationService:
 
     @staticmethod
     def add_user_message(conversation: Conversation, content: str) -> Message:
-        return Message.objects.create(
+        message = Message.objects.create(
             conversation=conversation, content=content, is_user=True
         )
+        # Keep recent-conversation ordering correct immediately after a send,
+        # before the asynchronous/provider response is available.
+        conversation.save(update_fields=["updated_at"])
+        return message
 
     @staticmethod
     def add_ai_message(conversation: Conversation, content: str) -> Message:

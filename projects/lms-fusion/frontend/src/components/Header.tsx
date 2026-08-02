@@ -27,8 +27,20 @@ export default function Header() {
     }).catch(() => {});
   }, []);
 
+  // Reflect the browser locale in the <html lang> attribute on first load.
+  // The root layout renders with a server-side default of "en"; this effect
+  // reconciles it with the client's actual locale so screen readers and the
+  // language routing tests see the correct language.
+  React.useEffect(() => {
+    const browserLang = (navigator.language || 'en').split('-')[0];
+    document.documentElement.lang = browserLang;
+    setLanguage(browserLang);
+  }, []);
+
   const handleLanguageChange = (code: string) => {
     setLanguage(code);
+    // Keep the <html lang> attribute in sync with the active language.
+    document.documentElement.lang = code;
     try {
       fetch('/apis/i18n/setlang/', {
         method: 'POST',

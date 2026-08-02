@@ -28,7 +28,7 @@ class FusionApiClient {
   }
 
   async checkHealth(): Promise<HealthResponse> {
-    const envelope = await this.fetchJson<HealthResponse>('/fusion/health');
+    const envelope = await this.fetchJson<HealthResponse>('/health');
     const data = decoder.unwrap(envelope);
     if (typeof data.fusion_render_first === 'boolean') {
       decoder.initSession(data.fusion_render_first);
@@ -85,7 +85,7 @@ class FusionApiClient {
 
   async fetchBranding(): Promise<FusionBranding> {
     try {
-      const envelope = await this.fetchJson<FusionBranding>('/fusion/branding');
+      const envelope = await this.fetchJson<FusionBranding>('/branding');
       return decoder.unwrap(envelope);
     } catch {
       return {

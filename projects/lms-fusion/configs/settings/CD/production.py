@@ -70,21 +70,16 @@ if "MIDDLEWARE" in dir():  # noqa: F821
         "django.middleware.cache.FetchFromCacheMiddleware",
     ]
 # ---- Cache Middleware: Shared Redis (faster than FileBasedCache, survives restarts) ----
-# Add a `redis` alias to CACHES that uses django_redis with a no-password URL.
-# REDIS_URL has a password but Redis has no `requirepass` configured, so we
-# strip the password here. `cache.clear()` affects all 4 gunicorn workers
-# in one call and the cache survives container restarts. Faster than the
-# `file` alias (FileBasedCache) because Redis is in-memory.
+# Keep the authenticated Redis URL intact. The shared Redis container enables
+# requirepass, so removing credentials here would make production cache and
+# session connections fail while appearing correctly configured.
 import os
-import re as _re_cache
 
-_redis_env = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-# Strip :password@ from the URL (keeps @host:port/db intact)
-_redis_url_no_password = _re_cache.sub(r"://[^@]+@", "://", _redis_env)
+_redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
 CACHES["redis"] = {
     "BACKEND": "django_redis.cache.RedisCache",
-    "LOCATION": _redis_url_no_password,
+    "LOCATION": _redis_url,
     "OPTIONS": {
         "CLIENT_CLASS": "django_redis.client.DefaultClient",
         "SOCKET_CONNECT_TIMEOUT": 5,
@@ -100,7 +95,7 @@ CACHES["redis"] = {
 # in CD/core.py (which overwrites CACHES with {default, file} keys only).
 # Without `session`, `SESSION_ENGINE = django.contrib.sessions.backends.cache`
 # fails with `InvalidCacheBackendError: The connection 'session' doesn't exist.`
-_session_db = (_redis_url_no_password.rsplit("/", 1)[0]) + "/1"
+_session_db = (_redis_url.rsplit("/", 1)[0]) + "/1"
 CACHES["session"] = {
     "BACKEND": "django_redis.cache.RedisCache",
     "LOCATION": _session_db,
@@ -111,7 +106,11 @@ CACHES["session"] = {
     "KEY_PREFIX": "django_session",
 }
 
-CACHE_MIDDLEWARE_ALIAS = "redis"
+# Use the authenticated Redis backend for ordinary cache operations too.
+# The development layer defines `default` as LocMemCache; leaving it intact
+# would make production cache behavior process-local and inconsistent.
+CACHES["default"] = dict(CACHES["redis"])
+CACHE_MIDDLEWARE_ALIAS = "default"
 
 # -------------------------------------------------------------------
 # 🌍 Internationalisation

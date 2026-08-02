@@ -9,5 +9,5 @@ from __future__ import annotations
 from django.urls import include, path
 
 urlpatterns = [
-    path("api/", include("apps.core.api.urls")),
+    path("apis/", include("apps.core.api.urls")),
 ]

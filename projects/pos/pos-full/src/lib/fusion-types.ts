@@ -12,7 +12,7 @@
 
 // ─── Envelope types ────────────────────────────────────────────────
 
-/** Top-level response envelope matching ``django_fusion.routes.renderers``. */
+/** Top-level response envelope matching ``django_fusion.routes.rendering.renderers``. */
 export interface FusionEnvelope<T = unknown> {
   status: number;
   message: string;

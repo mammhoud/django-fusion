@@ -5,7 +5,7 @@
  * Responsibilities:
  *
  * 1. **Decode** the base64-encoded payload produced by
- *    ``django_fusion.routes.session.FusionCodec.encode()`` back into
+ *    ``django_fusion.routes.rendering.session.FusionCodec.encode()`` back into
  *    the original typed data.
  * 2. **Session health check** — cache the ``fusion_render_first``
  *    preference in ``sessionStorage`` so the frontend does not re-query

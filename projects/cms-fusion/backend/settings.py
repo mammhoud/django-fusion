@@ -84,11 +84,11 @@ WAGTAIL_SITE_NAME = "Fusion CMS"
 # here would register the same app label twice and Django would raise
 # `ImproperlyConfigured: Application labels aren't unique`.
 LOCAL_APPS = [
-    "apps.core.domain",
+    "apps.domain",
     "apps.core",
-    "apps.core.content.apps.ContentConfig",
+    "apps.content.apps.ContentConfig",
     "apps.pages.pages.apps.PagesConfig",
-    "apps.core.handlers.apps.AccountsConfig",
+    "apps.handlers.apps.AccountsConfig",
     "apps.pages.accounts.apps.AccountsConfig",
     "apps.pages.lms.apps.LmsConfig",
     "apps.pages.blog.apps.BlogConfig",
@@ -138,7 +138,7 @@ PROFILE_MODEL = "auth.User"
 # TeamMembership ordering check is fixed in domain models.
 SILENCED_SYSTEM_CHECKS = [
     "treebeard.E001",
-    # ceptor_ai ↔ shared model clashes (legacy duplicate apps)
+    # Legacy duplicated app/model clashes from removed framework apps
     "models.E028",  # db_table clashes
     "models.E030",  # index name clashes
     "models.E032",  # constraint name clashes
@@ -149,27 +149,6 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.E340",   # intermediary table name clashes
 ]
 WAGTAIL_WORKFLOW_ENABLED = False
-
-# ============================================================
-# django-bolt / Fusion Bolt API Settings
-# ============================================================
-# Per-project bolt configuration. Override via environment variables
-# or directly in this module before running `python manage.py runbolt`.
-FUSION_BOLT = {
-    "enabled": True,
-    "prefix": "/api",
-    "openapi_title": "Fusion CMS API",
-    "openapi_version": "1.0.0",
-    "auth_backends": ["jwt"],
-    "serializer_format": "dict",
-    "cors_origins": [
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-    ],
-    "component_auto_register": True,
-}
 
 # ═══════════════════════════════════════════════════════════════════
 # Fusion Branding (override defaults)

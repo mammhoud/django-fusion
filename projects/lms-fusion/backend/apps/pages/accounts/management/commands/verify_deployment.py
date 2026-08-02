@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from django.core.management.base import BaseCommand
-from django_fusion.site.management.commands.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 
 # ---------------------------------------------------------------------------
 # ANSI colour helpers

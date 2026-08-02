@@ -16,7 +16,7 @@ cms-fusion/backend/
 │   ├── core/                      # Shared core: handlers, content, services, models, api, schemas
 │   │   ├── handlers/              # Shared handlers (services, views, forms, models, signals, filters)
 │   │   ├── content/               # Content models, search, tasks, Wagtail hooks
-│   │   ├── api/                   # Shared REST API endpoints (bolt_apis, fusion_health, data_adapter)
+│   │   ├── api/                   # Shared REST API endpoints (fusion_health, fusion_branding, urls)
 │   │   ├── schemas/               # Shared schema definitions (core, apps, site_settings)
 │   │   ├── urls.py                # Cart & checkout endpoints
 │   │   ├── handlers/urls.py       # Privacy & Terms endpoints
@@ -72,10 +72,15 @@ both Next.js and Django consumption.
 /learning/                     → apps.pages.lms.urls (namespace: "lms")
 /cart/                         → apps.core.urls (namespace: "cart")
 /legal/                        → apps.core.handlers.urls (namespace: "legal")
-/api/                          → apps.core.api.urls (namespace: "api")
+/apis/                         → apps.core.api.urls (namespace: "apis")
+/apis/assets/                  → fusion asset manifest (top/bottom)
+/                              → Routable component site (root) + Wagtail pages
+  /lms/...                     → LMSApp (courses, dashboard, action fragments)
+  /blog/...                    → BlogApp (posts, categories, action fragments)
+  /events/...                  → EventsApp (events CRUD, action fragments)
+  /core/...                    → CoreApp (cross-cutting CMS head, checkout)
 /admin/                        → Wagtail admin
 /django-admin/                 → Django admin
-/osoul/                        → Routable component site
 ```
 
 ## Import Conventions
@@ -102,13 +107,21 @@ Use canonical import paths from the new structure:
 django-fusion `FragmentComponent` / `RoutableComponent` subclasses live in
 each app's `components.py`:
 
-- `apps/pages/lms/components.py` — `StaticPageFragment`, `CourseListFragment`
-- `apps/pages/blog/components.py` — `BlogPostListFragment`, `BlogPostCreateFragment`
-- `apps/pages/profile/views/` — Profile fragments (dashboard, settings, courses, etc.)
+| App | File | Components |
+|-----|------|------------|
+| LMS | `apps/pages/lms/components.py` | `CourseGridFragment`, `CourseFiltersFragment`, `DashboardKPIsFragment`, `StaticPageFragment`, `CourseListFragment` |
+| Blog | `apps/pages/blog/components.py` | `BlogPostListFragment`, `BlogPostCreateFragment`, `ActionBlogPostListFragment` |
+| Events | `apps/pages/events/components.py` | `EventListFragment`, `EventCreateFragment` |
+| Core | `apps/core/site/components.py` | `CMSHeadContentFragment`, `CheckoutFragment` (cross-cutting) |
 
-API endpoints that need fragment pointers use `data_adapter.fusion_response()`:
+Fragment components are registered in their related app's `Application.viewsets`
+(via `EventsApp`, `LMSApp`, `BlogApp`, `CoreApp`), not in a separate
+`HTMXApplication` / `/actions/` prefix. Each app's Application is wired into
+the unified `Site` routing tree in `apps/core/routes.py`.
+
+API endpoints that need fragment pointers use `fusion_response()` from django-fusion:
 ```python
-from apps.core.api.data_adapter import bolt_view, fusion_response
+from django_fusion.routes import fusion_response
 ```
 
 ## Current Template Tree
@@ -279,6 +292,23 @@ class MyPage(RoutableComponent):
     fusion_render_first = True
 ```
 
+## Asset organization and migration process
+
+`cms-fusion/assets/` is the canonical project asset backend. Keep the source
+and runtime boundaries explicit:
+
+- `styles/` — SCSS/design-token source.
+- `static/js/` and `static/styles/` — JavaScript and CSS consumed by Django and
+  the frontend build; generated bundles and `staticfiles/` remain separate.
+- `fixtures/` — categorized JSON fixture data loaded by
+  `load_fusion_fixtures`, in dependency order.
+- `media/` — uploaded/runtime media; never treat it as a compiled static source.
+
+When reorganizing files, update the settings path, management command, tests,
+and documentation together. Prefer direct canonical paths and remove stale
+copies; do not add import re-exports, path aliases, or compatibility shims.
+Use `tests/test_assets_contract.py` as the structural, configuration, and process contract.
+
 ## Rules for Agents
 
 1. **Keep it local** — new templates and static files go in this project,
@@ -303,6 +333,7 @@ class MyPage(RoutableComponent):
 
 ## Related
 
-- [`docs/plans.md`](../../../docs/plans.md) — master enhancement plan
-- [`projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`](../plan/ASSETS_TEMPLATES_CLEANUP.md) — localized cleanup plan
+- [`docs/plans/README.md`](../../../docs/plans/README.md) — consolidated plan index
+- [`cms-fusion migration plan`](../../../docs/plans/cms-fusion/migration-plan.md)
+- [`cms-fusion asset cleanup plan`](../../../docs/plans/migrated/projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md)
 - [`libs/django-fusion/AGENTS.md`](../../../libs/django-fusion/AGENTS.md) — django-fusion conventions

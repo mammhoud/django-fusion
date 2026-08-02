@@ -290,14 +290,14 @@ from django_fusion.comp.generic import (
 
 | Module | Canonical Path |
 |--------|---------------|
-| Handlers | `django_fusion.core.handlers` |
-| Managers | `django_fusion.core.managers` |
-| Models | `django_fusion.core.models` |
-| Services | `django_fusion.core.services` |
+| Handlers | `django_fusion.management.handlers` |
+| Managers | `django_fusion.management.managers` |
+| Models | `django_fusion.models` |
+| Services | `django_fusion.services` |
 | Views (FilterMixin, SearchMixin) | `django_fusion.web.views` |
 | Loaders | `django_fusion.comp.loaders` |
 | Middlewares | `django_fusion.core.middlewares` |
-| Cache | `django_fusion.core.cache` |
+| Cache | `django_fusion.comp.cache` |
 
 ---
 

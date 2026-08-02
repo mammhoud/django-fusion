@@ -1,0 +1,81 @@
+{% load i18n %}
+{# htmx/course_grid.html — HTMX fragment for course listing grid #}
+<div id="course-grid" class="htmx-course-grid">
+  {% if q %}
+    <p class="htmx-course-grid__search-info">
+      {% blocktrans %}Results for <strong>{{ q }}</strong>{% endblocktrans %}
+      <a href="#"
+         hx-get="{% url 'lms:course-grid' %}"
+         hx-target="#course-grid"
+         hx-swap="outerHTML"
+         class="htmx-course-grid__clear">
+        {% trans "Clear" %}
+      </a>
+    </p>
+  {% endif %}
+
+  {% if courses %}
+    <div class="htmx-course-grid__items">
+      {% for course in courses %}
+        <article class="htmx-course-card">
+          {% if course.image %}
+            <div class="htmx-course-card__image">
+              <img src="{{ course.image.url }}" alt="{{ course.title }}" loading="lazy" />
+            </div>
+          {% else %}
+            <div class="htmx-course-card__image htmx-course-card__image--placeholder">
+              <span class="htmx-course-card__icon">🎓</span>
+            </div>
+          {% endif %}
+          <div class="htmx-course-card__body">
+            <h3 class="htmx-course-card__title">{{ course.title }}</h3>
+            {% if course.short_description %}
+              <p class="htmx-course-card__description">{{ course.short_description|truncatewords:25 }}</p>
+            {% endif %}
+            <div class="htmx-course-card__meta">
+              {% if course.instructor %}
+                <span class="htmx-course-card__instructor">{{ course.instructor.get_full_name|default:course.instructor.username }}</span>
+              {% endif %}
+              {% if course.difficulty_level %}
+                <span class="htmx-course-card__difficulty">{{ course.difficulty_level }}</span>
+              {% endif %}
+            </div>
+            <div class="htmx-course-card__footer">
+              <span class="htmx-course-card__price">${{ course.current_price|default:"0" }}</span>
+              {% if course.average_rating %}
+                <span class="htmx-course-card__rating">★ {{ course.average_rating }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+      <nav class="htmx-pagination" aria-label="{% trans 'Course pagination' %}">
+        {% if page > 1 %}
+          <button hx-get="{% url 'lms:course-grid' %}?page={{ page|add:-1 }}{% if q %}&q={{ q }}{% endif %}"
+                  hx-target="#course-grid"
+                  hx-swap="outerHTML"
+                  class="htmx-pagination__btn">
+            {% trans "Previous" %}
+          </button>
+        {% endif %}
+        <span class="htmx-pagination__info">{% blocktrans %}Page {{ page }} of {{ total_pages }}{% endblocktrans %}</span>
+        {% if page < total_pages %}
+          <button hx-get="{% url 'lms:course-grid' %}?page={{ page|add:1 }}{% if q %}&q={{ q }}{% endif %}"
+                  hx-target="#course-grid"
+                  hx-swap="outerHTML"
+                  class="htmx-pagination__btn">
+            {% trans "Next" %}
+          </button>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+  {% else %}
+    <div class="htmx-empty">
+      <p class="htmx-empty__message">{% trans "No courses found." %}</p>
+    </div>
+  {% endif %}
+</div>

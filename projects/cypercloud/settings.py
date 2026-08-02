@@ -233,7 +233,7 @@ MODELS_TIMEOUT = 60
 def _get_dynaconf_settings():
     """Lazy-load Dynaconf settings on first access."""
     try:
-        from django_fusion.config.dynaconf_loader import (
+        from django_fusion.config.loader import (
             DynaconfSettings,
             ModelsRegistry,
             TemplateRegistry,

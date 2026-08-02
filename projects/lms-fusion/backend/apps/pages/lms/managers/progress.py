@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db import models, transaction
 from django.utils import timezone
-from django_fusion.core.managers import BaseManager
+from django_fusion.management.managers.base import BaseManager
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

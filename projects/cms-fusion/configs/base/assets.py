@@ -1,6 +1,8 @@
 # ====================================
 # 🎨 Assets & Static Files Configuration
 # ====================================
+from pathlib import Path
+
 from ..settings.conf import settings
 from .paths import BASE_DIR
 
@@ -76,6 +78,23 @@ STATICFILES_FINDERS = settings.get("STATICFILES_FINDERS", [
 
 # ── Webpack Loader ────────────────────────────────────────────────────────────
 _bundles_json = SITE_BUNDLES_DIR / "bundles.json"
+
+# ── Unified django-fusion asset pipeline ─────────────────────────────────────
+# Webpack and component manifests are merged at link-generation time. The
+# generated bundle/static roots stay separate from source assets and media.
+FUSION_ASSET_PIPELINE = {
+    "enabled": True,
+    "static_url": STATIC_URL,
+    "webpack": {
+        "enabled": True,
+        "stats_file": str(_bundles_json),
+        "bundle_dir": f"bundles/{SITE_NAME}/",
+    },
+    "components": {
+        "enabled": True,
+        "manifest_path": str(Path(STATIC_ROOT) / "components" / "manifest.json"),
+    },
+}
 
 WEBPACK_LOADER = {
     "DEFAULT": {

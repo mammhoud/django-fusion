@@ -14,12 +14,11 @@ genuinely shared across sites or part of the `django-fusion` framework.
 lms-fusion/backend/
 ├── apps/                          # All Django application code
 │   ├── core/                      # Shared core: handlers, content, services, models, api, schemas
-│   │   ├── handlers/              # Shared handlers (services, views, forms, models, signals, filters)
+│   │   ├── handlers/              # Shared handlers (views, forms, models, signals, filters)
 │   │   ├── content/               # Content models, search, tasks, Wagtail hooks
-│   │   ├── api/                   # Shared REST API endpoints (bolt_apis, fusion_health, data_adapter)
-│   │   ├── schemas/               # Shared schema definitions (core, apps, site_settings)
-│   │   ├── urls.py                # Cart & checkout endpoints
-│   │   ├── handlers/urls.py       # Privacy & Terms endpoints
+│   │   ├── api/                   # Shared REST API endpoints
+│   │   ├── schemas/               # Shared schema definitions
+│   │   ├── urls.py                # Cart and checkout endpoints
 │   │   └── routes.py              # Routable component site configuration
 │   └── pages/                     # Domain-specific apps (one per feature module)
 │       ├── blog/                  # Blog app (models, views, API, components)
@@ -48,7 +47,6 @@ Django resolves templates in this order (highest priority first):
 3. `lms-fusion/backend/apps/core/**/templates/` — core app templates
 4. `lms-fusion/assets/templates/` — project asset templates
 5. `libs/django-fusion/src/django_fusion/templates/` — django-fusion framework templates
-6. `projects/assets/templates/` — legacy monorepo shared templates (for non-fusion sites only)
 
 ## Asset / Static Resolution Order
 
@@ -106,9 +104,9 @@ each app's `components.py`:
 - `apps/pages/blog/components.py` — `BlogPostListFragment`, `BlogPostCreateFragment`
 - `apps/pages/profile/views/` — Profile fragments (dashboard, settings, courses, etc.)
 
-API endpoints that need fragment pointers use `data_adapter.fusion_response()`:
+API endpoints that need fragment pointers use the framework response helpers directly:
 ```python
-from apps.core.api.data_adapter import bolt_view, fusion_response
+from django_fusion.routes import fusion_response
 ```
 
 ## Current Template Tree
@@ -303,6 +301,7 @@ class MyPage(RoutableComponent):
 
 ## Related
 
-- [`docs/plans.md`](../../../docs/plans.md) — master enhancement plan
-- [`projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`](../plan/ASSETS_TEMPLATES_CLEANUP.md) — localized cleanup plan
+- [`docs/plans/README.md`](../../../docs/plans/README.md) — consolidated plan index
+- [`lms-fusion migration plan`](../../../docs/plans/lms-fusion/migration-plan.md)
+- [`lms-fusion asset cleanup plan`](../../../docs/plans/migrated/projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md)
 - [`libs/django-fusion/AGENTS.md`](../../../libs/django-fusion/AGENTS.md) — django-fusion conventions

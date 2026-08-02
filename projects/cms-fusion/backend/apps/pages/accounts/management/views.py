@@ -72,7 +72,7 @@ def assign_default_group(user):
 
 def _ensure_profile_exists(user):
     try:
-        from apps.core.domain.models.users.users import Person
+        from apps.domain.models.users.users import Person
 
         Person.objects.get_or_create(
             user=user,

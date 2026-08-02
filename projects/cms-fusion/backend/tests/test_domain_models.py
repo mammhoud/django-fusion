@@ -20,7 +20,7 @@ class TestWorkspaceModel(TestCase):
 
     def test_create_workspace_minimal(self):
         """Workspace can be created with just a name."""
-        from apps.core.domain.models import Workspace
+        from apps.domain.models import Workspace
 
         ws = Workspace.objects.create(name="Test Workspace")
         assert ws.pk is not None
@@ -31,7 +31,7 @@ class TestWorkspaceModel(TestCase):
 
     def test_workspace_name_is_required(self):
         """Workspace cannot be created with an empty name."""
-        from apps.core.domain.models import Workspace
+        from apps.domain.models import Workspace
         from django.core.exceptions import ValidationError
 
         ws = Workspace(name="")
@@ -40,7 +40,7 @@ class TestWorkspaceModel(TestCase):
 
     def test_workspace_unique_name_per_company(self):
         """Workspace has unique constraint on (name + company)."""
-        from apps.core.domain.models import Workspace
+        from apps.domain.models import Workspace
 
         ws1 = Workspace.objects.create(name="Unique WS")
         # Same name, no company — should be allowed
@@ -49,7 +49,7 @@ class TestWorkspaceModel(TestCase):
 
     def test_workspace_string_representation(self):
         """Workspace __str__ includes name and module display."""
-        from apps.core.domain.models import Workspace
+        from apps.domain.models import Workspace
 
         ws = Workspace.objects.create(name="My Project", module="design")
         assert "My Project" in str(ws)
@@ -60,18 +60,18 @@ class TestTeamModel(TestCase):
     """Verify Team model can be created and saved."""
 
     def setUp(self):
-        from apps.core.domain.handlers.models.manage_company import Organization
+        from apps.domain.handlers.models.manage_company import Organization
 
         self.org = Organization.objects.create(name="Test Org")
         # Department.company FK points to Organization
-        from apps.core.domain.handlers.models.manage_company import Department
+        from apps.domain.handlers.models.manage_company import Department
         self.dept = Department.objects.create(
             name="Engineering", company=self.org
         )
 
     def test_create_team_minimal(self):
         """Team can be created with name, slug, and department."""
-        from apps.core.domain.models import Team
+        from apps.domain.models import Team
 
         team = Team.objects.create(
             name="Backend Team",
@@ -86,7 +86,7 @@ class TestTeamModel(TestCase):
 
     def test_team_string_representation(self):
         """Team __str__ includes name and department."""
-        from apps.core.domain.models import Team
+        from apps.domain.models import Team
 
         team = Team.objects.create(
             name="Frontend Team",
@@ -98,7 +98,7 @@ class TestTeamModel(TestCase):
 
     def test_team_slug_is_unique(self):
         """Team slug enforces uniqueness."""
-        from apps.core.domain.models import Team
+        from apps.domain.models import Team
 
         Team.objects.create(name="T1", slug="t1-slug", department=self.dept)
         with pytest.raises(IntegrityError):
@@ -117,7 +117,7 @@ class TestPersonModel(TestCase):
 
     def test_create_person_minimal(self):
         """Person can be created with just a user."""
-        from apps.core.domain.models import Person
+        from apps.domain.models import Person
 
         person = Person.objects.create(
             user=self.user,
@@ -129,7 +129,7 @@ class TestPersonModel(TestCase):
 
     def test_person_string_representation(self):
         """Person __str__ includes full name."""
-        from apps.core.domain.models import Person
+        from apps.domain.models import Person
 
         person = Person.objects.create(
             user=self.user,
@@ -142,7 +142,7 @@ class TestPersonModel(TestCase):
 
     def test_person_profile_type_default(self):
         """Person has default profile_type."""
-        from apps.core.domain.models import Person
+        from apps.domain.models import Person
 
         person = Person.objects.create(
             user=self.user,
@@ -156,7 +156,7 @@ class TestOrganizationModel(TestCase):
 
     def test_create_organization_minimal(self):
         """Organization can be created with just a name."""
-        from apps.core.domain.handlers.models.manage_company import Organization
+        from apps.domain.handlers.models.manage_company import Organization
 
         org = Organization.objects.create(name="R&D Division")
         assert org.pk is not None
@@ -164,7 +164,7 @@ class TestOrganizationModel(TestCase):
 
     def test_organization_string_representation(self):
         """Organization __str__ includes name and type."""
-        from apps.core.domain.handlers.models.manage_company import Organization
+        from apps.domain.handlers.models.manage_company import Organization
 
         org = Organization.objects.create(name="Sales")
         assert "Sales" in str(org)
@@ -174,13 +174,13 @@ class TestDepartmentModel(TestCase):
     """Verify Department model can be created."""
 
     def setUp(self):
-        from apps.core.domain.handlers.models.manage_company import Organization
+        from apps.domain.handlers.models.manage_company import Organization
 
         self.org = Organization.objects.create(name="Test Org Dept")
 
     def test_create_department(self):
         """Department can be created with name and company (Organization)."""
-        from apps.core.domain.handlers.models.manage_company import Department
+        from apps.domain.handlers.models.manage_company import Department
 
         dept = Department.objects.create(
             name="QA",
@@ -195,7 +195,7 @@ class TestCorporateModel(TestCase):
 
     def test_create_corporate(self):
         """Corporate can be created with just a name."""
-        from apps.core.domain.contrib.models import Corporate
+        from apps.domain.contrib.models import Corporate
 
         corp = Corporate.objects.create(name="Acme Inc.")
         assert corp.pk is not None
@@ -207,7 +207,7 @@ class TestGlobalSettingsModel(TestCase):
 
     def test_global_settings_model_imports(self):
         """GlobalSettings model can be imported and has expected attrs."""
-        from apps.core.domain.models import GlobalSettings
+        from apps.domain.models import GlobalSettings
 
         assert GlobalSettings is not None
         assert hasattr(GlobalSettings, "objects")
@@ -219,7 +219,7 @@ class TestServiceModel(TestCase):
 
     def test_create_service(self):
         """Service can be created with just a name."""
-        from apps.core.domain.handlers.models.manage_service import Service
+        from apps.domain.handlers.models.manage_service import Service
 
         svc = Service.objects.create(name="Consulting")
         assert svc.pk is not None
@@ -239,7 +239,7 @@ class TestCouponModel(TestCase):
 
     def test_create_coupon_minimal(self):
         """Coupon can be created with defaults."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(
             discount_value=10,
@@ -252,7 +252,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_fixed_discount(self):
         """Coupon with fixed amount discount."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(
             discount_type="fixed",
@@ -263,7 +263,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_calculate_discount_percentage(self):
         """Percentage discount calculation."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(discount_value=20)
         discount = coupon.calculate_discount(100)
@@ -271,7 +271,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_calculate_discount_fixed(self):
         """Fixed discount calculation."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(
             discount_type="fixed",
@@ -282,7 +282,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_percentage_over_100_invalid(self):
         """Percentage coupon with value > 100 should fail validation."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
         from django.core.exceptions import ValidationError
 
         coupon = Coupon(discount_value=150)
@@ -291,7 +291,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_apply(self):
         """Coupon apply returns final price and discount."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(discount_value=15)
         final, discount = coupon.apply(100)
@@ -300,7 +300,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_is_valid_active(self):
         """Active coupon with no restrictions passes is_valid."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(discount_value=10)
         valid, msg = coupon.is_valid(order_amount=50)
@@ -309,7 +309,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_is_valid_inactive_fails(self):
         """Inactive coupon fails is_valid."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(discount_value=10, is_active=False)
         valid, msg = coupon.is_valid(order_amount=50)
@@ -318,7 +318,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_is_valid_minimum_order(self):
         """Coupon with unmet minimum order fails is_valid."""
-        from apps.core.domain.models.coupon import Coupon
+        from apps.domain.models.coupon import Coupon
 
         coupon = Coupon.objects.create(
             discount_value=10, minimum_order_amount=100,
@@ -329,7 +329,7 @@ class TestCouponModel(TestCase):
 
     def test_coupon_usage_tracking(self):
         """CouponUsage records are created."""
-        from apps.core.domain.models.coupon import Coupon, CouponUsage
+        from apps.domain.models.coupon import Coupon, CouponUsage
 
         coupon = Coupon.objects.create(discount_value=10)
         coupon.record_usage(user=self.user)
@@ -343,7 +343,7 @@ class TestSubscriberModel(TestCase):
 
     def test_create_subscriber(self):
         """Subscriber can be created with an email."""
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         sub = Subscriber.objects.create(email="test@example.com")
         assert sub.pk is not None
@@ -353,7 +353,7 @@ class TestSubscriberModel(TestCase):
 
     def test_subscriber_confirm(self):
         """Subscriber can be confirmed."""
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         sub = Subscriber.objects.create(email="confirm@example.com")
         result = sub.confirm()
@@ -363,7 +363,7 @@ class TestSubscriberModel(TestCase):
 
     def test_subscriber_unsubscribe(self):
         """Subscriber can unsubscribe."""
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         sub = Subscriber.objects.create(email="unsub@example.com", status="confirmed")
         result = sub.unsubscribe()
@@ -372,7 +372,7 @@ class TestSubscriberModel(TestCase):
 
     def test_subscriber_is_active_property(self):
         """is_active property reflects status."""
-        from apps.core.domain.models.newsletter.subscriber import Subscriber
+        from apps.domain.models.newsletter.subscriber import Subscriber
 
         sub = Subscriber.objects.create(email="active@example.com")
         assert sub.is_active is False  # pending
@@ -385,7 +385,7 @@ class TestCampaignModel(TestCase):
 
     def test_create_campaign(self):
         """Campaign can be created."""
-        from apps.core.domain.models.newsletter.campaign import Campaign
+        from apps.domain.models.newsletter.campaign import Campaign
 
         camp = Campaign.objects.create(
             name="Welcome Email",
@@ -398,7 +398,7 @@ class TestCampaignModel(TestCase):
 
     def test_campaign_get_open_rate(self):
         """Open rate calculates correctly."""
-        from apps.core.domain.models.newsletter.campaign import Campaign
+        from apps.domain.models.newsletter.campaign import Campaign
 
         camp = Campaign.objects.create(
             name="Test", subject="Test", content="<p>Test</p>",
@@ -408,7 +408,7 @@ class TestCampaignModel(TestCase):
 
     def test_campaign_schedule(self):
         """Campaign can be scheduled."""
-        from apps.core.domain.models.newsletter.campaign import Campaign
+        from apps.domain.models.newsletter.campaign import Campaign
         from django.utils import timezone
 
         camp = Campaign.objects.create(
@@ -423,7 +423,7 @@ class TestCertificationTemplateModel(TestCase):
 
     def test_create_certification_template(self):
         """CertificationTemplate can be created with just a name."""
-        from apps.core.domain.models.certification import CertificationTemplate
+        from apps.domain.models.certification import CertificationTemplate
 
         tmpl = CertificationTemplate.objects.create(
             name="Default Certificate",
@@ -435,7 +435,7 @@ class TestCertificationTemplateModel(TestCase):
 
     def test_certification_template_context(self):
         """get_context returns expected keys."""
-        from apps.core.domain.models.certification import CertificationTemplate
+        from apps.domain.models.certification import CertificationTemplate
 
         tmpl = CertificationTemplate.objects.create(name="Test Cert")
         ctx = tmpl.get_context(
@@ -452,7 +452,7 @@ class TestNewsletterModel(TestCase):
 
     def test_newsletter_model_imports(self):
         """Newsletter model can be imported."""
-        from apps.core.domain.models import Newsletter
+        from apps.domain.models import Newsletter
 
         assert Newsletter is not None
         assert hasattr(Newsletter, "objects")

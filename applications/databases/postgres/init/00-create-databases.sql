@@ -35,6 +35,8 @@ SELECT 'CREATE DATABASE db_ctc'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_ctc')\gexec
 SELECT 'CREATE DATABASE db_structa'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_structa')\gexec
+SELECT 'CREATE DATABASE db_lms_fusion'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_lms_fusion')\gexec
 SELECT 'CREATE DATABASE blinko'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'blinko')\gexec
 
@@ -50,7 +52,7 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'blinko')\gexec
 -- -----------------------------------------------------------------------------
 DO $$
 DECLARE
-   db_names text[] := ARRAY['ctc_research', 'lms_demo', 'vresume', 'db_ctc', 'db_structa', 'blinko'];
+   db_names text[] := ARRAY['ctc_research', 'lms_demo', 'vresume', 'db_ctc', 'db_structa', 'db_lms_fusion', 'blinko'];
    db_name text;
 BEGIN
    FOREACH db_name IN ARRAY db_names LOOP
@@ -103,6 +105,14 @@ ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO 
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
+
+\c db_lms_fusion
+GRANT ALL PRIVILEGES ON SCHEMA public TO django;
+ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
+ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "hstore";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 \c blinko
 GRANT ALL PRIVILEGES ON SCHEMA public TO django;

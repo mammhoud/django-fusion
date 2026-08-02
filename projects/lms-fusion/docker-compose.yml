@@ -15,6 +15,8 @@ services:
     env_file: ../../.env
     environment:
       RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
       DJANGO_SETTINGS_MODULE: settings
       WEBSITE: lms-fusion
       DJANGO_SITE: lms-fusion
@@ -28,15 +30,20 @@ services:
       APP_MODULE: server:asgi_application
       DJANGO_SERVER_TYPE: asgi
       RUN_SETUP: "true"
-      DB_TYPE: ${DB_TYPE:-postgres}
+      # Production startup runs migrations and safe fixture detection against
+      # the shared PostgreSQL container. Destructive fixture replacement is
+      # opt-in through FORCE_LOAD_DUMPS=true and the load_data --replace flag.
+      LOAD_DATA_ON_START: ${LOAD_DATA_ON_START:-false}
+      FORCE_LOAD_DUMPS: ${FORCE_LOAD_DUMPS:-false}
+      DB_TYPE: postgres
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
       DB_USER: ${POSTGRES_USER:-admin}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      REDIS_URL: redis://default-redis:6379/0
-      CELERY_BROKER_URL: redis://default-redis:6379/1
-      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/2
       ALLOWED_HOSTS: localhost,127.0.0.1,lms-fusion.localhost,lms-fusion-backend
       CSRF_TRUSTED_ORIGINS: http://localhost:5074,http://lms-fusion.localhost
       CELERY_TASK_DEFAULT_QUEUE: lms-fusion
@@ -50,11 +57,13 @@ services:
       - "5074:5074"
     volumes:
       - ./backend:/app/lms-fusion:rw
+      - ./tools:/app/lms-fusion/tools:ro
       - ./configs:/app/configs:ro
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
-      - lms-fusion-static:/app/lms-fusion/static:rw
-      - lms-fusion-media:/app/lms-fusion/media:rw
+      # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
+      - lms-fusion-static:/app/lms-fusion/assets/staticfiles:rw
+      - lms-fusion-media:/app/lms-fusion/assets/media:rw
     networks:
       - common
       - traefik-net
@@ -78,16 +87,28 @@ services:
     restart: unless-stopped
     env_file: ../../.env
     environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
       DJANGO_SETTINGS_MODULE: settings
       WEBSITE: lms-fusion
       DJANGO_SITE: lms-fusion
       PROJECT_PATH: lms-fusion
       CELERY_TASK_DEFAULT_QUEUE: lms-fusion
-      CELERY_BROKER_URL: redis://default-redis:6379/1
-      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
-    command: celery -A www.worker.celery:app worker --loglevel=info --queues=lms-fusion
+      DB_TYPE: postgres
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/2
+    command: celery -A apps.domain.services.email.tasks:app worker --loglevel=info --queues=lms-fusion
     volumes:
       - ./backend:/app/lms-fusion:rw
+      - ./tools:/app/lms-fusion/tools:ro
       - ./configs:/app/configs:ro
       - ../../logs:/app/logs:z
     networks:

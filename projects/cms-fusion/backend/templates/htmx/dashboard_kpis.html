@@ -1,0 +1,28 @@
+{% load i18n %}
+{# htmx/dashboard_kpis.html — HTMX fragment for dashboard KPI metric cards #}
+<div id="dashboard-kpis" class="htmx-kpi-grid">
+  {% if kpis %}
+    {% for kpi in kpis %}
+      <div class="htmx-kpi-card htmx-kpi-card--{{ kpi.color|default:'primary' }}">
+        <div class="htmx-kpi-card__icon">
+          {% if kpi.icon == "book-open" %}📚
+          {% elif kpi.icon == "newspaper" %}📰
+          {% elif kpi.icon == "users" %}👥
+          {% elif kpi.icon == "trending-up" %}📈
+          {% elif kpi.icon == "star" %}⭐
+          {% elif kpi.icon == "dollar-sign" %}💰
+          {% else %}📊
+          {% endif %}
+        </div>
+        <div class="htmx-kpi-card__body">
+          <span class="htmx-kpi-card__value">{{ kpi.value }}</span>
+          <span class="htmx-kpi-card__label">{{ kpi.label }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="htmx-empty">
+      <p class="htmx-empty__message">{% trans "No metrics available yet." %}</p>
+    </div>
+  {% endif %}
+</div>

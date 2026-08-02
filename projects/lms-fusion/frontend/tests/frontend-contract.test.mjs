@@ -9,8 +9,8 @@ for (const key of ['results: T[]', 'count: number', 'next: string | null', 'prev
   assert.match(baseApi, new RegExp(key.replace(/[\[\]|]/g, '\\$&')));
 }
 
-for (const key of ['data.results', 'data.count']) {
-  assert.match(coursesPage, new RegExp(key.replace('.', '\\.')));
+for (const key of ['setCourses(data.data || [])', 'setPagination(data.pagination ||']) {
+  assert.match(coursesPage, new RegExp(key.replace(/[()[\\]|]/g, '\\$&')));
 }
 
 for (const key of ['hydrateFromRequest', 'hydrateFromCookieHeader', 'selectSessionCookies', 'selectSessionToken']) {

@@ -7,7 +7,7 @@ from django.utils import timezone
 from django_fusion.models.tags import (
     PersonTag,
 )
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.pages.handler import PageHandler
 
 from apps.pages.lms.models import Course, Enrollment
 from apps.pages.lms.models.courses.progress import LessonProgress

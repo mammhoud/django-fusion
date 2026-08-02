@@ -236,12 +236,12 @@ class TestFragmentComponent(TestCase):
         self.factory = RequestFactory()
 
     def test_is_htmx_request_true(self):
-        from django_fusion.site.interface._context_mixins import is_htmx_request
+        from django_fusion.core.context._context_mixins import is_htmx_request
         request = make_htmx_request(self.factory)
         self.assertTrue(is_htmx_request(request))
 
     def test_is_htmx_request_false(self):
-        from django_fusion.site.interface._context_mixins import is_htmx_request
+        from django_fusion.core.context._context_mixins import is_htmx_request
         request = make_regular_request(self.factory)
         self.assertFalse(is_htmx_request(request))
 
@@ -345,7 +345,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_explicit_fragment_name_returned_as_is(self):
         """Explicit fragment_name takes priority over items_template derivation."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class ExplicitPaginated(PaginatedComponentView):
             fragment_name = "my.custom_fragment"
@@ -355,7 +355,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_derives_from_items_template(self):
         """When fragment_name is not set, derives from items_template."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class DefaultPaginated(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -366,7 +366,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_custom_items_template_derives_correctly(self):
         """A custom items_template produces the right dotted name."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class CustomItems(PaginatedComponentView):
             items_template = "blog/fragments/post_list.html"
@@ -376,7 +376,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_template_path_conversion(self):
         """The derived fragment_name maps to the correct template path."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class MyPaginated(PaginatedComponentView):
             items_template = "components/items/table.html"
@@ -392,7 +392,7 @@ class TestPaginatedListViewFragmentName(TestCase):
 
     def test_explicit_fragment_name_returned_as_is(self):
         """Explicit fragment_name takes priority over model derivation."""
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class ExplicitListView(PaginatedListView):
             fragment_name = "my.custom_list"
@@ -404,7 +404,7 @@ class TestPaginatedListViewFragmentName(TestCase):
     def test_derives_from_model_meta(self):
         """When fragment_name is not set, derives from model._meta."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class PaginatedArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -422,7 +422,7 @@ class TestPaginatedListViewFragmentName(TestCase):
     def test_model_derived_template_path_conversion(self):
         """The model-derived fragment_name maps to the correct template path."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class PaginatedProduct(models.Model):
             name = models.CharField(max_length=100)
@@ -441,7 +441,7 @@ class TestPaginatedListViewFragmentName(TestCase):
 
     def test_falls_back_to_items_template_when_no_model(self):
         """When neither fragment_name nor model is set, falls back to items_template."""
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class NoModelListView(PaginatedListView):
             model = None
@@ -454,7 +454,7 @@ class TestPaginatedListViewFragmentName(TestCase):
     def test_explicit_overrides_model_derivation(self):
         """Explicit fragment_name takes priority over both model and items_template."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class PaginatedItem(models.Model):
             name = models.CharField(max_length=50)
@@ -469,64 +469,6 @@ class TestPaginatedListViewFragmentName(TestCase):
 
         view = OverrideListView()
         self.assertEqual(view.get_fragment_name(), "custom.list_view")
-
-
-# ---------------------------------------------------------------------------
-# Legacy paginators.py versions
-# ---------------------------------------------------------------------------
-
-class TestLegacyPaginatorsFragmentName(TestCase):
-    """Tests for get_fragment_name() on the legacy paginators.py versions."""
-
-    def test_legacy_paginated_component_view_derives_from_items_template(self):
-        """Legacy PaginatedComponentView derives fragment_name from items_template."""
-        from django_fusion.site.interface.paginators import PaginatedComponentView as LegacyPCV
-
-        class MyLegacyPCV(LegacyPCV):
-            items_template = "components/items/list.html"
-            # fragment_name NOT set
-
-        view = MyLegacyPCV()
-        self.assertEqual(view.get_fragment_name(), "components.items.list")
-
-    def test_legacy_paginated_component_view_explicit_override(self):
-        """Explicit fragment_name on legacy PaginatedComponentView takes priority."""
-        from django_fusion.site.interface.paginators import PaginatedComponentView as LegacyPCV
-
-        class ExplicitLegacyPCV(LegacyPCV):
-            fragment_name = "my.explicit_fragment"
-
-        view = ExplicitLegacyPCV()
-        self.assertEqual(view.get_fragment_name(), "my.explicit_fragment")
-
-    def test_legacy_paginated_list_view_derives_from_model(self):
-        """Legacy PaginatedListView derives fragment_name from model._meta."""
-        from django.db import models
-        from django_fusion.site.interface.paginators import PaginatedListView as LegacyPLV
-
-        class PaginatedCategory(models.Model):
-            name = models.CharField(max_length=50)
-
-            class Meta:
-                app_label = "tests"
-
-        class CategoryListView(LegacyPLV):
-            model = PaginatedCategory
-            fragment_name = None  # explicitly unset
-
-        view = CategoryListView()
-        self.assertEqual(view.get_fragment_name(), "components.tests.paginatedcategory_list")
-
-    def test_legacy_paginated_list_view_explicit_override(self):
-        """Explicit fragment_name on legacy PaginatedListView takes priority."""
-        from django_fusion.site.interface.paginators import PaginatedListView as LegacyPLV
-
-        class ExplicitLegacyPLV(LegacyPLV):
-            fragment_name = "my.explicit_list"
-            model = None
-
-        view = ExplicitLegacyPLV()
-        self.assertEqual(view.get_fragment_name(), "my.explicit_list")
 
 
 # ---------------------------------------------------------------------------
@@ -548,7 +490,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_fragment_strategy_with_items_template(self):
         """resolve_template_name() returns the items_template-derived path
         when strategy is 'fragment' and fragment_name is not set."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class MyPaginated(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -559,23 +501,23 @@ class TestResolveTemplateNameIntegration(TestCase):
         view.strategy = "fragment"
         self.assertEqual(view.resolve_template_name(), "components/items/list.html")
 
-    def test_resolve_template_name_document_strategy_uses_template_name(self):
+    def test_resolve_template_name_full_strategy_uses_template_name(self):
         """resolve_template_name() falls back to template_name when strategy
-        is 'document', even if items_template is set."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        is 'full', even if items_template is set."""
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class MyPaginated(PaginatedComponentView):
             items_template = "components/items/list.html"
             template_name = "full_page.html"
 
         view = MyPaginated()
-        view.strategy = "document"
+        view.strategy = "full"
         self.assertEqual(view.resolve_template_name(), "full_page.html")
 
     def test_resolve_template_name_fragment_with_custom_items_template(self):
         """resolve_template_name() correctly converts a deeply nested
         items_template path to the fragment template path."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class CustomItems(PaginatedComponentView):
             items_template = "blog/fragments/post_list.html"
@@ -588,7 +530,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_explicit_fragment_overrides_items_template(self):
         """Explicit fragment_name takes priority over items_template in
         resolve_template_name()."""
-        from django_fusion.site.interface.page_handler import PaginatedComponentView
+        from django_fusion.routes.pages.handler import PaginatedComponentView
 
         class ExplicitFragment(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -607,7 +549,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """resolve_template_name() returns the model-derived path when
         strategy is 'fragment', fragment_name is not set, and model is set."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class IntegrationArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -624,11 +566,11 @@ class TestResolveTemplateNameIntegration(TestCase):
         view.strategy = "fragment"
         self.assertEqual(view.resolve_template_name(), "components/tests/integrationarticle_list.html")
 
-    def test_resolve_template_name_document_strategy_uses_template_name_with_model(self):
+    def test_resolve_template_name_full_strategy_uses_template_name_with_model(self):
         """resolve_template_name() falls back to template_name when strategy
-        is 'document', even if model is set."""
+        is 'full', even if model is set."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class IntegrationProduct(models.Model):
             name = models.CharField(max_length=100)
@@ -642,13 +584,13 @@ class TestResolveTemplateNameIntegration(TestCase):
             template_name = "shop/full_page.html"
 
         view = ProductListView()
-        view.strategy = "document"
+        view.strategy = "full"
         self.assertEqual(view.resolve_template_name(), "shop/full_page.html")
 
     def test_resolve_template_name_fragment_falls_back_to_items_template_without_model(self):
         """resolve_template_name() uses items_template-derived path when
         strategy is 'fragment', no model, and no explicit fragment_name."""
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class NoModelListView(PaginatedListView):
             model = None
@@ -664,7 +606,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """Explicit fragment_name takes priority over model._meta in
         resolve_template_name()."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class IntegrationTag(models.Model):
             name = models.CharField(max_length=50)
@@ -685,7 +627,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """When both model and items_template are set (no explicit fragment_name),
         model._meta derivation takes priority over items_template."""
         from django.db import models
-        from django_fusion.site.interface.page_handler import PaginatedListView
+        from django_fusion.routes.pages.handler import PaginatedListView
 
         class IntegrationOrder(models.Model):
             total = models.DecimalField(max_digits=10, decimal_places=2)

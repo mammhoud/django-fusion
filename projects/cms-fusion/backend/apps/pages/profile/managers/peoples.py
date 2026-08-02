@@ -6,12 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
-from django_fusion.core.managers import CachedManager
-
-try:
-    from www.ci.services import *  # noqa: F401, F403
-except ImportError:
-    pass  # legacy shared module, may not be available
+from django_fusion.management.managers.base import CachedManager
 
 if TYPE_CHECKING:
     from ..models import Person
@@ -356,35 +351,6 @@ class PersonManager(CachedManager):
 
         except self.model.DoesNotExist:
             return {}
-
-    # ---------------------------------------------------------------
-    # SHARING & INVITATION OPERATIONS (Using Services)
-    # ---------------------------------------------------------------
-    def generate_share_token(self, person_id: str, expires_hours: int = 24) -> str | None:
-        """Generate a share token for a person."""
-        return SharingInvitationService.generate_share_token(person_id, expires_hours)
-
-    def get_person_by_share_token(self, token: str):
-        """Get person by share token if valid."""
-        return SharingInvitationService.get_person_by_share_token(token)
-
-    def generate_shareable_link(self, person_id: str, **kwargs) -> dict[str, Any]:
-        """Generate a shareable link for a person's profile."""
-        return SharingInvitationService.generate_shareable_link(person_id, **kwargs)
-
-    def send_invitation(
-        self,
-        person_id: str,
-        inviter: User,
-        invitation_type: str = 'join',
-        message: str = ''
-    ) -> dict[str, Any]:
-        """Send an invitation to a person."""
-        return InvitationService.send_invitation(person_id, inviter, invitation_type, message)
-
-    def accept_invitation(self, token: str) -> dict[str, Any]:
-        """Accept an invitation using token."""
-        return InvitationService.accept_invitation(token)
 
     # ---------------------------------------------------------------
     # BULK OPERATIONS

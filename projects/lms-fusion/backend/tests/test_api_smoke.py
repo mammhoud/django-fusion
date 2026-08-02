@@ -16,27 +16,27 @@ from django.test import Client, TestCase, override_settings
 
 @override_settings(ROOT_URLCONF="tests.urls")
 class TestFusionHealthAPI(TestCase):
-    """Verify the /api/fusion/health endpoint."""
+    """Verify the /api/health endpoint."""
 
     def setUp(self):
         self.client = Client()
 
     def test_health_returns_200(self):
-        """GET /api/fusion/health returns HTTP 200."""
-        response = self.client.get("/api/fusion/health/")
+        """GET /api/health returns HTTP 200."""
+        response = self.client.get("/api/health/")
         assert response.status_code == 200, (
             f"Expected 200, got {response.status_code}: {response.content[:200]}"
         )
 
     def test_health_returns_valid_json(self):
         """Response is parseable JSON."""
-        response = self.client.get("/api/fusion/health/")
+        response = self.client.get("/api/health/")
         data = json.loads(response.content)
         assert isinstance(data, dict)
 
     def test_health_contains_expected_keys(self):
         """Response contains status, data.fusion_render_first, and data.reason keys."""
-        response = self.client.get("/api/fusion/health/")
+        response = self.client.get("/api/health/")
         data = json.loads(response.content)
         assert data["status"] == 200
         assert data["message"] == "Success"
@@ -48,21 +48,21 @@ class TestFusionHealthAPI(TestCase):
 
 @override_settings(ROOT_URLCONF="tests.urls")
 class TestFusionBrandingAPI(TestCase):
-    """Verify the /api/fusion/branding/ endpoint."""
+    """Verify the /api/branding/ endpoint."""
 
     def setUp(self):
         self.client = Client()
 
     def test_branding_returns_200(self):
-        """GET /api/fusion/branding/ returns HTTP 200."""
-        response = self.client.get("/api/fusion/branding/")
+        """GET /api/branding/ returns HTTP 200."""
+        response = self.client.get("/api/branding/")
         assert response.status_code == 200, (
             f"Expected 200, got {response.status_code}: {response.content[:200]}"
         )
 
     def test_branding_returns_valid_json(self):
         """Response is parseable JSON with expected keys."""
-        response = self.client.get("/api/fusion/branding/")
+        response = self.client.get("/api/branding/")
         data = json.loads(response.content)
         assert isinstance(data, dict)
         assert "site_name" in data

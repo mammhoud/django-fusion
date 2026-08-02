@@ -111,6 +111,26 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
 
+    echo "[SETUP] Waiting for the configured database..."
+    DB_READY_ATTEMPTS="${DB_READY_ATTEMPTS:-30}"
+    DB_READY_DELAY="${DB_READY_DELAY:-2}"
+    db_ready=false
+    for ((attempt=1; attempt<=DB_READY_ATTEMPTS; attempt++)); do
+        if python manage.py --site "$SITE_NAME" shell -c \
+            'from django.db import connection; connection.ensure_connection()' \
+            >/dev/null 2>&1; then
+            db_ready=true
+            echo "[OK] Database is ready"
+            break
+        fi
+        echo "[WAIT] Database is not ready (attempt ${attempt}/${DB_READY_ATTEMPTS})"
+        sleep "$DB_READY_DELAY"
+    done
+    if [ "$db_ready" != "true" ]; then
+        echo "[ERROR] Database did not become ready; refusing to start"
+        exit 1
+    fi
+
     echo "[SETUP] Making migrations..."
     if ! run_logged makemigrations python manage.py --site "$SITE_NAME" makemigrations --noinput; then
         echo "[WARN] makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
@@ -127,12 +147,32 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
         run_logged superuser python -m django_fusion.infrastructure.scripts.superuser || echo "[WARN] superuser failed (non-fatal); see ${LOG_DIR}/superuser.log"
     fi
 
-    echo "[SETUP] Loading dumped data fixtures..."
-    LOAD_DUMP_ARGS=("$SITE_NAME")
-    [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
-    [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
-    if ! run_logged load_dumped_data python tests/scripts/utilities/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
-        echo "[WARN] dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
+    # Fixture loading is opt-in in production. Migrations and serving must be
+    # safe on every restart; fixture replacement is an explicit maintenance
+    # operation because it can replace Wagtail pages, sites, and images.
+    if [ "${LOAD_DATA_ON_START:-false}" = "true" ]; then
+        echo "[SETUP] Loading dumped data fixtures..."
+        # Use the site's `load_data` command when available. The command is
+        # non-destructive by default and accepts --replace only when the
+        # operator has also explicitly set FORCE_LOAD_DUMPS=true.
+        if python manage.py --site "$SITE_NAME" help load_data >/dev/null 2>&1; then
+            LOAD_DATA_ARGS=()
+            if [ "${FORCE_LOAD_DUMPS:-false}" = "true" ]; then
+                LOAD_DATA_ARGS+=("--replace")
+            fi
+            if ! run_logged load_data python manage.py --site "$SITE_NAME" load_data "${LOAD_DATA_ARGS[@]}"; then
+                echo "[WARN] load_data failed (non-fatal); see ${LOG_DIR}/load_data.log"
+            fi
+        else
+            LOAD_DUMP_ARGS=("$SITE_NAME")
+            [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
+            [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
+            if ! run_logged load_dumped_data python tests/scripts/utilities/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
+                echo "[WARN] dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
+            fi
+        fi
+    else
+        echo "[INFO] Fixture loading disabled; use LOAD_DATA_ON_START=true for a maintenance load."
     fi
 
     echo "[SETUP] Setting up Wagtail home page and language..."

@@ -8,6 +8,9 @@ from __future__ import annotations
 
 from django.urls import include, path
 
+from django_fusion.core.assets import urls as assets_urls
+
 urlpatterns = [
     path("api/", include("apps.core.api.urls")),
+    path("fusion/assets/", include(assets_urls)),
 ]

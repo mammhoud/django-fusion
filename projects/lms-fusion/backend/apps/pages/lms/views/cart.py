@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
-from django_fusion.site.interface.page_handler import PageHandler
+from django_fusion.routes.pages.handler import PageHandler
 
 # Optional coupling to Core plugins
 try:
@@ -16,7 +16,7 @@ except ImportError:
 # Lazy load PaymentProcessingMixin to avoid domain site import conflicts
 def _get_payment_mixin():
     try:
-        from apps.core.domain.site.payments import PaymentProcessingMixin
+        from apps.domain.site.payments import PaymentProcessingMixin
         return PaymentProcessingMixin
     except (ImportError, RuntimeError):
         # Return a no-op mixin if import fails

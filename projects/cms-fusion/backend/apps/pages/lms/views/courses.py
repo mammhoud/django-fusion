@@ -8,9 +8,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
-from ceptor_ai.contrib.core.cache import CachingStorage
-from django_fusion.site.interface.page_handler import PageHandler
-from django_fusion.core.views import FilterMixin, SearchMixin
+from django_fusion.routes.views.mixins import FilterMixin, SearchMixin
+from django_fusion.models import CachingStorage
+from django_fusion.routes.pages.handler import PageHandler
 
 from ..models import Course, CourseEnrollmentLead, CourseTag, Wishlist
 

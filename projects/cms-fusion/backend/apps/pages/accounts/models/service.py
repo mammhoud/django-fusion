@@ -1,11 +1,8 @@
 """
-Service model — minimal stub to satisfy ``ceptor_ai``'s ``Department.services``
-ManyToManyField dependency on ``accounts.Service``.
+Service model — managed via the accounts snippets (ServiceViewSet).
 
-This model exists only so the ``ceptor_ai`` migration ``0001_initial.py`` can
-resolve its ``to='accounts.service'`` reference. The project does not use
-departments or services in its own domain — see ``ceptor_ai.transport.handlers.models.manage_service``
-for the full ``Service`` implementation.
+The model is used by the admin/snippet interface to manage services and
+by content models that reference services (see ``apps.pages.accounts.snippets``).
 """
 
 from django.db import models
@@ -13,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Service(models.Model):
-    """Minimal stub model required by the ceptor_ai Department model."""
+    """Service managed through the admin snippet interface."""
 
     name = models.CharField(_("Name"), max_length=255, default="")
     created_at = models.DateTimeField(auto_now_add=True)

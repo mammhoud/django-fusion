@@ -392,13 +392,18 @@ class CeptorHealthView(View):
     def get(self, request):
         from django.http import JsonResponse
 
-        status = {"package": "ceptor-ai", "installed": False, "services": {}}
+        status = {
+            "package": "ceptor-stubs",
+            "installed": False,
+            "version": None,
+            "services": {},
+        }
 
         try:
-            import ceptor_ai  # noqa: F401
+            import ceptor_stubs  # noqa: F401
 
             status["installed"] = True
-            status["version"] = getattr(ceptor_ai, "__version__", "unknown")
+            status["version"] = "inline-stubs"
         except ImportError:
             pass
 
@@ -537,7 +542,7 @@ class CeptorAICompleteView(View):
 
         except ImportError:
             return JsonResponse(
-                {"error": "ceptor-ai is not installed. Install with: pip install ceptor-ai"},
+                {"error": "ceptor-stubs are not available."},
                 status=503,
             )
         except Exception as e:

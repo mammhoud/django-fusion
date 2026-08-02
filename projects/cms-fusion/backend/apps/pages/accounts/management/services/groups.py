@@ -6,8 +6,8 @@ the site-specific role hierarchy and permissions configured.
 """
 
 from django.db import transaction
-from django_fusion.core.managers import GroupAccessControl
-from django_fusion.core.managers import RoleHierarchyManager as _BaseRoleHierarchyManager
+from django_fusion.management.managers.group_access import GroupAccessControl
+from django_fusion.management.managers.role_hierarchy import RoleHierarchyManager as _BaseRoleHierarchyManager
 
 
 class RoleHierarchyManager(_BaseRoleHierarchyManager):

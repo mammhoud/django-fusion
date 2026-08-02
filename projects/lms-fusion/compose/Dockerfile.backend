@@ -39,8 +39,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python -m pip install --no-cache-dir --upgrade pip uv \
-    && uv venv /opt/venv
+RUN python -m pip install --no-cache-dir --upgrade pip setuptools uv \
+    && uv venv /opt/venv \
+    && uv pip install --python /opt/venv/bin/python setuptools
 
 # ── Python dependencies ─────────────────────────────────────────────────────
 COPY projects/pyproject.toml projects/uv.lock ${APP_HOME}/
@@ -60,8 +61,9 @@ RUN ln -sf ${APP_HOME}/libs /libs
 
 RUN uv sync --no-install-project
 
-RUN cd ${APP_HOME}/libs/django-fusion && uv pip install -e . --no-build-isolation 2>&1 \
-    || echo "[WARN] django-fusion install failed"
+RUN uv pip install --python /opt/venv/bin/python setuptools wheel \
+    && cd ${APP_HOME}/libs/django-fusion \
+    && uv pip install -e . --no-build-isolation
 
 # ── Project-specific code ───────────────────────────────────────────────────
 COPY projects/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}

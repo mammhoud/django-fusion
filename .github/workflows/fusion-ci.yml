@@ -171,11 +171,8 @@ jobs:
 
       - name: Start cms-fusion backend (SQLite for CI E2E)
         run: |
-          docker compose -f projects/cms-fusion/docker-compose.yml up -d --remove-orphans \
-            -e DB_TYPE=sqlite \
-            -e DB_HOST=127.0.0.1 \
-            -e DB_PORT= \
-            backend
+          DB_TYPE=sqlite DB_HOST=127.0.0.1 \
+            docker compose -f projects/cms-fusion/docker-compose.yml up -d --remove-orphans backend
 
       - name: Wait for cms-fusion backend health
         run: |
@@ -350,11 +347,8 @@ jobs:
 
       - name: Start lms-fusion backend (SQLite for CI E2E)
         run: |
-          docker compose -f projects/lms-fusion/docker-compose.yml up -d --remove-orphans \
-            -e DB_TYPE=sqlite \
-            -e DB_HOST=127.0.0.1 \
-            -e DB_PORT= \
-            backend
+          DB_TYPE=sqlite DB_HOST=127.0.0.1 \
+            docker compose -f projects/lms-fusion/docker-compose.yml up -d --remove-orphans backend
 
       - name: Wait for lms-fusion backend health
         run: |
@@ -448,11 +442,8 @@ jobs:
 
       - name: Start cms-fusion services (SQLite for staging)
         run: |
-          docker compose -f projects/cms-fusion/docker-compose.yml up -d --remove-orphans \
-            -e DB_TYPE=sqlite \
-            -e DB_HOST=127.0.0.1 \
-            -e DB_PORT= \
-            backend frontend
+          DB_TYPE=sqlite DB_HOST=127.0.0.1 \
+            docker compose -f projects/cms-fusion/docker-compose.yml up -d --remove-orphans backend frontend
 
       - name: Wait for cms-fusion backend health
         run: |
@@ -482,16 +473,13 @@ jobs:
 
       - name: Start lms-fusion services (SQLite for staging)
         run: |
-          docker compose -f projects/lms-fusion/docker-compose.yml up -d --remove-orphans \
-            -e DB_TYPE=sqlite \
-            -e DB_HOST=127.0.0.1 \
-            -e DB_PORT= \
-            backend frontend
+          DB_TYPE=sqlite DB_HOST=127.0.0.1 \
+            docker compose -f projects/lms-fusion/docker-compose.yml up -d --remove-orphans backend frontend
 
       - name: Wait for lms-fusion backend health
         run: |
           for i in $$(seq 1 12); do
-            if curl -sf http://127.0.0.1:5076/health/ >/dev/null 2>&1; then
+            if curl -sf http://127.0.0.1:5074/health/ >/dev/null 2>&1; then
               echo "✓ LMS-Fusion backend is healthy"
               exit 0
             fi
@@ -512,4 +500,4 @@ jobs:
           echo ""
           echo "=== Health Checks ==="
           curl -s http://127.0.0.1:5075/health/ && echo " — CMS-Fusion"
-          curl -s http://127.0.0.1:5076/health/ && echo " — LMS-Fusion"
+          curl -s http://127.0.0.1:5074/health/ && echo " — LMS-Fusion"

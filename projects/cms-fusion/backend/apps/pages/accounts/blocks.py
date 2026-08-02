@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.blocks import SnippetChooserBlock
 
-from apps.core.domain.handlers.models.manage_company import Organization
+from apps.domain.handlers.models.manage_company import Organization
 
 
 class OrganizationChooserBlock(SnippetChooserBlock):

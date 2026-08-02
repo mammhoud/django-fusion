@@ -49,7 +49,7 @@ logger = logging.getLogger("pos.fusion")
 class RobynFusionChecker:
     """Session-checker for Robyn sidecar servers.
 
-    Mirrors ``django_fusion.routes.session.FusionSessionChecker`` but
+    Mirrors ``django_fusion.routes.rendering.session.FusionSessionChecker`` but
     adapted for Robyn's ``Request`` (no Django session middleware).
     Instead of caching in ``request.session``, the health-check result
     is returned per-request — the frontend ``FusionDecoder`` caches it

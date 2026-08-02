@@ -46,9 +46,9 @@ function decodeFusionPayload(encoded: string): PageData {
 /** Fetch the home page data from the Wagtail backend API */
 async function fetchHomePageData(): Promise<PageData | null> {
   try {
-    const resp = await fetch(`${API_URL}/api/pages/${HOME_SLUG}/data/`);
+    const resp = await fetch(`${API_URL}/apis/pages/${HOME_SLUG}/data/`);
     if (!resp.ok) {
-      console.warn(`API returned ${resp.status} for /api/pages/${HOME_SLUG}/data/`);
+      console.warn(`API returned ${resp.status} for /apis/pages/${HOME_SLUG}/data/`);
       return null;
     }
     const body = await resp.json() as { data: { encoded: string } };
