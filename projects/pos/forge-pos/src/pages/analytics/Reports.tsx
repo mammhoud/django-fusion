@@ -840,7 +840,7 @@ export default function Reports() {
               <select
                 value={orderTypeFilter}
                 onChange={e => setOrderTypeFilter(e.target.value)}
-                className="input__field input__field--select text-xs w-36"
+                className="select text-xs w-36"
               >
                 <option value="">{t('reports.allTypes', 'All Types')}</option>
                 <option value="dine-in">{t('reports.dineIn', 'Dine-in')}</option>
@@ -866,7 +866,7 @@ export default function Reports() {
               <select
                 value={zoneFilterId ?? ''}
                 onChange={e => setZoneFilterId(e.target.value ? Number(e.target.value) : null)}
-                className="input__field input__field--select text-xs w-40"
+                className="select text-xs w-40"
               >
                 <option value="">{t('reports.allZones', 'All Zones')}</option>
                 {deliveryZones.filter(z => z.is_active).map(z => (
@@ -914,10 +914,10 @@ export default function Reports() {
             </div>
             <div className="flex items-center gap-2 flex-1 sm:justify-end">
               <input type="date" value={dateRange.start}
-                onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}className="input__field input__field--select text-base-content text-xs w-36" />
+                onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}className="select text-base-content text-xs w-36" />
               <span className="text-base-content/40 text-xs">{t('reports.dateTo')}</span>
               <input type="date" value={dateRange.end}
-                onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}className="input__field input__field--select text-base-content text-xs w-36" />
+                onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}className="select text-base-content text-xs w-36" />
               {(dateRange.start || dateRange.end) && (
                 <button onClick={() => applyDatePreset('clear')}
                   className="text-xs text-error hover:text-error/70 transition-colors shrink-0">

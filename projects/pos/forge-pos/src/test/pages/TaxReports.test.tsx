@@ -34,7 +34,7 @@ describe('TaxReports page', () => {
     renderWithRouter(<TaxReports />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/taxReports\.searchPlaceholder|Search tax reports/)).toBeInTheDocument();
+      expect(screen.getByLabelText(/taxReports\.searchPlaceholder|Search by period/)).toBeInTheDocument();
     });
     await waitFor(() => {
       expect(screen.getByText('3 / 3')).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe('TaxReports page', () => {
       expect(screen.getAllByText(/2026-02-01/).length).toBeGreaterThanOrEqual(1);
     });
 
-    const searchInput = screen.getByLabelText(/taxReports\.searchPlaceholder|Search tax reports/);
+    const searchInput = screen.getByLabelText(/taxReports\.searchPlaceholder|Search by period/);
     await userEvent.type(searchInput, '2026-02');
 
     await waitFor(

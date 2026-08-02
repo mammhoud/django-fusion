@@ -385,6 +385,7 @@
     "employeesDesc": "Gestionar personal",
     "footer": "Gestión de Restaurante Forge POS",
     "home": "Inicio",
+    "homeDesc": "Volver al panel",
     "inventory": "Inventario",
     "inventoryDesc": "Rastrear niveles de existencias",
     "invoice": "Factura",
@@ -429,8 +430,6 @@
     "taxReportsDesc": "Informes fiscales y tributarios",
     "themeShowcase": "Escaparate de Temas",
     "themeShowcaseDesc": "Vista previa de componentes en temas",
-    "themeStudio": "Estudio de Temas",
-    "themeStudioDesc": "Personalizar colores con vista previa",
     "transactions": "Historial de Transacciones",
     "transactionsDesc": "Navegar por el historial de transacciones"
   },
@@ -526,7 +525,24 @@
     "validationPrice": "Por favor, ingrese el precio",
     "validationPricePositive": "El precio debe ser un número positivo",
     "validationUnit": "Por favor, ingrese la unidad",
-    "viaIngredients": "Ingredientes"
+    "viaIngredients": "Ingredientes",
+    "manageCategories": "Administrar categorías",
+    "addCategory": "Añadir categoría",
+    "editCategory": "Editar categoría",
+    "deleteCategory": "Eliminar categoría",
+    "categoryName": "Nombre de categoría",
+    "categoryNamePlaceholder": "p. ej. Hamburguesas, Acompañamientos...",
+    "categoryColor": "Color",
+    "categoryCustomColor": "Color personalizado",
+    "categoryValidationName": "Introduzca un nombre de categoría",
+    "categorySuccessAdded": "Categoría añadida",
+    "categorySuccessUpdated": "Categoría actualizada",
+    "categorySuccessDeleted": "Categoría eliminada",
+    "colorPreview": "Vista previa",
+    "saving": "Guardando...",
+    "existingCategories": "Categorías existentes",
+    "deleteCategoryConfirm": "¿Eliminar esta categoría?",
+    "deleteCategoryWarning": "Los productos de esta categoría quedarán sin categoría."
   },
   "receipt": {
     "date": "Fecha:",
@@ -814,6 +830,8 @@
     "title": "Horario de Empleados"
   },
   "settings": {
+    "uniqueCardColors": "Colores de tarjetas únicos",
+    "uniqueCardColorsDescription": "Dé a cada tarjeta de producto y a cada artículo del ticket de cocina un color distinto para un escaneo visual más rápido",
     "address": "Dirección",
     "appearanceTab": {
       "activeLabel": "Activo",
@@ -951,6 +969,17 @@
     "searchCurrency": "Buscar moneda...",
     "selectCurrency": "Seleccionar Moneda",
     "successMessage": "¡Configuración guardada exitosamente!",
+    "emailTab": {
+      "description": "Configura el servidor SMTP (STARTTLS, puerto 587) para correos de soporte y confirmaciones de autenticación. Se guarda en Configuración en lugar de .env.",
+      "fromName": "Nombre del remitente",
+      "password": "Contraseña",
+      "port": "Puerto SMTP",
+      "recipient": "Destinatario de soporte",
+      "recipientHint": "Bandeja de entrada que recibe mensajes de soporte",
+      "server": "Servidor SMTP",
+      "title": "Correo electrónico / SMTP",
+      "username": "Nombre de usuario"
+    },
     "tabs": {
       "appearance": "Apariencia",
       "business": "Negocio",
@@ -958,11 +987,16 @@
       "delivery": "Entrega",
       "dining": "Comedor",
       "employees": "Empleados",
-      "general": "General"
+      "general": "General",
+      "theme": "Tema"
     },
     "taxId": "NIF",
     "taxRate": "Tasa de Impuesto (%)",
     "themeTab": {
+      "activeTheme": "Tema activo",
+      "appearance": "Apariencia",
+      "preview": "Vista previa",
+      "studio": "Estudio de temas",
       "title": "Tema"
     },
     "timeout15min": "15 minutos",

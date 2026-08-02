@@ -4,11 +4,24 @@ import { listen } from '@tauri-apps/api/event';
 import PageLayout from '../../components/layout/PageLayout';
 import { iconClass } from '../../lib/icons';
 import { useTranslation } from 'react-i18next';
-import { KitchenTicket, Sale } from '../../types';
+import { KitchenTicket, Sale, Category, Note, NoteStep } from '../../types';
+import SearchInput from '../../components/ui/SearchInput';
+import CategoryFilterPills from '../../components/pos/CategoryFilterPills';
+import Modal from '../../components/ui/Modal';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hooks/useKDSNotification';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import StatCard from '../../components/ui/StatCard';
+import { parseNoteSteps } from '../../utils/noteSteps';
+import { accentColorFromSeed, hexToRgba } from '../../components/pos/ProductCard';
+
+// Type from the Rust KitchenTicketCategory model (ticket → product-category rows)
+interface KitchenTicketCategoryRow {
+  ticket_id: number;
+  category_id: number;
+  name: string;
+  color?: string | null;
+}
 
 // Type from the Rust SaleItem model (mirrored here for the ticket detail modal)
 interface SaleItemData {
@@ -86,7 +99,13 @@ export default function KitchenDisplay() {
   const { formatPrice } = useCurrency();
   const [tickets, setTickets] = useState<KitchenTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // User-toggleable unique per-product accent colors (Settings → General).
+  const [uniqueCardColors, setUniqueCardColors] = useState(true);
   const [filter, setFilter] = useState<string>('pending');
+  // ── Product-category filter (colored tag pills) ──
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
+  const [ticketCategoryIds, setTicketCategoryIds] = useState<Record<number, number[]>>({});
 
   // ── P2 KDS enhancements: sort, mute, overdue tracking ──
   const [sortOrder, setSortOrder] = useState<'newest' | 'overdue-first'>(() => {
@@ -126,12 +145,18 @@ export default function KitchenDisplay() {
   } | null>(null);
   const [chefReport, setChefReport] = useState<ClickRecord[]>([]);
   const [showPreferences, setShowPreferences] = useState(false);
+  // ── Selectable notes (quick-pick prep steps + attached notes on the ticket) ──
+  const [selectableNotes, setSelectableNotes] = useState<Note[]>([]);
+  const [activePrepNoteId, setActivePrepNoteId] = useState<number | null>(null);
+  const [checkedSteps, setCheckedSteps] = useState<Record<string, boolean>>({});
+  const [showQuickAddNote, setShowQuickAddNote] = useState(false);
+  const [quickNoteName, setQuickNoteName] = useState('');
+  const [quickNoteBody, setQuickNoteBody] = useState('');
   // Preference: which order types to show in the KDS (by priority: 1=dine-in, 2=takeaway, 3=delivery)
   const [preferredPriorities, setPreferredPriorities] = useState<number[]>(() => {
     try { return JSON.parse(localStorage.getItem('kds-preferred-priorities') || '[1,2,3]'); }
     catch { return [1, 2, 3]; }
   });
-  const detailDialogRef = useRef<HTMLDialogElement>(null);
   const reportDialogRef = useRef<HTMLDialogElement>(null);
 
   const {
@@ -153,6 +178,13 @@ export default function KitchenDisplay() {
     invoke('sync_tray_badge').catch(() => {});
   }, []);
 
+  // ── Load unique-card-colors preference (Settings → General) ──
+  useEffect(() => {
+    invoke<{ unique_card_colors?: boolean }>('get_settings')
+      .then(s => setUniqueCardColors(s?.unique_card_colors !== false))
+      .catch(() => {});
+  }, []);
+
   // ── Real-time event listener — replaces the old 10s polling ──
   useEffect(() => {
     const unlisten = listen<{ type: string; ticket: KitchenTicket }>(
@@ -166,12 +198,42 @@ export default function KitchenDisplay() {
     };
   }, [filter]);
 
+  // ── Load selectable notes for the quick-notes / prep-steps picker ──
+  useEffect(() => {
+    invoke<Note[]>('get_selectable_notes')
+      .then(rows => setSelectableNotes(rows ?? []))
+      .catch(() => {});
+  }, []);
+
   const loadTickets = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const data = await invoke<KitchenTicket[]>('get_kitchen_tickets', { status: filter === 'all' ? null : filter });
+      const [data, categoryRows] = await Promise.all([
+        invoke<KitchenTicket[]>('get_kitchen_tickets', { status: filter === 'all' ? null : filter }),
+        invoke<KitchenTicketCategoryRow[]>('get_kitchen_ticket_categories', { status: filter === 'all' ? null : filter })
+          .then(rows => rows ?? [])
+          .catch(() => []),
+      ]);
       setTickets(data);
+
+      // Build category list (deduped) + per-ticket category membership
+      const catById = new Map<number, Category>();
+      const perTicket: Record<number, number[]> = {};
+      for (const row of categoryRows) {
+        if (!catById.has(row.category_id)) {
+          catById.set(row.category_id, { id: row.category_id, name: row.name, color: row.color });
+        }
+        (perTicket[row.ticket_id] ??= []).push(row.category_id);
+      }
+      setCategories([...catById.values()]);
+      setTicketCategoryIds(perTicket);
+      // Reset category selection if it no longer matches the loaded set
+      setSelectedCategory(prev =>
+        prev !== 'all' && !Object.values(perTicket).some(ids => ids.includes(prev))
+          ? 'all'
+          : prev,
+      );
     } catch (error) {
       console.error('Error loading kitchen tickets:', error);
     } finally {
@@ -222,7 +284,6 @@ export default function KitchenDisplay() {
       setSaleItems([]);
     } finally {
       setIsLoadingItems(false);
-      setTimeout(() => detailDialogRef.current?.showModal(), 50);
     }
   }, []);
 
@@ -234,16 +295,84 @@ export default function KitchenDisplay() {
     setSaleItems([]);
     setSaleDetail(null);
     setChefReport([]);
-    detailDialogRef.current?.close();
+    setActivePrepNoteId(null);
+    setCheckedSteps({});
   }, [selectedTicket]);
 
-  // Filter — text search + order-type preference (via priority: 1=dine-in, 2=takeaway, 3=delivery)
+  /*** Attach a selectable note to the open ticket (persists into ticket.notes) ***/
+  const attachNoteToTicket = useCallback(async (note: Note) => {
+    if (!selectedTicket) return;
+    const existing = selectedTicket.notes || '';
+    const block = note.template_body && note.template_body.trim()
+      ? note.template_body.trim()
+      : note.name;
+    const next = existing
+      ? `${existing}\n\n[${note.name}] ${block}`
+      : `[${note.name}] ${block}`;
+    try {
+      await invoke('update_kitchen_ticket', { id: selectedTicket.id, update: { notes: next } });
+      loadTickets({ quiet: true });
+    } catch (error) {
+      console.error('Error attaching note to ticket:', error);
+    }
+  }, [selectedTicket, loadTickets]);
+
+  /*** Quick-add a new selectable note from the KDS detail modal ***/
+  const handleQuickAddNote = useCallback(async () => {
+    if (!quickNoteName.trim()) return;
+    try {
+      const note = await invoke<Note>('add_note', {
+        template: {
+          name: quickNoteName.trim(),
+          template_body: quickNoteBody.trim() || quickNoteName.trim(),
+          category: 'preparation',
+          use_as_template: false,
+          selectable: true,
+          steps: null,
+        },
+      });
+      setSelectableNotes(prev => [...prev, note]);
+      setShowQuickAddNote(false);
+      setQuickNoteName('');
+      setQuickNoteBody('');
+      if (selectedTicket) {
+        await attachNoteToTicket(note);
+      }
+    } catch (error) {
+      console.error('Error adding quick note:', error);
+    }
+  }, [quickNoteName, quickNoteBody, selectedTicket, attachNoteToTicket]);
+
+  // Active prep note = explicitly picked one, else first preparation note with steps
+  const activePrepNote = useMemo(() => {
+    if (activePrepNoteId != null) {
+      return selectableNotes.find(n => n.id === activePrepNoteId) || null;
+    }
+    return selectableNotes.find(n => n.category === 'preparation' && parseNoteSteps(n.steps).length > 0) || null;
+  }, [activePrepNoteId, selectableNotes]);
+
+  const activePrepSteps: NoteStep[] = useMemo(
+    () => (activePrepNote ? parseNoteSteps(activePrepNote.steps) : []),
+    [activePrepNote],
+  );
+
+  // Filter — text search + order-type preference + product category
   const q = debouncedSearch.trim().toLowerCase();
   const showAllPriorities = preferredPriorities.length === 0;
   const rawFiltered = tickets.filter(t => {
     if (q && !String(t.sale_id || '').includes(q) && !(t.notes || '').toLowerCase().includes(q)) return false;
+    if (selectedCategory !== 'all' && !(ticketCategoryIds[t.id] ?? []).includes(selectedCategory)) return false;
     return showAllPriorities || preferredPriorities.includes(t.priority);
   });
+
+  // Per-category ticket counts for pill badges
+  const categoryCounts = useMemo(() => {
+    const counts: Record<number, number> = {};
+    for (const ids of Object.values(ticketCategoryIds)) {
+      for (const id of new Set(ids)) counts[id] = (counts[id] ?? 0) + 1;
+    }
+    return counts;
+  }, [ticketCategoryIds]);
 
   // ── Sort: overdue-first or newest first ──
   const filteredTickets = useMemo(() => {
@@ -302,40 +431,40 @@ export default function KitchenDisplay() {
           <h1 className="text-lg font-bold text-base-content">{t('kitchen.title')}</h1>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             {/* Search */}
-            <div className="input input--sm flex-1 sm:w-48">
-              <div className="input__wrapper">
-                <span className="input__icon icon-[tabler--search]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('kitchen.searchPlaceholder') || 'Search...'}
-                  aria-label={t('kitchen.searchPlaceholder') || 'Search kitchen tickets'}
-                  className="input__field input__field--with-icon-left"
-                />
-                {isFiltering ? (
-                  <div className="input__icon input__icon--right w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                ) : search ? (
-                  <button onClick={() => setSearch('')} className="input__icon input__icon--right">
-                    <span className="icon-[tabler--x]" />
-                  </button>
-                ) : null}
-              </div>
-            </div>
-            {/* Status filter */}
-            <div className="input input--sm w-full sm:w-36">
-              <select
-                value={filter}
-                onChange={e => setFilter(e.target.value)}
-                aria-label={t('kitchen.statusFilter') || 'Filter by status'}
-                className="input__field input__field--select"
-              >
-                <option value="all">{t('kitchen.allTickets')}</option>
-                <option value="pending">{t('kitchen.pending')}</option>
-                <option value="preparing">{t('kitchen.preparing')}</option>
-                <option value="ready">{t('kitchen.ready')}</option>
-                <option value="delivered">{t('kitchen.delivered')}</option>
-            </select>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('kitchen.searchPlaceholder') || 'Search...'}
+              ariaLabel={t('kitchen.searchPlaceholder') || 'Search kitchen tickets'}
+              testId="kds-search-input"
+              loading={isFiltering}
+              className="flex-1 sm:w-48"
+            />
+            {/* Status filter — tag pills (same pattern as ProductManager/Sale) */}
+            <div
+              role="group"
+              aria-label={t('kitchen.statusFilter') || 'Filter by status'}
+              className="flex flex-wrap items-center gap-1.5"
+            >
+              {[
+                { value: 'all', label: t('kitchen.allTickets') || 'All', active: 'tag--primary' },
+                { value: 'pending', label: t('kitchen.pending') || 'Pending', active: 'tag--warning' },
+                { value: 'preparing', label: t('kitchen.preparing') || 'Preparing', active: 'tag--info' },
+                { value: 'ready', label: t('kitchen.ready') || 'Ready', active: 'tag--success' },
+                { value: 'delivered', label: t('kitchen.delivered') || 'Delivered', active: 'tag--neutral' },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setFilter(opt.value)}
+                  data-testid={`kds-status-filter-${opt.value}`}
+                  aria-pressed={filter === opt.value}
+                  className={`tag tag--sm cursor-pointer transition-all ${
+                    filter === opt.value ? opt.active : 'tag--ghost hover:tag--primary'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
             {/* Chef Report button */}
             <button
@@ -410,6 +539,20 @@ export default function KitchenDisplay() {
             </button>
           </div>
         </div>
+
+        {/* ── Product category filter — colored tag pills (same pattern as ProductManager/Sale) ── */}
+        {categories.length > 0 && (
+          <CategoryFilterPills
+            categories={categories}
+            selected={selectedCategory}
+            onChange={setSelectedCategory}
+            allLabel={t('kitchen.allCategories') || 'All categories'}
+            ariaLabel={t('kitchen.categoryFilter') || 'Filter by category'}
+            testIdPrefix="kds-category-filter"
+            allTestId="kds-category-filter-all"
+            counts={categoryCounts}
+          />
+        )}
 
         {/* ── KDS Preferences Panel ── */}
         {showPreferences && (
@@ -530,7 +673,7 @@ export default function KitchenDisplay() {
                   {/* Order type + elapsed time row */}
                   <div className="flex items-center justify-between gap-1 mb-1">
                     {ORDER_TYPE_MAP[ticket.priority] && (
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${ORDER_TYPE_MAP[ticket.priority].color}`}>
+                      <span className={`tag tag--sm ${ORDER_TYPE_MAP[ticket.priority].color.includes('primary') ? 'tag--primary' : ORDER_TYPE_MAP[ticket.priority].color.includes('warning') ? 'tag--warning' : 'tag--success'}`}>
                         {ORDER_TYPE_MAP[ticket.priority].label}
                       </span>
                     )}
@@ -561,13 +704,13 @@ export default function KitchenDisplay() {
                   {/* Quick status badge */}
                   <div className="flex gap-1">
                     {ticket.status === 'pending' && !overdue && (
-                      <span className="text-[9px] px-2 py-0.5 rounded bg-warning/20 text-warning font-medium">Awaiting</span>
+                      <span className="tag tag--sm tag--warning">Awaiting</span>
                     )}
                     {ticket.status === 'preparing' && !overdue && (
-                      <span className="text-[9px] px-2 py-0.5 rounded bg-info/20 text-info font-medium">In Progress</span>
+                      <span className="tag tag--sm tag--info">In Progress</span>
                     )}
                     {ticket.status === 'ready' && (
-                      <span className="text-[9px] px-2 py-0.5 rounded bg-success/20 text-success font-medium">Ready ✓</span>
+                      <span className="tag tag--sm tag--success">Ready ✓</span>
                     )}
                   </div>
                   {/* ── Time-elapsed progress bar (green→yellow→red) ── */}
@@ -598,82 +741,88 @@ export default function KitchenDisplay() {
         )}
 
         {/* ── Ticket Detail Modal ── */}
-        <dialog ref={detailDialogRef} className="modal">
-          <div className="modal-box max-w-lg p-0 overflow-hidden">
-            {selectedTicket && (
-              <>
-                {/* Modal header with order-type-specific icon */}
-                <div className="sticky top-0 z-10 bg-base-100 border-b border-base-200 px-5 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {ORDER_TYPE_MAP[selectedTicket.priority] ? (
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${ORDER_TYPE_MAP[selectedTicket.priority].color}`}>
-                        <span className={iconClass(ORDER_TYPE_MAP[selectedTicket.priority].icon, 'w-4 h-4')} />
-                      </div>
-                    ) : (
-                      <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-primary" />
-                    )}
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-lg text-base-content">
-                          Order #{selectedTicket.sale_id}
-                        </h3>
-                        <span className={statusBadges[selectedTicket.status] || 'badge badge-sm'}>{selectedTicket.status}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[10px] text-base-content/40">
-                        <span>{timeAgo(selectedTicket.created_at)}</span>
-                        <span>·</span>
-                        <span>{new Date(selectedTicket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        {selectedTicket.prepare_time_minutes > 0 && (
-                          <>
-                            <span>·</span>
-                            <span className="flex items-center gap-0.5 text-primary/70">
-                              <span className="icon-[tabler--clock-play] w-3 h-3" />
-                              Est. {selectedTicket.prepare_time_minutes}min
-                            </span>
-                          </>
-                        )}
-                        {selectedTicket.completed_at && (
-                          <>
-                            <span>·</span>
-                            <span className="text-success">Completed {timeAgo(selectedTicket.completed_at)}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={closeDetail}
-                    className="btn btn-ghost btn-sm btn-square"
-                    aria-label={t('common.closeButton') || 'Close'}
-                  >
-                    <span className="icon-[tabler--x] w-4 h-4" />
-                  </button>
-                </div>
+        <Modal
+          isOpen={!!selectedTicket}
+          onClose={closeDetail}
+          size="lg"
+          scroll
+          headerIcon={selectedTicket && ORDER_TYPE_MAP[selectedTicket.priority] ? (
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${ORDER_TYPE_MAP[selectedTicket.priority].color}`}>
+              <span className={iconClass(ORDER_TYPE_MAP[selectedTicket.priority].icon, 'w-4 h-4')} />
+            </div>
+          ) : (
+            <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-primary" />
+          )}
+          title={selectedTicket ? `Order #${selectedTicket.sale_id}` : ''}
+          subtitle={selectedTicket
+            ? `${timeAgo(selectedTicket.created_at)} · ${new Date(selectedTicket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}${selectedTicket.prepare_time_minutes > 0 ? ` · Est. ${selectedTicket.prepare_time_minutes}min` : ''}`
+            : ''}
+          footer={selectedTicket ? (
+            <div className="flex gap-2 justify-end w-full">
+              {selectedTicket.status === 'pending' && (
+                <button
+                  onClick={() => { updateStatus(selectedTicket, 'preparing'); closeDetail(); }}
+                  className="btn btn-info btn-sm gap-1"
+                >
+                  <span className="icon-[tabler--chef-hat] w-4 h-4" />
+                  {t('kitchen.startPreparing')}
+                </button>
+              )}
+              {selectedTicket.status === 'preparing' && (
+                <button
+                  onClick={() => { updateStatus(selectedTicket, 'ready'); closeDetail(); }}
+                  className="btn btn-success btn-sm gap-1"
+                >
+                  <span className="icon-[tabler--circle-check] w-4 h-4" />
+                  {t('kitchen.markReady')}
+                </button>
+              )}
+              {selectedTicket.status === 'ready' && (
+                <button
+                  onClick={() => { updateStatus(selectedTicket, 'delivered'); closeDetail(); }}
+                  className="btn btn-ghost btn-sm gap-1"
+                >
+                  <span className="icon-[tabler--circle-check] w-4 h-4" />
+                  {t('kitchen.deliver')}
+                </button>
+              )}
+              <button onClick={closeDetail} className="btn btn-ghost btn-sm">{t('common.close')}</button>
+            </div>
+          ) : undefined}
+        >
+          {selectedTicket && (
+            <>
+              {/* Status badge row */}
+              <div className="flex items-center gap-2 mb-1">
+                <span className={statusBadges[selectedTicket.status] || 'badge badge-sm'}>{selectedTicket.status}</span>
+                {selectedTicket.completed_at && (
+                  <span className="text-xs text-success">Completed {timeAgo(selectedTicket.completed_at)}</span>
+                )}
+              </div>
 
-                <div className="px-5 py-3 space-y-3">
+              <div className="space-y-3">
                   {/* Order flags: table, delivery, total */}
                   <div className="flex flex-wrap items-center gap-2">
                     {saleDetail?.table_number && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                      <span className="tag tag--sm tag--info">
                         <span className="icon-[tabler--door-enter] w-3.5 h-3.5" />
                         Table {saleDetail.table_number}
                       </span>
                     )}
                     {saleDetail?.delivery_address && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">
+                      <span className="tag tag--sm tag--warning">
                         <span className="icon-[tabler--map-pin] w-3.5 h-3.5" />
                         {saleDetail.delivery_address}
                       </span>
                     )}
                     {saleDetail?.total_amount !== undefined && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      <span className="tag tag--sm tag--primary">
                         <span className="icon-[tabler--currency-dollar] w-3.5 h-3.5" />
                         ${saleDetail.total_amount.toFixed(2)}
                       </span>
                     )}
                     {saleItems.length > 0 && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-base-200/50 text-base-content/60">
+                      <span className="tag tag--sm">
                         <span className="icon-[tabler--shopping-cart] w-3.5 h-3.5" />
                         {saleItems.length} item{saleItems.length !== 1 ? 's' : ''}
                       </span>
@@ -702,20 +851,36 @@ export default function KitchenDisplay() {
                       <p className="text-xs text-base-content/40 italic py-3">No items recorded for this order.</p>
                     ) : (
                       <div className="space-y-1">
-                        {saleItems.map(item => (
-                          <div
-                            key={item.id}
-                            className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-base-200/30 text-xs"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="w-5 h-5 rounded bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">
-                                {item.quantity}
-                              </span>
-                              <span className="font-medium text-base-content truncate">{item.product_name}</span>
+                        {saleItems.map(item => {
+                          // Unique per-product accent — golden-angle hue derived
+                          // from the product name (SaleItemData carries no
+                          // product_id), so each product keeps a stable, distinct
+                          // color across tickets on the KDS. Toggleable via
+                          // Settings → General (unique_card_colors); when off the
+                          // rows render plain without accent rails/badges.
+                          const accent = uniqueCardColors ? accentColorFromSeed(item.product_name) : null;
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center justify-between py-1.5 px-2 rounded-lg text-xs"
+                              style={accent ? {
+                                backgroundColor: hexToRgba(accent, 0.08),
+                                borderLeft: `3px solid ${accent}`,
+                              } : undefined}
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span
+                                  className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold shrink-0 ${accent ? 'text-white' : 'bg-base-300 text-base-content/70'}`}
+                                  style={accent ? { backgroundColor: accent } : undefined}
+                                >
+                                  {item.quantity}
+                                </span>
+                                <span className="font-medium text-base-content truncate">{item.product_name}</span>
+                              </div>
+                              <span className="text-base-content/60 shrink-0 ml-2">{formatPrice(item.price * item.quantity)}</span>
                             </div>
-                            <span className="text-base-content/60 shrink-0 ml-2">{formatPrice(item.price * item.quantity)}</span>
-                          </div>
-                        ))}
+                          );
+                        })}
                         {/* Total */}
                         <div className="flex items-center justify-between py-2 px-2 mt-1 border-t border-base-200/50 text-xs font-bold text-base-content">
                           <span>Total</span>
@@ -749,44 +914,145 @@ export default function KitchenDisplay() {
                   )}
                 </div>
 
-                {/* Action footer */}
-                <div className="border-t border-base-200 px-5 py-3 flex gap-2 justify-end">
-                  {selectedTicket.status === 'pending' && (
+                {/* ── Prep Steps checklist (from selectable preparation notes) ── */}
+                {activePrepSteps.length > 0 && (
+                  <div className="bg-info/5 border border-info/20 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-semibold text-base-content/80 uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="icon-[tabler--list-check] w-3.5 h-3.5 text-info" />
+                        {t('kitchen.prepSteps') || 'Prep Steps'}
+                        {activePrepNote && (
+                          <span className="tag tag--sm tag--info font-normal normal-case">{activePrepNote.name}</span>
+                        )}
+                      </h4>
+                      <span className="text-[10px] text-base-content/40 tabular-nums">
+                        {Object.values(checkedSteps).filter(Boolean).length}/{activePrepSteps.length} done
+                      </span>
+                    </div>
+                    <ol className="space-y-1">
+                      {activePrepSteps.map((step, i) => {
+                        const key = `${activePrepNote?.id ?? 'note'}-${i}`;
+                        const done = !!checkedSteps[key];
+                        return (
+                          <li key={key}>
+                            <button
+                              type="button"
+                              onClick={() => setCheckedSteps(prev => ({ ...prev, [key]: !prev[key] }))}
+                              className={`w-full flex items-start gap-2 rounded-md px-2 py-1.5 text-left transition-all ${
+                                done ? 'bg-success/10 text-base-content/40' : 'bg-base-200/40 hover:bg-base-200/80'
+                              }`}
+                            >
+                              <span
+                                className={`mt-0.5 w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-all ${
+                                  done ? 'bg-success border-success text-success-content' : 'border-base-content/30'
+                                }`}
+                              >
+                                {done && <span className="icon-[tabler--check] w-3 h-3" />}
+                              </span>
+                              <span className="min-w-0">
+                                <span className={`block text-xs font-medium ${done ? 'line-through' : 'text-base-content'}`}>
+                                  {i + 1}. {step.title}
+                                </span>
+                                {step.details && (
+                                  <span className={`block text-[10px] leading-snug ${done ? 'text-base-content/30' : 'text-base-content/50'}`}>
+                                    {step.details}
+                                  </span>
+                                )}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </div>
+                )}
+
+                {/* ── Quick Notes picker — selectable notes + add-new ── */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-semibold text-base-content/70 uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="icon-[tabler--click] w-3.5 h-3.5 text-primary" />
+                      {t('kitchen.quickNotes') || 'Quick Notes'}
+                    </h4>
                     <button
-                      onClick={() => { updateStatus(selectedTicket, 'preparing'); closeDetail(); }}
-                      className="btn btn-info btn-sm gap-1"
+                      type="button"
+                      onClick={() => setShowQuickAddNote(s => !s)}
+                      className="btn btn-ghost btn-xs gap-1 text-primary"
                     >
-                      <span className="icon-[tabler--chef-hat] w-4 h-4" />
-                      Start Preparing
+                      <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+                      {t('kitchen.addNote') || 'Add note'}
                     </button>
+                  </div>
+
+                  {showQuickAddNote && (
+                    <div className="bg-base-200/40 rounded-lg p-2.5 space-y-2 mb-2 border border-base-300/40">
+                      <input
+                        type="text"
+                        value={quickNoteName}
+                        onChange={e => setQuickNoteName(e.target.value)}
+                        placeholder={t('notes.name') || 'Note name'}
+                        className="input w-full text-xs"
+                      />
+                      <input
+                        type="text"
+                        value={quickNoteBody}
+                        onChange={e => setQuickNoteBody(e.target.value)}
+                        placeholder={t('sale.orderNotesPlaceholder') || 'Note text...'}
+                        className="input w-full text-xs"
+                      />
+                      <div className="flex gap-2 justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setShowQuickAddNote(false)}
+                          className="btn btn-ghost btn-xs"
+                        >
+                          {t('common.cancel')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleQuickAddNote}
+                          disabled={!quickNoteName.trim()}
+                          className="btn btn-primary btn-xs gap-1"
+                        >
+                          <span className="icon-[tabler--check] w-3 h-3" />
+                          {t('common.save')}
+                        </button>
+                      </div>
+                    </div>
                   )}
-                  {selectedTicket.status === 'preparing' && (
-                    <button
-                      onClick={() => { updateStatus(selectedTicket, 'ready'); closeDetail(); }}
-                      className="btn btn-success btn-sm gap-1"
-                    >
-                      <span className="icon-[tabler--circle-check] w-4 h-4" />
-                      Mark Ready
-                    </button>
+
+                  {selectableNotes.length === 0 ? (
+                    <p className="text-[11px] text-base-content/40 italic py-1">
+                      {t('notes.noTemplates') || 'No quick notes yet — mark notes as selectable in Notes.'}
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectableNotes.map(note => {
+                        const isPrep = note.category === 'preparation' && parseNoteSteps(note.steps).length > 0;
+                        return (
+                          <button
+                            key={note.id}
+                            type="button"
+                            onClick={() => {
+                              setActivePrepNoteId(isPrep ? note.id : null);
+                              attachNoteToTicket(note);
+                            }}
+                            className={`tag tag--sm cursor-pointer transition-all ${
+                              activePrepNoteId === note.id ? 'tag--primary' : 'tag--ghost hover:tag--primary'
+                            }`}
+                            title={isPrep ? 'Shows prep steps on this order' : note.template_body}
+                          >
+                            {isPrep && <span className="icon-[tabler--list-check] w-3 h-3" />}
+                            {note.name}
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
-                  {selectedTicket.status === 'ready' && (
-                    <button
-                      onClick={() => { updateStatus(selectedTicket, 'delivered'); closeDetail(); }}
-                      className="btn btn-ghost btn-sm gap-1"
-                    >
-                      <span className="icon-[tabler--circle-check] w-4 h-4" />
-                      Deliver
-                    </button>
-                  )}
-                  <button onClick={closeDetail} className="btn btn-ghost btn-sm">Close</button>
                 </div>
               </>
             )}
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button type="button" onClick={closeDetail}>close</button>
-          </form>
-        </dialog>
+        </Modal>
 
         {/* ── Chef Report Modal ── */}
         <dialog ref={reportDialogRef} className="modal">

@@ -9,6 +9,8 @@ export interface Product {
   prepare_time_minutes?: number;
   barcode?: string | null;
   description?: string | null;
+  /** Comma-separated order types this product is available for ('' = all). */
+  available_order_types?: string;
 }
 
 export interface NewProduct {
@@ -21,6 +23,7 @@ export interface NewProduct {
   prepare_time_minutes?: number;
   barcode?: string | null;
   description?: string | null;
+  available_order_types?: string;
 }
 
 export interface UpdateProductPayload {
@@ -33,14 +36,26 @@ export interface UpdateProductPayload {
   prepare_time_minutes?: number;
   barcode?: string | null;
   description?: string | null;
+  available_order_types?: string;
 }
 
 // ---- Category ----
 export interface Category {
   id: number;
   name: string;
+  color?: string | null;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface NewCategory {
+  name: string;
+  color?: string | null;
+}
+
+export interface UpdateCategoryPayload {
+  name?: string;
+  color?: string | null;
 }
 
 
@@ -60,7 +75,16 @@ export interface Settings {
   dine_in_tables?: number;
   delivery_fee?: number;
   delivery_fee_per_km?: number;
+  /** Toggle for unique per-product accent colors on cards + KDS items (default on). */
+  unique_card_colors?: boolean;
   mcp_enabled?: boolean;
+  smtp_server?: string;
+  smtp_port?: number;
+  smtp_username?: string;
+  smtp_password?: string;
+  smtp_recipient?: string;
+  smtp_from_name?: string;
+  smtp_from_email?: string;
 }
 
 export interface DeliveryZone {
@@ -461,8 +485,15 @@ export interface Note {
   recipe_id?: number | null;
   is_default: boolean;
   use_as_template: boolean;
+  selectable: boolean;
+  steps?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface NoteStep {
+  title: string;
+  details?: string;
 }
 
 export interface TaxReport {

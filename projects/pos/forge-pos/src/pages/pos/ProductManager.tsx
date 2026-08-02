@@ -2,10 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { Product, NewProduct, UpdateProductPayload, Category } from '../../types';
+import { Product, NewProduct, UpdateProductPayload, Category, NewCategory, UpdateCategoryPayload, Settings } from '../../types';
 import Card from '../../components/ui/Card';
 import DataTable, { type Column } from '../../components/ui/DataTable';
-import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
+import ProductCard, { PRODUCT_CARD_COLORS, productAccentColor, ProductCardSkeleton, PRODUCT_SKELETON_COUNT, hexToRgba } from '../../components/pos/ProductCard';
+import ProductFilterBar from '../../components/shared/ProductFilterBar';
+import Modal from '../../components/ui/Modal';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import PageLayout from '../../components/layout/PageLayout';
 import { iconClass } from '../../lib/icons';
 import { useTranslation } from 'react-i18next';
@@ -22,13 +25,36 @@ interface FormErrors {
 
 type SortKey = 'newest' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc';
 
+/** Preset swatches for the category color picker. */
+export const CATEGORY_COLOR_PALETTE = [
+  '#f97316', // orange
+  '#f43f5e', // rose
+  '#8b5cf6', // violet
+  '#06b6d4', // cyan
+  '#10b981', // emerald
+  '#eab308', // yellow
+  '#3b82f6', // blue
+  '#db2777', // pastel (FlyonUI pastel-light primary)
+  '#14b8a6', // teal
+  '#6366f1', // indigo
+];
+
+/** Order types a product can be restricted to (mirrors Sale's ORDER_TYPES). */
+export const ORDER_TYPE_OPTIONS = [
+  { value: 'dine-in', label: 'Dine-in', i18nKey: 'sale.dineIn', color: '#10b981' },
+  { value: 'takeaway', label: 'Takeaway', i18nKey: 'sale.takeaway', color: '#3b82f6' },
+  { value: 'delivery', label: 'Delivery', i18nKey: 'sale.delivery', color: '#8b5cf6' },
+  { value: 'extra-order', label: 'Extra Order', i18nKey: 'sale.extraOrder', color: '#f97316' },
+  { value: 'dated-order', label: 'Dated Order', i18nKey: 'sale.datedOrder', color: '#db2777' },
+];
+
 export default function ProductManager() {
   const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '' });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -44,6 +70,17 @@ export default function ProductManager() {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  // User-toggleable unique per-product accent colors (Settings → General).
+  const [uniqueCardColors, setUniqueCardColors] = useState(true);
+
+  // Category CRUD state
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryForm, setCategoryForm] = useState({ name: '', color: CATEGORY_COLOR_PALETTE[0] });
+  const [categoryErrors, setCategoryErrors] = useState<{ name?: string }>({});
+  const [isCategorySubmitting, setIsCategorySubmitting] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [showCategoryDeleteModal, setShowCategoryDeleteModal] = useState(false);
 
   // AJAX-style debounced search — shared hook. Rename-destructure keeps the
   // existing JSX variable names (`searchQuery`, `debouncedSearch`, `isFiltering`).
@@ -84,24 +121,34 @@ export default function ProductManager() {
           setShowDeleteModal(false);
           setProductToDelete(null);
         }
+        if (showCategoryModal) { closeCategoryModal(); return; }
+        if (showCategoryDeleteModal) {
+          e.preventDefault();
+          setShowCategoryDeleteModal(false);
+          setCategoryToDelete(null);
+        }
         return;
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showAddModal, showDeleteModal]);
+  }, [showAddModal, showDeleteModal, showCategoryModal, showCategoryDeleteModal]);
 
 
   const loadProducts = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, categoriesRes] = await Promise.all([
+      const [productsRes, categoriesRes, settingsRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Category[]>('get_categories').catch(() => []),
+        invoke<Settings>('get_settings').catch(() => null),
       ]);
       setProducts(productsRes);
       setCategories(categoriesRes || []);
+      if (settingsRes) {
+        setUniqueCardColors(settingsRes.unique_card_colors !== false);
+      }
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
@@ -113,12 +160,21 @@ export default function ProductManager() {
     loadProducts();
   }, []);
 
-  // ----- Derived: filtered + sorted products -----
+  // ----- Derived: filtered + sorted products (unified search: name, barcode, category) -----
   const filteredProducts = useMemo(() => {
     let result = products;
     const query = debouncedSearch.trim().toLowerCase();
     if (query) {
-      result = result.filter(p => p.name.toLowerCase().includes(query));
+      result = result.filter(p => {
+        const catName = p.category_id != null
+          ? (categories.find(c => c.id === p.category_id)?.name || '').toLowerCase()
+          : '';
+        return (
+          p.name.toLowerCase().includes(query) ||
+          (p.barcode || '').toLowerCase().includes(query) ||
+          catName.includes(query)
+        );
+      });
     }
     if (selectedCategory !== 'all') {
       result = result.filter(p => p.category_id === selectedCategory);
@@ -133,7 +189,7 @@ export default function ProductManager() {
       default: sorted.sort((a, b) => b.id - a.id);
     }
     return sorted;
-  }, [products, debouncedSearch, selectedCategory, sortKey]);
+  }, [products, debouncedSearch, selectedCategory, sortKey, categories]);
 
   const handleInputChange = (field: string, value: string | number) => {
     setNewProduct({ ...newProduct, [field]: value });
@@ -208,14 +264,14 @@ export default function ProductManager() {
     setShowAddModal(false);
     setEditingProduct(null);
     setErrors({});
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '' });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
     setProductImage(null);
     setOriginalImage(null);
   };
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '' });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
     setProductImage(null);
     setOriginalImage(null);
     setErrors({});
@@ -233,6 +289,7 @@ export default function ProductManager() {
       prepare_time_minutes: product.prepare_time_minutes || 0,
       barcode: product.barcode || '',
       description: product.description || '',
+      available_order_types: product.available_order_types || 'dine-in,takeaway,delivery,extra-order,dated-order',
     });
     setProductImage(product.image ?? null);
     setOriginalImage(product.image ?? null);
@@ -267,6 +324,7 @@ export default function ProductManager() {
           prepare_time_minutes: newProduct.prepare_time_minutes,
           barcode: newProduct.barcode || null,
           description: newProduct.description || null,
+          available_order_types: newProduct.available_order_types || '',
         };
         const imageChanged = nextImage !== (originalImage || null);
         if (imageChanged) {
@@ -289,6 +347,7 @@ export default function ProductManager() {
           prepare_time_minutes: newProduct.prepare_time_minutes,
           barcode: newProduct.barcode || null,
           description: newProduct.description || null,
+          available_order_types: newProduct.available_order_types || '',
         };
         const result = await invoke<Product>('add_product', { product: create });
 
@@ -357,6 +416,94 @@ export default function ProductManager() {
     } finally {
       setDeletingId(null);
       setProductToDelete(null);
+    }
+  };
+
+  // ── Category CRUD ──
+  const openAddCategory = () => {
+    setEditingCategory(null);
+    // Unique color auto-assign: pick the first palette color not already in use.
+    const used = new Set(categories.map(c => c.color).filter(Boolean));
+    const nextColor = CATEGORY_COLOR_PALETTE.find(c => !used.has(c)) ?? CATEGORY_COLOR_PALETTE[0];
+    setCategoryForm({ name: '', color: nextColor });
+    setCategoryErrors({});
+    setShowCategoryModal(true);
+  };
+
+  const openEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    setCategoryForm({ name: category.name, color: category.color || CATEGORY_COLOR_PALETTE[0] });
+    setCategoryErrors({});
+    setShowCategoryModal(true);
+  };
+
+  const closeCategoryModal = () => {
+    setShowCategoryModal(false);
+    setEditingCategory(null);
+    setCategoryErrors({});
+  };
+
+  const handleSaveCategory = async () => {
+    const trimmedName = categoryForm.name.trim();
+    if (!trimmedName) {
+      setCategoryErrors({ name: t('productManager.categoryValidationName') || 'Please enter a category name' });
+      return;
+    }
+    setIsCategorySubmitting(true);
+    try {
+      if (editingCategory) {
+        const update: UpdateCategoryPayload = { name: trimmedName, color: categoryForm.color };
+        const updated = await invoke<Category>('update_category', { id: editingCategory.id, update });
+        setCategories(prev => prev.map(c => (c.id === updated.id ? updated : c)));
+      } else {
+        const data: NewCategory = { name: trimmedName, color: categoryForm.color };
+        const created = await invoke<Category>('add_category', { data });
+        setCategories(prev => [...prev, created]);
+      }
+      closeCategoryModal();
+      setSubmitStatus('success');
+      setStatusMessage(
+        editingCategory
+          ? t('productManager.categorySuccessUpdated') || 'Category updated'
+          : t('productManager.categorySuccessAdded') || 'Category added'
+      );
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } catch (error) {
+      console.error('Error saving category:', error);
+      setSubmitStatus('error');
+      setStatusMessage(String(error));
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } finally {
+      setIsCategorySubmitting(false);
+    }
+  };
+
+  const openDeleteCategoryConfirmation = (category: Category) => {
+    setCategoryToDelete(category);
+    setShowCategoryDeleteModal(true);
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!categoryToDelete) return;
+    const id = categoryToDelete.id;
+    setShowCategoryDeleteModal(false);
+    setIsCategorySubmitting(true);
+    try {
+      await invoke('delete_category', { id });
+      setCategories(prev => prev.filter(c => c.id !== id));
+      setProducts(prev => prev.map(p => (p.category_id === id ? { ...p, category_id: null } : p)));
+      if (selectedCategory === id) setSelectedCategory('all');
+      setSubmitStatus('success');
+      setStatusMessage(t('productManager.categorySuccessDeleted') || 'Category deleted');
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      setSubmitStatus('error');
+      setStatusMessage(String(error));
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } finally {
+      setIsCategorySubmitting(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -602,102 +749,84 @@ export default function ProductManager() {
         </Card>
       </div>
 
-      {/* ── Compact filter bar with tag-based category pills ── */}
-      <div className="flex flex-col gap-3 mb-4">
-        {/* Search + sort + add — single row */}
-        <div className="flex items-center gap-2">
-          <div className="input input--sm flex-1 max-w-xs">
-            <div className="input__wrapper">
-              <span className="input__icon icon-[tabler--search]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('productManager.searchPlaceholder') || 'Search...'}
-                aria-label={t('productManager.searchPlaceholder') || 'Search products'}
-                data-testid="pm-search-input"
-                className="input__field input__field--with-icon-left"
-              />
-              {isFiltering && (
-                <span className="input__icon input__icon--right w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              )}
-            </div>
-          </div>
-          {viewMode === 'grid' && (
-            <div className="input input--sm w-36">
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as SortKey)}
-                aria-label={t('productManager.sortBy') || 'Sort by'}
-                className="input__field input__field--select"
-              >
-                <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
-              <option value="name-asc">A→Z</option>
-              <option value="name-desc">Z→A</option>
-              <option value="price-asc">$↑</option>
-              <option value="price-desc">$↓</option>
-            </select>
-            </div>
-          )}
-          {/* View toggle: grid vs table */}
-          <button
-            onClick={() => setViewMode(prev => prev === 'grid' ? 'table' : 'grid')}
-            className="btn btn-ghost btn-sm btn-square text-base-content/50 hover:text-base-content"
-            aria-label={viewMode === 'grid' ? 'Switch to table view' : 'Switch to grid view'}
-            title={viewMode === 'grid' ? 'Table view' : 'Grid view'}
-          >
-            {viewMode === 'grid' ? (
-              <span className="icon-[tabler--list] w-4 h-4" />
-            ) : (
-              <span className="icon-[tabler--grid-dots] w-4 h-4" />
+      {/* ── Compact rounded filter bar — shared ProductFilterBar component ──
+          Same bar used on Sale; see docs/shared-components.md. */}
+      <ProductFilterBar
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={t('productManager.searchPlaceholder') || 'Search...'}
+        searchAriaLabel={t('productManager.searchPlaceholder') || 'Search products'}
+        searchTestId="pm-search-input"
+        searchLoading={isFiltering}
+        searchClassName="flex-1 max-w-xs"
+        topRowActions={
+          <>
+            {viewMode === 'grid' && (
+              <div className="field field--sm w-32">
+                <select
+                  value={sortKey}
+                  onChange={(e) => setSortKey(e.target.value as SortKey)}
+                  aria-label={t('productManager.sortBy') || 'Sort by'}
+                  className="select"
+                >
+                  <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
+                  <option value="name-asc">A→Z</option>
+                  <option value="name-desc">Z→A</option>
+                  <option value="price-asc">$↑</option>
+                  <option value="price-desc">$↓</option>
+                </select>
+              </div>
             )}
-          </button>
-          <button
-            onClick={openAddModal}
-            data-testid="pm-add-button"
-            className="btn btn-primary btn-sm gap-1.5 shrink-0"
-          >
-            <span className="icon-[tabler--plus] w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-xs">{t('productManager.addNewProduct')}</span>
-          </button>
-        </div>
-
-        {/* Category filter as clickable tag pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`badge badge-sm cursor-pointer transition-all ${
-              selectedCategory === 'all'
-                ? 'badge-primary badge-soft'
-                : 'badge-ghost hover:badge-soft hover:badge-primary'
-            }`}
-          >
-            {t('productManager.allCategories') || 'All'}
-          </button>
-          {categories.map(cat => (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(selectedCategory === cat.id ? 'all' : cat.id)}
-              className={`badge badge-sm cursor-pointer transition-all ${
-                selectedCategory === cat.id
-                  ? 'badge-primary badge-soft'
-                  : 'badge-ghost hover:badge-soft hover:badge-primary'
-              }`}
+              onClick={() => setViewMode(prev => prev === 'grid' ? 'table' : 'grid')}
+              className="btn btn-ghost btn-sm btn-square text-base-content/50 hover:text-base-content shrink-0"
+              aria-label={viewMode === 'grid' ? 'Switch to table view' : 'Switch to grid view'}
             >
-              {cat.name}
+              {viewMode === 'grid' ? (
+                <span className="icon-[tabler--list] w-4 h-4" />
+              ) : (
+                <span className="icon-[tabler--grid-dots] w-4 h-4" />
+              )}
             </button>
-          ))}
-          {selectedCategory !== 'all' && (
             <button
-              onClick={() => setSelectedCategory('all')}
-              className="badge badge-sm badge-ghost text-base-content/40 hover:text-error transition-colors"
-              title="Clear filter"
+              onClick={openAddModal}
+              data-testid="pm-add-button"
+              className="btn btn-primary btn-sm gap-1.5 shrink-0"
             >
-              <span className="icon-[tabler--x] w-3 h-3" />
+              <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-xs">{t('productManager.addNewProduct')}</span>
             </button>
-          )}
-        </div>
-      </div>
+          </>
+        }
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        categoryAllLabel={t('productManager.allCategories') || 'All'}
+        categoryTestIdPrefix="pm-category-filter"
+        categoryAllTestId="pm-category-filter"
+        pillsChildren={
+          <>
+            <button
+              onClick={openAddCategory}
+              data-testid="pm-manage-categories"
+              className="tag tag--sm tag--ghost cursor-pointer transition-all hover:border-primary/40 hover:text-primary flex items-center gap-1"
+              title={t('productManager.manageCategories') || 'Manage categories'}
+            >
+              <span className="icon-[tabler--settings] w-3 h-3" />
+              {t('productManager.manageCategories') || 'Manage'}
+            </button>
+            {selectedCategory !== 'all' && (
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="tag tag--sm tag--ghost text-base-content/40 hover:text-error transition-colors"
+                title="Clear filter"
+              >
+                <span className="icon-[tabler--x] w-3 h-3" />
+              </button>
+            )}
+          </>
+        }
+      />
 
       {/* ── Product Grid / Table ── */}
       {viewMode === 'grid' ? (
@@ -720,47 +849,30 @@ export default function ProductManager() {
             >
               {filteredProducts.map((product, index) => {
                 const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
+                // Unique per-product accent: category color wins when set;
+                // otherwise a deterministic golden-angle hue per product so the
+                // grid never repeats the same rotating palette color.
+                const categoryColor = product.category_id != null
+                  ? (categories.find(c => c.id === product.category_id)?.color || null)
+                  : null;
+                // Unique per-product accents are user-toggleable via Settings.
+                // When off, only explicit category colors apply and cards fall
+                // back to the rotating palette (pre-feature behavior).
+                const accentColor = uniqueCardColors
+                  ? (categoryColor ?? productAccentColor(product))
+                  : categoryColor;
                 return (
                   <ProductCard
                     key={product.id}
                     product={product}
                     color={color}
+                    categoryColor={accentColor}
                     currency={currencySymbol}
                     index={index}
-                  >
-                    <span className="index-pill group-hover:scale-110 transition-transform duration-200">
-                      {index + 1}
-                    </span>
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); openEditModal(product); }}
-                        className="w-7 h-7 flex items-center justify-center rounded-full
-                          bg-white/90 dark:bg-slate-700/90 text-primary hover:text-primary/70
-                          hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:scale-[0.9] shadow-sm"
-                        aria-label={t('common.edit')}
-                      >
-                        <span className="icon-[tabler--edit] w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(product); }}
-                        className="w-7 h-7 flex items-center justify-center rounded-full
-                          bg-white/90 dark:bg-slate-700/90 text-error hover:text-error/70
-                          hover:bg-error/10 dark:hover:bg-error/10 transition-all active:scale-[0.9] shadow-sm disabled:opacity-50"
-                        disabled={deletingId === product.id}
-                        aria-label={t('productManager.deleteTitle')}
-                      >
-                        {deletingId === product.id ? (
-                          <div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full"
-                          />
-                        ) : (
-                          <span className="icon-[tabler--trash] w-3 h-3" />
-                        )}
-                      </button>
-                    </div>
-                  </ProductCard>
+                    onClick={() => openEditModal(product)}
+                    onEdit={() => openEditModal(product)}
+                    onDelete={() => openDeleteConfirmation(product)}
+                  />
                 );
               })}
             </div>
@@ -799,20 +911,49 @@ export default function ProductManager() {
         />
       )}
 
-      {/* Add / Edit Modal (unified) */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-base-100 rounded-xl p-4 sm:p-6 w-full max-w-md transition-colors duration-300"
-            data-testid="pm-modal"
-          >
-            <h2 className="text-xl sm:text-2xl font-bold text-base-content mb-4 sm:mb-6">
-              {modalTitle}
-            </h2>
-
-            <div className="space-y-4">
+      {/* Add / Edit Modal (unified) — shared Modal component (FlyonUI BEM frame) */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={closeModal}
+        title={modalTitle}
+        size="lg"
+        scroll
+        contentTestId="pm-modal"
+        footer={
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={closeModal}
+              className="btn btn-ghost flex-1 disabled:opacity-50"
+              disabled={isSubmitting}
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              onClick={handleSaveProduct}
+              data-testid="pm-submit"
+              className="btn btn-primary flex-1 disabled:opacity-50 gap-2"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                  />
+                  {editingProduct ? t('common.updating') || 'Updating...' : t('productManager.adding')}
+                </>
+              ) : (
+                <>
+                  {editingProduct ? <span className="icon-[tabler--edit]" /> : <span className="icon-[tabler--plus]" />}
+                  {editingProduct ? t('common.update') : t('productManager.addProduct')}
+                </>
+              )}
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
               {/* Product Image */}
               <div>
                 <label className="block text-base-content mb-2">{t('productManager.productImageOptional') || 'Product Image (optional)'}</label>
@@ -860,19 +1001,19 @@ export default function ProductManager() {
                 </div>
               </div>
 
-              <div className={`input ${errors.name ? 'input--error' : ''}`}>
-                <label className="input__label">{t('productManager.productName')}</label>
+              <div className={`field ${errors.name ? 'field--error' : ''}`}>
+                <label className="label-text">{t('productManager.productName')}</label>
                 <input
                   type="text"
                   value={newProduct.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   data-testid="pm-name-input"
-                  className="input__field w-full"
+                  className="input w-full"
                   placeholder={t('productManager.namePlaceholder')}
                   disabled={isSubmitting}
                 />
                 {errors.name && (
-                  <p className="input__message">{errors.name}</p>
+                  <p className="helper-text">{errors.name}</p>
                 )}
               </div>
 
@@ -909,10 +1050,48 @@ export default function ProductManager() {
                 </div>
               )}
 
+              {/* Available Order Types — where this product can be sold */}
+              <div>
+                <label className="block text-base-content mb-2 flex items-center gap-2">
+                  <span className="icon-[tabler--building-store] w-4 h-4 text-primary/70" />
+                  {t('productManager.availableOrderTypes') || 'Available Order Types'}
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                  {ORDER_TYPE_OPTIONS.map(ot => {
+                    const selected = (newProduct.available_order_types || '').split(',').map(s => s.trim()).filter(Boolean);
+                    const isOn = selected.includes(ot.value);
+                    return (
+                      <button
+                        key={ot.value}
+                        type="button"
+                        onClick={() => {
+                          const next = isOn
+                            ? selected.filter(v => v !== ot.value).join(',')
+                            : [...selected, ot.value].join(',');
+                          handleInputChange('available_order_types', next);
+                        }}
+                        disabled={isSubmitting}
+                        className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg border-2 transition-all text-xs font-medium
+                          ${isOn
+                            ? 'border-primary bg-primary/5 text-primary'
+                            : 'border-slate-200 dark:border-slate-600 bg-base-100/50 text-slate-600 dark:text-slate-400 hover:border-primary/50'
+                          }`}
+                      >
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${isOn ? '' : 'bg-base-300'}`} style={isOn ? { backgroundColor: ot.color } : undefined} />
+                        {t(ot.i18nKey, ot.label)}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="helper-text mt-1">
+                  {t('productManager.availableOrderTypesHint') || 'Products are hidden from order types that are not selected'}
+                </p>
+              </div>
+
               {/* Price + Unit in a 2-column row */}
               <div className="grid grid-cols-2 gap-3">
-                <div className={`input ${errors.price ? 'input--error' : ''}`}>
-                  <label className="input__label input__label--sm">
+                <div className={`field ${errors.price ? 'field--error' : ''}`}>
+                  <label className="label-text">
                     <span className="icon-[tabler--currency-dollar] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
                     Price ({currencySymbol})
                   </label>
@@ -921,19 +1100,19 @@ export default function ProductManager() {
                     value={newProduct.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
                     data-testid="pm-price-input"
-                    className="input__field w-full h-9 text-sm"
+                    className="input w-full h-9 text-sm"
                     placeholder="0.00"
                     step="0.01"
                     min="0"
                     disabled={isSubmitting}
                   />
                   {errors.price && (
-                    <p className="input__message">{errors.price}</p>
+                    <p className="helper-text">{errors.price}</p>
                   )}
                 </div>
 
-                <div className={`input ${errors.unit ? 'input--error' : ''}`}>
-                  <label className="input__label input__label--sm">
+                <div className={`field ${errors.unit ? 'field--error' : ''}`}>
+                  <label className="label-text">
                     <span className="icon-[tabler--cube] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
                     Unit
                   </label>
@@ -942,12 +1121,12 @@ export default function ProductManager() {
                     value={newProduct.unit}
                     onChange={(e) => handleInputChange('unit', e.target.value)}
                     data-testid="pm-unit-input"
-                    className="input__field w-full h-9 text-sm"
+                    className="input w-full h-9 text-sm"
                     placeholder="item, kg, pcs"
                     disabled={isSubmitting}
                   />
                   {errors.unit && (
-                    <p className="input__message">{errors.unit}</p>
+                    <p className="helper-text">{errors.unit}</p>
                   )}
                 </div>
               </div>
@@ -963,7 +1142,7 @@ export default function ProductManager() {
                     type="number"
                     value={newProduct.prepare_time_minutes}
                     onChange={(e) => handleInputChange('prepare_time_minutes', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="input__field w-24 h-9 text-sm"
+                    className="input w-24 h-9 text-sm"
                     placeholder="0"
                     min="0"
                     step="1"
@@ -983,7 +1162,7 @@ export default function ProductManager() {
                   type="text"
                   value={newProduct.barcode}
                   onChange={(e) => handleInputChange('barcode', e.target.value)}
-                  className="input__field w-full h-9 text-sm"
+                  className="input w-full h-9 text-sm"
                   placeholder="e.g. 8901234567890"
                   disabled={isSubmitting}
                 />
@@ -997,7 +1176,7 @@ export default function ProductManager() {
                 <textarea
                   value={newProduct.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="input__field input__field--textarea w-full text-sm resize-none"
+                  className="textarea w-full text-sm resize-none"
                   placeholder={t('productManager.descriptionPlaceholder') || 'Product description for menu & tickets...'}
                   rows={2}
                   disabled={isSubmitting}
@@ -1015,7 +1194,7 @@ export default function ProductManager() {
                     value={newProduct.category_id ? String(newProduct.category_id) : ''}
                     onChange={(e) => handleInputChange('category_id', e.target.value ? Number(e.target.value) : 0)}
                     disabled={isSubmitting}
-                    className="input__field input__field--select w-full h-9 text-sm"
+                    className="select w-full h-9 text-sm"
                   >
                     <option value="">{t('productManager.noCategory') || '— No category —'}</option>
                     {categories.map(c => (
@@ -1025,89 +1204,181 @@ export default function ProductManager() {
                 </div>
               )}
 
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={closeModal}
-                  className="btn btn-ghost flex-1 disabled:opacity-50"
-                  disabled={isSubmitting}
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={handleSaveProduct}
-                  data-testid="pm-submit"
-                  className="btn btn-primary flex-1 disabled:opacity-50 gap-2"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
+            </div>
+        </Modal>
+
+      {/* Delete Confirmation Modal — shared ConfirmDialog */}
+      <ConfirmDialog
+        isOpen={showDeleteModal && !!productToDelete}
+        onClose={() => { setShowDeleteModal(false); setProductToDelete(null); }}
+        onConfirm={handleDeleteProduct}
+        title={t('productManager.deleteTitle')}
+        message={t('productManager.deleteConfirm')}
+        itemName={productToDelete?.name ?? ''}
+        description={t('productManager.deleteWarning')}
+        confirmLabel={t('productManager.confirmDelete')}
+        variant="danger"
+      />
+
+      {/* Category CRUD Modal — shared Modal component */}
+      <Modal
+        isOpen={showCategoryModal}
+        onClose={closeCategoryModal}
+        title={editingCategory ? t('productManager.editCategory') : t('productManager.addCategory')}
+        size="sm"
+        footer={
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={closeCategoryModal}
+              className="btn btn-ghost flex-1 disabled:opacity-50"
+              disabled={isCategorySubmitting}
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              onClick={handleSaveCategory}
+              data-testid="pm-category-submit"
+              className="btn btn-primary flex-1 disabled:opacity-50 gap-2"
+              disabled={isCategorySubmitting}
+            >
+              {isCategorySubmitting ? (
+                <>
+                  <div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                  />
+                  {t('productManager.saving') || 'Saving...'}
+                </>
+              ) : (
+                <>
+                  <span className="icon-[tabler--check]" />
+                  {editingCategory ? t('common.update') : t('productManager.addCategory')}
+                </>
+              )}
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+              {/* Category name */}
+              <div className={`field ${categoryErrors.name ? 'field--error' : ''}`}>
+                <label className="label-text">{t('productManager.categoryName')}</label>
+                <input
+                  type="text"
+                  value={categoryForm.name}
+                  onChange={(e) => {
+                    setCategoryForm(prev => ({ ...prev, name: e.target.value }));
+                    if (categoryErrors.name) setCategoryErrors({});
+                  }}
+                  data-testid="pm-category-name-input"
+                  className="input w-full"
+                  placeholder={t('productManager.categoryNamePlaceholder') || 'e.g. Burgers, Sides...'}
+                  disabled={isCategorySubmitting}
+                />
+                {categoryErrors.name && (
+                  <p className="helper-text">{categoryErrors.name}</p>
+                )}
+              </div>
+
+              {/* Color palette picker */}
+              <div>
+                <label className="label-text">
+                  {t('productManager.categoryColor') || 'Color'}
+                </label>
+                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                  {CATEGORY_COLOR_PALETTE.map(color => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setCategoryForm(prev => ({ ...prev, color }))}
+                      aria-label={`Color ${color}`}
+                      className={`w-7 h-7 rounded-full transition-all cursor-pointer
+                        hover:scale-110 active:scale-95 ring-2 ring-offset-2 ring-offset-base-100
+                        ${categoryForm.color === color ? 'ring-base-content/60 scale-110' : 'ring-transparent'}`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                  <label className="relative w-7 h-7 rounded-full overflow-hidden border border-base-300/50 cursor-pointer hover:scale-110 transition-transform">
+                    <span
+                      className="absolute inset-0 flex items-center justify-center text-[10px]"
+                      style={{ backgroundColor: 'repeating-conic-gradient(#d1d5db 0% 25%, #f9fafb 0% 50%) 0 0/12px 12px' }}
+                    />
+                    <input
+                      type="color"
+                      value={/^#[0-9a-fA-F]{6}$/.test(categoryForm.color) ? categoryForm.color : '#f97316'}
+                      onChange={(e) => setCategoryForm(prev => ({ ...prev, color: e.target.value }))}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      aria-label={t('productManager.categoryCustomColor') || 'Custom color'}
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="icon-[tabler--color-picker] w-3 h-3 text-base-content/70" />
+                    </span>
+                  </label>
+                </div>
+                {/* Live preview */}
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-xs text-base-content/50">{t('productManager.colorPreview') || 'Preview'}:</span>
+                  <span
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold border"
+                    style={{ backgroundColor: hexToRgba(categoryForm.color, 0.14), borderColor: hexToRgba(categoryForm.color, 0.5), color: categoryForm.color }}
+                  >
+                    {categoryForm.name.trim() || (t('productManager.category') || 'Category')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Existing categories list with edit / delete */}
+              {categories.length > 0 && (
+                <div className="border-t border-base-300/20 pt-3 mt-2">
+                  <p className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-2">
+                    {t('productManager.existingCategories') || 'Existing categories'}
+                  </p>
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                    {categories.map(cat => (
                       <div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                      />
-                      {editingProduct ? t('common.updating') || 'Updating...' : t('productManager.adding')}
-                    </>
-                  ) : (
-                    <>
-                      {editingProduct ? <span className="icon-[tabler--edit]" /> : <span className="icon-[tabler--plus]" />}
-                      {editingProduct ? t('common.update') : t('productManager.addProduct')}
-                    </>
-                  )}
-                </button>
-              </div>
+                        key={cat.id}
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-base-300/20 bg-base-100/50"
+                      >
+                        <span
+                          className="w-3 h-3 rounded-full shrink-0"
+                          style={{ backgroundColor: cat.color || '#94a3b8' }}
+                        />
+                        <span className="flex-1 text-sm font-medium truncate">{cat.name}</span>
+                        <button
+                          onClick={() => openEditCategory(cat)}
+                          className="p-1 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
+                          aria-label={t('common.edit')}
+                        >
+                          <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => openDeleteCategoryConfirmation(cat)}
+                          className="p-1 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
+                          aria-label={t('productManager.deleteCategory')}
+                        >
+                          <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
-      )}
+        </Modal>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && productToDelete && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-base-100 rounded-xl p-6 w-full max-w-md border-2
-              border-red-300 dark:border-red-500/30 transition-colors duration-300"
-          >
-            <div className="flex justify-center mb-4">
-              <div className="bg-red-500/20 rounded-full p-4">
-                <span className="icon-[tabler--alert-triangle] text-red-500 dark:text-red-400 text-4xl" />
-              </div>
-            </div>
-
-            <h2 className="text-xl sm:text-2xl font-bold text-base-content text-center mb-3">
-              {t('productManager.deleteTitle')}
-            </h2>
-
-            <p className="text-base-content/70 text-center mb-2">
-              {t('productManager.deleteConfirm')}
-            </p>
-            <p className="text-base-content font-semibold text-center text-lg mb-1">
-              {productToDelete.name}
-            </p>
-            <p className="text-base-content/50 text-center text-sm mb-6">
-              {t('productManager.deleteWarning')}
-            </p>
-
-            <div className="flex gap-4">
-              <button
-                onClick={() => { setShowDeleteModal(false); setProductToDelete(null); }}
-                className="btn btn-ghost flex-1 font-semibold"
-              >
-                {t('productManager.cancelDelete')}
-              </button>
-              <button
-                onClick={handleDeleteProduct}
-                className="btn btn-error flex-1 font-semibold gap-2"
-              >
-                <span className="icon-[tabler--trash]" />
-                {t('productManager.confirmDelete')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Category Delete Confirmation Modal — shared ConfirmDialog */}
+      <ConfirmDialog
+        isOpen={showCategoryDeleteModal && !!categoryToDelete}
+        onClose={() => { setShowCategoryDeleteModal(false); setCategoryToDelete(null); }}
+        onConfirm={handleDeleteCategory}
+        title={t('productManager.deleteCategory')}
+        message={t('productManager.deleteCategoryConfirm') || 'Delete this category?'}
+        itemName={categoryToDelete?.name ?? ''}
+        description={t('productManager.deleteCategoryWarning') || 'Products in this category will become uncategorized.'}
+        confirmLabel={t('productManager.confirmDelete')}
+        variant="danger"
+      />
 
       {/* Success Message */}
       {submitStatus === 'success' && (

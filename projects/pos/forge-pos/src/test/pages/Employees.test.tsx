@@ -88,9 +88,11 @@ describe('Employees Page', () => {
     });
     const allTypesEls = screen.getAllByText(/employees\.allTypes|All Types/);
     expect(allTypesEls.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/employees\.allTypesFilter|All/)).toBeInTheDocument();
-    expect(screen.getByText(/employees\.activeFilter|Active/)).toBeInTheDocument();
-    expect(screen.getByText(/employees\.inactiveFilter|Inactive/)).toBeInTheDocument();
+    // Filter buttons ('All' / 'Active' / 'Inactive') — 'All' would also match
+    // the 'All Types' <option>, so scope by button role for precision.
+    expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Active' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Inactive' })).toBeInTheDocument();
   });
 
   it('opens Add Employee modal', async () => {
@@ -127,8 +129,9 @@ describe('Employees Page', () => {
     if (typesTab) await userEvent.click(typesTab);
 
     await waitFor(() => {
-      // Find the tab content heading - use getAllByText since summary cards also show this text
-      const typesHeadings = screen.getAllByText(/employees\.employeeTypes/);
+      // Find the tab content heading - use getAllByText since summary cards also show this text.
+      // i18n mock resolves real en.json → 'Employee Types' (not the raw key).
+      const typesHeadings = screen.getAllByText(/Employee Types/);
       expect(typesHeadings.length).toBeGreaterThanOrEqual(1);
     });
     expect(screen.getByText('Manager')).toBeInTheDocument();

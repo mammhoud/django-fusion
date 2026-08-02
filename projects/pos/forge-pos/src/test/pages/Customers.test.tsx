@@ -44,7 +44,8 @@ describe('Customers page', () => {
       expect(screen.getAllByText('Bob Khan').length).toBeGreaterThanOrEqual(1);
     });
 
-    const searchInput = screen.getByLabelText(/customers\.searchPlaceholder/);
+    // i18n mock resolves real en.json → aria-label is 'Search customers...'
+    const searchInput = screen.getByLabelText(/Search customers/);
     await userEvent.type(searchInput, 'alice');
 
     // Right after typing, Bob is still visible (debounce window not elapsed)
@@ -76,8 +77,46 @@ describe('Customers page', () => {
     mockInvokeSuccess('get_customers', []);
     renderWithRouter(<Customers />);
 
+    // i18n mock resolves real en.json → empty-state text is 'No customers yet…'
     await waitFor(() => {
-      expect(screen.getByText(/customers\.noCustomers/)).toBeInTheDocument();
+      expect(screen.getByText(/No customers yet/)).toBeInTheDocument();
     });
+  });
+
+  it('opens the add form and saves a new customer via add_customer', async () => {
+    mockInvokeSuccess('add_customer', { id: 4 });
+    renderWithRouter(<Customers />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Alice Smith').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Customer/i }));
+
+    // Form appears with the Name field focused
+    const nameInput = screen.getByPlaceholderText('Name');
+    await userEvent.type(nameInput, 'Dana White');
+    await userEvent.type(screen.getByPlaceholderText('Phone'), '03004444444');
+
+    await userEvent.click(screen.getByRole('button', { name: /Save/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Saved/i)).toBeInTheDocument();
+    });
+  });
+
+  it('closes the add form via Cancel without saving', async () => {
+    renderWithRouter(<Customers />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Alice Smith').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Customer/i }));
+    expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+
+    expect(screen.queryByPlaceholderText('Name')).not.toBeInTheDocument();
   });
 });

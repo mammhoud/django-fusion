@@ -11,46 +11,16 @@ import { vi } from 'vitest';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import { AuthProvider } from '../contexts/AuthContext';
+import { CurrencyProvider } from '../contexts/CurrencyContext';
+import { ModalProvider } from '../components/ui/ModalProvider';
 
 // CSS animations are no-ops in jsdom — components render children directly
 // ---------------------------------------------------------------------------
-// i18n – mock the whole module so components & contexts don't trigger
-// react-i18next dependency resolution during tests
+// i18n – mocked globally in setup.ts (resolves REAL en.json translations).
+// react-router-dom – stub useNavigate
 // ---------------------------------------------------------------------------
-const { mockChangeLanguage, mockOn, mockOff, mockNavigate } = vi.hoisted(() => ({
-  mockChangeLanguage: vi.fn(),
-  mockOn: vi.fn(),
-  mockOff: vi.fn(),
+const { mockNavigate } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
-}));
-
-vi.mock('../i18n', () => ({
-  __esModule: true,
-  default: {
-    language: 'en',
-    changeLanguage: mockChangeLanguage,
-    on: mockOn,
-    off: mockOff,
-    dir: () => 'ltr',
-    use: () => ({
-      init: vi.fn(),
-    }),
-    t: (key: string) => key,
-  },
-}));
-
-vi.mock('react-i18next', () => ({
-  initReactI18next: { type: '3rdParty', init: () => {} },
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: {
-      language: 'en',
-      changeLanguage: mockChangeLanguage,
-      on: mockOn,
-      off: mockOff,
-      dir: () => 'ltr',
-    },
-  }),
 }));
 
 // ---------------------------------------------------------------------------
@@ -63,6 +33,9 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+// jspdf / recharts mocks are registered in setup.ts too, so tests that import
+// `render` directly (e.g. Settings.test.tsx) still get them.
 
 export { mockNavigate };
 
@@ -118,7 +91,11 @@ export function renderWithRouter(
       <MemoryRouter initialEntries={initialEntries}>
         <ThemeProvider>
           <LanguageProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <CurrencyProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </CurrencyProvider>
+            </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
       </MemoryRouter>

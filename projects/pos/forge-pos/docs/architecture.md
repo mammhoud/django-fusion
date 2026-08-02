@@ -84,7 +84,7 @@ Forge POS uses a modern styling stack. See the dedicated **[Styling & UI Package
 |---------|---------|
 | **Tailwind CSS v4** | Utility-first CSS framework with CSS-first configuration |
 | **FlyonUI v2.4.1** | Semantic component classes (badge, btn) via Tailwind plugin |
-| **Iconify + Tabler** | 2000+ icons via `icon-[tabler--name]` utility class syntax |
+| **Iconify + Tabler** | 2000+ icons via the `icon-[tabler--search]` utility class syntax |
 | **Framer Motion v12** | Page transitions and micro-interactions |
 
 ### Quick Integration Summary

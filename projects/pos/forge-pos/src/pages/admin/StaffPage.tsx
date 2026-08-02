@@ -9,7 +9,7 @@ type StaffTab = 'employees' | 'schedule' | 'payroll';
 
 const staffTabs: { key: StaffTab; labelKey: string; icon: string }[] = [
   { key: 'employees', labelKey: 'nav.employees', icon: 'users' },
-  { key: 'schedule', labelKey: 'nav.schedule', icon: 'calendar-event' },
+  { key: 'schedule', labelKey: 'nav.schedule', icon: 'calendar-clock' },
   { key: 'payroll', labelKey: 'nav.payroll', icon: 'moneybag' },
 ];
 

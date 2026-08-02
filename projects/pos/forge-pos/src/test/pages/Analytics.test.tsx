@@ -77,7 +77,7 @@ describe('Analytics Page', () => {
 
     await waitFor(() => {
       // Check that the revenue is displayed (4500)
-      const revenueElements = screen.getAllByText(/4500\.00/);
+      const revenueElements = screen.getAllByText(/4,500\.00|4500\.00/);
       expect(revenueElements.length).toBeGreaterThanOrEqual(1);
     });
   });

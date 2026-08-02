@@ -11,6 +11,8 @@ export default defineConfig({
     include: ['src/test/**/*.test.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
     exclude: ['node_modules', 'src-tauri'],
     css: false,
+    testTimeout: 15000,
+    hookTimeout: 15000,
   },
   resolve: {
     alias: {

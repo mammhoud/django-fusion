@@ -30,11 +30,10 @@ interface FormErrors {
   delivery_fee_per_km?: string;
 }
 
-type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database' | 'theme';
+type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'profile' | 'email' | 'database' | 'theme';
 
 interface TabDefinition {
   id: TabId;
-  label: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
@@ -53,13 +52,15 @@ const fieldToTab: Record<string, TabId> = {
 
 
 const tabs: TabDefinition[] = [
-  { id: 'general', label: 'General', icon: Ic('globe') },
-  { id: 'business', label: 'Business', icon: Ic('briefcase') },
-  { id: 'dining', label: 'Dining', icon: Ic('tools-kitchen-2') },
-  { id: 'delivery', label: 'Delivery', icon: Ic('truck') },
-  { id: 'employees', label: 'Employees', icon: Ic('users') },
-  { id: 'database', label: 'Database', icon: Ic('database') },
-  { id: 'theme', label: 'Theme', icon: Ic('palette') },
+  { id: 'general', icon: Ic('globe') },
+  { id: 'business', icon: Ic('briefcase') },
+  { id: 'dining', icon: Ic('tools-kitchen-2') },
+  { id: 'delivery', icon: Ic('truck') },
+  { id: 'employees', icon: Ic('users') },
+  { id: 'profile', icon: Ic('user') },
+  { id: 'email', icon: Ic('mail') },
+  { id: 'database', icon: Ic('database') },
+  { id: 'theme', icon: Ic('palette') },
 ];
 
 
@@ -258,7 +259,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        onClick={() => setIsOpen(!isOpen)}              className="input__field input__field--select w-full cursor-pointer flex items-center justify-between"
+        onClick={() => setIsOpen(!isOpen)}              className="select w-full cursor-pointer flex items-center justify-between"
       >
         <span>
           {selectedCurrency ? (
@@ -270,13 +271,13 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 bg-base-100 border border-slate-300 dark:border-gray-600 rounded-lg shadow-xl">
           <div className="p-2">
-            <div className="input">
+            <div className="field">
               <input
                 type="text"
                 placeholder={t('settings.searchCurrency')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input__field w-full"
+                className="input w-full"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
@@ -347,7 +348,14 @@ export default function Settings() {
     logo: undefined,
     dine_in_tables: 0,
     delivery_fee: 0,
-    delivery_fee_per_km: 0
+    delivery_fee_per_km: 0,
+    smtp_server: 'smtp.gmail.com',
+    smtp_port: 587,
+    smtp_username: '',
+    smtp_password: '',
+    smtp_recipient: '',
+    smtp_from_name: 'Forge POS',
+    smtp_from_email: ''
   });
 
   const [isSuccess, setIsSuccess] = useState(false);
@@ -393,6 +401,8 @@ export default function Settings() {
       'restaurant_name', 'address', 'phone', 'email', 'tax_rate', 'tax_id',
       'currency', 'opening_time', 'closing_time', 'receipt_footer',
       'dine_in_tables', 'delivery_fee', 'delivery_fee_per_km',
+      'smtp_server', 'smtp_port', 'smtp_username', 'smtp_password',
+      'smtp_recipient', 'smtp_from_name', 'smtp_from_email',
     ];
     const current = lastSavedSettings.current;
     for (const k of keys) {
@@ -712,7 +722,9 @@ export default function Settings() {
   const loadZones = useCallback(async () => {
     try {
       const zones = await invoke<DeliveryZone[]>('get_delivery_zones', { includeInactive: true });
-      setDeliveryZones(zones);
+      // Guard against the backend returning null/undefined (deliveryZones.length
+      // would otherwise crash the Delivery tab render).
+      setDeliveryZones(zones ?? []);
     } catch {
       console.error('[settings] Failed to load delivery zones');
     }
@@ -767,10 +779,10 @@ export default function Settings() {
   // ---- Shared Input Classes (FlyonUI) ----
   // BEM input helpers — maps flyonui classes to standardized BEM tokens
   const BEM = {
-    field: 'input__field w-full',
-    label: 'input__label',
-    msg: 'input__message',
-    wrap: (hasError?: boolean) => hasError ? 'input input--error' : 'input',
+    field: 'input w-full',
+    label: 'label-text',
+    msg: 'helper-text',
+    wrap: (hasError?: boolean) => hasError ? 'field field--error' : 'field',
   };
 
   // ---- Tab: Theme ----
@@ -794,10 +806,10 @@ export default function Settings() {
       <div className="sticky top-0 z-10 bg-base-100/95 backdrop-blur-sm border-b border-base-300/50 -mx-1 px-1 py-2 overflow-x-auto">
         <div className="flex items-center gap-1">
           {[
-            { id: 'theme-section-appearance', label: 'Appearance', icon: 'tabler--paint' },
-            { id: 'theme-section-studio', label: 'Theme Studio', icon: 'tabler--palette' },
-            { id: 'theme-section-preview', label: 'Preview', icon: 'tabler--eye' },
-            { id: 'theme-section-active', label: 'Active Theme', icon: 'tabler--info-circle' },
+            { id: 'theme-section-appearance', label: t('settings.themeTab.appearance'), icon: 'tabler--paint' },
+            { id: 'theme-section-studio', label: t('settings.themeTab.studio'), icon: 'tabler--palette' },
+            { id: 'theme-section-preview', label: t('settings.themeTab.preview'), icon: 'tabler--eye' },
+            { id: 'theme-section-active', label: t('settings.themeTab.activeTheme'), icon: 'tabler--info-circle' },
           ].map(item => (
             <button
               key={item.id}
@@ -906,28 +918,6 @@ export default function Settings() {
         </div>
       </div>
 
-
-      {/* Theme Studio Card */}
-      <div id="theme-section-studio" className="scroll-mt-20" />
-      <div className="card bg-base-200 border border-base-300 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="bg-purple-100 dark:bg-purple-800/30 rounded-full p-2.5">
-            <span className="icon-[tabler--paint] w-5 h-5 text-purple-600 dark:text-purple-400" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-base-content">Theme Studio</h3>
-            <p className="text-sm text-base-content/50">Customize OKLCH color values and create custom theme variants</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate('/theme-studio')}
-          className="btn btn-primary btn-sm gap-2"
-        >
-          <span className="icon-[tabler--paint] w-4 h-4" />
-          Open Theme Studio
-        </button>
-      </div>
 
       {/* Theme Preview Card */}
       <div id="theme-section-preview" className="scroll-mt-20" />
@@ -1067,7 +1057,7 @@ export default function Settings() {
               <select
                 value={pendingInactivityTimeout}
                 onChange={(e) => setPendingInactivityTimeout(e.target.value)}
-                className="input__field input__field--select w-full"
+                className="select w-full"
               >
                 <option value="never">{t('settings.timeoutNever')}</option>
                 <option value="5">{t('settings.timeout5min')}</option>
@@ -1076,72 +1066,6 @@ export default function Settings() {
                 <option value="60">{t('settings.timeout1hour')}</option>
                 <option value="120">{t('settings.timeout2hours')}</option>
               </select>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Password Change — only when authenticated */}
-      {isAuthRequired && user && (
-        <div className="md:col-span-2">
-          <div className="border-t border-slate-300/50 dark:border-gray-600/50 pt-6 mt-2">
-            <h3 className="text-lg font-semibold text-base-content mb-1">
-              <span className="icon-[tabler--lock] inline mr-2 text-primary/80" />
-              {t('settings.changePassword')}
-            </h3>
-            <p className="text-sm text-base-content/50 mb-4">
-              {t('settings.changePasswordDesc')} <strong>{user.email}</strong>
-            </p>
-
-            {passwordChangeSuccess && (
-              <div role="alert" className="alert alert-success mb-4">
-                <span className="icon-[tabler--check] w-4 h-4" />
-                <span>{t('settings.passwordChangeSuccess')}</span>
-              </div>
-            )}
-
-            {passwordChangeError && (
-              <div role="alert" className="alert alert-error mb-4">
-                <span className="icon-[tabler--alert-triangle] w-4 h-4" />
-                <span>{passwordChangeError}</span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="input">
-                <label className={BEM.label}>{t('settings.currentPassword')}</label>
-            <input
-              type="password"
-              value={passwordOld}
-              onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
-              placeholder="••••••••"
-              className="input__field w-full"
-            />
-              </div>
-              <div className="input">
-                <label className={BEM.label}>{t('settings.newPassword')}</label>
-            <input
-              type="password"
-              value={passwordNew}
-              onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
-              placeholder="••••••••"
-              className="input__field w-full"
-            />
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={handlePasswordChange}
-                  disabled={isChangingPassword || !passwordOld || !passwordNew}
-                  className="btn btn-primary w-full"
-                >
-                  {isChangingPassword ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <><span className="icon-[tabler--lock] text-sm" /> {t('settings.updatePassword')}</>
-                  )}
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -1166,7 +1090,7 @@ export default function Settings() {
       </div>
 
       {/* MCP Support Toggle */}
-      <div className="input">
+      <div className="field">
         <label className="input-choice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <span className="input-choice__label">{t('settings.mcpEnabled') || 'MCP Support'}</span>
           <input
@@ -1176,15 +1100,216 @@ export default function Settings() {
             onChange={(e) => setSettings(prev => ({ ...prev, mcp_enabled: e.target.checked }))}
           />
         </label>
-        <p className="input__message">
+        <p className="helper-text">
           {t('settings.mcpDescription') || 'When enabled, MCP takes priority over email support chat'}
         </p>
       </div>
 
+      {/* Unique Card Colors Toggle */}
+      <div className="field">
+        <label className="input-choice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <span className="input-choice__label">{t('settings.uniqueCardColors') || 'Unique Card Colors'}</span>
+          <input
+            type="checkbox"
+            className="input-choice__control"
+            checked={settings.unique_card_colors !== false}
+            onChange={(e) => setSettings(prev => ({ ...prev, unique_card_colors: e.target.checked }))}
+          />
+        </label>
+        <p className="helper-text">
+          {t('settings.uniqueCardColorsDescription') || 'Give every product card and kitchen ticket item a distinct color for faster visual scanning'}
+        </p>
+      </div>
+
       {/* Address */}
-      <div className="input">
+      <div className="field">
         <label className={BEM.label}>{t('settings.address')}</label>
-        <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="input__field input__field--textarea w-full" />
+        <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="textarea w-full" />
+      </div>
+    </div>
+  );
+
+  const renderProfileTab = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Account Info Card */}
+      <div className="md:col-span-2">
+        <div className="card bg-base-200 border border-base-300 p-5 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-primary/10 dark:bg-primary/20 rounded-full p-2.5">
+              <span className="icon-[tabler--user] w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-base-content">{t('settings.profileTab.title') || 'Profile & Account'}</h3>
+              <p className="text-sm text-base-content/50">{t('settings.profileTab.description') || 'Manage your account details and security'}</p>
+            </div>
+          </div>
+          {user ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="field">
+                <label className={BEM.label}>{t('settings.profileTab.name') || 'Name'}</label>
+                <input type="text" value={user.name || ''} readOnly className="input w-full opacity-70" />
+              </div>
+              <div className="field">
+                <label className={BEM.label}>{t('settings.profileTab.email') || 'Email'}</label>
+                <input type="email" value={user.email || ''} readOnly className="input w-full opacity-70" />
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-base-content/50">{t('settings.profileTab.noUser') || 'No signed-in account.'}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Password Change — only when authenticated */}
+      {isAuthRequired && user && (
+        <div className="md:col-span-2">
+          <div className="card bg-base-200 border border-base-300 p-5">
+            <h3 className="text-lg font-semibold text-base-content mb-1">
+              <span className="icon-[tabler--lock] inline mr-2 text-primary/80" />
+              {t('settings.changePassword')}
+            </h3>
+            <p className="text-sm text-base-content/50 mb-4">
+              {t('settings.changePasswordDesc')} <strong>{user.email}</strong>
+            </p>
+
+            {passwordChangeSuccess && (
+              <div role="alert" className="alert alert-success mb-4">
+                <span className="icon-[tabler--check] w-4 h-4" />
+                <span>{t('settings.passwordChangeSuccess')}</span>
+              </div>
+            )}
+
+            {passwordChangeError && (
+              <div role="alert" className="alert alert-error mb-4">
+                <span className="icon-[tabler--alert-triangle] w-4 h-4" />
+                <span>{passwordChangeError}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="field">
+                <label className={BEM.label}>{t('settings.currentPassword')}</label>
+            <input
+              type="password"
+              value={passwordOld}
+              onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
+              placeholder="••••••••"
+              className="input w-full"
+            />
+              </div>
+              <div className="field">
+                <label className={BEM.label}>{t('settings.newPassword')}</label>
+            <input
+              type="password"
+              value={passwordNew}
+              onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
+              placeholder="••••••••"
+              className="input w-full"
+            />
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={handlePasswordChange}
+                  disabled={isChangingPassword || !passwordOld || !passwordNew}
+                  className="btn btn-primary w-full"
+                >
+                  {isChangingPassword ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <><span className="icon-[tabler--lock] text-sm" /> {t('settings.updatePassword')}</>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inactivity Timeout — only when authenticated */}
+      {isAuthRequired && user && (
+        <div className="md:col-span-2">
+          <div className="card bg-base-200 border border-base-300 p-5">
+            <h3 className="text-lg font-semibold text-base-content mb-1">
+              <span className="icon-[tabler--clock] inline mr-2 text-primary/80" />
+              {t('settings.inactivityTimeout')}
+            </h3>
+            <p className="text-sm text-base-content/50 mb-4">
+              {t('settings.inactivityTimeoutDesc')}
+            </p>
+            <div className="max-w-xs">
+              <select
+                value={pendingInactivityTimeout}
+                onChange={(e) => setPendingInactivityTimeout(e.target.value)}
+                className="select w-full"
+              >
+                <option value="never">{t('settings.timeoutNever')}</option>
+                <option value="5">{t('settings.timeout5min')}</option>
+                <option value="15">{t('settings.timeout15min')}</option>
+                <option value="30">{t('settings.timeout30min')}</option>
+                <option value="60">{t('settings.timeout1hour')}</option>
+                <option value="120">{t('settings.timeout2hours')}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderEmailTab = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Email / SMTP Configuration — stored in DB (replaces .env SMTP_* vars) */}
+      <div className="md:col-span-2">
+        <div className="card bg-base-200 border border-base-300 p-5 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
+              <span className="icon-[tabler--mail] w-5 h-5 text-sky-600 dark:text-sky-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-base-content">{t('settings.emailTab.title')}</h3>
+              <p className="text-sm text-base-content/50">{t('settings.emailTab.description')}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.server')}</label>
+              <input type="text" name="smtp_server" value={settings.smtp_server || ''} onChange={handleChange}
+                placeholder="smtp.gmail.com" className="input w-full" />
+            </div>
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.port')}</label>
+              <input type="number" name="smtp_port" value={settings.smtp_port ?? 587} onChange={handleChange}
+                min="1" max="65535" className="input w-full" />
+            </div>
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.username')}</label>
+              <input type="text" name="smtp_username" value={settings.smtp_username || ''} onChange={handleChange}
+                autoComplete="off" placeholder="you@example.com" className="input w-full" />
+            </div>
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.password')}</label>
+              <input type="password" name="smtp_password" value={settings.smtp_password || ''} onChange={handleChange}
+                autoComplete="new-password" placeholder="••••••••" className="input w-full" />
+            </div>
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.recipient')}</label>
+              <input type="email" name="smtp_recipient" value={settings.smtp_recipient || ''} onChange={handleChange}
+                placeholder="support@yourrestaurant.com" className="input w-full" />
+              <p className="helper-text mt-1">{t('settings.emailTab.recipientHint')}</p>
+            </div>
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.fromName')}</label>
+              <input type="text" name="smtp_from_name" value={settings.smtp_from_name || ''} onChange={handleChange}
+                className="input w-full" />
+            </div>
+            <div className="field">
+              <label className={BEM.label}>{t('settings.emailTab.fromEmail')}</label>
+              <input type="email" name="smtp_from_email" value={settings.smtp_from_email || ''} onChange={handleChange}
+                placeholder="no-reply@yourrestaurant.com" className="input w-full" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -1202,10 +1327,10 @@ export default function Settings() {
       </div>
 
       {/* Tax ID */}
-      <div className="input">
+      <div className="field">
         <label className={BEM.label}>{t('settings.taxId') || 'Tax ID'}</label>
         <input type="text" name="tax_id" value={settings.tax_id || ''} onChange={handleChange}
-          placeholder="e.g. NTN-1234567" className="input__field w-full" />
+          placeholder="e.g. NTN-1234567" className="input w-full" />
       </div>
 
       {/* Currency */}
@@ -1233,10 +1358,10 @@ export default function Settings() {
       </div>
 
       {/* Receipt Footer */}
-      <div className="input md:col-span-2">
+      <div className="field md:col-span-2">
         <label className={BEM.label}>{t('settings.receiptFooter')}</label>
         <textarea name="receipt_footer" value={settings.receipt_footer} onChange={handleChange}
-          rows={3} className="input__field input__field--textarea w-full"
+          rows={3} className="textarea w-full"
           placeholder={t('settings.receiptFooterPlaceholder')} />
       </div>
     </div>
@@ -1254,11 +1379,11 @@ export default function Settings() {
             <p className="text-sm text-base-content/50">{t('settings.diningTab.description')}</p>
           </div>
         </div>
-        <div className="input">
+        <div className="field">
           <label className={BEM.label}>{t('settings.numberOfTables')}</label>
           <input type="number" name="dine_in_tables" value={settings.dine_in_tables ?? 0}
             onChange={handleChange} min="0"
-            className="input__field w-full" />
+            className="input w-full" />
           <p className="mt-1.5 text-xs text-base-content/50">
             {t('settings.diningTab.zeroToDisable')}
           </p>
@@ -1356,7 +1481,7 @@ export default function Settings() {
                     <td>{settings.currency} {zone.fee_per_km.toFixed(2)}</td>
                     <td>{zone.max_distance} km</td>
                     <td>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${zone.is_active ? 'bg-success/10 text-success dark:bg-success/30 dark:text-success/80' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                      <span className={`tag tag--sm ${zone.is_active ? 'tag--success' : 'tag--ghost'}`}>
                         {zone.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
@@ -1387,27 +1512,27 @@ export default function Settings() {
                 {editingZone ? `Edit Zone: ${editingZone.name}` : 'Add Delivery Zone'}
               </h3>
               <div className="space-y-4">
-                <div className="input">
+                <div className="field">
                   <label className={BEM.label}>Zone Name *</label>
                   <input type="text" value={zoneForm.name} onChange={e => setZoneForm(p => ({ ...p, name: e.target.value }))}
-                    className="input__field w-full" placeholder="e.g. Downtown" />
+                    className="input w-full" placeholder="e.g. Downtown" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="input">
+                  <div className="field">
                     <label className={BEM.label}>Base Fee ({settings.currency})</label>
                     <input type="number" value={zoneForm.base_fee} onChange={e => setZoneForm(p => ({ ...p, base_fee: Number(e.target.value) }))}
-                      min="0" step="0.5" className="input__field w-full" />
+                      min="0" step="0.5" className="input w-full" />
                   </div>
-                  <div className="input">
+                  <div className="field">
                     <label className={BEM.label}>Fee Per KM</label>
                     <input type="number" value={zoneForm.fee_per_km} onChange={e => setZoneForm(p => ({ ...p, fee_per_km: Number(e.target.value) }))}
-                      min="0" step="0.1" className="input__field w-full" />
+                      min="0" step="0.1" className="input w-full" />
                   </div>
                 </div>
-                <div className="input">
+                <div className="field">
                   <label className={BEM.label}>Max Distance (km)</label>
                   <input type="number" value={zoneForm.max_distance} onChange={e => setZoneForm(p => ({ ...p, max_distance: Number(e.target.value) }))}
-                    min="0" step="1" className="input__field w-full" />
+                    min="0" step="1" className="input w-full" />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
@@ -1525,8 +1650,7 @@ export default function Settings() {
         <div className="bg-base-100/50 rounded-lg p-4 mb-6 border border-base-300/50">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-base-content/60">{t('settings.databaseTab.status')}</span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-              bg-success/10 dark:bg-success/30 text-success dark:text-success/80">
+            <span className="tag tag--sm tag--success">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {t('settings.databaseTab.connected')}
             </span>
@@ -1735,6 +1859,8 @@ export default function Settings() {
             {activeTab === 'dining' && renderDiningTab()}
             {activeTab === 'delivery' && renderDeliveryTab()}
             {activeTab === 'employees' && renderEmployeesTab()}
+            {activeTab === 'profile' && renderProfileTab()}
+            {activeTab === 'email' && renderEmailTab()}
             {activeTab === 'database' && renderDatabaseTab()}
             {activeTab === 'theme' && renderThemeTab()}
           </div>

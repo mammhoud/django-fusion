@@ -400,7 +400,7 @@ export default function DataTable<T>({
                               if (e.key === 'Escape') cancelEditing();
                             }}
                             onBlur={confirmEditing}
-                            className="input__field input-sm w-full"
+                            className="input input-sm w-full"
                             onClick={(e) => e.stopPropagation()}
                             step={col.editType === 'number' ? 'any' : undefined}
                           />

@@ -2,48 +2,51 @@ import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { Note } from '../../types';
+import { Note, NoteStep } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import AnimatePresence from '../../components/ui/AnimatePresence';
+import SearchInput from '../../components/ui/SearchInput';
+import PrepStepsEditor from '../../components/notes/PrepStepsEditor';
+import { parseNoteSteps, serializeNoteSteps } from '../../utils/noteSteps';
 
 // ── Category color mapping ──
 const CATEGORY_COLORS: Record<string, string> = {
-  general: 'badge-ghost',
-  idea: 'badge-primary',
-  task: 'badge-warning',
-  recipe: 'badge-success',
-  receipt: 'badge-accent',
-  preparation: 'badge-info',
-  'chef-tips': 'badge-warning',
-  allergen: 'badge-error',
-  plating: 'badge-success',
-  inventory: 'badge-info',
-  staff: 'badge-secondary',
-  finance: 'badge-accent',
-  customer: 'badge-error',
-  other: 'badge-ghost',
+  general: 'tag--ghost',
+  idea: 'tag--primary',
+  task: 'tag--warning',
+  recipe: 'tag--success',
+  receipt: 'tag--primary',
+  preparation: 'tag--info',
+  'chef-tips': 'tag--warning',
+  allergen: 'tag--error',
+  plating: 'tag--success',
+  inventory: 'tag--info',
+  staff: 'tag--secondary',
+  finance: 'tag--primary',
+  customer: 'tag--error',
+  other: 'tag--ghost',
 };
 
 const NOTE_CATEGORIES = [
-  { value: '', label: 'General', color: 'badge-ghost' },
-  { value: 'idea', label: 'Idea', color: 'badge-primary' },
-  { value: 'task', label: 'Task', color: 'badge-warning' },
-  { value: 'receipt', label: 'Receipt Template', color: 'badge-accent' },
-  { value: 'recipe', label: 'Recipe', color: 'badge-success' },
-  { value: 'preparation', label: 'Preparation Steps', color: 'badge-info' },
-  { value: 'chef-tips', label: 'Chef Tips', color: 'badge-warning' },
-  { value: 'allergen', label: 'Allergen Info', color: 'badge-error' },
-  { value: 'plating', label: 'Plating Guide', color: 'badge-success' },
-  { value: 'inventory', label: 'Inventory', color: 'badge-info' },
-  { value: 'staff', label: 'Staff', color: 'badge-secondary' },
-  { value: 'finance', label: 'Finance', color: 'badge-accent' },
-  { value: 'customer', label: 'Customer', color: 'badge-error' },
-  { value: 'other', label: 'Other', color: 'badge-ghost' },
+  { value: '', label: 'General', color: 'tag--ghost' },
+  { value: 'idea', label: 'Idea', color: 'tag--primary' },
+  { value: 'task', label: 'Task', color: 'tag--warning' },
+  { value: 'receipt', label: 'Receipt Template', color: 'tag--primary' },
+  { value: 'recipe', label: 'Recipe', color: 'tag--success' },
+  { value: 'preparation', label: 'Preparation Steps', color: 'tag--info' },
+  { value: 'chef-tips', label: 'Chef Tips', color: 'tag--warning' },
+  { value: 'allergen', label: 'Allergen Info', color: 'tag--error' },
+  { value: 'plating', label: 'Plating Guide', color: 'tag--success' },
+  { value: 'inventory', label: 'Inventory', color: 'tag--info' },
+  { value: 'staff', label: 'Staff', color: 'tag--secondary' },
+  { value: 'finance', label: 'Finance', color: 'tag--primary' },
+  { value: 'customer', label: 'Customer', color: 'tag--error' },
+  { value: 'other', label: 'Other', color: 'tag--ghost' },
 ];
 
 function getCategoryColor(cat: string | null | undefined): string {
-  if (!cat) return 'badge-ghost';
-  return CATEGORY_COLORS[cat.toLowerCase()] || 'badge-ghost';
+  if (!cat) return 'tag--ghost';
+  return CATEGORY_COLORS[cat.toLowerCase()] || 'tag--ghost';
 }
 
 
@@ -124,8 +127,17 @@ export default function Notes() {
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Note | null>(null);
-  const [form, setForm] = useState({ name: '', template_body: '', category: '', is_default: false, use_as_template: false });
+  const [form, setForm] = useState<{
+    name: string;
+    template_body: string;
+    category: string;
+    is_default: boolean;
+    use_as_template: boolean;
+    selectable: boolean;
+    steps: NoteStep[];
+  }>({ name: '', template_body: '', category: '', is_default: false, use_as_template: false, selectable: false, steps: [] });
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [selectableFilter, setSelectableFilter] = useState(false);
 
   const {
     query: search,
@@ -154,15 +166,23 @@ export default function Notes() {
     }
   };
 
+  // A note is valid when it has a name AND (a plain-text body OR prep steps)
+  const hasBody = form.template_body.trim().length > 0;
+  const hasSteps = form.category === 'preparation' && form.steps.length > 0;
+  const canSave = !!form.name.trim() && (hasBody || hasSteps);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.template_body.trim()) return;
+    if (!canSave) return;
     try {
+      const stepsJson = serializeNoteSteps(form.steps);
       const payload = {
         name: form.name.trim(),
         template_body: form.template_body.trim(),
         category: form.category || null,
         use_as_template: form.use_as_template,
+        selectable: form.selectable,
+        steps: stepsJson,
       };
       if (editing) {
         await invoke('update_note', {
@@ -170,7 +190,6 @@ export default function Notes() {
           update: {
             ...payload,
             is_default: form.is_default,
-            use_as_template: form.use_as_template,
           },
         });
       } else {
@@ -199,6 +218,8 @@ export default function Notes() {
       category: note.category || '',
       is_default: note.is_default,
       use_as_template: note.use_as_template,
+      selectable: note.selectable,
+      steps: parseNoteSteps(note.steps),
     });
     setShowForm(true);
   };
@@ -236,6 +257,8 @@ export default function Notes() {
           template_body: note.template_body,
           category: note.category || null,
           use_as_template: note.use_as_template,
+          selectable: note.selectable,
+          steps: note.steps ?? null,
         }
       });
       loadNotes({ quiet: true });
@@ -312,7 +335,7 @@ export default function Notes() {
   const resetForm = () => {
     setShowForm(false);
     setEditing(null);
-    setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false });
+    setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false, selectable: false, steps: [] });
   };
 
   // ── Unique categories from notes for the filter bar ──
@@ -340,6 +363,11 @@ export default function Notes() {
       result = result.filter(n => (n.category || '').toLowerCase() === categoryFilter);
     }
 
+    // Selectable filter
+    if (selectableFilter) {
+      result = result.filter(n => !!n.selectable);
+    }
+
     // Sort
     const sorted = [...result];
     switch (sortKey) {
@@ -352,7 +380,7 @@ export default function Notes() {
         sorted.sort((a, b) => Number(b.is_default) - Number(a.is_default) || a.name.localeCompare(b.name));
     }
     return sorted;
-  }, [notes, q, categoryFilter, sortKey]);
+  }, [notes, q, categoryFilter, selectableFilter, sortKey]);
 
   // Clear selectedNotes when filtered notes change (search/category filter)
   useEffect(() => {
@@ -393,7 +421,7 @@ export default function Notes() {
               Export
             </button>
             <button
-              onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false }); setShowForm(true); }}
+              onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false, selectable: false, steps: [] }); setShowForm(true); }}
               className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
             >
               <span className="icon-[tabler--plus]" />
@@ -406,40 +434,23 @@ export default function Notes() {
         <div className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-3 shadow-sm">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Search */}
-            <div className="input input--sm flex-1">
-              <div className="input__wrapper">
-                <span className="input__icon icon-[tabler--search]" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('notes.searchPlaceholder') || 'Search notes...'}
-                  aria-label={t('notes.searchPlaceholder') || 'Search notes'}
-                  className="input__field input__field--with-icon-left"
-                />
-                {isFiltering ? (
-                  <div className="input__icon input__icon--right">
-                    <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
-                ) : search ? (
-                  <button
-                    onClick={() => setSearch('')}
-                    aria-label={t('common.clear')}
-                    className="input__icon input__icon--right"
-                  >
-                    <span className="icon-[tabler--x]" />
-                  </button>
-                ) : null}
-              </div>
-            </div>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('notes.searchPlaceholder') || 'Search notes...'}
+              ariaLabel={t('notes.searchPlaceholder') || 'Search notes'}
+              testId="notes-search-input"
+              loading={isFiltering}
+              className="flex-1"
+            />
 
             {/* Sort */}
-            <div className="input input--sm sm:w-40">
+            <div className="field field--sm sm:w-40">
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as typeof sortKey)}
                 aria-label={t('notes.sortBy') || 'Sort by'}
-                className="input__field input__field--select"
+                className="select"
               >
                 <option value="pinned">{t('notes.sortPinned') || 'Pinned first'}</option>
                 <option value="newest">{t('notes.sortNewest') || 'Newest'}</option>
@@ -451,12 +462,12 @@ export default function Notes() {
 
             {/* Category filter */}
             {availableCategories.length > 0 && (
-              <div className="input input--sm sm:w-36">
+              <div className="field field--sm sm:w-36">
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   aria-label="Filter by category"
-                  className="input__field input__field--select"
+                  className="select"
                 >
                   <option value="">All categories</option>
                   {availableCategories.map(cat => (
@@ -465,6 +476,20 @@ export default function Notes() {
                 </select>
               </div>
             )}
+
+            {/* Selectable-only filter */}
+            <button
+              type="button"
+              onClick={() => setSelectableFilter(f => !f)}
+              aria-pressed={selectableFilter}
+              className={`tag tag--sm cursor-pointer transition-all ${
+                selectableFilter ? 'tag--primary' : 'tag--ghost hover:tag--primary'
+              }`}
+              title={t('notes.selectableFilterHint') || 'Only quick-select notes'}
+            >
+              <span className="icon-[tabler--click] w-3 h-3" />
+              {t('notes.selectable') || 'Selectable'}
+            </button>
 
             <label className="flex items-center gap-1.5 cursor-pointer select-none">
               <input
@@ -506,6 +531,14 @@ export default function Notes() {
                 </button>
               </div>
 
+              {/* Category-aware helper strip */}
+              {form.category === 'preparation' && (
+                <p className="-mt-2 text-[11px] text-base-content/40 flex items-center gap-1.5">
+                  <span className="icon-[tabler--list-check] w-3.5 h-3.5 text-info" />
+                  {t('notes.preparationHint') || 'Structured steps below will render as a prep checklist on the Kitchen Display.'}
+                </p>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {/* Title */}
                 <div className="sm:col-span-2">
@@ -518,7 +551,7 @@ export default function Notes() {
                     onChange={e => setForm({ ...form, name: e.target.value })}
                     placeholder={t('notes.titlePlaceholder') || 'Note title...'}
                     required
-                    className="input__field w-full"
+                    className="input w-full"
                     autoFocus
                   />
                 </div>
@@ -531,7 +564,7 @@ export default function Notes() {
                   <select
                     value={form.category}
                     onChange={e => setForm({ ...form, category: e.target.value })}
-                    className="input__field input__field--select w-full"
+                    className="select w-full"
                   >
                     {NOTE_CATEGORIES.map(cat => (
                       <option key={cat.value} value={cat.value}>
@@ -542,20 +575,32 @@ export default function Notes() {
                 </div>
               </div>
 
-              {/* Content */}
-              <div>
-                <label className="block text-sm font-medium text-base-content/70 mb-1">
-                  {t('notes.body') || 'Content'}
-                </label>
-                <textarea
-                  value={form.template_body}
-                  onChange={e => setForm({ ...form, template_body: e.target.value })}
-                  placeholder={t('notes.bodyPlaceholder') || 'Write your notes here...'}
-                  rows={6}
-                  required
-                  className="input__field input__field--textarea w-full text-sm leading-relaxed resize-y min-h-[120px]"
-                />
-              </div>
+              {/* Prep steps editor — shown for the 'preparation' category */}
+              {form.category === 'preparation' ? (
+                <div>
+                  <label className="block text-sm font-medium text-base-content/70 mb-2">
+                    {t('notes.stepsTitle') || 'Preparation Steps'}
+                  </label>
+                  <PrepStepsEditor
+                    value={form.steps}
+                    onChange={steps => setForm(f => ({ ...f, steps }))}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-base-content/70 mb-1">
+                    {t('notes.body') || 'Content'}
+                  </label>
+                  <textarea
+                    value={form.template_body}
+                    onChange={e => setForm({ ...form, template_body: e.target.value })}
+                    placeholder={t('notes.bodyPlaceholder') || 'Write your notes here...'}
+                    rows={6}
+                    required
+                    className="textarea w-full text-sm leading-relaxed resize-y min-h-[120px]"
+                  />
+                </div>
+              )}
 
               {/* Toggle row: Pin + Template */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -586,17 +631,30 @@ export default function Notes() {
                       {t('notes.useAsReceiptTemplate') || 'Use as receipt template'}
                     </span>
                   </label>
+                  {/* Selectable toggle — quick-pick on KDS/Sale */}
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={form.selectable}
+                      onChange={e => setForm({ ...form, selectable: e.target.checked })}
+                      className="toggle toggle-primary toggle-sm"
+                    />
+                    <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
+                      <span className="icon-[tabler--click] w-3.5 h-3.5" />
+                      {t('notes.selectable') || 'Quick-select on KDS & Sale'}
+                    </span>
+                  </label>
                 </div>
 
                 <div className="flex gap-2">
                   <button type="button" onClick={resetForm} className="btn btn-ghost btn-sm">
                     {t('common.cancel')}
                   </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-sm gap-1.5"
-                    disabled={!form.name.trim() || !form.template_body.trim()}
-                  >
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-sm gap-1.5"
+                  disabled={!canSave}
+                >
                     <span className="icon-[tabler--check] w-3.5 h-3.5" />
                     {editing ? (t('common.update') || 'Update') : (t('common.save') || 'Save')}
                   </button>
@@ -664,7 +722,7 @@ export default function Notes() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid--auto">
             {filteredNotes.map((note, idx) => (
               <div
                 key={note.id}
@@ -696,14 +754,26 @@ export default function Notes() {
                 {/* Badges row */}
                 <div className="flex flex-wrap items-center gap-1.5 mb-2">
                   {note.category && (
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getCategoryColor(note.category)}`}>
+                    <span className={`tag tag--sm ${getCategoryColor(note.category)}`}>
                       <span className={getNoteIconClass(note.category)} /> {getCategoryLabel(note.category)}
                     </span>
                   )}
                   {note.use_as_template && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium badge-accent">
+                    <span className="tag tag--sm tag--primary">
                       <span className="icon-[tabler--receipt] w-3 h-3" />
                       Template
+                    </span>
+                  )}
+                  {note.selectable && (
+                    <span className="tag tag--sm tag--success">
+                      <span className="icon-[tabler--click] w-3 h-3" />
+                      {t('notes.selectable') || 'Selectable'}
+                    </span>
+                  )}
+                  {note.category === 'preparation' && (note.steps || '').length > 2 && (
+                    <span className="tag tag--sm tag--info">
+                      <span className="icon-[tabler--list-check] w-3 h-3" />
+                      {parseNoteSteps(note.steps).length} steps
                     </span>
                   )}
                 </div>

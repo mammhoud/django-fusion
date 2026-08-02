@@ -90,4 +90,40 @@ describe('Roles page', () => {
       expect(screen.getByText(/roles\.noRoles|No roles defined/)).toBeInTheDocument();
     });
   });
+
+  it('opens the add form and saves a new role via add_role', async () => {
+    mockInvokeSuccess('add_role', { id: 4 });
+    renderWithRouter(<Roles />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Manager').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Role/i }));
+
+    const nameInput = screen.getByPlaceholderText(/e\.g\. Manager, Cashier, Chef/);
+    await userEvent.type(nameInput, 'Kitchen Lead');
+
+    await userEvent.click(screen.getByRole('button', { name: /Save/i }));
+
+    // Roles page closes the form and quietly reloads — no toast.
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText(/e\.g\. Manager, Cashier, Chef/)).not.toBeInTheDocument();
+    });
+  });
+
+  it('cancels the add form without saving', async () => {
+    renderWithRouter(<Roles />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Manager').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Role/i }));
+    expect(screen.getByPlaceholderText(/e\.g\. Manager, Cashier, Chef/)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+
+    expect(screen.queryByPlaceholderText(/e\.g\. Manager, Cashier, Chef/)).not.toBeInTheDocument();
+  });
 });

@@ -385,6 +385,7 @@
     "employeesDesc": "Gérer le personnel",
     "footer": "Forge POS Gestion de Restaurant",
     "home": "Accueil",
+    "homeDesc": "Retour au tableau de bord",
     "inventory": "Inventaire",
     "inventoryDesc": "Suivre les niveaux de stock",
     "invoice": "Facture",
@@ -429,8 +430,6 @@
     "taxReportsDesc": "Rapports fiscaux",
     "themeShowcase": "Galerie de thèmes",
     "themeShowcaseDesc": "Aperçu des composants et thèmes",
-    "themeStudio": "Studio de Thèmes",
-    "themeStudioDesc": "Personnalisez les couleurs en direct",
     "transactions": "Historique des transactions",
     "transactionsDesc": "Parcourir l'historique"
   },
@@ -526,7 +525,24 @@
     "validationPrice": "Veuillez entrer le prix",
     "validationPricePositive": "Le prix doit être un nombre positif",
     "validationUnit": "Veuillez entrer l'unité",
-    "viaIngredients": "Ingrédients"
+    "viaIngredients": "Ingrédients",
+    "manageCategories": "Gérer les catégories",
+    "addCategory": "Ajouter une catégorie",
+    "editCategory": "Modifier la catégorie",
+    "deleteCategory": "Supprimer la catégorie",
+    "categoryName": "Nom de la catégorie",
+    "categoryNamePlaceholder": "ex. Burgers, Accompagnements...",
+    "categoryColor": "Couleur",
+    "categoryCustomColor": "Couleur personnalisée",
+    "categoryValidationName": "Veuillez saisir un nom de catégorie",
+    "categorySuccessAdded": "Catégorie ajoutée",
+    "categorySuccessUpdated": "Catégorie mise à jour",
+    "categorySuccessDeleted": "Catégorie supprimée",
+    "colorPreview": "Aperçu",
+    "saving": "Enregistrement...",
+    "existingCategories": "Catégories existantes",
+    "deleteCategoryConfirm": "Supprimer cette catégorie ?",
+    "deleteCategoryWarning": "Les produits de cette catégorie seront sans catégorie."
   },
   "receipt": {
     "date": "Date :",
@@ -814,6 +830,8 @@
     "title": "Planning des Employés"
   },
   "settings": {
+    "uniqueCardColors": "Couleurs de cartes uniques",
+    "uniqueCardColorsDescription": "Donnez à chaque carte produit et à chaque élément de ticket de cuisine une couleur distincte pour un balayage visuel plus rapide",
     "address": "Adresse",
     "appearanceTab": {
       "activeLabel": "Active",
@@ -951,6 +969,17 @@
     "searchCurrency": "Rechercher une devise...",
     "selectCurrency": "Sélectionner la devise",
     "successMessage": "Paramètres enregistrés avec succès !",
+    "emailTab": {
+      "description": "Configurez le serveur SMTP (STARTTLS, port 587) pour les e-mails de support et les confirmations d'authentification. Stocké dans les paramètres au lieu de .env.",
+      "fromName": "Nom de l'expéditeur",
+      "password": "Mot de passe",
+      "port": "Port SMTP",
+      "recipient": "Destinataire du support",
+      "recipientHint": "Boîte de réception des messages de support",
+      "server": "Serveur SMTP",
+      "title": "E-mail / SMTP",
+      "username": "Nom d'utilisateur"
+    },
     "tabs": {
       "appearance": "Appearance",
       "business": "Commerce",
@@ -958,11 +987,16 @@
       "delivery": "Livraison",
       "dining": "Salle à manger",
       "employees": "Employés",
-      "general": "Général"
+      "general": "Général",
+      "theme": "Thème"
     },
     "taxId": "Numéro fiscal",
     "taxRate": "Taux de taxe (%)",
     "themeTab": {
+      "activeTheme": "Thème actif",
+      "appearance": "Apparence",
+      "preview": "Aperçu",
+      "studio": "Studio de thèmes",
       "title": "Thème"
     },
     "timeout15min": "15 minutes",

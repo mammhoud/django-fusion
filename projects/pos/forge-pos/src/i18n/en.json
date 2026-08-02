@@ -72,6 +72,9 @@
     "resetPassword": "Reset Password",
     "resetPasswordBtn": "Reset Password",
     "resetPasswordDesc": "Enter the code and your new password for",
+    "roleEmployee": "Employee",
+    "roleLabel": "Sign in as",
+    "roleManager": "Manager",
     "sendCode": "Send Confirmation Code",
     "sendResetCode": "Send Reset Code",
     "showPassword": "Show password",
@@ -238,12 +241,38 @@
     "totalEmployees": "Total Employees",
     "typeDescription": "Description",
     "typeName": "Type Name",
-    "typeNamePlaceholder": "e.g., Sous Chef, Host, Bartender"
+    "typeNamePlaceholder": "e.g., Sous Chef, Host, Bartender",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "name": "Name",
+    "type": "Type",
+    "status": "Status",
+    "actions": "Actions"
   },
   "home": {
     "dashboard": "Dashboard",
     "loading": "Loading...",
-    "title": "Forge POS"
+    "title": "Forge POS",
+    "oneOrderToday": "1 order today",
+    "ordersToday": "orders today",
+    "vsYesterday": "vs yesterday",
+    "avg": "avg",
+    "noRevenueYet": "No revenue yet",
+    "allClear": "All clear",
+    "table": "table",
+    "tables": "tables",
+    "inService": "in service",
+    "noActiveOrders": "No active orders",
+    "ticket": "ticket",
+    "tickets": "tickets",
+    "inProgress": "in progress",
+    "employee": "employee",
+    "employees": "employees",
+    "onPayroll": "on payroll",
+    "allStocked": "All stocked",
+    "item": "item",
+    "items": "items",
+    "belowReorder": "below reorder level"
   },
   "inventory": {
     "addIngredient": "Add Ingredient",
@@ -295,7 +324,15 @@
     "transactions": "Transactions",
     "type": "Type",
     "uniqueIngredients": "Unique Ingredients",
-    "unit": "Unit"
+    "unit": "Unit",
+    "currentQuantity": "Current Quantity",
+    "reorderQty": "Reorder Qty",
+    "byUser": "by {user}",
+    "addAdjustment": "Add Adjustment",
+    "successAdjustmentDeleted": "Adjustment deleted — stock restored.",
+    "deleteAdjustmentTitle": "Delete Adjustment?",
+    "deleteAdjustmentConfirm": "This will remove the adjustment and restore the ingredient stock.",
+    "deleteAdjustmentDesc": "The quantity change will be reversed on the ingredient."
   },
   "invoice": {
     "amount": "Amount",
@@ -342,6 +379,7 @@
     "unitPrice": "Unit Price"
   },
   "kitchen": {
+    "allCategories": "All categories",
     "allTickets": "All Tickets",
     "deliver": "Deliver",
     "delivered": "Delivered",
@@ -353,8 +391,13 @@
     "searchPlaceholder": "Search by ticket or notes...",
     "startPreparing": "Start Preparing",
     "statusFilter": "Filter by status",
+    "categoryFilter": "Filter by category",
     "ticket": "Ticket",
-    "title": "Kitchen Display"
+    "title": "Kitchen Display",
+    "prepSteps": "Prep Steps",
+    "attachNotes": "Attach note",
+    "quickNotes": "Quick Notes",
+    "addNote": "Add note"
   },
   "language": {
     "ar": "العربية",
@@ -385,6 +428,7 @@
     "employeesDesc": "Manage staff",
     "footer": "Forge POS Restaurant Management",
     "home": "Home",
+    "homeDesc": "Back to dashboard",
     "inventory": "Inventory",
     "inventoryDesc": "Track stock levels",
     "invoice": "Invoice",
@@ -429,8 +473,6 @@
     "taxReportsDesc": "Tax & fiscal reports",
     "themeShowcase": "Theme Showcase",
     "themeShowcaseDesc": "Component preview across themes",
-    "themeStudio": "Theme Studio",
-    "themeStudioDesc": "Customize colors with live preview",
     "transactions": "Transaction History",
     "transactionsDesc": "Browse transaction history"
   },
@@ -454,7 +496,15 @@
     "title": "Notes",
     "titlePlaceholder": "Note title...",
     "totalNotes": "notes",
-    "useAsReceiptTemplate": "Use as receipt template"
+    "useAsReceiptTemplate": "Use as receipt template",
+    "selectable": "Quick-select on KDS & Sale",
+    "selectableFilterHint": "Only quick-select notes",
+    "stepsTitle": "Preparation Steps",
+    "addStep": "Add step",
+    "noSteps": "No steps yet — add the first preparation step.",
+    "stepTitlePlaceholder": "Step {n} title...",
+    "stepDetailsPlaceholder": "Details — time, temperature, technique...",
+    "preparationHint": "Structured steps below will render as a prep checklist on the Kitchen Display."
   },
   "payroll": {
     "addPayroll": "Add Payroll",
@@ -526,7 +576,26 @@
     "validationPrice": "Please enter price",
     "validationPricePositive": "Price must be a positive number",
     "validationUnit": "Please enter unit",
-    "viaIngredients": "Ingredients"
+    "viaIngredients": "Ingredients",
+    "manageCategories": "Manage categories",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "categoryNamePlaceholder": "e.g. Burgers, Sides...",
+    "categoryColor": "Color",
+    "categoryCustomColor": "Custom color",
+    "categoryValidationName": "Please enter a category name",
+    "categorySuccessAdded": "Category added",
+    "categorySuccessUpdated": "Category updated",
+    "categorySuccessDeleted": "Category deleted",
+    "colorPreview": "Preview",
+    "saving": "Saving...",
+    "existingCategories": "Existing categories",
+    "deleteCategoryConfirm": "Delete this category?",
+    "deleteCategoryWarning": "Products in this category will become uncategorized.",
+    "availableOrderTypes": "Available Order Types",
+    "availableOrderTypesHint": "Products are hidden from order types that are not selected"
   },
   "receipt": {
     "date": "Date:",
@@ -765,7 +834,9 @@
     "allTypes": "All Types",
     "assignTo": "Assign to",
     "cartSummary": "Cart Summary",
+    "categoryCount": "{count} products",
     "categoryFilter": "Filter by category",
+    "categoryLegend": "Category legend",
     "completeSale": "Complete Sale",
     "delivery": "Delivery",
     "deliveryAddress": "Delivery address...",
@@ -804,7 +875,17 @@
     "typeCombo": "Combos",
     "typeProduct": "Products",
     "viewCart": "View Cart",
-    "zone": "Zone"
+    "zone": "Zone",
+    "quickNotes": "Quick Notes",
+    "quickNotesHint": "Tap a note to add it to the order",
+    "newNote": "New note",
+    "newNotePlaceholder": "Note text...",
+    "quickAddNote": "Add to order",
+    "addToCartLabel": "Add {product}",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "extraOrder": "Extra Order",
+    "datedOrder": "Dated Order"
   },
   "schedule": {
     "addShift": "Add Shift",
@@ -814,6 +895,8 @@
     "title": "Employee Schedule"
   },
   "settings": {
+    "uniqueCardColors": "Unique Card Colors",
+    "uniqueCardColorsDescription": "Give every product card and kitchen ticket item a distinct color for faster visual scanning",
     "address": "Address",
     "appearanceTab": {
       "activeLabel": "Active",
@@ -951,6 +1034,18 @@
     "searchCurrency": "Search currency...",
     "selectCurrency": "Select Currency",
     "successMessage": "Settings saved successfully!",
+    "emailTab": {
+      "description": "Configure the SMTP server (STARTTLS, port 587) used for support emails and auth confirmations. Stored in Settings instead of .env.",
+      "fromName": "From Name",
+      "password": "Password",
+      "port": "SMTP Port",
+      "recipient": "Support Recipient",
+      "recipientHint": "Inbox that receives support messages",
+      "server": "SMTP Server",
+      "title": "Email / SMTP",
+      "username": "Username",
+      "fromEmail": "From Email"
+    },
     "tabs": {
       "appearance": "Appearance",
       "business": "Business",
@@ -958,11 +1053,18 @@
       "delivery": "Delivery",
       "dining": "Dining",
       "employees": "Employees",
-      "general": "General"
+      "general": "General",
+      "theme": "Theme",
+      "profile": "Profile",
+      "email": "Email"
     },
     "taxId": "Tax ID",
     "taxRate": "Tax Rate (%)",
     "themeTab": {
+      "activeTheme": "Active Theme",
+      "appearance": "Appearance",
+      "preview": "Preview",
+      "studio": "Theme Studio",
       "title": "Theme"
     },
     "timeout15min": "15 minutes",
@@ -983,7 +1085,14 @@
     "validationPasswordLength": "Password must be at least 6 characters",
     "validationPhone": "Please enter a valid phone number",
     "validationTaxNumber": "Tax rate must be a number",
-    "validationTaxRange": "Tax rate must be between 0 and 100"
+    "validationTaxRange": "Tax rate must be between 0 and 100",
+    "profileTab": {
+      "title": "Profile & Account",
+      "description": "Manage your account details and security",
+      "name": "Name",
+      "email": "Email",
+      "noUser": "No signed-in account."
+    }
   },
   "statusToast": {
     "dismiss": "Dismiss"
@@ -1015,7 +1124,7 @@
     "otherHelp": "Other Ways to Get Help",
     "send": "Send Message",
     "sendMessage": "Send us a message",
-    "sending": "Sending...",
+    "sending": "Sending…",
     "subject": "Subject",
     "subjectPlaceholder": "How can we help?",
     "subtitle": "Need help? Have questions? We're here for you!",
@@ -1029,7 +1138,32 @@
     "validationSubject": "Please enter a subject",
     "websiteText": "Visit our official website at",
     "yourEmail": "Your Email",
-    "yourName": "Your Name"
+    "yourName": "Your Name",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "category": "Category",
+    "priority": "Priority",
+    "submit": "Submit",
+    "errorsName": "Please enter your name",
+    "errorsEmail": "Please enter a valid email",
+    "errorsMessage": "Please enter a message",
+    "success": "Message sent!",
+    "successBody": "We will get back to you as soon as possible.",
+    "sendAnother": "Send another message",
+    "categories": {
+      "general": "General",
+      "billing": "Billing",
+      "technical": "Technical",
+      "feature": "Feature Request",
+      "feedback": "Feedback"
+    },
+    "priorities": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    }
   },
   "supportChat": {
     "connectionError": "Unable to connect to the support server.",

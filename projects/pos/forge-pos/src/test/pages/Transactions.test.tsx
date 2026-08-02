@@ -3,6 +3,7 @@ import {
   renderWithRouter,
   screen,
   waitFor,
+  userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
 import Transactions from '../../pages/pos/Transactions';
@@ -59,6 +60,51 @@ describe('Transactions page', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/No Data|Time Total|transactions\.title/i)).toBeInTheDocument();
+    });
+  });
+
+  it('navigates between the product-statistics, related-products, and invoices tabs', async () => {
+    renderWithRouter(<Transactions />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Time Total')).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole('tab', { name: /Product Statistics/i }));
+    await waitFor(() => {
+      // Burger appears in the product stats table (built from transaction items)
+      expect(screen.getAllByText('Burger').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('tab', { name: /Related Products/i }));
+    await waitFor(() => {
+      expect(screen.getAllByText('Burger').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getByRole('tab', { name: /Invoices/i }));
+    await waitFor(() => {
+      expect(screen.getAllByText('Burger').length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('opens the receipt dialog for a transaction row', async () => {
+    renderWithRouter(<Transactions />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Time Total')).toBeInTheDocument();
+    });
+
+    // Receipt buttons are icon-only (tabler--printer) — no accessible name,
+    // so they carry data-testid="receipt-button" for testability.
+    const printerBtn = screen.getAllByTestId('receipt-button')[0];
+    expect(printerBtn).toBeDefined();
+
+    await userEvent.click(printerBtn as HTMLButtonElement);
+
+    await waitFor(() => {
+      // Receipt dialog heading uses transactions.receipt = 'Receipt'
+      expect(screen.getByRole('heading', { name: /Receipt/i })).toBeInTheDocument();
+      expect(screen.getByText(/Burger/i)).toBeInTheDocument();
     });
   });
 });

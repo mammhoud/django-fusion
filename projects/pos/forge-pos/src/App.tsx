@@ -34,7 +34,6 @@ const TaxReports = lazy(() => import('./pages/analytics/TaxReports'));
 const Roles = lazy(() => import('./pages/admin/Roles'));
 const SupportChat = lazy(() => import('./pages/admin/SupportChat'));
 // const ThemeShowcase = lazy(() => import('./pages/ThemeShowcase')); // merged into ThemePreviewModal (Settings > Theme)
-const ThemeStudio = lazy(() => import('./pages/admin/ThemeStudio'));
 const StaffPage = lazy(() => import('./pages/admin/StaffPage'));
 const ProductsPage = lazy(() => import('./pages/pos/ProductsPage'));
 
@@ -177,7 +176,6 @@ function AnimatedRoutes() {
           <Route path="/tax-reports" element={<TaxReports />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/support-chat" element={<SupportChat />} />
-          <Route path="/theme-studio" element={<ThemeStudio />} />
           <Route path="/staff" element={<StaffPage />} />
           <Route path="/products" element={<ProductsPage />} />
         </Routes>

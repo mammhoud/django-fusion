@@ -7,7 +7,7 @@ import {
   fireEvent,
   cleanup,
 } from '../test-utils';
-import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
+import { mockInvokeSuccess, mockInvokeError, mockInvokePending, resetInvokeMocks } from '../mocks/tauri';
 import Auth from '../../pages/auth/Auth';
 
 beforeEach(() => {
@@ -23,12 +23,17 @@ afterEach(() => {
 
 describe('Auth Page', () => {
   it('shows the checking state while auth status is being determined', async () => {
-    mockInvokeSuccess('check_auth_required', true);
-    mockInvokeSuccess('has_users', false);
+    // Keep check_auth_required pending so the step stays on 'checking' — an
+    // immediately-resolving mock would jump straight to register/login.
+    mockInvokePending('check_auth_required');
 
     renderWithRouter(<Auth />);
 
-    expect(screen.getByText('auth.checking')).toBeInTheDocument();
+    // AnimatePresence (mode="wait") plays the previous step's exit animation
+    // (~200ms) before swapping in the checking panel, so wait for it.
+    await waitFor(() => {
+      expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
+    });
   });
 
   it('shows the register step when auth is required and no users exist', async () => {
@@ -38,9 +43,9 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
-    const descs = screen.getAllByText('auth.registerDesc');
+    const descs = screen.getAllByText('Set up your manager account to get started');
     expect(descs.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -51,9 +56,9 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
-    const descs = screen.getAllByText('auth.loginDesc');
+    const descs = screen.getAllByText('Sign in to manage your restaurant');
     expect(descs.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -64,10 +69,10 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
-    const sendCodeButton = screen.getByText('auth.sendCode').closest('button');
+    const sendCodeButton = screen.getByText('Send Confirmation Code').closest('button');
     expect(sendCodeButton).toBeDisabled();
   });
 
@@ -78,16 +83,16 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     const emailInput = screen.getByPlaceholderText('manager@restaurant.com');
     await userEvent.type(emailInput, 'not-an-email');
 
-    const sendCodeButton = screen.getByText('auth.sendCode');
+    const sendCodeButton = screen.getByText('Send Confirmation Code');
     await userEvent.click(sendCodeButton);
 
-    expect(screen.getByText('auth.validationEmailInvalid')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
   });
 
   it('moves to the verify step after sending a confirmation code', { timeout: 15000 }, async () => {
@@ -98,18 +103,18 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     fireEvent.change(screen.getByPlaceholderText('manager@restaurant.com'), { target: { value: 'manager@restaurant.com' } });
 
-    const sendCodeButton = screen.getByText('auth.sendCode');
+    const sendCodeButton = screen.getByText('Send Confirmation Code');
     fireEvent.click(sendCodeButton);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.verifyEmail')).toBeInTheDocument();
+      expect(screen.getByText('Verify Your Email')).toBeInTheDocument();
     }, { timeout: 10000 });
-    const descs = screen.getAllByText('auth.verifyDesc');
+    const descs = screen.getAllByText('Enter the 6-digit code sent to');
     expect(descs.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -121,19 +126,19 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     fireEvent.change(screen.getByPlaceholderText('manager@restaurant.com'), { target: { value: 'manager@restaurant.com' } });
-    fireEvent.click(screen.getByText('auth.sendCode'));
+    fireEvent.click(screen.getByText('Send Confirmation Code'));
 
     await waitFor(() => {
-      expect(screen.getByText('auth.verifyEmail')).toBeInTheDocument();
+      expect(screen.getByText('Verify Your Email')).toBeInTheDocument();
     }, { timeout: 10000 });
 
     expect(screen.getByPlaceholderText('000000')).toBeInTheDocument();
     expect(screen.getAllByPlaceholderText('••••••••').length).toBe(2);
-    const createBtn = screen.getByText('auth.createAccountBtn').closest('button');
+    const createBtn = screen.getByText('Create Account').closest('button');
     expect(createBtn).toBeInTheDocument();
     // TODO: Full account creation flow is not testable in jsdom + vitest v4.1.10.
     // React controlled inputs in AnimatePresence-rendered children don't update
@@ -160,15 +165,15 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
-    fireEvent.change(screen.getByPlaceholderText('auth.namePlaceholder'), { target: { value: 'Manager User' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g., Ahmed Ali'), { target: { value: 'Manager User' } });
     fireEvent.change(screen.getByPlaceholderText('manager@restaurant.com'), { target: { value: 'manager@restaurant.com' } });
-    fireEvent.click(screen.getByText('auth.sendCode'));
+    fireEvent.click(screen.getByText('Send Confirmation Code'));
 
     await waitFor(() => {
-      expect(screen.getByText('auth.verifyEmail')).toBeInTheDocument();
+      expect(screen.getByText('Verify Your Email')).toBeInTheDocument();
     }, { timeout: 10000 });
 
     const u = userEvent.setup();
@@ -178,11 +183,11 @@ describe('Auth Page', () => {
     await u.type(pwInput, 'password123');
     await u.type(confInput, 'different123');
 
-    const btn = screen.getByText('auth.createAccountBtn').closest('button')!;
+    const btn = screen.getByText('Create Account').closest('button')!;
     await waitFor(() => expect(btn).not.toBeDisabled());
     await u.click(btn);
 
-    expect(screen.getByText('auth.validationPasswordMatch')).toBeInTheDocument();
+    expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
   });
 
   it('logs in with valid credentials', async () => {
@@ -197,14 +202,14 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
 
     await userEvent.type(screen.getByPlaceholderText('manager@restaurant.com'), 'manager@restaurant.com');
     const passwordInput = screen.getByPlaceholderText('••••••••');
     await userEvent.type(passwordInput, 'password123');
 
-    await userEvent.click(screen.getByText('auth.signIn'));
+    await userEvent.click(screen.getByText('Sign In'));
 
     await waitFor(() => {
       expect(localStorage.getItem('is_authenticated')).toBe('true');
@@ -221,14 +226,14 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
 
     await userEvent.type(screen.getByPlaceholderText('manager@restaurant.com'), 'manager@restaurant.com');
     const passwordInput = screen.getByPlaceholderText('••••••••');
     await userEvent.type(passwordInput, 'wrongpassword');
 
-    await userEvent.click(screen.getByText('auth.signIn'));
+    await userEvent.click(screen.getByText('Sign In'));
 
     await waitFor(() => {
       expect(screen.getByText('Invalid email or password.')).toBeInTheDocument();
@@ -242,10 +247,10 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
 
-    const signInButton = screen.getByText('auth.signIn').closest('button');
+    const signInButton = screen.getByText('Sign In').closest('button');
     expect(signInButton).toBeDisabled();
   });
 
@@ -256,14 +261,14 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
-    const signInButton = screen.getByText('auth.signIn');
+    const signInButton = screen.getByText('Sign In');
     await userEvent.click(signInButton);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
   });
 
@@ -276,9 +281,9 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
-    expect(screen.queryByText('auth.welcomeBack')).not.toBeInTheDocument();
+    expect(screen.queryByText('Welcome Back')).not.toBeInTheDocument();
   });
 
   it('shows login content only, not register, on the login step', async () => {
@@ -288,9 +293,9 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
-    expect(screen.queryByText('auth.createAccount')).not.toBeInTheDocument();
+    expect(screen.queryByText('Create Account')).not.toBeInTheDocument();
   });
 
   it('removes register content when switching to login (AnimatePresence exit)', async () => {
@@ -300,15 +305,15 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText('auth.signIn'));
+    await userEvent.click(screen.getByText('Sign In'));
 
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
-    expect(screen.queryByText('auth.createAccount')).not.toBeInTheDocument();
+    expect(screen.queryByText('Create Account')).not.toBeInTheDocument();
   });
 
   it('removes login content when switching back to register (AnimatePresence exit)', async () => {
@@ -318,20 +323,20 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText('auth.signIn'));
+    await userEvent.click(screen.getByText('Sign In'));
     await waitFor(() => {
-      expect(screen.getByText('auth.welcomeBack')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText('auth.createOne'));
+    await userEvent.click(screen.getByText('Create one'));
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
-    expect(screen.queryByText('auth.welcomeBack')).not.toBeInTheDocument();
+    expect(screen.queryByText('Welcome Back')).not.toBeInTheDocument();
   });
 
   // ── Illustration Panel Tests ──
@@ -343,7 +348,7 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     expect(screen.getByText('Point of Sale & Order Management')).toBeInTheDocument();
@@ -369,7 +374,7 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     const whiteIconContainers = document.querySelectorAll('[class*="text-white/"]');
@@ -383,7 +388,7 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     const particles = document.querySelectorAll('[class*="bg-white/10"]');
@@ -399,10 +404,11 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
-    const gradientElements = document.querySelectorAll('[class*="from-teal-600"]');
+    // Illustration panel uses semantic variant gradient (default = from-primary)
+    const gradientElements = document.querySelectorAll('[class*="from-primary"]');
     expect(gradientElements.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -413,24 +419,25 @@ describe('Auth Page', () => {
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     const featureRows = document.querySelectorAll('[class*="flex items-center gap-3 text-white/80"]');
     expect(featureRows.length).toBe(3);
   });
 
-  it('renders the visibility toggle toggles (LanguageToggle + ThemeToggle)', async () => {
+  it('renders the language toggle (ThemeToggle removed from auth)', async () => {
     mockInvokeSuccess('check_auth_required', true);
     mockInvokeSuccess('has_users', false);
 
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('auth.createAccount')).toBeInTheDocument();
+      expect(screen.getByText('Create Account')).toBeInTheDocument();
     });
 
     const toggleContainer = document.querySelector('[class*="fixed top-4 right-4"]');
     expect(toggleContainer).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /theme/i })).not.toBeInTheDocument();
   });
 });

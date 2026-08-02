@@ -3,11 +3,12 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
-import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone, Note } from '../../types';
+import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone, Note, Category } from '../../types';
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
 import { downloadInvoicePDF } from '../../utils/invoicePdf';
-import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
+import ProductCard, { PRODUCT_CARD_COLORS, productAccentColor, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
+import ProductFilterBar from '../../components/shared/ProductFilterBar';
 import Card from '../../components/ui/Card';
 import jsPDF from 'jspdf';
 import PageLayout from '../../components/layout/PageLayout';
@@ -20,6 +21,8 @@ import StatusToast from '../../components/ui/StatusToast';
 import { iconClass } from '../../lib/icons';
 
 type OrderType = 'dine-in' | 'takeaway' | 'delivery' | 'extra-order' | 'dated-order';
+
+type SortKey = 'newest' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc';
 
 const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = [
   { key: 'dine-in', label: 'Dine-in', icon: <span className={iconClass('lucide:utensils', '')} /> },
@@ -86,7 +89,7 @@ export default function Sale() {
     isPending: isSearching,
   } = useDebouncedSearch();
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
-  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Status toast — errors during load, sale, print, or PDF generation must
   // surface to the user (the existing alert() calls block the main thread but
@@ -144,27 +147,34 @@ export default function Sale() {
   const [orderNotes, setOrderNotes] = useState('');
   const [viewMode, setViewMode] = useState<'standard' | 'compact'>('standard');
   const [productTypeFilter, setProductTypeFilter] = useState<string>('all');
+  const [sortKey, setSortKey] = useState<SortKey>('newest');
   const [itemNotes, setItemNotes] = useState<Record<number, string>>({});
   // Receipt template notes
   const [templateNotes, setTemplateNotes] = useState<Note[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number>(0);
+  // Quick-selectable notes (quick-add into order notes)
+  const [selectableNotes, setSelectableNotes] = useState<Note[]>([]);
+  const [showQuickNoteForm, setShowQuickNoteForm] = useState(false);
+  const [quickNoteText, setQuickNoteText] = useState('');
 
   const loadData = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes, notesRes] = await Promise.all([
+      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes, notesRes, selectableRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Settings>('get_settings'),
         invoke<DeliveryType[]>('get_delivery_types', { includeInactive: false }),
         invoke<DeliveryZone[]>('get_delivery_zones', { includeInactive: true }),
         invoke<Employee[]>('get_employees', { includeInactive: false }),
-        invoke<{ id: number; name: string }[]>('get_categories'),
+        invoke<Category[]>('get_categories'),
         invoke<Note[]>('get_notes'),
+        invoke<Note[]>('get_selectable_notes'),
       ]);
 
       setProducts(productsRes);
       setTemplateNotes((notesRes || []).filter(n => n.use_as_template || n.category === 'receipt'));
+      setSelectableNotes(selectableRes || []);
       if (settingsRes) {
         setSettings({
           restaurant_name: settingsRes.restaurant_name || 'Forge POS',
@@ -172,6 +182,7 @@ export default function Sale() {
           phone: settingsRes.phone || '',
           currency: settingsRes.currency || 'USD',
           receipt_footer: settingsRes.receipt_footer || 'Thank you for your business!',
+          unique_card_colors: settingsRes.unique_card_colors !== false,
         });
       }
       setDeliveryTypes(dtRes);
@@ -334,6 +345,37 @@ export default function Sale() {
     setSelectedTemplateId(0);
   };
 
+  /*** Append a selectable note's body to the order notes ***/
+  const appendQuickNote = (note: Note) => {
+    const block = note.template_body && note.template_body.trim() ? note.template_body.trim() : note.name;
+    setOrderNotes(prev => (prev ? `${prev}\n\n[${note.name}] ${block}` : `[${note.name}] ${block}`));
+  };
+
+  /*** Quick-create a new selectable note and append it to the order notes ***/
+  const handleQuickAddNote = async () => {
+    const text = quickNoteText.trim();
+    if (!text) return;
+    try {
+      const note = await invoke<Note>('add_note', {
+        template: {
+          name: text.split('\n')[0].slice(0, 60),
+          template_body: text,
+          category: 'general',
+          use_as_template: false,
+          selectable: true,
+          steps: null,
+        },
+      });
+      setSelectableNotes(prev => [...prev, note]);
+      appendQuickNote(note);
+      setQuickNoteText('');
+      setShowQuickNoteForm(false);
+    } catch (error) {
+      console.error('Error adding quick note:', error);
+      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+
   const handlePrint = () => {
     setIsPrinting(true);
     setTimeout(() => {
@@ -375,7 +417,7 @@ export default function Sale() {
         })),
         currency: settings.currency || 'USD',
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
-        notes: effectiveReceiptFooter || undefined,
+        notes: [orderNotes.trim(), effectiveReceiptFooter.trim()].filter(Boolean).join('\n\n') || undefined,
         orderType: receiptData.orderType,
         deliveryFee: receiptData.deliveryFee,
         deliveryTypeName: receiptData.deliveryTypeName,
@@ -488,7 +530,26 @@ export default function Sale() {
       pdf.setFont('helvetica', 'bold');
       pdf.text('Total', margin, yPos);
       pdf.text(`${settings.currency} ${receiptData.totalAmount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
-      yPos += 8;              if (effectiveReceiptFooter) {
+      yPos += 8;
+
+      // Order Notes (from the sale screen) — printed above the receipt footer
+      if (orderNotes.trim()) {
+        for (let i = 0; i < contentWidth; i += 2) {
+          pdf.line(margin + i, yPos, margin + i + 1, yPos);
+        }
+        yPos += 5;
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Notes', pageWidth / 2, yPos, { align: 'center' });
+        yPos += 4;
+        pdf.setFont('helvetica', 'normal');
+        const orderNoteLines = pdf.splitTextToSize(orderNotes.trim(), contentWidth);
+        pdf.text(orderNoteLines, pageWidth / 2, yPos, { align: 'center' });
+        yPos += orderNoteLines.length * 4 + 2;
+        pdf.setFontSize(9);
+      }
+
+      if (effectiveReceiptFooter) {
                 for (let i = 0; i < contentWidth; i += 2) {
                   pdf.line(margin + i, yPos, margin + i + 1, yPos);
                 }
@@ -546,7 +607,18 @@ export default function Sale() {
       ? settings.delivery_fee + (deliveryDistance * (settings.delivery_fee_per_km || 0))
       : 0;
 
-  // Filter products by search query, category, and product type
+  // Per-category product counts → displayed as small badges on the filter pills
+  const categoryCounts = useMemo(() => {
+    const map: Record<number, number> = {};
+    products.forEach(p => {
+      if (p.category_id != null) map[p.category_id] = (map[p.category_id] || 0) + 1;
+    });
+    return map;
+  }, [products]);
+
+  // Filter products by search query, category, product type, and the selected
+  // order type (products with a restricted `available_order_types` list are
+  // hidden from order types they don't belong to), then sort.
   const filteredProducts = useMemo(() => {
     let result = products;
     const query = debouncedSearchQuery.trim().toLowerCase();
@@ -559,8 +631,24 @@ export default function Sale() {
     if (productTypeFilter !== 'all') {
       result = result.filter(product => (product.product_type || 'product') === productTypeFilter);
     }
-    return result;
-  }, [products, debouncedSearchQuery, selectedCategory, productTypeFilter]);
+    // Order-type availability: '' = available everywhere; otherwise the
+    // comma-separated list must include the currently selected order type.
+    result = result.filter(product => {
+      const available = (product.available_order_types || '').trim();
+      if (!available) return true;
+      return available.split(',').map(s => s.trim()).includes(orderType);
+    });
+    const sorted = [...result].sort((a, b) => {
+      switch (sortKey) {
+        case 'name-asc': return a.name.localeCompare(b.name);
+        case 'name-desc': return b.name.localeCompare(a.name);
+        case 'price-asc': return (a.price ?? 0) - (b.price ?? 0);
+        case 'price-desc': return (b.price ?? 0) - (a.price ?? 0);
+        default: return (b.id ?? 0) - (a.id ?? 0); // newest
+      }
+    });
+    return sorted;
+  }, [products, debouncedSearchQuery, selectedCategory, productTypeFilter, sortKey, orderType]);
 
   // Whether any filter is currently applied — drives counter visibility & aria-hidden.
   // Keyed off debouncedSearchQuery so the count is in sync with the actual grid (the
@@ -591,78 +679,99 @@ export default function Sale() {
                 <span className={iconClass('lucide:shopping-cart', 'text-primary')} />
                 <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-wrap gap-2">
                 {ORDER_TYPES.map(ot => (
                   <button
                     key={ot.key}
                     onClick={() => setOrderType(ot.key)}
                     disabled={isLoading}
-                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98] ${
+                    className={`flex-1 basis-[calc(33.333%-0.375rem)] min-w-[6rem] flex flex-col items-center gap-1 p-2 rounded-lg font-medium text-xs transition-all active:scale-[0.98] ${
                       isLoading
                         ? 'bg-slate-200 dark:bg-slate-700 text-base-content/40 cursor-not-allowed'
                         : orderType === ot.key
-                          ? 'bg-primary text-white shadow-lg'
+                          ? 'bg-primary text-white shadow-md'
                           : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10 dark:hover:bg-primary/20'
                     }`}
                   >
-                    <span className="text-lg">{ot.icon}</span>
-                    <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
+                    <span className="text-base">{ot.icon}</span>
+                    <span className="text-xs">{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
                   </button>
                 ))}
               </div>
+              {/* Dine-in: Table + Employee side by side */}
               {orderType === 'dine-in' && (
-                <div
-                  className="flex items-center gap-3 mt-3 pt-3 border-t border-base-300/50"
-                >
-                  <span className={iconClass('lucide:door-open', 'text-base-content/50')} />
-                  <label className="text-sm text-base-content/80">{t('sale.table')}</label>
-                  <select
-                    value={tableNumber}
-                    onChange={e => setTableNumber(Number(e.target.value))}
-                    disabled={isLoading}
-                    className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
-                      <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-base-300/50">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <label className="text-xs text-base-content/80">{t('sale.table')}</label>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className={iconClass('lucide:door-open', 'text-base-content/50 shrink-0')} />
+                      <select
+                        value={tableNumber}
+                        onChange={e => setTableNumber(Number(e.target.value))}
+                        disabled={isLoading}
+                        className="select flex-1 min-w-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
+                          <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <label className="text-xs text-base-content/80">{t('sale.assignTo')}</label>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className={iconClass('lucide:user-check', 'text-base-content/50 shrink-0')} />
+                      <select
+                        value={employeeId}
+                        onChange={e => setEmployeeId(Number(e.target.value))}
+                        disabled={isLoading}
+                        className="select flex-1 min-w-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        <option value={0}>{t('sale.noAssignment')}</option>
+                        {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               )}
               {orderType === 'delivery' && (
                 <div
                   className="space-y-3 mt-3 pt-3 border-t border-base-300/50"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className={iconClass('lucide:truck', 'text-base-content/50')} />
-                    <label className="text-sm text-base-content/80">{t('sale.deliveryType')}</label>
-                    <select
-                      value={deliveryTypeId}
-                      onChange={e => setDeliveryTypeId(Number(e.target.value))}
-                      disabled={isLoading}
-                      className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {deliveryTypes.map(dt => (
-                        <option key={dt.id} value={dt.id}>{dt.name} {dt.fee_multiplier > 1 ? `(${dt.fee_multiplier}x fee)` : ''}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {/* Delivery Zone selector */}
-                  {deliveryZones.length > 0 && (
-                    <div className="flex items-center gap-3">
-                      <span className={iconClass('lucide:map-pin', 'text-base-content/50')} />
-                      <label className="text-sm text-base-content/80">{t('sale.zone')}</label>
+                  {/* Delivery Type + Zone — side by side */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={iconClass('lucide:truck', 'text-base-content/50 shrink-0')} />
+                      <label className="text-sm text-base-content/80 shrink-0">{t('sale.deliveryType')}</label>
                       <select
-                        value={selectedZoneId}
-                        onChange={e => setSelectedZoneId(Number(e.target.value))}
+                        value={deliveryTypeId}
+                        onChange={e => setDeliveryTypeId(Number(e.target.value))}
                         disabled={isLoading}
-                        className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="select flex-1 min-w-0 disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        {deliveryZones.filter(z => z.is_active).map(z => (
-                          <option key={z.id} value={z.id}>{z.name} ({z.base_fee.toFixed(2)} + {z.fee_per_km.toFixed(2)}/km)</option>
+                        {deliveryTypes.map(dt => (
+                          <option key={dt.id} value={dt.id}>{dt.name} {dt.fee_multiplier > 1 ? `(${dt.fee_multiplier}x fee)` : ''}</option>
                         ))}
                       </select>
                     </div>
-                  )}
+                    {/* Delivery Zone selector */}
+                    {deliveryZones.length > 0 && (
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className={iconClass('lucide:map-pin', 'text-base-content/50 shrink-0')} />
+                        <label className="text-sm text-base-content/80 shrink-0">{t('sale.zone')}</label>
+                        <select
+                          value={selectedZoneId}
+                          onChange={e => setSelectedZoneId(Number(e.target.value))}
+                          disabled={isLoading}
+                          className="select flex-1 min-w-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {deliveryZones.filter(z => z.is_active).map(z => (
+                            <option key={z.id} value={z.id}>{z.name} ({z.base_fee.toFixed(2)} + {z.fee_per_km.toFixed(2)}/km)</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
                   {/* Distance input */}
                   <div className="flex items-center gap-3">
                     <span className={iconClass('lucide:ruler', 'text-base-content/50')} />
@@ -670,7 +779,7 @@ export default function Sale() {
                     <div className="flex items-center gap-1 flex-1">
                       <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
                         placeholder="0" min="0" step="0.5" disabled={isLoading}
-                        className="input__field w-full disabled:opacity-60 disabled:cursor-not-allowed" />
+                        className="input w-full disabled:opacity-60 disabled:cursor-not-allowed" />
                       <span className="text-xs text-base-content/50">km</span>
                     </div>
                   </div>
@@ -678,7 +787,7 @@ export default function Sale() {
                     <span className={iconClass('lucide:map-pin', 'text-base-content/50')} />
                     <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                       placeholder={t('sale.deliveryAddress')} disabled={isLoading}
-                      className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
+                      className="select flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
                   </div>
                   {selectedZone && deliveryFee > 0 && (
                     <div className="ml-8">
@@ -709,143 +818,156 @@ export default function Sale() {
               )}
             </Card>
 
-            {/* Employee Assignment — mobile */}
+            {/* Employee Assignment — mobile (inline with Table when dine-in; standalone otherwise) */}
+            {orderType !== 'dine-in' && (
               <div className="mb-4">
               <div className="flex items-center gap-3">
                 <span className={iconClass('lucide:user-check', 'text-base-content/50')} />
                 <label className="text-sm text-base-content/80">{t('sale.assignTo')}</label>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
-                  className="input__field input__field--select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="select flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <option value={0}>{t('sale.noAssignment')}</option>
                   {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
                 </select>
               </div>
-            </div>
+              </div>
+            )}
 
-            {/* Total Amount Card — mobile */}
-              <Card transitional className="sm:p-6 mb-6 sm:mb-8">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-lg sm:text-xl text-base-content mb-1">{t('sale.totalAmount')}</h2>
-                  <p className={`text-3xl sm:text-4xl font-bold ${isLoading ? 'text-base-content/40 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
-                    {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
+            {/* Total Amount Card — mobile (centered, enhanced) */}
+              <Card transitional className="sm:p-6 mb-6 sm:mb-8 overflow-hidden">
+              <div className="relative flex flex-col items-center text-center gap-1.5 py-1">
+                <h2 className="text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
+                  <span className={iconClass('lucide:wallet', 'w-4 h-4 text-primary')} />
+                  {t('sale.totalAmount')}
+                </h2>
+                <p className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${isLoading ? 'text-base-content/40 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
+                  {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
+                </p>
+                {deliveryFee > 0 && (
+                  <p className="text-xs text-base-content/50">
+                    ({formatPrice(totalAmount)} + {formatPrice(deliveryFee)} delivery)
                   </p>
-                  {deliveryFee > 0 && (
-                    <p className="text-xs text-base-content/50 mt-1">
-                      ({formatPrice(totalAmount)} + {formatPrice(deliveryFee)} delivery)
-                    </p>
-                  )}
-                </div>
-                <div className="text-base-content/60">{t('sale.itemsSelected', { count: cart.length })}</div>
+                )}
+                <span className="badge badge-soft badge-primary gap-1.5 mt-0.5">
+                  <span className={iconClass('lucide:shopping-bag', 'w-3.5 h-3.5')} />
+                  {t('sale.itemsSelected', { count: cart.length })}
+                </span>
               </div>
             </Card>
            </div>
 
-          {/* ── Product Search & Category Filter ── */}
-            <Card padding="sm" className="sm:p-4 mb-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <span className={iconClass('lucide:search', 'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50 rtl:left-auto rtl:right-3')} />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder={t('sale.searchProducts')}
-                  aria-label={t('sale.searchProducts')}
-                  disabled={isLoading}
-                  className="input__field w-full pl-10 disabled:opacity-60 disabled:cursor-not-allowed"
-                />
-                {isSearching ? (
-                  <div
-                    aria-label="searching"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rtl:right-auto rtl:left-3
-                      border-2 border-teal-400 border-t-transparent rounded-full pointer-events-none animate-spin"
-                  />
-                ) : searchQuery ? (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors rtl:right-auto rtl:left-3"
-                    aria-label={t('common.clear')}
-                  >
-                    <span className={iconClass('lucide:x', 'w-4 h-4')} />
-                  </button>
-                ) : null}
-              </div>
-              <select
-                value={selectedCategory}
-                onChange={e => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                disabled={isLoading || categories.length === 0}
-                aria-label={t('sale.categoryFilter')}
-                className="input__field input__field--select disabled:opacity-60 disabled:cursor-not-allowed sm:w-44"
-              >
-                <option value="all">{t('sale.allCategories')}</option>
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
-                ))}
-              </select>
-              <select
-                value={productTypeFilter}
-                onChange={e => setProductTypeFilter(e.target.value)}
-                className="input__field input__field--select disabled:opacity-60 disabled:cursor-not-allowed sm:w-36"
-                aria-label={t('sale.productTypeLabel') || 'Product type'}
-              >
-                <option value="all">{t('sale.allTypes') || 'All Types'}</option>
-                <option value="product">{t('sale.typeProduct') || 'Products'}</option>
-                <option value="combo">{t('sale.typeCombo') || 'Combos'}</option>
-                <option value="addon">{t('sale.typeAddon') || 'Add-ons'}</option>
-              </select>
-              {/* Live-update indicator badge */}
-              <span
-                className={`w-2 h-2 rounded-full shrink-0 transition-all duration-300 ${
-                  showLiveBadge
-                    ? 'bg-success scale-125 opacity-100 animate-pulse'
-                    : 'bg-success/20 scale-100 opacity-0'
-                }`}
-                title={showLiveBadge ? 'Products updated live' : undefined}
-                aria-hidden={!showLiveBadge}
-              />
+          {/* ── Compact rounded search + filter + sort bar — shared ProductFilterBar ──
+              Same component used on ProductManager; see docs/shared-components.md. */}
+          <ProductFilterBar
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder={t('sale.searchProducts')}
+            searchAriaLabel={t('sale.searchProducts')}
+            searchTestId="sale-search-input"
+            searchLoading={isSearching}
+            searchDisabled={isLoading}
+            topRowActions={
+              <>
+                {/* Product type + sort — grouped together so the two selects sit side by side */}
+                <div className="flex items-center gap-2">
+                  <div className="field field--sm">
+                    <select
+                      value={productTypeFilter}
+                      onChange={e => setProductTypeFilter(e.target.value)}
+                      className="select"
+                      aria-label={t('sale.productTypeLabel') || 'Product type'}
+                    >
+                      <option value="all">{t('sale.allTypes') || 'All Types'}</option>
+                      <option value="product">{t('sale.typeProduct') || 'Products'}</option>
+                      <option value="combo">{t('sale.typeCombo') || 'Combos'}</option>
+                      <option value="addon">{t('sale.typeAddon') || 'Add-ons'}</option>
+                    </select>
+                  </div>
+                  <div className="field field--sm">
+                    <select
+                      value={sortKey}
+                      onChange={e => setSortKey(e.target.value as SortKey)}
+                      className="select"
+                      aria-label={t('sale.sortBy') || 'Sort by'}
+                    >
+                      <option value="newest">{t('sale.sortNewest') || 'Newest'}</option>
+                      <option value="name-asc">A→Z</option>
+                      <option value="name-desc">Z→A</option>
+                      <option value="price-asc">$↑</option>
+                      <option value="price-desc">$↓</option>
+                    </select>
+                  </div>
+                </div>
 
-              {/* View mode toggle */}
-              <div className="flex items-center gap-1 bg-base-200/50 rounded-lg p-0.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('standard')}
-                  className={`p-1.5 rounded-md transition-all ${
-                    viewMode === 'standard'
-                      ? 'bg-base-100 shadow-sm text-primary'
-                      : 'text-base-content/40 hover:text-base-content'
+                {/* Live-update indicator badge */}
+                <span
+                  className={`w-2 h-2 rounded-full shrink-0 transition-all duration-300 ${
+                    showLiveBadge
+                      ? 'bg-success scale-125 opacity-100 animate-pulse'
+                      : 'bg-success/20 scale-100 opacity-0'
                   }`}
-                  title="Standard view"
+                  title={showLiveBadge ? 'Products updated live' : undefined}
+                  aria-hidden={!showLiveBadge}
+                />
+
+                {/* View mode toggle — rounded segmented control */}
+                <div className="flex items-center gap-1 bg-base-200/50 rounded-full p-0.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('standard')}
+                    className={`p-1.5 rounded-full transition-all ${
+                      viewMode === 'standard'
+                        ? 'bg-base-100 shadow-sm text-primary'
+                        : 'text-base-content/40 hover:text-base-content'
+                    }`}
+                    title="Standard view"
+                  >
+                    <span className={iconClass('lucide:layout-grid', 'w-4 h-4')} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('compact')}
+                    className={`p-1.5 rounded-full transition-all ${
+                      viewMode === 'compact'
+                        ? 'bg-base-100 shadow-sm text-primary'
+                        : 'text-base-content/40 hover:text-base-content'
+                    }`}
+                    title="Compact view"
+                  >
+                    <span className={iconClass('lucide:layout-list', 'w-4 h-4')} />
+                  </button>
+                </div>
+              </>
+            }
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            categoryAllLabel={t('sale.allCategories')}
+            categoryAriaLabel={t('sale.categoryFilter')}
+            categoryTestIdPrefix="sale-category-filter"
+            categoryCounts={categoryCounts}
+            showLegend
+            legendLabel={t('sale.categoryLegend')}
+            categoryTooltipFormatter={(cat, count) =>
+              count !== undefined
+                ? `${cat.name} — ${t('sale.categoryCount', { count })}`
+                : cat.name
+            }
+            footer={
+              /* Result counter — always rendered; faded to opacity 0 when no filter active so the
+                 card height never jumps and the slot never shows blank whitespace. aria-hidden
+                 mirrors visibility so screen readers ignore the stale count while it's hidden. */
+              <div className="min-h-[1.25rem] flex items-center justify-end">
+                <span
+                  aria-hidden={!filterActive}
+                  className="text-xs text-base-content/50 tabular-nums transition-opacity duration-150"
                 >
-                  <span className={iconClass('lucide:layout-grid', 'w-4 h-4')} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('compact')}
-                  className={`p-1.5 rounded-md transition-all ${
-                    viewMode === 'compact'
-                      ? 'bg-base-100 shadow-sm text-primary'
-                      : 'text-base-content/40 hover:text-base-content'
-                  }`}
-                  title="Compact view"
-                >
-                  <span className={iconClass('lucide:layout-list', 'w-4 h-4')} />
-                </button>
+                  {filteredProducts.length} / {products.length}
+                </span>
               </div>
-            </div>
-            {/* Result counter — always rendered; faded to opacity 0 when no filter active so the
-                card height never jumps and the slot never shows blank whitespace. aria-hidden
-                mirrors visibility so screen readers ignore the stale count while it's hidden. */}
-            <div className="mt-2 min-h-[1.25rem] flex items-center justify-end">
-              <span
-                aria-hidden={!filterActive}
-                className="text-xs text-base-content/50 tabular-nums transition-opacity duration-150"
-              >
-                {filteredProducts.length} / {products.length}
-              </span>
-            </div>
-          </Card>
+            }
+          />
 
           {/* Products Grid */}
           <div className={`gap-3 sm:gap-4 mb-6 sm:mb-8 grid ${viewMode === 'compact'
@@ -860,29 +982,45 @@ export default function Sale() {
               filteredProducts.map((product, index) => {
               const cartItem = cart.find(item => item.id === product.id);
               const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
+              // Unique per-product accent: category color wins when the product
+              // has one; otherwise a deterministic golden-angle hue derived from
+              // the product id/name so adjacent cards never repeat the same
+              // palette color (the rotating 7-color cycle used to repeat).
+              const categoryColor = product.category_id != null
+                ? (categories.find(c => c.id === product.category_id)?.color || null)
+                : null;
+              // Unique per-product accents are user-toggleable via Settings.
+              // When off, only explicit category colors apply and cards fall
+              // back to the rotating palette (pre-feature behavior).
+              const accentColor = settings.unique_card_colors !== false
+                ? (categoryColor ?? productAccentColor(product))
+                : categoryColor;
               return (
                 <ProductCard
                   key={product.id}
                   product={product}
                   color={color}
+                  categoryColor={accentColor}
                   currency={settings.currency}
                   isSelected={!!cartItem}
                   index={index}
+                  showActions={false}
                 >
-                  {/* Add Button */}
-                  {!cartItem && (
+                  {/* Full-width Add Button */}
+                  {!cartItem ? (
                     <button
                       onClick={() => addToCart(product)}
-                      className={`${color.badge} text-white p-1.5 sm:p-2 rounded-lg hover:brightness-110 transition-all active:scale-[0.9] shrink-0 shadow-sm mt-1`}
-                      aria-label={t('sale.addToCart', { product: product.name })}
+                      className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white
+                        hover:brightness-110 transition-all active:scale-[0.95] shadow-sm mt-1 group-hover:shadow-md ${color.badge}`}
+                      style={accentColor ? { backgroundColor: accentColor } : undefined}
+                      aria-label={t('sale.addToCartLabel', { product: product.name })}
                     >
-                      <span className={iconClass('lucide:plus', 'w-3.5 h-3.5 sm:w-4 sm:h-4')} />
+                      <span className="icon-[tabler--plus] w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      {t('sale.addToCartLabel', { product: product.name })}
                     </button>
-                  )}
-
-                  {cartItem && (
+                  ) : (
                     <div
-                      className="flex items-center justify-between bg-white/50 dark:bg-white/10 rounded-lg p-1.5 sm:p-2 backdrop-blur-sm w-full mt-1"
+                      className="flex items-center justify-between bg-white/50 dark:bg-white/10 rounded-lg p-1.5 sm:p-2 backdrop-blur-sm w-full mt-1 shadow-sm"
                     >
                       <button
                         onClick={() =>
@@ -893,7 +1031,7 @@ export default function Sale() {
                           )
                         }
                         className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white bg-red-400 dark:bg-red-500/20
-                          hover:bg-red-500 rounded-lg transition-colors text-sm sm:text-base"
+                          hover:bg-red-500 rounded-lg transition-all active:scale-90 text-sm sm:text-base"
                         aria-label={t('sale.decreaseQuantity')}
                       >
                         -
@@ -915,7 +1053,7 @@ export default function Sale() {
                           )
                         }
                         className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white bg-primary/90 hover:bg-primary
-                          rounded-lg transition-colors text-sm sm:text-base"
+                          rounded-lg transition-all active:scale-90 text-sm sm:text-base"
                         aria-label={t('sale.increaseQuantity')}
                       >
                         +
@@ -1105,86 +1243,105 @@ export default function Sale() {
                   <span className={iconClass('lucide:sliders-horizontal', 'text-primary')} />
                   <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   {ORDER_TYPES.map(ot => (
                     <button
                       key={ot.key}
                       onClick={() => setOrderType(ot.key)}
                       disabled={isLoading}
-                      className={`flex items-center gap-3 p-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98] ${
+                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg font-medium text-xs transition-all active:scale-[0.98] ${
                         isLoading
                           ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
                           : orderType === ot.key
-                            ? 'bg-primary text-white shadow-lg shadow-teal-500/20'
+                            ? 'bg-primary text-white shadow-md shadow-teal-500/20'
                             : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10'
                       }`}
                     >
-                      <span className={`text-lg ${orderType === ot.key ? '' : 'text-primary dark:text-primary/80'}`}>{ot.icon}</span>
-                      <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
+                      <span className={`text-base ${orderType === ot.key ? '' : 'text-primary dark:text-primary/80'}`}>{ot.icon}</span>
+                      <span className="truncate">{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
                       {orderType === ot.key && (
-                        <span className={iconClass('lucide:circle-check', 'ml-auto w-4 h-4')} />
+                        <span className={iconClass('lucide:circle-check', 'ml-auto w-3.5 h-3.5')} />
                       )}
                     </button>
                   ))}
                 </div>
 
-                {/* Dine-in: Table Selector */}
+                {/* Dine-in: Table + Employee side by side */}
                 {orderType === 'dine-in' && (
-                  <div
-                    className="flex items-center gap-2 mt-3 pt-3 border-t border-base-300/30"
-                  >
-                    <span className={iconClass('lucide:door-open', 'text-base-content/50 text-sm')} />
-                    <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
-                      className="input__field input__field--select flex-1"
-                    >
-                      {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
-                        <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
-                      ))}
-                    </select>
+                  <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-base-300/30">
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <label className="text-[11px] text-base-content/60">{t('sale.table')}</label>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className={iconClass('lucide:door-open', 'text-base-content/50 text-sm shrink-0')} />
+                        <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
+                          className="select flex-1 min-w-0 text-xs"
+                        >
+                          {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
+                            <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <label className="text-[11px] text-base-content/60">{t('sale.assignTo')}</label>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className={iconClass('lucide:user-check', 'text-base-content/50 text-sm shrink-0')} />
+                        <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
+                          className="select flex-1 min-w-0 text-xs"
+                        >
+                          <option value={0}>{t('sale.noAssignment')}</option>
+                          {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                {/* Delivery: Type + Zone + Address */}
+                {/* Delivery: Type + Zone side by side + Address */}
                 {orderType === 'delivery' && (
                   <div
                     className="space-y-2 mt-3 pt-3 border-t border-base-300/30"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className={iconClass('lucide:truck', 'text-base-content/50 text-sm')} />
-                      <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
-                        className="input__field input__field--select flex-1"
-                      >
-                        {deliveryTypes.map(dt => (
-                          <option key={dt.id} value={dt.id}>{dt.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    {/* Desktop: Delivery Zone selector */}
-                    {deliveryZones.filter(z => z.is_active).length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className={iconClass('lucide:map-pin', 'text-base-content/50 text-sm')} />
-                        <select value={selectedZoneId} onChange={e => setSelectedZoneId(Number(e.target.value))} disabled={isLoading}
-                          className="input__field input__field--select flex-1 text-xs"
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className={iconClass('lucide:truck', 'text-base-content/50 text-sm shrink-0')} />
+                        <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
+                          className="select flex-1 min-w-0 text-xs"
+                          aria-label={t('sale.deliveryType')}
                         >
-                          {deliveryZones.filter(z => z.is_active).map(z => (
-                            <option key={z.id} value={z.id}>{z.name}</option>
+                          {deliveryTypes.map(dt => (
+                            <option key={dt.id} value={dt.id}>{dt.name}</option>
                           ))}
                         </select>
                       </div>
-                    )}
+                      {/* Desktop: Delivery Zone selector */}
+                      {deliveryZones.filter(z => z.is_active).length > 0 && (
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className={iconClass('lucide:map-pin', 'text-base-content/50 text-sm shrink-0')} />
+                          <select value={selectedZoneId} onChange={e => setSelectedZoneId(Number(e.target.value))} disabled={isLoading}
+                            className="select flex-1 min-w-0 text-xs"
+                            aria-label={t('sale.zone')}
+                          >
+                            {deliveryZones.filter(z => z.is_active).map(z => (
+                              <option key={z.id} value={z.id}>{z.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
                     {/* Desktop: Distance input */}
                     <div className="flex items-center gap-2">
                       <span className={iconClass('lucide:ruler', 'text-base-content/50 text-sm')} />
                       <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
                         placeholder="0" min="0" step="0.5" disabled={isLoading}
-                        className="input__field flex-1" />
+                        className="input flex-1" />
                       <span className="text-xs text-base-content/50 w-5">km</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={iconClass('lucide:map-pin', 'text-base-content/50 text-sm')} />
                       <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                         placeholder={t('sale.deliveryAddress')} disabled={isLoading}
-                        className="input__field flex-1" />
+                        className="input flex-1" />
                     </div>
                     {selectedZone && deliveryFee > 0 && (
                       <div>
@@ -1214,19 +1371,21 @@ export default function Sale() {
                 )}
               </Card>
 
-              {/* Employee Assignment Card */}
+              {/* Employee Assignment Card — hidden for dine-in (shown inline next to Table above) */}
+              {orderType !== 'dine-in' && (
                 <Card>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={iconClass('lucide:user-check', 'text-base-content/50')} />
                   <label className="text-sm font-medium text-base-content/80">{t('sale.assignTo')}</label>
                 </div>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
-                  className="input__field input__field--select w-full"
+                  className="select w-full"
                 >
                   <option value={0}>{t('sale.noAssignment')}</option>
                   {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
                 </select>
-              </Card>
+                </Card>
+              )}
 
               {/* Order Notes Card */}
                 <Card>
@@ -1240,12 +1399,85 @@ export default function Sale() {
                   placeholder={t('sale.orderNotesPlaceholder') || 'Special instructions, allergies, notes...'}
                   rows={3}
                   disabled={isLoading}
-                  className="input__field input__field--textarea w-full text-sm resize-none"
+                  className="textarea w-full text-sm resize-none"
                 />
                 {orderNotes && (
                   <p className="text-[10px] text-primary mt-1">
                     Notes will appear on the order ticket
                   </p>
+                )}
+              </Card>
+
+              {/* Quick Notes — selectable notes that append into the order notes */}
+              <Card>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className={iconClass('lucide:sticky-note', 'text-base-content/50')} />
+                    <label className="text-sm font-medium text-base-content/80">{t('sale.quickNotes') || 'Quick Notes'}</label>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowQuickNoteForm(s => !s)}
+                    className="btn btn-ghost btn-xs gap-1 text-primary"
+                  >
+                    <span className="icon-[tabler--plus] w-3 h-3" />
+                    {t('sale.newNote') || 'New note'}
+                  </button>
+                </div>
+
+                {showQuickNoteForm && (
+                  <div className="space-y-2 mb-2">
+                    <textarea
+                      value={quickNoteText}
+                      onChange={e => setQuickNoteText(e.target.value)}
+                      placeholder={t('sale.newNotePlaceholder') || 'Note text...'}
+                      rows={2}
+                      className="textarea w-full text-xs resize-none"
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => { setQuickNoteText(''); setShowQuickNoteForm(false); }}
+                        className="btn btn-ghost btn-xs"
+                      >
+                        {t('common.cancel')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleQuickAddNote}
+                        disabled={!quickNoteText.trim()}
+                        className="btn btn-primary btn-xs gap-1"
+                      >
+                        <span className="icon-[tabler--check] w-3 h-3" />
+                        {t('sale.quickAddNote') || 'Add to order'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {selectableNotes.length === 0 ? (
+                  <p className="text-[10px] text-base-content/40 italic">
+                    {t('sale.quickNotesHint') || 'No quick notes yet — mark notes as selectable in Notes.'}
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectableNotes.map(note => (
+                        <button
+                          key={note.id}
+                          type="button"
+                          onClick={() => appendQuickNote(note)}
+                          className="tag tag--sm tag--ghost hover:tag--primary cursor-pointer transition-all"
+                          title={note.template_body}
+                        >
+                          {note.name}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-base-content/40 mt-1.5">
+                      {t('sale.quickNotesHint') || 'Tap a note to add it to the order'}
+                    </p>
+                  </>
                 )}
               </Card>
 
@@ -1260,7 +1492,7 @@ export default function Sale() {
                     value={selectedTemplateId}
                     onChange={e => setSelectedTemplateId(Number(e.target.value))}
                     disabled={isLoading}
-                    className="input__field input__field--select w-full text-sm"
+                    className="select w-full text-sm"
                   >
                     <option value={0}>None</option>
                     {templateNotes.map(note => (
@@ -1277,10 +1509,13 @@ export default function Sale() {
                 </Card>
               )}
 
-              {/* Total Amount Card */}
-                <Card transitional>
-                <h2 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-1">{t('sale.totalAmount')}</h2>
-                <p className={`text-2xl font-bold mb-1 ${isLoading ? 'text-slate-400 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
+              {/* Total Amount Card — centered, enhanced */}
+                <Card transitional className="text-center">
+                <h2 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-1.5 flex items-center justify-center gap-1.5">
+                  <span className={iconClass('lucide:wallet', 'w-3.5 h-3.5 text-primary')} />
+                  {t('sale.totalAmount')}
+                </h2>
+                <p className={`text-2xl font-extrabold mb-1 ${isLoading ? 'text-slate-400 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
                   {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
                 </p>
                 {deliveryFee > 0 && (
@@ -1288,9 +1523,10 @@ export default function Sale() {
                     Subtotal: {formatPrice(totalAmount)} + Delivery: {formatPrice(deliveryFee)}
                   </p>
                 )}
-                <div className="text-xs text-base-content/50 mt-2">
+                <span className="badge badge-soft badge-primary gap-1.5 mt-1.5">
+                  <span className={iconClass('lucide:shopping-bag', 'w-3 h-3')} />
                   {t('sale.itemsSelected', { count: cart.length })}
-                </div>
+                </span>
               </Card>
 
               {/* Cart mini-summary in sidebar */}
@@ -1395,7 +1631,7 @@ export default function Sale() {
                 <select
                   value={invoiceType}
                   onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}
-                  className="input__field input__field--select w-full"
+                  className="select w-full"
                 >
                   <option value="tax">{t('invoice.typeTax')}</option>
                   <option value="commercial">{t('invoice.typeCommercial')}</option>

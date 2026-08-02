@@ -183,45 +183,63 @@ export default function About() {
 
             <form onSubmit={handleSupportSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className={`input ${formErrors.name ? 'input--error' : ''}`}>
-                  <label className="input__label">{t('about.supportName')}</label>
+                <div className={`field ${formErrors.name ? 'field--error' : ''}`}>
+                  <label className="label-text">{t('about.supportName')}</label>
                   <input
                     type="text"
                     name="name"
                     value={supportForm.name}
                     onChange={handleSupportChange}
-                    className="input__field w-full"
+                    className="input w-full"
                     disabled={isSubmitting}
                     placeholder={t('support.namePlaceholder')}
                   />
-                  {formErrors.name && <p className="input__message">{formErrors.name}</p>}
+                  {formErrors.name && <p className="helper-text">{formErrors.name}</p>}
                 </div>
-                <div className={`input ${formErrors.email ? 'input--error' : ''}`}>
-                  <label className="input__label">{t('about.supportEmail')}</label>
+                <div className={`field ${formErrors.email ? 'field--error' : ''}`}>
+                  <label className="label-text">{t('about.supportEmail')}</label>
                   <input
                     type="email"
                     name="email"
                     value={supportForm.email}
                     onChange={handleSupportChange}
-                    className="input__field w-full"
+                    className="input w-full"
                     disabled={isSubmitting}
                     placeholder={t('support.emailPlaceholder')}
                   />
-                  {formErrors.email && <p className="input__message">{formErrors.email}</p>}
+                  {formErrors.email && <p className="helper-text">{formErrors.email}</p>}
                 </div>
               </div>
 
-              <div className={`input ${formErrors.subject ? 'input--error' : ''}`}>
-                <label className="input__label">{t('about.supportSubject')}</label>
+              <div className={`field ${formErrors.subject ? 'field--error' : ''}`}>
+                <label className="label-text">{t('about.supportSubject')}</label>
                 <input
                   type="text"
                   name="subject"
                   value={supportForm.subject}
-                  onChange={handleSupportChange}                    className="input__field w-full"
+                  onChange={handleSupportChange}                    className="input w-full"
                   disabled={isSubmitting}
                   placeholder={t('support.subjectPlaceholder')}
                 />
-                {formErrors.subject && <p className="input__message">{formErrors.subject}</p>}
+                {formErrors.subject && <p className="helper-text">{formErrors.subject}</p>}
+              </div>
+
+              {/* Message */}
+              <div className={`field ${formErrors.message ? 'field--error' : ''}`}>
+                <label className="label-text">
+                  <span className="icon-[tabler--message] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                  {t('about.supportMessage')}
+                </label>
+                <textarea
+                  name="message"
+                  value={supportForm.message}
+                  onChange={handleSupportChange}
+                  className="textarea w-full"
+                  rows={4}
+                  disabled={isSubmitting}
+                  placeholder={t('support.messagePlaceholder')}
+                />
+                {formErrors.message && <p className="helper-text">{formErrors.message}</p>}
               </div>
 
               {/* ── Attachment area ── */}

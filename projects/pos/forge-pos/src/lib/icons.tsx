@@ -5,13 +5,13 @@
  *
  * Supported 8 icon sets:
  *   ── 7 Iconify CSS-based sets (tree-shaken at build time) ──
- *   tabler:    Tabler Icons (default) — icon-[tabler--{name}]
- *   lucide:    Lucide Icons            — icon-[lucide--{name}]
- *   mdi:       Material Design Icons   — icon-[mdi--{name}]
- *   ph:        Phosphor Icons          — icon-[ph--{name}]
- *   heroicons: Heroicons (Iconify)     — icon-[heroicons--{name}]
- *   carbon:    Carbon Icons            — icon-[carbon--{name}]
- *   solar:     Solar Icons             — icon-[solar--{name}]
+ *   tabler:    Tabler Icons (default) — icon-[tabler--search]
+ *   lucide:    Lucide Icons            — icon-[lucide--search]
+ *   mdi:       Material Design Icons   — icon-[mdi--magnify]
+ *   ph:        Phosphor Icons          — icon-[ph--magnifying-glass]
+ *   heroicons: Heroicons (Iconify)     — icon-[heroicons--magnifying-glass]
+ *   carbon:    Carbon Icons            — icon-[carbon--search]
+ *   solar:     Solar Icons             — icon-[solar--calendar-search-linear]
  *   ── 1 React component-based set ──
  *   hi:        Heroicons v2 Solid (react-icons/hi2) — <HiShoppingCart />
  *
@@ -217,7 +217,7 @@ export function getAllIconClasses(name: string): string[] {
  * Create a React component that renders an icon.
  *
  * For Iconify sets (tabler, lucide, mdi, ph, heroicons, carbon, solar),
- * renders a <span> with the appropriate icon-[*] CSS class.
+ * renders a <span> with the appropriate icon-[tabler--star] CSS class.
  *
  * For the "hi:" prefix, renders a Heroicons v2 Solid React component
  * from `react-icons/hi2`.

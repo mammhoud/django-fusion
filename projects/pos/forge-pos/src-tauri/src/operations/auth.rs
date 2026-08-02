@@ -48,9 +48,10 @@ pub fn check_auth_required(db_path: &PathBuf) -> Result<bool, String> {
         return Ok(true);
     }
 
-    // Check SMTP configuration
-    let smtp_configured = env::var("SMTP_USERNAME").is_ok()
-        && !env::var("SMTP_USERNAME").unwrap_or_default().is_empty();
+    // Check SMTP configuration (settings DB first, env fallback)
+    let smtp_configured = crate::email::load_smtp_config(db_path).is_configured()
+        || (env::var("SMTP_USERNAME").is_ok()
+            && !env::var("SMTP_USERNAME").unwrap_or_default().is_empty());
 
     if !smtp_configured {
         return Ok(false);
@@ -169,7 +170,7 @@ pub fn verify_user(db_path: &PathBuf, user_email: String) -> Result<User, String
 }
 
 /// Send a confirmation code to the given email via SMTP
-pub fn send_confirmation_code(email_address: String) -> Result<(), String> {
+pub fn send_confirmation_code(db_path: &PathBuf, email_address: String) -> Result<(), String> {
     // Generate a random 6-digit code
     use rand::Rng;
     let code: u32 = rand::thread_rng().gen_range(100000..999999);
@@ -180,7 +181,7 @@ pub fn send_confirmation_code(email_address: String) -> Result<(), String> {
     store.insert(email_address.clone(), (code_str.clone(), Instant::now()));
 
     // Send email via SMTP
-    email::send_confirmation_email(&email_address, &code_str)?;
+    email::send_confirmation_email(db_path, &email_address, &code_str)?;
 
     Ok(())
 }
@@ -208,7 +209,9 @@ pub fn verify_and_setup_account(
     }
 
     // Verify SMTP is configured (should be if we sent email)
-    if env::var("SMTP_USERNAME").is_err() {
+    if !crate::email::load_smtp_config(db_path).is_configured()
+        && env::var("SMTP_USERNAME").is_err()
+    {
         return Err("SMTP is not configured. Cannot complete setup.".to_string());
     }
 
@@ -268,7 +271,7 @@ pub fn request_password_reset(db_path: &PathBuf, email_address: String) -> Resul
         return Err("No account found with this email address.".to_string());
     }
 
-    send_confirmation_code(email_address)
+    send_confirmation_code(db_path, email_address)
 }
 
 /// Reset password using confirmation code (no old password required).

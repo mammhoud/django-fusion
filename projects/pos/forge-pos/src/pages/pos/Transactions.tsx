@@ -853,6 +853,7 @@ export default function Transactions() {
                             </span>
                             <button
                               onClick={() => setShowReceiptDialog(tx)}
+                              data-testid="receipt-button"
                               className="text-primary-content p-1.5 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-all active:scale-[0.9]"
                             >
                               <span className="icon-[tabler--printer] w-4 h-4" />
@@ -915,7 +916,7 @@ export default function Transactions() {
                     value={productSearch}
                     onChange={e => { setProductPage(1); setProductSearch(e.target.value); }}
                     placeholder={t('transactions.searchProduct')}
-                    className="input__field w-full text-xs pl-9"
+                    className="input w-full text-xs pl-9"
                   />
                   {productSearch && (
                     <button
@@ -1128,7 +1129,7 @@ export default function Transactions() {
                     value={relatedSearch}
                     onChange={e => setRelatedSearch(e.target.value)}
                     placeholder={t('transactions.searchProduct')}
-                    className="input__field w-full text-xs pl-9"
+                    className="input w-full text-xs pl-9"
                   />
                   {relatedSearch && (
                     <button
@@ -1433,6 +1434,7 @@ export default function Transactions() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setShowReceiptDialog(transaction)}
+                        data-testid="receipt-button"
                         className="text-primary-content p-2 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-colors"
                       >
                         <span className="icon-[tabler--printer] w-5 h-5" />
@@ -1525,7 +1527,7 @@ export default function Transactions() {
               </label>
               <select
                 value={invoiceType}
-                onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}className="input__field input__field--select w-full"
+                onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}className="select w-full"
               >
                 <option value="tax">{t('invoice.typeTax')}</option>
                 <option value="commercial">{t('invoice.typeCommercial')}</option>

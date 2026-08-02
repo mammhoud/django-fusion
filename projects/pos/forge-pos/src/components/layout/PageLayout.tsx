@@ -8,7 +8,7 @@ import AnimatePresence from '../ui/AnimatePresence';
 import { dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
 // Built-in Forge POS crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
-import defaultLogo from '../../assets/pos-crest.svg';
+import defaultLogo from '../../../assets/images/pos-crest.svg';
 
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
@@ -30,7 +30,7 @@ function ProfileDropdown({
   const { t } = useTranslation();
 
   return (
-    <div className="relative">
+    <div className="relative z-[60]">
       <button              onClick={onToggle}
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-100/70 backdrop-blur-md border border-base-300/30
                 hover:shadow-md transition-all active:scale-[0.97]"
@@ -108,7 +108,8 @@ export default function PageLayout({
   showNav = true,
   title,
   background = 'bg-texture',
-  containerWidth = 'max-w-[100rem] xl:max-w-[110rem] 3xl:max-w-[130rem] 4xl:max-w-[150rem]',
+  // Wider default container — all pages get more horizontal room for grids.
+  containerWidth = 'max-w-[120rem] xl:max-w-[132rem] 3xl:max-w-[148rem] 4xl:max-w-[168rem]',
   padding = 'py-12 md:py-16 lg:py-12',
 }: PageLayoutProps) {
   const navigate = useNavigate();
@@ -188,22 +189,22 @@ export default function PageLayout({
       <div className={`4xl:ml-16 rtl:4xl:mr-16 rtl:4xl:ml-0 ${containerWidth} mx-auto px-4 sm:px-6 ${padding}`}>
         {showNav ? (
           /* Full TopBar: [Menu] [Back] [Logo + Title] [Profile] */
-          <div className="flex items-center justify-between mb-6 gap-3">
+          <div className="relative z-30 flex items-center justify-between mb-6 gap-3 px-4 py-3 rounded-2xl bg-base-100/60 backdrop-blur-md border border-base-300/20 shadow-sm">
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsNavOpen(true)}
-                className="btn btn-square btn-ghost"
+                className="btn btn-square btn-ghost btn-icon"
                 aria-label={t('common.openNavigation') || 'Open navigation'}
               >
-                <span className="icon-[tabler--menu-2] w-5 h-5" />
+                <span className="icon-[tabler--menu-4] w-5 h-5" />
               </button>
               <button
                 onClick={handleBackNavigation}
                 disabled={isNavigating}
-                className="btn btn-square btn-ghost disabled:opacity-50"
+                className="btn btn-square btn-ghost btn-icon disabled:opacity-50"
                 aria-label={t('common.backToHome') || 'Back to home'}
               >
-                <span className="icon-[tabler--arrow-back] w-4 h-4 rtl:scale-x-[-1]" />
+                <span className="icon-[tabler--arrow-narrow-left] w-4 h-4 rtl:scale-x-[-1]" />
               </button>
             </div>
             <div className="flex items-center gap-3 flex-1 justify-center min-w-0">
@@ -231,7 +232,7 @@ export default function PageLayout({
           </div>
         ) : (
           /* Home page: logo + menu + profile */
-          <div className="flex justify-between items-center gap-3 mb-8">
+          <div className="relative z-30 flex justify-between items-center gap-3 mb-8">
             <div className="flex items-center gap-3">
               {renderLogo('h-10 w-10 sm:h-12 sm:w-12')}
             </div>
@@ -247,10 +248,10 @@ export default function PageLayout({
               )}
               <button
                 onClick={() => setIsNavOpen(true)}
-                className="btn btn-square btn-ghost shrink-0"
+                className="btn btn-square btn-ghost btn-icon shrink-0"
                 aria-label={t('common.openNavigation') || 'Open navigation'}
               >
-                <span className="icon-[tabler--menu-2] w-5 h-5" />
+                <span className="icon-[tabler--menu-4] w-5 h-5" />
               </button>
             </div>
           </div>
