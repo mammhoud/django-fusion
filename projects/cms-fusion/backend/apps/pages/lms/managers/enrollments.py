@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import uuid
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
@@ -32,6 +33,19 @@ class EnrollmentManager(CachedManager):
     CACHE_PREFIX = "enrollment"
     DEFAULT_TIMEOUT = 1800  # 30 minutes
 
+    def _cache_generation(self, scope: str, identifier: int) -> str:
+        """Return the current generation for a parameterized cache scope."""
+        key = f"{self.CACHE_PREFIX}:generation:{scope}:{identifier}"
+        return cache.get_or_set(key, uuid.uuid4().hex, timeout=self.DEFAULT_TIMEOUT)
+
+    def _bump_cache_generation(self, scope: str, identifier: int) -> None:
+        """Invalidate all parameterized entries in a cache scope."""
+        cache.set(
+            f"{self.CACHE_PREFIX}:generation:{scope}:{identifier}",
+            uuid.uuid4().hex,
+            timeout=self.DEFAULT_TIMEOUT,
+        )
+
     # -------------------------------------------------------------------------
     # User Enrollment Methods (For User Dashboard)
     # -------------------------------------------------------------------------
@@ -59,7 +73,8 @@ class EnrollmentManager(CachedManager):
         Returns:
             Dictionary with enrollments and metadata
         """
-        cache_key = f"{self.CACHE_PREFIX}:user:{user_id}:{status}:{progress_filter}:{limit}:{offset}:{include_related}"
+        generation = self._cache_generation("user", user_id)
+        cache_key = f"{self.CACHE_PREFIX}:user:{user_id}:{generation}:{status}:{progress_filter}:{limit}:{offset}:{include_related}"
 
         result = cache.get(cache_key)
         if result is not None:
@@ -169,12 +184,17 @@ class EnrollmentManager(CachedManager):
 
     def _get_next_lesson_for_enrollment(self, enrollment: Enrollment) -> Optional[Dict[str, Any]]:
         """Get next lesson for an enrollment."""
-        from ..models.courses.detail import LessonProgress
+        from apps.pages.lms.models import Lesson
+        from apps.pages.lms.models.courses.progress import LessonProgress
 
         try:
             # Get the last completed lesson
             last_completed = (
-                LessonProgress.objects.filter(enrollment=enrollment, is_completed=True)
+                LessonProgress.objects.filter(
+                    user=enrollment.student,
+                    lesson__module__course=enrollment.course,
+                    status=LessonProgress.StatusChoices.COMPLETED,
+                )
                 .order_by("-completed_at")
                 .first()
             )
@@ -213,7 +233,8 @@ class EnrollmentManager(CachedManager):
 
     def _get_module_progress(self, enrollment: Enrollment) -> List[Dict[str, Any]]:
         """Get progress for each module in course."""
-        from ..models.courses.detail import ModuleProgress
+        from apps.pages.lms.models import Module
+        from apps.pages.lms.models.courses.progress import ModuleProgress
 
         module_progress = []
 
@@ -224,7 +245,9 @@ class EnrollmentManager(CachedManager):
                 # Get module progress record
                 try:
                     mod_progress = ModuleProgress.objects.get(enrollment=enrollment, module=module)
-                    completed = mod_progress.is_completed
+                    completed = (
+                        mod_progress.status == ModuleProgress.StatusChoices.COMPLETED
+                    )
                     progress = mod_progress.progress_percentage
                 except ModuleProgress.DoesNotExist:
                     completed = False
@@ -237,7 +260,8 @@ class EnrollmentManager(CachedManager):
                         "module_order": module.order,
                         "total_lessons": module.lessons.count(),
                         "completed_lessons": module.lessons.filter(
-                            lessonprogress__enrollment=enrollment, lessonprogress__is_completed=True
+                            progress__user=enrollment.student,
+                            progress__status=LessonProgress.StatusChoices.COMPLETED,
                         ).count(),
                         "is_completed": completed,
                         "progress_percentage": progress,
@@ -346,7 +370,8 @@ class EnrollmentManager(CachedManager):
         Returns:
             Dictionary with enrollments and analytics
         """
-        cache_key = f"{self.CACHE_PREFIX}:course:{course_id}:{status_filter}:{progress_range}:{search_query}:{limit}:{offset}"
+        generation = self._cache_generation("course", course_id)
+        cache_key = f"{self.CACHE_PREFIX}:course:{course_id}:{generation}:{status_filter}:{progress_range}:{search_query}:{limit}:{offset}"
 
         result = cache.get(cache_key)
         if result is not None:
@@ -494,13 +519,14 @@ class EnrollmentManager(CachedManager):
 
     def _get_recent_activity(self, course_id: int, limit: int = 10) -> List[Dict[str, Any]]:
         """Get recent enrollment activity."""
-        from ..models.courses.detail import LessonProgress
+        from apps.pages.lms.models.courses.progress import LessonProgress
 
         recent_completions = (
-            LessonProgress.objects.filter(enrollment__course_id=course_id, is_completed=True)
-            .select_related(
-                "enrollment", "enrollment__student", "enrollment__student__user", "lesson"
+            LessonProgress.objects.filter(
+                lesson__module__course_id=course_id,
+                status=LessonProgress.StatusChoices.COMPLETED,
             )
+            .select_related("user", "lesson")
             .order_by("-completed_at")[:limit]
         )
 
@@ -509,10 +535,10 @@ class EnrollmentManager(CachedManager):
             activity.append(
                 {
                     "type": "lesson_completed",
-                    "student_name": completion.enrollment.student.user.get_full_name(),
+                    "student_name": completion.user.get_full_name(),
                     "lesson_title": completion.lesson.title,
                     "completed_at": completion.completed_at,
-                    "progress": completion.enrollment.progress_percentage,
+                    "progress": completion.progress,
                 }
             )
 
@@ -590,6 +616,8 @@ class EnrollmentManager(CachedManager):
 
         # Update course enrollment count
         try:
+            from apps.pages.lms.models import Course
+
             course = Course.objects.get(id=course_id)
             course.enrolled_count = F("enrolled_count") + len(results["successful"])
             course.save(update_fields=["enrolled_count"])
@@ -768,22 +796,28 @@ class EnrollmentManager(CachedManager):
 
         return deadlines
 
+    def get_user_enrollment_for_course(self, user_id: int, course_id: int):
+        """Return an active enrollment for a user and course, if present."""
+        return self.filter(
+            student_id=user_id,
+            course_id=course_id,
+            is_active=True,
+        ).first()
+
+    def invalidate_cache_for_enrollment(self, enrollment_id: int) -> None:
+        """Invalidate cache entries associated with one enrollment."""
+        cache.delete(f"{self.CACHE_PREFIX}:enrollment:{enrollment_id}")
+
+        enrollment_data = self.filter(pk=enrollment_id).values("student_id", "course_id").first()
+        if enrollment_data:
+            self.invalidate_user_enrollment_cache(enrollment_data["student_id"])
+            self._invalidate_course_enrollment_cache(enrollment_data["course_id"])
+
     def invalidate_user_enrollment_cache(self, user_id: int) -> None:
         """Invalidate all enrollment caches for a user."""
-        cache_keys = [
-            f"{self.CACHE_PREFIX}:user:{user_id}:*",
-            f"{self.CACHE_PREFIX}:summary:{user_id}",
-        ]
-
-        # This is a simplified approach - in production, you'd use Redis pattern deletion
-        for key in cache_keys:
-            cache.delete(key)
+        cache.delete(f"{self.CACHE_PREFIX}:summary:{user_id}")
+        self._bump_cache_generation("user", user_id)
 
     def _invalidate_course_enrollment_cache(self, course_id: int) -> None:
         """Invalidate enrollment caches for a course."""
-        cache_keys = [
-            f"{self.CACHE_PREFIX}:course:{course_id}:*",
-        ]
-
-        for key in cache_keys:
-            cache.delete(key)
+        self._bump_cache_generation("course", course_id)

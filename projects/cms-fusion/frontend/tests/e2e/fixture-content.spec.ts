@@ -445,6 +445,7 @@ test.describe('Dynamic CMS Pages (FusionProxy)', () => {
 // 6. Mobile Responsiveness for Fixture Pages
 // ═══════════════════════════════════════════════════════════════════════════════
 
+test.describe('Mobile Responsiveness for Fixture Pages', () => {
   test('homepage renders on mobile without layout breakage', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 15000 });

@@ -10,6 +10,8 @@ export type { ModalProps } from './Modal';
 
 export { default as LoadingSkeleton } from './LoadingSkeleton';
 export { default as LoadingSpinner } from './LoadingSpinner';
+export { default as StatSkeleton } from './StatSkeleton';
+export type { StatSkeletonProps } from './StatSkeleton';
 
 export { ToastProvider, useToast, useNotify } from './Toast';
 export type { Toast, ToastType } from './Toast';

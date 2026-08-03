@@ -1,6 +1,6 @@
 """Compatibility imports for shared content background tasks."""
 
-from tools.worker.content import (
+from configs.tools.worker.content import (
     get_users_count,
     send_user_welcome_notification,
     send_user_welcome_notification_task,

@@ -19,7 +19,7 @@ from django_fusion.services.token import TokenService
 
 logger = logging.getLogger(__name__)
 
-from apps.pages.lms.managers.enrollments import EnrollmentManager
+from apps.pages.lms.management.managers.enrollments import EnrollmentManager
 from apps.pages.lms.models import Course, Enrollment
 from apps.pages.lms.models.courses.progress import LessonProgress, ModuleProgress
 from apps.pages.lms.models.courses.specification import Lesson

@@ -22,7 +22,7 @@ NC     := \033[0m
 SITE_NAME := $(notdir $(CURDIR))
 DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
 # PYTHONPATH includes site root, workspace root, www subdirectory, and libs
-PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../libs/django-fusion/src):$(abspath ../libs/ceptor-ai/src)
+PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../..):$(abspath ../libs/django-fusion/src):$(abspath ../libs/ceptor-ai/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ..

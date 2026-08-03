@@ -47,7 +47,9 @@ class BlogPostListFragment(FusionDualModeMixin, FragmentComponent):
     def get_queryset(self):
         from apps.pages.blog.models import BlogPost
 
-        qs = BlogPost.objects.filter(status="published").select_related("author", "category")
+        # ``BlogPost.categories`` is a M2M — there is no ``category`` FK to
+        # select_related (previously raised FieldError -> HTTP 500).
+        qs = BlogPost.objects.filter(status="published").select_related("author")
 
         q = self.request.GET.get("q", "").strip()
         if q:
@@ -55,7 +57,7 @@ class BlogPostListFragment(FusionDualModeMixin, FragmentComponent):
 
         category = self.request.GET.get("category")
         if category:
-            qs = qs.filter(category__slug=category)
+            qs = qs.filter(categories__slug=category)
 
         return qs.order_by("-published_date")
 
@@ -87,7 +89,9 @@ class BlogPostListFragment(FusionDualModeMixin, FragmentComponent):
                     "excerpt": getattr(p, "excerpt", ""),
                     "author": p.author.get_full_name() if p.author else "",
                     "published_date": p.published_date.isoformat() if p.published_date else None,
-                    "category": getattr(p, "category", None) and p.category.name or "",
+                    "categories": [
+                        {"slug": c.slug, "name": c.name} for c in p.categories.all()
+                    ],
                 }
                 for p in posts
             ],

@@ -19,7 +19,13 @@ export default function CartPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-          <p className="text-gray-500 mt-1">{cart?.length ?? 0} items in your cart</p>
+          {isLoading ? (
+            <p className="text-gray-500 mt-1" aria-busy="true">
+              <span className="inline-block h-4 w-28 bg-gray-200 rounded animate-pulse align-middle" />
+            </p>
+          ) : (
+            <p className="text-gray-500 mt-1">{cart?.length ?? 0} items in your cart</p>
+          )}
         </div>
         <Link href="/shop" className="flex items-center gap-2 text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))] font-medium">
           <HiArrowLeft className="w-4 h-4" /> Continue Shopping

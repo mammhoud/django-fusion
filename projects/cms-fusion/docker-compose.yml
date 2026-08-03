@@ -50,7 +50,8 @@ services:
       - "5075:5075"
     volumes:
       - ./backend:/app/cms-fusion:rw
-      - ./configs:/app/configs:ro
+      - ../configs:/app/configs:ro
+      - ../assets:/app/assets:ro
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
       # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
@@ -89,7 +90,8 @@ services:
     command: celery -A www.worker.celery:app worker --loglevel=info --queues=cms-fusion
     volumes:
       - ./backend:/app/cms-fusion:rw
-      - ./configs:/app/configs:ro
+      - ../configs:/app/configs:ro
+      - ../assets:/app/assets:ro
       - ../../logs:/app/logs:z
     networks:
       - common

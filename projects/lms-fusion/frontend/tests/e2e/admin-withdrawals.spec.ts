@@ -12,10 +12,10 @@
  *   - /dashboard/admin/withdrawals (admin withdrawal management)
  *
  * API endpoints mocked:
- *   - GET  /apis/auth/profile              — admin/instructor profiles
- *   - GET  /apis/withdrawals/              — paginated withdrawals with status filter
- *   - PATCH /apis/withdrawals/:id/approve  — approve a withdrawal
- *   - PATCH /apis/withdrawals/:id/reject   — reject a withdrawal
+ *   - GET  /api/auth/profile              — admin/instructor profiles
+ *   - GET  /api/withdrawals/              — paginated withdrawals with status filter
+ *   - PATCH /api/withdrawals/:id/approve  — approve a withdrawal
+ *   - PATCH /api/withdrawals/:id/reject   — reject a withdrawal
  */
 
 import { test, expect } from "@playwright/test";
@@ -125,7 +125,7 @@ async function mockAdminSession(page: import("@playwright/test").Page) {
   await page.addInitScript(() => {
     localStorage.setItem('lms_token', 'test-mock-admin-token');
   });
-  await page.route("**/apis/auth/profile", (route) =>
+  await page.route("**/api/auth/profile", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(ADMIN_PROFILE) })
   );
 }
@@ -138,10 +138,10 @@ async function mockWithdrawalsList(
   // Register the list route with a precise URL matcher so it doesn't
   // catch approve/reject/detail URLs — those are handled by more specific
   // route handlers registered later in each test.
-  await page.route(/\/apis\/withdrawals\/\?/, (route) => {
+  await page.route(/\/api\/withdrawals\/\?/, (route) => {
     const url = route.request().url();
     // Only match the paginated list endpoint (has query params)
-    if (url.includes("/apis/withdrawals/") && !url.includes("/summary/") && !url.includes("/create/")) {
+    if (url.includes("/api/withdrawals/") && !url.includes("/summary/") && !url.includes("/create/")) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -181,7 +181,7 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
       await page.addInitScript(() => {
         localStorage.setItem('lms_token', 'test-mock-instructor-token');
       });
-      await page.route("**/apis/auth/profile", (route) =>
+      await page.route("**/api/auth/profile", (route) =>
         route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(INSTRUCTOR_PROFILE) })
       );
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
@@ -191,7 +191,7 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
     });
 
     test("unauthenticated user is denied access", async ({ page }) => {
-      await page.route("**/apis/auth/profile", (route) =>
+      await page.route("**/api/auth/profile", (route) =>
         route.fulfill({ status: 401, contentType: "application/json", body: "{}" })
       );
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
@@ -273,7 +273,7 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       // Mock approve endpoint
       let approveCalled = false;
-      await page.route("**/apis/withdrawals/10/approve/", (route) => {
+      await page.route("**/api/withdrawals/10/approve/", (route) => {
         if (route.request().method() === "PATCH") {
           approveCalled = true;
           return route.fulfill({
@@ -293,8 +293,9 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Click Approve — use .first() because there may be pending badges too
-      const approveBtn = page.locator("button", { hasText: "Approve" }).first();
+      // Click Approve — the action button has title="Approve withdrawal";
+      // a plain hasText "Approve" would also match the "approved" filter chip.
+      const approveBtn = page.locator('button[title="Approve withdrawal"]').first();
       await expect(approveBtn).toBeVisible();
       await approveBtn.click();
 
@@ -309,7 +310,7 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
       await mockAdminSession(page);
       await mockWithdrawalsList(page, [makePendingWithdrawal({ id: 20, amount: 400 })]);
 
-      await page.route("**/apis/withdrawals/20/approve/", (route) => {
+      await page.route("**/api/withdrawals/20/approve/", (route) => {
         if (route.request().method() === "PATCH") {
           return route.fulfill({
             status: 400,
@@ -322,8 +323,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Use .first() to avoid strict mode with multiple buttons
-      await page.locator("button", { hasText: "Approve" }).first().click();
+      // Use the title-based locator so we don't hit the "approved" filter chip.
+      await page.locator('button[title="Approve withdrawal"]').first().click();
 
       await expect(
         page.locator("text=Withdrawal has already been processed.")
@@ -339,7 +340,7 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
       await mockWithdrawalsList(page, [makePendingWithdrawal({ id: 30, amount: 250 })]);
 
       let rejectPayload: any = null;
-      await page.route("**/apis/withdrawals/30/reject/", (route) => {
+      await page.route("**/api/withdrawals/30/reject/", (route) => {
         if (route.request().method() === "PATCH") {
           rejectPayload = route.request().postDataJSON();
           return route.fulfill({
@@ -357,8 +358,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Click Reject — .first() because there may be multiple pending rows
-      await page.locator("button", { hasText: "Reject" }).first().click();
+      // Click Reject — title-based so it can't match the "rejected" filter chip.
+      await page.locator('button[title="Reject withdrawal"]').first().click();
 
       // Fill in rejection reason
       const reasonInput = page.locator('input[placeholder="Reason (optional)"]');
@@ -381,18 +382,19 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Click Reject — .first() because there may be multiple pending rows
-      await page.locator("button", { hasText: "Reject" }).first().click();
+      // Click Reject — title-based so it can't match the "rejected" filter chip.
+      await page.locator('button[title="Reject withdrawal"]').first().click();
 
       const reasonInput = page.locator('input[placeholder="Reason (optional)"]');
       await expect(reasonInput).toBeVisible();
 
-      // Click Cancel to dismiss
-      await page.locator("button", { hasText: "Cancel" }).click();
+      // Click Cancel to dismiss — exact text so the "cancelled" filter chip
+      // (case-insensitive substring match) isn't picked up.
+      await page.getByRole("button", { name: "Cancel", exact: true }).click();
 
       // The reject form should be gone and the Reject button should reappear
       await expect(reasonInput).toHaveCount(0);
-      await expect(page.locator("button", { hasText: "Reject" })).toBeVisible();
+      await expect(page.locator('button[title="Reject withdrawal"]')).toBeVisible();
     });
   });
 
@@ -404,8 +406,9 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
       await mockWithdrawalsList(page, [makePendingWithdrawal()]);
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Use .first() because there are multiple dashboard links in the sidebar
-      const backLink = page.locator('a[href="/dashboard"]').first();
+      // The header back link is scoped by its exact accessible text; the
+      // sidebar contains other links to /dashboard.
+      const backLink = page.getByRole("link", { name: "Back to Dashboard" });
       await expect(backLink).toBeVisible();
       await expect(backLink).toContainText("Back to Dashboard");
     });
