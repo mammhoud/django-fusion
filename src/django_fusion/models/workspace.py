@@ -1,4 +1,18 @@
-"""Reusable workspace model base for Fusion sites."""
+"""Reusable workspace model base for Fusion sites.
+
+Canonical import paths::
+
+    # Abstract base (django-fusion library):
+    from django_fusion.models.workspace import AbstractWorkspace
+
+    # Concrete model (site projects define their own):
+    from apps.domain.models.workspace import Workspace
+
+Site applications subclass ``AbstractWorkspace`` to create their own
+concrete ``Workspace`` model with site/company relationship fields.
+There is no concrete ``Workspace`` in django-fusion — each project
+defines its own.
+"""
 
 from django.conf import settings
 from django.core.validators import MaxLengthValidator, URLValidator
@@ -11,8 +25,20 @@ from django_fusion.models.default import DefaultBase
 class AbstractWorkspace(DefaultBase):
     """Shared workspace fields and behavior.
 
-    Site applications add their own site/company relationship fields while
-    inheriting this stable, reusable workspace core.
+    Site applications subclass this to add site/company relationship
+    fields while inheriting the stable, reusable workspace core.
+
+    Example::
+
+        from django_fusion.models.workspace import AbstractWorkspace
+
+        class Workspace(AbstractWorkspace):
+            sites = models.ManyToManyField(Site, ...)
+            company = models.ForeignKey(Corporate, ...)
+
+            class Meta:
+                app_label = "shared"
+                db_table = "workspaces"
     """
 
     class ModuleChoices(models.TextChoices):

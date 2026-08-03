@@ -29,6 +29,15 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 - `generate_asset_manifest` now imports the canonical implementation from
   `django_fusion.config.manifest` without a duplicate `comp.manifest` path.
+- **Model-scoped cache invalidation** — `CachingStorage.clear_model_cache()`
+  is now implemented (it was already referenced by
+  `ModelCacheMixin.invalidate_all_cache()` but had no definition, raising
+  `AttributeError` on model saves). Cached entries are tracked in a per-model
+  key registry guarded by an in-process lock, so concurrent
+  `cache_set`/`cache_delete` calls cannot lose registrations. Registries are
+  bounded: entries whose data already expired are pruned once the registry
+  exceeds `MAX_REGISTRY_KEYS`, and model-wide clearing skips (does not count)
+  already-expired entries.
 
 ## [0.4.0] — 2026-07-28
 

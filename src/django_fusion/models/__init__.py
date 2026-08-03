@@ -16,9 +16,12 @@ from .datatoken import (  # noqa: F401
     untag_by_entity,
 )
 from .email import EmailLog, EmailTemplate, UserGroup  # noqa: F401
+from .certificate import AbstractCertificate  # noqa: F401
 from .certification import AbstractCertificationTemplate  # noqa: F401
 from .coupon import AbstractCoupon, AbstractCouponUsage  # noqa: F401
+from .message import AbstractMessage  # noqa: F401
 from .newsletter import AbstractNewsletter  # noqa: F401
+from .note import AbstractNote, AbstractSharedNote  # noqa: F401
 from .settings import (
     AbstractBrandSettings,
     AbstractEmailSettings,
@@ -107,8 +110,12 @@ __all__ = [
     "AbstractWorkspace",
     "AbstractCoupon",
     "AbstractCouponUsage",
+    "AbstractCertificate",
     "AbstractCertificationTemplate",
+    "AbstractMessage",
     "AbstractNewsletter",
+    "AbstractNote",
+    "AbstractSharedNote",
     "AbstractLocalizedSettings",
     "AbstractBrandSettings",
     "AbstractEmailSettings",
