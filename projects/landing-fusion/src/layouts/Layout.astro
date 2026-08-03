@@ -1,30 +1,31 @@
 ---
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
-import { siteConfig } from '@/lib/site';
+import { siteConfig, THEME_STORAGE_KEY } from '@/lib/site';
 import '../styles/globals.css';
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
-  /** Set a dark-mode class on <html> (defaults to light). */
-  theme?: 'light' | 'dark';
 }
 
 const {
   title = siteConfig.name,
   description = siteConfig.description,
   ogImage = siteConfig.ogImage,
-  theme = 'light',
 } = Astro.props;
 
 const pageTitle = title === siteConfig.name ? siteConfig.name : `${title} · ${siteConfig.name}`;
 const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
+
+// THEME_STORAGE_KEY is used inside the FOUC-free inline head script below,
+// which the type-checker does not see — keep this explicit reference.
+void THEME_STORAGE_KEY;
 ---
 
 <!doctype html>
-<html lang="en" class={theme}>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -51,6 +52,32 @@ const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
 
     <!-- Theme color -->
     <meta name="theme-color" content="#7c3aed" />
+
+    <!--
+      FOUC-free theme init (ASTRO_MIGRATION_PLAN §5.1).
+      Runs synchronously before first paint: reads THEME_STORAGE_KEY from
+      localStorage (system preference on first visit) and applies the class
+      to <html>, which drives the `dark:` variant. Runs on every page load,
+      so the choice persists and syncs across pages/tabs.
+    -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var stored = null;
+        try {
+          stored = localStorage.getItem('{THEME_STORAGE_KEY}');
+        } catch (e) {
+          /* storage unavailable (private mode / file://) — fall through */
+        }
+        var prefersDark =
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var dark = stored ? stored === 'dark' : prefersDark;
+        root.classList.remove('light', 'dark');
+        root.classList.add(dark ? 'dark' : 'light');
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#131316' : '#fafafa');
+      })();
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
