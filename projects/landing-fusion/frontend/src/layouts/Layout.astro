@@ -60,12 +60,12 @@ void THEME_STORAGE_KEY;
       to <html>, which drives the `dark:` variant. Runs on every page load,
       so the choice persists and syncs across pages/tabs.
     -->
-    <script is:inline>
+    <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
         var root = document.documentElement;
         var stored = null;
         try {
-          stored = localStorage.getItem('{THEME_STORAGE_KEY}');
+          stored = localStorage.getItem(THEME_STORAGE_KEY);
         } catch (e) {
           /* storage unavailable (private mode / file://) — fall through */
         }

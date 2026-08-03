@@ -1,0 +1,21 @@
+<div class="card p-6">
+  <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-fu-primary/10 text-fu-primary">
+    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      {% if value.method_type == 'email' %}
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      {% elif value.method_type == 'phone' %}
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.38 4.14a1 1 0 01-.52 1.25l-2.17.87a12.04 12.04 0 006.25 6.25l.87-2.17a1 1 0 011.25-.52l4.14 1.38a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z"/>
+      {% elif value.method_type == 'address' %}
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      {% else %}
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      {% endif %}
+    </svg>
+  </div>
+  <h3 class="text-sm font-semibold text-fu-text">{{ value.label }}</h3>
+  {% if value.href %}
+    <a href="{{ value.href }}" class="mt-1 block text-sm text-fu-text/70 hover:text-fu-primary">{{ value.value }}</a>
+  {% else %}
+    <p class="mt-1 text-sm text-fu-text/70">{{ value.value }}</p>
+  {% endif %}
+</div>

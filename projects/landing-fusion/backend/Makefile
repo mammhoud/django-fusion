@@ -1,0 +1,74 @@
+# landing-fusion backend — Django + Wagtail (landing-only)
+# Mirrors projects/cms-fusion/backend conventions, trimmed to the landing slice.
+# ============================================================
+.PHONY: help dev server install migrate static collectstatic superuser shell check test format lint fix
+
+.DEFAULT_GOAL := help
+SHELL := /bin/bash
+
+# Colors
+CYAN   := \033[0;36m
+GREEN  := \033[0;32m
+YELLOW := \033[1;33m
+BLUE   := \033[0;34m
+RED    := \033[0;31m
+NC     := \033[0m
+
+DEFAULT_PORT := 8074
+PYTHONPATH := $(CURDIR):$(CURDIR)/apps
+export PYTHONPATH
+UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
+UV := $(UV_BIN) --project ../..
+UV_RUN := $(UV) run
+MANAGE := $(UV_RUN) python manage.py
+
+help: ## Show backend commands
+	@echo -e "$(CYAN)=== Landing-Fusion Backend (Django + Wagtail) ===$(NC)"
+	@echo -e "$(BLUE)Site: landing-fusion$(NC)"
+	@awk 'BEGIN {FS = ":.*##"; printf ""} /^[a-zA-Z_-]+:.*?##/ { printf "  $(CYAN)%-18s$(NC) %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+
+dev: ## Run Django dev server
+	$(MANAGE) runserver 0.0.0.0:$${PORT:-$(DEFAULT_PORT)}
+
+server: ## Production server (gunicorn, WSGI)
+	$(UV_RUN) gunicorn wsgi:application --bind 0.0.0.0:$${PORT:-$(DEFAULT_PORT)} --workers $${WORKERS:-4} --timeout $${TIMEOUT:-120} --log-level $${LOG_LEVEL:-info}
+
+install: ## Install Python deps (workspace venv)
+	@echo -e "$(BLUE)Syncing workspace deps...$(NC)"
+	@cd ../.. && $(UV) sync
+	@echo -e "$(GREEN)✅ Installed$(NC)"
+
+migrate: ## Make + apply migrations
+	@echo -e "$(BLUE)Making migrations...$(NC)"
+	@$(MANAGE) makemigrations --noinput
+	@echo -e "$(BLUE)Applying migrations...$(NC)"
+	@$(MANAGE) migrate --noinput
+	@echo -e "$(GREEN)✅ Migrations done$(NC)"
+
+static: collectstatic ## Alias for collectstatic
+collectstatic: ## Collect static files
+	@$(MANAGE) collectstatic --noinput
+
+superuser: ## Create superuser (interactive)
+	@$(MANAGE) createsuperuser
+
+shell: ## Django shell
+	@$(MANAGE) shell
+
+check: ## Django system checks
+	@$(MANAGE) check
+
+seed: ## Create the Wagtail page tree + default landing content
+	@$(MANAGE) seed_landing
+
+test: ## Run Django tests
+	@$(MANAGE) test apps.landing --verbosity=2
+
+format: ## Format with ruff
+	@$(UV_RUN) ruff format .
+
+lint: ## Fast lint (unused imports)
+	@$(UV_RUN) ruff check --select F401,F841,I001 --fix --no-cache .
+
+fix: ## Fix all ruff issues
+	@$(UV_RUN) ruff check --fix .

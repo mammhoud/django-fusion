@@ -1,0 +1,56 @@
+<header class="site-header" x-data="{ open: false }">
+  <div class="container-fusion" style="display:flex;height:4rem;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:.5rem;font-size:1.25rem;font-weight:700;color:hsl(var(--fu-primary));text-decoration:none;">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#7c3aed"/>
+            <stop offset="1" stop-color="#4c1d95"/>
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" rx="8" fill="url(#logo-g)"/>
+        <path d="M16 6l8 4-8 4-8-4 8-4zm0 9l6 3v5l-6 3-6-3v-5l6-3z" fill="#fff"/>
+      </svg>
+      <span>Fusion CMS</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main" style="display:none;align-items:center;gap:1.5rem;">
+      <a href="/">Home</a>
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <style>
+      @media (min-width: 768px) { nav[aria-label="Main"] { display: flex !important; } }
+    </style>
+
+    <div style="display:none;align-items:center;gap:.75rem;">
+      <button type="button" class="btn btn-secondary" style="padding:.5rem 1rem;" @click="open = !open">Log In</button>
+      <a href="/#cta" class="btn btn-primary" style="padding:.5rem 1rem;">Get Started</a>
+    </div>
+    <style>
+      @media (min-width: 768px) { .site-header > .container-fusion > div:last-of-type { display: flex !important; } }
+    </style>
+
+    <!-- Mobile menu button -->
+    <button type="button" class="btn btn-secondary" style="padding:.5rem;" @click="open = !open" aria-label="Toggle navigation menu" :aria-expanded="open.toString()">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <style>
+      @media (min-width: 768px) { .site-header > .container-fusion > button { display: none !important; } }
+    </style>
+  </div>
+
+  <div x-show="open" x-cloak x-transition style="border-top:1px solid hsl(var(--fu-border));background:hsl(var(--fu-card));">
+    <nav class="container-fusion" aria-label="Mobile" style="display:flex;flex-direction:column;gap:.25rem;padding-block:1rem;">
+      <a href="/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Home</a>
+      <a href="/#features" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Features</a>
+      <a href="/#pricing" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Pricing</a>
+      <a href="/about/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">About</a>
+      <a href="/faq/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">FAQ</a>
+      <a href="/contact/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Contact</a>
+    </nav>
+  </div>
+</header>

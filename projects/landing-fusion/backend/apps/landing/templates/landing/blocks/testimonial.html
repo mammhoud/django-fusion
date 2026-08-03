@@ -1,0 +1,15 @@
+<figure class="card flex h-full flex-col p-6">
+  <div class="mb-4 flex gap-1 text-amber-400" aria-label="5 out of 5 stars">
+    {% for i in "12345" %}<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.367 2.446a1 1 0 00-.363 1.118l1.286 3.958c.3.922-.755 1.688-1.539 1.118l-3.367-2.446a1 1 0 00-1.175 0l-3.367 2.446c-.783.57-1.838-.196-1.539-1.118l1.286-3.958a1 1 0 00-.363-1.118L2.924 9.385c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.958z"/></svg>{% endfor %}
+  </div>
+  <blockquote class="flex-1 text-sm text-fu-text/80">“{{ value.quote }}”</blockquote>
+  <figcaption class="mt-6 flex items-center gap-3">
+    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-fu-primary/10 text-sm font-semibold text-fu-primary">
+      {{ value.avatar_initials|default:value.author|slice:":2" }}
+    </span>
+    <div>
+      <div class="text-sm font-semibold text-fu-text">{{ value.author }}</div>
+      {% if value.role %}<div class="text-xs text-fu-text/60">{{ value.role }}</div>{% endif %}
+    </div>
+  </figcaption>
+</figure>
