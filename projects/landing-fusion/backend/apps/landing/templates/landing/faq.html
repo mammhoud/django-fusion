@@ -1,0 +1,10 @@
+{% extends "landing/base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}{{ page.title }} · Fusion CMS{% endblock %}
+
+{% block content %}
+  {% if page.hero %}{% include_block page.hero %}{% endif %}
+  {% if page.faq %}{% include_block page.faq %}{% endif %}
+  {% if page.cta %}{% include_block page.cta %}{% endif %}
+{% endblock %}

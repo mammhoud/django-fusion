@@ -1,0 +1,436 @@
+"""
+Seed the landing Wagtail page tree with default content.
+
+Creates the site record plus Home / About / Contact / FAQ / Privacy pages
+mirroring the Astro frontend content (see src/lib/site.ts and the pages in
+frontend/src/pages/).
+
+Idempotent: pages already present under the site root are left untouched.
+
+Usage:
+    python manage.py seed_landing
+"""
+from django.core.management.base import BaseCommand
+from wagtail.models import Page, Site
+
+from apps.landing.models import AboutPage, ContactPage, FaqPage, HomePage, PrivacyPage
+
+DEFAULT_HOME_CONTENT = {
+    "hero": [
+        (
+            "hero",
+            {
+                "badge": "Powered by the AHA stack",
+                "title": "Learn Without Limits",
+                "subtitle": (
+                    "Master new skills with expert-led courses, interactive content, "
+                    "and a community of learners."
+                ),
+                "primary_cta": {"label": "Explore Features", "href": "/#features", "style": "secondary"},
+                "secondary_cta": {"label": "Get Started Free", "href": "/#cta", "style": "white"},
+                "trusted_by": "Trusted by 5,000+ learners worldwide",
+            },
+        )
+    ],
+    "stats": [
+        (
+            "stats",
+            {
+                "title": "Numbers that speak for themselves",
+                "stats": [
+                    {"value": "5", "suffix": "K+", "label": "Learners worldwide"},
+                    {"value": "120", "suffix": "+", "label": "Courses"},
+                    {"value": "80", "suffix": "+", "label": "Instructors"},
+                    {"value": "40", "suffix": "K+", "label": "Reviews"},
+                ],
+            },
+        )
+    ],
+    "features": [
+        (
+            "features",
+            {
+                "eyebrow": "Features",
+                "title": "Everything you need to launch",
+                "description": (
+                    "A complete landing and marketing stack, ported from the heavy "
+                    "Next.js SPA to a lightweight AHA architecture."
+                ),
+                "features": [
+                    {
+                        "icon": "M13 10V3L4 14h7v7l9-11h-7z",
+                        "title": "Lightning Fast",
+                        "description": "Server-rendered HTML with minimal client JS. Sub-second loads on any connection.",
+                    },
+                    {
+                        "icon": "M4 5h16v14H4z M4 12h16",
+                        "title": "HTMX Fragments",
+                        "description": "Dynamic updates stream from the Django backend as HTML — no JSON API layer needed.",
+                    },
+                    {
+                        "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
+                        "title": "Secure by Default",
+                        "description": "django-allauth sessions and CSRF-protected HTMX forms work out of the box.",
+                    },
+                    {
+                        "icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87",
+                        "title": "Built for Teams",
+                        "description": "Role-based dashboards for students, instructors and admins — all from one codebase.",
+                    },
+                    {
+                        "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
+                        "title": "Insightful KPIs",
+                        "description": "Live metric cards and dashboards rendered as lightweight server fragments.",
+                    },
+                    {
+                        "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
+                        "title": "Fully Localized",
+                        "description": "Multi-language support with the Django DefaultLanguageMiddleware preserved.",
+                    },
+                ],
+            },
+        )
+    ],
+    "testimonials": [
+        (
+            "testimonials",
+            {
+                "eyebrow": "Testimonials",
+                "title": "Loved by teams worldwide",
+                "description": "Hear from the people building on the Fusion platform.",
+                "testimonials": [
+                    {
+                        "quote": "The switch from a heavy React SPA to HTMX fragments cut our page load time in half. Everything just works.",
+                        "author": "Sarah Mitchell",
+                        "role": "CTO, EduStart",
+                        "avatar_initials": "SM",
+                    },
+                    {
+                        "quote": "Alpine.js replaced all our custom UI state code. The FAQ accordion and modals took an afternoon instead of a week.",
+                        "author": "David Chen",
+                        "role": "Lead Developer, LearnLoop",
+                        "avatar_initials": "DC",
+                    },
+                    {
+                        "quote": "Server-rendered HTML means perfect SEO without any extra work. Our blog traffic doubled within a month.",
+                        "author": "Amira Hassan",
+                        "role": "Marketing Director, SkillBridge",
+                        "avatar_initials": "AH",
+                    },
+                ],
+            },
+        )
+    ],
+    "pricing": [
+        (
+            "pricing",
+            {
+                "eyebrow": "Pricing",
+                "title": "Simple, transparent pricing",
+                "description": "Start free and scale as you grow. No hidden fees, cancel anytime.",
+                "tiers": [
+                    {
+                        "name": "Starter",
+                        "description": "Perfect for individuals exploring the platform.",
+                        "price": "$0",
+                        "period": "/forever",
+                        "features": [
+                            "Up to 3 courses",
+                            "Community support",
+                            "Basic progress tracking",
+                            "Public profile",
+                        ],
+                        "cta_label": "Start Free",
+                        "cta_href": "/#cta",
+                        "featured": False,
+                    },
+                    {
+                        "name": "Pro",
+                        "description": "For active learners and content creators.",
+                        "price": "$29",
+                        "period": "/per month",
+                        "features": [
+                            "Unlimited courses",
+                            "Priority support",
+                            "Advanced analytics",
+                            "Offline downloads",
+                            "Certificates",
+                        ],
+                        "cta_label": "Go Pro",
+                        "cta_href": "/#cta",
+                        "featured": True,
+                    },
+                    {
+                        "name": "Team",
+                        "description": "For teams and organizations of any size.",
+                        "price": "$99",
+                        "period": "/per month",
+                        "features": [
+                            "Everything in Pro",
+                            "SSO & role management",
+                            "Dedicated success manager",
+                            "Custom branding",
+                            "API access",
+                        ],
+                        "cta_label": "Contact Sales",
+                        "cta_href": "/contact/",
+                        "featured": False,
+                    },
+                ],
+            },
+        )
+    ],
+    "faq": [
+        (
+            "faq",
+            {
+                "eyebrow": "FAQ",
+                "title": "Frequently asked questions",
+                "description": "Everything you need to know about the product and billing.",
+                "items": [
+                    {
+                        "question": "What is the AHA stack?",
+                        "answer": "AHA stands for Astro + HTMX + Alpine.js — a server-first rendering stack that ships minimal client-side JavaScript.",
+                    },
+                    {
+                        "question": "How do I get started?",
+                        "answer": "Create a free account, pick a course, and start learning instantly. No credit card required.",
+                    },
+                    {
+                        "question": "Are there any hidden fees?",
+                        "answer": "No. Pricing is transparent — the free plan stays free, and paid plans are billed monthly or yearly.",
+                    },
+                    {
+                        "question": "Can I switch plans later?",
+                        "answer": "Yes, you can upgrade, downgrade, or cancel at any time from your account settings.",
+                    },
+                    {
+                        "question": "Do you offer team or enterprise pricing?",
+                        "answer": "Yes — the Team plan adds SSO, role management and custom branding. Contact us for enterprise needs.",
+                    },
+                    {
+                        "question": "Is my data secure?",
+                        "answer": "Security is a core part of the platform: CSRF-protected forms, django-allauth sessions, and hardened defaults.",
+                    },
+                ],
+            },
+        )
+    ],
+    "cta": [
+        (
+            "cta",
+            {
+                "title": "Start Learning Today",
+                "subtitle": "Join thousands of students and start your learning journey today.",
+                "primary_cta": {"label": "Create Free Account", "href": "/#cta", "style": "white"},
+                "secondary_cta": {"label": "Talk to Sales", "href": "/contact/", "style": "outline"},
+            },
+        )
+    ],
+}
+
+
+class Command(BaseCommand):
+    help = "Seed the landing Wagtail page tree with default content."
+
+    def handle(self, *args, **options):
+        self.stdout.write("Seeding landing pages…")
+
+        root = Page.objects.filter(depth=1).first()
+        if root is None:
+            self.stdout.write(self.style.ERROR("No root page — run migrations first."))
+            return
+
+        landing_models = {HomePage, AboutPage, ContactPage, FaqPage, PrivacyPage}
+
+        # Repoint-or-drop any Site that does not point at one of our landing
+        # pages (Wagtail's migrations create a default site rooted on the
+        # "Welcome" page, which we remove below).
+        for site in Site.objects.all():
+            try:
+                rooted_in_landing = site.root_page.specific_class in landing_models
+            except Page.DoesNotExist:  # pragma: no cover — orphaned pointer
+                rooted_in_landing = False
+            if not rooted_in_landing:
+                self.stdout.write(f"Removing default site: {site.hostname}")
+                site.delete()
+
+        # Remove Wagtail's default "Welcome" page (created by migrations) so
+        # this command can own the site root and the '/' route.
+        for child in root.get_children():
+            if child.specific_class not in landing_models:
+                self.stdout.write(f"Removing default page: {child.title} (slug={child.slug})")
+                child.delete()
+
+        # ── Home page (root child) ──────────────────────────────────────
+        home, created = self._get_or_create_child(
+            root, HomePage, title="Home", slug="home", **DEFAULT_HOME_CONTENT
+        )
+        self._created(created, "home")
+
+        # Site record — root_page points at the home page.
+        site, _ = Site.objects.get_or_create(
+            hostname="localhost",
+            defaults={"port": 8074, "is_default_site": True, "root_page": home},
+        )
+        site.root_page = home
+        site.save()
+        self.stdout.write(f"Site root set to {home.title} (http://localhost:{site.port}/)")
+
+        # ── About ───────────────────────────────────────────────────────
+        about, created = self._get_or_create_child(
+            home,
+            AboutPage,
+            title="About Us",
+            slug="about",
+            hero=[
+                (
+                    "hero",
+                    {
+                        "title": "About Us",
+                        "subtitle": "The story behind Fusion CMS and the AHA stack.",
+                        "primary_cta": {"label": "Our Features", "href": "/#features", "style": "secondary"},
+                        "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
+                    },
+                )
+            ],
+            body=(
+                "<p>Fusion CMS started with a simple belief: marketing sites "
+                "should be fast, secure, and easy to maintain.</p>"
+                "<p>We migrated our own landing pages from a heavy Next.js SPA "
+                "to the AHA stack — Astro for server rendering, HTMX for dynamic "
+                "updates, and Alpine.js for client-side polish.</p>"
+                "<p>The result: sub-second loads, perfect SEO, and a codebase "
+                "that a small team can own.</p>"
+            ),
+            cta=DEFAULT_HOME_CONTENT["cta"],
+        )
+        self._created(created, "about")
+
+        # ── Contact ─────────────────────────────────────────────────────
+        contact, created = self._get_or_create_child(
+            home,
+            ContactPage,
+            title="Contact",
+            slug="contact",
+            hero=[
+                (
+                    "hero",
+                    {
+                        "title": "Get in Touch",
+                        "subtitle": "We'd love to hear from you. Reach out any time.",
+                    },
+                )
+            ],
+            contact=[
+                (
+                    "contact",
+                    {
+                        "eyebrow": "Contact",
+                        "title": "We'd love to hear from you",
+                        "description": "Send us a message and we'll respond within 24 hours.",
+                        "methods": [
+                            {
+                                "method_type": "email",
+                                "label": "Email",
+                                "value": "structa.cloud@gmail.com",
+                                "href": "mailto:structa.cloud@gmail.com",
+                            },
+                            {
+                                "method_type": "phone",
+                                "label": "Phone",
+                                "value": "+1 (555) 010-2030",
+                                "href": "tel:+15550102030",
+                            },
+                            {
+                                "method_type": "address",
+                                "label": "Address",
+                                "value": "123 Fusion Lane, Suite 400",
+                            },
+                            {
+                                "method_type": "hours",
+                                "label": "Working Hours",
+                                "value": "Mon – Fri, 9:00 – 18:00",
+                            },
+                        ],
+                        "form_title": "Send us a message",
+                        "form_description": "Fill out the form and our team will get back to you.",
+                    },
+                )
+            ],
+            cta=[
+                (
+                    "cta",
+                    {
+                        "title": "Prefer email?",
+                        "subtitle": "Write to structa.cloud@gmail.com and we'll reply within a day.",
+                        "primary_cta": {"label": "Send an Email", "href": "mailto:structa.cloud@gmail.com", "style": "white"},
+                    },
+                )
+            ],
+        )
+        self._created(created, "contact")
+
+        # ── FAQ ─────────────────────────────────────────────────────────
+        faq, created = self._get_or_create_child(
+            home,
+            FaqPage,
+            title="FAQ",
+            slug="faq",
+            hero=[
+                (
+                    "hero",
+                    {
+                        "title": "Frequently Asked Questions",
+                        "subtitle": "Quick answers to the most common questions.",
+                    },
+                )
+            ],
+            faq=DEFAULT_HOME_CONTENT["faq"],
+            cta=DEFAULT_HOME_CONTENT["cta"],
+        )
+        self._created(created, "faq")
+
+        # ── Privacy ─────────────────────────────────────────────────────
+        privacy, created = self._get_or_create_child(
+            home,
+            PrivacyPage,
+            title="Privacy Policy",
+            slug="privacy",
+            body=(
+                "<p>This privacy policy explains how Fusion CMS collects, uses, "
+                "and protects your information.</p>"
+                "<h3>What we collect</h3>"
+                "<p>Account details, course progress, and usage analytics.</p>"
+                "<h3>How we use it</h3>"
+                "<p>To deliver courses, personalize content, and improve the platform.</p>"
+                "<h3>Your rights</h3>"
+                "<p>You can request a copy or deletion of your data at any time "
+                "by contacting us.</p>"
+            ),
+        )
+        self._created(created, "privacy")
+
+        self.stdout.write(self.style.SUCCESS("✅ Landing pages seeded."))
+
+    # ── Helpers ─────────────────────────────────────────────────────
+    def _get_or_create_child(self, parent, model, **fields):
+        """Idempotently create a treebeard page under ``parent``.
+
+        Treebeard nodes cannot be created with ``Model.objects.get_or_create``
+        (``save()`` runs ``full_clean`` before ``path``/``depth`` are set), so
+        we look up by slug first and otherwise use ``parent.add_child``.
+        """
+        slug = fields["slug"]
+        existing = model.objects.filter(slug=slug, depth=parent.depth + 1).first()
+        if existing is not None:
+            return existing, False
+        page = model(**fields)
+        parent.add_child(instance=page)
+        return page, True
+
+    def _created(self, created, label):
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created {label} page."))
+        else:
+            self.stdout.write(f"{label} page already exists.")

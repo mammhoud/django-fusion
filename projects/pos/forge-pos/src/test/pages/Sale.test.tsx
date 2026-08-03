@@ -382,9 +382,15 @@ describe('Sale Page', () => {
     mockInvokeSuccess('get_categories', mockCategories);
     renderWithRouter(<Sale />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/Backend timed out/i)).toBeInTheDocument();
-    });
+    // The toast is surfaced via the shared status-toast hook; this environment
+    // is slow (imports take 30s+), so give it a generous timeout to avoid
+    // intermittent failures.
+    await waitFor(
+      () => {
+        expect(screen.getByText(/Backend timed out/i)).toBeInTheDocument();
+      },
+      { timeout: 8000 },
+    );
   });
 
   // ── Cart operations ──
