@@ -115,7 +115,7 @@ export default function Analytics() {
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-primary/20 rounded-lg">
-                  <span className="icon-[tabler--moneybag] w-6 h-6 text-info" />
+                  <span className="ri-money-dollar-box-line ri-24px text-info" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.totalRevenue')}</p>
@@ -131,7 +131,7 @@ export default function Analytics() {
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-info/20 rounded-lg">
-                  <span className="icon-[tabler--trending-up] w-6 h-6 text-info" />
+                  <span className="ri-stock-line ri-24px text-info" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.growthRate')}</p>
@@ -145,7 +145,7 @@ export default function Analytics() {
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-secondary/20 rounded-lg">
-                  <span className="icon-[tabler--shopping-cart] w-6 h-6 text-secondary" />
+                  <span className="ri-shopping-cart-line ri-24px text-secondary" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.totalOrders')}</p>
@@ -159,7 +159,7 @@ export default function Analytics() {
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-warning/20 rounded-lg">
-                  <span className="icon-[tabler--moneybag] w-6 h-6 text-warning" />
+                  <span className="ri-money-dollar-box-line ri-24px text-warning" />
                 </div>
                 <div>
                   <p className="text-base-content/60">{t('analytics.avgOrderValue')}</p>

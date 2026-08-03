@@ -164,7 +164,7 @@ export default function Modal({
                     className="modal__close"
                     aria-label="Close"
                   >
-                    <span className="icon-[tabler--x] modal__close-icon" />
+                    <span className="ri-close-line modal__close-icon" />
                   </button>
                 )}
               </div>

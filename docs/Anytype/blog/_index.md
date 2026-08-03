@@ -24,12 +24,12 @@ Tags: blog---
 
 ### POS Theme System Launch
 
-> **Excerpt:** Five production-ready themes for the POS desktop app — Default, Corporate, Luxury, Pastel, and Cyberpunk.
+> **Excerpt:** Five production-ready themes for the POS desktop app — Default, Corporate, Luxury, Pastel, and Perplexity.
 
 - **Published:** 2026-07-24
 - **Author:** → `people/mammhoud.md`
 - **Category:** Announcement
-- **Tags:** `#pos-solo` `#pos-full` `#theme-default` `#theme-corporate` `#theme-luxury` `#theme-pastel` `#theme-cyberpunk`
+- **Tags:** `#pos-solo` `#pos-full` `#theme-default` `#theme-corporate` `#theme-luxury` `#theme-pastel` `#theme-perplexity`
 
 The POS suite now ships with five theme variants, each supporting light and dark mode. The theme system uses CSS custom properties that map to Tailwind v4 tokens, making it easy to create new variants or customize existing ones.
 

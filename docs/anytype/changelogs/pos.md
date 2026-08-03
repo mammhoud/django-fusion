@@ -14,7 +14,7 @@ T**ags: **#`pos-mini `#`pos-solo `#`pos-full `#`pos-cloud
  --- 
 ## [2026-07-24] — Latest   
 ### Added   
-- **Theme System** — 5 theme variants (Default, Corporate, Luxury, Pastel, Cyberpunk)   
+- **Theme System** — 5 theme variants (Default, Corporate, Luxury, Pastel, Perplexity)   
 - **i18n** — 5 languages (EN, AR, FR, DE, ES) with RTL support   
 - **Role System** — Permission flags + 5 default roles (planning phase)   
 - **Sync Architecture** — 3-tier model (air-gapped, LAN, cloud)   

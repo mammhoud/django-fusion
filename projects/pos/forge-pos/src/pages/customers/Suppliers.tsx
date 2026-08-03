@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Supplier } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
+import { useApiMutation } from '../../hooks/useApiMutation';
 import StatusToast from '../../components/ui/StatusToast';
 
 type SortKey = 'name-asc' | 'name-desc' | 'newest';
@@ -51,22 +52,43 @@ export default function Suppliers() {
     }
   };
 
+  // ── Mutation hook — matches backend CRUD commands add/update/soft_delete_supplier ──
+  const supplierApi = useApiMutation<Supplier>({
+    singular: 'supplier',
+    softDelete: true,
+    createArg: 'supplier',
+  });
+
+  // Shared mutation failure handling: quiet reload + visible error toast.
+  const onMutationError = (err: Error) => {
+    showError(`${t('common.error')}: ${err.message}`);
+    loadSuppliers({ quiet: true });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (editing) {
-        await invoke('update_supplier', { id: editing.id, update: form });
-      } else {
-        await invoke('add_supplier', { supplier: form });
-      }
-      setShowForm(false);
-      setEditing(null);
-      setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' });
-      showSuccess(t('common.saved'));
-      loadSuppliers({ quiet: true });
-    } catch (error) {
-      console.error('Error saving supplier:', error);
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
+    if (editing) {
+      await supplierApi.update(editing.id, form, {
+        onSuccess: () => {
+          setShowForm(false);
+          setEditing(null);
+          setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' });
+          showSuccess(t('common.saved'));
+          loadSuppliers({ quiet: true });
+        },
+        onError: onMutationError,
+      });
+    } else {
+      await supplierApi.create(form, {
+        onSuccess: () => {
+          setShowForm(false);
+          setEditing(null);
+          setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' });
+          showSuccess(t('common.saved'));
+          loadSuppliers({ quiet: true });
+        },
+        onError: onMutationError,
+      });
     }
   };
 
@@ -86,14 +108,13 @@ export default function Suppliers() {
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
-    try {
-      await invoke('soft_delete_supplier', { id });
-      showSuccess(t('common.deleted'));
-      loadSuppliers({ quiet: true });
-    } catch (error) {
-      console.error('Error deleting supplier:', error);
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    await supplierApi.remove(id, {
+      onSuccess: () => {
+        showSuccess(t('common.deleted'));
+        loadSuppliers({ quiet: true });
+      },
+      onError: onMutationError,
+    });
   };
 
   const q = debouncedSearch.trim().toLowerCase();
@@ -123,7 +144,7 @@ export default function Suppliers() {
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' }); }}
             className="btn btn-primary gap-2 shrink-0 active:scale-[0.98] transition-all"
           >
-            <span className="icon-[tabler--plus]" /> {t('suppliers.addSupplier')}
+            <span className="ri-add-line" /> {t('suppliers.addSupplier')}
           </button>
         </div>
 
@@ -131,7 +152,7 @@ export default function Suppliers() {
         <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
-              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+              <span className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
               <div className="field">
                 <input
                   type="text"
@@ -144,11 +165,9 @@ export default function Suppliers() {
               </div>
               {isFiltering ? (
                 <div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   aria-label="filtering"
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                    border-2 border-teal-400 border-t-transparent rounded-full"
+                    border-2 border-teal-400 border-t-transparent rounded-full animate-spin"
                 />
               ) : search ? (
                 <button
@@ -156,7 +175,7 @@ export default function Suppliers() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <span className="icon-[tabler--x] w-4 h-4" />
+                  <span className="ri-close-line ri-16px" />
                 </button>
               ) : null}
             </div>
@@ -180,8 +199,6 @@ export default function Suppliers() {
 
         {showForm && (
           <form
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
             className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3"
           >
@@ -203,11 +220,7 @@ export default function Suppliers() {
 
         {isLoading ? (
           <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center">
-            <div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
-            />
+            <div className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2 animate-spin" />
             <p className="text-base-content/50 text-sm">{t('common.loading')}</p>
           </div>
         ) : sorted.length === 0 ? (
@@ -219,11 +232,11 @@ export default function Suppliers() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {sorted.map(supplier => (
-              <div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
+              <div key={supplier.id} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                      <span className="icon-[tabler--building] w-5 h-5" />
+                      <span className="ri-building-2-line ri-20px" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base-content">{supplier.name}</h3>
@@ -231,14 +244,14 @@ export default function Suppliers() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-primary"><span className="icon-[tabler--pencil]" /></button>
-                    <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
+                    <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-primary"><span className="ri-pencil-line" /></button>
+                    <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="ri-delete-bin-line" /></button>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1 text-sm text-base-content/60">
-                  {supplier.phone && <div className="flex items-center gap-1"><span className="icon-[tabler--phone]" /> {supplier.phone}</div>}
-                  {supplier.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {supplier.email}</div>}
-                  {supplier.address && <div className="flex items-center gap-1"><span className="icon-[tabler--map-pin]" /> {supplier.address}</div>}
+                  {supplier.phone && <div className="flex items-center gap-1"><span className="ri-phone-line" /> {supplier.phone}</div>}
+                  {supplier.email && <div className="flex items-center gap-1"><span className="ri-mail-line" /> {supplier.email}</div>}
+                  {supplier.address && <div className="flex items-center gap-1"><span className="ri-map-pin-2-line" /> {supplier.address}</div>}
                 </div>
               </div>
             ))}

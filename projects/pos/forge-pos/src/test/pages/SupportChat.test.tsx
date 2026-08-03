@@ -49,7 +49,6 @@ describe('SupportChat Page', () => {
       configured: true,
       support_email: 'support@structa.cloud',
     });
-    mockInvokeSuccess('get_settings', { mcp_enabled: false });
 
     renderWithRouter(<SupportChat />);
 

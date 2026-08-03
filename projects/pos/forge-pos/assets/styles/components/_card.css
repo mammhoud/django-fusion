@@ -17,61 +17,61 @@
 
 /* ── Base Block ───────────────────────────────────────────────── */
 .card {
-  --card__padding-x: 1.25rem;
-  --card__padding-y: 1.25rem;
-  --card__gap: 0.75rem;
+  --card-padding-x: 1.25rem;
+  --card-padding-y: 1.25rem;
+  --card-gap: 0.75rem;
 
   position: relative;
   display: flex;
   flex-direction: column;
-  background: oklch(var(--color-base-100));
-  color: var(--color__text--primary);
-  border-radius: var(--radius--lg);
-  box-shadow: var(--shadow--sm);
+  background: var(--color-base-100);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   transition:
-    transform var(--animation__duration--normal) var(--animation__easing--default),
-    box-shadow var(--animation__duration--normal) var(--animation__easing--default),
-    border-color var(--animation__duration--normal) var(--animation__easing--default),
-    background-color var(--animation__duration--slow) var(--animation__easing--default);
+    transform var(--animation-duration-normal) var(--animation-easing-default),
+    box-shadow var(--animation-duration-normal) var(--animation-easing-default),
+    border-color var(--animation-duration-normal) var(--animation-easing-default),
+    background-color var(--animation-duration-slow) var(--animation-easing-default);
 }
 
 /* ── Modifier: .card--hover ─────────────────────────────────────── */
 .card--hover:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow--lg);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ── Modifier: .card--glass ─────────────────────────────────────── */
 .card--glass {
-  background: oklch(var(--color-base-100) / 0.7);
+  background: color-mix(in oklch, var(--color-base-100) 70%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid oklch(var(--color-base-300) / 0.15);
+  border: 1px solid color-mix(in oklch, var(--color-base-300) 15%, transparent);
 }
 
 /* ── Modifier: .card--elevated ──────────────────────────────────── */
 .card--elevated {
-  box-shadow: var(--shadow--xl);
+  box-shadow: var(--shadow-xl);
 }
 
 .card--elevated:hover {
-  box-shadow: var(--shadow--elevated);
+  box-shadow: var(--shadow-elevated);
 }
 
 /* ── Modifier: .card--bordered ──────────────────────────────────── */
 .card--bordered {
-  border: 1px solid var(--color__border--subtle);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .card--bordered.card--hover:hover {
-  border-color: var(--color__border--default);
+  border-color: var(--color-border-default);
 }
 
 /* ── Modifier: .card--flat ──────────────────────────────────────── */
 .card--flat {
   box-shadow: none;
-  border: 1px solid var(--color__border--subtle);
-  background: oklch(var(--color-base-200) / 0.5);
+  border: 1px solid var(--color-border-subtle);
+  background: color-mix(in oklch, var(--color-base-200) 50%, transparent);
 }
 
 /* ── Modifier: .card--interactive ───────────────────────────────── */
@@ -85,23 +85,23 @@
 
 /* ── Modifier: .card--primary (primary accent top border) ──────── */
 .card--primary {
-  border-top: 3px solid oklch(var(--color-primary));
+  border-top: 3px solid var(--color-primary);
 }
 
 /* ── Modifier: .card--compact (tighter spacing) ─────────────────── */
 .card--compact {
-  --card__padding-x: 0.75rem;
-  --card__padding-y: 0.75rem;
-  --card__gap: 0.5rem;
+  --card-padding-x: 0.75rem;
+  --card-padding-y: 0.75rem;
+  --card-gap: 0.5rem;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
    Card Elements
    ═══════════════════════════════════════════════════════════════════
    Spacing uses CSS variables for easy customization.
-     --card__padding-x: 1.25rem (default)
-     --card__padding-y: 1.25rem (default)
-     --card__gap:       0.75rem (default)
+     --card-padding-x: 1.25rem (default)
+     --card-padding-y: 1.25rem (default)
+     --card-gap:       0.75rem (default)
    Override these on the .card element for custom spacing.
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -110,27 +110,27 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--card__gap);
-  padding: var(--card__padding-y) var(--card__padding-x) 0;
+  gap: var(--card-gap);
+  padding: var(--card-padding-y) var(--card-padding-x) 0;
 }
 
 .card__header + .card__body {
-  padding-top: calc(var(--card__padding-y) * 0.5);
+  padding-top: calc(var(--card-padding-y) * 0.5);
 }
 
 /* ── Element: .card__body ───────────────────────────────────────── */
 .card__body {
   flex: 1;
-  padding: var(--card__padding-y) var(--card__padding-x);
+  padding: var(--card-padding-y) var(--card-padding-x);
 }
 
 .card__header + .card__body,
 .card__body:first-child {
-  padding-top: var(--card__padding-y);
+  padding-top: var(--card-padding-y);
 }
 
 .card__body:last-child {
-  padding-bottom: var(--card__padding-y);
+  padding-bottom: var(--card-padding-y);
 }
 
 /* ── Element: .card__footer ─────────────────────────────────────── */
@@ -138,9 +138,9 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--card__gap);
-  padding: 0 var(--card__padding-x) var(--card__padding-y);
-  border-top: 1px solid var(--color__border--subtle);
+  gap: var(--card-gap);
+  padding: 0 var(--card-padding-x) var(--card-padding-y);
+  border-top: 1px solid var(--color-border-subtle);
   margin-top: auto;
 }
 
@@ -158,19 +158,19 @@
 
 /* ── Element: .card__title ──────────────────────────────────────── */
 .card__title {
-  font-size: var(--typography__size--lg);
-  font-weight: var(--typography__weight--semibold);
-  color: var(--color__text--primary);
-  line-height: var(--typography__line-height--tight);
+  font-size: var(--typography-size-lg);
+  font-weight: var(--typography-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--typography-line-height-tight);
   margin: 0;
 }
 
 /* ── Element: .card__subtitle ───────────────────────────────────── */
 .card__subtitle {
-  font-size: var(--typography__size--sm);
-  font-weight: var(--typography__weight--normal);
-  color: var(--color__text--secondary);
-  line-height: var(--typography__line-height--normal);
+  font-size: var(--typography-size-sm);
+  font-weight: var(--typography-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: var(--typography-line-height-normal);
   margin: 0.125rem 0 0 0;
 }
 
@@ -178,7 +178,7 @@
 .card__actions {
   display: flex;
   align-items: center;
-  gap: var(--card__gap);
+  gap: var(--card-gap);
   flex-wrap: wrap;
 }
 
@@ -186,7 +186,7 @@
 .card__media {
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius--lg) var(--radius--lg) 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   margin: 0;
 }
 
@@ -199,11 +199,11 @@
 }
 
 .card__media--top {
-  border-radius: var(--radius--lg) var(--radius--lg) 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .card__media--bottom {
-  border-radius: 0 0 var(--radius--lg) var(--radius--lg);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   margin-top: auto;
 }
 

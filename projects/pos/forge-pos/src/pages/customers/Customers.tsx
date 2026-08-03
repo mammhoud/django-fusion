@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Customer } from '../../types';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
+import { useApiMutation } from '../../hooks/useApiMutation';
 import Card from '../../components/ui/Card';
 import StatusToast from '../../components/ui/StatusToast';
 
@@ -58,25 +59,45 @@ export default function Customers() {
     }
   };
 
+  // ── Mutation hook — matches backend CRUD commands add/update/delete_customer ──
+  const customerApi = useApiMutation<Customer>({
+    singular: 'customer',
+    createArg: 'customer',
+  });
+
+  // Shared mutation failure handling: quiet reload + visible error toast.
+  const onMutationError = (err: Error) => {
+    showError(`${t('common.error')}: ${err.message}`);
+    loadCustomers({ quiet: true });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (editing) {
-        await invoke('update_customer', { id: editing.id, update: form });
-      window.dispatchEvent(new CustomEvent('customer-updated', { detail: { action: 'update', id: editing.id } }));
-      } else {
-        await invoke('add_customer', { customer: form });
-      window.dispatchEvent(new CustomEvent('customer-updated', { detail: { action: 'add' } }));
-      }
-      setShowForm(false);
-      setEditing(null);
-      setForm({ name: '', phone: '', email: '', notes: '' });
-      showSuccess(t('common.saved'));
-      // Quiet reload — don't pulse the skeleton just because the form closed.
-      loadCustomers({ quiet: true });
-    } catch (error) {
-      console.error('Error saving customer:', error);
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
+    if (editing) {
+      await customerApi.update(editing.id, form, {
+        onSuccess: () => {
+          window.dispatchEvent(new CustomEvent('customer-updated', { detail: { action: 'update', id: editing.id } }));
+          setShowForm(false);
+          setEditing(null);
+          setForm({ name: '', phone: '', email: '', notes: '' });
+          showSuccess(t('common.saved'));
+          // Quiet reload — don't pulse the skeleton just because the form closed.
+          loadCustomers({ quiet: true });
+        },
+        onError: onMutationError,
+      });
+    } else {
+      await customerApi.create(form, {
+        onSuccess: () => {
+          window.dispatchEvent(new CustomEvent('customer-updated', { detail: { action: 'add' } }));
+          setShowForm(false);
+          setEditing(null);
+          setForm({ name: '', phone: '', email: '', notes: '' });
+          showSuccess(t('common.saved'));
+          loadCustomers({ quiet: true });
+        },
+        onError: onMutationError,
+      });
     }
   };
 
@@ -93,14 +114,13 @@ export default function Customers() {
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
-    try {
-      await invoke('delete_customer', { id });
-      showSuccess(t('common.deleted'));
-      loadCustomers({ quiet: true });
-    } catch (error) {
-      console.error('Error deleting customer:', error);
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    await customerApi.remove(id, {
+      onSuccess: () => {
+        showSuccess(t('common.deleted'));
+        loadCustomers({ quiet: true });
+      },
+      onError: onMutationError,
+    });
   };
 
   const q = debouncedSearch.trim().toLowerCase();
@@ -120,7 +140,7 @@ export default function Customers() {
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-bold text-base-content shrink-0">{t('customers.title')}</h1>
           <div className="relative flex-1 max-w-64">
-            <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
+            <span className="ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
             <div className="field">
               <input
                 type="text"
@@ -138,7 +158,7 @@ export default function Customers() {
                 onClick={() => setSearch('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
-                <span className="icon-[tabler--x] w-3 h-3" />
+                <span className="ri-close-line ri-12px" />
               </button>
             ) : null}
           </div>
@@ -149,15 +169,13 @@ export default function Customers() {
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', phone: '', email: '', notes: '' }); }}
             className="btn btn-primary btn-sm gap-1 shrink-0"
           >
-            <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+            <span className="ri-add-line ri-14px" />
             <span className="text-xs">{t('customers.addCustomer')}</span>
           </button>
         </div>
 
         {showForm && (
           <form
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
           >
             <Card padding="md" className="space-y-3">
@@ -181,11 +199,7 @@ export default function Customers() {
 
         {isLoading ? (
           <Card padding="2xl" center>
-            <div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
-            />
+            <div className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2 animate-spin" />
             <p className="text-base-content/50 text-sm">{t('common.loading')}</p>
           </Card>
         ) : filteredCustomers.length === 0 ? (
@@ -199,35 +213,33 @@ export default function Customers() {
             {filteredCustomers.map(customer => (
               <div
                 key={customer.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
               >
                 <Card padding="md">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <span className="icon-[tabler--user] w-5 h-5" />
+                      <span className="ri-user-line ri-20px" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base-content">{customer.name}</h3>
                       <div className="flex items-center gap-1 text-sm text-base-content/50">
-                        <span className="icon-[tabler--star] text-amber-500" />
+                        <span className="ri-star-line text-amber-500" />
                         <span>{customer.loyalty_points.toFixed(0)} {t('customers.points')}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-1">
                     <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-primary">
-                      <span className="icon-[tabler--pencil]" />
+                      <span className="ri-pencil-line" />
                     </button>
                     <button onClick={() => handleDelete(customer.id)} className="p-2 text-slate-600 hover:text-red-600">
-                      <span className="icon-[tabler--trash]" />
+                      <span className="ri-delete-bin-line" />
                     </button>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1 text-sm text-base-content/60">
-                  {customer.phone && <div className="flex items-center gap-1"><span className="icon-[tabler--phone]" /> {customer.phone}</div>}
-                  {customer.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {customer.email}</div>}
+                  {customer.phone && <div className="flex items-center gap-1"><span className="ri-phone-line" /> {customer.phone}</div>}
+                  {customer.email && <div className="flex items-center gap-1"><span className="ri-mail-line" /> {customer.email}</div>}
                 </div>
               </Card>
             </div>

@@ -6,21 +6,44 @@
 
 ---
 
+## [Unreleased] — August 3, 2026
+
+### Added
+- **Modal system + shared form components** — Unified add/edit flows across modules via reusable `Modal` + form components (Employee module converted first)
+- **Plan cleanup** — All completed plans archived to `docs/plans/legacy/pos/` (UI Enhancement Master Plan, Task Status, Enhancement Plan); `forge-pos-plan.md` rewritten to track only pending work
+
+### Changed
+- **Icon system** — Remaining Iconify utility icons in SideNav (pin, logout, close, help-circle, user-check) + Analytics/Reports/Tax modules replaced with Heroicons (`react-icons/hi2`)
+- **Auth page** — Sign In submit arrow now flips for RTL (`rtl:rotate-180`), password show/hide toggle fixed, back-to-login arrows RTL-aware, leftover framer-motion `whileHover` removed, gradient class migrated to Tailwind v4 `bg-linear-to-r`
+- **Dead framer-motion props cleanup** — `initial/animate/exit/transition/whileHover/variants/layoutId` props stripped across ~20 files; 22 frozen `animate={{ rotate: 360 }}` spinners converted to Tailwind `animate-spin`; deleted `framer-legacy.d.ts` shim
+- **Behavior fixes from dead props** — Recipes cost bar now fills by percentage, Sale mobile checkout bar collapses when cart empty, Sale order-details sidebar collapses, Home icon spins on hover
+- **Product cards** — Unified single-color theme-adaptive styling; modals fixed on Products and Kitchen pages (FlyonUI opacity override)
+
+### Fixed
+- **Sale page layout** — Order-type component uses `flex gap-2` (removed wrap), total amount container simplified
+
+### Status
+All 17 sections of the UI Enhancement Master Plan complete; remaining work tracked in `docs/plans/pos/forge-pos-plan.md` (useApiMutation, DataTable bulk actions, events extension, preloading, Tauri notifications).
+
+---
+
 ## [Unreleased] — July 30, 2026
 
 ### Added
+- **KDS enhancements (from P2/P3 plan)** — Time-elapsed progress bar (green→yellow→red), overdue badge, 'overdue-first' sort, mute-30-min, and chime-variant dropdown
 - **Settings → Theme tab** — New "Theme" tab in Settings with Theme Studio link, "Preview Theme Components" modal, and active theme info display
 - **ThemePreviewModal** — Modal component showing buttons, forms, alerts, badges, tabs, stats, cards, tables, and progress bars across all 5 theme variants (default, corporate, luxury, pastel, cyberpunk)
 - **Email-based Support Chat** — Floating support widget using `VITE_SUPPORT_EMAIL` env var with mailto: links; hides entirely when email not configured; removed WebSocket/sidecar/ticket system dependency
 
 ### Changed
+- **Framer-motion removed** — Dependency dropped; components migrated to FlyonUI CSS animations
 - **ThemeShowcase page deleted** — Merged into `ThemePreviewModal`, accessible from Settings → Theme tab
 - **Dashboard text dimming** — Menu item labels dimmed (`text-base-content/80`), descriptions dimmed (`text-base-content/40`), category accent strips reduced opacity (`60%`)
 - **Removed routes** — `/theme-showcase` route removed from App.tsx, SideNav.tsx, Home.tsx, and preloadRoutes.ts
 
 ---
 
-## v1.2.0 — July 28, 2026
+## v1.2.0 — July 29, 2026
 
 ### Added
 - **Branding rename** — "Daily Grind" → "Forge POS" across all code + UI

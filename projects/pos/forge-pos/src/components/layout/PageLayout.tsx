@@ -45,7 +45,7 @@ function ProfileDropdown({
         <span className="hidden sm:block text-xs font-medium text-base-content/60 max-w-[120px] truncate">
           {user.email}
         </span>
-        <span className={`icon-[tabler--chevron-down] w-4 h-4 text-base-content/50 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <span className={`ri-arrow-down-s-line ri-16px text-base-content/50 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
@@ -53,9 +53,6 @@ function ProfileDropdown({
           <div
             className={`${dropdownMenu} absolute right-0 mt-1 w-64 bg-base-100 rounded-2xl shadow-xl
               border border-base-300/50 overflow-hidden z-50 rtl:right-auto rtl:left-0`}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
 
           >
             {/* User info header */}              <div className="px-4 py-3 border-b border-base-300/30">
@@ -81,7 +78,7 @@ function ProfileDropdown({
                 onClick={onLogout}
                 className="btn btn-ghost btn-block justify-start text-error hover:bg-error/10 rounded-xl"
               >
-                <span className="icon-[tabler--logout] w-4 h-4" />
+                <span className="ri-logout-box-r-line ri-16px" />
                 Sign Out
               </button>
             </div>
@@ -148,9 +145,6 @@ export default function PageLayout({
   };
 
   const renderLogo = (size: string) => (      <img
-      initial="initial"
-      animate="animate"
-      whileHover={{ rotate: 6, scale: 1.06 }}
       src={defaultLogo}
       alt="Forge POS"
       className={`${iconSpring} ${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
@@ -175,7 +169,7 @@ export default function PageLayout({
           <div
             className={`${toastSlideIn} fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold`}
           >
-            <span className="icon-[tabler--alert-triangle] w-5 h-5 shrink-0" />
+            <span className="ri-alert-line ri-20px shrink-0" />
             <span>Session expiring soon — click anywhere to stay logged in</span>              <button
                 onClick={dismissInactivityWarning}
                 className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
@@ -196,7 +190,7 @@ export default function PageLayout({
                 className="btn btn-square btn-ghost btn-icon"
                 aria-label={t('common.openNavigation') || 'Open navigation'}
               >
-                <span className="icon-[tabler--menu-4] w-5 h-5" />
+                <span className="ri-menu-4-line ri-20px" />
               </button>
               <button
                 onClick={handleBackNavigation}
@@ -204,7 +198,7 @@ export default function PageLayout({
                 className="btn btn-square btn-ghost btn-icon disabled:opacity-50"
                 aria-label={t('common.backToHome') || 'Back to home'}
               >
-                <span className="icon-[tabler--arrow-narrow-left] w-4 h-4 rtl:scale-x-[-1]" />
+                <span className="ri-arrow-left-line ri-16px rtl:scale-x-[-1]" />
               </button>
             </div>
             <div className="flex items-center gap-3 flex-1 justify-center min-w-0">
@@ -251,7 +245,7 @@ export default function PageLayout({
                 className="btn btn-square btn-ghost btn-icon shrink-0"
                 aria-label={t('common.openNavigation') || 'Open navigation'}
               >
-                <span className="icon-[tabler--menu-4] w-5 h-5" />
+                <span className="ri-menu-4-line ri-20px" />
               </button>
             </div>
           </div>

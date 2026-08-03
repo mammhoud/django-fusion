@@ -105,7 +105,7 @@ src/contexts/ThemeContext.tsx     # Register the new variant
 src/pages/Settings.tsx            # Add to Appearance tab
 ```
 
-The theme system supports 5 built-in color variants (Default, Corporate, Luxury, Pastel, Cyberpunk) — see `theming.md` for the full color palette reference.
+The theme system supports 5 built-in color variants (Default, Corporate, Luxury, Pastel, Perplexity) — see `theming.md` for the full color palette reference.
 
 ---
 

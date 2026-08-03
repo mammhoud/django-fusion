@@ -134,7 +134,6 @@ mod tests {
             dine_in_tables: None,
             delivery_fee: None,
             delivery_fee_per_km: None,
-            unique_card_colors: None,
             smtp_server: None,
             smtp_port: None,
             smtp_username: None,
@@ -225,30 +224,6 @@ mod tests {
         assert_eq!(stored, Some("logo_v2_replacement".to_string()), "logo should be replaced");
     }
 
-    #[test]
-    fn test_unique_card_colors_round_trip() {
-        let db_path = setup_test_db();
-
-        // Default is ON (column default = 1)
-        let initial = get_settings(&db_path).expect("get_settings should succeed");
-        assert!(initial.unique_card_colors, "unique_card_colors should default to true");
-
-        // Turn it off
-        save_settings(&db_path, UpdateSettings {
-            unique_card_colors: Some(false),
-            ..Default::default()
-        }).expect("disable unique card colors should succeed");
-        let result = get_settings(&db_path).expect("get_settings should succeed");
-        assert!(!result.unique_card_colors, "unique_card_colors should be false after toggle");
-
-        // Turn it back on
-        save_settings(&db_path, UpdateSettings {
-            unique_card_colors: Some(true),
-            ..Default::default()
-        }).expect("re-enable unique card colors should succeed");
-        let result = get_settings(&db_path).expect("get_settings should succeed");
-        assert!(result.unique_card_colors, "unique_card_colors should be true after re-enable");
-    }
 
     #[test]
     fn test_smtp_settings_round_trip() {

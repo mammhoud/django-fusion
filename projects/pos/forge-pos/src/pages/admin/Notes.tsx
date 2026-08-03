@@ -105,19 +105,19 @@ function getContentPreview(body: string, maxLines = 3): string {
 
 function getNoteIconClass(cat: string | null | undefined): string {
   switch ((cat || '').toLowerCase()) {
-    case 'idea': return 'icon-[tabler--bulb] w-3 h-3';
-    case 'task': return 'icon-[tabler--checkbox] w-3 h-3';
-    case 'recipe': return 'icon-[tabler--chef-hat] w-3 h-3';
-    case 'receipt': return 'icon-[tabler--receipt] w-3 h-3';
-    case 'preparation': return 'icon-[tabler--list-check] w-3 h-3';
-    case 'chef-tips': return 'icon-[tabler--bulb] w-3 h-3';
-    case 'allergen': return 'icon-[tabler--alert-triangle] w-3 h-3';
-    case 'plating': return 'icon-[tabler--palette] w-3 h-3';
-    case 'inventory': return 'icon-[tabler--packages] w-3 h-3';
-    case 'staff': return 'icon-[tabler--users] w-3 h-3';
-    case 'finance': return 'icon-[tabler--cash] w-3 h-3';
-    case 'customer': return 'icon-[tabler--user-circle] w-3 h-3';
-    default: return 'icon-[tabler--notes] w-3 h-3';
+    case 'idea': return 'ri-lightbulb-flash-line ri-12px';
+    case 'task': return 'ri-checkbox-line ri-12px';
+    case 'recipe': return 'ri-restaurant-2-line ri-12px';
+    case 'receipt': return 'ri-receipt-line ri-12px';
+    case 'preparation': return 'ri-check-double-line ri-12px';
+    case 'chef-tips': return 'ri-lightbulb-flash-line ri-12px';
+    case 'allergen': return 'ri-alert-line ri-12px';
+    case 'plating': return 'ri-palette-line ri-12px';
+    case 'inventory': return 'ri-box-2-line ri-12px';
+    case 'staff': return 'ri-group-line ri-12px';
+    case 'finance': return 'ri-money-dollar-circle-line ri-12px';
+    case 'customer': return 'ri-user-3-line ri-12px';
+    default: return 'ri-sticky-note-2-line ri-12px';
   }
 }
 
@@ -402,7 +402,7 @@ export default function Notes() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h1 className="text-2xl font-bold text-base-content flex items-center gap-2">
-              <span className="icon-[tabler--notes] w-6 h-6 text-primary" />
+              <span className="ri-sticky-note-2-line ri-24px text-primary" />
               {t('notes.title') || 'Notes'}
             </h1>
             <p className="text-sm text-base-content/50 mt-0.5">
@@ -417,14 +417,14 @@ export default function Notes() {
               className="btn btn-ghost btn-sm gap-1.5"
               title="Export filtered notes as JSON"
             >
-              <span className="icon-[tabler--download] w-4 h-4" />
+              <span className="ri-download-line ri-16px" />
               Export
             </button>
             <button
               onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false, selectable: false, steps: [] }); setShowForm(true); }}
               className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
             >
-              <span className="icon-[tabler--plus]" />
+              <span className="ri-add-line" />
               {t('notes.addTemplate') || 'New Note'}
             </button>
           </div>
@@ -487,7 +487,7 @@ export default function Notes() {
               }`}
               title={t('notes.selectableFilterHint') || 'Only quick-select notes'}
             >
-              <span className="icon-[tabler--click] w-3 h-3" />
+              <span className="ri-cursor-line ri-12px" />
               {t('notes.selectable') || 'Selectable'}
             </button>
 
@@ -510,16 +510,12 @@ export default function Notes() {
         <AnimatePresence>
           {showForm && (
             <form
-              initial={{ opacity: 0, y: -10, scaleY: 0.95 }}
-              animate={{ opacity: 1, y: 0, scaleY: 1 }}
-              exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
-              transition={{ duration: 0.2 }}
               onSubmit={handleSubmit}
               className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-5 space-y-4 shadow-lg overflow-hidden"
             >
               <div className="flex items-center justify-between mb-1">
                 <h3 className="font-semibold text-base-content flex items-center gap-2">
-                  <span className="icon-[tabler--pencil] w-4 h-4 text-primary" />
+                  <span className="ri-pencil-line ri-16px text-primary" />
                   {editing ? (t('common.edit') || 'Edit Note') : (t('notes.addTemplate') || 'New Note')}
                 </h3>
                 <button
@@ -527,14 +523,14 @@ export default function Notes() {
                   onClick={resetForm}
                   className="btn btn-ghost btn-sm btn-square"
                 >
-                  <span className="icon-[tabler--x] w-4 h-4" />
+                  <span className="ri-close-line ri-16px" />
                 </button>
               </div>
 
               {/* Category-aware helper strip */}
               {form.category === 'preparation' && (
                 <p className="-mt-2 text-[11px] text-base-content/40 flex items-center gap-1.5">
-                  <span className="icon-[tabler--list-check] w-3.5 h-3.5 text-info" />
+                  <span className="ri-check-double-line ri-14px text-info" />
                   {t('notes.preparationHint') || 'Structured steps below will render as a prep checklist on the Kitchen Display.'}
                 </p>
               )}
@@ -614,7 +610,7 @@ export default function Notes() {
                       className="toggle toggle-primary toggle-sm"
                     />
                     <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
-                      <span className="icon-[tabler--pin] w-3.5 h-3.5" />
+                      <span className="ri-pushpin-2-line ri-14px" />
                       {t('notes.setAsDefault') || 'Pin note'}
                     </span>
                   </label>
@@ -627,7 +623,7 @@ export default function Notes() {
                       className="toggle toggle-accent toggle-sm"
                     />
                     <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
-                      <span className="icon-[tabler--receipt] w-3.5 h-3.5" />
+                      <span className="ri-receipt-line ri-14px" />
                       {t('notes.useAsReceiptTemplate') || 'Use as receipt template'}
                     </span>
                   </label>
@@ -640,7 +636,7 @@ export default function Notes() {
                       className="toggle toggle-primary toggle-sm"
                     />
                     <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
-                      <span className="icon-[tabler--click] w-3.5 h-3.5" />
+                      <span className="ri-cursor-line ri-14px" />
                       {t('notes.selectable') || 'Quick-select on KDS & Sale'}
                     </span>
                   </label>
@@ -655,7 +651,7 @@ export default function Notes() {
                   className="btn btn-primary btn-sm gap-1.5"
                   disabled={!canSave}
                 >
-                    <span className="icon-[tabler--check] w-3.5 h-3.5" />
+                    <span className="ri-check-line ri-14px" />
                     {editing ? (t('common.update') || 'Update') : (t('common.save') || 'Save')}
                   </button>
                 </div>
@@ -672,13 +668,13 @@ export default function Notes() {
             </span>
             <div className="flex items-center gap-2">
               <button onClick={() => bulkPin(true)} className="btn btn-ghost btn-xs gap-1">
-                <span className="icon-[tabler--pin] w-3.5 h-3.5" /> Pin all
+                <span className="ri-pushpin-2-line ri-14px" /> Pin all
               </button>
               <button onClick={() => bulkPin(false)} className="btn btn-ghost btn-xs gap-1">
-                <span className="icon-[tabler--pin] w-3.5 h-3.5 rotate-45" /> Unpin all
+                <span className="ri-pushpin-2-line ri-14px rotate-45" /> Unpin all
               </button>
               <button onClick={bulkDelete} className="btn btn-ghost btn-xs gap-1 text-error">
-                <span className="icon-[tabler--trash] w-3.5 h-3.5" /> Delete
+                <span className="ri-delete-bin-line ri-14px" /> Delete
               </button>
               <button onClick={() => setSelectedNotes(new Set())} className="btn btn-ghost btn-xs">
                 Clear
@@ -691,21 +687,15 @@ export default function Notes() {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-3">
-              <div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                className="w-8 h-8 border-[3px] border-primary border-t-transparent rounded-full"
-              />
+              <div className="w-8 h-8 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
               <span className="text-sm text-base-content/50">{t('common.loading')}</span>
             </div>
           </div>
         ) : filteredNotes.length === 0 ? (
           <div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center py-20 text-base-content/40"
           >
-            <span className="icon-[tabler--note-off] w-16 h-16 mb-4 opacity-30" />
+            <span className="ri-sticky-note-line w-16 h-16 mb-4 opacity-30" />
             <p className="text-lg font-medium">
               {debouncedSearch || categoryFilter
                 ? (t('common.noDataFound') || 'No matches found')
@@ -716,19 +706,16 @@ export default function Notes() {
                 onClick={() => { setShowForm(true); }}
                 className="btn btn-primary btn-sm mt-4 gap-2"
               >
-                <span className="icon-[tabler--plus] w-4 h-4" />
+                <span className="ri-add-line ri-16px" />
                 {t('notes.addTemplate') || 'Create your first note'}
               </button>
             )}
           </div>
         ) : (
           <div className="grid grid--auto">
-            {filteredNotes.map((note, idx) => (
+            {filteredNotes.map((note) => (
               <div
                 key={note.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(idx * 0.03, 0.3) }}
                 className={`group bg-base-100/70 backdrop-blur-sm border border-base-300/30 border-l-4
                   rounded-xl p-4 hover:shadow-lg hover:shadow-base-300/20
                   hover:border-primary/30 hover:bg-base-100/90
@@ -747,7 +734,7 @@ export default function Notes() {
                 {/* Pin indicator */}
                 {note.is_default && (
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
-                    <span className="icon-[tabler--pin] w-3 h-3 text-primary-content" />
+                    <span className="ri-pushpin-2-line ri-12px text-primary-content" />
                   </div>
                 )}
 
@@ -760,19 +747,19 @@ export default function Notes() {
                   )}
                   {note.use_as_template && (
                     <span className="tag tag--sm tag--primary">
-                      <span className="icon-[tabler--receipt] w-3 h-3" />
+                      <span className="ri-receipt-line ri-12px" />
                       Template
                     </span>
                   )}
                   {note.selectable && (
                     <span className="tag tag--sm tag--success">
-                      <span className="icon-[tabler--click] w-3 h-3" />
+                      <span className="ri-cursor-line ri-12px" />
                       {t('notes.selectable') || 'Selectable'}
                     </span>
                   )}
                   {note.category === 'preparation' && (note.steps || '').length > 2 && (
                     <span className="tag tag--sm tag--info">
-                      <span className="icon-[tabler--list-check] w-3 h-3" />
+                      <span className="ri-check-double-line ri-12px" />
                       {parseNoteSteps(note.steps).length} steps
                     </span>
                   )}
@@ -801,7 +788,7 @@ export default function Notes() {
                       className="p-1.5 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Duplicate note"
                     >
-                      <span className="icon-[tabler--copy] w-3.5 h-3.5" />
+                      <span className="ri-file-copy-line ri-14px" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleTogglePin(note); }}
@@ -812,14 +799,14 @@ export default function Notes() {
                       }`}
                       title={note.is_default ? 'Unpin' : 'Pin note'}
                     >
-                      <span className="icon-[tabler--pin] w-3.5 h-3.5" />
+                      <span className="ri-pushpin-2-line ri-14px" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(note.id); }}
                       className="p-1.5 rounded-lg text-base-content/30 hover:text-error hover:bg-error/10 transition-colors"
                       title={t('common.delete')}
                     >
-                      <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                      <span className="ri-delete-bin-line ri-14px" />
                     </button>
                   </div>
                 </div>

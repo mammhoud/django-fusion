@@ -42,7 +42,7 @@ Forge POS uses Tailwind v4's new **CSS-first configuration** model. Theme varian
           corporate-light, corporate-dark,
           luxury-light, luxury-dark,
           pastel-light, pastel-dark,
-          cyberpunk-light, cyberpunk;
+          perplexity;
 }
 
 @plugin "flyonui/theme" { name: "corporate-light"; ... }
@@ -300,7 +300,7 @@ FlyonUI component classes (badge-primary, btn-primary) apply correctly
 | **Corporate** | `corporate-light` | `corporate-dark` | Blue #2563eb | Royal Blue #3b82f6 | Business |
 | **Luxury** | `luxury-light` | `luxury-dark` | Gold #ca8a04 | Amber #eab308 | Premium restaurants |
 | **Pastel** | `pastel-light` | `pastel-dark` | Pink #db2777 | Light Pink #f472b6 | Cafes, bakeries |
-| **Cyberpunk** | `cyberpunk-light` | `cyberpunk` | Magenta #cc00cc | Neon Pink #ff00ff | Gaming centers |
+| **Perplexity** | `perplexity` | `perplexity` | Teal | Teal | Minimal & intelligent |
 
 ### Theme Context
 
@@ -308,7 +308,7 @@ The `ThemeContext` provides:
 ```tsx
 const { mode, variant, followSystem, resolvedTheme, setVariant, setMode, setFollowSystem } = useTheme();
 // mode = 'light' | 'dark'
-// variant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk'
+// variant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'perplexity'
 // resolvedTheme = 'light' | 'dark' | 'corporate-light' | 'corporate-dark' | ...
 ```
 

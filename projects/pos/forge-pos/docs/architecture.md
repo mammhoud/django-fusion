@@ -144,7 +144,7 @@ FlyonUI component classes (badge-primary, btn-primary) match the palette
 // ThemeContext provides:
 { mode, variant, followSystem, resolvedTheme, setVariant, setMode, setFollowSystem }
 // mode = 'light' | 'dark'
-// variant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk'
+// variant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'perplexity'
 // resolvedTheme = 'dark' | 'corporate-light' | 'corporate-dark' | ...
 
 // Applied to <html>:
@@ -159,7 +159,7 @@ FlyonUI component classes (badge-primary, btn-primary) match the palette
 | **Corporate** | `corporate-light` | `corporate-dark` | Blue (#2563eb) | Royal Blue (#3b82f6) | Business |
 | **Luxury** | `luxury-light` | `luxury-dark` | Gold (#ca8a04) | Amber (#eab308) | Premium restaurants |
 | **Pastel** | `pastel-light` | `pastel-dark` | Pink (#db2777) | Light Pink (#f472b6) | Cafes, bakeries |
-| **Cyberpunk** | `cyberpunk-light` | `cyberpunk` | Magenta (#cc00cc) | Neon Pink (#ff00ff) | Gaming centers |
+| **Perplexity** | `perplexity` | `perplexity` | Teal | Teal | Minimal & intelligent |
 
 ---
 

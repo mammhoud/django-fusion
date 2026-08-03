@@ -40,7 +40,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-base-content/60 uppercase tracking-wider flex items-center gap-1.5">
-          <span className="icon-[tabler--list-check] w-3.5 h-3.5" />
+          <span className="ri-check-double-line ri-14px" />
           {t('notes.stepsTitle') || 'Preparation Steps'}
         </span>
         <button
@@ -48,7 +48,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
           onClick={addStep}
           className="btn btn-ghost btn-xs gap-1 text-primary hover:bg-primary/10"
         >
-          <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+          <span className="ri-add-line ri-14px" />
           {t('notes.addStep') || 'Add step'}
         </button>
       </div>
@@ -84,7 +84,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
                     className="p-1 rounded-md text-base-content/40 hover:text-base-content hover:bg-base-300/40 disabled:opacity-25 transition-colors"
                     title="Move up"
                   >
-                    <span className="icon-[tabler--chevron-up] w-3.5 h-3.5" />
+                    <span className="ri-arrow-up-s-line ri-14px" />
                   </button>
                   <button
                     type="button"
@@ -93,7 +93,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
                     className="p-1 rounded-md text-base-content/40 hover:text-base-content hover:bg-base-300/40 disabled:opacity-25 transition-colors"
                     title="Move down"
                   >
-                    <span className="icon-[tabler--chevron-down] w-3.5 h-3.5" />
+                    <span className="ri-arrow-down-s-line ri-14px" />
                   </button>
                   <button
                     type="button"
@@ -101,7 +101,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
                     className="p-1 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-colors"
                     title="Remove step"
                   >
-                    <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                    <span className="ri-delete-bin-line ri-14px" />
                   </button>
                 </div>
               </div>

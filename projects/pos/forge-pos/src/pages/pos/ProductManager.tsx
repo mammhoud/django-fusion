@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { Product, NewProduct, UpdateProductPayload, Category, NewCategory, UpdateCategoryPayload, Settings } from '../../types';
+import { Product, NewProduct, UpdateProductPayload, Category, NewCategory, UpdateCategoryPayload } from '../../types';
 import Card from '../../components/ui/Card';
 import DataTable, { type Column } from '../../components/ui/DataTable';
-import ProductCard, { PRODUCT_CARD_COLORS, productAccentColor, ProductCardSkeleton, PRODUCT_SKELETON_COUNT, hexToRgba } from '../../components/pos/ProductCard';
+import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT, hexToRgba } from '../../components/pos/ProductCard';
 import ProductFilterBar from '../../components/shared/ProductFilterBar';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -68,10 +68,17 @@ export default function ProductManager() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+  // Bulk selection (table view) + bulk action state
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [isBulkSubmitting, setIsBulkSubmitting] = useState(false);
+  const [bulkAction, setBulkAction] = useState<'category' | 'type' | null>(null);
+  /** Snapshot of the target product IDs taken when a bulk modal opens. */
+  const [bulkTargetIds, setBulkTargetIds] = useState<number[]>([]);
+  const [bulkCategoryValue, setBulkCategoryValue] = useState<number>(0);
+  const [bulkTypeValue, setBulkTypeValue] = useState('product');
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  // User-toggleable unique per-product accent colors (Settings → General).
-  const [uniqueCardColors, setUniqueCardColors] = useState(true);
 
   // Category CRUD state
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -139,16 +146,12 @@ export default function ProductManager() {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, categoriesRes, settingsRes] = await Promise.all([
+      const [productsRes, categoriesRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Category[]>('get_categories').catch(() => []),
-        invoke<Settings>('get_settings').catch(() => null),
       ]);
       setProducts(productsRes);
       setCategories(categoriesRes || []);
-      if (settingsRes) {
-        setUniqueCardColors(settingsRes.unique_card_colors !== false);
-      }
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
@@ -419,6 +422,91 @@ export default function ProductManager() {
     }
   };
 
+  // ── Bulk actions (table view) ──
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const finishBulk = (message: string) => {
+    clearSelection();
+    setSubmitStatus('success');
+    setStatusMessage(message);
+    loadProducts({ quiet: true });
+    setTimeout(() => setSubmitStatus('idle'), 3000);
+  };
+
+  const handleBulkDelete = async (rows: Product[]) => {
+    if (rows.length === 0 || isBulkSubmitting) return;
+    const ids = rows.map(p => p.id);
+    setIsBulkSubmitting(true);
+    try {
+      // Optimistic remove — splice selected rows out so the table updates instantly.
+      setProducts(prev => prev.filter(p => !ids.includes(p.id)));
+      for (const id of ids) {
+        await invoke('delete_product', { id });
+      }
+      finishBulk(t('productManager.bulkDeleted', { count: ids.length }));
+    } catch (error) {
+      console.error('Bulk delete failed:', error);
+      loadProducts({ quiet: true });
+      setSubmitStatus('error');
+      setStatusMessage(String(error) || t('productManager.errorDelete'));
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } finally {
+      setIsBulkSubmitting(false);
+    }
+  };
+
+  const handleBulkChangeCategory = async () => {
+    if (isBulkSubmitting) return;
+    const ids = bulkTargetIds;
+    if (ids.length === 0) return;
+    setBulkAction(null);
+    setIsBulkSubmitting(true);
+    try {
+      for (const id of ids) {
+        const updated = await invoke<Product>('update_product', {
+          id,
+          update: { category_id: bulkCategoryValue === 0 ? null : bulkCategoryValue },
+        });
+        setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+      }
+      finishBulk(t('productManager.bulkCategoryUpdated', { count: ids.length }));
+    } catch (error) {
+      console.error('Bulk category change failed:', error);
+      loadProducts({ quiet: true });
+      setSubmitStatus('error');
+      setStatusMessage(String(error) || t('productManager.errorUpdate'));
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } finally {
+      setIsBulkSubmitting(false);
+    }
+  };
+
+  const handleBulkChangeType = async () => {
+    if (isBulkSubmitting) return;
+    const ids = bulkTargetIds;
+    if (ids.length === 0) return;
+    setBulkAction(null);
+    setIsBulkSubmitting(true);
+    try {
+      for (const id of ids) {
+        const updated = await invoke<Product>('update_product', {
+          id,
+          update: { product_type: bulkTypeValue },
+        });
+        setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+      }
+      finishBulk(t('productManager.bulkTypeUpdated', { count: ids.length }));
+    } catch (error) {
+      console.error('Bulk type change failed:', error);
+      loadProducts({ quiet: true });
+      setSubmitStatus('error');
+      setStatusMessage(String(error) || t('productManager.errorUpdate'));
+      setTimeout(() => setSubmitStatus('idle'), 3000);
+    } finally {
+      setIsBulkSubmitting(false);
+    }
+  };
+
   // ── Category CRUD ──
   const openAddCategory = () => {
     setEditingCategory(null);
@@ -613,7 +701,7 @@ export default function ProductManager() {
           render: (_p: Product) => (
         <span className="text-xs text-base-content/50">
           <span className="badge badge-sm badge-ghost gap-1 font-normal">
-            <span className="icon-[tabler--package] w-3 h-3" />
+            <span className="ri-archive-line ri-12px" />
             {t('productManager.viaIngredients') || 'Ingredients'}
           </span>
         </span>
@@ -647,7 +735,7 @@ export default function ProductManager() {
             className="p-1.5 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
             aria-label={t('common.edit')}
           >
-            <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+            <span className="ri-pencil-line ri-14px" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(p); }}
@@ -656,13 +744,9 @@ export default function ProductManager() {
             aria-label={t('productManager.deleteTitle')}
           >
             {deletingId === p.id ? (
-              <div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-3.5 h-3.5 border-2 border-error border-t-transparent rounded-full"
-              />
+              <div className="w-3.5 h-3.5 border-2 border-error border-t-transparent rounded-full animate-spin" />
             ) : (
-              <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+              <span className="ri-delete-bin-line ri-14px" />
             )}
           </button>
         </div>
@@ -708,13 +792,13 @@ export default function ProductManager() {
           onClick={() => openEditModal(p)}
           className="p-1.5 rounded-md text-base-content/40 hover:text-primary"
         >
-          <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+          <span className="ri-pencil-line ri-14px" />
         </button>
         <button
           onClick={() => openDeleteConfirmation(p)}
           className="p-1.5 rounded-md text-base-content/40 hover:text-error"
         >
-          <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+          <span className="ri-delete-bin-line ri-14px" />
         </button>
       </div>
     </div>
@@ -783,9 +867,9 @@ export default function ProductManager() {
               aria-label={viewMode === 'grid' ? 'Switch to table view' : 'Switch to grid view'}
             >
               {viewMode === 'grid' ? (
-                <span className="icon-[tabler--list] w-4 h-4" />
+                <span className="ri-list-unordered-line ri-16px" />
               ) : (
-                <span className="icon-[tabler--grid-dots] w-4 h-4" />
+                <span className="ri-layout-grid-line ri-16px" />
               )}
             </button>
             <button
@@ -793,7 +877,7 @@ export default function ProductManager() {
               data-testid="pm-add-button"
               className="btn btn-primary btn-sm gap-1.5 shrink-0"
             >
-              <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+              <span className="ri-add-line ri-14px" />
               <span className="hidden sm:inline text-xs">{t('productManager.addNewProduct')}</span>
             </button>
           </>
@@ -812,7 +896,7 @@ export default function ProductManager() {
               className="tag tag--sm tag--ghost cursor-pointer transition-all hover:border-primary/40 hover:text-primary flex items-center gap-1"
               title={t('productManager.manageCategories') || 'Manage categories'}
             >
-              <span className="icon-[tabler--settings] w-3 h-3" />
+              <span className="ri-settings-3-line ri-12px" />
               {t('productManager.manageCategories') || 'Manage'}
             </button>
             {selectedCategory !== 'all' && (
@@ -821,7 +905,7 @@ export default function ProductManager() {
                 className="tag tag--sm tag--ghost text-base-content/40 hover:text-error transition-colors"
                 title="Clear filter"
               >
-                <span className="icon-[tabler--x] w-3 h-3" />
+                <span className="ri-close-line ri-12px" />
               </button>
             )}
           </>
@@ -834,7 +918,7 @@ export default function ProductManager() {
           {isLoading ? (
             <div
               key="skeleton"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
             >
               {Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
@@ -844,29 +928,19 @@ export default function ProductManager() {
           ) : filteredProducts.length > 0 ? (
             <div
               key="grid"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
             >
               {filteredProducts.map((product, index) => {
-                const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
-                // Unique per-product accent: category color wins when set;
-                // otherwise a deterministic golden-angle hue per product so the
-                // grid never repeats the same rotating palette color.
-                const categoryColor = product.category_id != null
-                  ? (categories.find(c => c.id === product.category_id)?.color || null)
-                  : null;
-                // Unique per-product accents are user-toggleable via Settings.
-                // When off, only explicit category colors apply and cards fall
-                // back to the rotating palette (pre-feature behavior).
-                const accentColor = uniqueCardColors
-                  ? (categoryColor ?? productAccentColor(product))
-                  : categoryColor;
+                // Single uniform card color (theme primary) — the default look.
+                const color = PRODUCT_CARD_COLORS[0];
+                const categoryColor = null;
                 return (
                   <ProductCard
                     key={product.id}
                     product={product}
                     color={color}
-                    categoryColor={accentColor}
+                    categoryColor={categoryColor}
                     currency={currencySymbol}
                     index={index}
                     onClick={() => openEditModal(product)}
@@ -879,10 +953,10 @@ export default function ProductManager() {
           ) : (
             <div
               key="empty"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              
             >
               <Card padding="2xl" center>
-                <span className="icon-[tabler--photo] w-16 h-16 mx-auto mb-4 text-base-content/40" />
+                <span className="ri-image-line w-16 h-16 mx-auto mb-4 text-base-content/40" />
                 <p className="text-base-content/60 text-lg mb-3">
                   {t('productManager.noProducts')}
                 </p>
@@ -908,6 +982,44 @@ export default function ProductManager() {
           exportable
           fileName="products"
           mobileRender={mobileTableRender}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={(ids) => setSelectedIds(new Set(Array.from(ids) as number[]))}
+          bulkActions={[
+            {
+              key: 'bulk-delete',
+              label: t('common.delete'),
+              icon: <span className="ri-delete-bin-line ri-12px" />,
+              className: 'btn-soft btn-error',
+              testId: 'pm-bulk-delete',
+              onClick: (rows: Product[]) => {
+                if (!window.confirm(t('productManager.bulkDeleteConfirm', { count: rows.length }))) return;
+                void handleBulkDelete(rows);
+              },
+            },
+            {
+              key: 'bulk-category',
+              label: t('productManager.bulkChangeCategory'),
+              icon: <span className="ri-folder-line ri-12px" />,
+              testId: 'pm-bulk-category',
+              onClick: (rows: Product[]) => {
+                setBulkTargetIds(rows.map(p => p.id));
+                setBulkAction('category');
+                setBulkCategoryValue(0);
+              },
+            },
+            {
+              key: 'bulk-type',
+              label: t('productManager.bulkChangeType'),
+              icon: <span className="ri-price-tag-line ri-12px" />,
+              testId: 'pm-bulk-type',
+              onClick: (rows: Product[]) => {
+                setBulkTargetIds(rows.map(p => p.id));
+                setBulkAction('type');
+                setBulkTypeValue('product');
+              },
+            },
+          ]}
         />
       )}
 
@@ -937,15 +1049,13 @@ export default function ProductManager() {
               {isSubmitting ? (
                 <>
                   <div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                   />
                   {editingProduct ? t('common.updating') || 'Updating...' : t('productManager.adding')}
                 </>
               ) : (
                 <>
-                  {editingProduct ? <span className="icon-[tabler--edit]" /> : <span className="icon-[tabler--plus]" />}
+                  {editingProduct ? <span className="ri-edit-line" /> : <span className="ri-add-line" />}
                   {editingProduct ? t('common.update') : t('productManager.addProduct')}
                 </>
               )}
@@ -971,7 +1081,7 @@ export default function ProductManager() {
                         className="absolute -top-2 -right-2 bg-error text-error-content rounded-full p-0.5
                           hover:brightness-90 transition-all shadow-lg"
                       >
-                        <span className="icon-[tabler--x] w-3 h-3" />
+                        <span className="ri-close-line ri-12px" />
                       </button>
                     </div>
                   ) : (
@@ -986,12 +1096,10 @@ export default function ProductManager() {
                     >
                       {isUploadingImage ? (
                         <div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          className="w-5 h-5 border-2 border-teal-400 border-t-transparent rounded-full"
+                          className="w-5 h-5 border-2 border-teal-400 border-t-transparent rounded-full animate-spin"
                         />
                       ) : (
-                        <span className="icon-[tabler--photo] w-6 h-6" />
+                        <span className="ri-image-line ri-24px" />
                       )}
                     </button>
                   )}
@@ -1021,7 +1129,7 @@ export default function ProductManager() {
               {!editingProduct && (
                 <div>
                   <label className="block text-base-content mb-2 flex items-center gap-2">
-                    <span className="icon-[tabler--tag] w-4 h-4 text-teal-500" />
+                    <span className="ri-price-tag-line ri-16px text-teal-500" />
                     {t('productManager.productType') || 'Product Type'}
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1053,7 +1161,7 @@ export default function ProductManager() {
               {/* Available Order Types — where this product can be sold */}
               <div>
                 <label className="block text-base-content mb-2 flex items-center gap-2">
-                  <span className="icon-[tabler--building-store] w-4 h-4 text-primary/70" />
+                  <span className="ri-store-2-line ri-16px text-primary/70" />
                   {t('productManager.availableOrderTypes') || 'Available Order Types'}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
@@ -1092,7 +1200,7 @@ export default function ProductManager() {
               <div className="grid grid-cols-2 gap-3">
                 <div className={`field ${errors.price ? 'field--error' : ''}`}>
                   <label className="label-text">
-                    <span className="icon-[tabler--currency-dollar] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                    <span className="ri-money-dollar-circle-line ri-14px inline-block mr-1 text-primary/70" />
                     Price ({currencySymbol})
                   </label>
                   <input
@@ -1113,7 +1221,7 @@ export default function ProductManager() {
 
                 <div className={`field ${errors.unit ? 'field--error' : ''}`}>
                   <label className="label-text">
-                    <span className="icon-[tabler--cube] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                    <span className="ri-box-3-line ri-14px inline-block mr-1 text-primary/70" />
                     Unit
                   </label>
                   <input
@@ -1134,7 +1242,7 @@ export default function ProductManager() {
               {/* Prepare time */}
               <div>
                 <label className="block text-base-content mb-1.5 text-xs font-medium">
-                  <span className="icon-[tabler--clock-play] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                  <span className="ri-play-circle-line ri-14px inline-block mr-1 text-primary/70" />
                   Prep Time (min)
                 </label>
                 <div className="flex items-center gap-2">
@@ -1155,7 +1263,7 @@ export default function ProductManager() {
               {/* Barcode + Description */}
               <div>
                 <label className="block text-base-content mb-1.5 text-xs font-medium">
-                  <span className="icon-[tabler--barcode] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                  <span className="ri-barcode-line ri-14px inline-block mr-1 text-primary/70" />
                   SKU / Barcode
                 </label>
                 <input
@@ -1170,7 +1278,7 @@ export default function ProductManager() {
 
               <div>
                 <label className="block text-base-content mb-1.5 text-xs font-medium">
-                  <span className="icon-[tabler--align-left] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                  <span className="ri-align-left-line ri-14px inline-block mr-1 text-primary/70" />
                   Description
                 </label>
                 <textarea
@@ -1187,7 +1295,7 @@ export default function ProductManager() {
               {categories.length > 0 && (
                 <div>
                   <label className="block text-base-content mb-1.5 text-xs font-medium">
-                    <span className="icon-[tabler--folder] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                    <span className="ri-folder-line ri-14px inline-block mr-1 text-primary/70" />
                     {t('productManager.category') || 'Category'}
                   </label>
                   <select
@@ -1220,6 +1328,110 @@ export default function ProductManager() {
         variant="danger"
       />
 
+      {/* Bulk Change Category Modal */}
+      <Modal
+        isOpen={bulkAction === 'category'}
+        onClose={() => setBulkAction(null)}
+        title={t('productManager.bulkChangeCategory')}
+        size="sm"
+        footer={
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={() => setBulkAction(null)}
+              className="btn btn-ghost flex-1"
+              disabled={isBulkSubmitting}
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              onClick={handleBulkChangeCategory}
+              data-testid="pm-bulk-category-apply"
+              className="btn btn-primary flex-1 gap-1.5"
+              disabled={isBulkSubmitting}
+            >
+              {isBulkSubmitting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span className="ri-folder-line ri-14px" />
+              )}
+              {isBulkSubmitting ? t('productManager.saving') : t('common.save')}
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-base-content/60">
+            {t('productManager.bulkCategoryHint', { count: bulkTargetIds.length })}
+          </p>
+          <div className="field">
+            <label className="label-text">{t('productManager.category')}</label>
+            <select
+              value={bulkCategoryValue ? String(bulkCategoryValue) : ''}
+              onChange={(e) => setBulkCategoryValue(e.target.value ? Number(e.target.value) : 0)}
+              className="select w-full"
+              data-testid="pm-bulk-category-select"
+            >
+              <option value="">{t('productManager.noCategory') || '— No category —'}</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Bulk Change Type Modal */}
+      <Modal
+        isOpen={bulkAction === 'type'}
+        onClose={() => setBulkAction(null)}
+        title={t('productManager.bulkChangeType')}
+        size="sm"
+        footer={
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={() => setBulkAction(null)}
+              className="btn btn-ghost flex-1"
+              disabled={isBulkSubmitting}
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              onClick={handleBulkChangeType}
+              data-testid="pm-bulk-type-apply"
+              className="btn btn-primary flex-1 gap-1.5"
+              disabled={isBulkSubmitting}
+            >
+              {isBulkSubmitting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span className="ri-price-tag-line ri-14px" />
+              )}
+              {isBulkSubmitting ? t('productManager.saving') : t('common.save')}
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-base-content/60">
+            {t('productManager.bulkTypeHint', { count: bulkTargetIds.length })}
+          </p>
+          <div className="field">
+            <label className="label-text">{t('productManager.type')}</label>
+            <select
+              value={bulkTypeValue}
+              onChange={(e) => setBulkTypeValue(e.target.value)}
+              className="select w-full"
+              data-testid="pm-bulk-type-select"
+            >
+              <option value="product">{t('productManager.typeProduct') || 'Product'}</option>
+              <option value="service">{t('productManager.typeService') || 'Service'}</option>
+              <option value="combo">{t('productManager.typeCombo') || 'Combo'}</option>
+              <option value="addon">{t('productManager.typeAddon') || 'Add-on'}</option>
+            </select>
+          </div>
+        </div>
+      </Modal>
+
       {/* Category CRUD Modal — shared Modal component */}
       <Modal
         isOpen={showCategoryModal}
@@ -1243,16 +1455,12 @@ export default function ProductManager() {
             >
               {isCategorySubmitting ? (
                 <>
-                  <div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                  />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   {t('productManager.saving') || 'Saving...'}
                 </>
               ) : (
                 <>
-                  <span className="icon-[tabler--check]" />
+                  <span className="ri-check-line" />
                   {editingCategory ? t('common.update') : t('productManager.addCategory')}
                 </>
               )}
@@ -1312,7 +1520,7 @@ export default function ProductManager() {
                       aria-label={t('productManager.categoryCustomColor') || 'Custom color'}
                     />
                     <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <span className="icon-[tabler--color-picker] w-3 h-3 text-base-content/70" />
+                      <span className="ri-dropper-line ri-12px text-base-content/70" />
                     </span>
                   </label>
                 </div>
@@ -1350,14 +1558,14 @@ export default function ProductManager() {
                           className="p-1 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
                           aria-label={t('common.edit')}
                         >
-                          <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+                          <span className="ri-pencil-line ri-14px" />
                         </button>
                         <button
                           onClick={() => openDeleteCategoryConfirmation(cat)}
                           className="p-1 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
                           aria-label={t('productManager.deleteCategory')}
                         >
-                          <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                          <span className="ri-delete-bin-line ri-14px" />
                         </button>
                       </div>
                     ))}
@@ -1383,12 +1591,9 @@ export default function ProductManager() {
       {/* Success Message */}
       {submitStatus === 'success' && (
         <div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success"
         >
-          <span className="icon-[tabler--check] text-xl" />
+          <span className="ri-check-line text-xl" />
           {statusMessage}
         </div>
       )}
@@ -1396,12 +1601,9 @@ export default function ProductManager() {
       {/* Error Message */}
       {submitStatus === 'error' && (
         <div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error max-w-md"
         >
-          <span className="icon-[tabler--alert-triangle] text-xl" />
+          <span className="ri-alert-line text-xl" />
           <span>{statusMessage}</span>
         </div>
       )}

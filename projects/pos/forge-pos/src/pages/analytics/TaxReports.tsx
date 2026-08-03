@@ -100,7 +100,7 @@ export default function TaxReports() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-base-content">{t('taxReports.title')}</h1>
           <button onClick={() => setShowForm(true)} className="btn btn-primary gap-2 active:scale-[0.98] transition-all">
-            <span className="icon-[tabler--plus]" /> {t('taxReports.addReport')}
+            <span className="ri-add-line" /> {t('taxReports.addReport')}
           </button>
         </div>
 
@@ -136,7 +136,7 @@ export default function TaxReports() {
         </div>
 
         {showForm && (
-          <form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
+          <form onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input w-full" />
               <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input w-full" />
@@ -162,18 +162,18 @@ export default function TaxReports() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {filteredReports.map(report => (
-              <div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
+              <div key={report.id} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">
-                      <span className="icon-[tabler--building-bank] w-5 h-5" />
+                      <span className="ri-bank-line ri-20px" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base-content">{report.period_start} - {report.period_end}</h3>
                       <p className="text-sm text-slate-500">{report.transaction_count} {t('taxReports.transactions')}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
+                  <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="ri-delete-bin-line" /></button>
                 </div>
                 <div className="mt-3 text-sm text-base-content/60 space-y-1">
                   <p>{t('taxReports.totalSales')}: {formatPrice(report.total_sales)}</p>

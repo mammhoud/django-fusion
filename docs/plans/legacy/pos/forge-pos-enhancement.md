@@ -1,3 +1,10 @@
+# ARCHIVED — COMPLETED (as of 2026-08-02)
+
+> This plan has been fully implemented (see forge-pos CHANGELOG).
+> Moved from `docs/plans/pos/` on 2026-08-02. Kept for historical reference only.
+
+---
+
 # POS Mini — Enhancement Plan
 > **Tags:** #pos #forge-pos #enhancement #tauri
 

@@ -63,7 +63,7 @@ export default function EmployeeSchedule() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-base-content">{t('schedule.title')}</h1>
           <button onClick={() => setShowForm(true)} className="btn btn-primary gap-2 active:scale-[0.98] transition-all">
-            <span className="icon-[tabler--plus]" /> {t('schedule.addShift')}
+            <span className="ri-add-line" /> {t('schedule.addShift')}
           </button>
         </div>
 
@@ -98,14 +98,14 @@ export default function EmployeeSchedule() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                      <span className="icon-[tabler--calendar-clock] w-5 h-5" />
+                      <span className="ri-calendar-2-line ri-20px" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base-content">{getEmployeeName(schedule.employee_id)}</h3>
                       <p className="text-sm text-slate-500 capitalize">{schedule.status}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
+                  <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="ri-delete-bin-line" /></button>
                 </div>
                 <div className="mt-3 text-sm text-base-content/60 space-y-1">
                   <p>{new Date(schedule.shift_start).toLocaleString()} - {new Date(schedule.shift_end).toLocaleTimeString()}</p>

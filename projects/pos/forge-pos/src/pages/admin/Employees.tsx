@@ -5,7 +5,9 @@ import { Employee, NewEmployee, EmployeeType, NewEmployeeType } from '../../type
 import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonList, SkeletonTable } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
-import Modal from '../../components/ui/Modal';
+import FormModal from '../../components/ui/FormModal';
+import EmployeeForm from '../../components/forms/EmployeeForm';
+import EmployeeTypeForm from '../../components/forms/EmployeeTypeForm';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import StatusToast from '../../components/ui/StatusToast';
 import Card from '../../components/ui/Card';
@@ -40,8 +42,8 @@ export default function Employees() {
   const [isLoading, setIsLoading] = useState(true);
 
   const getTabItems = () => [
-    { key: 'employees' as Tab, label: t('employees.employeeList'), icon: <span className="icon-[tabler--users]" /> },
-    { key: 'types' as Tab, label: t('employees.employeeTypes'), icon: <span className="icon-[tabler--user-check]" /> },
+    { key: 'employees' as Tab, label: t('employees.employeeList'), icon: <span className="ri-group-line" /> },
+    { key: 'types' as Tab, label: t('employees.employeeTypes'), icon: <span className="ri-user-follow-line" /> },
   ];
 
   // Data states
@@ -55,23 +57,18 @@ export default function Employees() {
   // Grid / list view toggle
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  // Modal states - Employee
-  const [showAddEmployee, setShowAddEmployee] = useState(false);
-  const [showEditEmployee, setShowEditEmployee] = useState<Employee | null>(null);
+  // Unified add/edit modal state — ONE modal per entity, switching between
+  // the add and edit modes (same pattern as ProductManager). The form data
+  // lives in a single `{ ... }Form` object shared by both modes.
+  type EmployeeModalState = { mode: 'add' } | { mode: 'edit'; employee: Employee } | null;
+  const [employeeModal, setEmployeeModal] = useState<EmployeeModalState>(null);
+  const [employeeForm, setEmployeeForm] = useState<NewEmployee>({ ...initialNewEmployee });
   const [showDeleteEmployee, setShowDeleteEmployee] = useState<Employee | null>(null);
 
-  // Modal states - Employee Type
-  const [showAddType, setShowAddType] = useState(false);
-  const [showEditType, setShowEditType] = useState<EmployeeType | null>(null);
+  type TypeModalState = { mode: 'add' } | { mode: 'edit'; type: EmployeeType } | null;
+  const [typeModal, setTypeModal] = useState<TypeModalState>(null);
+  const [typeForm, setTypeForm] = useState<NewEmployeeType>({ name: '', description: null });
   const [showDeleteType, setShowDeleteType] = useState<EmployeeType | null>(null);
-
-  // Form states - Employee
-  const [newEmployee, setNewEmployee] = useState<NewEmployee>({ ...initialNewEmployee });
-  const [editEmployee, setEditEmployee] = useState<Employee | null>(null);
-
-  // Form states - Employee Type
-  const [newType, setNewType] = useState<NewEmployeeType>({ name: '', description: null });
-  const [editType, setEditType] = useState<EmployeeType | null>(null);
 
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -130,37 +127,49 @@ export default function Employees() {
     .filter(e => e.is_active)
     .reduce((sum, e) => sum + e.salary, 0);
 
-  // ── Employee CRUD ──
-  const handleAddEmployee = async () => {
-    if (!newEmployee.name.trim() || newEmployee.employee_type_id === 0) return;
-    try {
-      await invoke('add_employee', { employee: newEmployee });
-      window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'add' } }));
-      setShowAddEmployee(false);
-      setNewEmployee({ ...initialNewEmployee });
-      loadData({ quiet: true });
-      showStatus('success', 'Employee added successfully!');
-    } catch (e) { showStatus('error', String(e)); }
+  // ── Employee CRUD (unified add/edit modal) ──
+  const openAddEmployee = () => {
+    setEmployeeForm({ ...initialNewEmployee });
+    setEmployeeModal({ mode: 'add' });
   };
 
-  const handleUpdateEmployee = async () => {
-    if (!editEmployee || !editEmployee.name.trim()) return;
+  const openEditEmployee = (emp: Employee) => {
+    setEmployeeForm({
+      name: emp.name,
+      phone: emp.phone ?? null,
+      email: emp.email ?? null,
+      employee_type_id: emp.employee_type_id,
+      salary: emp.salary,
+    });
+    setEmployeeModal({ mode: 'edit', employee: emp });
+  };
+
+  const closeEmployeeModal = () => setEmployeeModal(null);
+
+  const handleSaveEmployee = async () => {
+    if (!employeeForm.name.trim() || employeeForm.employee_type_id === 0) return;
+    const editing = employeeModal?.mode === 'edit' ? employeeModal.employee : null;
     try {
-      await invoke('update_employee', {
-        id: editEmployee.id,
-        update: {
-          name: editEmployee.name,
-          phone: editEmployee.phone || null,
-          email: editEmployee.email || null,
-          employee_type_id: editEmployee.employee_type_id,
-          salary: editEmployee.salary,
-        }
-      });
-      window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'update', id: editEmployee.id } }));
-      setShowEditEmployee(null);
-      setEditEmployee(null);
+      if (editing) {
+        await invoke('update_employee', {
+          id: editing.id,
+          update: {
+            name: employeeForm.name.trim(),
+            phone: employeeForm.phone || null,
+            email: employeeForm.email || null,
+            employee_type_id: employeeForm.employee_type_id,
+            salary: employeeForm.salary,
+          }
+        });
+        window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'update', id: editing.id } }));
+        showStatus('success', 'Employee updated!');
+      } else {
+        await invoke('add_employee', { employee: employeeForm });
+        window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'add' } }));
+        showStatus('success', 'Employee added successfully!');
+      }
+      closeEmployeeModal();
       loadData({ quiet: true });
-      showStatus('success', 'Employee updated!');
     } catch (e) { showStatus('error', String(e)); }
   };
 
@@ -175,32 +184,38 @@ export default function Employees() {
     } catch (e) { showStatus('error', String(e)); }
   };
 
-  // ── Employee Type CRUD ──
-  const handleAddType = async () => {
-    if (!newType.name.trim()) return;
-    try {
-      await invoke('add_employee_type', { employeeType: newType });
-      setShowAddType(false);
-      setNewType({ name: '', description: null });
-      loadData({ quiet: true });
-      showStatus('success', 'Employee type added!');
-    } catch (e) { showStatus('error', String(e)); }
+  // ── Employee Type CRUD (unified add/edit modal) ──
+  const openAddType = () => {
+    setTypeForm({ name: '', description: null });
+    setTypeModal({ mode: 'add' });
   };
 
-  const handleUpdateType = async () => {
-    if (!editType || !editType.name.trim()) return;
+  const openEditType = (et: EmployeeType) => {
+    setTypeForm({ name: et.name, description: et.description ?? null });
+    setTypeModal({ mode: 'edit', type: et });
+  };
+
+  const closeTypeModal = () => setTypeModal(null);
+
+  const handleSaveType = async () => {
+    if (!typeForm.name.trim()) return;
+    const editing = typeModal?.mode === 'edit' ? typeModal.type : null;
     try {
-      await invoke('update_employee_type', {
-        id: editType.id,
-        update: {
-          name: editType.name,
-          description: editType.description || null,
-        }
-      });
-      setShowEditType(null);
-      setEditType(null);
+      if (editing) {
+        await invoke('update_employee_type', {
+          id: editing.id,
+          update: {
+            name: typeForm.name.trim(),
+            description: typeForm.description || null,
+          }
+        });
+        showStatus('success', 'Employee type updated!');
+      } else {
+        await invoke('add_employee_type', { employeeType: typeForm });
+        showStatus('success', 'Employee type added!');
+      }
+      closeTypeModal();
       loadData({ quiet: true });
-      showStatus('success', 'Employee type updated!');
     } catch (e) { showStatus('error', String(e)); }
   };
 
@@ -228,7 +243,7 @@ export default function Employees() {
 
   return (
     <PageLayout
-      title={<><span className="icon-[tabler--users] text-info" /> Employees</>}
+      title={<><span className="ri-group-line text-info" /> Employees</>}
       background="bg-linear-to-br from-base-200 via-info/10 to-base-200"
     >
 
@@ -275,12 +290,12 @@ export default function Employees() {
 
         {/* ── TAB 1: EMPLOYEE LIST ── */}
         {activeTab === 'employees' && (
-          <div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div>
             {/* Filters & Actions */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative">
-                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+                  <span className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
                   <input
                     type="text"
                     value={searchQuery}
@@ -325,7 +340,7 @@ export default function Employees() {
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
-                    <span className="icon-[tabler--layout-grid] w-3.5 h-3.5" />
+                    <span className="ri-layout-grid-line ri-14px" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
@@ -336,15 +351,15 @@ export default function Employees() {
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
-                    <span className="icon-[tabler--list] w-3.5 h-3.5" />
+                    <span className="ri-list-unordered-line ri-14px" />
                   </button>
                 </div>
               </div>
               <button
-                onClick={() => setShowAddEmployee(true)}
+                onClick={openAddEmployee}
                 className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
-                <span className="icon-[tabler--plus]" /> {t('employees.addEmployee')}
+                <span className="ri-add-line" /> {t('employees.addEmployee')}
               </button>
             </div>
 
@@ -395,14 +410,14 @@ export default function Employees() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex justify-end gap-1">
-                            <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
+                            <button onClick={() => openEditEmployee(emp)}
                               className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
-                              <span className="icon-[tabler--pencil] w-4 h-4" />
+                              <span className="ri-pencil-line ri-16px" />
                             </button>
                             {emp.is_active && (
                               <button onClick={() => setShowDeleteEmployee(emp)}
                                 className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
-                                <span className="icon-[tabler--trash] w-4 h-4" />
+                                <span className="ri-delete-bin-line ri-16px" />
                               </button>
                             )}
                           </div>
@@ -425,8 +440,6 @@ export default function Employees() {
                 {filteredEmployees.map(emp => (
                   <div
                     key={emp.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
                     className={`bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
                       ${!emp.is_active ? 'opacity-60' : 'hover:border-info/70 dark:hover:border-info/30'} transition-all`}
                   >
@@ -442,14 +455,14 @@ export default function Employees() {
                         </div>
                       </div>
                       <div className="flex gap-1">
-                        <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
+                        <button onClick={() => openEditEmployee(emp)}
                           className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
-                          <span className="icon-[tabler--pencil] w-4 h-4" />
+                          <span className="ri-pencil-line ri-16px" />
                         </button>
                         {emp.is_active && (
                           <button onClick={() => setShowDeleteEmployee(emp)}
                             className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
-                            <span className="icon-[tabler--trash] w-4 h-4" />
+                            <span className="ri-delete-bin-line ri-16px" />
                           </button>
                         )}
                       </div>
@@ -457,24 +470,24 @@ export default function Employees() {
 
                     <div className="space-y-1.5 text-sm">
                       <div className="flex items-center gap-2 text-base-content/60">
-                        <span className="icon-[tabler--moneybag] text-success w-3.5 h-3.5" />
+                        <span className="ri-money-dollar-box-line text-success w-3.5 h-3.5" />
                         <span>{t('employees.salary')}: <strong className="text-base-content">{emp.salary.toLocaleString()}</strong></span>
                       </div>
                       {emp.phone && (
                         <div className="flex items-center gap-2 text-base-content/60">
-                          <span className="icon-[tabler--phone] text-info/70 w-3.5 h-3.5" />
+                          <span className="ri-phone-line text-info/70 w-3.5 h-3.5" />
                           <span>{emp.phone}</span>
                         </div>
                       )}
                       {emp.email && (
                         <div className="flex items-center gap-2 text-base-content/60">
-                          <span className="icon-[tabler--mail] text-secondary/80 w-3.5 h-3.5" />
+                          <span className="ri-mail-line text-secondary/80 w-3.5 h-3.5" />
                           <span className="truncate">{emp.email}</span>
                         </div>
                       )}
                       {emp.joined_at && (
                         <div className="flex items-center gap-2 text-base-content/60">
-                          <span className="icon-[tabler--calendar] text-info/80 w-3.5 h-3.5" />
+                          <span className="ri-calendar-line text-info/80 w-3.5 h-3.5" />
                           <span>{t('employees.joined')} {emp.joined_at}</span>
                         </div>
                       )}
@@ -499,14 +512,14 @@ export default function Employees() {
 
         {/* ── TAB 2: EMPLOYEE TYPES ── */}
         {activeTab === 'types' && (
-          <div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-base-content">{t('employees.employeeTypes')}</h2>
               <button
-                onClick={() => setShowAddType(true)}
+                onClick={openAddType}
                 className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
-                <span className="icon-[tabler--plus]" /> {t('employees.addType')}
+                <span className="ri-add-line" /> {t('employees.addType')}
               </button>
             </div>
 
@@ -516,8 +529,6 @@ export default function Employees() {
                 return (
                   <div
                     key={et.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
                     className={`bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
                       ${!et.is_active ? 'opacity-60' : 'hover:border-info/70 dark:hover:border-info/30'} transition-all`}
                   >
@@ -525,7 +536,7 @@ export default function Employees() {
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-lg
                           ${getTypeColor(et.name)}`}>
-                          <span className="icon-[tabler--briefcase]" />
+                          <span className="ri-briefcase-4-line" />
                         </div>
                         <div>
                           <h3 className="font-semibold text-base-content">{et.name}</h3>
@@ -535,14 +546,14 @@ export default function Employees() {
                         </div>
                       </div>
                       <div className="flex gap-1">
-                        <button onClick={() => { setShowEditType(et); setEditType({ ...et }); }}
+                        <button onClick={() => openEditType(et)}
                           className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
-                          <span className="icon-[tabler--pencil] w-4 h-4" />
+                          <span className="ri-pencil-line ri-16px" />
                         </button>
                         {et.is_active && (
                           <button onClick={() => setShowDeleteType(et)}
                             className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
-                            <span className="icon-[tabler--trash] w-4 h-4" />
+                            <span className="ri-delete-bin-line ri-16px" />
                           </button>
                         )}
                       </div>
@@ -570,103 +581,28 @@ export default function Employees() {
           </div>
         )}
 
-      <Modal
-        isOpen={showAddEmployee}
-        onClose={() => setShowAddEmployee(false)}
-        title={t('employees.addEmployeeTitle')}
-        footer={<>
-          <button onClick={() => setShowAddEmployee(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleAddEmployee} disabled={!newEmployee.name.trim() || newEmployee.employee_type_id === 0}
-            className="flex-1 py-2.5 rounded-lg bg-info text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <span className="icon-[tabler--device-floppy]" /> {t('employees.addEmployee')}
-          </button>
-        </>}
+      {/* Unified Add/Edit Employee modal — reusable FormModal + EmployeeForm */}
+      <FormModal
+        isOpen={!!employeeModal}
+        onClose={closeEmployeeModal}
+        title={employeeModal?.mode === 'edit' ? t('employees.editEmployeeTitle') : t('employees.addEmployeeTitle')}
+        size="lg"
+        submitLabel={employeeModal?.mode === 'edit' ? t('common.update') : t('employees.addEmployee')}
+        cancelLabel={t('common.cancel')}
+        // Type is only required when adding — an existing employee whose type
+        // was deleted (employee_type_id 0) must stay editable.
+        submitDisabled={!employeeForm.name.trim() || (employeeModal?.mode === 'add' && employeeForm.employee_type_id === 0)}
+        onSubmit={handleSaveEmployee}
+        submitClassName="btn-info"
+        contentTestId="employee-form-modal"
       >
-        <div>
-          <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')} *</label>
-          <input type="text" value={newEmployee.name} onChange={e => setNewEmployee(p => ({ ...p, name: e.target.value }))}
-            placeholder={t('employees.namePlaceholder') || 'Enter employee name'}
-            className="input w-full" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
-            <input type="tel" value={newEmployee.phone || ''} onChange={e => setNewEmployee(p => ({ ...p, phone: e.target.value || null }))}
-              placeholder="03XX-XXXXXXX"
-              className="input w-full" />
-          </div>
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
-            <input type="email" value={newEmployee.email || ''} onChange={e => setNewEmployee(p => ({ ...p, email: e.target.value || null }))}
-              placeholder={t('employees.email')}
-              className="input w-full" />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')} *</label>
-            <select value={newEmployee.employee_type_id} onChange={e => setNewEmployee(p => ({ ...p, employee_type_id: Number(e.target.value) }))}
-              className="select w-full">
-              <option value={0}>{t('employees.selectType')}</option>
-              {employeeTypes.filter(t => t.is_active).map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')} *</label>
-            <input type="number" step="1000" min="0" value={newEmployee.salary} onChange={e => setNewEmployee(p => ({ ...p, salary: Number(e.target.value) }))}
-              placeholder="0"
-              className="input w-full" />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={!!showEditEmployee && !!editEmployee}
-        onClose={() => { setShowEditEmployee(null); setEditEmployee(null); }}
-        title={t('employees.editEmployeeTitle')}
-        footer={<>
-          <button onClick={() => { setShowEditEmployee(null); setEditEmployee(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateEmployee} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
-        </>}
-      >
-        {editEmployee && (<>
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')}</label>
-            <input type="text" value={editEmployee.name} onChange={e => setEditEmployee(p => ({ ...p!, name: e.target.value }))}
-              className="input w-full" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
-              <input type="tel" value={editEmployee.phone || ''} onChange={e => setEditEmployee(p => ({ ...p!, phone: e.target.value || undefined }))}
-                className="input w-full" />
-            </div>
-            <div>
-              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
-              <input type="email" value={editEmployee.email || ''} onChange={e => setEditEmployee(p => ({ ...p!, email: e.target.value || undefined }))}
-                className="input w-full" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')}</label>
-              <select value={editEmployee.employee_type_id} onChange={e => setEditEmployee(p => ({ ...p!, employee_type_id: Number(e.target.value) }))}
-                className="select w-full">
-                {employeeTypes.filter(t => t.is_active || t.id === editEmployee.employee_type_id).map(t => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')}</label>
-              <input type="number" step="1000" value={editEmployee.salary} onChange={e => setEditEmployee(p => ({ ...p!, salary: Number(e.target.value) }))}
-                className="input w-full" />
-            </div>
-          </div>
-        </>)}
-      </Modal>
+        <EmployeeForm
+          value={employeeForm}
+          onChange={setEmployeeForm}
+          employeeTypes={employeeTypes}
+          includeInactiveTypes={employeeModal?.mode === 'edit'}
+        />
+      </FormModal>
 
       <ConfirmDialog
         isOpen={!!showDeleteEmployee}
@@ -678,57 +614,21 @@ export default function Employees() {
         description="They will no longer appear in active employee lists or be assignable to sales."
       />
 
-      <Modal
-        isOpen={showAddType}
-        onClose={() => setShowAddType(false)}
-        title={t('employees.addTypeTitle')}
+      {/* Unified Add/Edit Employee Type modal — reusable FormModal + EmployeeTypeForm */}
+      <FormModal
+        isOpen={!!typeModal}
+        onClose={closeTypeModal}
+        title={typeModal?.mode === 'edit' ? t('employees.editTypeTitle') : t('employees.addTypeTitle')}
         size="sm"
-        footer={<>
-          <button onClick={() => setShowAddType(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleAddType} disabled={!newType.name.trim()}
-            className="flex-1 py-2.5 rounded-lg bg-info text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <span className="icon-[tabler--device-floppy]" /> {t('employees.addType')}
-          </button>
-        </>}
+        submitLabel={typeModal?.mode === 'edit' ? t('common.update') : t('employees.addType')}
+        cancelLabel={t('common.cancel')}
+        submitDisabled={!typeForm.name.trim()}
+        onSubmit={handleSaveType}
+        submitClassName="btn-info"
+        contentTestId="employee-type-form-modal"
       >
-        <div>            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')} *</label>
-          <input type="text" value={newType.name} onChange={e => setNewType(p => ({ ...p, name: e.target.value }))}
-            placeholder={t('employees.typeNamePlaceholder')}
-            className="input w-full" />
-        </div>
-        <div>
-          <label className="block text-base-content/80 mb-1 text-sm">{t('employees.descriptionOptional')}</label>
-          <textarea value={newType.description || ''} onChange={e => setNewType(p => ({ ...p, description: e.target.value || null }))}
-            placeholder={t('employees.descPlaceholder')}
-            rows={3}
-            className="textarea w-full resize-none" />
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={!!showEditType && !!editType}
-        onClose={() => { setShowEditType(null); setEditType(null); }}
-        title={t('employees.editTypeTitle')}
-        size="sm"
-        footer={<>
-          <button onClick={() => { setShowEditType(null); setEditType(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateType} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
-        </>}
-      >
-        {editType && (<>
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')}</label>
-            <input type="text" value={editType.name} onChange={e => setEditType(p => ({ ...p!, name: e.target.value }))}
-              className="input w-full" />
-          </div>
-          <div>
-            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeDescription')}</label>
-            <textarea value={editType.description || ''}onChange={e => setEditType(p => ({ ...p!, description: e.target.value || undefined }))}
-              rows={3}
-              className="textarea w-full resize-none" />
-          </div>
-        </>)}
-      </Modal>
+        <EmployeeTypeForm value={typeForm} onChange={setTypeForm} />
+      </FormModal>
 
       <ConfirmDialog
         isOpen={!!showDeleteType}

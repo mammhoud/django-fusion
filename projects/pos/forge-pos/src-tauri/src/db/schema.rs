@@ -19,7 +19,6 @@ diesel::table! {
         dine_in_tables -> Integer,
         delivery_fee -> Double,
         delivery_fee_per_km -> Double,
-        unique_card_colors -> Bool,
         smtp_server -> Nullable<Text>,
         smtp_port -> Nullable<Integer>,
         smtp_username -> Nullable<Text>,

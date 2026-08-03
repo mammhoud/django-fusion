@@ -158,10 +158,6 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
         <AnimatePresence>
           {isOpen && (
             <div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.15 }}
               className="card bg-base-100 shadow-xl border border-base-300 p-4 absolute z-50 mt-2 w-full min-w-[280px]"
             >
               {/* Month/Year Selectors */}
@@ -178,16 +174,12 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                     className="select w-full text-sm flex items-center justify-between"
                   >
                     <span>{months[selectedMonth]}</span>
-                    <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
+                    <span className={`ri-arrow-down-s-line ri-20px transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
                   </button>
                   
                   <AnimatePresence>
                     {showMonthDropdown && (
                       <div
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.15 }}
                         className="absolute z-60 mt-1 w-full bg-white dark:bg-slate-700 rounded-lg 
                           border border-slate-300 dark:border-slate-600 shadow-xl overflow-hidden"
                       >
@@ -252,16 +244,12 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                     className="select text-sm flex items-center justify-between gap-2 min-w-[100px]"
                   >
                     <span>{selectedYear}</span>
-                    <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
+                    <span className={`ri-arrow-down-s-line ri-20px transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
                   </button>
                   
                   <AnimatePresence>
                     {showYearDropdown && (
                       <div
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.15 }}
                         className="absolute z-60 mt-1 w-full bg-white dark:bg-slate-700 rounded-lg 
                           border border-slate-300 dark:border-slate-600 shadow-xl overflow-hidden"
                       >

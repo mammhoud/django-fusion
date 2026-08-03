@@ -313,7 +313,7 @@ import "flyonui/flyonui";
 | Corporate | #2563eb (Blue) | #3b82f6 | `corporate` |
 | Luxury | #ca8a04 (Gold) | #eab308 | `luxury` |
 | Pastel | #db2777 (Pink) | #f472b6 | `pastel` |
-| Cyberpunk | #ff00ff (Magenta) | #ff00ff | `cyberpunk` |
+| Perplexity | Teal | Teal | `perplexity` |
 
 ---
 

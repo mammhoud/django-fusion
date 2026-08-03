@@ -77,17 +77,6 @@ describe('Settings Page', () => {
     expect(saveBtn).toBeInTheDocument();
   });
 
-  it('shows the Unique Card Colors toggle and toggles it off', async () => {
-    renderWithProviders(<Settings />);
-
-    const toggle = await screen.findByRole('checkbox', { name: /Unique Card Colors/ });
-    expect(toggle).toBeInTheDocument();
-    // Defaults to on when the setting is absent (column default = 1)
-    expect(toggle).toBeChecked();
-
-    fireEvent.click(toggle);
-    expect(toggle).not.toBeChecked();
-  });
 
   it('shows phone and email fields', async () => {
     renderWithProviders(<Settings />);
@@ -184,12 +173,13 @@ describe('Settings Page', () => {
     await waitFor(() => {
       expect(screen.getByText('Theme Customization')).toBeInTheDocument();
     });
-    // Mode options (Light / Dark / System) render inside the ThemeToggle
-    // dropdown — open it to reveal them.
+    // Mode options (Light / Dark only) render inside the ThemeToggle
+    // dropdown — open it to reveal them. The trigger shows the current
+    // mode too, so Light may appear twice (trigger + option).
     fireEvent.click(screen.getByRole('button', { name: /Theme:/ }));
-    expect(screen.getByText('Light')).toBeInTheDocument();
+    expect(screen.getAllByText('Light').length).toBeGreaterThan(0);
     expect(screen.getByText('Dark')).toBeInTheDocument();
-    expect(screen.getByText('System')).toBeInTheDocument();
+    expect(screen.queryByText('System')).not.toBeInTheDocument();
   });
 
   it('switches through multiple tabs in succession', async () => {
@@ -259,8 +249,7 @@ describe('Settings Page', () => {
       expect(screen.getByText('Corporate')).toBeInTheDocument();
     });
 
-    // Click the Corporate variant card (scoped to its title span — the
-    // ThemeToggle button also renders the active variant label).
+    // Click the Corporate variant card (scoped to its title span).
     const corporateButton = screen.getByText('Corporate', { selector: 'span.font-semibold' });
     fireEvent.click(corporateButton);
 
@@ -297,22 +286,23 @@ describe('Settings Page', () => {
     });
   });
 
-  it('shows all 5 theme variant options', async () => {
+  it('shows all theme variant options (cyberpunk removed)', async () => {
     renderWithProviders(<Settings />);
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
     await waitFor(() => expect(screen.getByText('Theme Customization')).toBeInTheDocument());
 
-    // All 5 variants should be present (scoped to variant card titles — the
-    // ThemeToggle button also renders the active variant label).
+    // All remaining variants should be present (scoped to variant card titles —
+    // the ThemeToggle button no longer renders a variant label).
     expect(screen.getByText('Default', { selector: 'span.font-semibold' })).toBeInTheDocument();
     expect(screen.getByText('Corporate', { selector: 'span.font-semibold' })).toBeInTheDocument();
     expect(screen.getByText('Luxury', { selector: 'span.font-semibold' })).toBeInTheDocument();
     expect(screen.getByText('Pastel', { selector: 'span.font-semibold' })).toBeInTheDocument();
-    expect(screen.getByText('Cyberpunk', { selector: 'span.font-semibold' })).toBeInTheDocument();
+    expect(screen.getByText('Perplexity', { selector: 'span.font-semibold' })).toBeInTheDocument();
+    expect(screen.queryByText('Cyberpunk', { selector: 'span.font-semibold' })).not.toBeInTheDocument();
   });
 
-  it('toggles between Light, Dark, and System mode in Appearance tab', async () => {
+  it('toggles between Light and Dark mode in Appearance tab', async () => {
     renderWithProviders(<Settings />);
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
@@ -321,18 +311,16 @@ describe('Settings Page', () => {
     // Mode options live inside the ThemeToggle dropdown — open it first
     const toggleBtn = screen.getByRole('button', { name: /Theme:/ });
     fireEvent.click(toggleBtn);
-    expect(screen.getByText('Light')).toBeInTheDocument();
+    expect(screen.getAllByText('Light').length).toBeGreaterThan(0);
     expect(screen.getByText('Dark')).toBeInTheDocument();
-    expect(screen.getByText('System')).toBeInTheDocument();
 
     // Selecting a mode closes the dropdown — reopen between switches
     fireEvent.click(screen.getByText('Dark'));
     fireEvent.click(screen.getByRole('button', { name: /Theme:.*Dark/ }));
     fireEvent.click(screen.getByText('Light'));
     fireEvent.click(screen.getByRole('button', { name: /Theme:.*Light/ }));
-    fireEvent.click(screen.getByText('System'));
 
-    // After switching to System, the toggle reports the system mode
-    expect(screen.getByRole('button', { name: /Theme:.*System/ })).toBeInTheDocument();
+    // The toggle reports the selected mode (light)
+    expect(screen.getByRole('button', { name: /Theme:.*Light/ })).toBeInTheDocument();
   });
 });

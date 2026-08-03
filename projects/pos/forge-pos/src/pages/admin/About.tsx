@@ -124,24 +124,15 @@ export default function About() {
         {/* Header */}
         <div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
         >
           <div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="bg-base-100/20 backdrop-blur-sm rounded-full p-6 w-fit mx-auto mb-6"
           >
-            <span className="icon-[tabler--heart] w-16 h-16 md:w-20 md:h-20 text-teal-500 dark:text-teal-400" />
+            <span className="ri-heart-line w-16 h-16 md:w-20 md:h-20 text-teal-500 dark:text-teal-400" />
           </div>
           <h1
             className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text
               bg-linear-to-r from-primary to-secondary py-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
           >
             {t('about.title')}
           </h1>
@@ -153,14 +144,11 @@ export default function About() {
         {/* Main Content */}
         <div
           className="max-w-4xl mx-auto space-y-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
         >
           {/* Project Info */}
           <Card padding="xl" transitional className="md:p-8">
             <h2 className="text-2xl font-semibold text-base-content mb-4 flex items-center gap-2">
-              <span className="icon-[tabler--code] text-primary" />
+              <span className="ri-code-s-slash-line text-primary" />
               {t('about.projectTitle')}
             </h2>
             <p className="text-base-content/70 leading-relaxed mb-4">
@@ -174,7 +162,7 @@ export default function About() {
           {/* Support & Contact */}
           <Card padding="xl" transitional className="md:p-8">
             <h2 className="text-2xl font-semibold text-base-content mb-6 flex items-center gap-2">
-              <span className="icon-[tabler--mail] text-primary" />
+              <span className="ri-mail-line text-primary" />
               {t('about.supportTitle')}
             </h2>
             <p className="text-base-content/70 mb-6">
@@ -227,7 +215,7 @@ export default function About() {
               {/* Message */}
               <div className={`field ${formErrors.message ? 'field--error' : ''}`}>
                 <label className="label-text">
-                  <span className="icon-[tabler--message] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                  <span className="ri-chat-1-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                   {t('about.supportMessage')}
                 </label>
                 <textarea
@@ -245,7 +233,7 @@ export default function About() {
               {/* ── Attachment area ── */}
               <div>
                 <label className="block text-base-content/80 mb-1.5 text-sm font-medium">
-                  <span className="icon-[tabler--paperclip] inline mr-1.5 w-3.5 h-3.5" />
+                  <span className="ri-attachment-line inline mr-1.5 w-3.5 h-3.5" />
                   {t('about.attachments') || 'Attachments'}
                 </label>
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -256,14 +244,14 @@ export default function About() {
                         bg-white/50 dark:bg-white/10 border border-base-300/30
                         text-xs text-slate-700 dark:text-slate-300"
                     >
-                      <span className="icon-[tabler--file] w-3.5 h-3.5 text-primary" />
+                      <span className="ri-file-line ri-14px text-primary" />
                       <span className="max-w-[120px] truncate">{att.name}</span>
                       <button
                         type="button"
                         onClick={() => setAttachments(prev => prev.filter((_, i) => i !== idx))}
                         className="text-slate-400 hover:text-error transition-colors"
                       >
-                        <span className="icon-[tabler--x] w-3 h-3" />
+                        <span className="ri-close-line ri-12px" />
                       </button>
                     </span>
                   ))}
@@ -310,12 +298,10 @@ export default function About() {
                   >
                     {isUploading ? (
                       <div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full"
+                        className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin"
                       />
                     ) : (
-                      <span className="icon-[tabler--paperclip] w-3.5 h-3.5" />
+                      <span className="ri-attachment-line ri-14px" />
                     )}
                     {t('about.attachFile') || 'Attach File'}
                   </button>
@@ -344,7 +330,7 @@ export default function About() {
                       text-slate-600 dark:text-slate-300 hover:bg-base-200/50
                       transition-colors flex items-center gap-1.5"
                   >
-                    <span className="icon-[tabler--chart-bar] w-3.5 h-3.5" />
+                    <span className="ri-bar-chart-2-line ri-14px" />
                     {t('about.forwardReport') || 'Forward Report'}
                   </button>
                 </div>
@@ -363,15 +349,13 @@ export default function About() {
                 {isSubmitting ? (
                   <>
                     <div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                     />
                     {t('about.sending')}
                   </>
                 ) : (
                   <>
-                    <span className="icon-[tabler--send] text-lg" />
+                    <span className="ri-send-plane-line text-lg" />
                     {t('about.sendMessage')}
                   </>
                 )}
@@ -416,9 +400,6 @@ export default function About() {
           {/* Developed by mammhoud */}
           <div
             className="text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
           >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-base-content/70">
               <span className="text-sm">{t('about.developedBy')}</span>
@@ -438,24 +419,18 @@ export default function About() {
       <AnimatePresence>
         {submitStatus === 'success' && (
           <div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success shadow-lg"
           >
-            <span className="icon-[tabler--check] text-xl" />
+            <span className="ri-check-line text-xl" />
             {t('about.successToast')}
           </div>
         )}
 
         {submitStatus === 'error' && (
           <div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error max-w-md shadow-lg"
           >
-            <span className="icon-[tabler--alert-triangle] text-xl" />
+            <span className="ri-alert-line text-xl" />
             <span>{errorMessage}</span>
           </div>
         )}

@@ -42,10 +42,6 @@ pub struct Settings {
     pub dine_in_tables: i32,
     pub delivery_fee: f64,
     pub delivery_fee_per_km: f64,
-    /// When true (default), product cards + KDS items get a deterministic
-    /// unique per-product accent color. When false, cards fall back to the
-    /// rotating palette (category colors still apply).
-    pub unique_card_colors: bool,
     pub smtp_server: Option<String>,
     pub smtp_port: Option<i32>,
     pub smtp_username: Option<String>,
@@ -78,7 +74,6 @@ pub struct UpdateSettings {
     pub tax_id: Option<Option<String>>,
     pub delivery_fee: Option<f64>,
     pub delivery_fee_per_km: Option<f64>,
-    pub unique_card_colors: Option<bool>,
     pub smtp_server: Option<String>,
     pub smtp_port: Option<i32>,
     pub smtp_username: Option<String>,

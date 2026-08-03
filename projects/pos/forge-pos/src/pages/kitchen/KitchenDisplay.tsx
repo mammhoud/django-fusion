@@ -13,7 +13,7 @@ import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hoo
 import { useCurrency } from '../../contexts/CurrencyContext';
 import StatCard from '../../components/ui/StatCard';
 import { parseNoteSteps } from '../../utils/noteSteps';
-import { accentColorFromSeed, hexToRgba } from '../../components/pos/ProductCard';
+
 
 // Type from the Rust KitchenTicketCategory model (ticket → product-category rows)
 interface KitchenTicketCategoryRow {
@@ -99,8 +99,6 @@ export default function KitchenDisplay() {
   const { formatPrice } = useCurrency();
   const [tickets, setTickets] = useState<KitchenTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // User-toggleable unique per-product accent colors (Settings → General).
-  const [uniqueCardColors, setUniqueCardColors] = useState(true);
   const [filter, setFilter] = useState<string>('pending');
   // ── Product-category filter (colored tag pills) ──
   const [categories, setCategories] = useState<Category[]>([]);
@@ -176,13 +174,6 @@ export default function KitchenDisplay() {
   // ── Sync tray badge on mount only (not on filter changes) ──
   useEffect(() => {
     invoke('sync_tray_badge').catch(() => {});
-  }, []);
-
-  // ── Load unique-card-colors preference (Settings → General) ──
-  useEffect(() => {
-    invoke<{ unique_card_colors?: boolean }>('get_settings')
-      .then(s => setUniqueCardColors(s?.unique_card_colors !== false))
-      .catch(() => {});
   }, []);
 
   // ── Real-time event listener — replaces the old 10s polling ──
@@ -473,7 +464,7 @@ export default function KitchenDisplay() {
               className="btn btn-ghost btn-sm gap-1 text-xs"
               title="Chef action report"
             >
-              <span className="icon-[tabler--clipboard-list] w-3.5 h-3.5" />
+              <span className="ri-clipboard-line ri-14px" />
               <span className="hidden sm:inline">Report</span>
               {ticketClickCount > 0 && (
                 <span className="badge badge-xs badge-soft badge-primary">{ticketClickCount}</span>
@@ -486,7 +477,7 @@ export default function KitchenDisplay() {
               className={`btn btn-ghost btn-sm gap-1 text-xs ${showPreferences ? 'btn-active' : ''}`}
               title="Display preferences"
             >
-              <span className="icon-[tabler--adjustments] w-3.5 h-3.5" />
+              <span className="ri-equalizer-line ri-14px" />
             </button>
             {/* Sort toggle */}
             <button
@@ -559,7 +550,7 @@ export default function KitchenDisplay() {
           <div className="bg-base-100 border border-base-300 rounded-lg p-3 text-xs">
             <div className="flex items-center justify-between mb-2">
               <span className="font-semibold text-base-content flex items-center gap-1.5">
-                <span className="icon-[tabler--adjustments] w-3.5 h-3.5" />
+                <span className="ri-equalizer-line ri-14px" />
                 Product Display Preferences
               </span>
               <button
@@ -567,7 +558,7 @@ export default function KitchenDisplay() {
                 onClick={() => setShowPreferences(false)}
                 className="btn btn-ghost btn-xs btn-square"
               >
-                <span className="icon-[tabler--x] w-3 h-3" />
+                <span className="ri-close-line ri-12px" />
               </button>
             </div>
             <p className="text-[10px] text-base-content/50 mb-2">
@@ -626,7 +617,7 @@ export default function KitchenDisplay() {
             <span>{filteredTickets.length} / {tickets.length}</span>
             {filteredTickets.filter(t => isOverdue(t)).length > 0 && (
               <span className="badge badge-xs badge-error gap-1 animate-pulse">
-                <span className="icon-[tabler--alert-triangle] w-2.5 h-2.5" />
+                <span className="ri-alert-line w-2.5 h-2.5" />
                 {filteredTickets.filter(t => isOverdue(t)).length} overdue
               </span>
             )}
@@ -678,7 +669,7 @@ export default function KitchenDisplay() {
                       </span>
                     )}
                     <span className={`text-[9px] flex items-center gap-1 ${overdue ? 'text-error font-semibold' : 'text-base-content/40'}`}>
-                      <span className="icon-[tabler--clock] w-3 h-3" />
+                      <span className="ri-time-line ri-12px" />
                       {timeAgo(ticket.created_at)}
                     </span>
                   </div>
@@ -690,7 +681,7 @@ export default function KitchenDisplay() {
                   <div className="flex items-center justify-between mt-auto mb-1">
                     {ticket.prepare_time_minutes > 0 && (
                       <span className={`flex items-center gap-1 text-[9px] ${overdue ? 'text-error' : 'text-base-content/50'}`}>
-                        <span className="icon-[tabler--clock-play] w-3 h-3" />
+                        <span className="ri-play-circle-line ri-12px" />
                         {ticket.prepare_time_minutes}min
                         <span className="text-base-content/30">Est.</span>
                       </span>
@@ -751,7 +742,7 @@ export default function KitchenDisplay() {
               <span className={iconClass(ORDER_TYPE_MAP[selectedTicket.priority].icon, 'w-4 h-4')} />
             </div>
           ) : (
-            <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-primary" />
+            <span className="ri-restaurant-2-line ri-20px text-primary" />
           )}
           title={selectedTicket ? `Order #${selectedTicket.sale_id}` : ''}
           subtitle={selectedTicket
@@ -764,7 +755,7 @@ export default function KitchenDisplay() {
                   onClick={() => { updateStatus(selectedTicket, 'preparing'); closeDetail(); }}
                   className="btn btn-info btn-sm gap-1"
                 >
-                  <span className="icon-[tabler--chef-hat] w-4 h-4" />
+                  <span className="ri-restaurant-2-line ri-16px" />
                   {t('kitchen.startPreparing')}
                 </button>
               )}
@@ -773,7 +764,7 @@ export default function KitchenDisplay() {
                   onClick={() => { updateStatus(selectedTicket, 'ready'); closeDetail(); }}
                   className="btn btn-success btn-sm gap-1"
                 >
-                  <span className="icon-[tabler--circle-check] w-4 h-4" />
+                  <span className="ri-checkbox-circle-line ri-16px" />
                   {t('kitchen.markReady')}
                 </button>
               )}
@@ -782,7 +773,7 @@ export default function KitchenDisplay() {
                   onClick={() => { updateStatus(selectedTicket, 'delivered'); closeDetail(); }}
                   className="btn btn-ghost btn-sm gap-1"
                 >
-                  <span className="icon-[tabler--circle-check] w-4 h-4" />
+                  <span className="ri-checkbox-circle-line ri-16px" />
                   {t('kitchen.deliver')}
                 </button>
               )}
@@ -805,25 +796,25 @@ export default function KitchenDisplay() {
                   <div className="flex flex-wrap items-center gap-2">
                     {saleDetail?.table_number && (
                       <span className="tag tag--sm tag--info">
-                        <span className="icon-[tabler--door-enter] w-3.5 h-3.5" />
+                        <span className="ri-login-box-line ri-14px" />
                         Table {saleDetail.table_number}
                       </span>
                     )}
                     {saleDetail?.delivery_address && (
                       <span className="tag tag--sm tag--warning">
-                        <span className="icon-[tabler--map-pin] w-3.5 h-3.5" />
+                        <span className="ri-map-pin-2-line ri-14px" />
                         {saleDetail.delivery_address}
                       </span>
                     )}
                     {saleDetail?.total_amount !== undefined && (
                       <span className="tag tag--sm tag--primary">
-                        <span className="icon-[tabler--currency-dollar] w-3.5 h-3.5" />
+                        <span className="ri-money-dollar-circle-line ri-14px" />
                         ${saleDetail.total_amount.toFixed(2)}
                       </span>
                     )}
                     {saleItems.length > 0 && (
                       <span className="tag tag--sm">
-                        <span className="icon-[tabler--shopping-cart] w-3.5 h-3.5" />
+                        <span className="ri-shopping-cart-line ri-14px" />
                         {saleItems.length} item{saleItems.length !== 1 ? 's' : ''}
                       </span>
                     )}
@@ -831,7 +822,7 @@ export default function KitchenDisplay() {
 
                   {selectedTicket.notes && (
                     <div className="bg-base-200/50 rounded-lg p-2.5 text-xs text-base-content/70 flex items-start gap-2">
-                      <span className="icon-[tabler--note] w-3.5 h-3.5 text-base-content/40 mt-0.5 shrink-0" />
+                      <span className="ri-sticky-note-line ri-14px text-base-content/40 mt-0.5 shrink-0" />
                       {selectedTicket.notes}
                     </div>
                   )}
@@ -839,7 +830,7 @@ export default function KitchenDisplay() {
                   {/* Sale Items */}
                   <div>
                     <h4 className="text-xs font-semibold text-base-content/70 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <span className="icon-[tabler--shopping-cart] w-3.5 h-3.5" />
+                      <span className="ri-shopping-cart-line ri-14px" />
                       Items
                     </h4>
                     {isLoadingItems ? (
@@ -851,36 +842,20 @@ export default function KitchenDisplay() {
                       <p className="text-xs text-base-content/40 italic py-3">No items recorded for this order.</p>
                     ) : (
                       <div className="space-y-1">
-                        {saleItems.map(item => {
-                          // Unique per-product accent — golden-angle hue derived
-                          // from the product name (SaleItemData carries no
-                          // product_id), so each product keeps a stable, distinct
-                          // color across tickets on the KDS. Toggleable via
-                          // Settings → General (unique_card_colors); when off the
-                          // rows render plain without accent rails/badges.
-                          const accent = uniqueCardColors ? accentColorFromSeed(item.product_name) : null;
-                          return (
-                            <div
-                              key={item.id}
-                              className="flex items-center justify-between py-1.5 px-2 rounded-lg text-xs"
-                              style={accent ? {
-                                backgroundColor: hexToRgba(accent, 0.08),
-                                borderLeft: `3px solid ${accent}`,
-                              } : undefined}
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span
-                                  className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold shrink-0 ${accent ? 'text-white' : 'bg-base-300 text-base-content/70'}`}
-                                  style={accent ? { backgroundColor: accent } : undefined}
-                                >
-                                  {item.quantity}
-                                </span>
-                                <span className="font-medium text-base-content truncate">{item.product_name}</span>
-                              </div>
-                              <span className="text-base-content/60 shrink-0 ml-2">{formatPrice(item.price * item.quantity)}</span>
+                        {saleItems.map(item => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between py-1.5 px-2 rounded-lg text-xs"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold shrink-0 bg-base-300 text-base-content/70">
+                                {item.quantity}
+                              </span>
+                              <span className="font-medium text-base-content truncate">{item.product_name}</span>
                             </div>
-                          );
-                        })}
+                            <span className="text-base-content/60 shrink-0 ml-2">{formatPrice(item.price * item.quantity)}</span>
+                          </div>
+                        ))}
                         {/* Total */}
                         <div className="flex items-center justify-between py-2 px-2 mt-1 border-t border-base-200/50 text-xs font-bold text-base-content">
                           <span>Total</span>
@@ -894,7 +869,7 @@ export default function KitchenDisplay() {
                   {chefReport.length > 0 && (
                     <div>
                       <h4 className="text-xs font-semibold text-base-content/70 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span className="icon-[tabler--history] w-3.5 h-3.5" />
+                        <span className="ri-history-line ri-14px" />
                         Actions
                       </h4>
                       <div className="space-y-1">
@@ -919,7 +894,7 @@ export default function KitchenDisplay() {
                   <div className="bg-info/5 border border-info/20 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-xs font-semibold text-base-content/80 uppercase tracking-wider flex items-center gap-1.5">
-                        <span className="icon-[tabler--list-check] w-3.5 h-3.5 text-info" />
+                        <span className="ri-check-double-line ri-14px text-info" />
                         {t('kitchen.prepSteps') || 'Prep Steps'}
                         {activePrepNote && (
                           <span className="tag tag--sm tag--info font-normal normal-case">{activePrepNote.name}</span>
@@ -947,7 +922,7 @@ export default function KitchenDisplay() {
                                   done ? 'bg-success border-success text-success-content' : 'border-base-content/30'
                                 }`}
                               >
-                                {done && <span className="icon-[tabler--check] w-3 h-3" />}
+                                {done && <span className="ri-check-line ri-12px" />}
                               </span>
                               <span className="min-w-0">
                                 <span className={`block text-xs font-medium ${done ? 'line-through' : 'text-base-content'}`}>
@@ -971,7 +946,7 @@ export default function KitchenDisplay() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-xs font-semibold text-base-content/70 uppercase tracking-wider flex items-center gap-1.5">
-                      <span className="icon-[tabler--click] w-3.5 h-3.5 text-primary" />
+                      <span className="ri-cursor-line ri-14px text-primary" />
                       {t('kitchen.quickNotes') || 'Quick Notes'}
                     </h4>
                     <button
@@ -979,7 +954,7 @@ export default function KitchenDisplay() {
                       onClick={() => setShowQuickAddNote(s => !s)}
                       className="btn btn-ghost btn-xs gap-1 text-primary"
                     >
-                      <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+                      <span className="ri-add-line ri-14px" />
                       {t('kitchen.addNote') || 'Add note'}
                     </button>
                   </div>
@@ -1014,7 +989,7 @@ export default function KitchenDisplay() {
                           disabled={!quickNoteName.trim()}
                           className="btn btn-primary btn-xs gap-1"
                         >
-                          <span className="icon-[tabler--check] w-3 h-3" />
+                          <span className="ri-check-line ri-12px" />
                           {t('common.save')}
                         </button>
                       </div>
@@ -1042,7 +1017,7 @@ export default function KitchenDisplay() {
                             }`}
                             title={isPrep ? 'Shows prep steps on this order' : note.template_body}
                           >
-                            {isPrep && <span className="icon-[tabler--list-check] w-3 h-3" />}
+                            {isPrep && <span className="ri-check-double-line ri-12px" />}
                             {note.name}
                           </button>
                         );
@@ -1059,7 +1034,7 @@ export default function KitchenDisplay() {
           <div className="modal-box max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-base text-base-content flex items-center gap-2">
-                <span className="icon-[tabler--clipboard-list] w-4 h-4 text-primary" />
+                <span className="ri-clipboard-line ri-16px text-primary" />
                 Chef Action Report
               </h3>
               <button
@@ -1067,7 +1042,7 @@ export default function KitchenDisplay() {
                 onClick={() => { reportDialogRef.current?.close(); }}
                 className="btn btn-ghost btn-sm btn-square"
               >
-                <span className="icon-[tabler--x] w-4 h-4" />
+                <span className="ri-close-line ri-16px" />
               </button>
             </div>
             {clickRecords.length === 0 ? (
@@ -1095,7 +1070,7 @@ export default function KitchenDisplay() {
                   onClick={clearClickHistory}
                   className="btn btn-ghost btn-sm text-error gap-1"
                 >
-                  <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                  <span className="ri-delete-bin-line ri-14px" />
                   Clear history
                 </button>
               )}

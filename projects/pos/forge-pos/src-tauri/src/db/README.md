@@ -32,6 +32,21 @@ pub fn run_migrations(db_path: &PathBuf) -> Result<(), String>      // Auto-migr
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 ```
 
+## SQLite PRAGMAs (WAL mode)
+
+Every connection established via `establish_connection` (the funnel behind
+`open_conn` and `run_migrations`) applies:
+
+```sql
+PRAGMA journal_mode=WAL;      -- write-ahead logging: concurrent reads + single writer
+PRAGMA synchronous=NORMAL;    -- safe with WAL, avoids fsync on every commit
+PRAGMA busy_timeout=5000;     -- wait up to 5 s instead of failing with SQLITE_BUSY
+```
+
+Because operations open short-lived per-command connections (Sale, KDS,
+Settings, …), WAL prevents readers from blocking writers and keeps concurrent
+writes from deadlocking.
+
 ## Model Pattern
 
 Each table has 3 structs:
