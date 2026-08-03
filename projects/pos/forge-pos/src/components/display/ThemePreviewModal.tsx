@@ -34,12 +34,12 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
       onClose={onClose}
       title="Theme Component Preview"
       subtitle="Switch between light & dark and pick a variant — changes apply live"
-      headerIcon={<span className="icon-[tabler--palette] w-5 h-5 text-primary" />}
+      headerIcon={<span className="ri-palette-line ri-20px text-primary" />}
       size="full"
       scroll
       footer={
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="icon-[tabler--check] w-4 h-4 text-success" />
+          <span className="ri-check-line ri-16px text-success" />
           <span className="text-xs text-base-content/60">
             {followSystem
               ? 'Following system preference — changes apply instantly'
@@ -64,7 +64,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
                     : 'text-base-content/50 hover:text-base-content'
                 }`}
               >
-                <span className={`icon-[${v.icon}] w-3.5 h-3.5 mr-1`} />
+                <span className={`${v.icon} ri-14px mr-1`} />
                 {v.label}
               </button>
             ))}
@@ -81,7 +81,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
                   : 'text-base-content/50 hover:text-base-content'
               }`}
             >
-              <span className="icon-[tabler--sun] w-3.5 h-3.5" /> Light
+              <span className="ri-sun-line ri-14px" /> Light
             </button>
             <button
               type="button"
@@ -93,7 +93,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
                   : 'text-base-content/50 hover:text-base-content'
               }`}
             >
-              <span className="icon-[tabler--moon] w-3.5 h-3.5" /> Dark
+              <span className="ri-moon-line ri-14px" /> Dark
             </button>
             <button
               type="button"
@@ -105,7 +105,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
                   : 'text-base-content/50 hover:text-base-content'
               }`}
             >
-              <span className="icon-[tabler--device-desktop] w-3.5 h-3.5" /> System
+              <span className="ri-computer-line ri-14px" /> System
             </button>
           </div>
           {/* Theme badge */}
@@ -169,10 +169,10 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
         {/* ── Alerts ── */}
         <Section title="Alerts">
           <div className="space-y-2">
-            <div role="alert" className="alert alert-info"><span className="icon-[tabler--info-circle] w-5 h-5" /><span>Info alert — general information</span></div>
-            <div role="alert" className="alert alert-success"><span className="icon-[tabler--check] w-5 h-5" /><span>Success — operation completed</span></div>
-            <div role="alert" className="alert alert-warning"><span className="icon-[tabler--alert-triangle] w-5 h-5" /><span>Warning — please review</span></div>
-            <div role="alert" className="alert alert-error"><span className="icon-[tabler--alert-circle] w-5 h-5" /><span>Error — something went wrong</span></div>
+            <div role="alert" className="alert alert-info"><span className="ri-information-line ri-20px" /><span>Info alert — general information</span></div>
+            <div role="alert" className="alert alert-success"><span className="ri-check-line ri-20px" /><span>Success — operation completed</span></div>
+            <div role="alert" className="alert alert-warning"><span className="ri-alert-line ri-20px" /><span>Warning — please review</span></div>
+            <div role="alert" className="alert alert-error"><span className="ri-alert-line ri-20px" /><span>Error — something went wrong</span></div>
           </div>
         </Section>
 

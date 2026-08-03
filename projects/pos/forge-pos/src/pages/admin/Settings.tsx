@@ -51,6 +51,10 @@ const fieldToTab: Record<string, TabId> = {
 };
 
 
+// Heroicon eye icons for the show/hide password toggles
+const EyeIcon = Ic('hi:eye');
+const EyeSlashIcon = Ic('hi:eye-slash');
+
 const tabs: TabDefinition[] = [
   { id: 'general', icon: Ic('globe') },
   { id: 'business', icon: Ic('briefcase') },
@@ -266,10 +270,10 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
             `${selectedCurrency.name} (${selectedCurrency.code} ${selectedCurrency.symbol})`
           ) : t('settings.selectCurrency')}
         </span>
-        <span className={`icon-[tabler--chevron-down] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className={`ri-arrow-down-s-line transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </div>
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-base-100 border border-slate-300 dark:border-gray-600 rounded-lg shadow-xl">
+        <div className="absolute z-50 w-full mt-2 bg-base-100 border border-base-300 rounded-lg shadow-xl">
           <div className="p-2">
             <div className="field">
               <input
@@ -293,7 +297,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
                 }}
                 className={`px-4 py-2 cursor-pointer flex items-center justify-between
                   ${value === currency.code
-                    ? 'bg-primary/10 text-primary dark:text-primary/80'
+                    ? 'bg-primary/10 text-primary'
                     : 'text-base-content hover:bg-base-200/50'}
                   transition-colors duration-200`}
               >
@@ -388,6 +392,8 @@ export default function Settings() {
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
   const [passwordOld, setPasswordOld] = useState('');
   const [passwordNew, setPasswordNew] = useState('');
+  const [showPasswordOld, setShowPasswordOld] = useState(false);
+  const [showPasswordNew, setShowPasswordNew] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
   const [passwordChangeError, setPasswordChangeError] = useState('');
@@ -795,7 +801,7 @@ export default function Settings() {
           onClick={() => setActiveTab(previousTabRef.current === activeTab ? 'general' : previousTabRef.current)}
           className="flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors duration-200"
         >
-          <span className="icon-[tabler--arrow-left] w-4 h-4" />
+          <span className="ri-arrow-left-line ri-16px" />
           <span>{t('settings.backToSettings') || 'Settings'}</span>
         </button>
         <span className="text-base-content/30">/</span>
@@ -806,10 +812,10 @@ export default function Settings() {
       <div className="sticky top-0 z-10 bg-base-100/95 backdrop-blur-sm border-b border-base-300/50 -mx-1 px-1 py-2 overflow-x-auto">
         <div className="flex items-center gap-1">
           {[
-            { id: 'theme-section-appearance', label: t('settings.themeTab.appearance'), icon: 'tabler--paint' },
-            { id: 'theme-section-studio', label: t('settings.themeTab.studio'), icon: 'tabler--palette' },
-            { id: 'theme-section-preview', label: t('settings.themeTab.preview'), icon: 'tabler--eye' },
-            { id: 'theme-section-active', label: t('settings.themeTab.activeTheme'), icon: 'tabler--info-circle' },
+            { id: 'theme-section-appearance', label: t('settings.themeTab.appearance'), icon: 'ri-paint-brush-line' },
+            { id: 'theme-section-studio', label: t('settings.themeTab.studio'), icon: 'ri-palette-line' },
+            { id: 'theme-section-preview', label: t('settings.themeTab.preview'), icon: 'ri-eye-line' },
+            { id: 'theme-section-active', label: t('settings.themeTab.activeTheme'), icon: 'ri-information-line' },
           ].map(item => (
             <button
               key={item.id}
@@ -819,7 +825,7 @@ export default function Settings() {
                 text-base-content/60 hover:text-base-content hover:bg-base-200/50
                 transition-colors duration-200 whitespace-nowrap"
             >
-              <span className={`icon-[${item.icon}] w-3.5 h-3.5`} />
+              <span className={`${item.icon} ri-14px`} />
               {item.label}
             </button>
           ))}
@@ -831,12 +837,12 @@ export default function Settings() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             {mode === 'dark' ? (
-              <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
-                <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+              <div className="bg-primary/10 rounded-full p-2.5">
+                <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
               </div>
             ) : (
-              <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
-                <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+              <div className="bg-warning/10 rounded-full p-2.5">
+                <svg className="w-5 h-5 text-warning" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
               </div>
             )}
             <div>
@@ -863,8 +869,8 @@ export default function Settings() {
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-3">
-            <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--paint] w-5 h-5 text-primary dark:text-primary/80" />
+            <div className="bg-primary/10 rounded-full p-2.5">
+              <span className="ri-paint-brush-line ri-20px text-primary" />
             </div>
             <div>
               <h3 className="font-semibold text-base-content">{t('settings.appearanceTab.title')}</h3>
@@ -876,7 +882,7 @@ export default function Settings() {
             onClick={() => setShowThemePreview(true)}
             className="btn btn-primary btn-sm gap-2"
           >
-            <span className="icon-[tabler--eye] w-4 h-4" />
+            <span className="ri-eye-line ri-16px" />
             {t('settings.appearanceTab.previewTitle') || 'Preview Theme'}
           </button>
         </div>
@@ -892,18 +898,18 @@ export default function Settings() {
                 onClick={() => setVariant(v.id)}
                 className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${
                   isActive
-                    ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10'
-                    : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600 hover:shadow-sm'
+                    ? 'border-primary bg-primary/10 shadow-md shadow-primary/10'
+                    : 'border-base-300/50 bg-base-100/50 hover:border-base-300 hover:shadow-sm'
                 }`}
               >
-                <span className={`icon-[${v.icon}] w-5 h-5 animate-scale-in`} />
+                <span className={`${v.icon} ri-20px animate-scale-in`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-base-content text-sm">
                       {t(`settings.appearanceTab.theme${v.label}`, v.label)}
                     </span>
                     {isActive && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 dark:bg-teal-800/40 text-teal-700 dark:text-primary/70">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">
                         {t('settings.appearanceTab.activeLabel')}
                       </span>
                     )}
@@ -923,8 +929,8 @@ export default function Settings() {
       <div id="theme-section-preview" className="scroll-mt-20" />
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
-            <span className="icon-[tabler--palette] w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <div className="bg-primary/10 rounded-full p-2.5">
+            <span className="ri-palette-line ri-20px text-primary" />
           </div>
           <div>
             <h3 className="font-semibold text-base-content">Component Preview</h3>
@@ -936,7 +942,7 @@ export default function Settings() {
           onClick={() => setShowThemePreview(true)}
           className="btn btn-primary btn-sm gap-2"
         >
-          <span className="icon-[tabler--eye] w-4 h-4" />
+          <span className="ri-eye-line ri-16px" />
           Preview Theme Components
         </button>
       </div>
@@ -945,8 +951,8 @@ export default function Settings() {
       <div id="theme-section-active" className="scroll-mt-20" />
       <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="bg-info/10 dark:bg-info/20 rounded-full p-2.5">
-            <span className="icon-[tabler--info-circle] w-5 h-5 text-info" />
+          <div className="bg-info/10 rounded-full p-2.5">
+            <span className="ri-information-line ri-20px text-info" />
           </div>
           <div>
             <h3 className="font-semibold text-base-content">Active Theme</h3>
@@ -1024,7 +1030,7 @@ export default function Settings() {
           <label className={BEM.label}>{t('settings.restaurantName')} <span className="text-red-400">*</span></label>
           <input type="text" name="restaurant_name" value={settings.restaurant_name} onChange={handleChange}
             className={BEM.field} />
-          {errors.restaurant_name && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.restaurant_name}</p>}
+          {errors.restaurant_name && <p className={BEM.msg}><span className="ri-alert-line text-xs" />{errors.restaurant_name}</p>}
         </div>
       </div>
 
@@ -1047,7 +1053,7 @@ export default function Settings() {
         <div className="md:col-span-2">
           <div className="border-t border-slate-300/50 dark:border-gray-600/50 pt-6 mt-2">
             <h3 className="text-lg font-semibold text-base-content mb-1">
-              <span className="icon-[tabler--clock] inline mr-2 text-primary/80" />
+              <span className="ri-time-line inline mr-2 text-primary/80" />
               {t('settings.inactivityTimeout')}
             </h3>
             <p className="text-sm text-base-content/50 mb-4">
@@ -1076,7 +1082,7 @@ export default function Settings() {
         <div className={BEM.wrap(!!errors.phone)}>
           <label className={BEM.label}>{t('settings.phone')}</label>
           <input type="tel" name="phone" value={settings.phone} onChange={handleChange} className={BEM.field} />
-          {errors.phone && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.phone}</p>}
+          {errors.phone && <p className={BEM.msg}><span className="ri-alert-line text-xs" />{errors.phone}</p>}
         </div>
       </div>
 
@@ -1085,40 +1091,8 @@ export default function Settings() {
         <div className={BEM.wrap(!!errors.email)}>
           <label className={BEM.label}>{t('settings.email')}</label>
           <input type="email" name="email" value={settings.email} onChange={handleChange} className={BEM.field} />
-          {errors.email && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.email}</p>}
+          {errors.email && <p className={BEM.msg}><span className="ri-alert-line text-xs" />{errors.email}</p>}
         </div>
-      </div>
-
-      {/* MCP Support Toggle */}
-      <div className="field">
-        <label className="input-choice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <span className="input-choice__label">{t('settings.mcpEnabled') || 'MCP Support'}</span>
-          <input
-            type="checkbox"
-            className="input-choice__control"
-            checked={!!settings.mcp_enabled}
-            onChange={(e) => setSettings(prev => ({ ...prev, mcp_enabled: e.target.checked }))}
-          />
-        </label>
-        <p className="helper-text">
-          {t('settings.mcpDescription') || 'When enabled, MCP takes priority over email support chat'}
-        </p>
-      </div>
-
-      {/* Unique Card Colors Toggle */}
-      <div className="field">
-        <label className="input-choice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <span className="input-choice__label">{t('settings.uniqueCardColors') || 'Unique Card Colors'}</span>
-          <input
-            type="checkbox"
-            className="input-choice__control"
-            checked={settings.unique_card_colors !== false}
-            onChange={(e) => setSettings(prev => ({ ...prev, unique_card_colors: e.target.checked }))}
-          />
-        </label>
-        <p className="helper-text">
-          {t('settings.uniqueCardColorsDescription') || 'Give every product card and kitchen ticket item a distinct color for faster visual scanning'}
-        </p>
       </div>
 
       {/* Address */}
@@ -1136,7 +1110,7 @@ export default function Settings() {
         <div className="card bg-base-200 border border-base-300 p-5 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-primary/10 dark:bg-primary/20 rounded-full p-2.5">
-              <span className="icon-[tabler--user] w-5 h-5 text-primary" />
+              <span className="ri-user-line ri-20px text-primary" />
             </div>
             <div>
               <h3 className="font-semibold text-base-content">{t('settings.profileTab.title') || 'Profile & Account'}</h3>
@@ -1165,7 +1139,7 @@ export default function Settings() {
         <div className="md:col-span-2">
           <div className="card bg-base-200 border border-base-300 p-5">
             <h3 className="text-lg font-semibold text-base-content mb-1">
-              <span className="icon-[tabler--lock] inline mr-2 text-primary/80" />
+              <span className="ri-lock-2-line inline mr-2 text-primary/80" />
               {t('settings.changePassword')}
             </h3>
             <p className="text-sm text-base-content/50 mb-4">
@@ -1174,14 +1148,14 @@ export default function Settings() {
 
             {passwordChangeSuccess && (
               <div role="alert" className="alert alert-success mb-4">
-                <span className="icon-[tabler--check] w-4 h-4" />
+                <span className="ri-check-line ri-16px" />
                 <span>{t('settings.passwordChangeSuccess')}</span>
               </div>
             )}
 
             {passwordChangeError && (
               <div role="alert" className="alert alert-error mb-4">
-                <span className="icon-[tabler--alert-triangle] w-4 h-4" />
+                <span className="ri-alert-line ri-16px" />
                 <span>{passwordChangeError}</span>
               </div>
             )}
@@ -1189,23 +1163,51 @@ export default function Settings() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="field">
                 <label className={BEM.label}>{t('settings.currentPassword')}</label>
-            <input
-              type="password"
-              value={passwordOld}
-              onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
-              placeholder="••••••••"
-              className="input w-full"
-            />
+                <div className="relative">
+                  <input
+                    type={showPasswordOld ? 'text' : 'password'}
+                    value={passwordOld}
+                    onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
+                    placeholder="••••••••"
+                    className="input w-full pe-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordOld(s => !s)}
+                    aria-pressed={showPasswordOld}
+                    aria-label={t('auth.showPassword')}
+                    className="absolute inset-y-0 end-2 my-auto flex items-center justify-center
+                      text-base-content/50 hover:text-base-content transition-colors"
+                  >
+                    {showPasswordOld
+                      ? <EyeSlashIcon className="size-4" />
+                      : <EyeIcon className="size-4" />}
+                  </button>
+                </div>
               </div>
               <div className="field">
                 <label className={BEM.label}>{t('settings.newPassword')}</label>
-            <input
-              type="password"
-              value={passwordNew}
-              onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
-              placeholder="••••••••"
-              className="input w-full"
-            />
+                <div className="relative">
+                  <input
+                    type={showPasswordNew ? 'text' : 'password'}
+                    value={passwordNew}
+                    onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
+                    placeholder="••••••••"
+                    className="input w-full pe-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordNew(s => !s)}
+                    aria-pressed={showPasswordNew}
+                    aria-label={t('auth.showPassword')}
+                    className="absolute inset-y-0 end-2 my-auto flex items-center justify-center
+                      text-base-content/50 hover:text-base-content transition-colors"
+                  >
+                    {showPasswordNew
+                      ? <EyeSlashIcon className="size-4" />
+                      : <EyeIcon className="size-4" />}
+                  </button>
+                </div>
               </div>
               <div className="flex items-end">
                 <button
@@ -1217,7 +1219,7 @@ export default function Settings() {
                   {isChangingPassword ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <><span className="icon-[tabler--lock] text-sm" /> {t('settings.updatePassword')}</>
+                    <><span className="ri-lock-2-line text-sm" /> {t('settings.updatePassword')}</>
                   )}
                 </button>
               </div>
@@ -1231,7 +1233,7 @@ export default function Settings() {
         <div className="md:col-span-2">
           <div className="card bg-base-200 border border-base-300 p-5">
             <h3 className="text-lg font-semibold text-base-content mb-1">
-              <span className="icon-[tabler--clock] inline mr-2 text-primary/80" />
+              <span className="ri-time-line inline mr-2 text-primary/80" />
               {t('settings.inactivityTimeout')}
             </h3>
             <p className="text-sm text-base-content/50 mb-4">
@@ -1264,7 +1266,7 @@ export default function Settings() {
         <div className="card bg-base-200 border border-base-300 p-5 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--mail] w-5 h-5 text-sky-600 dark:text-sky-400" />
+              <span className="ri-mail-line ri-20px text-sky-600 dark:text-sky-400" />
             </div>
             <div>
               <h3 className="font-semibold text-base-content">{t('settings.emailTab.title')}</h3>
@@ -1322,7 +1324,7 @@ export default function Settings() {
           <label className={BEM.label}>{t('settings.taxRate')}</label>
           <input type="number" name="tax_rate" value={settings.tax_rate} onChange={handleChange}
             step="0.01" min="0" max="100" className={BEM.field} />
-          {errors.tax_rate && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.tax_rate}</p>}
+          {errors.tax_rate && <p className={BEM.msg}><span className="ri-alert-line text-xs" />{errors.tax_rate}</p>}
         </div>
       </div>
 
@@ -1344,7 +1346,7 @@ export default function Settings() {
         <div className={BEM.wrap(!!errors.opening_time)}>
           <label className={BEM.label}>{t('settings.openingTime')}</label>
           <input type="time" name="opening_time" value={settings.opening_time} onChange={handleChange} className={BEM.field} />
-          {errors.opening_time && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.opening_time}</p>}
+          {errors.opening_time && <p className={BEM.msg}><span className="ri-alert-line text-xs" />{errors.opening_time}</p>}
         </div>
       </div>
 
@@ -1353,7 +1355,7 @@ export default function Settings() {
         <div className={BEM.wrap(!!errors.closing_time)}>
           <label className={BEM.label}>{t('settings.closingTime')}</label>
           <input type="time" name="closing_time" value={settings.closing_time} onChange={handleChange} className={BEM.field} />
-          {errors.closing_time && <p className={BEM.msg}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.closing_time}</p>}
+          {errors.closing_time && <p className={BEM.msg}><span className="ri-alert-line text-xs" />{errors.closing_time}</p>}
         </div>
       </div>
 
@@ -1372,7 +1374,7 @@ export default function Settings() {
       <div className="card bg-base-200 border border-base-300 p-6 mb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
-            <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <span className="ri-restaurant-2-line ri-20px text-amber-600 dark:text-amber-400" />
           </div>
           <div>
             <h3 className="font-semibold text-base-content">{t('settings.diningTab.title')}</h3>
@@ -1401,7 +1403,7 @@ export default function Settings() {
           onClick={() => setActiveTab(previousTabRef.current === activeTab ? 'general' : previousTabRef.current)}
           className="flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors duration-200"
         >
-          <span className="icon-[tabler--arrow-left] w-4 h-4" />
+          <span className="ri-arrow-left-line ri-16px" />
           <span>{t('settings.backToSettings') || 'Settings'}</span>
         </button>
         <span className="text-base-content/30">/</span>
@@ -1412,7 +1414,7 @@ export default function Settings() {
       <div className="card bg-base-200 border border-base-300 p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
-            <span className="icon-[tabler--truck] w-5 h-5 text-sky-600 dark:text-sky-400" />
+            <span className="ri-truck-line ri-20px text-sky-600 dark:text-sky-400" />
           </div>
           <div>
             <h3 className="font-semibold text-base-content">{t('settings.deliveryTab.title')}</h3>
@@ -1441,7 +1443,7 @@ export default function Settings() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="bg-success/10 dark:bg-emerald-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--map-pin] w-5 h-5 text-success dark:text-success/80" />
+              <span className="ri-map-pin-2-line ri-20px text-success dark:text-success/80" />
             </div>
             <div>
               <h3 className="font-semibold text-base-content">Delivery Zones</h3>
@@ -1450,14 +1452,14 @@ export default function Settings() {
           </div>
           <button type="button" onClick={() => handleZoneFormOpen()}
             className="btn btn-primary btn-sm gap-1.5">
-            <span className="icon-[tabler--plus] w-4 h-4" /> Add Zone
+            <span className="ri-add-line ri-16px" /> Add Zone
           </button>
         </div>
 
         {/* Zone Table */}
         {deliveryZones.length === 0 ? (
           <div className="text-center py-8 text-slate-400">
-            <span className="icon-[tabler--map-off] w-10 h-10 mx-auto mb-2 block opacity-50" />
+            <span className="ri-map-2-line ri-40px mx-auto mb-2 block opacity-50" />
             <p className="text-sm">No delivery zones configured. Click "Add Zone" to create one.</p>
           </div>
         ) : (
@@ -1489,11 +1491,11 @@ export default function Settings() {
                       <div className="flex items-center justify-end gap-1">
                         <button type="button" onClick={() => handleZoneFormOpen(zone)}
                           className="btn btn-ghost btn-xs btn-square" title="Edit">
-                          <span className="icon-[tabler--pencil] w-4 h-4" />
+                          <span className="ri-pencil-line ri-16px" />
                         </button>
                         <button type="button" onClick={() => setDeleteZoneId(zone.id)}
                           className="btn btn-ghost btn-xs btn-square text-red-500" title="Deactivate">
-                          <span className="icon-[tabler--trash] w-4 h-4" />
+                          <span className="ri-delete-bin-line ri-16px" />
                         </button>
                       </div>
                     </td>
@@ -1554,7 +1556,7 @@ export default function Settings() {
               <div className="text-center">
                 <div className="flex justify-center mb-4">
                   <div className="bg-red-500/20 rounded-full p-4">
-                    <span className="icon-[tabler--alert-triangle] text-4xl text-red-500" />
+                    <span className="ri-alert-line text-4xl text-red-500" />
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-base-content mb-2">Deactivate Zone?</h3>
@@ -1567,7 +1569,7 @@ export default function Settings() {
                   className="btn btn-ghost flex-1">Cancel</button>
                 <button type="button" onClick={handleDeleteZone}
                   className="btn btn-error flex-1">
-                  <span className="icon-[tabler--trash] w-4 h-4" /> Deactivate
+                  <span className="ri-delete-bin-line ri-16px" /> Deactivate
                 </button>
               </div>
             </div>
@@ -1586,7 +1588,7 @@ export default function Settings() {
           onClick={() => setActiveTab(previousTabRef.current === activeTab ? 'general' : previousTabRef.current)}
           className="flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors duration-200"
         >
-          <span className="icon-[tabler--arrow-left] w-4 h-4" />
+          <span className="ri-arrow-left-line ri-16px" />
           <span>{t('settings.backToSettings') || 'Settings'}</span>
         </button>
         <span className="text-base-content/30">/</span>
@@ -1597,7 +1599,7 @@ export default function Settings() {
         <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-base-300/50">
           <div className="flex items-center gap-3">
             <div className="bg-info/10 dark:bg-info/30 rounded-full p-2.5">
-              <span className="icon-[tabler--users] w-5 h-5 text-info dark:text-indigo-400" />
+              <span className="ri-group-line ri-20px text-info dark:text-indigo-400" />
             </div>
             <div>
               <p className="text-2xl font-bold text-base-content">{employeeCount}</p>
@@ -1608,7 +1610,7 @@ export default function Settings() {
         <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-base-300/50">
           <div className="flex items-center gap-3">
             <div className="bg-success/10 dark:bg-emerald-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--check] w-5 h-5 text-success dark:text-success/80" />
+              <span className="ri-check-line ri-20px text-success dark:text-success/80" />
             </div>
             <div>
               <p className="text-2xl font-bold text-base-content">{activeEmployeeCount}</p>
@@ -1626,7 +1628,7 @@ export default function Settings() {
           type="button"
           onClick={() => navigate('/employees')}            className="btn btn-info gap-2"
         >
-          <span className="icon-[tabler--users] w-4 h-4" />
+          <span className="ri-group-line ri-16px" />
           {t('settings.employeesTab.goToEmployees')}
         </button>
       </div>
@@ -1638,7 +1640,7 @@ export default function Settings() {
       <div className="card bg-base-200 border border-base-300 p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-purple-100 dark:bg-purple-800/30 rounded-full p-2.5">
-            <span className="icon-[tabler--database] w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <span className="ri-database-2-line ri-20px text-purple-600 dark:text-purple-400" />
           </div>
           <div>
             <h3 className="font-semibold text-base-content">{t('settings.databaseTab.title')}</h3>
@@ -1672,10 +1674,9 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isImporting ? (
-              <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <><span className="icon-[tabler--file-import] text-lg" />{t('settings.importDatabase')}</>
+              <><span className="ri-file-transfer-line text-lg" />{t('settings.importDatabase')}</>
             )}
           </button>
           <button
@@ -1687,10 +1688,9 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isExporting ? (
-              <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <><span className="icon-[tabler--file-export] text-lg" />{t('settings.exportDatabase')}</>
+              <><span className="ri-file-transfer-line text-lg" />{t('settings.exportDatabase')}</>
             )}
           </button>
         </div>
@@ -1699,7 +1699,7 @@ export default function Settings() {
         <div className="mt-8 pt-6 border-t-2 border-red-300 dark:border-red-700/50">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-2">
-              <span className="icon-[tabler--alert-triangle] w-5 h-5 text-red-600 dark:text-red-400" />
+              <span className="ri-alert-line ri-20px text-red-600 dark:text-red-400" />
             </div>
             <div>
               <h4 className="font-semibold text-red-700 dark:text-red-400 text-sm">
@@ -1720,12 +1720,11 @@ export default function Settings() {
           >
             {isResetting ? (
               <>
-                <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>{t('settings.resetting') || 'Resetting...'}</span>
               </>
             ) : (
-              <><span className="icon-[tabler--database-off] text-lg" />{t('settings.resetDatabase') || 'Reset Database'}</>
+              <><span className="ri-database-2-line text-lg" />{t('settings.resetDatabase') || 'Reset Database'}</>
             )}
           </button>
         </div>
@@ -1755,71 +1754,22 @@ export default function Settings() {
       {/* Header */}
       <div
         className="text-center mb-10"
-        transition={{ duration: 0.5 }}
       >
         <div
-          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-fit mx-auto mb-4"
         >
-          <span className="icon-[tabler--settings] w-12 h-12 md:w-14 md:h-14 text-primary/80" />
+          <span className="ri-settings-3-line ri-48px md:w-14 md:h-14 text-primary/80" />
         </div>
         <h1
           className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary"
-          transition={{ delay: 0.3 }}
         >
           {t('settings.title')}
         </h1>
       </div>
 
-      {/* Tab Navigation */}
-      <div
-        className="bg-base-100/60 backdrop-blur-md rounded-2xl p-1.5 mb-6 border border-slate-200/50 dark:border-gray-700/50"
-        transition={{ delay: 0.1 }}
-      >
-        <nav className="tabs gap-1 overflow-x-auto scrollbar-none" aria-label="Settings tabs" role="tablist" data-tab-prefix="settings-tab" onKeyDown={onSettingsTabKeyDown}>
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            const hasError = errorTabs.has(tab.id);
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                id={`settings-tab-${tab.id}`}
-                aria-controls={`settings-panel-${tab.id}`}
-                aria-selected={isActive}
-                onClick={() => navigateToTab(tab.id)}
-                className={`tab relative text-sm font-medium whitespace-nowrap shrink-0
-                  ${isActive ? 'tab-active' : ''}
-                  ${hasError ? 'text-red-500' : ''}
-                `}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-teal-500' : ''} ${hasError ? 'text-red-400' : ''}`} />
-                <span>{t('settings.tabs.' + tab.id)}</span>
-                {hasError && (
-                  <span className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" title={t('settings.hasValidationErrors')} />
-                )}
-                {isActive && hasUnsavedChanges && !hasError && (
-                  <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" title={t('settings.unsavedChanges')} />
-                )}
-                {isActive && (
-                  <div
-                    layoutId="activeTab"
-                    className="absolute inset-0 rounded-xl bg-white dark:bg-white/10 -z-10"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
       {/* Settings Form */}
       <form
         onSubmit={handleSubmit}
-        transition={{ delay: 0.2 }}
       >
         {/* Persistent Error Banner — shows when there are inline validation errors */}
         {Object.keys(errors).length > 0 && (
@@ -1827,7 +1777,7 @@ export default function Settings() {
             role="alert" className="alert alert-error mb-6 items-start"
           >
             <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-1.5 flex-shrink-0 mt-0.5">
-              <span className="icon-[tabler--alert-triangle] w-4 h-4 text-red-500" />
+              <span className="ri-alert-line ri-16px text-red-500" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-red-700 dark:text-red-300 text-sm">
@@ -1846,23 +1796,69 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Tab Content */}
+        {/* Unified Tab View — in-content sidebar nav + panel (no tab header) */}
         <Card padding="xl" transitional className="md:p-8 mb-6 min-h-[320px]">
-          <div
-            key={activeTab}
-            role="tabpanel"
-            id={`settings-panel-${activeTab}`}
-            aria-labelledby={`settings-tab-${activeTab}`}
-          >
-            {activeTab === 'general' && renderGeneralTab()}
-            {activeTab === 'business' && renderBusinessTab()}
-            {activeTab === 'dining' && renderDiningTab()}
-            {activeTab === 'delivery' && renderDeliveryTab()}
-            {activeTab === 'employees' && renderEmployeesTab()}
-            {activeTab === 'profile' && renderProfileTab()}
-            {activeTab === 'email' && renderEmailTab()}
-            {activeTab === 'database' && renderDatabaseTab()}
-            {activeTab === 'theme' && renderThemeTab()}
+          <div className="settings__layout">
+            <nav
+              className="settings__nav"
+              aria-label="Settings sections"
+              role="tablist"
+              data-tab-prefix="settings-tab"
+              onKeyDown={onSettingsTabKeyDown}
+            >
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                const hasError = errorTabs.has(tab.id);
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    id={`settings-tab-${tab.id}`}
+                    aria-controls={`settings-panel-${tab.id}`}
+                    aria-selected={isActive}
+                    onClick={() => navigateToTab(tab.id)}
+                    className={`settings__nav-item
+                      ${isActive ? 'settings__nav-item--active' : ''}
+                      ${hasError ? 'settings__nav-item--error' : ''}
+                    `}
+                  >
+                    <Icon className="settings__nav-icon" />
+                    <span className="settings__nav-label">{t('settings.tabs.' + tab.id)}</span>
+                    {hasError && (
+                      <span
+                        className="settings__nav-badge settings__nav-badge--error"
+                        title={t('settings.hasValidationErrors')}
+                      />
+                    )}
+                    {isActive && hasUnsavedChanges && !hasError && (
+                      <span
+                        className="settings__nav-badge settings__nav-badge--unsaved"
+                        title={t('settings.unsavedChanges')}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+            <div
+              className="settings__panel"
+              key={activeTab}
+              role="tabpanel"
+              id={`settings-panel-${activeTab}`}
+              aria-labelledby={`settings-tab-${activeTab}`}
+            >
+              {activeTab === 'general' && renderGeneralTab()}
+              {activeTab === 'business' && renderBusinessTab()}
+              {activeTab === 'dining' && renderDiningTab()}
+              {activeTab === 'delivery' && renderDeliveryTab()}
+              {activeTab === 'employees' && renderEmployeesTab()}
+              {activeTab === 'profile' && renderProfileTab()}
+              {activeTab === 'email' && renderEmailTab()}
+              {activeTab === 'database' && renderDatabaseTab()}
+              {activeTab === 'theme' && renderThemeTab()}
+            </div>
           </div>
         </Card>
 
@@ -1878,7 +1874,7 @@ export default function Settings() {
               disabled:opacity-40 disabled:cursor-not-allowed hover:bg-base-200"
             title={hasUnsavedChanges ? 'Revert unsaved changes' : 'No unsaved changes'}
           >
-            <span className="icon-[tabler--rotate-clockwise] text-lg" />
+            <span className="ri-refresh-line text-lg" />
             <span className="hidden sm:inline">{t('common.reset') || 'Reset'}</span>
           </button>
           <button
@@ -1890,22 +1886,20 @@ export default function Settings() {
           >
             {isSaving ? (
               <>
-                <div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>{t('settings.saving')}</span>
               </>
             ) : (
-              <><span className="icon-[tabler--device-floppy] text-lg" /> {t('settings.saveSettings')}</>
+              <><span className="ri-save-3-line text-lg" /> {t('settings.saveSettings')}</>
             )}
           </button>
         </div>
       </form>        {/* Success Toast */}
         {submitStatus === 'success' && isSuccess && (
           <div
-            exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success shadow-lg"
           >
-            <span className="icon-[tabler--check] text-lg" />
+            <span className="ri-check-line text-lg" />
             {t('settings.successMessage')}
           </div>
         )}
@@ -1913,10 +1907,9 @@ export default function Settings() {
         {/* Error Toast — only for API/save errors, not for validation errors (shown inline) */}
         {submitStatus === 'error' && errorMessage && Object.keys(errors).length === 0 && (
           <div
-            exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error shadow-lg max-w-md"
           >
-            <span className="icon-[tabler--alert-triangle] text-lg" />
+            <span className="ri-alert-line text-lg" />
             <span>{errorMessage}</span>
           </div>
         )}

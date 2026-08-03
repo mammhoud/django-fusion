@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Card from './Card';
 import { useTranslation } from 'react-i18next';
-import { useLanguage } from '../../contexts/LanguageContext';
 export interface Column<T> {
   key: string;
   label: string;
@@ -14,6 +13,21 @@ export interface Column<T> {
   editable?: boolean;
   /** Input type for the edit field (default: 'text') */
   editType?: 'text' | 'number';
+}
+
+export interface BulkAction<T> {
+  /** Unique key (used as the React key). */
+  key: string;
+  /** Button label. */
+  label: string;
+  /** Optional leading icon. */
+  icon?: React.ReactNode;
+  /** Extra button classes (e.g. `btn-error btn-soft`). */
+  className?: string;
+  /** Optional data-testid forwarded to the button. */
+  testId?: string;
+  /** Fired with the currently selected rows. */
+  onClick: (rows: T[]) => void | Promise<void>;
 }
 
 interface DataTableProps<T> {
@@ -29,6 +43,8 @@ interface DataTableProps<T> {
   selectedIds?: Set<string | number>;
   /** Fired whenever selection changes */
   onSelectionChange?: (ids: Set<string | number>) => void;
+  /** Bulk actions rendered in the toolbar while rows are selected. */
+  bulkActions?: BulkAction<T>[];
 
   // ── Inline Editing ──
   /** Called when an inline edit is confirmed. Return a promise to show a saving indicator. */
@@ -95,13 +111,12 @@ export default function DataTable<T>({
   selectable = false,
   selectedIds: controlledSelectedIds,
   onSelectionChange,
+  bulkActions,
   exportable = false,
   fileName = 'export',
   onEditSave,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const isRtl = language === 'ar';
   const emptyMsg = emptyMessage ?? t('common.noDataFound');
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -259,12 +274,32 @@ export default function DataTable<T>({
     <Card variant="bordered" className="overflow-hidden">
       {/* Toolbar */}
       {(selectable || exportable) && (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-base-300">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-base-300 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             {selectable && selectedIds.size > 0 && (
-              <span className="text-xs text-base-content/50 font-medium">
+              <span className="text-xs text-base-content/50 font-medium whitespace-nowrap">
                 {t('common.selected', { count: selectedIds.size })}
               </span>
+            )}
+            {/* Bulk actions — shown while rows are selected */}
+            {selectable && selectedIds.size > 0 && bulkActions && bulkActions.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {bulkActions.map((action) => {
+                  const selectedRows = data.filter((row) => selectedIds.has(keyExtractor(row)));
+                  return (
+                    <button
+                      key={action.key}
+                      type="button"
+                      data-testid={action.testId}
+                      onClick={() => { void action.onClick(selectedRows); }}
+                      className={`btn btn-sm text-xs gap-1.5 ${action.className || 'btn-soft'}`}
+                    >
+                      {action.icon}
+                      {action.label}
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
           {exportable && (
@@ -273,7 +308,7 @@ export default function DataTable<T>({
               onClick={handleExport}
               className="btn btn-soft btn-sm text-xs gap-1.5"
             >
-              <span className="icon-[tabler--download] w-3 h-3" />
+              <span className="ri-download-line ri-12px" />
               {t('common.csv')}
             </button>
           )}
@@ -316,9 +351,9 @@ export default function DataTable<T>({
                   {col.label}
                   {sortKey === col.key &&
                     (sortDir === 'asc' ? (
-                      <span className="icon-[tabler--arrow-up] w-3.5 h-3.5" />
+                      <span className="ri-arrow-up-line ri-14px" />
                     ) : (
-                      <span className="icon-[tabler--arrow-down] w-3.5 h-3.5" />
+                      <span className="ri-arrow-down-line ri-14px" />
                     ))}
                 </button>
               ) : (
@@ -342,9 +377,6 @@ export default function DataTable<T>({
           return (
             <div
               key={rowKey}
-              initial={{ opacity: 0, x: isRtl ? 20 : -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: _idx * 0.02 }}
               className={`transition-colors border-b border-base-300 last:border-b-0
                 ${isSelected ? 'bg-primary/10' : ''}
                 hover:bg-base-200`}
@@ -405,15 +437,7 @@ export default function DataTable<T>({
                             step={col.editType === 'number' ? 'any' : undefined}
                           />
                           {isSavingEdit && (
-                            <div
-                              animate={{ rotate: 360 }}
-                              transition={{
-                                duration: 0.8,
-                                repeat: Infinity,
-                                ease: 'linear',
-                              }}
-                              className="w-3.5 h-3.5 border-2 border-teal-400 border-t-transparent rounded-full shrink-0"
-                            />
+                            <div className="w-3.5 h-3.5 border-2 border-teal-400 border-t-transparent rounded-full shrink-0 animate-spin" />
                           )}
                           {!isSavingEdit && (
                             <div className="flex gap-0.5 shrink-0">
@@ -425,7 +449,7 @@ export default function DataTable<T>({
                                 }}
                                 className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 transition-colors"
                               >
-                                <span className="icon-[tabler--check] w-3 h-3" />
+                                <span className="ri-check-line ri-12px" />
                               </button>
                               <button
                                 type="button"
@@ -435,7 +459,7 @@ export default function DataTable<T>({
                                 }}
                                 className="p-1 rounded text-red-500 hover:bg-red-500/10 transition-colors"
                               >
-                                <span className="icon-[tabler--x] w-3 h-3" />
+                                <span className="ri-close-line ri-12px" />
                               </button>
                             </div>
                           )}

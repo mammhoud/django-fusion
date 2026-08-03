@@ -1,146 +1,126 @@
 /**
- * Centralized Icon System
- * =======================
- * Multi-set icon lookup with fallback priority and disambiguation support.
- *
- * Supported 8 icon sets:
- *   ── 7 Iconify CSS-based sets (tree-shaken at build time) ──
- *   tabler:    Tabler Icons (default) — icon-[tabler--search]
- *   lucide:    Lucide Icons            — icon-[lucide--search]
- *   mdi:       Material Design Icons   — icon-[mdi--magnify]
- *   ph:        Phosphor Icons          — icon-[ph--magnifying-glass]
- *   heroicons: Heroicons (Iconify)     — icon-[heroicons--magnifying-glass]
- *   carbon:    Carbon Icons            — icon-[carbon--search]
- *   solar:     Solar Icons             — icon-[solar--calendar-search-linear]
- *   ── 1 React component-based set ──
- *   hi:        Heroicons v2 Solid (react-icons/hi2) — <HiShoppingCart />
+ * Centralized Icon System — Remix Icons
+ * =====================================
+ * Single icon set: **Remix Icon** (font-based, loaded from
+ * `assets/styles/fonts/remixicon.css` with font files in
+ * `assets/icons/remix/`). All helpers normalize the legacy multi-set
+ * vocabulary (tabler/lucide/mdi/ph/heroicons/carbon/solar + `hi:` Heroicons)
+ * into the equivalent `ri-*` class.
  *
  * Usage:
- *   import { ic, Ic, iconClass, getAllIconClasses } from '../lib/icons';
+ *   import { ic, Ic, iconClass } from '../lib/icons';
  *
- *   // Iconify CSS-based sets:
- *   iconClass('lucide:alert-circle')           // icon-[lucide--alert-circle]
- *   const Search = ic('tabler:search');
+ *   // Class string (remix):
+ *   iconClass('search')               // "ri-search-line"
+ *   iconClass('tabler:trash')         // "ri-delete-bin-line"
+ *   iconClass('hi:home')              // "ri-home-line"
+ *   iconClass('x', 'w-4 h-4')         // "ri-close-line w-4 h-4"
  *
- *   // react-icons/hi2 React component:
- *   const CartIcon = Ic('hi:shopping-cart');    // renders <HiShoppingCart />
- *
- *   // Plain names auto-resolve to best Iconify set:
- *   iconClass('trash')                          // icon-[lucide--trash]
- *   iconClass('chef-hat')                       // icon-[tabler--chef-hat]
- *
- *   // Get all possible icon classes for a name (for disambiguation UI):
- *   getAllIconClasses('search')
- *   // ["icon-[tabler--search]", "icon-[lucide--search]", ...]
- *
- *   // Legacy — same as old Ic():
- *   tabs = [{ icon: Ic('globe'), ... }]
+ *   // React component (renders <span className="ri-...-line" />):
+ *   const Cart = Ic('hi:shopping-cart');
+ *   const Search = ic('lucide:search');
+ *   <Cart className="w-5 h-5 text-primary" />
  */
 
 import type React from 'react';
 
-// ── Lazy-loaded react-icons/hi2 module (loaded once on first use) ──
-let _hi2: Record<string, React.ComponentType<{ className?: string }>> | null = null;
-function getHi2() {
-  if (!_hi2) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    _hi2 = require('react-icons/hi2');
-  }
-  return _hi2;
-}
-
-/** Common HI icon name overrides — Tabler names that differ in Heroicons v2 */
-const HI_NAME_MAP: Record<string, string> = {
-  'x': 'HiXMark',
-  'x-mark': 'HiXMark',
-  'alert-triangle': 'HiExclamationTriangle',
-  'warning': 'HiExclamationTriangle',
-  'info': 'HiInformationCircle',
-  'info-circle': 'HiInformationCircle',
-  'help': 'HiQuestionMarkCircle',
-  'help-circle': 'HiQuestionMarkCircle',
-  'circle-x': 'HiXCircle',
-  'arrow-back': 'HiArrowLeft',
-  'arrow-up': 'HiArrowUp',
-  'arrow-down': 'HiArrowDown',
-  'arrow-right': 'HiArrowRight',
-  'arrow-left': 'HiArrowLeft',
-  'chevron-up': 'HiChevronUp',
-  'chevron-down': 'HiChevronDown',
-  'chevron-right': 'HiChevronRight',
-  'chevron-left': 'HiChevronLeft',
-  'menu': 'HiBars3',
-  'dots': 'HiEllipsisHorizontal',
-  'dots-vertical': 'HiEllipsisVertical',
+/**
+ * Map legacy icon vocabulary → Remix Icon base name.
+ * Keys are the plain icon name (without set prefix); values are the remix
+ * base name that gets the `-line` suffix (e.g. `search` → `ri-search-line`).
+ */
+const REMIX_MAP: Record<string, string> = {
+  // ── generic / ui ──
+  'search': 'search', 'x': 'close', 'close': 'close', 'plus': 'add', 'minus': 'subtract',
+  'check': 'check', 'check-circle': 'checkbox-circle', 'circle-check': 'checkbox-circle',
+  'alert-triangle': 'alert', 'alert-circle': 'alert', 'exclamation-triangle': 'alert',
+  'warning': 'alert', 'info': 'information', 'info-circle': 'information',
+  'help': 'question', 'help-circle': 'question', 'question-mark': 'question',
+  'x-mark': 'close', 'check-badge': 'checkbox-circle',
+  'arrow-left': 'arrow-left', 'arrow-right': 'arrow-right', 'arrow-up': 'arrow-up',
+  'arrow-down': 'arrow-down', 'arrow-narrow-left': 'arrow-left', 'arrow-back': 'arrow-left',
+  'chevron-up': 'arrow-up-s', 'chevron-down': 'arrow-down-s', 'chevron-left': 'arrow-left-s',
+  'chevron-right': 'arrow-right-s', 'menu': 'menu-2', 'menu-2': 'menu-2', 'menu-4': 'menu-4',
+  'dots': 'more-2', 'dots-vertical': 'more', 'loader': 'loader-4', 'loader-2': 'loader-4',
+  'spinner': 'loader-4', 'settings': 'settings-3', 'cog-6-tooth': 'settings-3', 'edit': 'edit',
+  'pencil': 'pencil', 'trash': 'delete-bin', 'copy': 'file-copy', 'filter': 'filter-2',
+  'history': 'history', 'refresh': 'refresh', 'rotate-clockwise': 'refresh',
+  'download': 'download', 'upload': 'upload-2', 'send': 'send-plane', 'external-link': 'external-link',
+  'globe': 'global', 'link': 'link', 'key': 'key', 'lock': 'lock-2', 'eye': 'eye',
+  'eye-slash': 'eye-off', 'calendar': 'calendar', 'calendar-days': 'calendar',
+  'calendar-week': 'calendar-2', 'calendar-month': 'calendar-2', 'calendar-clock': 'calendar-2',
+  'clock': 'time', 'star': 'star', 'heart': 'heart', 'fire': 'fire', 'bulb': 'lightbulb-flash',
+  'tag': 'price-tag', 'pin': 'pushpin-2', 'map-pin': 'map-pin-2', 'map-pin-2': 'map-pin-2',
+  'map-pin-code': 'map-pin-2', 'map-off': 'map-2', 'phone': 'phone', 'mail': 'mail',
+  'paperclip': 'attachment', 'message': 'chat-1', 'messages': 'chat-3',
+  'chat-bubble-left-right': 'chat-3', 'headset': 'customer-service', 'inbox': 'inbox',
+  'bell': 'notification-3', 'printer': 'printer', 'image': 'image', 'photo': 'image',
+  'folder': 'folder', 'file': 'file', 'file-text': 'file-text', 'document-text': 'file-text',
+  'file-invoice': 'file-list-3', 'file-download': 'download-2', 'file-import': 'file-transfer',
+  'file-export': 'file-transfer', 'file-type-pdf': 'file-pdf', 'template': 'layout-top',
+  'note': 'sticky-note', 'note-off': 'sticky-note', 'notes': 'sticky-note-2',
+  'clipboard-list': 'clipboard', 'clipboard-document-list': 'clipboard', 'list': 'list-unordered',
+  'list-check': 'check-double', 'language': 'translate', 'calculator': 'calculator',
+  'moneybag': 'money-dollar-box', 'cash': 'money-dollar-circle', 'currency-dollar': 'money-dollar-circle',
+  'coin': 'coins', 'banknotes': 'bank-card', 'receipt': 'receipt', 'receipt-percent': 'percent',
+  'credit-card': 'bank-card', 'trending-up': 'stock', 'chart-bar': 'bar-chart-2',
+  'chart-line': 'line-chart', 'chart-pie': 'pie-chart', 'bar-chart': 'bar-chart-2',
+  'dashboard': 'dashboard-2', 'layout-grid': 'layout-grid', 'grid-dots': 'layout-grid',
+  'apps': 'layout-grid', 'squares-2x2': 'layout-grid', 'table-cells': 'table', 'tables': 'table',
+  'adjustments': 'equalizer', 'tune': 'equalizer', 'code': 'code-s-slash', 'database': 'database-2',
+  'database-off': 'database-2', 'device-desktop': 'computer', 'device-floppy': 'save-3',
+  'flask': 'flask', 'beaker': 'flask', 'color-picker': 'dropper', 'paint': 'paint-brush',
+  'palette': 'palette', 'sun': 'sun', 'moon': 'moon', 'flower': 'flower', 'sparkles': 'star-smile',
+  'crown': 'vip-crown-2', 'star-smile': 'star-smile', 'shield': 'shield', 'shield-off': 'shield',
+  'shield-check': 'shield-check', 'user': 'user', 'users': 'group', 'user-group': 'group',
+  'user-circle': 'user-3', 'user-3': 'user-3', 'user-check': 'user-follow',
+  'briefcase': 'briefcase-4', 'building': 'building-2', 'building-bank': 'bank',
+  'building-store': 'store-2', 'store': 'store-2', 'truck': 'truck', 'package': 'archive',
+  'packages': 'box-2', 'cube': 'box-3', 'box': 'box', 'shopping-cart': 'shopping-cart',
+  'cart': 'shopping-cart', 'home': 'home', 'logout': 'logout-box-r', 'login': 'login-box',
+  'arrow-right-start-on-rectangle': 'logout-box-r', 'door-enter': 'login-box',
+  'chef-hat': 'restaurant-2', 'tools': 'tools', 'tools-kitchen-2': 'restaurant-2',
+  'utensils': 'restaurant', 'cup': 'cup', 'barcode': 'barcode', 'align-left': 'align-left',
+  'checkbox': 'checkbox', 'click': 'cursor', 'clock-play': 'play-circle',
+  'clock-exclamation': 'alarm-warning', 'hand-three-fingers': 'hand',
+  'magnifying-glass': 'zoom-in', 'magnify': 'zoom-in', 'calendar-search-linear': 'calendar-2',
+  'flag': 'flag-2', 'book-open': 'book-open', 'chart': 'line-chart',
 };
 
-/** Available icon sets with their CSS class prefixes */
+/**
+ * Available icon set aliases (all normalize to Remix). Kept for
+ * backward-compatible `set:name` strings.
+ */
 export const ICON_SETS = {
-  tabler:    'icon-[tabler--',
-  lucide:    'icon-[lucide--',
-  mdi:       'icon-[mdi--',
-  ph:        'icon-[ph--',
-  heroicons: 'icon-[heroicons--',
-  carbon:    'icon-[carbon--',
-  solar:     'icon-[solar--',
+  remix: 'ri-',
+  tabler: 'ri-',
+  lucide: 'ri-',
+  mdi: 'ri-',
+  ph: 'ri-',
+  heroicons: 'ri-',
+  carbon: 'ri-',
+  solar: 'ri-',
 } as const;
 
 export type IconSet = keyof typeof ICON_SETS;
 
-/** Default icon set when no prefix is specified */
-const DEFAULT_SET: IconSet = 'tabler';
+/** Default icon set (always remix). */
+const DEFAULT_SET: IconSet = 'remix';
 
-/** Fallback priority order — when preferred set isn't a match, try these */
-const FALLBACK_ORDER: IconSet[] = ['lucide', 'ph', 'mdi', 'heroicons', 'carbon', 'solar'];
+/** All icon sets in discovery order. */
+export const ALL_SETS: IconSet[] = ['remix'];
 
-/** All icon sets in discovery order (used by getAllIconClasses) */
-export const ALL_SETS: IconSet[] = ['tabler', ...FALLBACK_ORDER];
-
-/**
- * Known ambiguous names — icons that exist in multiple sets.
- * Specifies which set to prefer when the developer doesn't specify.
- */
-const AMBIGUOUS_NAMES: Record<string, IconSet> = {
-  'search': 'tabler',        'check': 'tabler',
-  'x': 'tabler',             'heart': 'tabler',
-  'star': 'tabler',          'alert-circle': 'tabler',
-  'info': 'tabler',          'arrow-left': 'tabler',
-  'arrow-right': 'tabler',   'chevron-down': 'tabler',
-  'chevron-left': 'tabler',  'chevron-right': 'tabler',
-  'plus': 'tabler',          'minus': 'tabler',
-  'trash': 'lucide',         // Lucide's trash is more polished
-  'edit': 'tabler',          'settings': 'tabler',
-  'user': 'tabler',          'mail': 'tabler',
-  'clock': 'tabler',         'calendar': 'tabler',
-  'map-pin': 'tabler',       'phone': 'tabler',
-  'download': 'tabler',      'upload': 'tabler',
-  'external-link': 'tabler',
-};
-
-// ── Core Helpers ──────────────────────────────────────────────────────────
-
-/** Build the raw icon CSS class prefix for a given set */
-function setPrefix(set: IconSet): string {
-  return ICON_SETS[set];
+/** Resolve a legacy name → remix base name; unknown → 'question' fallback. */
+function remixBase(name: string): string {
+  const clean = name.includes(':') ? name.split(':').slice(1).join(':') : name;
+  return REMIX_MAP[clean] || clean;
 }
 
-/**
- * Resolve the best icon set for a plain name (no prefix).
- * Uses AMBIGUOUS_NAMES table, then falls back to DEFAULT_SET.
- */
-function resolveBestSet(name: string): IconSet {
-  if (AMBIGUOUS_NAMES[name]) return AMBIGUOUS_NAMES[name];
-  return DEFAULT_SET;
-}
-
-/** Parse "set:name" or "name" into { set, name } */
-function parseIcon(fullName: string): { set: IconSet | 'hi'; name: string } {
+/** Parse "set:name" or "name" → remix base name. */
+function parseIcon(fullName: string): { set: IconSet; name: string } {
   const colonIdx = fullName.indexOf(':');
   if (colonIdx > 0) {
     const prefix = fullName.slice(0, colonIdx);
-    if (prefix === 'hi') {
-      return { set: 'hi', name: fullName.slice(colonIdx + 1) };
-    }
     if (prefix in ICON_SETS) {
       return { set: prefix as IconSet, name: fullName.slice(colonIdx + 1) };
     }
@@ -149,132 +129,46 @@ function parseIcon(fullName: string): { set: IconSet | 'hi'; name: string } {
 }
 
 /**
- * Convert kebab-case icon name to Heroicons PascalCase component name.
- * e.g. 'shopping-cart' → 'HiShoppingCart', 'x-mark' → 'HiXMark'
- */
-function toHiComponentName(name: string): string {
-  const pascal = name
-    .split('-')
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
-  return `Hi${pascal}`;
-}
-
-// ── Public API ────────────────────────────────────────────────────────────
-
-/**
- * Build a CSS class string for an Iconify icon.
- * Supports explicit set prefixes ("lucide:search"), plain names ("heart"),
- * and the "hi:" prefix for react-icons/hi2.
- *
- * **Note:** When using "hi:name", this returns a descriptive class string
- * but the icon is rendered as a React component. Use `ic()`/`Ic()` instead
- * for HI icons.
+ * Build the remix CSS class for an icon.
+ * Accepts "set:name" (tabler/lucide/hi/… all normalize to remix) or a plain
+ * name. Always returns `ri-<base>-line`.
  *
  * @example
- *   iconClass('lucide:alert-circle')             → "icon-[lucide--alert-circle]"
- *   iconClass('heart', 'w-5 h-5 text-error')     → "icon-[tabler--heart] w-5 h-5 text-error"
+ *   iconClass('search')                 → "ri-search-line"
+ *   iconClass('tabler:trash')           → "ri-delete-bin-line"
+ *   iconClass('hi:shopping-cart')       → "ri-shopping-cart-line"
+ *   iconClass('x', 'w-4 h-4 text-error')→ "ri-close-line w-4 h-4 text-error"
  */
 export function iconClass(fullName: string, extraClasses: string = ''): string {
-  const { set, name } = parseIcon(fullName);
-  if (set === 'hi') return ''; // HI icons are React components, no CSS class
-  const resolvedSet = fullName.includes(':') ? set : resolveBestSet(name);
-  const base = `${setPrefix(resolvedSet)}${name}]`;
+  const { name } = parseIcon(fullName);
+  const base = `ri-${remixBase(name)}-line`;
   return extraClasses ? `${base} ${extraClasses}` : base;
 }
 
 /**
- * Get ALL possible icon class strings for a given icon name across all 7 Iconify sets.
- * Useful for building disambiguation UIs (e.g., icon picker).
- *
- * @example
- *   getAllIconClasses('search')
- *   → ["icon-[tabler--search]", "icon-[lucide--search]", ...]
+ * Get ALL possible icon class strings for a given icon name (remix only).
+ * Kept for API compatibility with the old multi-set picker.
  */
 export function getAllIconClasses(name: string): string[] {
-  const cleanName = name.includes(':') ? name.split(':')[1] : name;
-  if (name.startsWith('hi:')) return []; // HI icons are components, not classes
-  const seen = new Set<string>();
-  const results: string[] = [];
-
-  // Always include the best match first
-  const best = iconClass(cleanName);
-  seen.add(best);
-  results.push(best);
-
-  // Then add all other sets
-  for (const set of ALL_SETS.slice(1)) {
-    const cls = `${setPrefix(set)}${cleanName}]`;
-    if (!seen.has(cls)) {
-      seen.add(cls);
-      results.push(cls);
-    }
-  }
-  return results;
+  return [iconClass(name)];
 }
 
 /**
- * Create a React component that renders an icon.
- *
- * For Iconify sets (tabler, lucide, mdi, ph, heroicons, carbon, solar),
- * renders a <span> with the appropriate icon-[tabler--star] CSS class.
- *
- * For the "hi:" prefix, renders a Heroicons v2 Solid React component
- * from `react-icons/hi2`.
+ * Create a React component that renders a remix icon.
  *
  * @example
- *   const Heart = ic('tabler:heart');
+ *   const Heart = ic('heart');
  *   <Heart className="w-5 h-5 text-error" />
  *
- *   const CartIcon = ic('hi:shopping-cart');
+ *   const CartIcon = Ic('hi:shopping-cart');
  *   <CartIcon className="w-5 h-5 text-primary" />
  */
 export function ic(fullName: string): React.ComponentType<{ className?: string }> {
-  const { set, name } = parseIcon(fullName);
-
-  // ── HI: Heroicons v2 Solid React component ──
-  if (set === 'hi') {
-    const componentName = HI_NAME_MAP[name] || toHiComponentName(name);
-    return ({ className = '' }) => {
-      try {
-        const hi2 = getHi2();
-        if (!hi2) {
-          console.warn('[icons] react-icons/hi2 module not loaded');
-          return <span className={`icon-[tabler--question-mark] ${className}`} />;
-        }
-        const HiIcon = hi2[componentName];
-        if (HiIcon) {
-          return <HiIcon className={className} />;
-        }
-        console.warn(`[icons] HI icon "${componentName}" not found in react-icons/hi2 for name "${name}"`);
-        return <span className={`icon-[tabler--question-mark] ${className}`} />;
-      } catch {
-        console.warn('[icons] Failed to load react-icons/hi2');
-        return <span className={`icon-[tabler--question-mark] ${className}`} />;
-      }
-    };
-  }
-
-  // ── Iconify CSS-based icon ──
-  const resolvedSet = fullName.includes(':') ? set : resolveBestSet(name);
-  const base = `${setPrefix(resolvedSet)}${name}]`;
-
-  return ({ className = '' }) => (
-    <span className={className ? `${base} ${className}` : base} />
-  );
+  const cls = iconClass(fullName);
+  return ({ className = '' }) => <span className={className ? `${cls} ${className}` : cls} />;
 }
 
-/**
- * Legacy-compatible Ic() helper.
- * Behaves identically to the old `function Ic(name: string)` but supports
- * multi-set prefixes, auto-resolution via AMBIGUOUS_NAMES, and the "hi:" prefix
- * for react-icons/hi2 Heroicons.
- *
- * @example
- *   Ic('globe')              → icon-[tabler--globe] (tabler default)
- *   Ic('lucide:search')      → icon-[lucide--search] (explicit set)
- *   Ic('hi:shopping-cart')   → <HiShoppingCart /> (react-icons/hi2)
- */
+/** Legacy-compatible Ic() helper — identical to ic(). */
 export function Ic(name: string): React.ComponentType<{ className?: string }> {
   return ic(name);
 }

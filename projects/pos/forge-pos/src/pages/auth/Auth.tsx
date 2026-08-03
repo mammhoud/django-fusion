@@ -1,15 +1,19 @@
 import { useState, useEffect, type ReactNode } from 'react';
-// react-icons/fa no longer needed — all icons migrated to Tabler
+// react-icons/fa no longer needed — all icons migrated to Remix
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme, type ThemeVariant } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../../components/display/LanguageToggle';
 import { invoke } from '@tauri-apps/api/core';
-import { iconClass } from '../../lib/icons';
+import { iconClass, Ic } from '../../lib/icons';
 import AnimatePresence from '../../components/ui/AnimatePresence';
 import posCrest from '../../../assets/images/pos-crest.svg';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login' | 'forgotPassword' | 'resetPassword';
+
+// Heroicon eye icons for the show/hide password toggles
+const EyeIcon = Ic('hi:eye');
+const EyeSlashIcon = Ic('hi:eye-slash');
 
 // ── Floating brand icons for the illustration panel ──
 const BRAND_ICONS = [
@@ -36,7 +40,6 @@ const ILLUSTRATION_GRADIENTS: Record<ThemeVariant, string> = {
   corporate: 'from-info via-primary to-info/80',
   luxury:    'from-warning via-warning/80 to-warning/70',
   pastel:    'from-secondary via-accent to-primary',
-  cyberpunk: 'from-secondary via-accent to-primary/80',
   perplexity: 'from-info via-primary to-secondary',
 };
 
@@ -65,8 +68,14 @@ export default function Auth() {
   const [resetPassword, setResetPassword] = useState(() => '');
   const [resetConfirmPassword, setResetConfirmPassword] = useState(() => '');
   const [selectedRole, setSelectedRole] = useState<'manager' | 'employee'>('manager');
-  // Password visibility toggles — handled by FlyonUI data-toggle-password
-  // (React state removed to avoid conflict with FlyonUI's DOM toggle)
+  // Password visibility toggles — React state (reliable, works with the
+  // dynamically-rendered form panels; FlyonUI's data-toggle-password JS
+  // binding never fires for these inputs).
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirm, setShowRegisterConfirm] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
 
   // Determine initial step on mount
@@ -320,7 +329,7 @@ export default function Auth() {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`btn w-full bg-gradient-to-r ${gradient} hover:from-primary/60 hover:to-primary/40
+      className={`btn w-full bg-linear-to-r ${gradient} hover:from-primary/60 hover:to-primary/40
         text-white rounded-xl font-semibold border-0
         flex items-center justify-center gap-2 h-12
         disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all`}
@@ -345,16 +354,6 @@ export default function Auth() {
             left: `${p.x}%`,
             top: `${p.y}%`,
           }}
-          animate={{
-            opacity: [0.2, 0.6, 0.2],
-            scale: [1, 1.5, 1],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: 'easeInOut',
-          }}
         />
       ))}
 
@@ -364,9 +363,6 @@ export default function Auth() {
           key={delay}
           className={`absolute ${size} ${color}`}
           style={{ left: x, top: y }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay, duration: 0.8, ease: 'easeOut' }}
         >
           <span className={iconClass(iconName, 'w-full h-full')} />
         </div>
@@ -375,16 +371,9 @@ export default function Auth() {
       {/* Central Branding */}
       <div
         className="relative z-10 text-center max-w-md"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div
-          className="bg-white/15 backdrop-blur-xl rounded-3xl p-6 w-fit mx-auto mb-8 border border-white/20 shadow-2xl"
-          whileHover={{ scale: 1.05, rotate: 2 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-        >
-          <span className="icon-[tabler--shield] w-16 h-16 text-white" />
+        <div className="bg-white/15 backdrop-blur-xl rounded-3xl p-6 w-fit mx-auto mb-8 border border-white/20 shadow-2xl">
+          <span className="ri-shield-line w-16 h-16 text-white" />
         </div>
         <h1 className="text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
           Forge POS
@@ -403,9 +392,6 @@ export default function Auth() {
             <div
               key={idx}
               className="flex items-center gap-3 text-white/80"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 + idx * 0.15, duration: 0.5 }}
             >
               <div className="bg-white/15 rounded-lg p-2">
                 <span className={iconClass(iconName, 'w-4 h-4')} />
@@ -430,9 +416,6 @@ export default function Auth() {
       <AnimatePresence>
         {error && (
           <div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className={`fixed bottom-6 left-1/2 -translate-x-1/2 backdrop-blur-md text-white
               px-5 py-3 rounded-2xl shadow-2xl z-50 max-w-md text-center border border-red-400/30
               flex items-center gap-3 shadow-red-500/20 ${toastBg}`}
@@ -446,14 +429,11 @@ export default function Auth() {
       <AnimatePresence>
         {success && (
           <div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className={`fixed bottom-24 left-1/2 -translate-x-1/2 backdrop-blur-md text-primary-content
               px-5 py-3 rounded-2xl shadow-2xl z-50 max-w-md text-center border border-primary/30
               flex items-center gap-3 shadow-primary/20 ${toastSuccessBg}`}
           >
-            <span className="icon-[tabler--check] w-4 h-4 shrink-0" />
+            <span className="ri-check-line ri-16px shrink-0" />
             <span className="text-sm font-medium">{success}</span>
           </div>
         )}
@@ -500,9 +480,6 @@ export default function Auth() {
       {/* Illustration Panel */}
       <div
         className="hidden lg:flex lg:w-1/2"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         {renderIllustration()}
       </div>
@@ -513,28 +490,14 @@ export default function Auth() {
           <div
             key="checking"
             className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 xl:p-12 min-h-screen lg:min-h-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
           >
             <div className="text-center">
               <div className="relative w-20 h-20 mx-auto mb-6">
-                <div
-                  className="absolute inset-0 border-4 border-primary/30 border-t-teal-400 rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-                />
-                <div
-                  className="absolute inset-2 border-4 border-success/20 border-b-emerald-400 rounded-full"
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
-                />
+                <div className="absolute inset-0 border-4 border-primary/30 border-t-teal-400 rounded-full animate-spin" />
+                <div className="absolute inset-2 border-4 border-success/20 border-b-emerald-400 rounded-full animate-spin [animation-direction:reverse]" />
               </div>
               <p
-                className={`text-lg ${isDark ? 'text-white/60' : 'text-slate-500'}`}
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className={`text-lg ${isDark ? 'text-white/60' : 'text-slate-500'} animate-pulse`}
               >
                 {t('auth.checking')}
               </p>
@@ -546,10 +509,6 @@ export default function Auth() {
           <div
             key="register"
             className={FORM_PANEL_CLASS}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             {/* Background overlay — theme-responsive */}
             <div className={`absolute inset-0 ${formPanelOverlay} lg:hidden`} />
@@ -564,11 +523,11 @@ export default function Auth() {
                   {/* Name */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--user] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-user-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.fullName')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--user] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-user-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         type="text"
                         value={name}
@@ -583,11 +542,11 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--mail] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-mail-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--mail] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-mail-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         type="email"
                         value={email}
@@ -606,7 +565,7 @@ export default function Auth() {
                     loading={codeSending}
                     gradient="from-primary to-primary/80"
                   >
-                    <span className="icon-[tabler--key] text-sm" />
+                    <span className="ri-key-line text-sm" />
                     {t('auth.sendCode')}
                   </PrimaryButton>
                 </div>
@@ -632,10 +591,6 @@ export default function Auth() {
           <div
             key="verify"
             className={FORM_PANEL_CLASS}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             {/* Background overlay — theme-responsive */}
             <div className={`absolute inset-0 ${formPanelOverlay} lg:hidden`} />
@@ -685,14 +640,14 @@ export default function Auth() {
                   {/* Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-lock-2-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.password')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--lock] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-lock-2-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         id="register-password"
-                        type="password"
+                        type={showRegisterPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
@@ -700,12 +655,14 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        data-toggle-password='{ "target": "#register-password" }'
+                        onClick={() => setShowRegisterPassword(s => !s)}
+                        aria-pressed={showRegisterPassword}
                         className={`transition-colors shrink-0 ${isDark ? 'text-white/40 hover:text-white/80' : 'text-slate-400 hover:text-slate-600'}`}
                         aria-label={t('auth.showPassword')}
                       >
-                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
-                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
+                        {showRegisterPassword
+                          ? <EyeSlashIcon className="size-4 shrink-0" />
+                          : <EyeIcon className="size-4 shrink-0" />}
                       </button>
                     </InputWrapper>
                   </div>
@@ -713,14 +670,14 @@ export default function Auth() {
                   {/* Confirm Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-lock-2-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.confirmPassword')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--lock] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-lock-2-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         id="register-confirm-password"
-                        type="password"
+                        type={showRegisterConfirm ? 'text' : 'password'}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••"
@@ -729,21 +686,21 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        data-toggle-password='{ "target": "#register-confirm-password" }'
+                        onClick={() => setShowRegisterConfirm(s => !s)}
+                        aria-pressed={showRegisterConfirm}
                         className={`transition-colors shrink-0 ${isDark ? 'text-white/40 hover:text-white/80' : 'text-slate-400 hover:text-slate-600'}`}
                         aria-label={t('auth.showPassword')}
                       >
-                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
-                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
+                        {showRegisterConfirm
+                          ? <EyeSlashIcon className="size-4 shrink-0" />
+                          : <EyeIcon className="size-4 shrink-0" />}
                       </button>
                     </InputWrapper>
                     {confirmPassword && password === confirmPassword && (
                       <p
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
                         className={`text-xs mt-1 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}
                       >
-                        <span className="icon-[tabler--check] w-3 h-3" /> Passwords match
+                        <span className="ri-check-line ri-12px" /> Passwords match
                       </p>
                     )}
                   </div>
@@ -755,7 +712,7 @@ export default function Auth() {
                     loading={isLoading}
                     gradient="from-primary to-primary/80"
                   >
-                    <span className="icon-[tabler--check] text-sm" />
+                    <span className="ri-check-line text-sm" />
                     {t('auth.createAccountBtn')}
                   </PrimaryButton>
 
@@ -768,11 +725,7 @@ export default function Auth() {
                     >
                       {codeSending ? (
                         <span className="flex items-center justify-center gap-2">
-                          <div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block"
-                          />
+                          <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block animate-spin" />
                           {t('common.loading')}
                         </span>
                       ) : (
@@ -790,10 +743,6 @@ export default function Auth() {
           <div
             key="login"
             className={FORM_PANEL_CLASS}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             {/* Background overlay — theme-responsive */}
             <div className={`absolute inset-0 ${formPanelOverlay} lg:hidden`} />
@@ -830,7 +779,7 @@ export default function Auth() {
                         <span>{role === 'manager' ? (t('auth.roleManager') || 'Manager') : (t('auth.roleEmployee') || 'Employee')}</span>
                         {isActive && (
                           <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
-                            <span className="icon-[tabler--check] w-3 h-3 text-primary" />
+                            <span className="ri-check-line ri-12px text-primary" />
                           </span>
                         )}
                       </button>
@@ -850,11 +799,11 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--mail] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-mail-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--mail] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-mail-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         type="email"
                         value={email}
@@ -869,14 +818,14 @@ export default function Auth() {
                   {/* Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-lock-2-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.password')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--lock] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-lock-2-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         id="login-password"
-                        type="password"
+                        type={showLoginPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
@@ -885,12 +834,14 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        data-toggle-password='{ "target": "#login-password" }'
+                        onClick={() => setShowLoginPassword(s => !s)}
+                        aria-pressed={showLoginPassword}
                         className={`transition-colors shrink-0 ${isDark ? 'text-white/40 hover:text-white/80' : 'text-slate-400 hover:text-slate-600'}`}
                         aria-label={t('auth.showPassword')}
                       >
-                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
-                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
+                        {showLoginPassword
+                          ? <EyeSlashIcon className="size-4 shrink-0" />
+                          : <EyeIcon className="size-4 shrink-0" />}
                       </button>
                     </InputWrapper>
                   </div>
@@ -902,7 +853,7 @@ export default function Auth() {
                     loading={isLoading}
                     gradient="from-primary to-secondary"
                   >
-                    <span className="icon-[tabler--arrow-right] text-sm" />
+                    <span className="ri-arrow-right-line text-sm rtl:rotate-180" />
                     {t('auth.signIn')}
                   </PrimaryButton>
                 </div>
@@ -951,10 +902,6 @@ export default function Auth() {
           <div
             key="forgotPassword"
             className={FORM_PANEL_CLASS}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             <div className={`absolute inset-0 ${formPanelOverlay} lg:hidden`} />
             {renderDecorativePattern()}
@@ -967,11 +914,11 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--mail] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-mail-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--mail] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-mail-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         type="email"
                         value={email}
@@ -991,7 +938,7 @@ export default function Auth() {
                     loading={codeSending}
                     gradient="from-primary to-primary/80"
                   >
-                    <span className="icon-[tabler--key] text-sm" />
+                    <span className="ri-key-line text-sm" />
                     {t('auth.sendResetCode')}
                   </PrimaryButton>
                 </div>
@@ -1002,7 +949,7 @@ export default function Auth() {
                     onClick={switchToLogin}
                     className={`text-sm transition-colors hover:underline ${isDark ? 'text-white/40 hover:text-primary/80' : 'text-slate-400 hover:text-primary'}`}
                   >
-                    ← {t('auth.backToLogin')}
+                    <span className="inline-block rtl:rotate-180">←</span> {t('auth.backToLogin')}
                   </button>
                 </div>
               </CardWrapper>
@@ -1015,10 +962,6 @@ export default function Auth() {
           <div
             key="resetPassword"
             className={FORM_PANEL_CLASS}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             <div className={`absolute inset-0 ${formPanelOverlay} lg:hidden`} />
             {renderDecorativePattern()}
@@ -1063,14 +1006,14 @@ export default function Auth() {
                   {/* New Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-lock-2-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.newPassword')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--lock] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-lock-2-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         id="reset-new-password"
-                        type="password"
+                        type={showResetPassword ? 'text' : 'password'}
                         value={resetPassword}
                         onChange={(e) => setResetPassword(e.target.value)}
                         placeholder="••••••••"
@@ -1078,12 +1021,14 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        data-toggle-password='{ "target": "#reset-new-password" }'
+                        onClick={() => setShowResetPassword(s => !s)}
+                        aria-pressed={showResetPassword}
                         className={`transition-colors shrink-0 ${isDark ? 'text-white/40 hover:text-white/80' : 'text-slate-400 hover:text-slate-600'}`}
                         aria-label={t('auth.showPassword')}
                       >
-                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
-                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
+                        {showResetPassword
+                          ? <EyeSlashIcon className="size-4 shrink-0" />
+                          : <EyeIcon className="size-4 shrink-0" />}
                       </button>
                     </InputWrapper>
                   </div>
@@ -1091,14 +1036,14 @@ export default function Auth() {
                   {/* Confirm New Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
+                      <span className="ri-lock-2-line inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.confirmPassword')}
                     </label>
                     <InputWrapper>
-                      <span className={`icon-[tabler--lock] w-4 h-4 shrink-0 ${inputIcon}`} />
+                      <span className={`ri-lock-2-line ri-16px shrink-0 ${inputIcon}`} />
                       <input
                         id="reset-confirm-password"
-                        type="password"
+                        type={showResetConfirm ? 'text' : 'password'}
                         value={resetConfirmPassword}
                         onChange={(e) => setResetConfirmPassword(e.target.value)}
                         placeholder="••••••••"
@@ -1107,21 +1052,21 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        data-toggle-password='{ "target": "#reset-confirm-password" }'
+                        onClick={() => setShowResetConfirm(s => !s)}
+                        aria-pressed={showResetConfirm}
                         className={`transition-colors shrink-0 ${isDark ? 'text-white/40 hover:text-white/80' : 'text-slate-400 hover:text-slate-600'}`}
                         aria-label={t('auth.showPassword')}
                       >
-                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
-                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
+                        {showResetConfirm
+                          ? <EyeSlashIcon className="size-4 shrink-0" />
+                          : <EyeIcon className="size-4 shrink-0" />}
                       </button>
                     </InputWrapper>
                     {resetConfirmPassword && resetPassword === resetConfirmPassword && (
                       <p
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
                         className={`text-xs mt-1 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}
                       >
-                        <span className="icon-[tabler--check] w-3 h-3" /> Passwords match
+                        <span className="ri-check-line ri-12px" /> Passwords match
                       </p>
                     )}
                   </div>
@@ -1133,7 +1078,7 @@ export default function Auth() {
                     loading={isLoading}
                     gradient="from-primary to-secondary"
                   >
-                    <span className="icon-[tabler--check] text-sm" />
+                    <span className="ri-check-line text-sm" />
                     {t('auth.resetPasswordBtn')}
                   </PrimaryButton>
 
@@ -1146,11 +1091,7 @@ export default function Auth() {
                     >
                       {codeSending ? (
                         <span className="flex items-center justify-center gap-2">
-                          <div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block"
-                          />
+                          <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block animate-spin" />
                           {t('common.loading')}
                         </span>
                       ) : (
@@ -1166,7 +1107,7 @@ export default function Auth() {
                     onClick={switchToLogin}
                     className={`text-sm transition-colors hover:underline ${isDark ? 'text-white/40 hover:text-primary/80' : 'text-slate-400 hover:text-primary'}`}
                   >
-                    ← {t('auth.backToLogin')}
+                    <span className="inline-block rtl:rotate-180">←</span> {t('auth.backToLogin')}
                   </button>
                 </div>
               </CardWrapper>

@@ -187,7 +187,7 @@ export default function Roles() {
             onClick={openAddForm}
             className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
           >
-            <span className="icon-[tabler--plus] w-4 h-4" /> {t('roles.addRole')}
+            <span className="ri-add-line ri-16px" /> {t('roles.addRole')}
           </button>
         </div>
 
@@ -228,7 +228,7 @@ export default function Roles() {
           <Card padding="md">
             <form onSubmit={handleSubmit} className="space-y-5">
               <h3 className="text-lg font-semibold text-base-content flex items-center gap-2">
-                <span className="icon-[tabler--shield] w-5 h-5 text-primary" />
+                <span className="ri-shield-line ri-20px text-primary" />
                 {editing ? t('common.edit') : t('common.add')} Role
               </h3>
 
@@ -263,7 +263,7 @@ export default function Roles() {
                     </div>
                   ) : catalogError ? (
                     <div className="col-span-full flex flex-col items-center justify-center py-6 gap-2">
-                      <span className="icon-[tabler--shield-off] w-8 h-8 text-base-content/30" />
+                      <span className="ri-shield-line ri-32px text-base-content/30" />
                       <p className="text-sm text-base-content/50 text-center">
                         Could not load permissions from backend. Use the custom permissions field below.
                       </p>
@@ -316,11 +316,11 @@ export default function Roles() {
               {/* Buttons */}
               <div className="flex gap-2 pt-2">
                 <button type="submit" className="btn btn-primary gap-2">
-                  <span className="icon-[tabler--device-floppy] w-4 h-4" />
+                  <span className="ri-save-3-line ri-16px" />
                   {editing ? t('common.update') : t('common.save')}
                 </button>
                 <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost gap-2">
-                  <span className="icon-[tabler--x] w-4 h-4" />
+                  <span className="ri-close-line ri-16px" />
                   {t('common.cancel')}
                 </button>
               </div>
@@ -335,7 +335,7 @@ export default function Roles() {
           </div>
         ) : filteredRoles.length === 0 ? (
           <Card className="text-center py-12">
-            <span className="icon-[tabler--shield-off] w-12 h-12 mx-auto mb-3 text-base-content/30" />
+            <span className="ri-shield-line ri-48px mx-auto mb-3 text-base-content/30" />
             <p className="text-base-content/50">
               {debouncedSearch
                 ? (t('common.noDataFound') || 'No matches found.')
@@ -358,7 +358,7 @@ export default function Roles() {
                           : 'bg-base-300/50 text-base-content/40'
                         }`}
                       >
-                        <span className="icon-[tabler--shield] w-5 h-5" />
+                        <span className="ri-shield-line ri-20px" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-base-content text-sm">{role.name}</h3>
@@ -370,10 +370,10 @@ export default function Roles() {
                     </div>
                     <div className="flex gap-1">
                       <button onClick={() => openEditForm(role)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-info">
-                        <span className="icon-[tabler--pencil] w-4 h-4" />
+                        <span className="ri-pencil-line ri-16px" />
                       </button>
                       <button onClick={() => handleDelete(role.id)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error">
-                        <span className="icon-[tabler--trash] w-4 h-4" />
+                        <span className="ri-delete-bin-line ri-16px" />
                       </button>
                     </div>
                   </div>

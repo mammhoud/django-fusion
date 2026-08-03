@@ -68,7 +68,7 @@ Each project has an associated color identity that can be expressed through the 
 | `corporate` | Blue `#3b82f6` | Neutral slate `#1e293b`→`#f1f5f9` | Offices | Professional, trustworthy, calm |
 | `luxury` | Gold/amber `#eab308`→`#f59e0b` | Warm stone `#292524`→`#fafaf9` | Fine dining | Premium, elegant, warm |
 | `pastel` | Pink/purple `#ec4899`→`#a855f7` | Soft lavender `#2e1065`→`#faf5ff` | Cafes, bakeries | Playful, soft, inviting |
-| `cyberpunk` | Magenta/neon `#cc00cc`→`#06b6d4` | Dark gray `#111827`→`#e5e7eb` | Gaming centers | Energetic, futuristic, bold |
+| `perplexity` | Teal | Neutral | Knowledge, AI tools | Minimal, intelligent, focused |
 
 ---
 

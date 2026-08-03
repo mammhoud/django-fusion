@@ -396,7 +396,7 @@ export default function Recipes() {
 
   return (
     <PageLayout
-      title={<><span className="icon-[tabler--menu-2] text-warning" /> Recipes</>}
+      title={<><span className="ri-menu-2-line text-warning" /> Recipes</>}
       background="bg-linear-to-br from-base-200 via-warning/10 to-base-200"
     >
 
@@ -405,13 +405,13 @@ export default function Recipes() {
           <StatCard
             title={t('recipes.totalRecipes')}
             value={recipes.filter(r => r.is_active).length}
-            icon={<span className="icon-[tabler--flask] w-6 h-6" />}
+            icon={<span className="ri-flask-line ri-24px" />}
             color="info"
           />
           <StatCard
             title={t('recipes.productsUsed')}
             value={new Set(recipes.filter(r => r.is_active).map(r => r.product_id)).size}
-            icon={<span className="icon-[tabler--apps] w-6 h-6" />}
+            icon={<span className="ri-layout-grid-line ri-24px" />}
             color="warning"
           />
           <StatCard
@@ -419,7 +419,7 @@ export default function Recipes() {
             value={recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
               ? Math.round(recipesWithDetails.filter(r => r.recipe.is_active).reduce((s, r) => s + r.totalCost, 0) / recipesWithDetails.filter(r => r.recipe.is_active).length)
               : 0}
-            icon={<span className="icon-[tabler--coin] w-6 h-6" />}
+            icon={<span className="ri-coins-line ri-24px" />}
             color="error"
           />
           <StatCard
@@ -427,7 +427,7 @@ export default function Recipes() {
             value={recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
               ? `${Math.round(recipesWithDetails.filter(r => r.recipe.is_active).reduce((s, r) => s + profitMargin(r), 0) / recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length)}%`
               : 'N/A'}
-            icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+            icon={<span className="ri-stock-line ri-24px" />}
             color="success"
           />
         </div>
@@ -435,7 +435,7 @@ export default function Recipes() {
         {/* Filters & Actions */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
           <div className="relative">
-            <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+            <span className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
             <input
               type="text"
               value={searchQuery}
@@ -448,7 +448,7 @@ export default function Recipes() {
             onClick={() => setShowAddRecipe(true)}
             className="flex items-center gap-2 px-4 py-2 bg-warning text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
           >
-            <span className="icon-[tabler--plus]" /> {t('recipes.addRecipe')}
+            <span className="ri-add-line" /> {t('recipes.addRecipe')}
           </button>
         </div>
 
@@ -456,8 +456,6 @@ export default function Recipes() {
           {filteredRecipes.map(rd => (
             <div
               key={rd.recipe.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
               className={`overflow-hidden rounded-xl border border-base-200
                 ${!rd.recipe.is_active ? 'opacity-60' : 'hover:border-warning/70 dark:hover:border-warning/30'} transition-all`}
             >
@@ -465,7 +463,7 @@ export default function Recipes() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-warning flex items-center justify-center text-white text-lg">
-                      <span className="icon-[tabler--tools-kitchen-2]" />
+                      <span className="ri-restaurant-2-line" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-base-content">{rd.productName}</h3>
@@ -477,11 +475,11 @@ export default function Recipes() {
                   <div className="flex gap-1">
                     <button onClick={() => handleOpenEdit(rd.recipe.id)}
                       className="text-primary hover:text-primary/70 p-1.5 rounded-lg hover:bg-primary/10" title={t('common.edit')}>
-                      <span className="icon-[tabler--pencil] w-4 h-4" />
+                      <span className="ri-pencil-line ri-16px" />
                     </button>
                     <button onClick={() => openNotesModal(rd)}
                       className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10 relative group/notesbtn" title="Notes">
-                      <span className="icon-[tabler--notes] w-4 h-4" />
+                      <span className="ri-sticky-note-2-line ri-16px" />
                       {(noteCounts[rd.recipe.id] || 0) > 0 && (
                         <span className="absolute -top-1 -right-1 min-w-4 h-4 px-0.5 flex items-center justify-center rounded-full bg-info text-info-content text-[10px] font-bold leading-none">
                           {noteCounts[rd.recipe.id]}
@@ -491,7 +489,7 @@ export default function Recipes() {
                     {rd.recipe.is_active && (
                       <button onClick={() => setShowDeleteRecipe(rd.recipe)}
                         className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
-                        <span className="icon-[tabler--trash] w-4 h-4" />
+                        <span className="ri-delete-bin-line ri-16px" />
                       </button>
                     )}
                   </div>
@@ -526,7 +524,7 @@ export default function Recipes() {
                     </div>
                     <div className="w-full bg-base-300/50 rounded-full h-2 overflow-hidden">
                       <div
-                        initial={{ width: 0 }} animate={{ width: `${Math.min((rd.totalCost / rd.productPrice) * 100, 100)}%` }}
+                        style={{ width: `${Math.min((rd.totalCost / rd.productPrice) * 100, 100)}%` }}
                         className={`h-full rounded-full ${rd.totalCost <= rd.productPrice ? 'bg-success' : 'bg-error'}`}
                       />
                     </div>
@@ -538,7 +536,7 @@ export default function Recipes() {
                   {rd.ingredients.slice(0, 5).map(ri => (
                     <div key={ri.id} className="flex items-center justify-between text-xs text-base-content/60">
                       <span className="flex items-center gap-1">
-                        <span className="icon-[tabler--package] text-warning/80 w-2.5 h-2.5" />
+                        <span className="ri-archive-line text-warning/80 w-2.5 h-2.5" />
                         {getIngredientName(ri.ingredient_id)}
                       </span>
                       <span>
@@ -576,7 +574,7 @@ export default function Recipes() {
           <button onClick={handleCreateRecipe}
             disabled={newRecipe.product_id === 0 || newRecipe.yield_quantity <= 0 || newRecipeIngredients.length === 0}
             className="flex-1 py-2.5 rounded-lg bg-warning text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <span className="icon-[tabler--device-floppy]" /> {t('recipes.createRecipeTitle')}
+            <span className="ri-save-3-line" /> {t('recipes.createRecipeTitle')}
           </button>
         </>}
       >
@@ -605,7 +603,7 @@ export default function Recipes() {
         </div>
 
         <div className="border-t border-base-300/50 pt-4">            <h3 className="text-sm font-semibold text-base-content mb-3 flex items-center gap-2">
-              <span className="icon-[tabler--package] text-warning" /> {t('recipes.ingredients')} {newRecipeIngredients.length > 0 && `(${newRecipeIngredients.length})`}
+              <span className="ri-archive-line text-warning" /> {t('recipes.ingredients')} {newRecipeIngredients.length > 0 && `(${newRecipeIngredients.length})`}
             </h3>
 
           <div className="grid grid-cols-12 gap-2 mb-2">
@@ -635,7 +633,7 @@ export default function Recipes() {
                 data-testid="add-ingredient"
                 aria-label={t('recipes.addIngredient')}
                 className="w-full h-full flex items-center justify-center bg-warning text-white rounded-lg disabled:opacity-50 text-xs font-bold">
-                <span className="icon-[tabler--plus] w-4 h-4" />
+                <span className="ri-add-line ri-16px" />
               </button>
             </div>
           </div>
@@ -647,7 +645,7 @@ export default function Recipes() {
                   {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
                 <button onClick={() => handleRemoveNewIngredient(idx)} className="text-error hover:text-error/70 p-0.5">
-                  <span className="icon-[tabler--minus] w-3.5 h-3.5" />
+                  <span className="ri-subtract-line ri-14px" />
                 </button>
               </div>
             ))}
@@ -669,7 +667,7 @@ export default function Recipes() {
           <button onClick={() => setShowEditRecipe(null)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleSaveEdit} disabled={editYield <= 0}
             className="flex-1 py-2.5 rounded-lg bg-primary text-primary-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <span className="icon-[tabler--device-floppy]" /> {t('common.saveChanges')}
+            <span className="ri-save-3-line" /> {t('common.saveChanges')}
           </button>
         </>}
       >          <div className="text-sm text-base-content/60">
@@ -685,11 +683,11 @@ export default function Recipes() {
         <div className="border-t border-base-300/50 pt-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-base-content flex items-center gap-2">
-              <span className="icon-[tabler--package] text-warning" /> {t('recipes.ingredients')} ({editIngredients.length})
+              <span className="ri-archive-line text-warning" /> {t('recipes.ingredients')} ({editIngredients.length})
             </h3>
             <button onClick={() => setShowEditAddIngredient(!showEditAddIngredient)}
               className="text-xs text-warning hover:text-warning/80 font-medium flex items-center gap-1">
-              <span className="icon-[tabler--plus]" /> {t('recipes.addIngredient')}
+              <span className="ri-add-line" /> {t('recipes.addIngredient')}
             </button>
           </div>
 
@@ -721,7 +719,7 @@ export default function Recipes() {
                   data-testid="add-edit-ingredient"
                   aria-label={t('recipes.addIngredient')}
                   className="w-full h-full flex items-center justify-center bg-warning text-white rounded-lg disabled:opacity-50 text-xs font-bold">
-                  <span className="icon-[tabler--plus]" />
+                  <span className="ri-add-line" />
                 </button>
               </div>
             </div>
@@ -734,7 +732,7 @@ export default function Recipes() {
                   {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
                 <button onClick={() => handleRemoveEditIngredient(idx)} className="text-error hover:text-error/70 p-0.5">
-                  <span className="icon-[tabler--minus] w-3.5 h-3.5" />
+                  <span className="ri-subtract-line ri-14px" />
                 </button>
               </div>
             ))}
@@ -761,14 +759,12 @@ export default function Recipes() {
       {showNotesModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
             className="bg-base-100 rounded-xl p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-info/10 text-info flex items-center justify-center">
-                  <span className="icon-[tabler--notes] w-5 h-5" />
+                  <span className="ri-sticky-note-2-line ri-20px" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-base-content">Notes for {showNotesModal.productName}</h3>
@@ -782,14 +778,14 @@ export default function Recipes() {
                 </div>
               </div>
               <button onClick={() => setShowNotesModal(null)} className="btn btn-ghost btn-sm btn-square">
-                <span className="icon-[tabler--x] w-5 h-5" />
+                <span className="ri-close-line ri-20px" />
               </button>
             </div>
 
             {/* Add Note Form */}
             <div className="bg-base-200 rounded-xl p-4 mb-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="icon-[tabler--plus] w-4 h-4 text-success" />
+                <span className="ri-add-line ri-16px text-success" />
                 <span className="text-sm font-semibold text-base-content">{t('recipes.addNote') || 'Add Note'}</span>
               </div>
               <div className="flex flex-col gap-2">
@@ -835,7 +831,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                     className="btn btn-ghost btn-sm gap-1 text-xs"
                     title={t('recipes.insertTemplate') || 'Template'}
                   >
-                    <span className="icon-[tabler--template] w-3.5 h-3.5" />
+                    <span className="ri-layout-top-line ri-14px" />
                     {t('recipes.insertTemplate') || 'Template'}
                   </button>
                 </div>
@@ -851,7 +847,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                   disabled={!newNoteForm.name.trim() || !newNoteForm.template_body.trim()}
                   className="btn btn-primary btn-sm w-full gap-1"
                 >
-                  <span className="icon-[tabler--plus] w-4 h-4" />
+                  <span className="ri-add-line ri-16px" />
                   Add Note
                 </button>
               </div>
@@ -865,7 +861,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
               </div>
             ) : recipeNotes.length === 0 ? (
               <div className="text-center py-6 text-base-content/40">
-                <span className="icon-[tabler--notes] w-10 h-10 mx-auto mb-2 opacity-30" />
+                <span className="ri-sticky-note-2-line ri-40px mx-auto mb-2 opacity-30" />
                 <p className="text-sm">{t('recipes.noNotes') || 'No notes yet. Add your first note above!'}</p>
               </div>
             ) : (
@@ -907,7 +903,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                       <>
                         <div className="flex items-start justify-between mb-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="icon-[tabler--note] w-4 h-4 text-info" />
+                            <span className="ri-sticky-note-line ri-16px text-info" />
                             <h4 className="text-sm font-semibold text-base-content">{note.name}</h4>
                             <span className={`badge badge-xs ${getNoteCategoryBadge(note.category)}`}>
                               {getNoteCategoryLabel(note.category)}
@@ -919,14 +915,14 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                               className="text-info/60 hover:text-info p-0.5 rounded hover:bg-info/10 transition-colors"
                               title="Edit note"
                             >
-                              <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+                              <span className="ri-pencil-line ri-14px" />
                             </button>
                             <button
                               onClick={() => handleDeleteNote(note.id)}
                               className="text-error/60 hover:text-error p-0.5 rounded hover:bg-error/10 transition-colors"
                               title="Delete note"
                             >
-                              <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                              <span className="ri-delete-bin-line ri-14px" />
                             </button>
                           </div>
                         </div>

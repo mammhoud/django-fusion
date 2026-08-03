@@ -7,7 +7,7 @@ import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
 import { downloadInvoicePDF } from '../../utils/invoicePdf';
-import ProductCard, { PRODUCT_CARD_COLORS, productAccentColor, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
+import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
 import ProductFilterBar from '../../components/shared/ProductFilterBar';
 import Card from '../../components/ui/Card';
 import jsPDF from 'jspdf';
@@ -182,7 +182,6 @@ export default function Sale() {
           phone: settingsRes.phone || '',
           currency: settingsRes.currency || 'USD',
           receipt_footer: settingsRes.receipt_footer || 'Thank you for your business!',
-          unique_card_colors: settingsRes.unique_card_colors !== false,
         });
       }
       setDeliveryTypes(dtRes);
@@ -679,7 +678,7 @@ export default function Sale() {
                 <span className={iconClass('lucide:shopping-cart', 'text-primary')} />
                 <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2">
                 {ORDER_TYPES.map(ot => (
                   <button
                     key={ot.key}
@@ -834,9 +833,8 @@ export default function Sale() {
               </div>
             )}
 
-            {/* Total Amount Card — mobile (centered, enhanced) */}
-              <Card transitional className="sm:p-6 mb-6 sm:mb-8 overflow-hidden">
-              <div className="relative flex flex-col items-center text-center gap-1.5 py-1">
+            {/* Total Amount — mobile (no card container, no flex-col) */}
+              <div className="relative flex items-center text-center gap-1.5 py-1 mb-6 sm:mb-8">
                 <h2 className="text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
                   <span className={iconClass('lucide:wallet', 'w-4 h-4 text-primary')} />
                   {t('sale.totalAmount')}
@@ -854,7 +852,6 @@ export default function Sale() {
                   {t('sale.itemsSelected', { count: cart.length })}
                 </span>
               </div>
-            </Card>
            </div>
 
           {/* ── Compact rounded search + filter + sort bar — shared ProductFilterBar ──
@@ -981,26 +978,15 @@ export default function Sale() {
             ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product, index) => {
               const cartItem = cart.find(item => item.id === product.id);
-              const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
-              // Unique per-product accent: category color wins when the product
-              // has one; otherwise a deterministic golden-angle hue derived from
-              // the product id/name so adjacent cards never repeat the same
-              // palette color (the rotating 7-color cycle used to repeat).
-              const categoryColor = product.category_id != null
-                ? (categories.find(c => c.id === product.category_id)?.color || null)
-                : null;
-              // Unique per-product accents are user-toggleable via Settings.
-              // When off, only explicit category colors apply and cards fall
-              // back to the rotating palette (pre-feature behavior).
-              const accentColor = settings.unique_card_colors !== false
-                ? (categoryColor ?? productAccentColor(product))
-                : categoryColor;
+              // Single uniform card color (theme primary) — the default look.
+              const color = PRODUCT_CARD_COLORS[0];
+              const categoryColor = null;
               return (
                 <ProductCard
                   key={product.id}
                   product={product}
                   color={color}
-                  categoryColor={accentColor}
+                  categoryColor={categoryColor}
                   currency={settings.currency}
                   isSelected={!!cartItem}
                   index={index}
@@ -1012,10 +998,9 @@ export default function Sale() {
                       onClick={() => addToCart(product)}
                       className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white
                         hover:brightness-110 transition-all active:scale-[0.95] shadow-sm mt-1 group-hover:shadow-md ${color.badge}`}
-                      style={accentColor ? { backgroundColor: accentColor } : undefined}
                       aria-label={t('sale.addToCartLabel', { product: product.name })}
                     >
-                      <span className="icon-[tabler--plus] w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="ri-add-line ri-14px sm:w-4 sm:h-4" />
                       {t('sale.addToCartLabel', { product: product.name })}
                     </button>
                   ) : (
@@ -1173,9 +1158,7 @@ export default function Sale() {
 
         {/* ── Sticky Mobile Checkout Bar ── */}
         <div
-          initial={false}
-          animate={cart.length > 0 ? { y: 0 } : { y: 120 }}
-          className="fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none"
+          className={`fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none transition-transform duration-300 ${cart.length > 0 ? 'translate-y-0' : 'translate-y-[120px]'}`}
         >
           <div className="pointer-events-auto bg-base-100/95 backdrop-blur-xl
             border-t border-slate-200 dark:border-slate-700
@@ -1228,13 +1211,7 @@ export default function Sale() {
           className="hidden lg:block relative"
         >
           <div
-            initial={false}
-            animate={{
-              width: (sidebarOpen || sidebarHovered) ? 280 : 0,
-              opacity: (sidebarOpen || sidebarHovered) ? 1 : 0,
-            }}
-            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-            className="sticky top-24 overflow-hidden"
+            className={`sticky top-24 overflow-hidden transition-all duration-300 ${(sidebarOpen || sidebarHovered) ? 'w-[280px] opacity-100' : 'w-0 opacity-0'}`}
           >
             <div className="w-[280px] space-y-4">
               {/* Order Type Card */}
@@ -1420,7 +1397,7 @@ export default function Sale() {
                     onClick={() => setShowQuickNoteForm(s => !s)}
                     className="btn btn-ghost btn-xs gap-1 text-primary"
                   >
-                    <span className="icon-[tabler--plus] w-3 h-3" />
+                    <span className="ri-add-line ri-12px" />
                     {t('sale.newNote') || 'New note'}
                   </button>
                 </div>
@@ -1448,7 +1425,7 @@ export default function Sale() {
                         disabled={!quickNoteText.trim()}
                         className="btn btn-primary btn-xs gap-1"
                       >
-                        <span className="icon-[tabler--check] w-3 h-3" />
+                        <span className="ri-check-line ri-12px" />
                         {t('sale.quickAddNote') || 'Add to order'}
                       </button>
                     </div>
@@ -1509,8 +1486,8 @@ export default function Sale() {
                 </Card>
               )}
 
-              {/* Total Amount Card — centered, enhanced */}
-                <Card transitional className="text-center">
+              {/* Total Amount — centered, no card container */}
+                <div className="text-center">
                 <h2 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-1.5 flex items-center justify-center gap-1.5">
                   <span className={iconClass('lucide:wallet', 'w-3.5 h-3.5 text-primary')} />
                   {t('sale.totalAmount')}
@@ -1527,7 +1504,7 @@ export default function Sale() {
                   <span className={iconClass('lucide:shopping-bag', 'w-3 h-3')} />
                   {t('sale.itemsSelected', { count: cart.length })}
                 </span>
-              </Card>
+              </div>
 
               {/* Cart mini-summary in sidebar */}
               {cart.length > 0 && (
@@ -1559,16 +1536,13 @@ export default function Sale() {
       {/* Success Dialog */}
       {showSuccessDialog && receiptData && (
         <div
-          exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
         >
           <div
-            exit={{ scale: 0.8, opacity: 0 }}
             className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full my-8 transition-colors duration-300"
           >
             <div className="text-center">
               <div
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
                 <span className={iconClass('lucide:circle-check', 'w-16 h-16 text-primary mx-auto')} />
@@ -1724,22 +1698,15 @@ export default function Sale() {
       {/* PDF Success Dialog */}
       {showPDFSuccessDialog && (
         <div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={() => setShowPDFSuccessDialog(false)}
         >
           <div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
             className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full transition-colors duration-300"
             onClick={e => e.stopPropagation()}
           >
             <div className="text-center">
               <div
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
                 <span className={iconClass('lucide:circle-check', 'w-16 h-16 text-green-500 mx-auto')} />

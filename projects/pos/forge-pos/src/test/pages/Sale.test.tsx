@@ -261,12 +261,13 @@ describe('Sale Page', () => {
     });
   });
 
-  it('falls back to palette colors when unique card colors are disabled', async () => {
+
+  it('uses one uniform primary color for all product cards', async () => {
     resetInvokeMocks();
-    // Lemonade has no category → no category color to fall back on, so the
-    // rotating palette must be used (no inline accent on the add button).
+    // Every card (incl. category-less ones) shares the single theme-primary
+    // color — no per-product accent colors.
     mockInvokeSuccess('get_products', [...mockProducts, { id: 9, name: 'Lemonade', price: 50, unit: 'glass' }]);
-    mockInvokeSuccess('get_settings', { ...mockSettings, unique_card_colors: false });
+    mockInvokeSuccess('get_settings', mockSettings);
     mockInvokeSuccess('get_delivery_types', mockDeliveryTypes);
     mockInvokeSuccess('get_delivery_zones', []);
     mockInvokeSuccess('get_employees', mockEmployees);
@@ -280,36 +281,13 @@ describe('Sale Page', () => {
       expect(screen.getByText('Lemonade')).toBeInTheDocument();
     });
 
-    // The card itself is role="button", so target the inner add button
-    // directly (same pattern as clickAddToCart).
     const lemonadeCard = screen.getByText('Lemonade').closest('[class*="rounded-xl"]') as HTMLElement | null;
     const addBtn = lemonadeCard!.querySelector('button') as HTMLButtonElement | null;
     expect(addBtn).not.toBeNull();
-    // No generated per-product accent → no inline background color.
+    // Uniform mode → no per-product inline accent; the card uses the shared
+    // theme-primary classes instead.
     expect(addBtn!.style.backgroundColor).toBe('');
-  });
-
-  it('applies a generated accent to category-less products when unique colors are on', async () => {
-    resetInvokeMocks();
-    mockInvokeSuccess('get_products', [...mockProducts, { id: 9, name: 'Lemonade', price: 50, unit: 'glass' }]);
-    mockInvokeSuccess('get_settings', mockSettings); // unique_card_colors absent → on
-    mockInvokeSuccess('get_delivery_types', mockDeliveryTypes);
-    mockInvokeSuccess('get_delivery_zones', []);
-    mockInvokeSuccess('get_employees', mockEmployees);
-    mockInvokeSuccess('get_categories', mockCategories);
-    mockInvokeSuccess('get_notes', []);
-    mockInvokeSuccess('check_auth_required', false);
-
-    renderWithRouter(<Sale />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Lemonade')).toBeInTheDocument();
-    });
-
-    const lemonadeCard = screen.getByText('Lemonade').closest('[class*="rounded-xl"]') as HTMLElement | null;
-    const addBtn = lemonadeCard!.querySelector('button') as HTMLButtonElement | null;
-    expect(addBtn).not.toBeNull();
-    expect(addBtn!.style.backgroundColor).not.toBe('');
+    expect(addBtn!.className).toContain('bg-primary');
   });
 
   it('filters products by category via colored tag pills', async () => {

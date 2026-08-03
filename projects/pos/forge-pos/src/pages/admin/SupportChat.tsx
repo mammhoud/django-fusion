@@ -108,7 +108,7 @@ export default function SupportChat() {
     <PageLayout
       title={
         <span className="flex items-center gap-2">
-          <span className="icon-[tabler--headset] w-5 h-5 text-primary" />
+          <span className="ri-customer-service-line ri-20px text-primary" />
           Support
         </span>
       }
@@ -117,19 +117,19 @@ export default function SupportChat() {
         {/* Status */}
         {smtpConfig === null ? (
           <div className="alert alert-info">
-            <span className="icon-[tabler--loader-2] w-5 h-5 animate-spin" />
+            <span className="ri-loader-4-line ri-20px animate-spin" />
             <span>Checking email configuration…</span>
           </div>
         ) : SUPPORT_EMAIL ? (
           <div className="alert alert-success">
-            <span className="icon-[tabler--check] w-5 h-5" />
+            <span className="ri-check-line ri-20px" />
             <span>
               Support email configured — <strong className="font-mono">{SUPPORT_EMAIL}</strong>
             </span>
           </div>
         ) : (
           <div className="alert alert-warning">
-            <span className="icon-[tabler--alert-triangle] w-5 h-5" />
+            <span className="ri-alert-line ri-20px" />
             <span>
               No support email configured. Set the SMTP recipient in Settings → Business → Email to
               enable email support.
@@ -146,12 +146,12 @@ export default function SupportChat() {
         {SUPPORT_EMAIL && (
           <div className="card bg-base-200 border border-base-300/50 p-6">
             <h2 className="text-lg font-semibold text-base-content mb-4 flex items-center gap-2">
-              <span className="icon-[tabler--info-circle] w-5 h-5 text-info" />
+              <span className="ri-information-line ri-20px text-info" />
               Contact Information
             </h2>
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3">
-                <span className="icon-[tabler--mail] w-4 h-4 text-primary" />
+                <span className="ri-mail-line ri-16px text-primary" />
                 <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary hover:underline font-mono text-xs">
                   {SUPPORT_EMAIL}
                 </a>
@@ -164,23 +164,23 @@ export default function SupportChat() {
         <div className="bg-base-100 rounded-2xl border border-base-300/50 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-base-300/50 flex items-center justify-between">
             <h2 className="text-base font-semibold text-base-content flex items-center gap-2">
-              <span className="icon-[tabler--messages] w-5 h-5 text-primary" />
+              <span className="ri-chat-3-line ri-20px text-primary" />
               Message History
               <span className="badge badge-soft bg-primary/10 text-primary border-primary/20">{messages.length}</span>
             </h2>
             <button onClick={loadMessages} className="btn btn-ghost btn-sm gap-1.5">
-              <span className="icon-[tabler--refresh] w-3.5 h-3.5" />
+              <span className="ri-refresh-line ri-14px" />
               Refresh
             </button>
           </div>
 
           {loadingMessages ? (
             <div className="p-8 text-center text-base-content/40 text-sm">
-              <span className="icon-[tabler--loader-2] w-5 h-5 animate-spin inline-block" /> Loading messages…
+              <span className="ri-loader-4-line ri-20px animate-spin inline-block" /> Loading messages…
             </div>
           ) : messages.length === 0 ? (
             <div className="p-8 text-center text-base-content/40 text-sm">
-              <span className="icon-[tabler--inbox] w-8 h-8 mx-auto mb-2 opacity-50 block" />
+              <span className="ri-inbox-line ri-32px mx-auto mb-2 opacity-50 block" />
               No messages yet. Submissions from the chat widget will appear here.
             </div>
           ) : (
@@ -203,16 +203,16 @@ export default function SupportChat() {
                       <div className="flex items-center gap-2 mt-2 flex-wrap text-[10px] text-base-content/30">
                         {m.category && (
                           <span className="inline-flex items-center gap-1">
-                            <span className="icon-[tabler--tag] w-3 h-3" /> {m.category}
+                            <span className="ri-price-tag-line ri-12px" /> {m.category}
                           </span>
                         )}
                         {m.phone && (
                           <span className="inline-flex items-center gap-1">
-                            <span className="icon-[tabler--phone] w-3 h-3" /> {m.phone}
+                            <span className="ri-phone-line ri-12px" /> {m.phone}
                           </span>
                         )}
                         <span className="inline-flex items-center gap-1">
-                          <span className="icon-[tabler--clock] w-3 h-3" /> {formatDate(m.created_at)}
+                          <span className="ri-time-line ri-12px" /> {formatDate(m.created_at)}
                         </span>
                       </div>
                     </div>
@@ -234,7 +234,7 @@ export default function SupportChat() {
                         className="btn btn-ghost btn-xs text-error gap-1"
                         aria-label="Delete message"
                       >
-                        <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                        <span className="ri-delete-bin-line ri-14px" />
                       </button>
                     </div>
                   </div>

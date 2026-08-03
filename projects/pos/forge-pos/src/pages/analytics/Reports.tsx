@@ -284,18 +284,18 @@ export default function Reports() {
 
   // ---- Tab Navigation ----
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'overview' as Tab, label: 'Overview', icon: <span className="icon-[tabler--dashboard] w-5 h-5" /> },
-    { key: 'sales' as Tab, label: 'Sales', icon: <span className="icon-[tabler--moneybag] w-5 h-5" /> },
-    { key: 'productsSales' as Tab, label: 'Products Sales', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" /> },
-    { key: 'invoices' as Tab, label: 'Invoices', icon: <span className="icon-[tabler--receipt] w-5 h-5" /> },
-    { key: 'dailyComparison' as Tab, label: 'Daily Comparison', icon: <span className="icon-[tabler--trending-up] w-5 h-5" /> },
-    { key: 'periodComparison' as Tab, label: 'Period Comparison', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
-    { key: 'deliveryTracking' as Tab, label: 'Delivery Tracking', icon: <span className="icon-[tabler--building-store] w-5 h-5" /> },
-    { key: 'inventory' as Tab, label: 'Inventory', icon: <span className="icon-[tabler--package] w-5 h-5" /> },
-    { key: 'recipes' as Tab, label: 'Recipes', icon: <span className="icon-[tabler--menu-2] w-5 h-5" /> },
-    { key: 'employees' as Tab, label: 'Employees', icon: <span className="icon-[tabler--users] w-5 h-5" /> },
-    { key: 'transactions' as Tab, label: 'Transactions', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
-    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <span className="icon-[tabler--building-bank] w-5 h-5" /> },
+    { key: 'overview' as Tab, label: 'Overview', icon: <span className="ri-dashboard-2-line ri-20px" /> },
+    { key: 'sales' as Tab, label: 'Sales', icon: <span className="ri-money-dollar-box-line ri-20px" /> },
+    { key: 'productsSales' as Tab, label: 'Products Sales', icon: <span className="ri-bar-chart-2-line ri-20px" /> },
+    { key: 'invoices' as Tab, label: 'Invoices', icon: <span className="ri-receipt-line ri-20px" /> },
+    { key: 'dailyComparison' as Tab, label: 'Daily Comparison', icon: <span className="ri-stock-line ri-20px" /> },
+    { key: 'periodComparison' as Tab, label: 'Period Comparison', icon: <span className="ri-calendar-line ri-20px" /> },
+    { key: 'deliveryTracking' as Tab, label: 'Delivery Tracking', icon: <span className="ri-store-2-line ri-20px" /> },
+    { key: 'inventory' as Tab, label: 'Inventory', icon: <span className="ri-archive-line ri-20px" /> },
+    { key: 'recipes' as Tab, label: 'Recipes', icon: <span className="ri-menu-2-line ri-20px" /> },
+    { key: 'employees' as Tab, label: 'Employees', icon: <span className="ri-group-line ri-20px" /> },
+    { key: 'transactions' as Tab, label: 'Transactions', icon: <span className="ri-calendar-line ri-20px" /> },
+    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <span className="ri-bank-line ri-20px" /> },
   ];
 
   // ── Arrow-key tab nav ──
@@ -799,7 +799,7 @@ export default function Reports() {
           {exporting ? (
             <span className="loading loading-spinner loading-sm" />
           ) : (
-            <span className="icon-[tabler--download] w-4 h-4" />
+            <span className="ri-download-line ri-16px" />
           )}
           {exporting ? t('reports.exporting') : t('reports.exportExcel')}
         </button>
@@ -811,7 +811,7 @@ export default function Reports() {
           {exporting ? (
             <span className="loading loading-spinner loading-sm" />
           ) : (
-            <span className="icon-[tabler--file-type-pdf] w-4 h-4" />
+            <span className="ri-file-pdf-line ri-16px" />
           )}
           {exporting ? t('reports.exporting') : t('reports.exportPDF')}
         </button>
@@ -822,7 +822,7 @@ export default function Reports() {
           <div className="text-center mb-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
               bg-info/10 text-info">
-              <span className="icon-[tabler--calendar] w-3.5 h-3.5" />
+              <span className="ri-calendar-line ri-14px" />
               {t('reports.showingDataFrom', { start: dateRange.start || t('reports.dateEarliest'), end: dateRange.end || t('reports.dateLatest') })}
             </span>
           </div>
@@ -833,7 +833,7 @@ export default function Reports() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             {/* Order Type Filter */}
             <div className="flex items-center gap-2 shrink-0">
-              <span className="icon-[tabler--building-store] w-5 h-5 text-info" />
+              <span className="ri-store-2-line ri-20px text-info" />
               <span className="text-sm font-semibold text-base-content">{t('reports.orderType', 'Order Type')}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -859,7 +859,7 @@ export default function Reports() {
 
             {/* Delivery Zone Filter */}
             <div className="flex items-center gap-2 shrink-0">
-              <span className="icon-[tabler--map-pin-code] w-5 h-5 text-warning" />
+              <span className="ri-map-pin-2-line ri-20px text-warning" />
               <span className="text-sm font-semibold text-base-content">{t('reports.zone', 'Delivery Zone')}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -887,7 +887,7 @@ export default function Reports() {
         <Card className="mb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <span className="icon-[tabler--calendar] w-5 h-5 text-info" />
+              <span className="ri-calendar-line ri-20px text-info" />
               <span className="text-sm font-semibold text-base-content">{t('common.period')}</span>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -959,9 +959,6 @@ export default function Reports() {
           role="tabpanel"
           id={`reports-panel-${activeTab}`}
           aria-labelledby={`reports-tab-${activeTab}`}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
         >
           {activeTab === 'overview' && (
             <div className="space-y-6">
@@ -969,22 +966,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalOrders')}
                   value={filteredSales.length.toString()}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${formatPrice(stockValue)}`}
-                  icon={<span className="icon-[tabler--package] w-6 h-6" />}
+                  icon={<span className="ri-archive-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
-                  icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
+                  icon={<span className="ri-menu-2-line ri-24px" />}
                   color="warning"
                  compact/><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
-                  icon={<span className="icon-[tabler--users] w-6 h-6" />}
+                  icon={<span className="ri-group-line ri-24px" />}
                   color="secondary"
                 compact
                 />
@@ -1045,27 +1042,27 @@ export default function Reports() {
                   title={t('reports.totalRevenue')}
                   value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   desc={`${salesRevDelta.direction === 'up' ? '▲' : salesRevDelta.direction === 'down' ? '▼' : '→'} ${salesRevDelta.pct} vs prev 30 days`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                  compact/><StatCard 
                   title={t('reports.totalOrders')}
                   value={(filteredSales.length).toString()}
                   desc={`${salesOrderDelta.direction === 'up' ? '▲' : salesOrderDelta.direction === 'down' ? '▼' : '→'} ${salesOrderDelta.pct} vs prev 30 days`}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="info"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${formatPrice(analytics?.summary.average_order_value || 0)}`}
                   desc={`${salesAvgDelta.direction === 'up' ? '▲' : salesAvgDelta.direction === 'down' ? '▼' : '→'} Avg ${salesAvgDelta.pct} vs prev 30 days`}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                  compact/><StatCard 
                   title={t('reports.orderTypes')}
                   value={orderTypeBreakdown.length.toString()}
-                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
+                  icon={<span className="ri-store-2-line ri-24px" />}
                   color="warning"
                 compact
                 />
@@ -1087,7 +1084,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1109,7 +1106,7 @@ export default function Reports() {
                         return (
                           <div key={ot.type} className={`flex items-center gap-4 p-4 rounded-lg border ${colorClass}`}>
                             <div className={`p-3 rounded-lg ${colorClass}`}>
-                              <span className="icon-[tabler--building-store] w-5 h-5" />
+                              <span className="ri-store-2-line ri-20px" />
                             </div>
                             <div className="flex-1">
                               <p className="text-sm text-base-content/50">{ot.type}</p>
@@ -1220,22 +1217,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalProductsSold')}
                   value={analytics?.summary?.total_orders?.toString() || '0'}
-                  icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
+                  icon={<span className="ri-bar-chart-2-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.productRevenue')}
                   value={formatPrice(analytics?.summary?.total_revenue || 0)}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.bestSellingCategory')}
                   value={bestSellingCategory}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="warning"
                  compact/><StatCard 
                   title={t('reports.avgItemsPerOrder')}
                   value={avgItemsPerOrder}
-                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
+                  icon={<span className="ri-store-2-line ri-24px" />}
                   color="secondary"
                 compact
                 />
@@ -1248,7 +1245,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1298,7 +1295,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--chart-bar] w-12 h-12 mx-auto mb-4 text-base-content/50" />
+                  <span className="ri-bar-chart-2-line ri-48px mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noProductSales')}</p>
                   <p className="text-base-content/50">{t('reports.noProductSalesHint')}</p>
                 </Card>
@@ -1333,22 +1330,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalInvoices')}
                   value={filteredSales.length.toString()}
-                  icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
+                  icon={<span className="ri-receipt-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.totalRevenue')}
                   value={formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0))}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={filteredSales.length > 0 ? formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length) : formatPrice(0)}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                  compact/><StatCard 
                   title={t('reports.completedOrders')}
                   value={filteredSales.filter(s => s.status === 'completed').length.toString()}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="success"
                 compact
                 />
@@ -1361,7 +1358,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1412,7 +1409,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--receipt] w-12 h-12 mx-auto mb-4 text-base-content/50" />
+                  <span className="ri-receipt-line ri-48px mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noInvoices')}</p>
                   <p className="text-base-content/50">{t('reports.noInvoicesHint')}</p>
                 </Card>
@@ -1427,28 +1424,28 @@ export default function Reports() {
                   title={t('reports.todayRevenue')}
                   value={`${formatPrice(todayStats.revenue)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs yesterday`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                  compact/><StatCard 
                   title={t('reports.todayOrders')}
                   value={todayStats.orders.toString()}
                   desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="info"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                  compact/><StatCard 
                   title={t('reports.todayAvgOrder')}
                   value={`${formatPrice(todayStats.avgOrder)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} Avg ${revDelta.pct} vs yesterday`}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                  compact/><StatCard 
                   title={t('reports.todayItemsSold')}
                   value={todayStats.orders > 0 ? (todayStats.orders * (parseFloat(avgItemsPerOrder) || 1)).toFixed(0) : '0'}
                   desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
-                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
+                  icon={<span className="ri-store-2-line ri-24px" />}
                   color="warning"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                 />
@@ -1571,7 +1568,7 @@ export default function Reports() {
               {/* Employee Daily Breakdown */}
               <Card padding="xl">
                 <h3 className="text-lg font-bold text-base-content mb-4 flex items-center gap-2">
-                  <span className="icon-[tabler--users] w-5 h-5 text-info" />
+                  <span className="ri-group-line ri-20px text-info" />
                   {t('reports.employeeDailyBreakdown')}
                 </h3>
                 {employeeDailyStats.length > 0 ? (
@@ -1597,13 +1594,13 @@ export default function Reports() {
                             <td className="py-3 px-4 text-right text-base-content/70">{emp.yesterdayOrders}</td>
                             <td className="py-3 px-4 text-right text-base-content/70">{formatPrice(emp.yesterdayRevenue)}</td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.revColor}`}>
-                              {emp.revDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
-                              {emp.revDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
+                              {emp.revDirection === 'up' && <span className="ri-stock-line inline w-3.5 h-3.5 mr-0.5" />}
+                              {emp.revDirection === 'down' && <span className="ri-stock-line inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
                               {emp.revChange}
                             </td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.orderColor}`}>
-                              {emp.orderDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
-                              {emp.orderDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
+                              {emp.orderDirection === 'up' && <span className="ri-stock-line inline w-3.5 h-3.5 mr-0.5" />}
+                              {emp.orderDirection === 'down' && <span className="ri-stock-line inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
                               {emp.orderChange}
                             </td>
                           </tr>
@@ -1613,7 +1610,7 @@ export default function Reports() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 text-base-content/50">
-                    <span className="icon-[tabler--users] w-5 h-5" />
+                    <span className="ri-group-line ri-20px" />
                     <span>{t('reports.noEmployeeDailyData')}</span>
                   </div>
                 )}
@@ -1656,7 +1653,7 @@ export default function Reports() {
                   title={t('reports.currentPeriodRevenue')}
                   value={`${formatPrice(currentStats.revenue)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs previous`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                   onDescClick={() => setComparisonFilter(periodView === 'week'
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
@@ -1666,7 +1663,7 @@ export default function Reports() {
                   title={t('reports.currentPeriodOrders')}
                   value={currentStats.orders.toString()}
                   desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs previous`}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="info"
                   onDescClick={() => setComparisonFilter(periodView === 'week'
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
@@ -1676,7 +1673,7 @@ export default function Reports() {
                   title={t('reports.currentPeriodAvg')}
                   value={`${formatPrice(currentStats.avgOrder)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} Avg ${periodRevDelta.pct} vs previous`}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                   onDescClick={() => setComparisonFilter(periodView === 'week'
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
@@ -1686,7 +1683,7 @@ export default function Reports() {
                   title={t('reports.previousPeriod')}
                   value={`${formatPrice(previousStats.revenue)}`}
                   desc={`${currentStats.revenue > previousStats.revenue ? '▲ Up' : currentStats.revenue < previousStats.revenue ? '▼ Down' : '→ Flat'} from current`}
-                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
+                  icon={<span className="ri-calendar-line ri-24px" />}
                   color="neutral"
                 compact
                 />
@@ -1802,22 +1799,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.deliveryOrders')}
                   value={deliveryStats.totalOrders.toString()}
-                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
+                  icon={<span className="ri-store-2-line ri-24px" />}
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${formatPrice(deliveryStats.totalRevenue)}`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${formatPrice(deliveryStats.avgOrderValue)}`}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                  compact/><StatCard 
                   title={t('reports.deliveryCompleted')}
                   value={`${deliveryStats.completedOrders} / ${deliveryStats.pendingOrders}`}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="warning"
                 compact
                 />
@@ -1830,7 +1827,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1862,7 +1859,7 @@ export default function Reports() {
                             </div>
                             {/* Delivery Address — map-style card */}
                             <div className="flex items-start gap-2 bg-base-100/40 rounded-lg p-3 mb-2 border border-base-300/50">
-                              <span className="icon-[tabler--building-store] w-4 h-4 text-warning mt-0.5 shrink-0" />
+                              <span className="ri-store-2-line ri-16px text-warning mt-0.5 shrink-0" />
                               <div>
                                 <p className="text-xs font-medium text-base-content/50 uppercase tracking-wider">{t('reports.deliveryAddress')}</p>
                                 <p className="text-sm text-base-content font-medium">{sale.delivery_address || t('reports.noAddress')}</p>
@@ -1884,7 +1881,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--building-store] w-12 h-12 mx-auto mb-4 text-base-content/50" />
+                  <span className="ri-store-2-line ri-48px mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noDeliveries')}</p>
                   <p className="text-base-content/50">{t('reports.noDeliveriesHint')}</p>
                 </Card>
@@ -1898,22 +1895,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${formatPrice(stockValue)}`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="success"
                  compact/><StatCard 
                   title={t('reports.activeIngredients')}
                   value={ingredients.filter(i => i.is_active).length.toString()}
-                  icon={<span className="icon-[tabler--package] w-6 h-6" />}
+                  icon={<span className="ri-archive-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.lowStockItems')}
                   value={lowStockItems.length.toString()}
-                  icon={<span className="icon-[tabler--alert-triangle] w-6 h-6" />}
+                  icon={<span className="ri-alert-line ri-24px" />}
                   color="error"
                  compact/><StatCard 
                   title={t('transactions.title')}
                   value={inventoryTxns.length.toString()}
-                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
+                  icon={<span className="ri-calendar-line ri-24px" />}
                   color="secondary"
                 compact
                 />
@@ -1926,7 +1923,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1934,7 +1931,7 @@ export default function Reports() {
               {/* Low Stock Alerts */}
               <Card padding="xl">
                 <h3 className="text-lg font-bold text-base-content mb-4 flex items-center gap-2">
-                  <span className="icon-[tabler--alert-triangle] w-5 h-5 text-error" />
+                  <span className="ri-alert-line ri-20px text-error" />
                   {t('reports.lowStockAlerts')}
                 </h3>
                 {lowStockItems.length > 0 ? (
@@ -1964,7 +1961,7 @@ export default function Reports() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 text-success">
-                    <span className="icon-[tabler--alert-triangle] w-5 h-5" />
+                    <span className="ri-alert-line ri-20px" />
                     <span>{t('reports.allWellStocked')}</span>
                   </div>
                 )}
@@ -2069,22 +2066,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalRecipes')}
                   value={recipePerformance.length.toString()}
-                  icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
+                  icon={<span className="ri-menu-2-line ri-24px" />}
                   color="warning"
                  compact/><StatCard 
                   title={t('reports.activeProducts')}
                   value={products.length.toString()}
-                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
+                  icon={<span className="ri-store-2-line ri-24px" />}
                   color="success"
                  compact/><StatCard 
                   title={t('reports.avgProductPrice')}
                   value={`${formatPrice(products.length > 0 ? products.reduce((s, p) => s + p.price, 0) / products.length : 0)}`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                 compact
                 />
@@ -2097,7 +2094,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -2139,7 +2136,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--menu-2] w-12 h-12 mx-auto mb-4 text-base-content/50" />
+                  <span className="ri-menu-2-line ri-48px mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noRecipes')}</p>
                   <p className="text-base-content/50">{t('reports.noRecipesHint')}</p>
                 </Card>
@@ -2194,22 +2191,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${formatPrice(transactions.reduce((s, t) => s + t.total_amount, 0))}`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.totalOrders')}
                   value={transactions.length.toString()}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${formatPrice(transactions.length > 0 ? transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length : 0)}`}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="secondary"
                  compact/><StatCard 
                   title={t('reports.transactionItems')}
                   value={transactions.reduce((s, t) => s + t.items.length, 0).toString()}
-                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
+                  icon={<span className="ri-calendar-line ri-24px" />}
                   color="warning"
                 compact
                 />
@@ -2222,7 +2219,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -2261,7 +2258,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--calendar] w-12 h-12 mx-auto mb-4 text-base-content/50" />
+                  <span className="ri-calendar-line ri-48px mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('transactions.noTransactions')}</p>
                 </Card>
               )}
@@ -2274,22 +2271,22 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
-                  icon={<span className="icon-[tabler--users] w-6 h-6" />}
+                  icon={<span className="ri-group-line ri-24px" />}
                   color="secondary"
                  compact/><StatCard 
                   title={t('reports.employeesWithSales')}
                   value={employeePerformance.length.toString()}
-                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
+                  icon={<span className="ri-stock-line ri-24px" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.totalOrders')}
                   value={employeePerformance.reduce((s, e) => s + e.orderCount, 0).toString()}
-                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
                   color="success"
                  compact/><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${formatPrice(employeePerformance.reduce((s, e) => s + e.revenue, 0))}`}
-                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                  icon={<span className="ri-money-dollar-box-line ri-24px" />}
                   color="warning"
                 compact
                 />
@@ -2302,7 +2299,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -2372,7 +2369,7 @@ export default function Reports() {
                 </Card>
               ) : (
                 <Card padding="xl" center>
-                  <span className="icon-[tabler--users] w-12 h-12 mx-auto mb-4 text-base-content/50" />
+                  <span className="ri-group-line ri-48px mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noEmployeeSales')}</p>
                   <p className="text-base-content/50">{t('reports.noEmployeeSalesHint')}</p>
                 </Card>

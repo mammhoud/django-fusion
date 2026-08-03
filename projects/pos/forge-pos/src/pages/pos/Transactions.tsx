@@ -669,10 +669,10 @@ export default function Transactions() {
 
   // ---- Tab Definition ----
   const tabs: { key: TabId; label: string; icon: React.ReactNode }[] = [
-    { key: 'timeTotal', label: 'Time Total', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
-    { key: 'productStats', label: 'Product Statistics', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" /> },
-    { key: 'relatedProducts', label: 'Related Products', icon: <span className="icon-[tabler--file-invoice] w-5 h-5" /> },
-    { key: 'invoices', label: 'Invoices', icon: <span className="icon-[tabler--receipt] w-5 h-5" /> },
+    { key: 'timeTotal', label: 'Time Total', icon: <span className="ri-calendar-line ri-20px" /> },
+    { key: 'productStats', label: 'Product Statistics', icon: <span className="ri-bar-chart-2-line ri-20px" /> },
+    { key: 'relatedProducts', label: 'Related Products', icon: <span className="ri-file-list-3-line ri-20px" /> },
+    { key: 'invoices', label: 'Invoices', icon: <span className="ri-receipt-line ri-20px" /> },
   ];
 
   // ── Arrow-key tab nav ──
@@ -713,7 +713,7 @@ export default function Transactions() {
             bg-secondary/20 px-4 py-2 rounded-lg
             transition-all duration-300 active:scale-[0.95]"
         >
-          <span className="icon-[tabler--filter] w-5 h-5" />
+          <span className="ri-filter-2-line ri-20px" />
           <span>{t('transactions.filters')}</span>
         </button>
       </div>
@@ -740,8 +740,6 @@ export default function Transactions() {
       {/* Filters */}
       {showFilters && (
         <div
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
         >
           <Card padding="md" transitional className="mb-6 overflow-visible">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -777,7 +775,6 @@ export default function Transactions() {
         role="tabpanel"
         id={`tx-panel-${activeTab}`}
         aria-labelledby={`tx-tab-${activeTab}`}
-        transition={{ duration: 0.3 }}
       >
         {/* ========== TIME TOTAL TAB ========== */}
         {activeTab === 'timeTotal' && (
@@ -788,28 +785,28 @@ export default function Transactions() {
                 title={t('transactions.today') || 'Today'}
                 value={`${transactions[0]?.currency || ''} ${todayKpis.todayRevenue.toFixed(2)}`}
                 desc={todayKpis.todayOrders === 1 ? '1 order' : `${todayKpis.todayOrders} orders`}
-                icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
+                icon={<span className="ri-calendar-line ri-24px" />}
                 color="primary"
               />
               <StatCard
                 title={t('transactions.thisWeek') || 'This Week'}
                 value={`${transactions[0]?.currency || ''} ${todayKpis.weekRevenue.toFixed(2)}`}
                 desc={todayKpis.weekOrders === 1 ? '1 order' : `${todayKpis.weekOrders} orders`}
-                icon={<span className="icon-[tabler--calendar-week] w-6 h-6" />}
+                icon={<span className="ri-calendar-2-line ri-24px" />}
                 color="info"
               />
               <StatCard
                 title={t('transactions.thisMonth') || 'This Month'}
                 value={`${transactions[0]?.currency || ''} ${todayKpis.monthRevenue.toFixed(2)}`}
                 desc={todayKpis.monthOrders === 1 ? '1 order' : `${todayKpis.monthOrders} orders`}
-                icon={<span className="icon-[tabler--calendar-month] w-6 h-6" />}
+                icon={<span className="ri-calendar-2-line ri-24px" />}
                 color="secondary"
               />
               <StatCard
                 title={t('transactions.outstanding') || 'Outstanding'}
                 value={todayKpis.outstanding}
                 desc={todayKpis.outstanding === 0 ? 'All settled' : `${todayKpis.outstanding} pending`}
-                icon={<span className="icon-[tabler--clock-exclamation] w-6 h-6" />}
+                icon={<span className="ri-alarm-warning-line ri-24px" />}
                 color={todayKpis.outstanding > 0 ? 'warning' : 'success'}
               />
             </div>
@@ -824,7 +821,7 @@ export default function Transactions() {
                     <Card padding="md">
                       <div className="flex items-center justify-between mb-3 pb-2 border-b border-base-300/30">
                         <div className="flex items-center gap-2">
-                          <span className="icon-[tabler--calendar] w-5 h-5 text-info" />
+                          <span className="ri-calendar-line ri-20px text-info" />
                           <h3 className="font-bold text-base-content">
                             {new Date(group.date + 'T00:00:00').toLocaleDateString('en-US', {
                               weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -856,13 +853,13 @@ export default function Transactions() {
                               data-testid="receipt-button"
                               className="text-primary-content p-1.5 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-all active:scale-[0.9]"
                             >
-                              <span className="icon-[tabler--printer] w-4 h-4" />
+                              <span className="ri-printer-line ri-16px" />
                             </button>
                             <button
                               onClick={() => handleDeleteTransaction(tx.id)}
                               className="text-error hover:text-error p-1.5 transition-all active:scale-[0.9]"
                             >
-                              <span className="icon-[tabler--trash] w-4 h-4" />
+                              <span className="ri-delete-bin-line ri-16px" />
                             </button>
                           </div>
                         </div>
@@ -874,7 +871,7 @@ export default function Transactions() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--calendar] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-calendar-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('transactions.noTimeTotalData')}</p>
               </div>
             )}
@@ -889,19 +886,19 @@ export default function Transactions() {
               <StatCard
                 title={t('reports.totalProductsSold')}
                 value={productStats.reduce((s, p) => s + p.count, 0)}
-                icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
+                icon={<span className="ri-bar-chart-2-line ri-24px" />}
                 color="info"
               />
               <StatCard
                 title={t('transactions.revenue')}
                 value={`${transactions[0]?.currency || ''} ${productStats.reduce((s, p) => s + p.totalAmount, 0).toFixed(2)}`}
-                icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                icon={<span className="ri-money-dollar-box-line ri-24px" />}
                 color="primary"
               />
               <StatCard
                 title={t('transactions.uniqueProducts')}
                 value={productStats.length}
-                icon={<span className="icon-[tabler--apps] w-6 h-6" />}
+                icon={<span className="ri-layout-grid-line ri-24px" />}
                 color="secondary"
               />
             </div>
@@ -910,7 +907,7 @@ export default function Transactions() {
             {productStats.length > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
                 <div className="relative flex-1 max-w-xs">
-                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
+                  <span className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
                   <input
                     type="text"
                     value={productSearch}
@@ -923,7 +920,7 @@ export default function Transactions() {
                       onClick={() => { setProductPage(1); setProductSearch(''); }}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                     >
-                      <span className="icon-[tabler--x] w-3.5 h-3.5" />
+                      <span className="ri-close-line ri-14px" />
                     </button>
                   )}
                 </div>
@@ -975,8 +972,8 @@ export default function Transactions() {
                         {isInChain && criterion && (
                           <>
                             {criterion.order === 'asc'
-                              ? <span className="icon-[tabler--arrow-up] w-3 h-3" />
-                              : <span className="icon-[tabler--arrow-down] w-3 h-3" />
+                              ? <span className="ri-arrow-up-line ri-12px" />
+                              : <span className="ri-arrow-down-line ri-12px" />
                             }
                             <span className="text-[10px] font-bold text-info dark:text-info/80 ml-0.5">
                               {chainIdx + 1}
@@ -994,21 +991,21 @@ export default function Transactions() {
                     hover:bg-base-300/80 transition-colors"
                   title={t('transactions.shortcutHelp')}
                 >
-                  <span className="icon-[tabler--help-circle] w-4 h-4" />
+                  <span className="ri-question-line ri-16px" />
                 </button>
                 <button
                   onClick={handleExportProductStatsCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
             )}
             {productStats.length > 0 && sortedProductStats.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--search] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-search-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('transactions.noSearchMatch')}</p>
                 <button
                   onClick={() => setProductSearch('')}
@@ -1110,7 +1107,7 @@ export default function Transactions() {
               </Card>
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--chart-bar] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-bar-chart-2-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('transactions.noProductStatsData')}</p>
               </div>
             )}
@@ -1123,7 +1120,7 @@ export default function Transactions() {
             {productInvoices.length > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
                 <div className="relative flex-1 max-w-xs">
-                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
+                  <span className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
                   <input
                     type="text"
                     value={relatedSearch}
@@ -1136,7 +1133,7 @@ export default function Transactions() {
                       onClick={() => setRelatedSearch('')}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                     >
-                      <span className="icon-[tabler--x] w-3.5 h-3.5" />
+                      <span className="ri-close-line ri-14px" />
                     </button>
                   )}
                 </div>
@@ -1186,8 +1183,8 @@ export default function Transactions() {
                         {isInChain && criterion && (
                           <>
                             {criterion.order === 'asc'
-                              ? <span className="icon-[tabler--arrow-up] w-3 h-3" />
-                              : <span className="icon-[tabler--arrow-down] w-3 h-3" />
+                              ? <span className="ri-arrow-up-line ri-12px" />
+                              : <span className="ri-arrow-down-line ri-12px" />
                             }
                             <span className="text-[10px] font-bold text-info dark:text-info/80 ml-0.5">
                               {chainIdx + 1}
@@ -1203,14 +1200,14 @@ export default function Transactions() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0
                     bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
+                  <span className="ri-download-line ri-14px" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
             )}
             {productInvoices.length > 0 && filteredRelatedProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--search] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-search-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('transactions.noSearchMatch')}</p>
                 <button
                   onClick={() => setRelatedSearch('')}
@@ -1227,7 +1224,7 @@ export default function Transactions() {
                   <Card padding="md">
                     <div className="flex items-center justify-between mb-3 pb-2 border-b border-base-300/30">
                       <div className="flex items-center gap-2">
-                        <span className="icon-[tabler--chart-bar] w-5 h-5 text-info" />
+                        <span className="ri-bar-chart-2-line ri-20px text-info" />
                         <div>
                           <div className="flex items-center gap-1.5">
                             <h3 className="font-bold text-base-content">{product.productName}</h3>
@@ -1237,7 +1234,7 @@ export default function Transactions() {
                             const crit = relatedSortChain[idx];
                             return (
                               <span className="inline-flex items-center gap-0.5 text-primary text-xs">
-                                {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
+                                {crit.order === 'asc' ? <span className="ri-arrow-up-line ri-12px" /> : <span className="ri-arrow-down-line ri-12px" />}
                                 {relatedSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                               </span>
                             );
@@ -1272,7 +1269,7 @@ export default function Transactions() {
                                 const crit = relatedSortChain[idx];
                                 return (
                                   <span className="inline-flex items-center gap-0.5 text-primary">
-                                    {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
+                                    {crit.order === 'asc' ? <span className="ri-arrow-up-line ri-12px" /> : <span className="ri-arrow-down-line ri-12px" />}
                                     {relatedSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                                   </span>
                                 );
@@ -1289,7 +1286,7 @@ export default function Transactions() {
                                 const crit = relatedSortChain[idx];
                                 return (
                                   <span className="inline-flex items-center gap-0.5 text-primary">
-                                    {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
+                                    {crit.order === 'asc' ? <span className="ri-arrow-up-line ri-12px" /> : <span className="ri-arrow-down-line ri-12px" />}
                                     {relatedSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                                   </span>
                                 );
@@ -1317,7 +1314,7 @@ export default function Transactions() {
               ))
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--file-invoice] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-file-list-3-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('transactions.noRelatedProductsData')}</p>
               </div>
             )}
@@ -1374,8 +1371,8 @@ export default function Transactions() {
                       {isInChain && criterion && (
                         <>
                           {criterion.order === 'asc'
-                            ? <span className="icon-[tabler--arrow-up] w-3 h-3" />
-                            : <span className="icon-[tabler--arrow-down] w-3 h-3" />
+                            ? <span className="ri-arrow-up-line ri-12px" />
+                            : <span className="ri-arrow-down-line ri-12px" />
                           }
                           <span className="text-[10px] font-bold text-info dark:text-info/80 ml-0.5">
                             {chainIdx + 1}
@@ -1391,13 +1388,12 @@ export default function Transactions() {
               sortedInvoices.map((transaction) => (
                 <div
                   key={transaction.id}
-                  exit={{ opacity: 0, x: 20 }}
                 >
                   <Card padding="md" hover>
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="icon-[tabler--receipt] w-5 h-5 text-info" />
+                        <span className="ri-receipt-line ri-20px text-info" />
                         <span className="font-bold text-base-content">#{transaction.id}</span>
                         {(() => {
                           const idx = invoiceSortChain.findIndex(c => c.field === 'type');
@@ -1405,7 +1401,7 @@ export default function Transactions() {
                           const crit = invoiceSortChain[idx];
                           return (
                             <span className="inline-flex items-center gap-0.5 text-primary text-xs">
-                              {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
+                              {crit.order === 'asc' ? <span className="ri-arrow-up-line ri-12px" /> : <span className="ri-arrow-down-line ri-12px" />}
                               {invoiceSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                             </span>
                           );
@@ -1423,7 +1419,7 @@ export default function Transactions() {
                           const crit = invoiceSortChain[idx];
                           return (
                             <span className="inline-flex items-center gap-0.5 text-primary">
-                              {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
+                              {crit.order === 'asc' ? <span className="ri-arrow-up-line ri-12px" /> : <span className="ri-arrow-down-line ri-12px" />}
                               {invoiceSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                             </span>
                           );
@@ -1437,13 +1433,13 @@ export default function Transactions() {
                         data-testid="receipt-button"
                         className="text-primary-content p-2 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-colors"
                       >
-                        <span className="icon-[tabler--printer] w-5 h-5" />
+                        <span className="ri-printer-line ri-20px" />
                       </button>
                       <button
                         onClick={() => handleDeleteTransaction(transaction.id)}
                         className="text-error hover:text-error p-2"
                       >
-                        <span className="icon-[tabler--trash] w-5 h-5" />
+                        <span className="ri-delete-bin-line ri-20px" />
                       </button>
                     </div>
                   </div>
@@ -1474,7 +1470,7 @@ export default function Transactions() {
                         const crit = invoiceSortChain[idx];
                         return (
                           <span className="inline-flex items-center gap-0.5 text-primary">
-                            {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-4 h-4" /> : <span className="icon-[tabler--arrow-down] w-4 h-4" />}
+                            {crit.order === 'asc' ? <span className="ri-arrow-up-line ri-16px" /> : <span className="ri-arrow-down-line ri-16px" />}
                             {invoiceSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                           </span>
                         );
@@ -1486,7 +1482,7 @@ export default function Transactions() {
               ))
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--receipt] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-receipt-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('transactions.noInvoicesData')}</p>
               </div>
             )}
@@ -1497,16 +1493,10 @@ export default function Transactions() {
       {/* Receipt Dialog */}
       {showReceiptDialog && (
         <div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
           className="fixed inset-0 bg-neutral/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
           onClick={() => setShowReceiptDialog(null)}
         >
           <div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
             className="bg-base-100 rounded-2xl p-6 max-w-md w-full my-8 transition-colors duration-300"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1516,7 +1506,7 @@ export default function Transactions() {
                 onClick={() => setShowReceiptDialog(null)}
                 className="text-base-content/60 hover:text-base-content p-2"
               >
-                <span className="icon-[tabler--x] w-6 h-6" />
+                <span className="ri-close-line ri-24px" />
               </button>
             </div>
 
@@ -1561,7 +1551,7 @@ export default function Transactions() {
                 className="py-3 px-4 bg-info text-info-content rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
-                <span className="icon-[tabler--file-download] text-xl" />
+                <span className="ri-download-2-line text-xl" />
                 {t('transactions.receiptPDF')}
               </button>
 
@@ -1570,7 +1560,7 @@ export default function Transactions() {
                 className="py-3 px-4 bg-secondary text-secondary-content rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
-                <span className="icon-[tabler--printer] text-xl" />
+                <span className="ri-printer-line text-xl" />
                 {t('transactions.print')}
               </button>
             </div>
@@ -1587,7 +1577,7 @@ export default function Transactions() {
                 />
               ) : (
                 <>
-                  <span className="icon-[tabler--file-invoice] text-xl" />
+                  <span className="ri-file-list-3-line text-xl" />
                   {t('invoice.downloadInvoice')}
                 </>
               )}

@@ -7,9 +7,8 @@
  * forwarded to the support inbox by email.
  *
  * Visibility logic:
- *   - If SMTP recipient is configured (settings DB) AND MCP is NOT configured: show email chat
- *   - If MCP is configured (settings.mcp_enabled): hide email chat (MCP takes priority)
- *   - If neither is set: hidden entirely (returns null)
+ *   - If an SMTP support recipient is configured: show the email chat
+ *   - Otherwise: hidden entirely (returns null)
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -51,7 +50,6 @@ export default function ChatSupport({
 }: ChatSupportProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [mcpConfigured, setMcpConfigured] = useState<boolean | null>(null);
   const [supportEmail, setSupportEmail] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -59,11 +57,8 @@ export default function ChatSupport({
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Check MCP settings + SMTP config on mount — MCP takes priority over email support
+  // Check SMTP config on mount to decide whether to show the email support chat
   useEffect(() => {
-    invoke<{ mcp_enabled?: boolean }>('get_settings')
-      .then(s => setMcpConfigured(!!s.mcp_enabled))
-      .catch(() => setMcpConfigured(false));
     invoke<{ support_email?: string | null }>('get_smtp_config')
       .then(cfg => setSupportEmail(cfg.support_email ?? null))
       .catch(() => setSupportEmail(null));
@@ -125,10 +120,8 @@ export default function ChatSupport({
     }
   }, [form, validate, t]);
 
-  // Hide while checking MCP status (prevents flash of email panel)
-  if (mcpConfigured === null) return null;
-  // Hide entirely if no support email configured, or if MCP takes priority
-  if (!supportEmail || mcpConfigured) return null;
+  // Hide entirely if no support email is configured
+  if (!supportEmail) return null;
 
   return (
     <>
@@ -139,14 +132,14 @@ export default function ChatSupport({
           onClick={() => setIsOpen(o => !o)}
           className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-linear-to-br from-primary to-primary/70 text-white shadow-xl flex items-center justify-center active:scale-[0.93] transition-transform hover:shadow-2xl"
         >
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence mode="wait">
             {isOpen ? (
-              <span key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
-                <span className="icon-[tabler--x] w-6 h-6" />
+              <span key="close">
+                <span className="ri-close-line ri-24px" />
               </span>
             ) : (
-              <span key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
-                <span className="icon-[tabler--message] w-6 h-6" />
+              <span key="open">
+                <span className="ri-chat-1-line ri-24px" />
               </span>
             )}
           </AnimatePresence>
@@ -159,17 +152,13 @@ export default function ChatSupport({
           <div
             role="dialog"
             aria-label="Support contact"
-            initial={{ opacity: 0, y: 32, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 32, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
             className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-1.5rem)] rounded-2xl shadow-2xl overflow-hidden border border-base-300 bg-base-100"
           >
             {/* Header */}
             <div className="bg-linear-to-r from-base-300 to-primary/90 text-white px-4 py-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <span className="icon-[tabler--headset] w-5 h-5" />
+                  <span className="ri-customer-service-line ri-20px" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm">Need Help?</p>
@@ -179,7 +168,7 @@ export default function ChatSupport({
                   onClick={() => setIsOpen(false)}
                   className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
                 >
-                  <span className="icon-[tabler--x] w-4 h-4" />
+                  <span className="ri-close-line ri-16px" />
                 </button>
               </div>
             </div>
@@ -193,7 +182,7 @@ export default function ChatSupport({
               {submitState === 'success' ? (
                 <div className="text-center py-6 space-y-3">
                   <div className="w-14 h-14 mx-auto rounded-full bg-success/15 flex items-center justify-center">
-                    <span className="icon-[tabler--check] w-7 h-7 text-success" />
+                    <span className="ri-check-line ri-28px text-success" />
                   </div>
                   <p className="font-semibold text-base-content">{t('support.success') || 'Message sent!'}</p>
                   <p className="text-xs text-base-content/50">
@@ -203,7 +192,7 @@ export default function ChatSupport({
                     onClick={() => setSubmitState('idle')}
                     className="btn btn-ghost btn-sm"
                   >
-                    <span className="icon-[tabler--send] w-3.5 h-3.5" />
+                    <span className="ri-send-plane-line ri-14px" />
                     {t('support.sendAnother') || 'Send another message'}
                   </button>
                 </div>
@@ -361,12 +350,12 @@ export default function ChatSupport({
                   >
                     {submitting ? (
                       <>
-                        <span className="icon-[tabler--loader-2] w-4 h-4 animate-spin" />
+                        <span className="ri-loader-4-line ri-16px animate-spin" />
                         {t('support.sending') || 'Sending…'}
                       </>
                     ) : (
                       <>
-                        <span className="icon-[tabler--send] w-4 h-4" />
+                        <span className="ri-send-plane-line ri-16px" />
                         {t('support.submit') || 'Submit'}
                       </>
                     )}

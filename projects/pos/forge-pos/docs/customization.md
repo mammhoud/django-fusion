@@ -32,7 +32,7 @@ The POS ships with 5 theme variants defined in `src/contexts/ThemeContext.tsx`:
 | Corporate | `corporate` | Blue `#3b82f6` | Neutral | Professional |
 | Luxury | `luxury` | Gold `#eab308` | Warm stone | Premium |
 | Pastel | `pastel` | Pink `#ec4899` | Light purple | Playful |
-| Cyberpunk | `cyberpunk` | Magenta `#cc00cc` | Dark/Light gray | Neon |
+| Perplexity | `perplexity` | Teal | Neutral | Minimal |
 
 **How to customize:**
 

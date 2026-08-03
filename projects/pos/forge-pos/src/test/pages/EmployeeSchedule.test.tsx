@@ -118,7 +118,7 @@ describe('EmployeeSchedule Page', () => {
     await waitFor(() => {
       const deleteButtons = screen.getAllByRole('button');
       const deleteIcons = deleteButtons.filter(b =>
-        b.innerHTML.includes('tabler--trash') || b.querySelector('svg')
+        b.innerHTML.includes('ri-delete-bin-line') || b.querySelector('svg')
       );
       expect(deleteIcons.length).toBeGreaterThanOrEqual(2);
     });

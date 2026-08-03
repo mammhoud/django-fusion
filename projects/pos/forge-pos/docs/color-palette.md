@@ -28,7 +28,6 @@ The picker offers 6 variants; each maps to a FlyonUI theme per mode.
 | **Corporate** | `corporate-light` | `corporate-dark` | Professional blue tones |
 | **Luxury** | `luxury-light` | `luxury-dark` | Rich gold & warm hues |
 | **Pastel** | `perplexity`¹ | `pastel-dark` | Soft candy colors |
-| **Cyberpunk** | `cyberpunk` | `cyberpunk` | Neon futuristic glow |
 | **Perplexity** | `perplexity` | `perplexity` | Minimal & intelligent |
 
 ¹ Pastel light intentionally reuses the built-in Perplexity theme (both are rounded, pastel-forward).
@@ -65,7 +64,6 @@ Each theme block defines the same token set. Values are **per theme**; the two t
 | `corporate-light` | `oklch(54.61% 0.2152 262.88)` | `98.42%` | `27.95%` | `0.5rem` |
 | `luxury-light` | `oklch(68.06% 0.1423 75.83)` gold | `98.48%` | `26.85%` | `0.5625rem` |
 | `pastel-light`² | `oklch(59.16% 0.2180 0.58)` | `97.14%` | `29.32%` | `2rem` (pill) |
-| `cyberpunk-light` | `oklch(58.00% 0.2700 328.36)` | `96.00%` | `20.00%` | `0.375rem` |
 
 ### Dark themes — key values
 
@@ -75,7 +73,6 @@ Each theme block defines the same token set. Values are **per theme**; the two t
 | `corporate-dark` | `oklch(62.31% 0.1880 259.81)` | `20.77%` | `92.88%` | `0.5rem` |
 | `luxury-dark` | `oklch(79.52% 0.1617 86.05)` | `21.61%` | `98.48%` | `0.5625rem` |
 | `pastel-dark` | `oklch(72.53% 0.1752 349.76)` | `25.39%` | `94.82%` | `2rem` (pill) |
-| `cyberpunk` | `oklch(70.17% 0.3225 328.36)` | `14.48%` | `86.86%` | `0.375rem` |
 
 ² `pastel-light` block exists in `index.css` but the Pastel variant maps light mode to `perplexity`.
 
@@ -94,7 +91,6 @@ export const THEME_VARIANTS = [
   { id: 'corporate',  label: 'Corporate',  icon: 'tabler--briefcase', description: 'Professional blue tones' },
   { id: 'luxury',     label: 'Luxury',     icon: 'tabler--crown',     description: 'Rich gold & warm hues' },
   { id: 'pastel',     label: 'Pastel',     icon: 'tabler--flower',    description: 'Soft candy colors' },
-  { id: 'cyberpunk',  label: 'Cyberpunk',  icon: 'tabler--bolt',      description: 'Neon futuristic glow' },
   { id: 'perplexity', label: 'Perplexity', icon: 'tabler--sparkles',  description: 'Minimal & intelligent' },
 ];
 ```
@@ -123,7 +119,7 @@ Then add the variant to `THEME_MAP` + `THEME_VARIANTS` in `ThemeContext.tsx`.
 | Area | Where | What you choose |
 |------|-------|-----------------|
 | Category colors | ProductManager → Manage categories | One of `CATEGORY_COLOR_PALETTE` (10 swatches) or any custom hex |
-| Per-product accents | Settings → General (`unique_card_colors`) | Deterministic golden-angle hue per product, or rotating palette |
+| Product card accents | Fixed — `PRODUCT_CARD_COLORS[0]` | Every card shares one uniform accent color (per-product accents removed) |
 | Product card palette | `ProductCard.tsx` (`PRODUCT_CARD_COLORS`) | 7 rotating bg/border/initial/badge/icon sets |
 
 ---
@@ -148,7 +144,7 @@ Then add the variant to `THEME_MAP` + `THEME_VARIANTS` in `ThemeContext.tsx`.
 
 - [`docs/styling.md`](styling.md) — styling stack, FlyonUI integration, bundle analysis
 - [`docs/customization.md`](customization.md) — end-user theming guide (settings paths)
-- `assets/styles/index.css` — the custom `@plugin "flyonui/theme"` blocks (corporate/luxury/pastel/cyberpunk light+dark; source of truth)
+- `assets/styles/index.css` — the custom `@plugin "flyonui/theme"` blocks (corporate/luxury/pastel light+dark; source of truth)
 - `src/contexts/ThemeContext.tsx` — `THEME_VARIANTS`, `THEME_MAP`, `useTheme()`
 - `src/components/display/ThemePreviewModal.tsx` — live cross-variant preview modal
 - [FlyonUI docs](https://flyonui.com) — theme token reference

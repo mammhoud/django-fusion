@@ -1,55 +1,33 @@
-# Execution Plan — All Feature Requests
+# Execution Plan — Remaining Forge POS Work
 > **Tags:** #pos #forge-pos #planning #tauri
+> **Updated:** 2026-08-02 — completed plans archived to `../legacy/pos/`; this file tracks only pending work.
+
+## Completed (archived)
+
+- **UI Enhancement Master Plan** (17 sections: theme system, alignment, ThemeToggle select, circular images, dense grids, Notes/receipt enhancement, RTL DataTable, StatCard compact/skeleton, dashboard cards, translations, currency context, Iconify→Heroicons, preloading) — ✅ done, archived in [`../legacy/pos/forge-pos-ui-enhancement-master.md`](../legacy/pos/forge-pos-ui-enhancement-master.md)
+- **Task Status snapshot** (roles/branding/merged pages/SideNav/theme/settings/auth/home/sale/UIUX) — ✅ done, archived in [`../legacy/pos/forge-pos-tasks-status.md`](../legacy/pos/forge-pos-tasks-status.md)
+- **Enhancement Plan** (component reorg, migration runner) — ✅ Plan 1 & Plan 3 done, archived in [`../legacy/pos/forge-pos-enhancement.md`](../legacy/pos/forge-pos-enhancement.md)
+- **KDS P2 batch** — time-elapsed progress bar, overdue badge, 'overdue-first' sort, mute 30 min, chime dropdown — ✅ all implemented in `KitchenDisplay.tsx`
+- **Motion cleanup** — framer-motion fully removed; all dead `initial/animate/exit/transition` props stripped across ~20 files; spinners converted to `animate-spin` — ✅
 
 ## Priority Order (Expected Risk Reduction × Effort)
 
-### P0 — Must fix before using pageTransition changes
-- [x] Remove unused `staggerItem` import from Home.tsx
-
-### P1 — High-impact, low-effort
-- [x] React.memo on SideNav.tsx and ProductCard.tsx
-- [x] hover:scale-[1.02] active:scale-[0.97] CSS on 14 converted buttons
-
 ### P2 — High-impact, moderate-effort
-- [ ] UseApiMutation hook (matches backend CRUD pattern, removes boilerplate)
-- [ ] KDS time-elapsed progress bar (green→yellow→red fill)
-- [ ] Overdue ticket count badge in KDS header
-- [ ] 'Overdue first' sort option for KDS
-- [ ] Mute 30min button for KDS
+- [x] `useApiMutation` hook — implemented in `src/hooks/useApiMutation.ts` + tests; adopted by Customers.tsx & Suppliers.tsx
 
 ### P3 — Medium impact
-- [ ] KDS notification-sound preference dropdown (3 chime variants)
 - [ ] Extend events to customers/employees CRUD
 - [ ] Live indicator badge in Sale.tsx (product-updated pulse)
-- [ ] Replace motion.div dialog animations with CSS
-- [ ] DataTable bulk actions (select + delete/change-category/change-type)
+- [x] DataTable bulk actions — implemented in `DataTable.tsx` (bulkActions prop) + ProductManager (delete/category/type)
 - [ ] DataTable inline category dropdown editor
 - [ ] DataTable duplicate-product button
 
 ### P4 — Lower impact, higher effort
-- [ ] preloadOnRoutePattern hook
-- [ ] link rel=modulepreload tags
-- [ ] Sidebar hover preloads
+- [ ] `preloadOnRoutePattern` hook
+- [ ] `link rel=modulepreload` tags
 - [ ] Tauri notification plugin (OS notifications with action buttons)
-- [ ] register_crud! on remaining 16 entities
-- [ ] useApiMutation optimistic updates
+- [ ] `register_crud!` on remaining CRUD entities (currently only products/categories/ingredients/recipes use the macro)
+- [ ] `useApiMutation` optimistic updates
+- [x] SQLite WAL mode — enabled in `src-tauri/src/db/mod.rs` (journal_mode=WAL + synchronous=NORMAL + busy_timeout=5000 on every connection)
 
-> **Note:** The "Notes page / refactor receipt templates" task has been superseded by the comprehensive plan in [`forge-pos-ui-enhancement-master.md`](./forge-pos-ui-enhancement-master.md) (Section 6: Recipes Page → Notes Page Enhancement).
-
-## Execution Order
-
-Phase 1 — Stabilization (P0): ✅ Complete
-1. Remove unused staggerItem import — ✅
-
-Phase 2 — Performance wins (P1): ✅ Complete
-3. SideNav.memo + ProductCard.memo — ✅ Both already use React.memo()
-4. CSS hover/tap on converted buttons — ✅ ProductCard uses whileHover/whileTap, menu items use active:scale
-
-Phase 3 — KDS enhancements (P2):
-5. Time-elapsed progress bar
-6. Overdue badge + sort + mute
-
-Phase 4 — Data layer (P2-P3):
-7. useApiMutation hook
-8. Extend events
-9. Bulk actions + inline editor
+> **Note:** The old "Notes page / refactor receipt templates" task is complete — folded into the receipt-category system and the archived UI Enhancement Master Plan.

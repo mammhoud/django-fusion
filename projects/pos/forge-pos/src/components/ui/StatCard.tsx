@@ -86,7 +86,7 @@ export type StatCardProps = StatCardLoading | StatCardNormal;
  * <StatCard
  *   title="Today Revenue"
  *   value="$1,245.00"
- *   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+ *   icon={<span className="ri-money-dollar-box-line ri-24px" />}
  *   color="primary"
  * />
  */
@@ -113,8 +113,6 @@ export default function StatCard(props: StatCardProps) {
     if (animated) {
       return (
         <div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
         >
           {skeleton}
         </div>
@@ -219,8 +217,6 @@ export default function StatCard(props: StatCardProps) {
   if (animated) {
     return (
       <div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
         className={classes}
         style={borderStyle}
         onClick={onClick}

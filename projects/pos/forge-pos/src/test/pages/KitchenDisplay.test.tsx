@@ -207,8 +207,8 @@ describe('KitchenDisplay page', () => {
     });
   });
 
-  // ── Per-product accent colors on sale-item rows in the detail modal ──
-  it('renders sale items with a unique per-product accent color', async () => {
+  // ── Sale-item rows in the detail modal render with a uniform (no-accent) look ──
+  it('renders sale items without per-product accent rails (uniform look)', async () => {
     const saleItems = [
       { id: 1, sale_id: 100, product_name: 'Chicken Burger', price: 350, quantity: 2, unit: 'piece', subtotal: 700, created_at: '2026-01-15T10:00:00' },
       { id: 2, sale_id: 100, product_name: 'French Fries', price: 150, quantity: 1, unit: 'plate', subtotal: 150, created_at: '2026-01-15T10:00:00' },
@@ -228,23 +228,17 @@ describe('KitchenDisplay page', () => {
       expect(screen.getByText('French Fries')).toBeInTheDocument();
     });
 
-    // Each item row carries a left accent border derived from its product name.
-    // The styled row is the outer div (with inline style) wrapping the item.
-    const burgerRow = screen.getByText('Chicken Burger').closest('div[style]') as HTMLElement | null;
-    const friesRow = screen.getByText('French Fries').closest('div[style]') as HTMLElement | null;
+    // Every row renders as a plain list item — no inline accent styles.
+    const burgerRow = screen.getByText('Chicken Burger').closest('div') as HTMLElement | null;
     expect(burgerRow).not.toBeNull();
-    expect(friesRow).not.toBeNull();
-    expect(burgerRow!.style.borderLeft).toContain('solid');
-    expect(friesRow!.style.borderLeft).toContain('solid');
-    // Distinct products get distinct accent colors.
-    expect(burgerRow!.style.borderLeft).not.toBe(friesRow!.style.borderLeft);
+    expect(burgerRow!.style.borderLeft).toBe('');
+    expect(burgerRow!.style.backgroundColor).toBe('');
   });
 
-  it('renders sale-item rows without accent rails when unique card colors are disabled', async () => {
+  it('renders sale-item rows without accent rails', async () => {
     const saleItems = [
       { id: 1, sale_id: 100, product_name: 'Chicken Burger', price: 350, quantity: 2, unit: 'piece', subtotal: 700, created_at: '2026-01-15T10:00:00' },
     ];
-    mockInvokeSuccess('get_settings', { unique_card_colors: false });
     mockInvokeSuccess('get_sale_items_by_sale_id', saleItems);
     mockInvokeSuccess('get_sale_by_id', { order_type: 'dine-in', total_amount: 25 });
     renderWithRouter(<KitchenDisplay />);

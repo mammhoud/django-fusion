@@ -6,7 +6,15 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { preloadRoute } from '../../utils/preloadRoutes';
-import { Ic, iconClass } from '../../lib/icons';
+import { Ic } from '../../lib/icons';
+
+// Remix Icon components used across the sidebar
+const HomeIcon = Ic('hi:home');
+const PinIcon = Ic('hi:map-pin');
+const LogoutIcon = Ic('hi:arrow-right-start-on-rectangle');
+const HelpIcon = Ic('hi:help-circle');
+const CloseIcon = Ic('hi:x-mark');
+const RoleBadgeIcon = Ic('hi:check-badge');
 
 // ── Role-based nav visibility ──
 // Which routes each role can see. 'manager' sees everything.
@@ -46,7 +54,7 @@ interface NavItem {
 interface NavCategory {
   id: string;
   label: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   /** Text accent color for the category header — mirrors the dashboard's MENU_CATEGORIES palette. */
   color: string;
   items: NavItem[];
@@ -56,61 +64,61 @@ const navCategories: NavCategory[] = [
   {
     id: 'sales',
     label: 'nav.sales',
-    icon: 'shopping-cart',
+    icon: Ic('hi:shopping-cart'),
     color: 'text-success',
     items: [
-      { label: 'nav.newSale', desc: 'nav.newSaleDesc', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success' },
-      { label: 'nav.kitchen', desc: 'nav.kitchenDesc', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-success' },
-      { label: 'nav.transactions', desc: 'nav.transactionsDesc', route: '/transactions', icon: Ic('history'), colorClass: 'bg-success' },
+      { label: 'nav.newSale', desc: 'nav.newSaleDesc', route: '/sale', icon: Ic('hi:shopping-cart'), colorClass: 'bg-success' },
+      { label: 'nav.kitchen', desc: 'nav.kitchenDesc', route: '/kitchen', icon: Ic('hi:fire'), colorClass: 'bg-success' },
+      { label: 'nav.transactions', desc: 'nav.transactionsDesc', route: '/transactions', icon: Ic('hi:clock'), colorClass: 'bg-success' },
     ],
   },
   {
     id: 'products',
     label: 'nav.products',
-    icon: 'package',
+    icon: Ic('hi:cube'),
     color: 'text-info',
     items: [
-      { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: Ic('apps'), colorClass: 'bg-info' },
-      { label: 'nav.productManager', desc: 'nav.productManagerDesc', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-info' },
-      { label: 'nav.inventory', desc: 'nav.inventoryDesc', route: '/inventory', icon: Ic('package'), colorClass: 'bg-info' },
-      { label: 'nav.recipes', desc: 'nav.recipesDesc', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-info' },
-      { label: 'nav.suppliers', desc: 'nav.suppliersDesc', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-info' },
+      { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: Ic('hi:squares-2x2'), colorClass: 'bg-info' },
+      { label: 'nav.productManager', desc: 'nav.productManagerDesc', route: '/manager', icon: Ic('hi:clipboard-document-list'), colorClass: 'bg-info' },
+      { label: 'nav.inventory', desc: 'nav.inventoryDesc', route: '/inventory', icon: Ic('hi:cube'), colorClass: 'bg-info' },
+      { label: 'nav.recipes', desc: 'nav.recipesDesc', route: '/recipes', icon: Ic('hi:beaker'), colorClass: 'bg-info' },
+      { label: 'nav.suppliers', desc: 'nav.suppliersDesc', route: '/suppliers', icon: Ic('hi:truck'), colorClass: 'bg-info' },
     ],
   },
   {
     id: 'staff',
     label: 'nav.staff',
-    icon: 'users',
+    icon: Ic('hi:users'),
     color: 'text-secondary',
     items: [
-      { label: 'nav.employees', desc: 'nav.employeesDesc', route: '/employees', icon: Ic('users'), colorClass: 'bg-secondary' },
-      { label: 'nav.schedule', desc: 'nav.scheduleDesc', route: '/schedule', icon: Ic('calendar-clock'), colorClass: 'bg-secondary' },
-      { label: 'nav.payroll', desc: 'nav.payrollDesc', route: '/payroll', icon: Ic('moneybag'), colorClass: 'bg-secondary' },
-      { label: 'nav.customers', desc: 'nav.customersDesc', route: '/customers', icon: Ic('users'), colorClass: 'bg-secondary' },
-      { label: 'nav.roles', desc: 'nav.rolesDesc', route: '/roles', icon: Ic('shield'), colorClass: 'bg-secondary' },
+      { label: 'nav.employees', desc: 'nav.employeesDesc', route: '/employees', icon: Ic('hi:users'), colorClass: 'bg-secondary' },
+      { label: 'nav.schedule', desc: 'nav.scheduleDesc', route: '/schedule', icon: Ic('hi:calendar-days'), colorClass: 'bg-secondary' },
+      { label: 'nav.payroll', desc: 'nav.payrollDesc', route: '/payroll', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
+      { label: 'nav.customers', desc: 'nav.customersDesc', route: '/customers', icon: Ic('hi:user-group'), colorClass: 'bg-secondary' },
+      { label: 'nav.roles', desc: 'nav.rolesDesc', route: '/roles', icon: Ic('hi:shield-check'), colorClass: 'bg-secondary' },
     ],
   },
   {
     id: 'reports',
     label: 'nav.reports',
-    icon: 'chart-bar',
+    icon: Ic('hi:chart-pie'),
     color: 'text-error',
     items: [
-      { label: 'nav.analytics', desc: 'nav.analyticsDesc', route: '/analytics', icon: Ic('chart-dots'), colorClass: 'bg-error' },
-      { label: 'nav.reports', desc: 'nav.reportsDesc', route: '/reports', icon: Ic('report-money'), colorClass: 'bg-error' },
-      { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/tax-reports', icon: Ic('receipt-tax'), colorClass: 'bg-error' },
+      { label: 'nav.analytics', desc: 'nav.analyticsDesc', route: '/analytics', icon: Ic('hi:chart-bar'), colorClass: 'bg-error' },
+      { label: 'nav.reports', desc: 'nav.reportsDesc', route: '/reports', icon: Ic('hi:document-chart-bar'), colorClass: 'bg-error' },
+      { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/tax-reports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error' },
     ],
   },
   {
     id: 'system',
     label: 'nav.system',
-    icon: 'dashboard',
+    icon: Ic('hi:cog-6-tooth'),
     color: 'text-base-content/50',
     items: [
-      { label: 'nav.settings', desc: 'nav.settingsDesc', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral' },
-      { label: 'nav.notes', desc: 'nav.notesDesc', route: '/notes', icon: Ic('clipboard-text'), colorClass: 'bg-neutral' },
-      { label: 'nav.supportChat', desc: 'nav.supportChatDesc', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-neutral' },
-      { label: 'nav.about', desc: 'nav.aboutDesc', route: '/about', icon: Ic('heart'), colorClass: 'bg-neutral' },
+      { label: 'nav.settings', desc: 'nav.settingsDesc', route: '/settings', icon: Ic('hi:cog-6-tooth'), colorClass: 'bg-neutral' },
+      { label: 'nav.notes', desc: 'nav.notesDesc', route: '/notes', icon: Ic('hi:document-text'), colorClass: 'bg-neutral' },
+      { label: 'nav.supportChat', desc: 'nav.supportChatDesc', route: '/support-chat', icon: Ic('hi:chat-bubble-left-right'), colorClass: 'bg-neutral' },
+      { label: 'nav.about', desc: 'nav.aboutDesc', route: '/about', icon: Ic('hi:heart'), colorClass: 'bg-neutral' },
     ],
   },
 ];
@@ -135,10 +143,11 @@ function CategoryHeader({
   onClick?: () => void;
 }) {
   const { t } = useTranslation();
+  const CategoryIcon = category.icon;
   const content = (
     <div className="flex items-center gap-2 px-2.5 py-2 mt-1 first:mt-0 w-full">
       <span className={`${category.color}`}>
-        <span className={iconClass(category.icon, 'w-3.5 h-3.5 shrink-0')} />
+        <CategoryIcon className="w-3.5 h-3.5 shrink-0" />
       </span>
       {isExpanded && (
         <span className={`text-[10px] font-semibold uppercase tracking-wider truncate ${category.color}`}>
@@ -318,14 +327,14 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               hover:bg-base-200/50 dark:hover:bg-white/10 transition-all active:scale-[0.9]"
             title={isPinned ? 'Unpin sidebar' : 'Pin sidebar'}
           >
-            <span className={`icon-[tabler--pin] w-4 h-4 transition-transform duration-200 ${isPinned ? 'rotate-45 text-primary' : ''}`} />
+            <PinIcon className={`w-4 h-4 transition-transform duration-200 ${isPinned ? 'rotate-45 text-primary' : ''}`} />
           </button>
         </div>
 
         {/* Home button always visible */}
         <div className="px-3 pt-2 pb-1">
           <NavItemButton
-            item={{ label: 'nav.home', desc: 'nav.homeDesc', route: '/dashboard', icon: Ic('dashboard'), colorClass: 'bg-info' }}
+            item={{ label: 'nav.home', desc: 'nav.homeDesc', route: '/dashboard', icon: HomeIcon, colorClass: 'bg-info' }}
             isActive={currentRoute === '/dashboard'}
             isExpanded={expanded}
             onClick={() => handleNavigate('/dashboard')}
@@ -357,7 +366,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
                 rounded-xl text-sm font-medium transition-all active:scale-[0.97]"
               title={!expanded ? t('auth.signOut') : undefined}
             >
-              <span className="icon-[tabler--logout] w-4 h-4 shrink-0" />
+              <LogoutIcon className="w-4 h-4 shrink-0" />
               <span
                 className={`overflow-hidden truncate transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0'}`}
               >
@@ -373,7 +382,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               text-base-content/60 rounded-xl text-sm font-medium transition-all active:scale-[0.97]"
             title={!expanded ? t('transactions.shortcutHelp') : undefined}
           >
-            <span className="icon-[tabler--help-circle] w-4 h-4 shrink-0" />
+            <HelpIcon className="w-4 h-4 shrink-0" />
             <span
               className={`overflow-hidden truncate flex items-center gap-1 transition-opacity duration-150 ${expanded ? 'opacity-100' : 'opacity-0'}`}
             >
@@ -387,7 +396,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
 
           {expanded && user && (
             <div className="flex items-center justify-center gap-1.5 mt-2 mb-1">
-              <span className="icon-[tabler--user-check] w-3 h-3 text-base-content/40" />
+              <RoleBadgeIcon className="w-3 h-3 text-base-content/40" />
               <span className="text-[10px] font-medium text-base-content/50 capitalize">
                 {user.role || 'Manager'}
               </span>
@@ -503,7 +512,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                 className="p-1.5 rounded-lg text-base-content/40 hover:text-base-content
                   hover:bg-base-200/50 dark:hover:bg-white/10 transition-all active:scale-[0.9]"
               >
-                <span className="icon-[tabler--x] w-5 h-5" />
+                <CloseIcon className="w-5 h-5" />
               </button>
             </div>
 
@@ -524,7 +533,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm
                   bg-info shadow-sm shrink-0
                   group-hover:scale-105 transition-transform">
-                  <span className="icon-[tabler--dashboard] w-4 h-4" />
+                  <HomeIcon className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="font-semibold">{t('nav.home')}</span>
@@ -532,9 +541,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                 </div>
                 {currentRoute === '/dashboard' && (
                   <div
-                    layoutId="sidenav-active"
                     className="ms-auto w-1.5 h-1.5 rounded-full bg-primary"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
               </button>
@@ -564,7 +571,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                     rounded-xl text-sm font-medium transition-all active:scale-[0.97] 
                     border border-error/20"
                 >
-                  <span className="icon-[tabler--logout] w-4 h-4" />
+                  <LogoutIcon className="w-4 h-4" />
                   {t('auth.signOut')}
                 </button>
               )}
@@ -576,7 +583,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                   text-base-content/60 rounded-xl text-sm font-medium transition-all active:scale-[0.97]
                   border border-base-300/50"
               >
-                <span className="icon-[tabler--help-circle] w-4 h-4" />
+                <HelpIcon className="w-4 h-4" />
                 <span>{t('transactions.shortcutHelp')}</span>
                 <kbd className="ms-1 px-1.5 py-0.5 text-[10px] font-mono rounded
                   bg-base-200 dark:bg-white/10 text-base-content/50">
@@ -589,7 +596,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
               </div>
               {user && (
                 <div className="flex items-center justify-center gap-1.5 mt-2 mb-1">
-                  <span className="icon-[tabler--user-check] w-3 h-3 text-base-content/40" />
+                  <RoleBadgeIcon className="w-3 h-3 text-base-content/40" />
                   <span className="text-[10px] font-medium text-base-content/50 capitalize">
                     {user.role || 'Manager'}
                   </span>

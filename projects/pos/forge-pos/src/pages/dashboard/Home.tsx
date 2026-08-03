@@ -1,5 +1,5 @@
 
-import { Ic, iconClass } from '../../lib/icons';
+import { Ic } from '../../lib/icons';
 import { useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { Settings, Sale, Ingredient, Employee, KitchenTicket } from '../../types';
@@ -27,52 +27,63 @@ interface MenuItem {
   colorClass: string;
 }
 
+// Category header icons — Remix Icon components
+const ShoppingCartIcon = Ic('hi:shopping-cart');
+const CubeIcon = Ic('hi:cube');
+const UsersIcon = Ic('hi:users');
+const ChartPieIcon = Ic('hi:chart-pie');
+const CogIcon = Ic('hi:cog-6-tooth');
+const BanknotesIcon = Ic('hi:banknotes');
+const TableCellsIcon = Ic('hi:table-cells');
+const ExclamationTriangleIcon = Ic('hi:exclamation-triangle');
+const FireIcon = Ic('hi:fire');
+
 const MENU_CATEGORIES: MenuCategory[] = [
-  { id: 'sales', label: 'nav.categorySales', icon: <span className={iconClass('lucide:shopping-cart', 'w-6 h-6')} />, color: 'text-success' },
-  { id: 'products', label: 'nav.categoryProducts', icon: <span className={iconClass('lucide:package', 'w-6 h-6')} />, color: 'text-info' },
-  { id: 'staff', label: 'nav.categoryStaff', icon: <span className={iconClass('lucide:users', 'w-6 h-6')} />, color: 'text-secondary' },
-  { id: 'reports', label: 'nav.categoryReports', icon: <span className={iconClass('lucide:chart-pie', 'w-6 h-6')} />, color: 'text-error' },
-  { id: 'system', label: 'nav.categorySystem', icon: <span className={iconClass('lucide:layout-dashboard', 'w-6 h-6')} />, color: 'text-base-content/50' },
+  { id: 'sales', label: 'nav.categorySales', icon: <ShoppingCartIcon className="w-6 h-6" />, color: 'text-success' },
+  { id: 'products', label: 'nav.categoryProducts', icon: <CubeIcon className="w-6 h-6" />, color: 'text-info' },
+  { id: 'staff', label: 'nav.categoryStaff', icon: <UsersIcon className="w-6 h-6" />, color: 'text-secondary' },
+  { id: 'reports', label: 'nav.categoryReports', icon: <ChartPieIcon className="w-6 h-6" />, color: 'text-error' },
+  { id: 'system', label: 'nav.categorySystem', icon: <CogIcon className="w-6 h-6" />, color: 'text-base-content/50' },
 ];
 
 const MENU_ITEMS: Record<string, MenuItem[]> = {
   // Each section's items share the section's accent color as the icon background
   sales: [
-    { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success text-white' },
-    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-success text-white' },
-    { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-success text-white' },
-    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-success text-white' },
+    { label: 'nav.newSale', route: '/sale', icon: Ic('hi:shopping-cart'), colorClass: 'bg-success text-white' },
+    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('hi:fire'), colorClass: 'bg-success text-white' },
+    { label: 'nav.transactions', route: '/transactions', icon: Ic('hi:clock'), colorClass: 'bg-success text-white' },
+    { label: 'nav.notes', route: '/notes', icon: Ic('hi:document-text'), colorClass: 'bg-success text-white' },
   ],
   products: [
-    { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-info text-white' },
-    { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), colorClass: 'bg-info text-white' },
-    { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-info text-white' },
-    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-info text-white' },
+    { label: 'nav.productManager', route: '/manager', icon: Ic('hi:clipboard-document-list'), colorClass: 'bg-info text-white' },
+    { label: 'nav.inventory', route: '/inventory', icon: Ic('hi:cube'), colorClass: 'bg-info text-white' },
+    { label: 'nav.recipes', route: '/recipes', icon: Ic('hi:beaker'), colorClass: 'bg-info text-white' },
+    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('hi:truck'), colorClass: 'bg-info text-white' },
   ],
   staff: [
-    { label: 'nav.staff', route: '/staff', icon: Ic('users'), colorClass: 'bg-secondary text-white' },
-    { label: 'nav.customers', route: '/customers', icon: Ic('users'), colorClass: 'bg-secondary text-white' },
-    { label: 'nav.roles', route: '/roles', icon: Ic('shield'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.staff', route: '/staff', icon: Ic('hi:users'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.customers', route: '/customers', icon: Ic('hi:user-group'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.roles', route: '/roles', icon: Ic('hi:shield-check'), colorClass: 'bg-secondary text-white' },
   ],
   reports: [
-    { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-dots'), colorClass: 'bg-error text-white' },
-    { label: 'nav.reports', route: '/reports', icon: Ic('report-money'), colorClass: 'bg-error text-white' },
-    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('receipt-tax'), colorClass: 'bg-error text-white' },
+    { label: 'nav.analytics', route: '/analytics', icon: Ic('hi:chart-bar'), colorClass: 'bg-error text-white' },
+    { label: 'nav.reports', route: '/reports', icon: Ic('hi:document-chart-bar'), colorClass: 'bg-error text-white' },
+    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error text-white' },
   ],
   system: [
-    { label: 'nav.settings', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral text-white' },
-    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral text-white' },
-    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-neutral text-white' },
-    { label: 'nav.about', route: '/about', icon: Ic('heart'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.settings', route: '/settings', icon: Ic('hi:cog-6-tooth'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.notes', route: '/notes', icon: Ic('hi:document-text'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('hi:chat-bubble-left-right'), colorClass: 'bg-neutral text-white' },
+    { label: 'nav.about', route: '/about', icon: Ic('hi:heart'), colorClass: 'bg-neutral text-white' },
   ],
 };
 
 /** Quick-access merged page cards shown at the top of the home page */
 const QUICK_ACCESS = [
-  { label: 'nav.staff', desc: 'nav.staffDesc', route: '/staff', icon: 'users', gradient: 'from-secondary to-primary' },
-  { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: 'apps', gradient: 'from-info to-primary' },
-  { label: 'nav.salesMerged', desc: 'nav.salesMergedDesc', route: '/sale', icon: 'shopping-cart', gradient: 'from-success to-primary' },
-  { label: 'nav.reportsMerged', desc: 'nav.reportsMergedDesc', route: '/reports', icon: 'chart-pie', gradient: 'from-warning to-secondary' },
+  { label: 'nav.staff', desc: 'nav.staffDesc', route: '/staff', icon: Ic('hi:users'), gradient: 'from-secondary to-primary' },
+  { label: 'nav.productsMerged', desc: 'nav.productsMergedDesc', route: '/products', icon: Ic('hi:squares-2x2'), gradient: 'from-info to-primary' },
+  { label: 'nav.salesMerged', desc: 'nav.salesMergedDesc', route: '/sale', icon: Ic('hi:shopping-cart'), gradient: 'from-success to-primary' },
+  { label: 'nav.reportsMerged', desc: 'nav.reportsMergedDesc', route: '/reports', icon: Ic('hi:chart-pie'), gradient: 'from-warning to-secondary' },
 ];
 
 export default function Home() {
@@ -149,13 +160,7 @@ export default function Home() {
           animate-slide-up provides a gentle entrance for the header content
           without duplicating framer-motion entry animations. */}
       <div className="text-center mb-10 md:mb-12 animate-slide-up">
-        <div
-          initial="initial"
-          animate="animate"
-          whileHover={{ rotate: 360 }}
-          transition={{ duration: 0.6 }}
-          className={`${iconSpring} bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5`}
-        >
+        <div className={`${iconSpring} bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5 hover:rotate-180 transition-transform duration-700`}>
           <img
             src={defaultLogo}
             alt="Forge POS"
@@ -209,7 +214,7 @@ export default function Home() {
                   bg-linear-to-br ${qa.gradient} text-white shadow-lg
                   group-hover:scale-110 transition-transform duration-200`}
                 >
-                  <span className={iconClass(qa.icon, 'w-6 h-6')} />
+                  <qa.icon className="w-6 h-6" />
                 </div>
                 <span className="text-xs font-semibold text-base-content/60 text-center leading-tight relative z-10">{t(qa.label)}</span>
                 <span className="text-[10px] text-base-content/50 text-center mt-0.5 leading-tight line-clamp-1 relative z-10">{t(qa.desc)}</span>
@@ -241,7 +246,7 @@ export default function Home() {
                 desc={todayStats.orders === 1
                   ? t('home.oneOrderToday', '1 order today') + ` — ${orderDelta.pct} ` + t('home.vsYesterday', 'vs yesterday')
                   : `${todayStats.orders} ${t('home.ordersToday', 'orders today')} — ${orderDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`}
-                icon={<span className={iconClass('lucide:shopping-cart', 'w-6 h-6')} />}
+                icon={<ShoppingCartIcon className="w-6 h-6" />}
                 sparklineData={sparklines?.orders}
                 color="primary"
                 onClick={() => handleNavigation('/transactions')}
@@ -252,7 +257,7 @@ export default function Home() {
                 desc={todayStats.revenue > 0
                   ? `${formatPrice(todayStats.revenue / (todayStats.orders || 1))} ${t('home.avg', 'avg')} — ${revDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`
                   : t('home.noRevenueYet', 'No revenue yet')}
-                icon={<span className={iconClass('lucide:banknote', 'w-6 h-6')} />}
+                icon={<BanknotesIcon className="w-6 h-6" />}
                 sparklineData={sparklines?.revenue}
                 color="info"
                 onClick={() => handleNavigation('/reports')}
@@ -263,7 +268,7 @@ export default function Home() {
                 desc={kpis?.openTables === 0
                   ? t('home.allClear', 'All clear')
                   : `${kpis?.openTables} ${kpis?.openTables === 1 ? t('home.table', 'table') : t('home.tables', 'tables')} ${t('home.inService', 'in service')}`}
-                icon={<span className={iconClass('lucide:utensils', 'w-6 h-6')} />}
+                icon={<TableCellsIcon className="w-6 h-6" />}
                 color="warning"
                 onClick={() => handleNavigation('/sale')}
               />
@@ -273,7 +278,7 @@ export default function Home() {
                 desc={kpis?.activeEmployees === 1
                   ? `1 ${t('home.employee', 'employee')} ${t('home.onPayroll', 'on payroll')}`
                   : `${kpis?.activeEmployees ?? 0} ${t('home.employees', 'employees')} ${t('home.onPayroll', 'on payroll')}`}
-                icon={<span className={iconClass('lucide:users', 'w-6 h-6')} />}
+                icon={<UsersIcon className="w-6 h-6" />}
                 color="secondary"
                 onClick={() => handleNavigation('/staff')}
               />
@@ -283,7 +288,7 @@ export default function Home() {
                 desc={kpis?.lowStockCount === 0
                   ? t('home.allStocked', 'All stocked')
                   : `${kpis?.lowStockCount} ${kpis?.lowStockCount === 1 ? t('home.item', 'item') : t('home.items', 'items')} ${t('home.belowReorder', 'below reorder level')}`}
-                icon={<span className={iconClass('lucide:alert-triangle', 'w-6 h-6')} />}
+                icon={<ExclamationTriangleIcon className="w-6 h-6" />}
                 color={kpis?.lowStockCount && kpis.lowStockCount > 0 ? 'error' : 'success'}
                 onClick={() => handleNavigation('/inventory')}
               />
@@ -293,7 +298,7 @@ export default function Home() {
                 desc={kpis?.activeKitchenTickets === 0
                   ? t('home.noActiveOrders', 'No active orders')
                   : `${kpis?.activeKitchenTickets} ${kpis?.activeKitchenTickets === 1 ? t('home.ticket', 'ticket') : t('home.tickets', 'tickets')} ${t('home.inProgress', 'in progress')}`}
-                icon={<span className={iconClass('lucide:chef-hat', 'w-6 h-6')} />}
+                icon={<FireIcon className="w-6 h-6" />}
                 color={kpis?.activeKitchenTickets && kpis.activeKitchenTickets > 0 ? 'warning' : 'success'}
                 onClick={() => handleNavigation('/kitchen')}
               />
@@ -305,8 +310,6 @@ export default function Home() {
       {/* ── Categorized Menu Grid — single stagger animation ── */}
       <div
         className={`max-w-6xl mx-auto px-2 space-y-8 ${staggerContainer}`}
-        initial="hidden"
-        animate="visible"
       >
         {MENU_CATEGORIES.map((cat) => (
           <div key={cat.id}>
@@ -320,15 +323,7 @@ export default function Home() {
             </div>
 
             {/* Category Items — staggered children */}
-            <div
-              className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 gap-3 md:gap-4"
-              variants={{
-                hidden: { opacity: 0 },
-                show: { opacity: 1, transition: { staggerChildren: 0.035 } },
-              }}
-              initial="hidden"
-              animate="show"
-            >
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 gap-3 md:gap-4">
               {(MENU_ITEMS[cat.id] || []).map((menuItem) => {
                 const Icon = menuItem.icon;
                 const isLoading = loadingRoute === menuItem.route;
@@ -358,11 +353,7 @@ export default function Home() {
 
                     {isLoading ? (
                       <div className="w-full flex items-center justify-center py-4">
-                        <div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          className="w-7 h-7 border-3 border-base-300 border-t-primary rounded-full"
-                        />
+                        <div className="w-7 h-7 border-3 border-base-300 border-t-primary rounded-full animate-spin" />
                       </div>
                     ) : (
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-2

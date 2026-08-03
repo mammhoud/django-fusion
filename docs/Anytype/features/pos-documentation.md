@@ -42,7 +42,7 @@ id: bafyreid4m6jco6cyqmcd5rmwi6vw6kijlepvhciy4rj5jnyovwzyhhpbum
 - `#theme-corporate` — Blue professional palette   
 - `#theme-luxury` — Gold/warm premium palette   
 - `#theme-pastel` — Soft candy colors   
-- `#theme-cyberpunk` — Neon futuristic glow   
+- `#theme-perplexity` — Minimal & intelligent   
    
 ## By Status   
 - `#complete` — Fully implemented and tested   

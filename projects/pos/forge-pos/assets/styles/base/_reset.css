@@ -42,9 +42,9 @@ a {
 
 /* ── Accessible focus ring ──────────────────────────────────────────── */
 *:focus-visible {
-  outline: 2px solid var(--color__border--focus);
+  outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
-  border-radius: var(--radius--sm);
+  border-radius: var(--radius-sm);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -54,7 +54,7 @@ a {
      <div class="input input--error">
        <label class="input__label">Email</label>
        <div class="input__wrapper">
-         <span class="input__icon icon-[tabler--mail]"></span>
+         <span class="input__icon ri-mail-line"></span>
          <input class="input__field" type="email" placeholder="you@example.com" />
        </div>
        <p class="input__message">Please enter a valid email</p>
@@ -71,26 +71,26 @@ a {
 
 /* ── Element: .input__label ─────────────────────────────────── */
 .input__label {
-  font-size: var(--typography__size--sm);
-  font-weight: var(--typography__weight--medium);
-  color: var(--color__text--secondary);
-  line-height: var(--typography__line-height--normal);
-  transition: color var(--animation__duration--fast) var(--animation__easing--default);
+  font-size: var(--typography-size-sm);
+  font-weight: var(--typography-weight-medium);
+  color: var(--color-text-secondary);
+  line-height: var(--typography-line-height-normal);
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
 }
 
 /* Label highlights when its field receives focus */
 .field:focus-within > .label-text {
-  color: var(--color__semantic--primary);
+  color: var(--color-semantic-primary);
 }
 
 .input__label--required::after {
   content: ' *';
-  color: var(--color__semantic--error);
+  color: var(--color-semantic-error);
 }
 
 .input__label--sm {
-  font-size: var(--typography__size--xs);
-  font-weight: var(--typography__weight--medium);
+  font-size: var(--typography-size-xs);
+  font-weight: var(--typography-weight-medium);
 }
 
 /* ── Element: .input__wrapper ────────────────────────────────── */
@@ -104,150 +104,150 @@ a {
 /* ── Element: .input__field ──────────────────────────────────── */
 .input__field {
   width: 100%;
-  height: var(--input__height);
-  padding: 0 var(--input__padding-x);
-  font-size: var(--typography__size--base);
+  height: var(--input-height);
+  padding: 0 var(--input-padding-x);
+  font-size: var(--typography-size-base);
   font-family: inherit;
-  color: var(--input__text-color);
-  background-color: var(--input__bg);
-  border: var(--input__border-width) solid var(--input__border-color);
-  border-radius: var(--input__radius);
+  color: var(--input-text-color);
+  background-color: var(--input-bg);
+  border: var(--input-border-width) solid var(--input-border-color);
+  border-radius: var(--input-radius);
   outline: none;
-  caret-color: var(--color__semantic--primary);
+  caret-color: var(--color-semantic-primary);
   transition:
-    border-color var(--animation__duration--fast) var(--animation__easing--default),
-    box-shadow var(--animation__duration--fast) var(--animation__easing--default),
-    background-color var(--animation__duration--fast) var(--animation__easing--default);
+    border-color var(--animation-duration-fast) var(--animation-easing-default),
+    box-shadow var(--animation-duration-fast) var(--animation-easing-default),
+    background-color var(--animation-duration-fast) var(--animation-easing-default);
 }
 
 /* ── State: hover ─────────────────────────────────────────────── */
 .input__field:hover {
-  border-color: var(--input__border-color--hover);
+  border-color: var(--input-border-color-hover);
 }
 
 /* ── State: focus (animated glow) ───────────────────────────── */
 @keyframes input-focus-glow {
   0% {
-    box-shadow: 0 0 0 0 oklch(var(--color-primary) / 0.25);
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-primary) 25%, transparent);
   }
   100% {
-    box-shadow: var(--input__shadow--focus);
+    box-shadow: var(--input-shadow-focus);
   }
 }
 
 .input__field:focus {
-  border-color: var(--input__border-color--focus);
-  box-shadow: var(--input__shadow--focus);
-  animation: input-focus-glow var(--animation__duration--normal) var(--animation__easing--out);
+  border-color: var(--input-border-color-focus);
+  box-shadow: var(--input-shadow-focus);
+  animation: input-focus-glow var(--animation-duration-normal) var(--animation-easing-out);
 }
 
 /* ── State: disabled ──────────────────────────────────────────── */
 .input__field:disabled {
-  background-color: var(--input__bg--disabled);
-  color: var(--input__text-color--disabled);
+  background-color: var(--input-bg-disabled);
+  color: var(--input-text-color-disabled);
   cursor: not-allowed;
-  border-color: var(--color__border--subtle);
+  border-color: var(--color-border-subtle);
 }
 
 /* ── Placeholder ──────────────────────────────────────────────── */
 .input__field::placeholder {
-  color: var(--input__placeholder-color);
+  color: var(--input-placeholder-color);
   opacity: 1;
 }
 
 /* ── Element: .input__icon ────────────────────────────────────── */
 .input__icon {
   position: absolute;
-  left: var(--input__padding-x);
+  left: var(--input-padding-x);
   top: 50%;
   transform: translateY(-50%);
   width: 1.125rem;
   height: 1.125rem;
-  color: var(--color__text--disabled);
+  color: var(--color-text-disabled);
   pointer-events: none;
-  transition: color var(--animation__duration--fast) var(--animation__easing--default);
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
 }
 
 .input__icon--right {
   left: auto;
-  right: var(--input__padding-x);
+  right: var(--input-padding-x);
   pointer-events: auto;
   cursor: pointer;
 }
 
 .input__icon--right:hover {
-  color: var(--color__text--secondary);
+  color: var(--color-text-secondary);
 }
 
 /* When icon is present, pad the input field */
 .input__icon ~ .input__field,
 .input__field--with-icon-left {
-  padding-left: calc(var(--input__padding-x) * 2 + 1.125rem);
+  padding-left: calc(var(--input-padding-x) * 2 + 1.125rem);
 }
 
 .input__icon--right ~ .input__field,
 .input__field--with-icon-right {
-  padding-right: calc(var(--input__padding-x) * 2 + 1.125rem);
+  padding-right: calc(var(--input-padding-x) * 2 + 1.125rem);
 }
 
 /* ── Element: .input__message (validation/helper text) ────────── */
 .input__message {
-  font-size: var(--typography__size--xs);
-  line-height: var(--typography__line-height--normal);
-  color: var(--color__text--disabled);
+  font-size: var(--typography-size-xs);
+  line-height: var(--typography-line-height-normal);
+  color: var(--color-text-disabled);
   min-height: 1em;
-  transition: color var(--animation__duration--fast) var(--animation__easing--default);
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
 }
 
 /* ── Modifier: .input--error ───────────────────────────────────── */
 .field--error .input,
 .field--error .select,
 .field--error .textarea {
-  border-color: var(--input__border-color--error);
+  border-color: var(--input-border-color-error);
 }
 
 .field--error .input:focus,
 .field--error .select:focus,
 .field--error .textarea:focus {
-  border-color: var(--input__border-color--error);
-  box-shadow: 0 0 0 3px oklch(var(--color-error) / 0.15);
+  border-color: var(--input-border-color-error);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-error) 15%, transparent);
 }
 
 .field--error .label-text {
-  color: var(--color__semantic--error);
+  color: var(--color-semantic-error);
 }
 
 .field--error .helper-text {
-  color: var(--color__semantic--error);
+  color: var(--color-semantic-error);
 }
 
 .field--error .field__icon {
-  color: var(--color__semantic--error);
+  color: var(--color-semantic-error);
 }
 
 /* ── Modifier: .input--success ─────────────────────────────────── */
 .field--success .input,
 .field--success .select,
 .field--success .textarea {
-  border-color: var(--color__semantic--success);
+  border-color: var(--color-semantic-success);
 }
 
 .field--success .input:focus,
 .field--success .select:focus,
 .field--success .textarea:focus {
-  border-color: var(--color__semantic--success);
-  box-shadow: 0 0 0 3px oklch(var(--color-success) / 0.15);
+  border-color: var(--color-semantic-success);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-success) 15%, transparent);
 }
 
 .field--success .helper-text {
-  color: var(--color__semantic--success);
+  color: var(--color-semantic-success);
 }
 
 /* ── Modifier: .input--sm ──────────────────────────────────────── */
 .field--sm .input,
 .field--sm .select {
-  height: var(--input__height--sm);
-  font-size: var(--typography__size--sm);
+  height: var(--input-height-sm);
+  font-size: var(--typography-size-sm);
   padding: 0 0.5rem;
 }
 
@@ -263,8 +263,8 @@ a {
 /* ── Modifier: .input--lg ──────────────────────────────────────── */
 .field--lg .input,
 .field--lg .select {
-  height: var(--input__height--lg);
-  font-size: var(--typography__size--md);
+  height: var(--input-height-lg);
+  font-size: var(--typography-size-md);
   padding: 0 1rem;
 }
 
@@ -275,11 +275,11 @@ a {
 }
 
 .field--ghost .input:hover {
-  background-color: oklch(var(--color-base-200) / 0.5);
+  background-color: color-mix(in oklch, var(--color-base-200) 50%, transparent);
 }
 
 .field--ghost .input:focus {
-  background-color: oklch(var(--color-base-200) / 0.5);
+  background-color: color-mix(in oklch, var(--color-base-200) 50%, transparent);
   border-color: transparent;
   box-shadow: none;
 }
@@ -293,11 +293,11 @@ a {
 
 .input__field--textarea {
   height: auto;
-  min-height: calc(var(--input__height) * 2.5);
-  padding-top: var(--input__padding-x);
-  padding-bottom: var(--input__padding-x);
+  min-height: calc(var(--input-height) * 2.5);
+  padding-top: var(--input-padding-x);
+  padding-bottom: var(--input-padding-x);
   resize: vertical;
-  line-height: var(--typography__line-height--relaxed);
+  line-height: var(--typography-line-height-relaxed);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -313,7 +313,7 @@ a {
 
 .input__field--select {
   appearance: none;
-  padding-right: calc(var(--input__padding-x) * 2 + 1rem);
+  padding-right: calc(var(--input-padding-x) * 2 + 1rem);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
@@ -322,8 +322,8 @@ a {
 }
 
 .input__field--select option {
-  color: var(--input__text-color);
-  background-color: var(--input__bg);
+  color: var(--input-text-color);
+  background-color: var(--input-bg);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -338,24 +338,24 @@ a {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  font-size: var(--typography__size--base);
-  color: var(--color__text--primary);
-  transition: color var(--animation__duration--fast) var(--animation__easing--default);
+  font-size: var(--typography-size-base);
+  color: var(--color-text-primary);
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
 }
 
 .input-choice:hover {
-  color: var(--color__semantic--primary);
+  color: var(--color-semantic-primary);
 }
 
 /* ── Element: .input-choice__control ─────────────────────────── */
 .input-choice__control {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--color__semantic--primary);
+  accent-color: var(--color-semantic-primary);
   cursor: pointer;
   transition:
-    accent-color var(--animation__duration--fast) var(--animation__easing--default),
-    transform var(--animation__duration--fast) var(--animation__easing--spring);
+    accent-color var(--animation-duration-fast) var(--animation-easing-default),
+    transform var(--animation-duration-fast) var(--animation-easing-spring);
 }
 
 .input-choice__control:active {
@@ -364,7 +364,7 @@ a {
 
 /* ── Element: .input-choice__label ─────────────────────────────── */
 .input-choice__label {
-  font-size: var(--typography__size--sm);
-  line-height: var(--typography__line-height--normal);
+  font-size: var(--typography-size-sm);
+  line-height: var(--typography-line-height-normal);
   user-select: none;
 }

@@ -204,7 +204,7 @@ const ProductCard = memo(function ProductCard({
               text-primary bg-primary/10 hover:bg-primary/20 active:scale-[0.97] transition-all"
             aria-label="Edit product"
           >
-            <span className="icon-[tabler--pencil] w-3 h-3" />
+            <span className="ri-pencil-line ri-12px" />
             Edit
           </button>
           <button
@@ -213,7 +213,7 @@ const ProductCard = memo(function ProductCard({
               text-error bg-error/10 hover:bg-error/20 active:scale-[0.97] transition-all"
             aria-label="Delete product"
           >
-            <span className="icon-[tabler--trash] w-3 h-3" />
+            <span className="ri-delete-bin-line ri-12px" />
             Delete
           </button>
         </div>

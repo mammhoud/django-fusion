@@ -37,21 +37,17 @@ export default function BackButton({
     >
       {disabled ? (
         <>
-          <div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="w-4 h-4 border-2 border-slate-500 dark:border-slate-300 border-t-transparent rounded-full shrink-0"
-          />
+          <div className="w-4 h-4 border-2 border-slate-500 dark:border-slate-300 border-t-transparent rounded-full shrink-0 animate-spin" />
           <span>{t('common.loading')}</span>
         </>
       ) : showBreadcrumb ? (
         <>
-          <span className="icon-[tabler--arrow-narrow-left] w-4 h-4 rtl:scale-x-[-1] shrink-0" />
+          <span className="ri-arrow-left-line ri-16px rtl:scale-x-[-1] shrink-0" />
           <span className="flex items-center gap-1 text-xs truncate">
             {breadcrumb!.map((segment, i) => (
               <span key={i} className="flex items-center gap-1 min-w-0">
                 {i > 0 && (
-                  <span className="icon-[tabler--chevron-right] w-3 h-3 text-base-content/40 rtl:rotate-180 shrink-0" />
+                  <span className="ri-arrow-right-s-line ri-12px text-base-content/40 rtl:rotate-180 shrink-0" />
                 )}
                 <span className={`truncate ${i === breadcrumb!.length - 1 ? 'font-semibold' : 'text-base-content/60'}`}>
                   {segment}
@@ -62,7 +58,7 @@ export default function BackButton({
         </>
       ) : (
         <>
-          <span className="icon-[tabler--arrow-narrow-left] w-4 h-4 rtl:scale-x-[-1] shrink-0" />
+          <span className="ri-arrow-left-line ri-16px rtl:scale-x-[-1] shrink-0" />
           <span>{displayText}</span>
         </>
       )}

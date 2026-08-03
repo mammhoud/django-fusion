@@ -22,18 +22,7 @@ const mockCategories = [
   { id: 2, name: 'Sides', color: '#06b6d4' },
 ];
 
-const mockSettings = {
-  restaurant_name: 'Test',
-  address: '',
-  phone: '',
-  currency: 'USD',
-  receipt_footer: '',
-  dine_in_tables: 10,
-  delivery_fee: 0,
-  delivery_fee_per_km: 0,
-};
-
-// Hydration is async (products + categories + settings + AnimatePresence mode="wait"
+// Hydration is async (products + categories + AnimatePresence mode="wait"
 // fallback timer). Under combined-run CPU contention the default 1000ms waitFor
 // window is occasionally too tight, so give hydration generous headroom.
 async function waitForHydration() {
@@ -51,24 +40,9 @@ beforeEach(() => {
   clearInvokeHistory();
   mockInvokeSuccess('get_products', mockProducts);
   mockInvokeSuccess('get_categories', mockCategories);
-  mockInvokeSuccess('get_settings', mockSettings);
 });
 
 describe('ProductManager page', () => {
-  it('falls back to palette colors when unique card colors are disabled', async () => {
-    mockInvokeSuccess('get_products', [...mockProducts, { id: 9, name: 'Lemonade', price: 50, unit: 'glass' }]);
-    mockInvokeSuccess('get_settings', { ...mockSettings, unique_card_colors: false });
-    renderWithRouter(<ProductManager />);
-
-    await waitForHydration();
-
-    // Lemonade has no category → with unique colors off it must NOT get an
-    // inline accent color on its initial-letter span (rotating palette only).
-    const lemonadeCard = screen.getByText('Lemonade').closest('[role="button"]') as HTMLElement | null;
-    const initial = lemonadeCard?.querySelector('[data-testid="product-initial"]') as HTMLElement | null;
-    expect(initial).not.toBeNull();
-    expect(initial!.style.color).toBe('');
-  });
 
   it('hydrates product grid from the backend', async () => {
     renderWithRouter(<ProductManager />);
@@ -293,6 +267,161 @@ describe('Category CRUD — color round-trip through the modal', () => {
       const deleteCall = history.find(h => h.cmd === 'delete_category');
       expect(deleteCall).toBeDefined();
       expect(deleteCall!.args).toEqual({ id: 2 });
+    });
+  });
+});
+
+describe('ProductManager bulk actions (table view)', () => {
+  async function openTableView() {
+    renderWithRouter(<ProductManager />);
+    await waitForHydration();
+    await userEvent.click(screen.getByRole('button', { name: /Switch to table view/ }));
+    await waitFor(() => {
+      expect(screen.getAllByRole('checkbox').length).toBeGreaterThanOrEqual(4);
+    });
+  }
+
+  // Helper: select the first N product rows. Each row renders TWO checkboxes
+  // (desktop + mobile), so desktop rows sit at odd indices (1, 3, 5, …) —
+  // index 0 is the header select-all checkbox.
+  async function selectRows(count: number) {
+    const checkboxes = screen.getAllByRole('checkbox');
+    for (let i = 0; i < count; i++) {
+      await userEvent.click(checkboxes[1 + i * 2]);
+    }
+  }
+
+  it('shows bulk action buttons only after selecting rows', async () => {
+    await openTableView();
+
+    expect(screen.queryByTestId('pm-bulk-delete')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('pm-bulk-category')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('pm-bulk-type')).not.toBeInTheDocument();
+
+    await selectRows(2);
+
+    expect(screen.getByTestId('pm-bulk-delete')).toBeInTheDocument();
+    expect(screen.getByTestId('pm-bulk-category')).toBeInTheDocument();
+    expect(screen.getByTestId('pm-bulk-type')).toBeInTheDocument();
+  });
+
+  it('bulk deletes selected products after confirmation', async () => {
+    mockInvokeSuccess('delete_product', null);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    await openTableView();
+
+    await selectRows(2); // table sorts by newest (id desc) → rows 3 + 2
+
+    await userEvent.click(screen.getByTestId('pm-bulk-delete'));
+
+    await waitFor(() => {
+      const history = getInvokeHistory();
+      const deleteCalls = history.filter(h => h.cmd === 'delete_product');
+      expect(deleteCalls.length).toBe(2);
+      expect(deleteCalls.map(c => c.args)).toEqual([{ id: 3 }, { id: 2 }]);
+    });
+    confirmSpy.mockRestore();
+  });
+
+  it('bulk delete asks for confirmation first and skips when cancelled', async () => {
+    mockInvokeSuccess('delete_product', null);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    await openTableView();
+
+    await selectRows(1);
+    await userEvent.click(screen.getByTestId('pm-bulk-delete'));
+
+    expect(confirmSpy).toHaveBeenCalled();
+    const history = getInvokeHistory();
+    expect(history.some(h => h.cmd === 'delete_product')).toBe(false);
+    confirmSpy.mockRestore();
+  });
+
+  it('bulk change category updates all selected products', async () => {
+    mockInvokeSuccess('update_product', { id: 1, name: 'X', price: 0, unit: 'item' });
+    await openTableView();
+
+    await selectRows(2); // rows 3 + 2 (newest-first order)
+
+    await userEvent.click(screen.getByTestId('pm-bulk-category'));
+    await waitFor(() => {
+      expect(screen.getByTestId('pm-bulk-category-select')).toBeInTheDocument();
+    });
+    await userEvent.selectOptions(screen.getByTestId('pm-bulk-category-select'), '2');
+    await userEvent.click(screen.getByTestId('pm-bulk-category-apply'));
+
+    await waitFor(() => {
+      const history = getInvokeHistory();
+      const updateCalls = history.filter(h => h.cmd === 'update_product');
+      expect(updateCalls.length).toBe(2);
+      expect(updateCalls.map(c => c.args)).toEqual([
+        { id: 3, update: { category_id: 2 } },
+        { id: 2, update: { category_id: 2 } },
+      ]);
+    });
+  });
+
+  it('bulk change type updates all selected products', async () => {
+    mockInvokeSuccess('update_product', { id: 1, name: 'X', price: 0, unit: 'item' });
+    await openTableView();
+
+    await selectRows(2); // rows 3 + 2 (newest-first order)
+
+    await userEvent.click(screen.getByTestId('pm-bulk-type'));
+    await waitFor(() => {
+      expect(screen.getByTestId('pm-bulk-type-select')).toBeInTheDocument();
+    });
+    await userEvent.selectOptions(screen.getByTestId('pm-bulk-type-select'), 'combo');
+    await userEvent.click(screen.getByTestId('pm-bulk-type-apply'));
+
+    await waitFor(() => {
+      const history = getInvokeHistory();
+      const updateCalls = history.filter(h => h.cmd === 'update_product');
+      expect(updateCalls.length).toBe(2);
+      expect(updateCalls.map(c => c.args)).toEqual([
+        { id: 3, update: { product_type: 'combo' } },
+        { id: 2, update: { product_type: 'combo' } },
+      ]);
+    });
+  });
+
+  it('bulk category modal can set products to no category (0 → null)', async () => {
+    mockInvokeSuccess('update_product', { id: 1, name: 'X', price: 0, unit: 'item' });
+    await openTableView();
+
+    await selectRows(1); // row 3 (newest-first)
+
+    await userEvent.click(screen.getByTestId('pm-bulk-category'));
+    await waitFor(() => {
+      expect(screen.getByTestId('pm-bulk-category-select')).toBeInTheDocument();
+    });
+    // Leave default (empty = no category) and apply
+    await userEvent.click(screen.getByTestId('pm-bulk-category-apply'));
+
+    await waitFor(() => {
+      const history = getInvokeHistory();
+      const updateCalls = history.filter(h => h.cmd === 'update_product');
+      expect(updateCalls.length).toBe(1);
+      expect(updateCalls[0].args).toEqual({ id: 3, update: { category_id: null } });
+    });
+  });
+
+  it('clears selection after a successful bulk action', async () => {
+    mockInvokeSuccess('update_product', { id: 1, name: 'X', price: 0, unit: 'item' });
+    await openTableView();
+
+    await selectRows(1);
+    expect(screen.getByTestId('pm-bulk-type')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId('pm-bulk-type'));
+    await waitFor(() => {
+      expect(screen.getByTestId('pm-bulk-type-select')).toBeInTheDocument();
+    });
+    await userEvent.selectOptions(screen.getByTestId('pm-bulk-type-select'), 'service');
+    await userEvent.click(screen.getByTestId('pm-bulk-type-apply'));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('pm-bulk-type')).not.toBeInTheDocument();
     });
   });
 });

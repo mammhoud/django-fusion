@@ -9,7 +9,7 @@ id: bafyreifygksb6dfq4qovq7gpaxwcvmj2tl3khj3gqptbel4psixpch7fqa
 ---
 # Theme System   
 **Type:** Architecture 🏗️
-T**ags: **#`frontend `#`theme-default `#`theme-corporate `#`theme-luxury `#`theme-pastel `#`theme-cyberpunk
+T**ags: **#`frontend `#`theme-default `#`theme-corporate `#`theme-luxury `#`theme-pastel `#`theme-perplexity
 `S**tatus: **Published
 E**dition: **Mini, Solo, Full   
  --- 
@@ -18,7 +18,7 @@ E**dition: **Mini, Solo, Full
 ThemeContext (React)
     │
     ├─ mode: 'light' | 'dark'
-    ├─ variant: 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk'
+    ├─ variant: 'default' | 'corporate' | 'luxury' | 'pastel' | 'perplexity'
     ├─ followSystem: boolean (OS preference)
     │
     ├──→ <html> class="light|dark" data-theme="variant"
@@ -44,7 +44,7 @@ ThemeContext (React)
 | **Corporate**   <br> |                    Blue `#3b82f6`   <br> |            Slate (neutral)   <br> |    Professional   <br> |
 |    **Luxury**   <br> |                    Gold `#eab308`   <br> |                 Warm stone   <br> |         Premium   <br> |
 |    **Pastel**   <br> |                    Pink `#ec4899`   <br> |               Light purple   <br> |         Playful   <br> |
-| **Cyberpunk**   <br> |                 Magenta `#cc00cc`   <br> |            Dark/Light gray   <br> | Neon futuristic   <br> |
+| **Perplexity**   <br> |                   Teal   <br> |                     Neutral   <br> |      Minimal & intelligent   <br> |
 
  --- 
 ## Light / Dark Inversion   

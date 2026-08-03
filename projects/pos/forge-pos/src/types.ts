@@ -75,9 +75,6 @@ export interface Settings {
   dine_in_tables?: number;
   delivery_fee?: number;
   delivery_fee_per_km?: number;
-  /** Toggle for unique per-product accent colors on cards + KDS items (default on). */
-  unique_card_colors?: boolean;
-  mcp_enabled?: boolean;
   smtp_server?: string;
   smtp_port?: number;
   smtp_username?: string;

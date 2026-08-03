@@ -33,9 +33,9 @@ export default function Inventory() {
 
   // Tab definition matching Transactions page pattern
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'stock' as Tab, label: t('inventory.stockLevels'), icon: <span className="icon-[tabler--package] w-5 h-5" /> },
-    { key: 'transactions' as Tab, label: t('inventory.transactions'), icon: <span className="icon-[tabler--history] w-5 h-5" /> },
-    { key: 'adjustments' as Tab, label: t('inventory.adjustments'), icon: <span className="icon-[tabler--alert-triangle] w-5 h-5" /> },
+    { key: 'stock' as Tab, label: t('inventory.stockLevels'), icon: <span className="ri-archive-line ri-20px" /> },
+    { key: 'transactions' as Tab, label: t('inventory.transactions'), icon: <span className="ri-history-line ri-20px" /> },
+    { key: 'adjustments' as Tab, label: t('inventory.adjustments'), icon: <span className="ri-alert-line ri-20px" /> },
   ];
 
   // ── Arrow-key tab nav ──
@@ -299,7 +299,7 @@ export default function Inventory() {
 
   return (
     <PageLayout
-      title={<><span className="icon-[tabler--package] text-success" /> {t('inventory.title')}</>}
+      title={<><span className="ri-archive-line text-success" /> {t('inventory.title')}</>}
       background="bg-linear-to-br from-base-200 via-success/10 to-base-200"
     >
       {/* Tab Navigation — matching Transactions page pattern */}
@@ -327,9 +327,6 @@ export default function Inventory() {
         role="tabpanel"
         id={`inv-panel-${activeTab}`}
         aria-labelledby={`inv-tab-${activeTab}`}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
       >
         {/* ========== TAB 1: STOCK LEVELS ========== */}
         {activeTab === 'stock' && (
@@ -339,28 +336,28 @@ export default function Inventory() {
               <StatCard
                 title={t('inventory.totalIngredients')}
                 value={activeIngredients.length}
-                icon={<span className="icon-[tabler--package] w-5 h-5" />}
+                icon={<span className="ri-archive-line ri-20px" />}
                 color="info"
                 compact
               />
               <StatCard
                 title={t('inventory.stockValue')}
                 value={formatPrice(totalStockValue)}
-                icon={<span className="icon-[tabler--moneybag] w-5 h-5" />}
+                icon={<span className="ri-money-dollar-box-line ri-20px" />}
                 color="primary"
                 compact
               />
               <StatCard
                 title={t('inventory.avgCost')}
                 value={formatPrice(avgCost)}
-                icon={<span className="icon-[tabler--calculator] w-5 h-5" />}
+                icon={<span className="ri-calculator-line ri-20px" />}
                 color="secondary"
                 compact
               />
               <StatCard
                 title={t('inventory.lowStockItems')}
                 value={lowStockCount}
-                icon={<span className="icon-[tabler--alert-triangle] w-5 h-5" />}
+                icon={<span className="ri-alert-line ri-20px" />}
                 color="warning"
                 compact
               />
@@ -370,7 +367,7 @@ export default function Inventory() {
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold text-base-content shrink-0">{t('inventory.allIngredients')}</h2>
               <div className="relative flex-1 max-w-56">
-                <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
+                <span className="ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
                 <input
                   type="text"
                   value={stockSearch}
@@ -383,7 +380,7 @@ export default function Inventory() {
                     onClick={() => setStockSearch('')}
                     className="absolute right-1.5 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                   >
-                    <span className="icon-[tabler--x] w-3 h-3" />
+                    <span className="ri-close-line ri-12px" />
                   </button>
                 )}
               </div>
@@ -391,7 +388,7 @@ export default function Inventory() {
                 onClick={() => setShowAddIngredient(true)}
                 className="btn btn-success btn-sm gap-1 shrink-0"
               >
-                <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+                <span className="ri-add-line ri-14px" />
                 <span className="text-xs">{t('inventory.addIngredient')}</span>
               </button>
             </div>
@@ -399,7 +396,7 @@ export default function Inventory() {
             {/* Ingredient list */}
             {ingredients.length > 0 && filteredIngredients.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--search] w-12 h-12 text-base-content/40 mb-4" />
+                <span className="ri-search-line ri-48px text-base-content/40 mb-4" />
                 <p className="text-base-content/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
                 <button
                   onClick={() => setStockSearch('')}
@@ -425,7 +422,7 @@ export default function Inventory() {
                   return (
                     <div
                       key={ing.id}
-                      initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                      
                       className={`sm:grid sm:grid-cols-12 gap-4 p-4 border-b border-base-300/50 
                         hover:bg-base-200/50 transition-colors ${!ing.is_active ? 'opacity-50' : ''}`}
                     >
@@ -444,13 +441,13 @@ export default function Inventory() {
                       </div>
                       <div className="sm:hidden flex gap-2 mb-1">
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
-                          className="text-primary hover:text-primary/70 p-1"><span className="icon-[tabler--pencil]" /></button>
+                          className="text-primary hover:text-primary/70 p-1"><span className="ri-pencil-line" /></button>
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
-                        }} className="text-success hover:text-success/80 p-1"><span className="icon-[tabler--plus]" /></button>
+                        }} className="text-success hover:text-success/80 p-1"><span className="ri-add-line" /></button>
                         {ing.is_active && (
-                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1"><span className="icon-[tabler--trash]" /></button>
+                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1"><span className="ri-delete-bin-line" /></button>
                         )}
                       </div>
 
@@ -465,13 +462,13 @@ export default function Inventory() {
                           {status.label}
                         </span>
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
-                          className="text-primary hover:text-primary/70 p-1" title={t('common.edit')}><span className="icon-[tabler--pencil]" /></button>
+                          className="text-primary hover:text-primary/70 p-1" title={t('common.edit')}><span className="ri-pencil-line" /></button>
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
-                        }} className="text-success hover:text-success/80 p-1" title={t('inventory.recordTransaction')}><span className="icon-[tabler--plus]" /></button>
+                        }} className="text-success hover:text-success/80 p-1" title={t('inventory.recordTransaction')}><span className="ri-add-line" /></button>
                         {ing.is_active && (
-                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1" title={t('common.deactivate')}><span className="icon-[tabler--trash]" /></button>
+                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1" title={t('common.deactivate')}><span className="ri-delete-bin-line" /></button>
                         )}
                       </div>
                     </div>
@@ -536,7 +533,7 @@ export default function Inventory() {
                 onClick={() => setShowAddTransaction(true)}
                 className="btn btn-success btn-sm gap-1 shrink-0"
               >
-                <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+                <span className="ri-add-line ri-14px" />
                 <span className="text-xs">{t('inventory.recordTransaction')}</span>
               </button>
             </div>
@@ -592,7 +589,7 @@ export default function Inventory() {
                 onClick={() => { setNewTransaction({ ingredient_id: 0, transaction_type: 'adjustment', quantity_change: 0 }); setAdjustmentReason(''); setCreatedBy(''); setShowAddTransaction(true); }}
                 className="flex items-center gap-2 px-3 py-2 bg-warning text-warning-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all shadow-sm"
               >
-                <span className="icon-[tabler--plus] w-4 h-4" /> {t('inventory.addAdjustment')}
+                <span className="ri-add-line ri-16px" /> {t('inventory.addAdjustment')}
               </button>
             </div>
             <div className="space-y-3">
@@ -607,7 +604,7 @@ export default function Inventory() {
                 return (
                   <div
                     key={adj.id}
-                    initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                    
                     className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl p-4"
                   >
                     <div className="flex justify-between items-start gap-3">
@@ -620,7 +617,7 @@ export default function Inventory() {
                         </div>
                         <div className="text-sm text-base-content/60 mt-1 flex items-center gap-2">
                           <span className="line-through opacity-60">{adj.previous_quantity}</span>
-                          <span className="icon-[tabler--arrow-right] w-3.5 h-3.5 rtl:rotate-180" />
+                          <span className="ri-arrow-right-line ri-14px rtl:rotate-180" />
                           <strong>{adj.new_quantity}</strong> {ing?.unit || ''}
                         </div>
                         <p className="text-sm text-base-content/50 mt-1 italic">"{adj.reason}"</p>
@@ -635,7 +632,7 @@ export default function Inventory() {
                           className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10 transition-colors"
                           title={t('common.delete')}
                         >
-                          <span className="icon-[tabler--trash] w-4 h-4" />
+                          <span className="ri-delete-bin-line ri-16px" />
                         </button>
                       </div>
                     </div>
@@ -655,7 +652,7 @@ export default function Inventory() {
           <button onClick={() => setShowAddIngredient(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddIngredient} disabled={!newIngredient.name.trim()}
             className="flex-1 py-2.5 rounded-lg bg-success text-success-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <span className="icon-[tabler--device-floppy]" /> {t('inventory.addIngredient')}
+            <span className="ri-save-3-line" /> {t('inventory.addIngredient')}
           </button>
         </>}
       >
@@ -689,7 +686,7 @@ export default function Inventory() {
         title={t('inventory.editIngredientTitle')}
         footer={<>
           <button onClick={() => { setShowEditIngredient(null); setEditForm(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-primary text-primary-content font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
+          <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-primary text-primary-content font-semibold flex items-center justify-center gap-2"><span className="ri-save-3-line" /> {t('common.update')}</button>
         </>}
       >
         {editForm && (<>
@@ -744,7 +741,7 @@ export default function Inventory() {
         footer={<>
           <button onClick={() => setShowAddTransaction(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddTransaction} disabled={newTransaction.ingredient_id === 0 || newTransaction.quantity_change === 0}
-            className="flex-1 py-2.5 rounded-lg bg-success text-success-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('inventory.recordTransaction')}</button>
+            className="flex-1 py-2.5 rounded-lg bg-success text-success-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="ri-save-3-line" /> {t('inventory.recordTransaction')}</button>
         </>}
       >
         <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.ingredient')} *</label>

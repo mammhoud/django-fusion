@@ -4,6 +4,13 @@
 /* ── FlyonUI theme variants ────────────────────────────────────── */
 @import "flyonui/variants.css";
 
+/* ── Icon & Font Assets ──────────────────────────────────────── */
+/* Remix Icon font (icons/*.woff2 in assets/icons/remix/). */
+@import "./fonts/remixicon.css";
+/* Optional text fonts copied from the Fusion design system. */
+@import "./fonts/inter.css";
+@import "./fonts/roboto.css";
+
 /* ── Base Design Tokens ──────────────────────────────────────── */
 @import "./base/_variables.css";
 @import "./base/_reset.css";
@@ -13,6 +20,7 @@
 @import "./components/_flyonui.css";
 @import "./components/_card.css";
 @import "./components/_modal.css";
+@import "./components/_settings.css";
 @import "./components/_receipt.css";
 
 /* ── FlyonUI Component Library ───────────────────────────────── */
@@ -22,14 +30,12 @@
  *   light, dark            → also enabled (Default variant in picker)
  *   corporate-light/dark   → blue professional variant
  *   luxury-light/dark      → rich gold/warm variant
- *   cyberpunk              → neon futuristic variant (single theme)
  */
 @plugin "flyonui" {
   themes: perplexity --default, pastel-dark --prefersdark,
           light, dark,
           corporate-light, corporate-dark,
-          luxury-light, luxury-dark,
-          cyberpunk;
+          luxury-light, luxury-dark;
 }
 
 /* ── Corporate Light — clean, professional, blue-toned ────────── */
@@ -203,112 +209,9 @@
 }
 
 /* ── Pastel Dark — dark candy colors, moody and soft ──────────── */
-@plugin "flyonui/theme" {
-  name: "pastel-dark";
-  color-scheme: dark;
-  --color-base-100: oklch(25.39% 0.0432 324.94);
-  --color-base-200: oklch(30.00% 0.0350 320.00);
-  --color-base-300: oklch(35.00% 0.0300 315.00);
-  --color-base-content: oklch(94.82% 0.0276 342.26);
-  --color-primary: oklch(72.53% 0.1752 349.76);
-  --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(70.90% 0.1592 293.54);
-  --color-secondary-content: oklch(100% 0 0);
-  --color-accent: oklch(86.51% 0.1153 207.08);
-  --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(50.00% 0.0400 320.00);
-  --color-neutral-content: oklch(94.82% 0.0276 342.26);
-  --color-info: oklch(65.00% 0.1200 230.00);
-  --color-info-content: oklch(100% 0 0);
-  --color-success: oklch(77.29% 0.1535 163.22);
-  --color-success-content: oklch(100% 0 0);
-  --color-warning: oklch(80.00% 0.1500 85.00);
-  --color-warning-content: oklch(100% 0 0);
-  --color-error: oklch(80.77% 0.1035 19.57);
-  --color-error-content: oklch(100% 0 0);
-  --radius-selector: 2rem;
-  --radius-field: 2rem;
-  --radius-box: 2rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
-
-/* ── Cyberpunk — neon on dark, high-contrast futuristic ──────────── */
-@plugin "flyonui/theme" {
-  name: "cyberpunk";
-  color-scheme: dark;
-  --color-base-100: oklch(14.48% 0.0000 89.88);
-  --color-base-200: oklch(20.00% 0.0100 90.00);
-  --color-base-300: oklch(25.00% 0.0150 90.00);
-  --color-base-content: oklch(86.86% 0.2776 144.47);
-  --color-primary: oklch(70.17% 0.3225 328.36);
-  --color-primary-content: oklch(0% 0 0);
-  --color-secondary: oklch(90.54% 0.1546 194.77);
-  --color-secondary-content: oklch(0% 0 0);
-  --color-accent: oklch(96.80% 0.2110 109.77);
-  --color-accent-content: oklch(0% 0 0);
-  --color-neutral: oklch(30.00% 0.0100 90.00);
-  --color-neutral-content: oklch(86.86% 0.2776 144.47);
-  --color-info: oklch(70.00% 0.1500 230.00);
-  --color-info-content: oklch(0% 0 0);
-  --color-success: oklch(86.86% 0.2776 144.47);
-  --color-success-content: oklch(0% 0 0);
-  --color-warning: oklch(96.80% 0.2110 109.77);
-  --color-warning-content: oklch(0% 0 0);
-  --color-error: oklch(63.22% 0.2542 20.85);
-  --color-error-content: oklch(0% 0 0);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.375rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 1;
-}
-
-/* ── Cyberpunk Light — neon on white, accessible variant ──────── */
-@plugin "flyonui/theme" {
-  name: "cyberpunk-light";
-  color-scheme: light;
-  --color-base-100: oklch(96.00% 0.0050 90.00);
-  --color-base-200: oklch(93.00% 0.0080 90.00);
-  --color-base-300: oklch(50.00% 0.0150 90.00);
-  --color-base-content: oklch(20.00% 0.0100 90.00);
-  --color-primary: oklch(58.00% 0.2700 328.36);
-  --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(60.00% 0.1200 194.77);
-  --color-secondary-content: oklch(100% 0 0);
-  --color-accent: oklch(70.00% 0.1800 109.77);
-  --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(45.00% 0.0100 90.00);
-  --color-neutral-content: oklch(100% 0 0);
-  --color-info: oklch(60.00% 0.1200 230.00);
-  --color-info-content: oklch(100% 0 0);
-  --color-success: oklch(55.00% 0.1500 144.47);
-  --color-success-content: oklch(100% 0 0);
-  --color-warning: oklch(70.00% 0.1800 109.77);
-  --color-warning-content: oklch(100% 0 0);
-  --color-error: oklch(55.00% 0.2200 20.85);
-  --color-error-content: oklch(100% 0 0);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.375rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
-
-/* ── FlyonUI source scanning ──────────────────────────────────── */
 @source "flyonui/dist/index.js";
 
 /* ── Iconify / Tabler Icons for FlyonUI ──────────────────────── */
-@plugin "@iconify/tailwind4";
 
 @custom-variant dark (&:where(.dark, .dark *));
 @custom-variant rtl (&:where([dir="rtl"] &));
@@ -323,8 +226,7 @@
  *   luxury + dark  → data-theme="luxury-dark"
  *   pastel + light → data-theme="pastel-light"
  *   pastel + dark  → data-theme="pastel-dark"
- *   cyberpunk + light → data-theme="cyberpunk-light"
- *   cyberpunk + dark  → data-theme="cyberpunk"
+ *   perplexity → data-theme="perplexity" (single built-in theme)
  */
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -356,21 +258,21 @@
 @keyframes page-slide-left  { from { opacity: 0; transform: translateX(-40px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
 
 /* ── Entrance classes ── */
-.animate--fade-in      { animation: animate--fade-in      var(--animation__duration--slow)    var(--animation__easing--out) both; }
-.animate--slide-up     { animation: animate--slide-up     var(--animation__duration--slow)    var(--animation__easing--out) both; }
-.animate--slide-down   { animation: animate--slide-down   var(--animation__duration--slow)    var(--animation__easing--out) both; }
-.animate--slide-right  { animation: animate--slide-right  var(--animation__duration--normal)  var(--animation__easing--out) both; }
-.animate--slide-left   { animation: animate--slide-left   var(--animation__duration--normal)  var(--animation__easing--out) both; }
-.animate--scale-in     { animation: animate--scale-in     var(--animation__duration--normal)  var(--animation__easing--spring) both; }
-.animate--dialog       { animation: animate--dialog       var(--animation__duration--slow)    var(--animation__easing--spring) both; }
-.animate--dropdown     { animation: animate--dropdown     var(--animation__duration--fast)    var(--animation__easing--out) both; }
-.animate--toast        { animation: animate--toast        var(--animation__duration--slow)    var(--animation__easing--spring) both; }
-.animate--stagger      { animation: animate--stagger      var(--animation__duration--slow)    var(--animation__easing--out) both; }
+.animate--fade-in      { animation: animate--fade-in      var(--animation-duration-slow)    var(--animation-easing-out) both; }
+.animate--slide-up     { animation: animate--slide-up     var(--animation-duration-slow)    var(--animation-easing-out) both; }
+.animate--slide-down   { animation: animate--slide-down   var(--animation-duration-slow)    var(--animation-easing-out) both; }
+.animate--slide-right  { animation: animate--slide-right  var(--animation-duration-normal)  var(--animation-easing-out) both; }
+.animate--slide-left   { animation: animate--slide-left   var(--animation-duration-normal)  var(--animation-easing-out) both; }
+.animate--scale-in     { animation: animate--scale-in     var(--animation-duration-normal)  var(--animation-easing-spring) both; }
+.animate--dialog       { animation: animate--dialog       var(--animation-duration-slow)    var(--animation-easing-spring) both; }
+.animate--dropdown     { animation: animate--dropdown     var(--animation-duration-fast)    var(--animation-easing-out) both; }
+.animate--toast        { animation: animate--toast        var(--animation-duration-slow)    var(--animation-easing-spring) both; }
+.animate--stagger      { animation: animate--stagger      var(--animation-duration-slow)    var(--animation-easing-out) both; }
 
 /* ── Exit classes ── */
-.animate--fade-out     { animation: animate--fade-out     var(--animation__duration--fast)   var(--animation__easing--in) both; }
-.animate--slide-up-out { animation: animate--slide-up-out var(--animation__duration--fast)   var(--animation__easing--in) both; }
-.animate--scale-out    { animation: animate--scale-out    var(--animation__duration--fast)   var(--animation__easing--in) both; }
+.animate--fade-out     { animation: animate--fade-out     var(--animation-duration-fast)   var(--animation-easing-in) both; }
+.animate--slide-up-out { animation: animate--slide-up-out var(--animation-duration-fast)   var(--animation-easing-in) both; }
+.animate--scale-out    { animation: animate--scale-out    var(--animation-duration-fast)   var(--animation-easing-in) both; }
 
 /* ── Legacy animation classes (kept for backward compat) ────────── */
 .animate-page-slide-right { animation: page-slide-right 0.35s ease-out both; }
@@ -391,16 +293,16 @@
 .animate-dialog-out   { animation: animate--scale-out .12s ease-in both; }
 
 /* ── Stagger delay utilities (BEM: .animate__stagger--{n}) ────── */
-.animate__stagger--1  { animation-delay: var(--animation__stagger--1);  }
-.animate__stagger--2  { animation-delay: var(--animation__stagger--2);  }
-.animate__stagger--3  { animation-delay: var(--animation__stagger--3);  }
-.animate__stagger--4  { animation-delay: var(--animation__stagger--4);  }
-.animate__stagger--5  { animation-delay: var(--animation__stagger--5);  }
-.animate__stagger--6  { animation-delay: var(--animation__stagger--6);  }
-.animate__stagger--7  { animation-delay: var(--animation__stagger--7);  }
-.animate__stagger--8  { animation-delay: var(--animation__stagger--8);  }
-.animate__stagger--9  { animation-delay: var(--animation__stagger--9);  }
-.animate__stagger--10 { animation-delay: var(--animation__stagger--10); }
+.animate__stagger--1  { animation-delay: var(--animation-stagger-1);  }
+.animate__stagger--2  { animation-delay: var(--animation-stagger-2);  }
+.animate__stagger--3  { animation-delay: var(--animation-stagger-3);  }
+.animate__stagger--4  { animation-delay: var(--animation-stagger-4);  }
+.animate__stagger--5  { animation-delay: var(--animation-stagger-5);  }
+.animate__stagger--6  { animation-delay: var(--animation-stagger-6);  }
+.animate__stagger--7  { animation-delay: var(--animation-stagger-7);  }
+.animate__stagger--8  { animation-delay: var(--animation-stagger-8);  }
+.animate__stagger--9  { animation-delay: var(--animation-stagger-9);  }
+.animate__stagger--10 { animation-delay: var(--animation-stagger-10); }
 
 /* ── Legacy stagger delays ── */
 .anim-delay-1  { animation-delay: .05s; }
@@ -421,41 +323,41 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Block: .glass (glassmorphism backdrop utility) ───────────── */
-.glass--primary   { background: oklch(var(--color-primary) / 0.08);   backdrop-filter: blur(8px); }
-.glass--secondary { background: oklch(var(--color-secondary) / 0.08); backdrop-filter: blur(8px); }
-.glass--accent    { background: oklch(var(--color-accent) / 0.08);    backdrop-filter: blur(8px); }
-.glass--success   { background: oklch(var(--color-success) / 0.08);   backdrop-filter: blur(8px); }
-.glass--warning   { background: oklch(var(--color-warning) / 0.08);   backdrop-filter: blur(8px); }
-.glass--error     { background: oklch(var(--color-error) / 0.08);     backdrop-filter: blur(8px); }
-.glass--info      { background: oklch(var(--color-info) / 0.08);      backdrop-filter: blur(8px); }
+.glass--primary   { background: color-mix(in oklch, var(--color-primary) 8%, transparent);   backdrop-filter: blur(8px); }
+.glass--secondary { background: color-mix(in oklch, var(--color-secondary) 8%, transparent); backdrop-filter: blur(8px); }
+.glass--accent    { background: color-mix(in oklch, var(--color-accent) 8%, transparent);    backdrop-filter: blur(8px); }
+.glass--success   { background: color-mix(in oklch, var(--color-success) 8%, transparent);   backdrop-filter: blur(8px); }
+.glass--warning   { background: color-mix(in oklch, var(--color-warning) 8%, transparent);   backdrop-filter: blur(8px); }
+.glass--error     { background: color-mix(in oklch, var(--color-error) 8%, transparent);     backdrop-filter: blur(8px); }
+.glass--info      { background: color-mix(in oklch, var(--color-info) 8%, transparent);      backdrop-filter: blur(8px); }
 
 /* ── Legacy glass names ── */
-.bg-primary-glass   { background: oklch(var(--color-primary) / 0.08);   backdrop-filter: blur(8px); }
-.bg-secondary-glass { background: oklch(var(--color-secondary) / 0.08); backdrop-filter: blur(8px); }
-.bg-accent-glass    { background: oklch(var(--color-accent) / 0.08);    backdrop-filter: blur(8px); }
-.bg-success-glass   { background: oklch(var(--color-success) / 0.08);   backdrop-filter: blur(8px); }
-.bg-warning-glass   { background: oklch(var(--color-warning) / 0.08);   backdrop-filter: blur(8px); }
-.bg-error-glass     { background: oklch(var(--color-error) / 0.08);     backdrop-filter: blur(8px); }
-.bg-info-glass      { background: oklch(var(--color-info) / 0.08);      backdrop-filter: blur(8px); }
+.bg-primary-glass   { background: color-mix(in oklch, var(--color-primary) 8%, transparent);   backdrop-filter: blur(8px); }
+.bg-secondary-glass { background: color-mix(in oklch, var(--color-secondary) 8%, transparent); backdrop-filter: blur(8px); }
+.bg-accent-glass    { background: color-mix(in oklch, var(--color-accent) 8%, transparent);    backdrop-filter: blur(8px); }
+.bg-success-glass   { background: color-mix(in oklch, var(--color-success) 8%, transparent);   backdrop-filter: blur(8px); }
+.bg-warning-glass   { background: color-mix(in oklch, var(--color-warning) 8%, transparent);   backdrop-filter: blur(8px); }
+.bg-error-glass     { background: color-mix(in oklch, var(--color-error) 8%, transparent);     backdrop-filter: blur(8px); }
+.bg-info-glass      { background: color-mix(in oklch, var(--color-info) 8%, transparent);      backdrop-filter: blur(8px); }
 
 /* ── Block: .border (border color utilities) ───────────────────── */
-.border--subtle   { border-color: var(--color__border--subtle); }
-.border--default  { border-color: var(--color__border--default); }
-.border--emphasis { border-color: var(--color__border--emphasis); }
-.border--card     { border: 1px solid var(--color__border--subtle); }
+.border--subtle   { border-color: var(--color-border-subtle); }
+.border--default  { border-color: var(--color-border-default); }
+.border--emphasis { border-color: var(--color-border-emphasis); }
+.border--card     { border: 1px solid var(--color-border-subtle); }
 
 /* ── Legacy border names ── */
-.border-subtle   { border-color: oklch(var(--color-base-content) / 0.1); }
-.border-emphasis { border-color: oklch(var(--color-base-content) / 0.2); }
-.border-card     { border: 1px solid oklch(var(--color-base-content) / 0.08); }
+.border-subtle   { border-color: color-mix(in oklch, var(--color-base-content) 10%, transparent); }
+.border-emphasis { border-color: color-mix(in oklch, var(--color-base-content) 20%, transparent); }
+.border-card     { border: 1px solid color-mix(in oklch, var(--color-base-content) 8%, transparent); }
 
 /* ── Block: .shadow (shadow depth utilities) ────────────────────── */
-.shadow--sm       { box-shadow: var(--shadow--sm); }
-.shadow--md       { box-shadow: var(--shadow--md); }
-.shadow--lg       { box-shadow: var(--shadow--lg); }
-.shadow--xl       { box-shadow: var(--shadow--xl); }
-.shadow--elevated { box-shadow: var(--shadow--elevated); }
-.shadow--colored  { box-shadow: var(--shadow--colored); }
+.shadow--sm       { box-shadow: var(--shadow-sm); }
+.shadow--md       { box-shadow: var(--shadow-md); }
+.shadow--lg       { box-shadow: var(--shadow-lg); }
+.shadow--xl       { box-shadow: var(--shadow-xl); }
+.shadow--elevated { box-shadow: var(--shadow-elevated); }
+.shadow--colored  { box-shadow: var(--shadow-colored); }
 
 /* ── Legacy shadow names ── */
 .shadow-card         { box-shadow: var(--forge-shadow-card); }
@@ -463,11 +365,11 @@
 .shadow-card-elevated { box-shadow: var(--forge-shadow-elevated); }
 
 /* ── Block: .transition (transition timing utilities) ──────────── */
-.transition--fast   { transition: all var(--animation__transition--fast); }
-.transition--normal { transition: all var(--animation__transition--normal); }
-.transition--slow   { transition: all var(--animation__transition--slow); }
-.transition--spring { transition: all var(--animation__transition--spring); }
-.transition--colors { transition: color, background-color, border-color var(--animation__duration--fast) var(--animation__easing--default); }
+.transition--fast   { transition: all var(--animation-transition-fast); }
+.transition--normal { transition: all var(--animation-transition-normal); }
+.transition--slow   { transition: all var(--animation-transition-slow); }
+.transition--spring { transition: all var(--animation-transition-spring); }
+.transition--colors { transition: color, background-color, border-color var(--animation-duration-fast) var(--animation-easing-default); }
 
 /* ── Legacy transition names ── */
 .transition-fast        { transition: all var(--forge-transition-fast); }
@@ -492,7 +394,7 @@
 /* ── Focus ring — stable, accessible, theme-aware ── */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px oklch(var(--color-base-100)), 0 0 0 4px oklch(var(--color-primary) / 0.4);
+  box-shadow: 0 0 0 2px var(--color-base-100), 0 0 0 4px color-mix(in oklch, var(--color-primary) 40%, transparent);
 }
 
 /* ── Reduced motion ── */
@@ -545,8 +447,7 @@
   background-color: oklch(97% 0.006 85);
 }
 
-[data-theme*="dark"] .bg-texture::before,
-[data-theme="cyberpunk"] .bg-texture::before {
+[data-theme*="dark"] .bg-texture::before {
   background-color: oklch(16% 0.012 60);
 }
 

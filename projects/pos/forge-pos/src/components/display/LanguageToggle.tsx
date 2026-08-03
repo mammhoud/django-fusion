@@ -40,7 +40,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
           shadow-sm transition-all active:scale-[0.95] min-w-[120px]"
         aria-label={t('language.selectLanguage')}
       >
-        <span className="icon-[tabler--language] w-4 h-4 shrink-0 opacity-70" />
+        <span className="ri-translate-line ri-16px shrink-0 opacity-70" />
         <span className="flex-1 text-left">{current.flag} {current.label}</span>
         <svg
           className={`w-3.5 h-3.5 opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -58,10 +58,6 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
       <AnimatePresence>
         {isOpen && (
           <div
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
             className={`absolute ${dropdownUp ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 right-0 max-h-[260px] overflow-y-auto
               bg-base-100 rounded-xl shadow-xl
               border border-base-300/30
@@ -85,7 +81,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
                   <span className="text-base">{opt.flag}</span>
                   <span className="flex-1 text-left">{opt.label}</span>
                   {isActive && (
-                    <span className="icon-[tabler--check] w-4 h-4 text-indigo-500" />
+                    <span className="ri-check-line ri-16px text-indigo-500" />
                   )}
                 </button>
               );

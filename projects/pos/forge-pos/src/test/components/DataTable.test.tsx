@@ -82,6 +82,58 @@ describe('DataTable component', () => {
     expect(screen.getByText(/common\.selected|selected/)).toBeInTheDocument();
   });
 
+  it('renders bulk action buttons only while rows are selected', () => {
+    const bulkDelete = vi.fn();
+    renderTable({
+      selectable: true,
+      bulkActions: [
+        { key: 'delete', label: 'Delete', onClick: bulkDelete },
+        { key: 'tag', label: 'Tag', onClick: vi.fn() },
+      ],
+    });
+
+    // No selection yet — no bulk buttons visible.
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[1]); // select first row
+
+    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Tag' })).toBeInTheDocument();
+  });
+
+  it('passes only the selected rows to a bulk action onClick', () => {
+    const bulkDelete = vi.fn();
+    renderTable({
+      selectable: true,
+      bulkActions: [{ key: 'delete', label: 'Delete', onClick: bulkDelete }],
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[1]); // Apple (id 1)
+    fireEvent.click(checkboxes[3]); // Cherry (id 3)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    expect(bulkDelete).toHaveBeenCalledTimes(1);
+    expect(bulkDelete).toHaveBeenCalledWith([rows[0], rows[2]]);
+  });
+
+  it('bulk action buttons disappear when selection is cleared', () => {
+    const bulkDelete = vi.fn();
+    renderTable({
+      selectable: true,
+      bulkActions: [{ key: 'delete', label: 'Delete', onClick: bulkDelete }],
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[1]);
+    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+
+    fireEvent.click(checkboxes[1]); // deselect
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+  });
+
   it('supports inline editing and saves on Enter', async () => {
     const onEditSave = vi.fn().mockResolvedValue(undefined);
     const editableColumns: Column<Row>[] = [
