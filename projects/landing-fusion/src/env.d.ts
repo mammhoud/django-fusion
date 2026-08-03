@@ -9,6 +9,7 @@ interface ToastStore {
 
 declare global {
   interface Window {
+    htmx?: unknown;
     Alpine?: {
       store(name: string, value?: unknown): unknown;
       store(name: 'toast'): ToastStore;

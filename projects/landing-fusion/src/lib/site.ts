@@ -107,3 +107,11 @@ export const contactMethods: ContactMethod[] = [
  */
 export const fusionApiUrl: string =
   (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) ?? '';
+
+/**
+ * localStorage key for the persisted theme (ASTRO_MIGRATION_PLAN §5.1).
+ *
+ * Stored value is `'dark'` or `'light'`. Read in `Layout.astro`'s inline
+ * head script (before first paint) and written by `ThemeToggle.astro`.
+ */
+export const THEME_STORAGE_KEY = 'fusion-theme';

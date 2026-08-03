@@ -73,6 +73,8 @@
   body {
     @apply bg-fu-bg text-fu-text antialiased;
     font-feature-settings: "cv11", "ss01";
+    /* Smooth theme switch (§5.1). Applied pre-paint, so no flash on load. */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   ::selection {
     @apply bg-fu-primary text-white;
