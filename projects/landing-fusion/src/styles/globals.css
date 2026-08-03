@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/* Dark mode is driven by the `.dark` class on <html>, not OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Fusion theme → shadcnblocks HSL tokens (ASTRO_MIGRATION_PLAN §4) ── */
+:root {
+  --fu-primary: 262 83% 58%;          /* #7c3aed — buttons, links, accent */
+  --fu-primary-dark: 262 70% 35%;     /* #4c1d95 — hover, gradients   */
+  --fu-accent: 262 83% 48%;           /* #6d28d9 */
+  --fu-bg: 0 0% 98%;                  /* #fafafa */
+  --fu-text: 240 6% 10%;              /* #18181b */
+  --fu-muted: 240 5% 96%;             /* card bg */
+  --fu-border: 240 6% 90%;            /* dividers */
+  --fu-card: 0 0% 100%;
+}
+
+/* Dark mode — astro-themes style token swap */
+.dark {
+  --fu-primary: 262 83% 64%;
+  --fu-primary-dark: 262 90% 75%;
+  --fu-accent: 262 83% 70%;
+  --fu-bg: 240 6% 8%;
+  --fu-text: 0 0% 96%;
+  --fu-muted: 240 5% 14%;
+  --fu-border: 240 6% 22%;
+  --fu-card: 240 6% 11%;
+}
+
+@theme inline {
+  --color-fu-primary: hsl(var(--fu-primary));
+  --color-fu-primary-dark: hsl(var(--fu-primary-dark));
+  --color-fu-accent: hsl(var(--fu-accent));
+  --color-fu-bg: hsl(var(--fu-bg));
+  --color-fu-text: hsl(var(--fu-text));
+  --color-fu-muted: hsl(var(--fu-muted));
+  --color-fu-border: hsl(var(--fu-border));
+  --color-fu-card: hsl(var(--fu-card));
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --animate-fusion-fade-in: fusion-fade-in 0.4s ease-out;
+  --animate-fusion-pulse: fusion-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes fusion-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fusion-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+  }
+}
+
+/* ── Composable utilities (usable in @apply, Tailwind 4) ── */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-6 py-2.5
+         text-sm font-semibold transition-all duration-200
+         focus-visible:outline-2 focus-visible:outline-offset-2
+         focus-visible:outline-fu-primary cursor-pointer
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+@utility badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-fu-bg text-fu-text antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection {
+    @apply bg-fu-primary text-white;
+  }
+}
+
+@layer components {
+  /* ── Buttons ─────────────────────────────────────────────── */
+  .btn-primary {
+    @apply btn bg-fu-primary text-white
+           hover:bg-fu-primary-dark active:scale-[0.98]
+           shadow-sm hover:shadow-md;
+  }
+  .btn-secondary {
+    @apply btn bg-fu-card text-fu-text border border-fu-border
+           hover:bg-fu-muted active:scale-[0.98];
+  }
+  .btn-outline {
+    @apply btn border-2 border-fu-primary text-fu-primary
+           hover:bg-fu-primary/10 active:scale-[0.98];
+  }
+  .btn-white {
+    @apply btn bg-white text-fu-primary-dark
+           hover:bg-fu-primary/5 active:scale-[0.98] shadow-lg;
+  }
+
+  /* ── Cards ───────────────────────────────────────────────── */
+  .card {
+    @apply bg-fu-card rounded-2xl shadow-sm border border-fu-border
+           transition-all duration-300 hover:shadow-md;
+  }
+  .card-gradient {
+    @apply bg-gradient-to-br from-fu-primary via-fu-accent to-fu-primary-dark text-white;
+  }
+
+  /* ── Hero section (matches existing `.section-hero`) ──────── */
+  .section-hero {
+    @apply bg-gradient-to-br from-fu-primary via-fu-accent to-fu-primary-dark text-white;
+  }
+
+  /* ── Forms ───────────────────────────────────────────────── */
+  .input-field {
+    @apply w-full rounded-lg border border-fu-border bg-fu-card px-4 py-2.5 text-sm
+           text-fu-text placeholder:text-fu-text/40
+           focus:border-fu-primary focus:ring-2 focus:ring-fu-primary/30
+           outline-none transition-all duration-200;
+  }
+  .form-label {
+    @apply block text-sm font-medium text-fu-text mb-1;
+  }
+
+  /* ── Badges ──────────────────────────────────────────────── */
+  .badge-primary {
+    @apply badge bg-fu-primary/10 text-fu-primary-dark dark:text-fu-primary;
+  }
+  .badge-success {
+    @apply badge bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300;
+  }
+
+  /* ── Misc ────────────────────────────────────────────────── */
+  .container-fusion {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .prose-fusion h2 {
+    @apply text-2xl font-bold text-fu-text mb-3;
+  }
+  .prose-fusion p {
+    @apply text-fu-text/70 leading-relaxed mb-4;
+  }
+
+  /* Scroll-reveal (Alpine.js powered) */
+  [x-cloak] { display: none !important; }
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .reveal.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

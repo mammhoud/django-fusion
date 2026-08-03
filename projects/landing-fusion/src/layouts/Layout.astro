@@ -1,0 +1,112 @@
+---
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { siteConfig } from '@/lib/site';
+import '../styles/globals.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  /** Set a dark-mode class on <html> (defaults to light). */
+  theme?: 'light' | 'dark';
+}
+
+const {
+  title = siteConfig.name,
+  description = siteConfig.description,
+  ogImage = siteConfig.ogImage,
+  theme = 'light',
+} = Astro.props;
+
+const pageTitle = title === siteConfig.name ? siteConfig.name : `${title} · ${siteConfig.name}`;
+const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
+---
+
+<!doctype html>
+<html lang="en" class={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, siteConfig.url).href} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteConfig.url).href} />
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#7c3aed" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="flex min-h-screen flex-col">
+      <Header />
+      <main class="flex-1">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+
+    <!-- AHA runtime: HTMX + Alpine (bundled, not CDN) -->
+    <script>
+      import htmx from 'htmx.org';
+      import Alpine from 'alpinejs';
+      import collapse from '@alpinejs/collapse';
+      import intersect from '@alpinejs/intersect';
+
+      // Expose globals for hx-* attributes and htmx:event listeners
+      window.htmx = htmx;
+      window.Alpine = Alpine;
+      Alpine.plugin(collapse);
+      Alpine.plugin(intersect);
+
+      // Global toast store (used by ContactForm, CTA blocks)
+      document.addEventListener('alpine:init', () => {
+        Alpine.store('toast', {
+          visible: false,
+          message: '',
+          variant: 'success',
+          timeout: 0 as number | ReturnType<typeof setTimeout>,
+          show(message: string, variant = 'success', duration = 3500) {
+            this.message = message;
+            this.variant = variant;
+            this.visible = true;
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => (this.visible = false), duration);
+          },
+        });
+      });
+
+      // HTMX error handling (ASTRO_MIGRATION_PLAN §13.5) → Alpine toast
+      document.body.addEventListener('htmx:responseError', () => {
+        window.Alpine?.store('toast').show('Something went wrong — please try again.', 'error');
+      });
+
+      Alpine.start();
+
+      // Analytics hook for View Transitions (ASTRO_MIGRATION_PLAN §13.7)
+      document.addEventListener('astro:page-load', () => {
+        if (typeof window.gtag === 'function') {
+          window.gtag('config', 'G-XXXXXXXXXX', { page_path: window.location.pathname });
+        }
+      });
+    </script>
+  </body>
+</html>

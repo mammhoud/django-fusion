@@ -1,0 +1,116 @@
+---
+interface Plan {
+  name: string;
+  price: number;
+  period: string;
+  description: string;
+  features: string[];
+  highlighted?: boolean;
+  cta: { label: string; href: string };
+}
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  plans?: Plan[];
+}
+
+const defaultPlans: Plan[] = [
+  {
+    name: 'Starter',
+    price: 0,
+    period: 'forever',
+    description: 'Perfect for individuals exploring the platform.',
+    features: [
+      'Up to 3 courses',
+      'Community support',
+      'Basic progress tracking',
+      'Public profile',
+    ],
+    cta: { label: 'Start Free', href: '/#cta' },
+  },
+  {
+    name: 'Pro',
+    price: 29,
+    period: 'per month',
+    description: 'For active learners and content creators.',
+    highlighted: true,
+    features: [
+      'Unlimited courses',
+      'Priority support',
+      'Advanced analytics',
+      'Offline downloads',
+      'Certificates',
+    ],
+    cta: { label: 'Go Pro', href: '/#cta' },
+  },
+  {
+    name: 'Team',
+    price: 99,
+    period: 'per month',
+    description: 'For teams and organizations of any size.',
+    features: [
+      'Everything in Pro',
+      'SSO & role management',
+      'Dedicated success manager',
+      'Custom branding',
+      'API access',
+    ],
+    cta: { label: 'Contact Sales', href: '/contact' },
+  },
+];
+
+const {
+  heading = 'Simple, transparent pricing',
+  intro = 'Start free and scale as you grow. No hidden fees, cancel anytime.',
+  plans = defaultPlans,
+} = Astro.props;
+---
+
+<section id="pricing" class="bg-fu-bg py-20">
+  <div class="container-fusion">
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <span class="badge-primary mb-4">Pricing</span>
+      <h2 class="mb-4 text-3xl font-bold text-fu-text md:text-4xl">{heading}</h2>
+      <p class="text-fu-text/60">{intro}</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {plans.map((plan) => (
+        <div
+          class:list={[
+            'card relative flex flex-col p-8',
+            plan.highlighted &&
+              'border-fu-primary shadow-xl ring-2 ring-fu-primary/40 md:-translate-y-2',
+          ]}
+        >
+          {plan.highlighted && (
+            <span class="badge-primary absolute -top-3 left-1/2 -translate-x-1/2">Most Popular</span>
+          )}
+          <h3 class="mb-2 text-lg font-semibold text-fu-text">{plan.name}</h3>
+          <p class="mb-6 text-sm text-fu-text/60">{plan.description}</p>
+          <div class="mb-6 flex items-baseline gap-2">
+            <span class="text-4xl font-bold text-fu-text">${plan.price}</span>
+            <span class="text-sm text-fu-text/50">/{plan.period}</span>
+          </div>
+          <ul class="mb-8 space-y-3 text-sm">
+            {plan.features.map((feature) => (
+              <li class="flex items-start gap-3">
+                <svg class="mt-0.5 h-4 w-4 flex-shrink-0 text-fu-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span class="text-fu-text/80">{feature}</span>
+              </li>
+            ))}
+          </ul>
+          <a
+            href={plan.cta.href}
+            class:list={['mt-auto w-full', plan.highlighted ? 'btn-primary' : 'btn-secondary']}
+          >
+            {plan.cta.label}
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

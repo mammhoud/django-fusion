@@ -1,0 +1,29 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+---
+
+<Layout
+  title="FAQ"
+  description="Answers to the most common questions about the Fusion platform, billing and the AHA stack."
+>
+  <!-- Hero -->
+  <section class="section-hero py-16">
+    <div class="container-fusion">
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="badge mb-6 inline-flex border border-white/20 bg-white/10 text-white backdrop-blur-sm">Help Center</span>
+        <h1 class="mb-4 text-4xl font-bold md:text-5xl">Frequently Asked Questions</h1>
+        <p class="text-lg text-white/70">
+          Can&apos;t find what you&apos;re looking for? <a href="/contact" class="font-semibold underline underline-offset-2 hover:text-white">Contact support</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <FAQ heading="" intro="" searchable={true} />
+
+  <CTA heading="Still have questions?" intro="Our team is happy to help you get started." ctaLabel="Contact Support" ctaHref="/contact" />
+  <Toast />
+</Layout>

@@ -1,0 +1,89 @@
+---
+interface Feature {
+  icon: 'rocket' | 'bolt' | 'shield' | 'users' | 'chart' | 'globe';
+  title: string;
+  description: string;
+}
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  features?: Feature[];
+}
+
+const defaultFeatures: Feature[] = [
+  {
+    icon: 'rocket',
+    title: 'Lightning Fast',
+    description: 'Server-rendered HTML with minimal client JS. Sub-second loads on any connection.',
+  },
+  {
+    icon: 'bolt',
+    title: 'HTMX Fragments',
+    description: 'Dynamic updates stream from the Django backend as HTML — no JSON API layer needed.',
+  },
+  {
+    icon: 'shield',
+    title: 'Secure by Default',
+    description: 'django-allauth sessions and CSRF-protected HTMX forms work out of the box.',
+  },
+  {
+    icon: 'users',
+    title: 'Built for Teams',
+    description: 'Role-based dashboards for students, instructors and admins — all from one codebase.',
+  },
+  {
+    icon: 'chart',
+    title: 'Insightful KPIs',
+    description: 'Live metric cards and dashboards rendered as lightweight server fragments.',
+  },
+  {
+    icon: 'globe',
+    title: 'Fully Localized',
+    description: 'Multi-language support with the Django DefaultLanguageMiddleware preserved.',
+  },
+];
+
+const {
+  heading = 'Everything you need to launch',
+  intro = 'A complete landing and marketing stack, ported from the heavy Next.js SPA to a lightweight AHA architecture.',
+  features = defaultFeatures,
+} = Astro.props;
+
+const iconPaths: Record<Feature['icon'], string> = {
+  rocket: 'M14.053 4.197a1 1 0 011.306.615l1.386 4.324 4.324 1.386a1 1 0 010 1.895l-4.324 1.386-1.386 4.324a1 1 0 01-1.895 0l-1.386-4.324-4.324-1.386a1 1 0 010-1.895l4.324-1.386 1.386-4.324a1 1 0 011.11-.615z',
+  bolt: 'M13 10V3L4 14h7v7l9-11h-7z',
+  shield: 'M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z',
+  users: 'M17 20h5v-2a3 3 0 00-4.1-2.7M9 20H4v-2a3 3 0 015.1-2M12 16a4 4 0 100-8 4 4 0 000 8zm5-3a3 3 0 100-6',
+  chart: 'M3 21h18M6 17v-5M11 17V7M16 17v-9M21 17v-3',
+  globe: 'M12 21a9 9 0 100-18 9 9 0 000 18zm-9-9h18M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3z',
+};
+---
+
+<section id="features" class="bg-fu-bg py-20">
+  <div class="container-fusion">
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <span class="badge-primary mb-4">Features</span>
+      <h2 class="mb-4 text-3xl font-bold text-fu-text md:text-4xl">{heading}</h2>
+      <p class="text-fu-text/60">{intro}</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {features.map((feature, i) => (
+        <div
+          class="card reveal group p-6 hover:-translate-y-1"
+          x-data x-intersect="$el.classList.add('reveal-visible')"
+          style={`transition-delay: ${i * 60}ms`}
+        >
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-fu-primary/10 text-fu-primary transition-transform duration-300 group-hover:scale-110">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d={iconPaths[feature.icon]} />
+            </svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-fu-text">{feature.title}</h3>
+          <p class="text-sm leading-relaxed text-fu-text/60">{feature.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
