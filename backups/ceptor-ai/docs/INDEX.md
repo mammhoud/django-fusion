@@ -1,4 +1,4 @@
-# Documentation Index
+# Documentation Home
 
 The canonical documentation entrypoint is [docs/README.md](README.md).
 
