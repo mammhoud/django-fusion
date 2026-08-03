@@ -1,0 +1,39 @@
+---
+interface Props {
+  heading?: string;
+  intro?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  heading = 'Start Learning Today',
+  intro = 'Join thousands of students and start your learning journey today.',
+  ctaLabel = 'Create Free Account',
+  ctaHref = '/#cta',
+} = Astro.props;
+---
+
+<section id="cta" class="section-hero py-20">
+  <div class="container-fusion">
+    <div class="mx-auto max-w-3xl text-center">
+      <h2 class="mb-4 text-3xl font-bold text-white md:text-4xl">{heading}</h2>
+      <p class="mx-auto mb-8 max-w-xl text-lg text-white/70">{intro}</p>
+      <div class="flex flex-col justify-center gap-4 sm:flex-row">
+        <a
+          href={ctaHref}
+          class="btn-white !px-10 !py-4 text-lg"
+          @click.prevent="$store.toast.show('Welcome aboard! Your account is being created…')"
+        >
+          {ctaLabel}
+        </a>
+        <a
+          href="/contact"
+          class="btn !px-10 !py-4 text-lg text-white ring-2 ring-inset ring-white/40 hover:bg-white/10"
+        >
+          Talk to Sales
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

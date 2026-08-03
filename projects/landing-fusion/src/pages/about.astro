@@ -1,0 +1,96 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+
+const values = [
+  {
+    title: 'Accessibility first',
+    text: 'Knowledge should be open to everyone. We build with progressive enhancement so the content works everywhere.',
+  },
+  {
+    title: 'Performance matters',
+    text: 'Every kilobyte counts. Server-rendered HTML with a sprinkle of Alpine.js keeps our pages instantly responsive.',
+  },
+  {
+    title: 'Simplicity wins',
+    text: 'We prefer boring, maintainable technology over clever abstractions. The AHA stack is our happy medium.',
+  },
+];
+
+const highlights = [
+  { value: '120+', label: 'Courses', desc: 'Expert-crafted content' },
+  { value: '45+', label: 'Instructors', desc: 'Industry professionals' },
+  { value: '5K+', label: 'Students', desc: 'Active learners worldwide' },
+  { value: '50+', label: 'Countries', desc: 'Global reach' },
+];
+---
+
+<Layout
+  title="About Us"
+  description="Learn about the Fusion team, our mission, and why we bet on the AHA stack."
+>
+  <!-- Hero -->
+  <section class="section-hero py-20">
+    <div class="container-fusion">
+      <div class="mx-auto max-w-3xl text-center">
+        <span class="badge mb-6 inline-flex border border-white/20 bg-white/10 text-white backdrop-blur-sm">About Us</span>
+        <h1 class="mb-6 text-4xl font-bold leading-tight md:text-5xl">
+          Building the web we wish existed
+        </h1>
+        <p class="text-lg leading-relaxed text-white/70">
+          We believe great software should be fast, simple, and open. That&apos;s why we moved from a
+          heavy single-page app to a lightweight server-rendered stack.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="relative z-10 -mt-10">
+    <div class="container-fusion">
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {highlights.map((h) => (
+          <div class="card p-6 text-center">
+            <div class="text-3xl font-bold text-fu-primary">{h.value}</div>
+            <div class="mt-1 text-sm font-medium text-fu-text">{h.label}</div>
+            <p class="mt-1 text-xs text-fu-text/50">{h.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission -->
+  <section class="py-20">
+    <div class="container-fusion">
+      <div class="mx-auto mb-14 max-w-2xl text-center">
+        <h2 class="mb-4 text-3xl font-bold text-fu-text md:text-4xl">Our mission</h2>
+        <p class="text-lg leading-relaxed text-fu-text/60">
+          To make world-class learning accessible to everyone, powered by a web stack that&apos;s
+          fast enough to feel instant and simple enough to maintain for years.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {values.map((value, i) => (
+          <div class="card reveal p-8 text-center" x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
+            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-fu-primary/10 text-fu-primary">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d={i === 0 ? 'M12 3v18M3 12h18M12 7l1.5 3 3 1.5-3 1.5L12 17l-1.5-3-3-1.5 3-1.5L12 7z'
+                    : i === 1 ? 'M13 10V3L4 14h7v7l9-11h-7z'
+                    : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'} />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-fu-text">{value.title}</h3>
+            <p class="text-sm leading-relaxed text-fu-text/60">{value.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTA heading="Join us on the journey" intro="Be part of a community that values speed, simplicity and learning for all." ctaLabel="Create Free Account" ctaHref="/#cta" />
+  <Toast />
+</Layout>

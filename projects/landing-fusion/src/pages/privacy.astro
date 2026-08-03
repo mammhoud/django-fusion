@@ -1,0 +1,68 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const sections = [
+  {
+    heading: '1. Information we collect',
+    body: 'We collect information you provide directly, such as your name, email address, and account details, as well as usage data like pages visited and course progress. We never sell your personal information to third parties.',
+  },
+  {
+    heading: '2. How we use your information',
+    body: 'Your information is used to operate and improve the platform, personalize your learning experience, process payments, send service communications, and respond to support requests.',
+  },
+  {
+    heading: '3. Cookies and tracking',
+    body: 'We use essential cookies to keep you signed in (django-allauth sessions) and to remember your language preference. Optional analytics cookies help us understand aggregate usage — you can disable them in your browser settings.',
+  },
+  {
+    heading: '4. Data sharing',
+    body: 'We share data only with trusted service providers that help us operate the platform (hosting, payments, email delivery), under strict data-processing agreements, and when required by law.',
+  },
+  {
+    heading: '5. Data retention',
+    body: 'We retain your data only as long as necessary to provide the service or as required by law. You may request deletion of your account and associated data at any time by contacting support.',
+  },
+  {
+    heading: '6. Your rights',
+    body: 'Depending on your jurisdiction, you may have rights to access, correct, or delete your personal data, and to object to or restrict certain processing. Contact us to exercise these rights.',
+  },
+  {
+    heading: '7. Contact',
+    body: 'For privacy questions, email structa.cloud@gmail.com or write to 123 Fusion Lane, Suite 400. We respond to all privacy requests within 30 days.',
+  },
+];
+---
+
+<Layout
+  title="Privacy Policy"
+  description="How Fusion CMS collects, uses, and protects your personal information."
+>
+  <section class="bg-fu-bg py-16">
+    <div class="container-fusion">
+      <div class="mx-auto max-w-3xl">
+        <div class="mb-12 text-center">
+          <span class="badge-primary mb-4">Legal</span>
+          <h1 class="mb-4 text-4xl font-bold text-fu-text">Privacy Policy</h1>
+          <p class="text-fu-text/60">Last updated: August 3, 2026</p>
+        </div>
+
+        <div class="card space-y-10 p-8 md:p-12">
+          {sections.map((section) => (
+            <section>
+              <h2 class="mb-3 text-xl font-semibold text-fu-text">{section.heading}</h2>
+              <div class="prose-fusion">
+                <p>{section.body}</p>
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="/" class="font-medium text-fu-primary transition-colors hover:text-fu-primary-dark">
+            &larr; Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
