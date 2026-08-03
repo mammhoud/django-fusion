@@ -11,16 +11,23 @@
 ### Added
 - **Modal system + shared form components** — Unified add/edit flows across modules via reusable `Modal` + form components (Employee module converted first)
 - **Plan cleanup** — All completed plans archived to `docs/plans/legacy/pos/` (UI Enhancement Master Plan, Task Status, Enhancement Plan); `forge-pos-plan.md` rewritten to track only pending work
+- **Remix Icon system** — Full icon-set migration from Iconify (`icon-[tabler--…]`, lucide, heroicons, mdi, ph, carbon, solar) and `react-icons/hi2` to the Remix Icon font (`ri-*` classes). Vendored the Remix Icon package (2,950 icons) plus Inter & Roboto font families from CMS Fusion; rewrote `src/lib/icons.tsx` (`Ic`/`ic`/`iconClass`) to emit `ri-*` classes; ~600+ icon tokens replaced across all pages
+- **Assets reorganization** — `public/` merged into `assets/` with organized layout: icon fonts → `assets/icons/remix/`, font families → `assets/fonts/inter/` + `assets/fonts/roboto/`, CSS → `assets/styles/fonts/`; all asset paths fixed in `index.html`, `vite.config.ts`, `tauri.conf.json`, and source imports
 
 ### Changed
-- **Icon system** — Remaining Iconify utility icons in SideNav (pin, logout, close, help-circle, user-check) + Analytics/Reports/Tax modules replaced with Heroicons (`react-icons/hi2`)
+- **Icon system** — Remaining Iconify utility icons in SideNav (pin, logout, close, help-circle, user-check) + Analytics/Reports/Tax modules replaced with Heroicons (`react-icons/hi2`) — *superseded by the Remix Icon migration above; Iconify + `react-icons` deps and `@iconify/tailwind4` plugin removed*
 - **Auth page** — Sign In submit arrow now flips for RTL (`rtl:rotate-180`), password show/hide toggle fixed, back-to-login arrows RTL-aware, leftover framer-motion `whileHover` removed, gradient class migrated to Tailwind v4 `bg-linear-to-r`
 - **Dead framer-motion props cleanup** — `initial/animate/exit/transition/whileHover/variants/layoutId` props stripped across ~20 files; 22 frozen `animate={{ rotate: 360 }}` spinners converted to Tailwind `animate-spin`; deleted `framer-legacy.d.ts` shim
 - **Behavior fixes from dead props** — Recipes cost bar now fills by percentage, Sale mobile checkout bar collapses when cart empty, Sale order-details sidebar collapses, Home icon spins on hover
 - **Product cards** — Unified single-color theme-adaptive styling; modals fixed on Products and Kitchen pages (FlyonUI opacity override)
 
+### Removed
+- **MCP Support toggle** — Removed from Settings; ChatSupport no longer gates on MCP; the never-applied `mcp_enabled` migration was deleted
+- **Unique Card Colors toggle** — Backend `unique_card_colors` column dropped (migration `2026-10-03-000000_remove_unique_card_colors`); Settings toggle + i18n keys removed; product cards always use the single uniform theme color (Sale/ProductManager simplified)
+
 ### Fixed
 - **Sale page layout** — Order-type component uses `flex gap-2` (removed wrap), total amount container simplified
+- **Sale status-toast test flake** — Load-error toast assertion given an explicit `waitFor` timeout (8s) for the slow CI test environment
 
 ### Status
 All 17 sections of the UI Enhancement Master Plan complete; remaining work tracked in `docs/plans/pos/forge-pos-plan.md` (useApiMutation, DataTable bulk actions, events extension, preloading, Tauri notifications).

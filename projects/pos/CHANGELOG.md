@@ -5,6 +5,20 @@
 
 ---
 
+## Unreleased — 3 August 2026
+
+> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [pos-solo](pos-solo/CHANGELOG.md) · [pos-full](pos-full/CHANGELOG.md)
+
+### Added (forge-pos)
+- **Remix Icon system** — Full icon-set migration from Iconify + `react-icons/hi2` to Remix Icon (`ri-*` classes); vendored Remix, Inter, and Roboto from CMS Fusion; assets reorganized under `assets/`
+- **Assets reorganization** — `public/` merged into `assets/` (icon fonts → `icons/remix/`, font families → `fonts/`, CSS → `styles/fonts/`); paths fixed in `index.html`, `vite.config.ts`, `tauri.conf.json`
+
+### Removed (forge-pos)
+- **MCP Support toggle** — Removed from Settings + ChatSupport gating; `mcp_enabled` migration deleted
+- **Unique Card Colors toggle** — Backend column dropped (migration `2026-10-03-000000_remove_unique_card_colors`); Settings toggle + i18n keys removed; product cards use one uniform theme color
+
+---
+
 ## v1.3.0 — 30 July 2026
 
 > **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [pos-solo](pos-solo/CHANGELOG.md) · [pos-full](pos-full/CHANGELOG.md)
