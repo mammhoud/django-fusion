@@ -1,0 +1,38 @@
+{% load i18n %}
+
+<section class="services-section py-5">
+    <div class="container">
+        {% if block.value.title %}
+            <div class="text-center mb-5">
+                <h2>{{ block.value.title }}</h2>
+                {% if block.value.subtitle %}
+                    <p class="lead text-muted">{{ block.value.subtitle }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+        <div class="row g-4">
+            {% for service in page_items %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card h-100 p-4 border rounded shadow-sm">
+                        {% if service.icon %}
+                            <div class="service-card__icon mb-3">
+                                <i class="{{ service.icon }} fs-1 text-primary" aria-hidden="true"></i>
+                            </div>
+                        {% endif %}
+                        <h3 class="service-card__title h5">{{ service.name }}</h3>
+                        {% if service.overview %}
+                            <p class="text-muted">{{ service.overview }}</p>
+                        {% elif service.short_description %}
+                            <p class="text-muted">{{ service.short_description }}</p>
+                        {% endif %}
+                        {% if service.formatted_price %}
+                            <p class="service-card__price fw-semibold text-primary mb-0">{{ service.formatted_price }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center w-100">{% trans "No services available." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>

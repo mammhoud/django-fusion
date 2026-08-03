@@ -37,7 +37,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from apps.pages.accounts.emails import send_registration_email
         from apps.pages.accounts.tokens import registration_token_generator
-        from apps.pages.accounts.views.registration import get_site_url
+        from apps.pages.accounts.site.views.registration import get_site_url
 
         dry_run = options["dry_run"]
         email_filter = options.get("email")

@@ -127,8 +127,8 @@ export default function CoursesPage() {
         </section>
       </ScrollReveal>
 
-      {/* Featured Courses Carousel */}
-      {featuredSlides.length > 0 && (
+      {/* Featured Courses Carousel — only after the API response is in */}
+      {!loading && featuredSlides.length > 0 && (
         <ScrollReveal animation="fadeUp" duration={0.5}>
           <section className="bg-white border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

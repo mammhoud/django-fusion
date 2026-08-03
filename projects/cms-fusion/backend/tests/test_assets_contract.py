@@ -55,8 +55,13 @@ def test_generated_outputs_are_not_asset_sources():
 
 
 def test_assets_config_declares_canonical_path_settings():
-    """The Django asset config declares the canonical project path settings."""
-    config_file = PROJECT_ROOT / "configs" / "base" / "assets.py"
+    """The Django asset config declares the canonical project path settings.
+
+    During the configs consolidation the per-project ``configs/`` trees were
+    merged into the shared workspace ``projects/configs/`` package, so the
+    asset path settings now live there instead of under this project root.
+    """
+    config_file = Path(__file__).resolve().parents[3] / "configs" / "base" / "assets.py"
     tree = ast.parse(config_file.read_text(encoding="utf-8"))
 
     assignments = set()

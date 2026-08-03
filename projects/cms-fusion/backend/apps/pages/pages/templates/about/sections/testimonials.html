@@ -1,0 +1,46 @@
+{% load i18n wagtailcore_tags %}
+
+{% prop block %}
+
+{# about/sections/testimonials.html — renders the AboutPage "testimonials" #}
+{# StructBlock. The block fields are: title, subtitle, background_image,    #}
+{# video_url, testimonials (StreamBlock of {content, client_photo,          #}
+{# client_name, client_position}).                                          #}
+<section class="testimonials-section py-5">
+    <div class="container">
+        {% if block.value.title or block.value.subtitle %}
+        <div class="text-center mb-5">
+            {% if block.value.title %}
+            <h2 class="display-6 fw-bold mb-3">{{ block.value.title }}</h2>
+            {% endif %}
+            {% if block.value.subtitle %}
+            <p class="text-muted lead">{{ block.value.subtitle }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="row g-4">
+            {% if block.value.testimonials %}
+                {% for item in block.value.testimonials %}
+                {% with testimonial=item.value %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 p-4">
+                        <blockquote class="mb-3 flex-grow-1">
+                            <p class="text-muted fst-italic">"{{ testimonial.content|striptags }}"</p>
+                        </blockquote>
+                        <div class="d-flex align-items-center mt-auto">
+                            <div class="fw-bold">{{ testimonial.client_name }}</div>
+                            {% if testimonial.client_position %}
+                            <span class="text-muted ms-2 small">{{ testimonial.client_position }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% endfor %}
+            {% else %}
+                {% include_block block %}
+            {% endif %}
+        </div>
+    </div>
+</section>

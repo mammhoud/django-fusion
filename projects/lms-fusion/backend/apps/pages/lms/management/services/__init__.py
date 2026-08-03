@@ -1,8 +1,5 @@
-# from .lesson import *
-# from .enrollment import *
-from . import legacy  # noqa: F401
-from .courses import *
-from .enrollments import *
-from .lessons import *
-from .notes import *
-from .progress import *
+"""LMS service modules.
+
+Import services from their concrete modules; this package intentionally performs
+no eager aggregation so model loading remains cycle-safe.
+"""

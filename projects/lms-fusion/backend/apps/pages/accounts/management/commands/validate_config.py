@@ -289,7 +289,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.MIGRATE_HEADING("\n--- Summary ---"))
         self.stdout.write(
             "Precedence rule: .env values override YAML defaults.\n"
-            "  Dynaconf loads YAML files first (configs/settings/ENV/*.yml),\n"
+            "  Dynaconf loads YAML files first (configs/Env/*.yml),\n"
             "  then pydantic-settings applies .env on top via env_file='.env'.\n"
             "  The effective runtime value is always the .env value when both\n"
             "  sources define the same key.\n"

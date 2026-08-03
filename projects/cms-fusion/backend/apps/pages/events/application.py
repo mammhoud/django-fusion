@@ -27,6 +27,15 @@ class EventsApp(Application):
     icon = "date_range"
     app_name = "events"
 
+    # The public events grid is a Wagtail ``EventPage`` served at ``/events/``
+    # (mirroring LMS). The inherited ``index_path`` would 302 ``/events/`` to
+    # the staff-only routable EventViewset list (``/events/event/``), shadowing
+    # the Wagtail page. ``index_path = None`` removes the inherited pattern
+    # (ViewsetMeta treats ``None`` as "remove inherited pattern") so Wagtail
+    # keeps serving the page while the HTMX action fragments
+    # (``/events/list-fragment/``, ``/events/create-fragment/``) stay mounted.
+    index_path = None
+
     @viewprop
     def viewsets(self):
         from apps.pages.events.components import EventCreateFragment, EventListFragment

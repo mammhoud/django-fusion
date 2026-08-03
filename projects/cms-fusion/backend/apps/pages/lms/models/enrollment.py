@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django_fusion.models.base import BaseModel as DefaultBase
 
-from apps.pages.lms.managers import EnrollmentManager as EnrollmentsManager
+from apps.pages.lms.managers.enrollments import EnrollmentManager
 
 
 class Enrollment(
@@ -49,7 +49,7 @@ class Enrollment(
     progress = models.FloatField(default=0.0)  # 0-100%
     last_accessed_at = models.DateTimeField(auto_now=True)
 
-    objects = EnrollmentsManager()
+    objects = EnrollmentManager()
     # packages = GenericRelation(
     #     PackageAssignment,
     #     content_type_field="content_type",

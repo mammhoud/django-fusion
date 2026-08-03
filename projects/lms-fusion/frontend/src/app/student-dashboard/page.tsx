@@ -6,19 +6,20 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { HiAcademicCap, HiClock, HiCheckCircle, HiChartBar, HiBookOpen, HiHeart, HiUser, HiArrowRight, HiStar } from 'react-icons/hi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import StatSkeleton from '@/components/ui/StatSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
 import EmptyState from '@/components/ui/EmptyState';
 
 export default function StudentDashboard() {
-  const { data: profile } = useGetProfileQuery();
+  const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useGetProfileQuery();
   const { data: dashboard, isLoading: dashLoading } = useGetDashboardQuery(profile?.id ?? 0, {
     skip: !profile?.id,
   });
-  const { data: enrollments } = useGetStudentEnrollmentsQuery(profile?.id ?? 0, {
+  const { data: enrollments, isLoading: enrollLoading } = useGetStudentEnrollmentsQuery(profile?.id ?? 0, {
     skip: !profile?.id,
   });
 
-  if (!profile) {
+  if (profileLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
@@ -29,6 +30,17 @@ export default function StudentDashboard() {
     );
   }
 
+  if (profileError || !profile) {
+    return (
+      <ErrorState
+        fullPage
+        message="Unable to load your student dashboard. Please sign in and try again."
+        onRetry={refetchProfile}
+      />
+    );
+  }
+
+  const statsLoading = dashLoading || enrollLoading;
   const statsCards = [
     { icon: HiAcademicCap, label: 'Enrolled Courses', value: dashboard?.enrolled_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiCheckCircle, label: 'Completed', value: dashboard?.completed_courses ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
@@ -59,7 +71,9 @@ export default function StudentDashboard() {
             <div className={`${stat.bg} w-12 h-12 rounded-lg flex items-center justify-center mb-3`}>
               <stat.icon className={`w-6 h-6 ${stat.color}`} />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{stat.value}{stat.suffix || ''}</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {statsLoading ? <StatSkeleton /> : stat.value}{!statsLoading && (stat.suffix || '')}
+            </div>
             <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
           </motion.div>
         ))}

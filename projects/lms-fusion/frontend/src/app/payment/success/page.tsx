@@ -7,6 +7,7 @@ import { HiCheckCircle, HiAcademicCap, HiArrowRight, HiMail, HiExclamation, HiRe
 import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import { useGetStudentEnrollmentsQuery, useVerifyPaymentMutation } from '@/store/api/endpoints/students';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import ErrorState from '@/components/ui/ErrorState';
 
 function PaymentSuccessContent() {
   const router = useRouter();
@@ -14,7 +15,7 @@ function PaymentSuccessContent() {
   const enrollmentId = searchParams?.get('enrollment_id');
   const urlTxId = searchParams?.get('transaction_id');
 
-  const { data: profile } = useGetProfileQuery();
+  const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useGetProfileQuery();
   const { data: enrollments, isLoading: enrollmentsLoading } = useGetStudentEnrollmentsQuery(profile?.id ?? 0, {
     skip: !profile?.id,
   });
@@ -29,9 +30,9 @@ function PaymentSuccessContent() {
   const enrollment = enrollments?.find((e) => String(e.id) === enrollmentId);
   const resolvedTxId = urlTxId || String(enrollment?.payment_transaction_id ?? '');
 
-  // Call verify endpoint on mount
+  // Call verify endpoint on mount (only once the user profile is available)
   useEffect(() => {
-    if (!resolvedTxId || verifyAttempted) return;
+    if (!profile || !resolvedTxId || verifyAttempted) return;
 
     const runVerify = async () => {
       setVerifyAttempted(true);
@@ -55,7 +56,7 @@ function PaymentSuccessContent() {
     };
 
     runVerify();
-  }, [resolvedTxId, verifyAttempted, verifyPayment]);
+  }, [profile, resolvedTxId, verifyAttempted, verifyPayment]);
 
   // Auto-redirect after 10 seconds (only on success)
   useEffect(() => {
@@ -67,6 +68,26 @@ function PaymentSuccessContent() {
   }, [verifySuccess, router]);
 
   const isLoading = enrollmentsLoading || verifying;
+
+  // ── Profile/auth gate — don't fall through to a success screen when the
+  // ── profile request failed or the user is not signed in ──
+  if (profileLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <LoadingSkeleton variant="card" count={1} />
+      </div>
+    );
+  }
+
+  if (profileError || !profile) {
+    return (
+      <ErrorState
+        fullPage
+        message="Unable to load your enrollment details. Please sign in to continue."
+        onRetry={refetchProfile}
+      />
+    );
+  }
 
   // ── Verifying state ──
   if (isLoading && !verifyAttempted) {

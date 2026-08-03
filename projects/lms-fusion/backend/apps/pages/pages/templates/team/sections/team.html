@@ -35,7 +35,7 @@
                             {% if member.skills %}
                                 {% for skill in member.skills %}
                                 <div class="col-12 col-lg-6">
-                                    <div class="progress-box progress-orange {% if not forloop.first and forloop.counter0|divisibleby:2 %}mt-4{% endif %}">
+                                    <div class="progress-box progress-orange">
                                         <h6 class="fw-medium">{{ skill.name }}</h6>
                                         <div class="animated-progress">
                                             <div data-progress="{{ skill.percentage }}" style="width: {{ skill.percentage }}%;"></div>
@@ -43,8 +43,6 @@
                                     </div>
                                 </div>
                                 {% endfor %}
-                            {% else %}
-
                             {% endif %}
                         </div><!-- end row(inner) -->
                     </div>
