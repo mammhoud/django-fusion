@@ -39,14 +39,12 @@ class LandingPage(Page):
         [("hero", HeroBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Hero"),
     )
     cta = StreamField(
         [("cta", CtaBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Call to action"),
     )
 
@@ -70,35 +68,30 @@ class HomePage(LandingPage):
         [("stats", StatsSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Stats"),
     )
     features = StreamField(
         [("features", FeaturesSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Features"),
     )
     testimonials = StreamField(
         [("testimonials", TestimonialsSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Testimonials"),
     )
     pricing = StreamField(
         [("pricing", PricingSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Pricing"),
     )
     faq = StreamField(
         [("faq", FaqSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("FAQ"),
     )
 
@@ -149,7 +142,6 @@ class ContactPage(LandingPage):
         [("contact", ContactSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("Contact section"),
     )
 
@@ -171,7 +163,6 @@ class FaqPage(LandingPage):
         [("faq", FaqSectionBlock())],
         use_json_field=True,
         blank=True,
-        null=True,
         verbose_name=_("FAQ"),
     )
 

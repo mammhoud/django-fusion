@@ -21,7 +21,7 @@
         hx-swap="innerHTML"
         x-data="{ name: '', email: '', message: '', valid: false }"
         x-effect="valid = name.trim() && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && message.trim()"
-        @submit.prevent="if (!valid) { return; } $el.querySelector('button[type=submit]').setAttribute('aria-busy', 'true'); htmx.process($el); $el.requestSubmit()"
+        @submit="if (!valid) $event.preventDefault()"
       >
         {% csrf_token %}
         <div>
