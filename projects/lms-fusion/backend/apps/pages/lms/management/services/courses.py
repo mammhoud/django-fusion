@@ -601,9 +601,9 @@ class CourseService(BaseService):
 
             # Add user enrollment status if user_id provided
             if user_id:
-                from apps.pages.lms.models.enrollment import EnrollmentsManager
+                from apps.pages.lms.management.managers.enrollments import EnrollmentManager
 
-                enrollment = EnrollmentsManager().get_user_enrollment_for_course(
+                enrollment = EnrollmentManager().get_user_enrollment_for_course(
                     user_id=user_id,
                     course_id=course.id
                 )

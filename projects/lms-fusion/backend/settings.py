@@ -1,139 +1,98 @@
-"""Website-local Django settings for lms-fusion."""
-import os
+"""Site-specific Django settings for lms-fusion.
+
+Imports shared Fusion defaults from configs.default, then applies
+LMS-specific branding, CORS origins, and feature flags.
+"""
+
 import sys
 from pathlib import Path
 
-# ============================================================
-# Path Configuration
-# ============================================================
+# ═══════════════════════════════════════════════════════════════════
+# Path Configuration — ensure correct import resolution
+# ═══════════════════════════════════════════════════════════════════
 _SITE_DIR = Path(__file__).resolve().parent
 _WORKSPACE_DIR = _SITE_DIR.parent
+_PROJECTS_DIR = _WORKSPACE_DIR.parent
 _SITE_APP_DIR = _SITE_DIR / "www"
 _APPS_DIR = _SITE_DIR / "apps"
 
-# Ensure correct import paths.
-for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR), str(_APPS_DIR)):
+for _path in (str(_PROJECTS_DIR), str(_WORKSPACE_DIR), str(_SITE_DIR),
+              str(_SITE_APP_DIR), str(_APPS_DIR)):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)
 
 
-# ============================================================
-# Site Configuration
-# ============================================================
-from configs.site import configure_site_environment
+# ═══════════════════════════════════════════════════════════════════
+# Site Environment — seed env vars before importing shared settings
+# ═══════════════════════════════════════════════════════════════════
+from configs.site import configure_site_environment  # noqa: E402
 
 configure_site_environment("lms-fusion", module="FUSION", default_port=5070)
 
-# ============================================================
-# Internal Dependency Handling
-# ============================================================
-# django_fusion is the real workspace framework. Do not install
-# fake sys.modules shims here; dependency failures should surface during checks.
 
-# ============================================================
-# Import Shared Django Settings
-# ============================================================
-from configs.settings import *  # noqa: E402,F401,F403
+# ═══════════════════════════════════════════════════════════════════
+# Shared Fusion Settings — CD layer, base Django, common FUSION_*
+# Also provides the ``cfg()`` helper for resolving site settings
+# from env vars, Dynaconf YAML (Env/_site.yml), or Python fallback.
+# ═══════════════════════════════════════════════════════════════════
+from configs.default import *  # noqa: E402,F401,F403
 
-# ============================================================
-# URL and Application Configuration
-# ============================================================
-ROOT_URLCONF = "www.urls"
 
-# ASGI/WSGI applications live in the site-local server.py.
-# The start script places this site directory on PYTHONPATH and launches
-# server:application, so Django can keep the same import path.
-ASGI_APPLICATION = "server.asgi_application"
-WSGI_APPLICATION = "server.application"
-
-# ============================================================
-# Website-Specific Settings
-# ============================================================
+# ═══════════════════════════════════════════════════════════════════
+# Site Identity
+# ═══════════════════════════════════════════════════════════════════
 WEBSITE_NAME = "lms-fusion"
 WEBSITE_IDENTIFIER = "lms-fusion"
-SITE_ID = 1
+WAGTAIL_SITE_NAME = cfg("WAGTAIL_SITE_NAME", "Fusion LMS")
 
-# ── Wagtail admin branding ──
-WAGTAIL_SITE_NAME = "Fusion LMS"
 
-# ── Local apps (site-specific plugins, www packages, and page apps) ──
-# NOTE: `www.worker` is NOT listed here because `core.configs.base.apps`
-# already registers it globally as a shared worker module — including it
-# here would register the same app label twice and Django would raise
-# `ImproperlyConfigured: Application labels aren't unique`.
-LOCAL_APPS = [
-    "apps.domain",
-    "apps.core",
-    "apps.content.apps.ContentConfig",
-    "apps.pages.pages.apps.PagesConfig",
-    "apps.handlers.apps.AccountsConfig",
-    "apps.pages.accounts.apps.AccountsConfig",
-    "apps.pages.lms.apps.LmsConfig",
-    "apps.pages.blog.apps.BlogConfig",
-    "apps.pages.products.apps.ProductsConfig",
-    "apps.pages.profile.apps.ProfileConfig",
-    "django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",
-    "apps.pages.branding.apps.BrandingConfig",
-]
-INSTALLED_APPS += LOCAL_APPS
+# ═══════════════════════════════════════════════════════════════════
+# Branding — teal theme (env var > _site.yml > fallback)
+# ═══════════════════════════════════════════════════════════════════
+FUSION_SITE_NAME = cfg("FUSION_SITE_NAME", "Fusion LMS")
+FUSION_COMPANY_NAME = cfg("FUSION_COMPANY_NAME", "Fusion Inc.")
+FUSION_CREATOR_NAME = cfg("FUSION_CREATOR_NAME", "Fusion Team")
+FUSION_PRIMARY_COLOR = cfg("FUSION_PRIMARY_COLOR", "#00a1b3")
+FUSION_SECONDARY_COLOR = cfg("FUSION_SECONDARY_COLOR", "#008080")
 
-# The shared `www.worker` app is registered globally in `configs.base.apps`,
-# but the fusion projects have their own site-local `www` package that shadows
-# the workspace one, so `www.worker` cannot be imported here. Remove it from
-# the fusion app registry; the fusion sites run their own task/worker stack
-# through django-fusion and do not need the legacy shared worker.
-INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
 
-# Register fusion_layout template tag library as both a builtin and library.
-# - builtin:  allows {% fusion_layout %} and {% fusion_render_first_flag %} without {% load %}
-# - library:  allows {% load fusion_layout %} in templates like base.html
-# The shared configs/base/templates.py already has both, but /app/configs/ is
-# read-only in the container, so we duplicate the registration here.
-TEMPLATES[0]["OPTIONS"]["builtins"].append(
-    "django_fusion.comp.templatetags.fusion_layout"
-)
-TEMPLATES[0]["OPTIONS"]["libraries"]["fusion_layout"] = (
-    "django_fusion.comp.templatetags.fusion_layout"
-)
+# ═══════════════════════════════════════════════════════════════════
+# Render-First — disabled by default for LMS
+# ═══════════════════════════════════════════════════════════════════
+FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", False)
 
-# Dynamic branding context processor
+
+# ═══════════════════════════════════════════════════════════════════
+# Branding Context Processor — resolved from _site.yml
+# ═══════════════════════════════════════════════════════════════════
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
-    "django_fusion.contrib.branding.context_processors.fusion_branding_context"
+    cfg("FUSION_BRANDING_BACKEND",
+        "django_fusion.contrib.branding.context_processors.fusion_branding_context")
 )
 
-# ============================================================
-# Domain model settings
-# ============================================================
-# PROFILE_MODEL is a required ForeignKey target in domain models.
-# Point it to Django's built-in User model since this project
-# does not have a separate profile model.
-PROFILE_MODEL = "auth.User"
 
-# ============================================================
-# Silenced system checks
-# ============================================================
-# Keep only legacy duplicated app/model checks silenced; the previous
-# TeamMembership ordering check is fixed in domain models.
-SILENCED_SYSTEM_CHECKS = [
-    "treebeard.E001",
-    # Legacy duplicated app/model clashes from removed framework apps
-    "models.E028",  # db_table clashes
-    "models.E030",  # index name clashes
-    "models.E032",  # constraint name clashes
-    "fields.E300",   # relation with uninstalled models
-    "fields.E304",   # reverse accessor clashes
-    "fields.E305",   # reverse query name clashes
-    "fields.E307",   # lazy reference to uninstalled model
-    "fields.E340",   # intermediary table name clashes
-]
-WAGTAIL_WORKFLOW_ENABLED = False
+# ═══════════════════════════════════════════════════════════════════
+# CORS Origins — resolved from _site.yml (YAML key: CORS_ORIGINS)
+# ═══════════════════════════════════════════════════════════════════
+CORS_ALLOWED_ORIGINS = cfg("CORS_ORIGINS", [
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:3002",
+    "http://localhost:3458",
+    "http://127.0.0.1:3458",
+])
 
-# ============================================================
-# django-bolt / Fusion Bolt API Settings
-# ============================================================
-# Per-project bolt configuration. Override via environment variables
-# or directly in this module before running `python manage.py runbolt`.
+# Allow custom fusion headers for render-first negotiation.
+from corsheaders.defaults import default_headers  # noqa: E402
+
+CORS_ALLOW_HEADERS = [*default_headers, "x-fusion-render-first"]
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Bolt API — complex nested config, kept inline (not in YAML)
+# ═══════════════════════════════════════════════════════════════════
 FUSION_BOLT = {
     "enabled": True,
     "prefix": "/api",
@@ -149,94 +108,3 @@ FUSION_BOLT = {
     ],
     "component_auto_register": True,
 }
-
-# ═══════════════════════════════════════════════════════════════════
-# Fusion Branding (override defaults)
-# ═══════════════════════════════════════════════════════════════════
-FUSION_SITE_NAME = os.environ.get("FUSION_SITE_NAME", "Fusion LMS")
-FUSION_COMPANY_NAME = os.environ.get("FUSION_COMPANY_NAME", "Fusion Inc.")
-FUSION_CREATOR_NAME = os.environ.get("FUSION_CREATOR_NAME", "Fusion Team")
-FUSION_PRIMARY_COLOR = os.environ.get("FUSION_PRIMARY_COLOR", "#00a1b3")
-FUSION_SECONDARY_COLOR = os.environ.get("FUSION_SECONDARY_COLOR", "#008080")
-
-# ═══════════════════════════════════════════════════════════════════
-# Fusion Layouts
-# ═══════════════════════════════════════════════════════════════════
-FUSION_LAYOUTS = {
-    "default": "fusion/layouts/default.html",
-    "full_width": "fusion/layouts/full_width.html",
-    "sidebar": "fusion/layouts/sidebar.html",
-    "blank": "fusion/layouts/blank.html",
-}
-FUSION_DEFAULT_LAYOUT = "default"
-
-# ═══════════════════════════════════════════════════════════════════
-# Fusion Features (toggle individual LMS features)
-# ═══════════════════════════════════════════════════════════════════
-FUSION_FEATURES = {
-    "blog": True,
-    "courses": True,
-    "products": True,
-    "pages": True,
-    "auth": True,
-    "profile": True,
-    "branding": True,
-    "search": True,
-}
-
-# ═══════════════════════════════════════════════════════════════════
-# Fusion Render-First
-# ═══════════════════════════════════════════════════════════════════
-FUSION_RENDER_FIRST_DEFAULT = False
-
-# ═══════════════════════════════════════════════════════════════════
-# Fusion Assets — top/bottom asset manifest served to Next.js frontend
-# ═══════════════════════════════════════════════════════════════════
-FUSION_ASSETS = {
-    "top": {
-        "css": [
-            "/static/css/fusion.css",
-        ],
-        "fonts": [
-            "/static/fonts/remixicon/remixicon.css",
-            "/static/fonts/fontawesome-free/css/all.min.css",
-        ],
-        "preconnect": [
-            "https://fonts.googleapis.com",
-        ],
-        "inline_css": [],
-    },
-    "bottom": {
-        "js": [
-            "/static/js/fusion-bridge.js",
-        ],
-        "inline_js": [],
-    },
-}
-
-# ═══════════════════════════════════════════════════════════════════
-# CORS — allow frontend origins to access the API
-# ═══════════════════════════════════════════════════════════════════
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3001",
-    "http://localhost:3002",
-    "http://127.0.0.1:3001",
-    "http://127.0.0.1:3002",
-    "http://localhost:3458",
-    "http://127.0.0.1:3458",
-]
-CORS_ALLOW_CREDENTIALS = True
-
-# Allow the custom fusion headers used for render-first negotiation.
-from corsheaders.defaults import default_headers  # noqa: E402
-
-CORS_ALLOW_HEADERS = [*default_headers, "x-fusion-render-first"]
-
-# ═══════════════════════════════════════════════════════════════════
-# CORS — force-enable cortheaders since configs/base may be read-only
-# ═══════════════════════════════════════════════════════════════════
-if "corsheaders" not in INSTALLED_APPS:
-    INSTALLED_APPS.append("corsheaders")
-if "corsheaders.middleware.CorsMiddleware" not in MIDDLEWARE:
-    idx = next((i for i, m in enumerate(MIDDLEWARE) if m.startswith("django.middleware.security")), 0) + 1
-    MIDDLEWARE.insert(idx, "corsheaders.middleware.CorsMiddleware")

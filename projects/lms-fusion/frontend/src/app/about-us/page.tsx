@@ -7,6 +7,7 @@ import type { Route } from 'next';
 import { useGetInstructorsQuery } from '@/store/api/endpoints/instructors';
 import { useGetCoursesQuery } from '@/store/api/endpoints/courses';
 import { FusionPage } from '@/components/FusionPage';
+import StatSkeleton from '@/components/ui/StatSkeleton';
 import type { CmsPage } from '@/store/api/endpoints/pages';
 
 export default function AboutPage() {
@@ -22,8 +23,8 @@ function AboutPageContent({ page }: { page: CmsPage | undefined }) {
   const { data: coursesData, isLoading: coursesLoading } = useGetCoursesQuery({ page: 1 });
 
   const highlights = [
-    { icon: HiBookOpen, label: 'Courses', value: coursesData?.count ?? 0, desc: 'Expert-crafted courses' },
-    { icon: HiUserGroup, label: 'Instructors', value: instructorsData?.count ?? 0, desc: 'Industry professionals' },
+    { icon: HiBookOpen, label: 'Courses', value: coursesData?.count ?? 0, apiLoading: coursesLoading, desc: 'Expert-crafted courses' },
+    { icon: HiUserGroup, label: 'Instructors', value: instructorsData?.count ?? 0, apiLoading: instrLoading, desc: 'Industry professionals' },
     { icon: HiAcademicCap, label: 'Students', value: '5K+', desc: 'Active learners worldwide' },
     { icon: HiGlobe, label: 'Countries', value: '50+', desc: 'Global reach' },
   ];
@@ -55,7 +56,11 @@ function AboutPageContent({ page }: { page: CmsPage | undefined }) {
             <motion.div key={h.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
               className="card p-6 text-center bg-white">
               <h.icon className="w-8 h-8 text-[rgb(var(--fu-primary))] mx-auto mb-3" />
-              <div className="text-3xl font-bold text-gray-900">{h.value}</div>
+              {h.apiLoading ? (
+                <StatSkeleton size="lg" center />
+              ) : (
+                <div className="text-3xl font-bold text-gray-900">{h.value}</div>
+              )}
               <div className="text-sm text-gray-500 mt-1">{h.label}</div>
               <p className="text-xs text-gray-400 mt-1">{h.desc}</p>
             </motion.div>

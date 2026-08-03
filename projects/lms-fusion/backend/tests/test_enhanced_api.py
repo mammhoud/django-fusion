@@ -294,7 +294,7 @@ class TestFusionAssetsEndpoint(TestCase):
         assert set(("top", "bottom")) <= data["data"].keys()
 
 
-@override_settings(ROOT_URLCONF="www.urls")
+@override_settings(ROOT_URLCONF="apps.urls")
 class TestProductionFusionAssetsURL(TestCase):
     """Verify production URL configuration mounts assets exactly once."""
 

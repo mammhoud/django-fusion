@@ -197,14 +197,17 @@ class LessonsService(BaseService):
             return False
 
         # Check if user is enrolled in the course
-        from .enrollment_services import EnrollmentService
+        from apps.pages.lms.managers.enrollments import EnrollmentManager
 
         course_id = lesson.module.course_id if lesson.module else None
         if not course_id:
             return False
 
-        enrollment = EnrollmentService.check_if_user_enrolled(user_id, course_id)
-        return enrollment['is_enrolled']
+        enrollment = EnrollmentManager().get_user_enrollment_for_course(
+            user_id=user_id,
+            course_id=course_id,
+        )
+        return enrollment is not None
 
     @classmethod
     def mark_lesson_as_completed(
@@ -271,7 +274,7 @@ class LessonsService(BaseService):
         """
         Check if all lessons in a course are completed and mark enrollment as completed.
         """
-        from .enrollment_services import EnrollmentService
+        from apps.pages.lms.managers.enrollments import EnrollmentManager
 
         # Get total lessons
         lessons = Lesson.objects.get_course_lessons(course_id)
@@ -282,9 +285,9 @@ class LessonsService(BaseService):
 
         # If all lessons completed, mark enrollment as completed
         if completed_lessons >= total_lessons:
-            enrollment = EnrollmentService.get_user_enrollment_for_course(
+            enrollment = EnrollmentManager().get_user_enrollment_for_course(
                 user_id=user_id,
-                course_id=course_id
+                course_id=course_id,
             )
 
             if enrollment and not enrollment.completed_at:

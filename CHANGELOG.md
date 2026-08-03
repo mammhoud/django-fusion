@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-08-02 — lms-fusion container recovery: mounts, migrations, templates
+
+### docker (lms-fusion + cms-fusion compose)
+
+- Fixed stale container mounts that shadowed the shared configs package with an
+  empty `projects/lms-fusion/configs/` dir (caused `ModuleNotFoundError: No module
+  named 'configs.site'` at boot). Containers now mount `../configs` (shared),
+  `../assets` (workspace shared assets), and `./backend` per the current compose.
+- `docker-compose.yml` (LMS + CMS): added `../assets:/app/assets` mounts for
+  backend and worker so workspace-level shared templates resolve in containers.
+
+### migrations
+
+- Fixed `accounts/0002_remove_message_recipient_content_type_and_more.py` (LMS):
+  `AlterUniqueTogether(name='sharednote', unique_together=None)` now runs before
+  the `RemoveField('note')` / `RemoveField('user')` operations. The prior ordering
+  made Django's state projection fail with `SharedNote has no field named 'note'`
+  during `migrate` (Django requires the fields present in the from-state to drop
+  the composed unique index). Legacy `accounts_*` tables are now cleanly dropped
+  and `handlers.0002` applies.
+
+### templates & settings
+
+- `projects/configs/base/templates.py`: added `BASE_DIR / "apps" / "templates"` to
+  `TEMPLATES_DIRS` (the canonical home/about/contact/services/team template tree
+  was unreachable).
+- Created missing `services/includes/*` component templates (page_title,
+  services_section, counter_section, testimonial_section, pricing_section,
+  clients_section) and `events/main.html` + `events/includes/events_grid.html`
+  for both LMS and CMS — all dynamic (backend context), defensive, no static
+  content. Removed stale broken duplicates in `assets/templates/events/` that
+  referenced a dead `plugins:event-detail` URL.
+- `cms-fusion tests/test_assets_contract.py`: the canonical asset-path settings
+  now resolve from the shared `projects/configs/base/assets.py` after the configs
+  consolidation.
+
 ## 2026-07-30 — ceptor-ai migration complete + enhanced test coverage + plan consolidation
 
 ### ceptor-ai dependency: fully removed across all 6 projects

@@ -1,10 +1,10 @@
-# type: ignore NOQA
-from . import views
+"""Authentication and privacy routes for the LMS accounts app."""
+
 from django.urls import path
 
-from .views.auth import AllauthLoginView, AllauthSignupView
 from .apps import AccountsConfig
-from .views.allauth import AllauthLoginView, AllauthSignupView
+from .site.views.auth import AllauthLoginView, AllauthSignupView
+from .site.views import privacy
 
 app_name = AccountsConfig.label
 
@@ -14,29 +14,29 @@ urlpatterns = [
     # Privacy Policy
     path(
         "policy/modal/",
-        views.privacy.privacy_policy_modal,
+        privacy.privacy_policy_modal,
         name="policy_modal",
     ),
     path(
         "policy/accept/",
-        views.privacy.accept_privacy_policy,
+        privacy.accept_privacy_policy,
         name="accept_policy",
     ),
     # Terms of Service
     path(
         "terms/modal/",
-        views.privacy.terms_modal,
+        privacy.terms_modal,
         name="terms_modal",
     ),
     path(
         "terms/accept/",
-        views.privacy.accept_terms,
+        privacy.accept_terms,
         name="accept_terms",
     ),
     # Consent Status
     path(
         "consent/status/",
-        views.privacy.check_consent_status,
+        privacy.check_consent_status,
         name="consent_status",
     ),
 ]

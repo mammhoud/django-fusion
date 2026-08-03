@@ -4,7 +4,7 @@ from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.models import DraftStateMixin, LockableMixin, RevisionMixin
 
-from .base import DefaultBase
+from django_fusion.models.base import BaseModel as DefaultBase
 
 
 class ContactSubmission(DefaultBase, DraftStateMixin, RevisionMixin, LockableMixin):

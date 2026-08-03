@@ -3,6 +3,6 @@ revision = 3
 requires-python = ">=3.11"
 
 [[package]]
-name = "ctc-research"
+name = "lms-fusion"
 version = "1.0.3"
 source = { editable = "." }

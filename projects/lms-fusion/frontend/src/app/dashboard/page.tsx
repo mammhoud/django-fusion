@@ -14,6 +14,7 @@ import {
   HiClock, HiCheckCircle, HiTrendingUp, HiLightBulb, HiSpeakerphone, HiLink, HiInformationCircle,
 } from 'react-icons/hi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import StatSkeleton from '@/components/ui/StatSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
 import EmptyState from '@/components/ui/EmptyState';
 import RevenueChart from '@/components/dashboard/RevenueChart';
@@ -326,7 +327,7 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
 // ═══════════════════════════════════════════════════════════════════
 
 function StudentDashboard({ profile }: { profile: { id: number; first_name?: string; username: string } }) {
-  const { data: dashboard } = useGetDashboardQuery(profile.id, { skip: !profile.id });
+  const { data: dashboard, isLoading: dashLoading } = useGetDashboardQuery(profile.id, { skip: !profile.id });
   const { data: enrollments, isLoading: enrollLoading } = useGetStudentEnrollmentsQuery(profile.id, { skip: !profile.id });
   const toast = useToast();
 
@@ -341,6 +342,7 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
     return () => clearTimeout(timer);
   }, [toast, profile]);
 
+  const statsLoading = dashLoading || enrollLoading;
   const statsCards = [
     { icon: HiAcademicCap, label: 'Enrolled Courses', value: dashboard?.enrolled_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiCheckCircle, label: 'Completed', value: dashboard?.completed_courses ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
@@ -356,7 +358,9 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
         <div className={`${stat.bg} w-12 h-12 rounded-lg flex items-center justify-center mb-3`}>
           <stat.icon className={`w-6 h-6 ${stat.color}`} />
         </div>
-        <div className="text-2xl font-bold text-gray-900">{stat.value}{stat.suffix || ''}</div>
+        <div className="text-2xl font-bold text-gray-900">
+          {statsLoading ? <StatSkeleton /> : stat.value}{!statsLoading && (stat.suffix || '')}
+        </div>
         <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
       </div>
     ),
@@ -399,7 +403,9 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
                   <div className={`${stat.bg} w-12 h-12 rounded-lg flex items-center justify-center mb-3`}>
                     <stat.icon className={`w-6 h-6 ${stat.color}`} />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{stat.value}{stat.suffix || ''}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {statsLoading ? <StatSkeleton /> : stat.value}{!statsLoading && (stat.suffix || '')}
+                  </div>
                   <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
                 </div>
               </ScrollReveal>

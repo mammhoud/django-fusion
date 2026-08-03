@@ -99,7 +99,7 @@ def _check_duplicate_settings() -> None:
     key_sources: dict[str, list[str]] = {}
 
     for yaml_file in configs_dir.rglob("*.yml"):
-        # Environment profiles (e.g. configs/settings/ENV/_development.yml) are
+        # Environment profiles (e.g. configs/Env/default/_development.yml) are
         # mutually exclusive — only the active environment's file is loaded, so
         # a key defined across several profiles is NOT a duplicate and auditing
         # them together only produces false-positive warnings on every boot.
