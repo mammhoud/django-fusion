@@ -14,12 +14,3 @@ class AppsConfig(AppConfig):
         with contextlib.suppress(ImportError):
             import apps.core.signals  # noqa: F401
 
-        from django.db.models.signals import post_migrate
-        post_migrate.connect(_on_post_migrate, sender=self)
-
-
-def _on_post_migrate(sender, **kwargs):
-    """Call ensure_groups_exist() after migrations run."""
-    with contextlib.suppress(Exception):
-        from apps.pages.accounts.views.registration import ensure_groups_exist
-        ensure_groups_exist()

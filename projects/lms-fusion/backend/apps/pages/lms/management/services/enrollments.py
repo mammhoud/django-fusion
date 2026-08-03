@@ -20,7 +20,7 @@ from django_fusion.services.token import TokenService
 
 logger = logging.getLogger(__name__)
 
-from apps.pages.lms.managers import EnrollmentsManager
+from apps.pages.lms.management.managers.enrollments import EnrollmentManager
 from apps.pages.lms.models import Course, Enrollment, Lesson, LessonProgress, ModuleProgress
 
 User = get_user_model()
@@ -83,7 +83,7 @@ class EnrollmentService(BaseService):
             return {"error": "Profile not found", "success": False}
 
         # Get enrollment summary
-        enrollment_summary = EnrollmentsManager().get_enrollment_summary(user_id)
+        enrollment_summary = EnrollmentManager().get_enrollment_summary(user_id)
 
         # Get learning analytics
         learning_analytics = cls._get_learning_analytics(profile, time_period)
@@ -427,7 +427,7 @@ class EnrollmentService(BaseService):
     @classmethod
     def _get_course_recommendations(cls, profile: Profile) -> List[Dict[str, Any]]:
         """Get personalized course recommendations for user."""
-        from ..managers.course import CourseManager as CourseCacheManager
+        from apps.pages.lms.management.managers.course import CourseManager as CourseCacheManager
 
         # Get user's completed courses
         completed_courses = Enrollment.objects.filter(
@@ -750,8 +750,8 @@ class EnrollmentService(BaseService):
 
         # Invalidate caches
         for course_id in course_ids:
-            EnrollmentsManager()._invalidate_course_enrollment_cache(course_id)
-        EnrollmentsManager().invalidate_user_enrollment_cache(user_id)
+            EnrollmentManager()._invalidate_course_enrollment_cache(course_id)
+        EnrollmentManager().invalidate_user_enrollment_cache(user_id)
 
         return {
             "success": True,
@@ -1025,9 +1025,9 @@ class EnrollmentService(BaseService):
     def _invalidate_enrollment_caches(cls, enrollment_id: int, user_id: int, course_id: int):
         """Invalidate all relevant caches for an enrollment."""
         # Invalidate manager caches
-        EnrollmentsManager().invalidate_cache_for_enrollment(enrollment_id)
-        EnrollmentsManager().invalidate_user_enrollment_cache(user_id)
-        EnrollmentsManager()._invalidate_course_enrollment_cache(course_id)
+        EnrollmentManager().invalidate_cache_for_enrollment(enrollment_id)
+        EnrollmentManager().invalidate_user_enrollment_cache(user_id)
+        EnrollmentManager()._invalidate_course_enrollment_cache(course_id)
 
         # Invalidate service caches
         cache_keys = [

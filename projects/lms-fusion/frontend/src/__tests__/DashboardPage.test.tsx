@@ -418,6 +418,24 @@ describe('DashboardPage', () => {
       expect(screen.getByText('Welcome back, Mike!')).toBeInTheDocument();
     });
 
+    it('shows skeleton stat placeholders (not 0) while dashboard data is loading', () => {
+      mockUseGetDashboardQuery.mockReturnValue({
+        data: undefined,
+        isLoading: true,
+      });
+      mockUseGetStudentEnrollmentsQuery.mockReturnValue({
+        data: undefined,
+        isLoading: true,
+      });
+
+      const { container } = renderWithProviders(<DashboardPage />);
+
+      // Stats + enrollments render pulse placeholders while the APIs are in flight
+      expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(0);
+      // No premature "0" values in the stat cards
+      expect(screen.queryByText('0')).not.toBeInTheDocument();
+    });
+
     it('renders enrolled courses count', async () => {
       await act(async () => {
         renderWithProviders(<DashboardPage />);

@@ -29,9 +29,9 @@
       {% if post.excerpt %}
         <p class="post-card__excerpt">{{ post.excerpt|truncatewords:30 }}</p>
       {% endif %}
-      {% if post.category %}
-        <span class="badge">{{ post.category }}</span>
-      {% endif %}
+      {% for cat in post.categories.all %}
+        <span class="badge">{{ cat.name }}</span>
+      {% endfor %}
     </article>
   {% empty %}
     <p class="empty-state">No posts found.</p>

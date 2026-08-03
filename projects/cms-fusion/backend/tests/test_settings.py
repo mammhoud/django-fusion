@@ -31,21 +31,16 @@ DATABASES = {
 
 # ── Disable migrations for speed ────────────────────────────────────────
 # Return None for ALL apps — Django creates tables from model metadata
-# instead of running migration files. This is much faster and avoids
+# instead of running migration files, which is much faster and avoids
 # SQLite/Postgres migration file incompatibilities. Tables are still
 # created for all models (Wagtail, Django, domain, project apps) via
 # schema introspection.
 class _DisableMigrations:
     def __contains__(self, item):
         return True
+
     def __getitem__(self, item):
         return None
 
-MIGRATION_MODULES = _DisableMigrations()
 
-# ── Silence noisy checks in tests ───────────────────────────────────────
-SILENCED_SYSTEM_CHECKS = [
-    "treebeard.E001",        # Wagtail upstream — managers don't subclass MP_NodeManager
-    "models.W001",           # PostgreSQL-specific field not needed on SQLite
-    "wagtailsearch.W004",    # No search backend configured in test
-]
+MIGRATION_MODULES = _DisableMigrations()

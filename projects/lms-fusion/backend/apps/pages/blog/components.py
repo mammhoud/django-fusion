@@ -39,7 +39,9 @@ class BlogPostListFragment(FragmentComponent):
     def get_queryset(self):
         from apps.pages.blog.models import BlogPost
 
-        qs = BlogPost.objects.filter(status="published").select_related("author", "category")
+        # ``BlogPost.categories`` is a M2M — there is no ``category`` FK to
+        # select_related (previously raised FieldError -> HTTP 500).
+        qs = BlogPost.objects.filter(status="published").select_related("author")
 
         q = self.request.GET.get("q", "").strip()
         if q:
@@ -47,7 +49,7 @@ class BlogPostListFragment(FragmentComponent):
 
         category = self.request.GET.get("category")
         if category:
-            qs = qs.filter(category__slug=category)
+            qs = qs.filter(categories__slug=category)
 
         return qs.order_by("-published_date")
 

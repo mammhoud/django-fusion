@@ -26,6 +26,15 @@ class BlogApp(Application):
     icon = "article"
     app_name = "blog"
 
+    # No Wagtail ``BlogPage`` exists in the fixture set, so the inherited
+    # ``index_path`` would 302 ``/blog/`` to the staff-only routable
+    # BlogPostViewset list (``/blog/blogpost/`` → sign-in wall) — matching
+    # LMS, ``/blog/`` is left to fall through to Wagtail (404). ``index_path
+    # = None`` removes the inherited pattern (ViewsetMeta) while the HTMX
+    # action fragments (``/blog/posts/``, ``/blog/posts/list-fragment/``,
+    # ``/blog/posts/create-fragment/``) stay mounted.
+    index_path = None
+
     @viewprop
     def viewsets(self):
         from apps.pages.blog.components import (

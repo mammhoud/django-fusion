@@ -89,8 +89,6 @@ class ModuleProgress(DefaultBase):
 
     def get_lesson_progress_stats(self):
         """Get lesson progress statistics for this module."""
-        from ..models.lesson_progress import LessonProgress
-
         lessons = self.module.lessons.filter(is_active=True)
         total_lessons = lessons.count()
 

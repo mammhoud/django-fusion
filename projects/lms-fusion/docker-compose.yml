@@ -57,8 +57,8 @@ services:
       - "5074:5074"
     volumes:
       - ./backend:/app/lms-fusion:rw
-      - ./tools:/app/lms-fusion/tools:ro
-      - ./configs:/app/configs:ro
+      - ../configs:/app/configs:ro
+      - ../assets:/app/assets:ro
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
       # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
@@ -108,8 +108,13 @@ services:
     command: celery -A apps.domain.services.email.tasks:app worker --loglevel=info --queues=lms-fusion
     volumes:
       - ./backend:/app/lms-fusion:rw
-      - ./tools:/app/lms-fusion/tools:ro
-      - ./configs:/app/configs:ro
+      - ../configs:/app/configs:ro
+      - ../assets:/app/assets:ro
+      # Live libs mirror: the worker must see the same django-fusion source the
+      # backend does, otherwise it imports the image-baked (potentially stale)
+      # copy and crashes on new modules (e.g. django_fusion.models.certificate).
+      # :rw required — django-fusion's editable install touches egg-info at import.
+      - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
     networks:
       - common

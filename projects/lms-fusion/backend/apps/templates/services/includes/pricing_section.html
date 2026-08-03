@@ -1,0 +1,43 @@
+{% load i18n %}
+
+<section class="pricing-section py-5 bg-light">
+    <div class="container">
+        {% if block.value.title %}
+            <div class="text-center mb-5">
+                <h2>{{ block.value.title }}</h2>
+                {% if block.value.subtitle %}
+                    <p class="lead text-muted">{{ block.value.subtitle }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+        <div class="row g-4 justify-content-center">
+            {% for plan in block.value.plans %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="pricing-card h-100 p-4 border rounded shadow-sm {% if plan.value.is_featured %}border-primary{% endif %}">
+                        <h3 class="pricing-card__plan h5">{{ plan.value.plan_name }}</h3>
+                        <p class="pricing-card__price fs-2 fw-bold text-primary">
+                            {{ plan.value.currency|default:"$" }}{{ plan.value.price }}
+                            {% if plan.value.duration %}
+                                <span class="fs-6 text-muted fw-normal">/ {{ plan.value.duration }}</span>
+                            {% endif %}
+                        </p>
+                        {% if plan.value.description %}
+                            <p class="text-muted">{{ plan.value.description }}</p>
+                        {% endif %}
+                        {% if plan.value.features %}
+                            <ul class="pricing-card__features list-unstyled mb-0">
+                                {% for feature in plan.value.features %}
+                                    <li class="py-1">
+                                        <i class="bi bi-check-circle-fill text-success me-2" aria-hidden="true"></i>{{ feature }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center w-100">{% trans "No pricing plans available." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>

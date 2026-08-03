@@ -21,6 +21,6 @@ class AccountsConfig(AppConfig):
 
 def _on_post_migrate(sender, **kwargs):
     """Call ensure_groups_exist() after migrations run."""
-    from apps.pages.accounts.views.registration import ensure_groups_exist
+    from apps.pages.accounts.site.views.registration import ensure_groups_exist
 
     ensure_groups_exist()

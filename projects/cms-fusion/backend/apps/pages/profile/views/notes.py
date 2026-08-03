@@ -9,7 +9,8 @@ from django_fusion.routes.http.notifications import NotificationMixin
 from django_fusion.routes.pages.handler import PageHandler
 
 from apps.pages.accounts.management.services import CertificateService, MessageService
-from apps.pages.lms.management.services import CourseService, NoteService
+from apps.pages.lms.management.services.courses import CourseService
+from apps.pages.lms.management.services.notes import NoteService
 
 logger = logging.getLogger(__name__)
 
