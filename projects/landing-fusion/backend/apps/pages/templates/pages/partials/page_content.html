@@ -1,0 +1,78 @@
+{% comment %} ──────────────────────────────────────────────────────────
+   pages/partials/page_content.html — THE one content-region road.
+
+   Every landing page template (pages/*.html) and the HTMX fragment
+   (pages/fragments/page.html) include THIS partial, so the content
+   sequence (hero → body → projects → stats → features+pricing →
+   testimonials → faq → contact → cta) is defined exactly once.
+
+   Mechanism (django-fusion comp road, plan candidate 01):
+   - Full page templates render the comp tag for this partial inside the
+     content block — resolved through django-fusion's ComponentRegistry
+     (IncludePathComponent), so render history and component tracking stay
+     intact for every section.
+   - The HTMX fragment uses the SAME comp call — the fragment IS the
+     content region, so plain loads and HTMX swaps share one road and can
+     never drift apart.
+   - django-fusion's FragmentHandlerMixin resolves the strategy in
+     setup(): "fragment" (HX-Request header) → pages/fragments/page.html;
+     "full" → the page's own template (pages/about.html, …). Both include
+     this partial, so the sequence lives in exactly one place.
+
+   Each section is guarded by a page-field check so a page renders exactly
+   its own stack:
+   - Home             → hero + cta
+   - About/Products/Features → full document (hero, body, stats,
+     features+pricing, testimonials, faq, cta)
+   - Company/Services → hero + body + cta
+   - Contact          → hero + contact + cta
+   - FAQ              → hero + faq + cta
+   - Privacy          → body only (static legal document)
+   - Projects         → hero + body + projects + full document
+
+   The body heading is page.body_heading (a class attribute on each page
+   model) and falls back to the page title.
+   ────────────────────────────────────────────────────────────────────── {% endcomment %}
+{% load wagtailcore_tags %}
+
+{% if page.hero %}{% include_block page.hero %}{% endif %}
+
+{# Body / story — the "about this page" prose section. #}
+{% if page.body %}
+<section class="container-fusion" style="padding-block:4rem 5rem;">
+  <div style="max-width:42rem;">
+    <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{{ page.body_heading|default:page.title }}</h2>
+    <div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>
+  </div>
+</section>
+{% endif %}
+
+{# Projects grid (ProjectsPage) — cards rendered by content/blocks/project.html. #}
+{% if page.projects %}
+<section id="projects" class="container-fusion" style="padding-block:4rem 5rem;">
+  <div class="mx-auto mb-12 max-w-2xl text-center">
+    <span class="tag-marker">projects</span>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.875rem;margin:.75rem 0 0;">{{ page.projects_heading|default:"Projects in this repo" }}</h2>
+  </div>
+  <div class="project__grid" style="display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+    {% include_block page.projects %}
+  </div>
+</section>
+{% endif %}
+
+{# Stats band. #}
+{% if page.stats %}{% include_block page.stats %}{% endif %}
+
+{# Features with pricing folded into the same section (mirrors the Astro side). #}
+{% if page.features or page.pricing %}
+<section id="features" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% if page.features %}{% include_block page.features %}{% endif %}
+  {% if page.pricing %}{% include_block page.pricing %}{% endif %}
+</section>
+{% endif %}
+
+{# Proof / answers / contact / close. #}
+{% if page.testimonials %}{% include_block page.testimonials %}{% endif %}
+{% if page.faq %}{% include_block page.faq %}{% endif %}
+{% if page.contact %}{% include_block page.contact %}{% endif %}
+{% if page.cta %}{% include_block page.cta %}{% endif %}

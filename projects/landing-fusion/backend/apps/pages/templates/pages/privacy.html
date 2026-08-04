@@ -1,0 +1,9 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ page.title }} · Fusion CMS{% endblock %}
+
+{% block content %}
+  {# Privacy renders only its body section (no hero/cta fields are seeded). #}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}

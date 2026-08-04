@@ -1,0 +1,81 @@
+---
+/**
+ * LiveFragment — an HTMX section that requests the *backend* component.
+ *
+ * Mechanism (AHA-stack, plan §12):
+ *   - On load, HTMX issues `hx-get` to the django-fusion handler for this
+ *     route (e.g. `{fusionApiUrl}/features/`). Because the request carries
+ *     the `HX-Request` header, the backend renders `pages/fragments/page.html`
+ *     — the content region only — and swaps it into this section.
+ *   - While the request is in flight, the section shows a default skeleton
+ *     (`.fusion-skeleton` shimmer). HTMX toggles `#htmx-global-indicator`
+ *     via the global beforeRequest/afterRequest listeners in Layout.astro.
+ *   - On success the backend HTML replaces the skeleton (`hx-swap`).
+ *   - On error (backend down) the section falls back to a quiet note.
+ *
+ * `fusionApiUrl` defaults to '' (same-origin). Set PUBLIC_FUSION_API_URL to
+ * point at the Django backend directly (e.g. http://localhost:8074).
+ */
+import Skeleton from '@/components/ui/Skeleton.astro';
+import { fusionApiUrl } from '@/lib/site';
+
+interface Props {
+  /** Backend route to fetch — must match an apps/handlers url, e.g. '/features/'. */
+  route: string;
+  /** Fragment name label, shown as the section tag-marker. */
+  label?: string;
+  heading?: string;
+  intro?: string;
+  /** Number of skeleton cards shown while the fragment loads. */
+  skeletonCards?: number;
+}
+
+const {
+  route,
+  label = 'live · from the backend',
+  heading = 'The same component, served by Django',
+  intro = 'This section is fetched with HTMX from the Wagtail backend — skeleton while it loads, then the server-rendered fragment swaps in.',
+  skeletonCards = 3,
+} = Astro.props;
+
+// Ensure the URL joins cleanly and stays relative when fusionApiUrl is ''.
+const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
+---
+
+
+<section class="live-fragment doc-sheet bg-fu-paper py-20 md:py-24" data-live-fragment>
+  <div class="container-fusion">
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <p class="tag-marker mb-4">{label}</p>
+      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>
+      <p class="text-fu-muted">{intro}</p>
+    </div>
+
+    <div
+      class="live-fragment__target"
+      hx-get={endpoint}
+      hx-trigger="load"
+      hx-target="this"
+      hx-swap="innerHTML"
+      data-fragment-endpoint={endpoint}
+    >
+      <!-- Default loading state: skeleton while the backend responds -->
+      <div class="live-fragment__skeleton" aria-hidden="true">
+        <Skeleton variant="card" count={skeletonCards} />
+        <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
+          requesting {route} · text/html
+        </p>
+      </div>
+
+      <!-- Quiet error fallback (swap listener lives in Layout.astro's bundled
+           script — one listener for all live fragments, not one per instance). -->
+      <template data-fragment-fallback>
+        <p class="live-fragment__fallback">
+          The backend fragment for <code class="font-mono">{route}</code> is not reachable right now
+          (is the Django server running at <code class="font-mono">{fusionApiUrl || '/  (same-origin)'}</code>?).
+          The static sections on this page render the same content.
+        </p>
+      </template>
+    </div>
+  </div>
+</section>
