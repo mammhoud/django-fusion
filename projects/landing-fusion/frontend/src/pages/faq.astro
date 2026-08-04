@@ -3,27 +3,49 @@ import Layout from '@/layouts/Layout.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('faq'),
+  ]);
+} catch { /* use fallbacks */ }
+
+const pageCta = pageData?.cta;
+const pageFaq = (pageData?.faq as any[] | undefined);
+
+const faqItems = pageFaq?.map((f: any) => ({
+  question: String(f.question || ''),
+  answer: String(f.answer || ''),
+})) ?? [
+  { question: 'What is structa.cloud?', answer: 'Structa Cloud is the portfolio and product hub for Mahmoud Ezzat Moustafa — a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.' },
+  { question: 'What is the AHA stack?', answer: 'AHA stands for Astro + HTMX + Alpine.js — a lightweight, server-first web stack. Astro renders pages to static/dynamic HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers micro-interactions.' },
+  { question: 'What is django-fusion?', answer: 'django-fusion is the component system and routing framework that powers every structa.cloud site. Component registry, HTMX detection, PageHandler views, fragment/layout rendering, SSE, and Wagtail block integration.' },
+  { question: 'What is ceptor-ai?', answer: 'ceptor-ai is an AI chat client with a Model Context Protocol (MCP) server. It enables AI agent communication, BEM-to-component design conversion, and agent-assisted code generation. Powers Cypercloud.' },
+  { question: 'Are the libraries free to use?', answer: 'Yes. django-fusion, ceptor-ai, and django-bolt are all open-source on GitHub under permissive licenses.' },
+  { question: 'How do I deploy a Fusion site?', answer: 'The monorepo includes Docker Compose orchestration with Traefik + Nginx + Postgres. One `make deploy` command provisions the full stack with HTTPS, shared media, and health checks.' },
+];
 ---
 
-<Layout
-  title="FAQ"
-  description="Answers to the most common questions about the Fusion platform, billing and the AHA stack."
->
-  <!-- Hero -->
-  <section class="section-hero reg-marks overflow-hidden py-16">
-    <div class="container-fusion">
-      <div class="mx-auto max-w-2xl text-center">
-        <p class="tag-marker mb-5">help</p>
-        <h1 class="mb-4 font-display text-4xl font-bold tracking-tight md:text-5xl">Frequently Asked Questions</h1>
-        <p class="text-lg text-fu-muted">
-          Can&apos;t find what you&apos;re looking for? <a href="/contact" class="font-medium text-fu-link underline underline-offset-2 hover:text-fu-link-dark">Contact support</a>.
-        </p>
+<Layout title={pageData?.title || 'FAQ'} description={pageData?.search_description || 'Frequently asked questions about structa.cloud, django-fusion, ceptor-ai, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings}>
+  <section class='section-hero reg-marks overflow-hidden py-16'>
+    <div class='container-fusion'>
+      <div class='mx-auto max-w-2xl text-center'>
+        <p class='tag-marker mb-5'>faq</p>
+        <h1 class='mb-4 font-display text-4xl font-bold tracking-tight md:text-5xl'>Frequently asked questions</h1>
+        <p class='text-lg text-fu-muted'>Everything you need to know about structa.cloud, the AHA stack, and the open-source libraries.</p>
       </div>
     </div>
   </section>
 
-  <FAQ heading="" intro="" searchable={true} />
+  <div class='py-14'>
+    <FAQ items={faqItems} />
+  </div>
 
-  <CTA heading="Still have questions?" intro="Our team is happy to help you get started." ctaLabel="Contact Support" ctaHref="/contact" />
+  <CTA heading={pageCta?.title || 'Still have questions?'} intro={pageCta?.subtitle || "Reach out through the contact form or open an issue on GitHub."} ctaLabel={pageCta?.primary_cta?.label || 'Contact us'} ctaHref={pageCta?.primary_cta?.href || '/contact'} />
   <Toast />
 </Layout>

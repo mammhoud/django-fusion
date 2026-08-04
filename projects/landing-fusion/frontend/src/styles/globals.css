@@ -387,6 +387,10 @@
   .fusion-skeleton--card {
     @apply grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
   }
+  .fusion-skeleton--card.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .fusion-skeleton--card.md\:grid-cols-4 { @media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Lines — shimmering text placeholders */
   .fusion-skeleton__line {
     display: block;
     height: 0.9rem;
@@ -401,7 +405,52 @@
   .fusion-skeleton__line--hero {
     height: 2.25rem;
     width: min(36rem, 82%);
+    margin-bottom: 0.5rem;
   }
+  .fusion-skeleton__line--title {
+    height: 1.6rem;
+    width: min(24rem, 65%);
+    margin-bottom: 0.5rem;
+  }
+  .fusion-skeleton__line--tag {
+    height: 0.65rem;
+    width: 7rem;
+    margin-bottom: 0.75rem;
+  }
+  .fusion-skeleton__line--btn {
+    height: 2.5rem;
+    border-radius: 0.375rem;
+  }
+  .fusion-skeleton__line--icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+  .fusion-skeleton__line--search {
+    height: 3rem;
+    border-radius: 0.375rem;
+    width: 100%;
+  }
+  .fusion-skeleton__line--accordion {
+    height: 3.25rem;
+    border-radius: 0.375rem;
+    width: 100%;
+  }
+  .fusion-skeleton__line--stat-value {
+    height: 2rem;
+    width: 5rem;
+    margin-bottom: 0.5rem;
+  }
+  .fusion-skeleton__line--circle {
+    border-radius: 9999px;
+  }
+  .fusion-skeleton__line--dot {
+    height: 0.5rem;
+    border-radius: 9999px;
+  }
+
+  /* Cards — generic and specialised */
   .fusion-skeleton__card {
     display: block;
     height: 9rem;
@@ -412,6 +461,107 @@
       hsl(var(--fu-line) / 0.55) 75%);
     background-size: 200% 100%;
     animation: fusion-shimmer 1.4s ease-in-out infinite;
+  }
+
+  /* ── Per-component skeleton layouts ──────────────────────────────── */
+
+  /* Hero section — tall centered block */
+  .fusion-skeleton--hero-section {
+    @apply w-full;
+  }
+  .fusion-skeleton--hero-section__inner {
+    @apply mx-auto flex max-w-3xl flex-col items-center gap-3 py-20 md:py-28;
+  }
+
+  /* Stats row */
+  .fusion-skeleton--stats {
+    @apply w-full;
+  }
+  .fusion-skeleton__stat {
+    @apply flex flex-col items-center gap-1.5 border-t border-fu-line pt-5;
+  }
+
+  /* Features grid */
+  .fusion-skeleton--features {
+    @apply w-full;
+  }
+  .fusion-skeleton__section-header {
+    @apply mx-auto flex max-w-2xl flex-col items-center gap-2;
+  }
+  .fusion-skeleton__feature-card {
+    @apply flex flex-col gap-2 rounded-md border border-fu-line bg-fu-card p-6;
+    min-height: 11rem;
+  }
+
+  /* Section divider (for folded sections) */
+  .fusion-skeleton__section-divider {
+    @apply mx-auto w-full border-t border-fu-line pt-16;
+    max-width: 80rem;
+  }
+
+  /* Testimonials */
+  .fusion-skeleton--testimonials {
+    @apply w-full;
+  }
+  .fusion-skeleton--testimonial {
+    @apply w-full;
+  }
+  .fusion-skeleton__carousel-controls {
+    @apply flex items-center justify-center gap-3;
+  }
+
+  /* Pricing */
+  .fusion-skeleton--pricing {
+    @apply w-full;
+  }
+  .fusion-skeleton--pricing-folded {
+    @apply w-full;
+  }
+
+  /* FAQ */
+  .fusion-skeleton--faq {
+    @apply w-full;
+  }
+
+  /* CTA banner */
+  .fusion-skeleton--cta {
+    @apply w-full;
+  }
+  .fusion-skeleton__cta-row {
+    @apply flex items-center gap-3;
+    margin-top: 2rem;
+  }
+
+  /* Contact form */
+  .fusion-skeleton--contact {
+    @apply w-full;
+  }
+  .fusion-skeleton__contact-info {
+    @apply flex flex-col gap-3;
+  }
+  .fusion-skeleton__contact-form {
+    @apply flex flex-col;
+  }
+
+  /* Shimmer animation (shared by all skeleton elements) */
+  .fusion-skeleton__line,
+  .fusion-skeleton__line--hero,
+  .fusion-skeleton__line--title,
+  .fusion-skeleton__line--tag,
+  .fusion-skeleton__line--btn,
+  .fusion-skeleton__line--icon,
+  .fusion-skeleton__line--search,
+  .fusion-skeleton__line--accordion,
+  .fusion-skeleton__line--stat-value,
+  .fusion-skeleton__line--circle,
+  .fusion-skeleton__line--dot,
+  .fusion-skeleton__card {
+    animation: fusion-shimmer 1.4s ease-in-out infinite;
+    background: linear-gradient(90deg,
+      hsl(var(--fu-line) / 0.55) 25%,
+      hsl(var(--fu-line)) 50%,
+      hsl(var(--fu-line) / 0.55) 75%);
+    background-size: 200% 100%;
   }
   @keyframes fusion-shimmer {
     0%   { background-position: 200% 0; }
@@ -442,5 +592,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fusion-skeleton__line, .fusion-skeleton__card { animation: none !important; }
+  .fusion-skeleton__line,
+  .fusion-skeleton__line--hero,
+  .fusion-skeleton__line--title,
+  .fusion-skeleton__line--tag,
+  .fusion-skeleton__line--btn,
+  .fusion-skeleton__line--icon,
+  .fusion-skeleton__line--search,
+  .fusion-skeleton__line--accordion,
+  .fusion-skeleton__line--stat-value,
+  .fusion-skeleton__line--circle,
+  .fusion-skeleton__line--dot,
+  .fusion-skeleton__card {
+    animation: none !important;
+  }
 }

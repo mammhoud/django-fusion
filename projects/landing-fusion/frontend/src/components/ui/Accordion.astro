@@ -12,6 +12,7 @@ const { items } = Astro.props;
 ---
 
 <div
+  client:idle
   class="space-y-3"
   x-data="{ open: null, toggle(id) { this.open = this.open === id ? null : id; } }"
 >

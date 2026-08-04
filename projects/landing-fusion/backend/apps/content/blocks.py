@@ -1,3 +1,11 @@
+# Section stack field names — shared between models and the API serializer.
+# Any page model that carries these fields exports their content via
+# the /apis/pages/<slug>/ endpoint.
+SECTION_STACK_FIELDS = [
+    "stats", "features", "testimonials", "pricing", "faq", "projects",
+]
+
+
 """
 Reusable Wagtail StreamField blocks for the landing-fusion pages.
 

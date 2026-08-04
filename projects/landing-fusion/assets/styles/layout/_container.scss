@@ -1,0 +1,16 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Layout: Container — responsive max-width wrapper.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fusion-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+
+  @media (min-width: 640px)  { padding-inline: 1.75rem; }
+  @media (min-width: 1024px) { padding-inline: 2.5rem; }
+
+  &--narrow { max-width: 48rem; }
+  &--wide   { max-width: 90rem; }
+}

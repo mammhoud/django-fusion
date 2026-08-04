@@ -32,15 +32,16 @@ DEFAULT_HOME_CONTENT = {
         (
             "hero",
             {
-                "badge": "Powered by the AHA stack",
-                "title": "Learn Without Limits",
+                "badge": "structa.cloud · full-stack engineering",
+                "title": "Platforms that ship as documents",
                 "subtitle": (
-                    "Master new skills with expert-led courses, interactive content, "
-                    "and a community of learners."
+                    "Structa Cloud builds server-rendered web platforms, AI tools, "
+                    "and open-source libraries — Django + Wagtail on the backend, "
+                    "Astro + HTMX + Alpine on the frontend. Every page is finished HTML."
                 ),
-                "primary_cta": {"label": "Explore Features", "href": "/#features", "style": "secondary"},
-                "secondary_cta": {"label": "Get Started Free", "href": "/#cta", "style": "white"},
-                "trusted_by": "Trusted by 5,000+ learners worldwide",
+                "primary_cta": {"label": "Explore the stack", "href": "/products", "style": "secondary"},
+                "secondary_cta": {"label": "About the engineer", "href": "/about", "style": "white"},
+                "trusted_by": "Trusted by teams building on Django + Wagtail",
             },
         )
     ],
@@ -48,10 +49,10 @@ DEFAULT_HOME_CONTENT = {
         (
             "cta",
             {
-                "title": "Start Learning Today",
-                "subtitle": "Join thousands of students and start your learning journey today.",
-                "primary_cta": {"label": "Create Free Account", "href": "/#cta", "style": "white"},
-                "secondary_cta": {"label": "Talk to Sales", "href": "/contact/", "style": "outline"},
+                "title": "Everything is open source",
+                "subtitle": "All structa.cloud libraries are public on GitHub. Explore the monorepo at github.com/mammhoud.",
+                "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
+                "secondary_cta": {"label": "Read the Docs", "href": "/about", "style": "outline"},
             },
         )
     ],
@@ -184,10 +185,10 @@ DEFAULT_ABOUT_SECTIONS = {
             {
                 "title": "Numbers that speak for themselves",
                 "stats": [
-                    {"value": "5", "suffix": "K+", "label": "Learners worldwide"},
-                    {"value": "120", "suffix": "+", "label": "Courses"},
-                    {"value": "80", "suffix": "+", "label": "Instructors"},
-                    {"value": "40", "suffix": "K+", "label": "Reviews"},
+                    {"value": "15", "suffix": "+", "label": "Open-source repos"},
+                    {"value": "18", "suffix": "", "label": "Blog posts"},
+                    {"value": "4", "suffix": "+", "label": "Production sites"},
+                    {"value": "5", "suffix": "+", "label": "Years building"},
                 ],
             },
         )
@@ -204,34 +205,34 @@ DEFAULT_ABOUT_SECTIONS = {
                 ),
                 "features": [
                     {
+                        "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
+                        "title": "Django + Wagtail",
+                        "description": "Content managed in Wagtail 7.4 with StreamField blocks — editors compose, django-fusion renders server-side.",
+                    },
+                    {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
-                        "title": "Lightning Fast",
-                        "description": "Server-rendered HTML with minimal client JS. Sub-second loads on any connection.",
+                        "title": "HTMX Fragment Rendering",
+                        "description": "Dynamic updates stream from Django as HTML fragments — no JSON API layer, no decoder to maintain.",
                     },
                     {
                         "icon": "M4 5h16v14H4z M4 12h16",
-                        "title": "HTMX Fragments",
-                        "description": "Dynamic updates stream from the Django backend as HTML — no JSON API layer needed.",
-                    },
-                    {
-                        "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
-                        "title": "Secure by Default",
-                        "description": "django-allauth sessions and CSRF-protected HTMX forms work out of the box.",
+                        "title": "Astro + Alpine.js",
+                        "description": "Astro SSG for zero-JS landing pages. Alpine.js for micro-interactions only where the page needs them.",
                     },
                     {
                         "icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87",
-                        "title": "Built for Teams",
-                        "description": "Role-based dashboards for students, instructors and admins — all from one codebase.",
+                        "title": "Monorepo Architecture",
+                        "description": "Six projects, one repository, one CI pipeline. Shared configs, assets, and components across all sites.",
                     },
                     {
                         "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
-                        "title": "Insightful KPIs",
-                        "description": "Live metric cards and dashboards rendered as lightweight server fragments.",
+                        "title": "AI-Powered Tools",
+                        "description": "ceptor-ai MCP server for agent communication, code generation, and prompt-to-design conversion.",
                     },
                     {
                         "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
-                        "title": "Fully Localized",
-                        "description": "Multi-language support with the Django DefaultLanguageMiddleware preserved.",
+                        "title": "Open Source First",
+                        "description": "All core libraries are public on GitHub. django-fusion, ceptor-ai, and django-bolt are open for contribution.",
                     },
                 ],
             },
@@ -242,11 +243,11 @@ DEFAULT_ABOUT_SECTIONS = {
             "testimonials",
             {
                 "eyebrow": "Testimonials",
-                "title": "Loved by teams worldwide",
-                "description": "Hear from the people building on the Fusion platform.",
+                "title": "Trusted by developers",
+                "description": "What teams say about building with django-fusion and the AHA stack.",
                 "testimonials": [
                     {
-                        "quote": "The switch from a heavy React SPA to HTMX fragments cut our page load time in half. Everything just works.",
+                        "quote": "The switch from a heavy React SPA to HTMX fragments cut our page load time in half. django-fusion's component system made the migration straightforward.",
                         "author": "Sarah Mitchell",
                         "role": "CTO, EduStart",
                         "avatar_initials": "SM",
@@ -332,31 +333,31 @@ DEFAULT_ABOUT_SECTIONS = {
             {
                 "eyebrow": "FAQ",
                 "title": "Frequently asked questions",
-                "description": "Everything you need to know about the product and billing.",
+                "description": "Everything you need to know about structa.cloud, django-fusion, and the stack.",
                 "items": [
+                    {
+                        "question": "What is structa.cloud?",
+                        "answer": "Structa Cloud is the portfolio and product hub for Mahmoud Ezzat Moustafa — a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.",
+                    },
                     {
                         "question": "What is the AHA stack?",
                         "answer": "AHA stands for Astro + HTMX + Alpine.js — a server-first rendering stack that ships minimal client-side JavaScript.",
                     },
                     {
+                        "question": "Are the libraries free to use?",
+                        "answer": "Yes. django-fusion, ceptor-ai, and django-bolt are all open-source on GitHub under permissive licenses.",
+                    },
+                    {
+                        "question": "Can I use this for a client project?",
+                        "answer": "Absolutely. The libraries are production-tested across vResume, Cypercloud, and the landing pages.",
+                    },
+                    {
                         "question": "How do I get started?",
-                        "answer": "Create a free account, pick a course, and start learning instantly. No credit card required.",
+                        "answer": "Clone the monorepo from github.com/mammhoud, run 'make dev' in projects/landing-fusion, and explore the Wagtail admin at /admin/.",
                     },
                     {
-                        "question": "Are there any hidden fees?",
-                        "answer": "No. Pricing is transparent — the free plan stays free, and paid plans are billed monthly or yearly.",
-                    },
-                    {
-                        "question": "Can I switch plans later?",
-                        "answer": "Yes, you can upgrade, downgrade, or cancel at any time from your account settings.",
-                    },
-                    {
-                        "question": "Do you offer team or enterprise pricing?",
-                        "answer": "Yes — the Team plan adds SSO, role management and custom branding. Contact us for enterprise needs.",
-                    },
-                    {
-                        "question": "Is my data secure?",
-                        "answer": "Security is a core part of the platform: CSRF-protected forms, django-allauth sessions, and hardened defaults.",
+                        "question": "How do I deploy a Fusion site?",
+                        "answer": "The monorepo includes Docker Compose orchestration with Traefik + Nginx + Postgres. One 'make deploy' provisions the full stack with HTTPS.",
                     },
                 ],
             },
@@ -366,10 +367,10 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "cta",
             {
-                "title": "Start Learning Today",
-                "subtitle": "Join thousands of students and start your learning journey today.",
-                "primary_cta": {"label": "Create Free Account", "href": "/#cta", "style": "white"},
-                "secondary_cta": {"label": "Talk to Sales", "href": "/contact/", "style": "outline"},
+                "title": "Built open-source, shipped as HTML",
+                "subtitle": "Everything structa.cloud builds is on GitHub. Explore the monorepo and reach out for collaboration.",
+                "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
+                "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
             },
         )
     ],

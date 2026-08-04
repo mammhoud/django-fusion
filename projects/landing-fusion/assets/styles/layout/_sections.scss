@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Layout: Sections — BEM document sheets.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fusion-section {
+  position: relative;
+  padding-block: var(--section-padding-lg);
+
+  &--hero {
+    padding-block: 5rem 7rem;
+    @media (min-width: 768px) { padding-block: 7rem; }
+  }
+
+  &--alt {
+    background-color: hsl(var(--fu-card));
+  }
+
+  /* Document sheet — separated by hairlines */
+  &--sheet {
+    border-top: 1px solid hsl(var(--fu-line));
+  }
+  &--sheet:last-of-type { border-bottom: 0; }
+
+  /* Registration marks (print-like corners) */
+  &--reg::before,
+  &--reg::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    border-color: hsl(var(--fu-line));
+  }
+  &--reg::before {
+    top: 0; left: 0;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+  &--reg::after {
+    bottom: 0; right: 0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  &__header {
+    max-width: 42rem;
+    margin-inline: auto;
+    margin-bottom: 3.5rem;
+    text-align: center;
+  }
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--fu-ink));
+    margin-bottom: 1rem;
+    @media (min-width: 768px) { font-size: 2.25rem; }
+  }
+  &__intro {
+    color: hsl(var(--fu-muted));
+  }
+}

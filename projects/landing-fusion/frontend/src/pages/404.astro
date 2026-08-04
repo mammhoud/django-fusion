@@ -1,23 +1,28 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { SiteSettings, NavigationData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try {
+  [siteSettings, navData] = await Promise.all([cachedSiteSettings(), cachedNavigation()]);
+} catch { /* use fallbacks */ }
 ---
 
-<Layout
-  title="Page Not Found"
-  description="The page you're looking for doesn't exist."
->
-  <section class="section-hero reg-marks overflow-hidden py-24 md:py-32">
-    <div class="container-fusion">
-      <div class="mx-auto max-w-2xl text-center">
-        <p class="tag-marker mb-6">error</p>
-        <div class="mb-5 font-mono text-7xl font-semibold tracking-tight text-fu-link md:text-8xl">404</div>
-        <h1 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">Page not found</h1>
-        <p class="mb-10 font-mono text-[0.8rem] uppercase tracking-wider text-fu-muted">
+<Layout title='Page Not Found' description="The page you're looking for doesn't exist." navItems={navData?.nav_items} siteSettings={siteSettings}>
+  <section class='section-hero reg-marks overflow-hidden py-24 md:py-32'>
+    <div class='container-fusion'>
+      <div class='mx-auto max-w-2xl text-center'>
+        <p class='tag-marker mb-6'>error</p>
+        <div class='mb-5 font-mono text-7xl font-semibold tracking-tight text-fu-link md:text-8xl'>404</div>
+        <h1 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Page not found</h1>
+        <p class='mb-10 font-mono text-[0.8rem] uppercase tracking-wider text-fu-muted'>
           GET {new URL(Astro.url.pathname, 'https://landing.structa.cloud').pathname} → 404 Not Found
         </p>
-        <div class="flex flex-col justify-center gap-3 sm:flex-row">
-          <a href="/" class="btn-primary !px-7 !py-3">Back to Home</a>
-          <a href="/contact" class="btn-secondary !px-7 !py-3">Contact Support</a>
+        <div class='flex flex-col justify-center gap-3 sm:flex-row'>
+          <a href='/' class='btn-primary !px-7 !py-3'>Back to Home</a>
+          <a href='/contact' class='btn-secondary !px-7 !py-3'>Contact Support</a>
         </div>
       </div>
     </div>

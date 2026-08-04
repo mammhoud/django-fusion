@@ -1,6 +1,13 @@
 ---
 import ThemeToggle from '@/components/ui/ThemeToggle.astro';
-import { navLinks, siteConfig } from '@/lib/site';
+
+interface Props {
+  siteName?: string;
+  /** Backend-fetched nav items (from /apis/navigation/). Falls back to a sensible default. */
+  navItems?: { label: string; href: string; active?: boolean; external?: boolean }[];
+}
+
+const { siteName = 'Structa Cloud', navItems } = Astro.props;
 
 const pathname = Astro.url.pathname;
 const isActive = (href: string) => {
@@ -8,28 +15,41 @@ const isActive = (href: string) => {
   if (href.startsWith('/#')) return pathname === '/' || pathname === '/index';
   return pathname.startsWith(href.split('#')[0]);
 };
+
+const displayNav = navItems && navItems.length > 0
+  ? navItems
+  : [
+    { label: 'Home', href: '/' },
+    { label: 'Products', href: '/products/' },
+    { label: 'Projects', href: '/projects/' },
+    { label: 'Features', href: '/features/' },
+    { label: 'About', href: '/about/' },
+    { label: 'FAQ', href: '/faq/' },
+    { label: 'Contact', href: '/contact/' },
+  ];
 ---
 
 <header
+  client:load
   class="sticky top-0 z-50 border-b border-fu-line bg-fu-paper/92 backdrop-blur-md"
   x-data="{ open: false }"
 >
   <div class="container-fusion">
     <div class="flex h-16 items-center justify-between">
-      <!-- Wordmark: a markup tag, because the product is markup -->
-      <a href="/" class="flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink" aria-label={siteConfig.name}>
+      <!-- Wordmark: angle-bracket logo for Structa Cloud -->
+      <a href="/" class="flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink" aria-label={siteName}>
         <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <rect width="32" height="32" rx="4" fill="#1A1917"/>
-          <path d="M11 8L6 13l5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <rect width="32" height="32" rx="6" fill="#1A1917"/>
+          <path d="M12 8L6 14l6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 8l6 6-6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 6l-4 20" stroke="#FFE14D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
         </svg>
-        <span>{siteConfig.name}</span>
+        <span>{siteName}</span>
       </a>
 
       <!-- Desktop Navigation -->
       <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
-        {navLinks.map((link) => {
+        {displayNav.map((link) => {
           const active = isActive(link.href);
           return (
             <a
@@ -85,7 +105,7 @@ const isActive = (href: string) => {
        x-transition:leave-end="opacity-0 -translate-y-2"
        class="border-t border-fu-line bg-fu-paper md:hidden">
     <nav class="container-fusion space-y-1 py-4" aria-label="Mobile">
-      {navLinks.map((link) => {
+      {displayNav.map((link) => {
         const active = isActive(link.href);
         return (
           <a

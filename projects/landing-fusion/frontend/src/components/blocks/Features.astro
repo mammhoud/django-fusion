@@ -19,33 +19,33 @@ interface Props {
 const defaultFeatures: Feature[] = [
   {
     icon: 'rocket',
-    title: 'Server-rendered by default',
-    description: 'Astro renders every page to HTML at build time. The browser downloads finished markup — no client boot, no first-paint spinner.',
+    title: 'Django + Wagtail Backend',
+    description: 'Content managed in Wagtail 7.4 with StreamField blocks — editors compose sections, django-fusion renders them as server-side HTML.',
   },
   {
     icon: 'bolt',
-    title: 'HTMX fragments',
-    description: 'Dynamic regions stream from Django as HTML fragments over plain HTTP. No JSON API, no decoder, no state layer to keep in sync.',
+    title: 'HTMX Fragment Rendering',
+    description: 'Dynamic regions stream from Django as HTML fragments over plain HTTP. No JSON API layer, no decoder, no state to keep in sync.',
   },
   {
     icon: 'shield',
-    title: 'Alpine micro-interactions',
-    description: 'A toggle or an accordion should not cost a framework. Alpine adds interactivity in-place, only where the page actually needs it.',
+    title: 'Alpine Micro-Interactions',
+    description: 'A toggle, accordion, or counter should not cost a framework. Alpine adds interactivity in-place, only where the page needs it.',
   },
   {
     icon: 'chart',
-    title: '0 KB of framework JS',
-    description: 'No React, no hydration script, no node_modules in the critical path. Your pages feel instant because they ship as documents.',
+    title: '0 KB Framework JavaScript',
+    description: 'No React, no hydration script, no node_modules in the critical path. Pages feel instant because they ship as finished documents.',
   },
   {
     icon: 'globe',
-    title: 'SEO is free',
-    description: 'Search engines read the finished page, not a shell. Content, headings and links are in the first byte of the response.',
+    title: 'SEO is Free',
+    description: 'Search engines read the finished page, not a framework shell. Content, headings and links arrive in the first byte.',
   },
   {
     icon: 'users',
-    title: 'Built for teams',
-    description: 'Wagtail-editable blocks in Django, Astro components in the frontend, one mental model: HTML in, HTML out.',
+    title: 'Monorepo Architecture',
+    description: 'Six projects, one repository, one CI pipeline. Shared configs, assets, and django-fusion components across all sites.',
   },
 ];
 
