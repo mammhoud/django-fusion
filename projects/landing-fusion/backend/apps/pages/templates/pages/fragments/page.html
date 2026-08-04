@@ -1,0 +1,26 @@
+{% comment %} ──────────────────────────────────────────────────────────
+   Fragment template — rendered by apps.handlers.views.LandingPageView for
+   HTMX requests (strategy == "fragment").
+
+   django-fusion pipeline: resolve_template_name() maps the dotted
+   fragment_name "pages.fragments.page" → "pages/fragments/page.html".
+
+   This is JUST the content region — no document wrapper (no doctype,
+   head, header or footer) — so HTMX can swap it into the Astro/Alpine
+   shell without a full navigation.
+
+   One road: the same shared partial (pages/partials/page_content.html)
+   that the full page templates render via the comp tag. The fragment IS
+   that partial inside the #page-content swap target, so the full document
+   and the HTMX swap can never drift apart.
+
+   Skeleton: HTMX requests show the global #htmx-indicator overlay
+   (defined in pages/base.html + pages/partials/skeleton.html) while this
+   fragment is in flight.
+   ────────────────────────────────────────────────────────────────────── {% endcomment %}
+{% load components %}
+
+{# id="page-content" — the swap target used by hx-target in the shell #}
+<div id="page-content" data-fragment="page">
+  {% comp "pages/partials/page_content.html" /%}
+</div>

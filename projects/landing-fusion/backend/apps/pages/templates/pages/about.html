@@ -1,0 +1,10 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ page.title }} · Fusion CMS{% endblock %}
+
+{% block content %}
+  {# The whole document — hero, mission, stats, features+pricing, testimonials,
+     faq, cta — rendered by the one shared content-region partial. #}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}

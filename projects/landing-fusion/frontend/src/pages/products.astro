@@ -1,0 +1,105 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Stats from '@/components/blocks/Stats.astro';
+import Features from '@/components/blocks/Features.astro';
+import Testimonials from '@/components/blocks/Testimonials.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+import LiveFragment from '@/components/ui/LiveFragment.astro';
+
+// Products is a full document (like /about): hero → lines → stats → features
+// (+ folded pricing) → testimonials → faq → live backend fragment → cta.
+// BEM custom classes (.product__*) pair with the theme utilities; the
+// live-fragment section fetches the Wagtail-rendered component via HTMX.
+
+const productLines = [
+  {
+    name: 'Fusion CMS',
+    tag: 'flagship · the content engine',
+    text: 'A Wagtail-powered backend that renders every page server-side. Blocks, not markup — editors compose sections, templates render them as HTML.',
+    icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
+  },
+  {
+    name: 'Fusion Sites',
+    tag: 'frontend · the Astro shell',
+    text: 'The AHA frontend: Astro SSG, HTMX fragment swaps, Alpine micro-interactions. Zero framework JS in the critical path, perfect Lighthouse by default.',
+    icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+  },
+  {
+    name: 'Fusion Cloud',
+    tag: 'deploy · one command',
+    text: 'Traefik + Nginx + Postgres orchestration from the monorepo. HTTPS by default, shared media, and the same HTML in dev, staging and production.',
+    icon: 'M4 5h16v14H4z M4 12h16',
+  },
+];
+---
+
+<Layout
+  title="Products"
+  description="The full Fusion CMS product document — the lines, stats, features, pricing, proof, and the live backend-fragment demo."
+>
+  <Hero
+    eyebrow="products · the full product document"
+    heading="Everything we ship, shipped as"
+    accent="plain HTML"
+    intro="Three products, one promise: the finished page is one HTTP response. From the Wagtail content engine to the Astro shell to the one-command deploy — this page documents the whole line, then fetches a live fragment straight from the backend."
+    primaryCta={{ label: 'See the features', href: '/features' }}
+    secondaryCta={{ label: 'Read the FAQ', href: '/products#faq' }}
+    status="200 OK · text/html · the full product line in one response"
+  />
+
+  <!-- Product lines (mission-style section, BEM classes) -->
+  <section class="page-section doc-sheet bg-fu-paper py-20 md:py-24">
+    <div class="container-fusion">
+      <div class="mx-auto mb-14 max-w-2xl text-center">
+        <p class="tag-marker mb-4">product lines</p>
+        <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">The line, end to end</h2>
+        <p class="text-fu-muted">From editable content to the deployed byte — three products that compose.</p>
+      </div>
+
+      <div class="product__grid grid grid-cols-1 gap-5 md:grid-cols-3">
+        {productLines.map((line, i) => (
+          <div class="product__card card reveal p-6" x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
+            <div class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d={line.icon} />
+              </svg>
+            </div>
+            <p class="mb-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-muted">{line.tag}</p>
+            <h3 class="mb-2 font-display text-[1.05rem] font-semibold text-fu-ink">{line.name}</h3>
+            <p class="text-sm leading-relaxed text-fu-muted">{line.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Stats />
+
+  <!-- Features with pricing folded in (the section ends with the pricing grid) -->
+  <Features
+    heading="Everything is a document"
+    intro="No hidden layers between your content and the browser. The AHA stack — Astro, HTMX, Alpine — renders the web the way it was meant to ship."
+    pricing={{
+      heading: 'Pricing, printed clearly',
+      intro: 'No hidden fees, no per-seat math. Pick a sheet, ship a site.',
+    }}
+  />
+
+  <Testimonials />
+
+  <FAQ />
+
+  <!-- HTMX → backend: skeleton while the Wagtail fragment loads, then the
+       django-fusion handler's server-rendered component swaps in. -->
+  <LiveFragment route="/products/" />
+
+  <CTA
+    heading="Ship the document, not the app"
+    intro="One HTTP response, finished HTML. Start building on Fusion CMS today — no framework to learn, no bundle to wait for."
+  />
+
+  <Toast />
+</Layout>

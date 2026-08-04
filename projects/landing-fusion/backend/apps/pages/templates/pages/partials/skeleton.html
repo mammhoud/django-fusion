@@ -1,0 +1,57 @@
+{% comment %} ---------------------------------------------------------------------
+   Skeleton loading — the default "content is on its way" state.
+
+   Two mechanisms, both default-on:
+
+   1. First-paint skeleton (full page loads)
+      Shown immediately (pure CSS, no JS) and hidden by the inline script
+      once the DOM is interactive. The skeleton mirrors the real page
+      regions (header/hero/sections) so the layout does not jump when the
+      content arrives.
+
+   2. HTMX in-flight indicator
+      `#htmx-indicator` is the global overlay HTMX shows (via the
+      `htmx-indicator` class) while a fragment request is in flight — same
+      shimmer, so a partial swap looks like a continued load rather than a
+      flash.
+
+   Include once in pages/base.html inside <body>. Style lives in
+   pages/base.html <style> (`.fusion-skeleton` rules).
+   --------------------------------------------------------------------- {% endcomment %}
+<div class="fusion-skeleton" id="fusion-skeleton" aria-hidden="true" data-skeleton>
+  <div class="fusion-skeleton__bar fusion-skeleton__bar--nav">
+    <span class="fusion-skeleton__line" style="width:7rem;"></span>
+    <span class="fusion-skeleton__lines">
+      <span class="fusion-skeleton__line" style="width:3.5rem;"></span>
+      <span class="fusion-skeleton__line" style="width:3.5rem;"></span>
+      <span class="fusion-skeleton__line" style="width:4rem;"></span>
+    </span>
+  </div>
+  <div class="fusion-skeleton__body">
+    <span class="fusion-skeleton__line fusion-skeleton__line--hero" style="width:min(36rem,80%);"></span>
+    <span class="fusion-skeleton__line" style="width:min(26rem,70%);"></span>
+    <span class="fusion-skeleton__line" style="width:min(18rem,50%);"></span>
+    <span class="fusion-skeleton__cards">
+      <span class="fusion-skeleton__card"></span>
+      <span class="fusion-skeleton__card"></span>
+      <span class="fusion-skeleton__card"></span>
+    </span>
+  </div>
+</div>
+
+<script>
+  // Hide the first-paint skeleton as soon as the DOM is interactive.
+  // Kept inline (before Alpine boots) so it is removed on first paint even
+  // if the AHA runtime is slow to load.
+  (function () {
+    function hide() {
+      var el = document.getElementById('fusion-skeleton');
+      if (el) { el.style.display = 'none'; }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', hide);
+    } else {
+      hide();
+    }
+  })();
+</script>

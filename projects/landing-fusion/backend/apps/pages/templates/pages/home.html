@@ -1,0 +1,10 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ page.title|default:"Fusion CMS" }}{% endblock %}
+
+{% block content %}
+  {# Slim entry page: the shared partial renders only hero + CTA because HomePage
+     carries no section-stack fields (the full document lives on /about/). #}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}
