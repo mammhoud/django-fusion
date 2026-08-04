@@ -41,8 +41,12 @@ INSTALLED_APPS = [
     "wagtail",
     "modelcluster",
     "taggit",
-    # Landing app
-    "apps.landing",
+    # django-fusion — unified fragment/layout rendering pipeline
+    "django_fusion",
+    # Landing apps (lms-fusion-style organization)
+    "apps.content",  # StreamField blocks + block templates
+    "apps.pages",  # Wagtail page models + page templates + seed
+    "apps.handlers",  # PageHandler views (HTMX fragment rendering)
 ]
 
 MIDDLEWARE = [
@@ -55,6 +59,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    "apps.handlers.middleware.LandingCorsMiddleware",
 ]
 
 ROOT_URLCONF = "urls"
@@ -72,6 +77,11 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "wagtail.contrib.settings.context_processors.settings",
             ],
+            "libraries": {
+                # django-fusion component tags (comp, slot, prop, var) — registered
+                # so `{% load components %}` works, mirroring configs/base/templates.py.
+                "components": "django_fusion.comp.templatetags.components",
+            },
         },
     },
 ]

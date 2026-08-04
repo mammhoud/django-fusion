@@ -27,11 +27,11 @@ projects/landing-fusion/
 ├── backend/                  # Django 5.2 + Wagtail 7.4 (landing-only CMS)
 │   ├── manage.py / settings.py / urls.py / wsgi.py
 │   ├── Makefile
-│   └── apps/landing/
-│       ├── blocks.py             # StreamField blocks for every frontend section
-│       ├── models.py             # LandingPage, HomePage, AboutPage, ContactPage, FaqPage, PrivacyPage
-│       ├── management/commands/seed_landing.py
-│       └── templates/landing/    # base.html + page + block templates (Fusion tokens)
+│   └── apps/
+│       ├── content/              # StreamField block types + content/blocks/ templates
+│       ├── pages/                # page models + pages/ templates + seed_pages + tests
+│       │   └── management/commands/seed_pages.py
+│       └── handlers/             # django-fusion PageHandler views (HTMX fragment rendering)
 ├── plan/                    # Plan docs (this dir) + shadcnblocks theme styles
 ├── Makefile                 # Root dispatcher: frontend + backend targets
 └── README.md
@@ -49,14 +49,14 @@ projects/landing-fusion/
 
 ## Backend ↔ frontend mapping
 
-| Frontend block (`frontend/src/components/blocks/`) | Wagtail field (`backend/apps/landing/models.py`) | Block type (`blocks.py`) |
+| Frontend block (`frontend/src/components/blocks/`) | Wagtail field (`backend/apps/pages/models.py`) | Block type (`apps/content/blocks.py`) |
 |----------------------------------------------------|---------------------------------------------------|--------------------------|
 | Hero | `LandingPage.hero` | `HeroBlock` |
-| Stats | `HomePage.stats` | `StatsSectionBlock` → `StatBlock` |
-| Features | `HomePage.features` | `FeaturesSectionBlock` → `FeatureBlock` |
-| Testimonials | `HomePage.testimonials` | `TestimonialsSectionBlock` → `TestimonialBlock` |
-| Pricing | `HomePage.pricing` | `PricingSectionBlock` → `PricingTierBlock` |
-| FAQ | `HomePage.faq` / `FaqPage.faq` | `FaqSectionBlock` → `FaqItemBlock` |
+| Stats | `AboutPage.stats` | `StatsSectionBlock` → `StatBlock` |
+| Features | `AboutPage.features` | `FeaturesSectionBlock` → `FeatureBlock` |
+| Testimonials | `AboutPage.testimonials` | `TestimonialsSectionBlock` → `TestimonialBlock` |
+| Pricing | `AboutPage.pricing` | `PricingSectionBlock` → `PricingTierBlock` |
+| FAQ | `AboutPage.faq` / `FaqPage.faq` | `FaqSectionBlock` → `FaqItemBlock` |
 | CTA | `LandingPage.cta` | `CtaBlock` |
 | ContactForm + methods | `ContactPage.contact` | `ContactSectionBlock` → `ContactMethodBlock` |
 | Header/Footer nav + theme | hardcoded in `partials/` + `base.html` | — (site.ts equivalent) |
@@ -66,10 +66,10 @@ projects/landing-fusion/
 ```bash
 cd projects/landing-fusion/backend
 make migrate     # makemigrations + migrate (SQLite)
-make seed        # create site + home/about/contact/faq/privacy pages
+make seed        # create site + home/about/company/services/products/contact/faq/privacy pages
 make dev         # http://localhost:8074  (Wagtail admin at /admin/)
 make check       # django system checks
-make test        # apps.landing tests
+make test        # apps.pages tests
 ```
 
 ## Theme reference

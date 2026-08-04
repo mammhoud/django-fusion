@@ -8,9 +8,9 @@
 
 export const siteConfig = {
   name: 'Fusion CMS',
-  tagline: 'Landing pages powered by the AHA stack',
+  tagline: 'Server-rendered HTML, delivered as a document. No heavy SPA.',
   description:
-    'A modern landing experience built with Astro, HTMX and Alpine.js — server-rendered HTML with zero heavy SPA overhead.',
+    'A CMS that renders every page as plain server-rendered HTML — Astro, HTMX and Alpine, with zero heavy JavaScript framework in the critical path.',
   url: 'https://landing.structa.cloud',
   author: 'mammhoud',
   ogImage: '/og-image.svg',
@@ -25,8 +25,9 @@ export interface NavLink {
 
 export const navLinks: NavLink[] = [
   { label: 'Home', href: '/' },
-  { label: 'Features', href: '/#features' },
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Features', href: '/features' },
+  { label: 'Products', href: '/products' },
+  { label: 'Projects', href: '/projects' },
   { label: 'About', href: '/about' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Contact', href: '/contact' },
@@ -41,10 +42,10 @@ export const footerColumns: FooterColumn[] = [
   {
     title: 'Platform',
     links: [
-      { label: 'Features', href: '/#features' },
-      { label: 'Pricing', href: '/#pricing' },
-      { label: 'Blog', href: '/faq' },
-      { label: 'Events', href: '/about' },
+      { label: 'Features', href: '/features' },
+      { label: 'Products', href: '/products' },
+      { label: 'Projects', href: '/projects' },
+      { label: 'About', href: '/about' },
     ],
   },
   {

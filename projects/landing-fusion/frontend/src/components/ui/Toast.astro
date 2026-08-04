@@ -16,8 +16,8 @@
   role="status" aria-live="polite"
 >
   <div
-    class="flex items-center gap-3 rounded-xl px-5 py-3.5 text-sm font-medium shadow-xl"
-    :class="$store.toast.variant === 'success' ? 'bg-green-600 text-white' : $store.toast.variant === 'error' ? 'bg-red-600 text-white' : 'bg-fu-primary text-white'"
+    class="flex items-center gap-3 rounded-md border border-fu-line bg-fu-card px-5 py-3.5 text-sm font-medium shadow-xl"
+    :class="$store.toast.variant === 'success' ? 'text-fu-live' : $store.toast.variant === 'error' ? 'text-red-600 dark:text-red-400' : 'text-fu-link'"
   >
     <svg x-show="$store.toast.variant !== 'error'" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>

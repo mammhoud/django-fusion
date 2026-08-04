@@ -51,7 +51,7 @@ void THEME_STORAGE_KEY;
     <meta name="twitter:image" content={new URL(ogImage, siteConfig.url).href} />
 
     <!-- Theme color -->
-    <meta name="theme-color" content="#7c3aed" />
+    <meta name="theme-color" content="#FCFCFA" />
 
     <!--
       FOUC-free theme init (ASTRO_MIGRATION_PLAN §5.1).
@@ -75,14 +75,46 @@ void THEME_STORAGE_KEY;
         root.classList.remove('light', 'dark');
         root.classList.add(dark ? 'dark' : 'light');
         var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', dark ? '#131316' : '#fafafa');
+        if (meta) meta.setAttribute('content', dark ? '#131312' : '#fcfcfa');
       })();
     </script>
+
+    <!-- Fonts: the document voice (Bricolage display / Public Sans body / JetBrains Mono data) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <body>
+  <body class="is-hydrating">
+    <!--
+      Default loading state (skeleton). Two mechanisms, both on by default:
+
+      1. Alpine hydrate fallback — while `body.is-hydrating`, regions marked
+         `[data-hydrate-skeleton]` render their skeleton instead of the
+         x-cloak'd interactive content. The class is removed on
+         `alpine:initialized` below, so interactive blocks never flash empty.
+
+      2. HTMX in-flight indicator — `#htmx-global-indicator` shows a
+         skeleton overlay whenever any hx-request is pending (fragments
+         stream in from the Django backend via apps/handlers).
+    -->
+    <div
+      id="htmx-global-indicator"
+      class="fixed inset-0 z-50 items-center justify-center bg-fu-paper/80 backdrop-blur-sm"
+      aria-hidden="true"
+    >
+      <div class="container-fusion grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <span class="fusion-skeleton__card"></span>
+        <span class="fusion-skeleton__card"></span>
+        <span class="fusion-skeleton__card"></span>
+      </div>
+    </div>
+
     <div class="flex min-h-screen flex-col">
       <Header />
       <main class="flex-1">
@@ -124,6 +156,36 @@ void THEME_STORAGE_KEY;
       // HTMX error handling (ASTRO_MIGRATION_PLAN §13.5) → Alpine toast
       document.body.addEventListener('htmx:responseError', () => {
         window.Alpine?.store('toast').show('Something went wrong — please try again.', 'error');
+      });
+
+      // Hydration complete → swap skeletons for real content (§6.4). Removes
+      // `body.is-hydrating`, which CSS uses to show [data-hydrate-skeleton]
+      // placeholders instead of the x-cloak'd interactive regions.
+      document.addEventListener('alpine:initialized', () => {
+        document.body.classList.remove('is-hydrating');
+      });
+      // Safety net: if Alpine never boots (slow network / script error), drop
+      // the skeleton state after 3s so content is never hidden forever.
+      setTimeout(() => document.body.classList.remove('is-hydrating'), 3000);
+
+      // Global HTMX in-flight indicator. HTMX only adds `.htmx-request` to
+      // the *requesting* element (or elements wired via hx-indicator), so we
+      // toggle the class on the indicator explicitly for every request.
+      const htmxIndicator = document.getElementById('htmx-global-indicator');
+      document.addEventListener('htmx:beforeRequest', () => htmxIndicator?.classList.add('htmx-request'));
+      document.addEventListener('htmx:afterRequest', () => htmxIndicator?.classList.remove('htmx-request'));
+      document.addEventListener('htmx:responseError', () => htmxIndicator?.classList.remove('htmx-request'));
+
+      // Live-fragment fallback (LiveFragment.astro): if an HTMX request for a
+      // backend fragment fails, replace its target with the quiet fallback so
+      // the section never sits empty or shows the skeleton forever. One
+      // listener for all instances — kept here so it is bundled once, not
+      // inlined per component.
+      document.addEventListener('htmx:responseError', (event) => {
+        const target = (event as CustomEvent).detail?.elt as HTMLElement | null;
+        if (!target || !target.matches('[data-live-fragment] .live-fragment__target')) return;
+        const fallback = target.querySelector<HTMLTemplateElement>('[data-fragment-fallback]');
+        if (fallback) target.innerHTML = fallback.innerHTML;
       });
 
       Alpine.start();

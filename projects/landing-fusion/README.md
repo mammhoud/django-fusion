@@ -29,23 +29,23 @@ makes every landing section editable.
 projects/landing-fusion/
 ├── frontend/            # Astro 5 + Tailwind 4 + HTMX + Alpine.js
 │   ├── src/
-│   │   ├── layouts/Layout.astro    # Header, Footer, SEO, theme init, AHA runtime
-│   │   ├── pages/                  # index, about, contact, faq, privacy, 404
+│   │   ├── layouts/Layout.astro    # Header, Footer, SEO, theme init, AHA runtime, skeleton loading
+│   │   ├── pages/                  # index, about, company, services, products, contact, faq, privacy, 404
 │   │   ├── components/
-│   │   │   ├── ui/                 # Button, Card, Accordion, Modal, Toast, ThemeToggle
+│   │   │   ├── ui/                 # Button, Card, Accordion, Modal, Toast, ThemeToggle, Skeleton, PricingCard
 │   │   │   ├── blocks/             # Hero, Features, Stats, Testimonials, Pricing, FAQ, CTA, ContactForm
 │   │   │   └── layout/             # Header, Footer
 │   │   ├── lib/site.ts             # Nav, footer links, contact methods, backend URL
-│   │   └── styles/globals.css      # Tailwind 4 + Fusion tokens + .dark variant
+│   │   └── styles/globals.css      # Tailwind 4 + Fusion tokens + .dark variant + skeleton shimmer
 │   ├── astro.config.mjs
+│   ├── tests/section-placement.test.mjs
 │   └── package.json
-├── backend/             # Django 5.2 + Wagtail 7.4 — landing-only CMS
+├── backend/             # Django 5.2 + Wagtail 7.4 — landing-only CMS (lms-fusion-style apps)
 │   ├── manage.py / settings.py / urls.py / wsgi.py / Makefile
-│   └── apps/landing/
-│       ├── blocks.py               # StreamField blocks for every frontend section
-│       ├── models.py               # LandingPage, HomePage, AboutPage, ContactPage, FaqPage, PrivacyPage
-│       ├── management/commands/seed_landing.py
-│       └── templates/landing/      # base.html + page + block templates (Fusion tokens)
+│   └── apps/
+│       ├── content/                # StreamField block types + content/blocks/ templates
+│       ├── pages/                  # page models + pages/ templates + seed_pages + tests + migrations
+│       └── handlers/               # django-fusion PageHandler views (HTMX fragment rendering)
 ├── plan/                # Plan docs + extracted shadcnblocks theme styles
 ├── Makefile             # Root dispatcher (frontend + backend targets)
 └── README.md
@@ -69,10 +69,10 @@ npm run preview      # preview the build
 ```bash
 cd projects/landing-fusion/backend
 make migrate         # makemigrations + migrate (SQLite)
-make seed            # create site + home/about/contact/faq/privacy pages
+make seed            # create site + home/about/company/services/products/contact/faq/privacy pages
 make dev             # http://localhost:8074 — Wagtail admin at /admin/
 make check           # django system checks
-make test            # apps.landing tests
+make test            # apps.pages tests
 ```
 
 > Uses the workspace venv via `uv --project ../..` (Wagtail 7.4 + Django 5.2).
@@ -82,12 +82,17 @@ make test            # apps.landing tests
 ### Frontend (Astro + AHA)
 - **Phase 0** ✅ — Astro 5 scaffold, Fusion theme tokens → Tailwind 4, bundled HTMX 2 + Alpine 3, root Layout with SEO/OG, toast store, HTMX error handling
 - **Phase 1** ✅ — home (hero/stats/features/testimonials/pricing/FAQ/CTA), about, contact (HTMX form), FAQ (search + accordion), privacy, 404
+- **Page expansion** ✅ — separate Company / Services / Products pages; current home content moved to About; pricing folded into Features; all sections appended to page ends
 - **§5.1 dark mode** ✅ — `ThemeToggle` persists to localStorage, swaps `.dark` on `<html>`, FOUC-free init script, cross-tab sync
+- **Skeleton loading** ✅ — `Skeleton` component + shimmer CSS; global HTMX in-flight indicator; Alpine hydrate fallback (`is-hydrating`)
 
 ### Backend (Django + Wagtail)
-- Landing-only Wagtail page models with editable StreamFields for every section (hero, stats, features, testimonials, pricing, FAQ, CTA, contact)
+- Landing-only Wagtail page models with editable StreamFields for every section (hero, stats, features, testimonials, pricing, FAQ, CTA, contact) — organized lms-fusion-style into `apps/content`, `apps/pages`, `apps/handlers`
+- **django-fusion views** — every landing route is served by a `PageHandler` subclass (unified fragment/layout render pipeline); HTMX requests get `pages/fragments/page.html`, plain requests get the full document
+- Render-mechanism documented in `apps/handlers/views.py` (backend → HTML → HTMX/Alpine)
+- Skeleton loading on the backend too (`pages/partials/skeleton.html` + `#htmx-indicator`)
 - Templates mirroring the Astro frontend (same Fusion tokens, `.dark` variant, HTMX/Alpine)
-- `seed_landing` management command — creates the site + full page tree
+- `seed_pages` management command — creates the site + full 8-page tree (idempotent)
 - Self-contained `settings.py` (standalone, no shared-config dependency)
 
 ### Plan docs

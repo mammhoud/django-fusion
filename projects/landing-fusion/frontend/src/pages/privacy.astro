@@ -37,19 +37,19 @@ const sections = [
   title="Privacy Policy"
   description="How Fusion CMS collects, uses, and protects your personal information."
 >
-  <section class="bg-fu-bg py-16">
+  <section class="bg-fu-paper py-16">
     <div class="container-fusion">
       <div class="mx-auto max-w-3xl">
         <div class="mb-12 text-center">
-          <span class="badge-primary mb-4">Legal</span>
-          <h1 class="mb-4 text-4xl font-bold text-fu-text">Privacy Policy</h1>
-          <p class="text-fu-text/60">Last updated: August 3, 2026</p>
+          <p class="tag-marker mb-4">legal</p>
+          <h1 class="mb-4 font-display text-4xl font-bold tracking-tight text-fu-ink">Privacy Policy</h1>
+          <p class="font-mono text-[0.78rem] uppercase tracking-wider text-fu-muted">Last updated: August 3, 2026</p>
         </div>
 
         <div class="card space-y-10 p-8 md:p-12">
           {sections.map((section) => (
             <section>
-              <h2 class="mb-3 text-xl font-semibold text-fu-text">{section.heading}</h2>
+              <h2 class="mb-3 font-display text-xl font-semibold text-fu-ink">{section.heading}</h2>
               <div class="prose-fusion">
                 <p>{section.body}</p>
               </div>
@@ -58,7 +58,7 @@ const sections = [
         </div>
 
         <div class="mt-8 text-center">
-          <a href="/" class="font-medium text-fu-primary transition-colors hover:text-fu-primary-dark">
+          <a href="/" class="font-medium text-fu-link transition-colors hover:text-fu-link-dark">
             &larr; Back to Home
           </a>
         </div>

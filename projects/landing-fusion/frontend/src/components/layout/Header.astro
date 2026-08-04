@@ -11,38 +11,34 @@ const isActive = (href: string) => {
 ---
 
 <header
-  class="sticky top-0 z-50 border-b border-fu-border bg-fu-card/90 backdrop-blur-md"
+  class="sticky top-0 z-50 border-b border-fu-line bg-fu-paper/92 backdrop-blur-md"
   x-data="{ open: false }"
 >
   <div class="container-fusion">
     <div class="flex h-16 items-center justify-between">
-      <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 text-xl font-bold text-fu-primary" aria-label={siteConfig.name}>
-        <svg class="h-8 w-8" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#7c3aed"/>
-              <stop offset="1" stop-color="#4c1d95"/>
-            </linearGradient>
-          </defs>
-          <rect width="32" height="32" rx="8" fill="url(#logo-g)"/>
-          <path d="M16 6l8 4-8 4-8-4 8-4zm0 9l6 3v5l-6 3-6-3v-5l6-3z" fill="#fff"/>
+      <!-- Wordmark: a markup tag, because the product is markup -->
+      <a href="/" class="flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink" aria-label={siteConfig.name}>
+        <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="4" fill="#1A1917"/>
+          <path d="M11 8L6 13l5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
         </svg>
         <span>{siteConfig.name}</span>
       </a>
 
       <!-- Desktop Navigation -->
-      <nav class="hidden items-center gap-6 md:flex" aria-label="Main">
+      <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
         {navLinks.map((link) => {
           const active = isActive(link.href);
           return (
             <a
               href={link.href}
               class:list={[
-                'text-sm font-medium transition-colors duration-200',
+                'text-[0.9rem] transition-colors duration-200',
                 active
-                  ? 'text-fu-primary'
-                  : 'text-fu-text/70 hover:text-fu-primary',
+                  ? 'font-medium text-fu-ink border-b-2 border-fu-link'
+                  : 'text-fu-muted hover:text-fu-ink',
               ]}
             >
               {link.label}
@@ -53,9 +49,9 @@ const isActive = (href: string) => {
 
       <!-- CTA + Theme toggle (desktop) -->
       <div class="hidden items-center gap-3 md:flex">
+        <span class="status-line mr-1 hidden lg:inline-flex"><span class="dot" aria-hidden="true"></span>online</span>
         <ThemeToggle />
-        <a href="/#pricing" class="btn-secondary !py-2 !px-4 text-sm">Log In</a>
-        <a href="/#cta" class="btn-primary !py-2 !px-4 text-sm">Get Started</a>
+        <a href="/#cta" class="btn-primary !h-9 !px-4 !py-0 text-[0.85rem]">Get Started</a>
       </div>
 
       <!-- Mobile controls: theme toggle + menu button -->
@@ -63,16 +59,16 @@ const isActive = (href: string) => {
         <ThemeToggle />
         <button
           type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-lg text-fu-text transition-colors hover:bg-fu-muted"
+          class="flex h-10 w-10 items-center justify-center rounded-md text-fu-ink transition-colors hover:bg-fu-line/40"
           aria-label="Toggle navigation menu"
           aria-expanded="false"
           :aria-expanded="open.toString()"
           @click="open = !open"
         >
-          <svg x-show="!open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
-          <svg x-show="open" x-cloak class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg x-show="open" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
@@ -87,7 +83,7 @@ const isActive = (href: string) => {
        x-transition:leave="transition ease-in duration-150"
        x-transition:leave-start="opacity-100 translate-y-0"
        x-transition:leave-end="opacity-0 -translate-y-2"
-       class="border-t border-fu-border bg-fu-card md:hidden">
+       class="border-t border-fu-line bg-fu-paper md:hidden">
     <nav class="container-fusion space-y-1 py-4" aria-label="Mobile">
       {navLinks.map((link) => {
         const active = isActive(link.href);
@@ -96,18 +92,17 @@ const isActive = (href: string) => {
             href={link.href}
             @click="open = false"
             class:list={[
-              'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              'block rounded-md px-3 py-2 text-[0.9rem] transition-colors',
               active
-                ? 'bg-fu-primary/10 text-fu-primary'
-                : 'text-fu-text/70 hover:bg-fu-muted hover:text-fu-primary',
+                ? 'bg-fu-line/40 font-medium text-fu-ink'
+                : 'text-fu-muted hover:bg-fu-line/30 hover:text-fu-ink',
             ]}
           >
             {link.label}
           </a>
         );
       })}
-      <hr class="my-2 border-fu-border" />
-      <a href="/#pricing" @click="open = false" class="block rounded-lg px-3 py-2 text-sm font-medium text-fu-primary">Log In</a>
+      <hr class="my-2 border-fu-line" />
       <a href="/#cta" @click="open = false" class="btn-primary mt-2 w-full">Get Started</a>
     </nav>
   </div>

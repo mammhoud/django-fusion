@@ -12,8 +12,12 @@ urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+    # Landing page handlers — django-fusion PageHandler views that render each
+    # Wagtail page through the unified fragment/layout pipeline (HTMX-aware).
+    # They sit BEFORE Wagtail's catch-all so fragments serve the same templates.
+    path("", include("apps.handlers.urls")),
     # 404 — Wagtail serves unknown page paths, so this only catches admin/API misses
-    path("404/", TemplateView.as_view(template_name="landing/404.html"), name="error-404"),
+    path("404/", TemplateView.as_view(template_name="pages/404.html"), name="error-404"),
     path("", include(wagtail_urls)),
 ]
 
