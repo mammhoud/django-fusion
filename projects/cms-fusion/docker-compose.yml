@@ -34,9 +34,9 @@ services:
       DB_NAME: ${DB_NAME_CMS_FUSION:-db_cms_fusion}
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      REDIS_URL: redis://default-redis:6379/0
-      CELERY_BROKER_URL: redis://default-redis:6379/1
-      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CMS production}@default-redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CMS production}@default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CMS production}@default-redis:6379/2
       ALLOWED_HOSTS: localhost,127.0.0.1,cms-fusion.localhost,cms-fusion-backend
       CSRF_TRUSTED_ORIGINS: http://localhost:5075,http://cms-fusion.localhost
       CELERY_TASK_DEFAULT_QUEUE: cms-fusion
@@ -80,18 +80,31 @@ services:
     restart: unless-stopped
     env_file: ../../.env
     environment:
+      RUNNING_ENV: docker
       DJANGO_SETTINGS_MODULE: settings
       WEBSITE: cms-fusion
       DJANGO_SITE: cms-fusion
       PROJECT_PATH: cms-fusion
       CELERY_TASK_DEFAULT_QUEUE: cms-fusion
-      CELERY_BROKER_URL: redis://default-redis:6379/1
-      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
-    command: celery -A www.worker.celery:app worker --loglevel=info --queues=cms-fusion
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CMS_FUSION:-db_cms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CMS production}@default-redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CMS production}@default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CMS production}@default-redis:6379/2
+    command: celery -A apps.domain.services.email.tasks:app worker --loglevel=info --queues=cms-fusion
     volumes:
       - ./backend:/app/cms-fusion:rw
       - ../configs:/app/configs:ro
       - ../assets:/app/assets:ro
+      # Live libs mirror: the worker must see the same django-fusion source the
+      # backend does, otherwise it imports the image-baked (potentially stale)
+      # copy and crashes on new modules (e.g. django_fusion.models.certificate).
+      # :rw required — django-fusion's editable install touches egg-info at import.
+      - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
     networks:
       - common

@@ -5,6 +5,7 @@ import Stats from '@/components/blocks/Stats.astro';
 import Features from '@/components/blocks/Features.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -27,26 +28,14 @@ const pageFeatures = (pageData?.features as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 
-// ── Fallbacks ──
-const bioStats = pageStats?.map((s: any) => ({ label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || '') })) ?? [
-  { label: 'Years coding', value: 5, suffix: '+' },
-  { label: 'Open-source repos', value: 15, suffix: '+' },
-  { label: 'Blog posts', value: 18, suffix: '' },
-  { label: 'Production sites', value: 4, suffix: '+' },
-];
+// ── Mapped from backend data (no hardcoded fallbacks) ──
+const bioStats = pageStats?.map((s: any) => ({ label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || '') }));
 
 const skills = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
   title: String(f.title || ''),
   description: String(f.description || ''),
-})) ?? [
-  { icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z', title: 'Python & Django', description: 'Django 5.2, Wagtail 7.4, django-allauth, django-fusion component system, REST APIs, and database design with PostgreSQL and MongoDB.' },
-  { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'AI & Machine Learning', description: 'Natural language processing, computer vision, predictive modeling, MCP agents, and AI-powered business solutions.' },
-  { icon: 'M4 5h16v14H4z M4 12h16', title: 'Cloud & DevOps', description: 'Traefik + Docker + Nginx orchestration, CI/CD pipelines, Let\'s Encrypt SSL, GitHub Actions.' },
-  { icon: 'M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87', title: 'Full-Stack Architecture', description: 'Monorepo design, component systems, HTMX fragment rendering, Astro SSG, Alpine.js, Tauri 2 + Rust.' },
-  { icon: 'M3 3v18h18M7 15l4-4 3 3 5-6', title: 'Data Engineering', description: 'Web scraping, ETL pipelines, data analysis, Django ORM outside web projects.' },
-  { icon: 'M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20', title: 'Open Source & Writing', description: '18 technical blog posts on MCP, AI, Django, architecture. 15+ public repositories.' },
-];
+}));
 
 const missionValues = [
   { title: 'Server-rendered by default', text: 'Every page ships as finished HTML. No heavy SPA, no hydration overhead — just the web as it was designed to work.' },
@@ -58,23 +47,12 @@ const testimonialItems = pageTestimonials?.map((t: any) => ({
   quote: String(t.quote || ''),
   author: String(t.author || ''),
   role: String(t.role || ''),
-})) ?? [
-  { quote: "The switch from a heavy React SPA to HTMX fragments cut our page load time in half. django-fusion's component system made the migration straightforward.", author: 'Sarah Mitchell', role: 'CTO, EduStart' },
-  { quote: 'Alpine.js replaced all our custom UI state code. The FAQ accordion and modals took an afternoon instead of a week.', author: 'David Chen', role: 'Lead Developer, LearnLoop' },
-  { quote: 'Server-rendered HTML means perfect SEO without any extra work. Our blog traffic doubled within a month.', author: 'Amira Hassan', role: 'Marketing Director, SkillBridge' },
-];
+}));
 
 const faqItems = pageFaq?.map((f: any) => ({
   question: String(f.question || ''),
   answer: String(f.answer || ''),
-})) ?? [
-  { question: 'Who is behind structa.cloud?', answer: 'Mahmoud Ezzat Moustafa — a full-stack developer and open-source contributor specializing in Python/Django, AI tools, and cloud architecture.' },
-  { question: 'What is the AHA stack?', answer: 'AHA stands for Astro + HTMX + Alpine.js — a server-first rendering stack. Astro generates static/dynamic HTML, HTMX streams server-rendered fragments, and Alpine.js powers local interactivity.' },
-  { question: 'Are the libraries production-ready?', answer: 'Yes. django-fusion, ceptor-ai, and django-bolt power structa.cloud\'s own production sites including vResume, Cypercloud, and the landing pages themselves.' },
-  { question: 'Can I contribute?', answer: 'Absolutely. All libraries are on GitHub at github.com/mammhoud. Open issues, submit PRs, or reach out for collaboration.' },
-  { question: 'What AI capabilities are available?', answer: 'ceptor-ai provides an MCP server for AI agent communication, a chat client, and BEM-to-component conversion. It powers the Cypercloud platform.' },
-  { question: 'How is this different from a typical CMS?', answer: 'Most CMS platforms serve a JSON API to a React SPA. Structa Cloud serves finished HTML in one response. Less complexity, better performance.' },
-];
+}));
 ---
 
 <Layout
@@ -82,6 +60,8 @@ const faqItems = pageFaq?.map((f: any) => ({
   description={pageData?.search_description || 'Mahmoud Ezzat Moustafa — full-stack developer, open-source contributor, and the engineer behind structa.cloud.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="about"
 >
   <Hero
     eyebrow={pageHero?.badge || 'about · the engineer behind the code'}
@@ -93,7 +73,7 @@ const faqItems = pageFaq?.map((f: any) => ({
     status='200 OK · text/html · the engineer, in one response'
   />
 
-  <Stats stats={bioStats} />
+  {bioStats?.length ? <Stats stats={bioStats} /> : <ContentError label="Stats data unavailable" />}
 
   <!-- Mission -->
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
@@ -122,7 +102,7 @@ const faqItems = pageFaq?.map((f: any) => ({
     </div>
   </section>
 
-  <!-- Skills -->
+  {skills?.length ? (
   <Features
     heading='The stack, in detail'
     intro='From Django backends to AI agents, these are the technologies that power structa.cloud.'
@@ -133,9 +113,10 @@ const faqItems = pageFaq?.map((f: any) => ({
       _iconPath: s.icon,
     }))}
   />
+  ) : <ContentError label="Skills data unavailable" />}
 
-  <Testimonials testimonials={testimonialItems} />
-  <FAQ items={faqItems} />
+  {testimonialItems?.length ? <Testimonials testimonials={testimonialItems} /> : <ContentError label="Testimonials unavailable" />}
+  {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
 
   <CTA
     heading={pageCta?.title || "Let's build together"}

@@ -1,13 +1,12 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
-import Stats from '@/components/blocks/Stats.astro';
-import Features from '@/components/blocks/Features.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -31,19 +30,13 @@ const capabilities = pageFeatures?.map((f: any) => ({
   title: String(f.title || ''),
   text: String(f.description || ''),
   icon: String(f.icon || 'M13 10V3L4 14h7v7l9-11h-7z'),
-})) ?? [
-  { title: 'Server-rendered by default', text: 'Every page ships as finished HTML in one response. No client boot, no first-paint spinner — what the browser downloads is what the server sent.', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
-  { title: 'HTMX fragments from Django', text: 'Dynamic regions are plain HTML fragments served by Wagtail through django-fusion handlers. No JSON API, no decoder, no second state layer.', icon: 'M4 5h16v14H4z M4 12h16' },
-  { title: 'Alpine.js micro-interactions', text: 'Accordions, theme toggles, counters, and modals handled by Alpine — 15 KB, no build step, works with server-rendered HTML.', icon: 'M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87' },
-  { title: 'Wagtail StreamField blocks', text: 'Content teams compose pages with blocks (hero, stats, features, testimonials, FAQ, pricing) — no developer needed for content updates.', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z' },
-  { title: 'Shared configs + CI', text: 'One CI pipeline for six projects. django-fusion, ceptor-ai, django-bolt share build configs, test suites, and deployment scripts.', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
-  { title: 'Fusion design tokens', text: 'CSS custom properties (--fu-*) with light/dark theme and Tailwind 4 utility classes. Consistent design across all six projects from one source.', icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.3M7 7h.01' },
-];
+}));
 ---
 
-<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'The full feature document — capabilities, server-rendered HTML, HTMX fragments, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings}>
+<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'The full feature document — capabilities, server-rendered HTML, HTMX fragments, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
   <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Built to ship as'} accent='documents' intro={pageHero?.subtitle || 'No SPA, no JSON API, no hydration waterfall. Every page is finished HTML in one response. Here\'s what makes it work.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Explore projects', href: '/projects' }} status='200 OK · text/html · every capability in one response' />
 
+  {capabilities?.length ? (
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
@@ -52,7 +45,7 @@ const capabilities = pageFeatures?.map((f: any) => ({
         <p class='text-fu-muted'>Astro, HTMX, and Alpine.js power every page. Here\'s what each layer does and why there\'s no framework overhead.</p>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
-        {capabilities.map((cap, i) => (
+        {capabilities!.map((cap, i) => (
           <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
             <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
               <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} /></svg>
@@ -64,11 +57,10 @@ const capabilities = pageFeatures?.map((f: any) => ({
       </div>
     </div>
   </section>
+  ) : <ContentError label="Capabilities data unavailable" />}
 
-  <Stats />
-  <Features heading='Everything is a document' intro='No hidden layers between your content and the browser.' pricing={{ heading: 'Pricing, printed clearly', intro: 'No hidden fees, no per-seat math.' }} />
-  <Testimonials testimonials={pageTestimonials?.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} />
-  <FAQ items={pageFaq?.map((f: any) => ({ question: String(f.question || ''), answer: String(f.answer || '') }))} />
+  {pageTestimonials?.length ? <Testimonials testimonials={pageTestimonials.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} /> : null}
+  {pageFaq?.length ? <FAQ items={pageFaq.map((f: any) => ({ question: String(f.question || ''), answer: String(f.answer || '') }))} /> : null}
   <LiveFragment route='/features/' />
   <CTA heading={pageCta?.title || 'Ship the document, not the app'} intro={pageCta?.subtitle || 'One HTTP response, finished HTML.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />

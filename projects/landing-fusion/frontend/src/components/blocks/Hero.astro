@@ -48,35 +48,34 @@ const sourceMarkup = [
 ].join('\n');
 ---
 
-<section class="section-hero reg-marks overflow-hidden">
+<section class="hero">
   <!-- Skeleton while Alpine boots (x-intersect reveals) — component-matched height -->
   <div data-hydrate-skeleton>
     <Skeleton variant="hero-section" />
   </div>
   <div data-hydrate-content>
-  <div class="container-fusion py-20 md:py-28">
-    <div class="mx-auto max-w-3xl text-center">
+  <div class="hero__inner">
+    <div class="hero__content">
       <p
-        class="tag-marker reveal mb-5"
+        class="hero__eyebrow"
         x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak
       >
         {eyebrow}
       </p>
 
       <h1
-        class="reveal mb-6 font-display text-[2.6rem] font-bold leading-[1.05] tracking-tight md:text-6xl"
+        class="hero__heading"
         x-data x-intersect="$el.classList.add('reveal-visible')"
       >
         {heading}{' '}
-        <span class="relative inline-block whitespace-nowrap">
+        <span class="hero__accent">
           <span class="relative z-10">{accent}</span>
-          <!-- Marker underline — the one use of the marker accent -->
-          <span class="absolute inset-x-[-0.08em] bottom-[0.06em] z-0 h-[0.34em] rounded-sm bg-fu-mark/70" aria-hidden="true"></span>
+          <span class="hero__accent-mark" aria-hidden="true"></span>
         </span>
       </h1>
 
       <p
-        class="reveal mx-auto mb-9 max-w-xl text-[1.05rem] leading-relaxed text-fu-muted md:text-lg"
+        class="hero__intro"
         x-data x-intersect="$el.classList.add('reveal-visible')"
         style="transition-delay: 100ms"
       >
@@ -84,7 +83,7 @@ const sourceMarkup = [
       </p>
 
       <div
-        class="reveal flex flex-col items-center justify-center gap-3 sm:flex-row"
+        class="hero__actions"
         x-data x-intersect="$el.classList.add('reveal-visible')"
         style="transition-delay: 200ms"
       >
@@ -99,9 +98,8 @@ const sourceMarkup = [
         </a>
       </div>
 
-      <!-- Status line — reads like a server response -->
       <p
-        class="reveal mt-8 flex items-center justify-center"
+        class="hero__status"
         x-data x-intersect="$el.classList.add('reveal-visible')"
         style="transition-delay: 260ms"
       >
@@ -111,13 +109,13 @@ const sourceMarkup = [
 
     <!-- ── View Source toggle: the signature ───────────────────────── -->
     <div
-      class="reveal mx-auto mt-14 max-w-2xl"
+      class="hero__source-toggle"
       client:load
       x-data="{ showSource: false }"
       x-intersect="$el.classList.add('reveal-visible')"
       style="transition-delay: 320ms"
     >
-      <div class="mb-3 flex items-center justify-between gap-3">
+      <div class="hero__source-bar">
         <p class="tag-marker">view-source:fusion-cms</p>
         <button
           type="button"

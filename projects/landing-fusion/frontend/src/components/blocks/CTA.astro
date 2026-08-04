@@ -14,13 +14,13 @@ const {
 } = Astro.props;
 ---
 
-<section id="cta" client:idle class="doc-sheet reg-marks overflow-hidden bg-[#1a1917] py-20 text-[#f0eee8] md:py-24">
-  <div class="container-fusion">
-    <div class="mx-auto max-w-3xl text-center">
-      <p class="tag-marker mb-5 !text-[#b0aba0]">cta</p>
-      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight md:text-4xl">{heading}</h2>
-      <p class="mx-auto mb-9 max-w-xl text-lg leading-relaxed text-[#b0aba0]">{intro}</p>
-      <div class="flex flex-col justify-center gap-3 sm:flex-row">
+<section id="cta" client:idle class="cta">
+  <div class="cta__inner">
+    <div class="cta__content">
+      <p class="cta__eyebrow">cta</p>
+      <h2 class="cta__heading">{heading}</h2>
+      <p class="cta__intro">{intro}</p>
+      <div class="cta__actions">
         <a
           href={ctaHref}
           class="btn-primary !px-8 !py-3.5 text-base"
@@ -35,7 +35,7 @@ const {
           Talk to sales
         </a>
       </div>
-      <p class="mt-8">
+      <p class="cta__status">
         <span class="status-line !text-[#b0aba0]"><span class="dot" aria-hidden="true"></span>ready when you are · text/html</span>
       </p>
     </div>

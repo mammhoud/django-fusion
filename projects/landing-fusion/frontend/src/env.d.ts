@@ -21,6 +21,14 @@ interface ToastStore {
 declare global {
   interface Window {
     htmx?: unknown;
+    /** Redux store instance (configureStore result) */
+    __reduxStore?: {
+      getState: () => { toast: ToastStore; site: { theme: string; loaded: boolean } };
+      dispatch: (action: unknown) => void;
+      subscribe: (listener: () => void) => () => void;
+    };
+    /** Redux-powered toast helper */
+    __showToast?: (message: string, variant?: 'success' | 'error' | 'info' | 'warning') => void;
     Alpine?: {
       store(name: string, value?: unknown): unknown;
       store(name: 'toast'): ToastStore;

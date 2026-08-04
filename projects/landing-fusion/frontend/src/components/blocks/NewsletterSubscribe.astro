@@ -23,20 +23,18 @@ const {
 } = Astro.props;
 ---
 
-<section class="doc-sheet bg-fu-card py-16 md:py-20">
-  <div class="container-fusion">
-    <div class="mx-auto max-w-xl text-center">
-      <h2 class="mb-3 font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">{title}</h2>
-      {description && <p class="mb-8 text-fu-muted">{description}</p>}
+<section class="newsletter">
+  <div class="newsletter__inner">
+    <div class="newsletter__content">
+      <h2 class="newsletter__heading">{title}</h2>
+      {description && <p class="newsletter__text">{description}</p>}
 
-      {/* Backend endpoint: POST /api/newsletter/subscribe/ needs adding in urls.py
-        — see apps/handlers/views.py for the handler pattern */}
     <form
         hx-post="/api/newsletter/subscribe/"
         hx-target="#newsletter-feedback"
         hx-swap="innerHTML"
         hx-indicator="#newsletter-spinner"
-        class="flex flex-col gap-3 sm:flex-row"
+        class="newsletter__form"
       >
         <label for="newsletter-email" class="sr-only">Email address</label>
         <input
@@ -45,7 +43,7 @@ const {
           name="email"
           required
           placeholder={placeholder}
-          class="flex-1 rounded-lg border border-fu-line bg-fu-paper px-4 py-3 text-sm text-fu-ink placeholder:text-fu-muted/60 focus:border-fu-link focus:outline-none focus:ring-1 focus:ring-fu-link"
+          class="newsletter__input"
         />
         <button type="submit" class="btn-primary shrink-0">
           <span id="newsletter-spinner" class="htmx-indicator mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true"></span>
@@ -53,9 +51,9 @@ const {
         </button>
       </form>
 
-      <div id="newsletter-feedback" class="mt-4 min-h-[1.5rem]"></div>
+      <div id="newsletter-feedback" class="newsletter__feedback"></div>
 
-      {privacyNote && <p class="mt-4 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-fu-muted/60">{privacyNote}</p>}
+      {privacyNote && <p class="newsletter__privacy">{privacyNote}</p>}
     </div>
   </div>
 </section>

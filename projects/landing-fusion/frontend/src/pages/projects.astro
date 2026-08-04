@@ -8,6 +8,7 @@ import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -35,19 +36,13 @@ const repoProjects = pageProjects?.map((p: any) => ({
     label: String(f.label || ''),
     shared: Boolean(f.shared),
   })) ?? [],
-})) ?? [
-  { name: 'Fusion CMS', edition: 'Wagtail backend', category: 'website', path: 'projects/landing-fusion/backend', text: 'The Wagtail content engine behind every landing page — StreamField sections rendered server-side by django-fusion handlers.', features: [{ label: 'django-fusion fragment pipeline', shared: true }, { label: 'HTMX fragment rendering', shared: true }, { label: 'Wagtail StreamField blocks', shared: false }] },
-  { name: 'Fusion Sites', edition: 'Astro frontend', category: 'website', path: 'projects/landing-fusion/frontend', text: 'The AHA shell — Astro SSG, HTMX fragment swaps, Alpine micro-interactions. Zero framework JS in the critical path.', features: [{ label: 'Astro SSG', shared: false }, { label: 'HTMX + Alpine runtime', shared: true }, { label: 'Fusion design tokens', shared: true }] },
-  { name: 'Forge POS', edition: 'Minimal · Solo · Full', category: 'product', path: 'projects/pos/forge-pos', text: 'A desktop point-of-sale app in three editions — Tauri 2 + Rust core with a React/Vite frontend and SQLite storage.', features: [{ label: 'Tauri 2 + Rust core', shared: true }, { label: 'SQLite schema', shared: true }, { label: 'Kitchen display', shared: false }, { label: 'Employee scheduling', shared: false }] },
-  { name: 'django-fusion', edition: 'library · generic', category: 'library', path: 'libs/django-fusion', text: 'The component system + routing framework shared by every site — PageHandler views, fragment rendering, and comp templates.', features: [{ label: 'Component registry', shared: true }, { label: 'FragmentHandlerMixin', shared: true }, { label: 'Wagtail blocks bridge', shared: true }] },
-  { name: 'ceptor-ai', edition: 'library · generic', category: 'library', path: 'libs/ceptor-ai', text: 'AI chat client + MCP server used by the Cypercloud platform and agent tooling.', features: [{ label: 'MCP server', shared: true }, { label: 'Chat client', shared: true }] },
-  { name: 'Cypercloud', edition: 'AI platform', category: 'product', path: 'projects/cypercloud', text: 'The AI chat customizer platform — ceptor-ai powered chat embedded into customer sites.', features: [{ label: 'ceptor-ai chat', shared: true }, { label: 'Customizer UI', shared: false }] },
-];
+}));
 ---
 
-<Layout title={pageData?.title || 'Projects'} description={pageData?.search_description || 'The full project document — the monorepo at a glance.'} navItems={navData?.nav_items} siteSettings={siteSettings}>
+<Layout title={pageData?.title || 'Projects'} description={pageData?.search_description || 'The full project document — the monorepo at a glance.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="projects">
   <Hero eyebrow={pageHero?.badge || 'projects · the monorepo inventory'} heading={pageHero?.title || 'Everything we build, shipped as'} accent='one monorepo' intro={pageHero?.subtitle || 'Every project in the structa.cloud repo, its edition, and what it shares.'} primaryCta={{ label: 'See the features', href: '/features' }} secondaryCta={{ label: 'Read the FAQ', href: '/projects#faq' }} status='200 OK · text/html · every project in one response' />
 
+  {repoProjects?.length ? (
   <section class='page-section doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
@@ -56,7 +51,7 @@ const repoProjects = pageProjects?.map((p: any) => ({
         <p class='text-fu-muted'>Six projects, one pipeline — <span class='font-mono text-[0.72rem] uppercase tracking-[0.14em] text-fu-live'>shared</span> features are reused, <span class='font-mono text-[0.72rem] uppercase tracking-[0.14em] text-fu-muted'>own</span> features are standalone.</p>
       </div>
       <div class='project__grid grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
-        {repoProjects.map((project, i) => (
+        {repoProjects!.map((project, i) => (
           <article class='project__card card reveal p-6' x-data x-intersect='$el.classList.add("reveal-visible")' style={`transition-delay: ${i * 80}ms`}>
             <div class='project__head mb-1 flex items-center justify-between gap-3'>
               <p class='tag-marker project__category'>{project.category}</p>
@@ -78,6 +73,7 @@ const repoProjects = pageProjects?.map((p: any) => ({
       </div>
     </div>
   </section>
+  ) : <ContentError label="Projects data unavailable" />}
 
   <Stats />
   <Features heading='Everything is a document' intro='No hidden layers between your content and the browser. The AHA stack renders the web the way it was meant to ship.' pricing={{ heading: 'Pricing, printed clearly', intro: 'No hidden fees, no per-seat math. Pick a sheet, ship a site.' }} />

@@ -1,0 +1,40 @@
+{% extends "pages/fusion_landing.html" %}
+{% load i18n wagtailcore_tags comp %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block content %}
+<section class="fusion-page-title bg-gray-50">
+    <div class="container text-center py-12">
+        <h1 class="text-4xl font-bold">Privacy Policy</h1>
+        <p class="text-gray-500 mt-2">Last updated: {{ page.last_updated|date:"F j, Y"|default:"2025" }}</p>
+    </div>
+</section>
+
+<section class="py-16">
+    <div class="container max-w-3xl mx-auto prose prose-lg">
+        {% if page and page.body %}
+            {% for block in page.body %}
+                {% if block.block_type == 'rich_section' %}
+                    <div class="mb-10">
+                        {% if block.value.heading %}<h2>{{ block.value.heading }}</h2>{% endif %}
+                        {% if block.value.html %}{{ block.value.html|richtext }}{% endif %}
+                        {% for item in block.value.items %}
+                            <h3>{{ item.heading }}</h3>
+                            <p>{{ item.text|linebreaks }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-600">This privacy policy describes how we collect, use, and protect your personal information when you use our services.</p>
+            <h2>Information We Collect</h2>
+            <p>We collect information you provide directly, such as when you create an account, fill out a form, or contact us.</p>
+            <h2>How We Use Your Information</h2>
+            <p>We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to protect our users.</p>
+            <h2>Data Protection</h2>
+            <p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, or destruction.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

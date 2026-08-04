@@ -4,6 +4,7 @@ import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -34,39 +35,13 @@ const techStats = pageStats?.map((s: any) => ({
   label: String(s.label || ''),
   value: Number(s.value || 0),
   suffix: String(s.suffix || ''),
-})) ?? [
-  { label: 'Open-source libraries', value: 5, suffix: '+' },
-  { label: 'Production sites', value: 4, suffix: '+' },
-  { label: 'Blog posts published', value: 18, suffix: '' },
-  { label: 'Years building Django', value: 5, suffix: '+' },
-];
+}));
 
 const stackItems = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
   title: String(f.title || ''),
   description: String(f.description || ''),
-})) ?? [
-  {
-    icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
-    title: 'Django + Wagtail',
-    description: 'Backend built on Django 5.2 with Wagtail 7.4 CMS. StreamField content blocks, django-fusion component system, and a unified fragment/layout render pipeline.',
-  },
-  {
-    icon: 'M13 10V3L4 14h7v7l9-11h-7z',
-    title: 'Astro + HTMX + Alpine',
-    description: 'The AHA frontend stack: Astro SSG for zero-JS pages, HTMX for server-rendered HTML fragments, and Alpine.js for micro-interactions where needed.',
-  },
-  {
-    icon: 'M4 5h16v14H4z M4 12h16',
-    title: 'AI & MCP Integration',
-    description: 'Ceptor AI chat client with Model Context Protocol server. Agent-powered tooling for code generation, template customization, and structured prompts.',
-  },
-  {
-    icon: 'M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87',
-    title: 'Monorepo Architecture',
-    description: 'One repository, six projects: django-fusion, ceptor-ai, django-bolt, Forge POS, Cypercloud, and the landing sites — all sharing configs, assets, and CI.',
-  },
-];
+}));
 
 const productCards = [
   {
@@ -106,6 +81,8 @@ const productCards = [
   description={pageData?.search_description || 'Full-stack engineering — Django, Wagtail, and AI-powered systems. Built open-source, shipped as documents. By Mahmoud Ezzat Moustafa.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="home"
 >
   <Hero
     eyebrow={pageHero?.badge || 'structa.cloud · full-stack engineering'}
@@ -118,9 +95,10 @@ const productCards = [
   />
 
   <!-- Tech Stats -->
-  <Stats stats={techStats} />
+  {techStats?.length ? <Stats stats={techStats} /> : <ContentError label="Stats data unavailable" />}
 
   <!-- The Stack — what runs under the hood -->
+  {stackItems?.length ? (
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
@@ -155,6 +133,7 @@ const productCards = [
       </div>
     </div>
   </section>
+  ) : <ContentError label="Stack data unavailable" />}
 
   <!-- Products preview — four key products -->
   <section id='products' class='doc-sheet bg-fu-surface py-20 md:py-24'>
@@ -264,8 +243,8 @@ const productCards = [
     </div>
   </section>
 
-  <!-- HTMX → backend: skeleton while the Wagtail fragment loads -->
-  <LiveFragment route='/' />
+  <!-- HTMX → backend: server-rendered fragment replaces this region -->
+  {pageData ? <LiveFragment route='/' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
 
   <CTA
     heading={pageCta?.title || 'Built open-source, shipped as HTML'}

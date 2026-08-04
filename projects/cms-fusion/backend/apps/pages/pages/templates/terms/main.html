@@ -1,0 +1,42 @@
+{% extends "pages/fusion_landing.html" %}
+{% load i18n wagtailcore_tags comp %}
+
+{% block title %}Terms of Service{% endblock %}
+
+{% block content %}
+<section class="fusion-page-title bg-gray-50">
+    <div class="container text-center py-12">
+        <h1 class="text-4xl font-bold">Terms of Service</h1>
+        <p class="text-gray-500 mt-2">Last updated: {{ page.last_updated|date:"F j, Y"|default:"2025" }}</p>
+    </div>
+</section>
+
+<section class="py-16">
+    <div class="container max-w-3xl mx-auto prose prose-lg">
+        {% if page and page.body %}
+            {% for block in page.body %}
+                {% if block.block_type == 'rich_section' %}
+                    <div class="mb-10">
+                        {% if block.value.heading %}<h2>{{ block.value.heading }}</h2>{% endif %}
+                        {% if block.value.html %}{{ block.value.html|richtext }}{% endif %}
+                        {% for item in block.value.items %}
+                            <h3>{{ item.heading }}</h3>
+                            <p>{{ item.text|linebreaks }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>By accessing and using Fusion CMS, you agree to be bound by these Terms of Service.</p>
+            <h2>Acceptance of Terms</h2>
+            <p>By using our services, you agree to these terms. If you do not agree, please do not use our services.</p>
+            <h2>Use of Services</h2>
+            <p>You agree to use our services only for lawful purposes and in accordance with these terms.</p>
+            <h2>Intellectual Property</h2>
+            <p>All content, features, and functionality are owned by Fusion CMS and are protected by international copyright laws.</p>
+            <h2>Limitation of Liability</h2>
+            <p>Fusion CMS shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "pages/fusion_landing.html" %}
+{% load i18n wagtailcore_tags comp %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block content %}
+<section class="fusion-page-title bg-gray-50">
+    <div class="container text-center py-12">
+        <h1 class="text-4xl font-bold">Frequently Asked Questions</h1>
+        <p class="text-lg text-gray-500 mt-2">Find answers to common questions.</p>
+    </div>
+</section>
+
+{% if page and page.body %}
+{% for block in page.body %}
+    {% if block.block_type == 'faq_groups' %}
+<section class="py-16">
+    <div class="container max-w-3xl mx-auto">
+        {% for group in block.value.groups %}
+        <div class="mb-10">
+            <h2 class="text-2xl font-bold mb-6">{{ group.title }}</h2>
+            <div class="space-y-3">
+                {% for item in group.items %}
+                <details class="fusion-faq-item bg-white rounded-lg border p-5 cursor-pointer hover:border-blue-200 transition-colors">
+                    <summary class="font-semibold text-lg">{{ item.question }}</summary>
+                    <div class="mt-3 text-gray-600 leading-relaxed">{{ item.answer|linebreaks }}</div>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+    {% endif %}
+
+    {% if block.block_type == 'cta' %}
+<section class="fusion-cta py-20 bg-gradient-to-r from-blue-600 to-blue-800 text-white text-center">
+    <div class="container max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-4">{{ block.value.heading }}</h2>
+        <p class="text-lg text-white/70 mb-8">{{ block.value.intro }}</p>
+        {% for cta in block.value.ctas %}
+        <a href="{{ cta.href }}" class="fusion-btn px-8 py-3 rounded-lg font-semibold {% if cta.variant == 'primary' %}bg-white text-blue-700{% else %}border-2 border-white{% endif %}">{{ cta.label }}</a>
+        {% endfor %}
+    </div>
+</section>
+    {% endif %}
+{% endfor %}
+{% endif %}
+{% endblock %}

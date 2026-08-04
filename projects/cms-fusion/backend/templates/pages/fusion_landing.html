@@ -1,0 +1,119 @@
+{% load i18n static wagtailcore_tags wagtailimages_tags fusion_layout %}
+{% load comp %}
+<!DOCTYPE html>
+<html lang="en" class="fusion-html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% fusion_render_first_flag %}
+    <title>{% block title %}{{ title|default:"Fusion CMS" }}{% endblock %} — {{ site_settings.site_name|default:"Fusion" }}</title>
+    <meta name="description" content="{{ page.seo_description|default:'Modern content management platform powered by django-fusion.' }}">
+    {% if page.seo_title %}<meta property="og:title" content="{{ page.seo_title }}">{% endif %}
+    {% fusion_branding %}
+
+    {# Bootstrap Icons + Fusion CSS #}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    {% block css %}{% endblock %}
+
+    {# HTMX — loaded early so hx-* attributes work immediately #}
+    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+<body class="fusion-body fu-themed" data-page="{{ page_slug }}" {% fusion_body_data %}>
+    {# Site Header #}
+    <header class="fusion-header" hx-boost="true">
+        <nav class="fusion-nav container" role="navigation" aria-label="Main navigation">
+            <a href="/" class="fusion-nav__logo">
+                {% if site_settings.logo %}
+                    {% image site_settings.logo height-40 class="fusion-nav__logo-img" %}
+                {% else %}
+                    <span class="fusion-nav__brand">{{ site_settings.site_name|default:"Fusion CMS" }}</span>
+                {% endif %}
+            </a>
+
+            <ul class="fusion-nav__menu" hx-target="#main-content" hx-swap="innerHTML show:top">
+                <li><a href="/" class="{% if page_slug == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="/about-us/" class="{% if page_slug == 'about-us' %}active{% endif %}">About</a></li>
+                <li><a href="/services/" class="{% if page_slug == 'services' %}active{% endif %}">Services</a></li>
+                <li><a href="/pricing/" class="{% if page_slug == 'pricing' %}active{% endif %}">Pricing</a></li>
+                <li><a href="/team/" class="{% if page_slug == 'team' %}active{% endif %}">Team</a></li>
+                <li><a href="/contact/" class="{% if page_slug == 'contact' %}active{% endif %}">Contact</a></li>
+            </ul>
+
+            <div class="fusion-nav__actions">
+                {# Search (HTMX live) #}
+                <form class="fusion-nav__search" hx-get="/apis/htmx/search/"
+                      hx-target="#search-results" hx-swap="innerHTML"
+                      hx-trigger="keyup changed delay:300ms">
+                    <input type="search" name="q" placeholder="Search…" aria-label="Search">
+                    <div id="search-results" class="fusion-search-dropdown"></div>
+                </form>
+
+                {# Social links #}
+                {% if social_links %}
+                <div class="fusion-nav__socials">
+                    {% for s in social_links %}
+                        <a href="{{ s.url }}" target="_blank" rel="noopener" aria-label="{{ s.platform }}" class="fusion-social-link">
+                            <i class="{{ s.icon_class|default:'bi bi-link' }}"></i>
+                        </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            {# Mobile toggle #}
+            <button class="fusion-nav__mobile-toggle" aria-label="Toggle menu" onclick="document.querySelector('.fusion-nav__menu').classList.toggle('fusion-nav__menu--open')">
+                <i class="bi bi-list"></i>
+            </button>
+        </nav>
+    </header>
+
+    {# Main Content #}
+    <main id="main-content" class="fusion-main fusion-main--{{ layout|default:'default' }}">
+        {% block content %}{% endblock %}
+    </main>
+
+    {# Site Footer #}
+    <footer class="fusion-footer">
+        <div class="container">
+            <div class="fusion-footer__grid">
+                {# Brand Column #}
+                <div class="fusion-footer__brand">
+                    <h4>{{ site_settings.site_name|default:"Fusion CMS" }}</h4>
+                    <p>{{ footer.description|default:site_settings.footer_description|default:"" }}</p>
+                    <div class="fusion-footer__socials">
+                        {% for s in social_links %}
+                            <a href="{{ s.url }}" target="_blank" rel="noopener"><i class="{{ s.icon_class|default:'bi bi-link' }}"></i></a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if footer.link_groups %}
+                {% for group in footer.link_groups %}
+                <div class="fusion-footer__links">
+                    <h5>{{ group.title }}</h5>
+                    <ul>
+                        {% for link in group.links %}
+                            <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="fusion-footer__bottom">
+                <p>{{ footer.copyright|default:"© 2025 Fusion CMS. All rights reserved." }}</p>
+                <div class="fusion-footer__legal">
+                    <a href="/privacy/">Privacy Policy</a>
+                    <a href="/terms/">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {# Scripts #}
+    {% block scripts %}
+        {% render_fusion_scripts %}
+    {% endblock %}
+</body>
+</html>

@@ -213,6 +213,136 @@ class DynamicDashboardPage(ContentPageMixin, Page):
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Pricing Page
+# ═══════════════════════════════════════════════════════════════════
+
+class DynamicPricingPage(ContentPageMixin, Page):
+    """Pricing page — hero, pricing tiers, FAQ, CTA."""
+
+    body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("seo_title"), FieldPanel("seo_description")],
+            heading=_("SEO"),
+        ),
+        FieldPanel("body"),
+    ]
+
+    subpage_types = []
+
+    class Meta:
+        db_table = "content_dynamic_pricingpage"
+        verbose_name = _("pricing page")
+        verbose_name_plural = _("pricing pages")
+        app_label = "content"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Testimonials Page
+# ═══════════════════════════════════════════════════════════════════
+
+class DynamicTestimonialsPage(ContentPageMixin, Page):
+    """Testimonials page — hero, testimonials grid, CTA."""
+
+    body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("seo_title"), FieldPanel("seo_description")],
+            heading=_("SEO"),
+        ),
+        FieldPanel("body"),
+    ]
+
+    subpage_types = []
+
+    class Meta:
+        db_table = "content_dynamic_testimonialspage"
+        verbose_name = _("testimonials page")
+        verbose_name_plural = _("testimonials pages")
+        app_label = "content"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Terms of Service Page
+# ═══════════════════════════════════════════════════════════════════
+
+class DynamicTermsPage(ContentPageMixin, Page):
+    """Terms of service page — rich text sections."""
+
+    body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("seo_title"), FieldPanel("seo_description")],
+            heading=_("SEO"),
+        ),
+        FieldPanel("body"),
+    ]
+
+    subpage_types = []
+
+    class Meta:
+        db_table = "content_dynamic_termspage"
+        verbose_name = _("terms page")
+        verbose_name_plural = _("terms pages")
+        app_label = "content"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Services Page
+# ═══════════════════════════════════════════════════════════════════
+
+class DynamicServicesPage(ContentPageMixin, Page):
+    """Services page — hero, services grid, features, CTA."""
+
+    body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("seo_title"), FieldPanel("seo_description")],
+            heading=_("SEO"),
+        ),
+        FieldPanel("body"),
+    ]
+
+    subpage_types = []
+
+    class Meta:
+        db_table = "content_dynamic_servicespage"
+        verbose_name = _("services page")
+        verbose_name_plural = _("services pages")
+        app_label = "content"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Team Page
+# ═══════════════════════════════════════════════════════════════════
+
+class DynamicTeamPage(ContentPageMixin, Page):
+    """Team page — hero, team grid, CTA."""
+
+    body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("seo_title"), FieldPanel("seo_description")],
+            heading=_("SEO"),
+        ),
+        FieldPanel("body"),
+    ]
+
+    subpage_types = []
+
+    class Meta:
+        db_table = "content_dynamic_teampage"
+        verbose_name = _("team page")
+        verbose_name_plural = _("team pages")
+        app_label = "content"
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Utility: StreamField → JSON serializer
 # ═══════════════════════════════════════════════════════════════════
 

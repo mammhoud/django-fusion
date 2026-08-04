@@ -19,46 +19,40 @@ interface Props {
 const { eyebrow, title = 'Our journey', description, events } = Astro.props;
 ---
 
-<section class="doc-sheet bg-fu-paper py-20 md:py-24">
+<section class="timeline">
   <div data-hydrate-skeleton>
     <Skeleton variant="timeline" />
   </div>
   <div data-hydrate-content>
     <div class="container-fusion">
-      {eyebrow && <p class="tag-marker mb-4 reveal" x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak>{eyebrow}</p>}
-      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl reveal" x-data x-intersect="$el.classList.add('reveal-visible')">{title}</h2>
-      {description && <p class="mb-14 max-w-2xl text-fu-muted reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="transition-delay: 50ms">{description}</p>}
+      <div class="timeline__header">
+        {eyebrow && <p class="tag-marker mb-4 reveal" x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak>{eyebrow}</p>}
+        <h2 class="page-section__title reveal" x-data x-intersect="$el.classList.add('reveal-visible')">{title}</h2>
+        {description && <p class="mt-2 sm:mt-3 mb-10 sm:mb-14 max-w-2xl text-fu-muted reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="transition-delay: 50ms">{description}</p>}
+      </div>
 
-      <div class="relative">
-        {/* Vertical line */}
-        <div class="absolute left-4 top-0 h-full w-px bg-fu-line md:left-1/2 md:-translate-x-px" aria-hidden="true"></div>
+      <div class="timeline__track">
+        <div class="timeline__line" aria-hidden="true"></div>
 
-        <div class="space-y-12">
+        <div class="timeline__items">
           {events.map((event, i) => {
             const isLeft = i % 2 === 0;
             return (
-              <div class={`relative flex flex-col gap-4 md:flex-row md:gap-8 ${!isLeft ? 'md:flex-row-reverse' : ''}`}>
-                {/* Dot on timeline */}
+              <div class={`timeline__row ${!isLeft ? 'md:flex-row-reverse' : ''}`}>
                 <div
-                  class={`absolute left-4 top-6 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 md:left-1/2 ${
-                    event.highlight
-                      ? 'border-fu-link bg-fu-link shadow-[0_0_0_4px_rgba(11,87,208,0.15)]'
-                      : 'border-fu-line bg-fu-paper'
-                  }`}
+                  class={`timeline__dot ${event.highlight ? 'timeline__dot--highlighted' : 'timeline__dot--default'}`}
                   aria-hidden="true"
                 ></div>
 
-                {/* Content card */}
-                <div class={`ml-10 md:ml-0 md:w-1/2 ${isLeft ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
-                  <div class="card reveal group p-5 hover:-translate-y-0.5" x-data x-intersect="$el.classList.add('reveal-visible')">
-                    <time class="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-fu-link">{event.date}</time>
-                    <h3 class="mt-1 font-display text-[1.05rem] font-semibold text-fu-ink">{event.title}</h3>
-                    <p class="mt-2 text-sm leading-relaxed text-fu-muted">{event.description}</p>
+                <div class={`timeline__content ${isLeft ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
+                  <div class="timeline__card" x-data x-intersect="$el.classList.add('reveal-visible')">
+                    <time class="timeline__date">{event.date}</time>
+                    <h3 class="timeline__title">{event.title}</h3>
+                    <p class="timeline__text">{event.description}</p>
                   </div>
                 </div>
 
-                {/* Empty spacer for alternating layout */}
-                <div class="hidden md:block md:w-1/2" aria-hidden="true"></div>
+                <div class="timeline__spacer" aria-hidden="true"></div>
               </div>
             );
           })}

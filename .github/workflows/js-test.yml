@@ -2,9 +2,9 @@
 # JavaScript/TypeScript front-end projects on pull requests.
 #
 # Projects covered:
-#   - projects/lms/front-end  → Next.js app (primary LMS)
-#   - projects/lms/lms        → Next.js app (secondary LMS)
-#   - projects/pos/pos-e2e    → POS E2E suite (all editions)
+#   - projects/lms-fusion/frontend  → Next.js app (primary LMS)
+#   - projects/cms-fusion/frontend  → Next.js app (secondary LMS/CMS)
+#   - projects/pos/pos-e2e          → POS E2E suite (all editions)
 #
 # Each project gets its own job so failures are isolated and results
 # are easy to triage in the GitHub Checks UI.
@@ -14,8 +14,8 @@ name: JS Tests (vitest + Playwright E2E)
 on:
   pull_request:
     paths:
-      - 'projects/lms/front-end/**'
-      - 'projects/lms/lms/**'
+      - 'projects/lms-fusion/frontend/**'
+      - 'projects/cms-fusion/frontend/**'
       - 'projects/pos/pos-e2e/**'
       - 'projects/pos/pos-full/**'
       - 'projects/pos/pos-solo/**'
@@ -24,8 +24,8 @@ on:
   push:
     branches: ['**']
     paths:
-      - 'projects/lms/front-end/**'
-      - 'projects/lms/lms/**'
+      - 'projects/lms-fusion/frontend/**'
+      - 'projects/cms-fusion/frontend/**'
       - 'projects/pos/pos-e2e/**'
       - 'projects/pos/pos-full/**'
       - 'projects/pos/pos-solo/**'
@@ -47,14 +47,14 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: projects/lms/front-end
+        working-directory: projects/lms-fusion/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/lms/front-end/package-lock.json
+          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run unit tests
@@ -66,14 +66,14 @@ jobs:
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: projects/lms/front-end
+        working-directory: projects/lms-fusion/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/lms/front-end/package-lock.json
+          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright browsers
@@ -85,55 +85,55 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lms-frontend-playwright-report
-          path: projects/lms/front-end/playwright-report/
+          path: projects/lms-fusion/frontend/playwright-report/
           retention-days: 7
       - name: Upload test results (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: lms-frontend-test-results
-          path: projects/lms/front-end/test-results/
+          path: projects/lms-fusion/frontend/test-results/
           retention-days: 7
 
-  # ── LMS (secondary Next.js app) ──────────────────────────────────
+  # ── CMS (secondary Next.js app) ──────────────────────────────────
 
-  lms-test:
-    name: LMS — Unit Tests
+  cms-test:
+    name: CMS — Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: projects/lms/lms
+        working-directory: projects/cms-fusion/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/lms/lms/package-lock.json
+          cache-dependency-path: projects/cms-fusion/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run unit tests
         run: npm run test
 
-  # NOTE: playwright.config.ts exists but no test files yet for lms/lms.
+  # NOTE: playwright.config.ts exists but no test files yet for cms-fusion.
   # This job will pass silently (playwright test finds nothing) until
   # test files are added to tests/e2e/.
 
-  lms-e2e:
-    name: LMS — Playwright E2E
+  cms-e2e:
+    name: CMS — Playwright E2E
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: projects/lms/lms
+        working-directory: projects/cms-fusion/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/lms/lms/package-lock.json
+          cache-dependency-path: projects/cms-fusion/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright browsers
@@ -144,8 +144,8 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lms-playwright-report
-          path: projects/lms/lms/playwright-report/
+          name: cms-playwright-report
+          path: projects/cms-fusion/frontend/playwright-report/
           retention-days: 7
 
   # ── POS E2E Suite ────────────────────────────────────────────────

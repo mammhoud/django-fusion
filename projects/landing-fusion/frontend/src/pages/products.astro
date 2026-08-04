@@ -7,6 +7,7 @@ import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -28,12 +29,7 @@ const pageFaq = (pageData?.faq as any[] | undefined);
 
 const productStats = pageStats?.map((s: any) => ({
   label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || ''),
-})) ?? [
-  { label: 'Open-source libraries', value: 3, suffix: '' },
-  { label: 'Production sites', value: 4, suffix: '+' },
-  { label: 'GitHub stars (combined)', value: 50, suffix: '+' },
-  { label: 'Downloads / month', value: 1, suffix: 'K+' },
-];
+}));
 
 interface ProductLine { name: string; id: string; tag: string; description: string; features: string[]; tech: string[]; href: string; cta: string; external?: boolean; }
 const productLines: ProductLine[] = [
@@ -46,9 +42,9 @@ const productLines: ProductLine[] = [
 ];
 ---
 
-<Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'Structa Cloud products — django-fusion, ceptor-ai, django-bolt, vResume, Forge POS, and Cypercloud.'} navItems={navData?.nav_items} siteSettings={siteSettings}>
+<Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'Structa Cloud products — django-fusion, ceptor-ai, django-bolt, vResume, Forge POS, and Cypercloud.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
   <Hero eyebrow={pageHero?.badge || 'products · the full product line'} heading={pageHero?.title || 'Everything we build, shipped as'} accent='open source' intro={pageHero?.subtitle || 'Six products from one monorepo — three open-source libraries, two cloud platforms, and a desktop POS in three editions.'} primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'View on GitHub', href: 'https://github.com/mammhoud' }} secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'See projects', href: '/projects' }} status='200 OK · text/html · the full product line in one response' />
-  <Stats stats={productStats} />
+  {productStats?.length ? <Stats stats={productStats} /> : <ContentError label="Stats data unavailable" />}
 
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>

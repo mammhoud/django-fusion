@@ -66,31 +66,31 @@ const iconPaths: Record<Feature['icon'], string> = {
 };
 ---
 
-<section id="features" class="doc-sheet bg-fu-paper py-20 md:py-24">
+<section id="features" class="features">
   <div class="container-fusion">
-    <div class="mx-auto mb-14 max-w-2xl text-center">
+    <div class="features__header">
       <p class="tag-marker mb-4">features</p>
-      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>
+      <h2 class="page-section__title">{heading}</h2>
       <p class="text-fu-muted">{intro}</p>
     </div>
 
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="features__grid">
       {features.map((feature, i) => (
         <div
-          class="card reveal group relative p-6 pt-7 hover:-translate-y-0.5"
+          class="features__card"
           x-data x-intersect="$el.classList.add('reveal-visible')"
           style={`transition-delay: ${i * 60}ms`}
         >
-          <span class="absolute right-4 top-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70" aria-hidden="true">
+          <span class="features__card-index" aria-hidden="true">
             {String(i + 1).padStart(2, '0')}
           </span>
-          <div class="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link">
+          <div class="features__icon">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d={iconPaths[feature.icon]} />
             </svg>
           </div>
-          <h3 class="mb-2 font-display text-[1.05rem] font-semibold text-fu-ink">{feature.title}</h3>
-          <p class="text-sm leading-relaxed text-fu-muted">{feature.description}</p>
+          <h3 class="features__title">{feature.title}</h3>
+          <p class="features__text">{feature.description}</p>
         </div>
       ))}
     </div>

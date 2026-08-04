@@ -1,0 +1,106 @@
+{% extends "pages/fusion_landing.html" %}
+{% load i18n wagtailcore_tags comp %}
+
+{% block title %}Pricing Plans{% endblock %}
+
+{% block content %}
+{# Page Title #}
+{% if page and page.body %}
+{% for block in page.body %}
+    {% if block.block_type == 'page_title' %}
+        {% comp "blocks/page_title.html" heading=block.value.heading intro=block.value.intro /%}
+    {% elif block.block_type == 'hero' %}
+        {% comp "blocks/hero.html" heading=block.value.heading intro=block.value.intro ctas=block.value.ctas /%}
+    {% endif %}
+{% endfor %}
+{% else %}
+<section class="fusion-page-title">
+    <div class="container text-center py-12">
+        <h1 class="text-4xl font-bold">Pricing Plans</h1>
+        <p class="text-lg text-gray-500 mt-2">Choose the plan that fits your needs.</p>
+    </div>
+</section>
+{% endif %}
+
+{# Pricing Tiers #}
+{% if page and page.body %}
+{% for block in page.body %}
+    {% if block.block_type == 'pricing' %}
+<section class="fusion-pricing py-16 bg-gray-50">
+    <div class="container">
+        {% if block.value.heading %}
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold">{{ block.value.heading }}</h2>
+            {% if block.value.intro %}<p class="text-gray-500 mt-2">{{ block.value.intro }}</p>{% endif %}
+        </div>
+        {% endif %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {% for tier in block.value.tiers %}
+            <div class="fusion-pricing-card {% if tier.highlighted %}fusion-pricing-card--highlighted{% endif %} bg-white rounded-xl shadow-sm border p-8 text-center relative">
+                {% if tier.highlighted and tier.badge %}
+                <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">{{ tier.badge }}</span>
+                {% endif %}
+                <h3 class="text-xl font-bold">{{ tier.name }}</h3>
+                <div class="my-4">
+                    <span class="text-4xl font-extrabold">{{ tier.price }}</span>
+                    {% if tier.period %}<span class="text-gray-400">{{ tier.period }}</span>{% endif %}
+                </div>
+                {% if tier.description %}<p class="text-gray-500 mb-6">{{ tier.description }}</p>{% endif %}
+                <ul class="space-y-3 mb-8 text-left">
+                    {% for feature in tier.features %}
+                    <li class="flex items-center gap-2 {% if not feature.included %}text-gray-300 line-through{% endif %}">
+                        <i class="bi bi-check-circle-fill text-green-500"></i> {{ feature.text }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% if tier.cta %}
+                <a href="{{ tier.cta.href }}" class="fusion-btn fusion-btn--{{ tier.cta.variant }} w-full">{{ tier.cta.label }}</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+    {% endif %}
+
+    {# FAQ Section #}
+    {% if block.block_type == 'faq_groups' %}
+<section class="py-16">
+    <div class="container max-w-3xl mx-auto">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold">Frequently Asked Questions</h2>
+        </div>
+        {% for group in block.value.groups %}
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">{{ group.title }}</h3>
+            <div class="space-y-2">
+                {% for item in group.items %}
+                <details class="fusion-faq-item bg-white rounded-lg border p-4" hx-get="/htmx/faq/{{ forloop.counter }}/" hx-trigger="toggle once" hx-swap="none">
+                    <summary class="font-medium cursor-pointer">{{ item.question }}</summary>
+                    <p class="mt-2 text-gray-600">{{ item.answer }}</p>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+    {% endif %}
+
+    {# CTA #}
+    {% if block.block_type == 'cta' %}
+<section class="fusion-cta py-20 bg-gradient-to-r from-blue-600 to-blue-800 text-white text-center">
+    <div class="container max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-4">{{ block.value.heading }}</h2>
+        {% if block.value.intro %}<p class="text-lg text-white/70 mb-8">{{ block.value.intro }}</p>{% endif %}
+        <div class="flex gap-4 justify-center">
+            {% for cta in block.value.ctas %}
+            <a href="{{ cta.href }}" class="fusion-btn fusion-btn--{{ cta.variant }} px-8 py-3 rounded-lg font-semibold {% if cta.variant == 'primary' %}bg-white text-blue-700 hover:bg-gray-100{% else %}border-2 border-white text-white hover:bg-white/10{% endif %}">{{ cta.label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+    {% endif %}
+{% endfor %}
+{% endif %}
+{% endblock %}

@@ -73,27 +73,27 @@ const {
 ---
 
 {folded ? (
-  <div id="pricing" class="mt-20 border-t border-fu-line pt-16">
-    <div class="mx-auto mb-14 max-w-2xl text-center">
+  <div id="pricing" class="mt-16 sm:mt-20 border-t border-fu-line pt-14 sm:pt-16">
+    <div class="pricing__header">
       <p class="tag-marker mb-4">pricing</p>
-      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>
+      <h2 class="page-section__title">{heading}</h2>
       <p class="text-fu-muted">{intro}</p>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="pricing__grid">
       {plans.map((plan) => <PricingCard plan={plan} />)}
     </div>
   </div>
 ) : (
-  <section id="pricing" class="doc-sheet bg-fu-paper py-20 md:py-24">
+  <section id="pricing" class="pricing">
     <div class="container-fusion">
-      <div class="mx-auto mb-14 max-w-2xl text-center">
+      <div class="pricing__header">
         <p class="tag-marker mb-4">pricing</p>
-        <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>
+        <h2 class="page-section__title">{heading}</h2>
         <p class="text-fu-muted">{intro}</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div class="pricing__grid">
         {plans.map((plan) => <PricingCard plan={plan} />)}
       </div>
     </div>

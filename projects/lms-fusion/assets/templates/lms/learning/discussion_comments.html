@@ -1,0 +1,152 @@
+{% load i18n %}
+<h4 class="mb-3">{% trans "Lesson Discussion" %}</h4>
+
+<!-- Discussion Form -->
+{% if user.is_authenticated %}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="post" action="{% url 'add_comment' lesson.id %}" class="comment-form">
+            {% csrf_token %}
+            {{ comment_form.content }}
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted">Share your questions or insights with other students</small>
+                <button type="submit" class="button button-sm button-radius button-primary">
+                    <i class="bi bi-send me-2"></i>Post Comment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <a href="{% url 'plugins:login' %}?next={{ request.path }}">{% trans "Login" %}</a> to participate in the discussion.
+</div>
+{% endif %}
+
+<!-- Comments -->
+<div class="comment-thread">
+    {% for comment in comments %}
+    <div class="comment card mb-3" id="comment-{{ comment.id }}">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+                <img src="{% if comment.user.profile.avatar %}{{ comment.user.profile.avatar.url }}{% else %}{% static 'assets/images/avatar-placeholder.jpg' %}{% endif %}" 
+                     alt="{{ comment.user.get_full_name }}" class="rounded-circle me-2" width="32" height="32">
+                <div>
+                    <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                    {% if comment.user == lesson.course.instructor %}
+                    <span class="badge bg-primary ms-1">{% trans "Instructor" %}</span>
+                    {% endif %}
+                    <small class="text-muted ms-2">{{ comment.created_at|timesince }} ago</small>
+                </div>
+            </div>
+            <p class="mb-2">{{ comment.content|linebreaks }}</p>
+            
+            <div class="d-flex align-items-center">
+                <!-- Vote Form -->
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'vote_comment' comment.id %}" class="comment-vote-form me-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="is_helpful" value="true">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-hand-thumbs-up{% if user in comment.voters %} fill{% endif %} me-1"></i>
+                        Helpful ({{ comment.votes_count }})
+                    </button>
+                </form>
+                {% endif %}
+                
+                <!-- Reply Button -->
+                {% if user.is_authenticated %}
+                <button class="btn btn-sm btn-outline-secondary reply-btn" data-comment-id="{{ comment.id }}">
+                    <i class="bi bi-reply me-1"></i>Reply
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Reply Form -->
+            {% if user.is_authenticated %}
+            <div class="reply-form mt-3" id="reply-form-{{ comment.id }}" style="display: none;">
+                <form method="post" action="{% url 'add_reply' comment.id %}" class="reply-form">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        {{ reply_form.content }}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Replying to {{ comment.user.get_full_name|default:comment.user.username }}</small>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary cancel-reply me-2" data-comment-id="{{ comment.id }}">{% trans "Cancel" %}</button>
+                            <button type="submit" class="button button-sm button-radius button-primary">
+                                <i class="bi bi-send me-1"></i>Post Reply
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Replies -->
+            {% if comment.replies.exists %}
+            <div class="replies mt-3 ps-4 border-start border-2">
+                {% for reply in comment.replies.all %}
+                <div class="reply mb-3">
+                    <div class="d-flex align-items-center mb-1">
+                        <img src="{% if reply.user.profile.avatar %}{{ reply.user.profile.avatar.url }}{% else %}{% static 'assets/images/avatar-placeholder.jpg' %}{% endif %}" 
+                             alt="{{ reply.user.get_full_name }}" class="rounded-circle me-2" width="28" height="28">
+                        <div>
+                            <strong class="small">{{ reply.user.get_full_name|default:reply.user.username }}</strong>
+                            {% if reply.user == lesson.course.instructor %}
+                            <span class="badge bg-primary ms-1">{% trans "Instructor" %}</span>
+                            {% endif %}
+                            <small class="text-muted ms-2">{{ reply.created_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                    <p class="small mb-1">{{ reply.content|linebreaks }}</p>
+                    
+                    <!-- Reply Vote Form -->
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'vote_comment' reply.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="is_helpful" value="true">
+                        <button type="submit" class="btn btn-sm btn-outline-primary btn-sm">
+                            <i class="bi bi-hand-thumbs-up{% if user in reply.voters %} fill{% endif %} me-1"></i>
+                            ({{ reply.votes_count }})
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-4">
+        <i class="bi bi-chat-dots display-4 text-muted mb-3"></i>
+        <p class="text-muted">{% trans "No comments yet. Be the first to start the discussion!" %}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if comments.has_other_pages %}
+<nav aria-label="Comments pagination">
+    <ul class="pagination justify-content-center">
+        {% if comments.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?comment_page={{ comments.previous_page_number }}#discussion">{% trans "Previous" %}</a>
+        </li>
+        {% endif %}
+        
+        {% for i in comments.paginator.page_range %}
+        <li class="page-item {% if comments.number == i %}active{% endif %}">
+            <a class="page-link" href="?comment_page={{ i }}#discussion">{{ i }}</a>
+        </li>
+        {% endfor %}
+        
+        {% if comments.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?comment_page={{ comments.next_page_number }}#discussion">{% trans "Next" %}</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

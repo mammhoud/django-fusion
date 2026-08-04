@@ -1,0 +1,431 @@
+{% load i18n %}
+<div class="card shadow-sm" id="blog-post-form-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">{{ form_title }}</h5>
+        <a href="{{ cancel_url }}"
+           class="btn btn-sm btn-outline-secondary"
+           hx-get="{% url 'handlers:blog-posts' %}"
+           hx-target="#panel-content"
+           hx-swap="innerHTML"
+           hx-push-url="true">
+            <i class="bi bi-x-lg me-1"></i>{% trans "Cancel" %}
+        </a>
+    </div>
+
+    <div class="card-body">
+        {# Draft / Publish toggle banner #}
+        <div id="status-banner" class="alert mb-4 py-2 d-flex align-items-center gap-3
+            {% if form.status.value == 'published' %}alert-success{% elif form.status.value == 'archived' %}alert-secondary{% else %}alert-warning{% endif %}"
+             role="status" aria-live="polite">
+            <span id="status-icon">
+                {% if form.status.value == 'published' %}
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                {% elif form.status.value == 'archived' %}
+                    <i class="bi bi-archive-fill text-secondary fs-5"></i>
+                {% else %}
+                    <i class="bi bi-pencil-square text-warning fs-5"></i>
+                {% endif %}
+            </span>
+            <span id="status-label" class="fw-semibold">
+                {% if form.status.value == 'published' %}{% trans "Published" %}
+                {% elif form.status.value == 'archived' %}{% trans "Archived" %}
+                {% else %}{% trans "Draft" %}{% endif %}
+            </span>
+            <span class="text-muted small ms-auto" id="status-hint">
+                {% if form.status.value == 'published' %}
+                    {% trans "This post is live." %}
+                {% else %}
+                    {% trans "Not visible to the public yet." %}
+                {% endif %}
+            </span>
+        </div>
+
+        <form id="blog-post-form"
+              hx-post="{{ request.path }}"
+              hx-target="#panel-content"
+              hx-swap="innerHTML"
+              hx-push-url="true"
+              hx-encoding="multipart/form-data"
+              novalidate>
+            {% csrf_token %}
+
+            {# ── Title + Slug ── #}
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold">
+                    {% trans "Title" %} <span class="text-danger" aria-hidden="true">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="invalid-feedback d-block" role="alert">{{ form.title.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.slug.id_for_label }}" class="form-label fw-semibold">
+                    {% trans "Slug" %}
+                    <button type="button"
+                            class="btn btn-link btn-sm p-0 ms-1 text-muted"
+                            id="btn-regen-slug"
+                            title="{% trans 'Re-generate from title' %}"
+                            aria-label="{% trans 'Re-generate slug from title' %}">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted small">/blog/</span>
+                    {{ form.slug }}
+                </div>
+                <div class="form-text">{{ form.slug.help_text }}</div>
+                {% if form.slug.errors %}
+                <div class="invalid-feedback d-block" role="alert">{{ form.slug.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {# ── Status + Publish Date row ── #}
+            <div class="row g-3 mb-3">
+                <div class="col-sm-5">
+                    <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold">
+                        {% trans "Status" %}
+                    </label>
+                    {{ form.status }}
+                </div>
+                <div class="col-sm-7" id="published-date-wrapper">
+                    <label for="{{ form.published_date.id_for_label }}" class="form-label fw-semibold">
+                        {% trans "Publish Date" %}
+                    </label>
+                    {{ form.published_date }}
+                    <div class="form-text">{{ form.published_date.help_text }}</div>
+                    {% if form.published_date.errors %}
+                    <div class="invalid-feedback d-block" role="alert">{{ form.published_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# ── Featured Image ── #}
+            <div class="mb-3">
+                <label for="{{ form.featured_image_upload.id_for_label }}" class="form-label fw-semibold">
+                    {% trans "Featured Image" %}
+                </label>
+                {% if post and post.featured_image %}
+                <div class="mb-2 d-flex align-items-center gap-3">
+                    {% image post.featured_image width-120 as thumb %}
+                    <img src="{{ thumb.url }}" alt="{{ post.featured_image.title }}"
+                         class="rounded border" style="max-height:80px;object-fit:cover;">
+                    <span class="text-muted small">{% trans "Current image" %}: {{ post.featured_image.title }}</span>
+                </div>
+                {% endif %}
+                {{ form.featured_image_upload }}
+                <div class="form-text">{{ form.featured_image_upload.help_text }}</div>
+                {% if form.featured_image_upload.errors %}
+                <div class="invalid-feedback d-block" role="alert">{{ form.featured_image_upload.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {# ── Excerpt ── #}
+            <div class="mb-3">
+                <label for="{{ form.excerpt.id_for_label }}" class="form-label fw-semibold">
+                    {% trans "Excerpt" %}
+                </label>
+                {{ form.excerpt }}
+                <div class="form-text">{% trans "Optional short summary shown in listings." %}</div>
+            </div>
+
+            {# ── Content ── #}
+            <div class="mb-3">
+                <label for="{{ form.content.id_for_label }}" class="form-label fw-semibold">
+                    {% trans "Content" %} <span class="text-danger" aria-hidden="true">*</span>
+                </label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                <div class="invalid-feedback d-block" role="alert">{{ form.content.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {# ── Categories & Tags ── #}
+            <div class="row g-3 mb-3">
+                {% if form.categories.field.queryset.exists %}
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{% trans "Categories" %}</label>
+                    <div class="border rounded p-2" style="max-height:150px;overflow-y:auto;">
+                        {% for checkbox in form.categories %}
+                        <div class="form-check">
+                            {{ checkbox.tag }}
+                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                {{ checkbox.choice_label }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if form.tags.field.queryset.exists %}
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{% trans "Tags" %}</label>
+                    <div class="border rounded p-2" style="max-height:150px;overflow-y:auto;">
+                        {% for checkbox in form.tags %}
+                        <div class="form-check">
+                            {{ checkbox.tag }}
+                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                {{ checkbox.choice_label }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {# ── SEO ── #}
+            <div class="mb-4">
+                <label for="{{ form.meta_description.id_for_label }}" class="form-label fw-semibold">
+                    {{ form.meta_description.label }}
+                </label>
+                {{ form.meta_description }}
+                <div class="d-flex justify-content-between">
+                    <div class="form-text">{% trans "Optional. Shown in search engine results." %}</div>
+                    <small class="text-muted" id="meta-char-count">0 / 160</small>
+                </div>
+            </div>
+
+            {# ── Actions ── #}
+            <div class="d-flex flex-wrap gap-2 align-items-center border-top pt-3">
+                {# Save as Draft quick-action #}
+                <button type="button"
+                        class="btn btn-outline-warning"
+                        id="btn-save-draft"
+                        title="{% trans 'Save as draft without publishing' %}">
+                    <i class="bi bi-floppy me-1"></i>{% trans "Save Draft" %}
+                </button>
+
+                {# Primary submit (respects current status selection) #}
+                <button type="submit" class="btn btn-primary" id="btn-submit">
+                    <i class="bi bi-save me-1"></i>{{ submit_label }}
+                </button>
+
+                {# Publish shortcut #}
+                <button type="button"
+                        class="btn btn-success"
+                        id="btn-publish"
+                        title="{% trans 'Set status to Published and save' %}">
+                    <i class="bi bi-send me-1"></i>{% trans "Publish" %}
+                </button>
+
+                <a href="{{ cancel_url }}"
+                   class="btn btn-outline-secondary ms-auto"
+                   hx-get="{% url 'handlers:blog-posts' %}"
+                   hx-target="#panel-content"
+                   hx-swap="innerHTML"
+                   hx-push-url="true">
+                    {% trans "Cancel" %}
+                </a>
+            </div>
+
+            {# Client-side validation summary #}
+            <div id="form-validation-summary" class="alert alert-danger mt-3 d-none" role="alert" aria-live="assertive">
+                <strong>{% trans "Please fix the following:" %}</strong>
+                <ul class="mb-0 mt-1" id="validation-errors-list"></ul>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ── Slug auto-generation ── */
+    function slugify(text) {
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[\s_]+/g, '-')       // spaces/underscores → hyphens
+            .replace(/[^\w\-]+/g, '')       // remove non-word chars
+            .replace(/\-\-+/g, '-')         // collapse multiple hyphens
+            .replace(/^-+|-+$/g, '');       // trim leading/trailing hyphens
+    }
+
+    const titleInput = document.getElementById('id_title');
+    const slugInput  = document.getElementById('id_slug');
+    const regenBtn   = document.getElementById('btn-regen-slug');
+    let slugManuallyEdited = slugInput && slugInput.value.trim() !== '';
+
+    if (titleInput && slugInput) {
+        titleInput.addEventListener('input', function () {
+            if (!slugManuallyEdited) {
+                slugInput.value = slugify(this.value);
+            }
+        });
+
+        slugInput.addEventListener('input', function () {
+            slugManuallyEdited = this.value.trim() !== '';
+        });
+    }
+
+    if (regenBtn && titleInput && slugInput) {
+        regenBtn.addEventListener('click', function () {
+            slugInput.value = slugify(titleInput.value);
+            slugManuallyEdited = false;
+        });
+    }
+
+    /* ── Status banner update ── */
+    const statusSelect = document.getElementById('id_status');
+    const statusBanner = document.getElementById('status-banner');
+    const statusLabel  = document.getElementById('status-label');
+    const statusIcon   = document.getElementById('status-icon');
+    const statusHint   = document.getElementById('status-hint');
+    const publishedDateWrapper = document.getElementById('published-date-wrapper');
+
+    const statusConfig = {
+        published: {
+            bannerClass: 'alert-success',
+            icon: '<i class="bi bi-check-circle-fill text-success fs-5"></i>',
+            label: '{% trans "Published" %}',
+            hint: '{% trans "This post is live." %}',
+        },
+        draft: {
+            bannerClass: 'alert-warning',
+            icon: '<i class="bi bi-pencil-square text-warning fs-5"></i>',
+            label: '{% trans "Draft" %}',
+            hint: '{% trans "Not visible to the public yet." %}',
+        },
+        archived: {
+            bannerClass: 'alert-secondary',
+            icon: '<i class="bi bi-archive-fill text-secondary fs-5"></i>',
+            label: '{% trans "Archived" %}',
+            hint: '{% trans "Hidden from public listings." %}',
+        },
+    };
+
+    function updateStatusBanner(val) {
+        const cfg = statusConfig[val] || statusConfig.draft;
+        if (statusBanner) {
+            statusBanner.className = 'alert mb-4 py-2 d-flex align-items-center gap-3 ' + cfg.bannerClass;
+        }
+        if (statusIcon)  statusIcon.innerHTML  = cfg.icon;
+        if (statusLabel) statusLabel.textContent = cfg.label;
+        if (statusHint)  statusHint.textContent  = cfg.hint;
+
+        // Show/hide publish date based on status
+        if (publishedDateWrapper) {
+            publishedDateWrapper.style.display = (val === 'published') ? '' : '';
+        }
+    }
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function () {
+            updateStatusBanner(this.value);
+        });
+        updateStatusBanner(statusSelect.value);
+    }
+
+    /* ── Draft / Publish quick buttons ── */
+    const form        = document.getElementById('blog-post-form');
+    const btnDraft    = document.getElementById('btn-save-draft');
+    const btnPublish  = document.getElementById('btn-publish');
+
+    if (btnDraft && statusSelect && form) {
+        btnDraft.addEventListener('click', function () {
+            statusSelect.value = 'draft';
+            updateStatusBanner('draft');
+            form.requestSubmit ? form.requestSubmit() : form.submit();
+        });
+    }
+
+    if (btnPublish && statusSelect && form) {
+        btnPublish.addEventListener('click', function () {
+            statusSelect.value = 'published';
+            updateStatusBanner('published');
+            form.requestSubmit ? form.requestSubmit() : form.submit();
+        });
+    }
+
+    /* ── Meta description character counter ── */
+    const metaInput    = document.querySelector('[name="meta_description"]');
+    const metaCounter  = document.getElementById('meta-char-count');
+
+    if (metaInput && metaCounter) {
+        function updateMetaCount() {
+            const len = metaInput.value.length;
+            metaCounter.textContent = len + ' / 160';
+            metaCounter.classList.toggle('text-danger', len > 140);
+        }
+        metaInput.addEventListener('input', updateMetaCount);
+        updateMetaCount();
+    }
+
+    /* ── Client-side validation ── */
+    const validationSummary = document.getElementById('form-validation-summary');
+    const validationList    = document.getElementById('validation-errors-list');
+
+    function validateForm() {
+        const errors = [];
+        const titleVal   = titleInput ? titleInput.value.trim() : '';
+        const contentEl  = document.querySelector('[name="content"]');
+        const contentVal = contentEl ? contentEl.value.trim() : '';
+
+        if (!titleVal) {
+            errors.push('{% trans "Title is required." %}');
+            if (titleInput) titleInput.classList.add('is-invalid');
+        } else {
+            if (titleInput) titleInput.classList.remove('is-invalid');
+        }
+
+        if (!contentVal) {
+            errors.push('{% trans "Content is required." %}');
+            if (contentEl) contentEl.classList.add('is-invalid');
+        } else {
+            if (contentEl) contentEl.classList.remove('is-invalid');
+        }
+
+        if (errors.length > 0) {
+            validationList.innerHTML = errors.map(e => '<li>' + e + '</li>').join('');
+            validationSummary.classList.remove('d-none');
+            validationSummary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return false;
+        }
+
+        validationSummary.classList.add('d-none');
+        return true;
+    }
+
+    if (form) {
+        form.addEventListener('htmx:confirm', function (e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+
+        // Also validate on native submit (fallback)
+        form.addEventListener('submit', function (e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    /* ── Image preview ── */
+    const imageInput   = document.querySelector('[name="featured_image_upload"]');
+    if (imageInput) {
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                let preview = document.getElementById('featured-image-preview');
+                if (!preview) {
+                    preview = document.createElement('img');
+                    preview.id = 'featured-image-preview';
+                    preview.className = 'rounded border mt-2';
+                    preview.style.cssText = 'max-height:120px;object-fit:cover;display:block;';
+                    imageInput.parentNode.insertBefore(preview, imageInput.nextSibling);
+                }
+                preview.src = ev.target.result;
+                preview.alt = file.name;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+})();
+</script>

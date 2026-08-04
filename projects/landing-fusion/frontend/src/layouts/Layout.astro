@@ -21,6 +21,10 @@ interface Props {
     footer_link_groups?: { title: string; links: { label: string; url: string }[] }[];
     social_links?: { platform: string; label: string; url: string; icon_class: string }[];
   };
+  /** Backend-fetched page data for the current route (from /apis/pages/<slug>/). */
+  pageData?: import('@/lib/api').PageData | null;
+  /** Slug of the current page, used as the cache key in the Redux pageSlice. */
+  pageSlug?: string;
 }
 
 const {
@@ -29,6 +33,8 @@ const {
   ogImage = fallbackOgImage,
   navItems,
   siteSettings,
+  pageData = null,
+  pageSlug = '',
 } = Astro.props;
 
 const siteName = siteSettings?.site_name || fallbackSiteName;
@@ -87,16 +93,60 @@ void THEME_STORAGE_KEY;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body class="is-hydrating">
+    <!-- HTMX global in-flight indicator — shows a branded skeleton overlay
+         while hx- requests are pending.  Toggled by htmx-bootstrap.ts via
+         the `.htmx-request` class.  Respects reduced-motion preference. -->
     <div
       id="htmx-global-indicator"
-      class="fixed inset-0 z-50 items-center justify-center bg-fu-paper/80 backdrop-blur-sm"
+      class="htmx-indicator-overlay"
       aria-hidden="true"
+      role="status"
+      aria-live="polite"
     >
-      <div class="container-fusion grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <span class="fusion-skeleton__card"></span>
-        <span class="fusion-skeleton__card"></span>
-        <span class="fusion-skeleton__card"></span>
+      <!-- Progress bar (top edge) -->
+      <div class="htmx-indicator-progress" aria-hidden="true">
+        <div class="htmx-indicator-progress__bar"></div>
       </div>
+
+      <!-- Request target label — shows which region is being swapped -->
+      <p class="htmx-indicator__target" id="htmx-indicator-target" aria-hidden="true"></p>
+
+      <!-- Branded skeleton: hero → stats → cards mirrors a full page layout -->
+      <div class="htmx-indicator-skeleton">
+        <!-- Hero skeleton -->
+        <div class="htmx-indicator-skeleton__hero">
+          <span class="fusion-skeleton__line fusion-skeleton__line--tag" style="width:10rem;margin-inline:auto"></span>
+          <span class="fusion-skeleton__line fusion-skeleton__line--hero"></span>
+          <span class="fusion-skeleton__line" style="width:55%"></span>
+          <div class="htmx-indicator-skeleton__ctas">
+            <span class="fusion-skeleton__line fusion-skeleton__line--btn" style="width:9rem"></span>
+            <span class="fusion-skeleton__line fusion-skeleton__line--btn" style="width:8rem;opacity:0.6"></span>
+          </div>
+        </div>
+
+        <!-- Stats row skeleton -->
+        <div class="htmx-indicator-skeleton__stats">
+          {[1,2,3,4].map(() => (
+            <span class="htmx-indicator-skeleton__stat">
+              <span class="fusion-skeleton__line fusion-skeleton__line--stat-value" style="width:4rem"></span>
+              <span class="fusion-skeleton__line" style="width:70%"></span>
+            </span>
+          ))}
+        </div>
+
+        <!-- Card grid skeleton -->
+        <div class="htmx-indicator-skeleton__cards">
+          {[1,2,3].map(() => (
+            <span class="fusion-skeleton__card"></span>
+          ))}
+        </div>
+      </div>
+
+      <!-- Footer hint — switches between "Loading…" and elapsed time -->
+      <p class="htmx-indicator__hint" id="htmx-indicator-hint">
+        <span class="htmx-indicator__pulse" aria-hidden="true"></span>
+        Loading&hellip;
+      </p>
     </div>
 
     <div class="flex min-h-screen flex-col">
@@ -109,32 +159,125 @@ void THEME_STORAGE_KEY;
 
     <CookieConsent />
 
-    <!-- Toast store + hydration guard — runs before any Alpine component hydrates -->
-    <script>
-      import Alpine from 'alpinejs';
+    <!-- SSR data bridge → Redux initial state (site + page) -->
+    <script type="application/json" id="fusion-site-data">
+      {JSON.stringify({ siteSettings: siteSettings ?? null, navItems: navItems ?? [], pageData: pageData ?? null, pageSlug: pageSlug ?? '' })}
+    </script>
 
-      document.addEventListener('alpine:init', () => {
-        Alpine.store('toast', {
-          visible: false,
-          message: '',
-          variant: 'success',
-          timeout: 0 as number | ReturnType<typeof setTimeout>,
-          show(message: string, variant = 'success', duration = 3500) {
-            this.message = message;
-            this.variant = variant;
-            this.visible = true;
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => (this.visible = false), duration);
+    <!-- Redux store + toast + hydration guard — replaces Alpine toast store.
+
+         NOTE: The slice definitions below are the canonical runtime source.
+         The files in lib/store/ (pageSlice.ts, siteSlice.ts, toastSlice.ts)
+         serve as type-safe reference copies for TypeScript imports.
+         Keep both in sync when changing reducer logic. -->
+    <script>
+      import { configureStore, createSlice } from '@reduxjs/toolkit';
+
+      // ── Read SSR data from JSON bridge ─────────────────────────────────
+      let ssrSiteSettings = null;
+      let ssrNavItems = [];
+      let ssrPageData = null;
+      let ssrPageSlug = '';
+      try {
+        const el = document.getElementById('fusion-site-data');
+        if (el) {
+          const data = JSON.parse(el.textContent || '{}');
+          ssrSiteSettings = data.siteSettings;
+          ssrNavItems = data.navItems;
+          ssrPageData = data.pageData;
+          ssrPageSlug = data.pageSlug;
+        }
+      } catch { /* use defaults */ }
+
+      // ── Inline Redux store with toast + site slices ────────────────────
+      const toastSlice = createSlice({
+        name: 'toast',
+        initialState: { visible: false, message: '', variant: 'success' as string },
+        reducers: {
+          showToast(state, action) {
+            state.message = action.payload.message;
+            state.variant = action.payload.variant || 'success';
+            state.visible = true;
           },
-        });
+          hideToast(state) { state.visible = false; },
+        },
       });
 
-      // Remove hydration skeleton after Alpine finishes initializing
+      const siteSlice = createSlice({
+        name: 'site',
+        initialState: {
+          theme: 'light' as string,
+          loaded: !!ssrSiteSettings,
+          settings: ssrSiteSettings,
+          navigation: ssrNavItems,
+          error: null as string | null,
+        },
+        reducers: {
+          setTheme(state, action) {
+            state.theme = action.payload;
+            try { localStorage.setItem('fusion-theme', action.payload); } catch { /* noop */ }
+          },
+          setLoaded(state) { state.loaded = true; },
+          setSettings(state, action) { state.settings = action.payload; },
+          setNavigation(state, action) { state.navigation = action.payload; },
+          setError(state, action) { state.error = action.payload; },
+        },
+      });
+
+      const pageSlice = createSlice({
+        name: 'page',
+        initialState: {
+          current: ssrPageData,
+          cache: (ssrPageData && ssrPageSlug) ? { [ssrPageSlug]: ssrPageData } : {},
+          loading: false,
+          error: null as string | null,
+        },
+        reducers: {
+          setPageData(state, action) {
+            const { slug, data } = action.payload;
+            state.current = data;
+            state.cache[slug] = data;
+            state.loading = false; state.error = null;
+          },
+          setPageLoading(state) { state.loading = true; },
+          setPageError(state, action) { state.error = action.payload; state.loading = false; },
+        },
+      });
+
+      const { showToast, hideToast } = toastSlice.actions;
+      const { setTheme, setLoaded, setSettings, setNavigation, setError } = siteSlice.actions;
+
+      const reduxStore = configureStore({
+        reducer: { toast: toastSlice.reducer, site: siteSlice.reducer, page: pageSlice.reducer },
+      });
+
+      // Expose globally for components (Toast.astro, ThemeToggle, HTMX error handler)
+      (window as any).__reduxStore = reduxStore;
+      (window as any).__showToast = (message: string, variant = 'success') => {
+        reduxStore.dispatch(showToast({ message, variant }));
+        setTimeout(() => reduxStore.dispatch(hideToast()), 3500);
+      };
+
+      // ── Theme sync: Redux → DOM ───────────────────────────────────────
+      reduxStore.subscribe(() => {
+        const { site: siteState } = reduxStore.getState();
+        const root = document.documentElement;
+        const isDark = siteState.theme === 'dark';
+        root.classList.toggle('dark', isDark);
+        root.classList.toggle('light', !isDark);
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', isDark ? '#131312' : '#fcfcfa');
+      });
+
+      // ── Hydration skeleton removal ────────────────────────────────────
       document.addEventListener('alpine:initialized', () => {
         document.body.classList.remove('is-hydrating');
+        reduxStore.dispatch(setLoaded());
       });
-      // Safety net — remove skeleton after 3s regardless
-      setTimeout(() => document.body.classList.remove('is-hydrating'), 3000);
+      setTimeout(() => {
+        document.body.classList.remove('is-hydrating');
+        reduxStore.dispatch(setLoaded());
+      }, 3000);
     </script>
 
     <!-- HTMX bootstrap is now loaded per-page via <HtmxBootstrap /> —
