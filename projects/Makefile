@@ -97,6 +97,13 @@ else ifeq ($(WEBSITE),lms-fusion)
   MANAGE := uv run python $(SITE)/backend/__main__.py
   PYTHON := uv run python
 
+else ifeq ($(WEBSITE),landing-fusion)
+  SITE := landing-fusion
+  TEST_WEBSITE := landing-fusion
+  COMPOSE_FILE ?= docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/__main__.py
+  PYTHON := uv run python
+
 else
   SITE := $(WEBSITE)
   TEST_WEBSITE := all

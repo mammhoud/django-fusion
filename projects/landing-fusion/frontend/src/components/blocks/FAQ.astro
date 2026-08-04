@@ -11,40 +11,40 @@ interface Props {
 
 const defaultItems = [
   {
-    question: 'What is the AHA stack?',
+    question: 'What exactly is the AHA stack?',
     answer:
-      'AHA stands for Astro + HTMX + Alpine.js — a lightweight alternative to heavy SPA frameworks. Astro renders server-side HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers local interactivity. No Redux, no decoder, no FusionProxy needed for most pages.',
+      'AHA stands for Astro + HTMX + Alpine.js — a lightweight alternative to heavy SPA frameworks. Astro renders server-side HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers local interactivity. No Redux, no decoder, no client-side router needed for most pages.',
   },
   {
-    question: 'How do I get started?',
+    question: 'Do I need to write JavaScript?',
     answer:
-      'Create a free account in seconds, browse the course catalog, and enroll in any course that catches your eye. Your progress syncs automatically across devices.',
+      'Not for the page itself. Your content is HTML; interactions are declared with small hx-* and x-* attributes. Alpine is 15 KB, and you only load it on pages that actually use it.',
   },
   {
-    question: 'Are there any hidden fees?',
+    question: 'How is this different from a React or Vue site?',
     answer:
-      'No. The Starter plan is free forever with no credit card required. Paid plans are billed monthly or yearly and you can cancel anytime from your dashboard.',
+      'A React site sends a shell plus a bundle, then builds the page in the browser. Fusion sends the finished HTML in one response. Less to download, less to run, and search engines read exactly what your visitors see.',
   },
   {
-    question: 'Can I switch plans later?',
+    question: 'Can I still build dynamic dashboards?',
     answer:
-      'Absolutely. You can upgrade or downgrade at any time — changes apply immediately and we prorate any differences on your next invoice.',
+      'Yes. HTMX streams HTML fragments from Django over plain HTTP — the same technology as your landing page. Dynamic regions stay server-rendered, so there is never a second, parallel API to maintain.',
   },
   {
-    question: 'Do you offer team or enterprise pricing?',
+    question: 'What about team and enterprise needs?',
     answer:
-      'Yes. The Team plan includes SSO, role management, custom branding and a dedicated success manager. Contact us for volume discounts and custom requirements.',
+      'The Enterprise sheet includes SSO, audit logs, custom branding and a dedicated success manager. Contact us for volume discounts and custom requirements.',
   },
   {
     question: 'Is my data secure?',
     answer:
-      'Security is our priority. All sessions use django-allauth best practices, forms are CSRF-protected, and traffic is served over HTTPS with Let’s Encrypt certificates.',
+      'Sessions use django-allauth best practices, forms are CSRF-protected, and traffic is served over HTTPS with Let’s Encrypt certificates.',
   },
 ];
 
 const {
-  heading = 'Frequently asked questions',
-  intro = 'Everything you need to know about the product and billing.',
+  heading = 'Questions, answered in plain HTML',
+  intro = 'The honest answers to the questions technical buyers ask.',
   items = defaultItems,
   searchable = true,
 } = Astro.props;
@@ -53,12 +53,12 @@ const {
 const itemsJson = JSON.stringify(items);
 ---
 
-<section id="faq" class="bg-fu-muted py-20">
+<section id="faq" class="doc-sheet bg-fu-paper py-20 md:py-24">
   <div class="container-fusion">
     <div class="mx-auto mb-14 max-w-2xl text-center">
-      <span class="badge-primary mb-4">FAQ</span>
-      {heading && <h2 class="mb-4 text-3xl font-bold text-fu-text md:text-4xl">{heading}</h2>}
-      {intro && <p class="text-fu-text/60">{intro}</p>}
+      <p class="tag-marker mb-4">faq</p>
+      {heading && <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>}
+      {intro && <p class="text-fu-muted">{intro}</p>}
     </div>
 
     <!-- Shared Alpine scope: search query + the items themselves -->
@@ -66,22 +66,22 @@ const itemsJson = JSON.stringify(items);
       {searchable && (
         <div class="mb-10">
           <div class="relative">
-            <svg class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-fu-text/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-fu-muted/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.3-4.3M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             <input
               type="search"
               x-model="query"
-              class="input-field !pl-11 !py-3.5"
-              placeholder="Search FAQs..."
+              class="input-field !pl-11 !py-3"
+              placeholder="Search the FAQ…"
               aria-label="Search frequently asked questions"
             />
           </div>
           <p
-            class="mt-3 text-center text-sm text-fu-text/50"
+            class="mt-3 text-center font-mono text-[0.72rem] uppercase tracking-wider text-fu-muted"
             x-show="query.length > 0"
             x-cloak
-            x-text="`${items.filter(i => i.question.toLowerCase().includes(query.toLowerCase()) || i.answer.toLowerCase().includes(query.toLowerCase())).length} item(s) match`"
+            x-text="`${items.filter(i => i.question.toLowerCase().includes(query.toLowerCase()) || i.answer.toLowerCase().includes(query.toLowerCase())).length} match(es)`"
           ></p>
         </div>
       )}

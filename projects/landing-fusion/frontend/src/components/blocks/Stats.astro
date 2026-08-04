@@ -1,4 +1,6 @@
 ---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
 interface Stat {
   label: string;
   value: number | string;
@@ -9,48 +11,53 @@ interface Props {
   stats?: Stat[];
 }
 
+// Network facts — the numbers that matter to a technical evaluator.
 const defaultStats: Stat[] = [
-  { label: 'Courses', value: 120, suffix: '+' },
-  { label: 'Instructors', value: 45, suffix: '+' },
-  { label: 'Students', value: 5000, suffix: '+' },
-  { label: 'Reviews', value: 12, suffix: 'K+' },
+  { label: 'Total page weight', value: 30, suffix: 'KB' },
+  { label: 'Client-side framework', value: 0, suffix: 'KB' },
+  { label: 'Time to first byte', value: '<0.1', suffix: 's' },
+  { label: 'HTML, not JSON', value: 100, suffix: '%' },
 ];
 
 const { stats = defaultStats } = Astro.props;
 ---
 
-<section class="border-b border-fu-border bg-fu-card py-12">
+<section class="doc-sheet bg-fu-paper py-14">
   <div class="container-fusion">
-    <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
-      {stats.map((stat) => (
-        <div
-          class="text-center"
-          x-data="{ shown: false, count: 0 }"
-          x-intersect.once="shown = true"
-        >
-          <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fu-primary/10 text-fu-primary">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-            </svg>
-          </div>
+    <div class="relative">
+      <!-- Default loading state: skeleton while Alpine hydrates (see Skeleton.astro + Layout.astro is-hydrating). -->
+      <div data-hydrate-skeleton class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+        <Skeleton variant="card" count={4} />
+      </div>
+
+      <div data-hydrate-content class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+        {stats.map((stat) => (
           <div
-            class="text-3xl font-bold text-fu-text md:text-4xl"
-            x-text={
-              typeof stat.value === 'number'
-                ? `shown ? count.toLocaleString() + '${stat.suffix ?? ''}' : '0${stat.suffix ?? ''}'`
-                : `'${stat.value}'`
-            }
-            x-effect={
-              typeof stat.value === 'number'
-                ? `if (shown && count === 0) { const target = ${stat.value}; const step = Math.max(1, Math.ceil(target / 30)); const t = setInterval(() => { count += step; if (count >= target) { count = target; clearInterval(t); } }, 30); }`
-                : undefined
-            }
+            class="border-t border-fu-line pt-5"
+            x-data="{ shown: false, count: 0 }"
+            x-intersect.once="shown = true"
           >
-            {typeof stat.value === 'number' ? `0${stat.suffix ?? ''}` : stat.value}
+            <p class="mb-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-fu-muted">
+              {stat.label}
+            </p>
+            <div
+              class="font-mono text-3xl font-semibold tracking-tight text-fu-ink md:text-[2.15rem]"
+              x-text={
+                typeof stat.value === 'number'
+                  ? `shown ? count.toLocaleString() + '${stat.suffix ?? ''}' : '0${stat.suffix ?? ''}'`
+                  : `'${stat.value}' + '${stat.suffix ?? ''}'`
+              }
+              x-effect={
+                typeof stat.value === 'number'
+                  ? `if (shown && count === 0) { const target = ${stat.value}; const step = Math.max(1, Math.ceil(target / 30)); const t = setInterval(() => { count += step; if (count >= target) { count = target; clearInterval(t); } }, 30); }`
+                  : undefined
+              }
+            >
+              {typeof stat.value === 'number' ? `0${stat.suffix ?? ''}` : `${stat.value}${stat.suffix ?? ''}`}
+            </div>
           </div>
-          <div class="mt-1 text-sm text-fu-text/60">{stat.label}</div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </div>
 </section>

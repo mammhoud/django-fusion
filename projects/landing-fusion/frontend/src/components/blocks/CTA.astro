@@ -7,33 +7,37 @@ interface Props {
 }
 
 const {
-  heading = 'Start Learning Today',
-  intro = 'Join thousands of students and start your learning journey today.',
-  ctaLabel = 'Create Free Account',
+  heading = 'Ship the document, not the app',
+  intro = 'One HTTP response, finished HTML. Start building on Fusion CMS today — no framework to learn, no bundle to wait for.',
+  ctaLabel = 'Create free account',
   ctaHref = '/#cta',
 } = Astro.props;
 ---
 
-<section id="cta" class="section-hero py-20">
+<section id="cta" class="doc-sheet reg-marks overflow-hidden bg-[#1a1917] py-20 text-[#f0eee8] md:py-24">
   <div class="container-fusion">
     <div class="mx-auto max-w-3xl text-center">
-      <h2 class="mb-4 text-3xl font-bold text-white md:text-4xl">{heading}</h2>
-      <p class="mx-auto mb-8 max-w-xl text-lg text-white/70">{intro}</p>
-      <div class="flex flex-col justify-center gap-4 sm:flex-row">
+      <p class="tag-marker mb-5 !text-[#b0aba0]">cta</p>
+      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight md:text-4xl">{heading}</h2>
+      <p class="mx-auto mb-9 max-w-xl text-lg leading-relaxed text-[#b0aba0]">{intro}</p>
+      <div class="flex flex-col justify-center gap-3 sm:flex-row">
         <a
           href={ctaHref}
-          class="btn-white !px-10 !py-4 text-lg"
-          @click.prevent="$store.toast.show('Welcome aboard! Your account is being created…')"
+          class="btn-primary !px-8 !py-3.5 text-base"
+          @click.prevent="$store.toast.show('Account created. Check your inbox.')"
         >
           {ctaLabel}
         </a>
         <a
           href="/contact"
-          class="btn !px-10 !py-4 text-lg text-white ring-2 ring-inset ring-white/40 hover:bg-white/10"
+          class="btn !px-8 !py-3.5 text-base text-[#f0eee8] ring-1 ring-inset ring-[#f0eee8]/40 hover:bg-[#f0eee8]/5"
         >
-          Talk to Sales
+          Talk to sales
         </a>
       </div>
+      <p class="mt-8">
+        <span class="status-line !text-[#b0aba0]"><span class="dot" aria-hidden="true"></span>ready when you are · text/html</span>
+      </p>
     </div>
   </div>
 </section>

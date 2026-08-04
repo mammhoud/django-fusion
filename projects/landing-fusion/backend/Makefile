@@ -59,10 +59,10 @@ check: ## Django system checks
 	@$(MANAGE) check
 
 seed: ## Create the Wagtail page tree + default landing content
-	@$(MANAGE) seed_landing
+	@$(MANAGE) seed_pages
 
 test: ## Run Django tests
-	@$(MANAGE) test apps.landing --verbosity=2
+	@$(MANAGE) test apps.pages --verbosity=2
 
 format: ## Format with ruff
 	@$(UV_RUN) ruff format .

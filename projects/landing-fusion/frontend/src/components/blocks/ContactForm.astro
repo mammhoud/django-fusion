@@ -11,34 +11,34 @@ const methodIcons = {
 };
 ---
 
-<section id="contact" class="bg-fu-bg py-20">
+<section id="contact" class="doc-sheet bg-fu-paper py-20">
   <div class="container-fusion">
     <div class="grid gap-10 md:grid-cols-3">
       <!-- Contact info -->
       <div class="space-y-5">
         <div>
-          <span class="badge-primary mb-4">Contact</span>
-          <h2 class="mb-2 text-3xl font-bold text-fu-text">Get in touch</h2>
-          <p class="text-fu-text/60">
+          <p class="tag-marker mb-4">contact</p>
+          <h2 class="mb-2 font-display text-3xl font-bold tracking-tight text-fu-ink">Get in touch</h2>
+          <p class="text-fu-muted">
             Have a question or want to work with us? Send a message and we&apos;ll reply within one business day.
           </p>
         </div>
 
         {contactMethods.map((method) => (
           <div class="card flex items-start gap-4 p-5">
-            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-fu-primary/10 text-fu-primary">
+            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d={methodIcons[method.type]} />
               </svg>
             </div>
             <div>
-              <h3 class="text-sm font-semibold text-fu-text">{method.label}</h3>
+              <h3 class="text-sm font-semibold text-fu-ink">{method.label}</h3>
               {method.href ? (
-                <a href={method.href} class="text-sm text-fu-text/60 transition-colors hover:text-fu-primary">
+                <a href={method.href} class="text-sm text-fu-muted transition-colors hover:text-fu-link">
                   {method.value}
                 </a>
               ) : (
-                <p class="text-sm text-fu-text/60">{method.value}</p>
+                <p class="text-sm text-fu-muted">{method.value}</p>
               )}
             </div>
           </div>

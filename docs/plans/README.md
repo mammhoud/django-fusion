@@ -1,6 +1,6 @@
 # Structa Cloud — Plans Index
 
-> **Last updated:** 2026-08-01 | **Branch:** `generic`
+> **Last updated:** 2026-08-03 | **Branch:** `generic`
 
 All active, migrated, and historical repository plans live below this directory.
 `docs/Anytype/plans/` remains a separate Anytype knowledge graph and is not
@@ -19,6 +19,7 @@ This directory consolidates all implementation plans for the Structa Cloud monor
 | **cypercloud ceptor-ai stubs** | ✅ Done | 100% | 6 AI/MCP/chat imports → local stubs |
 | **cms-fusion migration** | ✅ Done | 100% | django-fusion + bolt + Next.js; 113 tests |
 | **lms-fusion migration** | ✅ Done | 100% | django-fusion + bolt + Next.js; 113 tests |
+| **landing-fusion migration** | 🟡 In Progress | 70% | Astro + AHA frontend (Phases 0-1 + dark mode) + Django/Wagtail backend; blog/auth/Docker pending |
 | **fusion-assets-templates-cleanup** | ✅ Done | 100% | Phases 0-7 complete; Phase 8 deferred (deployment) |
 | **django-fusion-webpack-integration** | ✅ Done | 100% | SCSS pipeline configured |
 | **fix-deploy-webpack-cleanup** | ✅ Done | 100% | Deployment fixes applied |
@@ -65,6 +66,9 @@ docs/plans/
 │   └── frontend-enhancement-master.md
 ├── lms-fusion/
 │   └── migration-plan.md
+├── landing-fusion/
+│   ├── LANDING_FUSION_PLAN.md     # Build plan + backend↔frontend mapping
+│   └── SHADCNBLOCKS_THEME.md      # Extracted shadcnblocks theme styles
 ├── pos/
 │   ├── forge-pos-plan.md
 │   ├── forge-pos-enhancement.md
@@ -115,6 +119,9 @@ Each plan file is tagged at the top with relevant project tags. Use these to fil
 |-----|-------|
 | `#cms-fusion` | CMS Fusion project (Next.js frontend) |
 | `#lms-fusion` | LMS Fusion project (Next.js frontend) |
+| `#landing` | Landing site (landing-fusion) |
+| `#astro` | Astro framework work |
+| `#aha-stack` | Astro + HTMX + Alpine.js architecture |
 | `#fusion` | Both CMS + LMS fusion projects |
 | `#pos` | Point of Sale desktop app |
 | `#forge-pos` | Forge POS edition (Tauri + Rust) |

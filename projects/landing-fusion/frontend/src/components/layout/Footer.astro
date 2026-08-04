@@ -4,41 +4,40 @@ import { footerColumns, siteConfig } from '@/lib/site';
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-fu-border bg-fu-text text-fu-muted dark:bg-fu-card">
-  <div class="container-fusion py-12">
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
-      <!-- Brand -->
+<footer class="doc-sheet border-t border-fu-line bg-fu-paper text-fu-muted">
+  <div class="container-fusion py-14">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-4">
+      <!-- Colophon -->
       <div>
-        <a href="/" class="mb-4 flex items-center gap-2 text-lg font-bold text-white">
-          <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#7c3aed"/>
-                <stop offset="1" stop-color="#4c1d95"/>
-              </linearGradient>
-            </defs>
-            <rect width="32" height="32" rx="8" fill="url(#logo-g)"/>
-            <path d="M16 6l8 4-8 4-8-4 8-4zm0 9l6 3v5l-6 3-6-3v-5l6-3z" fill="#fff"/>
+        <a href="/" class="mb-4 flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink">
+          <svg class="h-6 w-6" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect width="32" height="32" rx="4" fill="#1A1917"/>
+            <path d="M11 8L6 13l5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
           </svg>
           <span>{siteConfig.name}</span>
         </a>
-        <p class="text-sm leading-relaxed opacity-80">
-          {siteConfig.tagline}. Server-rendered HTML with HTMX and Alpine.js — no heavy SPA.
+        <p class="mb-5 text-sm leading-relaxed">
+          {siteConfig.tagline}
         </p>
+        <p class="status-line"><span class="dot" aria-hidden="true"></span>server-rendered · 0 KB JS</p>
       </div>
 
       <!-- Link groups -->
       {footerColumns.map((column) => (
         <div>
-          <h3 class="mb-4 text-sm font-semibold text-white">{column.title}</h3>
-          <ul class="space-y-2">
+          <h3 class="mb-4 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-fu-ink">
+            <span class="tag-marker">{column.title}</span>
+          </h3>
+          <ul class="space-y-2.5">
             {column.links.map((link) => (
               <li>
                 <a
                   href={link.href}
                   target={link.external ? '_blank' : undefined}
                   rel={link.external ? 'noopener noreferrer' : undefined}
-                  class="text-sm opacity-80 transition-colors duration-200 hover:text-white hover:opacity-100"
+                  class="text-sm transition-colors duration-200 hover:text-fu-link"
                 >
                   {link.label}
                 </a>
@@ -49,12 +48,14 @@ const year = new Date().getFullYear();
       ))}
     </div>
 
-    <div class="mt-10 border-t border-white/10 pt-8 text-center text-sm opacity-70">
-      <p>
-        &copy; {year} {siteConfig.author}. All rights reserved. ·
-        <a href="https://github.com/mammhoud" class="hover:text-white" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-fu-line pt-7 sm:flex-row">
+      <p class="font-mono text-[0.72rem] uppercase tracking-wider">
+        &copy; {year} {siteConfig.author} · rendered as HTML, served as text/html
+      </p>
+      <p class="font-mono text-[0.72rem] uppercase tracking-wider">
+        <a href="https://github.com/mammhoud" class="hover:text-fu-link" target="_blank" rel="noopener noreferrer">github</a>
         {' · '}
-        <a href="https://mammhoud.github.io" class="hover:text-white" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="https://mammhoud.github.io" class="hover:text-fu-link" target="_blank" rel="noopener noreferrer">portfolio</a>
       </p>
     </div>
   </div>
