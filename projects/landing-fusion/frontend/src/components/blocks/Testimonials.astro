@@ -1,4 +1,6 @@
 ---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
 interface Testimonial {
   quote: string;
   author: string;
@@ -47,8 +49,13 @@ const {
       <p class="text-fu-muted">{intro}</p>
     </div>
 
+    <!-- Skeleton while Alpine boots (carousel) — component-matched size -->
+    <div data-hydrate-skeleton>
+      <Skeleton variant="testimonials-carousel" />
+    </div>
+
     <!-- Alpine carousel -->
-    <div class="mx-auto max-w-3xl" x-data={`{ active: 0, total: ${testimonials.length} }`}>
+    <div data-hydrate-content class="mx-auto max-w-3xl" client:visible x-data={`{ active: 0, total: ${testimonials.length} }`}>
       <div class="overflow-hidden">
         <div class="flex transition-transform duration-500 ease-out" :style="`transform: translateX(-${active * 100}%)`">
           {testimonials.map((t) => (

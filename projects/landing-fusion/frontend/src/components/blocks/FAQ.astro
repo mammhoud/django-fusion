@@ -1,5 +1,6 @@
 ---
 import Accordion from '@/components/ui/Accordion.astro';
+import Skeleton from '@/components/ui/Skeleton.astro';
 
 interface Props {
   heading?: string;
@@ -61,8 +62,13 @@ const itemsJson = JSON.stringify(items);
       {intro && <p class="text-fu-muted">{intro}</p>}
     </div>
 
+    <!-- Skeleton while Alpine boots (search + accordion) — component-matched size -->
+    <div data-hydrate-skeleton>
+      <Skeleton variant="faq-list" count={items.length} />
+    </div>
+
     <!-- Shared Alpine scope: search query + the items themselves -->
-    <div class="mx-auto max-w-2xl" x-data={`{ query: '', items: ${itemsJson} }`}>
+    <div data-hydrate-content class="mx-auto max-w-2xl" client:idle x-data={`{ query: '', items: ${itemsJson} }`}>
       {searchable && (
         <div class="mb-10">
           <div class="relative">

@@ -26,8 +26,8 @@ class LandingPagesTestCase(TestCase):
 
     def test_all_pages_render(self):
         expected_hero = {
-            "/": b"Learn Without Limits",
-            "/about/": b"About Us",
+            "/": b"Platforms that ship as documents",
+            "/about/": b"Mahmoud Ezzat",
             "/company/": b"Who We Are",
             "/services/": b"Services",
             "/products/": b"Products",
@@ -46,12 +46,12 @@ class LandingPagesTestCase(TestCase):
     def test_home_is_slim_entry(self):
         """Home renders hero + CTA only — the section stack moved to About."""
         response = self.client.get("/")
-        self.assertIn(b"Learn Without Limits", response.content)
-        self.assertIn(b"Start Learning Today", response.content)
+        self.assertIn(b"Platforms that ship as documents", response.content)
+        self.assertIn(b"Everything is open source", response.content)
         for moved in (
             b"Numbers that speak for themselves",
             b"Everything you need to launch",
-            b"Loved by teams worldwide",
+            b"Trusted by developers",
             b"Simple, transparent pricing",
             b"Frequently asked questions",
         ):
@@ -66,9 +66,9 @@ class LandingPagesTestCase(TestCase):
             b"Numbers that speak for themselves",
             b"Everything you need to launch",
             b"Simple, transparent pricing",
-            b"Loved by teams worldwide",
+            b"Trusted by developers",
             b"Frequently asked questions",
-            b"Start Learning Today",
+            b"Built open-source, shipped as HTML",
         ):
             self.assertIn(marker, response.content)
 
@@ -82,9 +82,9 @@ class LandingPagesTestCase(TestCase):
                     b"Numbers that speak for themselves",
                     b"Everything you need to launch",
                     b"Simple, transparent pricing",
-                    b"Loved by teams worldwide",
+                    b"Trusted by developers",
                     b"Frequently asked questions",
-                    b"Start Learning Today",
+                    b"Built open-source, shipped as HTML",
                 ):
                     self.assertIn(marker, response.content)
 
@@ -103,9 +103,9 @@ class LandingPagesTestCase(TestCase):
             b"Numbers that speak for themselves",
             b"Everything you need to launch",
             b"Simple, transparent pricing",
-            b"Loved by teams worldwide",
+            b"Trusted by developers",
             b"Frequently asked questions",
-            b"Start Learning Today",
+            b"Built open-source, shipped as HTML",
         ):
             self.assertIn(marker, response.content)
 

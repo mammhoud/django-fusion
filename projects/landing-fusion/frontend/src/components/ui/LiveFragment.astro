@@ -15,6 +15,9 @@
  *
  * `fusionApiUrl` defaults to '' (same-origin). Set PUBLIC_FUSION_API_URL to
  * point at the Django backend directly (e.g. http://localhost:8074).
+ *
+ * The `skeletonVariant` prop selects a component-matched skeleton so the
+ * placeholder reflects the actual content shape — no layout jump on swap.
  */
 import Skeleton from '@/components/ui/Skeleton.astro';
 import { fusionApiUrl } from '@/lib/site';
@@ -26,8 +29,16 @@ interface Props {
   label?: string;
   heading?: string;
   intro?: string;
-  /** Number of skeleton cards shown while the fragment loads. */
+  /** Number of skeleton cards shown while the fragment loads (generic 'card' variant only). */
   skeletonCards?: number;
+  /**
+   * Component-matched skeleton variant. When set, LiveFragment renders a
+   * skeleton that mirrors the real content shape (hero, stats, features, etc.)
+   * instead of generic cards. Leave unset for generic cards via skeletonCards.
+   */
+  skeletonVariant?: 'hero-section' | 'stats-row' | 'features-grid' | 'testimonial'
+    | 'testimonials-carousel' | 'pricing-grid' | 'pricing-folded' | 'faq-list'
+    | 'cta-banner' | 'contact-form' | 'section-header';
 }
 
 const {
@@ -36,6 +47,7 @@ const {
   heading = 'The same component, served by Django',
   intro = 'This section is fetched with HTMX from the Wagtail backend — skeleton while it loads, then the server-rendered fragment swaps in.',
   skeletonCards = 3,
+  skeletonVariant,
 } = Astro.props;
 
 // Ensure the URL joins cleanly and stays relative when fusionApiUrl is ''.
@@ -53,6 +65,7 @@ const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
 
     <div
       class="live-fragment__target"
+      client:visible
       hx-get={endpoint}
       hx-trigger="load"
       hx-target="this"
@@ -61,7 +74,11 @@ const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
     >
       <!-- Default loading state: skeleton while the backend responds -->
       <div class="live-fragment__skeleton" aria-hidden="true">
-        <Skeleton variant="card" count={skeletonCards} />
+        {skeletonVariant ? (
+          <Skeleton variant={skeletonVariant} />
+        ) : (
+          <Skeleton variant="card" count={skeletonCards} />
+        )}
         <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
           requesting {route} · text/html
         </p>

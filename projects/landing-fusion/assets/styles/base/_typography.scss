@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Typography — BEM text primitives.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fusion-text {
+  font-family: var(--font-sans);
+  color: hsl(var(--fu-ink));
+  line-height: 1.6;
+
+  &--display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  &--mono {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+
+  &--muted { color: hsl(var(--fu-muted)); }
+  &--link { color: hsl(var(--fu-link)); }
+  &--live { color: hsl(var(--fu-live)); }
+
+  /* Sizes */
+  &--xs { font-size: 0.75rem; }
+  &--sm { font-size: 0.875rem; }
+  &--base { font-size: 1rem; }
+  &--lg { font-size: 1.125rem; }
+  &--xl { font-size: 1.25rem; }
+  &--2xl { font-size: 1.5rem; }
+  &--3xl { font-size: 1.875rem; }
+  &--4xl { font-size: 2.25rem; }
+}
+
+/* Tag marker — mono label with guillemets */
+.fusion-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: hsl(var(--fu-muted));
+
+  &::before { content: '‹'; opacity: 0.55; }
+  &::after  { content: '›'; opacity: 0.55; }
+}
+
+/* Status line — reads like a server response */
+.fusion-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: hsl(var(--fu-muted));
+
+  &__dot {
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: hsl(var(--fu-live));
+    animation: fusion-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}

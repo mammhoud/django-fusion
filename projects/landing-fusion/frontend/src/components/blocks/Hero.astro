@@ -1,4 +1,6 @@
 ---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
 // Fusion CMS hero — "the page as its own document."
 //
 // Signature element: a real View Source toggle (Alpine) that flips the
@@ -47,6 +49,11 @@ const sourceMarkup = [
 ---
 
 <section class="section-hero reg-marks overflow-hidden">
+  <!-- Skeleton while Alpine boots (x-intersect reveals) — component-matched height -->
+  <div data-hydrate-skeleton>
+    <Skeleton variant="hero-section" />
+  </div>
+  <div data-hydrate-content>
   <div class="container-fusion py-20 md:py-28">
     <div class="mx-auto max-w-3xl text-center">
       <p
@@ -105,6 +112,7 @@ const sourceMarkup = [
     <!-- ── View Source toggle: the signature ───────────────────────── -->
     <div
       class="reveal mx-auto mt-14 max-w-2xl"
+      client:load
       x-data="{ showSource: false }"
       x-intersect="$el.classList.add('reveal-visible')"
       style="transition-delay: 320ms"
@@ -143,5 +151,6 @@ const sourceMarkup = [
         </p>
       </div>
     </div>
+  </div>
   </div>
 </section>

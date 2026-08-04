@@ -1,9 +1,42 @@
 ---
-import { contactMethods, fusionApiUrl } from '@/lib/site';
+import { fusionApiUrl } from '@/lib/site';
+
+interface ContactMethod {
+  type: string;
+  label: string;
+  value: string;
+  href: string;
+}
+
+interface Props {
+  /** Backend-fetched contact methods (from /apis/contact/). Falls back to defaults. */
+  methods?: ContactMethod[];
+  formTitle?: string;
+  formDescription?: string;
+  sectionTitle?: string;
+  sectionDescription?: string;
+}
+
+const {
+  methods: propMethods,
+  formTitle = 'Send us a message',
+  formDescription = 'Fill out the form and our team will get back to you.',
+  sectionTitle = 'Get in touch',
+  sectionDescription = 'Have a question or want to work with us? Send a message and we\'ll reply within one business day.',
+} = Astro.props;
+
+const methods: ContactMethod[] = propMethods && propMethods.length > 0
+  ? propMethods
+  : [
+    { type: 'email', label: 'Email', value: 'structa.cloud@gmail.com', href: 'mailto:structa.cloud@gmail.com' },
+    { type: 'address', label: 'GitHub', value: 'github.com/mammhoud', href: 'https://github.com/mammhoud' },
+    { type: 'hours', label: 'Portfolio', value: 'mammhoud.github.io', href: 'https://mammhoud.github.io' },
+    { type: 'address', label: 'LinkedIn', value: 'linkedin.com/in/mammhoud', href: 'https://linkedin.com/in/mammhoud' },
+  ];
 
 const contactEndpoint = `${fusionApiUrl}/api/htmx/contact/`.replace(/\/+/g, '/');
 
-const methodIcons = {
+const methodIcons: Record<string, string> = {
   email: 'M3 8l7.5 5L18 8M4 19h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z',
   phone: 'M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012 4.2 2 2 0 014 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z',
   address: 'M17.7 2.9A8 8 0 0010 21a8 8 0 007.7-18.1zM10 11a2 2 0 100-4 2 2 0 000 4z',
@@ -18,17 +51,15 @@ const methodIcons = {
       <div class="space-y-5">
         <div>
           <p class="tag-marker mb-4">contact</p>
-          <h2 class="mb-2 font-display text-3xl font-bold tracking-tight text-fu-ink">Get in touch</h2>
-          <p class="text-fu-muted">
-            Have a question or want to work with us? Send a message and we&apos;ll reply within one business day.
-          </p>
+          <h2 class="mb-2 font-display text-3xl font-bold tracking-tight text-fu-ink">{sectionTitle}</h2>
+          <p class="text-fu-muted">{sectionDescription}</p>
         </div>
 
-        {contactMethods.map((method) => (
+        {methods.map((method) => (
           <div class="card flex items-start gap-4 p-5">
             <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d={methodIcons[method.type]} />
+                <path stroke-linecap="round" stroke-linejoin="round" d={methodIcons[method.type] || methodIcons.email} />
               </svg>
             </div>
             <div>
@@ -48,6 +79,7 @@ const methodIcons = {
       <!-- Contact form — Alpine validation + HTMX submission -->
       <div class="md:col-span-2">
         <form
+          client:idle
           class="card p-8"
           x-data="{
             form: { name: '', email: '', subject: '', message: '' },

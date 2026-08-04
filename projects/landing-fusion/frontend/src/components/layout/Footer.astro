@@ -1,62 +1,47 @@
 ---
-import { footerColumns, siteConfig } from '@/lib/site';
+interface Props {
+  siteName?: string;
+  siteSettings?: {
+    site_tagline?: string;
+    footer_description?: string;
+    footer_copyright?: string;
+    footer_link_groups?: { title: string; links: { label: string; url: string }[] }[];
+  };
+}
 
+const { siteName = 'Structa Cloud', siteSettings } = Astro.props;
 const year = new Date().getFullYear();
+
+const footerGroups = siteSettings?.footer_link_groups?.length
+  ? siteSettings.footer_link_groups
+  : [
+    { title: 'Platform', links: [{ label: 'Products', url: '/products' }, { label: 'Projects', url: '/projects' }] },
+    { title: 'Support', links: [{ label: 'Contact', url: '/contact' }, { label: 'FAQ', url: '/faq' }] },
+  ];
 ---
 
 <footer class="doc-sheet border-t border-fu-line bg-fu-paper text-fu-muted">
   <div class="container-fusion py-14">
-    <div class="grid grid-cols-1 gap-10 md:grid-cols-4">
-      <!-- Colophon -->
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-3">
       <div>
-        <a href="/" class="mb-4 flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink">
-          <svg class="h-6 w-6" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <rect width="32" height="32" rx="4" fill="#1A1917"/>
-            <path d="M11 8L6 13l5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-          </svg>
-          <span>{siteConfig.name}</span>
+        <a href="/" class="mb-4 flex items-center gap-2 font-mono font-semibold text-fu-ink">
+          <span>{siteName}</span>
         </a>
-        <p class="mb-5 text-sm leading-relaxed">
-          {siteConfig.tagline}
-        </p>
-        <p class="status-line"><span class="dot" aria-hidden="true"></span>server-rendered · 0 KB JS</p>
+        <p class="mb-4 text-sm">{siteSettings?.footer_description || 'Full-stack engineering.'}</p>
       </div>
-
-      <!-- Link groups -->
-      {footerColumns.map((column) => (
+      {footerGroups.map((column) => (
         <div>
-          <h3 class="mb-4 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-fu-ink">
-            <span class="tag-marker">{column.title}</span>
-          </h3>
-          <ul class="space-y-2.5">
+          <h3 class="mb-4 font-mono text-xs uppercase tracking-wider text-fu-ink">{column.title}</h3>
+          <ul class="space-y-2">
             {column.links.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  target={link.external ? '_blank' : undefined}
-                  rel={link.external ? 'noopener noreferrer' : undefined}
-                  class="text-sm transition-colors duration-200 hover:text-fu-link"
-                >
-                  {link.label}
-                </a>
-              </li>
+              <li><a href={link.url} class="text-sm hover:text-fu-link">{link.label}</a></li>
             ))}
           </ul>
         </div>
       ))}
     </div>
-
-    <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-fu-line pt-7 sm:flex-row">
-      <p class="font-mono text-[0.72rem] uppercase tracking-wider">
-        &copy; {year} {siteConfig.author} · rendered as HTML, served as text/html
-      </p>
-      <p class="font-mono text-[0.72rem] uppercase tracking-wider">
-        <a href="https://github.com/mammhoud" class="hover:text-fu-link" target="_blank" rel="noopener noreferrer">github</a>
-        {' · '}
-        <a href="https://mammhoud.github.io" class="hover:text-fu-link" target="_blank" rel="noopener noreferrer">portfolio</a>
-      </p>
+    <div class="mt-12 border-t border-fu-line pt-7 text-center">
+      <p class="font-mono text-xs uppercase">&copy; {year} {siteName}</p>
     </div>
   </div>
 </footer>

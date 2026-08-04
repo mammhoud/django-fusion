@@ -64,10 +64,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "urls"
 
+_PROJECT_DIR = BASE_DIR.parent  # projects/landing-fusion/
+_ASSETS_DIR = _PROJECT_DIR / "assets"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [
+            # Project-level consolidated assets/templates/ (all templates live here)
+            _ASSETS_DIR / "templates",
+            _ASSETS_DIR / "templates" / "pages",
+            _ASSETS_DIR / "templates" / "content",
+            _ASSETS_DIR / "templates" / "content" / "blocks",
+            # Legacy — backend-level templates (for backward compat)
+            BASE_DIR / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -111,12 +122,47 @@ USE_TZ = True
 
 # ── Static / Media ─────────────────────────────────────────────────
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = _ASSETS_DIR / "staticfiles"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = _ASSETS_DIR / "media"
+
+# STATICFILES_DIRS: include project-level assets/static/
+STATICFILES_DIRS = [
+    _ASSETS_DIR / "static",
+] if (_ASSETS_DIR / "static").exists() else []
 
 # ── Wagtail ────────────────────────────────────────────────────────
 WAGTAIL_SITE_NAME = "Fusion Landing"
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "http://localhost:8074")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ── Fusion Asset Pipeline ──────────────────────────────────────────
+# Mirrors the Astro frontend bundler output so both Django template tags
+# ({% fusion_top_assets %}) and the Astro build (vite) emit the same URLs.
+# Served via: GET /apis/assets/
+FUSION_ASSETS = {
+    "top": {
+        "preconnect": [
+            "https://fonts.googleapis.com",
+            "https://fonts.gstatic.com",
+        ],
+        "fonts": [
+            "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        ],
+        "css": [],
+    },
+    "bottom": {
+        "js": [],
+    },
+}
+
+FUSION_ASSET_PIPELINE = {
+    "enabled": True,
+    "webpack": {"enabled": False},
+    "components": {
+        "enabled": True,
+        "manifest_path": str(_ASSETS_DIR / "static" / "components" / "manifest.json"),
+    },
+    "static_url": STATIC_URL,
+}

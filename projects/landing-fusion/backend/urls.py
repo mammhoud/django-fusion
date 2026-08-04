@@ -8,10 +8,25 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+from apps.pages import api as pages_api
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+
+    # ── APIs — backend-driven content for the Astro frontend ──────────
+    path("apis/site/settings/", pages_api.site_settings_api, name="site_settings_api"),
+    path("apis/navigation/", pages_api.navigation_api, name="navigation_api"),
+    path("apis/contact/", pages_api.contact_api, name="contact_api"),
+    path("apis/pages/", pages_api.page_list_api, name="page_list_api"),
+    path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
+    path("apis/assets/", pages_api.assets_api, name="assets_api"),
+
+    # ── HTMX endpoints ────────────────────────────────────────────────
+    path("api/newsletter/subscribe/", pages_api.newsletter_subscribe_api, name="newsletter_subscribe"),
+    path("api/htmx/ping/", pages_api.htxm_ping_api, name="htmx_ping"),
+
     # Landing page handlers — django-fusion PageHandler views that render each
     # Wagtail page through the unified fragment/layout pipeline (HTMX-aware).
     # They sit BEFORE Wagtail's catch-all so fragments serve the same templates.

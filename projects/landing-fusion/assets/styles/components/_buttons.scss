@@ -1,0 +1,65 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Components: Buttons — BEM button variants.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fusion-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  cursor: pointer;
+  transition: all var(--transition-standard);
+  border: 1px solid transparent;
+
+  &:focus-visible {
+    outline: 2px solid hsl(var(--fu-link));
+    outline-offset: 2px;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  &:active { transform: translateY(1px); }
+
+  &--primary {
+    background: hsl(var(--fu-link));
+    color: white;
+    box-shadow: var(--shadow-card);
+    &:hover {
+      background: hsl(var(--fu-link-dark));
+      box-shadow: var(--shadow-card-hover);
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: hsl(var(--fu-ink));
+    border-color: hsl(var(--fu-line));
+    &:hover {
+      border-color: hsl(var(--fu-link));
+      color: hsl(var(--fu-link));
+    }
+  }
+
+  &--outline {
+    border-color: hsl(var(--fu-link));
+    color: hsl(var(--fu-link));
+    background: transparent;
+    &:hover { background: hsl(var(--fu-link) / 0.05); }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: hsl(var(--fu-muted));
+    &:hover { color: hsl(var(--fu-ink)); background: hsl(var(--fu-line) / 0.3); }
+  }
+
+  &--sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+  &--lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
+  &--icon { width: 2.5rem; height: 2.5rem; padding: 0; }
+}

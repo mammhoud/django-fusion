@@ -25,12 +25,12 @@ const { stats = defaultStats } = Astro.props;
 <section class="doc-sheet bg-fu-paper py-14">
   <div class="container-fusion">
     <div class="relative">
-      <!-- Default loading state: skeleton while Alpine hydrates (see Skeleton.astro + Layout.astro is-hydrating). -->
-      <div data-hydrate-skeleton class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
-        <Skeleton variant="card" count={4} />
+      <!-- Default loading state: skeleton while Alpine hydrates — component-matched size. -->
+      <div data-hydrate-skeleton>
+        <Skeleton variant="stats-row" count={stats.length} />
       </div>
 
-      <div data-hydrate-content class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+      <div data-hydrate-content class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4" client:visible>
         {stats.map((stat) => (
           <div
             class="border-t border-fu-line pt-5"

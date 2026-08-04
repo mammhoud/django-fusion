@@ -1,0 +1,11 @@
+{% load wagtailcore_tags %}
+<section id="cta" class="section-hero">
+  <div class="container-fusion py-16 text-center sm:py-20">
+    <h2 class="mx-auto max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl" style="font-family:'Bricolage Grotesque','Public Sans',sans-serif;">{{ value.title }}</h2>
+    {% if value.subtitle %}<p class="mx-auto mt-4 max-w-2xl text-lg" style="color:hsl(var(--fu-muted));">{{ value.subtitle }}</p>{% endif %}
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      {% if value.primary_cta %}{% include_block value.primary_cta %}{% endif %}
+      {% if value.secondary_cta %}{% include_block value.secondary_cta %}{% endif %}
+    </div>
+  </div>
+</section>
