@@ -1,0 +1,63 @@
+{% extends "pages/fusion_landing.html" %}
+{% load i18n wagtailcore_tags wagtailimages_tags comp %}
+
+{% block title %}Testimonials{% endblock %}
+
+{% block content %}
+<section class="fusion-page-title bg-gray-50">
+    <div class="container text-center py-12">
+        <h1 class="text-4xl font-bold">What Our Clients Say</h1>
+        <p class="text-lg text-gray-500 mt-2">Hear from the businesses and teams we've helped.</p>
+    </div>
+</section>
+
+{% if page and page.body %}
+{% for block in page.body %}
+    {% if block.block_type == 'testimonials' %}
+<section class="py-16">
+    <div class="container max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for item in block.value.items %}
+            <div class="fusion-testimonial-card bg-white rounded-xl shadow-sm border p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    {% if item.avatar %}
+                        {% image item.avatar fill-60x60 class="rounded-full w-12 h-12 object-cover" %}
+                    {% else %}
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">{{ item.name|slice:":1" }}</div>
+                    {% endif %}
+                    <div>
+                        <h4 class="font-semibold">{{ item.name }}</h4>
+                        {% if item.role %}<p class="text-sm text-gray-500">{{ item.role }}{% if item.company %}, {{ item.company }}{% endif %}</p>{% endif %}
+                    </div>
+                </div>
+                <blockquote class="text-gray-700 italic mb-3">"{{ item.quote }}"</blockquote>
+                {% if item.rating %}
+                <div class="flex gap-1">
+                    {% for i in "12345"|make_list %}
+                        <i class="bi bi-star-fill text-yellow-400 {% if forloop.counter > item.rating %}opacity-30{% endif %}"></i>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+    {% endif %}
+
+    {% if block.block_type == 'cta' %}
+<section class="fusion-cta py-20 bg-gradient-to-r from-blue-600 to-blue-800 text-white text-center">
+    <div class="container max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-4">{{ block.value.heading }}</h2>
+        <p class="text-lg text-white/70 mb-8">{{ block.value.intro }}</p>
+        <div class="flex gap-4 justify-center">
+            {% for cta in block.value.ctas %}
+            <a href="{{ cta.href }}" class="fusion-btn fusion-btn--{{ cta.variant }} px-8 py-3 rounded-lg font-semibold {% if cta.variant == 'primary' %}bg-white text-blue-700{% else %}border-2 border-white{% endif %}">{{ cta.label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+    {% endif %}
+{% endfor %}
+{% endif %}
+{% endblock %}

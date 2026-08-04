@@ -15,12 +15,20 @@ Usage (in core/routes.py)::
 
 from __future__ import annotations
 
+from typing import Any
+
 from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
 
 
 class BlogApp(Application):
-    """Blog — public read, staff write."""
+    """Blog — public read, staff write.
+
+    Inherits ``NotificationMixin`` from ``Application`` (merged from
+    ``PageHandler``), so child ``RoutableComponent`` views (post editor,
+    category manager) automatically get ``add_success()`` and
+    ``add_error()`` for publish/save toasts.
+    """
 
     title = "Blog"
     icon = "article"
@@ -50,6 +58,18 @@ class BlogApp(Application):
             ActionBlogPostListFragment(),
             BlogPostCreateFragment(),
         ]
+
+    def application_context(self, request: Any) -> dict[str, Any]:
+        """Inject blog-level context for all blog components."""
+        user = getattr(request, "user", None)
+        return {
+            "blog_title": self.title,
+            "blog_icon": self.icon,
+            "can_write": (
+                user.is_authenticated and user.is_staff
+                if user else False
+            ),
+        }
 
     def has_view_permission(self, user, obj=None):
         return True  # Public

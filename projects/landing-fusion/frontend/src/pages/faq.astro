@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -21,17 +22,10 @@ const pageFaq = (pageData?.faq as any[] | undefined);
 const faqItems = pageFaq?.map((f: any) => ({
   question: String(f.question || ''),
   answer: String(f.answer || ''),
-})) ?? [
-  { question: 'What is structa.cloud?', answer: 'Structa Cloud is the portfolio and product hub for Mahmoud Ezzat Moustafa — a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.' },
-  { question: 'What is the AHA stack?', answer: 'AHA stands for Astro + HTMX + Alpine.js — a lightweight, server-first web stack. Astro renders pages to static/dynamic HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers micro-interactions.' },
-  { question: 'What is django-fusion?', answer: 'django-fusion is the component system and routing framework that powers every structa.cloud site. Component registry, HTMX detection, PageHandler views, fragment/layout rendering, SSE, and Wagtail block integration.' },
-  { question: 'What is ceptor-ai?', answer: 'ceptor-ai is an AI chat client with a Model Context Protocol (MCP) server. It enables AI agent communication, BEM-to-component design conversion, and agent-assisted code generation. Powers Cypercloud.' },
-  { question: 'Are the libraries free to use?', answer: 'Yes. django-fusion, ceptor-ai, and django-bolt are all open-source on GitHub under permissive licenses.' },
-  { question: 'How do I deploy a Fusion site?', answer: 'The monorepo includes Docker Compose orchestration with Traefik + Nginx + Postgres. One `make deploy` command provisions the full stack with HTTPS, shared media, and health checks.' },
-];
+}));
 ---
 
-<Layout title={pageData?.title || 'FAQ'} description={pageData?.search_description || 'Frequently asked questions about structa.cloud, django-fusion, ceptor-ai, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings}>
+<Layout title={pageData?.title || 'FAQ'} description={pageData?.search_description || 'Frequently asked questions about structa.cloud, django-fusion, ceptor-ai, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="faq">
   <section class='section-hero reg-marks overflow-hidden py-16'>
     <div class='container-fusion'>
       <div class='mx-auto max-w-2xl text-center'>
@@ -43,7 +37,7 @@ const faqItems = pageFaq?.map((f: any) => ({
   </section>
 
   <div class='py-14'>
-    <FAQ items={faqItems} />
+    {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
   </div>
 
   <CTA heading={pageCta?.title || 'Still have questions?'} intro={pageCta?.subtitle || "Reach out through the contact form or open an issue on GitHub."} ctaLabel={pageCta?.primary_cta?.label || 'Contact us'} ctaHref={pageCta?.primary_cta?.href || '/contact'} />

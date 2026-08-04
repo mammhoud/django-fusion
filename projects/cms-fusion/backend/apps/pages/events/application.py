@@ -16,12 +16,20 @@ Usage (in core/routes.py)::
 
 from __future__ import annotations
 
+from typing import Any
+
 from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
 
 
 class EventsApp(Application):
-    """Events — public read, staff write."""
+    """Events — public read, staff write.
+
+    Inherits ``NotificationMixin`` from ``Application`` (merged from
+    ``PageHandler``), so child ``RoutableComponent`` views (create,
+    delete, RSVP) automatically get ``add_success()`` and
+    ``add_error()`` for confirmation toasts.
+    """
 
     title = "Events"
     icon = "date_range"
@@ -45,6 +53,18 @@ class EventsApp(Application):
             EventListFragment(),
             EventCreateFragment(),
         ]
+
+    def application_context(self, request: Any) -> dict[str, Any]:
+        """Inject event-level context."""
+        user = getattr(request, "user", None)
+        return {
+            "events_title": self.title,
+            "events_icon": self.icon,
+            "can_manage_events": (
+                user.is_authenticated and user.is_staff
+                if user else False
+            ),
+        }
 
     def has_view_permission(self, user, obj=None):
         return True  # Public

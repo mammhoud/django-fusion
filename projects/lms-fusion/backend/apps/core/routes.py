@@ -19,6 +19,8 @@ Generated URL prefix: /osoul/
 
 from __future__ import annotations
 
+from typing import Any
+
 from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.sites import Site
 from django_fusion.routes.core.base import viewprop
@@ -28,7 +30,13 @@ from django_fusion.routes.core.base import viewprop
 # ---------------------------------------------------------------------------
 
 class LMSApp(Application):
-    """Learning Management System — staff only."""
+    """Learning Management System — staff only.
+
+    Inherits ``NotificationMixin`` from ``Application`` (merged from
+    ``PageHandler``), so child ``RoutableComponent`` views (dashboard,
+    enrollment, course management) automatically get ``add_success()``,
+    ``add_error()``, and SSE streaming for enrollment toasts and alerts.
+    """
 
     title = "Learning"
     icon = "school"
@@ -58,6 +66,15 @@ class LMSApp(Application):
             StaticPageFragment("contact"),
         ]
 
+    def application_context(self, request: Any) -> dict[str, Any]:
+        """Inject LMS-level context: branding, staff status, auth."""
+        user = getattr(request, "user", None)
+        return {
+            "lms_title": self.title,
+            "lms_icon": self.icon,
+            "is_staff": user.is_staff if user and user.is_authenticated else False,
+        }
+
     def has_view_permission(self, user, obj=None):
         return user.is_authenticated and user.is_staff
 
@@ -67,7 +84,13 @@ class LMSApp(Application):
 # ---------------------------------------------------------------------------
 
 class BlogApp(Application):
-    """Blog — public read, staff write."""
+    """Blog — public read, staff write.
+
+    Inherits ``NotificationMixin`` from ``Application`` (merged from
+    ``PageHandler``), so child ``RoutableComponent`` views (post editor,
+    category manager) automatically get ``add_success()`` and
+    ``add_error()`` for publish/save toasts.
+    """
 
     title = "Blog"
     icon = "article"
@@ -84,33 +107,37 @@ class BlogApp(Application):
             BlogPostCreateFragment(),
         ]
 
+    def application_context(self, request: Any) -> dict[str, Any]:
+        """Inject blog-level context for all blog components."""
+        user = getattr(request, "user", None)
+        return {
+            "blog_title": self.title,
+            "blog_icon": self.icon,
+            "can_write": (
+                user.is_authenticated and user.is_staff
+                if user else False
+            ),
+        }
+
     def has_view_permission(self, user, obj=None):
         return True  # Public
 
 
 # ---------------------------------------------------------------------------
-# Site
+# Site — lazy creation to avoid circular imports during module load.
 # ---------------------------------------------------------------------------
 
-site = Site(
-    title="Fusion CMS",
-    viewsets=[
-        LMSApp(),
-        BlogApp(),
-    ],
-)
-
-# -----------------------------------------------------------------------
-# Backwards-compatible site variable
-# The actual Site instance is created lazily in get_site() to avoid
-# circular import issues during module load time when models are imported
-# before Django is fully initialized.
-# -----------------------------------------------------------------------
-_site = None
+_site: Site | None = None
 
 
-def get_site():
-    """Lazy site creation - ensures Django is initialized before model imports."""
+def get_site() -> Site:
+    """Build the Site once, memoized.
+
+    Lazily creates the Site instance after Django has fully initialized
+    the app registry.  Applications are imported at the top of this
+    module, so their ``viewsets`` lazy-import components only when first
+    accessed.
+    """
     global _site
     if _site is None:
         _site = Site(
@@ -123,29 +150,5 @@ def get_site():
     return _site
 
 
-# For backwards compatibility, expose as 'site' but it's actually lazy
-site = get_site()
-
-# ---------------------------------------------------------------------------
-# Lazy site creation to avoid circular imports during module load
-# ---------------------------------------------------------------------------
-
-_site = None
-
-
-def get_site():
-    """Lazy site creation to ensure Django is initialized before model imports."""
-    global _site
-    if _site is None:
-        _site = Site(
-            title="Fusion CMS",
-            viewsets=[
-                LMSApp(),
-                BlogApp(),
-            ],
-        )
-    return _site
-
-
-# Keep 'site' for backwards compatibility, but use the lazy version
+# Expose as 'site' for backwards compatibility.
 site = get_site()

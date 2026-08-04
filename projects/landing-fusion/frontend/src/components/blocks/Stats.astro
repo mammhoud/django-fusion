@@ -22,26 +22,25 @@ const defaultStats: Stat[] = [
 const { stats = defaultStats } = Astro.props;
 ---
 
-<section class="doc-sheet bg-fu-paper py-14">
+<section class="stats">
   <div class="container-fusion">
     <div class="relative">
-      <!-- Default loading state: skeleton while Alpine hydrates — component-matched size. -->
       <div data-hydrate-skeleton>
         <Skeleton variant="stats-row" count={stats.length} />
       </div>
 
-      <div data-hydrate-content class="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4" client:visible>
+      <div data-hydrate-content class="stats__grid" client:visible>
         {stats.map((stat) => (
           <div
-            class="border-t border-fu-line pt-5"
+            class="stats__item"
             x-data="{ shown: false, count: 0 }"
             x-intersect.once="shown = true"
           >
-            <p class="mb-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-fu-muted">
+            <p class="stats__label">
               {stat.label}
             </p>
             <div
-              class="font-mono text-3xl font-semibold tracking-tight text-fu-ink md:text-[2.15rem]"
+              class="stats__value"
               x-text={
                 typeof stat.value === 'number'
                   ? `shown ? count.toLocaleString() + '${stat.suffix ?? ''}' : '0${stat.suffix ?? ''}'`

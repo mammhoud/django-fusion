@@ -108,3 +108,48 @@ FUSION_BOLT = {
     ],
     "component_auto_register": True,
 }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Asset Consolidation — all templates, static, media, and styles
+# live under the workspace-level assets/ directory.
+# ═══════════════════════════════════════════════════════════════════
+
+# Templates: ensure the consolidated assets/templates/ is in DIRS.
+# The shared configs already include this path via BASE_DIR.parent, but
+# we add it explicitly so it takes priority over scattered app dirs.
+_ASSETS_TEMPLATES = _WORKSPACE_DIR / "assets" / "templates"
+if str(_ASSETS_TEMPLATES) not in [str(d) for d in TEMPLATES[0]["DIRS"]]:
+    TEMPLATES[0]["DIRS"].insert(0, str(_ASSETS_TEMPLATES))
+
+# Sub-paths that app templates were scattered across — now under assets/templates/.
+for _sub in ("blog", "lms", "profile", "products", "pages", "accounts",
+             "blocks", "emails", "events", "layout", "plugins"):
+    _sub_path = _ASSETS_TEMPLATES / _sub
+    if _sub_path.exists() and str(_sub_path) not in [str(d) for d in TEMPLATES[0]["DIRS"]]:
+        TEMPLATES[0]["DIRS"].append(str(_sub_path))
+
+# Media: override the shared default (backend/assets/media) → workspace assets/media.
+MEDIA_ROOT = str(_WORKSPACE_DIR / "assets" / "media")
+
+# Static: ensure workspace-level assets/static is in STATICFILES_DIRS.
+_ASSETS_STATIC = _WORKSPACE_DIR / "assets" / "static"
+if _ASSETS_STATIC.exists() and "STATICFILES_DIRS" in dir():
+    _entry = ("workspace-assets", str(_ASSETS_STATIC))
+    if _entry not in STATICFILES_DIRS:
+        STATICFILES_DIRS.append(_entry)
+
+# FUSION_ASSET_PIPELINE: point component manifest at the workspace static root.
+if "FUSION_ASSET_PIPELINE" in dir() and "components" in FUSION_ASSET_PIPELINE:
+    FUSION_ASSET_PIPELINE["components"]["manifest_path"] = str(
+        _ASSETS_STATIC / "components" / "manifest.json"
+    )
+
+# Legacy duplicate styles dir: remove assets/styles/ from STATICFILES_DIRS
+# (content was merged into assets/static/styles/).
+if "STATICFILES_DIRS" in dir():
+    _styles_dup = _WORKSPACE_DIR / "assets" / "styles"
+    STATICFILES_DIRS[:] = [
+        d for d in STATICFILES_DIRS
+        if not (isinstance(d, tuple) and str(d[1]) == str(_styles_dup))
+    ]

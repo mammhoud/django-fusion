@@ -21,6 +21,11 @@ def ready():
         DynamicFaqPage,
         DynamicHomePage,
         DynamicPrivacyPage,
+        DynamicPricingPage,
+        DynamicTestimonialsPage,
+        DynamicTermsPage,
+        DynamicServicesPage,
+        DynamicTeamPage,
     )
     from apps.content.models.pages.events import (
         EventPage,  # noqa: F401 (EventPage not EventsPage)

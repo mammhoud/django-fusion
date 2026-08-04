@@ -44,11 +44,10 @@ const methodIcons: Record<string, string> = {
 };
 ---
 
-<section id="contact" class="doc-sheet bg-fu-paper py-20">
+<section id="contact" class="contact-form">
   <div class="container-fusion">
-    <div class="grid gap-10 md:grid-cols-3">
-      <!-- Contact info -->
-      <div class="space-y-5">
+    <div class="contact-form__grid">
+      <div class="contact-form__info">
         <div>
           <p class="tag-marker mb-4">contact</p>
           <h2 class="mb-2 font-display text-3xl font-bold tracking-tight text-fu-ink">{sectionTitle}</h2>
@@ -76,8 +75,7 @@ const methodIcons: Record<string, string> = {
         ))}
       </div>
 
-      <!-- Contact form — Alpine validation + HTMX submission -->
-      <div class="md:col-span-2">
+      <div class="contact-form__form">
         <form
           client:idle
           class="card p-8"
@@ -117,7 +115,7 @@ const methodIcons: Record<string, string> = {
           @submit.prevent="submit()"
           novalidate
         >
-          <div class="mb-6 grid gap-4 md:grid-cols-2">
+          <div class="contact-form__fields">
             <div>
               <label for="cf-name" class="form-label">Name</label>
               <input id="cf-name" type="text" class="input-field" placeholder="Your name"

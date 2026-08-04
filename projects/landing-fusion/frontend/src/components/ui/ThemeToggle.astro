@@ -16,7 +16,7 @@ const label = 'Toggle light / dark mode';
 const darkBg = '#131312'; // hsl(45 6% 8%) — dark --fu-paper
 const lightBg = '#fcfcfa'; // hsl(46 25% 98%) — light --fu-paper
 
-// @click handler — flip theme, persist it, update class + theme-color meta.
+// @click handler — flip theme, persist via Redux + localStorage.
 const toggleExpr = [
   'dark = !dark;',
   'const root = document.documentElement;',
@@ -24,6 +24,9 @@ const toggleExpr = [
   "root.classList.toggle('light', !dark);",
   `localStorage.setItem('${THEME_STORAGE_KEY}', dark ? 'dark' : 'light');`,
   `document.querySelector('meta[name=theme-color]')?.setAttribute('content', dark ? '${darkBg}' : '${lightBg}');`,
+  'if (window.__reduxStore) {',
+  "  window.__reduxStore.dispatch({ type: 'site/setTheme', payload: dark ? 'dark' : 'light' });",
+  '}',
 ].join(' ');
 
 // @storage.window handler — sync the theme across open tabs.
@@ -33,6 +36,9 @@ const storageExpr = [
   'const root = document.documentElement;',
   "root.classList.toggle('dark', dark);",
   "root.classList.toggle('light', !dark);",
+  'if (window.__reduxStore) {',
+  "  window.__reduxStore.dispatch({ type: 'site/setTheme', payload: dark ? 'dark' : 'light' });",
+  '}',
   '}',
 ].join(' ');
 ---

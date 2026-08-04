@@ -15,12 +15,20 @@ Usage (in core/routes.py)::
 
 from __future__ import annotations
 
+from typing import Any
+
 from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
 
 
 class LMSApp(Application):
-    """Learning Management System — staff only."""
+    """Learning Management System — staff only.
+
+    Inherits ``NotificationMixin`` from ``Application`` (merged from
+    ``PageHandler``), so child ``RoutableComponent`` views (dashboard,
+    enrollment, course management) automatically get ``add_success()``,
+    ``add_error()``, and SSE streaming for enrollment toasts and alerts.
+    """
 
     title = "Learning"
     icon = "school"
@@ -55,6 +63,15 @@ class LMSApp(Application):
             StaticPageFragment("faq"),
             StaticPageFragment("contact"),
         ]
+
+    def application_context(self, request: Any) -> dict[str, Any]:
+        """Inject LMS-level context: branding, staff status, auth."""
+        user = getattr(request, "user", None)
+        return {
+            "lms_title": self.title,
+            "lms_icon": self.icon,
+            "is_staff": user.is_staff if user and user.is_authenticated else False,
+        }
 
     def has_view_permission(self, user, obj=None):
         return user.is_authenticated and user.is_staff

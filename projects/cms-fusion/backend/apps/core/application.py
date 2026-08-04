@@ -23,7 +23,14 @@ from django_fusion.routes.core.base import viewprop
 
 
 class CoreApp(Application):
-    """Cross-cutting shared fragments — CMS head, checkout, etc."""
+    """Cross-cutting shared fragments — CMS head, checkout, etc.
+
+    Inherits ``NotificationMixin`` from ``Application`` (merged from
+    ``PageHandler``), so child ``RoutableComponent`` views under this
+    app automatically get ``add_success()``, ``add_error()``,
+    ``show_notification()``, and SSE streaming without importing
+    ``NotificationMixin`` separately.
+    """
 
     title = "Core"
     icon = "widgets"

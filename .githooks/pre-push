@@ -12,7 +12,7 @@
 #   git push                          # runs unit tests only
 #   TEST_FULL=1 git push              # runs unit + E2E tests
 #   SKIP_TESTS=1 git push             # emergency bypass
-#   TEST_PROJECTS="lms/front-end" git push  # only lms front-end
+#   TEST_PROJECTS="lms-fusion/frontend" git push  # only lms-fusion frontend
 #
 # Install:
 #   git config core.hooksPath .githooks
@@ -38,13 +38,13 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # Map of project path → display name (parallel arrays for bash 3.2+ compat)
 # Only these projects get tested (matches .github/workflows/js-test.yml)
 PROJECT_PATHS=(
-  "projects/lms/front-end"
-  "projects/lms/lms"
+  "projects/lms-fusion/frontend"
+  "projects/cms-fusion/frontend"
   "projects/pos/pos-e2e"
 )
 PROJECT_NAMES=(
-  "LMS Front-End"
-  "LMS"
+  "LMS Fusion Front-End"
+  "CMS Fusion Front-End"
   "POS E2E"
 )
 

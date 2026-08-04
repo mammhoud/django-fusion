@@ -1,0 +1,36 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% trans "Blog" %}{% endblock %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .btn { padding: 8px 16px; margin: 2px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn-secondary { background: #6c757d; color: white; border: none; }
+        .btn-danger { background: #dc3545; color: white; border: none; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f4f4f4; }
+        form { margin: 20px 0; }
+        input[type="text"] { padding: 8px; width: 300px; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">{% trans "Blog" %}</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Blog</p>
+    </footer>
+</body>
+</html>
