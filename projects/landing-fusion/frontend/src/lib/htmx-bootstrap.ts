@@ -18,6 +18,14 @@ import htmx from 'htmx.org';
 // Expose on window for components that reference window.htmx
 window.htmx = htmx;
 
+// Allow cross-origin requests to the configured Fusion backend.
+// htmx 2.x defaults `selfRequestsOnly` to true, so a LiveFragment pointing
+// at the Django backend on another origin (e.g. Astro on :3000 → Django on
+// :8074) is rejected with `htmx:invalidPath` and never fires. The backend
+// already gates fragment CORS to CORS_ALLOWED_ORIGINS, so this only widens
+// the client to reach that gated backend.
+htmx.config.selfRequestsOnly = false;
+
 // ── Request state ────────────────────────────────────────────────────────
 
 let requestCount = 0;

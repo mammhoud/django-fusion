@@ -20,6 +20,59 @@ from wagtail.models import Page
 logger = logging.getLogger(__name__)
 
 
+# ── Fusion Render Mode (django-fusion settings config) ─────────────────────
+
+def get_effective_render_first(request=None) -> bool:
+    """Return the effective ``fusion_render_first`` preference.
+
+    Mirrors django-fusion's ``FusionDualModeMixin.get_effective_render_first()``
+    for the landing project: the ``X-Fusion-Render-First: true|false`` header
+    overrides per request; otherwise the ``FUSION_RENDER_FIRST_DEFAULT``
+    setting (read fresh from Django settings, which is what django-fusion's
+    ``DjangoComponentsSettings`` resolves at init) decides the mode.
+
+    ``True``  → “fusion render first” — Django renders finished HTML.
+    ``False`` → “data APIs” — the client renders from /apis/* JSON.
+    """
+    if request is not None:
+        header = request.headers.get("X-Fusion-Render-First")
+        if header in ("true", "false"):
+            return header == "true"
+    from django.conf import settings as django_settings
+
+    return bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", False))
+
+
+def render_mode_api(request):
+    """GET /apis/render-mode/ — report the active fusion render mode.
+
+    Lets operators (and the frontend) switch between and verify the two
+    content delivery options:
+
+    .. code-block:: json
+
+        {
+          "fusion_render_first": true,
+          "mode": "fusion-render",
+          "content": {"html": "/about/", "data": "/apis/pages/about/"}
+        }
+
+    The ``X-Fusion-Render-First: true|false`` request header overrides the
+    configured default for a single request.
+    """
+    render_first = get_effective_render_first(request)
+    return JsonResponse(
+        {
+            "fusion_render_first": render_first,
+            "mode": "fusion-render" if render_first else "data-api",
+            "content": {
+                "html": "/about/",
+                "data": "/apis/pages/about/",
+            },
+        }
+    )
+
+
 # ── Site Settings ───────────────────────────────────────────────────────────
 
 def site_settings_api(request):
@@ -247,6 +300,27 @@ def _get_wagtail_page(slug: str):
         return None
 
 
+# Section blocks whose nested *item list* is exposed directly on the page
+# payload. The Astro frontend maps items ("Open-source repos", a feature card,
+# a testimonial, an FAQ entry), so stats/features/testimonials/faq (and
+# services/process/blog) are flattened to their item lists. ``projects`` stays
+# block-level because each block is already one project card; ``pricing`` stays
+# block-level because each block carries a ``tiers`` list (the frontend
+# flattens it when it needs a plan array).
+SECTION_ITEM_LIST_KEYS = {
+    "stats": "stats",
+    "features": "features",
+    "testimonials": "testimonials",
+    "faq": "items",
+    "services": "services",
+    "process": "steps",
+    "blog": "posts",
+    "tech": "items",
+    "editions": "editions",
+    "snippets": "snippets",
+}
+
+
 def _page_to_dict(page) -> dict:
     """Serialize a Wagtail page to a frontend-consumable dict."""
     from apps.pages.models import AboutPage, ProductsPage, FeaturesPage, ProjectsPage
@@ -294,19 +368,42 @@ def _page_to_dict(page) -> dict:
     if hasattr(page, "body") and page.body:
         data["body"] = str(page.body)
 
+    # Blog post meta (BlogPostPage) — category, date, read time, excerpt.
+    # The date is serialized as an ISO string so the frontend renders it
+    # without a client-side date dependency.
+    for field_name in ("category", "read_time", "excerpt"):
+        value = getattr(page, field_name, "")
+        if value:
+            data[field_name] = str(value)
+    if getattr(page, "post_date", None):
+        data["post_date"] = page.post_date.isoformat()
+
     # Section stack fields (stats, features, testimonials, pricing, faq, projects)
     for field_name in SECTION_STACK_FIELDS:
         if hasattr(page, field_name):
             field_val = getattr(page, field_name)
             if field_val:
-                blocks_list = []
+                items = []
                 for block in field_val:
                     block_data = _stream_to_plain(block.value)
-                    if isinstance(block_data, dict):
+                    if not isinstance(block_data, dict):
+                        items.append(block_data)
+                        continue
+                    # Flatten section blocks to their item list (see
+                    # SECTION_ITEM_LIST_KEYS); keep projects/pricing block-level.
+                    item_key = SECTION_ITEM_LIST_KEYS.get(block.block_type)
+                    nested = block_data.get(item_key) if item_key else None
+                    if isinstance(nested, list):
+                        items.extend(nested)
+                    else:
                         block_data["type"] = block.block_type
-                    blocks_list.append(block_data)
-                if blocks_list:
-                    data[field_name] = blocks_list
+                        items.append(block_data)
+                if items:
+                    data[field_name] = items
+
+    # Product listing (ProductsPage) — one card per live ProductPage child.
+    if hasattr(page, "get_product_cards") and page.get_product_cards():
+        data["products"] = page.get_product_cards()
 
     # Contact section
     if hasattr(page, "contact") and page.contact:
@@ -380,6 +477,7 @@ def assets_api(request):
     data = {
         "version": version,
         "static_url": static_url,
+        "fusion_render_first": get_effective_render_first(request),
         "enabled": opts.enabled if opts else True,
         "webpack_enabled": opts.webpack_enabled if opts else False,
         "webpack_bundle_dir": opts.webpack_bundle_dir if opts else "",
@@ -411,7 +509,7 @@ def page_list_api(request):
 
 @csrf_exempt
 def htxm_ping_api(request):
-    """GET /api/htmx/ping/ — returns the current server time as an HTML fragment.
+    """GET /fragment/ping/ — returns the current server time as an HTML fragment.
 
     Used by the homepage HTMX demo to show live fragment swapping.
     """
@@ -425,6 +523,71 @@ def htxm_ping_api(request):
         f'<p class="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-muted">'
         f'server time · text/html fragment</p>'
         f'</div>'
+    )
+
+
+@csrf_exempt
+def contact_submit_api(request):
+    """POST /fragment/contact/ — handle the contact form submission.
+
+    Accepts form-encoded (Django template form) or JSON (Astro ContactForm)
+    bodies with ``name``/``email``/``subject``/``message``. Returns an HTML
+    fragment for HTMX swaps into ``#contact-form-result`` (the Django form)
+    and JSON for plain API consumers. In production this would queue an
+    email/CRM notification.
+    """
+    import json
+    import re
+
+    EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+    data = {}
+    if request.method == "POST":
+        if request.content_type == "application/json":
+            try:
+                data = json.loads(request.body.decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                data = {}
+        else:
+            data = request.POST
+
+    name = str(data.get("name", "")).strip()
+    email = str(data.get("email", "")).strip()
+    subject = str(data.get("subject", "")).strip()
+    message = str(data.get("message", "")).strip()
+
+    errors = []
+    if not name:
+        errors.append("Please provide your name.")
+    if not EMAIL_RE.match(email):
+        errors.append("Please provide a valid email address.")
+    if len(message) < 10:
+        errors.append("Please write a message (at least 10 characters).")
+
+    def fragment(text, ok):
+        from django.http import HttpResponse
+        klass = "text-fu-live font-medium" if ok else "text-red-500 font-medium"
+        return HttpResponse(f'<p class="{klass}">{text}</p>')
+
+    if errors:
+        detail = "<br>".join(errors)
+        if request.headers.get("HX-Request"):
+            return fragment(detail, False)
+        return JsonResponse({"success": False, "message": detail}, status=400)
+
+    logger.info("contact_submit: %s <%s> %s", name, email, subject or "(no subject)")
+
+    from django.utils.html import escape
+
+    if request.headers.get("HX-Request"):
+        # User input is interpolated into an HTML fragment — escape it so a
+        # crafted name/email cannot inject markup into the HTMX swap target.
+        return fragment(
+            f"✓ Thanks, {escape(name)}! We'll get back to you at {escape(email)} within one business day.",
+            True,
+        )
+    return JsonResponse(
+        {"success": True, "message": f"Thanks, {name}! We'll be in touch."}
     )
 
 
@@ -486,10 +649,3 @@ def newsletter_subscribe_api(request):
         "success": True,
         "message": f"Subscribed! We'll send updates to {email}.",
     })
-
-
-# ── Section stack field names ───────────────────────────────────────────────
-# Imported by _page_to_dict and models to stay DRY.
-SECTION_STACK_FIELDS = [
-    "stats", "features", "testimonials", "pricing", "faq", "projects",
-]

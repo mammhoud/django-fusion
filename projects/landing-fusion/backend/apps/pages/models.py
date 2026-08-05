@@ -14,14 +14,20 @@ from wagtail.models import Page
 from wagtail.search import index
 
 from apps.content.blocks import (
+    BlogSectionBlock,
     ContactSectionBlock,
     CtaBlock,
+    EditionsSectionBlock,
     FaqSectionBlock,
     FeaturesSectionBlock,
     HeroBlock,
     PricingSectionBlock,
+    ProcessSectionBlock,
     ProjectBlock,
+    ServicesSectionBlock,
+    SnippetsSectionBlock,
     StatsSectionBlock,
+    TechStackSectionBlock,
     TestimonialsSectionBlock,
 )
 
@@ -159,34 +165,8 @@ class AboutPage(SectionStackMixin, LandingPage):
         verbose_name_plural = _("About pages")
 
 
-class CompanyPage(LandingPage):
-    """Company page — hero, story, values."""
-
-    body_heading = _("Who we are")
-
-    body = RichTextField(
-        blank=True,
-        verbose_name=_("Body"),
-        help_text=_("Company story, mission and values content."),
-    )
-
-    content_panels = LandingPage.content_panels + [
-        MultiFieldPanel(
-            [FieldPanel("body")],
-            heading=_("Content"),
-            classname=SECTION_PANEL_CLASS,
-        ),
-    ]
-
-    template = "pages/company.html"
-
-    class Meta:
-        verbose_name = _("Company page")
-        verbose_name_plural = _("Company pages")
-
-
 class ServicesPage(LandingPage):
-    """Services page — hero, offering, approach."""
+    """Services page — hero, offering grid (features), and the 'build as you go' process."""
 
     body_heading = _("What we do")
 
@@ -195,6 +175,18 @@ class ServicesPage(LandingPage):
         verbose_name=_("Body"),
         help_text=_("Services, offering and approach content."),
     )
+    services = StreamField(
+        [("services", ServicesSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Services"),
+    )
+    process = StreamField(
+        [("process", ProcessSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Build as you go"),
+    )
 
     content_panels = LandingPage.content_panels + [
         MultiFieldPanel(
@@ -202,6 +194,8 @@ class ServicesPage(LandingPage):
             heading=_("Content"),
             classname=SECTION_PANEL_CLASS,
         ),
+        FieldPanel("services"),
+        FieldPanel("process"),
     ]
 
     template = "pages/services.html"
@@ -211,8 +205,238 @@ class ServicesPage(LandingPage):
         verbose_name_plural = _("Services pages")
 
 
+class ShowInNavMixin(models.Model):
+    """Shared nav-control fields for page types (matches migration 0004).
+
+    ``show_in_nav``/``nav_order`` let editors toggle a page in the header nav
+    and set its position. The main nav source of truth is ``LandingSite``
+    (apps/core/site.py); these fields are used by the Wagtail-tree nav
+    fallback and exposed on the page API.
+    """
+
+    show_in_nav = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text=_("Include this page in the main site header navigation."),
+        verbose_name=_("Show in navigation"),
+    )
+    nav_order = models.IntegerField(
+        default=100,
+        help_text=_("Lower numbers appear first in the header nav."),
+        verbose_name=_("Navigation order"),
+    )
+
+    class Meta:
+        abstract = True
+
+    nav_panels = [FieldPanel("show_in_nav"), FieldPanel("nav_order")]
+
+
+class PricingPage(ShowInNavMixin, LandingPage):
+    """Dedicated pricing page — hero, pricing tiers, faq, cta."""
+
+    pricing = StreamField(
+        [("pricing", PricingSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Pricing"),
+    )
+    faq = StreamField(
+        [("faq", FaqSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("FAQ"),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        FieldPanel("pricing"),
+        FieldPanel("faq"),
+        *ShowInNavMixin.nav_panels,
+    ]
+
+    template = "pages/pricing.html"
+
+    class Meta:
+        verbose_name = _("Pricing page")
+        verbose_name_plural = _("Pricing pages")
+
+
+class BlogPage(ShowInNavMixin, LandingPage):
+    """Blog index — hero, post grid, cta."""
+
+    blog = StreamField(
+        [("blog", BlogSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Blog"),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        FieldPanel("blog"),
+        *ShowInNavMixin.nav_panels,
+    ]
+
+    template = "pages/blog.html"
+
+    class Meta:
+        verbose_name = _("Blog page")
+        verbose_name_plural = _("Blog pages")
+
+
+
+class BlogPostPage(ShowInNavMixin, LandingPage):
+    """A single blog post — child of the Blog index, served at /blog/<slug>/.
+
+    Carries the post meta (category, date, read time), an excerpt used by the
+    index grid, and a RichText body for the detail page. Slugs must match the
+    ``slug`` field of the matching ``BlogPostBlock`` on the Blog index so grid
+    cards link to live pages.
+    """
+
+    body_heading = _("The post")
+
+    category = models.CharField(
+        max_length=80,
+        blank=True,
+        verbose_name=_("Category"),
+    )
+    post_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("Date"),
+    )
+    read_time = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name=_("Read time"),
+        help_text=_("e.g. 6 min read"),
+    )
+    excerpt = models.TextField(
+        blank=True,
+        verbose_name=_("Excerpt"),
+        help_text=_("One-liner shown on the blog index grid card."),
+    )
+    body = RichTextField(
+        blank=True,
+        verbose_name=_("Body"),
+        help_text=_("The post content — paragraphs, headings, lists, code."),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        MultiFieldPanel(
+            [
+                FieldPanel("category"),
+                FieldPanel("post_date"),
+                FieldPanel("read_time"),
+                FieldPanel("excerpt"),
+            ],
+            heading=_("Post meta"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        MultiFieldPanel(
+            [FieldPanel("body")],
+            heading=_("Body"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        *ShowInNavMixin.nav_panels,
+    ]
+
+    template = "pages/blog_post.html"
+
+    class Meta:
+        verbose_name = _("Blog post page")
+        verbose_name_plural = _("Blog post pages")
+
+class ProductPage(ShowInNavMixin, LandingPage):
+    """
+    A single product page — the reference document for one product.
+
+    Carries everything another project needs to reuse it (e.g. LMS reusing
+    Forge POS patterns): an overview, its tech stack, its editions with
+    per-edition pricing, reference snippets/models, features, FAQ and CTA.
+    These pages live as children of ``ProductsPage`` and are listed there.
+    """
+
+    tagline = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_("Tagline"),
+        help_text=_("One-line summary shown on the product card in the /products/ listing."),
+    )
+    body = RichTextField(
+        blank=True,
+        verbose_name=_("Overview"),
+        help_text=_("What this product is and why it exists."),
+    )
+    tech = StreamField(
+        [("tech", TechStackSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Tech stack"),
+    )
+    editions = StreamField(
+        [("editions", EditionsSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Editions & pricing"),
+    )
+    snippets = StreamField(
+        [("snippets", SnippetsSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Reference snippets"),
+    )
+    features = StreamField(
+        [("features", FeaturesSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Features"),
+    )
+    faq = StreamField(
+        [("faq", FaqSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("FAQ"),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("tagline")],
+            heading=_("Listing card"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        MultiFieldPanel(
+            [FieldPanel("body")],
+            heading=_("Overview"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        FieldPanel("tech"),
+        FieldPanel("editions"),
+        FieldPanel("snippets"),
+        FieldPanel("features"),
+        FieldPanel("faq"),
+        *ShowInNavMixin.nav_panels,
+    ]
+
+    template = "pages/product.html"
+
+    class Meta:
+        verbose_name = _("Product page")
+        verbose_name_plural = _("Product pages")
+
+    def get_product_card(self) -> dict:
+        """The listing-card payload for the /products/ page + API."""
+        return {
+            "title": self.title,
+            "slug": self.slug,
+            "tagline": self.tagline,
+            "href": f"/products/{self.slug}/",
+        }
+
+
 class ProductsPage(SectionStackMixin, LandingPage):
-    """Products page — the full product document: hero, lines, stats, features, pricing, testimonials, faq, cta."""
+    """Products page — the full product document: hero, lines, projects (cards),
+    stats, features, pricing, testimonials, faq, cta."""
 
     body_heading = _("What ships with Fusion")
 
@@ -221,6 +445,12 @@ class ProductsPage(SectionStackMixin, LandingPage):
         verbose_name=_("Body"),
         help_text=_("Product lines and highlights content."),
     )
+    projects = StreamField(
+        [("project", ProjectBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Projects"),
+    )
 
     content_panels = LandingPage.content_panels + [
         MultiFieldPanel(
@@ -228,6 +458,7 @@ class ProductsPage(SectionStackMixin, LandingPage):
             heading=_("Content"),
             classname=SECTION_PANEL_CLASS,
         ),
+        FieldPanel("projects"),
         *SectionStackMixin.section_panels,
     ]
 
@@ -236,6 +467,16 @@ class ProductsPage(SectionStackMixin, LandingPage):
     class Meta:
         verbose_name = _("Products page")
         verbose_name_plural = _("Products pages")
+
+    def get_product_cards(self) -> list[dict]:
+        """Product cards — one per live ProductPage child, for the listing + API."""
+        from apps.pages.models import ProductPage as _ProductPage
+
+        return [
+            child.specific.get_product_card()
+            for child in self.get_children().live()
+            if isinstance(child.specific, _ProductPage)
+        ]
 
 
 class FeaturesPage(SectionStackMixin, LandingPage):

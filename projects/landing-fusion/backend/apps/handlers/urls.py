@@ -7,15 +7,21 @@ Wagtail's built-in ``serve()`` — giving us the unified fragment/layout
 renderer described in ``apps/handlers/views.py``.
 """
 from django.urls import path
+from django.views.generic import RedirectView
 
 from apps.handlers import views
 
 urlpatterns = [
     path("", views.LandingHomeView.as_view(), name="home"),
     path("about/", views.AboutPageView.as_view(), name="about"),
-    path("company/", views.CompanyPageView.as_view(), name="company"),
+    # Company merged into About — legacy URL redirects permanently.
+    path("company/", RedirectView.as_view(url="/about/", permanent=True), name="company_redirect"),
     path("services/", views.ServicesPageView.as_view(), name="services"),
+    path("pricing/", views.PricingPageView.as_view(), name="pricing"),
+    path("blog/", views.BlogPageView.as_view(), name="blog"),
+    path("blog/<slug:slug>/", views.BlogPostPageView.as_view(), name="blog_post"),
     path("products/", views.ProductsPageView.as_view(), name="products"),
+    path("products/<slug:slug>/", views.ProductPageView.as_view(), name="product"),
     path("features/", views.FeaturesPageView.as_view(), name="features"),
     path("projects/", views.ProjectsPageView.as_view(), name="projects"),
     path("contact/", views.ContactPageView.as_view(), name="contact"),

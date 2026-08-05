@@ -137,7 +137,19 @@ export interface PageData {
   pricing?: Record<string, any>[];
   faq?: Record<string, any>[];
   projects?: Record<string, any>[];
+  services?: Record<string, any>[];
+  process?: Record<string, any>[];
+  blog?: Record<string, any>[];
+  tech?: string[];
+  editions?: Record<string, any>[];
+  snippets?: Record<string, any>[];
+  products?: { title: string; slug: string; tagline: string; href: string }[];
   contact?: Record<string, any>[];
+  // Blog post meta (BlogPostPage detail pages)
+  category?: string;
+  post_date?: string;
+  read_time?: string;
+  excerpt?: string;
 }
 
 export interface PageListItem {

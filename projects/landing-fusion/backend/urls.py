@@ -16,6 +16,7 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
 
     # ── APIs — backend-driven content for the Astro frontend ──────────
+    path("apis/render-mode/", pages_api.render_mode_api, name="render_mode_api"),
     path("apis/site/settings/", pages_api.site_settings_api, name="site_settings_api"),
     path("apis/navigation/", pages_api.navigation_api, name="navigation_api"),
     path("apis/contact/", pages_api.contact_api, name="contact_api"),
@@ -23,9 +24,10 @@ urlpatterns = [
     path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
     path("apis/assets/", pages_api.assets_api, name="assets_api"),
 
-    # ── HTMX endpoints ────────────────────────────────────────────────
+    # ── Fragment endpoints (HTMX HTML swaps) ──────────────────────────
+    path("fragment/contact/", pages_api.contact_submit_api, name="contact_submit"),
     path("api/newsletter/subscribe/", pages_api.newsletter_subscribe_api, name="newsletter_subscribe"),
-    path("api/htmx/ping/", pages_api.htxm_ping_api, name="htmx_ping"),
+    path("fragment/ping/", pages_api.htxm_ping_api, name="htmx_ping"),
 
     # Landing page handlers — django-fusion PageHandler views that render each
     # Wagtail page through the unified fragment/layout pipeline (HTMX-aware).

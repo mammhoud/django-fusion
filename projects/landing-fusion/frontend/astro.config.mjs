@@ -11,7 +11,12 @@ export default defineConfig({
   // CMS-backed dynamic pages (see ASTRO_MIGRATION_PLAN §7).
   output: 'static',
   site: 'https://landing.structa.cloud',
-  integrations: [mdx(), alpinejs()],
+  integrations: [
+    mdx(),
+    // Alpine with the Intersect + Collapse plugins (see src/alpine.js) —
+    // without them x-intersect reveals and x-collapse accordions no-op.
+    alpinejs({ entrypoint: '@/alpine' }),
+  ],
   vite: {
     resolve: {
       alias: {

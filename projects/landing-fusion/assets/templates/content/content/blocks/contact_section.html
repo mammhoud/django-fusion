@@ -16,7 +16,7 @@
       {% if value.form_description %}<p class="mt-2 text-sm text-fu-text/70">{{ value.form_description }}</p>{% endif %}
       <form
         class="mt-6 space-y-4"
-        hx-post="/api/htmx/contact/"
+        hx-post="/fragment/contact/"
         hx-target="#contact-form-result"
         hx-swap="innerHTML"
         x-data="{ name: '', email: '', message: '', valid: false }"

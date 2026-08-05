@@ -64,7 +64,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "urls"
 
-_PROJECT_DIR = BASE_DIR.parent  # projects/landing-fusion/
+_PROJECT_DIR = BASE_DIR.parent  # projects/
 _ASSETS_DIR = _PROJECT_DIR / "assets"
 
 TEMPLATES = [
@@ -126,10 +126,14 @@ STATIC_ROOT = _ASSETS_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = _ASSETS_DIR / "media"
 
-# STATICFILES_DIRS: include project-level assets/static/
+# STATICFILES_DIRS: the landing project's own assets/static/ (compiled
+# fusion.css from `make css`). Note: _ASSETS_DIR resolves to the shared
+# projects/assets/ (a legacy path that does not exist here), so we point at
+# BASE_DIR/assets/static — the real location of the compiled stylesheet.
+_PROJECT_STATIC_DIR = BASE_DIR / "assets" / "static"
 STATICFILES_DIRS = [
-    _ASSETS_DIR / "static",
-] if (_ASSETS_DIR / "static").exists() else []
+    _PROJECT_STATIC_DIR,
+] if _PROJECT_STATIC_DIR.exists() else []
 
 # ── Wagtail ────────────────────────────────────────────────────────
 WAGTAIL_SITE_NAME = "Fusion Landing"
@@ -166,3 +170,16 @@ FUSION_ASSET_PIPELINE = {
     },
     "static_url": STATIC_URL,
 }
+
+# ── Fusion Render Mode (django-fusion settings config) ─────────────
+# The dual-mode contract used across django-fusion
+# (``RoutableComponent.get_fusion_render_first()`` / ``FusionDualModeMixin``
+# read ``FUSION_RENDER_FIRST_DEFAULT`` or ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``):
+#
+#   True  → “fusion render first” — Django serves finished server-rendered
+#           HTML as the source of truth (SEO friendly, no client render).
+#   False → “data APIs” — the client (Astro build) renders from /apis/* JSON.
+#
+# Override per request with the ``X-Fusion-Render-First: true|false`` header.
+# Env: FUSION_RENDER_FIRST=1|0
+FUSION_RENDER_FIRST_DEFAULT = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"

@@ -16,10 +16,18 @@
  * `fusionApiUrl` defaults to '' (same-origin). Set PUBLIC_FUSION_API_URL to
  * point at the Django backend directly (e.g. http://localhost:8074).
  *
+ * Recursion guard: on a standalone static build (no PUBLIC_FUSION_API_URL)
+ * the endpoint resolves same-origin, so `hx-get` would fetch *this very page*
+ * (which contains another LiveFragment) and nest the full document into
+ * itself forever. When no backend is configured we never fire the request —
+ * the section shows a quiet note instead. The actual request region lives in
+ * LiveFragmentTarget.astro (the `<template>` fallback must stay in plain
+ * template body — inside a JSX expression the Astro compiler flattens it).
+ *
  * The `skeletonVariant` prop selects a component-matched skeleton so the
  * placeholder reflects the actual content shape — no layout jump on swap.
  */
-import Skeleton from '@/components/ui/Skeleton.astro';
+import LiveFragmentTarget from '@/components/ui/LiveFragmentTarget.astro';
 import { fusionApiUrl } from '@/lib/site';
 
 interface Props {
@@ -52,6 +60,10 @@ const {
 
 // Ensure the URL joins cleanly and stays relative when fusionApiUrl is ''.
 const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
+
+// Recursion guard — see header comment. Only fire HTMX when a backend is
+// configured; otherwise show the quiet fallback note.
+const hasBackend = fusionApiUrl !== '';
 ---
 
 
@@ -63,36 +75,22 @@ const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
       <p class="text-fu-muted">{intro}</p>
     </div>
 
-    <div
-      class="live-fragment__target"
-      client:visible
-      hx-get={endpoint}
-      hx-trigger="load"
-      hx-target="this"
-      hx-swap="innerHTML"
-      data-fragment-endpoint={endpoint}
-    >
-      <!-- Default loading state: skeleton while the backend responds -->
-      <div class="live-fragment__skeleton" aria-hidden="true">
-        {skeletonVariant ? (
-          <Skeleton variant={skeletonVariant} />
-        ) : (
-          <Skeleton variant="card" count={skeletonCards} />
-        )}
-        <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
-          requesting {route} · text/html
-        </p>
-      </div>
-
-      <!-- Quiet error fallback (swap listener lives in Layout.astro's bundled
-           script — one listener for all live fragments, not one per instance). -->
-      <template data-fragment-fallback>
-        <p class="live-fragment__fallback">
-          The backend fragment for <code class="font-mono">{route}</code> is not reachable right now
-          (is the Django server running at <code class="font-mono">{fusionApiUrl || '/  (same-origin)'}</code>?).
+    {hasBackend ? (
+      <LiveFragmentTarget
+        endpoint={endpoint}
+        route={route}
+        skeletonCards={skeletonCards}
+        skeletonVariant={skeletonVariant}
+      />
+    ) : (
+      <div class="live-fragment__target">
+        <div class="live-fragment__fallback">
+          The live fragment for <code class="font-mono">{route}</code> needs the Django backend.
+          Rebuild the frontend with <code class="font-mono">PUBLIC_FUSION_API_URL</code> set to point
+          at the backend (e.g. <code class="font-mono">http://localhost:8074</code>) to enable it.
           The static sections on this page render the same content.
-        </p>
-      </template>
-    </div>
+        </div>
+      </div>
+    )}
   </div>
 </section>

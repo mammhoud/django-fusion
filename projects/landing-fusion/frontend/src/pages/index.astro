@@ -2,13 +2,18 @@
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
-import CTA from '@/components/blocks/CTA.astro';
-import Toast from '@/components/ui/Toast.astro';
+import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+import { fusionApiUrl } from '@/lib/site';
+
+// The HTMX demo fetches the backend ping fragment — always point at the
+// configured backend (Django), never same-origin (the Astro host has no
+// /fragment/ping/ route and would 404).
+const pingEndpoint = `${fusionApiUrl.replace(/\/+$/, '')}/fragment/ping/`;
 
 // ── Fetch from backend (SSG build-time), fall back to static content ──
 let siteSettings: SiteSettings | undefined;
@@ -94,8 +99,8 @@ const productCards = [
     status='200 OK · text/html · 0 KB client framework'
   />
 
-  <!-- Tech Stats -->
-  {techStats?.length ? <Stats stats={techStats} /> : <ContentError label="Stats data unavailable" />}
+  <!-- Tech Stats — renders only when the backend provides stats (HomePage is a slim page by design) -->
+  {techStats?.length ? <Stats stats={techStats} /> : null}
 
   <!-- The Stack — what runs under the hood -->
   {stackItems?.length ? (
@@ -133,7 +138,7 @@ const productCards = [
       </div>
     </div>
   </section>
-  ) : <ContentError label="Stack data unavailable" />}
+  ) : null}
 
   <!-- Products preview — four key products -->
   <section id='products' class='doc-sheet bg-fu-surface py-20 md:py-24'>
@@ -206,7 +211,7 @@ const productCards = [
           </div>
           <button
             class='btn-secondary w-full'
-            hx-get='/api/htmx/ping/'
+            hx-get={pingEndpoint}
             hx-target='#htmx-demo-target'
             hx-swap='innerHTML'
           >

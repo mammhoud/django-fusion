@@ -26,6 +26,7 @@ const pageCta = pageData?.cta;
 const pageStats = (pageData?.stats as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
+const productCards = (pageData?.products as { title: string; slug: string; tagline: string; href: string }[] | undefined);
 
 const productStats = pageStats?.map((s: any) => ({
   label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || ''),
@@ -45,6 +46,28 @@ const productLines: ProductLine[] = [
 <Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'Structa Cloud products — django-fusion, ceptor-ai, django-bolt, vResume, Forge POS, and Cypercloud.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
   <Hero eyebrow={pageHero?.badge || 'products · the full product line'} heading={pageHero?.title || 'Everything we build, shipped as'} accent='open source' intro={pageHero?.subtitle || 'Six products from one monorepo — three open-source libraries, two cloud platforms, and a desktop POS in three editions.'} primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'View on GitHub', href: 'https://github.com/mammhoud' }} secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'See projects', href: '/projects' }} status='200 OK · text/html · the full product line in one response' />
   {productStats?.length ? <Stats stats={productStats} /> : <ContentError label="Stats data unavailable" />}
+
+  <!-- Product pages grid — one card per ProductPage child (links to detail pages) -->
+  {productCards?.length ? (
+  <section id='products' class='doc-sheet bg-fu-paper py-16 md:py-20'>
+    <div class='container-fusion'>
+      <div class='mx-auto mb-12 max-w-2xl text-center'>
+        <p class='tag-marker mb-4'>the product line</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Every product, one page each</h2>
+        <p class='text-fu-muted'>Each product gets a reference page — editions &amp; pricing, tech stack, and snippets/models you can reuse.</p>
+      </div>
+      <div class='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+        {productCards.map((card, i) => (
+          <a href={card.href} class='card reveal group flex flex-col gap-2 p-6 hover:-translate-y-0.5' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+            <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink transition-colors group-hover:text-fu-link'>{card.title}</h3>
+            {card.tagline && <p class='text-sm leading-relaxed text-fu-muted'>{card.tagline}</p>}
+            <span class='mt-auto pt-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>View product →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : null}
 
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>

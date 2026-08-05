@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class PagesConfig(AppConfig):
-    """Wagtail page models for the landing site (Home / About / Company / Services / Products / Features / Projects / Contact / FAQ / Privacy)."""
+    """Wagtail page models for the landing site (Home / About / Services / Products / Features / Projects / Blog / Pricing / Contact / FAQ / Privacy)."""
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.pages"
