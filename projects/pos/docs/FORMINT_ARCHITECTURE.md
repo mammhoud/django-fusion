@@ -50,8 +50,8 @@ formint-pos/
 │   │   ├── components.py        # django-fusion table/form data components
 │   │   ├── fusion_components.py # branch summary fragment (FusionDualModeMixin)
 │   │   ├── core.py              # FormintSite (django-fusion Site — nav source of truth)
-│   │   ├── fusion.py            # render-mode/nav/assets contract (get_effective_render_first)
-│   │   ├── handlers.py          # class-based HTMX fragment handlers (mirrors landing handlers)
+│   │   ├── fusion.py            # render-mode/nav/assets contract + FusionCodec pointer
+│   │   ├── handlers.py          # HTMX fragment handlers + FormintPageView (PageHandler)
 │   │   ├── views.py             # thin URL-facing delegation to handlers + /fusion/* endpoints
 │   │   ├── admin.py             # canonical Unfold ModelAdmin registrations (superset)
 │   │   ├── dashboard.py         # Unfold dashboard callback (KPIs/charts/tables)
@@ -145,12 +145,18 @@ contract as `projects/landing-fusion/backend/apps/pages/api.py`:
 | `/fusion/render-mode/` | Same report at the fragment path (HTMX shell) |
 | `/fusion/navigation/` | Nav JSON at the fragment path |
 | `/fusion/assets/` | Asset manifest at the fragment path |
+| `/fusion/pointer/` | `FusionCodec`-encoded fragment pointer (session-aware) |
+| `/fusion/health/` | django-fusion `contrib.api` health (render-strategy preference) |
+| `/fusion/branding/` | django-fusion `contrib.api` branding (env/snippet fallback) |
+| `/fusion/layouts/` | django-fusion `contrib.api` layouts (available/default) |
+| `/fusion/page/` | Full-page render via `PageHandler` (HTMX → fragment, else layout) |
 
-* **`formint/fusion.py`** — `get_effective_render_first(request)` reads the
-  `X-Fusion-Render-First: true|false` header (per-request override), falling
-  back to `FUSION_RENDER_FIRST_DEFAULT` (env `FUSION_RENDER_FIRST`, default
-  `1`). This is the same precedence django-fusion's
-  `FusionDualModeMixin.get_effective_render_first()` uses.
+* **`formint/fusion.py`** — `get_effective_render_first(request)` precedence:
+  `X-Fusion-Render-First` header → **session preference**
+  (`django_fusion.routes.rendering.session.get_session_render_first`) →
+  `FUSION_RENDER_FIRST_DEFAULT` (env `FUSION_RENDER_FIRST`, default `1`).
+  The header still wins per-request; the session preference (set/cached by
+  `FusionSessionChecker`) sits above the configured default.
 * **`formint/core.py`** — `FormintSite(Site)` from `django_fusion.routes.core.sites`
   with `NAV_ITEMS` (Home / Data / Admin) — mirrors landing-fusion's
   `apps/core/site.py`.
@@ -164,6 +170,11 @@ Settings (`sidecar/configs/`):
 ```python
 FUSION_RENDER_FIRST_DEFAULT = os.environ.get('FUSION_RENDER_FIRST', '1') == '1'
 COMPONENTS_FUSION_RENDER_FIRST_DEFAULT = FUSION_RENDER_FIRST_DEFAULT
+# §12 — component registry + block attrs + session preference
+COMPONENTS_DIR_NAMES = ("components", "partials", "tags")
+COMPONENTS_ENABLE_BLOCK_ATTRS = True
+COMPONENTS_INCLUDE_PATH_ROOTS = ("components", "partials", "formint")
+# TEMPLATES OPTIONS.libraries: {"components": "django_fusion.comp.templatetags.components"}
 FUSION_ASSETS = {...}  # frontend bundle parity
 FUSION_ASSET_PIPELINE = {...}
 ```
@@ -260,14 +271,17 @@ Unified test directory: [`../tests/`](../tests/)
 
 | Suite | Location | Runner |
 |---|---|---|
-| Backend (35 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
+| Backend (50 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
 | Frontend contract | `tests/js/vitest.config.ts` | `npx vitest run` |
 | Admin selenium | `tests/selenium/formint/` | `pytest tests/selenium/formint/` |
 
 Backend coverage: ninja CRUD (create/list/patch/delete), pagination,
 openapi, fusion envelope, HTMX table/form fragments, render-first + data-
-mode (header override), render-mode/navigation/assets endpoints, admin
-login/dashboard/changelists for loyalty + settings models.
+mode (header + session override), render-mode/navigation/assets endpoints,
+§12 enhancement surface (include-path registry, block attrs, FusionCodec
+pointer, `is_htmx_request`, PageHandler full page + fragment, `{% comp %}`,
+`contrib.api` health/branding/layouts), admin login/dashboard/changelists
+for loyalty + settings models.
 
 ---
 
@@ -305,7 +319,7 @@ landing-fusion's root + backend split):
 | `make dev-backend` / `make dev-frontend` | Foreground servers |
 | `make stop` / `make status` | Manage the running env |
 | `make check` | Django check + astro check |
-| `make test` | Backend 35-test suite + frontend contract tests |
+| `make test` | Backend 50-test suite + frontend contract tests |
 | `make build` / `make preview` | Frontend build (+ collectstatic) / preview |
 | `make clean` | Remove db + staticfiles + node_modules |
 | `make backend-*` / `make frontend-*` | Delegate to the layer Makefiles |
@@ -348,12 +362,13 @@ Parent `projects/pos/Makefile` delegates: `make formint-install`,
 - [`SIDECAR_V2.md`](SIDECAR_V2.md) — sidecar API reference
 - [`tests/README.md`](../tests/README.md) — unified test suite
 
-## 12. django-fusion enhancement surface (available features)
+## 12. django-fusion enhancement surface (all wired)
 
-Features from the django-fusion library that Formint uses today and others
-that can be enabled incrementally:
+All seven features previously listed as “available to enable” are now wired
+into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
+`formint/handlers.py`, `formint/urls.py`, `formint/templates/`):
 
-**In use:**
+**In use (long-standing):**
 
 - `FusionDualModeMixin` + `FragmentComponent` — `formint/fusion_components.py`
   (render-first vs data-mode with header/session precedence).
@@ -367,18 +382,37 @@ that can be enabled incrementally:
 - `fusion_json_response` (`routes.rendering.renderers`) — render-first
   table responses.
 
-**Available to enable (settings-only or small additions):**
+**Wired in this pass:**
 
-- `register_include_paths()` + `COMPONENTS_INCLUDE_PATH_ROOTS` — bridge any
-  `{% include %}` partial into the component registry for stable identity.
-- `COMPONENTS_ENABLE_BLOCK_ATTRS` — emit `data-block-*` attributes on
-  components for headless/CMS inspection.
-- `FusionCodec` / `get_session_render_first` (`routes.rendering.session`) —
-  per-session render-mode preference (beyond the header override).
-- `django_fusion.plugins.htmx.is_htmx_request` — centralized HTMX detection
-  (already used internally by dual-mode).
-- `PageHandler` (`routes.pages.handler`) — full-page fragment/layout render
-  pipeline (used by landing-fusion; Formint currently uses lean fragments).
-- `comp`/`comp_include` template tags + component registry — server-side
-  component reuse across templates.
-- `django_fusion.contrib.api` — extra API helpers for Ninja-based apps.
+1. **Include-path component bridge** — `formint/apps.py::ready()` calls
+   `register_include_paths()` for every `formint/templates/formint/**/*.html`
+   file; `configs` sets `COMPONENTS_INCLUDE_PATH_ROOTS = ("components",
+   "partials", "formint")`. The registry is pre-warmed at startup and all
+   formint fragment templates are resolvable as path-style components
+   (verified by `FormintFusionEnhancementTests.test_formint_templates_registered_as_components`).
+2. **`COMPONENTS_ENABLE_BLOCK_ATTRS = True`** — components emit
+   `data-block-*` / `data-block-id` attributes (used by the headless/CMS
+   tooling in the broader fusion stack).
+3. **Session render-mode preference + `FusionCodec`** —
+   `get_effective_render_first()` now consults
+   `get_session_render_first()` (header → session → default), and
+   `formint/fusion.py` exposes `encode_fragment_pointer()` (session-aware)
+   plus `/fusion/pointer/` returning the encoded + decoded pointer
+   (pairs with the TS `FusionDecoder`).
+4. **`is_htmx_request`** (`django_fusion.plugins.htmx`) — replaces the
+   manual `HX-Request` header checks in `formint/handlers.py`.
+5. **`PageHandler` full-page pipeline** — `FormintPageView(PageHandler)`
+   renders `formint/page.html` for full requests and
+   `formint/fragments/page.html` for HTMX (same layout/flags contract as
+   landing-fusion's `LandingPageView`); exposed at `/fusion/page/`.
+6. **`{% comp %}` tags + component registry** — `{% load components %}`
+   (registered via the TEMPLATES `libraries` option) and self-closing
+   `{% comp "formint/branch_summary.html" /%}` reuse the registered
+   components in the page + fragment templates.
+7. **`django_fusion.contrib.api`** — `health`, `branding`, `layouts` wired
+   at `/fusion/health/`, `/fusion/branding/`, `/fusion/layouts/` (a latent
+   `layouts` view bug — missing `LAYOUTS` on the settings façade — was
+   fixed upstream in `libs/django-fusion` with a safe fallback set).
+
+All seven are covered by `FormintFusionEnhancementTests` in
+`formint/tests.py` (50 backend tests total).
