@@ -9,7 +9,7 @@
 POS Mini uses raw SQL migration files in `src-tauri/migrations/` — no Diesel
 migration runner and no Django ORM.
 
-See **`../../pos-full/docs/sql/index.md`** for the base SQL convention patterns.
+See the archived **`../../formint-pos/legacy-react/pos-full/docs/sql/index.md`** for the base SQL convention patterns.
 
 ### POS Mini Specific
 

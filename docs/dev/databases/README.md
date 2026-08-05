@@ -2,6 +2,9 @@
 
 > Database architecture across all Structa Cloud projects — PostgreSQL for production, SQLite for development, and the 37-table POS schema.
 
+> ⚠️ **Historical**: examples below referencing `pos-full/` predate the merge of
+> `pos-full` + `pos-solo` into `projects/pos/formint-pos/`.
+
 ---
 
 ## Architecture

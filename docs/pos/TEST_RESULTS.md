@@ -36,14 +36,19 @@ cd projects && uv sync --group dev && uv run pytest ../tests/unit/ -v
 
 ---
 
-## Direction 2a: Pos-Full Sidecar (`projects/pos/pos-full/sidecar/tests/`)
+## Direction 2: Merged Sidecar (`projects/pos/formint-pos/sidecar/tests/`)
+
+> ⚠️ **Historical report**: pos-full and pos-solo were merged into `formint-pos/`.
+> Both `tests/py/full/run.sh` and `tests/py/solo/run.sh` wrappers now cd to the
+> merged sidecar at `projects/pos/formint-pos/sidecar/tests/`.
 
 **Command:**
 ```bash
-DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_server.py tests/test_data_sync.py tests/test_webhook_e2e.py -v --import-mode=importlib
+cd projects/pos/formint-pos/sidecar
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
 ```
 
-**Result:** 68 passed / 0 failed / 12 skipped (80 total) ✅
+**Legacy result (pos-full direction):** 68 passed / 0 failed / 12 skipped (80 total) ✅
 
 ### `test_server.py` — 53/53 ✅
 
@@ -100,14 +105,14 @@ crm_activities, crm_notes, crm_sync_log, crm_sync_queue, crm_cloud_config
 
 ---
 
-## Direction 2b: Pos-Solo Sidecar (`projects/pos/pos-solo/sidecar/tests/`)
+### Legacy direction 2b: Pos-Solo Sidecar (now merged)
 
-**Command:**
+**Legacy command:**
 ```bash
 DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_unified_api.py -v --import-mode=importlib
 ```
 
-**Result:** 155/155 ✅ (100%)
+**Legacy result:** 155/155 ✅ (100%)
 
 | Test Class | Tests | Description |
 |-----------|------:|-------------|
@@ -139,7 +144,7 @@ DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_unified_api.py -v --impor
 
 > No live sync was performed — cloud CRM at `http://127.0.0.1:8082` was not running. This section inspects sync infrastructure: endpoints, engine, state file, and database layout.
 
-### Sync State (`pos-full/sidecar/sync_state.json`)
+### Sync State (merged sidecar `formint-pos/sidecar/sync_state.json`)
 
 ```json
 {
@@ -261,8 +266,7 @@ Both sidecars serve **REST JSON + WebSocket exclusively**. No server-side HTML r
 
 | Document | Path |
 |----------|------|
-| Pos-Full architecture | `projects/pos/pos-full/sidecar/ARCHITECTURE.md` |
-| Pos-Solo architecture | `projects/pos/pos-solo/sidecar/ARCHITECTURE.md` |
+| Merged sidecar architecture | `projects/pos/formint-pos/sidecar/ARCHITECTURE.md` |
 | Sidecar overview | [`sidecar/README.md`](sidecar/README.md) |
 | Django ORM guide | [`sidecar/django-orm.md`](sidecar/django-orm.md) |
 | Edition comparison | [`editions.md`](editions.md) |

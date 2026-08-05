@@ -71,8 +71,8 @@ class Branch(models.Model):
 
     # POS configuration
     pos_type = models.CharField(
-        _("POS type"), max_length=20, default="pos-solo",
-        choices=[("pos-solo", "POS Solo"), ("pos-full", "POS Full"), ("pos-mini", "POS Mini")],
+        _("POS type"), max_length=20, default="formint-pos",
+        choices=[("formint-pos", "Formint POS"), ("pos-solo", "POS Solo"), ("pos-full", "POS Full"), ("pos-mini", "POS Mini")],
     )
     node_id = models.CharField(
         _("node ID"), max_length=100, blank=True,
@@ -520,10 +520,10 @@ class DeviceToken(BaseDeviceToken):
     # Override node_type with shorter admin labels (values are identical)
     node_type = models.CharField(
         _("node type"), max_length=20,
-        choices=[("pos-solo", "POS Solo"), ("pos-full", "POS Full"),
+        choices=[("formint-pos", "Formint POS"), ("pos-solo", "POS Solo"), ("pos-full", "POS Full"),
                  ("pos-minimal", "POS Minimal"), ("cloud-server", "Cloud Server"),
                  ("external", "External")],
-        default="pos-solo",
+        default="formint-pos",
     )
 
     # ── Cloud-unique field ───────────────────────────────────────

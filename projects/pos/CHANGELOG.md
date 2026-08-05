@@ -7,39 +7,37 @@
 
 ## Unreleased — 3 August 2026
 
-> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [pos-solo](pos-solo/CHANGELOG.md) · [pos-full](pos-full/CHANGELOG.md)
+> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [formint-pos](formint-pos/CHANGELOG.md)
 
-### Added (forge-pos)
-- **Remix Icon system** — Full icon-set migration from Iconify + `react-icons/hi2` to Remix Icon (`ri-*` classes); vendored Remix, Inter, and Roboto from CMS Fusion; assets reorganized under `assets/`
-- **Assets reorganization** — `public/` merged into `assets/` (icon fonts → `icons/remix/`, font families → `fonts/`, CSS → `styles/fonts/`); paths fixed in `index.html`, `vite.config.ts`, `tauri.conf.json`
+### Added (formint-pos — merged package)
+- **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
+- **Robyn sidecar** — Merged from the former Full/Solo sidecars (streams, ws_client, sync signals, services, middleware, routes) into `formint-pos/sidecar/`
+- **Sidecar test fixes** — `bolt_api` collection crash fixed (removed stale `namespace` kwarg); `test_bolt_api` gracefully skips when `AsyncTestClient` is unavailable
+- **Screenshots** — Unfold admin screenshots moved to `formint-pos/docs/screenshots/admin/`
 
-### Removed (forge-pos)
-- **MCP Support toggle** — Removed from Settings + ChatSupport gating; `mcp_enabled` migration deleted
-- **Unique Card Colors toggle** — Backend column dropped (migration `2026-10-03-000000_remove_unique_card_colors`); Settings toggle + i18n keys removed; product cards use one uniform theme color
+### Removed (repository)
+- **`pos-solo/` and `pos-full/` editions deleted** — fully merged into `formint-pos/` (content preserved in `legacy-react/` archive and git history)
+- **`make editions`** — edition generation target removed; each edition is now canonical in its own directory
 
 ---
 
 ## v1.3.0 — 30 July 2026
 
-> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [pos-solo](pos-solo/CHANGELOG.md) · [pos-full](pos-full/CHANGELOG.md)
+> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [formint-pos](formint-pos/CHANGELOG.md)
 
 ### Added (forge-pos)
 - **Settings → Theme tab** — New tab with Theme Studio link, "Preview Theme Components" modal, and active theme info
 - **ThemePreviewModal** — Modal previewing all components across 5 theme variants
 - **Email-based Support Chat** — Using `VITE_SUPPORT_EMAIL` env var with mailto links; removed WebSocket/sidecar/ticket deps
-- **Per-edition CHANGELOGs** — `forge-pos/`, `pos-solo/`, `pos-full/` each with edition-specific history
 
 ### Changed (forge-pos)
 - **ThemeShowcase page deleted** — Merged into ThemePreviewModal (Settings → Theme)
 - **Dashboard text dimming** — Menu labels, descriptions, and accent strips use reduced opacity
 - **SupportChat simplified** — No longer depends on sidecar health check or ticket system
 
-### Changed (pos-full)
-- **Django Bolt API** — `bolt_api.py` sidecar module with BoltAPI integration
+### Changed (formint-pos)
+- **Django Bolt API** — `bolt_api.py` sidecar module with BoltAPI integration (carried into the merged sidecar)
 - **Bolt tests** — `test_bolt_api.py` and `bolt_urlconf.py` for URL routing verification
-
-### Changed (pos-solo)
-- **Plans documented** — Django Fusion enhancements and solo enhancement plans in `docs/plans/pos/`
 
 ---
 

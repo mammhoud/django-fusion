@@ -2,7 +2,7 @@
 
 > **Status:** Production Ready (with known test issues)  
 > **Last Updated:** 2026-07-24 (fusion audit)  
-> **Editions:** pos-solo (standalone) + pos-full (cloud master)
+> **Editions:** pos-solo (standalone) + pos-full (cloud master) — **both merged into `formint-pos/sidecar/`**
 
 ---
 

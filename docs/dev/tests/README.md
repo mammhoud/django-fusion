@@ -2,6 +2,10 @@
 
 > Test architecture and coverage across all Structa Cloud projects.
 
+> ⚠️ **Historical**: POS examples referencing `pos-full/` predate the merge of
+> `pos-full` + `pos-solo` into `projects/pos/formint-pos/` (unified tests now in
+> `projects/pos/tests/`).
+
 ---
 
 ## Test Architecture

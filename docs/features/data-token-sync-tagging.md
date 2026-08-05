@@ -1,5 +1,8 @@
 # DataToken Sync-Tagging System
 
+> ⚠️ **Historical**: `pos-solo`/`pos-full` references predate the merge into
+> `projects/pos/formint-pos/` (legacy code archived under `legacy-react/`).
+
 ## Overview
 
 **DataToken** is a lightweight sync-tagging system in `django-fusion` that marks

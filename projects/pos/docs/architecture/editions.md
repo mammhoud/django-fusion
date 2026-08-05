@@ -2,41 +2,46 @@
 
 ## Comparison
 
-| Feature | pos-full | pos-solo | pos-mini |
-|---------|----------|----------|----------|
-| **Tauri shell** | ✅ | ✅ | ✅ |
-| **React frontend** | ✅ | ✅ | ✅ |
-| **Rust backend** | ✅ | ✅ | ✅ |
-| **Python sidecar** | ✅ | ✅ | ❌ |
-| **Cloud sync** | ✅ | ❌ | ❌ |
-| **Multi-node** | ✅ | ❌ | ❌ |
-| **Django ORM** | ✅ (sidecar) | ✅ (sidecar) | ❌ |
-| **WebSocket** | ✅ | ✅ | ❌ |
-| **POS preset** | all/base/gaming/coffee | retail | basic |
-| **Port** | 1420 | 1420 | 1420 |
+| Feature | forge-pos (Mini) | formint-pos (Merged) | pos-client |
+|---------|------------------|----------------------|------------|
+| **Tauri shell** | ✅ | ✅ | ✅ (Vue 3) |
+| **Astro frontend** | ❌ | ✅ | ❌ |
+| **Rust backend** | ✅ | ✅ (minimal shell) | ✅ |
+| **Django Ninja backend** | ❌ | ✅ | ❌ |
+| **Robyn sidecar** | ❌ | ✅ | ❌ |
+| **Unfold admin** | ❌ | ✅ | ❌ |
+| **WebSocket streams** | ❌ | ✅ | ❌ |
+| **Cloud sync** | ❌ | ✅ | ❌ |
+| **Port** | 1420 | 8767 (backend) / 4321 (frontend) | 1420 |
+
+> **Note**: The former `pos-full` (Cloud Master) and `pos-solo` (Standalone)
+> editions were merged into `formint-pos/` — the merged package now owns the
+> single Robyn sidecar (`formint-pos/sidecar/`) and both legacy React UIs are
+> archived under `formint-pos/legacy-react/`.
 
 ## Architecture Per Edition
 
-### pos-full (Cloud Master)
+### formint-pos (Merged — recommended)
 ```
-React → Tauri Commands → Rust/Diesel → SQLite
-React → HTTP/WS → Robyn Sidecar → Django ORM → SQLite
-     → Sync Engine → Multi-node replication
-     → Cloud Links → External CRM/ERP
-```
-
-### pos-solo (Standalone)
-```
-React → Tauri Commands → Rust/Diesel → SQLite
-React → HTTP/WS → Robyn Sidecar → Django ORM → SQLite
+Astro → HTMX/JSON → Django Ninja backend → Django ORM → SQLite
+  └── /api/v1 (45 paginated resources, django-fusion encoder/decoder)
+  └── /htmx   (django-fusion tables + forms fragments)
+  └── /fusion (render-mode / navigation / assets)
+  └── /admin  (Unfold dashboard + KPI cards + charts)
+  └── Robyn Sidecar (:8765) → WebSocket streams + data sync + webhooks
 ```
 
-### pos-mini (Minimal)
+### forge-pos (Mini)
 ```
 React → Tauri Commands → Rust/Diesel → SQLite
 ```
 
-## Preset Configurations (pos-full)
+### pos-client (Vue 3 desktop)
+```
+Vue 3 → Tauri Commands → Rust → SQLite
+```
+
+## Preset Configurations (formint-pos)
 
 | Preset | Brand | Products |
 |--------|-------|----------|

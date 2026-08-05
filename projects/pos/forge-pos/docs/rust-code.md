@@ -157,14 +157,14 @@ try {
 }
 ```
 
-## Key Differences from pos-solo/pos-full
+## Key Differences from the merged package
 
-| Feature | forge-pos | pos-solo | pos-full |
-|---------|:--------:|:--------:|:--------:|
-| Data access | `invoke()` → Rust/Diesel | Redux RTK Query → HTTP | Redux RTK Query → HTTP |
-| Python sidecar | ❌ | ✅ Robyn | ✅ Robyn |
-| Django ORM | ❌ (Diesel) | ✅ | ✅ |
-| Admin panel | ❌ | ❌ | ✅ Unfold |
-| Cloud sync | ❌ | ✅ Child→Master | ✅ Master↔Children |
-| WebSocket | ❌ | ✅ | ✅ /ws/entities |
-| Hardware printer | ✅ Direct ESC/POS | ❌ (sidecar) | ❌ (sidecar) |
+| Feature | forge-pos | formint-pos |
+|---------|:--------:|:-----------:|
+| Data access | `invoke()` → Rust/Diesel | Django Ninja API → HTTP |
+| Python sidecar | ❌ | ✅ Robyn |
+| Django ORM | ❌ (Diesel) | ✅ |
+| Admin panel | ❌ | ✅ Unfold |
+| Cloud sync | ❌ | ✅ Child→Master |
+| WebSocket | ❌ | ✅ /ws/entities |
+| Hardware printer | ✅ Direct ESC/POS | ❌ (sidecar) |

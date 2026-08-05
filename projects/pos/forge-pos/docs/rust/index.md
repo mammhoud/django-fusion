@@ -8,7 +8,7 @@
 
 POS Mini uses Rust/Tauri with direct Diesel + SQLite access — **no Python sidecar**.
 
-See **`../../pos-full/docs/rust/index.md`** for the base Rust conventions.
+See the archived **`../../formint-pos/legacy-react/pos-full/docs/rust/index.md`** for the base Rust conventions.
 
 ## POS Mini Specific
 

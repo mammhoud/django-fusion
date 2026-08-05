@@ -1,7 +1,7 @@
 # Forge POS — Customization Guide
 
 > **Applies to:** forge-pos (Tauri + React + Rust/Diesel)  
-> **Adapt for:** pos-solo / pos-full (use sidecar API instead of Tauri invoke)
+> **Adapt for:** formint-pos (merged package — use the Robyn sidecar / Django Ninja API instead of Tauri invoke)
 
 ---
 

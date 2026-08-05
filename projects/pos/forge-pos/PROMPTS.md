@@ -7,7 +7,7 @@
 
 ## TypeScript / React Prompts
 
-Same as POS Full — see `../pos-full/PROMPTS.md` for base catalog.
+Same as the merged package — see `../formint-pos/legacy-react/` (archived pos-full/pos-solo) for the base catalog.
 
 ### POS Mini Specific
 
@@ -61,7 +61,7 @@ All backend logic is in Rust + Diesel + SQLite.
 
 ## SQL Prompts
 
-Same as POS Full — see `../pos-full/PROMPTS.md`.
+Same as the merged package — see `../formint-pos/legacy-react/` (archived pos-full/pos-solo).
 
 ### POS Mini Specific
 - Migrations are raw SQL files in `src-tauri/migrations/` (not Diesel migration runner)

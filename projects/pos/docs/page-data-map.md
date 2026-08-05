@@ -1,8 +1,12 @@
 # POS Page Data Map — Edition Comparison & Recommendations
 
 > **Last Updated:** 22 July 2026  
-> **Editions:** pos-mini, pos-solo, pos-full  
+> **Editions:** pos-mini, pos-solo, pos-full (historical)  
 > **Purpose:** Map each page's data dependencies, actions, form submissions, and identify naming conflicts and enhancement opportunities.
+
+> ⚠️ **Archived reference**: pos-solo and pos-full were merged into
+> `formint-pos/` (their React UIs live under `formint-pos/legacy-react/`).
+> This document is kept as a historical data-layer analysis.
 
 ---
 

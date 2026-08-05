@@ -28,8 +28,8 @@ export default defineConfig({
     testTimeout: 10000,
     hookTimeout: 10000,
     include: [
-      // Tests from each edition (shared identical copies — run one edition)
-      path.join(ROOT, 'pos-full', 'src', 'test', '**', '*.test.{ts,tsx}'),
+      // Archived React UI tests (pos-full + pos-solo merged into formint-pos)
+      path.join(ROOT, 'formint-pos', 'legacy-react', 'pos-full', 'src', 'test', '**', '*.test.{ts,tsx}'),
       // formint-pos (merged package) frontend tests — Astro shell contract
       path.join(ROOT, 'formint-pos', 'frontend', 'src', '**', '*.test.{ts,tsx}'),
       // New tests in the unified test directory
@@ -44,7 +44,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(ROOT, 'pos-full', 'src'),
+      '@': path.resolve(ROOT, 'formint-pos', 'legacy-react', 'pos-full', 'src'),
       // Redirect all @tauri-apps imports to local mocks (no Tauri Rust backend in jsdom)
       '@tauri-apps/api/core': path.join(MOCKS, 'tauri-api-core.ts'),
       '@tauri-apps/plugin-dialog': path.join(MOCKS, 'tauri-plugin-dialog.ts'),

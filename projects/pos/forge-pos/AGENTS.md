@@ -67,7 +67,7 @@ forge-pos/
 ## Code Style & Standards
 
 ### TypeScript / React
-Same as POS Full — see `../pos-full/AGENTS.md`.
+Same as the merged package — see `../formint-pos/README.md` and the archived React UI at `../formint-pos/legacy-react/` (formerly pos-full/pos-solo).
 
 ### Rust / Tauri
 - Direct SQLite access via Diesel ORM (no Python intermediary)

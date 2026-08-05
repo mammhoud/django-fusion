@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================================
-# POS — run pos-solo sidecar tests from their original location
+# POS — run merged sidecar tests (alias for py/full — pos-solo merged)
 # ============================================================================
+# pos-solo was merged into formint-pos; its unique test (test_ws_client.py)
+# lives with the combined suite at formint-pos/sidecar/tests/. This wrapper is
+# kept as an alias so existing CI/docs invocations keep working.
+#
 # Usage:
 #   bash py/solo/run.sh              — all tests
 #   bash py/solo/run.sh -k "product" — filtered
@@ -9,18 +13,4 @@
 
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"  # projects/pos/
-SIDECAR_SOLO="$ROOT/pos-solo/sidecar"
-cd "$SIDECAR_SOLO"
-
-EXTRA_ARGS=("$@")
-
-echo "▸ Running pos-solo tests from $SIDECAR_SOLO"
-echo "  pytest tests/ ${EXTRA_ARGS[*]}"
-echo ""
-
-# Clear DJANGO_SETTINGS_MODULE to avoid pytest-django loading root settings
-unset DJANGO_SETTINGS_MODULE
-PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/ \
-    -v --tb=short --no-header \
-    "${EXTRA_ARGS[@]}"
+exec bash "$(dirname "$0")/full/run.sh" "$@"

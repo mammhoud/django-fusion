@@ -1,8 +1,8 @@
 # POS — Unified Test Directory
 
-This directory consolidates test orchestration and NEW tests for the POS project (mini, solo, full editions). Python sidecar tests run from their original locations via wrapper scripts (see note below).
+This directory consolidates test orchestration and NEW tests for the POS project (mini, formint-pos merged package). Python sidecar tests run from the merged sidecar via wrapper scripts (see note below).
 
-> **Note on Python test location**: The POS sidecar tests (`pos-full/sidecar/tests/`, `pos-solo/sidecar/tests/`) must run from their original directories because the root `pyproject.toml` sets `DJANGO_SETTINGS_MODULE = "tests.settings"` which `pytest-django` auto-discovers. Running pytest from any subdirectory triggers Django configuration with the root test settings, which reference a `plugins` module that doesn't exist in the POS project. The wrapper scripts in `py/full/` and `py/solo/` `cd` to the original locations and `unset DJANGO_SETTINGS_MODULE` to avoid this conflict.
+> **Note on Python test location**: The merged POS sidecar tests (`formint-pos/sidecar/tests/`) must run from the sidecar directory because the root `pyproject.toml` sets `DJANGO_SETTINGS_MODULE = "tests.settings"` which `pytest-django` auto-discovers. Running pytest from any subdirectory triggers Django configuration with the root test settings, which reference a `plugins` module that doesn't exist in the POS project. The wrapper scripts `cd` to the sidecar directory and `unset DJANGO_SETTINGS_MODULE` to avoid this conflict.
 
 ## Directory Structure
 
@@ -11,14 +11,14 @@ tests/
 ├── README.md              ← this file
 ├── run-all.sh             ← unified orchestration runner
 ├── py/                    ← Python sidecar test runners (wrapper scripts)
-│   ├── full/              ← wrapper: runs pos-full/sidecar/tests/ via pytest
+│   ├── full/              ← wrapper: runs formint-pos/sidecar/tests/ via pytest
 │   │   └── run.sh
-│   ├── solo/              ← wrapper: runs pos-solo/sidecar/tests/ via pytest
+│   ├── solo/              ← wrapper: runs formint-pos/sidecar/tests/ via pytest
 │   │   └── run.sh
 │   └── formint/           ← wrapper: runs formint-pos backend tests via manage.py
 │       └── run.sh
 ├── js/                    ← JS/TS frontend tests (vitest config)
-│   ├── vitest.config.ts   ← shared vitest config (discovers pos-full/src/test/ + formint-pos frontend)
+│   ├── vitest.config.ts   ← shared vitest config (discovers legacy-react tests + formint-pos frontend)
 │   └── setup-global.ts    ← global test setup (polyfills, mocks)
 ├── selenium/              ← NEW: Browser-based admin panel tests
 │   ├── conftest.py        ← Selenium driver + auth fixture
@@ -63,19 +63,21 @@ bash tests/run-all.sh --quick
 
 | Suite | Edition | Tests | Run Command |
 |-------|---------|-------|-------------|
-| `py/full/` | pos-full | 53 (server + webhook + data_sync) | `bash tests/py/full/run.sh` |
-| `py/solo/` | pos-solo | 155 (unified API models) | `bash tests/py/solo/run.sh` |
+| `py/full/` | formint-pos (merged sidecar) | 53 (server + webhook + data_sync) | `bash tests/py/full/run.sh` |
+| `py/solo/` | formint-pos (merged sidecar) | 155 (unified API models + ws_client) | `bash tests/py/solo/run.sh` |
 | `py/formint/` | formint-pos | 35 (ninja CRUD + HTMX + render-mode + admin) | `bash tests/py/formint/run.sh` |
 
 Each `run.sh` wrapper:
-1. `cd`s to the original sidecar directory (`pos-full/sidecar/` or `pos-solo/sidecar/`)
+1. `cd`s to the merged sidecar directory (`formint-pos/sidecar/`)
 2. Runs `unset DJANGO_SETTINGS_MODULE` to avoid pytest-django auto-configuration
 3. Invokes `python3 -m pytest tests/` with optional filter arguments
 
+> **Note**: `pos-full/` and `pos-solo/` were merged into `formint-pos/` (the merged package owns a single Robyn sidecar at `formint-pos/sidecar/`). Both legacy editions remain archived under `formint-pos/legacy-react/`.
+
 ### JS Frontend Tests (`js/`)
 
-The vitest config (`js/vitest.config.ts`) discovers tests from `pos-full/src/test/`
-(identical copies exist in all 3 editions) **plus the formint-pos merged package**
+The vitest config (`js/vitest.config.ts`) discovers tests from `formint-pos/legacy-react/`
+(the archived pos-full/pos-solo React sources) **plus the formint-pos merged package**
 frontend contract tests (`formint-pos/frontend/src/**/*.test.ts`). The config's
 `server.fs.allow` includes the whole `projects/pos` root so out-of-edition tests
 load correctly. New tests can be added directly under `tests/js/`.
@@ -94,14 +96,14 @@ own `pytest.ini` so the repo-root pytest-django config is not loaded.
 Requires:
 - Chromium / Chrome installed
 - `python3 -m pip install selenium webdriver-manager`
-- pos-full sidecar running on `:8000` with superuser seeded (formint suite:
-  formint-pos backend on `:8000` with `FORMINT_ADMIN_*` superuser seeded)
+- formint-pos backend running on `:8000` with superuser seeded (formint suite:
+  `FORMINT_ADMIN_*` superuser seeded)
 
 ### API Endpoint Tests (`api/`) 🆕
 
 Lightweight Node.js scripts that test the REST API directly. Require:
 - Node.js 18+ (for global `fetch`)
-- pos-full sidecar running on `:8000`
+- formint-pos backend running on `:8000`
 
 ## CI Integration
 
@@ -110,7 +112,7 @@ Selenium and API tests can be run nightly or on demand.
 
 ## Known Issues
 
-- **pos-full tests (49 failures, 6 errors)**: Pre-existing database migration issue — `no such table: full_nodes`. The Django test database doesn't create tables correctly. 13 tests (WebSocket broadcast + webhook config) still pass.
+- **Merged sidecar tests (85 failures, 21 errors)**: Pre-existing database migration issues (e.g. `no such table: full_nodes`) carried over from the legacy pos-full/pos-solo suites. 171 tests pass (up from 161 in the legacy split — the `bolt_api` collection crash was fixed and the `ws_client` suite now runs).
 - **Vitest JS tests (145 failures)**: Pre-existing React rendering issues — components need context providers (AuthContext, Router, etc.) set up in test environment. Tauri mock infrastructure works correctly (no `invoke` errors). 14 tests pass.
 - **Robyn server**: Fails to start with `Apps aren't loaded yet` — Django ORM bootstrap issue. API tests require this to be fixed before they can execute.
 

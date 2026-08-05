@@ -6,10 +6,12 @@
 
 | Edition | Package | Branch | Description |
 |---------|---------|--------|-------------|
-| **pos-full** | Cloud Master | `generic` | Full-featured cloud POS with Django sidecar |
-| **pos-solo** | Solo | `solo` | Standalone single-device POS |
-| **pos-mini** | Mini | `mini` | Lightweight minimal POS |
-| **formint-pos** | Formint POS Professional | `generic` | **Merged package** (pos-full + pos-solo) — Django Ninja + ninja-extra API with django-fusion encoder/decoder and data components (tables + forms) |
+| **formint-pos** | Formint POS Professional | `generic` | **Merged package** (formerly pos-full + pos-solo) — Astro shell + Django Ninja + ninja-extra API with django-fusion encoder/decoder and data components (tables + forms) |
+| **pos-mini / forge-pos** | Mini | `mini` | Lightweight minimal POS |
+
+> ⚠️ The former `pos-full` (Cloud Master) and `pos-solo` (Standalone) editions
+> were merged into `formint-pos/` (legacy React UIs archived at
+> `formint-pos/legacy-react/`).
 
 > **Formint** is the canonical Professional POS product name. `formint-pos/` is the
 > new product boundary (Astro shell + Django data/API layer + Tauri). See
@@ -37,8 +39,8 @@
 
 ```
 projects/pos/
-├── pos-full/          # Cloud master edition
-├── pos-solo/          # Standalone edition
+├── formint-pos/       # Merged package (formerly pos-full + pos-solo)
+├── forge-pos/         # Mini edition
 ├── pos-mini/          # Minimal edition
 ├── formint-pos/       # Merged package (Django Ninja API + fusion data components)
 ├── pos-client/        # Shared client library

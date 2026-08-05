@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================================
-# POS — run pos-full sidecar tests from their original location
+# POS — run merged sidecar tests (pos-full + pos-solo absorbed into formint-pos)
 # ============================================================================
-# The original test files live at pos-full/sidecar/tests/ and must be run
-# from that directory to avoid pytest-django conflicts with the root
+# pos-full and pos-solo were merged into formint-pos (see the merge commit).
+# Their Robyn sidecar now lives at formint-pos/sidecar/ — this wrapper runs
+# the combined suite (pos-full tests + pos-solo's test_ws_client.py) from
+# that single location, avoiding pytest-django conflicts with the root
 # pyproject.toml (which sets DJANGO_SETTINGS_MODULE).
 #
 # Usage:
@@ -14,15 +16,15 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"  # projects/pos/
-SIDECAR_FULL="$ROOT/pos-full/sidecar"
-cd "$SIDECAR_FULL"
+SIDECAR="$ROOT/formint-pos/sidecar"
+cd "$SIDECAR"
 
 EXTRA_ARGS=("$@")
 if [ ${#EXTRA_ARGS[@]} -eq 0 ]; then
     EXTRA_ARGS=("-k" "not rust_db")
 fi
 
-echo "▸ Running pos-full tests from $SIDECAR_FULL"
+echo "▸ Running merged sidecar tests from $SIDECAR"
 echo "  pytest tests/ ${EXTRA_ARGS[*]}"
 echo ""
 

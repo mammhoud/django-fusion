@@ -2,6 +2,9 @@
 
 > All POS changes extracted from the real repo `CHANGELOG.md` at the repository root.
 
+> ⚠️ **Historical**: the `pos-solo`/`pos-full` editions were merged into
+> `projects/pos/formint-pos/` (legacy React UIs archived under `legacy-react/`).
+
 ---
 
 ## 2026-07-19 — POS-KO Gaming Center + 3-Edition System

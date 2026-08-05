@@ -19,8 +19,11 @@
 set -uo pipefail  # NOTE: no set -e — we capture exit codes manually
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"          # projects/pos/
-SIDECAR_FULL="$ROOT/pos-full/sidecar"
-SIDECAR_SOLO="$ROOT/pos-solo/sidecar"
+# pos-full + pos-solo were merged into formint-pos; the combined Robyn sidecar
+# lives at formint-pos/sidecar and the merged Django backend at formint-pos/backend.
+FORMINT="$ROOT/formint-pos"
+SIDECAR="$FORMINT/sidecar"
+BACKEND="$FORMINT/backend"
 TESTS="$ROOT/tests"
 
 MODE="${1:-all}"
@@ -46,25 +49,14 @@ banner() {
   echo "╚══════════════════════════════════════════════════════════╝"
 }
 
-run_py_full() {
-  banner "Python: pos-full sidecar"
+run_py_sidecar() {
+  banner "Python: merged sidecar (formint-pos/sidecar — pos-full + pos-solo)"
   bash "$TESTS/py/full/run.sh" 2>&1 | tail -15
   local st=${PIPESTATUS[0]}
   if [ "$st" -eq 0 ]; then
-    echo "  ✅ pos-full — PASSED"; PASS=$((PASS + 1))
+    echo "  ✅ merged sidecar — PASSED"; PASS=$((PASS + 1))
   else
-    echo "  ❌ pos-full — FAILED (exit $st)"; FAIL=$((FAIL + 1))
-  fi
-}
-
-run_py_solo() {
-  banner "Python: pos-solo sidecar"
-  bash "$TESTS/py/solo/run.sh" 2>&1 | tail -15
-  local st=${PIPESTATUS[0]}
-  if [ "$st" -eq 0 ]; then
-    echo "  ✅ pos-solo — PASSED"; PASS=$((PASS + 1))
-  else
-    echo "  ❌ pos-solo — FAILED (exit $st)"; FAIL=$((FAIL + 1))
+    echo "  ❌ merged sidecar — FAILED (exit $st)"; FAIL=$((FAIL + 1))
   fi
 }
 
@@ -80,8 +72,8 @@ run_py_formint() {
 }
 
 run_js() {
-  banner "JavaScript: vitest (pos-full src/test)"
-  cd "$ROOT/pos-full"
+  banner "JavaScript: vitest (formint-pos legacy-react src/test)"
+  cd "$FORMINT/legacy-react"
   npx vitest run --config "$TESTS/js/vitest.config.ts" 2>&1 | tail -20
   local st=${PIPESTATUS[0]}
   if [ "$st" -eq 0 ]; then
@@ -97,16 +89,15 @@ run_js() {
 run_api() {
   banner "API: Node.js endpoint tests"
 
-  # Start pos-full sidecar if not running
+  # Start formint-pos backend if not running
   if ! curl -sf http://127.0.0.1:8000/ >/dev/null 2>&1; then
-    echo "Starting pos-full sidecar on :8000 ..."
-    cd "$SIDECAR_FULL"
-    rm -f restaurant.db
-    python3 manage.py migrate 2>/dev/null
-    POS_FULL_ADMIN_EMAIL='admin@pos-full.local' \
-      POS_FULL_ADMIN_PASSWORD='admin123' \
-      python3 manage.py --ensure-superuser 2>/dev/null || true
-    python3 manage.py runserver 0.0.0.0:8000 &>/tmp/pos-api-test.log &
+    echo "Starting formint-pos backend on :8000 ..."
+    cd "$BACKEND"
+    .venv/bin/python3 manage.py migrate 2>/dev/null
+    FORMINT_ADMIN_EMAIL='admin@formint.local' \
+      FORMINT_ADMIN_PASSWORD='admin123' \
+      .venv/bin/python3 manage.py --ensure-superuser 2>/dev/null || true
+    .venv/bin/python3 manage.py runserver 0.0.0.0:8000 &>/tmp/pos-api-test.log &
     sleep 4
   fi
 
@@ -143,16 +134,15 @@ run_selenium() {
     return 0
   fi
 
-  # Start pos-full sidecar with admin if not running
+  # Start formint-pos backend with admin if not running
   if ! curl -sf http://127.0.0.1:8000/ >/dev/null 2>&1; then
-    echo "Starting pos-full sidecar on :8000 ..."
-    cd "$SIDECAR_FULL"
-    rm -f restaurant.db
-    python3 manage.py migrate 2>/dev/null
-    POS_FULL_ADMIN_EMAIL='admin@pos-full.local' \
-      POS_FULL_ADMIN_PASSWORD='admin123' \
-      python3 manage.py --ensure-superuser 2>/dev/null || true
-    python3 manage.py runserver 0.0.0.0:8000 &>/tmp/pos-selenium-test.log &
+    echo "Starting formint-pos backend on :8000 ..."
+    cd "$BACKEND"
+    .venv/bin/python3 manage.py migrate 2>/dev/null
+    FORMINT_ADMIN_EMAIL='admin@formint.local' \
+      FORMINT_ADMIN_PASSWORD='admin123' \
+      .venv/bin/python3 manage.py --ensure-superuser 2>/dev/null || true
+    .venv/bin/python3 manage.py runserver 0.0.0.0:8000 &>/tmp/pos-selenium-test.log &
     sleep 5
   fi
 
@@ -179,23 +169,24 @@ echo ""
 
 case "$MODE" in
   all)
-    run_py_full
-    run_py_solo
+    run_py_sidecar
     run_py_formint
     run_js
     [[ "$QUICK" == "true" ]] || run_api
     [[ "$QUICK" == "true" ]] || run_selenium
     ;;
   py)
-    run_py_full
-    run_py_solo
+    run_py_sidecar
     run_py_formint
     ;;
+  py-sidecar)
+    run_py_sidecar
+    ;;
   py-full)
-    run_py_full
+    run_py_sidecar
     ;;
   py-solo)
-    run_py_solo
+    run_py_sidecar
     ;;
   py-formint)
     run_py_formint
@@ -216,8 +207,7 @@ case "$MODE" in
     ;;
   --quick)
     QUICK=true
-    run_py_full
-    run_py_solo
+    run_py_sidecar
     run_py_formint
     run_js
     ;;
