@@ -79,6 +79,17 @@ class Application(NotificationMixin, IndexViewMixin, Viewset):
     ``application_context()`` returns a dict that child ``RoutableComponent``
     subclasses should merge into their own context.  Override this method
     to inject shared navigation, site info, or other app-level data.
+
+    Dual-mode response action (django-fusion ``apis`` plugin)
+    --------------------------------------------------------
+    Every Application gains the ``apis`` plugin contract:
+
+    * ``fusion_render_first`` — default render mode option (``None`` falls
+      through to ``settings.FUSION_RENDER_FIRST_DEFAULT``).
+    * ``render_first_mapping`` — per-view-name overrides.
+    * :meth:`get_effective_render_first` — resolve the mode for a request.
+    * :meth:`respond` — return a rendered component (render-first) or a
+      codec-encoded JSON API response (data mode).
     """
 
     title: str = ""
@@ -86,6 +97,19 @@ class Application(NotificationMixin, IndexViewMixin, Viewset):
     menu_template_name: str = "side-nav/app_menu.html"
     base_template_name: str = "layouts/base.html"
     permission: str | Callable[[Any], bool] | None = None
+
+    # ── apis plugin: dual-mode defaults ───────────────────────────────────
+    #: Default render mode option. ``None`` → global setting fallback.
+    fusion_render_first: bool | None = None
+
+    #: Per-view render-mode overrides: ``{"<view_name>": bool}``.
+    render_first_mapping: dict[str, bool] = {}
+
+    #: Optional component template used by ``respond()`` in render-first mode.
+    template_name: str | None = None
+
+    #: Optional schema class exposed by ``respond()``/``schema_payload()``.
+    schema_class: Any = None
 
     def __init__(self, **initkwargs: Any) -> None:
         # Store the viewsets BEFORE super().__init__() so Viewset.__init__
@@ -118,6 +142,69 @@ class Application(NotificationMixin, IndexViewMixin, Viewset):
             return title
 
         return attr
+
+    # ------------------------------------------------------------------
+    # apis plugin — dual-mode response action
+    # ------------------------------------------------------------------
+
+    def get_effective_render_first(self, request: Any = None, *, view_name: str | None = None) -> bool:
+        """Resolve the effective render-first mode (apis plugin contract).
+
+        Priority: ``X-Fusion-Render-First`` header → ``render_first_mapping``
+        → ``fusion_render_first`` default → ``FUSION_RENDER_FIRST_DEFAULT``.
+        """
+        from django_fusion.plugins.apis.views import APISViewMixin
+
+        # Reuse the mixin logic against this instance (safe: no __init__ deps).
+        mixin = APISViewMixin.__new__(APISViewMixin)
+        mixin.fusion_render_first = self.fusion_render_first
+        mixin.render_first_mapping = self.render_first_mapping
+        return mixin.get_effective_render_first(request, view_name=view_name)
+
+    def respond(
+        self,
+        request: Any,
+        data: Any,
+        *,
+        view_name: str | None = None,
+        template_name: str | None = None,
+        context: dict[str, Any] | None = None,
+        status: int = 200,
+        message: str | None = None,
+    ) -> Any:
+        """Return a component response (render-first) or codec JSON response.
+
+        Render-first → HTML from ``template_name`` (or ``self.template_name``).
+        Data mode → ``{status, message, data: {encoded, data, view_name}}``
+        where ``encoded`` is ``FusionCodec.encode(data)``.
+        """
+        from django_fusion.plugins.apis.views import APISViewMixin
+
+        mixin = APISViewMixin.__new__(APISViewMixin)
+        mixin.fusion_render_first = self.fusion_render_first
+        mixin.render_first_mapping = self.render_first_mapping
+        mixin.template_name = self.template_name
+        mixin.schema_class = self.schema_class
+        return mixin.respond(
+            request,
+            data,
+            view_name=view_name,
+            template_name=template_name,
+            context=context,
+            status=status,
+            message=message,
+        )
+
+    def schema_payload(self) -> dict[str, Any]:
+        """Return a JSON-serialisable schema descriptor for this Application."""
+        from django_fusion.plugins.apis.views import APISViewMixin
+
+        mixin = APISViewMixin.__new__(APISViewMixin)
+        mixin.fusion_render_first = self.fusion_render_first
+        mixin.render_first_mapping = self.render_first_mapping
+        mixin.schema_class = self.schema_class
+        mixin.name = getattr(self, "name", None)
+        return mixin.schema_payload()
 
     def _get_resolver_extra(self) -> dict[str, Any]:
         return {"viewset": self, "app": self}
