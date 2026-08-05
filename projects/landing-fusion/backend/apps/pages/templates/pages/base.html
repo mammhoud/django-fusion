@@ -6,6 +6,12 @@
   <title>{% block title %}{{ page.title|default:"Fusion CMS" }}{% endblock %}</title>
   <meta name="description" content="{% block description %}A modern landing experience built with Astro, HTMX and Alpine.js.{% endblock %}" />
   <meta name="theme-color" content="#FCFCFA" />
+  <!-- Fusion render mode (django-fusion settings config) — the content-delivery
+       option this document was served under: fusion-render (server HTML) or
+       data-api (client renders from /apis/* JSON). Controlled by
+       FUSION_RENDER_FIRST_DEFAULT + the X-Fusion-Render-First header. -->
+  <meta name="fusion-render-first" content="{{ fusion_render_first|yesno:'true,false' }}" />
+  <meta name="fusion-render-mode" content="{% if fusion_render_first %}fusion-render{% else %}data-api{% endif %}" />
 
   <!-- Fonts: the document voice (Bricolage display / Public Sans body / JetBrains Mono data) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,8 +35,16 @@
     })();
   </script>
 
+  <!-- Shared design system — compiled from frontend/src/styles/globals.css by
+       `make css` (@tailwindcss/cli) into assets/static/css/fusion.css. Single
+       source of truth for BOTH render paths: Astro (Vite) and Django (this
+       link). @source directives in globals.css scan the backend templates so
+       the Tailwind utilities they use are included. -->
+  <link rel="stylesheet" href="{% static 'css/fusion.css' %}" />
+
+  <!-- Critical inline (subset of fusion.css) — theme vars + base + FOUC guard,
+       so the theme-init script above has vars before the stylesheet parses. -->
   <style>
-    /* ── Fusion CMS — "the page as its own document" (mirrors frontend globals.css) ── */
     :root {
       --fu-paper: 46 25% 98%;
       --fu-ink: 40 6% 10%;
@@ -76,61 +90,7 @@
     }
     h1, h2, h3, h4 { font-family: "Bricolage Grotesque", "Public Sans", ui-sans-serif, sans-serif; letter-spacing: -0.02em; }
     .font-mono, .tag-marker, .status-line { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; }
-    /* Composable helpers */
-    .container-fusion { margin-inline: auto; width: 100%; max-width: 80rem; padding-inline: 1.25rem; box-sizing: border-box; }
-    @media (min-width: 640px) { .container-fusion { padding-inline: 1.75rem; } }
-    @media (min-width: 1024px) { .container-fusion { padding-inline: 2.5rem; } }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: .375rem; padding: .625rem 1.25rem; font-size: .875rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all .2s ease; border: 0; box-sizing: border-box; }
-    .btn:focus-visible { outline: 2px solid hsl(var(--fu-link)); outline-offset: 2px; }
-    .btn-primary { background: hsl(var(--fu-link)); color: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / .06); }
-    .btn-primary:hover { background: hsl(var(--fu-link-dark)); }
-    .btn-secondary { background: transparent; color: hsl(var(--fu-ink)); border: 1px solid hsl(var(--fu-line)); }
-    .btn-secondary:hover { border-color: hsl(var(--fu-link)); color: hsl(var(--fu-link)); }
-    .btn-outline { border: 1px solid hsl(var(--fu-link)); color: hsl(var(--fu-link)); background: transparent; }
-    .btn-outline:hover { background: hsl(var(--fu-link) / .06); }
-    .btn-white { background: hsl(var(--fu-paper)); color: hsl(var(--fu-link)); border: 1px solid hsl(var(--fu-line)); }
-    .btn-white:hover { border-color: hsl(var(--fu-link)); }
-    .card { background: hsl(var(--fu-card)); border-radius: .375rem; box-shadow: none; border: 1px solid hsl(var(--fu-line)); transition: all .3s ease; }
-    .card:hover { box-shadow: 0 10px 24px -12px rgb(0 0 0 / .14); border-color: hsl(var(--fu-muted)); }
-    /* Fixed ink surface in BOTH themes (like the frontend source panel), so
-       hardcoded .text-white content stays legible in dark mode. */
-    .card-gradient { background: #1a1917; color: #f0eee8; border-radius: .375rem; }
-    .section-hero { background: hsl(var(--fu-paper)); color: hsl(var(--fu-ink)); }
-    .badge { display: inline-flex; align-items: center; gap: .25rem; border-radius: 9999px; padding: .125rem .625rem; font-size: .75rem; font-weight: 500; }
-    .badge-primary { border: 1px solid hsl(var(--fu-line)); background: hsl(var(--fu-card)); color: hsl(var(--fu-link)); font-family: "JetBrains Mono", monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .14em; }
-    .badge-white { border: 1px solid rgb(240 238 232 / .35); background: rgb(240 238 232 / .12); color: #f0eee8; }
-    .tag-marker { color: hsl(var(--fu-muted)); font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; }
-    .tag-marker::before { content: "‹"; opacity: .55; }
-    .tag-marker::after { content: "›"; opacity: .55; }
-    .status-line { display: inline-flex; align-items: center; gap: .5rem; color: hsl(var(--fu-muted)); font-size: .72rem; text-transform: uppercase; letter-spacing: .16em; }
-    .status-line .dot { width: 6px; height: 6px; border-radius: 9999px; background: hsl(var(--fu-live)); animation: fusion-pulse 2.2s cubic-bezier(.4,0,.6,1) infinite; display: inline-block; }
-    @keyframes fusion-pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
-    .input-field { width: 100%; border-radius: .375rem; border: 1px solid hsl(var(--fu-line)); background: hsl(var(--fu-card)); color: hsl(var(--fu-ink)); padding: .625rem 1rem; font-size: .875rem; transition: all .2s ease; box-sizing: border-box; }
-    .input-field:focus { border-color: hsl(var(--fu-link)); outline: none; box-shadow: 0 0 0 2px hsl(var(--fu-link) / .2); }
-    .form-label { display: block; font-size: .875rem; font-weight: 500; margin-bottom: .375rem; color: hsl(var(--fu-ink)); }
     [x-cloak] { display: none !important; }
-    .site-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid hsl(var(--fu-line)); background: hsl(var(--fu-paper) / .92); backdrop-filter: blur(8px); }
-    .site-nav a { font-size: .9rem; color: hsl(var(--fu-muted)); text-decoration: none; transition: color .2s; }
-    .site-nav a:hover { color: hsl(var(--fu-ink)); }
-    .site-footer { border-top: 1px solid hsl(var(--fu-line)); background: hsl(var(--fu-paper)); color: hsl(var(--fu-muted)); }
-    .site-footer a { color: hsl(var(--fu-muted)); text-decoration: none; }
-    .site-footer a:hover { color: hsl(var(--fu-link)); }
-
-    /* ── Skeleton loading (default content-on-the-way state) ── */
-    /* Shown by partials/skeleton.html on first paint; HTMX reuses the same
-       shimmer for the in-flight indicator (#htmx-indicator). */    .fusion-skeleton { position: relative; min-height: 100vh; background: hsl(var(--fu-paper)); }
-    .fusion-skeleton__bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid hsl(var(--fu-line)); }
-    .fusion-skeleton__lines { display: flex; gap: 1.25rem; }
-    .fusion-skeleton__body { display: flex; flex-direction: column; gap: 1rem; padding: 3rem 1.5rem; max-width: 80rem; margin-inline: auto; }
-    .fusion-skeleton__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-    .fusion-skeleton__card { height: 9rem; border-radius: .5rem; }
-    .fusion-skeleton__line { display: block; height: .9rem; border-radius: .25rem; background: hsl(var(--fu-line)); }
-    .fusion-skeleton__line--hero { height: 2.25rem; margin-bottom: .5rem; }
-    .fusion-skeleton__bar .fusion-skeleton__line, .fusion-skeleton__body .fusion-skeleton__line, .fusion-skeleton__card { animation: fusion-shimmer 1.4s ease-in-out infinite; background: linear-gradient(90deg, hsl(var(--fu-line) / .6) 25%, hsl(var(--fu-line) / 1) 50%, hsl(var(--fu-line) / .6) 75%); background-size: 200% 100%; }
-    @keyframes fusion-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    /* HTMX indicator — visible only while a request is in flight.
-       base.html toggles `.htmx-request` in htmx:beforeRequest/afterRequest
-       (HTMX only adds the class to the requesting element itself). */
     #htmx-indicator { display: none; }
     #htmx-indicator.htmx-request { display: block; }
   </style>
@@ -153,10 +113,14 @@
     {% include "pages/partials/footer.html" %}
   </div>
 
-  <!-- AHA runtime: HTMX + Alpine (bundled in the Astro frontend; CDN for the backend templates) -->
+  <!-- AHA runtime: HTMX + Alpine (bundled in the Astro frontend; CDN for the backend templates)
+       IMPORTANT: Alpine plugins must load BEFORE alpine itself — the CDN plugin build
+       registers on `alpine:init`, which Alpine emits at startup. Loading the collapse
+       plugin after alpine causes "You can't use [x-collapse] without first installing
+       the Collapse plugin" warnings and breaks the FAQ accordion. -->
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
-  <script src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
   <script src="https://unpkg.com/@alpinejs/collapse@3.14.8/dist/cdn.min.js" defer></script>
+  <script src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
 
   <script>
     // Global HTMX in-flight indicator — HTMX toggles `.htmx-request` only on

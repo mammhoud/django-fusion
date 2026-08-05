@@ -32,17 +32,20 @@ class LandingSite(Site):
 
     # Ordered list of page routes that appear in the main nav.
     # Each tuple is (slug, display_label, show_in_nav).
+    # FAQ + Privacy are intentionally NOT in the main nav — they are linked
+    # from the footer only (legal/support pages don't belong in the header).
     NAV_ITEMS: list[tuple[str, str, bool]] = [
         ("home", "Home", True),
         ("about", "About Us", True),
-        ("company", "Company", True),
         ("services", "Services", True),
         ("products", "Products", True),
         ("features", "Features", False),       # linked from /products
         ("projects", "Projects", True),
+        ("blog", "Blog", True),
+        ("pricing", "Pricing", True),
         ("contact", "Contact", True),
-        ("faq", "FAQ", True),
-        ("privacy", "Privacy Policy", False),  # linked from footer only
+        ("faq", "FAQ", False),                 # footer only
+        ("privacy", "Privacy Policy", False),  # footer only
     ]
 
     def get_navigation_context(self, request: Any = None) -> list[dict[str, Any]]:

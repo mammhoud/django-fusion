@@ -26,15 +26,19 @@ const {
   x-data="{
     visible: false,
     init() {
-      const stored = localStorage.getItem('cookie-consent');
+      // Sandbox-safe: in a sandboxed iframe (or private/blocked storage)
+      // localStorage access throws SecurityError — never let that break
+      // the banner. Without storage we show once per page load.
+      let stored = null;
+      try { stored = localStorage.getItem('cookie-consent'); } catch (e) {}
       if (!stored) this.visible = true;
     },
     accept() {
-      localStorage.setItem('cookie-consent', 'accepted');
+      try { localStorage.setItem('cookie-consent', 'accepted'); } catch (e) {}
       this.visible = false;
     },
     deny() {
-      localStorage.setItem('cookie-consent', 'denied');
+      try { localStorage.setItem('cookie-consent', 'denied'); } catch (e) {}
       this.visible = false;
     },
   }"

@@ -38,14 +38,22 @@
 </div>
 
 <script>
-  // Subscribe to Redux toast state — runs once when component mounts
+  // Subscribe to Redux toast state — runs once when component mounts.
+  // The store lives in Layout.astro's inline script; this island may mount
+  // before that script runs, so wait for window.__reduxStore to exist.
   const toastEl = document.getElementById('redux-toast');
   const toastMsg = document.getElementById('redux-toast-msg');
   const toastInner = document.getElementById('redux-toast-inner');
   const iconOk = document.getElementById('redux-toast-icon-ok');
   const iconErr = document.getElementById('redux-toast-icon-err');
 
-  const unsubscribe = window.__reduxStore.subscribe(() => {
+  function subscribeToStore() {
+    if (!window.__reduxStore) {
+      // Store not booted yet — retry on next frame (island vs inline-script race).
+      requestAnimationFrame(subscribeToStore);
+      return;
+    }
+    window.__reduxStore.subscribe(() => {
     const { visible, message, variant } = window.__reduxStore.getState().toast;
     if (visible) {
       toastEl.classList.remove('hidden');
@@ -61,5 +69,7 @@
     } else {
       toastEl.classList.add('hidden');
     }
-  });
+    });
+  }
+  subscribeToStore();
 </script>

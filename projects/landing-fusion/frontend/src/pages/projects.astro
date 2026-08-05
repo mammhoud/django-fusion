@@ -31,7 +31,7 @@ const repoProjects = pageProjects?.map((p: any) => ({
   edition: String(p.edition || ''),
   category: String(p.category || 'project'),
   path: String(p.path || ''),
-  text: String(p.text || ''),
+  text: String(p.description || p.text || ''),
   features: (p.features as any[] | undefined)?.map((f: any) => ({
     label: String(f.label || ''),
     shared: Boolean(f.shared),

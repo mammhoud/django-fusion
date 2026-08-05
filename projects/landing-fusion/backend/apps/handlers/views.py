@@ -49,18 +49,23 @@ Astro frontend's route→page map.
 """
 from __future__ import annotations
 
-from django.http import HttpRequest
+from django.http import Http404, HttpRequest
 
 from django_fusion.routes.pages.handler import PageHandler
 
+from apps.pages.api import get_effective_render_first
+
 from apps.pages.models import (
     AboutPage,
-    CompanyPage,
+    BlogPage,
+    BlogPostPage,
     ContactPage,
     FaqPage,
     FeaturesPage,
     HomePage,
+    PricingPage,
     PrivacyPage,
+    ProductPage,
     ProductsPage,
     ProjectsPage,
     ServicesPage,
@@ -90,7 +95,7 @@ class LandingPageView(PageHandler):
     fragment_name = FRAGMENT_NAME
 
     def get_context_data(self, request: HttpRequest | None = None, **kwargs) -> dict:
-        """Attach the Wagtail page instance to the template context."""
+        """Attach the Wagtail page instance + fusion render mode to the context."""
         context = super().get_context_data(request=request, **kwargs)
         page = self._get_page()
         context.update(
@@ -98,9 +103,30 @@ class LandingPageView(PageHandler):
                 "page": page,
                 "content": page,
                 "site_name": "Fusion CMS",
+                # Main nav (show_in_nav items only) — single source of truth is
+                # LandingSite.NAV_ITEMS; the header partial renders from this.
+                "nav_items": self._get_nav_items(),
+                # django-fusion settings config — which content-delivery option
+                # this request is served under (see settings.FUSION_RENDER_FIRST_DEFAULT
+                # and the X-Fusion-Render-First per-request override).
+                "fusion_render_first": get_effective_render_first(self.request),
+                "fusion_render_mode": "fusion-render"
+                if get_effective_render_first(self.request)
+                else "data-api",
             }
         )
         return context
+
+    def _get_nav_items(self) -> list[dict]:
+        """Return the main navigation items (show_in_nav only), for the header partial."""
+        from apps.core.site import landing_site
+
+        items = []
+        for item in landing_site.get_navigation_context(self.request):
+            if not item.get("show_in_nav", True):
+                continue
+            items.append({k: v for k, v in item.items() if k != "show_in_nav"})
+        return items
 
     def _get_page(self) -> HomePage:
         """Resolve the page instance from the request path via the Wagtail tree."""
@@ -114,8 +140,9 @@ class LandingPageView(PageHandler):
 
 
 # ── Per-page handlers (one class per Wagtail model) ─────────────────
-# Each mirrors the Astro frontend route: `/` home, `/about`, `/company`,
-# `/services`, `/products`, `/contact`, `/faq`, `/privacy`.
+# Each mirrors the Astro frontend route: `/` home, `/about`, `/services`,
+# `/products` (+ `/products/<slug>/` product pages), `/contact`, `/faq`,
+# `/privacy`.
 
 class LandingHomeView(LandingPageView):
     """Home page — full document or ``#main`` fragment for HTMX."""
@@ -133,13 +160,6 @@ class AboutPageView(LandingPageView):
         return AboutPage.objects.first()
 
 
-class CompanyPageView(LandingPageView):
-    template_name = "pages/company.html"
-
-    def _get_page(self) -> CompanyPage:
-        return CompanyPage.objects.first()
-
-
 class ServicesPageView(LandingPageView):
     template_name = "pages/services.html"
 
@@ -147,11 +167,65 @@ class ServicesPageView(LandingPageView):
         return ServicesPage.objects.first()
 
 
+class PricingPageView(LandingPageView):
+    template_name = "pages/pricing.html"
+
+    def _get_page(self) -> PricingPage:
+        return PricingPage.objects.first()
+
+
+class BlogPageView(LandingPageView):
+    template_name = "pages/blog.html"
+
+    def _get_page(self) -> BlogPage:
+        return BlogPage.objects.first()
+
+
+class BlogPostPageView(LandingPageView):
+    """A single blog post — resolved by slug from the Blog index children.
+
+    Post pages are children of the Blog page, so they are looked up from the
+    ``<slug>`` URL kwarg (their full url_path is ``/blog/<slug>/``). Unknown
+    slugs are a 404 — never a silent fallback to another post.
+    """
+
+    model = BlogPostPage
+    template_name = "pages/blog_post.html"
+
+    def _get_page(self) -> BlogPostPage:
+        """Resolve the post page by slug — unknown slugs are 404, never a fallback."""
+        slug = self.kwargs.get("slug")
+        page = BlogPostPage.objects.filter(slug=slug).first() if slug else None
+        if page is None:
+            raise Http404(f"No blog post with slug {slug!r}")
+        return page
+
+
 class ProductsPageView(LandingPageView):
     template_name = "pages/products.html"
 
     def _get_page(self) -> ProductsPage:
         return ProductsPage.objects.first()
+
+
+class ProductPageView(LandingPageView):
+    """A single product page — resolved by slug from the Products page children.
+
+    Product pages are children of the Products page, so they are looked up
+    from the ``<slug>`` URL kwarg rather than the generic url_path resolver
+    (their full url_path is ``/home/products/<slug>/``).
+    """
+
+    model = ProductPage
+    template_name = "pages/product.html"
+
+    def _get_page(self) -> ProductPage:
+        """Resolve the product page by slug — unknown slugs are 404, never a fallback."""
+        slug = self.kwargs.get("slug")
+        page = ProductPage.objects.filter(slug=slug).first() if slug else None
+        if page is None:
+            raise Http404(f"No product page with slug {slug!r}")
+        return page
 
 
 class FeaturesPageView(LandingPageView):

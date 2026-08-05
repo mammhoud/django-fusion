@@ -37,6 +37,19 @@
 
 {% if page.hero %}{% include_block page.hero %}{% endif %}
 
+{% comment %} Blog post meta (BlogPostPage) — category · read time · date row
+   between the hero and the body, rendered only for post pages. {% endcomment %}
+{% if page.category or page.read_time or page.post_date %}
+<section class="container-fusion" style="padding-block:1.5rem 0;">
+  <div class="blog__meta" style="display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">
+    {% if page.category %}<span style="color:hsl(var(--fu-link));">{{ page.category }}</span>{% endif %}
+    {% if page.read_time %}<span>{{ page.read_time }}</span>{% endif %}
+    {% if page.post_date %}<time datetime="{{ page.post_date|date:"Y-m-d" }}">{{ page.post_date|date:"M j, Y" }}</time>{% endif %}
+    <a href="/blog/" style="color:hsl(var(--fu-link));text-decoration:none;">← All posts</a>
+  </div>
+</section>
+{% endif %}
+
 {% comment %} Body / story — the "about this page" prose section. {% endcomment %}
 {% if page.body %}
 <section class="container-fusion" style="padding-block:4rem 5rem;">
@@ -47,7 +60,27 @@
 </section>
 {% endif %}
 
-{% comment %} Projects grid (ProjectsPage) — cards rendered by content/blocks/project.html. {% endcomment %}
+{% comment %} Product cards (ProductsPage) — one card per ProductPage child, from
+   get_product_cards() (a model method used by both the template and the API). {% endcomment %}
+{% if page.get_product_cards %}
+<section id="products" class="container-fusion" style="padding-block:4rem 5rem;">
+  <div class="mx-auto mb-12 max-w-2xl text-center">
+    <span class="tag-marker">products</span>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.875rem;margin:.75rem 0 0;">The product line</h2>
+  </div>
+  <div class="product-list__grid" style="display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+    {% for card in page.get_product_cards %}
+    <a href="{{ card.href }}" class="card product-list__card" style="padding:1.5rem;text-decoration:none;display:flex;flex-direction:column;gap:.5rem;">
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;margin:0;color:hsl(var(--fu-ink));">{{ card.title }}</h3>
+      {% if card.tagline %}<p style="color:hsl(var(--fu-text) / .7);font-size:.875rem;line-height:1.6;margin:0;">{{ card.tagline }}</p>{% endif %}
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));margin-top:auto;">View product →</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% comment %} Projects grid (ProjectsPage + ProductsPage) — cards rendered by content/blocks/project.html. {% endcomment %}
 {% if page.projects %}
 <section id="projects" class="container-fusion" style="padding-block:4rem 5rem;">
   <div class="mx-auto mb-12 max-w-2xl text-center">
@@ -57,6 +90,48 @@
   <div class="project__grid" style="display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
     {% include_block page.projects %}
   </div>
+</section>
+{% endif %}
+
+{% comment %} Services grid (ServicesPage) — offering cards rendered by content/blocks/services.html. {% endcomment %}
+{% if page.services %}
+<section id="services" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.services %}
+</section>
+{% endif %}
+
+{% comment %} Tech stack (ProductPage) — technology tags rendered by content/blocks/tech_stack.html. {% endcomment %}
+{% if page.tech %}
+<section id="tech" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.tech %}
+</section>
+{% endif %}
+
+{% comment %} Editions & pricing (ProductPage) — per-edition pricing cards rendered by content/blocks/editions.html. {% endcomment %}
+{% if page.editions %}
+<section id="editions" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.editions %}
+</section>
+{% endif %}
+
+{% comment %} Reference snippets (ProductPage) — code/models other projects can copy. {% endcomment %}
+{% if page.snippets %}
+<section id="snippets" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.snippets %}
+</section>
+{% endif %}
+
+{% comment %} “Build as you go” process (ServicesPage) — numbered steps rendered by content/blocks/process.html. {% endcomment %}
+{% if page.process %}
+<section id="process" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.process %}
+</section>
+{% endif %}
+
+{% comment %} Blog grid (BlogPage) — post cards rendered by content/blocks/blog.html. {% endcomment %}
+{% if page.blog %}
+<section id="blog" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.blog %}
 </section>
 {% endif %}
 

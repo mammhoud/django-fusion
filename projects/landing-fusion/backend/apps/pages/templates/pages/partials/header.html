@@ -10,15 +10,25 @@
       <span>Fusion CMS</span>
     </a>
 
+    {% comment %} Main nav — rendered from the handler nav_items context (single
+       source of truth: apps/core/site.py NAV_ITEMS filtered by show_in_nav).
+       FAQ and Privacy are footer-only, so they never appear here. {% endcomment %}
     <nav class="site-nav" aria-label="Main" style="display:none;align-items:center;gap:1.5rem;">
-      <a href="/">Home</a>
-      <a href="/features/">Features</a>
-      <a href="/products/">Products</a>
-      <a href="/projects/">Projects</a>
-      <a href="/about/#pricing">Pricing</a>
-      <a href="/about/">About</a>
-      <a href="/faq/">FAQ</a>
-      <a href="/contact/">Contact</a>
+      {% if nav_items %}
+        {% for item in nav_items %}
+        <a href="{{ item.href }}"{% if item.active %} style="color:hsl(var(--fu-link));"{% endif %}>{{ item.label }}</a>
+        {% endfor %}
+      {% else %}
+        {% comment %} Fallback for pages rendered outside the handler pipeline (e.g. 404). {% endcomment %}
+        <a href="/">Home</a>
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/products/">Products</a>
+        <a href="/projects/">Projects</a>
+        <a href="/blog/">Blog</a>
+        <a href="/pricing/">Pricing</a>
+        <a href="/contact/">Contact</a>
+      {% endif %}
     </nav>
     <style>
       @media (min-width: 768px) { nav[aria-label="Main"] { display: flex !important; } }
@@ -43,14 +53,20 @@
 
   <div x-show="open" x-cloak x-transition style="border-top:1px solid hsl(var(--fu-border));background:hsl(var(--fu-card));">
     <nav class="container-fusion" aria-label="Mobile" style="display:flex;flex-direction:column;gap:.25rem;padding-block:1rem;">
-      <a href="/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Home</a>
-      <a href="/features/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Features</a>
-      <a href="/products/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Products</a>
-      <a href="/projects/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Projects</a>
-      <a href="/about/#pricing" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Pricing</a>
-      <a href="/about/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">About</a>
-      <a href="/faq/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">FAQ</a>
-      <a href="/contact/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Contact</a>
+      {% if nav_items %}
+        {% for item in nav_items %}
+        <a href="{{ item.href }}" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">{{ item.label }}</a>
+        {% endfor %}
+      {% else %}
+        <a href="/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Home</a>
+        <a href="/about/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">About</a>
+        <a href="/services/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Services</a>
+        <a href="/products/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Products</a>
+        <a href="/projects/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Projects</a>
+        <a href="/blog/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Blog</a>
+        <a href="/pricing/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Pricing</a>
+        <a href="/contact/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Contact</a>
+      {% endif %}
     </nav>
   </div>
 </header>

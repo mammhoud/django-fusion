@@ -3,6 +3,16 @@
 /* Dark mode is driven by the `.dark` class on <html>, not OS preference. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Content sources for the compiled `fusion.css` (backend render) ──
+   globals.css is the single source of truth for BOTH render paths:
+   - the Astro frontend compiles it via @tailwindcss/vite (scans frontend src),
+   - the Django backend compiles it via @tailwindcss/cli into
+     assets/static/css/fusion.css. The @source directives below make the
+     backend build scan the Django templates + shared block templates so the
+     utility classes they use (text-4xl, max-w-2xl, flex, …) are emitted. */
+@source "../../../backend/apps/**/templates/";
+@source "../../../assets/templates/";
+
 /* ────────────────────────────────────────────────────────────────────────
    Fusion CMS — "the page as its own document"
    paper + ink, hairline rules, hypermedia-blue links, mono labels.
@@ -243,6 +253,46 @@
   .badge-success {
     @apply badge bg-fu-live/10 text-fu-live border border-fu-live/30;
   }
+
+  /* ── Backend shell (Django render) ─────────────────────────────── */
+  /* The backend templates (pages/partials/header.html, footer.html) use
+     these classes instead of Tailwind utilities; they live here so the
+     compiled fusion.css covers both render paths. */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-paper) / 0.92);
+    backdrop-filter: blur(8px);
+  }
+  .site-nav a {
+    font-size: 0.9rem;
+    color: hsl(var(--fu-muted));
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .site-nav a:hover { color: hsl(var(--fu-ink)); }
+  .site-footer {
+    border-top: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-paper));
+    color: hsl(var(--fu-muted));
+  }
+  .site-footer a {
+    color: hsl(var(--fu-muted));
+    text-decoration: none;
+  }
+  .site-footer a:hover { color: hsl(var(--fu-link)); }
+  .badge-white {
+    border: 1px solid rgb(240 238 232 / 0.35);
+    background: rgb(240 238 232 / 0.12);
+    color: #f0eee8;
+  }
+
+  /* Backend HTMX in-flight indicator (#htmx-indicator, toggled by the
+     htmx:beforeRequest/afterRequest listeners in base.html). */
+  #htmx-indicator { display: none; }
+  #htmx-indicator.htmx-request { display: block; }
 
   /* ── Misc ───────────────────────────────────────────────────────── */
   .container-fusion {
@@ -1155,7 +1205,14 @@
 
   /* Alpine hydrate fallback — while Alpine is still booting, regions marked
      [data-hydrate-skeleton] show the skeleton instead of their x-cloak'd
-     interactive content. Removed on `alpine:initialized` (Layout.astro). */
+     interactive content. Removed on `alpine:initialized` (Layout.astro).
+
+     Default (after hydration): skeletons are hidden. Only while the body
+     carries `.is-hydrating` do the skeletons show and the real content hide;
+     the higher-specificity rule below wins while that class is present. */
+  [data-hydrate-skeleton] {
+    display: none;
+  }
   body.is-hydrating [data-hydrate-skeleton] {
     display: block;
   }

@@ -35,7 +35,7 @@ class LandingCorsMiddleware:
         response = self.get_response(request)
         # Only the public landing routes serve fragments; leave admin/Wagtail
         # responses untouched.
-        if request.path in ("/", "/about/", "/company/", "/services/", "/products/", "/features/", "/contact/", "/faq/", "/privacy/"):
+        if request.path in ("/", "/about/", "/services/", "/products/", "/features/", "/projects/", "/blog/", "/pricing/", "/contact/", "/faq/", "/privacy/"):
             origin = request.headers.get("Origin")
             if origin and (origin in self.allowed_origins or "*" in self.allowed_origins):
                 response["Access-Control-Allow-Origin"] = origin
