@@ -194,7 +194,6 @@ When used inside Structa Cloud, django-fusion is a git submodule at `libs/django
 | Submodule | Role | Key File |
 |-----------|------|----------|
 | `libs/ceptor-ai` | AI chat client, MCP server, agent generation | [`libs/ceptor-ai/AGENTS.md`](../ceptor-ai/AGENTS.md) |
-| `libs/django-bolt` | High-performance BoltAPI (Rust-backed) | [`libs/django-bolt/README.md`](../django-bolt/README.md) |
 
 - Keep framework-level changes in `libs/django-fusion/` and site-specific overrides in the relevant `projects/<site>/` directory.
 - When modifying a template or component that is used across multiple Structa Cloud sites, consider whether the change belongs in django-fusion (shared) or in `projects/assets/` (cross-site design).

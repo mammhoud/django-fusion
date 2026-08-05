@@ -32,6 +32,7 @@ from django.urls import NoReverseMatch, include, path
 from django.utils.functional import cached_property
 
 from django_fusion.contrib import camel_case_to_title, strip_suffixes
+from django_fusion.routes.http.notifications import NotificationMixin
 
 from .base import IndexViewMixin, Viewset
 
@@ -65,7 +66,21 @@ class AppMenuMixin:
         return True
 
 
-class Application(IndexViewMixin, Viewset):
+class Application(NotificationMixin, IndexViewMixin, Viewset):
+    """
+    Application — routing container with notification support.
+
+    Merges ``NotificationMixin`` (from PageHandler) with ``IndexViewMixin``
+    and ``Viewset`` so every Application can send notifications and share
+    context with its child views.
+
+    Context propagation
+    -------------------
+    ``application_context()`` returns a dict that child ``RoutableComponent``
+    subclasses should merge into their own context.  Override this method
+    to inject shared navigation, site info, or other app-level data.
+    """
+
     title: str = ""
     icon: str = "view_module"
     menu_template_name: str = "side-nav/app_menu.html"
@@ -111,13 +126,31 @@ class Application(IndexViewMixin, Viewset):
         if not hasattr(self, "name") or not self.name:
             name = self.title.lower().replace(" ", "_")
             self.name = name
-        return {
+        context = {
             "app_name": self.name,
             "title": self.title,
             "icon": self.icon,
             "app_url": request.path,
             "viewset": self,
         }
+        # Merge in application_context() — subclasses override this to inject
+        # shared data (navigation, site info, etc.) into every child view.
+        app_ctx = self.application_context(request)
+        if app_ctx:
+            context.update(app_ctx)
+        return context
+
+    def application_context(self, request: Any) -> dict[str, Any]:
+        """
+        Shared context injected into every child view.
+
+        Override in subclasses to provide navigation, site branding,
+        or other app-level data without repeating it in every view.
+
+        Called by ``get_context_data()`` — the result is merged into
+        the context dict returned to child ``RoutableComponent`` views.
+        """
+        return {}
 
     def has_view_permission(self, user: Any, obj: Any | None = None) -> bool:
         if self.permission is not None:
@@ -125,6 +158,27 @@ class Application(IndexViewMixin, Viewset):
                 return self.permission(user)
             return user.is_authenticated and user.has_perm(self.permission)
         return True
+
+    # ------------------------------------------------------------------
+    # URL pattern shortcut for direct include()
+    # ------------------------------------------------------------------
+
+    @property
+    def url_pattern(self) -> URLPattern:
+        """Return a URL pattern ready for ``include()`` in urlpatterns.
+
+        Shortcut that avoids the manual ``(app.urls[0], app.urls[1])``
+        tuple unpacking.  Usage::
+
+            urlpatterns += [path("", include(app.url_pattern))]
+
+        Equivalent to::
+
+            urlpatterns += [
+                path("", include((app.urls[0], app.urls[1]), namespace=app.urls[2]))
+            ]
+        """
+        return path("", include((self.urls[0], self.urls[1]), namespace=self.urls[2]))
 
     def menu_items(self) -> Iterator[AppMenuMixin | dict[str, Any]]:
         # First yield the viewsets that are AppMenuMixin instances, sorted by menu_order

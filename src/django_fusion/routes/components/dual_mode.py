@@ -93,9 +93,8 @@ class FusionDualModeMixin:
 
         request = request or getattr(self, "request", None)
         if request is not None:
-            # Per-request override — mirrors ``plugins/bolt/decorators.py``.
-            # Lets data-mode clients (Astro, Next.js) opt into a mode for a
-            # single request without touching the session.
+            # Per-request override lets data-mode clients (Astro, Next.js)
+            # opt into a mode for a single request without touching the session.
             header = request.headers.get("X-Fusion-Render-First")
             if header in ("true", "false"):
                 return header == "true"

@@ -36,6 +36,14 @@ longer part of the supported runtime.
 - **Dynaconf multi-environment YAML config** + privacy/cache/middleware
   helpers in `contrib/`. ([DF-007](./docs/07-configuration.md))
 
+## API boundary
+
+`django-fusion` does not bundle or expose an API-framework integration. The
+removed `django_fusion.plugins.bolt` package is not available in current
+releases. Projects that use an API framework should register their own routes,
+authentication, serializers, and asset endpoints while using django-fusion's
+routing, component, fragment, and `FusionCodec` primitives.
+
 ## Quick start (standalone project)
 
 ```bash
@@ -155,10 +163,10 @@ Then in your Django template:
 {% render_bundle 'fusion' 'js' %}
 ```
 
-For Next.js projects, use the `FUSION_ASSETS` endpoint instead:
+For Next.js projects, expose the shared asset manifest through a project-owned endpoint:
 
 ```tsx
-// FusionAssets component calls /api/fusion/assets/manifest/
+// FusionAssets component calls the project's /api/fusion/assets/manifest/ endpoint.
 <FusionAssets />
 ```
 

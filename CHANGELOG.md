@@ -17,6 +17,11 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Removed
 
+- Removed the `django_fusion.plugins.bolt` integration package (`FusionBoltAPI`,
+  `FusionBoltAuthBackend`, `FusionBoltDualModeMixin`, `fusion_endpoint`, and
+  `component_serializer`). API frameworks and authentication bridges now belong
+  to consuming projects; django-fusion remains responsible for Django routing,
+  components, fragments, and data-response primitives.
 - Removed the unused `django_fusion.plugins.webpack.assets` forwarding package;
   asset views and URL patterns now have one canonical source under
   `django_fusion.core.assets`.
