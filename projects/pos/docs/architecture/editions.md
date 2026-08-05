@@ -17,7 +17,8 @@
 > **Note**: The former `pos-full` (Cloud Master) and `pos-solo` (Standalone)
 > editions were merged into `formint-pos/` — the merged package now owns the
 > single Robyn sidecar (`formint-pos/sidecar/`) and both legacy React UIs are
-> archived under `formint-pos/legacy-react/`.
+> merged into `formint-pos` (the legacy React code was removed; the Astro
+> + Alpine + HTMX frontend is canonical).
 
 ## Architecture Per Edition
 
