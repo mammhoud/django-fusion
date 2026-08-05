@@ -20,9 +20,11 @@
 
 ## 1. Purpose
 
-Formint is the canonical Professional POS product name. The legacy
-`pos-full`, `pos-solo`, and Forge directories remain on disk for parity and
-rollback; all new work uses `formint-pos` / `Formint` identifiers.
+Formint is the canonical Professional POS product name. The legacy React
+editions (`pos-full`, `pos-solo`) were merged into this package and their
+dead React code removed; `forge-pos` and `pos-cloud` remain in
+`projects/pos/` for parity/rollback. All new work uses `formint-pos` /
+`Formint` identifiers.
 
 The package keeps the established Tauri architecture (Rust shell + sidecar
 backend + web frontend) while upgrading the backend to a fully typed REST API
@@ -34,12 +36,14 @@ with server-rendered data components and a modern admin panel.
 
 ```text
 formint-pos/
-├── backend/                     # Django boundary — no Wagtail
-│   ├── config/                  # settings (Unfold + fusion render-mode), URLs
+├── sidecar/                     # merged Django boundary — no Wagtail
+│   ├── configs/                 # settings (Unfold + fusion render-mode), URLs
+│   ├── manage.py                # CLI + --ensure-superuser bootstrap
+│   ├── server.py                # Robyn sidecar server (API + WebSocket, :8766)
+│   ├── bolt_api.py              # django-bolt REST API
+│   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
-│   │   ├── models/              # 45+ merged domain models (pos, menu, node,
-│   │   │                        #   config, sync, inventory, ops, hr, notes,
-│   │   │                        #   extra, loyalty, approval, token, audit, crm)
+│   │   ├── models/              # re-exports pos_full models (unified layer)
 │   │   ├── schemas.py           # ninja_schema Out schemas + writable/patch factory
 │   │   ├── controllers.py       # ninja-extra ModelController CRUD (45 resources)
 │   │   ├── api.py               # NinjaAPI + fusion JSONRenderer + system endpoints
@@ -49,18 +53,16 @@ formint-pos/
 │   │   ├── fusion.py            # render-mode/nav/assets contract (get_effective_render_first)
 │   │   ├── handlers.py          # class-based HTMX fragment handlers (mirrors landing handlers)
 │   │   ├── views.py             # thin URL-facing delegation to handlers + /fusion/* endpoints
-│   │   ├── admin.py             # Unfold ModelAdmin registrations (all models)
+│   │   ├── admin.py             # canonical Unfold ModelAdmin registrations (superset)
 │   │   ├── dashboard.py         # Unfold dashboard callback (KPIs/charts/tables)
 │   │   └── templates/           # fusion table + form templates
-│   ├── templates/admin/         # Unfold admin index override (dashboard UI)
-│   ├── Makefile                 # backend targets (dev/check/migrate/test/seed/env)
-│   ├── manage.py                # CLI + --ensure-superuser bootstrap
-│   └── sidecar.py               # PyInstaller sidecar entry point
-├── Makefile                     # root orchestrator (frontend + backend + full + env)
+│   ├── django_templates/admin/  # Unfold admin index override (dashboard UI)
+│   └── Makefile                 # sidecar targets (dev/check/migrate/test/seed/server)
+├── Makefile                     # root orchestrator (frontend + sidecar + full + env)
 ├── frontend/                    # Astro shell
 │   ├── Makefile                 # frontend targets (install/dev/build/check/test)
-│   ├── astro.config.mjs         # dev proxy → backend :8767 (/api, /htmx, /fusion)
-│   └── src/pages/               # index.astro, data.astro (+ contract tests)
+│   ├── astro.config.mjs         # dev proxy → sidecar :8767 (/api, /htmx, /fusion)
+│   └── src/                     # pages/ (index, data) + components/ui/Skeleton + lib/htmx-bootstrap + tests/
 ├── src-tauri/                   # Tauri shell (sidecar supervision + native)
 ├── assets/                      # shared static assets
 └── migration/
@@ -157,7 +159,7 @@ contract as `projects/landing-fusion/backend/apps/pages/api.py`:
   mirroring landing-fusion's `apps/handlers/views.py` organization;
   `views.py` stays a thin URL-facing delegation layer so routes never break.
 
-Settings (`config/settings.py`):
+Settings (`sidecar/configs/`):
 
 ```python
 FUSION_RENDER_FIRST_DEFAULT = os.environ.get('FUSION_RENDER_FIRST', '1') == '1'
@@ -180,9 +182,10 @@ The admin panel is the master-manager surface with special focus on
 | Nodes & Sync | Nodes, Heartbeats, Events, Device Configs, Master Devices, Cloud Links, Sync Logs |
 | CRM | Companies, Pipelines, Stages, Contacts, Deals, Activities, Notes |
 
-The admin index is overridden by `templates/admin/index.html`, which renders
-the dashboard injected by `UNFOLD["DASHBOARD_CALLBACK"]` →
-`formint.dashboard.formint_dashboard_callback`:
+The admin index is overridden by `django_templates/admin/index.html`, which
+renders the dashboard injected by `UNFOLD["DASHBOARD_CALLBACK"]` →
+`configs.dashboard.pos_dashboard_callback` (the richer of the two merged
+dashboard callbacks; `formint/dashboard.py` kept as a reference copy):
 
 - **10 KPI cards** — today's sales, monthly revenue, AOV, active products,
   customers, branch nodes, loyalty members, points issued/redeemed, settings
@@ -193,7 +196,7 @@ the dashboard injected by `UNFOLD["DASHBOARD_CALLBACK"]` →
 
 Superuser bootstrap (idempotent): `python manage.py --ensure-superuser`,
 which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
-`FORMINT_ADMIN_NAME` (defaults in `config/settings.py`) and seeds a
+`FORMINT_ADMIN_NAME` (defaults in `sidecar/configs/`) and seeds a
 `UserSettings` row. **When `DJANGO_DEBUG=0` the default password is refused.**
 
 ---
@@ -202,10 +205,14 @@ which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
 
 - **Astro shell** with Alpine.js + HTMX; frontend owns layout, skeletons,
   retry, and empty/error states.
-- `astro.config.mjs` proxies `/api` and `/htmx` to the backend at `:8000`.
-- `src/pages/data.astro` showcases the API + HTMX table/form components.
-- Frontend contract tests live alongside pages (`index.test.ts`) and are
+- `astro.config.mjs` proxies `/api`, `/htmx` and `/fusion` to the sidecar at `:8767`.
+- `src/pages/index.astro` + `src/pages/data.astro` showcase the API + HTMX
+  table/form components with landing-fusion skeleton loading
+  (`src/components/ui/Skeleton.astro`, `src/lib/htmx-bootstrap.ts`, global
+  indicator in `src/layouts/Layout.astro`).
+- Frontend contract tests live in `src/tests/` (`index.test.ts`) and are
   collected by the unified vitest config (`tests/js/vitest.config.ts`).
+  They are kept out of `src/pages/` so Astro never treats them as routes.
 
 ---
 
@@ -214,8 +221,9 @@ which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
 `src-tauri/` keeps the same desktop shell architecture as the merged
 editions: Rust supervises the sidecar process and exposes native
 capabilities; Django owns domain rules, persistence, permissions, audit, and
-fusion fragment rendering. The sidecar entry point is `backend/sidecar.py`
-(PyInstaller-packaged as `formint-backend`).
+fusion fragment rendering. The Django entry point is `sidecar/manage.py`
+(`DJANGO_SETTINGS_MODULE=configs`); `server.py` runs the Robyn sidecar
+(API + WebSocket on `:8766`) and `bolt_api.py` the django-bolt API layer.
 
 ---
 
@@ -225,8 +233,8 @@ fusion fragment rendering. The sidecar entry point is `backend/sidecar.py`
   `merge-complete`), canonical identifiers, and retirement gates.
 - Legacy table names are preserved (`full_*`, `pos_crm_*`, …) so existing POS
   databases remain readable during the migration window.
-- Legacy directories (`pos-full`, `pos-solo`, `forge-pos`, `pos-cloud`) stay
-  preserved for parity/rollback.
+- Legacy React directories (`pos-full`, `pos-solo`) were merged and removed;
+  `forge-pos` and `pos-cloud` stay preserved for parity/rollback.
 
 ---
 
@@ -287,9 +295,9 @@ landing-fusion's root + backend split):
 | `make backend-*` / `make frontend-*` | Delegate to the layer Makefiles |
 | `make tauri` / `make tauri-dev` / `make tauri-build` | Tauri CLI / dev / build |
 
-**`formint-pos/backend/Makefile`** — `install`, `migrate`, `dev` (:8767),
-`server` (gunicorn), `check`, `test`, `seed`, `ensure-superuser`, `shell`,
-`collectstatic`, `clean`.
+**`formint-pos/sidecar/Makefile`** — `install`, `migrate`, `dev` (:8767),
+`server` (Robyn, :8766), `check`, `test`, `seed`, `ensure-superuser`,
+`shell`, `collectstatic`, `clean`.
 
 **`formint-pos/frontend/Makefile`** — `install`, `dev` (:4321), `build`,
 `preview`, `check`, `test` (vitest), `clean`.

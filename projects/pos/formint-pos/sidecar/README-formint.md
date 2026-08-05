@@ -8,11 +8,11 @@ native capabilities.
 ## Local development
 
 ```bash
-cd projects/pos/formint-pos/backend
+cd projects/pos/formint-pos/sidecar
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[dev]'
-python sidecar.py runserver 127.0.0.1:8767
+python manage.py runserver 127.0.0.1:8767
 ```
 
 The Astro dev proxy and the Tauri shell use port `8767`. Browser requests to

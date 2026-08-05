@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Skeleton from '../components/ui/Skeleton.astro';
 ---
 
 <Layout>
@@ -33,11 +34,7 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <div id="branch-summary-content">
-        <div class="skeleton-grid" aria-hidden="true">
-          <span class="skeleton skeleton-value"></span>
-          <span class="skeleton skeleton-value"></span>
-          <span class="skeleton skeleton-value"></span>
-        </div>
+        <Skeleton variant="branch-summary" count={3} />
         <p class="sr-only">Loading branch summary…</p>
         <p class="sr-only" data-fusion-note>First request uses django-fusion rendering.</p>
       </div>
@@ -61,16 +58,11 @@ import Layout from '../layouts/Layout.astro';
   .data-card { padding: clamp(1rem, 3vw, 2rem); background: #fff; border: 1px solid #dbe3ef; border-radius: 1rem; box-shadow: 0 1rem 2.5rem rgb(15 23 42 / 0.06); }
   .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
   .status-dot { width: 0.7rem; height: 0.7rem; margin-top: 0.35rem; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 0.3rem #fef3c7; }
-  .skeleton-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
-  .skeleton { display: block; height: 4.5rem; border-radius: 0.7rem; background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
   .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
   .principles article { display: grid; gap: 0.35rem; padding: 1rem; color: #475569; background: #eef4ff; border-radius: 0.8rem; line-height: 1.45; }
   .principles strong { color: #172033; }
-  @keyframes shimmer { to { background-position: -200% 0; } }
   @media (max-width: 700px) {
     .page-shell { padding-top: 2.5rem; }
-    .skeleton-grid, .principles { grid-template-columns: 1fr; }
-    .site-header { align-items: flex-start; flex-direction: column; padding-block: 0.8rem; }
+    .principles { grid-template-columns: 1fr; }
   }
-  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
 </style>

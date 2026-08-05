@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 // Vite rewrites import.meta.url to a /@fs/... URL when running through the
 // unified vitest config, so resolve the page path via fileURLToPath.
-const page = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'index.astro'), 'utf8');
+const page = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'pages', 'index.astro'), 'utf8');
 
 describe('Formint shell contract', () => {
   it('owns the skeleton and targets a data-only HTMX endpoint', () => {
@@ -20,7 +20,8 @@ describe('Formint shell contract', () => {
   });
 
   it('renders its own skeleton + sr-only loading note', () => {
-    expect(page).toContain('skeleton-value');
+    expect(page).toContain('variant="branch-summary"');
+    expect(page).toContain("import Skeleton from '../components/ui/Skeleton.astro'");
     expect(page).toContain('Loading branch summary');
   });
 });

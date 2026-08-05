@@ -5,18 +5,25 @@
   "status": "merge-complete",
   "migration_policy": "side-by-side",
   "merge_summary": "pos-full and pos-solo merged into the formint-pos package with the same Tauri shell architecture. Backend now uses Django Ninja + ninja-extra for the API (fusion encoder/decoder for all responses) and django-fusion data components (tables + forms) for HTMX fragments.",
+  "merge_notes": "Sidecar merge: backend/ merged into sidecar/ (single Django project — pos_full app + formint app unified onto one model layer via formint.models re-exporting pos_full models). Admin unified on formint/admin.py (superset of the old configs/admin.py). Dead React frontends (legacy-react/pos-full, legacy-react/pos-solo) removed — the Astro + Alpine + HTMX shell in frontend/ is canonical. Rust Diesel ORM removed from both editions; data layer is Django models + Robyn/django-bolt APIs.",
   "legacy_sources": {
     "pos-solo": {
-      "path": "../pos-solo",
+      "path": "removed (was ../pos-solo; React code archived under legacy-react/pos-solo, since deleted)",
       "role": "local-pos-parity-source",
       "status": "merged-into-formint-pos",
       "replacement": "formint-pos"
     },
     "pos-full": {
-      "path": "../pos-full",
+      "path": "removed (was ../pos-full; React code archived under legacy-react/pos-full, since deleted)",
       "role": "multi-branch-cloud-parity-source",
       "status": "merged-into-formint-pos",
       "replacement": "formint-pos plus pos-cloud"
+    },
+    "legacy-react": {
+      "path": "legacy-react/ (pos-full + pos-solo React apps)",
+      "role": "pre-merge-react-frontends",
+      "status": "removed — superseded by the Astro + Alpine + HTMX frontend",
+      "replacement": "frontend/"
     },
     "forge-pos": {
       "path": "../forge-pos",
