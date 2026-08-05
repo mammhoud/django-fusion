@@ -8,7 +8,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import { invoke } from '@tauri-apps/api/core';
-import { AnalyticsData } from '../../types';
+import { AnalyticsData, PaymentMethodRevenue, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS, PAYMENT_ICONS } from '../../types';
 import { useStatusToast } from '../../hooks/useStatusToast';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import StatusToast from '../../components/ui/StatusToast';
@@ -25,6 +25,7 @@ export default function Analytics() {
   });
   const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(true);
+  const [paymentRevenue, setPaymentRevenue] = useState<PaymentMethodRevenue[]>([]);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
 
   // Status toast — load failures must surface visibly even when there is no
@@ -51,9 +52,11 @@ export default function Analytics() {
     const { quiet = false } = opts;
     if (!quiet) setLoading(true);
     try {
-      const [analyticsRes] = await Promise.all([
+      const [analyticsRes, paymentRevRes] = await Promise.all([
         invoke<AnalyticsData>('get_analytics'),
+        invoke<PaymentMethodRevenue[]>('get_revenue_by_payment_method'),
       ]);
+      setPaymentRevenue(Array.isArray(paymentRevRes) ? paymentRevRes : []);
 
       // Ensure we have valid data structure
       setData({
@@ -99,7 +102,7 @@ export default function Analytics() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center transition-colors duration-300">
+      <div className="min-h-[100dvh] bg-base-200 flex items-center justify-center transition-colors duration-300">
         <div className="text-base-content">{t('analytics.title')}...</div>
       </div>
     );
@@ -179,6 +182,57 @@ export default function Analytics() {
               <div className="text-base-content/60 text-lg mb-2">{t('analytics.noData')}</div>
               <div className="text-base-content/50">
                 {t('analytics.noDataHint')}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Revenue by Payment Method — how customers paid */}
+        {paymentRevenue.length > 0 && (
+          <div className="animate-fade-in mb-2">
+            <Card padding="md" transitional>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-base-content flex items-center gap-2">
+                  <span className="ri-bank-card-line ri-20px text-primary" />
+                  {t('analytics.paymentMethods')}
+                </h2>
+                <span className="tag tag--sm tag--ghost">
+                  {t('analytics.totalRevenue')}: {formatPrice(paymentRevenue.reduce((s, p) => s + p.revenue, 0))}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+                {(() => {
+                  const total = paymentRevenue.reduce((s, p) => s + p.revenue, 0);
+                  return paymentRevenue.map(pr => {
+                    const method = (PAYMENT_METHODS as string[]).includes(pr.payment_method)
+                      ? (pr.payment_method as PaymentMethod)
+                      : 'other';
+                    const pct = total > 0 ? (pr.revenue / total) * 100 : 0;
+                    return (
+                      <div
+                        key={pr.payment_method}
+                        className="rounded-xl border border-base-300/30 bg-base-100/50 p-4 transition-all duration-200 hover:border-primary/30 hover:bg-base-100/80"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 flex items-center justify-center">
+                            <span className={`${PAYMENT_ICONS[method]} ri-16px`} />
+                          </div>
+                          <p className="text-sm font-medium text-base-content truncate">
+                            {t(`payments.${pr.payment_method}`, PAYMENT_METHOD_LABELS[method] || pr.payment_method)}
+                          </p>
+                        </div>
+                      <p className="text-lg font-bold text-base-content tabular-nums">{formatPrice(pr.revenue)}</p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 h-1.5 rounded-full bg-base-200 dark:bg-base-300/40 overflow-hidden">
+                          <div className="h-full rounded-full bg-primary/70 dark:bg-primary/60" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-[11px] text-base-content/50 tabular-nums shrink-0">{pct.toFixed(0)}%</span>
+                      </div>
+                        <p className="text-[11px] text-base-content/50 mt-1.5">{pr.orders} {t('analytics.paymentOrders')}</p>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </Card>
           </div>

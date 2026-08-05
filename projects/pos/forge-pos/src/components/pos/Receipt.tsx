@@ -20,10 +20,18 @@ interface ReceiptProps {
   deliveryFee?: number;
   deliveryZoneName?: string;
   deliveryDistance?: number;
+  /** Coupon discount amount — renders a discount line when > 0. */
+  discountAmount?: number;
+  /** Cart subtotal (before delivery/discount) — used for the subtotal line. */
+  subtotalAmount?: number;
+  /** Payment method id (cash/card/...) — rendered as a badge. */
+  paymentMethod?: string;
+  /** Tax amount — renders a tax line between subtotal and delivery when > 0. */
+  taxAmount?: number;
 }
 
 const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
-  ({ products, totalAmount, date, time, settings, receiptNumber, orderType, deliveryTypeName, deliveryAddress, deliveryFee, deliveryZoneName, deliveryDistance }, ref) => {
+  ({ products, totalAmount, date, time, settings, receiptNumber, orderType, deliveryTypeName, deliveryAddress, deliveryFee, deliveryZoneName, deliveryDistance, discountAmount, subtotalAmount, paymentMethod, taxAmount }, ref) => {
     const { t } = useTranslation();
     const orderLabel = orderType ? orderType.charAt(0).toUpperCase() + orderType.slice(1) : '';
     const hasDelivery = deliveryFee && deliveryFee > 0;
@@ -83,7 +91,14 @@ const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
             )}
             {orderType === 'delivery' && deliveryZoneName && (
               <p className="text-[10px] text-gray-500 mt-0.5">
-                Zone: {deliveryZoneName}{deliveryDistance ? ` — ${deliveryDistance} km` : ''}
+                Zone: {deliveryZoneName}{deliveryDistance ? ` · ${deliveryDistance} km` : ''}
+              </p>
+            )}
+            {paymentMethod && (
+              <p className="mt-1.5">
+                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700">
+                  {t(`payments.${paymentMethod}`, paymentMethod)}
+                </span>
               </p>
             )}
           </div>
@@ -116,21 +131,33 @@ const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
           {/* Separator */}
           <div className="border-t-2 border-dashed border-gray-400 my-3" />
 
-          {/* Totals with delivery fee breakdown */}
+          {/* Totals with delivery fee + discount breakdown */}
           <div className="space-y-1 mb-4">
             <div className="flex justify-between items-center text-xs text-gray-600">
               <span>{t('receipt.subtotal', 'Subtotal')}</span>
-              <span>{settings.currency} {hasDelivery ? (totalAmount - deliveryFee!).toFixed(2) : totalAmount.toFixed(2)}</span>
+              <span>{settings.currency} {(subtotalAmount ?? (hasDelivery ? totalAmount - deliveryFee! : totalAmount)).toFixed(2)}</span>
             </div>
+            {taxAmount && taxAmount > 0 && (
+              <div className="flex justify-between items-center text-xs text-gray-600">
+                <span>{t('sale.tax', 'Tax')}</span>
+                <span>{settings.currency} {taxAmount.toFixed(2)}</span>
+              </div>
+            )}
             {hasDelivery && (
               <div className="flex justify-between items-center text-xs text-orange-600">
                 <span>{t('sale.deliveryFee', 'Delivery Fee')}</span>
                 <span>{settings.currency} {deliveryFee!.toFixed(2)}</span>
               </div>
             )}
+            {discountAmount && discountAmount > 0 && (
+              <div className="flex justify-between items-center text-xs text-red-600">
+                <span>{t('receipt.discount', 'Discount')}</span>
+                <span>{settings.currency} -{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center font-bold text-base border-t border-dashed border-gray-400 pt-1">
               <span>{t('receipt.totalLabel')}</span>
-              <span>{settings.currency} {hasDelivery ? totalAmount.toFixed(2) : totalAmount.toFixed(2)}</span>
+              <span>{settings.currency} {totalAmount.toFixed(2)}</span>
             </div>
           </div>
 

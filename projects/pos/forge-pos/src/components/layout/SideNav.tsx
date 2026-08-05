@@ -24,8 +24,8 @@ export const ROLE_ROUTES: Record<string, Set<string>> = {
     '/dashboard', '/sale', '/kitchen', '/transactions',
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
     '/employees', '/schedule', '/payroll', '/customers', '/roles',
-    '/analytics', '/reports', '/tax-reports',
-    '/settings', '/notes', '/support-chat', '/about',
+    '/analytics', '/reports', '/reports?tab=taxReports',
+    '/settings', '/notes', '/coupons', '/support-chat', '/about',
   ]),
   employee: new Set([
     '/dashboard', '/sale', '/kitchen', '/transactions', '/inventory',
@@ -106,7 +106,7 @@ const navCategories: NavCategory[] = [
     items: [
       { label: 'nav.analytics', desc: 'nav.analyticsDesc', route: '/analytics', icon: Ic('hi:chart-bar'), colorClass: 'bg-error' },
       { label: 'nav.reports', desc: 'nav.reportsDesc', route: '/reports', icon: Ic('hi:document-chart-bar'), colorClass: 'bg-error' },
-      { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/tax-reports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error' },
+      { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/reports?tab=taxReports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error' },
     ],
   },
   {
@@ -117,6 +117,7 @@ const navCategories: NavCategory[] = [
     items: [
       { label: 'nav.settings', desc: 'nav.settingsDesc', route: '/settings', icon: Ic('hi:cog-6-tooth'), colorClass: 'bg-neutral' },
       { label: 'nav.notes', desc: 'nav.notesDesc', route: '/notes', icon: Ic('hi:document-text'), colorClass: 'bg-neutral' },
+      { label: 'nav.coupons', desc: 'nav.couponsDesc', route: '/coupons', icon: Ic('hi:tag'), colorClass: 'bg-neutral' },
       { label: 'nav.supportChat', desc: 'nav.supportChatDesc', route: '/support-chat', icon: Ic('hi:chat-bubble-left-right'), colorClass: 'bg-neutral' },
       { label: 'nav.about', desc: 'nav.aboutDesc', route: '/about', icon: Ic('hi:heart'), colorClass: 'bg-neutral' },
     ],

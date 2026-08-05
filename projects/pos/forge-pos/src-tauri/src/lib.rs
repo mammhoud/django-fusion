@@ -182,6 +182,12 @@ fn get_analytics(app: AppHandle) -> Result<analytics::AnalyticsData, String> {
     analytics::get_analytics(&db_path)
 }
 
+#[tauri::command]
+fn get_revenue_by_payment_method(app: AppHandle) -> Result<Vec<analytics::PaymentMethodRevenue>, String> {
+    let db_path = get_db_path(&app)?;
+    analytics::get_revenue_by_payment_method(&db_path)
+}
+
 // ---- Recipe child-entity commands (stay manual — complex signatures) ----
 #[tauri::command]
 fn create_recipe(
@@ -709,6 +715,37 @@ fn delete_note(app: AppHandle, id: i32) -> Result<(), String> {
     notes::delete_note(&db_path, id)
 }
 
+// ---- Coupon commands ----
+#[tauri::command]
+fn get_coupons(app: AppHandle) -> Result<Vec<db::models::Coupon>, String> {
+    let db_path = get_db_path(&app)?;
+    coupons::get_coupons(&db_path)
+}
+
+#[tauri::command]
+fn get_active_coupons(app: AppHandle) -> Result<Vec<db::models::Coupon>, String> {
+    let db_path = get_db_path(&app)?;
+    coupons::get_active_coupons(&db_path)
+}
+
+#[tauri::command]
+fn add_coupon(app: AppHandle, template: db::models::NewCoupon) -> Result<db::models::Coupon, String> {
+    let db_path = get_db_path(&app)?;
+    coupons::add_coupon(&db_path, template)
+}
+
+#[tauri::command]
+fn update_coupon(app: AppHandle, id: i32, update: db::models::UpdateCoupon) -> Result<db::models::Coupon, String> {
+    let db_path = get_db_path(&app)?;
+    coupons::update_coupon(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_coupon(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    coupons::delete_coupon(&db_path, id)
+}
+
 // ---- Recipe Notes commands ----
 #[tauri::command]
 fn get_recipe_notes(app: AppHandle, recipe_id: i32) -> Result<Vec<db::models::Note>, String> {
@@ -1185,6 +1222,7 @@ pub fn run() {
             save_settings,
             // Analytics
             get_analytics,
+            get_revenue_by_payment_method,
             // Ingredients
             get_ingredients,
             add_ingredient,
@@ -1288,6 +1326,12 @@ pub fn run() {
             add_recipe_note,
             get_recipe_notes,
             delete_note,
+            // Coupons
+            get_coupons,
+            get_active_coupons,
+            add_coupon,
+            update_coupon,
+            delete_coupon,
             // Tax Reports
             get_tax_reports,
             add_tax_report,

@@ -68,7 +68,7 @@ const MENU_ITEMS: Record<string, MenuItem[]> = {
   reports: [
     { label: 'nav.analytics', route: '/analytics', icon: Ic('hi:chart-bar'), colorClass: 'bg-error text-white' },
     { label: 'nav.reports', route: '/reports', icon: Ic('hi:document-chart-bar'), colorClass: 'bg-error text-white' },
-    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error text-white' },
+    { label: 'nav.taxReports', route: '/reports?tab=taxReports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error text-white' },
   ],
   system: [
     { label: 'nav.settings', route: '/settings', icon: Ic('hi:cog-6-tooth'), colorClass: 'bg-neutral text-white' },
@@ -160,7 +160,7 @@ export default function Home() {
           animate-slide-up provides a gentle entrance for the header content
           without duplicating framer-motion entry animations. */}
       <div className="text-center mb-10 md:mb-12 animate-slide-up">
-        <div className={`${iconSpring} bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5 hover:rotate-180 transition-transform duration-700`}>
+        <div className={`${iconSpring} bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5`}>
           <img
             src={defaultLogo}
             alt="Forge POS"
@@ -169,8 +169,7 @@ export default function Home() {
           />
         </div>
         <h1
-          className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text
-            bg-linear-to-r from-primary via-secondary to-accent
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-base-content
             py-2 animate-fade-in"
           style={{ animationDelay: '0.15s' }}
         >
@@ -189,7 +188,7 @@ export default function Home() {
         style={{ animationDelay: '0.1s' }}
       >
         <Card padding="sm" variant="bordered" className="shadow-sm">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {QUICK_ACCESS.map((qa, i) => (
               <button
                 key={qa.route}
@@ -204,12 +203,10 @@ export default function Home() {
                   border border-base-300/20 p-3 rounded-xl
                   transition-all duration-200 group disabled:opacity-60 animate-fade-in
                   hover:shadow-card-hover hover:-translate-y-0.5
+                  hover:bg-base-100/80 dark:hover:bg-white/10 hover:border-primary/30
                   focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none
                   overflow-hidden"
               >
-                {/* Hover gradient sweep animation */}
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                  bg-linear-to-br ${qa.gradient}`} />
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-2 relative z-10
                   bg-linear-to-br ${qa.gradient} text-white shadow-lg
                   group-hover:scale-110 transition-transform duration-200`}
@@ -235,7 +232,7 @@ export default function Home() {
           {kpisLoading ? (
             <>
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <StatCard key={i} loading />
+                <StatCard key={i} loading compact />
               ))}
             </>
           ) : (
@@ -244,22 +241,24 @@ export default function Home() {
                 title={t('home.todaySales', 'Today Sales')}
                 value={todayStats.orders}
                 desc={todayStats.orders === 1
-                  ? t('home.oneOrderToday', '1 order today') + ` — ${orderDelta.pct} ` + t('home.vsYesterday', 'vs yesterday')
-                  : `${todayStats.orders} ${t('home.ordersToday', 'orders today')} — ${orderDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`}
+                  ? t('home.oneOrderToday', '1 order today') + ` · ${orderDelta.pct} ` + t('home.vsYesterday', 'vs yesterday')
+                  : `${todayStats.orders} ${t('home.ordersToday', 'orders today')} · ${orderDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`}
                 icon={<ShoppingCartIcon className="w-6 h-6" />}
                 sparklineData={sparklines?.orders}
                 color="primary"
+                compact
                 onClick={() => handleNavigation('/transactions')}
               />
               <StatCard
                 title={t("home.todayRevenue", "Today's Revenue")}
                 value={`${currencySymbol} ${todayStats.revenue.toLocaleString()}`}
                 desc={todayStats.revenue > 0
-                  ? `${formatPrice(todayStats.revenue / (todayStats.orders || 1))} ${t('home.avg', 'avg')} — ${revDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`
+                  ? `${formatPrice(todayStats.revenue / (todayStats.orders || 1))} ${t('home.avg', 'avg')} · ${revDelta.pct} ${t('home.vsYesterday', 'vs yesterday')}`
                   : t('home.noRevenueYet', 'No revenue yet')}
                 icon={<BanknotesIcon className="w-6 h-6" />}
                 sparklineData={sparklines?.revenue}
                 color="info"
+                compact
                 onClick={() => handleNavigation('/reports')}
               />
               <StatCard
@@ -270,6 +269,7 @@ export default function Home() {
                   : `${kpis?.openTables} ${kpis?.openTables === 1 ? t('home.table', 'table') : t('home.tables', 'tables')} ${t('home.inService', 'in service')}`}
                 icon={<TableCellsIcon className="w-6 h-6" />}
                 color="warning"
+                compact
                 onClick={() => handleNavigation('/sale')}
               />
               <StatCard
@@ -280,6 +280,7 @@ export default function Home() {
                   : `${kpis?.activeEmployees ?? 0} ${t('home.employees', 'employees')} ${t('home.onPayroll', 'on payroll')}`}
                 icon={<UsersIcon className="w-6 h-6" />}
                 color="secondary"
+                compact
                 onClick={() => handleNavigation('/staff')}
               />
               <StatCard
@@ -290,6 +291,7 @@ export default function Home() {
                   : `${kpis?.lowStockCount} ${kpis?.lowStockCount === 1 ? t('home.item', 'item') : t('home.items', 'items')} ${t('home.belowReorder', 'below reorder level')}`}
                 icon={<ExclamationTriangleIcon className="w-6 h-6" />}
                 color={kpis?.lowStockCount && kpis.lowStockCount > 0 ? 'error' : 'success'}
+                compact
                 onClick={() => handleNavigation('/inventory')}
               />
               <StatCard
@@ -300,6 +302,7 @@ export default function Home() {
                   : `${kpis?.activeKitchenTickets} ${kpis?.activeKitchenTickets === 1 ? t('home.ticket', 'ticket') : t('home.tickets', 'tickets')} ${t('home.inProgress', 'in progress')}`}
                 icon={<FireIcon className="w-6 h-6" />}
                 color={kpis?.activeKitchenTickets && kpis.activeKitchenTickets > 0 ? 'warning' : 'success'}
+                compact
                 onClick={() => handleNavigation('/kitchen')}
               />
             </>
@@ -316,7 +319,7 @@ export default function Home() {
             {/* Category Header */}
             <div className="flex items-center gap-2.5 mb-3 pl-1">
               <span className={`${cat.color}`}>{cat.icon}</span>
-              <h2 className={`text-sm font-semibold uppercase tracking-wider ${cat.color}`}>
+              <h2 className={`text-sm font-semibold ${cat.color}`}>
                 {t(cat.label)}
               </h2>
               <div className={`flex-1 h-px bg-linear-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30 rtl:bg-linear-to-l`} />

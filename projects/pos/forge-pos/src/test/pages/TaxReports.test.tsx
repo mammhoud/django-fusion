@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import TaxReports from '../../pages/analytics/TaxReports';
+import TaxReportsPanel from '../../components/analytics/TaxReportsPanel';
 
 const mockReports = [
   { id: 1, period_start: '2026-01-01', period_end: '2026-01-31', total_sales: 12000, total_tax: 1560, transaction_count: 240 },
@@ -20,9 +20,9 @@ beforeEach(() => {
   mockInvokeSuccess('get_tax_reports', mockReports);
 });
 
-describe('TaxReports page', () => {
+describe('TaxReportsPanel (Reports tab)', () => {
   it('hydrates the report list from the backend', async () => {
-    renderWithRouter(<TaxReports />);
+    renderWithRouter(<TaxReportsPanel />);
 
     await waitFor(() => {
       expect(screen.getAllByText(/2026-01-01/).length).toBeGreaterThanOrEqual(1);
@@ -30,8 +30,18 @@ describe('TaxReports page', () => {
     expect(screen.getAllByText(/2026-02-01/).length).toBeGreaterThanOrEqual(1);
   });
 
+  it('shows summary stats (periods, total sales, total tax)', async () => {
+    renderWithRouter(<TaxReportsPanel />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/taxReports\.periods|Periods/)).toBeInTheDocument();
+    });
+    // Total sales across the three reports: 12000 + 18500 + 9300 = 39800
+    expect(screen.getByText('$39,800.00')).toBeInTheDocument();
+  });
+
   it('shows search input + result counter', async () => {
-    renderWithRouter(<TaxReports />);
+    renderWithRouter(<TaxReportsPanel />);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/taxReports\.searchPlaceholder|Search by period/)).toBeInTheDocument();
@@ -42,7 +52,7 @@ describe('TaxReports page', () => {
   });
 
   it('search by period substring filters after the idle window', async () => {
-    renderWithRouter(<TaxReports />);
+    renderWithRouter(<TaxReportsPanel />);
 
     await waitFor(() => {
       expect(screen.getAllByText(/2026-02-01/).length).toBeGreaterThanOrEqual(1);
@@ -63,7 +73,7 @@ describe('TaxReports page', () => {
   });
 
   it('sort-by-sales-desc reorders by total_sales', async () => {
-    renderWithRouter(<TaxReports />);
+    renderWithRouter(<TaxReportsPanel />);
 
     await waitFor(() => {
       expect(screen.getAllByText(/2026-01-01/).length).toBeGreaterThanOrEqual(1);
@@ -80,7 +90,7 @@ describe('TaxReports page', () => {
   it('shows the no-reports empty state when the list is empty', async () => {
     resetInvokeMocks();
     mockInvokeSuccess('get_tax_reports', []);
-    renderWithRouter(<TaxReports />);
+    renderWithRouter(<TaxReportsPanel />);
 
     await waitFor(() => {
       expect(screen.getByText(/taxReports\.noReports|No tax reports/)).toBeInTheDocument();

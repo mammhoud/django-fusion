@@ -79,7 +79,7 @@ function ProfileDropdown({
                 className="btn btn-ghost btn-block justify-start text-error hover:bg-error/10 rounded-xl"
               >
                 <span className="ri-logout-box-r-line ri-16px" />
-                Sign Out
+                {t('auth.signOut')}
               </button>
             </div>
           </div>
@@ -106,8 +106,11 @@ export default function PageLayout({
   title,
   background = 'bg-texture',
   // Wider default container — all pages get more horizontal room for grids.
-  containerWidth = 'max-w-[120rem] xl:max-w-[132rem] 3xl:max-w-[148rem] 4xl:max-w-[168rem]',
-  padding = 'py-12 md:py-16 lg:py-12',
+  // Capped at ~120rem so table rows don't stretch absurdly on huge monitors.
+  containerWidth = 'max-w-[90rem] xl:max-w-[100rem] 3xl:max-w-[110rem] 4xl:max-w-[120rem]',
+  // Compact on small screens (py-4) so every viewport shows more content,
+  // scaling up only once there is real room (md+).
+  padding = 'py-4 sm:py-6 md:py-10 lg:py-12',
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -156,7 +159,7 @@ export default function PageLayout({
   const showProfile = isAuthRequired && user;
 
   return (
-    <div className={`min-h-screen overflow-y-auto transition-colors duration-300 ${background}`}>
+    <div className={`min-h-[100dvh] overflow-y-auto transition-colors duration-300 ${background}`}>
       {/* Overlay SideNav (mobile/tablet) */}
       <SideNav isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} currentRoute={location.pathname} />
 
@@ -170,7 +173,7 @@ export default function PageLayout({
             className={`${toastSlideIn} fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold`}
           >
             <span className="ri-alert-line ri-20px shrink-0" />
-            <span>Session expiring soon — click anywhere to stay logged in</span>              <button
+            <span>Session expiring soon. Click anywhere to stay logged in</span>              <button
                 onClick={dismissInactivityWarning}
                 className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
             >
@@ -183,7 +186,7 @@ export default function PageLayout({
       <div className={`4xl:ml-16 rtl:4xl:mr-16 rtl:4xl:ml-0 ${containerWidth} mx-auto px-4 sm:px-6 ${padding}`}>
         {showNav ? (
           /* Full TopBar: [Menu] [Back] [Logo + Title] [Profile] */
-          <div className="relative z-30 flex items-center justify-between mb-6 gap-3 px-4 py-3 rounded-2xl bg-base-100/60 backdrop-blur-md border border-base-300/20 shadow-sm">
+          <div className="relative z-30 flex items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-base-100/60 backdrop-blur-md border border-base-300/20 shadow-sm">
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsNavOpen(true)}

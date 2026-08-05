@@ -160,6 +160,9 @@ export interface Sale {
   delivery_address: string | null;
   employee_id: number | null;
   customer_id?: number | null;
+  discount_code?: string | null;
+  discount_amount?: number;
+  payment_method?: string;
 }
 
 export interface NewSaleData {
@@ -175,6 +178,9 @@ export interface NewSaleData {
   delivery_address?: string | null;
   employee_id?: number | null;
   customer_id?: number | null;
+  discount_code?: string | null;
+  discount_amount?: number;
+  payment_method?: string;
 }
 
 export interface NewSaleItemData {
@@ -204,6 +210,9 @@ export interface Transaction {
   table_number?: number | null;
   delivery_type_id?: number | null;
   delivery_address?: string | null;
+  payment_method: string;
+  discount_code?: string | null;
+  discount_amount: number;
 }
 
 export interface DailyRevenue {
@@ -234,6 +243,12 @@ export interface AnalyticsData {
   top_products: TopProduct[];
   product_distribution: ProductDistribution[];
   summary: AnalyticsSummary;
+}
+
+export interface PaymentMethodRevenue {
+  payment_method: string;
+  revenue: number;
+  orders: number;
 }
 
 export interface CartItem extends Product {
@@ -440,6 +455,56 @@ export interface LoyaltyTransaction {
   reason: string;
   created_at: string;
 }
+
+// ---- Coupons ----
+export interface Coupon {
+  id: number;
+  code: string;
+  kind: 'percent' | 'fixed';
+  value: number;
+  min_subtotal?: number | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewCoupon {
+  code: string;
+  kind: 'percent' | 'fixed';
+  value: number;
+  min_subtotal?: number | null;
+  is_active: boolean;
+}
+
+export interface UpdateCouponPayload {
+  code?: string;
+  kind?: 'percent' | 'fixed';
+  value?: number;
+  min_subtotal?: number | null;
+  is_active?: boolean;
+}
+
+// ---- Payment Methods ----
+export type PaymentMethod = 'cash' | 'card' | 'mobile' | 'bank' | 'other';
+
+export const PAYMENT_METHODS: PaymentMethod[] = ['cash', 'card', 'mobile', 'bank', 'other'];
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  cash: 'Cash',
+  card: 'Card',
+  mobile: 'Mobile',
+  bank: 'Bank Transfer',
+  other: 'Other',
+};
+
+/** Remix icon class for each payment method (shared across Sale/Reports/Analytics). */
+export const PAYMENT_ICONS: Record<PaymentMethod, string> = {
+  cash: 'ri-money-cny-circle-line',
+  card: 'ri-bank-card-line',
+  mobile: 'ri-smartphone-line',
+  bank: 'ri-bank-line',
+  other: 'ri-wallet-3-line',
+};
 
 export type InvoiceType = 'tax' | 'commercial' | 'proforma' | 'credit' | 'receipt' | 'selling' | 'goods_transfer';
 

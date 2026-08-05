@@ -112,9 +112,25 @@ diesel::table! {
         delivery_address -> Nullable<Text>,
         employee_id -> Nullable<Integer>,
         customer_id -> Nullable<Integer>,
+        discount_code -> Nullable<Text>,
+        discount_amount -> Double,
+        payment_method -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
+    }
+}
+
+diesel::table! {
+    coupons (id) {
+        id -> Integer,
+        code -> Text,
+        kind -> Text,
+        value -> Double,
+        min_subtotal -> Nullable<Double>,
+        is_active -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -484,4 +500,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     payrolls,
     delivery_zones,
     support_messages,
+    coupons,
 );

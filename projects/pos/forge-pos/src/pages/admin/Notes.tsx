@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -100,7 +100,7 @@ function formatDate(dateStr: string): string {
 function getContentPreview(body: string, maxLines = 3): string {
   const lines = body.split('\n').filter(l => l.trim());
   const preview = lines.slice(0, maxLines).join('\n');
-  return preview || '—';
+  return preview || '-';
 }
 
 function getNoteIconClass(cat: string | null | undefined): string {
@@ -148,6 +148,31 @@ export default function Notes() {
   const [sortKey, setSortKey] = useState<'name-asc' | 'name-desc' | 'newest' | 'oldest' | 'pinned'>('pinned');
   const [selectedNotes, setSelectedNotes] = useState<Set<number>>(new Set());
   const [duplicatingId, setDuplicatingId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Copy a note's body to the clipboard with transient "Copied" feedback. */
+  const handleCopy = async (note: Note) => {
+    const text = note.template_body || '';
+    if (!text) return;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopiedId(note.id);
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopiedId(null), 1500);
+    } catch (error) {
+      console.error('Error copying note:', error);
+    }
+  };
 
   useEffect(() => {
     loadNotes();
@@ -782,6 +807,15 @@ export default function Notes() {
                     {formatDate(note.updated_at || note.created_at)}
                   </span>
                   <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleCopy(note); }}
+                      className="p-1.5 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 transition-colors"
+                      title={copiedId === note.id ? 'Copied!' : 'Copy note text'}
+                    >
+                      {copiedId === note.id
+                        ? <span className="ri-check-line ri-14px text-success" />
+                        : <span className="ri-clipboard-line ri-14px" />}
+                    </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDuplicate(note); }}
                       disabled={duplicatingId === note.id}

@@ -50,7 +50,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
         {/* Sorting Section */}
         <div className="space-y-2">
           <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
-            <span className="w-1 h-4 rounded-full bg-indigo-500" />
+            <span className="w-1 h-4 rounded-full bg-primary" />
             {t('transactions.shortcutSortTitle')}
           </h4>
           <div className="divide-y divide-slate-100 dark:divide-white/5">
@@ -75,10 +75,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
 
         {/* Product Manager Section */}
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+          <h4 className="text-sm font-semibold text-info uppercase tracking-wider">
             {t('productManager.title')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-info/5 dark:bg-info/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutPMAdd')}</span>
               <kbd className="px-1.5 py-0.5 rounded bg-base-200/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/20">A</kbd>
@@ -95,7 +95,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
           <h4 className="text-sm font-semibold text-primary uppercase tracking-wider">
             {t('transactions.title')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-violet-50/50 dark:bg-violet-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-secondary/5 dark:bg-secondary/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutTxTabNav')}</span>
               <span className="text-xs text-slate-400 dark:text-white/50 font-mono">1 · 2 · 3 · 4</span>
@@ -113,10 +113,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
 
         {/* Reports Section */}
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+          <h4 className="text-sm font-semibold text-success uppercase tracking-wider">
             {t('reports.title')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-success/5 dark:bg-success/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutReportsTabLabel')}</span>
               <span className="text-xs text-slate-400 dark:text-white/50 font-mono">1-9 · 0 · -</span>
@@ -150,10 +150,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
 
         {/* Inventory Section */}
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+          <h4 className="text-sm font-semibold text-warning uppercase tracking-wider">
             {t('inventory.title')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-amber-50/50 dark:bg-amber-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-warning/5 dark:bg-warning/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutTabNav')}</span>
               <span className="text-xs text-slate-400 dark:text-white/50">
@@ -181,10 +181,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
 
         {/* Analytics Section */}
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+          <h4 className="text-sm font-semibold text-secondary uppercase tracking-wider">
             {t('analytics.title')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-purple-50/50 dark:bg-purple-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-secondary/5 dark:bg-secondary/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutHelpDesc')}</span>
               <kbd className="px-1.5 py-0.5 rounded bg-base-200/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/20">?</kbd>
@@ -197,7 +197,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
           <h4 className="text-sm font-semibold text-primary uppercase tracking-wider">
             {t('sale.title')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-teal-50/50 dark:bg-teal-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-success/5 dark:bg-success/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('sale.orderType')}</span>
               <span className="text-xs text-slate-400 dark:text-white/50">
@@ -208,6 +208,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
                 <kbd className="px-1.5 py-0.5 rounded bg-base-200/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/20">3</kbd>
                 {' '}{t('sale.delivery')}
               </span>
+            </div>
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-sm text-base-content/70">{t('sale.orderPreview')}</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-base-200/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/20">P</kbd>
             </div>
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutActionsRow')}</span>
@@ -223,10 +227,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
 
         {/* Multi-Column Sort Section */}
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+          <h4 className="text-sm font-semibold text-primary uppercase tracking-wider">
             {t('transactions.shortcutMultiSortTitle')}
           </h4>
-          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg px-3 py-2">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 bg-primary/5 dark:bg-primary/10 rounded-lg px-3 py-2">
             <div className="flex items-center justify-between py-1.5">
               <span className="text-sm text-base-content/70">{t('transactions.shortcutShiftClick')}</span>
               <kbd className="px-2 py-0.5 rounded bg-base-200/50 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/20">
@@ -237,9 +241,9 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
               <span className="text-sm text-base-content/70">{t('transactions.shortcutChainPriority')}</span>
               <span className="text-xs text-slate-400 dark:text-white/50">
                 <span className="inline-flex items-center gap-1">
-                  <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-800/40 px-1 rounded">1</span>
-                  <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-800/40 px-1 rounded">2</span>
-                  <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-800/40 px-1 rounded">3</span>
+                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-1 rounded">1</span>
+                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-1 rounded">2</span>
+                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-1 rounded">3</span>
                 </span>
               </span>
             </div>
@@ -259,7 +263,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
         {/* General Section */}
         <div className="space-y-2">
           <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
-            <span className="w-1 h-4 rounded-full bg-amber-500" />
+            <span className="w-1 h-4 rounded-full bg-warning" />
             {t('transactions.shortcutGeneralTitle')}
           </h4>
           <div className="divide-y divide-slate-100 dark:divide-white/5">

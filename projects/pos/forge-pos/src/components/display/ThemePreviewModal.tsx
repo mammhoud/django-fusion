@@ -33,7 +33,7 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
       isOpen={isOpen}
       onClose={onClose}
       title="Theme Component Preview"
-      subtitle="Switch between light & dark and pick a variant — changes apply live"
+      subtitle="Switch between light & dark and pick a variant. Changes apply live"
       headerIcon={<span className="ri-palette-line ri-20px text-primary" />}
       size="full"
       scroll
@@ -42,8 +42,8 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
           <span className="ri-check-line ri-16px text-success" />
           <span className="text-xs text-base-content/60">
             {followSystem
-              ? 'Following system preference — changes apply instantly'
-              : `${mode === 'dark' ? 'Dark' : 'Light'} mode · ${variant} — changes apply instantly`}
+              ? 'Following system preference. Changes apply instantly'
+              : `${mode === 'dark' ? 'Dark' : 'Light'} mode · ${variant}. Changes apply instantly`}
           </span>
         </div>
       }
@@ -169,10 +169,10 @@ export default function ThemePreviewModal({ isOpen, onClose }: ThemePreviewModal
         {/* ── Alerts ── */}
         <Section title="Alerts">
           <div className="space-y-2">
-            <div role="alert" className="alert alert-info"><span className="ri-information-line ri-20px" /><span>Info alert — general information</span></div>
-            <div role="alert" className="alert alert-success"><span className="ri-check-line ri-20px" /><span>Success — operation completed</span></div>
-            <div role="alert" className="alert alert-warning"><span className="ri-alert-line ri-20px" /><span>Warning — please review</span></div>
-            <div role="alert" className="alert alert-error"><span className="ri-alert-line ri-20px" /><span>Error — something went wrong</span></div>
+            <div role="alert" className="alert alert-info"><span className="ri-information-line ri-20px" /><span>Info alert: general information</span></div>
+            <div role="alert" className="alert alert-success"><span className="ri-check-line ri-20px" /><span>Success: operation completed</span></div>
+            <div role="alert" className="alert alert-warning"><span className="ri-alert-line ri-20px" /><span>Warning: please review</span></div>
+            <div role="alert" className="alert alert-error"><span className="ri-alert-line ri-20px" /><span>Error: something went wrong</span></div>
           </div>
         </Section>
 
