@@ -175,10 +175,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        # Locate project root (fusion-cms.com/projects/)
+        # Locate project root (lms-fusion.com/projects/)
         # File is at: <project_root>/apps/handlers/management/commands/validate_config.py
         # parents: [0]=commands, [1]=management, [2]=handlers, [3]=apps, [4]=project_root
-        project_root = Path(__file__).resolve().parents[4]  # …/fusion-cms.com/core
+        project_root = Path(__file__).resolve().parents[4]  # …/lms-fusion.com/core
         configs_dir = project_root / "configs"
         env_path = project_root / ".env"
 

@@ -236,11 +236,11 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
 
     content = traefik_file.read_text(encoding="utf-8")
 
-    # Check for a fusion-cms.com domain
-    if "fusion-cms.com" in content:
-        results.append((True, "Domain configured: fusion-cms.com"))
+    # Check for a lms-fusion.com domain
+    if "lms-fusion.com" in content:
+        results.append((True, "Domain configured: lms-fusion.com"))
     else:
-        results.append((None, "fusion-cms.com domain not found in Traefik config"))
+        results.append((None, "lms-fusion.com domain not found in Traefik config"))
 
     return results
 
@@ -309,7 +309,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("Fusion CMS Deployment Verification")
+        self.stdout.write("LMS Fusion Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )
@@ -327,7 +327,7 @@ class Command(BaseCommand):
         # 1. Docker Compose config
         # ------------------------------------------------------------------
         self.stdout.write("1. Checking Docker Compose Configuration...")
-        project_root = Path(__file__).resolve().parents[4]  # fusion-cms.com/
+        project_root = Path(__file__).resolve().parents[4]  # lms-fusion.com/
         ok, msg = _check_compose_config(project_root)
         if ok:
             self.stdout.write(_pass(msg))
@@ -443,8 +443,8 @@ class Command(BaseCommand):
             "======================================================\n"
         )
         self.stdout.write(f"Container : {container}")
-        self.stdout.write("Project   : fusion-cms.com/core")
-        self.stdout.write("Domain    : https://fusion-cms.com\n")
+        self.stdout.write("Project   : lms-fusion.com/core")
+        self.stdout.write("Domain    : https://lms-fusion.com\n")
 
         if any_failure:
             self.stderr.write(

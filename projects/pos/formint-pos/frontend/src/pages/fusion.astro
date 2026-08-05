@@ -93,7 +93,12 @@ import Skeleton from '../components/ui/Skeleton.astro';
         (header → session → default precedence). Changes are also
         broadcast to other tabs of this origin via
         <code>BroadcastChannel</code> (+ <code>storage</code>-event
-        fallback), so toggling here updates every open tab live.
+        fallback), so toggling here updates every open tab live. Saves of
+        <code>UserSettings.fusion_render_mode</code> in the Unfold admin
+        propagate the same way — the page watches the DB-truth
+        preference (<code>admin_preference</code> / <code>admin_version</code>
+        on <code>GET /fusion/session-mode/</code>) and re-broadcasts it, so
+        open tabs react to admin changes without a reload.
       </p>
     </section>
   </div>
@@ -102,6 +107,7 @@ import Skeleton from '../components/ui/Skeleton.astro';
 <script>
   import { fusionDecoder, FusionDecodeError } from '../lib/fusion-decoder';
   import { fusionSessionSync } from '../lib/session-sync';
+  import { AdminSettingsWatcher } from '../lib/admin-settings-poll';
 
   type PointerBody = {
     encoded: string;
@@ -249,6 +255,28 @@ import Skeleton from '../components/ui/Skeleton.astro';
     }
     loadPointer();
   });
+
+  // Admin preference (UserSettings.fusion_render_mode) saved in the Unfold
+  // admin: the sidecar origin can't BroadcastChannel to this origin, so the
+  // watcher polls the DB-truth fields of GET /fusion/session-mode/ and fires
+  // here when the row changes. Apply it like a toggle — persist to the
+  // session, update the decoder cache, broadcast to every open tab, refresh.
+  const adminWatcher = new AdminSettingsWatcher({
+    onChange: async (pref) => {
+      const ok = pref === null
+        ? await clearSessionPreference()
+        : await persistSessionPreference(pref);
+      if (!ok) return;
+      if (pref === null) {
+        fusionDecoder.clearSession();
+      } else {
+        fusionDecoder.initSession(pref);
+      }
+      fusionSessionSync.publish(pref);
+      loadPointer();
+    },
+  });
+  adminWatcher.start();
 
   await seedSessionFromServer();
   loadPointer();

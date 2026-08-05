@@ -1,0 +1,129 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Stats from '@/components/blocks/Stats.astro';
+import Features from '@/components/blocks/Features.astro';
+import Testimonials from '@/components/blocks/Testimonials.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+// ── Fetch from backend, fall back to static content ──
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('about'),
+  ]);
+} catch { /* use fallbacks */ }
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const pageStats = (pageData?.stats as any[] | undefined);
+const pageFeatures = (pageData?.features as any[] | undefined);
+const pageTestimonials = (pageData?.testimonials as any[] | undefined);
+const pageFaq = (pageData?.faq as any[] | undefined);
+
+// ── Mapped from backend data (no hardcoded fallbacks) ──
+const bioStats = pageStats?.map((s: any) => ({ label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || '') }));
+
+const skills = pageFeatures?.map((f: any) => ({
+  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  title: String(f.title || ''),
+  description: String(f.description || ''),
+}));
+
+const missionValues = [
+  { title: 'Server-rendered by default', text: 'Every page ships as finished HTML. No heavy SPA, no hydration overhead — just the web as it was designed to work.' },
+  { title: 'Open source first', text: 'All core libraries are public. django-fusion, ceptor-ai, and django-bolt are open for contribution and use.' },
+  { title: 'Boring technology wins', text: 'Django, PostgreSQL, HTML, CSS — proven tools that keep working. No framework churn, no maintenance treadmill.' },
+];
+
+const testimonialItems = pageTestimonials?.map((t: any) => ({
+  quote: String(t.quote || ''),
+  author: String(t.author || ''),
+  role: String(t.role || ''),
+}));
+
+const faqItems = pageFaq?.map((f: any) => ({
+  question: String(f.question || ''),
+  answer: String(f.answer || ''),
+}));
+---
+
+<Layout
+  title={pageData?.title || 'About'}
+  description={pageData?.search_description || 'Mahmoud Ezzat Moustafa — full-stack developer, open-source contributor, and the engineer behind structa.cloud.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="about"
+>
+  <Hero
+    eyebrow={pageHero?.badge || 'about · the engineer behind the code'}
+    heading={pageHero?.title || 'Mahmoud Ezzat'}
+    accent='Moustafa'
+    intro={pageHero?.subtitle || "Full-stack developer and open-source contributor specializing in Python/Django, AI tools, and cloud architecture. I build server-rendered platforms that ship as documents — no heavy SPAs, no framework overhead, just the web working the way it should."}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'View GitHub', href: 'https://github.com/mammhoud' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Read the blog', href: 'https://mammhoud.github.io' }}
+    status='200 OK · text/html · the engineer, in one response'
+  />
+
+  {bioStats?.length ? <Stats stats={bioStats} /> : <ContentError label="Stats data unavailable" />}
+
+  <!-- Mission -->
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mx-auto mb-14 max-w-2xl text-center'>
+        <p class='tag-marker mb-4'>philosophy</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Why I build this way</h2>
+        <p class='text-fu-muted'>Three principles guide every project: server-render by default, open source first, and choose boring technology that keeps working.</p>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
+        {missionValues.map((value, i) => (
+          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+            <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
+              <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                <path stroke-linecap='round' stroke-linejoin='round'
+                  d={i === 0 ? 'M12 3v18M3 12h18M12 7l1.5 3 3 1.5-3 1.5L12 17l-1.5-3-3-1.5 3-1.5L12 7z'
+                    : i === 1 ? 'M13 10V3L4 14h7v7l9-11h-7z'
+                    : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'} />
+              </svg>
+            </div>
+            <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{value.title}</h3>
+            <p class='text-sm leading-relaxed text-fu-muted'>{value.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {skills?.length ? (
+  <Features
+    heading='The stack, in detail'
+    intro='From Django backends to AI agents, these are the technologies that power structa.cloud.'
+    features={skills.map((s) => ({
+      icon: 'rocket' as const,
+      title: s.title,
+      description: s.description,
+      _iconPath: s.icon,
+    }))}
+  />
+  ) : <ContentError label="Skills data unavailable" />}
+
+  {testimonialItems?.length ? <Testimonials testimonials={testimonialItems} /> : <ContentError label="Testimonials unavailable" />}
+  {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
+
+  <CTA
+    heading={pageCta?.title || "Let's build together"}
+    intro={pageCta?.subtitle || 'Open to collaboration, consulting, and new projects. Reach out on GitHub, LinkedIn, or through the contact form.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'Get in touch'}
+    ctaHref={pageCta?.primary_cta?.href || '/contact'}
+  />
+
+  <Toast />
+</Layout>
