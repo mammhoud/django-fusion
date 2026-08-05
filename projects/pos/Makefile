@@ -28,6 +28,7 @@
 .PHONY: server-install server-run server-dev server-check server-test server-clean
 .PHONY: server-full-install server-full-run server-full-dev server-full-check server-full-test server-full-clean
 .PHONY: cloud-install cloud-run cloud-dev cloud-check cloud-test cloud-clean
+.PHONY: formint-install formint-run formint-test formint-check formint-clean
 .PHONY: screenshots publish
 
 # ── Edition directories ────────────────────────────────────────────────────
@@ -101,6 +102,13 @@ help:                 ## Show this help menu
 	@echo '  make cloud-check       Validate Django imports'
 	@echo '  make cloud-test        Run cloud test suite'
 	@echo '  make cloud-clean       Remove cloud database'
+	@echo ''
+	@echo '── Formint POS (merged package) ─────────────────────────────'
+	@echo '  make formint-install   Install formint-pos backend deps'
+	@echo '  make formint-run       Run backend (API + admin on :8000)'
+	@echo '  make formint-test      Run backend + JS contract tests'
+	@echo '  make formint-check     Validate backend'
+	@echo '  make formint-clean     Remove db + staticfiles'
 	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
 	@echo '  make screenshots       Capture marketplace screenshots'
@@ -304,6 +312,30 @@ cloud-clean:          ## Remove cloud database and bytecode cache
 	find $(POS_CLOUD) -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find $(POS_CLOUD) -name '*.pyc' -delete 2>/dev/null || true
 	@echo '✓ Cloud database and cache cleaned'
+
+# ── Formint POS (merged package: pos-full + pos-solo) ────────────────────
+
+FORMINT_POS := formint-pos
+
+formint-install:      ## Install formint-pos backend deps
+	cd $(FORMINT_POS)/backend && python3 -m venv .venv && . .venv/bin/activate && pip install -e . && python manage.py migrate
+	@echo '✓ Formint backend installed'
+
+formint-run:          ## Run formint-pos backend (API + admin on :8000)
+	cd $(FORMINT_POS)/backend && .venv/bin/python manage.py runserver 127.0.0.1:8000
+
+formint-test:         ## Run formint-pos test suite (26 backend + js contract)
+	bash tests/py/formint/run.sh
+	@echo '── JS contract tests (via pos-full vitest) ──'
+	@cd $(POS_FULL) && npx vitest run --config ../tests/js/vitest.config.ts formint-pos 2>&1 | tail -6
+
+formint-check:        ## Validate formint-pos backend
+	cd $(FORMINT_POS)/backend && .venv/bin/python manage.py check
+
+formint-clean:        ## Clean formint-pos artifacts
+	rm -f $(FORMINT_POS)/backend/formint-phase1.sqlite3
+	rm -rf $(FORMINT_POS)/backend/staticfiles
+	@echo '✓ Formint artifacts cleaned'
 
 
 # ── Publishing ────────────────────────────────────────────────────────────

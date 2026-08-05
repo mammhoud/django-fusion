@@ -6,6 +6,7 @@ requires-python = ">=3.11"
 dependencies = [
   "Django>=4.2,<5.1",
   "django-fusion",
+  "django-unfold>=0.80",
 ]
 
 [build-system]
