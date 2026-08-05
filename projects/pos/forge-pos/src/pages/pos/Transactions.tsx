@@ -924,7 +924,7 @@ export default function Transactions() {
                     </button>
                   )}
                 </div>
-                <div className="flex items-center gap-1 bg-base-200/50 rounded-lg p-0.5">
+                <div className="flex items-center gap-1 bg-base-200/50 dark:bg-white/5 rounded-lg p-0.5 border border-base-300/40 dark:border-white/10">
                   {([
                     { key: 'name' as ProductSortField, label: t('transactions.sortName') },
                     { key: 'quantity' as ProductSortField, label: t('transactions.sortQuantity') },
@@ -963,7 +963,7 @@ export default function Transactions() {
                             ? 'bg-info/10 dark:bg-info/40 text-info dark:text-info/70'
                             : 'text-base-content/50 hover:bg-base-100/50'
                         }`}
-                        title={`${opt.label} (${opt.key === 'name' ? 'N' : opt.key === 'quantity' ? 'Q' : 'R'})${isInChain ? ` — #${chainIdx + 1} (shift-click to toggle)` : ' — shift-click to add to chain'}`}
+                        title={`${opt.label} (${opt.key === 'name' ? 'N' : opt.key === 'quantity' ? 'Q' : 'R'})${isInChain ? ` · #${chainIdx + 1} (shift-click to toggle)` : ' · shift-click to add to chain'}`}
                       >
                         <span className="hidden sm:inline text-[10px] font-mono opacity-60 mr-0.5">
                           {opt.key === 'name' ? 'N' : opt.key === 'quantity' ? 'Q' : 'R'}
@@ -1137,7 +1137,7 @@ export default function Transactions() {
                     </button>
                   )}
                 </div>
-                <div className="flex items-center gap-1 bg-base-200/50 rounded-lg p-0.5">
+                <div className="flex items-center gap-1 bg-base-200/50 dark:bg-white/5 rounded-lg p-0.5 border border-base-300/40 dark:border-white/10">
                   {([
                     { key: 'name' as RelatedSortField, label: t('transactions.sortName') },
                     { key: 'units' as RelatedSortField, label: t('reports.sortUnits') },
@@ -1174,7 +1174,7 @@ export default function Transactions() {
                             ? 'bg-info/10 dark:bg-info/40 text-info dark:text-info/70'
                             : 'text-base-content/50 hover:bg-base-100/50'
                         }`}
-                        title={`${opt.label} (${opt.key === 'name' ? 'N' : opt.key === 'units' ? 'U' : 'R'})${isInChain ? ` — #${chainIdx + 1} (shift-click to toggle)` : ' — shift-click to add to chain'}`}
+                        title={`${opt.label} (${opt.key === 'name' ? 'N' : opt.key === 'units' ? 'U' : 'R'})${isInChain ? ` · #${chainIdx + 1} (shift-click to toggle)` : ' · shift-click to add to chain'}`}
                       >
                         <span className="hidden sm:inline text-[10px] font-mono opacity-60 mr-0.5">
                           {opt.key === 'name' ? 'N' : opt.key === 'units' ? 'U' : 'R'}
@@ -1362,7 +1362,7 @@ export default function Transactions() {
                           ? 'bg-info/10 dark:bg-info/40 text-info dark:text-info/70'
                           : 'text-base-content/50 hover:bg-base-100/50'
                       }`}
-                      title={`${opt.label} (${opt.key === 'date' ? 'D' : opt.key === 'amount' ? 'A' : 'O'})${isInChain ? ` — #${chainIdx + 1} (shift-click to toggle)` : ' — shift-click to add to chain'}`}
+                      title={`${opt.label} (${opt.key === 'date' ? 'D' : opt.key === 'amount' ? 'A' : 'O'})${isInChain ? ` · #${chainIdx + 1} (shift-click to toggle)` : ' · shift-click to add to chain'}`}
                     >
                       <span className="hidden sm:inline text-[10px] font-mono opacity-60 mr-0.5">
                         {opt.key === 'date' ? 'D' : opt.key === 'amount' ? 'A' : 'O'}
@@ -1395,6 +1395,11 @@ export default function Transactions() {
                       <div className="flex items-center gap-2">
                         <span className="ri-receipt-line ri-20px text-info" />
                         <span className="font-bold text-base-content">#{transaction.id}</span>
+                        {transaction.payment_method && (
+                          <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-semibold uppercase tracking-wide">
+                            {t(`payments.${transaction.payment_method}`)}
+                          </span>
+                        )}
                         {(() => {
                           const idx = invoiceSortChain.findIndex(c => c.field === 'type');
                           if (idx === -1) return null;
@@ -1459,6 +1464,13 @@ export default function Transactions() {
                       </div>
                     ))}
                   </div>
+
+                  {transaction.discount_amount > 0 && (
+                    <div className="flex justify-between items-center text-sm text-success pt-2">
+                      <span>{t('sale.discount')}{transaction.discount_code ? ` (${transaction.discount_code})` : ''}</span>
+                      <span>-{transaction.currency} {transaction.discount_amount.toFixed(2)}</span>
+                    </div>
+                  )}
 
                   <div className="border-t border-base-300/50 pt-3 flex justify-between items-center">
                     <span className="text-base-content font-semibold">{t('transactions.totalLabel')}</span>
@@ -1542,6 +1554,8 @@ export default function Transactions() {
                 settings={settings}
                 receiptNumber={showReceiptDialog.id.toString()}
                 orderType={showReceiptDialog.order_type}
+                paymentMethod={showReceiptDialog.payment_method}
+                discountAmount={showReceiptDialog.discount_amount}
               />
             </div>
 

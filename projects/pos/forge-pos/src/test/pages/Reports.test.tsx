@@ -67,6 +67,10 @@ const mockEmployees = [
   { id: 2, name: 'Bilal', phone: '03002222222', employee_type_id: 2, salary: 25000, is_active: true, joined_at: '2026-01-15' },
 ];
 
+const mockTaxReports = [
+  { id: 1, period_start: '2026-01-01', period_end: '2026-01-31', total_sales: 12000, total_tax: 1560, transaction_count: 240 },
+];
+
 beforeEach(() => {
   resetInvokeMocks();
   vi.clearAllMocks();
@@ -80,6 +84,7 @@ beforeEach(() => {
   mockInvokeSuccess('get_employees', mockEmployees);
   mockInvokeSuccess('get_transactions', []);
   mockInvokeSuccess('get_delivery_types', []);
+  mockInvokeSuccess('get_tax_reports', mockTaxReports);
 });
 
 describe('Reports Page', () => {
@@ -120,6 +125,22 @@ describe('Reports Page', () => {
     expect(screen.getByText(/reports\.totalOrders|Total Orders/)).toBeInTheDocument();
     expect(screen.getByText(/reports\.avgOrderValue|Avg\. Order Value/)).toBeInTheDocument();
     expect(screen.getByText(/reports\.orderTypes|Order Types/)).toBeInTheDocument();
+  });
+
+  it('opens Tax Reports as an inline tab (no full-page navigation)', async () => {
+    renderWithRouter(<Reports />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: /Tax Reports/ })).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole('tab', { name: /Tax Reports/ }));
+
+    // The panel renders inline within the Reports page (not a separate route)
+    await waitFor(() => {
+      expect(screen.getAllByText(/2026-01-01/).length).toBeGreaterThanOrEqual(1);
+    });
+    expect(screen.getByText(/taxReports\.periods|Periods/)).toBeInTheDocument();
   });
 
   it('shows order types breakdown in sales tab', async () => {

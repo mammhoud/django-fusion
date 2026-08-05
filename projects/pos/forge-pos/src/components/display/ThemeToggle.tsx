@@ -49,13 +49,10 @@ export default function ThemeToggle() {
       >
         <span className={`${activeMode.icon} ri-16px shrink-0 opacity-70`} />
         <span className="flex-1 text-left text-xs">{activeMode.label}</span>
-        <svg
-          className={`w-3.5 h-3.5 opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <span
+          className={`ri-arrow-down-s-line ri-14px opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        />
       </button>
 
       <AnimatePresence>

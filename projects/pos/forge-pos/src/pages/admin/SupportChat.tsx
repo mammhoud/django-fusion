@@ -124,7 +124,7 @@ export default function SupportChat() {
           <div className="alert alert-success">
             <span className="ri-check-line ri-20px" />
             <span>
-              Support email configured — <strong className="font-mono">{SUPPORT_EMAIL}</strong>
+              Support email configured: <strong className="font-mono">{SUPPORT_EMAIL}</strong>
             </span>
           </div>
         ) : (

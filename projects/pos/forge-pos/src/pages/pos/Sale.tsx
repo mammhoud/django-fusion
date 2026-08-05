@@ -3,13 +3,16 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
-import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone, Note, Category } from '../../types';
+import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone, Note, Category, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS, PAYMENT_ICONS } from '../../types';
+import type { Sale } from '../../types';
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
 import { downloadInvoicePDF } from '../../utils/invoicePdf';
-import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
+import ProductCard, { ProductThumb, PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/pos/ProductCard';
 import ProductFilterBar from '../../components/shared/ProductFilterBar';
 import Card from '../../components/ui/Card';
+import Modal from '../../components/ui/Modal';
+import Button from '../../components/ui/Button';
 import jsPDF from 'jspdf';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +22,8 @@ import { useStatusToast } from '../../hooks/useStatusToast';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import StatusToast from '../../components/ui/StatusToast';
 import { iconClass } from '../../lib/icons';
+import { lookupCoupon, applyCoupon } from '../../utils/coupons';
+import type { Coupon } from '../../types';
 
 type OrderType = 'dine-in' | 'takeaway' | 'delivery' | 'extra-order' | 'dated-order';
 
@@ -31,6 +36,16 @@ const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = 
   { key: 'extra-order', label: 'Extra Order', icon: <span className={iconClass('lucide:plus', '')} /> },
   { key: 'dated-order', label: 'Dated Order', icon: <span className={iconClass('lucide:calendar-clock', '')} /> },
 ];
+
+// i18n keys for order types — note the real keys use camelCase (extraOrder/datedOrder),
+// so `t('sale.' + key)` would leak raw keys for dashed types.
+const ORDER_TYPE_KEYS: Record<OrderType, string> = {
+  'dine-in': 'sale.dineIn',
+  takeaway: 'sale.takeaway',
+  delivery: 'sale.delivery',
+  'extra-order': 'sale.extraOrder',
+  'dated-order': 'sale.datedOrder',
+};
 
 export default function Sale() {
   const { t } = useTranslation();
@@ -52,6 +67,9 @@ export default function Sale() {
     deliveryZoneName?: string;
     deliveryDistance?: number;
     employeeName?: string;
+    grandTotal: number;
+    discountAmount?: number;
+    paymentMethod?: PaymentMethod;
   } | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<Settings>({
@@ -75,6 +93,8 @@ export default function Sale() {
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  // ── Collapsible filter bar — slides open/closed to free vertical space ──
+  const [filtersOpen, setFiltersOpen] = useState(true);
   // ── Live-update indicator — briefly pulses green when product-updated event fires ──
   const [showLiveBadge, setShowLiveBadge] = useState(false);
   const liveBadgeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -117,6 +137,12 @@ export default function Sale() {
       if (key === '2') { setOrderType('takeaway'); return; }
       if (key === '3') { setOrderType('delivery'); return; }
 
+      // Order preview
+      if ((key === 'p' || key === 'P') && cart.length > 0) {
+        setShowOrderPreview(true);
+        return;
+      }
+
       // Clear cart
       if (key === 'Escape') {
         if (cart.length > 0 && confirm('Clear cart?')) {
@@ -156,12 +182,24 @@ export default function Sale() {
   const [selectableNotes, setSelectableNotes] = useState<Note[]>([]);
   const [showQuickNoteForm, setShowQuickNoteForm] = useState(false);
   const [quickNoteText, setQuickNoteText] = useState('');
+  // ── Checkout: coupon + payment method + order preview ──
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+  const [showOrderPreview, setShowOrderPreview] = useState(false);
+  // Bottom-bar invoice hover card (mobile sticky bar) — tap toggles on touch,
+  // hover reveals on pointer devices.
+  const [showBottomInvoice, setShowBottomInvoice] = useState(false);
+  // Persisted sale id — lets the success sheet sync payment-method edits to the DB
+  const savedSaleIdRef = useRef<number | null>(null);
 
   const loadData = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes, notesRes, selectableRes] = await Promise.all([
+      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes, notesRes, selectableRes, couponsRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Settings>('get_settings'),
         invoke<DeliveryType[]>('get_delivery_types', { includeInactive: false }),
@@ -170,9 +208,17 @@ export default function Sale() {
         invoke<Category[]>('get_categories'),
         invoke<Note[]>('get_notes'),
         invoke<Note[]>('get_selectable_notes'),
+        invoke<Coupon[]>('get_active_coupons'),
       ]);
 
       setProducts(productsRes);
+      setCoupons(couponsRes || []);
+      // Drop an applied coupon that was disabled or deleted since it was applied.
+      setAppliedCoupon(prev =>
+        prev && (couponsRes || []).some(c => c.is_active && c.code.toUpperCase() === prev.code.toUpperCase())
+          ? prev
+          : null
+      );
       setTemplateNotes((notesRes || []).filter(n => n.use_as_template || n.category === 'receipt'));
       setSelectableNotes(selectableRes || []);
       if (settingsRes) {
@@ -264,7 +310,7 @@ export default function Sale() {
 
       const now = new Date();
       const saleData: NewSaleData = {
-        total_amount: totalAmount + (orderType === 'delivery' ? deliveryFee : 0),
+        total_amount: grandTotal,
         currency: settings.currency || 'USD',
         date: now.toISOString().split('T')[0],
         time: now.toTimeString().split(' ')[0],
@@ -275,6 +321,9 @@ export default function Sale() {
         delivery_zone_id: orderType === 'delivery' && selectedZoneId > 0 ? selectedZoneId : null,
         delivery_address: orderType === 'delivery' ? deliveryAddress || null : null,
         employee_id: employeeId > 0 ? employeeId : null,
+        discount_code: appliedCoupon ? appliedCoupon.code : null,
+        discount_amount: discountAmount,
+        payment_method: paymentMethod,
       };
 
       const itemsData: NewSaleItemData[] = cart.map(item => ({
@@ -284,7 +333,11 @@ export default function Sale() {
         unit: item.unit,
       }));
 
-      await invoke('add_sale', { sale: saleData, items: itemsData });
+      const result = await invoke<unknown>('add_sale', { sale: saleData, items: itemsData });
+      // Backend returns [Sale, KitchenTicket]; tests may mock a plain Sale object.
+      if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null && 'id' in result[0]) {
+        savedSaleIdRef.current = (result[0] as Sale).id;
+      }
 
       // Generate receipt data
       const deliveryTypeName = orderType === 'delivery'
@@ -302,6 +355,9 @@ export default function Sale() {
           price: item.price * item.quantity,
         })),
         totalAmount,
+        grandTotal,
+        discountAmount,
+        paymentMethod,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString(),
         receiptNumber: Math.random().toString(36).substr(2, 9).toUpperCase(),
@@ -342,6 +398,45 @@ export default function Sale() {
     setOrderNotes('');
     setItemNotes({});
     setSelectedTemplateId(0);
+    setAppliedCoupon(null);
+    setCouponError(null);
+    setCouponInput('');
+    setShowOrderPreview(false);
+    savedSaleIdRef.current = null;
+  };
+
+  /*** Validate & apply a coupon code to the cart ***/
+  const handleApplyCoupon = () => {
+    const code = couponInput.trim();
+    if (!code) return;
+    const coupon = lookupCoupon(coupons, code, totalAmount);
+    if (coupon) {
+      setAppliedCoupon(coupon);
+      setCouponError(null);
+      setCouponInput('');
+    } else {
+      setAppliedCoupon(null);
+      setCouponError(t('sale.couponInvalid') || 'Invalid coupon code');
+    }
+  };
+
+  /*** Remove the applied coupon ***/
+  const clearCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError(null);
+    setCouponInput('');
+  };
+
+  /*** Sync a payment-method change made on the success sheet back to the saved sale ***/
+  const handlePaymentMethodChange = async (next: PaymentMethod) => {
+    setPaymentMethod(next);
+    if (savedSaleIdRef.current) {
+      try {
+        await invoke('update_sale', { id: savedSaleIdRef.current, update: { payment_method: next } });
+      } catch (error) {
+        console.error('Error updating payment method:', error);
+      }
+    }
   };
 
   /*** Append a selectable note's body to the order notes ***/
@@ -416,7 +511,12 @@ export default function Sale() {
         })),
         currency: settings.currency || 'USD',
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
-        notes: [orderNotes.trim(), effectiveReceiptFooter.trim()].filter(Boolean).join('\n\n') || undefined,
+        notes: [
+          ...(discountAmount > 0 && appliedCoupon ? [`Coupon ${appliedCoupon.code}: -${settings.currency} ${discountAmount.toFixed(2)}`] : []),
+          ...(receiptData.paymentMethod ? [`Payment: ${PAYMENT_METHOD_LABELS[receiptData.paymentMethod as PaymentMethod] || receiptData.paymentMethod}`] : []),
+          orderNotes.trim(),
+          effectiveReceiptFooter.trim(),
+        ].filter(Boolean).join('\n\n') || undefined,
         orderType: receiptData.orderType,
         deliveryFee: receiptData.deliveryFee,
         deliveryTypeName: receiptData.deliveryTypeName,
@@ -525,10 +625,26 @@ export default function Sale() {
       }
       yPos += 5;
 
+      if (receiptData.discountAmount) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Discount', margin, yPos);
+        pdf.text(`${settings.currency} -${receiptData.discountAmount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
+        yPos += 5;
+      }
+      if (receiptData.deliveryFee) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Delivery', margin, yPos);
+        pdf.text(`${settings.currency} ${receiptData.deliveryFee.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
+        yPos += 5;
+      }
+
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'bold');
+      const pdfTotal = receiptData.totalAmount + (receiptData.deliveryFee || 0) - (receiptData.discountAmount || 0);
       pdf.text('Total', margin, yPos);
-      pdf.text(`${settings.currency} ${receiptData.totalAmount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
+      pdf.text(`${settings.currency} ${pdfTotal.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
       yPos += 8;
 
       // Order Notes (from the sale screen) — printed above the receipt footer
@@ -606,6 +722,20 @@ export default function Sale() {
       ? settings.delivery_fee + (deliveryDistance * (settings.delivery_fee_per_km || 0))
       : 0;
 
+  // Coupon discount + final grand total (clamped at 0)
+  const discountAmount = appliedCoupon ? applyCoupon(appliedCoupon, totalAmount) : 0;
+  const taxRate = settings.tax_rate ? parseFloat(settings.tax_rate) : 0;
+  const taxAmount = taxRate > 0 ? (totalAmount * taxRate) / 100 : 0;
+  const grandTotal = Math.max(0, totalAmount + deliveryFee - discountAmount);
+
+  // Itemized lines shared by the preview modal, hover card + success sheet
+  const invoiceLines = [
+    { key: 'subtotal', label: t('sale.subtotal'), value: totalAmount, muted: false, negative: false },
+    ...(taxAmount > 0 ? [{ key: 'tax', label: t('sale.tax', { rate: taxRate }), value: taxAmount, muted: true, negative: false }] : []),
+    ...(deliveryFee > 0 ? [{ key: 'delivery', label: t('sale.deliveryFee'), value: deliveryFee, muted: true, negative: false }] : []),
+    ...(discountAmount > 0 ? [{ key: 'discount', label: t('sale.discount'), value: discountAmount, muted: true, negative: true }] : []),
+  ];
+
   // Per-category product counts → displayed as small badges on the filter pills
   const categoryCounts = useMemo(() => {
     const map: Record<number, number> = {};
@@ -655,8 +785,8 @@ export default function Sale() {
   // 250ms debounce window).
   const filterActive = debouncedSearchQuery.trim() !== '' || selectedCategory !== 'all';
 
-  return (        <PageLayout title={t('sale.title')}>
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-full overflow-x-hidden">{/* ── Sidebar Toggle Button (desktop only) ── */}
+  return (        <PageLayout title={t('sale.title')} padding="py-8 md:py-10">
+      <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 max-w-full overflow-x-hidden">{/* ── Sidebar Toggle Button (desktop only) ── */}
         <div          className="hidden lg:flex items-start pt-1 -mr-2 z-20">
           <button
             onClick={() => { setSidebarOpen(o => !o); setSidebarHovered(false); }}
@@ -678,22 +808,22 @@ export default function Sale() {
                 <span className={iconClass('lucide:shopping-cart', 'text-primary')} />
                 <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
               </div>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
                 {ORDER_TYPES.map(ot => (
                   <button
                     key={ot.key}
                     onClick={() => setOrderType(ot.key)}
                     disabled={isLoading}
-                    className={`flex-1 basis-[calc(33.333%-0.375rem)] min-w-[6rem] flex flex-col items-center gap-1 p-2 rounded-lg font-medium text-xs transition-all active:scale-[0.98] ${
+                    className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg font-medium text-xs transition-all active:scale-[0.98] ${
                       isLoading
-                        ? 'bg-slate-200 dark:bg-slate-700 text-base-content/40 cursor-not-allowed'
+                        ? 'bg-base-200 text-base-content/40 cursor-not-allowed'
                         : orderType === ot.key
                           ? 'bg-primary text-white shadow-md'
                           : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10 dark:hover:bg-primary/20'
                     }`}
                   >
-                    <span className="text-base">{ot.icon}</span>
-                    <span className="text-xs">{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
+                    <span className="text-sm sm:text-base">{ot.icon}</span>
+                    <span className="truncate">{t(ORDER_TYPE_KEYS[ot.key])}</span>
                   </button>
                 ))}
               </div>
@@ -794,11 +924,11 @@ export default function Sale() {
                         <>
                           <p className="text-xs text-warning dark:text-warning/80 font-medium">
                             <span className={iconClass('lucide:alert-triangle', 'w-3.5 h-3.5 inline-block mr-1')} />
-                            Distance exceeds {selectedZone.name} max ({selectedZone.max_distance} km) — fee capped at max distance
+                            Distance exceeds {selectedZone.name} max ({selectedZone.max_distance} km). Fee capped at max distance
                           </p>
                           <p className="text-xs text-base-content/50 mt-0.5">
                             Fee: {formatPrice(selectedZone.base_fee)} + {selectedZone.max_distance}km × {formatPrice(selectedZone.fee_per_km)} = <span className="font-semibold text-primary dark:text-primary/80">{formatPrice(deliveryFee)}</span>
-                            <span className="line-through text-slate-400 ml-2">({settings.currency} {(selectedZone.base_fee + (deliveryDistance * selectedZone.fee_per_km)).toFixed(2)})</span>
+                            <span className="line-through text-base-content/40 ml-2">({settings.currency} {(selectedZone.base_fee + (deliveryDistance * selectedZone.fee_per_km)).toFixed(2)})</span>
                           </p>
                         </>
                       ) : (
@@ -833,6 +963,78 @@ export default function Sale() {
               </div>
             )}
 
+            {/* Payment Method + Coupon — mobile */}
+            <Card className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="ri-bank-card-line text-primary" />
+                <h2 className="text-sm font-semibold text-base-content">{t('sale.paymentMethod')}</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {PAYMENT_METHODS.map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setPaymentMethod(m)}
+                    disabled={isLoading}
+                    aria-pressed={paymentMethod === m}
+                    className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${
+                      paymentMethod === m
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-base-100/50 text-base-content/70 hover:bg-primary/10 dark:hover:bg-primary/20'
+                    }`}
+                  >
+                    <span className={`${PAYMENT_ICONS[m]} text-sm`} />
+                    {t(`payments.${m}`)}
+                  </button>
+                ))}
+              </div>
+              {/* Coupon */}
+              <div className="mt-3 pt-3 border-t border-base-300/30">
+                <label className="flex items-center gap-1.5 text-xs text-base-content/70 mb-1.5">
+                  <span className="ri-ticket-2-line text-base-content/50" />
+                  {t('sale.coupon')}
+                </label>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between gap-2 bg-success/10 border border-success/30 rounded-lg px-2.5 py-1.5">
+                    <span className="text-xs font-semibold text-success flex items-center gap-1.5">
+                      <span className="ri-checkbox-circle-line ri-14px" />
+                      {appliedCoupon.code} · -{formatPrice(discountAmount)}
+                    </span>
+                    <button type="button" onClick={clearCoupon} className="p-0.5 text-base-content/40 hover:text-error transition-colors" aria-label={t('sale.couponRemove')}>
+                      <span className="ri-close-line ri-14px" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={e => { setCouponInput(e.target.value.toUpperCase()); if (couponError) setCouponError(null); }}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleApplyCoupon(); } }}
+                        placeholder={t('sale.couponPlaceholder')}
+                        disabled={isLoading}
+                        className="input w-full text-xs uppercase"
+                        aria-label={t('sale.coupon')}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={!couponInput.trim() || isLoading}
+                        className="btn btn-primary btn-sm shrink-0 gap-1"
+                      >
+                        <span className="ri-check-line ri-14px" />
+                        {t('sale.couponApply')}
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-[10px] text-error mt-1">{couponError}</p>
+                    )}
+                  </>
+                )}
+              </div>
+            </Card>
+
             {/* Total Amount — mobile (no card container, no flex-col) */}
               <div className="relative flex items-center text-center gap-1.5 py-1 mb-6 sm:mb-8">
                 <h2 className="text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-1.5">
@@ -840,11 +1042,16 @@ export default function Sale() {
                   {t('sale.totalAmount')}
                 </h2>
                 <p className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${isLoading ? 'text-base-content/40 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
-                  {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
+                  {isLoading ? '-' : `${settings.currency} ${grandTotal.toFixed(2)}`}
                 </p>
                 {deliveryFee > 0 && (
                   <p className="text-xs text-base-content/50">
                     ({formatPrice(totalAmount)} + {formatPrice(deliveryFee)} delivery)
+                  </p>
+                )}
+                {discountAmount > 0 && (
+                  <p className="text-xs text-success font-medium">
+                    {t('sale.discount')} {appliedCoupon ? `(${appliedCoupon.code})` : ''}: -{formatPrice(discountAmount)}
                   </p>
                 )}
                 <span className="badge badge-soft badge-primary gap-1.5 mt-0.5">
@@ -854,9 +1061,37 @@ export default function Sale() {
               </div>
            </div>
 
-          {/* ── Compact rounded search + filter + sort bar — shared ProductFilterBar ──
-              Same component used on ProductManager; see docs/shared-components.md. */}
-          <ProductFilterBar
+          {/* ── Collapsible filter bar — slides open/closed via grid-rows ── */}
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(o => !o)}
+              aria-expanded={filtersOpen}
+              aria-controls="sale-filter-bar"
+              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl
+                bg-base-100/70 backdrop-blur-md border border-base-300/30 shadow-sm
+                text-sm font-medium text-base-content/70 hover:text-base-content hover:border-primary/30
+                transition-all duration-200 active:scale-[0.98]"
+            >
+              <span className="flex items-center gap-2">
+                <span className={iconClass('lucide:sliders-horizontal', 'w-4 h-4 text-primary')} />
+                {t('transactions.filters')}
+              </span>
+              <span className="flex items-center gap-2">
+                {filterActive && (
+                  <span className="badge badge-soft badge-primary badge-sm">{filteredProducts.length}/{products.length}</span>
+                )}
+                <span className={`ri-arrow-down-s-line ri-16px transition-transform duration-300 ${filtersOpen ? 'rotate-180' : ''}`} />
+              </span>
+            </button>
+            <div
+              id="sale-filter-bar"
+              className={`grid transition-all duration-300 ease-out ${
+                filtersOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+              }`}
+            >
+              <div className="overflow-hidden min-h-0">
+                <ProductFilterBar
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             searchPlaceholder={t('sale.searchProducts')}
@@ -909,14 +1144,19 @@ export default function Sale() {
                 />
 
                 {/* View mode toggle — rounded segmented control */}
-                <div className="flex items-center gap-1 bg-base-200/50 rounded-full p-0.5 shrink-0">
+                <div
+                  role="group"
+                  aria-label="View mode"
+                  className="flex items-center gap-1 bg-base-200/50 dark:bg-white/5 rounded-full p-0.5 shrink-0 border border-base-300/40 dark:border-white/10"
+                >
                   <button
                     type="button"
                     onClick={() => setViewMode('standard')}
-                    className={`p-1.5 rounded-full transition-all ${
+                    aria-pressed={viewMode === 'standard'}
+                    className={`p-1.5 rounded-full transition-all active:scale-90 ${
                       viewMode === 'standard'
-                        ? 'bg-base-100 shadow-sm text-primary'
-                        : 'text-base-content/40 hover:text-base-content'
+                        ? 'bg-base-100 dark:bg-white/10 shadow-sm text-primary dark:text-primary/80'
+                        : 'text-base-content/50 hover:text-base-content hover:bg-base-200/60 dark:hover:bg-white/10'
                     }`}
                     title="Standard view"
                   >
@@ -925,10 +1165,11 @@ export default function Sale() {
                   <button
                     type="button"
                     onClick={() => setViewMode('compact')}
-                    className={`p-1.5 rounded-full transition-all ${
+                    aria-pressed={viewMode === 'compact'}
+                    className={`p-1.5 rounded-full transition-all active:scale-90 ${
                       viewMode === 'compact'
-                        ? 'bg-base-100 shadow-sm text-primary'
-                        : 'text-base-content/40 hover:text-base-content'
+                        ? 'bg-base-100 dark:bg-white/10 shadow-sm text-primary dark:text-primary/80'
+                        : 'text-base-content/50 hover:text-base-content hover:bg-base-200/60 dark:hover:bg-white/10'
                     }`}
                     title="Compact view"
                   >
@@ -948,7 +1189,7 @@ export default function Sale() {
             legendLabel={t('sale.categoryLegend')}
             categoryTooltipFormatter={(cat, count) =>
               count !== undefined
-                ? `${cat.name} — ${t('sale.categoryCount', { count })}`
+                ? `${cat.name} · ${t('sale.categoryCount', { count })}`
                 : cat.name
             }
             footer={
@@ -965,9 +1206,12 @@ export default function Sale() {
               </div>
             }
           />
+              </div>
+            </div>
+          </div>
 
           {/* Products Grid */}
-          <div className={`gap-3 sm:gap-4 mb-6 sm:mb-8 grid ${viewMode === 'compact'
+          <div className={`gap-2 sm:gap-3 mb-5 sm:mb-6 grid ${viewMode === 'compact'
               ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-10 3xl:grid-cols-12'
               : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10 4xl:grid-cols-12'
           }`}>
@@ -1015,8 +1259,8 @@ export default function Sale() {
                             product.unit
                           )
                         }
-                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white bg-red-400 dark:bg-red-500/20
-                          hover:bg-red-500 rounded-lg transition-all active:scale-90 text-sm sm:text-base"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-error bg-error/10 dark:bg-error/20
+                          hover:bg-error/25 rounded-lg transition-all active:scale-90 text-sm sm:text-base"
                         aria-label={t('sale.decreaseQuantity')}
                       >
                         -
@@ -1076,11 +1320,14 @@ export default function Sale() {
                   const note = itemNotes[item.id] || '';
                   return (
                     <div key={item.id} className="flex flex-col">
-                      <div className="flex justify-between items-center text-slate-700 dark:text-white/80">
-                        <span>
-                          {item.name} × {item.quantity} {item.unit === 'item' ? 'item(s)' : item.unit}
+                      <div className="flex justify-between items-center gap-2 text-base-content/80">
+                        <span className="flex items-center gap-2 min-w-0">
+                          <ProductThumb product={item} size="sm" />
+                          <span className="truncate">
+                            {item.name} × {item.quantity} {item.unit === 'item' ? 'item(s)' : item.unit}
+                          </span>
                         </span>
-                        <span>{formatPrice(item.price * item.quantity)}</span>
+                        <span className="shrink-0">{formatPrice(item.price * item.quantity)}</span>
                       </div>
                       {/* Item notes customization */}
                       <div className="flex items-center gap-2 mt-0.5">
@@ -1111,48 +1358,58 @@ export default function Sale() {
                     {formatPrice(totalAmount)}
                   </span>
                 </div>
+                {taxAmount > 0 && (
+                  <div className="flex justify-between items-center text-base-content/60 text-sm">
+                    <span>{t('sale.tax', { rate: taxRate })}</span>
+                    <span>{formatPrice(taxAmount)}</span>
+                  </div>
+                )}
                 {deliveryFee > 0 && (
-                  <div className="flex justify-between items-center text-slate-600 dark:text-gray-400 text-sm">
+                  <div className="flex justify-between items-center text-base-content/60 text-sm">
                     <span>{t('sale.deliveryFee')}</span>
                     <span>{formatPrice(deliveryFee)}</span>
+                  </div>
+                )}
+                {discountAmount > 0 && (
+                  <div className="flex justify-between items-center text-success text-sm">
+                    <span>{t('sale.discount')} {appliedCoupon ? `(${appliedCoupon.code})` : ''}</span>
+                    <span>-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
                 <div className="border-t border-base-300/50 pt-2 mt-2 flex justify-between items-center">
                   <span className="text-base-content font-bold">{t('sale.total')}</span>
                   <span className="text-primary dark:text-primary/80 font-bold">
-                    {formatPrice(totalAmount + deliveryFee)}
+                    {formatPrice(grandTotal)}
                   </span>
                 </div>
               </div>
             </Card>
           )}
 
-          {/* Sell Button — desktop only (mobile uses sticky bar below) */}
-          <div className="hidden lg:block">
-            <button
+          {/* Complete Sale + Preview — desktop only (mobile uses sticky bar below) */}
+          <div className="hidden lg:grid grid-cols-[1fr_2fr] gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setShowOrderPreview(true)}
+              disabled={cart.length === 0 || isSelling || isLoading}
+              className="w-full border-base-300/50 bg-base-100/60 text-base-content/80 hover:bg-base-200/60 hover:text-base-content disabled:opacity-40"
+              iconStart={<span className={iconClass('lucide:eye', 'text-lg')} />}
+            >
+              {t('sale.previewOrder')}
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              block
               onClick={handleSell}
               disabled={cart.length === 0 || isSelling || isLoading}
-              className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-semibold
-                transition-all duration-300 shadow-lg hover:shadow-xl btn btn-block ${
-                  cart.length === 0 || isSelling || isLoading
-                    ? 'btn-disabled bg-gray-500/50 cursor-not-allowed'
-                    : 'bg-primary btn-primary'
-                }`}
+              loading={isSelling}
+              className="disabled:bg-base-300/60"
+              iconStart={<span className={iconClass('lucide:shopping-cart', 'text-xl')} />}
             >
-              {isSelling ? (
-                <>
-                  <div
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
-                  />
-                  <span>{t('sale.processing')}</span>
-                </>
-              ) : (
-                <>
-                  <span className={iconClass('lucide:shopping-cart', 'text-xl')} />
-                  {t('sale.completeSale')}
-                </>
-              )}
-            </button>
+              {isSelling ? t('sale.processing') : t('sale.completeSale')}
+            </Button>
           </div>
         </div>{/* end main-content */}
 
@@ -1161,45 +1418,102 @@ export default function Sale() {
           className={`fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none transition-transform duration-300 ${cart.length > 0 ? 'translate-y-0' : 'translate-y-[120px]'}`}
         >
           <div className="pointer-events-auto bg-base-100/95 backdrop-blur-xl
-            border-t border-slate-200 dark:border-slate-700
+            border-t border-base-300/40
             px-4 py-3 pb-[env(safe-area-inset-bottom,0.75rem)]
             shadow-2xl shadow-black/10 dark:shadow-black/40">
             <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs text-base-content/50">
-                  {t('sale.itemsSelected', { count: cart.length })}
-                </p>
-                <p className="text-lg font-bold text-primary dark:text-primary/80">
-                  {formatPrice(totalAmount + deliveryFee)}
-                </p>
-                {deliveryFee > 0 && (
-                  <p className="text-[10px] text-slate-400 dark:text-gray-500">
-                    {t('sale.deliveryFee')}: {formatPrice(deliveryFee)}
+              {/* Price block — hover/tap reveals the itemized invoice (items + taxes + fees) */}
+              <div className="relative min-w-0 flex-1">
+                <button
+                  type="button"
+                  onClick={() => setShowBottomInvoice(v => !v)}
+                  onMouseEnter={() => setShowBottomInvoice(true)}
+                  onMouseLeave={() => setShowBottomInvoice(false)}
+                  aria-expanded={showBottomInvoice}
+                  className="text-left w-full group"
+                >
+                  <p className="text-xs text-base-content/50">
+                    {t('sale.itemsSelected', { count: cart.length })}
                   </p>
-                )}
+                  <p className="text-lg font-bold text-primary dark:text-primary/80 flex items-center gap-1">
+                    {formatPrice(grandTotal)}
+                    <span className={`ri-arrow-up-s-line ri-14px text-base-content/40 transition-transform duration-200 ${showBottomInvoice ? 'rotate-180' : ''}`} />
+                  </p>
+                  {deliveryFee > 0 && (
+                    <p className="text-[10px] text-base-content/50">
+                      {t('sale.deliveryFee')}: {formatPrice(deliveryFee)}
+                    </p>
+                  )}
+                  {discountAmount > 0 && (
+                    <p className="text-[10px] text-success">
+                      {t('sale.discount')}: -{formatPrice(discountAmount)}
+                    </p>
+                  )}
+                </button>
+
+                {/* Hover card — itemized invoice above the bar */}
+                <div
+                  className={`absolute bottom-full left-0 right-0 mb-2 z-50 origin-bottom transition-all duration-200
+                    ${showBottomInvoice && cart.length > 0
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 translate-y-2 pointer-events-none'}`}
+                >
+                  <div className="rounded-xl bg-base-100 dark:bg-base-200 border border-base-300/40 shadow-2xl shadow-black/10 dark:shadow-black/40 p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-base-content/50 mb-2 flex items-center gap-1.5">
+                      <span className="ri-receipt-line ri-12px text-primary" />
+                      {t('sale.invoicePreview') || 'Invoice'}
+                    </p>
+                    <div className="max-h-48 overflow-y-auto space-y-1.5 pr-0.5">
+                      {cart.map(item => (
+                        <div key={item.id} className="flex items-center justify-between gap-2 text-xs">
+                          <span className="flex items-center gap-2 min-w-0">
+                            <ProductThumb product={item} size="sm" />
+                            <span className="truncate text-base-content/80">
+                              {item.name} <span className="text-base-content/40">×{item.quantity}</span>
+                            </span>
+                          </span>
+                          <span className="font-medium text-base-content tabular-nums shrink-0">
+                            {formatPrice(item.price * item.quantity)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-dashed border-base-300/50 space-y-1 text-xs">
+                      {invoiceLines.map(line => (
+                        <div key={line.key} className={`flex justify-between ${line.muted ? 'text-base-content/60' : 'font-semibold text-base-content'}`}>
+                          <span>{line.label}</span>
+                          <span className={`tabular-nums ${line.negative ? 'text-success' : ''}`}>
+                            {line.negative ? '-' : ''}{formatPrice(line.value)}
+                          </span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between font-bold text-base-content pt-1.5 border-t border-base-300/50">
+                        <span>{t('sale.total')}</span>
+                        <span className="tabular-nums text-primary">{formatPrice(grandTotal)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button
+              <Button
+                variant="outline"
+                shape="square"
+                onClick={() => setShowOrderPreview(true)}
+                disabled={cart.length === 0 || isSelling || isLoading}
+                className="shrink-0 border-base-300/50 bg-base-100 text-base-content/70 hover:bg-base-200/70 disabled:opacity-40"
+                aria-label={t('sale.previewOrder')}
+                iconStart={<span className={iconClass('lucide:eye', 'text-lg')} />}
+              />
+              <Button
+                variant="primary"
                 onClick={handleSell}
                 disabled={cart.length === 0 || isSelling || isLoading}
-                className="shrink-0 px-5 py-2.5 rounded-xl bg-primary text-white font-semibold
-                  flex items-center gap-2 shadow-lg shadow-teal-500/30 dark:shadow-teal-500/20
-                  transition-all duration-200 active:scale-95
-                  disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
+                loading={isSelling}
+                className="shrink-0 px-5 py-2.5 shadow-lg shadow-primary/30 dark:shadow-primary/20 disabled:bg-base-300/70 disabled:shadow-none"
+                iconStart={<span className={iconClass('lucide:shopping-cart', 'text-lg')} />}
               >
-                {isSelling ? (
-                  <>
-                    <div
-                      className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
-                    />
-                    <span className="text-sm">{t('sale.processing')}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className={iconClass('lucide:shopping-cart', 'text-lg')} />
-                    <span className="text-sm">{t('sale.completeSale')}</span>
-                  </>
-                )}
-              </button>
+                <span className="text-sm">{isSelling ? t('sale.processing') : t('sale.completeSale')}</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -1211,9 +1525,9 @@ export default function Sale() {
           className="hidden lg:block relative"
         >
           <div
-            className={`sticky top-24 overflow-hidden transition-all duration-300 ${(sidebarOpen || sidebarHovered) ? 'w-[280px] opacity-100' : 'w-0 opacity-0'}`}
+            className={`sticky top-24 overflow-hidden transition-all duration-300 ${(sidebarOpen || sidebarHovered) ? 'w-[264px] opacity-100' : 'w-0 opacity-0'}`}
           >
-            <div className="w-[280px] space-y-4">
+            <div className="w-[264px] space-y-3">
               {/* Order Type Card */}
                 <Card>
                 <div className="flex items-center gap-2 mb-3">
@@ -1228,14 +1542,14 @@ export default function Sale() {
                       disabled={isLoading}
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg font-medium text-xs transition-all active:scale-[0.98] ${
                         isLoading
-                          ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                          ? 'bg-base-200 text-base-content/40 cursor-not-allowed'
                           : orderType === ot.key
-                            ? 'bg-primary text-white shadow-md shadow-teal-500/20'
+                            ? 'bg-primary text-white shadow-md shadow-primary/20'
                             : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10'
                       }`}
                     >
                       <span className={`text-base ${orderType === ot.key ? '' : 'text-primary dark:text-primary/80'}`}>{ot.icon}</span>
-                      <span className="truncate">{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
+                      <span className="truncate">{t(ORDER_TYPE_KEYS[ot.key])}</span>
                       {orderType === ot.key && (
                         <span className={iconClass('lucide:circle-check', 'ml-auto w-3.5 h-3.5')} />
                       )}
@@ -1326,7 +1640,7 @@ export default function Sale() {
                           <>
                             <p className="text-[11px] text-warning dark:text-warning/80 font-medium">
                               <span className={iconClass('lucide:alert-triangle', 'w-3 h-3 inline-block mr-0.5')} />
-                              Exceeds {selectedZone.max_distance} km max — capped
+                              Exceeds {selectedZone.max_distance} km max. Capped
                             </p>
                             <p className="text-[11px] text-base-content/50">
                               Fee: {formatPrice(selectedZone.base_fee)} + {selectedZone.max_distance}km × {formatPrice(selectedZone.fee_per_km)} = {formatPrice(deliveryFee)}
@@ -1434,7 +1748,7 @@ export default function Sale() {
 
                 {selectableNotes.length === 0 ? (
                   <p className="text-[10px] text-base-content/40 italic">
-                    {t('sale.quickNotesHint') || 'No quick notes yet — mark notes as selectable in Notes.'}
+                    {t('sale.quickNotesHint') || 'No quick notes yet. Mark notes as selectable in Notes.'}
                   </p>
                 ) : (
                   <>
@@ -1486,18 +1800,94 @@ export default function Sale() {
                 </Card>
               )}
 
+              {/* Payment Method + Coupon — desktop sidebar */}
+                <Card>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="ri-bank-card-line text-base-content/50" />
+                    <label className="text-sm font-medium text-base-content/80">{t('sale.paymentMethod')}</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {PAYMENT_METHODS.map(m => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => setPaymentMethod(m)}
+                        disabled={isLoading}
+                        aria-pressed={paymentMethod === m}
+                        className={`flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-[0.97] ${
+                          paymentMethod === m
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'bg-base-100/50 text-base-content/70 hover:bg-primary/10 dark:hover:bg-primary/20'
+                        }`}
+                      >
+                        <span className={`${PAYMENT_ICONS[m]} text-xs`} />
+                        {t(`payments.${m}`)}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-base-300/30">
+                    <label className="flex items-center gap-1.5 text-[11px] font-medium text-base-content/60 mb-1">
+                      <span className="ri-ticket-2-line text-sm" />
+                      {t('sale.coupon')}
+                    </label>
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between gap-2 bg-success/10 border border-success/30 rounded-lg px-2.5 py-1.5">
+                        <span className="text-[11px] font-semibold text-success flex items-center gap-1.5">
+                          <span className="ri-checkbox-circle-line ri-14px" />
+                          {appliedCoupon.code} · -{formatPrice(discountAmount)}
+                        </span>
+                        <button type="button" onClick={clearCoupon} className="p-0.5 text-base-content/40 hover:text-error transition-colors" aria-label={t('sale.couponRemove')}>
+                          <span className="ri-close-line ri-12px" />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex gap-1.5">
+                          <input
+                            type="text"
+                            value={couponInput}
+                            onChange={e => { setCouponInput(e.target.value.toUpperCase()); if (couponError) setCouponError(null); }}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleApplyCoupon(); } }}
+                            placeholder={t('sale.couponPlaceholder')}
+                            disabled={isLoading}
+                            className="input w-full text-xs uppercase"
+                            aria-label={t('sale.coupon')}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyCoupon}
+                            disabled={!couponInput.trim() || isLoading}
+                            className="btn btn-primary btn-sm shrink-0 gap-1"
+                          >
+                            <span className="ri-check-line ri-14px" />
+                            {t('sale.couponApply')}
+                          </button>
+                        </div>
+                        {couponError && (
+                          <p className="text-[10px] text-error mt-1">{couponError}</p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </Card>
+
               {/* Total Amount — centered, no card container */}
                 <div className="text-center">
                 <h2 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-1.5 flex items-center justify-center gap-1.5">
                   <span className={iconClass('lucide:wallet', 'w-3.5 h-3.5 text-primary')} />
                   {t('sale.totalAmount')}
                 </h2>
-                <p className={`text-2xl font-extrabold mb-1 ${isLoading ? 'text-slate-400 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
-                  {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
+                <p className={`text-2xl font-extrabold mb-1 ${isLoading ? 'text-base-content/40 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
+                  {isLoading ? '-' : `${settings.currency} ${grandTotal.toFixed(2)}`}
                 </p>
                 {deliveryFee > 0 && (
                   <p className="text-[11px] text-base-content/50">
                     Subtotal: {formatPrice(totalAmount)} + Delivery: {formatPrice(deliveryFee)}
+                  </p>
+                )}
+                {discountAmount > 0 && (
+                  <p className="text-[11px] text-success font-medium">
+                    {t('sale.discount')} {appliedCoupon ? `(${appliedCoupon.code})` : ''}: -{formatPrice(discountAmount)}
                   </p>
                 )}
                 <span className="badge badge-soft badge-primary gap-1.5 mt-1.5">
@@ -1512,8 +1902,11 @@ export default function Sale() {
                   <h3 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-2">{t('sale.cartSummary')}</h3>
                   <div className="space-y-1.5">
                     {cart.map(item => (
-                      <div key={item.id} className="flex justify-between text-xs text-slate-700 dark:text-white/70">
-                        <span className="truncate mr-2">{item.name} ×{item.quantity}</span>
+                      <div key={item.id} className="flex justify-between items-center gap-2 text-xs text-base-content/80">
+                        <span className="flex items-center gap-2 min-w-0">
+                          <ProductThumb product={item} size="sm" />
+                          <span className="truncate">{item.name} ×{item.quantity}</span>
+                        </span>
                         <span className="font-medium flex-shrink-0">{formatPrice(item.price * item.quantity)}</span>
                       </div>
                     ))}
@@ -1526,56 +1919,161 @@ export default function Sale() {
           {/* Collapsed peek tab — visible on hover when sidebar is closed */}
           {!sidebarOpen && !sidebarHovered && (
             <div
-              className="absolute right-0 top-24 w-4 h-32 rounded-l-lg bg-teal-400/30 dark:bg-primary/20 cursor-pointer hover:bg-teal-400/50 dark:hover:bg-primary/40 transition-colors"
+              className="absolute right-0 top-24 w-4 h-32 rounded-l-lg bg-primary/20 cursor-pointer hover:bg-primary/40 transition-colors"
               onMouseEnter={() => setSidebarHovered(true)}
             />
           )}
         </div>
       </div>
 
-      {/* Success Dialog */}
-      {showSuccessDialog && receiptData && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
-        >
-          <div
-            className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full my-8 transition-colors duration-300"
-          >
-            <div className="text-center">
-              <div
-                className="mx-auto mb-4"
-              >
-                <span className={iconClass('lucide:circle-check', 'w-16 h-16 text-primary mx-auto')} />
+      {/* Order Preview Modal — full summary of the current order before completing */}
+      <Modal
+        isOpen={showOrderPreview}
+        onClose={() => setShowOrderPreview(false)}
+        position="center"
+        size="md"
+        scroll
+        title={t('sale.orderPreview')}
+        headerIcon={<span className={iconClass('lucide:receipt', 'w-5 h-5 text-primary')} />}
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              variant="ghost"
+              className="flex-1"
+              onClick={() => setShowOrderPreview(false)}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={() => { setShowOrderPreview(false); handleSell(); }}
+              disabled={cart.length === 0 || isSelling || isLoading}
+              loading={isSelling}
+              iconStart={<span className={iconClass('lucide:shopping-cart', 'text-lg')} />}
+            >
+              {isSelling ? t('sale.processing') : t('sale.completeSale')}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          {/* Order meta badges */}
+          <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 rounded-full text-xs font-medium">
+              {t(ORDER_TYPE_KEYS[orderType])}
+            </span>
+            {orderType === 'dine-in' && (
+              <span className="px-3 py-1 bg-info/10 dark:bg-info/20 text-info dark:text-info/80 rounded-full text-xs font-medium">
+                {t('sale.table')} {tableNumber}
+              </span>
+            )}
+            {orderType === 'delivery' && deliveryTypes.find(dt => dt.id === deliveryTypeId)?.name && (
+              <span className="px-3 py-1 bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning/80 rounded-full text-xs font-medium">
+                {deliveryTypes.find(dt => dt.id === deliveryTypeId)?.name}
+              </span>
+            )}
+            {employeeId > 0 && employees.find(e => e.id === employeeId)?.name && (
+              <span className="px-3 py-1 bg-secondary/10 dark:bg-secondary/20 text-secondary dark:text-secondary/80 rounded-full text-xs font-medium">
+                {employees.find(e => e.id === employeeId)?.name}
+              </span>
+            )}
+            <span className="px-3 py-1 bg-success/10 text-success dark:text-success/80 rounded-full text-xs font-medium flex items-center gap-1">
+              <span className={`${PAYMENT_ICONS[paymentMethod]} text-xs`} />
+              {t(`payments.${paymentMethod}`)}
+            </span>
+          </div>
+
+          {/* Items list */}
+          <div className="rounded-xl border border-base-300/40 divide-y divide-base-300/30 max-h-72 overflow-y-auto">
+            {cart.length === 0 ? (
+              <p className="p-4 text-sm text-base-content/50 text-center">{t('sale.pleaseSelectProduct')}</p>
+            ) : cart.map(item => (
+              <div key={item.id} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+                <div className="flex items-center gap-3 min-w-0">
+                  <ProductThumb product={item} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-base-content truncate">{item.name}</p>
+                    <p className="text-[11px] text-base-content/50">{item.quantity} {item.unit} × {formatPrice(item.price)}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-base-content shrink-0 tabular-nums">{formatPrice(item.price * item.quantity)}</span>
               </div>
+            ))}
+          </div>
 
-              <h3
-                className="text-2xl font-bold text-base-content mb-6"
-              >
-                {t('sale.saleComplete')}
-              </h3>
-
-              {/* Order Details Badge */}
+          {/* Totals — shared itemized lines (subtotal, tax, delivery, discount) */}
+          <div className="space-y-1.5 text-sm">
+            {invoiceLines.map(line => (
               <div
-                className="flex flex-wrap justify-center gap-2 mb-4"
+                key={line.key}
+                className={`flex justify-between ${line.muted ? 'text-base-content/70' : 'text-base-content'}`}
               >
+                <span>{line.label}</span>
+                <span className={`tabular-nums ${line.negative ? 'text-success' : ''}`}>
+                  {line.negative ? '-' : ''}{formatPrice(line.value)}
+                </span>
+              </div>
+            ))}
+            <div className="flex justify-between font-bold text-base-content border-t border-base-300/40 pt-2">
+              <span>{t('sale.total')}</span>
+              <span className="tabular-nums text-primary">{formatPrice(grandTotal)}</span>
+            </div>
+          </div>
+
+          {/* Order notes */}
+          {orderNotes.trim() && (
+            <div className="rounded-lg bg-warning/10 border border-warning/20 px-3 py-2.5">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-warning mb-0.5 flex items-center gap-1">
+                <span className="ri-sticky-note-line ri-12px" /> {t('sale.orderNotes') || 'Order Notes'}
+              </p>
+              <p className="text-xs text-base-content/80 whitespace-pre-wrap">{orderNotes}</p>
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      {/* Success Sheet — slide-in right drawer (modal-enter-right animation) */}
+      <Modal
+        isOpen={showSuccessDialog && !!receiptData}
+        onClose={handleNewSale}
+        position="right"
+        size="md"
+        scroll
+        dismissible={false}
+        closeOnBackdrop={false}
+        escapeClosable={false}
+        title={t('sale.saleComplete')}
+        headerIcon={<span className={iconClass('lucide:circle-check', 'w-6 h-6 text-primary')} />}
+      >
+        {receiptData && (
+        <div className="space-y-4">
+          {/* Order Details Badge */}
+          <div
+            className="flex flex-wrap gap-2"
+          >
                 <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 rounded-full text-xs font-medium">
                   {receiptData.orderType.charAt(0).toUpperCase() + receiptData.orderType.slice(1)}
                 </span>
                 {receiptData.tableNumber && (
-                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-info/10 dark:bg-info/20 text-info dark:text-info/80 rounded-full text-xs font-medium">
                     Table {receiptData.tableNumber}
                   </span>
                 )}
                 {receiptData.deliveryTypeName && (
-                  <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/20 text-warning dark:text-warning/80 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning/80 rounded-full text-xs font-medium">
                     {receiptData.deliveryTypeName}
                   </span>
                 )}
                 {receiptData.employeeName && (
-                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/20 text-secondary dark:text-purple-400 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-secondary/10 dark:bg-secondary/20 text-secondary dark:text-secondary/80 rounded-full text-xs font-medium">
                     {receiptData.employeeName}
                   </span>
                 )}
+                <span className="px-3 py-1 bg-success/10 text-success dark:text-success/80 rounded-full text-xs font-medium flex items-center gap-1">
+                  <span className={`${PAYMENT_ICONS[paymentMethod]} text-xs`} />
+                  {t(`payments.${paymentMethod}`)}
+                </span>
               </div>
 
               {/* Receipt Preview */}
@@ -1583,7 +2081,11 @@ export default function Sale() {
                 <Receipt
                   ref={receiptRef}
                   products={receiptData.products}
-                  totalAmount={receiptData.totalAmount + (receiptData.deliveryFee || 0)}
+                  totalAmount={receiptData.grandTotal}
+                  subtotalAmount={receiptData.totalAmount}
+                  discountAmount={receiptData.discountAmount}
+                  paymentMethod={receiptData.paymentMethod}
+                  taxAmount={taxAmount}
                   date={receiptData.date}
                   time={receiptData.time}
                   settings={settings}
@@ -1597,144 +2099,115 @@ export default function Sale() {
                 />
               </div>
 
-              {/* Invoice Type Selector */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-base-content/80 mb-1.5">
-                  {t('invoice.typeLabel')}
-                </label>
-                <select
-                  value={invoiceType}
-                  onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}
-                  className="select w-full"
-                >
-                  <option value="tax">{t('invoice.typeTax')}</option>
-                  <option value="commercial">{t('invoice.typeCommercial')}</option>
-                  <option value="proforma">{t('invoice.typeProforma')}</option>
-                  <option value="credit">{t('invoice.typeCredit')}</option>
-                  <option value="receipt">{t('invoice.typeReceipt')}</option>
-                </select>
+              {/* Payment Method + Invoice Type Selectors */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-base-content/80 mb-1.5">
+                    {t('sale.paymentMethod')}
+                  </label>
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => handlePaymentMethodChange(e.target.value as PaymentMethod)}
+                    className="select w-full"
+                  >
+                    {PAYMENT_METHODS.map(m => (
+                      <option key={m} value={m}>{t(`payments.${m}`)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-base-content/80 mb-1.5">
+                    {t('invoice.typeLabel')}
+                  </label>
+                  <select
+                    value={invoiceType}
+                    onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}
+                    className="select w-full"
+                  >
+                    <option value="tax">{t('invoice.typeTax')}</option>
+                    <option value="commercial">{t('invoice.typeCommercial')}</option>
+                    <option value="proforma">{t('invoice.typeProforma')}</option>
+                    <option value="credit">{t('invoice.typeCredit')}</option>
+                    <option value="receipt">{t('invoice.typeReceipt')}</option>
+                  </select>
+                </div>
               </div>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <button
+                <Button
+                  variant="info"
                   onClick={handleDownloadPDF}
                   disabled={isDownloadingPDF}
-                  className={`py-3 px-4 text-white rounded-xl font-semibold
-                    transition-all duration-300 flex items-center justify-center gap-2 ${
-                      isDownloadingPDF ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500'
-                    }`}
+                  loading={isDownloadingPDF}
+                  iconStart={<span className={iconClass('lucide:download', 'text-xl')} />}
                 >
-                  {isDownloadingPDF ? (
-                    <>
-                      <div
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
-                      />
-                      <span>{t('sale.saving')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className={iconClass('lucide:download', 'text-xl')} />
-                      {t('sale.pdf')}
-                    </>
-                  )}
-                </button>
+                  {isDownloadingPDF ? t('sale.saving') : t('sale.pdf')}
+                </Button>
 
-                <button
+                <Button
+                  variant="secondary"
                   onClick={handlePrint}
                   disabled={isPrinting}
-                  className={`py-3 px-4 text-white rounded-xl font-semibold
-                    transition-all duration-300 flex items-center justify-center gap-2 ${
-                      isPrinting ? 'bg-purple-300 cursor-not-allowed' : 'bg-purple-500'
-                    }`}
+                  loading={isPrinting}
+                  iconStart={<span className={iconClass('lucide:printer', 'text-xl')} />}
                 >
-                  {isPrinting ? (
-                    <>
-                      <div
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
-                      />
-                      <span>{t('sale.printing')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className={iconClass('lucide:printer', 'text-xl')} />
-                      {t('sale.print')}
-                    </>
-                  )}
-                </button>
+                  {isPrinting ? t('sale.printing') : t('sale.print')}
+                </Button>
               </div>
 
-              <button
+              <Button
+                variant="accent"
+                block
                 onClick={handleDownloadInvoice}
                 disabled={isInvoiceDownloading}
-                className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold 
-                  transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                loading={isInvoiceDownloading}
+                className="mb-4"
+                iconStart={<span className={iconClass('lucide:file-text', 'text-xl')} />}
               >
-                {isInvoiceDownloading ? (
-                  <div
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
-                  />
-                ) : (
-                  <>
-                    <span className={iconClass('lucide:file-text', 'text-xl')} />
-                    {t('invoice.downloadInvoice')}
-                  </>
-                )}
-              </button>
+                {isInvoiceDownloading ? t('sale.saving') : t('invoice.downloadInvoice')}
+              </Button>
 
-              <button
+              <Button
+                variant="primary"
+                block
                 onClick={handleNewSale}
-                className="w-full py-3 px-4 bg-primary text-white rounded-xl font-semibold
-                  transition-all duration-300 flex items-center justify-center gap-2"
+                iconStart={<span className={iconClass('lucide:shopping-cart', 'text-xl')} />}
               >
-                <span className={iconClass('lucide:shopping-cart', 'text-xl')} />
                 {t('sale.startNewSale')}
-              </button>
-            </div>
+              </Button>
           </div>
-        </div>
-      )}
+        )}
+        </Modal>
 
-      {/* PDF Success Dialog */}
-      {showPDFSuccessDialog && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={() => setShowPDFSuccessDialog(false)}
-        >
-          <div
-            className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full transition-colors duration-300"
-            onClick={e => e.stopPropagation()}
+      {/* PDF Success Dialog — themed success modal (variant accents via Modal) */}
+      <Modal
+        isOpen={showPDFSuccessDialog}
+        onClose={() => setShowPDFSuccessDialog(false)}
+        position="center"
+        size="sm"
+        variant="success"
+        title={t('sale.pdfSaved')}
+        headerIcon={
+          <span className="modal__icon">
+            <span className={iconClass('lucide:circle-check', 'w-6 h-6')} />
+          </span>
+        }
+      >
+        <div className="text-center">
+          <p className="text-base-content/70 mb-6 break-all text-sm">
+            {savedPDFPath}
+          </p>
+          <button
+            onClick={() => setShowPDFSuccessDialog(false)}
+            className="w-full py-3 px-4 bg-success hover:bg-success/90 text-white rounded-xl font-semibold
+              transition-all duration-300 flex items-center justify-center gap-2"
           >
-            <div className="text-center">
-              <div
-                className="mx-auto mb-4"
-              >
-                <span className={iconClass('lucide:circle-check', 'w-16 h-16 text-green-500 mx-auto')} />
-              </div>
-
-              <h3
-                className="text-2xl font-bold text-base-content mb-2"
-              >
-                {t('sale.pdfSaved')}
-              </h3>
-
-              <p
-                className="text-slate-600 dark:text-slate-300 mb-6 break-all text-sm"
-              >
-                {savedPDFPath}
-              </p>
-
-              <button
-                onClick={() => setShowPDFSuccessDialog(false)}
-                className="w-full py-3 px-4 bg-green-500 text-white rounded-xl font-semibold
-                  transition-all duration-300 hover:bg-green-600"
-              >
-                {t('common.close')}
-              </button>
-            </div>
-          </div>
+            <span className="ri-check-double-line ri-16px" />
+            {t('common.close')}
+          </button>
         </div>
-      )}
+      </Modal>
 
       <KeyboardShortcutsModal isOpen={showShortcutHelp} onClose={() => setShowShortcutHelp(false)} />
 

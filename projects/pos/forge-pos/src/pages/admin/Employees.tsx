@@ -15,17 +15,19 @@ import Card from '../../components/ui/Card';
 type Tab = 'employees' | 'types';
 
 const EMPLOYEE_TYPE_COLORS: Record<string, string> = {
-  'Manager': 'bg-purple-500',
-  'Chef': 'bg-orange-500',
-  'Waiter': 'bg-blue-500',
-  'Cashier': 'bg-emerald-500',
-  'Driver': 'bg-yellow-500',
-  'Cleaner': 'bg-slate-500',
-  'Other': 'bg-gray-500',
+  // Categorical role colors — theme tokens (bg-X + text-X-content pairs) so
+  // avatar chips keep distinct hues AND correct contrast in every theme variant.
+  'Manager': 'bg-secondary text-secondary-content',
+  'Chef': 'bg-warning text-warning-content',
+  'Waiter': 'bg-info text-info-content',
+  'Cashier': 'bg-success text-success-content',
+  'Driver': 'bg-accent text-accent-content',
+  'Cleaner': 'bg-neutral text-neutral-content',
+  'Other': 'bg-base-300 text-base-content',
 };
 
 const getTypeColor = (typeName: string) => {
-  return EMPLOYEE_TYPE_COLORS[typeName] || 'bg-gray-500';
+  return EMPLOYEE_TYPE_COLORS[typeName] || 'bg-neutral text-neutral-content';
 };
 
 const initialNewEmployee: NewEmployee = {
@@ -351,7 +353,7 @@ export default function Employees() {
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
-                    <span className="ri-list-unordered-line ri-14px" />
+                    <span className="ri-file-list-3-line ri-14px" />
                   </button>
                 </div>
               </div>
@@ -386,7 +388,7 @@ export default function Employees() {
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0
                               ${getTypeColor(getTypeName(emp.employee_type_id))}`}>
                               {emp.name.charAt(0).toUpperCase()}
                             </div>
@@ -394,8 +396,8 @@ export default function Employees() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-base-content/70">{getTypeName(emp.employee_type_id)}</td>
-                        <td className="px-4 py-3 text-base-content/70">{emp.phone || '—'}</td>
-                        <td className="px-4 py-3 text-base-content/70">{emp.email || '—'}</td>
+                        <td className="px-4 py-3 text-base-content/70">{emp.phone || '-'}</td>
+                        <td className="px-4 py-3 text-base-content/70">{emp.email || '-'}</td>
                         <td className="px-4 py-3 text-right tabular-nums text-base-content">{emp.salary.toLocaleString()}</td>
                         <td className="px-4 py-3">
                           {emp.is_active ? (
@@ -445,7 +447,7 @@ export default function Employees() {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold
                           ${getTypeColor(getTypeName(emp.employee_type_id))}`}>
                           {emp.name.charAt(0).toUpperCase()}
                         </div>
@@ -534,7 +536,7 @@ export default function Employees() {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-lg
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg
                           ${getTypeColor(et.name)}`}>
                           <span className="ri-briefcase-4-line" />
                         </div>

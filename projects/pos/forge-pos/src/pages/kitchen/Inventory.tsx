@@ -265,7 +265,7 @@ export default function Inventory() {
       render: (tx) => {
         const colors: Record<string, string> = { purchase: 'bg-success', usage: 'bg-info', waste: 'bg-error', adjustment: 'bg-warning', return: 'bg-secondary' };
         const ing = ingredients.find(i => i.id === tx.ingredient_id);
-        return <div className="flex items-center gap-2"><span className={`w-2 h-2 rounded-full ${colors[tx.transaction_type] || 'bg-base-content/20'}`} /><span className="capitalize font-medium">{tx.transaction_type}</span><span className="text-base-content/50 text-sm ml-1">— {ing?.name || `#${tx.ingredient_id}`}</span></div>;
+        return <div className="flex items-center gap-2"><span className={`w-2 h-2 rounded-full ${colors[tx.transaction_type] || 'bg-base-content/20'}`} /><span className="capitalize font-medium">{tx.transaction_type}</span><span className="text-base-content/50 text-sm ml-1">· {ing?.name || `#${tx.ingredient_id}`}</span></div>;
       }
     },
     {
@@ -277,7 +277,7 @@ export default function Inventory() {
     },
     {
       key: 'note', label: 'Note', colSpan: 1, hideOnMobile: true,
-      render: (tx) => tx.note ? <span className="text-base-content/50 italic text-sm">"{tx.note}"</span> : <span className="text-base-content/40 text-sm">—</span>
+      render: (tx) => tx.note ? <span className="text-base-content/50 italic text-sm">"{tx.note}"</span> : <span className="text-base-content/40 text-sm">-</span>
     },
     {
       key: 'date', label: 'Date', colSpan: 1, sortable: true,
@@ -550,7 +550,7 @@ export default function Inventory() {
                     <div className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${getTransactionColor(tx.transaction_type)}`} />
                       <span className="font-medium capitalize text-base-content">{tx.transaction_type}</span>
-                      <span className="text-base-content/50 text-sm">— {ing?.name || `ID: ${tx.ingredient_id}`}</span>
+                      <span className="text-base-content/50 text-sm">· {ing?.name || `ID: ${tx.ingredient_id}`}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className={`font-semibold ${tx.quantity_change >= 0 ? 'text-success' : 'text-error'}`}>

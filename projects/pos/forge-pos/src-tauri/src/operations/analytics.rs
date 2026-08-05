@@ -7,6 +7,23 @@ use chrono::{Duration, Local};
 use serde::Serialize;
 
 #[derive(Serialize)]
+pub struct PaymentMethodRevenue {
+    pub payment_method: String,
+    pub revenue: f64,
+    pub orders: i64,
+}
+
+#[derive(QueryableByName)]
+struct PaymentMethodRow {
+    #[diesel(sql_type = Text)]
+    payment_method: String,
+    #[diesel(sql_type = Double)]
+    revenue: f64,
+    #[diesel(sql_type = BigInt)]
+    orders: i64,
+}
+
+#[derive(Serialize)]
 pub struct DailyRevenue { pub date: String, pub revenue: f64, pub orders: i64 }
 #[derive(Serialize)]
 pub struct TopProduct { pub name: String, pub sales: i64, pub revenue: f64 }
@@ -47,6 +64,26 @@ struct SummaryRow {
     total_orders: i64,
     #[diesel(sql_type = Double)]
     total_revenue: f64,
+}
+
+/// Aggregate revenue and order counts grouped by payment method (cash/card/mobile/...).
+pub fn get_revenue_by_payment_method(db_path: &PathBuf) -> Result<Vec<PaymentMethodRevenue>, String> {
+    let mut conn = open_conn(db_path)?;
+    let rows: Vec<PaymentMethodRow> = diesel::sql_query(
+        "SELECT COALESCE(payment_method, 'other') AS payment_method,
+                SUM(total_amount) AS revenue,
+                COUNT(*) AS orders
+         FROM sales
+         GROUP BY payment_method
+         ORDER BY revenue DESC",
+    )
+    .load(&mut conn)
+    .map_err(|e| e.to_string())?;
+    Ok(rows.into_iter().map(|r| PaymentMethodRevenue {
+        payment_method: r.payment_method,
+        revenue: r.revenue,
+        orders: r.orders,
+    }).collect())
 }
 
 pub fn get_analytics(db_path: &PathBuf) -> Result<AnalyticsData, String> {

@@ -55,7 +55,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
 
       {value.length === 0 ? (
         <p className="text-xs text-base-content/40 italic py-2">
-          {t('notes.noSteps') || 'No steps yet — add the first preparation step.'}
+          {t('notes.noSteps') || 'No steps yet. Add the first preparation step.'}
         </p>
       ) : (
         <div className="space-y-2">
@@ -108,7 +108,7 @@ export default function PrepStepsEditor({ value, onChange, compact = false }: Pr
               <textarea
                 value={step.details || ''}
                 onChange={e => updateStep(index, { details: e.target.value })}
-                placeholder={t('notes.stepDetailsPlaceholder') || 'Details — time, temperature, technique...'}
+                placeholder={t('notes.stepDetailsPlaceholder') || 'Details: time, temperature, technique...'}
                 rows={compact ? 1 : 2}
                 className="textarea w-full text-xs leading-relaxed resize-y min-h-[28px]"
                 aria-label={`Step ${index + 1} details`}

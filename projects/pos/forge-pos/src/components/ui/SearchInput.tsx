@@ -26,7 +26,7 @@ interface SearchInputProps {
  *
  * Replaces the verbose `.input.field--sm > .field__wrapper > .input`
  * markup that was duplicated across ProductManager, KitchenDisplay, Notes,
- * Roles and TaxReports. Provides the search icon, debounced-loading spinner
+ * Roles and the Reports › Tax Reports tab. Provides the search icon, debounced-loading spinner
  * and clear button out of the box.
  *
  * Usage:

@@ -19,6 +19,7 @@ pub mod purchase_orders;
 pub mod kitchen_tickets;
 pub mod customers;
 pub mod notes;
+pub mod coupons;
 pub mod tax_reports;
 pub mod employee_schedules;
 pub mod payrolls;
