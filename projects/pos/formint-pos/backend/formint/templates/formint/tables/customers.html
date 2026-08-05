@@ -1,0 +1,26 @@
+<div class="fusion-table" data-fusion-table="{{ resource }}" data-fusion-fragment="formint.tables.{{ resource }}">
+  <div class="table-toolbar">
+    <span class="table-count">{{ table_data|length }} customers</span>
+    <button class="btn btn-primary btn-sm" hx-get="/htmx/forms/customer/" hx-target="#formint-form-slot" hx-swap="innerHTML">+ New customer</button>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>{% for header in table_headers %}<th scope="col">{{ header.label }}</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row in table_data %}
+        <tr>
+          <td>{{ row.id }}</td>
+          <td class="cell-strong">{{ row.full_name }}</td>
+          <td>{{ row.email|default:"—" }}</td>
+          <td>{{ row.phone|default:"—" }}</td>
+          <td class="cell-numeric">{{ row.loyalty_points }}</td>
+          <td class="cell-numeric">{{ row.total_spent }}</td>
+          <td>{% if row.is_active %}<span class="badge badge-ok">Active</span>{% else %}<span class="badge badge-muted">Inactive</span>{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="table-empty">No customers yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
