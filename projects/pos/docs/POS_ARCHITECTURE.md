@@ -1,6 +1,16 @@
 # POS Architecture — Master Design Document
 
-> **Version:** 2.0.0  
+> **⚠️ Superseded (August 2026):** `pos-full` and `pos-solo` have been merged
+> into the single **Formint POS Professional** package — see
+> [FORMINT_ARCHITECTURE.md](FORMINT_ARCHITECTURE.md) for the canonical,
+> current architecture. The `pos-solo` / `pos-full` directories no longer
+> exist; their merged home is [`../formint-pos/`](../formint-pos/).
+>
+> This document is kept as the historical design record for the pre-merge
+> three-edition layout (Solo → Full → Cloud Server). Sections describing
+> deleted paths (`pos-solo/`, `pos-full/`) refer to the pre-merge state.
+>
+> **Version:** 2.0.0 (historical)  
 > **Last Updated:** 20 July 2026  
 > **Editions:** Solo (standalone) → Full (cloud master) → Cloud Server (enterprise)  
 > **Related:** [Bolt API Integration Plan](BOLT_INTEGRATION.md) — django-bolt integration strategy
@@ -1260,29 +1270,29 @@ pos-full includes a **Django Unfold** admin dashboard — a modern, dark-themed 
 | Tables | 2 | Recent Sales (5 rows), Node Status (5 rows) |
 | Registered Models | 17+ | Product, Category, Customer, Sale, SaleItem, Employee, Inventory, Menu, Node, Config, Sync, etc. |
 
-### Access
+### Access (current — merged package)
 
 ```bash
-cd pos-full/sidecar
+cd formint-pos/sidecar
 python3 manage.py migrate
 python3 manage.py --ensure-superuser   # Auto-create admin from env vars
-python3 manage.py runserver 0.0.0.0:8000
-# → http://localhost:8000/admin/
+python3 manage.py runserver 0.0.0.0:8767
+# → http://localhost:8767/admin/
 ```
 
 Or use the one-command bootstrap:
 
 ```bash
-cd pos-full && make admin-bootstrap
+cd formint-pos && make seed && make env
 ```
 
 ### Screenshots
 
 | Dashboard | Products |
 |:---:|:---:|
-| ![Dashboard](../pos-full/docs/screenshots/admin/admin-dashboard.svg) | ![Products](../pos-full/docs/screenshots/admin/admin-products.svg) |
+| ![Dashboard](../formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg) | ![Products](../formint-pos/docs/screenshots/admin/02_admin_products.jpg) |
 
-Admin panel is **pos-full only** — pos-solo and pos-mini have no admin interface.
+Admin panel ships with the merged **Formint POS** package (pos-mini has no admin interface).
 
 ---
 
