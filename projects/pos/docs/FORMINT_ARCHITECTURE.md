@@ -259,6 +259,14 @@ toggle without touching HTTP or cookies:
 - `src/lib/fusion-decoder.ts` + `src/lib/fusion-types.ts` — Formint-adapted
   `FusionDecoder` (decode / decodeFragmentPointer / shouldRenderFragmentFirst /
   session helpers with an in-memory fallback for node/SSR).
+- **`src/lib/session-sync.ts`** — cross-tab sync for the session-mode
+  preference (`fusionSessionSync` singleton). When the operator toggles the
+  render mode on `/fusion/` in one tab, the change is broadcast to every
+  other tab of the same origin via `BroadcastChannel` (primary) with a
+  `localStorage` mirror + `storage`-event fallback for browsers without
+  it. Both transports carry the same monotonic timestamp, so the change is
+  applied exactly once (last-writer-wins dedupe); the page subscribes and
+  re-renders the pointer/strategy view on remote changes.
 - Frontend contract tests live in `src/tests/` (`index.test.ts`,
   `fusion.test.ts`) and `src/lib/fusion-decoder.test.ts` (round-trips a real
   backend-encoded pointer fixture); all are collected by the unified vitest

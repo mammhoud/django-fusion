@@ -90,7 +90,10 @@ import Skeleton from '../components/ui/Skeleton.astro';
         <code>DELETE</code>) — the same value the Astro shell caches in
         <code>sessionStorage</code> so <code>FusionDecoder.decode()</code>
         and the server agree on the effective strategy
-        (header → session → default precedence).
+        (header → session → default precedence). Changes are also
+        broadcast to other tabs of this origin via
+        <code>BroadcastChannel</code> (+ <code>storage</code>-event
+        fallback), so toggling here updates every open tab live.
       </p>
     </section>
   </div>
@@ -98,6 +101,7 @@ import Skeleton from '../components/ui/Skeleton.astro';
 
 <script>
   import { fusionDecoder, FusionDecodeError } from '../lib/fusion-decoder';
+  import { fusionSessionSync } from '../lib/session-sync';
 
   type PointerBody = {
     encoded: string;
@@ -157,7 +161,12 @@ import Skeleton from '../components/ui/Skeleton.astro';
     }
   }
 
-  /** Seed sessionStorage from the server preference (other tabs/browsers). */
+  /** Seed sessionStorage from the server preference (other tabs/browsers).
+   *
+   * When the server preference differs from what this tab cached, the
+   * change was made elsewhere (Unfold admin, another device) — publish it
+   * so every already-open tab of this origin catches up too.
+   */
   async function seedSessionFromServer(): Promise<void> {
     try {
       const res = await fetch('/fusion/session-mode/', {
@@ -167,8 +176,13 @@ import Skeleton from '../components/ui/Skeleton.astro';
       const body = (await res.json()) as {
         session_preference: boolean | null;
       };
-      if (body.session_preference !== null) {
+      const local = fusionDecoder.getSessionPreference();
+      if (body.session_preference !== null && body.session_preference !== local) {
         fusionDecoder.initSession(body.session_preference);
+        fusionSessionSync.publish(body.session_preference);
+      } else if (body.session_preference === null && local !== undefined) {
+        fusionDecoder.clearSession();
+        fusionSessionSync.publish(null);
       }
     } catch {
       /* ignore — sessionStorage stays authoritative on failure */
@@ -199,13 +213,15 @@ import Skeleton from '../components/ui/Skeleton.astro';
   }
 
   // Session-mode toggle → writes the preference server-side via
-  // FusionSessionChecker and mirrors it in sessionStorage, then refreshes.
+  // FusionSessionChecker, mirrors it in sessionStorage, broadcasts the
+  // change to other tabs (BroadcastChannel / storage events), then refreshes.
   const toggleInput = document.getElementById('session-toggle') as HTMLInputElement | null;
   toggleInput?.addEventListener('change', async () => {
     const next = toggleInput.checked;
     const ok = await persistSessionPreference(next);
     if (ok) {
       fusionDecoder.initSession(next);
+      fusionSessionSync.publish(next);
       loadPointer();
     } else {
       toggleInput.checked = !next;
@@ -217,8 +233,21 @@ import Skeleton from '../components/ui/Skeleton.astro';
     const ok = await clearSessionPreference();
     if (ok) {
       fusionDecoder.clearSession();
+      fusionSessionSync.publish(null);
       loadPointer();
     }
+  });
+
+  // Cross-tab sync: apply preference changes made in other tabs (same
+  // origin) so this tab's FusionDecoder cache + UI stay in agreement with
+  // the server session, then refresh the pointer view.
+  fusionSessionSync.subscribe((value) => {
+    if (value === null) {
+      fusionDecoder.clearSession();
+    } else {
+      fusionDecoder.initSession(value);
+    }
+    loadPointer();
   });
 
   await seedSessionFromServer();
