@@ -1,7 +1,7 @@
 # Forge POS — Calculations Reference
 
 > All formulas, methods, and fields used across the POS system  
-> **Applies to:** forge-pos (Rust/Diesel) — same formulas apply to pos-solo and pos-full via sidecar API
+> **Applies to:** forge-pos (Rust/Diesel) — same formulas apply to formint-pos via the sidecar API
 
 ---
 

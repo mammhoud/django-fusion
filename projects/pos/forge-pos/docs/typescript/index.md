@@ -9,7 +9,7 @@
 POS Mini uses the same TypeScript/React conventions as POS Full but with a
 simpler architecture (no sidecar, no Fusion, direct Rust/Diesel data access).
 
-See **`../../pos-full/docs/typescript/index.md`** for the base conventions.
+See the archived **`../../formint-pos/legacy-react/pos-full/docs/typescript/index.md`** for the base conventions.
 
 ### POS Mini Specific
 

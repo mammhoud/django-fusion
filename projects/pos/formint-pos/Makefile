@@ -34,7 +34,7 @@ BACKEND_PORT := 8767
 FRONTEND_PORT := 4321
 
 .PHONY: help install seed migrate check test env dev-backend dev-frontend stop \
-        build preview clean \
+        build preview clean screenshots \
         backend-help backend-dev backend-check backend-migrate backend-test backend-seed backend-clean \
         frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean \
         tauri tauri-dev tauri-build
@@ -78,6 +78,10 @@ help: ## Show all commands
 	@echo '  make tauri-dev        Tauri dev (desktop hot-reload)'
 	@echo '  make tauri-build      Tauri production build'
 	@echo ''
+	@echo '── Screenshots ─────────────────────────────────────────────'
+	@echo '  make screenshots      Capture Unfold admin screenshots → docs/screenshots/admin/'
+	@echo ''
+
 
 # ── Setup ─────────────────────────────────────────────────────────────────
 
@@ -154,6 +158,14 @@ clean: ## Remove build artifacts + db + node_modules
 	$(MAKE) -C $(BACKEND_DIR) clean
 	$(MAKE) -C $(FRONTEND_DIR) clean
 	@echo '✅ Formint POS cleaned'
+
+screenshots: ## Capture Unfold admin screenshots → docs/screenshots/admin/
+	@mkdir -p docs/screenshots/admin
+	@echo 'ℹ️  Admin screenshots live in docs/screenshots/admin/ (4 images, committed).'
+	@echo '   To re-capture: start the backend (make env), log in at http://127.0.0.1:$(BACKEND_PORT)/admin/,'
+	@echo '   then run the legacy capture tool: bash ../scripts/dev/capture-admin-screenshots.sh'
+	@echo '   (that tool targets the legacy pos-full admin layout; for formint admin pages, capture'
+	@echo '   /admin/ + the formint model changelists manually at 1440px via headless Chromium.)'
 
 # ── Backend delegation ────────────────────────────────────────────────────
 

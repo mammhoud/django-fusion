@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="pos-full/docs/screenshots/01_pos_overview.jpg" alt="POS Overview" width="600"/>
+  <img src="formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
 </p>
 
 POS is a modern, offline-first desktop point-of-sale application for
@@ -19,70 +19,47 @@ Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 
 ---
 
-## 📦 Three Editions
+## 📦 Editions
 
-Choose the edition that fits your needs:
+| Edition | Contents | Target |
+|---------|----------|--------|
+| **Mini** (`forge-pos/`) | Core POS (Tauri + Rust + SQLite) | Offline-only deployments |
+| **Formint** (`formint-pos/`) | **Merged package** — Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin (consolidates the former Full + Solo editions) | Enterprise multi-device |
+| **Client** (`pos-client/`) | Vue 3 + Tauri desktop | Separate client app |
+| **Cloud** (`pos-cloud/`) | Django ASGI + Unfold + Bolt dashboard | Cloud CRM master |
 
-| Feature | Minimal | Solo | Full |
-|---------|:-------:|:----:|:----:|
-| **React + TypeScript frontend** | ✅ | ✅ | ✅ |
-| **Tauri 2 + Rust backend** | ✅ | ✅ | ✅ |
-| **SQLite database (29 tables)** | ✅ | ✅ | ✅ |
-| **i18n (en/fr/ar)** | ✅ | ✅ | ✅ |
-| **POS, inventory, analytics** | ✅ | ✅ | ✅ |
-| **Employees, payroll, scheduling** | ✅ | ✅ | ✅ |
-| **Kitchen display system** | ✅ | ✅ | ✅ |
-| **Python/Sanic sidecar API** | ❌ | ✅ | ✅ |
-| **REST API (35+ endpoints)** | ❌ | ✅ | ✅ |
-| **Invoice PDF generation** | ❌ | ✅ | ✅ |
-| **Chat support widget** | ❌ | ✅ | ✅ |
-| **Django ORM models (30 tables)** | ❌ | ❌ | ✅ |
-| **WebSocket real-time chat** | ❌ | ❌ | ✅ |
-| **Data sync between devices** | ❌ | ❌ | ✅ |
-| **JSON seed fixtures** | ❌ | ❌ | ✅ |
-| **Django Portal (admin + menu UI)** | ✅ portal/ | ✅ portal/ | ✅ portal/ |
-| **Cloud CRM master** | ❌ | ❌ | ✅ portal/cloud/ |
-| **Directory size** | ~8M | ~8.5M | ~9M |
+> **`formint-pos/`** merges the former `pos-full` + `pos-solo` editions into one
+> product boundary. The legacy React UIs are archived under `formint-pos/legacy-react/`.
 
 ---
 
 ## 🚀 Quick Start
 
-### Minimal Edition (no sidecar)
+### Mini Edition (no sidecar)
 ```bash
-cd pos-minimal
+cd forge-pos
 pnpm install
 cd src-tauri && cargo fetch && cd ..
 pnpm dev          # Vite dev server at localhost:1420
 pnpm dev:desktop  # Full Tauri desktop app
 ```
 
-### Extended Edition (with sidecar API)
+### Formint POS (merged package — recommended)
 ```bash
-cd pos-solo
-pnpm install && cd src-tauri && cargo fetch && cd ..
-cd sidecar && pip install -r requirements.txt && cd ..
-python3 sidecar/server.py &    # Start sidecar on :8765
-pnpm dev                        # Vite dev server
-```
-
-### Full Edition (sidecar + Django + WebSocket)
-```bash
-cd pos-full
-pnpm install && cd src-tauri && cargo fetch && cd ..
-cd sidecar && pip install -r requirements.txt && cd ..
-python3 sidecar/server.py &    # Sidecar + Django + WebSocket
-pnpm dev
+cd formint-pos
+make install      # backend .venv + deps + migrate + frontend npm install
+make env          # backend :8767 + frontend :4321 (tmux)
+make test         # backend + frontend contract tests
+make check        # django check + astro check
 ```
 
 ### Using Root Makefile
 ```bash
-make editions          # Generate all 3 editions
-make setup-full        # Install full edition deps
-make dev-full          # Start full stack
-make build-full        # Build everything
+make formint-install   # Install merged package
+make formint-env       # Run full env (backend + frontend)
+make server-test       # Run merged sidecar test suite
 make screenshots       # Capture marketplace screenshots
-make clean             # Delete all editions
+make clean             # Delete build artifacts
 ```
 
 ### Formint POS Professional (merged package)
@@ -114,54 +91,37 @@ See [`formint-pos/README.md`](formint-pos/README.md) and
 
 | | | |
 |:---:|:---:|:---:|
-| ![Overview](pos-full/docs/screenshots/01_pos_overview.jpg) | ![Dashboard](pos-full/docs/screenshots/02_dashboard.jpg) | ![POS](pos-full/docs/screenshots/03_point_of_sale.jpg) |
-| **Home / Overview** | **Dashboard Grid** | **Point of Sale** |
-| ![Inventory](pos-full/docs/screenshots/04_inventory.jpg) | ![Reports](pos-full/docs/screenshots/05_reports.jpg) | ![Settings](pos-full/docs/screenshots/06_settings.jpg) |
-| **Inventory** | **Reports** | **Settings** |
+| ![Dashboard](formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg) | ![Products](formint-pos/docs/screenshots/admin/02_admin_products.jpg) | ![Customers](formint-pos/docs/screenshots/admin/03_admin_customers.jpg) |
+| **Unfold Admin — Dashboard** | **Unfold Admin — Products** | **Unfold Admin — Customers** |
+| ![Sales](formint-pos/docs/screenshots/admin/04_admin_sales.jpg) | | |
+| **Unfold Admin — Sales** | | |
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-pos-{edition}/
-├── src/                    # React 19 + TypeScript + Tailwind CSS 4
-│   ├── api/                # API client layer (edition-dependent)
-│   ├── components/         # 15 reusable UI components
-│   ├── contexts/           # Auth, Theme, Language providers
-│   ├── hooks/              # Custom React hooks
-│   ├── i18n/               # en/fr/ar translations (i18next)
-│   ├── pages/              # 22 route-level page components
-│   ├── styles/             # SCSS (utilities, base, components)
-│   └── utils/              # PDF/Excel export utilities
-├── src-tauri/              # Tauri 2 + Rust + Diesel + SQLite
-│   ├── src/
-│   │   ├── db/             # Schema (29 tables), models, connection
-│   │   ├── operations/     # 25 CRUD modules (auth, sales, inventory...)
-│   │   └── email.rs        # SMTP email sender
-│   ├── migrations/         # Diesel SQLite migrations (6)
-│   └── icons/              # App icons (all platforms)├── sidecar/                 # [Solo/Full] Python/Robyn API + Django ORM
-│   ├── server.py           # Robyn REST + WebSocket (60-70+ endpoints)
-│   ├── models/             # Django ORM models (organized packages)
-│   │   ├── pos.py          #   [Solo] Category, Product, Customer, Sale
-│   │   ├── menu.py         #   [Solo] MenuItem, Menu, Assignment
-│   │   ├── node.py         #   Node, Heartbeat, NodeEvent
-│   │   ├── config.py       #   DeviceConfig, MasterDevice, CloudLink
-│   │   └── sync.py         #   SyncLog
-│   └── tests/              # Pytest suites (155 solo + 63 full)
-├── shared/                 # [All] Models, signals, viewsets, templates
-│   ├── signals/            #   Django signals (config_changed, etc.)
-│   ├── models/             #   SignalEvent, SyncApproval, DeviceToken
-│   ├── handlers/           #   Signal handlers (log, webhook, audit)
-│   ├── services/           #   ProductSyncEngine
-│   ├── middleware/          #   Auth middleware (bearer token + API key)
-│   ├── api/                #   CRUD helpers (_ser, _register_crud)
-│   ├── portal_viewsets.py  #   Portal viewsets (approvals, sync, menu)
-│   └── portal_urls.py      #   Portal URL patterns
-├── scripts/
-│   ├── dev/                # Build, i18n, checksum utilities (12 scripts)
-│   └── github/             # CI/CD scripts
-└── docs/                   # Documentation (17 files)
+formint-pos/                 # Merged package (formerly pos-full + pos-solo)
+├── frontend/                # Astro + Alpine.js + HTMX shell
+│   └── src/                 # Pages, components, contract tests
+├── backend/                 # Django + Ninja + django-fusion + Unfold admin
+│   ├── formint/             # Models (45), views, api, fusion, handlers
+│   ├── configs/             # Settings + URL routing
+│   └── Makefile             # dev/check/migrate/test/seed targets
+├── sidecar/                 # Merged Robyn sidecar (streams, ws_client, sync)
+│   ├── server.py            # Robyn REST + WebSocket (60-70+ endpoints)
+│   ├── routes/              # CRUD + state + webhooks + reports
+│   ├── services/            # sync, scheduler, webhook services
+│   ├── models/              # Django ORM models (organized packages)
+│   └── tests/               # Pytest suites (171 passing)
+├── src-tauri/               # Tauri 2 desktop shell (Django is data authority)
+├── legacy-react/            # Archived React UIs (pos-full + pos-solo)
+├── docs/                    # Screenshots + architecture docs
+└── Makefile                 # install/env/test/check/build orchestration
+
+forge-pos/                   # Mini edition — Tauri + Rust/Diesel
+pos-client/                  # Vue 3 + Tauri desktop client
+pos-cloud/                   # Django ASGI + Unfold + Bolt cloud CRM master
 ```
 
 ---
@@ -170,20 +130,23 @@ pos-{edition}/
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 19, TypeScript 5.8, Vite 7, Tailwind CSS 4, Framer Motion |
-| Backend | Rust (Tauri 2), Diesel ORM, SQLite |
-| Sidecar | Python 3, Sanic, Django ORM (mirror), PyInstaller |
-| i18n | i18next (English, French, Arabic) |
-| Testing | Vitest (frontend), cargo test (Rust) |
-| Build | pnpm, cargo, PyInstaller |
+| Frontend | Astro, Alpine.js, HTMX (merged) · React 19 (archived legacy) |
+| Backend | Django 5 + Ninja + django-fusion + django-tables2 |
+| Sidecar | Python 3, Robyn, Django ORM (mirror), WebSocket streams |
+| Admin | django-unfold (dashboard, KPI cards, charts) |
+| Desktop | Rust (Tauri 2) |
+| Testing | pytest (sidecar + backend), Vitest (frontend contract) |
+| Build | make, pnpm/npm, pip/.venv |
 
 ---
 
 ## ✨ Key Features
 
 - **Cross-platform desktop POS** — Windows, macOS, Linux, Android, iOS
-- **Offline-first SQLite** — No internet required for core POS operations
-- **3 Editions** — Minimal (core), Solo (+API), Full (+Django+CRM+Sync)
+- **Merged Formint package** — one boundary for frontend + backend + sidecar
+- **Django Ninja REST API** — 45 paginated resources with django-fusion encoder/decoder
+- **Unfold admin panel** — KPI dashboard, charts, loyalty & settings management
+- **Robyn sidecar** — WebSocket streams, data sync, webhooks, scheduler
 - **Role-based auth** — Superuser with 2FA support
 - **Inventory tracking** — Low-stock alerts, purchase orders, supplier management
 - **Kitchen display system** — Ticket flow: pending → preparing → ready → delivered
@@ -192,12 +155,7 @@ pos-{edition}/
 - **Advanced receipts** — Tax, commercial, proforma, credit invoice templates
 - **Automated tax reports** — PDF and Excel export
 - **Employee management** — Scheduling, payroll, role assignments
-- **i18n (3 languages)** — English, French, Arabic with i18next
-- **Dark & Light mode** — CSS custom properties theme system
-- **REST API (Solo/Full)** — 35+ endpoints via Python/Sanic sidecar
-- **WebSocket chat** — Real-time support chat with auto-reconnect
-- **Cloud CRM sync** — Push sales, products, customers to cloud (Solo edition)
-- **Django Portal** — Web-based admin UI with django-fusion viewsets
+- **HTMX data components** — django-fusion tables + forms server-rendered
 
 ---
 

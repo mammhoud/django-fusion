@@ -53,7 +53,7 @@ class BranchModal(FragmentComponent):
             "is_edit": branch is not None,
             "organizations": organizations,
             "pos_types": [
-                ("pos-solo", "POS Solo"), ("pos-full", "POS Full"), ("pos-mini", "POS Mini"),
+                ("formint-pos", "Formint POS"), ("pos-solo", "POS Solo"), ("pos-full", "POS Full"), ("pos-mini", "POS Mini"),
             ],
         }
 

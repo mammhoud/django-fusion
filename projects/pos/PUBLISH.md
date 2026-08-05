@@ -4,7 +4,7 @@
 > **Tags:** #publish #themeforest #marketplace #listing
 
 Use this file when listing **POS** on any digital marketplace.
-Available in 3 editions — list the **Full Edition** for maximum value.
+The merged **Formint** package is the canonical edition to list.
 
 ---
 
@@ -12,17 +12,16 @@ Available in 3 editions — list the **Full Edition** for maximum value.
 
 | Edition | Contents | Target |
 |---------|----------|--------|
-| **Minimal** | Core POS app (React + Tauri + Rust + SQLite) | Offline-only deployments |
-| **Solo** | Core + Python/Sanic sidecar API (35+ endpoints) + Cloud CRM sync | API-enabled deployments |
-| **Full** | Core + sidecar + Django ORM + WebSocket chat + data sync + Cloud CRM master | Enterprise multi-device |
+| **Mini** | Core POS app (Tauri + Rust + SQLite) | Offline-only deployments |
+| **Formint (merged)** | Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin (consolidates former Solo + Full) | Enterprise multi-device |
 
-> **For marketplace listing, always use `pos-full/`.**
+> **For marketplace listing, always use `formint-pos/`** (the merged package).
 
 ---
 
 ## Item Name
 
-**POS — Restaurant Point of Sale Desktop App (Full Edition)**
+**POS — Restaurant Point of Sale Desktop App (Formint Edition)**
 
 > Maximum 100 characters. No HTML or emoji.
 
@@ -42,29 +41,23 @@ suppliers, tax reports, loyalty program, and 29 database tables.
 
 ## Visual Preview
 
-Six screenshots captured at 1440px viewport. Regenerate with `make screenshots`:
+Screenshots captured via headless Chromium. Regenerate with `make screenshots`:
 
 ```bash
-cd pos-full && make screenshots
+make -C formint-pos screenshots
 ```
 
-### 1. Home / Overview
-![POS — Home](pos-full/docs/screenshots/01_pos_overview.jpg)
+### 1. Unfold Admin — Dashboard
+![POS — Dashboard](formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg)
 
-### 2. Dashboard Grid
-![POS — Dashboard](pos-full/docs/screenshots/02_dashboard.jpg)
+### 2. Unfold Admin — Products
+![POS — Products](formint-pos/docs/screenshots/admin/02_admin_products.jpg)
 
-### 3. Point of Sale Terminal
-![POS — POS](pos-full/docs/screenshots/03_point_of_sale.jpg)
+### 3. Unfold Admin — Customers
+![POS — Customers](formint-pos/docs/screenshots/admin/03_admin_customers.jpg)
 
-### 4. Inventory Management
-![POS — Inventory](pos-full/docs/screenshots/04_inventory.jpg)
-
-### 5. Reports & Analytics
-![POS — Reports](pos-full/docs/screenshots/05_reports.jpg)
-
-### 6. Settings & Configuration
-![POS — Settings](pos-full/docs/screenshots/06_settings.jpg)
+### 4. Unfold Admin — Sales
+![POS — Sales](formint-pos/docs/screenshots/admin/04_admin_sales.jpg)
 
 ---
 

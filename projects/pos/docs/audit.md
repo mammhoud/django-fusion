@@ -1,8 +1,12 @@
 # POS System — Comprehensive Architecture Audit
 
 > **Generated:** 2026-07-23  
-> **Scope:** `pos-mini`, `pos-solo`, `pos-full`  
+> **Scope:** `pos-mini`, `pos-solo`, `pos-full` (historical)  
 > **Stack:** Tauri v2 (Rust backend) + React (TypeScript frontend) + SQLite (Diesel ORM) + Python/Sanic sidecar
+
+> ⚠️ **Archived reference**: pos-solo and pos-full were merged into
+> `formint-pos/`; the Robyn sidecar now lives at `formint-pos/sidecar/` and the
+> legacy React UIs under `formint-pos/legacy-react/`.
 
 ---
 

@@ -39,12 +39,12 @@ Tauri commands backed by Diesel.
 
 ## What's NOT Included
 
-- Python/Robyn sidecar server (use [`pos-solo`](../pos-solo/) for that)
-- Zustand API stores (pos-mini uses `invoke()` directly)
+- Python/Robyn sidecar server (use [`formint-pos`](../formint-pos/) for that)
+- Zustand API stores (forge-pos uses `invoke()` directly)
 - Django ORM models
 - Cloud CRM sync
 
-> Need a sidecar API + cloud sync? Use [`pos-solo`](../pos-solo/) or [`pos-full`](../pos-full/).
+> Need a sidecar API + cloud sync? Use [`formint-pos`](../formint-pos/) (the merged package, formerly pos-full + pos-solo).
 
 ## Documentation
 
@@ -122,12 +122,16 @@ pnpm build:desktop     # Production desktop app (Tauri bundle)
 
 ## Editions Comparison
 
-| Feature | forge-pos | pos-solo | pos-full |
-|---------|:---------:|:--------:|:--------:|
-| Rust/Diesel ORM | ✅ | ❌ (removed) | ❌ (removed) |
-| Robyn sidecar | ❌ | ✅ | ✅ |
-| Cloud CRM sync | ❌ | ✅ | ✅ |
-| WebSocket support | ❌ | ✅ | ✅ |
+| Feature | forge-pos | formint-pos |
+|---------|:---------:|:-----------:|
+| Rust/Diesel ORM | ✅ | ❌ (Django is data authority) |
+| Robyn sidecar | ❌ | ✅ |
+| Django Ninja backend | ❌ | ✅ |
+| Cloud CRM sync | ❌ | ✅ |
+| WebSocket support | ❌ | ✅ |
+
+> **Note**: The former `pos-solo` and `pos-full` editions were merged into
+> `formint-pos/` (see [`../formint-pos/README.md`](../formint-pos/README.md)).
 | Django ORM models | ❌ | ✅ | ✅ |
 | Node registry | ❌ | ✅ | ✅ |
 | invoke() data ops | ✅ | ❌ (Zustand) | ❌ (Zustand) |

@@ -11,7 +11,7 @@ For complete documentation of **all** scripts (dev, publish, github), see:
 ## Quick usage
 
 ```bash
-# From any edition directory (forge-pos, pos-solo, or pos-full)
+# From any edition directory (forge-pos, formint-pos, or pos-client)
 
 # Free up port 1420 before starting dev server
 node ../scripts/dev/kill-port.cjs

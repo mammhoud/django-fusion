@@ -1,7 +1,7 @@
-# POS — Commands Reference
+# POS — Commands Reference> **All editions:** [mini](#pos-mini-edition) · [formint](#formint-pos-merged-package) · [client](#pos-client-edition)  
+> **Topics:** [Dev Workflows](#development) · [Building](#building) · [Testing](#testing--checking) · [Server](#pos-server) · [Publishing](#publishing)  
 
-> **All editions:** [mini](#pos-mini-edition) · [solo](#pos-solo-edition) · [full](#pos-full-edition) · [client](#pos-client-edition)  
-> **Topics:** [Dev Workflows](#development) · [Building](#building) · [Testing](#testing--checking) · [Server](#pos-server) · [Admin (Full)](#admin-pos-full) · [i18n](#i18n) · [Publishing](#publishing)  
+  
 > **Last updated:** July 22, 2026
 
 ---
@@ -9,10 +9,11 @@
 ## Quick Reference
 
 | Action | Mini | Solo | Full | Client |
-|--------|:----:|:----:|:----:|:------:|
-| **Run `make` from repo root** | `make pos-mini ...` | `make pos-solo ...` | `make pos-full ...` | `make pos-client ...` |
+|--------|:----:|:----:|:----:|:------:|| **Run `make` from repo root** | `make pos-mini ...` | `make pos-formint ...` | `make pos-client ...` |
+
+
 | **Run `make` from POS root** | `make setup-mini` | `make setup-solo` | `make setup-full` | `make setup-client` |
-| **Run `make` from edition dir** | `cd pos-mini && make ...` | `cd pos-solo && make ...` | `cd pos-full && make ...` | `cd pos-client && make ...` |
+| **Run `make` from edition dir** | `cd forge-pos && make ...` | `cd formint-pos && make ...` | `cd pos-client && make ...` |
 | Dev server | `make dev` | `make dev` | `make dev` | `make dev` |
 | Desktop dev | `make dev-desktop` | `make dev-desktop` | `make dev-desktop` | — |
 | Production build | `make build` | `make build` | `make build` | `make build` |
@@ -53,10 +54,9 @@ Path 3: Direct POS root access
 **From repo root:**
 ```bash
 # Access any edition's Makefile directly
-make pos-mini help      # Show pos-mini commands
-make pos-solo dev       # Start solo Vite dev server
-make pos-full build     # Build full desktop app
-make pos-client lint    # Lint pos-client code
+make pos-mini help         # Show pos-mini commands
+make pos-formint env       # Start formint backend + frontend
+make pos-client lint       # Lint pos-client code
 ```
 
 **From POS root (`projects/pos/`):**
@@ -64,15 +64,17 @@ make pos-client lint    # Lint pos-client code
 cd projects/pos
 
 # Aggregated convenience targets (delegate to per-edition Makefiles)
-make setup-mini         # Install mini deps
-make dev-solo           # Start solo Vite + sidecar
-make build-full         # Build full desktop + sidecar
-make check-mini         # TypeScript + Rust check for mini
+make setup-mini            # Install mini deps
+make formint-install       # Install merged package (backend + frontend)
+make formint-env           # Run full formint env (backend :8767 + frontend :4321)
+make formint-test          # Run merged package tests
+make check-mini            # TypeScript + Rust check for mini
+make server-test           # Run merged sidecar suite
 
 # Direct per-edition access
-make -C pos-mini dev-desktop
-make -C pos-solo test
-make -C pos-full admin-bootstrap
+make -C forge-pos dev-desktop
+make -C formint-pos backend-test
+make -C formint-pos seed
 ```
 
 **From within an edition directory:**
@@ -157,117 +159,53 @@ make cargo-check        # Rust compilation check
 
 ---
 
-## POS Solo Edition
+## Formint POS (merged package)
 
-**Directory:** `projects/pos/pos-solo/`  
-**Stack:** React 19 + Tauri 2 + Rust/Diesel + Python/Sanic sidecar + cloud sync  
-**Sidecar port:** `:8765`  
-**Cloud sync:** pushes data to pos-full master
+**Directory:** `projects/pos/formint-pos/`  
+**Stack:** Astro + Alpine.js + HTMX frontend, Django 5 + Ninja + django-fusion backend, Robyn sidecar, Unfold admin  
+**Backend port:** `:8767` · **Frontend port:** `:4321` · **Sidecar port:** `:8765`  
+**Admin panel:** `http://127.0.0.1:8767/admin/`  
+**API docs:** `http://127.0.0.1:8767/api/v1/docs`
 
-### Development
+> Merges the former `pos-full` (Cloud Master) + `pos-solo` (Standalone)
+> editions. Legacy React UIs archived under `formint-pos/legacy-react/`.
 
-| Command | Description |
-|---------|-------------|
-| `make dev` | Start Vite frontend dev server at `http://localhost:1420` (browser only) |
-| `make dev-desktop` | Start full Tauri desktop app with hot-reload (includes Rust backend) |
-| `make tauri-dev` | Alias for `dev-desktop` |
-| `make preview` | Preview production build locally |
-
-### Building
+### Setup & Running
 
 | Command | Description |
 |---------|-------------|
-| `make build` | Build production desktop app |
-| `make build-frontend` | Build frontend only |
-| `make build-desktop` | Build desktop app |
-| `make build-android` | Build Android APK |
-| `make build-ios` | Build iOS app |
-| `make build-all` | Build all platforms sequentially |
-| `make build-sidecar` | Build the Python/Sanic sidecar binary for current platform |
-| `make build-sidecar-x86_64-unknown-linux-gnu` | Build sidecar for specific target triple |
+| `make install` | Backend .venv + deps + migrate + frontend npm install |
+| `make seed` | Migrate + idempotent superuser (admin@formint.local) |
+| `make env` | Run backend + frontend in tmux (formint-be / formint-fe) |
+| `make dev-backend` | Run backend runserver `:8767` (foreground) |
+| `make dev-frontend` | Run astro dev `:4321` (foreground) |
+| `make stop` | Kill tmux env sessions |
+| `make status` | Show tmux sessions + endpoint health |
 
-### Testing & Checking
-
-| Command | Description |
-|---------|-------------|
-| `make check` | `typecheck` + `cargo-check` |
-| `make typecheck` | TypeScript type-check |
-| `make cargo-check` | Rust compilation check |
-| `make cargo-test` | Run Rust tests |
-| `make cargo-clippy` | Run Rust Clippy linter |
-| `make test` | Run Vitest unit tests |
-| `make test-watch` | Run Vitest in watch mode |
-
-### Database
+### Validation
 
 | Command | Description |
 |---------|-------------|
-| `make seed` | Reset DB + apply preset |
-| `make db-seed` | **DEPRECATED** — forwards to `make seed` |
+| `make check` | Django check + astro check |
+| `make test` | Backend suite + frontend contract tests |
+| `make backend-test` | Backend Django test suite |
+| `make frontend-test` | Frontend vitest contract tests |
 
-### i18n
-
-| Command | Description |
-|---------|-------------|
-| `make i18n-audit` | Regenerate i18n gaps report |
-| `make i18n-check` | CI-friendly audit |
-| `make i18n-fix` | Apply i18n fix + regenerate audit |
-| `make i18n-fix-check` | Full i18n pipeline |
-
-### Maintenance
+### Admin
 
 | Command | Description |
 |---------|-------------|
-| `make install` | Install all dependencies (pnpm + cargo fetch) |
-| `make install-tauri-cli` | Install/update Tauri CLI |
-| `make lint` | `typecheck` + `cargo-clippy` |
-| `make format` | `cargo fmt` |
-| `make clean` | Remove all build artifacts |
-| `make clean-build` | Clean, reinstall, rebuild |
-| `make screenshots` | Capture 6 screenshots |
-| `make info` | Show tool versions |
-| `make port-kill` | Kill process on port 1420 |
+| `make backend-seed` | Create/update superuser from env (idempotent) |
+| `make screenshots` | Capture Unfold admin dashboard screenshots → `docs/screenshots/admin/` |
 
----
-
-## POS Full Edition
-
-**Directory:** `projects/pos/pos-full/`  
-**Stack:** React 19 + Tauri 2 + Rust/Diesel + Python/Sanic sidecar + Django admin + WebSocket  
-**Sidecar port:** `:8766`  
-**Admin panel:** `http://localhost:8000/admin/`  
-**Extra features:** Django ORM, WebSocket chat, Cloud CRM master, JSON seed fixtures
-
-POS Full has all the same commands as [POS Solo](#pos-solo-edition) plus additional admin targets.
-
-### Admin (Full Only)
+### Build & Maintenance
 
 | Command | Description |
 |---------|-------------|
-| `make admin-bootstrap` | Migrate DB → create superuser → start runserver on `:8000` |
-| `make admin-ensure-superuser` | Create/update superuser from env vars (idempotent) |
-| `make admin-screenshots` | Capture 6 admin dashboard screenshots (requires running `:8000`) |
-
-### Development
-
-Same as Solo edition. All commands delegate to the shared pattern:
-`dev`, `dev-desktop`, `tauri-dev`, `preview`
-
-### Building
-
-Same as Solo edition: `build`, `build-frontend`, `build-desktop`, `build-android`, `build-ios`, `build-all`, `build-sidecar`, `build-sidecar-%`
-
-### Testing & Checking
-
-Same as Solo edition: `check`, `typecheck`, `cargo-check`, `cargo-test`, `cargo-clippy`, `test`, `test-watch`
-
-### Database & i18n
-
-Same as Solo edition: `seed`, `db-seed`, `i18n-audit`, `i18n-check`, `i18n-fix`, `i18n-fix-check`
-
-### Maintenance
-
-Same as Solo edition: `install`, `install-tauri-cli`, `lint`, `format`, `clean`, `clean-build`, `screenshots`, `info`, `port-kill`
+| `make build` | Frontend production build + backend collectstatic |
+| `make preview` | Astro preview `:4321` |
+| `make clean` | Remove db + staticfiles + node_modules |
+| `make tauri` / `tauri-dev` / `tauri-build` | Tauri desktop shell commands |
 
 ---
 
@@ -305,40 +243,20 @@ Same as Solo edition: `install`, `install-tauri-cli`, `lint`, `format`, `clean`,
 
 ## POS Server
 
-The POS server is a consolidated **Robyn + Django ORM** server located in `pos-solo/sidecar/`.
+The POS server is a consolidated **Robyn + Django ORM** server located in `formint-pos/sidecar/`.
 
 Commands are available from the POS root Makefile (`projects/pos/Makefile`).
 
-### Solo Server (port 8765)
+### Merged Sidecar (port 8765)
 
 | Command | Description |
 |---------|-------------|
 | `make server-install` | Install server dependencies (`pip install -r requirements.txt`) |
 | `make server-run` | Start server on port 8765 |
 | `make server-dev` | Start server with hot reload and verbose output (`--dev --verbose`) |
-| `make server-check` | Validate imports (unified_models + server) |
-| `make server-test` | Run 155-test unified test suite |
+| `make server-check` | Validate server imports |
+| `make server-test` | Run merged sidecar test suite (171 passing + legacy known issues) |
 | `make server-clean` | Remove `restaurant.db` |
-
-### Full Server (port 8766)
-
-| Command | Description |
-|---------|-------------|
-| `make server-full-install` | Install server dependencies |
-| `make server-full-run` | Start server on port 8766 |
-| `make server-full-dev` | Start server with verbose output |
-| `make server-full-check` | Validate server imports |
-| `make server-full-test` | Run 45-test server test suite |
-| `make server-full-clean` | Remove `full_portal.db` |
-
----
-
-## Edition Generation & Cleanup
-
-| Command | Description |
-|---------|-------------|
-| `make editions` | Generate `pos-solo` and `pos-full` from canonical `pos-full/` source |
-| `make clean` | Delete `pos-solo/`, `pos-full/`, and all build artifacts |
 
 ---
 
@@ -346,7 +264,7 @@ Commands are available from the POS root Makefile (`projects/pos/Makefile`).
 
 | Command | Description |
 |---------|-------------|
-| `make dev-all` | Start POS Full sidecar (`:8765`) + POS Full Vite dev server. Start other editions individually: `make dev-{mini\|solo\|client}` |
+| `make dev-all` | Start the formint env (backend `:8767` + frontend `:4321`). Start other editions individually: `make dev-mini` / `dev-client` |
 
 ---
 
@@ -356,10 +274,10 @@ Unit tests and integration tests for the POS sidecar servers live in:
 
 | Test Suite | Location | Count | Run Command |
 |-----------|----------|:-----:|-------------|
-| Unified API (Solo) | `pos-solo/sidecar/tests/test_unified_api.py` | 155 | `make server-test` |
-| Server (Full) | `pos-full/sidecar/tests/test_server.py` | 45 | `make server-full-test` |
-| Rust unit tests | `pos-{mini,solo,full}/src-tauri/src/` | inline | `make cargo-test` |
-| Vitest (Frontend) | `pos-{mini,solo,full}/src/test/` | inline | `make test` |
+| Merged sidecar | `formint-pos/sidecar/tests/` | 171 passing (+85 legacy failures, 21 errors) | `make server-test` |
+| Formint backend | `formint-pos/backend/` | 35 | `make formint-test` |
+| Rust unit tests | `forge-pos/src-tauri/src/` | inline | `make check-mini` |
+| Vitest (Frontend) | `formint-pos/frontend/src/` + `tests/js/` | inline | `make formint-test` |
 
 ---
 
@@ -367,8 +285,8 @@ Unit tests and integration tests for the POS sidecar servers live in:
 
 | Command | Description |
 |---------|-------------|
-| `make screenshots` | Capture 6 marketplace screenshots (requires pos-full) |
-| `make publish` | Prepare publish bundle from `pos-full/` → `publish-bundle/` |
+| `make screenshots` | Capture Unfold admin screenshots (via formint-pos) |
+| `make publish` | Prepare publish bundle from `formint-pos/` → `publish-bundle/` |
 
 ---
 
@@ -381,40 +299,29 @@ make setup-mini            # pnpm install + cargo fetch
 make dev                   # Vite dev server on :1420
 ```
 
-### First-time setup (solo with sidecar)
+### First-time setup (merged package)
 ```bash
 cd projects/pos
-make setup-solo            # pnpm install + cargo fetch + pip install
-make dev-solo              # Start sidecar on :8765 + Vite on :1420
-```
-
-### First-time setup (full with admin)
-```bash
-cd projects/pos
-make setup-full            # Install everything
-make dev-full              # Start sidecar + Vite
-# In another terminal:
-make -C pos-full admin-bootstrap  # Migrate + seed superuser + run admin on :8000
+make formint-install       # Backend .venv + deps + migrate + frontend npm install
+make formint-env           # Start backend :8767 + frontend :4321 in tmux
+# Admin panel at http://127.0.0.1:8767/admin/ (admin@formint.local / admin123)
 ```
 
 ### Full validation before release
 ```bash
 cd projects/pos
-make check-full            # TypeScript + Rust + sidecar + Django check
-make -C pos-full test      # Run Vitest frontend tests
-make server-full-test      # Run server test suite (45 tests)
-make -C pos-full cargo-test # Run Rust tests
-make screenshots           # Capture marketplace screenshots
+make formint-check         # Django check + astro check
+make formint-test          # Backend suite + frontend contract tests
+make server-test           # Run merged sidecar test suite
+make screenshots           # Capture admin screenshots
 ```
 
 ### Quick development loop
 ```bash
 # From repo root — start coding immediately
-make pos-mini dev          # Vite on :1420
+make pos-mini dev          # forge-pos Vite on :1420
 # or
-make pos-solo dev          # Solo Vite on :1420
-# or
-make pos-full dev          # Full Vite on :1420
+make pos-formint env       # formint backend + frontend
 ```
 
 ### Clean rebuild

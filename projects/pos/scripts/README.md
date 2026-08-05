@@ -40,10 +40,9 @@ These remain in each edition's local `scripts/` directory (not shared):
 
 | Edition | Script | Purpose |
 |---------|--------|---------|
-| `pos-solo` | `dev/start-browser-dev.cjs` | Starts sidecar + Vite dev server together |
-| `pos-solo` | `dev/test-sidecar-api.sh` | curl-based API smoke test against running sidecar |
-| `pos-solo` | `dev/capture-admin-screenshots.sh` | Captures Django admin dashboard screenshots |
-| `pos-full` | `dev/capture-admin-screenshots.sh` | Captures Django admin dashboard screenshots |
+| `formint-pos` | `dev/start-browser-dev.cjs` | Starts sidecar + frontend dev server together |
+| `formint-pos` | `dev/test-sidecar-api.sh` | curl-based API smoke test against running sidecar |
+| `formint-pos` | `dev/capture-admin-screenshots.sh` | Captures Unfold admin dashboard screenshots |
 
 ---
 
@@ -73,7 +72,7 @@ These remain in each edition's local `scripts/` directory (not shared):
 All shared scripts resolve edition-specific paths using the `PROJECT_ROOT` environment variable. From an edition directory:
 
 ```bash
-# From projects/pos/forge-pos/ (or pos-solo/, pos-full/)
+# From projects/pos/forge-pos/ (or formint-pos/)
 PROJECT_ROOT=. node ../scripts/dev/update-year.cjs
 PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs
 PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs
@@ -100,9 +99,10 @@ build-sidecar:        PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs
 ```
 
 The root `projects/pos/Makefile` also has convenience targets:
-- `make dev-desktop-{mini,solo,full}` — delegates to per-edition `dev-desktop`
-- `make check-{mini,solo,full}` — runs per-edition checks
-- `make screenshots` — captures marketplace screenshots via `pos-full`
+- `make dev-desktop-mini` — delegates to forge-pos `dev-desktop`
+- `make check-mini` — runs forge-pos checks
+- `make formint-*` — installs/runs/tests the merged package
+- `make screenshots` — captures marketplace screenshots via `formint-pos`
 
 ---
 

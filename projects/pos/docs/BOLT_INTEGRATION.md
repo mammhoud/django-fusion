@@ -220,30 +220,19 @@ POS Solo (Node, port 8765)                    POS Full (Server, port 8766)
 
 Each POS sidecar now has a clear role and organized structure:
 
-### pos-solo/sidecar/ → Node
+### formint-pos/sidecar/ → Merged Robyn sidecar
 ```
 sidecar/
-├── server.py         # Thin entry point (~420 lines)
-├── routes/           # Route handler modules (7 modules, ~790 lines)
-├── models/           # Django ORM models (5 modules: pos, menu, node, config, sync)
-├── (shim removed — direct import from models/)
-├── tests/            # Test suite (155 tests + django_setup.py helper)
+├── server.py         # Thin entry point
+├── routes/           # Route handler modules (7+ modules)
+├── models/           # Django ORM models (organized packages)
+├── bolt_api.py       # django-bolt API (ported from the former pos-full)
+├── tests/            # Test suite (171 passing + legacy known-issue failures)
 └── Django portal files **removed** — Robyn server.py handles everything
 ```
 
-### pos-full/sidecar/ → Server (Cloud Master)
-```
-sidecar/
-├── server.py         # Thin entry point (~415 lines)
-├── routes/           # Route handler modules (8 modules, ~1,420 lines)
-│   ├── crm.py        # 🆕 Planned: CRM endpoints
-│   └── reports.py    # 🆕 Planned: Report endpoints
-├── models/           # Django ORM models (3 modules: node, config, sync)
-├── posapp/           # Rust-backed models (managed=False, 30+ models)
-├── bolt_api.py       # django-bolt API (1,010 lines, to be merged into routes/)
-├── tests/            # Test suite (63 tests + django_setup.py helper)
-└── Django portal files **removed** — Robyn server.py handles everything
-```
+> **Note**: The former `pos-solo/sidecar` and `pos-full/sidecar` directories were
+> merged into the single `formint-pos/sidecar/` when the editions were consolidated.
 
 ### Cloud Server (Future: `projects/pos/cloud/`)
 ```

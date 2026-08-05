@@ -241,21 +241,16 @@ VALUES
 
 ## Migration Path from Other Editions
 
-### pos-solo → forge-pos
+> The former pos-solo/pos-full editions were merged into `formint-pos` (archived
+> React UIs under `formint-pos/legacy-react/`).
 
-| Difference | pos-solo | forge-pos |
+### Legacy React editions → forge-pos
+
+| Difference | pos-full / pos-solo | forge-pos |
 |-----------|----------|-----------|
-| Role model | CharField (string) | `roles` table (JSON permissions) |
+| Role model | CharField (string) / `Role` model in `extra.py` | `roles` table (JSON permissions) |
 | Permission check | None (string-based) | Granular permission flags |
 | UI management | No role management UI | Full role list + editor |
-
-### pos-full → forge-pos
-
-| Difference | pos-full | forge-pos |
-|-----------|----------|-----------|
-| Role model | `Role` model in `extra.py` | `roles` table (Rust Diesel) |
-| Permission check | Planned (not wired) | Implemented |
-| UI management | Missing (planned) | Implemented in Roles.tsx |
 
 ---
 

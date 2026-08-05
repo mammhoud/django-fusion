@@ -2,6 +2,9 @@
 
 > In-depth guide to customizing Structa Cloud projects — beyond the basic tag system.
 
+> ⚠️ **Historical**: examples referencing `pos-solo/`/`pos-full/` predate the
+> merge into `projects/pos/formint-pos/`.
+
 ---
 
 ## Method Overview

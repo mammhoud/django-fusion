@@ -9,8 +9,10 @@
 | Edition | Platforms | Bundle Formats | Workflow |
 |---------|-----------|---------------|----------|
 | **Minimal** | Windows, Linux | NSIS, MSI, AppImage | `pos-minimal/.github/workflows/release.yml` |
-| **Solo** | Windows, Linux | NSIS, MSI, AppImage | `pos-solo/.github/workflows/release.yml` |
-| **Full** | Windows, Linux | NSIS, MSI, AppImage | `pos-full/.github/workflows/release.yml` |
+| **Formint (merged)** | Windows, Linux | NSIS, MSI, AppImage | `formint-pos/.github/workflows/release.yml` |
+
+> ⚠️ The former `pos-solo`/`pos-full` editions were merged into `formint-pos/`
+> (legacy React UIs archived under `formint-pos/legacy-react/`).
 
 ---
 
@@ -75,7 +77,7 @@ The `make publish` target uses `rsync` to assemble a clean bundle directory:
 publish:
     mkdir -p publish
     rsync -av --exclude node_modules --exclude .git \
-        --exclude src-tauri/target pos-full/ publish/
+        --exclude src-tauri/target formint-pos/ publish/
 ```
 
 ---
@@ -86,9 +88,9 @@ Each GitHub release includes:
 
 | Artifact | Format | OS |
 |----------|--------|-----|
-| `pos-full_<version>_x64-setup.exe` | NSIS | Windows |
-| `pos-full_<version>_x64_en-US.msi` | MSI | Windows |
-| `pos-full_<version>_amd64.AppImage` | AppImage | Linux |
+| `formint-pos_<version>_x64-setup.exe` | NSIS | Windows |
+| `formint-pos_<version>_x64_en-US.msi` | MSI | Windows |
+| `formint-pos_<version>_amd64.AppImage` | AppImage | Linux |
 
 ---
 
@@ -101,7 +103,7 @@ pnpm install
 pnpm tauri dev         # Opens Tauri window with Vite HMR
 
 # Rust-only checks
-cd projects/pos/pos-full
+cd projects/pos/formint-pos
 cargo build            # Compile Rust backend
 cargo test             # Run unit tests
 ```

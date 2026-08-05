@@ -91,7 +91,7 @@ Validates every `uv add "pkg[extras]"` line in docs matches actual `pyproject.to
 Each POS edition has its own release workflow:
 
 ```yaml
-# projects/pos/pos-full/.github/workflows/release.yml
+# projects/pos/formint-pos/.github/workflows/release.yml
 on:
   push:
     tags: ['v*.*.*']
@@ -114,8 +114,7 @@ jobs:
 
 Three identical workflows at:
 - `projects/pos/pos-minimal/.github/workflows/release.yml`
-- `projects/pos/pos-solo/.github/workflows/release.yml`
-- `projects/pos/pos-full/.github/workflows/release.yml`
+- `projects/pos/formint-pos/.github/workflows/release.yml` (merged package — formerly pos-solo + pos-full)
 
 ---
 
