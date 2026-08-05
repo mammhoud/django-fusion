@@ -73,10 +73,10 @@ export default function ComparisonTable({
             </h3>
             <p className="text-xs text-base-content/50 mt-0.5">
               <span className="font-semibold text-primary">{filter.periodALabel}</span>:{' '}
-              {periodACount} orders — {currency} {totalA.toFixed(2)}
+              {periodACount} orders · {currency} {totalA.toFixed(2)}
               {' · '}
               <span className="font-semibold text-secondary">{filter.periodBLabel}</span>:{' '}
-              {periodBCount} orders — {currency} {totalB.toFixed(2)}
+              {periodBCount} orders · {currency} {totalB.toFixed(2)}
             </p>
           </div>
         </div>
@@ -150,20 +150,20 @@ export default function ComparisonTable({
                 {/* Date */}
                 <div>
                   <span className="sm:hidden text-xs font-medium text-slate-400 mr-2">Date</span>
-                  <span className="text-base-content">{sale.date || '—'}</span>
+                  <span className="text-base-content">{sale.date || '-'}</span>
                 </div>
 
                 {/* Time */}
                 <div>
                   <span className="sm:hidden text-xs font-medium text-slate-400 mr-2">Time</span>
-                  <span className="text-slate-600 dark:text-slate-300">{sale.time || '—'}</span>
+                  <span className="text-slate-600 dark:text-slate-300">{sale.time || '-'}</span>
                 </div>
 
                 {/* Order Type */}
                 <div>
                   <span className="sm:hidden text-xs font-medium text-slate-400 mr-2">Type</span>
                   <span className="capitalize text-slate-600 dark:text-slate-300">
-                    {sale.order_type || '—'}
+                    {sale.order_type || '-'}
                   </span>
                 </div>
 
@@ -179,7 +179,7 @@ export default function ComparisonTable({
                           : 'bg-info/10 text-info'
                     }`}
                   >
-                    {sale.status || '—'}
+                    {sale.status || '-'}
                   </span>
                 </div>
 

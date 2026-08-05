@@ -1,19 +1,22 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { useDashboardDeltas } from '../../hooks/useDashboardDeltas';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonTable, SkeletonCard } from '../../components/ui/Skeleton';
 import Card from '../../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import StatCard from '../../components/ui/StatCard';
+import TaxReportsPanel from '../../components/analytics/TaxReportsPanel';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import ComparisonTable, { type ComparisonFilter } from '../../components/ui/ComparisonTable';
 import { useApiQueries } from '../../hooks/useApi';
 import {
   Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction,
-  Recipe, Employee, Product, Transaction, DeliveryType, DeliveryZone
+  Recipe, Employee, Product, Transaction, DeliveryType, DeliveryZone,
+  PaymentMethodRevenue, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS,
+  PAYMENT_ICONS
 } from '../../types';
 import jsPDF from 'jspdf';
 import { downloadExcel } from '../../utils/export';
@@ -51,7 +54,6 @@ interface LowStockItem {
 
 export default function Reports() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('sales');
   const [exporting, setExporting] = useState(false);
   // Date range filter for sales
@@ -63,11 +65,18 @@ export default function Reports() {
   const [zoneFilterId, setZoneFilterId] = useState<number | null>(null);
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>('');
   const [comparisonFilter, setComparisonFilter] = useState<ComparisonFilter | null>(null);
+  const [searchParams] = useSearchParams();
 
   // Clear comparison filter when switching tabs
   useEffect(() => {
     setComparisonFilter(null);
   }, [activeTab]);
+
+  // Deep-link support: /reports?tab=taxReports opens the Tax Reports tab
+  // (used by the sidebar / dashboard menu items).
+  useEffect(() => {
+    if (searchParams.get('tab') === 'taxReports') setActiveTab('taxReports');
+  }, [searchParams]);
 
   // ── Data fetching via shared useApiQueries hook ──
   const {
@@ -78,6 +87,7 @@ export default function Reports() {
       transactionsRes,
       deliveryTypesRes,
       deliveryZonesRes,
+      paymentRevRes,
     ],
     isLoading: loading,
   } = useApiQueries([
@@ -92,6 +102,7 @@ export default function Reports() {
     { command: 'get_transactions' },
     { command: 'get_delivery_types', params: { includeInactive: true } },
     { command: 'get_delivery_zones', params: { includeInactive: true } },
+    { command: 'get_revenue_by_payment_method' },
   ]);
 
   const settings = (settingsRes as Settings | undefined) ?? null;
@@ -107,6 +118,7 @@ export default function Reports() {
   const transactions = (Array.isArray(transactionsRes) ? (transactionsRes as Transaction[]) : []) as Transaction[];
   const deliveryTypes = (Array.isArray(deliveryTypesRes) ? (deliveryTypesRes as DeliveryType[]) : []) as DeliveryType[];
   const deliveryZones = (Array.isArray(deliveryZonesRes) ? (deliveryZonesRes as DeliveryZone[]) : []) as DeliveryZone[];
+  const paymentRevenue = (Array.isArray(paymentRevRes) ? (paymentRevRes as PaymentMethodRevenue[]) : []) as PaymentMethodRevenue[];
 
   // ---- Help Modal State ----
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
@@ -299,7 +311,7 @@ export default function Reports() {
   ];
 
   // ── Arrow-key tab nav ──
-  const tabKeys: Tab[] = tabs.map(t => t.key).filter(k => k !== 'taxReports');
+  const tabKeys: Tab[] = tabs.map(t => t.key);
   const { onKeyDown: onReportsTabKeyDown } = useKeyboardTabNav(tabKeys, activeTab, setActiveTab);
 
   // ---- Keyboard Shortcuts ----
@@ -319,7 +331,7 @@ export default function Reports() {
       }
 
       // Number keys for tab navigation
-      const tabKeys: Tab[] = ['overview', 'sales', 'productsSales', 'invoices', 'dailyComparison', 'periodComparison', 'deliveryTracking', 'inventory', 'recipes', 'employees', 'transactions'];
+      const tabKeys: Tab[] = ['overview', 'sales', 'productsSales', 'invoices', 'dailyComparison', 'periodComparison', 'deliveryTracking', 'inventory', 'recipes', 'employees', 'transactions', 'taxReports'];
       const num = parseInt(key);
       if (num >= 1 && num <= 9 && num <= tabKeys.length) {
         setActiveTab(tabKeys[num - 1]);
@@ -544,7 +556,7 @@ export default function Reports() {
       // Order Type Breakdown
       addSection('Orders by Type');
       orderTypeBreakdown.forEach(ot => {
-        addText(ot.type, `${ot.count} orders — ${formatPrice(ot.revenue)}`);
+        addText(ot.type, `${ot.count} orders · ${formatPrice(ot.revenue)}`);
       });
       y += 5;
 
@@ -553,7 +565,7 @@ export default function Reports() {
         addSection('Top Products');
         const topSlice = analytics.top_products.slice(0, 5);
         topSlice.forEach((p, i) => {
-          addText(`#${i + 1} ${p.name}`, `${p.sales} sold — ${formatPrice(p.revenue)}`);
+          addText(`#${i + 1} ${p.name}`, `${p.sales} sold · ${formatPrice(p.revenue)}`);
         });
         y += 5;
       }
@@ -583,7 +595,7 @@ export default function Reports() {
         employeePerformance.slice(0, 5).forEach((emp, i) => {
           addText(
             `#${i + 1} ${emp.employeeName}`,
-            `${emp.orderCount} orders — ${formatPrice(emp.revenue)}`
+            `${emp.orderCount} orders · ${formatPrice(emp.revenue)}`
           );
         });
         y += 5;
@@ -594,7 +606,7 @@ export default function Reports() {
       doc.setFontSize(8);
       doc.setFont('helvetica', 'italic');
       doc.text(
-        `Report generated on ${dateStr} — ${restaurantName}`,
+        `Report generated on ${dateStr} · ${restaurantName}`,
         pageWidth / 2,
         doc.internal.pageSize.getHeight() - 10,
         { align: 'center' }
@@ -936,15 +948,9 @@ export default function Reports() {
               type="button"
               role="tab"
               id={`reports-tab-${tab.key}`}
-              aria-controls={tab.key !== 'taxReports' ? `reports-panel-${tab.key}` : undefined}
+              aria-controls={`reports-panel-${tab.key}`}
               aria-selected={activeTab === tab.key}
-              onClick={() => {
-                if (tab.key === 'taxReports') {
-                  navigate('/tax-reports');
-                } else {
-                  setActiveTab(tab.key);
-                }
-              }}
+              onClick={() => setActiveTab(tab.key)}
               className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
             >
               {tab.icon}
@@ -1155,6 +1161,64 @@ export default function Reports() {
                   </Card>
                 )}
               </div>
+
+              {/* Revenue by Payment Method — breakdown of totals by how customers paid */}
+              {paymentRevenue.length > 0 && (
+                <Card padding="xl">
+                  {(() => {
+                    const paymentTotal = paymentRevenue.reduce((s, p) => s + p.revenue, 0);
+                    return (
+                      <>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-bold text-base-content flex items-center gap-2">
+                            <span className="ri-bank-card-line ri-20px text-primary" />
+                            {t('reports.revenueByPayment')}
+                          </h3>
+                          <span className="tag tag--sm tag--ghost">
+                            {t('reports.totalRevenue')}: {formatPrice(paymentTotal)}
+                          </span>
+                        </div>
+                        <div className="space-y-4">
+                          {paymentRevenue.map(pr => {
+                            const method = (PAYMENT_METHODS as string[]).includes(pr.payment_method)
+                              ? (pr.payment_method as PaymentMethod)
+                              : 'other';
+                            const pct = paymentTotal > 0 ? (pr.revenue / paymentTotal) * 100 : 0;
+                            return (
+                              <div key={pr.payment_method} className="flex items-center gap-4">
+                                <div className="w-9 h-9 shrink-0 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 flex items-center justify-center">
+                                  <span className={`${PAYMENT_ICONS[method]} ri-18px`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between gap-2 mb-1">
+                                    <p className="text-sm font-medium text-base-content truncate">
+                                      {t(`payments.${pr.payment_method}`, PAYMENT_METHOD_LABELS[method] || pr.payment_method)}
+                                    </p>
+                                    <p className="text-sm font-semibold text-base-content tabular-nums shrink-0">
+                                      {formatPrice(pr.revenue)}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex-1 h-1.5 rounded-full bg-base-200 dark:bg-base-300/40 overflow-hidden">
+                                      <div
+                                        className="h-full rounded-full bg-primary/70 dark:bg-primary/60 transition-all duration-500"
+                                        style={{ width: `${pct}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-[11px] text-base-content/50 tabular-nums shrink-0 w-16 text-right">
+                                      {pct.toFixed(0)}% · {pr.orders} {t('reports.ordersShort')}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </Card>
+              )}
 
               {/* Top Products */}
               {analytics?.top_products && analytics.top_products.length > 0 && (
@@ -1464,7 +1528,10 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* vs Yesterday */}
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.vsYesterday')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/70 mb-4 flex items-center gap-1.5">
+                    <span className="ri-time-line ri-14px text-primary/60" />
+                    {t('reports.vsYesterday')}
+                  </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.todayRevenue')}
@@ -1487,7 +1554,10 @@ export default function Reports() {
 
                 {/* vs Same Day Last Week */}
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.vsLastWeek')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/70 mb-4 flex items-center gap-1.5">
+                    <span className="ri-calendar-line ri-14px text-primary/60" />
+                    {t('reports.vsLastWeek')}
+                  </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.todayRevenue')}
@@ -1642,8 +1712,8 @@ export default function Reports() {
                 </div>
                 <span className="text-xs text-base-content/50 ml-2">
                   {periodView === 'week'
-                    ? `${thisWeekStart} — ${todayStr}`
-                    : `${currentMonthStart} — ${todayStr}`
+                    ? `${thisWeekStart} · ${todayStr}`
+                    : `${currentMonthStart} · ${todayStr}`
                   }
                 </span>
               </div>
@@ -1701,7 +1771,10 @@ export default function Reports() {
               {/* Comparison Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.revenueComparison')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/70 mb-4 flex items-center gap-1.5">
+                    <span className="ri-bar-chart-2-line ri-14px text-primary/60" />
+                    {t('reports.revenueComparison')}
+                  </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.currentPeriodShort')}
@@ -1722,7 +1795,10 @@ export default function Reports() {
                   </div>
                 </Card>
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.ordersComparison')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/70 mb-4 flex items-center gap-1.5">
+                    <span className="ri-shopping-bag-line ri-14px text-primary/60" />
+                    {t('reports.ordersComparison')}
+                  </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.currentPeriodShort')}
@@ -2414,6 +2490,10 @@ export default function Reports() {
                 )}
               </Card>
             </div>
+          )}
+
+          {activeTab === 'taxReports' && (
+            <TaxReportsPanel />
           )}
         </div>
 

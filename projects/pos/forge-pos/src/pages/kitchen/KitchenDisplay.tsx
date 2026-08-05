@@ -561,7 +561,7 @@ export default function KitchenDisplay() {
                 <span className="ri-close-line ri-12px" />
               </button>
             </div>
-            <p className="text-[10px] text-base-content/50 mb-2">
+            <p className="text-[11px] text-base-content/50 mb-2">
               Select which order types to display as kitchen tasks:
             </p>
             <div className="flex flex-wrap gap-2">
@@ -613,7 +613,7 @@ export default function KitchenDisplay() {
 
         {/* ── Ticket count ── */}
         {filteredTickets.length > 0 && (
-          <div className="flex items-center justify-end gap-2 text-[10px] text-base-content/40 -mt-1">
+          <div className="flex items-center justify-end gap-2 text-[11px] text-base-content/40 -mt-1">
             <span>{filteredTickets.length} / {tickets.length}</span>
             {filteredTickets.filter(t => isOverdue(t)).length > 0 && (
               <span className="badge badge-xs badge-error gap-1 animate-pulse">
@@ -655,7 +655,7 @@ export default function KitchenDisplay() {
                     </div>
                     {overdue ? (
                       <span className="badge badge-sm badge-error gap-1 shrink-0 ml-1 animate-pulse">
-                        <span className="text-[10px]">🔴</span> Overdue
+                        <span className="ri-alarm-warning-line ri-12px" /> Overdue
                       </span>
                     ) : (
                       <span className={`${statusBadges[ticket.status] || 'badge badge-soft'} shrink-0 ml-1`}>{ticket.status}</span>
@@ -668,26 +668,26 @@ export default function KitchenDisplay() {
                         {ORDER_TYPE_MAP[ticket.priority].label}
                       </span>
                     )}
-                    <span className={`text-[9px] flex items-center gap-1 ${overdue ? 'text-error font-semibold' : 'text-base-content/40'}`}>
+                    <span className={`text-[11px] flex items-center gap-1 ${overdue ? 'text-error font-semibold' : 'text-base-content/40'}`}>
                       <span className="ri-time-line ri-12px" />
                       {timeAgo(ticket.created_at)}
                     </span>
                   </div>
                   {/* Notes (truncated) */}
                   {ticket.notes && (
-                    <p className="text-[10px] text-base-content/60 line-clamp-1 mb-1.5">{ticket.notes}</p>
+                    <p className="text-[11px] text-base-content/60 line-clamp-1 mb-1.5">{ticket.notes}</p>
                   )}
                   {/* Prep time + status row */}
                   <div className="flex items-center justify-between mt-auto mb-1">
                     {ticket.prepare_time_minutes > 0 && (
-                      <span className={`flex items-center gap-1 text-[9px] ${overdue ? 'text-error' : 'text-base-content/50'}`}>
+                      <span className={`flex items-center gap-1 text-[11px] ${overdue ? 'text-error' : 'text-base-content/50'}`}>
                         <span className="ri-play-circle-line ri-12px" />
                         {ticket.prepare_time_minutes}min
                         <span className="text-base-content/30">Est.</span>
                       </span>
                     )}
                     {overdue && (
-                      <span className="text-[9px] text-error font-bold">
+                      <span className="text-[11px] text-error font-bold">
                         +{Math.floor((Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime()) / 60000) - ticket.prepare_time_minutes}min overdue
                       </span>
                     )}
@@ -712,7 +712,7 @@ export default function KitchenDisplay() {
                     const barColor = pct < 50 ? 'bg-success' : pct < 90 ? 'bg-warning' : 'bg-error';
                     return (
                       <div className="mt-1.5 w-full">
-                        <div className="flex items-center justify-between text-[8px] text-base-content/30 mb-0.5">
+                        <div className="flex items-center justify-between text-[11px] text-base-content/40 mb-0.5">
                           <span>{pct}%</span>
                           <span>{Math.round(elapsed / 60000)}m / {ticket.prepare_time_minutes}m</span>
                         </div>
@@ -848,7 +848,7 @@ export default function KitchenDisplay() {
                             className="flex items-center justify-between py-1.5 px-2 rounded-lg text-xs"
                           >
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold shrink-0 bg-base-300 text-base-content/70">
+                              <span className="w-5 h-5 rounded flex items-center justify-center text-[11px] font-bold shrink-0 bg-base-300 text-base-content/70">
                                 {item.quantity}
                               </span>
                               <span className="font-medium text-base-content truncate">{item.product_name}</span>
@@ -874,7 +874,7 @@ export default function KitchenDisplay() {
                       </h4>
                       <div className="space-y-1">
                         {chefReport.slice(-8).map((rec, i) => (
-                          <div key={i} className="flex items-center gap-2 text-[10px] text-base-content/50">
+                          <div key={i} className="flex items-center gap-2 text-[11px] text-base-content/50">
                             <span className={`w-1.5 h-1.5 rounded-full ${
                               rec.action === 'opened' ? 'bg-info' :
                               rec.action === 'started' ? 'bg-warning' :
@@ -900,7 +900,7 @@ export default function KitchenDisplay() {
                           <span className="tag tag--sm tag--info font-normal normal-case">{activePrepNote.name}</span>
                         )}
                       </h4>
-                      <span className="text-[10px] text-base-content/40 tabular-nums">
+                      <span className="text-[11px] text-base-content/40 tabular-nums">
                         {Object.values(checkedSteps).filter(Boolean).length}/{activePrepSteps.length} done
                       </span>
                     </div>
@@ -929,7 +929,7 @@ export default function KitchenDisplay() {
                                   {i + 1}. {step.title}
                                 </span>
                                 {step.details && (
-                                  <span className={`block text-[10px] leading-snug ${done ? 'text-base-content/30' : 'text-base-content/50'}`}>
+                                  <span className={`block text-[11px] leading-snug ${done ? 'text-base-content/30' : 'text-base-content/50'}`}>
                                     {step.details}
                                   </span>
                                 )}
@@ -998,7 +998,7 @@ export default function KitchenDisplay() {
 
                   {selectableNotes.length === 0 ? (
                     <p className="text-[11px] text-base-content/40 italic py-1">
-                      {t('notes.noTemplates') || 'No quick notes yet — mark notes as selectable in Notes.'}
+                      {t('notes.noTemplates') || 'No quick notes yet. Mark notes as selectable in Notes.'}
                     </p>
                   ) : (
                     <div className="flex flex-wrap gap-1.5">

@@ -22,6 +22,9 @@ pub struct Transaction {
     pub time: String,
     pub order_type: String,
     pub status: String,
+    pub payment_method: String,
+    pub discount_code: Option<String>,
+    pub discount_amount: f64,
 }
 
 pub fn get_transactions(db_path: &PathBuf) -> Result<Vec<Transaction>, String> {
@@ -55,6 +58,9 @@ pub fn get_transactions(db_path: &PathBuf) -> Result<Vec<Transaction>, String> {
             time: sale.time,
             order_type: sale.order_type,
             status: sale.status,
+            payment_method: sale.payment_method,
+            discount_code: sale.discount_code,
+            discount_amount: sale.discount_amount,
         });
     }
     Ok(transactions)

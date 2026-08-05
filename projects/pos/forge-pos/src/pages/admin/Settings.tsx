@@ -838,11 +838,11 @@ export default function Settings() {
           <div className="flex items-center gap-3">
             {mode === 'dark' ? (
               <div className="bg-primary/10 rounded-full p-2.5">
-                <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+                <span className="ri-moon-line ri-20px text-primary" />
               </div>
             ) : (
               <div className="bg-warning/10 rounded-full p-2.5">
-                <svg className="w-5 h-5 text-warning" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+                <span className="ri-sun-line ri-20px text-warning" />
               </div>
             )}
             <div>
@@ -992,9 +992,7 @@ export default function Settings() {
                 onClick={() => { setLogoPreview(undefined); setSettings(prev => ({ ...prev, logo: null })); }}
                 className="btn btn-circle btn-error btn-xs absolute -top-2 -right-2 rtl:-left-2 rtl:right-auto shadow-lg"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+                <span className="ri-close-line ri-14px" />
               </button>
             </div>
           )}
@@ -1012,10 +1010,7 @@ export default function Settings() {
               />
             ) : (
               <>
-                <svg className="w-8 h-8 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <span className="ri-image-add-line ri-32px mb-1" />
                 <span className="text-sm">{logoPreview ? t('settings.changeLogo') : t('settings.uploadLogo')}</span>
               </>
             )}
@@ -1653,7 +1648,7 @@ export default function Settings() {
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-base-content/60">{t('settings.databaseTab.status')}</span>
             <span className="tag tag--sm tag--success">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
               {t('settings.databaseTab.connected')}
             </span>
           </div>
@@ -1761,7 +1756,7 @@ export default function Settings() {
           <span className="ri-settings-3-line ri-48px md:w-14 md:h-14 text-primary/80" />
         </div>
         <h1
-          className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary"
+          className="text-3xl md:text-4xl font-bold text-base-content"
         >
           {t('settings.title')}
         </h1>

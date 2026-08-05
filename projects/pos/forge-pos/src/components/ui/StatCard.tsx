@@ -42,7 +42,7 @@ type StatCardBase = Omit<HTMLAttributes<HTMLDivElement>, 'title'> & {
   icon?: React.ReactNode;
   /** Color theme: gradient name, semantic name, or text class. Default: 'primary' */
   color?: string;
-  /** Show a left border indicator via CSS variable border-l-4. */
+  /** Show a start-edge accent bar via CSS variable (RTL-aware). */
   border?: boolean;
   /** Enable entrance animation. */
   animated?: boolean;
@@ -50,7 +50,7 @@ type StatCardBase = Omit<HTMLAttributes<HTMLDivElement>, 'title'> & {
   onClick?: () => void;
   /** Optional click handler for the desc/delta text. */
   onDescClick?: () => void;
-  /** Optional sparkline data — renders a tiny Recharts AreaChart in the stat-figure area. */
+  /** Optional sparkline data — renders a tiny Recharts AreaChart as an in-card bottom strip. */
   sparklineData?: { value: number }[];
   /** Compact mode — reduced padding and font sizes for denser grids. */
   compact?: boolean;
@@ -73,12 +73,15 @@ type StatCardNormal = StatCardBase & {
 export type StatCardProps = StatCardLoading | StatCardNormal;
 
 /**
- * StatCard — FlyonUI `.stat` component wrapper.
+ * StatCard — fit-design KPI card.
  *
- * Renders a theme-adaptive KPI card with optional icon, descriptive label,
- * value, and delta text. All colors use the active FlyonUI theme's palette.
+ * Every element lives inside the card container:
+ * - the icon renders in a rounded tinted badge pinned to the top-end corner (inside the card),
+ * - the sparkline renders as a subtle full-width strip anchored to the card bottom,
+ * - title / value / description truncate (ellipsis) instead of overflowing,
+ * - the card root is overflow-hidden with a real card surface.
  *
- * Supports compact mode, skeleton loading, CSS-variable border-left,
+ * Supports compact mode, skeleton loading, an RTL-aware start-edge accent bar,
  * and all FlyonUI semantic color tokens (primary, secondary, accent, neutral,
  * info, success, warning, error).
  *
@@ -88,35 +91,36 @@ export type StatCardProps = StatCardLoading | StatCardNormal;
  *   value="$1,245.00"
  *   icon={<span className="ri-money-dollar-box-line ri-24px" />}
  *   color="primary"
+ *   compact
  * />
  */
 export default function StatCard(props: StatCardProps) {
   const { animated = true, compact = false, className = '' } = props;
 
-  // ── Skeleton loading state — early return so rest of the function
+  // ── Card surface (shared by skeleton + content) ──
+  const surfaceClass = 'bg-base-100/70 dark:bg-white/5 backdrop-blur-sm border border-base-300/40 dark:border-white/10 rounded-2xl shadow-sm';
+
+  // ── Skeleton loading state — early return so the rest of the function
   //     sees narrowed StatCardNormal with required title/value. ──
   if (props.loading) {
     const skeleton = (
-      <div className={`stat bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 animate-pulse ${compact ? 'p-3' : ''} ${className}`.trim()}>
-        <div className={`stat-title ${compact ? 'mb-0.5' : ''}`}>
-          <div className={`rounded bg-base-300/50 ${compact ? 'h-2 w-12' : 'h-3 w-16'}`} />
+      <div
+        className={`stat relative overflow-hidden ${surfaceClass} animate-pulse ${compact ? 'p-3' : 'p-4'} ${className}`.trim()}
+      >
+        <div className="stat-title">
+          <div className={`rounded bg-base-300/50 ${compact ? 'h-2 w-14' : 'h-3 w-20'}`} />
         </div>
         <div className="stat-value">
-          <div className={`rounded bg-base-300/50 mt-1 ${compact ? 'h-5 w-14' : 'h-7 w-20'}`} />
+          <div className={`rounded bg-base-300/50 mt-1.5 ${compact ? 'h-5 w-16' : 'h-8 w-28'}`} />
         </div>
         <div className="stat-desc">
-          <div className={`rounded bg-base-300/50 mt-1 ${compact ? 'h-2 w-16' : 'h-2.5 w-24'}`} />
+          <div className={`rounded bg-base-300/50 mt-1.5 ${compact ? 'h-2 w-24' : 'h-2.5 w-36'}`} />
         </div>
       </div>
     );
 
     if (animated) {
-      return (
-        <div
-        >
-          {skeleton}
-        </div>
-      );
+      return <div>{skeleton}</div>;
     }
     return skeleton;
   }
@@ -127,71 +131,88 @@ export default function StatCard(props: StatCardProps) {
   const semanticColor = resolveColor(color);
   const sparkColor = semanticColor.replace('text-', '');
   const hasValidSparkColor = SEMANTIC_COLORS.has(sparkColor);
+  const hasSparkline = !!sparklineData && sparklineData.length > 0 && hasValidSparkColor;
 
-  const clickableClass = onClick ? ' cursor-pointer hover:bg-white/10 transition-colors duration-200' : '';
+  const clickableClass = onClick
+    ? ' cursor-pointer hover:bg-base-100 dark:hover:bg-white/10 transition-colors duration-200'
+    : '';
 
-  // ── Border-left via CSS variable ──
-  // Uses var(--color-*) so the border tracks the active FlyonUI theme palette.
-  // borderColor sets all four sides so RTL rtl:border-r-[4px] inherits the correct color.
-  const borderStyle: React.CSSProperties | undefined = border && hasValidSparkColor
-    ? { borderLeftWidth: '4px', borderColor: `var(--color-${sparkColor})` }
-    : border
-      ? { borderLeftWidth: '4px', borderColor: 'var(--color-primary)' }
-      : undefined;
+  // ── Start-edge accent bar via CSS variable (RTL-aware by using inline-start). ──
+  // borderInlineStartWidth/Color flip automatically in RTL — no rtl: class juggling needed.
+  const borderStyle: React.CSSProperties | undefined = border
+    ? {
+        borderInlineStartWidth: '4px',
+        borderInlineStartColor: `var(--color-${hasValidSparkColor ? sparkColor : 'primary'})`,
+      }
+    : undefined;
 
-  // RTL-aware border — swap left→right in RTL via className
-  const borderClass = border ? ' rtl:border-l-0 rtl:border-r-[4px]' : '';
-
-  // ── Compact classes ──
-  const compactTitleClass = compact ? 'text-[11px] mb-0.5' : '';
-  const compactValueClass = compact ? 'text-lg' : '';
-  const compactDescClass = compact ? 'text-[10px]' : '';
-  const compactPaddingClass = compact ? 'p-3' : '';
+  // ── Compact vs default type scale ──
+  const compactTitleClass = compact ? 'text-[11px]' : 'text-xs';
+  const compactValueClass = compact ? 'text-lg' : 'text-2xl md:text-3xl';
+  const compactDescClass = compact ? 'text-[10px]' : 'text-xs';
+  // Reserve the bottom strip space so text never collides with the sparkline.
+  const sparkPadClass = hasSparkline ? (compact ? 'pb-8' : 'pb-9') : '';
 
   const classes = [
     'stat',
-    borderClass,
+    'relative overflow-hidden',
+    surfaceClass,
     clickableClass,
-    compactPaddingClass,
+    compact ? 'p-3' : 'p-4',
+    sparkPadClass,
     className,
   ].filter(Boolean).join(' ').trim();
 
+  // ── Icon badge — pinned inside the card top-end corner, tinted with the accent color ──
+  const iconBadge = icon ? (
+    <div
+      aria-hidden="true"
+      className="absolute top-2.5 end-2.5 z-10 w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+      style={
+        hasValidSparkColor
+          ? { backgroundColor: `color-mix(in oklab, var(--color-${sparkColor}) 14%, transparent)` }
+          : undefined
+      }
+    >
+      <span className={semanticColor}>{icon}</span>
+    </div>
+  ) : null;
+
+  // ── Sparkline — subtle full-width strip anchored to the card bottom ──
+  const sparkId = `spark-${sparkColor}-${title.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  const sparkline = hasSparkline ? (
+    <div data-testid="stat-sparkline" className="absolute inset-x-0 bottom-0 h-8 opacity-70 pointer-events-none" aria-hidden="true">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={sparklineData ?? []} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <defs>
+            <linearGradient id={sparkId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={`var(--color-${sparkColor})`} stopOpacity={0.35} />
+              <stop offset="95%" stopColor={`var(--color-${sparkColor})`} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke={`var(--color-${sparkColor})`}
+            strokeWidth={1.5}
+            fill={`url(#${sparkId})`}
+            dot={false}
+            activeDot={false}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  ) : null;
+
   const content = (
     <>
-      {(icon || sparklineData) && (
-        <div className={`stat-figure ${semanticColor} ${compact ? 'top-2 right-2' : ''}`}>
-          {icon}
-          {sparklineData && sparklineData.length > 0 && hasValidSparkColor && (
-            <div className={`${compact ? 'w-14 h-7 mt-0.5' : 'w-20 h-10 mt-1'}`}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sparklineData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                  <defs>
-                    <linearGradient id={`spark-fill-${title.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={`var(--color-${sparkColor})`} stopOpacity={0.3} />
-                      <stop offset="95%" stopColor={`var(--color-${sparkColor})`} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke={`var(--color-${sparkColor})`}
-                    strokeWidth={1.5}
-                    fill={`url(#spark-fill-${title.replace(/\s+/g, '-')})`}
-                    dot={false}
-                    activeDot={false}
-                    isAnimationActive={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </div>
-      )}
-      <div className={`stat-title ${compactTitleClass}`.trim()}>{title}</div>
-      <div className={`stat-value ${semanticColor} ${compactValueClass}`.trim()}>{value}</div>
+      {iconBadge}
+      <div className={`stat-title ${compactTitleClass} ${icon ? 'pe-12' : ''} truncate min-w-0`}>{title}</div>
+      <div className={`stat-value ${semanticColor} ${compactValueClass} truncate min-w-0 tabular-nums`}>{value}</div>
       {desc && (
         <div
-          className={`stat-desc ${semanticColor}/70 ${compactDescClass} ${onDescClick ? 'cursor-pointer hover:text-primary hover:underline transition-colors' : ''}`.trim()}
+          className={`stat-desc ${semanticColor}/70 ${compactDescClass} line-clamp-1 min-w-0 ${onDescClick ? 'cursor-pointer hover:text-primary hover:underline transition-colors' : ''}`.trim()}
           onClick={(e) => {
             if (onDescClick) {
               e.stopPropagation();
@@ -211,20 +232,9 @@ export default function StatCard(props: StatCardProps) {
           {desc}
         </div>
       )}
+      {sparkline}
     </>
   );
-
-  if (animated) {
-    return (
-      <div
-        className={classes}
-        style={borderStyle}
-        onClick={onClick}
-      >
-        {content}
-      </div>
-    );
-  }
 
   return (
     <div className={classes} style={borderStyle} onClick={onClick}>

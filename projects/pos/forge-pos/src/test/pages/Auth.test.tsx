@@ -190,6 +190,31 @@ describe('Auth Page', () => {
     expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
   });
 
+  it('keeps the password input mounted when the form re-renders (no focus steal)', async () => {
+    mockInvokeSuccess('check_auth_required', true);
+    mockInvokeSuccess('has_users', true);
+
+    renderWithRouter(<Auth />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
+    });
+
+    const passwordInput = document.getElementById('login-password');
+    expect(passwordInput).not.toBeNull();
+
+    // Click the show/hide password eye toggle → triggers a re-render.
+    // (A plain button click works in jsdom even where controlled-input typing
+    // is flaky under AnimatePresence.)
+    const eyeToggle = passwordInput!.closest('div')!.querySelector('button')!;
+    fireEvent.click(eyeToggle);
+
+    // Regression: components defined inside the Auth component caused every
+    // re-render to remount the whole form subtree (new DOM node), so the email
+    // input's autoFocus re-fired and stole focus from the password field.
+    expect(document.getElementById('login-password')).toBe(passwordInput);
+  });
+
   it('logs in with valid credentials', async () => {
     mockInvokeSuccess('check_auth_required', true);
     mockInvokeSuccess('has_users', true);

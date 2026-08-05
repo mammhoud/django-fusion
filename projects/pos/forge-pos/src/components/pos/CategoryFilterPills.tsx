@@ -63,7 +63,7 @@ export default function CategoryFilterPills({
 
   const pillTitle = (cat: Category, count: number | undefined): string => {
     if (tooltipFormatter) return tooltipFormatter(cat, count);
-    return count !== undefined ? `${cat.name} — ${count} products` : cat.name;
+    return count !== undefined ? `${cat.name} · ${count} products` : cat.name;
   };
 
   return (

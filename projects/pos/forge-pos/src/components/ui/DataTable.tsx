@@ -447,7 +447,7 @@ export default function DataTable<T>({
                                   e.preventDefault();
                                   confirmEditing();
                                 }}
-                                className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 transition-colors"
+                                className="p-1 rounded text-success hover:bg-success/10 transition-colors"
                               >
                                 <span className="ri-check-line ri-12px" />
                               </button>

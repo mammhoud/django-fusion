@@ -40,19 +40,12 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
           shadow-sm transition-all active:scale-[0.95] min-w-[120px]"
         aria-label={t('language.selectLanguage')}
       >
-        <span className="ri-translate-line ri-16px shrink-0 opacity-70" />
+        <span className="ri-translate ri-16px shrink-0 opacity-70" />
         <span className="flex-1 text-left">{current.flag} {current.label}</span>
-        <svg
-          className={`w-3.5 h-3.5 opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <span
+          className={`ri-arrow-down-s-line ri-14px opacity-50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        />
       </button>
 
       <AnimatePresence>

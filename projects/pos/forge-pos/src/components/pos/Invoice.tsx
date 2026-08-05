@@ -209,7 +209,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
                 }`}>
                   {orderType === 'delivery' && <span className="ri-truck-line ri-14px" />}
                   {orderType === 'dine-in' && <span className="ri-store-2-line ri-14px" />}
-                  {orderType === 'takeaway' && <span className="ri-hand-line ri-14px" />}
+                  {orderType === 'takeaway' && <span className="ri-hand ri-14px" />}
                   {orderType.charAt(0).toUpperCase() + orderType.slice(1)}
                 </span>
                 {deliveryTypeName && (
