@@ -305,6 +305,18 @@ Unified test directory: [`../tests/`](../tests/)
 | Frontend contract | `tests/js/vitest.config.ts` | `npx vitest run` |
 | Admin selenium | `tests/selenium/formint/` | `pytest tests/selenium/formint/` |
 
+**Live browser verification** (Chrome DevTools automation against the dev
+stack: Astro `:4321` → Django sidecar `:8767`) — all steps passed with no
+console errors or failed network requests:
+
+- Page loads: title `Fusion — Formint POS`, heading `Fusion render contract`.
+- Encoded pointer decodes to `formint.branch_summary` (`fusion_v1:` prefix).
+- Session-mode toggle ON → `POST /fusion/session-mode/` stores `true`;
+  OFF → `DELETE` clears (indicator flips to explicit `false` / `data-api`).
+- `Reset to default` → preference back to unset; effective strategy falls
+  back to the settings default (`fusion-render`).
+- `Reload fragment` → HTMX swap re-fetches `/fusion/page/` successfully.
+
 Backend coverage: ninja CRUD (create/list/patch/delete), pagination,
 openapi, fusion envelope, HTMX table/form fragments, render-first + data-
 mode (header + session override), render-mode/navigation/assets endpoints,
