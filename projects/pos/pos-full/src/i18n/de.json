@@ -646,7 +646,8 @@
       "delivery": "Delivery",
       "employees": "Employees",
       "database": "Database",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "loyalty": "Treue"
     },
     "appearanceTab": {
       "title": "Theme Customization",
@@ -736,7 +737,38 @@
       "deliveryFee": "Delivery Fee",
       "perKmFee": "Per-Km Fee"
     },
-    "languageNote": "Switch between English, Arabic, and French. RTL support is automatic."
+    "languageNote": "Switch between English, Arabic, and French. RTL support is automatic.",
+    "loyaltyTab": {
+      "title": "Treue & Kundensegmente",
+      "description": "Gruppieren Sie Ihre Kunden in Treuestufen, gesteuert durch Punkte, Rabatte und Vorteile.",
+      "activeCategories": "Aktive Kategorien",
+      "ledgerEntries": "Kontobuchungen",
+      "pointsIssued": "Vergebene Punkte",
+      "categoryName": "Kategoriename",
+      "minPoints": "Mindestpunkte",
+      "discount": "Rabatt %",
+      "perks": "Vorteile (kommagetrennt)",
+      "addCategory": "Kategorie hinzufügen",
+      "delete": "Löschen",
+      "noCategories": "Noch keine Kundenkategorien — fügen Sie oben Ihre erste Stufe hinzu.",
+      "userSettings": "Benutzereinstellungen",
+      "userSettingsDesc": "Gleiche Daten wie die POS-Einstellungsseite, mit Details pro Benutzer.",
+      "theme": "Design",
+      "language": "Sprache",
+      "notifications": "Benachrichtigungen",
+      "inactivityTimeout": "Inaktivitäts-Timeout",
+      "saveUserPrefs": "Benutzereinstellungen speichern",
+      "recentTransactions": "Letzte Treue-Transaktionen",
+      "customer": "Kunde",
+      "type": "Typ",
+      "change": "Änderung",
+      "balance": "Saldo",
+      "date": "Datum",
+      "noTransactions": "Noch keine Treue-Transaktionen.",
+      "saved": "Treueänderungen gespeichert",
+      "saveFailed": "Speichern fehlgeschlagen",
+      "currentUser": "aktueller Benutzer"
+    }
   },
   "supportChat": {
     "title": "Support & Customer Chat",

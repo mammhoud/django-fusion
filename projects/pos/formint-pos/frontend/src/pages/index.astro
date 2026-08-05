@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">Arabic-first · offline-capable · restaurant-focused</p>
+      <h1 id="page-title">Formint POS Professional</h1>
+      <p class="intro">
+        Phase 1 foundation for branch operations, orders, kitchen coordination, sync, and reports.
+      </p>
+    </section>
+
+    <section
+      id="branch-summary"
+      class="data-card"
+      data-skeleton-label="Branch summary"
+      aria-labelledby="branch-summary-title"
+      aria-live="polite"
+      hx-get="/htmx/branches/summary/"
+      hx-trigger="load"
+      hx-headers='{"X-Fusion-Render-First":"true"}'
+      hx-target="#branch-summary-content"
+      hx-swap="innerHTML"
+    >
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Vertical slice</p>
+          <h2 id="branch-summary-title">Branch → order → KDS → sync → report</h2>
+        </div>
+        <span class="status-dot" aria-label="Phase 1 planned"></span>
+      </div>
+
+      <div id="branch-summary-content">
+        <div class="skeleton-grid" aria-hidden="true">
+          <span class="skeleton skeleton-value"></span>
+          <span class="skeleton skeleton-value"></span>
+          <span class="skeleton skeleton-value"></span>
+        </div>
+        <p class="sr-only">Loading branch summary…</p>
+        <p class="sr-only" data-fusion-note>First request uses django-fusion rendering.</p>
+      </div>
+    </section>
+
+    <section class="principles" aria-label="Phase 1 principles">
+      <article><strong>Astro shell</strong><span>Owns layout, skeleton, retry, and responsive states.</span></article>
+      <article><strong>HTMX data</strong><span>Swaps only the target section; never full backend pages.</span></article>
+      <article><strong>Django rules</strong><span>Owns validation, permissions, transactions, and audit.</span></article>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .page-shell { max-width: 72rem; margin: 0 auto; padding: 4rem 1.25rem; }
+  .hero { max-width: 48rem; margin-bottom: 2rem; }
+  .eyebrow { margin: 0 0 0.5rem; color: #2563eb; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { margin: 0; color: #111827; font-size: clamp(2rem, 6vw, 4.5rem); letter-spacing: -0.06em; line-height: 0.98; }
+  h2 { margin: 0; color: #111827; font-size: clamp(1rem, 2vw, 1.45rem); }
+  .intro { max-width: 38rem; margin: 1rem 0 0; color: #475569; font-size: 1.1rem; line-height: 1.6; }
+  .data-card { padding: clamp(1rem, 3vw, 2rem); background: #fff; border: 1px solid #dbe3ef; border-radius: 1rem; box-shadow: 0 1rem 2.5rem rgb(15 23 42 / 0.06); }
+  .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+  .status-dot { width: 0.7rem; height: 0.7rem; margin-top: 0.35rem; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 0.3rem #fef3c7; }
+  .skeleton-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  .skeleton { display: block; height: 4.5rem; border-radius: 0.7rem; background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+  .principles article { display: grid; gap: 0.35rem; padding: 1rem; color: #475569; background: #eef4ff; border-radius: 0.8rem; line-height: 1.45; }
+  .principles strong { color: #172033; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  @media (max-width: 700px) {
+    .page-shell { padding-top: 2.5rem; }
+    .skeleton-grid, .principles { grid-template-columns: 1fr; }
+    .site-header { align-items: flex-start; flex-direction: column; padding-block: 0.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+</style>

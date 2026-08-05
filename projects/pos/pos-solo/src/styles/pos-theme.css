@@ -1,138 +1,790 @@
 /* ============================================================
-   POS Design System — Shared Theme
+   POS Design System — Shared Theme (v2)
    ============================================================
    Used by: pos-minimal, pos-solo, pos-full, CRM
+
+   Color philosophy:
+     - All colors use HSL for proper light/dark transitions
+     - Every background color has a corresponding text color
+     - Contrast ratios meet WCAG AA minimums (4.5:1 for text)
+     - Responsive sizes scale smoothly across breakpoints
+
+   Breakpoint scale (mobile-first):
+     xs: < 480px   (default, no prefix needed)
+     sm: ≥ 480px   (phones landscape, small tablets)
+     md: ≥ 768px   (tablets)
+     lg: ≥ 1024px  (desktops)
+     xl: ≥ 1280px  (large desktops)
+     xxl: ≥ 1536px (ultrawide)
    ============================================================ */
 
 :root {
-  /* ── Color Palette ─────────────────────────────────────── */
-  --pos-primary: #2563eb;          /* Blue-600 */
-  --pos-primary-dark: #1d4ed8;     /* Blue-700 */
-  --pos-primary-light: #60a5fa;    /* Blue-400 */
-  --pos-secondary: #059669;        /* Emerald-600 */
-  --pos-secondary-dark: #047857;   /* Emerald-700 */
-  --pos-accent: #f59e0b;           /* Amber-500 */
-  --pos-accent-dark: #d97706;      /* Amber-600 */
-  --pos-danger: #dc2626;           /* Red-600 */
-  --pos-warning: #f97316;          /* Orange-500 */
+  /* ═══════════════════════════════════════════════════════════
+     COLOR PALETTE — HSL values (hue, saturation%, lightness%)
+     ═══════════════════════════════════════════════════════════ */
 
-  /* ── Neutral ───────────────────────────────────────────── */
-  --pos-bg: #f8fafc;               /* Slate-50 */
-  --pos-bg-alt: #f1f5f9;           /* Slate-100 */
-  --pos-surface: #ffffff;
-  --pos-border: #e2e8f0;           /* Slate-200 */
-  --pos-text: #1e293b;             /* Slate-800 */
-  --pos-text-secondary: #64748b;   /* Slate-500 */
-  --pos-text-muted: #94a3b8;       /* Slate-400 */
+  /* ── Brand Primary (Blue) ─────────────────────────────── */
+  --pos-primary-h: 221;
+  --pos-primary-s: 83%;
+  --pos-primary-l: 53%;
+  --pos-primary: hsl(var(--pos-primary-h), var(--pos-primary-s), var(--pos-primary-l));
 
-  /* ── Typography ────────────────────────────────────────── */
-  --pos-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --pos-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --pos-radius: 8px;
-  --pos-radius-sm: 4px;
-  --pos-radius-lg: 12px;
+  --pos-primary-dark-h: 221;
+  --pos-primary-dark-s: 83%;
+  --pos-primary-dark-l: 42%;
+  --pos-primary-dark: hsl(var(--pos-primary-dark-h), var(--pos-primary-dark-s), var(--pos-primary-dark-l));
 
-  /* ── Spacing ───────────────────────────────────────────── */
+  --pos-primary-light-h: 221;
+  --pos-primary-light-s: 83%;
+  --pos-primary-light-l: 72%;
+  --pos-primary-light: hsl(var(--pos-primary-light-h), var(--pos-primary-light-s), var(--pos-primary-light-l));
+
+  --pos-primary-bg-h: 221;
+  --pos-primary-bg-s: 83%;
+  --pos-primary-bg-l: 96%;
+  --pos-primary-bg: hsl(var(--pos-primary-bg-h), var(--pos-primary-bg-s), var(--pos-primary-bg-l));
+
+  /* Text on primary backgrounds */
+  --pos-on-primary: #ffffff;
+  --pos-on-primary-bg: hsl(221, 83%, 25%);
+
+  /* ── Success (Emerald) ────────────────────────────────── */
+  --pos-success-h: 160;
+  --pos-success-s: 84%;
+  --pos-success-l: 39%;
+  --pos-success: hsl(var(--pos-success-h), var(--pos-success-s), var(--pos-success-l));
+
+  --pos-success-bg-h: 160;
+  --pos-success-bg-s: 84%;
+  --pos-success-bg-l: 94%;
+  --pos-success-bg: hsl(var(--pos-success-bg-h), var(--pos-success-bg-s), var(--pos-success-bg-l));
+
+  --pos-on-success: #ffffff;
+  --pos-on-success-bg: hsl(160, 84%, 18%);
+
+  /* ── Warning (Amber/Orange) ────────────────────────────── */
+  --pos-warning-h: 38;
+  --pos-warning-s: 92%;
+  --pos-warning-l: 50%;
+  --pos-warning: hsl(var(--pos-warning-h), var(--pos-warning-s), var(--pos-warning-l));
+
+  --pos-warning-bg-h: 38;
+  --pos-warning-bg-s: 92%;
+  --pos-warning-bg-l: 94%;
+  --pos-warning-bg: hsl(var(--pos-warning-bg-h), var(--pos-warning-bg-s), var(--pos-warning-bg-l));
+
+  --pos-on-warning: #1a1000;
+  --pos-on-warning-bg: hsl(38, 92%, 20%);
+
+  /* ── Danger (Red) ─────────────────────────────────────── */
+  --pos-danger-h: 0;
+  --pos-danger-s: 72%;
+  --pos-danger-l: 51%;
+  --pos-danger: hsl(var(--pos-danger-h), var(--pos-danger-s), var(--pos-danger-l));
+
+  --pos-danger-bg-h: 0;
+  --pos-danger-bg-s: 72%;
+  --pos-danger-bg-l: 95%;
+  --pos-danger-bg: hsl(var(--pos-danger-bg-h), var(--pos-danger-bg-s), var(--pos-danger-bg-l));
+
+  --pos-on-danger: #ffffff;
+  --pos-on-danger-bg: hsl(0, 72%, 25%);
+
+  /* ── Info (Cyan) ──────────────────────────────────────── */
+  --pos-info-h: 196;
+  --pos-info-s: 94%;
+  --pos-info-l: 47%;
+  --pos-info: hsl(var(--pos-info-h), var(--pos-info-s), var(--pos-info-l));
+
+  --pos-info-bg-h: 196;
+  --pos-info-bg-s: 94%;
+  --pos-info-bg-l: 94%;
+  --pos-info-bg: hsl(var(--pos-info-bg-h), var(--pos-info-bg-s), var(--pos-info-bg-l));
+
+  --pos-on-info: #ffffff;
+  --pos-on-info-bg: hsl(196, 94%, 20%);
+
+  /* ── Neutral: Surfaces ────────────────────────────────── */
+  --pos-surface-h: 210;
+  --pos-surface-s: 20%;
+  --pos-surface-l: 98%;
+  --pos-surface: hsl(var(--pos-surface-h), var(--pos-surface-s), var(--pos-surface-l));
+
+  --pos-surface-alt-h: 210;
+  --pos-surface-alt-s: 20%;
+  --pos-surface-alt-l: 95%;
+  --pos-surface-alt: hsl(var(--pos-surface-alt-h), var(--pos-surface-alt-s), var(--pos-surface-alt-l));
+
+  --pos-surface-raised-h: 0;
+  --pos-surface-raised-s: 0%;
+  --pos-surface-raised-l: 100%;
+  --pos-surface-raised: hsl(var(--pos-surface-raised-h), var(--pos-surface-raised-s), var(--pos-surface-raised-l));
+
+  /* ── Neutral: Backgrounds ──────────────────────────────── */
+  --pos-bg-h: 210;
+  --pos-bg-s: 40%;
+  --pos-bg-l: 96%;
+  --pos-bg: hsl(var(--pos-bg-h), var(--pos-bg-s), var(--pos-bg-l));
+
+  --pos-bg-alt-h: 210;
+  --pos-bg-alt-s: 40%;
+  --pos-bg-alt-l: 92%;
+  --pos-bg-alt: hsl(var(--pos-bg-alt-h), var(--pos-bg-alt-s), var(--pos-bg-alt-l));
+
+  /* ── Neutral: Borders ──────────────────────────────────── */
+  --pos-border-h: 210;
+  --pos-border-s: 16%;
+  --pos-border-l: 88%;
+  --pos-border: hsl(var(--pos-border-h), var(--pos-border-s), var(--pos-border-l));
+
+  --pos-border-light-h: 210;
+  --pos-border-light-s: 16%;
+  --pos-border-light-l: 93%;
+  --pos-border-light: hsl(var(--pos-border-light-h), var(--pos-border-light-s), var(--pos-border-light-l));
+
+  /* ── Neutral: Text ─────────────────────────────────────── */
+  --pos-text-h: 215;
+  --pos-text-s: 28%;
+  --pos-text-l: 17%;
+  --pos-text: hsl(var(--pos-text-h), var(--pos-text-s), var(--pos-text-l));
+
+  --pos-text-secondary-h: 215;
+  --pos-text-secondary-s: 16%;
+  --pos-text-secondary-l: 47%;
+  --pos-text-secondary: hsl(var(--pos-text-secondary-h), var(--pos-text-secondary-s), var(--pos-text-secondary-l));
+
+  --pos-text-muted-h: 215;
+  --pos-text-muted-s: 12%;
+  --pos-text-muted-l: 65%;
+  --pos-text-muted: hsl(var(--pos-text-muted-h), var(--pos-text-muted-s), var(--pos-text-muted-l));
+
+  --pos-text-inverse: #f8fafc;
+
+  /* ═══════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════ */
+  --pos-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --pos-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --pos-font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Type scale (mobile-first, ramps up at md breakpoint) */
+  --pos-text-xs: 0.6875rem;   /* 11px */
+  --pos-text-sm: 0.8125rem;   /* 13px */
+  --pos-text-base: 0.9375rem; /* 15px */
+  --pos-text-md: 1.0625rem;   /* 17px */
+  --pos-text-lg: 1.25rem;     /* 20px */
+  --pos-text-xl: 1.5rem;      /* 24px */
+  --pos-text-2xl: 1.875rem;   /* 30px */
+  --pos-text-3xl: 2.25rem;    /* 36px */
+
+  /* Font weights */
+  --pos-weight-normal: 400;
+  --pos-weight-medium: 500;
+  --pos-weight-semibold: 600;
+  --pos-weight-bold: 700;
+
+  /* Line heights */
+  --pos-leading-tight: 1.25;
+  --pos-leading-normal: 1.5;
+  --pos-leading-relaxed: 1.625;
+
+  /* Letter spacing */
+  --pos-tracking-tight: -0.02em;
+  --pos-tracking-normal: 0;
+  --pos-tracking-wide: 0.03em;
+  --pos-tracking-wider: 0.05em;
+
+  /* ═══════════════════════════════════════════════════════════
+     SPACING SCALE (4px base)
+     ═══════════════════════════════════════════════════════════ */
+  --pos-space-2xs: 2px;
   --pos-space-xs: 4px;
   --pos-space-sm: 8px;
   --pos-space-md: 16px;
   --pos-space-lg: 24px;
   --pos-space-xl: 32px;
+  --pos-space-2xl: 48px;
+  --pos-space-3xl: 64px;
 
-  /* ── Shadows ───────────────────────────────────────────── */
-  --pos-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --pos-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --pos-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  /* ═══════════════════════════════════════════════════════════
+     BORDER RADIUS
+     ═══════════════════════════════════════════════════════════ */
+  --pos-radius-xs: 3px;
+  --pos-radius-sm: 6px;
+  --pos-radius: 8px;
+  --pos-radius-md: 10px;
+  --pos-radius-lg: 12px;
+  --pos-radius-xl: 16px;
+  --pos-radius-full: 9999px;
+
+  /* ═══════════════════════════════════════════════════════════
+     SHADOWS (with proper dark mode support)
+     ═══════════════════════════════════════════════════════════ */
+  --pos-shadow-color: 215 28% 17%;
+  --pos-shadow-sm: 0 1px 2px hsl(var(--pos-shadow-color) / 0.05);
+  --pos-shadow-md: 0 4px 6px -1px hsl(var(--pos-shadow-color) / 0.06),
+                   0 2px 4px -2px hsl(var(--pos-shadow-color) / 0.04);
+  --pos-shadow-lg: 0 10px 15px -3px hsl(var(--pos-shadow-color) / 0.08),
+                   0 4px 6px -4px hsl(var(--pos-shadow-color) / 0.04);
+  --pos-shadow-xl: 0 20px 25px -5px hsl(var(--pos-shadow-color) / 0.1),
+                   0 8px 10px -6px hsl(var(--pos-shadow-color) / 0.05);
+
+  /* ═══════════════════════════════════════════════════════════
+     ANIMATION / TRANSITIONS
+     ═══════════════════════════════════════════════════════════ */
+  --pos-transition-fast: 0.12s ease;
+  --pos-transition-base: 0.2s ease;
+  --pos-transition-slow: 0.3s ease;
+  --pos-easing-spring: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ═══════════════════════════════════════════════════════════
+     RESPONSIVE BREAKPOINTS (as CSS custom properties — for
+     container queries and @media fallbacks)
+     ═══════════════════════════════════════════════════════════ */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-xxl: 1536px;
+
+  /* Container widths */
+  --container-sm: 448px;
+  --container-md: 720px;
+  --container-lg: 960px;
+  --container-xl: 1200px;
+  --container-xxl: 1440px;
+
+  /* ═══════════════════════════════════════════════════════════
+     COMPONENT-SPECIFIC TOKENS
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Sidebar */
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 64px;
+
+  /* Topbar / Header */
+  --topbar-height: 56px;
+  --topbar-height-mobile: 48px;
+
+  /* Cards */
+  --card-padding: var(--pos-space-lg);
+  --card-padding-sm: var(--pos-space-md);
+  --card-padding-xs: var(--pos-space-sm);
+
+  /* Tables */
+  --table-cell-padding-y: 10px;
+  --table-cell-padding-x: 12px;
+  --table-header-bg: var(--pos-bg-alt);
 }
 
-/* ── Typography ──────────────────────────────────────────── */
-.pos-body { font-family: var(--pos-font); color: var(--pos-text); line-height: 1.6; }
-.pos-heading { font-weight: 600; letter-spacing: -0.02em; }
-.pos-mono { font-family: var(--pos-font-mono); }
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE — Invert surface and text tokens
+   ═══════════════════════════════════════════════════════════ */
+
+.dark {
+  /* Invert surfaces */
+  --pos-surface-h: 217;
+  --pos-surface-s: 33%;
+  --pos-surface-l: 15%;
+  --pos-surface: hsl(var(--pos-surface-h), var(--pos-surface-s), var(--pos-surface-l));
+
+  --pos-surface-alt-h: 217;
+  --pos-surface-alt-s: 33%;
+  --pos-surface-alt-l: 19%;
+  --pos-surface-alt: hsl(var(--pos-surface-alt-h), var(--pos-surface-alt-s), var(--pos-surface-alt-l));
+
+  --pos-surface-raised-h: 217;
+  --pos-surface-raised-s: 33%;
+  --pos-surface-raised-l: 22%;
+  --pos-surface-raised: hsl(var(--pos-surface-raised-h), var(--pos-surface-raised-s), var(--pos-surface-raised-l));
+
+  /* Invert backgrounds */
+  --pos-bg-h: 217;
+  --pos-bg-s: 20%;
+  --pos-bg-l: 10%;
+  --pos-bg: hsl(var(--pos-bg-h), var(--pos-bg-s), var(--pos-bg-l));
+
+  --pos-bg-alt-h: 217;
+  --pos-bg-alt-s: 20%;
+  --pos-bg-alt-l: 14%;
+  --pos-bg-alt: hsl(var(--pos-bg-alt-h), var(--pos-bg-alt-s), var(--pos-bg-alt-l));
+
+  /* Invert borders */
+  --pos-border-h: 215;
+  --pos-border-s: 16%;
+  --pos-border-l: 28%;
+  --pos-border: hsl(var(--pos-border-h), var(--pos-border-s), var(--pos-border-l));
+
+  --pos-border-light-h: 215;
+  --pos-border-light-s: 12%;
+  --pos-border-light-l: 22%;
+  --pos-border-light: hsl(var(--pos-border-light-h), var(--pos-border-light-s), var(--pos-border-light-l));
+
+  /* Invert text */
+  --pos-text-h: 210;
+  --pos-text-s: 20%;
+  --pos-text-l: 92%;
+  --pos-text: hsl(var(--pos-text-h), var(--pos-text-s), var(--pos-text-l));
+
+  --pos-text-secondary-h: 215;
+  --pos-text-secondary-s: 12%;
+  --pos-text-secondary-l: 70%;
+  --pos-text-secondary: hsl(var(--pos-text-secondary-h), var(--pos-text-secondary-s), var(--pos-text-secondary-l));
+
+  --pos-text-muted-h: 215;
+  --pos-text-muted-s: 10%;
+  --pos-text-muted-l: 55%;
+  --pos-text-muted: hsl(var(--pos-text-muted-h), var(--pos-text-muted-s), var(--pos-text-muted-l));
+
+  --pos-text-inverse: #0f172a;
+
+  /* Dark mode shadows */
+  --pos-shadow-color: 0 0% 0%;
+  --pos-shadow-sm: 0 1px 2px hsl(var(--pos-shadow-color) / 0.25);
+  --pos-shadow-md: 0 4px 6px -1px hsl(var(--pos-shadow-color) / 0.3),
+                   0 2px 4px -2px hsl(var(--pos-shadow-color) / 0.2);
+  --pos-shadow-lg: 0 10px 15px -3px hsl(var(--pos-shadow-color) / 0.35),
+                   0 4px 6px -4px hsl(var(--pos-shadow-color) / 0.2);
+
+  /* Adjust brand colors for dark backgrounds */
+  --pos-primary-bg-l: 18%;
+  --pos-success-bg-l: 16%;
+  --pos-warning-bg-l: 18%;
+  --pos-danger-bg-l: 18%;
+  --pos-info-bg-l: 16%;
+
+  --pos-on-primary-bg: hsl(221, 83%, 88%);
+  --pos-on-success-bg: hsl(160, 84%, 85%);
+  --pos-on-warning-bg: hsl(38, 92%, 88%);
+  --pos-on-danger-bg: hsl(0, 72%, 88%);
+  --pos-on-info-bg: hsl(196, 94%, 88%);
+
+  /* Cards */
+  --card-glass-bg: rgba(255, 255, 255, 0.06);
+  --card-glass-border: rgba(255, 255, 255, 0.08);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE TYPE SCALE (ramps up at breakpoints)
+   ═══════════════════════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+  :root {
+    --pos-text-xs: 0.75rem;    /* 12px */
+    --pos-text-sm: 0.875rem;   /* 14px */
+    --pos-text-base: 1rem;     /* 16px */
+    --pos-text-md: 1.125rem;   /* 18px */
+    --pos-text-lg: 1.375rem;   /* 22px */
+    --pos-text-xl: 1.75rem;    /* 28px */
+    --pos-text-2xl: 2.25rem;   /* 36px */
+    --pos-text-3xl: 2.75rem;   /* 44px */
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   COMPONENT CLASSES
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Typography utilities ────────────────────────────────── */
+.pos-body {
+  font-family: var(--pos-font);
+  color: var(--pos-text);
+  line-height: var(--pos-leading-normal);
+  font-size: var(--pos-text-base);
+}
+.pos-heading {
+  font-weight: var(--pos-weight-semibold);
+  letter-spacing: var(--pos-tracking-tight);
+  color: var(--pos-text);
+}
+.pos-mono {
+  font-family: var(--pos-font-mono);
+}
 
 /* ── Buttons ─────────────────────────────────────────────── */
 .pos-btn {
-  display: inline-flex; align-items: center; gap: var(--pos-space-sm);
-  padding: 8px 16px; border-radius: var(--pos-radius); border: none;
-  font-family: var(--pos-font); font-size: 14px; font-weight: 500;
-  cursor: pointer; transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pos-space-sm);
+  padding: 8px 16px;
+  border-radius: var(--pos-radius);
+  border: 1px solid transparent;
+  font-family: var(--pos-font);
+  font-size: var(--pos-text-sm);
+  font-weight: var(--pos-weight-medium);
+  cursor: pointer;
+  transition: all var(--pos-transition-base);
+  white-space: nowrap;
+  user-select: none;
 }
 .pos-btn:active { transform: scale(0.97); }
-.pos-btn-primary { background: var(--pos-primary); color: white; }
-.pos-btn-primary:hover { background: var(--pos-primary-dark); box-shadow: var(--pos-shadow-md); }
-.pos-btn-secondary { background: var(--pos-secondary); color: white; }
-.pos-btn-secondary:hover { background: var(--pos-secondary-dark); }
-.pos-btn-ghost { background: transparent; color: var(--pos-text); border: 1px solid var(--pos-border); }
-.pos-btn-ghost:hover { background: var(--pos-bg-alt); }
-.pos-btn-danger { background: var(--pos-danger); color: white; }
-.pos-btn-sm { padding: 4px 10px; font-size: 12px; }
-.pos-btn-lg { padding: 12px 24px; font-size: 16px; }
+.pos-btn:focus-visible {
+  outline: 2px solid var(--pos-primary);
+  outline-offset: 2px;
+}
+
+/* Size modifiers */
+.pos-btn--xs { padding: 2px 8px; font-size: var(--pos-text-xs); border-radius: var(--pos-radius-xs); }
+.pos-btn--sm { padding: 4px 10px; font-size: var(--pos-text-xs); }
+.pos-btn--md { padding: 8px 18px; font-size: var(--pos-text-sm); }
+.pos-btn--lg { padding: 12px 24px; font-size: var(--pos-text-base); }
+.pos-btn--xl { padding: 14px 32px; font-size: var(--pos-text-md); }
+
+/* Responsive button sizes */
+@media (min-width: 768px) {
+  .pos-btn--responsive { padding: 10px 20px; font-size: var(--pos-text-base); }
+}
+
+/* Variant modifiers */
+.pos-btn--primary {
+  background: var(--pos-primary);
+  color: var(--pos-on-primary);
+}
+.pos-btn--primary:hover {
+  background: var(--pos-primary-dark);
+  box-shadow: var(--pos-shadow-md);
+}
+
+.pos-btn--success {
+  background: var(--pos-success);
+  color: var(--pos-on-success);
+}
+.pos-btn--success:hover {
+  filter: brightness(0.9);
+  box-shadow: var(--pos-shadow-md);
+}
+
+.pos-btn--danger {
+  background: var(--pos-danger);
+  color: var(--pos-on-danger);
+}
+.pos-btn--danger:hover {
+  filter: brightness(0.9);
+  box-shadow: var(--pos-shadow-md);
+}
+
+.pos-btn--ghost {
+  background: transparent;
+  color: var(--pos-text);
+  border-color: var(--pos-border);
+}
+.pos-btn--ghost:hover {
+  background: var(--pos-bg-alt);
+  border-color: var(--pos-text-muted);
+}
+
+.pos-btn--outline {
+  background: transparent;
+  color: var(--pos-primary);
+  border-color: var(--pos-primary);
+}
+.pos-btn--outline:hover {
+  background: var(--pos-primary);
+  color: var(--pos-on-primary);
+}
 
 /* ── Cards ───────────────────────────────────────────────── */
 .pos-card {
-  background: var(--pos-surface); border-radius: var(--pos-radius-lg);
-  border: 1px solid var(--pos-border); padding: var(--pos-space-lg);
+  background: var(--pos-surface-raised);
+  border-radius: var(--pos-radius-lg);
+  border: 1px solid var(--pos-border);
+  padding: var(--card-padding);
   box-shadow: var(--pos-shadow-sm);
+  transition: box-shadow var(--pos-transition-base),
+              transform var(--pos-transition-base);
+  color: var(--pos-text);
 }
-.pos-card:hover { box-shadow: var(--pos-shadow-md); }
+.pos-card:hover {
+  box-shadow: var(--pos-shadow-md);
+  transform: translateY(-1px);
+}
+
+.pos-card--sm { padding: var(--card-padding-sm); }
+.pos-card--xs { padding: var(--card-padding-xs); }
+.pos-card--flat { box-shadow: none; }
+.pos-card--glass {
+  background: var(--card-glass-bg);
+  border-color: var(--card-glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Responsive card padding */
+@media (min-width: 768px) {
+  .pos-card--responsive { padding: var(--pos-space-xl); }
+}
 
 /* ── Forms ───────────────────────────────────────────────── */
 .pos-input {
-  width: 100%; padding: 8px 12px; border: 1px solid var(--pos-border);
-  border-radius: var(--pos-radius); font-family: var(--pos-font);
-  font-size: 14px; color: var(--pos-text); background: var(--pos-surface);
-  transition: border-color 0.15s ease;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--pos-border);
+  border-radius: var(--pos-radius);
+  font-family: var(--pos-font);
+  font-size: var(--pos-text-sm);
+  color: var(--pos-text);
+  background: var(--pos-surface-raised);
+  transition: border-color var(--pos-transition-fast);
 }
-.pos-input:focus { outline: none; border-color: var(--pos-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-.pos-label { display: block; font-size: 13px; font-weight: 500; color: var(--pos-text-secondary); margin-bottom: 4px; }
+.pos-input::placeholder { color: var(--pos-text-muted); }
+.pos-input:focus {
+  outline: none;
+  border-color: var(--pos-primary);
+  box-shadow: 0 0 0 3px hsl(var(--pos-primary-h), var(--pos-primary-s), var(--pos-primary-l) / 0.12);
+}
+
+.pos-input--sm { padding: 4px 8px; font-size: var(--pos-text-xs); border-radius: var(--pos-radius-sm); }
+.pos-input--lg { padding: 10px 16px; font-size: var(--pos-text-base); }
+
+.pos-label {
+  display: block;
+  font-size: var(--pos-text-sm);
+  font-weight: var(--pos-weight-medium);
+  color: var(--pos-text-secondary);
+  margin-bottom: 4px;
+}
+
+.pos-select {
+  @extend .pos-input;
+  appearance: none;
+  background-image: url("data:image/svg+xml,...");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 32px;
+}
 
 /* ── Tables ──────────────────────────────────────────────── */
-.pos-table { width: 100%; border-collapse: collapse; }
-.pos-table th {
-  text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600;
-  color: var(--pos-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;
-  border-bottom: 2px solid var(--pos-border); background: var(--pos-bg-alt);
+.pos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--pos-text-sm);
+  color: var(--pos-text);
 }
-.pos-table td { padding: 10px 12px; border-bottom: 1px solid var(--pos-border); font-size: 14px; }
-.pos-table tr:hover td { background: var(--pos-bg); }
+.pos-table th {
+  text-align: left;
+  padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+  font-size: var(--pos-text-xs);
+  font-weight: var(--pos-weight-semibold);
+  color: var(--pos-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--pos-tracking-wider);
+  border-bottom: 2px solid var(--pos-border);
+  background: var(--table-header-bg);
+}
+.pos-table td {
+  padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+  border-bottom: 1px solid var(--pos-border-light);
+}
+.pos-table tr:hover td {
+  background: var(--pos-bg);
+}
+
+/* Responsive table — stacks on mobile */
+@media (max-width: 767px) {
+  .pos-table--responsive thead { display: none; }
+  .pos-table--responsive tr {
+    display: block;
+    padding: var(--pos-space-sm);
+    border-bottom: 1px solid var(--pos-border);
+  }
+  .pos-table--responsive td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--pos-space-xs) 0;
+    border: none;
+  }
+  .pos-table--responsive td::before {
+    content: attr(data-label);
+    font-weight: var(--pos-weight-medium);
+    color: var(--pos-text-secondary);
+    font-size: var(--pos-text-xs);
+    margin-right: var(--pos-space-sm);
+  }
+}
 
 /* ── Badges ──────────────────────────────────────────────── */
 .pos-badge {
-  display: inline-flex; align-items: center; padding: 2px 8px;
-  border-radius: 999px; font-size: 12px; font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: var(--pos-radius-full);
+  font-size: var(--pos-text-xs);
+  font-weight: var(--pos-weight-medium);
+  white-space: nowrap;
+  transition: all var(--pos-transition-fast);
 }
-.pos-badge-primary { background: rgba(37, 99, 235, 0.1); color: var(--pos-primary); }
-.pos-badge-success { background: rgba(5, 150, 105, 0.1); color: var(--pos-secondary); }
-.pos-badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--pos-accent); }
-.pos-badge-danger { background: rgba(220, 38, 38, 0.1); color: var(--pos-danger); }
+.pos-badge--primary {
+  background: var(--pos-primary-bg);
+  color: var(--pos-on-primary-bg);
+}
+.pos-badge--success {
+  background: var(--pos-success-bg);
+  color: var(--pos-on-success-bg);
+}
+.pos-badge--warning {
+  background: var(--pos-warning-bg);
+  color: var(--pos-on-warning-bg);
+}
+.pos-badge--danger {
+  background: var(--pos-danger-bg);
+  color: var(--pos-on-danger-bg);
+}
+.pos-badge--info {
+  background: var(--pos-info-bg);
+  color: var(--pos-on-info-bg);
+}
+.pos-badge--sm { padding: 1px 6px; font-size: 10px; }
+.pos-badge--lg { padding: 4px 14px; font-size: var(--pos-text-sm); }
 
 /* ── Layout ──────────────────────────────────────────────── */
-.pos-layout { display: flex; min-height: 100vh; background: var(--pos-bg); }
-.pos-sidebar { width: 240px; background: var(--pos-surface); border-right: 1px solid var(--pos-border); padding: var(--pos-space-md); }
-.pos-main { flex: 1; padding: var(--pos-space-xl); overflow-y: auto; }
-.pos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--pos-space-xl); }
-.pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--pos-space-md); }
-
-/* ── Sidebar Navigation ──────────────────────────────────── */
-.pos-nav-item {
-  display: flex; align-items: center; gap: var(--pos-space-sm);
-  padding: 10px 12px; border-radius: var(--pos-radius); color: var(--pos-text-secondary);
-  text-decoration: none; font-size: 14px; transition: all 0.15s ease;
+.pos-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--pos-bg);
+  color: var(--pos-text);
 }
-.pos-nav-item:hover { background: var(--pos-bg-alt); color: var(--pos-text); }
-.pos-nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--pos-primary); font-weight: 500; }
+.pos-sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--pos-surface);
+  border-right: 1px solid var(--pos-border);
+  padding: var(--pos-space-md);
+  transition: width var(--pos-transition-slow);
+}
+.pos-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--pos-space-xl);
+  overflow-y: auto;
+}
+.pos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--pos-space-md);
+  margin-bottom: var(--pos-space-xl);
+}
 
-/* ── Utilities ───────────────────────────────────────────── */
+/* Responsive layout */
+@media (max-width: 767px) {
+  .pos-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    height: 100vh;
+    transform: translateX(-100%);
+  }
+  .pos-sidebar--open {
+    transform: translateX(0);
+  }
+  .pos-main {
+    padding: var(--pos-space-md);
+  }
+}
+
+/* ── Grid system ─────────────────────────────────────────── */
+.pos-grid {
+  display: grid;
+  gap: var(--pos-space-md);
+}
+.pos-grid--2 { grid-template-columns: repeat(1, 1fr); }
+.pos-grid--3 { grid-template-columns: repeat(1, 1fr); }
+.pos-grid--4 { grid-template-columns: repeat(1, 1fr); }
+.pos-grid--auto {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (min-width: 480px) {
+  .pos-grid--2 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 768px) {
+  .pos-grid--3 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .pos-grid--4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── Navigation ──────────────────────────────────────────── */
+.pos-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--pos-space-sm);
+  padding: 10px 12px;
+  border-radius: var(--pos-radius);
+  color: var(--pos-text-secondary);
+  text-decoration: none;
+  font-size: var(--pos-text-sm);
+  font-weight: var(--pos-weight-medium);
+  transition: all var(--pos-transition-fast);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.pos-nav-item:hover {
+  background: var(--pos-bg-alt);
+  color: var(--pos-text);
+}
+.pos-nav-item.active {
+  background: var(--pos-primary-bg);
+  color: var(--pos-primary);
+  font-weight: var(--pos-weight-semibold);
+}
+
+/* ── Utility classes ─────────────────────────────────────── */
 .pos-flex { display: flex; }
+.pos-flex-col { flex-direction: column; }
 .pos-flex-center { align-items: center; justify-content: center; }
 .pos-flex-between { display: flex; align-items: center; justify-content: space-between; }
+.pos-flex-wrap { flex-wrap: wrap; }
 .pos-gap-xs { gap: var(--pos-space-xs); }
 .pos-gap-sm { gap: var(--pos-space-sm); }
 .pos-gap-md { gap: var(--pos-space-md); }
+.pos-gap-lg { gap: var(--pos-space-lg); }
+.pos-gap-xl { gap: var(--pos-space-xl); }
+.pos-mt-xs { margin-top: var(--pos-space-xs); }
 .pos-mt-sm { margin-top: var(--pos-space-sm); }
 .pos-mt-md { margin-top: var(--pos-space-md); }
 .pos-mt-lg { margin-top: var(--pos-space-lg); }
+.pos-mt-xl { margin-top: var(--pos-space-xl); }
+.pos-mb-sm { margin-bottom: var(--pos-space-sm); }
+.pos-mb-md { margin-bottom: var(--pos-space-md); }
+.pos-mb-lg { margin-bottom: var(--pos-space-lg); }
 .pos-text-center { text-align: center; }
 .pos-text-right { text-align: right; }
+.pos-text-left { text-align: left; }
 .pos-text-muted { color: var(--pos-text-muted); }
+.pos-text-secondary { color: var(--pos-text-secondary); }
 .pos-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pos-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+  border: 0;
+}
+
+/* ── Responsive visibility ───────────────────────────────── */
+.pos-hidden-xs { display: none; }
+.pos-hidden-sm { display: none; }
+.pos-hidden-md { display: none; }
+.pos-hidden-lg { display: none; }
+
+@media (min-width: 480px)  { .pos-hidden-xs { display: revert; } }
+@media (min-width: 768px)  { .pos-hidden-sm { display: revert; } }
+@media (min-width: 1024px) { .pos-hidden-md { display: revert; } }
+@media (min-width: 1280px) { .pos-hidden-lg { display: revert; } }
+
+.pos-visible-xs { display: revert; }
+.pos-visible-sm { display: revert; }
+.pos-visible-md { display: revert; }
+
+@media (min-width: 480px)  { .pos-visible-xs { display: none; } }
+@media (min-width: 768px)  { .pos-visible-sm { display: none; } }
+@media (min-width: 1024px) { .pos-visible-md { display: none; } }

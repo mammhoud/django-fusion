@@ -1,0 +1,241 @@
+import json
+
+from django.test import TestCase
+
+from formint.models import Category, Product
+
+
+class FormintPhaseOneTests(TestCase):
+    def test_health_identifies_formint(self):
+        response = self.client.get('/health/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['product'], 'formint-pos')
+
+    def test_branch_summary_rejects_non_htmx_full_page_requests(self):
+        response = self.client.get('/htmx/branches/summary/')
+
+        self.assertEqual(response.status_code, 406)
+        self.assertEqual(response.json()['product'], 'formint-pos')
+
+    def test_fusion_branch_summary_renders_a_fragment_for_htmx(self):
+        response = self.client.get(
+            '/fusion/branches/summary/',
+            HTTP_HX_REQUEST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'django-fusion-fragment')
+        self.assertIn('data-fusion-fragment="formint.branch_summary"', response.content.decode())
+
+    def test_branch_summary_can_render_first_through_fusion(self):
+        response = self.client.get(
+            '/htmx/branches/summary/',
+            HTTP_HX_REQUEST='true',
+            HTTP_X_FUSION_RENDER_FIRST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'django-fusion-fragment')
+        self.assertIn('data-fusion-fragment="formint.branch_summary"', response.content.decode())
+
+    def test_branch_summary_returns_only_data_fragment_for_htmx(self):
+        response = self.client.get(
+            '/htmx/branches/summary/',
+            HTTP_HX_REQUEST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+        self.assertNotIn('<html', response.content.decode().lower())
+        self.assertIn('data-value="branches"', response.content.decode())
+
+
+class FormintNinjaApiTests(TestCase):
+    """Phase 2: Django Ninja + ninja-extra API with the fusion encoder."""
+
+    def test_api_health_returns_fusion_envelope(self):
+        response = self.client.get('/api/v1/health')
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        # fusion envelope keys
+        self.assertIn('status', body)
+        self.assertIn('message', body)
+        self.assertIn('data', body)
+        self.assertEqual(body['data']['product'], 'formint-pos')
+        self.assertEqual(body['data']['phase'], 2)
+        self.assertIn('pos-full', body['data']['editions'])
+        self.assertIn('pos-solo', body['data']['editions'])
+
+    def test_api_stats(self):
+        response = self.client.get('/api/v1/stats')
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertIn('products', data)
+        self.assertIn('categories', data)
+        self.assertIn('sales', data)
+
+    def test_create_category_and_product(self):
+        payload = {'name': 'Beverages', 'slug': 'beverages', 'display_order': 1}
+        response = self.client.post(
+            '/api/v1/categories/',
+            data=json.dumps(payload),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        category_id = response.json()['data']['id']
+        self.assertEqual(response.json()['data']['name'], 'Beverages')
+
+        payload = {
+            'name': 'Arabic Coffee',
+            'price': '3.50',
+            'sku': 'COF-001',
+            'category': category_id,
+        }
+        response = self.client.post(
+            '/api/v1/products/',
+            data=json.dumps(payload),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()['data']['name'], 'Arabic Coffee')
+        self.assertEqual(Product.objects.count(), 1)
+
+    def test_list_is_paginated(self):
+        cat = Category.objects.create(name='Food', slug='food')
+        for i in range(3):
+            Product.objects.create(name=f'Item {i}', price=f'{i}.50', category=cat)
+
+        response = self.client.get('/api/v1/products/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertIn('results', data)
+        self.assertEqual(data['count'], 3)
+        self.assertEqual(len(data['results']), 3)
+
+    def test_find_one_patch_delete(self):
+        cat = Category.objects.create(name='Food', slug='food')
+        product = Product.objects.create(name='Bread', price='1.00', category=cat)
+
+        response = self.client.get(f'/api/v1/products/{product.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['data']['name'], 'Bread')
+
+        response = self.client.patch(
+            f'/api/v1/products/{product.id}',
+            data=json.dumps({'price': '4.00'}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(str(response.json()['data']['price']), '4.00')
+        product.refresh_from_db()
+        self.assertEqual(str(product.price), '4.00')
+
+        response = self.client.delete(f'/api/v1/products/{product.id}')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Product.objects.count(), 0)
+
+    def test_openapi_schema_available(self):
+        response = self.client.get('/api/v1/openapi.json')
+        self.assertEqual(response.status_code, 200)
+        paths = response.json()['paths']
+        self.assertIn('/api/v1/products/', paths)
+        self.assertIn('/api/v1/categories/', paths)
+        self.assertIn('/api/v1/sales/', paths)
+        self.assertIn('/api/v1/health', paths)
+        self.assertIn('/api/v1/stats', paths)
+
+    def test_crm_namespaced_controllers_registered(self):
+        response = self.client.get('/api/v1/openapi.json')
+        paths = response.json()['paths']
+        self.assertIn('/api/v1/crm/contacts/', paths)
+        self.assertIn('/api/v1/crm/deals/', paths)
+        self.assertIn('/api/v1/loyalty-transactions/', paths)
+        self.assertIn('/api/v1/user-settings/', paths)
+
+
+class FormintHtmxFragmentsTests(TestCase):
+    """Phase 2: django-fusion data components as tables and forms."""
+
+    def _seed(self):
+        cat = Category.objects.create(name='Food', slug='food')
+        Product.objects.create(name='Bread', price='1.00', category=cat)
+        Product.objects.create(name='Milk', price='2.00', category=cat)
+        return cat
+
+    def test_table_fragment_renders_fusion_table(self):
+        self._seed()
+        response = self.client.get('/htmx/tables/products/', HTTP_HX_REQUEST='true')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+        self.assertEqual(response['X-Formint-Table-Resource'], 'products')
+        content = response.content.decode()
+        self.assertIn('fusion-table', content)
+        self.assertIn('Bread', content)
+        self.assertIn('Milk', content)
+
+    def test_table_fragment_supports_fusion_render_first(self):
+        self._seed()
+        response = self.client.get(
+            '/htmx/tables/products/',
+            HTTP_HX_REQUEST='true',
+            HTTP_X_FUSION_RENDER_FIRST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        # render-first path returns a fusion JSON envelope with the table context
+        body = response.json()
+        self.assertIn('status', body)
+        self.assertIn('data', body)
+        self.assertEqual(body['data']['table_name'], 'formint/tables/products')
+        self.assertEqual(body['data']['pagination']['total'], 2)
+
+    def test_table_fragment_for_client_categories_hyphen_mapping(self):
+        response = self.client.get('/htmx/tables/client-categories/', HTTP_HX_REQUEST='true')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+        self.assertIn('fusion-table', response.content.decode())
+
+    def test_form_fragment_renders_fusion_form(self):
+        response = self.client.get('/htmx/forms/product/', HTTP_HX_REQUEST='true')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+        self.assertIn('fusion-form', response.content.decode())
+
+    def test_form_fragment_valid_post_saves_and_returns_headers(self):
+        response = self.client.post(
+            '/htmx/forms/category/',
+            {'name': 'Juices', 'display_order': 3},
+            HTTP_HX_REQUEST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Saved'], 'true')
+        self.assertIn('HX-Trigger', response)
+        self.assertTrue(Category.objects.filter(name='Juices').exists())
+
+    def test_form_fragment_invalid_post_returns_errors(self):
+        response = self.client.post(
+            '/htmx/forms/category/',
+            {'display_order': 2},
+            HTTP_HX_REQUEST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-form-errors')
+        self.assertIn('field-error', response.content.decode())
+
+    def test_form_fragment_hyphen_mapping(self):
+        response = self.client.post(
+            '/htmx/forms/client-category/',
+            {'name': 'Gold', 'min_points': 500},
+            HTTP_HX_REQUEST='true',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Saved'], 'true')

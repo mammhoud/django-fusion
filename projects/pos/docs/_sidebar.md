@@ -5,6 +5,8 @@
 **Architecture**
 - [POS Architecture](architecture/pos-architecture.md)
 - [Editions Overview](architecture/editions.md)
+- [Formint POS (merged)](../formint-pos/README.md)
+- [Formint Migration Manifest](../formint-pos/migration/compatibility-manifest.json)
 
 **Reference**
 - [POS Architecture (full)](POS_ARCHITECTURE.md)

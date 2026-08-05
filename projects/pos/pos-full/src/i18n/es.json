@@ -646,7 +646,8 @@
       "delivery": "Delivery",
       "employees": "Employees",
       "database": "Database",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "loyalty": "Lealtad"
     },
     "appearanceTab": {
       "title": "Theme Customization",
@@ -736,7 +737,38 @@
       "deliveryFee": "Delivery Fee",
       "perKmFee": "Per-Km Fee"
     },
-    "languageNote": "Switch between English, Arabic, and French. RTL support is automatic."
+    "languageNote": "Switch between English, Arabic, and French. RTL support is automatic.",
+    "loyaltyTab": {
+      "title": "Lealtad y categorías de clientes",
+      "description": "Agrupe a sus clientes en niveles de lealtad basados en puntos, descuentos y beneficios.",
+      "activeCategories": "Categorías activas",
+      "ledgerEntries": "Movimientos de cuenta",
+      "pointsIssued": "Puntos emitidos",
+      "categoryName": "Nombre de categoría",
+      "minPoints": "Puntos mínimos",
+      "discount": "Descuento %",
+      "perks": "Beneficios (separados por comas)",
+      "addCategory": "Añadir categoría",
+      "delete": "Eliminar",
+      "noCategories": "Aún no hay categorías de clientes — añada su primer nivel arriba.",
+      "userSettings": "Configuración de usuario",
+      "userSettingsDesc": "Mismos datos que la página de configuración POS, con detalles por usuario.",
+      "theme": "Tema",
+      "language": "Idioma",
+      "notifications": "Notificaciones",
+      "inactivityTimeout": "Tiempo de inactividad",
+      "saveUserPrefs": "Guardar preferencias",
+      "recentTransactions": "Transacciones de lealtad recientes",
+      "customer": "Cliente",
+      "type": "Tipo",
+      "change": "Cambio",
+      "balance": "Saldo",
+      "date": "Fecha",
+      "noTransactions": "Aún no hay transacciones de lealtad.",
+      "saved": "Cambios de lealtad guardados",
+      "saveFailed": "Error al guardar",
+      "currentUser": "usuario actual"
+    }
   },
   "supportChat": {
     "title": "Support & Customer Chat",

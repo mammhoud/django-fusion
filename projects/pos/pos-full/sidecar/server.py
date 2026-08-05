@@ -70,6 +70,7 @@ try:
             DEBUG, DATABASES, INSTALLED_APPS, MIDDLEWARE,
             TEMPLATES, ROOT_URLCONF, SECRET_KEY,
             DEFAULT_AUTO_FIELD, USE_TZ, STATIC_URL, STATIC_ROOT,
+            UNFOLD,
         )
         settings.configure(
             DEBUG=DEBUG,
@@ -83,6 +84,8 @@ try:
             USE_TZ=USE_TZ,
             STATIC_URL=STATIC_URL,
             STATIC_ROOT=STATIC_ROOT,
+            # Unfold admin theme config (sidebar, dashboard callback, login, colors)
+            UNFOLD=UNFOLD,
         )
         # Import admin registration AFTER settings but before setup()
         # (admin.py registers models which requires app registry ready after setup)
@@ -107,6 +110,9 @@ try:
     # ── Extra managed models (Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment) ──
     from models.extra import Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment
 
+    # ── Loyalty & client settings models ──
+    from models.loyalty import ClientCategory, LoyaltyTransaction, UserSettings
+
     # ── Local shared-style models ──
     from models.approval import SyncApproval
     from services.sync import ProductSyncEngine
@@ -129,6 +135,8 @@ try:
         Note,
         # ── Extra managed models (added 2026-07-22) ──
         Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
+        # ── Loyalty & client settings (added 2026-08-04) ──
+        ClientCategory, LoyaltyTransaction, UserSettings,
     ]
 
     # Config models for dedicated CRUD
@@ -398,6 +406,9 @@ init_state(
     SyncApproval=SyncApproval,
     DeviceToken=DeviceToken,
     SignalEvent=SignalEvent,
+    ClientCategory=ClientCategory,
+    LoyaltyTransaction=LoyaltyTransaction,
+    UserSettings=UserSettings,
     sync_engine=sync_engine,
     DB_PATH=DB_PATH,
     CLOUD_CRM_URL=os.environ.get("CLOUD_CRM_URL", ""),
@@ -529,6 +540,11 @@ _register_crud(app, "recipes", Recipe, "Recipe", **_tag_sync)
 _register_crud(app, "receipt-templates", ReceiptTemplate, "ReceiptTemplate", **_tag_sync)
 _register_crud(app, "roles", Role, "Role", **_tag_sync)
 _register_crud(app, "inventory-adjustments", InventoryAdjustment, "InventoryAdjustment", **_tag_sync)
+
+# ── Loyalty & Client Settings CRUD ──
+_register_crud(app, "client-categories", ClientCategory, "ClientCategory", **_tag_sync)
+_register_crud(app, "loyalty-transactions", LoyaltyTransaction, "LoyaltyTransaction", **_tag_sync)
+_register_crud(app, "user-settings", UserSettings, "UserSettings", **_tag_sync)
 
 # ===========================================================================
 # WebSocket: Entity event stream (real-time CRUD notifications for Redux)

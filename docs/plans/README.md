@@ -1,6 +1,8 @@
 # Structa Cloud — Plans Index
 
-> **Last updated:** 2026-08-03 | **Branch:** `generic`
+> **Last updated:** 2026-08-04 | **Branch:** `generic`
+> **Lifecycle policy:** [`document-lifecycle.md`](document-lifecycle.md)
+> **Marketing claims register:** [`marketing-claims.md`](marketing-claims.md)
 
 All active, migrated, and historical repository plans live below this directory.
 `docs/Anytype/plans/` remains a separate Anytype knowledge graph and is not
@@ -17,8 +19,8 @@ This directory consolidates all implementation plans for the Structa Cloud monor
 | **cepter-ai cleanup** (fusion) | ✅ Done | 100% | 0 imports across all 6 projects |
 | **ctc-research ceptor-ai migration** | ✅ Done | 100% | ~90 files, phases 1-4 complete; project archived |
 | **cypercloud ceptor-ai stubs** | ✅ Done | 100% | 6 AI/MCP/chat imports → local stubs |
-| **cms-fusion migration** | ✅ Done | 100% | django-fusion + bolt + Next.js; 113 tests |
-| **lms-fusion migration** | ✅ Done | 100% | django-fusion + bolt + Next.js; 113 tests |
+| **cms-fusion migration** | ✅ Done | 100% | django-fusion + project-owned API + Next.js; 113 tests |
+| **lms-fusion migration** | ✅ Done | 100% | django-fusion + project-owned API + Next.js; 113 tests |
 | **landing-fusion migration** | 🟡 In Progress | 70% | Astro + AHA frontend (Phases 0-1 + dark mode) + Django/Wagtail backend; blog/auth/Docker pending |
 | **fusion-assets-templates-cleanup** | ✅ Done | 100% | Phases 0-7 complete; Phase 8 deferred (deployment) |
 | **django-fusion-webpack-integration** | ✅ Done | 100% | SCSS pipeline configured |
@@ -34,12 +36,12 @@ This directory consolidates all implementation plans for the Structa Cloud monor
 | **cms-fusion frontend-improvements** | ⬜ Not Started | 0% | Frontend improvements plan |
 | **cms-fusion dashboard-migration** | ⬜ Not Started | 0% | Dashboard migration to fusion |
 | **cms-fusion fragment-redux-integration** | ⬜ Not Started | 0% | Fragment Redux integration |
-| **forge-pos plan** | 🟡 In Progress | 60% | P0-P1 complete; P2 KDS + P3 pending |
-| **forge-pos enhancement** | 🟡 In Progress | 20% | Component reorg / Rust / SQL migration pending |
-| **forge-pos UI-enhancement-master** | 🟡 In Progress | 35% | Sections 1, 3, 4, 5, 7, 9, 12 done; 2, 6, 8, 10, 11 pending |
-| **pos-solo enhancement** | ⬜ Not Started | 0% | Solo edition enhancement |
-| **pos cloud plan** | ⬜ Not Started | 0% | Cloud CRM architecture plan |
-| **pos django-fusion-enhancements** | ⬜ Not Started | 0% | Django fusion enhancements |
+| **Forge POS parity plan** | 🟡 Migration source | Gate-based | Keep until Formint transfer evidence passes; do not market as a product |
+| **Forge POS enhancement/UI plans** | 🗄️ Archived | Completed source | Retain in `legacy/pos/` as rollback and design evidence |
+| **Formint POS Professional Edition** | 🟡 Current | Phase 1 started | Canonical product plan; foundation created at `projects/pos/formint-pos/`; legacy POS sources preserved |
+| **pos-solo enhancement** | 🗄️ Historical | — | Working file removed; migration evidence is preserved by the Formint/Forge plans and deletion manifest |
+| **pos cloud plan** | 🟡 Planned | Gate-based | Cloud-only transport and multi-branch architecture |
+| **pos django-fusion-enhancements** | ⬜ Not Started | 0% | Django-fusion component and sync enhancements |
 
 ---
 
@@ -70,12 +72,12 @@ docs/plans/
 │   ├── LANDING_FUSION_PLAN.md     # Build plan + backend↔frontend mapping
 │   └── SHADCNBLOCKS_THEME.md      # Extracted shadcnblocks theme styles
 ├── pos/
-│   ├── forge-pos-plan.md
-│   ├── forge-pos-enhancement.md
-│   ├── forge-pos-tasks-status.md
-│   ├── forge-pos-ui-enhancement-master.md
-│   ├── pos-solo-enhancement.md
-│   ├── cloud-plan.md
+│   ├── forge-pos-plan.md                  # Forge parity source and retirement gates
+│   ├── (archived Forge status/design plans live in ../legacy/pos/)
+│   ├── formint-pos-professional-plan.md  # Canonical Professional Edition plan
+│   ├── pos-solo-enhancement.md           # Historical source removed; see deletion manifest
+│   ├── tauri-plugins-enhancement-plan.md # Formint desktop plugin migration
+│   ├── cloud-plan.md                     # Cloud-only transport and sync
 │   └── django-fusion-enhancements.md
 └── legacy/
     ├── legacy-cleanup.md
@@ -125,7 +127,9 @@ Each plan file is tagged at the top with relevant project tags. Use these to fil
 | `#fusion` | Both CMS + LMS fusion projects |
 | `#pos` | Point of Sale desktop app |
 | `#forge-pos` | Forge POS edition (Tauri + Rust) |
-| `#pos-solo` | POS Solo edition |
+| `#pos-solo` | POS Solo edition / migration source |
+| `#formint-pos` | Formint POS canonical product |
+| `#professional` | Professional commercial edition |
 | `#tauri` | Tauri 2 desktop framework |
 | `#frontend` | Frontend/React/TypeScript work |
 | `#backend` | Backend/Django/Python work |
@@ -154,25 +158,32 @@ Each plan file is tagged at the top with relevant project tags. Use these to fil
 
 ## Recommendations (Next Priority)
 
-1. **cms-fusion frontend plans** — All 6 frontend plans (flyonui, component-pages, responsive-layout, frontend-enhancement-master, dashboard-migration, fragment-redux) are not started. These should be the top priority since the backend is fully migrated and tested.
+1. **Formint POS Professional Edition** — Use [`pos/formint-pos-professional-plan.md`](pos/formint-pos-professional-plan.md) as the canonical scope. The Phase 1 boundary is [`projects/pos/formint-pos/`](../../projects/pos/formint-pos/); the verified backup record is [`pos/formint-backup-20260804.md`](pos/formint-backup-20260804.md). Start with the branch → order → KDS → sync → report vertical slice and keep POS Solo/Full available until parity gates pass.
 
-2. **legacy cleanup** — Only ctc-research has been archived. The legacy-cleanup plan lists 5 candidate directories; none have been assessed for removal.
+2. **cms-fusion frontend plans** — All 6 frontend plans (flyonui, component-pages, responsive-layout, frontend-enhancement-master, dashboard-migration, fragment-redux) are not started. These should be prioritized independently of the POS consolidation.
 
-3. **forge-pos enhancement** — Active work in progress (recent commits show branding rename, Roles.tsx work). Complete the enhancement plan.
+3. **legacy cleanup** — Only ctc-research has been archived. The legacy-cleanup plan lists 5 candidate directories; none have been assessed for removal.
 
-4. **worker consolidation** — The worker task module plan hasn't been started; it would simplify the deployment architecture.
+4. **forge-pos enhancement** — Port reusable UI, KDS, native I/O, and testing patterns into Formint; do not copy Forge's data layer as a second authority.
+
+5. **worker consolidation** — The worker task module plan has not started and may simplify cloud sync and scheduled operations.
 
 ---
+
+## Lifecycle and marketing
+
+- [`document-lifecycle.md`](document-lifecycle.md) — Current/archive/delete/rollback policy
+- [`marketing-claims.md`](marketing-claims.md) — Marketing evidence register
 
 ## Related
 
 - [`../../CHANGELOG.md`](../../CHANGELOG.md) — root changelog
 - [`../../projects/cms-fusion/CHANGELOG.md`](../../projects/cms-fusion/CHANGELOG.md)
 - [`../../projects/lms-fusion/CHANGELOG.md`](../../projects/lms-fusion/CHANGELOG.md)
-- [`fusion-assets-templates-cleanup.md`](fusion-assets-templates-cleanup.md) — detailed Phase 0-8 spec
+- [`django-fusion/fusion-assets-templates-cleanup.md`](django-fusion/fusion-assets-templates-cleanup.md) — detailed Phase 0-8 spec
 
 ### Duplicate Task Resolution
 
-- **Notes page / receipt templates**: Originally in both `forge-pos-plan.md` (P4) and `forge-pos-ui-enhancement-master.md` (Section 6). Superseded by the comprehensive plan in the UI master plan.
-- **Theme toggle → select box**: `forge-pos-tasks-status.md` records the current sliding-knob implementation as complete; `forge-pos-ui-enhancement-master.md` plans the select-box redesign (Section 3). No conflict — sequential work.
-- **FlyonUI integration**: Referenced in `cms-fusion/frontend-enhancement-master.md`, detailed in `cms-fusion/flyonui-integration.md`, and referenced by `forge-pos-tasks-status.md`. These are separate project integrations (CMS vs POS) — not duplicates.
+- **Notes, receipt templates, KDS, loyalty, combo/composite items, modifiers, and extras**: Their implementation source may exist in archived Forge/Solo material, but Formint Professional is now the canonical owner. They must pass Formint implementation and compatibility gates before any source removal.
+- **Forge design/status evidence**: Archived copies live in [`legacy/pos/`](legacy/pos/); Formint is the current product owner.
+- **FlyonUI integration**: CMS and POS references are separate concerns; confirm ownership before merging or deleting either plan.

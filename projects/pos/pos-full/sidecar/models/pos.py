@@ -83,6 +83,12 @@ class Customer(models.Model):
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, default="")
     loyalty_points = models.IntegerField(default=0)
+    # Loyalty tier (people as a client category) — points-driven segmentation
+    client_category = models.ForeignKey(
+        "ClientCategory", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="customers",
+        help_text="Client category / loyalty tier this customer belongs to",
+    )
     total_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     notes = models.TextField(blank=True, default="")
     is_active = models.BooleanField(default=True)

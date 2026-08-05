@@ -383,9 +383,49 @@ export interface LoyaltyTransaction {
   id: number;
   customer_id: number;
   sale_id?: number | null;
+  transaction_type: string;
   points_change: number;
+  balance_after: number;
   reason: string;
   created_at: string;
+}
+
+export interface ClientCategory {
+  id: number;
+  name: string;
+  description?: string;
+  min_points: number;
+  points_per_currency: number;
+  points_to_currency: number;
+  discount_rate: number | string;
+  perks?: string[];
+  is_active: boolean;
+  customer_count?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface UserSettings {
+  id: number;
+  user_id: number;
+  restaurant_name?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  tax_rate?: number | null;
+  currency?: string;
+  opening_time?: string;
+  closing_time?: string;
+  receipt_footer?: string;
+  logo?: string;
+  dine_in_tables?: number;
+  delivery_fee?: number;
+  delivery_fee_per_km?: number;
+  theme?: 'dark' | 'light' | 'system';
+  language?: 'en' | 'ar' | 'fr';
+  notifications_enabled?: boolean;
+  inactivity_timeout?: string;
+  two_factor_enabled?: boolean;
 }
 
 export type InvoiceType = 'tax' | 'commercial' | 'proforma' | 'credit' | 'receipt' | 'selling' | 'goods_transfer';

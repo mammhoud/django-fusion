@@ -128,6 +128,7 @@ nav:
   - Testing: tests/README.md
   - Plans:
     - Index: plans/README.md
+    - Formint POS Professional Edition: plans/pos/formint-pos-professional-plan.md
     - LMS Fusion: plans/lms-fusion/migration-plan.md
     - CMS Fusion: plans/cms-fusion/migration-plan.md
     - Asset & template cleanup: plans/fusion-assets-templates-cleanup.md

@@ -1,4 +1,6 @@
 # LMS Fusion — Migration & django-fusion Integration Plan
+
+> API frameworks are project-owned; django-fusion provides rendering, routing, components, and data-response primitives only. The former shared Bolt integration has been removed.
 > **Tags:** #lms-fusion #fusion #backend
 
 > **Site:** `lms-fusion` | **Path:** `projects/lms-fusion/` | **Last updated:** 2026-07-26  
@@ -46,17 +48,17 @@
 
 ---
 
-## 4. django-bolt API Integration
+## 4. Project-owned API Integration
 
 | # | Item | Status |
 |---|------|:------:|
-| 1 | `bolt_apis.py` with real `BoltAPI` endpoints | ✅ |
+| 1 | `bolt_apis.py` with project-owned API endpoints | ✅ |
 | 2 | Health, pages, fragment, fusion health, branding, courses, blog | ✅ |
-| 3 | Graceful fallback when `django_bolt` not installed | ✅ |
-| 4 | `django_fusion.bolt.FusionBoltAPI` module created | ✅ |
-| 5 | `@fusion_endpoint` decorator | ✅ |
-| 6 | `component_serializer` helper | ✅ |
-| 7 | `FusionBoltAuthBackend` for session→bolt bridge | ✅ |
+| 3 | API integration remains optional and isolated from django-fusion | ✅ |
+| 4 | Shared Bolt integration removed from django-fusion | ✅ |
+| 5 | Project-owned endpoint decorators, where needed | ✅ |
+| 6 | Project-owned response schemas/serializers, where needed | ✅ |
+| 7 | Project-owned API authentication boundary | ✅ |
 
 ---
 
@@ -83,7 +85,7 @@
 | 1 | Full Next.js 14 + React 18 + Tailwind setup | ✅ |
 | 2 | `fusion-types.ts`, `fusion-decoder.ts`, `fusion-store.ts` | ✅ |
 | 3 | `api-client.ts` with health, fragment, page, branding, layout APIs | ✅ |
-| 4 | `FusionProxy.tsx` with fallback chain (bolt→fragment→error) | ✅ |
+| 4 | `FusionProxy.tsx` with fallback chain (project API→fragment→error) | ✅ |
 | 5 | `FusionLayout.tsx` consuming `/api/fusion/layouts` | ✅ |
 | 6 | `Header.tsx`, `Footer.tsx`, `Providers.tsx`, `ErrorBoundary.tsx` | ✅ |
 | 7 | Dynamic routing (`[slug]/page.tsx`) | ✅ |
@@ -103,4 +105,4 @@ make check && make test && python3 manage.py showmigrations
 > site tests, frontend builds, template-resolution audit, and smoke tests) is
 > tracked in [`docs/plans/README.md`](../README.md) under Phases 1–5 and 8.
 
-See [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../DJANGO_BOLT_FUSION_CASE_STUDY.md) for full analysis.
+See [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../DJANGO_BOLT_FUSION_CASE_STUDY.md) for the historical integration analysis and migration context.
