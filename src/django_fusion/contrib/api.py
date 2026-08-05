@@ -110,6 +110,8 @@ def layouts(request: HttpRequest):
 
     Reads from the django-fusion ``COMPONENTS`` settings
     (``LAYOUTS`` / ``DEFAULT_LAYOUT``) so backend and frontend stay in sync.
+    Falls back to the standard set when the settings façade does not expose
+    layout options (newer/leaner settings objects may omit them).
 
     Returns::
 
@@ -123,10 +125,16 @@ def layouts(request: HttpRequest):
         }
     """
     components = get_settings()
+    available = getattr(components, "LAYOUTS", ())
+    default = getattr(components, "DEFAULT_LAYOUT", "")
+    if not available:
+        # Fallback set — the settings façade may not expose LAYOUTS.
+        available = ("default", "full_width", "sidebar", "blank")
+        default = default or "default"
     return fusion_json_response(
         data={
-            "available": list(components.LAYOUTS),
-            "default": components.DEFAULT_LAYOUT,
+            "available": list(available),
+            "default": default,
         },
         status=200,
     )
