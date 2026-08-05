@@ -121,6 +121,18 @@ class FusionSessionChecker:
         )  # 7 days — matches typical browser-session lifetime ##TODO: Days
         return preference
 
+    def set_preference(self, request: HttpRequest, value: bool) -> None:
+        """Store an explicit render-mode preference in the session.
+
+        This is the settings-toggle counterpart of :meth:`get_preference`:
+        an operator (or the settings UI) writes an explicit value that is
+        then returned by ``get_preference`` / read by consumers without
+        ever running the health-check heuristic. The 7-day expiry matches
+        the auto-seeded value from :meth:`get_preference`.
+        """
+        request.session[SESSION_KEY] = bool(value)
+        request.session.set_expiry(86400 * 7)
+
     def clear_preference(self, request: HttpRequest) -> None:
         """Remove the cached preference from the session.
 
