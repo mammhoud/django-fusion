@@ -1,0 +1,9 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ page.title }} · Fusion CMS{% endblock %}
+
+{% block content %}
+  {% comment %} Blog index — hero, post grid, cta — rendered by the shared content-region partial. {% endcomment %}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}
