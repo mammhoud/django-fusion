@@ -2,14 +2,16 @@
 
 > **Phase 2 status:** Merge complete — `pos-full` + `pos-solo` consolidated into this package.
 >
-> Formint is the canonical Professional POS product name. The legacy `pos-solo`, `pos-full`, and Forge directories remain on disk for parity and rollback work.
+> Formint is the canonical Professional POS product name. The legacy `pos-full` / `pos-solo`
+> React editions were merged here and their dead React code was removed; `forge-pos` and
+> `pos-cloud` remain in `projects/pos/` as preserved parity sources.
 
 ## Purpose
 
 Formint POS Professional is the restaurant-focused POS product built from the existing POS capabilities. This directory is the product boundary for:
 
-- `backend/` — Django data/API/HTMX boundary (Django Ninja + ninja-extra + django-fusion)
-- `frontend/` — Astro + Alpine.js + HTMX shell
+- `sidecar/` — merged Django boundary (Django Ninja + ninja-extra + django-fusion + Unfold admin + Robyn/django-bolt APIs)
+- `frontend/` — Astro + Alpine.js + HTMX shell (landing-fusion skeleton-loading pattern)
 - `src-tauri/` — Tauri desktop shell (same architecture as the merged packages)
 - `assets/` — shared source assets and static build inputs
 - `migration/` — compatibility manifests and migration notes
@@ -18,12 +20,16 @@ Formint POS Professional is the restaurant-focused POS product built from the ex
 
 ```text
 formint-pos/
-├── Makefile                     # root orchestrator (frontend + backend + full + env)
-├── backend/                     # Django boundary — no Wagtail
-│   ├── Makefile                 # backend targets (dev/check/migrate/test/seed)
-│   ├── config/                  # settings (Unfold + fusion render-mode) + URL wiring
+├── Makefile                     # root orchestrator (frontend + sidecar + full + env)
+├── sidecar/                     # merged Django boundary — no Wagtail
+│   ├── Makefile                 # sidecar targets (dev/check/migrate/test/seed/server)
+│   ├── configs/                 # settings (Unfold + fusion render-mode) + URL wiring
+│   ├── manage.py                # Django entrypoint (DJANGO_SETTINGS_MODULE=configs)
+│   ├── server.py                # Robyn sidecar server (API + WebSocket, :8766)
+│   ├── bolt_api.py              # django-bolt REST API (check-bolt → /bolt/*)
+│   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
-│   │   ├── models/              # domain models (products, sales, inventory, crm, hr, …)
+│   │   ├── models/              # re-exports pos_full models (unified layer)
 │   │   ├── schemas.py           # ninja_schema models + writable/patch schema factory
 │   │   ├── controllers.py       # ninja-extra ModelController CRUD for 45 entities
 │   │   ├── api.py               # NinjaAPI with fusion encoder renderer + system endpoints
@@ -32,13 +38,13 @@ formint-pos/
 │   │   ├── core.py              # FormintSite (django-fusion Site — nav source of truth)
 │   │   ├── fusion.py            # render-mode/nav/assets contract (landing-fusion parity)
 │   │   ├── handlers.py          # class-based HTMX fragment handlers
+│   │   ├── admin.py             # canonical Unfold admin (superset of both editions)
 │   │   ├── views.py             # thin URL-facing delegation + /fusion/* endpoints
 │   │   └── templates/           # fusion table + form templates
-│   └── manage.py
 ├── frontend/                    # Astro shell
 │   ├── Makefile                 # frontend targets (install/dev/build/check/test)
-│   ├── astro.config.mjs         # dev proxy → backend :8767
-│   └── src/pages/data.astro     # data management showcase (API + HTMX)
+│   ├── astro.config.mjs         # dev proxy → sidecar :8767
+│   └── src/pages/               # index.astro + data.astro (HTMX + skeleton loading)
 ├── src-tauri/                   # Tauri desktop shell
 ├── assets/                      # shared assets
 └── migration/
@@ -57,7 +63,7 @@ formint-pos/
 
 ### API
 
-Base URL: `http://127.0.0.1:8000/api/v1/`
+Base URL: `http://127.0.0.1:8767/api/v1/`
 
 | Endpoint | Method | Description |
 |---|---|---|
@@ -137,7 +143,9 @@ Validation: `make check` (astro check) and `make build`.
 ## Migration notes
 
 - `migration/compatibility-manifest.json` records the merge, accepted legacy identifiers, canonical identifiers, and retirement gates.
-- Legacy directories are preserved for parity/rollback. New work uses `formint-pos` / `Formint` identifiers.
+- The legacy React editions (`pos-full`, `pos-solo`) were merged; their dead React code was removed.
+  `forge-pos` and `pos-cloud` remain in `projects/pos/` for parity/rollback. New work uses
+  `formint-pos` / `Formint` identifiers.
 
 ## Validation gates
 
