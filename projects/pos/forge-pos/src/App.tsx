@@ -30,7 +30,7 @@ const KitchenDisplay = lazy(() => import('./pages/kitchen/KitchenDisplay'));
 const EmployeeSchedule = lazy(() => import('./pages/admin/EmployeeSchedule'));
 const Payroll = lazy(() => import('./pages/admin/Payroll'));
 const Notes = lazy(() => import('./pages/admin/Notes'));
-const TaxReports = lazy(() => import('./pages/analytics/TaxReports'));
+const Coupons = lazy(() => import('./pages/admin/Coupons'));
 const Roles = lazy(() => import('./pages/admin/Roles'));
 const SupportChat = lazy(() => import('./pages/admin/SupportChat'));
 // const ThemeShowcase = lazy(() => import('./pages/ThemeShowcase')); // merged into ThemePreviewModal (Settings > Theme)
@@ -109,7 +109,7 @@ function AnimatedRoutes() {
 
   // ── Suspense fallback shown while lazy chunks load ──
   const PageFallback = (
-    <div className="min-h-screen flex items-center justify-center bg-base-100">
+    <div className="min-h-[100dvh] flex items-center justify-center bg-base-100">
       <div className="text-center">
         <span className="loading loading-spinner loading-lg text-primary" />
         <p className="text-sm text-base-content/50 mt-3">Loading...</p>
@@ -129,9 +129,9 @@ function AnimatedRoutes() {
   // If auth is still being checked, show a loading screen
   if (isAuthRequired === null) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white/60 text-lg">Loading...</p>
         </div>
       </div>
@@ -149,7 +149,7 @@ function AnimatedRoutes() {
   }
 
   return (
-    <div className="relative min-h-screen bg-base-100">
+    <div className="relative min-h-[100dvh] bg-base-100">
       <Suspense fallback={PageFallback}>
         <Routes location={location} key={location.pathname}>
           {/* Root route: Auth/Login is the first page for unauthenticated users */}
@@ -173,7 +173,8 @@ function AnimatedRoutes() {
           <Route path="/schedule" element={<EmployeeSchedule />} />
           <Route path="/payroll" element={<Payroll />} />
           <Route path="/notes" element={<Notes />} />
-          <Route path="/tax-reports" element={<TaxReports />} />
+          <Route path="/coupons" element={<Coupons />} />
+          <Route path="/tax-reports" element={<Navigate to="/reports?tab=taxReports" replace />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/support-chat" element={<SupportChat />} />
           <Route path="/staff" element={<StaffPage />} />

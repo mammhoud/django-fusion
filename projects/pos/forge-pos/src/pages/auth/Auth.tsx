@@ -43,6 +43,92 @@ const ILLUSTRATION_GRADIENTS: Record<ThemeVariant, string> = {
   perplexity: 'from-info via-primary to-secondary',
 };
 
+// ── Hoisted UI building blocks (MODULE SCOPE) ──
+// These MUST NOT be defined inside Auth(): a component defined inside another
+// component is a NEW component type on every render, so React unmounts and
+// remounts the whole subtree on each keystroke — the email input's autoFocus
+// then re-fires and steals focus from the field being typed in. They derive
+// their theme values from useTheme() themselves instead of closing over the
+// render scope.
+
+// ── Card with theme-responsive styling ──
+function CardWrapper({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const { mode } = useTheme();
+  const isDark = mode === 'dark';
+  const cardBase = isDark
+    ? 'card bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl shadow-white/5'
+    : 'card bg-white border border-slate-200 shadow-xl shadow-slate-200/50';
+  const decoColor = isDark ? 'text-primary/80' : 'text-primary/10';
+  return (
+    <div className={`${cardBase} relative overflow-hidden ${className}`}>
+      <div className={`absolute -top-24 -right-24 w-72 h-72 opacity-[0.06] pointer-events-none ${decoColor}`}>
+        <span className="ri-focus-3-line w-full h-full" aria-hidden="true" />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Input group with theme-responsive styling ──
+function InputWrapper({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const { mode } = useTheme();
+  const isDark = mode === 'dark';
+  const inputBg = isDark ? 'bg-white/5 border-white/20' : 'bg-slate-50 border-slate-200';
+  const inputFocus = isDark ? 'focus-within:border-primary/60 focus-within:ring-primary/20' : 'focus-within:border-primary focus-within:ring-primary/10';
+  return (
+    <div className={`input flex items-center gap-3 w-full px-4 py-3 rounded-xl border
+      ${inputBg} ${inputFocus} focus-within:ring-2 transition-all duration-200 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+// ── FlyonUI primary button with spring animations ──
+function PrimaryButton({ onClick, disabled, loading, children }: {
+  onClick: () => void; disabled?: boolean; loading?: boolean; children: ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`btn w-full bg-primary hover:bg-primary/90 text-primary-content
+        rounded-xl font-semibold border-0
+        flex items-center justify-center gap-2 h-12
+        disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all`}
+    >
+      {loading ? (
+        <span className="loading loading-spinner loading-sm" />
+      ) : children}
+    </button>
+  );
+}
+
+// ── Auth header (title + subtitle) ──
+function AuthHeader({ title, desc }: { title: string; desc: string }) {
+  const { mode } = useTheme();
+  const isDark = mode === 'dark';
+  return (
+    <div className="mb-6">
+      <h2 className={`text-2xl font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{title}</h2>
+      <p className={`text-sm ${isDark ? 'text-white/50' : 'text-slate-500'}`}>{desc}</p>
+    </div>
+  );
+}
+
+// ── Brand Logo chip — uses the pos-crest.svg crest (same as app chrome) ──
+function BrandLogo() {
+  const { variant, mode } = useTheme();
+  const isDark = mode === 'dark';
+  return (
+    <div className="flex items-center gap-2.5 mb-4">
+      <div className={`bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-1.5 shadow-lg`}>
+        <img src={posCrest} alt="Forge POS" className="w-6 h-6 object-contain rounded-md" />
+      </div>
+      <span className={`text-lg font-bold ${isDark ? 'text-white/80' : 'text-slate-800'}`}>Forge POS</span>
+    </div>
+  );
+}
+
 export default function Auth() {
   const { t, i18n } = useTranslation();
   const {
@@ -269,76 +355,25 @@ export default function Auth() {
   const { variant, mode } = useTheme();
   const isDark = mode === 'dark';
 
-  // ── Decorative pattern SVG lines (visible in both light and dark) ──
+  // ── Decorative grid pattern — pure CSS (no hand-rolled SVG paths) ──
   const renderDecorativePattern = (opacityClass = 'opacity-[0.04]') => (
-    <svg
-      className={`absolute inset-0 w-full h-full pointer-events-none ${opacityClass} ${isDark ? 'text-white' : 'text-slate-300'}`}
-      viewBox="0 0 800 600"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="currentColor" strokeWidth="0.5" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" />
-    </svg>
+    <div
+      className={`absolute inset-0 pointer-events-none ${opacityClass} ${isDark ? 'text-white' : 'text-slate-300'}`}
+      style={{
+        backgroundImage:
+          'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)',
+        backgroundSize: '60px 60px',
+      }}
+    />
   );
 
-  // ── Card with theme-responsive styling ──
-  const CardWrapper = ({ children, className = '' }: { children: ReactNode; className?: string }) => {
-    const cardBase = isDark
-      ? 'card bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl shadow-white/5'
-      : 'card bg-white border border-slate-200 shadow-xl shadow-slate-200/50';
-    const decoColor = isDark ? 'text-primary/80' : 'text-primary/10';
-    return (
-      <div className={`${cardBase} relative overflow-hidden ${className}`}>
-        <div className={`absolute -top-24 -right-24 w-72 h-72 opacity-[0.06] pointer-events-none ${decoColor}`}>
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-            <path d="M100 0C155.228 0 200 44.7715 200 100C200 155.228 155.228 200 100 200C44.7715 200 0 155.228 0 100C0 44.7715 44.7715 0 100 0Z" fill="currentColor" />
-            <circle cx="100" cy="100" r="60" fill="currentColor" opacity="0.6" />
-            <circle cx="100" cy="100" r="30" fill="currentColor" opacity="0.3" />
-          </svg>
-        </div>
-        {children}
-      </div>
-    );
-  };
-
-  // ── Shared form label ──
+  // ── Shared form label (used directly in the form JSX below) ──
   const labelClass = `block text-sm font-medium mb-1.5 ${isDark ? 'text-white/70' : 'text-slate-600'}`;
 
-  // ── Input group with theme-responsive styling ──
-  const inputBg = isDark ? 'bg-white/5 border-white/20' : 'bg-slate-50 border-slate-200';
-  const inputPlaceholder = isDark ? 'placeholder:text-white/30' : 'placeholder:text-slate-400';
+  // ── Input child class strings — used by <InputWrapper> children at call sites ──
+  const inputPlaceholder = isDark ? 'placeholder:text-white/30' : 'placeholder:text-slate-500';
   const inputText = isDark ? 'text-white' : 'text-slate-900';
-  const inputIcon = isDark ? 'text-white/40' : 'text-slate-400';
-  const inputFocus = isDark ? 'focus-within:border-primary/60 focus-within:ring-teal-400/20' : 'focus-within:border-primary focus-within:ring-primary/10';
-  
-  const InputWrapper = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-    <div className={`input flex items-center gap-3 w-full px-4 py-3 rounded-xl border
-      ${inputBg} ${inputFocus} focus-within:ring-2 transition-all duration-200 ${className}`}>
-      {children}
-    </div>
-  );
-
-  // ── FlyonUI primary button with spring animations ──
-  const PrimaryButton = ({ onClick, disabled, loading, children, gradient = 'from-primary to-primary/80' }: {
-    onClick: () => void; disabled?: boolean; loading?: boolean; children: React.ReactNode; gradient?: string;
-  }) => (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`btn w-full bg-linear-to-r ${gradient} hover:from-primary/60 hover:to-primary/40
-        text-white rounded-xl font-semibold border-0
-        flex items-center justify-center gap-2 h-12
-        disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all`}
-    >
-      {loading ? (
-        <span className="loading loading-spinner loading-sm" />
-      ) : children}
-    </button>
-  );
+  const inputIcon = isDark ? 'text-white/40' : 'text-slate-500';
 
   // ── Illustration Panel ──
   const renderIllustration = () => (
@@ -385,9 +420,9 @@ export default function Auth() {
         {/* Feature highlights */}
         <div className="mt-10 space-y-4 text-left">
           {[
-            { icon: 'building-store', text: 'Point of Sale & Order Management' },
-            { icon: 'chart-line', text: 'Real-time Analytics & Reports' },
-            { icon: 'tools-kitchen-2', text: 'Inventory & Recipe Tracking' },
+            { icon: 'building-store', text: t('auth.featurePos') },
+            { icon: 'chart-line', text: t('auth.featureAnalytics') },
+            { icon: 'tools-kitchen-2', text: t('auth.featureInventory') },
           ].map(({ icon: iconName, text }, idx) => (
             <div
               key={idx}
@@ -405,7 +440,7 @@ export default function Auth() {
   );
 
   // ── Form Panel step classes ──
-  const FORM_PANEL_CLASS = 'w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 xl:p-12 relative overflow-y-auto min-h-screen lg:min-h-0';
+  const FORM_PANEL_CLASS = 'w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 xl:p-12 relative overflow-y-auto min-h-[100dvh] lg:min-h-0';
 
   // ── Toast backgrounds (moved near other computed classes for consistency) ──
   const toastBg = isDark ? 'bg-red-500/95' : 'bg-red-500';
@@ -441,35 +476,17 @@ export default function Auth() {
     </>
   );
 
-  // ── Brand Logo chip — uses the pos-crest.svg crest (same as app chrome) ──
-  const BrandLogo = () => (
-    <div className="flex items-center gap-2.5 mb-4">
-      <div className={`bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-1.5 shadow-lg`}>
-        <img src={posCrest} alt="Forge POS" className="w-6 h-6 object-contain rounded-md" />
-      </div>
-      <span className={`text-lg font-bold ${isDark ? 'text-white/80' : 'text-slate-800'}`}>Forge POS</span>
-    </div>
-  );
 
   // ── Theme-responsive computed classes ──
-  const textHeading = isDark ? 'text-white' : 'text-slate-900';
-  const textMuted = isDark ? 'text-white/50' : 'text-slate-400';
+  const textMuted = isDark ? 'text-white/50' : 'text-slate-500';
   const textLink = isDark ? 'text-primary/80 hover:text-primary/70' : 'text-primary hover:text-primary/600';
   const formPanelOverlay = isDark
     ? 'bg-linear-to-br from-primary/20 via-base-200 to-primary/20'
     : 'bg-linear-to-br from-primary/5 via-base-200 to-primary/5';
 
-  // ── Auth header ──
-  const AuthHeader = ({ title, desc }: { title: string; desc: string }) => (
-    <div className="mb-6">
-      <h2 className={`text-2xl font-bold mb-1 ${textHeading}`}>{title}</h2>
-      <p className={`text-sm ${textMuted}`}>{desc}</p>
-    </div>
-  );
-
   return (
     <div
-      className={`min-h-screen flex ${isRtl ? 'rtl flex-row-reverse' : 'ltr'}`}
+      className={`min-h-[100dvh] flex ${isRtl ? 'rtl flex-row-reverse' : 'ltr'}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       {/* Top-right toggles */}
@@ -489,12 +506,12 @@ export default function Auth() {
         {step === 'checking' && (
           <div
             key="checking"
-            className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 xl:p-12 min-h-screen lg:min-h-0"
+            className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 xl:p-12 min-h-[100dvh] lg:min-h-0"
           >
             <div className="text-center">
               <div className="relative w-20 h-20 mx-auto mb-6">
-                <div className="absolute inset-0 border-4 border-primary/30 border-t-teal-400 rounded-full animate-spin" />
-                <div className="absolute inset-2 border-4 border-success/20 border-b-emerald-400 rounded-full animate-spin [animation-direction:reverse]" />
+                <div className="absolute inset-0 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <div className="absolute inset-2 border-4 border-success/20 border-b-primary rounded-full animate-spin [animation-direction:reverse]" />
               </div>
               <p
                 className={`text-lg ${isDark ? 'text-white/60' : 'text-slate-500'} animate-pulse`}
@@ -563,7 +580,6 @@ export default function Auth() {
                     onClick={handleSendCode}
                     disabled={codeSending || !email.trim()}
                     loading={codeSending}
-                    gradient="from-primary to-primary/80"
                   >
                     <span className="ri-key-line text-sm" />
                     {t('auth.sendCode')}
@@ -615,10 +631,10 @@ export default function Auth() {
                           className={`w-10 h-12 sm:w-12 sm:h-14 rounded-xl border-2 flex items-center justify-center
                             text-xl font-bold font-mono transition-all duration-200
                             ${code.length > i
-                              ? 'border-primary bg-primary/20 shadow-lg shadow-teal-500/10 text-white'
+                              ? 'border-primary bg-primary/20 shadow-lg shadow-primary/10 text-white'
                               : code.length === i
                                 ? 'border-primary/60 animate-pulse ' + (isDark ? 'bg-white/10 text-white' : 'bg-primary/5 text-slate-700')
-                                : (isDark ? 'border-white/10 bg-white/5 text-white' : 'border-slate-200 bg-slate-50 text-slate-400')
+                                : (isDark ? 'border-white/10 bg-white/5 text-white' : 'border-slate-200 bg-slate-50 text-slate-500')
                             }`}
                         >
                           {code[i] || ''}
@@ -700,7 +716,7 @@ export default function Auth() {
                       <p
                         className={`text-xs mt-1 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}
                       >
-                        <span className="ri-check-line ri-12px" /> Passwords match
+                        <span className="ri-check-line ri-12px" /> {t('auth.passwordsMatch')}
                       </p>
                     )}
                   </div>
@@ -710,7 +726,6 @@ export default function Auth() {
                     onClick={handleRegister}
                     disabled={isLoading || !code.trim() || !password || !confirmPassword}
                     loading={isLoading}
-                    gradient="from-primary to-primary/80"
                   >
                     <span className="ri-check-line text-sm" />
                     {t('auth.createAccountBtn')}
@@ -851,7 +866,6 @@ export default function Auth() {
                     onClick={handleLogin}
                     disabled={isLoading || !email.trim() || !password}
                     loading={isLoading}
-                    gradient="from-primary to-secondary"
                   >
                     <span className="ri-arrow-right-line text-sm rtl:rotate-180" />
                     {t('auth.signIn')}
@@ -887,9 +901,9 @@ export default function Auth() {
                   <div className={`mt-4 text-center border-t pt-4 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                     <button
                       onClick={skipAuth}
-                      className={`text-xs transition-colors hover:underline ${isDark ? 'text-white/30 hover:text-white/60' : 'text-slate-400 hover:text-slate-600'}`}
+                      className={`text-xs transition-colors hover:underline ${isDark ? 'text-white/30 hover:text-white/60' : 'text-slate-500 hover:text-slate-700'}`}
                     >
-                      Continue without signing in
+                      {t('auth.continueWithoutSigningIn')}
                     </button>
                   </div>
                 )}
@@ -936,7 +950,6 @@ export default function Auth() {
                     onClick={handleRequestReset}
                     disabled={codeSending || !email.trim()}
                     loading={codeSending}
-                    gradient="from-primary to-primary/80"
                   >
                     <span className="ri-key-line text-sm" />
                     {t('auth.sendResetCode')}
@@ -981,10 +994,10 @@ export default function Auth() {
                           className={`w-10 h-12 sm:w-12 sm:h-14 rounded-xl border-2 flex items-center justify-center
                             text-xl font-bold font-mono transition-all duration-200
                             ${resetCode.length > i
-                              ? 'border-primary bg-primary/20 shadow-lg shadow-teal-500/10 text-white'
+                              ? 'border-primary bg-primary/20 shadow-lg shadow-primary/10 text-white'
                               : resetCode.length === i
                                 ? 'border-primary/60 animate-pulse ' + (isDark ? 'bg-white/10 text-white' : 'bg-primary/5 text-slate-700')
-                                : (isDark ? 'border-white/10 bg-white/5 text-white' : 'border-slate-200 bg-slate-50 text-slate-400')
+                                : (isDark ? 'border-white/10 bg-white/5 text-white' : 'border-slate-200 bg-slate-50 text-slate-500')
                             }`}
                         >
                           {resetCode[i] || ''}
@@ -1066,7 +1079,7 @@ export default function Auth() {
                       <p
                         className={`text-xs mt-1 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}
                       >
-                        <span className="ri-check-line ri-12px" /> Passwords match
+                        <span className="ri-check-line ri-12px" /> {t('auth.passwordsMatch')}
                       </p>
                     )}
                   </div>
@@ -1076,7 +1089,6 @@ export default function Auth() {
                     onClick={handleResetPassword}
                     disabled={isLoading || !resetCode.trim() || !resetPassword || !resetConfirmPassword}
                     loading={isLoading}
-                    gradient="from-primary to-secondary"
                   >
                     <span className="ri-check-line text-sm" />
                     {t('auth.resetPasswordBtn')}

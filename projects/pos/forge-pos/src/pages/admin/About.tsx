@@ -128,11 +128,10 @@ export default function About() {
           <div
             className="bg-base-100/20 backdrop-blur-sm rounded-full p-6 w-fit mx-auto mb-6"
           >
-            <span className="ri-heart-line w-16 h-16 md:w-20 md:h-20 text-teal-500 dark:text-teal-400" />
+            <span className="ri-heart-line w-16 h-16 md:w-20 md:h-20 text-accent dark:text-accent/80" />
           </div>
           <h1
-            className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text
-              bg-linear-to-r from-primary to-secondary py-2"
+            className="text-3xl md:text-5xl font-bold text-base-content py-2"
           >
             {t('about.title')}
           </h1>

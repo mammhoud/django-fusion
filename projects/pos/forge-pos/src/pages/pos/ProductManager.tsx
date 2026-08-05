@@ -8,6 +8,7 @@ import DataTable, { type Column } from '../../components/ui/DataTable';
 import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT, hexToRgba } from '../../components/pos/ProductCard';
 import ProductFilterBar from '../../components/shared/ProductFilterBar';
 import Modal from '../../components/ui/Modal';
+import Button from '../../components/ui/Button';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import PageLayout from '../../components/layout/PageLayout';
 import { iconClass } from '../../lib/icons';
@@ -653,7 +654,7 @@ export default function ProductManager() {
           render: (p: Product) => (
         <span className="font-mono text-xs text-base-content/70">
           {p.barcode || (
-            <span className="text-base-content/30 italic">—</span>
+            <span className="text-base-content/30 italic">-</span>
           )}
         </span>
       ),
@@ -681,7 +682,7 @@ export default function ProductManager() {
               {categoryMap[p.category_id]}
             </span>
           ) : (
-            <span className="text-base-content/30 italic">—</span>
+            <span className="text-base-content/30 italic">-</span>
           )}
         </span>
       ),
@@ -861,25 +862,27 @@ export default function ProductManager() {
                 </select>
               </div>
             )}
-            <button
+            <Button
+              variant="ghost"
+              shape="square"
+              size="sm"
               onClick={() => setViewMode(prev => prev === 'grid' ? 'table' : 'grid')}
-              className="btn btn-ghost btn-sm btn-square text-base-content/50 hover:text-base-content shrink-0"
+              className="text-base-content/50 hover:text-base-content shrink-0"
               aria-label={viewMode === 'grid' ? 'Switch to table view' : 'Switch to grid view'}
-            >
-              {viewMode === 'grid' ? (
-                <span className="ri-list-unordered-line ri-16px" />
-              ) : (
-                <span className="ri-layout-grid-line ri-16px" />
-              )}
-            </button>
-            <button
+              iconStart={viewMode === 'grid'
+                ? <span className="ri-file-list-3-line ri-16px" />
+                : <span className="ri-layout-grid-line ri-16px" />}
+            />
+            <Button
+              variant="primary"
+              size="sm"
               onClick={openAddModal}
               data-testid="pm-add-button"
-              className="btn btn-primary btn-sm gap-1.5 shrink-0"
+              className="shrink-0"
+              iconStart={<span className="ri-add-line ri-14px" />}
             >
-              <span className="ri-add-line ri-14px" />
               <span className="hidden sm:inline text-xs">{t('productManager.addNewProduct')}</span>
-            </button>
+            </Button>
           </>
         }
         categories={categories}
@@ -1278,7 +1281,7 @@ export default function ProductManager() {
 
               <div>
                 <label className="block text-base-content mb-1.5 text-xs font-medium">
-                  <span className="ri-align-left-line ri-14px inline-block mr-1 text-primary/70" />
+                  <span className="ri-align-left ri-14px inline-block mr-1 text-primary/70" />
                   Description
                 </label>
                 <textarea
@@ -1304,7 +1307,7 @@ export default function ProductManager() {
                     disabled={isSubmitting}
                     className="select w-full h-9 text-sm"
                   >
-                    <option value="">{t('productManager.noCategory') || '— No category —'}</option>
+                    <option value="">{t('productManager.noCategory') || '- No category -'}</option>
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}

@@ -642,7 +642,7 @@ export default function Recipes() {
             {newRecipeIngredients.map((ri, idx) => (
               <div key={idx} className="flex items-center justify-between bg-base-100/30 rounded-lg px-2 py-1.5">
                 <span className="text-xs text-base-content/80">
-                  {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
+                  {getIngredientName(ri.ingredient_id)} · {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
                 <button onClick={() => handleRemoveNewIngredient(idx)} className="text-error hover:text-error/70 p-0.5">
                   <span className="ri-subtract-line ri-14px" />
@@ -729,7 +729,7 @@ export default function Recipes() {
             {editIngredients.map((ri, idx) => (
               <div key={ri.id} className="flex items-center justify-between bg-base-100/30 rounded-lg px-2 py-1.5">
                 <span className="text-xs text-base-content/80">
-                  {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
+                  {getIngredientName(ri.ingredient_id)} · {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
                 <button onClick={() => handleRemoveEditIngredient(idx)} className="text-error hover:text-error/70 p-0.5">
                   <span className="ri-subtract-line ri-14px" />
@@ -769,7 +769,7 @@ export default function Recipes() {
                 <div>
                   <h3 className="text-lg font-bold text-base-content">Notes for {showNotesModal.productName}</h3>
                   <p className="text-xs text-base-content/50">
-                    Recipe #{showNotesModal.recipe.id} — {showNotesModal.recipe.yield_quantity} {showNotesModal.productUnit}
+                    Recipe #{showNotesModal.recipe.id} · {showNotesModal.recipe.yield_quantity} {showNotesModal.productUnit}
                     {' · '}
                     <span className="text-info underline cursor-pointer hover:text-info/80" onClick={() => { setShowNotesModal(null); navigate('/notes'); }}>
                       Open Notes app
@@ -815,7 +815,7 @@ export default function Recipes() {
                         'chef-tips': `Chef recommendation: For best results, use fresh ingredients.
 
 Tip: Prep time can be reduced by pre-chopping vegetables the day before.`,
-                        allergen: `⚠️ Allergens: May contain dairy, gluten, nuts.
+                        allergen: `Allergens: May contain dairy, gluten, nuts.
 
 Cross-contamination warning: Prepared in a kitchen that also processes shellfish and soy.`,
                         plating: `Plate presentation steps:

@@ -189,7 +189,7 @@ describe('Recipes Page', () => {
     // Ingredient row appears ("Chicken Breast — 1 kg"), then save becomes enabled.
     // The select option also contains 'Chicken Breast', so match the row format.
     await waitFor(() => {
-      expect(within(dialog).getByText(/Chicken Breast\s*—\s*1/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/Chicken Breast[\s·—–-]*1/)).toBeInTheDocument();
     });
     await userEvent.click(within(dialog).getByRole('button', { name: /Create New Recipe/ }));
 

@@ -49,4 +49,27 @@ describe('StatCard component', () => {
     render(<StatCard title="T" value="1" compact animated={false} />);
     expect(screen.getByText('T').closest('.stat')).toHaveClass('p-3');
   });
+
+  it('keeps icon, sparkline, and text inside the card container (fit design)', () => {
+    const { container } = render(
+      <StatCard
+        title="A very long dashboard stat title that must never overflow the card"
+        value="$12,345.67"
+        desc="A long description line that must also stay clipped inside the card"
+        icon={<span data-testid="stat-icon" />}
+        sparklineData={[{ value: 1 }, { value: 2 }, { value: 3 }]}
+        animated={false}
+      />
+    );
+    const card = container.querySelector('.stat');
+    // Card container is a real, clipped surface
+    expect(card).toHaveClass('overflow-hidden');
+    expect(card).toHaveClass('rounded-2xl');
+    // Icon badge and sparkline live inside the card (no external figure column)
+    expect(screen.getByTestId('stat-icon').closest('.stat')).toBe(card);
+    expect(screen.getByTestId('stat-sparkline').closest('.stat')).toBe(card);
+    // Long text truncates instead of spilling out
+    expect(screen.getByText(/long dashboard stat title/)).toHaveClass('truncate');
+    expect(screen.getByText(/long description line/)).toHaveClass('line-clamp-1');
+  });
 });

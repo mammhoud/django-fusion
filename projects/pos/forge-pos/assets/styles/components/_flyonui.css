@@ -36,6 +36,73 @@
   background: var(--color-semantic-primary-hover);
 }
 
+/* ── Semantic variant buttons: pull explicit content tokens so text
+   contrast is guaranteed in every theme (the shared Button component
+   relies on these for info/secondary/accent/success/warning/error). */
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-secondary-content);
+}
+
+.btn-secondary:hover {
+  background: color-mix(in oklch, var(--color-secondary) 88%, black);
+}
+
+.btn-accent {
+  background: var(--color-accent);
+  color: var(--color-accent-content);
+}
+
+.btn-accent:hover {
+  background: color-mix(in oklch, var(--color-accent) 88%, black);
+}
+
+.btn-info {
+  background: var(--color-info);
+  color: var(--color-info-content);
+}
+
+.btn-info:hover {
+  background: color-mix(in oklch, var(--color-info) 88%, black);
+}
+
+.btn-success {
+  background: var(--color-success);
+  color: var(--color-success-content);
+}
+
+.btn-success:hover {
+  background: color-mix(in oklch, var(--color-success) 88%, black);
+}
+
+.btn-warning {
+  background: var(--color-warning);
+  color: var(--color-warning-content);
+}
+
+.btn-warning:hover {
+  background: color-mix(in oklch, var(--color-warning) 88%, black);
+}
+
+.btn-error {
+  background: var(--color-error);
+  color: var(--color-error-content);
+}
+
+.btn-error:hover {
+  background: color-mix(in oklch, var(--color-error) 88%, black);
+}
+
+/* Outline buttons: theme-linked border + text, translucent fill on hover */
+.btn-outline {
+  border: 1px solid color-mix(in oklch, var(--color-base-content) 30%, transparent);
+  color: var(--color-base-content);
+}
+
+.btn-outline:hover {
+  background: color-mix(in oklch, var(--color-base-200) 70%, transparent);
+}
+
 .btn-ghost:hover {
   background: color-mix(in oklch, var(--color-base-200) 70%, transparent);
 }

@@ -186,6 +186,9 @@ pub struct Sale {
     pub delivery_address: Option<String>,
     pub employee_id: Option<i32>,
     pub customer_id: Option<i32>,
+    pub discount_code: Option<String>,
+    pub discount_amount: f64,
+    pub payment_method: String,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
@@ -206,6 +209,12 @@ pub struct NewSale {
     pub delivery_address: Option<String>,
     pub employee_id: Option<i32>,
     pub customer_id: Option<i32>,
+    #[serde(default)]
+    pub discount_code: Option<String>,
+    #[serde(default)]
+    pub discount_amount: f64,
+    #[serde(default)]
+    pub payment_method: String,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -219,6 +228,7 @@ pub struct UpdateSale {
     pub delivery_address: Option<Option<String>>,
     pub employee_id: Option<Option<i32>>,
     pub customer_id: Option<Option<i32>>,
+    pub payment_method: Option<String>,
     pub uploaded: Option<bool>,
 }
 
@@ -903,6 +913,47 @@ pub struct UpdateNote {
     pub use_as_template: Option<bool>,
     pub selectable: Option<bool>,
     pub steps: Option<Option<String>>,
+}
+
+// ---- Coupon (DB table: coupons) ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::coupons)]
+pub struct Coupon {
+    pub id: i32,
+    pub code: String,
+    pub kind: String,
+    pub value: f64,
+    pub min_subtotal: Option<f64>,
+    pub is_active: bool,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+fn default_true() -> bool {
+    true
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::coupons)]
+pub struct NewCoupon {
+    pub code: String,
+    pub kind: String,
+    #[serde(default)]
+    pub value: f64,
+    #[serde(default)]
+    pub min_subtotal: Option<f64>,
+    #[serde(default = "default_true")]
+    pub is_active: bool,
+}
+
+#[derive(Debug, AsChangeset, Deserialize)]
+#[diesel(table_name = crate::db::schema::coupons)]
+pub struct UpdateCoupon {
+    pub code: Option<String>,
+    pub kind: Option<String>,
+    pub value: Option<f64>,
+    pub min_subtotal: Option<Option<f64>>,
+    pub is_active: Option<bool>,
 }
 
 // ---- SupportMessage (DB table: support_messages) ----

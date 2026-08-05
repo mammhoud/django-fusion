@@ -101,6 +101,45 @@ export function productAccentColor(product: Product): string {
   return accentColorFromSeed(`${product.id ?? ''}:${product.name}`);
 }
 
+/**
+ * Small square product thumbnail for cart rows / lists. Shows the product
+ * image when available, otherwise a tinted initial tile — keeps every
+ * cart line visually identifiable at a glance.
+ */
+export function ProductThumb({
+  product,
+  size = 'md',
+  className = '',
+}: {
+  product: Product;
+  /** sm = 28px · md = 36px · lg = 44px */
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}) {
+  const [imageError, setImageError] = useState(false);
+  const sizeClass = size === 'sm' ? 'w-7 h-7' : size === 'lg' ? 'w-11 h-11' : 'w-9 h-9';
+  const textClass = size === 'sm' ? 'text-[10px]' : size === 'lg' ? 'text-base' : 'text-xs';
+  return (
+    <div
+      className={`${sizeClass} rounded-lg overflow-hidden shrink-0 flex items-center justify-center border border-base-300/40 bg-base-100/70 shadow-sm ${className}`}
+      aria-hidden="true"
+    >
+      {product.image && !imageError ? (
+        <img
+          src={product.image}
+          alt=""
+          onError={() => setImageError(true)}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span className={`${textClass} font-bold text-base-content/40 select-none`}>
+          {product.name.charAt(0).toUpperCase()}
+        </span>
+      )}
+    </div>
+  );
+}
+
 const ProductCard = memo(function ProductCard({
   product,
   color,
@@ -139,6 +178,9 @@ const ProductCard = memo(function ProductCard({
   const imageBorderStyle = hasCategoryColor
     ? { borderColor: hexToRgba(categoryColor as string, 0.5) }
     : undefined;
+  const imageTintStyle = hasCategoryColor
+    ? { backgroundColor: hexToRgba(categoryColor as string, 0.14) }
+    : undefined;
 
   return (
     <div
@@ -152,45 +194,68 @@ const ProductCard = memo(function ProductCard({
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
     >
-      {/* Top section: Image + Name + Price */}
-      <div className="flex flex-col items-center text-center flex-1 min-h-0 px-0.5">
-        {/* Product Image */}
-        <div className={`w-11 h-11 mb-1 rounded-full overflow-hidden flex items-center justify-center border
-          ${isSelected ? 'border-primary/50 dark:border-primary/50' : color.border}
-          bg-base-100/70 shadow-sm shrink-0`}
-          style={imageBorderStyle}>
-          {product.image && !imageError ? (
+      {/* Hero image banner — full-width so product photos are the visual anchor */}
+      <div
+        className={`relative w-full aspect-[4/3] rounded-lg overflow-hidden border mb-1.5
+          ${isSelected
+            ? 'border-primary/60 ring-2 ring-primary/40'
+            : hasCategoryColor
+              ? ''
+              : color.border}`}
+        style={imageBorderStyle}
+      >
+        {product.image && !imageError ? (
+          <>
             <img
               src={product.image}
               alt={product.name}
               onError={() => setImageError(true)}
-              className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             />
-          ) : (
+            {/* Soft bottom scrim gives the price-row contrast over busy photos */}
+            <div className="absolute inset-x-0 bottom-0 h-8 bg-linear-to-t from-black/25 to-transparent pointer-events-none" />
+          </>
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={imageTintStyle}
+          >
             <span
               data-testid="product-initial"
-              className={`text-base font-extrabold ${isSelected ? 'text-primary dark:text-primary/80' : (hasCategoryColor ? '' : color.initial)} select-none`}
+              className={`text-2xl font-extrabold ${isSelected ? 'text-primary dark:text-primary/80' : (hasCategoryColor ? '' : color.initial)} select-none drop-shadow-sm`}
               style={accentStyle}
             >
               {product.name.charAt(0).toUpperCase()}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Name */}
+        {/* Selected check badge */}
+        {isSelected && (
+          <span
+            className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-primary text-primary-content
+              flex items-center justify-center shadow-md"
+            aria-hidden="true"
+          >
+            <span className="ri-check-line ri-12px" />
+          </span>
+        )}
+      </div>
+
+      {/* Name + Price + Unit */}
+      <div className="flex flex-col flex-1 min-h-0 px-0.5 text-center">
         <h3 className="text-[11px] font-bold text-base-content leading-tight line-clamp-1 w-full" title={product.name}>
           {product.name}
         </h3>
 
-        {/* Price */}
-        <div className={`font-semibold text-xs tabular-nums ${isSelected ? 'text-primary dark:text-primary/80' : (hasCategoryColor ? '' : color.initial)}`} style={accentStyle}>
-          {currency} {product.price.toFixed(2)}
+        <div className="flex items-center justify-center gap-1 mt-0.5">
+          <span className={`font-semibold text-xs tabular-nums ${isSelected ? 'text-primary dark:text-primary/80' : (hasCategoryColor ? '' : color.initial)}`} style={accentStyle}>
+            {currency} {product.price.toFixed(2)}
+          </span>
+          <span className={`text-[10px] tabular-nums ${isSelected ? 'text-primary/70 dark:text-primary/70' : (hasCategoryColor ? '' : (color.icon || color.initial))} opacity-50 uppercase tracking-wider`} style={mutedAccentStyle}>
+            / {product.unit}
+          </span>
         </div>
-
-        {/* Unit */}
-        <span className={`text-[9px] tabular-nums ${isSelected ? 'text-primary/70 dark:text-primary/70' : (hasCategoryColor ? '' : (color.icon || color.initial))} opacity-50 uppercase tracking-wider`} style={mutedAccentStyle}>
-          / {product.unit}
-        </span>
 
         {children}
       </div>
@@ -232,12 +297,11 @@ export function ProductCardSkeleton({ className = '' }: ProductCardSkeletonProps
   return (
     <div
       data-testid="product-card-skeleton"
-      className={`rounded-lg p-2 flex flex-col items-center text-center
-        border border-base-300/30 dark:border-base-300/20 backdrop-blur-sm
-        bg-base-200/50 animate-pulse min-h-[120px] ${className}`}
+      className={`rounded-lg p-2 flex flex-col border border-base-300/30 dark:border-base-300/20 backdrop-blur-sm
+        bg-base-200/50 animate-pulse min-h-[140px] ${className}`}
       aria-hidden="true"
     >
-      <div className="w-12 h-12 mb-1.5 rounded-full bg-base-300/50" />
+      <div className="w-full aspect-[4/3] mb-1.5 rounded-lg bg-base-300/50" />
       <div className="w-full flex flex-col items-center gap-1">
         <div className="w-3/4 h-3 rounded bg-base-300/50" />
         <div className="w-1/2 h-2 rounded bg-base-300/50" />
