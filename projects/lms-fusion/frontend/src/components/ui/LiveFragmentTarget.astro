@@ -1,0 +1,68 @@
+---
+/**
+ * LiveFragmentTarget — the HTMX-requesting region of a LiveFragment section.
+ *
+ * Extracted from LiveFragment.astro so the `<template data-fragment-fallback>`
+ * element lives in plain template body: inside a JSX expression the Astro
+ * compiler flattens `<template>` content and the emitted code fails to parse.
+ *
+ * Fires `hx-get` on load (client:visible island). The backend answers the
+ * HX-Request header with the fragment (content region only); errors swap in
+ * the quiet fallback note (listener lives in htmx-bootstrap.ts).
+ */
+import Skeleton from '@/components/ui/Skeleton.astro';
+
+interface Props {
+  /** Fully-resolved backend URL for the fragment, e.g. 'http://localhost:8074/'. */
+  endpoint: string;
+  /** Backend route (for labels), e.g. '/'. */
+  route: string;
+  /** Number of skeleton cards shown while the fragment loads (generic 'card' variant only). */
+  skeletonCards?: number;
+  /**
+   * Component-matched skeleton variant. When set, renders a skeleton that
+   * mirrors the real content shape instead of generic cards.
+   */
+  skeletonVariant?: 'hero-section' | 'stats-row' | 'features-grid' | 'testimonial'
+    | 'testimonials-carousel' | 'pricing-grid' | 'pricing-folded' | 'faq-list'
+    | 'cta-banner' | 'contact-form' | 'section-header';
+}
+
+const {
+  endpoint,
+  route,
+  skeletonCards = 3,
+  skeletonVariant,
+} = Astro.props;
+---
+
+<div
+  class="live-fragment__target"
+  hx-get={endpoint}
+  hx-trigger="load"
+  hx-target="this"
+  hx-swap="innerHTML"
+  data-fragment-endpoint={endpoint}
+>
+  <!-- Default loading state: skeleton while the backend responds -->
+  <div class="live-fragment__skeleton" aria-hidden="true">
+    {skeletonVariant ? (
+      <Skeleton variant={skeletonVariant} />
+    ) : (
+      <Skeleton variant="card" count={skeletonCards} />
+    )}
+    <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
+      requesting {route} · text/html
+    </p>
+  </div>
+
+  <!-- Quiet error fallback (swap listener lives in htmx-bootstrap.ts —
+       one listener for all live fragments, not one per instance). -->
+  <template data-fragment-fallback>
+    <p class="live-fragment__fallback">
+      The backend fragment for <code class="font-mono">{route}</code> is not reachable right now
+      (is the Django server running at <code class="font-mono">{endpoint}</code>?).
+      The static sections on this page render the same content.
+    </p>
+  </template>
+</div>

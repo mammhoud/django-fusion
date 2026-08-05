@@ -797,3 +797,57 @@ class FormintUserSettingsRenderModeTests(TestCase):
         # the stored session preference is reported by the settings-UI endpoint
         response = self.client.get('/fusion/session-mode/')
         self.assertIs(response.json()['session_preference'], False)
+
+    # ── DB-truth admin preference (cross-tab sync source) ──────────────────
+
+    def _session_mode_for(self, mode: str) -> dict:
+        UserSettings.objects.create(user=self.operator, fusion_render_mode=mode)
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+        response = self.client.get('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def test_session_mode_reports_admin_fusion_preference(self):
+        body = self._session_mode_for('fusion')
+        self.assertIs(body['admin_preference'], True)
+        self.assertIsNotNone(body['admin_version'])
+
+    def test_session_mode_reports_admin_data_preference(self):
+        body = self._session_mode_for('data')
+        self.assertIs(body['admin_preference'], False)
+        self.assertIsNotNone(body['admin_version'])
+
+    def test_session_mode_reports_admin_default_as_null(self):
+        """mode=default maps to None — but a non-null version proves a row
+        exists (so the frontend clears the session instead of ignoring it)."""
+        body = self._session_mode_for('default')
+        self.assertIsNone(body['admin_preference'])
+        self.assertIsNotNone(body['admin_version'])
+
+    def test_session_mode_admin_fields_null_for_anonymous(self):
+        response = self.client.get('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIsNone(body['admin_preference'])
+        self.assertIsNone(body['admin_version'])
+
+    def test_admin_version_bumps_on_save(self):
+        settings_obj = UserSettings.objects.create(
+            user=self.operator, fusion_render_mode='fusion',
+        )
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        first = self.client.get('/fusion/session-mode/').json()['admin_version']
+        self.assertIsNotNone(first)
+
+        # simulate an admin save in Unfold — the row's updated_at bumps
+        settings_obj.fusion_render_mode = 'data'
+        settings_obj.save()
+
+        second = self.client.get('/fusion/session-mode/').json()['admin_version']
+        self.assertGreater(second, first)
+        # the mapped preference also flipped
+        self.assertIs(
+            self.client.get('/fusion/session-mode/').json()['admin_preference'],
+            False,
+        )

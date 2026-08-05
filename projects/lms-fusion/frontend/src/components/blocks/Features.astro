@@ -1,0 +1,100 @@
+---
+import Pricing from '@/components/blocks/Pricing.astro';
+import type { Plan } from '@/components/blocks/Pricing.astro';
+
+interface Feature {
+  icon: 'rocket' | 'bolt' | 'shield' | 'users' | 'chart' | 'globe';
+  title: string;
+  description: string;
+}
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  features?: Feature[];
+  /** Optional pricing section folded into the bottom of this section. */
+  pricing?: { heading?: string; intro?: string; plans?: Plan[] };
+}
+
+const defaultFeatures: Feature[] = [
+  {
+    icon: 'rocket',
+    title: 'Django + Wagtail Backend',
+    description: 'Content managed in Wagtail 7.4 with StreamField blocks — editors compose sections, django-fusion renders them as server-side HTML.',
+  },
+  {
+    icon: 'bolt',
+    title: 'HTMX Fragment Rendering',
+    description: 'Dynamic regions stream from Django as HTML fragments over plain HTTP. No JSON API layer, no decoder, no state to keep in sync.',
+  },
+  {
+    icon: 'shield',
+    title: 'Alpine Micro-Interactions',
+    description: 'A toggle, accordion, or counter should not cost a framework. Alpine adds interactivity in-place, only where the page needs it.',
+  },
+  {
+    icon: 'chart',
+    title: '0 KB Framework JavaScript',
+    description: 'No React, no hydration script, no node_modules in the critical path. Pages feel instant because they ship as finished documents.',
+  },
+  {
+    icon: 'globe',
+    title: 'SEO is Free',
+    description: 'Search engines read the finished page, not a framework shell. Content, headings and links arrive in the first byte.',
+  },
+  {
+    icon: 'users',
+    title: 'Monorepo Architecture',
+    description: 'Six projects, one repository, one CI pipeline. Shared configs, assets, and django-fusion components across all sites.',
+  },
+];
+
+const {
+  heading = 'Everything is a document',
+  intro = 'No hidden layers between your content and the browser. The AHA stack — Astro, HTMX, Alpine — renders the web the way it was meant to ship.',
+  features = defaultFeatures,
+  pricing,
+} = Astro.props;
+
+const iconPaths: Record<Feature['icon'], string> = {
+  rocket: 'M14.053 4.197a1 1 0 011.306.615l1.386 4.324 4.324 1.386a1 1 0 010 1.895l-4.324 1.386-1.386 4.324a1 1 0 01-1.895 0l-1.386-4.324-4.324-1.386a1 1 0 010-1.895l4.324-1.386 1.386-4.324a1 1 0 011.11-.615z',
+  bolt: 'M13 10V3L4 14h7v7l9-11h-7z',
+  shield: 'M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z',
+  users: 'M17 20h5v-2a3 3 0 00-4.1-2.7M9 20H4v-2a3 3 0 015.1-2M12 16a4 4 0 100-8 4 4 0 000 8zm5-3a3 3 0 100-6',
+  chart: 'M3 21h18M6 17v-5M11 17V7M16 17v-9M21 17v-3',
+  globe: 'M12 21a9 9 0 100-18 9 9 0 000 18zm-9-9h18M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3z',
+};
+---
+
+<section id="features" class="features">
+  <div class="container-fusion">
+    <div class="features__header">
+      <p class="tag-marker mb-4">features</p>
+      <h2 class="page-section__title">{heading}</h2>
+      <p class="text-fu-muted">{intro}</p>
+    </div>
+
+    <div class="features__grid">
+      {features.map((feature, i) => (
+        <div
+          class="features__card"
+          x-data x-intersect="$el.classList.add('reveal-visible')"
+          style={`transition-delay: ${i * 60}ms`}
+        >
+          <span class="features__card-index" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <div class="features__icon">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d={iconPaths[feature.icon]} />
+            </svg>
+          </div>
+          <h3 class="features__title">{feature.title}</h3>
+          <p class="features__text">{feature.description}</p>
+        </div>
+      ))}
+    </div>
+
+    {pricing && <Pricing folded {...pricing} />}
+  </div>
+</section>

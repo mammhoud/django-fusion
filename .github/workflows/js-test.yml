@@ -1,15 +1,5 @@
-# js-test: Runs unit tests (vitest) and Playwright E2E tests across all
-# JavaScript/TypeScript front-end projects on pull requests.
-#
-# Projects covered:
-#   - projects/lms-fusion/frontend  → Next.js app (primary LMS)
-#   - projects/cms-fusion/frontend  → Next.js app (secondary LMS/CMS)
-#   - projects/pos/pos-e2e          → POS E2E suite (all editions)
-#
-# Each project gets its own job so failures are isolated and results
-# are easy to triage in the GitHub Checks UI.
-
-name: JS Tests (vitest + Playwright E2E)
+# js-test: Runs frontend smoke/build tests across the Astro and Next projects.
+name: JS Tests (frontend builds + smoke tests)
 
 on:
   pull_request:
@@ -33,35 +23,13 @@ on:
       - '.github/workflows/js-test.yml'
   workflow_dispatch:
 
-# Prevent duplicate runs on PRs that are from the same repo
 concurrency:
   group: js-test-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # ── LMS Front-End (primary) ──────────────────────────────────────
-
-  lms-frontend-test:
-    name: LMS Front-End — Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: projects/lms-fusion/frontend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
-      - name: Install dependencies
-        run: npm ci
-      - name: Run unit tests
-        run: npm run test
-
-  lms-frontend-e2e:
-    name: LMS Front-End — Playwright E2E
+  lms-frontend-build:
+    name: LMS Front-End — Astro Build + Smoke
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -76,26 +44,12 @@ jobs:
           cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Install Playwright browsers
-        run: npx playwright install chromium --with-deps
-      - name: Run E2E tests
-        run: npm run test:e2e
-      - name: Upload Playwright report (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lms-frontend-playwright-report
-          path: projects/lms-fusion/frontend/playwright-report/
-          retention-days: 7
-      - name: Upload test results (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lms-frontend-test-results
-          path: projects/lms-fusion/frontend/test-results/
-          retention-days: 7
-
-  # ── CMS (secondary Next.js app) ──────────────────────────────────
+      - name: Check Astro types
+        run: npm run check
+      - name: Build Astro frontend
+        run: npm run build
+      - name: Run frontend smoke tests
+        run: npm run test
 
   cms-test:
     name: CMS — Unit Tests
@@ -115,10 +69,6 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: npm run test
-
-  # NOTE: playwright.config.ts exists but no test files yet for cms-fusion.
-  # This job will pass silently (playwright test finds nothing) until
-  # test files are added to tests/e2e/.
 
   cms-e2e:
     name: CMS — Playwright E2E
@@ -148,12 +98,6 @@ jobs:
           path: projects/cms-fusion/frontend/playwright-report/
           retention-days: 7
 
-  # ── POS E2E Suite ────────────────────────────────────────────────
-  #
-  # Runs API-level E2E tests only (bolt pattern — no browser/webServer
-  # needed). Page E2E tests require Tauri + Vite, which doesn't run in
-  # a headless CI environment without system deps.
-
   pos-e2e:
     name: POS — API E2E Tests
     runs-on: ubuntu-latest
@@ -170,5 +114,5 @@ jobs:
           cache-dependency-path: projects/pos/pos-e2e/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Run API E2E tests (bolt pattern — no browser)
+      - name: Run API E2E tests
         run: npx playwright test tests/api/ --project=pos-full

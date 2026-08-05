@@ -2,7 +2,7 @@
 # Dynamic TLS certificates
 # =============================================================================
 # For local .localhost development, Traefik serves a single self-signed
-# certificate that covers cms-fusion.localhost and lms-fusion.localhost.
+# certificate that covers lms-fusion.localhost.
 # Production domains still obtain certs via Let's Encrypt (certResolver in each
 # router config), but .localhost cannot pass public ACME validation, so this
 # static certificate is used instead.

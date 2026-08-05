@@ -1,5 +1,5 @@
 """
-Accounts signals for fusion-cms.com.
+Accounts signals for lms-fusion.com.
 
 Handles email template file uploads and registration lifecycle events.
 """

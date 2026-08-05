@@ -15,7 +15,7 @@ from .snippets import (
 )
 
 """
-WAGTAIL HOOKS — Fusion CMS LMS
+WAGTAIL HOOKS — LMS Fusion LMS
 =================================
 
 Menu groups:

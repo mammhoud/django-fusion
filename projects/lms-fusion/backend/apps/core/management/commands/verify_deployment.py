@@ -239,10 +239,10 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
     content = traefik_file.read_text(encoding="utf-8")
 
     # Check for a fusion-cms domain
-    if "fusion-cms.com" in content:
-        results.append((True, "Domain configured: fusion-cms.com"))
+    if "lms-fusion.com" in content:
+        results.append((True, "Domain configured: lms-fusion.com"))
     else:
-        results.append((None, "fusion-cms.com domain not found in Traefik config"))
+        results.append((None, "lms-fusion.com domain not found in Traefik config"))
 
     return results
 
@@ -380,7 +380,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("Fusion CMS Deployment Verification")
+        self.stdout.write("LMS Fusion Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )
@@ -535,7 +535,7 @@ class Command(BaseCommand):
         )
         self.stdout.write(f"Container : {container}")
         self.stdout.write("Project   : fusion-cms")
-        self.stdout.write("Domain    : https://fusion-cms.com\n")
+        self.stdout.write("Domain    : https://lms-fusion.com\n")
 
         if any_failure:
             self.stderr.write(

@@ -1,5 +1,5 @@
 """
-Shared static page content definitions for Fusion CMS.
+Shared static page content definitions for LMS Fusion.
 
 Moved from ``www.api.pages`` to a reusable plugin module so that both the
 API views and the django-fusion fragment components can import the same

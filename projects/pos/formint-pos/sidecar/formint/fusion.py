@@ -222,21 +222,57 @@ def fusion_pointer_api(request: HttpRequest) -> JsonResponse:
 
 # ── Session-mode settings toggle (FusionSessionChecker) ────────────────────
 
+def _admin_settings_state(request: HttpRequest | None) -> tuple[bool | None, int | None]:
+    """DB-truth render-mode preference from the operator's ``UserSettings`` row.
+
+    Returns ``(preference, version)`` where ``preference`` maps
+    ``fusion_render_mode`` (``fusion`` → ``True``, ``data`` → ``False``,
+    ``default`` → ``None``) and ``version`` is a monotonic per-row counter
+    derived from ``updated_at`` (``None`` when there is no row).
+
+    This is the *source of truth* the session caches: the frontend watches it
+    so an admin save in Unfold propagates to every open tab even when that
+    tab's session was already seeded (``_fusion_settings_synced``) with the
+    previous value — the middleware only re-seeds a session on its first
+    request or on the editor's own save_model path.
+    """
+    if request is None:
+        return None, None
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated:
+        return None, None
+    from formint.models import UserSettings
+
+    settings_obj = UserSettings.objects.filter(user=user).first()
+    if settings_obj is None:
+        return None, None
+    mode = settings_obj.fusion_render_mode
+    preference = {"fusion": True, "data": False, "default": None}.get(mode)
+    updated = settings_obj.updated_at
+    version = int(updated.strftime("%Y%m%d%H%M%S%f")) if updated else 0
+    return preference, version
+
+
 def session_mode_payload(request: HttpRequest | None = None) -> dict[str, Any]:
     """Report the current session render-mode state.
 
     Returns the effective preference (header → session → default), whether
-    an explicit session value is stored, and the stored value itself (or
-    ``None`` when unset).
+    an explicit session value is stored, the stored value itself (or
+    ``None`` when unset), and the DB-truth admin preference
+    (``UserSettings.fusion_render_mode``) plus a per-row version the
+    frontend uses to detect admin saves (see §12 cross-tab sync).
     """
     session = request.session if request is not None else None
     session_cached = bool(session and "fusion_render_first" in session)
     session_value = session.get("fusion_render_first") if session_cached else None
+    admin_preference, admin_version = _admin_settings_state(request)
     return {
         "fusion_render_first": get_effective_render_first(request),
         "session_cached": session_cached,
         "session_preference": session_value,
         "default": bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", True)),
+        "admin_preference": admin_preference,
+        "admin_version": admin_version,
     }
 
 

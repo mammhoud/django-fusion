@@ -1,0 +1,65 @@
+---
+// Theme toggle (ASTRO_MIGRATION_PLAN §5.1) — Alpine-powered, no framework island.
+//
+// - Reads the current theme from the `.dark`/`.light` class on <html> (set by
+//   the FOUC-free head script in Layout.astro before first paint).
+// - Persists the choice under THEME_STORAGE_KEY in localStorage.
+// - Swaps the class on <html>, which drives the Tailwind `dark:` variant and
+//   the `.dark` token block in globals.css.
+// - Listens for the `storage` event so other open tabs stay in sync.
+//
+// The Alpine attribute expressions are built in the frontmatter so the storage
+// key stays a single source of truth and stays type-checked.
+import { THEME_STORAGE_KEY } from '@/lib/site';
+
+const label = 'Toggle light / dark mode';
+const darkBg = '#131312'; // hsl(45 6% 8%) — dark --fu-paper
+const lightBg = '#fcfcfa'; // hsl(46 25% 98%) — light --fu-paper
+
+// @click handler — flip theme, persist via Redux + localStorage.
+const toggleExpr = [
+  'dark = !dark;',
+  'const root = document.documentElement;',
+  "root.classList.toggle('dark', dark);",
+  "root.classList.toggle('light', !dark);",
+  `localStorage.setItem('${THEME_STORAGE_KEY}', dark ? 'dark' : 'light');`,
+  `document.querySelector('meta[name=theme-color]')?.setAttribute('content', dark ? '${darkBg}' : '${lightBg}');`,
+  'if (window.__reduxStore) {',
+  "  window.__reduxStore.dispatch({ type: 'site/setTheme', payload: dark ? 'dark' : 'light' });",
+  '}',
+].join(' ');
+
+// @storage.window handler — sync the theme across open tabs.
+const storageExpr = [
+  `if ($event.key === '${THEME_STORAGE_KEY}') {`,
+  "dark = $event.newValue === 'dark';",
+  'const root = document.documentElement;',
+  "root.classList.toggle('dark', dark);",
+  "root.classList.toggle('light', !dark);",
+  'if (window.__reduxStore) {',
+  "  window.__reduxStore.dispatch({ type: 'site/setTheme', payload: dark ? 'dark' : 'light' });",
+  '}',
+  '}',
+].join(' ');
+---
+
+<button
+  type="button"
+  x-data="{ dark: document.documentElement.classList.contains('dark') }"
+  @click={toggleExpr}
+  @storage.window={storageExpr}
+  :aria-label="dark ? 'Switch to light mode' : 'Switch to dark mode'"
+  aria-label={label}
+  title={label}
+  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-fu-text transition-colors duration-200 hover:bg-fu-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fu-primary"
+>
+  <!-- Sun — shown in dark mode (click to go light) -->
+  <svg x-show="dark" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07-7.07-1.41 1.41M6.34 17.66l-1.41 1.41m0-14.14 1.41 1.41m11.32 11.32 1.41 1.41" />
+  </svg>
+  <!-- Moon — shown in light mode (click to go dark) -->
+  <svg x-show="!dark" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+</button>

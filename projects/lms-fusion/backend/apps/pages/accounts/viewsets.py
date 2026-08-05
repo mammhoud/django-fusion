@@ -1,5 +1,5 @@
 """
-Events Viewset for fusion-cms.com
+Events Viewset for lms-fusion.com
 =====================================
 
 Routable ModelViewset for Events management using django_fusion.
