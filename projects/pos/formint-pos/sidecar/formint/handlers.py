@@ -24,6 +24,8 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from django_fusion.fragments import FragmentRequestRenderer
+from django_fusion.plugins.htmx import is_htmx_request
+from django_fusion.routes.pages.handler import PageHandler
 from django_fusion.routes.rendering.renderers import fusion_json_response
 
 from formint.components import FORM_COMPONENTS, TABLE_COMPONENTS
@@ -31,6 +33,7 @@ from formint.fusion import get_effective_render_first
 from formint.fusion_components import BranchSummaryFragment
 
 __all__ = [
+    "FormintPageView",
     "BranchSummaryHandler",
     "TableFragmentHandler",
     "FormFragmentHandler",
@@ -55,7 +58,7 @@ class BranchSummaryHandler:
     template_name = "formint/branch_summary.html"
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        if request.headers.get("HX-Request") != "true":
+        if not is_htmx_request(request):
             return _not_htmx(
                 {
                     "detail": "This endpoint is an HTMX data fragment.",
@@ -67,8 +70,8 @@ class BranchSummaryHandler:
         component.setup(request)
         # NOTE: we consult get_effective_render_first() directly (mirroring
         # landing-fusion's helper) rather than the mixin's dispatch, so the
-        # component-level force_data_mode / force_render_first / session
-        # preference are not consulted here — header + settings default only.
+        # component-level force_data_mode / force_render_first flags are not
+        # consulted here — header → session → settings default (see §12).
         if get_effective_render_first(request):
             response = component.render_fragment_response(component.get_fragment_context())
             response["X-Formint-Response-Mode"] = "django-fusion-fragment"
@@ -85,7 +88,7 @@ class FusionBranchSummaryHandler(BranchSummaryHandler):
     """Expose the shared django-fusion renderer for an explicit first-load test."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        if request.headers.get("HX-Request") != "true":
+        if not is_htmx_request(request):
             return _not_htmx({"detail": "HTMX required"})
 
         renderer = FragmentRequestRenderer(
@@ -120,10 +123,7 @@ class TableFragmentHandler:
             )
 
         component = component_cls()
-        if (
-            request.headers.get("HX-Request") == "true"
-            and get_effective_render_first(request)
-        ):
+        if is_htmx_request(request) and get_effective_render_first(request):
             # django-fusion render-first path — fusion JSON envelope.
             context = component.get_table_context_data()
             return fusion_json_response(data=context, status=200)
@@ -190,6 +190,57 @@ class FormFragmentHandler:
         response["X-Formint-Response-Mode"] = "htmx-data-only"
         response["Cache-Control"] = "no-store"
         return response
+
+
+class FormintPageView(PageHandler):
+    """Full-page view through the django-fusion fragment/layout pipeline.
+
+    Mirrors landing-fusion's ``LandingPageView`` (``PageHandler`` subclass):
+    the full render pipeline resolves the template automatically —
+
+    * HTMX request  → ``fragment_name`` → ``formint/fragments/page.html``
+    * full request  → ``template_name`` → ``formint/page.html``
+
+    ``PageHandler`` adds ``NotificationMixin`` on top of ``ComponentViews``,
+    giving full-page pages the same notification + HTMX response headers as
+    the lean fragments (see ``_render_fragment_response`` in
+    ``django_fusion.core.context._context_mixins``).
+    """
+
+    template_name = "formint/page.html"
+    fragment_name = "formint.fragments.page"
+    page_title = "Formint POS"
+
+    def get_context_data(self, request=None, **kwargs) -> dict[str, Any]:
+        """Attach nav + render-mode + branch summary to the page context."""
+        context = super().get_context_data(request=request, **kwargs)
+        from formint.core import formint_site
+        from formint.fusion_components import BranchSummaryFragment
+
+        nav_items = formint_site.get_navigation_context(request)
+        nav_items = [item for item in nav_items if item.get("show_in_nav", True)]
+        for item in nav_items:
+            item.pop("show_in_nav", None)
+
+        summary = BranchSummaryFragment().get_branch_summary()
+        context.update(
+            {
+                "nav_items": nav_items,
+                "site_name": "Formint POS",
+                # Fusion render-mode contract — header → session → default.
+                "fusion_render_first": get_effective_render_first(request),
+                "fusion_render_mode": "fusion-render"
+                if get_effective_render_first(request)
+                else "data-api",
+                # Flattened summary vars so the {% comp "formint/branch_summary.html" %}
+                # component (rendered in the same context) can read them.
+                "summary": summary,
+                "branches": summary["branches"],
+                "orders_today": summary["orders_today"],
+                "sync_status": summary["sync_status"],
+            }
+        )
+        return context
 
 
 # ── Dispatch helper (kept for function-view compatibility) ─────────────────

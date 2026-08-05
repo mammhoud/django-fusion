@@ -413,3 +413,164 @@ class FormintAdminDashboardTests(TestCase):
         self.assertIn("Today&#x27;s Sales", content)
         self.assertIn('Loyalty Members', content)
         self.assertIn('pos-kpi-card', content)
+
+
+class FormintFusionEnhancementTests(TestCase):
+    """§12 django-fusion enhancement surface — settings, session, PageHandler,
+    comp tags, contrib.api, and the include-path component bridge."""
+
+    # ── 1. COMPONENTS_INCLUDE_PATH_ROOTS + register_include_paths() ──────
+
+    def test_include_path_roots_setting(self):
+        from django.conf import settings
+
+        self.assertEqual(
+            settings.COMPONENTS_INCLUDE_PATH_ROOTS,
+            ('components', 'partials', 'formint'),
+        )
+
+    def test_formint_templates_registered_as_components(self):
+        """apps.py ready() bridges {% include %} templates into {% comp %}."""
+        from django_fusion.comp._init import components
+
+        for path in (
+            'formint/branch_summary.html',
+            'formint/tables/products.html',
+            'formint/forms/product.html',
+        ):
+            with self.subTest(path=path):
+                component = components.get_component(path)
+                self.assertEqual(component.name, path)
+
+    # ── 2. COMPONENTS_ENABLE_BLOCK_ATTRS ────────────────────────────────
+
+    def test_block_attrs_enabled(self):
+        from django.conf import settings
+        from django_fusion.config.conf import _settings
+
+        self.assertIs(settings.COMPONENTS_ENABLE_BLOCK_ATTRS, True)
+        self.assertIs(_settings.ENABLE_BLOCK_ATTRS, True)
+
+    # ── 3. FusionCodec + get_session_render_first (session preference) ───
+
+    def test_render_mode_respects_session_preference(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.get('/fusion/render-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+        self.assertIs(body['session_cached'], True)
+
+    def test_header_overrides_session_preference(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.get(
+            '/fusion/render-mode/',
+            HTTP_X_FUSION_RENDER_FIRST='true',
+        )
+        self.assertIs(response.json()['fusion_render_first'], True)
+
+    def test_data_api_default_respected_for_fresh_session(self):
+        """A data-API deployment (default False) must not be overridden by
+        the UA-seeding heuristic for fresh sessions."""
+        from django.test import override_settings
+
+        with override_settings(FUSION_RENDER_FIRST_DEFAULT=False):
+            response = self.client.get('/fusion/render-mode/')
+            body = response.json()
+            self.assertIs(body['fusion_render_first'], False)
+            self.assertEqual(body['mode'], 'data-api')
+            # the session must NOT have been auto-seeded to True
+            self.assertNotIn('fusion_render_first', self.client.session)
+
+    def test_render_mode_payload_includes_encoded_pointer(self):
+        from django_fusion.routes.rendering.session import FusionCodec
+
+        response = self.client.get('/fusion/render-mode/')
+        pointer = response.json()['pointer']
+        self.assertTrue(pointer.startswith('fusion_v1:'))
+        decoded = FusionCodec.decode(pointer)
+        self.assertEqual(decoded['component'], 'formint.branch_summary')
+
+    def test_fusion_pointer_api_roundtrip(self):
+        response = self.client.get(
+            '/fusion/pointer/',
+            HTTP_HX_REQUEST='true',
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body['encoded'].startswith('fusion_v1:'))
+        self.assertEqual(body['decoded']['component'], 'formint.branch_summary')
+        self.assertIs(body['decoded']['htmx'], True)
+        self.assertIn('fusion_render_first', body)
+
+    # ── 4. is_htmx_request (centralised HTMX detection) ──────────────────
+
+    def test_htmx_detection_used_by_handlers(self):
+        # non-HTMX → rejected with the HTMX-fragment contract
+        response = self.client.get('/htmx/branches/summary/')
+        self.assertEqual(response.status_code, 406)
+
+        # HTMX header → fragment served
+        response = self.client.get(
+            '/htmx/branches/summary/', HTTP_HX_REQUEST='true'
+        )
+        self.assertEqual(response.status_code, 200)
+
+    # ── 5. PageHandler full-page pipeline ────────────────────────────────
+
+    def test_page_view_renders_full_layout(self):
+        response = self.client.get('/fusion/page/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('<html', content)
+        self.assertIn('Formint POS', content)
+        self.assertIn('data-fusion-render-mode', content)
+
+    def test_page_view_renders_fragment_for_htmx(self):
+        response = self.client.get('/fusion/page/', HTTP_HX_REQUEST='true')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertNotIn('<html', content)
+        self.assertIn('data-fusion-fragment="formint.fragments.page"', content)
+
+    # ── 6. {% comp %} tags (component registry) ──────────────────────────
+
+    def test_comp_tag_renders_registered_component(self):
+        response = self.client.get('/fusion/page/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        # branch_summary.html is rendered via {% comp %} inside the page
+        self.assertIn('summary-grid', content)
+        self.assertIn('data-value="branches"', content)
+
+    # ── 7. django_fusion.contrib.api ─────────────────────────────────────
+
+    def test_contrib_health(self):
+        response = self.client.get('/fusion/health/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('status', body)
+        self.assertIn('data', body)
+        self.assertIn('fusion_render_first', body['data'])
+
+    def test_contrib_branding(self):
+        response = self.client.get('/fusion/branding/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('site_name', body)
+        self.assertIn('primary_color', body)
+
+    def test_contrib_layouts(self):
+        response = self.client.get('/fusion/layouts/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('data', body)
+        self.assertIn('available', body['data'])
+        self.assertIn('default', body['data'])

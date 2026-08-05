@@ -89,8 +89,23 @@ USE_I18N = True
 #           HTML (or fusion-encoded JSON) as the source of truth.
 #   False → "data APIs" — the client renders from /api/v1/* JSON.
 # Per-request override: ``X-Fusion-Render-First: true|false`` header.
+# Per-session preference: ``request.session['fusion_render_first']`` (set by
+# ``django_fusion.routes.rendering.session.FusionSessionChecker``) sits
+# between the header override and the configured default.
 FUSION_RENDER_FIRST_DEFAULT = os.environ.get("FUSION_RENDER_FIRST", "1") == "1"
 COMPONENTS_DIR_NAMES = ("components", "partials", "tags")
+
+# ── django-fusion component registry (see FORMINT_ARCHITECTURE.md §12) ────
+# COMPONENTS_ENABLE_BLOCK_ATTRS — emit data-block-* attributes on components
+# for headless/CMS inspection and stable component identity in the HTML.
+COMPONENTS_ENABLE_BLOCK_ATTRS = True
+# COMPONENTS_INCLUDE_PATH_ROOTS — template subdirectories whose *.html files
+# are auto-registered as path-style components ({% comp %} / include bridge).
+COMPONENTS_INCLUDE_PATH_ROOTS = (
+    "components",
+    "partials",
+    "formint",
+)
 
 # ── Superuser bootstrap (used by manage.py --ensure-superuser) ──
 FORMINT_ADMIN_EMAIL = os.environ.get("FORMINT_ADMIN_EMAIL", "admin@formint.local")
@@ -112,6 +127,11 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            # django-fusion component tags (comp, slot, prop, var) — registered
+            # so `{% load components %}` works (mirrors landing-fusion).
+            "libraries": {
+                "components": "django_fusion.comp.templatetags.components",
+            },
         },
     },
 ]
