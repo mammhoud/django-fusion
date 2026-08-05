@@ -27,6 +27,9 @@ from models.sync import SyncLog
 from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
 from models.ops import KitchenTicket, SupportTicket
 
+# ── Loyalty & Client Settings ──
+from models.loyalty import ClientCategory, LoyaltyTransaction, UserSettings
+
 
 # ── Inline registrations (Unfold TabularInline) ──
 class SaleItemInline(TabularInline):
@@ -65,12 +68,13 @@ class ProductAdmin(ModelAdmin):
 
 @admin.register(Customer)
 class CustomerAdmin(ModelAdmin):
-    list_display = ["id", "first_name", "last_name", "email", "phone", "loyalty_points", "total_spent"]
-    list_filter = ["is_active"]
+    list_display = ["id", "first_name", "last_name", "email", "phone", "loyalty_points", "client_category", "total_spent"]
+    list_filter = ["is_active", "client_category"]
     list_filter_submit = True
     search_fields = ["first_name", "last_name", "email", "phone"]
     ordering = ["-created_at"]
     list_fullwidth = True
+    compressed_fields = True
 
 
 @admin.register(Sale)
@@ -191,6 +195,40 @@ class SupportTicketAdmin(ModelAdmin):
     search_fields = ["subject", "name", "email"]
     ordering = ["-created_at"]
     list_fullwidth = True
+
+
+# ── Loyalty & Client Settings Admin Classes ──
+@admin.register(ClientCategory)
+class ClientCategoryAdmin(ModelAdmin):
+    list_display = ["id", "name", "min_points", "points_per_currency", "discount_rate", "is_active"]
+    list_filter = ["is_active"]
+    list_filter_submit = True
+    search_fields = ["name", "description"]
+    ordering = ["min_points", "name"]
+    compressed_fields = True
+    readonly_fields = ["created_at", "updated_at"]
+
+
+@admin.register(LoyaltyTransaction)
+class LoyaltyTransactionAdmin(ModelAdmin):
+    list_display = ["id", "customer", "transaction_type", "points_change", "balance_after", "sale", "reason", "created_at"]
+    list_filter = ["transaction_type", "created_at"]
+    list_filter_submit = True
+    search_fields = ["customer__first_name", "customer__last_name", "customer__email", "reason"]
+    ordering = ["-created_at"]
+    list_fullwidth = True
+    readonly_fields = ["created_at"]
+
+
+@admin.register(UserSettings)
+class UserSettingsAdmin(ModelAdmin):
+    list_display = ["id", "user", "user_email", "restaurant_name", "currency", "tax_rate", "theme", "language"]
+    list_filter = ["theme", "language", "notifications_enabled"]
+    list_filter_submit = True
+    search_fields = ["user__username", "user__email", "restaurant_name", "email"]
+    list_fullwidth = True
+    compressed_fields = True
+    readonly_fields = ["created_at", "updated_at"]
 
 
 # ── Django built-in admin (Unfold themed) ──

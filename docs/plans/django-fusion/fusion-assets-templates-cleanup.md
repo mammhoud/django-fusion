@@ -1,4 +1,5 @@
 # Structa Cloud — Enhancement Plans
+> **Tags:** #fusion #assets #templates #cleanup
 
 This file collects active implementation plans for the Structa Cloud monorepo.
 Each plan is derived from an interview-and-spec cycle and may be accompanied by
@@ -147,8 +148,8 @@ after verifying the fusion projects no longer need it. Verify that
 ### 4. Implementation Steps
 
 #### Phase 0 — Preparation
-- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
-- [x] Finalize the repo-wide docs scan for `projects/assets/` references. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
+- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`. (see `docs/../ASSETS_MIGRATION_INVENTORY.md`)
+- [x] Finalize the repo-wide docs scan for `projects/assets/` references. (see `docs/../ASSETS_MIGRATION_INVENTORY.md`)
 - [ ] Generate a file matrix: `cms-fusion/backend` vs `cms/cms-full`, `lms-fusion/backend` vs `cms/lms-full` and `lms/cms`.
 - [ ] Identify exact duplicates, near-duplicates, and diverged files.
 - [ ] Back up or tag any data-only files before deletion.
@@ -357,6 +358,6 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 - `docs/plans/cms-fusion/migration-plan.md`
 - `docs/plans/migrated/projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
 - `docs/plans/lms-fusion/migration-plan.md`
-- `projects/docs/MIGRATION_AND_CLEANUP_MASTER_PLAN.md`
+- `docs/plans/migration-cleanup-master.md`
 - `libs/django-fusion/AGENTS.md`
 - `projects/assets/templates/AGENTS.md`

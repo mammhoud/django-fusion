@@ -65,6 +65,12 @@ try:
             INSTALLED_APPS=[
                 "django.contrib.contenttypes",
                 "django.contrib.auth",
+                # POS Full app — required so pos_full models participate in
+                # apps.get_models()/relation graph (reverse FKs, cascading
+                # deletes, related_objects). Without it, string FKs resolve
+                # but reverse relations are never registered and deletes fail
+                # with FOREIGN KEY constraint errors.
+                "models.PosFullConfig",
             ],
             TEMPLATES=[
                 {
@@ -113,6 +119,11 @@ try:
     except Exception:
         pass
 
+    # ── Register ALL pos_full models (string FK resolution + discovery) ──
+    # models.models imports every model sub-module; Django loads it during
+    # phase 2 of apps.populate() (import_models) when apps_ready=True.
+    import models.models  # noqa: F401
+
     # ── Import all local models used by webhook tests ──
     from models.audit import SignalEvent
     from models.token import DeviceToken
@@ -141,9 +152,16 @@ try:
     except Exception:
         pass
     with connection.schema_editor() as schema_editor:
-        for model in _REGISTRY_MODELS:
-            if model._meta.db_table in existing_tables:
+        # Registry models first, then ALL registered pos_full models
+        # (incl. loyalty/ops/inventory/menu/crm so every FK target table
+        # exists — e.g. full_client_categories referenced by full_customers).
+        from django.apps import apps as django_apps
+        pos_full_models = list(django_apps.all_models.get("pos_full", {}).values())
+        seen = {m._meta.db_table for m in _REGISTRY_MODELS}
+        for model in _REGISTRY_MODELS + pos_full_models:
+            if model._meta.db_table in existing_tables or model._meta.db_table in seen:
                 continue
+            seen.add(model._meta.db_table)
             try:
                 schema_editor.create_model(model)
             except Exception:

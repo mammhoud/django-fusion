@@ -38,6 +38,7 @@ if not settings.configured:
         DEBUG, DATABASES, INSTALLED_APPS, MIDDLEWARE,
         TEMPLATES, ROOT_URLCONF, SECRET_KEY,
         DEFAULT_AUTO_FIELD, USE_TZ, STATIC_URL, STATIC_ROOT,
+        UNFOLD,
     )
     settings.configure(
         DEBUG=DEBUG,
@@ -51,6 +52,8 @@ if not settings.configured:
         USE_TZ=USE_TZ,
         STATIC_URL=STATIC_URL,
         STATIC_ROOT=STATIC_ROOT,
+        # Unfold admin theme config (sidebar, dashboard callback, login, colors)
+        UNFOLD=UNFOLD,
     )
 
 django.setup()

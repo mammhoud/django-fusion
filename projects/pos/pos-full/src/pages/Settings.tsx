@@ -1,13 +1,23 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';import { FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
   FaExclamationTriangle, FaGlobe, FaBriefcase, FaUtensils, FaTruck,
-  FaUsers, FaDatabase, FaLock, FaClock, FaPaintBrush
+  FaUsers, FaDatabase, FaLock, FaClock, FaPaintBrush, FaMedal, FaStar,
+  FaGift, FaUserCog, FaBell
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { readFile, writeFile } from '@tauri-apps/plugin-fs';
-import { Settings as SettingsType, Employee } from '../types';
+import { Settings as SettingsType, Employee, ClientCategory, UserSettings } from '../types';
+import {
+  useGetClientCategoriesQuery,
+  useAddClientCategoryMutation,
+  useUpdateClientCategoryMutation,
+  useDeleteClientCategoryMutation,
+  useGetLoyaltyTransactionsQuery,
+  useGetUserSettingsQuery,
+  useUpdateUserSettingsMutation,
+} from '../store/api/endpoints/loyalty';
 import BackButton from '../components/BackButton';
 import PageLayout from '../components/PageLayout';
 import LanguageToggle from '../components/LanguageToggle';
@@ -28,7 +38,7 @@ interface FormErrors {
   delivery_fee_per_km?: string;
 }
 
-type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database' | 'appearance';
+type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database' | 'appearance' | 'loyalty';
 
 interface TabDefinition {
   id: TabId;
@@ -57,6 +67,7 @@ const tabs: TabDefinition[] = [
   { id: 'employees', label: 'Employees', icon: FaUsers },
   { id: 'database', label: 'Database', icon: FaDatabase },
   { id: 'appearance', label: 'Appearance', icon: FaPaintBrush },
+  { id: 'loyalty', label: 'Loyalty', icon: FaMedal },
 ];
 
 const tabVariants = {
@@ -322,6 +333,20 @@ export default function Settings() {
   const { t, i18n } = useTranslation();
   const { mode, variant, followSystem, setVariant, setMode, toggleMode, setFollowSystem } = useTheme();
   const navigate = useNavigate();
+
+  // ── Loyalty & Client settings (RTK Query → Robyn API) ──
+  const { data: categoriesData, isLoading: catsLoading } = useGetClientCategoriesQuery({ per_page: 100 });
+  const { data: txData, isLoading: txLoading } = useGetLoyaltyTransactionsQuery({ per_page: 15 });
+  const { data: userSettingsData } = useGetUserSettingsQuery({ per_page: 100 });
+  const [addCategory, { isLoading: isAddingCategory }] = useAddClientCategoryMutation();
+  const [deleteCategory] = useDeleteClientCategoryMutation();
+  const [updateUserSettings] = useUpdateUserSettingsMutation();
+  const [newCategory, setNewCategory] = useState({ name: '', min_points: 0, discount_rate: 0, perks: '', description: '' });
+  const [loyaltyMsg, setLoyaltyMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [userPrefs, setUserPrefs] = useState<Partial<UserSettings>>({
+    theme: 'dark', language: 'en', notifications_enabled: true, inactivity_timeout: '30',
+  });
+
   const [activeTab, setActiveTab] = useState<TabId>('general');
   const [settings, setSettings] = useState<SettingsType>({
     restaurant_name: 'POS',
@@ -354,6 +379,22 @@ export default function Settings() {
 
   // Password change state
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
+
+  // Sync per-user preference form when user settings load (after useAuth is available)
+  useEffect(() => {
+    const target =
+      userSettingsData?.data?.find((s) => s.user_id === user?.id) ?? userSettingsData?.data?.[0];
+    if (target) {
+      setUserPrefs({
+        theme: target.theme ?? 'dark',
+        language: target.language ?? 'en',
+        notifications_enabled: target.notifications_enabled ?? true,
+        inactivity_timeout: target.inactivity_timeout ?? '30',
+        restaurant_name: target.restaurant_name,
+      });
+    }
+  }, [userSettingsData, user]);
+
   const [passwordOld, setPasswordOld] = useState('');
   const [passwordNew, setPasswordNew] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -1135,6 +1176,349 @@ export default function Settings() {
     </div>
   );
 
+  // ---- Loyalty Tab ----
+  const loyaltyToast = (ok: boolean, text: string) => {
+    setLoyaltyMsg({ ok, text });
+    setTimeout(() => setLoyaltyMsg(null), 3500);
+  };
+
+  const handleSaveCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategory.name.trim()) return;
+    try {
+      await addCategory({
+        name: newCategory.name.trim(),
+        description: newCategory.description,
+        min_points: Number(newCategory.min_points) || 0,
+        points_per_currency: 1,
+        points_to_currency: 100,
+        discount_rate: Number(newCategory.discount_rate) || 0,
+        perks: newCategory.perks.split(',').map((p) => p.trim()).filter(Boolean),
+        is_active: true,
+      }).unwrap();
+      setNewCategory({ name: '', min_points: 0, discount_rate: 0, perks: '', description: '' });
+      loyaltyToast(true, t('settings.loyaltyTab.saved'));
+    } catch (err) {
+      console.error('Error saving category:', err);
+      loyaltyToast(false, t('settings.loyaltyTab.saveFailed'));
+    }
+  };
+
+  const handleSaveUserPrefs = async () => {
+    try {
+      const target =
+        userSettingsData?.data?.find((s) => s.user_id === user?.id) ?? userSettingsData?.data?.[0];
+      if (target) {
+        await updateUserSettings({ id: target.id, data: userPrefs }).unwrap();
+      }
+      loyaltyToast(true, t('settings.loyaltyTab.saved'));
+    } catch (err) {
+      console.error('Error saving user prefs:', err);
+      loyaltyToast(false, t('settings.loyaltyTab.saveFailed'));
+    }
+  };
+
+  const renderLoyaltyTab = () => {
+    const categories = categoriesData?.data ?? [];
+    const transactions = txData?.data ?? [];
+    const pointsIssued = transactions
+      .filter((tx) => tx.points_change > 0)
+      .reduce((sum, tx) => sum + tx.points_change, 0);
+    const activeCategories = categories.filter((c) => c.is_active).length;
+
+    const inputCls =
+      'w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border ' +
+      'border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white ' +
+      'focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30 transition-all duration-200';
+
+    return (
+      <div className="space-y-8">
+        {/* Loyalty message toast */}
+        <AnimatePresence>
+          {loyaltyMsg && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className={`mb-2 px-4 py-2.5 rounded-xl text-sm font-medium border ${
+                loyaltyMsg.ok
+                  ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-700/40 text-teal-700 dark:text-teal-300'
+                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/40 text-red-700 dark:text-red-300'
+              }`}
+            >
+              {loyaltyMsg.ok ? <FaCheck className="inline mr-2" /> : <FaExclamationTriangle className="inline mr-2" />}
+              {loyaltyMsg.text}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Program summary stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white/50 dark:bg-white/5 rounded-xl p-5 border border-slate-200 dark:border-gray-700 text-center">
+            <div className="flex items-center justify-center gap-2 text-amber-500 mb-1">
+              <FaMedal className="w-5 h-5" />
+            </div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white">{activeCategories}</div>
+            <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('settings.loyaltyTab.activeCategories')}</div>
+          </div>
+          <div className="bg-white/50 dark:bg-white/5 rounded-xl p-5 border border-slate-200 dark:border-gray-700 text-center">
+            <div className="flex items-center justify-center gap-2 text-purple-500 mb-1">
+              <FaStar className="w-5 h-5" />
+            </div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white">{pointsIssued.toLocaleString()}</div>
+            <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('settings.loyaltyTab.pointsIssued')}</div>
+          </div>
+          <div className="bg-white/50 dark:bg-white/5 rounded-xl p-5 border border-slate-200 dark:border-gray-700 text-center">
+            <div className="flex items-center justify-center gap-2 text-teal-500 mb-1">
+              <FaGift className="w-5 h-5" />
+            </div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white">{transactions.length}</div>
+            <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('settings.loyaltyTab.ledgerEntries')}</div>
+          </div>
+        </div>
+
+        {/* Client categories CRUD */}
+        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-amber-200 dark:border-amber-700/30">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
+              <FaMedal className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.loyaltyTab.title')}</h3>
+              <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.loyaltyTab.description')}</p>
+            </div>
+          </div>
+
+          {/* Add category form */}
+          <form onSubmit={handleSaveCategory} className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
+            <div className="md:col-span-1">
+              <input
+                type="text"
+                placeholder={t('settings.loyaltyTab.categoryName')}
+                value={newCategory.name}
+                onChange={(e) => setNewCategory((p) => ({ ...p, name: e.target.value }))}
+                className={inputCls}
+              />
+            </div>
+            <input
+              type="number"
+              placeholder={t('settings.loyaltyTab.minPoints')}
+              value={newCategory.min_points}
+              onChange={(e) => setNewCategory((p) => ({ ...p, min_points: Number(e.target.value) || 0 }))}
+              className={inputCls}
+            />
+            <input
+              type="number"
+              step="0.1"
+              placeholder={t('settings.loyaltyTab.discount')}
+              value={newCategory.discount_rate}
+              onChange={(e) => setNewCategory((p) => ({ ...p, discount_rate: Number(e.target.value) || 0 }))}
+              className={inputCls}
+            />
+            <input
+              type="text"
+              placeholder={t('settings.loyaltyTab.perks')}
+              value={newCategory.perks}
+              onChange={(e) => setNewCategory((p) => ({ ...p, perks: e.target.value }))}
+              className={inputCls}
+            />
+            <motion.button
+              type="submit"
+              disabled={isAddingCategory || !newCategory.name.trim()}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium text-sm
+                flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FaMedal className="text-sm" /> {t('settings.loyaltyTab.addCategory')}
+            </motion.button>
+          </form>
+
+          {/* Category list */}
+          <div className="space-y-2.5">
+            {catsLoading ? (
+              <div className="h-10 bg-white/30 dark:bg-white/5 rounded-lg animate-pulse" />
+            ) : categories.length === 0 ? (
+              <p className="text-sm text-slate-500 dark:text-gray-400 text-center py-4">
+                {t('settings.loyaltyTab.noCategories')}
+              </p>
+            ) : (
+              categories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="flex items-center justify-between gap-4 bg-white/60 dark:bg-white/5 rounded-lg px-4 py-3 border border-slate-200 dark:border-gray-700"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-slate-900 dark:text-white">{cat.name}</span>
+                      <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full">
+                        {cat.min_points}+ pts
+                      </span>
+                      {Number(cat.discount_rate) > 0 && (
+                        <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                          {Number(cat.discount_rate)}% off
+                        </span>
+                      )}
+                      {!cat.is_active && (
+                        <span className="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                          inactive
+                        </span>
+                      )}
+                    </div>
+                    {Array.isArray(cat.perks) && cat.perks.length > 0 && (
+                      <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 truncate">
+                        {cat.perks.join(' · ')}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => deleteCategory(cat.id).catch((err) => console.error(err))}
+                    className="text-red-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg p-2 transition-colors shrink-0"
+                    title={t('settings.loyaltyTab.delete')}
+                  >
+                    <FaExclamationTriangle className="w-4 h-4" />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* User settings (same data as POS settings + per-user details) */}
+        <div className="bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-sky-200 dark:border-sky-700/30">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
+              <FaUserCog className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">
+                {t('settings.loyaltyTab.userSettings')} — {user?.email ?? t('settings.loyaltyTab.currentUser')}
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.loyaltyTab.userSettingsDesc')}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+            <div>
+              <label className="block text-xs text-slate-500 dark:text-gray-400 mb-1.5">{t('settings.loyaltyTab.theme')}</label>
+              <select
+                value={userPrefs.theme}
+                onChange={(e) => setUserPrefs((p) => ({ ...p, theme: e.target.value as UserSettings['theme'] }))}
+                className={inputCls}
+              >
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 dark:text-gray-400 mb-1.5">{t('settings.loyaltyTab.language')}</label>
+              <select
+                value={userPrefs.language}
+                onChange={(e) => setUserPrefs((p) => ({ ...p, language: e.target.value as UserSettings['language'] }))}
+                className={inputCls}
+              >
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 dark:text-gray-400 mb-1.5">{t('settings.loyaltyTab.inactivityTimeout')}</label>
+              <select
+                value={userPrefs.inactivity_timeout ?? '30'}
+                onChange={(e) => setUserPrefs((p) => ({ ...p, inactivity_timeout: e.target.value }))}
+                className={inputCls}
+              >
+                <option value="never">Never</option>
+                <option value="5">5 min</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="60">1 hour</option>
+                <option value="120">2 hours</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-gray-300 pb-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={userPrefs.notifications_enabled ?? true}
+                  onChange={(e) => setUserPrefs((p) => ({ ...p, notifications_enabled: e.target.checked }))}
+                  className="w-4 h-4 accent-sky-500"
+                />
+                <FaBell className="text-sky-500" /> {t('settings.loyaltyTab.notifications')}
+              </label>
+            </div>
+          </div>
+
+          <motion.button
+            type="button"
+            onClick={handleSaveUserPrefs}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-medium text-sm
+              flex items-center justify-center gap-2 transition-all"
+          >
+            <FaSave className="text-sm" /> {t('settings.loyaltyTab.saveUserPrefs')}
+          </motion.button>
+        </div>
+
+        {/* Recent loyalty transactions */}
+        <div className="bg-white/50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-gray-700 overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 dark:border-gray-700 flex items-center gap-2">
+            <FaStar className="text-purple-500" />
+            <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.loyaltyTab.recentTransactions')}</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-slate-500 dark:text-gray-400 border-b border-slate-200 dark:border-gray-700">
+                  <th className="px-5 py-3 font-medium">{t('settings.loyaltyTab.customer')}</th>
+                  <th className="px-5 py-3 font-medium">{t('settings.loyaltyTab.type')}</th>
+                  <th className="px-5 py-3 font-medium">{t('settings.loyaltyTab.change')}</th>
+                  <th className="px-5 py-3 font-medium">{t('settings.loyaltyTab.balance')}</th>
+                  <th className="px-5 py-3 font-medium">{t('settings.loyaltyTab.date')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {txLoading ? (
+                  <tr><td colSpan={5} className="px-5 py-6 text-center text-slate-400">…</td></tr>
+                ) : transactions.length === 0 ? (
+                  <tr><td colSpan={5} className="px-5 py-6 text-center text-slate-400">{t('settings.loyaltyTab.noTransactions')}</td></tr>
+                ) : (
+                  transactions.map((tx) => (
+                    <tr key={tx.id} className="border-b border-slate-200/60 dark:border-gray-700/60 last:border-0">
+                      <td className="px-5 py-3 text-slate-900 dark:text-white">#{tx.customer_id}</td>
+                      <td className="px-5 py-3">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          tx.transaction_type === 'earn'
+                            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                            : tx.transaction_type === 'redeem'
+                              ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                              : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                        }`}>
+                          {tx.transaction_type}
+                        </span>
+                      </td>
+                      <td className={`px-5 py-3 font-semibold ${tx.points_change >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                        {tx.points_change >= 0 ? '+' : ''}{tx.points_change}
+                      </td>
+                      <td className="px-5 py-3 text-slate-600 dark:text-gray-300">{tx.balance_after}</td>
+                      <td className="px-5 py-3 text-slate-500 dark:text-gray-400">
+                        {tx.created_at ? new Date(tx.created_at).toLocaleString() : '—'}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <PageLayout
       background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
@@ -1260,6 +1644,7 @@ export default function Settings() {
               {activeTab === 'employees' && renderEmployeesTab()}
               {activeTab === 'database' && renderDatabaseTab()}
               {activeTab === 'appearance' && renderAppearanceTab()}
+              {activeTab === 'loyalty' && renderLoyaltyTab()}
             </motion.div>
           </AnimatePresence>
         </div>

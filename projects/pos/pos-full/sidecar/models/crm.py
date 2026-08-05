@@ -193,11 +193,11 @@ class CRMNote(models.Model):
     """CRM Note — pinned/unpinned notes linked to contacts/deals."""
     contact = models.ForeignKey(
         Contact, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name="notes", verbose_name=_("contact"),
+        related_name="crm_notes", verbose_name=_("contact"),
     )
     deal = models.ForeignKey(
         Deal, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name="notes", verbose_name=_("deal"),
+        related_name="crm_notes", verbose_name=_("deal"),
     )
     content = models.TextField(_("content"))
     is_pinned = models.BooleanField(_("pinned"), default=False)
