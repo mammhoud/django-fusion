@@ -1,26 +1,27 @@
 # ============================================================================
-# Formint POS — Root Makefile (frontend + backend + full commands)
+# Formint POS — Root Makefile (frontend + sidecar + full commands)
 # ============================================================================
 # Orchestrates the merged package:
-#   - backend/   : Django + Ninja + django-fusion + Unfold admin (sidecar boundary)
+#   - sidecar/   : Django + Ninja + django-fusion + Unfold admin + Robyn server
+#                  (single merged Django project — pos_full + formint apps)
 #   - frontend/  : Astro + Alpine.js + HTMX shell (proxies /api, /htmx, /fusion)
 #   - src-tauri/ : Tauri v2 desktop shell
 #
 # Design: delegates to per-layer Makefiles via $(MAKE) -C, mirroring
-# landing-fusion's root Makefile (frontend targets here, backend via
-# `backend-*` → backend/Makefile). The parent `projects/pos/Makefile`
+# landing-fusion's root Makefile (frontend targets here, sidecar via
+# `backend-*` → sidecar/Makefile). The parent `projects/pos/Makefile`
 # delegates its `formint-*` targets here too.
 #
 # Quick start:
-#   make install          — backend .venv + deps, frontend npm install, migrate
+#   make install          — sidecar .venv + deps, frontend npm install, migrate
 #   make seed             — migrate + idempotent superuser (admin@formint.local)
-#   make env              — run BOTH servers in tmux (backend :8767 + frontend :4321)
+#   make env              — run BOTH servers in tmux (sidecar :8767 + frontend :4321)
 #   make dev-backend      — runserver :8767 (foreground)
 #   make dev-frontend     — astro dev :4321 (foreground)
-#   make test             — backend tests + frontend contract tests
+#   make test             — sidecar tests + frontend contract tests
 #   make check            — django check + astro check
 #   make stop             — kill the tmux env sessions
-#   make build            — production frontend build + backend collectstatic
+#   make build            — production frontend build + sidecar collectstatic
 #
 # Env overrides: BACKEND_PORT (8767), FRONTEND_PORT (4321), NODE_BIN
 
@@ -28,7 +29,7 @@
 NODE_BIN := $(shell dirname $$(command -v node 2>/dev/null) 2>/dev/null)
 export PATH := $(NODE_BIN):$(PATH)
 
-BACKEND_DIR  := backend
+BACKEND_DIR  := sidecar
 FRONTEND_DIR := frontend
 BACKEND_PORT := 8767
 FRONTEND_PORT := 4321
@@ -100,7 +101,7 @@ migrate: ## Apply backend migrations
 
 # ── Running environments ──────────────────────────────────────────────────
 
-env: ## Run backend (:8767) + frontend (:4321) in tmux sessions
+env: ## Run sidecar (:8767) + frontend (:4321) in tmux sessions
 	@echo '── Starting Formint POS environment ──'
 	@echo '  Backend  → http://127.0.0.1:$(BACKEND_PORT)/api/v1/docs'
 	@echo '  Admin    → http://127.0.0.1:$(BACKEND_PORT)/admin/'

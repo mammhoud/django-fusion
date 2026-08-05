@@ -306,7 +306,7 @@ async def _resolve_category(category_id: int | None) -> Category | None:
     try:
         return await Category.objects.aget(id=category_id)
     except Category.DoesNotExist as exc:
-        raise BadRequest(f"Category {category_id} not found") from exc
+        raise BadRequest(status_code=400, detail=f"Category {category_id} not found") from exc
 
 
 async def _resolve_customer(customer_id: int | None) -> Customer | None:
@@ -315,14 +315,14 @@ async def _resolve_customer(customer_id: int | None) -> Customer | None:
     try:
         return await Customer.objects.aget(id=customer_id)
     except Customer.DoesNotExist as exc:
-        raise BadRequest(f"Customer {customer_id} not found") from exc
+        raise BadRequest(status_code=400, detail=f"Customer {customer_id} not found") from exc
 
 
 async def _resolve_product(product_id: int) -> Product:
     try:
         return await Product.objects.aget(id=product_id)
     except Product.DoesNotExist as exc:
-        raise BadRequest(f"Product {product_id} not found") from exc
+        raise BadRequest(status_code=400, detail=f"Product {product_id} not found") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -375,7 +375,7 @@ async def get_category(request: Request, category_id: int) -> CategoryResponse:
     try:
         category = await Category.objects.aget(id=category_id)
     except Category.DoesNotExist:
-        raise NotFound(f"Category {category_id} not found")
+        raise NotFound(status_code=404, detail=f"Category {category_id} not found")
     return _category_response(category)
 
 
@@ -397,7 +397,7 @@ async def update_category(request: Request, category_id: int, body: CategoryUpda
     try:
         category = await Category.objects.aget(id=category_id)
     except Category.DoesNotExist:
-        raise NotFound(f"Category {category_id} not found")
+        raise NotFound(status_code=404, detail=f"Category {category_id} not found")
     updates = _struct_updates(body)
     updates.pop("id", None)
     if "slug" in updates and not updates["slug"]:
@@ -414,7 +414,7 @@ async def delete_category(request: Request, category_id: int) -> None:
     try:
         category = await Category.objects.aget(id=category_id)
     except Category.DoesNotExist:
-        raise NotFound(f"Category {category_id} not found")
+        raise NotFound(status_code=404, detail=f"Category {category_id} not found")
     await category.adelete()
 
 
@@ -435,7 +435,7 @@ async def get_product(request: Request, product_id: int) -> ProductResponse:
     try:
         product = await Product.objects.aget(id=product_id)
     except Product.DoesNotExist:
-        raise NotFound(f"Product {product_id} not found")
+        raise NotFound(status_code=404, detail=f"Product {product_id} not found")
     return _product_response(product)
 
 
@@ -458,7 +458,7 @@ async def update_product(request: Request, product_id: int, body: ProductUpdate)
     try:
         product = await Product.objects.aget(id=product_id)
     except Product.DoesNotExist:
-        raise NotFound(f"Product {product_id} not found")
+        raise NotFound(status_code=404, detail=f"Product {product_id} not found")
     updates = _struct_updates(body)
     updates.pop("id", None)
     if "category_id" in updates:
@@ -476,7 +476,7 @@ async def delete_product(request: Request, product_id: int) -> None:
     try:
         product = await Product.objects.aget(id=product_id)
     except Product.DoesNotExist:
-        raise NotFound(f"Product {product_id} not found")
+        raise NotFound(status_code=404, detail=f"Product {product_id} not found")
     await product.adelete()
 
 
@@ -497,7 +497,7 @@ async def get_customer(request: Request, customer_id: int) -> CustomerResponse:
     try:
         customer = await Customer.objects.aget(id=customer_id)
     except Customer.DoesNotExist:
-        raise NotFound(f"Customer {customer_id} not found")
+        raise NotFound(status_code=404, detail=f"Customer {customer_id} not found")
     return _customer_response(customer)
 
 
@@ -519,7 +519,7 @@ async def update_customer(request: Request, customer_id: int, body: CustomerUpda
     try:
         customer = await Customer.objects.aget(id=customer_id)
     except Customer.DoesNotExist:
-        raise NotFound(f"Customer {customer_id} not found")
+        raise NotFound(status_code=404, detail=f"Customer {customer_id} not found")
     updates = _struct_updates(body)
     updates.pop("id", None)
     for key, value in updates.items():
@@ -534,7 +534,7 @@ async def delete_customer(request: Request, customer_id: int) -> None:
     try:
         customer = await Customer.objects.aget(id=customer_id)
     except Customer.DoesNotExist:
-        raise NotFound(f"Customer {customer_id} not found")
+        raise NotFound(status_code=404, detail=f"Customer {customer_id} not found")
     await customer.adelete()
 
 
@@ -555,7 +555,7 @@ async def get_sale(request: Request, sale_id: int) -> SaleResponse:
     try:
         sale = await Sale.objects.aget(id=sale_id)
     except Sale.DoesNotExist:
-        raise NotFound(f"Sale {sale_id} not found")
+        raise NotFound(status_code=404, detail=f"Sale {sale_id} not found")
     return _sale_response(sale)
 
 
@@ -580,7 +580,7 @@ async def update_sale(request: Request, sale_id: int, body: SaleUpdate) -> SaleR
     try:
         sale = await Sale.objects.aget(id=sale_id)
     except Sale.DoesNotExist:
-        raise NotFound(f"Sale {sale_id} not found")
+        raise NotFound(status_code=404, detail=f"Sale {sale_id} not found")
     updates = _struct_updates(body)
     updates.pop("id", None)
     if "customer_id" in updates:
@@ -598,7 +598,7 @@ async def delete_sale(request: Request, sale_id: int) -> None:
     try:
         sale = await Sale.objects.aget(id=sale_id)
     except Sale.DoesNotExist:
-        raise NotFound(f"Sale {sale_id} not found")
+        raise NotFound(status_code=404, detail=f"Sale {sale_id} not found")
     await sale.adelete()
 
 
@@ -619,7 +619,7 @@ async def get_inventory_transaction(request: Request, transaction_id: int) -> In
     try:
         tx = await InventoryTransaction.objects.aget(id=transaction_id)
     except InventoryTransaction.DoesNotExist:
-        raise NotFound(f"Inventory transaction {transaction_id} not found")
+        raise NotFound(status_code=404, detail=f"Inventory transaction {transaction_id} not found")
     return _inventory_response(tx)
 
 
@@ -642,7 +642,7 @@ async def update_inventory_transaction(request: Request, transaction_id: int, bo
     try:
         tx = await InventoryTransaction.objects.aget(id=transaction_id)
     except InventoryTransaction.DoesNotExist:
-        raise NotFound(f"Inventory transaction {transaction_id} not found")
+        raise NotFound(status_code=404, detail=f"Inventory transaction {transaction_id} not found")
     updates = _struct_updates(body)
     updates.pop("id", None)
     if "product_id" in updates:
@@ -660,7 +660,7 @@ async def delete_inventory_transaction(request: Request, transaction_id: int) ->
     try:
         tx = await InventoryTransaction.objects.aget(id=transaction_id)
     except InventoryTransaction.DoesNotExist:
-        raise NotFound(f"Inventory transaction {transaction_id} not found")
+        raise NotFound(status_code=404, detail=f"Inventory transaction {transaction_id} not found")
     await tx.adelete()
 
 
@@ -681,7 +681,7 @@ async def get_employee(request: Request, employee_id: int) -> EmployeeResponse:
     try:
         employee = await Employee.objects.aget(id=employee_id)
     except Employee.DoesNotExist:
-        raise NotFound(f"Employee {employee_id} not found")
+        raise NotFound(status_code=404, detail=f"Employee {employee_id} not found")
     return _employee_response(employee)
 
 
@@ -705,7 +705,7 @@ async def update_employee(request: Request, employee_id: int, body: EmployeeUpda
     try:
         employee = await Employee.objects.aget(id=employee_id)
     except Employee.DoesNotExist:
-        raise NotFound(f"Employee {employee_id} not found")
+        raise NotFound(status_code=404, detail=f"Employee {employee_id} not found")
     updates = _struct_updates(body)
     updates.pop("id", None)
     for key, value in updates.items():
@@ -720,7 +720,7 @@ async def delete_employee(request: Request, employee_id: int) -> None:
     try:
         employee = await Employee.objects.aget(id=employee_id)
     except Employee.DoesNotExist:
-        raise NotFound(f"Employee {employee_id} not found")
+        raise NotFound(status_code=404, detail=f"Employee {employee_id} not found")
     await employee.adelete()
 
 
@@ -815,3 +815,122 @@ def _employee_response(employee: Employee) -> EmployeeResponse:
         created_at=_format_dt(employee.created_at),
         updated_at=_format_dt(employee.updated_at),
     )
+
+
+# ---------------------------------------------------------------------------
+# django-fusion apis plugin bridge — auto API generation + dual-mode views
+# ---------------------------------------------------------------------------
+# The django-fusion ``apis`` plugin restores the django-bolt integration in a
+# reusable way:
+#
+#   * ``generate_msgspec_schema`` — auto-generate a typed msgspec Struct from
+#     any Django model (no hand-written request/response classes).
+#   * ``mount_model_crud`` — register GET/POST/PATCH/DELETE routes for every
+#     model, extending the hand-written CRUD above to all 43 models.
+#   * ``BoltAPIApplication`` / ``mount_application`` — mount django-fusion
+#     Application viewsets as bolt routes that answer with the *same*
+#     dual-mode ``respond()`` contract: component fragment HTML with data
+#     (render-first) or codec-encoded JSON API payload (data mode).
+#
+# Everything is conditional on ``is_bolt_installed()`` — if django-bolt is
+# missing these helpers degrade gracefully (bolt_api still serves the
+# hand-written endpoints via django-bolt's own machinery only when present).
+# ---------------------------------------------------------------------------
+
+# django-fusion is optional here too (the apis plugin pulls ninja-schema
+# which may be absent in lean environments) — the bridge degrades gracefully.
+try:
+    from django_fusion.plugins.apis.bolt import (  # noqa: E402
+        BoltAPIApplication,
+        is_bolt_installed,
+        mount_model_crud,
+    )
+    from django_fusion.plugins.apis.schemas import generate_schemas_for_app  # noqa: E402
+
+    _FUSION_BRIDGE = True
+except ImportError:
+    _FUSION_BRIDGE = False
+
+if _FUSION_BRIDGE and is_bolt_installed():
+    # 1. Auto-generated CRUD for every remaining managed model. The six
+    #    hand-written resources above stay as-is; these cover the rest so
+    #    the full 43-model surface is API-complete without manual structs.
+    from models import models as _all_models  # noqa: E402
+
+    _AUTO_MODELS = [
+        _all_models.MenuItem,
+        _all_models.Menu,
+        _all_models.MenuItemAssignment,
+        _all_models.Node,
+        _all_models.Heartbeat,
+        _all_models.NodeEvent,
+        _all_models.DeviceConfig,
+        _all_models.MasterDevice,
+        _all_models.CloudLink,
+        _all_models.SyncLog,
+        _all_models.Supplier,
+        _all_models.PurchaseOrder,
+        _all_models.PurchaseOrderItem,
+        _all_models.KitchenTicket,
+        _all_models.SupportTicket,
+        _all_models.Payroll,
+        _all_models.EmployeeSchedule,
+        _all_models.TaxReport,
+        _all_models.Note,
+        _all_models.Ingredient,
+        _all_models.Recipe,
+        _all_models.ReceiptTemplate,
+        _all_models.Role,
+        _all_models.InventoryAdjustment,
+        _all_models.ClientCategory,
+        _all_models.LoyaltyTransaction,
+        _all_models.UserSettings,
+        _all_models.SyncApproval,
+        _all_models.DeviceToken,
+        _all_models.SignalEvent,
+        _all_models.Company,
+        _all_models.Pipeline,
+        _all_models.Stage,
+        _all_models.Contact,
+        _all_models.Deal,
+        _all_models.Activity,
+        _all_models.CRMNote,
+    ]
+
+    for _model in _AUTO_MODELS:
+        try:
+            mount_model_crud(
+                bolt,
+                _model,
+                prefix=f"/{_model._meta.model_name}",
+                auth=_AUTH_BACKENDS,
+                guards=[IsAuthenticated()],
+            )
+        except Exception as _exc:  # pragma: no cover - defensive
+            print(f"[bolt_api] skip auto-CRUD for {_model.__name__}: {_exc}")
+
+    # 2. Dual-mode Application mount — the same views of django-fusion's
+    #    ``Application`` served through bolt, answering each route either as
+    #    a component fragment HTML with data or a codec JSON API payload.
+    class FusionBoltApp(BoltAPIApplication):
+        title = "Fusion"
+        fusion_render_first = True
+        template_name = "formint/tables/sales.html"
+        viewsets = []
+
+    FusionBoltApp().mount_on_bolt(bolt, prefix="/fusion")
+
+    # 3. Expose the schema registry at /bolt/schemas so clients can discover
+    #    every generated schema (mirrors the apis plugin's schema endpoint).
+    @bolt.get("/schemas", guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
+    async def list_schemas(request: Request) -> dict:
+        schemas = generate_schemas_for_app("pos_full")
+        return {
+            "count": len(schemas),
+            "schemas": sorted(schemas.keys()),
+        }
+
+if _FUSION_BRIDGE:
+    print("[bolt_api] django-fusion apis bridge loaded")
+else:
+    print("[bolt_api] django-fusion apis bridge unavailable (ninja-schema/django-fusion missing)")

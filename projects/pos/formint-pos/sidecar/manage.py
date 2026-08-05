@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Django management CLI for POS Full sidecar (master manager).
+"""Django management CLI for the merged Formint sidecar (master manager).
+
+Merged from the original POS Full sidecar manage.py and the formint backend
+manage.py (loyalty + settings admin, superuser seeding).
 
 Supports: migrate, makemigrations, showmigrations, createsuperuser, runserver
 
@@ -12,9 +15,9 @@ Usage:
 The server.py also supports --migrate flag for auto-migration at startup.
 
 Environment Variables (for --ensure-superuser):
-    POS_FULL_ADMIN_EMAIL       Default: admin@pos-full.local
-    POS_FULL_ADMIN_PASSWORD    Default: admin123
-    POS_FULL_ADMIN_NAME        Default: POS Full Admin
+    FORMINT_ADMIN_EMAIL        Default: admin@formint.local
+    FORMINT_ADMIN_PASSWORD     Default: admin123
+    FORMINT_ADMIN_NAME         Default: Formint Admin
 """
 
 import os
@@ -59,7 +62,7 @@ if not settings.configured:
 django.setup()
 
 # Register admin models (must happen AFTER django.setup() or models won't be ready)
-import configs.admin  # noqa: F401
+import formint.admin  # noqa: F401 — autodiscovery registration (canonical, covers all pos_full + formint models)
 
 from django.core.management import execute_from_command_line
 
@@ -76,31 +79,56 @@ def _ensure_superuser() -> None:
 
     Idempotent — if the user already exists, prints a message and does nothing.
     """
+    from django.conf import settings
+
     from django.contrib.auth import get_user_model
 
     User = get_user_model()
 
-    email = os.environ.get("POS_FULL_ADMIN_EMAIL", "admin@pos-full.local")
-    password = os.environ.get("POS_FULL_ADMIN_PASSWORD", "admin123")
-    name = os.environ.get("POS_FULL_ADMIN_NAME", "POS Full Admin")
+    email = getattr(settings, "FORMINT_ADMIN_EMAIL", os.environ.get("FORMINT_ADMIN_EMAIL", "admin@formint.local"))
+    password = getattr(settings, "FORMINT_ADMIN_PASSWORD", os.environ.get("FORMINT_ADMIN_PASSWORD", "admin123"))
+    name = getattr(settings, "FORMINT_ADMIN_NAME", os.environ.get("FORMINT_ADMIN_NAME", "Formint Admin"))
+
+    # Security guard: never create an admin with the default password when
+    # DEBUG is off (production). Deployment must set FORMINT_ADMIN_PASSWORD.
+    if not getattr(settings, "DEBUG", True) and password == "admin123":
+        raise SystemExit(
+            "Refusing to create superuser with the default password while "
+            "DEBUG=False. Set FORMINT_ADMIN_PASSWORD to a strong value first."
+        )
 
     existing = User.objects.filter(email=email).first()
     if existing:
         print(f"✔ Superuser already exists: {email} (id={existing.id})")
-        return
+        user = existing
+    else:
+        username = email.split("@")[0]
+        user = User.objects.create_superuser(
+            username=username,
+            email=email,
+            password=password,
+        )
+        user.first_name = name.split()[0] if name else username
+        if " " in name:
+            user.last_name = " ".join(name.split()[1:])
+        user.save(update_fields=["first_name", "last_name"])
+        print(f"✔ Superuser created: {email} (password: {password})")
 
-    username = email.split("@")[0]
-    user = User.objects.create_superuser(
-        username=username,
-        email=email,
-        password=password,
-    )
-    user.first_name = name.split()[0] if name else username
-    if " " in name:
-        user.last_name = " ".join(name.split()[1:])
-    user.save(update_fields=["first_name", "last_name"])
+    # Seed UserSettings for the superuser so the Settings admin has a row.
+    try:
+        from formint.models import UserSettings as FormintUserSettings
+    except ImportError:
+        FormintUserSettings = None
+    if FormintUserSettings is not None:
+        if not FormintUserSettings.objects.filter(user=user).exists():
+            FormintUserSettings.objects.create(
+                user=user,
+                restaurant_name=name if name else "Formint POS",
+            )
+            print(f"✔ UserSettings seeded for {email}")
+        else:
+            print(f"✔ UserSettings already exists for {email}")
 
-    print(f"✔ Superuser created: {email} (password: {password})")
     print(f"  → Login at http://localhost:8000/admin/")
 
 

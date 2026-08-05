@@ -1,7 +1,7 @@
 [project]
-name = "pos-full-sidecar"
+name = "formint-pos-sidecar"
 dynamic = ["version"]
-description = "POS Full Edition — Robyn + Django ORM Cloud Master sidecar"
+description = "Formint POS (merged) — Robyn + Django ORM Cloud Master sidecar"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "AGPL-3.0" }
@@ -22,6 +22,10 @@ dependencies = [
     "Jinja2>=3.1",          # Robyn template rendering
     "django-tables2>=2.7",   # Required by django_fusion.comp.generic.table
     "wagtail>=6.0,<7.0",    # Compatible with Django>=4.2,<5.1 (wagtail 7.x requires Django>=5.2)
+    # Merged from backend/ (formint app): Ninja API layer + HTMX + tables
+    "django-ninja>=1.0",
+    "django-ninja-extra>=0.19",
+    "django-htmx>=1.19",
 ]
 
 [project.optional-dependencies]

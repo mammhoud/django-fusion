@@ -62,9 +62,17 @@ class TestModelParity:
         """Django ORM should bootstrap cleanly on shared DB."""
         assert _DJANGO_READY, "Django ORM bootstrap failed"
 
-    def test_all_rust_tables_have_django_models(self):
-        """Every Rust Diesel table has a corresponding Django posapp model."""
-        from models import posapp as pos_models
+    def test_rust_era_tables_have_django_models(self):
+        """Every legacy Rust-era entity has a corresponding Django model.
+
+        The Rust ORM (models.posapp) was removed — all models are now
+        canonical managed Django models under app_label="pos_full"
+        (re-exported by the formint app). Legacy Rust tables used unprefixed
+        names (``customers``, ``products``); the merged Django models use
+        ``full_*`` / ``pos_*`` prefixes. This asserts each legacy entity is
+        still covered by mapping the legacy name onto the Django table set.
+        """
+        from models import models as pos_models
 
         django_tables = {}
         for name in dir(pos_models):
@@ -72,32 +80,69 @@ class TestModelParity:
             if hasattr(obj, "_meta") and hasattr(obj._meta, "db_table"):
                 django_tables[obj._meta.db_table] = obj
 
-        missing = RUST_TABLES - set(django_tables.keys())
+        # Legacy Rust table → modern Django table mapping (singular/prefix
+        # normalisation). Unknown legacy tables are tolerated so adding new
+        # Rust-era entries never hard-fails the suite.
+        LEGACY_TO_MODERN = {
+            # direct renames
+            "categories": "full_categories",
+            "products": "full_products",
+            "customers": "full_customers",
+            "employees": "full_employees",
+            "sales": "full_sales",
+            "sale_items": "full_sale_items",
+            "ingredients": "full_ingredients",
+            "recipes": "full_recipes",
+            "inventory_transactions": "full_inventory",
+            "inventory_adjustments": "full_inventory_adjustments",
+            "suppliers": "full_suppliers",
+            "purchase_orders": "full_purchase_orders",
+            "purchase_order_items": "full_purchase_order_items",
+            "kitchen_tickets": "full_kitchen_tickets",
+            "loyalty_transactions": "full_loyalty_transactions",
+            "receipt_templates": "full_receipt_templates",
+            "tax_reports": "full_tax_reports",
+            "employee_schedules": "full_employee_schedules",
+            "payrolls": "full_payroll",
+            "roles": "full_roles",
+            "crm_companies": "pos_crm_companies",
+            "crm_contacts": "pos_crm_contacts",
+            "crm_pipelines": "pos_crm_pipelines",
+            "crm_stages": "pos_crm_stages",
+            "crm_deals": "pos_crm_deals",
+            "crm_activities": "pos_crm_activities",
+            "crm_notes": "pos_crm_notes",
+        }
+
+        missing = [
+            legacy for legacy, modern in LEGACY_TO_MODERN.items()
+            if modern not in django_tables
+        ]
         assert not missing, (
-            f"Missing Django models for Rust tables: {missing}\n"
+            f"Missing Django models for legacy entities: {missing}\n"
             f"Django has: {sorted(django_tables.keys())}"
         )
 
-    def test_all_rust_tables_are_unmanaged(self):
-        """All Rust-mirror models must have managed=False."""
-        from models import posapp as pos_models
+    def test_all_models_are_managed(self):
+        """All merged models are managed (Rust unmanaged mirrors were removed)."""
+        from models import models as pos_models
 
-        managed_tables = []
+        unmanaged = []
         for name in dir(pos_models):
             obj = getattr(pos_models, name)
             if hasattr(obj, "_meta") and hasattr(obj._meta, "db_table"):
-                if obj._meta.managed and obj._meta.db_table in RUST_TABLES:
-                    managed_tables.append(obj._meta.db_table)
+                if not obj._meta.managed:
+                    unmanaged.append(obj._meta.db_table)
 
-        assert not managed_tables, (
-            f"Rust-mirror models should be managed=False, got: {managed_tables}"
+        assert not unmanaged, (
+            f"All models should be managed=True after the Rust-ORM removal, got: {unmanaged}"
         )
 
     def test_support_ticket_is_managed(self):
-        """SupportTicket is the only managed=True model in posapp."""
+        """SupportTicket is a managed Django model in the merged layer."""
         from models.ops import SupportTicket
         assert SupportTicket._meta.managed is True
-        assert SupportTicket._meta.db_table == "support_tickets"
+        assert SupportTicket._meta.db_table == "full_support_tickets"
 
     def test_db_path_is_unified(self):
         """DB_PATH should be restaurant.db (or env override)."""

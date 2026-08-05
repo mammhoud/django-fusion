@@ -106,7 +106,16 @@ def bolt_database(django_bootstrap):
 
     from models.pos import Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee
 
+    # Customer has an FK to ClientCategory (loyalty) — create it first so
+    # SQLite FK targets exist when Customer's table is built.
+    try:
+        from models.loyalty import ClientCategory
+        loyalty_models = [ClientCategory]
+    except Exception:
+        loyalty_models = []
+
     models_to_create = [
+        *loyalty_models,
         Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee,
     ]
     with connection.schema_editor() as schema_editor:

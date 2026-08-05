@@ -7,11 +7,18 @@ pos-full is the master manager with Django Admin (Unfold theme).
 
 from __future__ import annotations
 
+import importlib.util
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR.parent / "restaurant.db"
+
+# ── Optional django-bolt (high-performance Rust-backed API) ────────────────
+# The django-fusion ``apis`` plugin checks this at runtime: when django-bolt is
+# installed, Application viewsets can also be mounted as bolt routes (same
+# dual-mode respond contract). Kept optional so the project runs without it.
+HAS_DJANGO_BOLT = importlib.util.find_spec("django_bolt") is not None
 
 # ── Django Core ──
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "pos-full-master-secret-key")
@@ -29,8 +36,8 @@ DATABASES = {
 
 # ── Installed Apps ──
 INSTALLED_APPS = [
-    # django-bolt high-performance API framework
-    "django_bolt",
+    # django-bolt high-performance API framework (optional)
+    *(("django_bolt",) if HAS_DJANGO_BOLT else ()),
     # Unfold — modern admin theme (must come before django.contrib.admin)
     "unfold",
     "unfold.contrib.filters",
@@ -49,17 +56,46 @@ INSTALLED_APPS = [
     "django_fusion",
     # POS Full managed models
     "models.PosFullConfig",
+    # Formint app (merged from backend/ — loyalty, settings, ninja API,
+    # fusion render-mode contract; app_label="formint")
+    "formint",
+    # Ninja + ninja-extra API layer (django-fusion encoder/decoder)
+    "ninja",
+    "ninja_extra",
+    "django_htmx",
+    "django_tables2",
 ]
 
 # ── Middleware ──
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
 # ── URL Configuration ──
 ROOT_URLCONF = "configs.urls"
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver", "0.0.0.0"]
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+
+# ── Fusion Render Mode (django-fusion dual-mode contract) ───────────────
+#   True  → "fusion render first" — Django serves finished server-rendered
+#           HTML (or fusion-encoded JSON) as the source of truth.
+#   False → "data APIs" — the client renders from /api/v1/* JSON.
+# Per-request override: ``X-Fusion-Render-First: true|false`` header.
+FUSION_RENDER_FIRST_DEFAULT = os.environ.get("FUSION_RENDER_FIRST", "1") == "1"
+COMPONENTS_DIR_NAMES = ("components", "partials", "tags")
+
+# ── Superuser bootstrap (used by manage.py --ensure-superuser) ──
+FORMINT_ADMIN_EMAIL = os.environ.get("FORMINT_ADMIN_EMAIL", "admin@formint.local")
+FORMINT_ADMIN_PASSWORD = os.environ.get("FORMINT_ADMIN_PASSWORD", "admin123")
+FORMINT_ADMIN_NAME = os.environ.get("FORMINT_ADMIN_NAME", "Formint Admin")
 
 # ── Templates (required for admin) ──
 # DIRS contains only django_templates/ (a Django-only template tree). The
@@ -86,9 +122,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # ── Unfold Admin Theme Settings ──
 UNFOLD = {
-    "SITE_TITLE": "POS Full — Master Manager",
-    "SITE_HEADER": "POS Full Admin",
-    "SITE_SUBHEADER": "Branch Device & Data Management",
+    "SITE_TITLE": "Formint POS — Master Manager",
+    "SITE_HEADER": "Formint POS Admin",
+    "SITE_SUBHEADER": "Merged Master Manager · Branch, Loyalty & Settings",
     "SITE_URL": "/",
     "SITE_ICON": None,
     "SITE_SYMBOL": "dashboard",
