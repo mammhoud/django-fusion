@@ -18,22 +18,29 @@ Formint POS Professional is the restaurant-focused POS product built from the ex
 
 ```text
 formint-pos/
-├── backend/                    # Django boundary — no Wagtail
-│   ├── config/                 # settings + URL wiring
+├── Makefile                     # root orchestrator (frontend + backend + full + env)
+├── backend/                     # Django boundary — no Wagtail
+│   ├── Makefile                 # backend targets (dev/check/migrate/test/seed)
+│   ├── config/                  # settings (Unfold + fusion render-mode) + URL wiring
 │   ├── formint/
-│   │   ├── models/             # domain models (products, sales, inventory, crm, hr, …)
-│   │   ├── schemas.py          # ninja_schema models + writable/patch schema factory
-│   │   ├── controllers.py      # ninja-extra ModelController CRUD for 45 entities
-│   │   ├── api.py              # NinjaAPI with fusion encoder renderer + system endpoints
-│   │   ├── components.py       # django-fusion table/form components
-│   │   ├── views.py            # HTMX table/form fragment views
-│   │   └── templates/          # fusion table + form templates
+│   │   ├── models/              # domain models (products, sales, inventory, crm, hr, …)
+│   │   ├── schemas.py           # ninja_schema models + writable/patch schema factory
+│   │   ├── controllers.py       # ninja-extra ModelController CRUD for 45 entities
+│   │   ├── api.py               # NinjaAPI with fusion encoder renderer + system endpoints
+│   │   ├── components.py        # django-fusion table/form components
+│   │   ├── fusion_components.py # branch summary fragment (FusionDualModeMixin)
+│   │   ├── core.py              # FormintSite (django-fusion Site — nav source of truth)
+│   │   ├── fusion.py            # render-mode/nav/assets contract (landing-fusion parity)
+│   │   ├── handlers.py          # class-based HTMX fragment handlers
+│   │   ├── views.py             # thin URL-facing delegation + /fusion/* endpoints
+│   │   └── templates/           # fusion table + form templates
 │   └── manage.py
-├── frontend/                   # Astro shell
-│   ├── astro.config.mjs        # dev proxy → backend :8000
-│   └── src/pages/data.astro    # data management showcase (API + HTMX)
-├── src-tauri/                  # Tauri desktop shell
-├── assets/                     # shared assets
+├── frontend/                    # Astro shell
+│   ├── Makefile                 # frontend targets (install/dev/build/check/test)
+│   ├── astro.config.mjs         # dev proxy → backend :8767
+│   └── src/pages/data.astro     # data management showcase (API + HTMX)
+├── src-tauri/                   # Tauri desktop shell
+├── assets/                      # shared assets
 └── migration/
     └── compatibility-manifest.json
 ```
@@ -70,36 +77,58 @@ Resources (45 controllers): products, categories, customers, client-categories, 
 
 | Endpoint | Description |
 |---|---|
-| `/htmx/tables/{resource}/` | Server-rendered fusion table (`X-Formint-Response-Mode: table`) |
+| `/htmx/tables/{resource}/` | Server-rendered fusion table (`X-Formint-Table-Resource`) |
 | `/htmx/forms/{resource}/` | Server-rendered fusion form (GET) / save (POST, `X-Formint-Saved`, `HX-Trigger`) |
-| `/htmx/branches/summary/` | Legacy branch summary fragment |
+| `/htmx/branches/summary/` | Branch summary fragment (render-first by default) |
 
-All fragment responses support the fusion render-first contract when `X-Fusion-Render-First: true` is sent — the response body is a fusion JSON envelope.
+All fragment responses support the fusion **render-first** contract — the
+`X-Fusion-Render-First: true|false` header switches between django-fusion
+rendered fragments and lean HTMX data-only responses (see `formint/fusion.py`).
 
-### Run
+### Fusion render-mode (landing-fusion parity)
+
+| Endpoint | Description |
+|---|---|
+| `/api/v1/render-mode` | Active mode (`fusion-render` vs `data-api`) |
+| `/api/v1/navigation` | Nav from `FormintSite` (Home / Data / Admin) |
+| `/api/v1/assets` | `FUSION_ASSETS` manifest |
+| `/fusion/render-mode/` · `/fusion/navigation/` · `/fusion/assets/` | Same contract at the fragment path |
+
+### Quick start (make)
 
 ```bash
-cd projects/pos/formint-pos/backend
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -e .
-python manage.py migrate
-python manage.py runserver 127.0.0.1:8000
+cd projects/pos/formint-pos
+make install   # backend .venv + deps + migrate + frontend npm install
+make seed      # migrate + idempotent superuser (admin@formint.local / admin123)
+make env       # tmux: backend :8767 + frontend :4321 (health-checked)
+#   API      → http://127.0.0.1:8767/api/v1/docs
+#   Admin    → http://127.0.0.1:8767/admin/
+#   Shell    → http://127.0.0.1:4321/
+#   Render   → http://127.0.0.1:4321/fusion/render-mode/
+
+make status    # tmux sessions + endpoint health
+make test      # 35 backend tests + frontend contract tests
+make stop      # stop the tmux env
 ```
 
-Validation: `python manage.py check`, `python manage.py test` (see `tests/`).
+Full command list: `make help`. The parent `projects/pos/Makefile` delegates
+`make formint-{install,run,env,stop,test,check,clean}` here.
+
+Validation: `make check` (django check + astro check), `make test`.
 
 ## Frontend
 
 ```bash
 cd projects/pos/formint-pos/frontend
-pnpm install
-pnpm dev
+make install   # npm install
+make dev       # astro dev :4321
 ```
 
-`astro.config.mjs` proxies `/api` and `/htmx` to the backend at `:8000`. The `/data` page showcases the API and the HTMX table/form components with frontend-owned loading states.
+`astro.config.mjs` proxies `/api`, `/htmx` and `/fusion` to the backend at
+`:8767`. The `/data` page showcases the API and the HTMX table/form
+components with frontend-owned loading states.
 
-Validation: `pnpm check` (astro check) and `pnpm build`.
+Validation: `make check` (astro check) and `make build`.
 
 ## Tauri shell
 

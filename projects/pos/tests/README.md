@@ -65,7 +65,7 @@ bash tests/run-all.sh --quick
 |-------|---------|-------|-------------|
 | `py/full/` | pos-full | 53 (server + webhook + data_sync) | `bash tests/py/full/run.sh` |
 | `py/solo/` | pos-solo | 155 (unified API models) | `bash tests/py/solo/run.sh` |
-| `py/formint/` | formint-pos | 26 (ninja CRUD + HTMX + admin) | `bash tests/py/formint/run.sh` |
+| `py/formint/` | formint-pos | 35 (ninja CRUD + HTMX + render-mode + admin) | `bash tests/py/formint/run.sh` |
 
 Each `run.sh` wrapper:
 1. `cd`s to the original sidecar directory (`pos-full/sidecar/` or `pos-solo/sidecar/`)

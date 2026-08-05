@@ -7,10 +7,11 @@
 | | |
 |---|---|
 | **Location** | [`../formint-pos/`](../formint-pos/) |
-| **Status** | Phase 2 — merge complete |
+| **Status** | Phase 2 — merge complete + landing-fusion render-mode parity |
 | **API** | Django Ninja + ninja-extra (fusion encoder/decoder) |
 | **Admin** | Django Unfold dashboard (loyalty/settings focus) |
 | **Data components** | django-fusion tables + forms (HTMX) |
+| **Render mode** | Dual-mode contract (render-first / data-API), mirroring landing-fusion |
 | **Frontend** | Astro + Alpine.js + HTMX |
 | **Desktop** | Tauri v2 shell |
 | **Manifest** | [`../formint-pos/migration/compatibility-manifest.json`](../formint-pos/migration/compatibility-manifest.json) |
@@ -34,7 +35,7 @@ with server-rendered data components and a modern admin panel.
 ```text
 formint-pos/
 ├── backend/                     # Django boundary — no Wagtail
-│   ├── config/                  # settings (Unfold), URLs (admin + API)
+│   ├── config/                  # settings (Unfold + fusion render-mode), URLs
 │   ├── formint/
 │   │   ├── models/              # 45+ merged domain models (pos, menu, node,
 │   │   │                        #   config, sync, inventory, ops, hr, notes,
@@ -43,16 +44,22 @@ formint-pos/
 │   │   ├── controllers.py       # ninja-extra ModelController CRUD (45 resources)
 │   │   ├── api.py               # NinjaAPI + fusion JSONRenderer + system endpoints
 │   │   ├── components.py        # django-fusion table/form data components
-│   │   ├── views.py             # HTMX table/form fragment views
+│   │   ├── fusion_components.py # branch summary fragment (FusionDualModeMixin)
+│   │   ├── core.py              # FormintSite (django-fusion Site — nav source of truth)
+│   │   ├── fusion.py            # render-mode/nav/assets contract (get_effective_render_first)
+│   │   ├── handlers.py          # class-based HTMX fragment handlers (mirrors landing handlers)
+│   │   ├── views.py             # thin URL-facing delegation to handlers + /fusion/* endpoints
 │   │   ├── admin.py             # Unfold ModelAdmin registrations (all models)
 │   │   ├── dashboard.py         # Unfold dashboard callback (KPIs/charts/tables)
-│   │   ├── fusion_components.py # branch summary fragment
 │   │   └── templates/           # fusion table + form templates
 │   ├── templates/admin/         # Unfold admin index override (dashboard UI)
+│   ├── Makefile                 # backend targets (dev/check/migrate/test/seed/env)
 │   ├── manage.py                # CLI + --ensure-superuser bootstrap
 │   └── sidecar.py               # PyInstaller sidecar entry point
+├── Makefile                     # root orchestrator (frontend + backend + full + env)
 ├── frontend/                    # Astro shell
-│   ├── astro.config.mjs         # dev proxy → backend :8000 (/api, /htmx)
+│   ├── Makefile                 # frontend targets (install/dev/build/check/test)
+│   ├── astro.config.mjs         # dev proxy → backend :8767 (/api, /htmx, /fusion)
 │   └── src/pages/               # index.astro, data.astro (+ contract tests)
 ├── src-tauri/                   # Tauri shell (sidecar supervision + native)
 ├── assets/                      # shared static assets
@@ -123,7 +130,43 @@ All fragments support the fusion **render-first** contract when
 envelope. Resource names use hyphens; template files use underscores
 (`client-categories` → `client_categories.html`).
 
-### 3.5 Unfold admin (`/admin/`)
+### 3.5 Fusion render-mode contract (landing-fusion parity)
+
+The backend mirrors landing-fusion's dual-mode content delivery — the same
+contract as `projects/landing-fusion/backend/apps/pages/api.py`:
+
+| Endpoint | Description |
+|---|---|
+| `/api/v1/render-mode` | Report active mode (`fusion-render` vs `data-api`) |
+| `/api/v1/navigation` | Nav items from `FormintSite` (single source of truth) |
+| `/api/v1/assets` | `FUSION_ASSETS` manifest (bundle parity) |
+| `/fusion/render-mode/` | Same report at the fragment path (HTMX shell) |
+| `/fusion/navigation/` | Nav JSON at the fragment path |
+| `/fusion/assets/` | Asset manifest at the fragment path |
+
+* **`formint/fusion.py`** — `get_effective_render_first(request)` reads the
+  `X-Fusion-Render-First: true|false` header (per-request override), falling
+  back to `FUSION_RENDER_FIRST_DEFAULT` (env `FUSION_RENDER_FIRST`, default
+  `1`). This is the same precedence django-fusion's
+  `FusionDualModeMixin.get_effective_render_first()` uses.
+* **`formint/core.py`** — `FormintSite(Site)` from `django_fusion.routes.core.sites`
+  with `NAV_ITEMS` (Home / Data / Admin) — mirrors landing-fusion's
+  `apps/core/site.py`.
+* **`formint/handlers.py`** — class-based HTMX fragment handlers
+  (`BranchSummaryHandler`, `TableFragmentHandler`, `FormFragmentHandler`)
+  mirroring landing-fusion's `apps/handlers/views.py` organization;
+  `views.py` stays a thin URL-facing delegation layer so routes never break.
+
+Settings (`config/settings.py`):
+
+```python
+FUSION_RENDER_FIRST_DEFAULT = os.environ.get('FUSION_RENDER_FIRST', '1') == '1'
+COMPONENTS_FUSION_RENDER_FIRST_DEFAULT = FUSION_RENDER_FIRST_DEFAULT
+FUSION_ASSETS = {...}  # frontend bundle parity
+FUSION_ASSET_PIPELINE = {...}
+```
+
+### 3.6 Unfold admin (`/admin/`)
 
 The admin panel is the master-manager surface with special focus on
 **loyalty & settings**:
@@ -193,12 +236,13 @@ Unified test directory: [`../tests/`](../tests/)
 
 | Suite | Location | Runner |
 |---|---|---|
-| Backend (26 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
+| Backend (35 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
 | Frontend contract | `tests/js/vitest.config.ts` | `npx vitest run` |
 | Admin selenium | `tests/selenium/formint/` | `pytest tests/selenium/formint/` |
 
 Backend coverage: ninja CRUD (create/list/patch/delete), pagination,
-openapi, fusion envelope, HTMX table/form fragments, render-first, admin
+openapi, fusion envelope, HTMX table/form fragments, render-first + data-
+mode (header override), render-mode/navigation/assets endpoints, admin
 login/dashboard/changelists for loyalty + settings models.
 
 ---
@@ -206,23 +250,57 @@ login/dashboard/changelists for loyalty + settings models.
 ## 8. Quick start
 
 ```bash
-# Backend (API + admin)
-cd projects/pos/formint-pos/backend
-python3 -m venv .venv && . .venv/bin/activate && pip install -e .
-python manage.py migrate
-python manage.py --ensure-superuser
-python manage.py runserver 127.0.0.1:8000
-#   API    → http://127.0.0.1:8000/api/v1/docs
-#   Admin  → http://127.0.0.1:8000/admin/  (admin@formint.local / admin123)
+# One-shot: install + seed + run both servers (backend :8767 + frontend :4321)
+cd projects/pos/formint-pos
+make install        # backend .venv + deps + migrate + frontend npm install
+make seed           # migrate + idempotent superuser (admin@formint.local / admin123)
+make env            # tmux: backend :8767 + frontend :4321 (proxies /api, /htmx, /fusion)
+#   API      → http://127.0.0.1:8767/api/v1/docs
+#   Admin    → http://127.0.0.1:8767/admin/
+#   Shell    → http://127.0.0.1:4321/
+#   Render   → http://127.0.0.1:4321/fusion/render-mode/
 
-# Frontend
-cd ../frontend && pnpm install && pnpm dev
-#   Shell  → http://localhost:4321/  (proxies /api and /htmx)
+make status         # show tmux sessions + endpoint health
+make stop           # stop the tmux env
 ```
 
 ---
 
-## 9. Extending
+## 9. Make commands
+
+The package ships three Makefiles with full delegation (mirrors
+landing-fusion's root + backend split):
+
+**`formint-pos/Makefile`** (root orchestrator)
+
+| Command | Action |
+|---|---|
+| `make install` | Backend .venv + deps + migrate + frontend npm install |
+| `make seed` | Migrate + idempotent superuser |
+| `make env` | Run backend (:8767) + frontend (:4321) in tmux + health check |
+| `make dev-backend` / `make dev-frontend` | Foreground servers |
+| `make stop` / `make status` | Manage the running env |
+| `make check` | Django check + astro check |
+| `make test` | Backend 35-test suite + frontend contract tests |
+| `make build` / `make preview` | Frontend build (+ collectstatic) / preview |
+| `make clean` | Remove db + staticfiles + node_modules |
+| `make backend-*` / `make frontend-*` | Delegate to the layer Makefiles |
+| `make tauri` / `make tauri-dev` / `make tauri-build` | Tauri CLI / dev / build |
+
+**`formint-pos/backend/Makefile`** — `install`, `migrate`, `dev` (:8767),
+`server` (gunicorn), `check`, `test`, `seed`, `ensure-superuser`, `shell`,
+`collectstatic`, `clean`.
+
+**`formint-pos/frontend/Makefile`** — `install`, `dev` (:4321), `build`,
+`preview`, `check`, `test` (vitest), `clean`.
+
+Parent `projects/pos/Makefile` delegates: `make formint-install`,
+`make formint-run` (:8767), `make formint-env`, `make formint-stop`,
+`make formint-test`, `make formint-check`, `make formint-clean`.
+
+---
+
+## 10. Extending
 
 - **New model** → add to `formint/models/` + export in `models/__init__.py`,
   run `makemigrations`/`migrate`, register a controller in `controllers.py`
@@ -238,10 +316,45 @@ cd ../frontend && pnpm install && pnpm dev
 
 ---
 
-## 10. Related docs
+## 11. Related docs
 
 - [`README.md`](../formint-pos/README.md) — package readme
 - [`compatibility-manifest.json`](../formint-pos/migration/compatibility-manifest.json)
 - [`POS_ARCHITECTURE.md`](POS_ARCHITECTURE.md) — all-editions architecture
 - [`SIDECAR_V2.md`](SIDECAR_V2.md) — sidecar API reference
 - [`tests/README.md`](../tests/README.md) — unified test suite
+
+## 12. django-fusion enhancement surface (available features)
+
+Features from the django-fusion library that Formint uses today and others
+that can be enabled incrementally:
+
+**In use:**
+
+- `FusionDualModeMixin` + `FragmentComponent` — `formint/fusion_components.py`
+  (render-first vs data-mode with header/session precedence).
+- `TableMixin` + `RowGenerator` (`django_fusion.fragments.tables`) —
+  `formint/components.py` table fragments.
+- `FormMixin` + `FormTagGenerator` (`django_fusion.fragments.forms`) —
+  form fragments with model defaults patched.
+- `ModelSchema` (`django_fusion.routes.schemas.model_schema`) — decoders for
+  every Out schema; `JSONRenderer` (encoder) wraps every API response.
+- `Site` (`django_fusion.routes.core.sites`) — `FormintSite` nav context.
+- `fusion_json_response` (`routes.rendering.renderers`) — render-first
+  table responses.
+
+**Available to enable (settings-only or small additions):**
+
+- `register_include_paths()` + `COMPONENTS_INCLUDE_PATH_ROOTS` — bridge any
+  `{% include %}` partial into the component registry for stable identity.
+- `COMPONENTS_ENABLE_BLOCK_ATTRS` — emit `data-block-*` attributes on
+  components for headless/CMS inspection.
+- `FusionCodec` / `get_session_render_first` (`routes.rendering.session`) —
+  per-session render-mode preference (beyond the header override).
+- `django_fusion.plugins.htmx.is_htmx_request` — centralized HTMX detection
+  (already used internally by dual-mode).
+- `PageHandler` (`routes.pages.handler`) — full-page fragment/layout render
+  pipeline (used by landing-fusion; Formint currently uses lean fragments).
+- `comp`/`comp_include` template tags + component registry — server-side
+  component reuse across templates.
+- `django_fusion.contrib.api` — extra API helpers for Ninja-based apps.

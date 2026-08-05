@@ -147,5 +147,40 @@ FORMINT_ADMIN_NAME = os.environ.get('FORMINT_ADMIN_NAME', 'Formint Admin')
 # enables the component and fragment settings it actually uses; it does not
 # delegate page layout, loading UI, or business ownership to the library.
 COMPONENTS_DIR_NAMES = ('components', 'partials', 'tags')
-FUSION_RENDER_FIRST_DEFAULT = True
-COMPONENTS_FUSION_RENDER_FIRST_DEFAULT = True
+
+# ── Fusion Render Mode (django-fusion dual-mode contract) ────────────────
+# Mirrors landing-fusion's settings contract. Two content-delivery modes:
+#
+#   True  → "fusion render first" — Django serves finished server-rendered
+#           HTML (or fusion-encoded JSON) as the source of truth.
+#   False → "data APIs" — the Astro client renders from /api/v1/* JSON.
+#
+# Per-request override with the ``X-Fusion-Render-First: true|false`` header
+# (see formint/fusion.py get_effective_render_first). Env: FUSION_RENDER_FIRST=1|0
+FUSION_RENDER_FIRST_DEFAULT = os.environ.get('FUSION_RENDER_FIRST', '1') == '1'
+COMPONENTS_FUSION_RENDER_FIRST_DEFAULT = FUSION_RENDER_FIRST_DEFAULT
+
+# ── Fusion Assets (frontend bundle parity) ────────────────────────────────
+# Mirrors the Astro frontend bundler output so Django template tags and the
+# Astro build emit the same URLs. Served via: GET /api/v1/assets/ and
+# GET /fusion/assets/ (see formint/fusion.py assets_api).
+FUSION_ASSETS = {
+    'top': {
+        'preconnect': [],
+        'fonts': [],
+        'css': [],
+    },
+    'bottom': {
+        'js': [],
+    },
+}
+
+FUSION_ASSET_PIPELINE = {
+    'enabled': True,
+    'webpack': {'enabled': False},
+    'components': {
+        'enabled': True,
+        'manifest_path': str(BASE_DIR / 'staticfiles' / 'components' / 'manifest.json'),
+    },
+    'static_url': STATIC_URL,
+}

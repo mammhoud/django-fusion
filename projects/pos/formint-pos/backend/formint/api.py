@@ -83,6 +83,31 @@ class SystemController:
         result["sale_total_count"] = total["total"]
         return result
 
+    @http_get("/render-mode")
+    def render_mode(self, request: HttpRequest):
+        """Report the active fusion render mode (mirrors landing-fusion /apis/render-mode/).
+
+        ``X-Fusion-Render-First: true|false`` overrides the configured default
+        for a single request.
+        """
+        from formint.fusion import render_mode_payload
+
+        return render_mode_payload(request)
+
+    @http_get("/navigation")
+    def navigation(self, request: HttpRequest):
+        """Nav items from FormintSite (single source of truth for POS nav)."""
+        from formint.fusion import navigation_payload
+
+        return navigation_payload(request)
+
+    @http_get("/assets")
+    def assets(self, request: HttpRequest):
+        """FUSION_ASSETS manifest for frontend bundle parity."""
+        from formint.fusion import assets_payload
+
+        return assets_payload(request)
+
 
 # Register every merged model controller (CRUD surface) + the system controller.
 api.register_controllers(*ALL_CONTROLLERS, SystemController)
