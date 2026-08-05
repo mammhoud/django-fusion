@@ -85,6 +85,29 @@ make screenshots       # Capture marketplace screenshots
 make clean             # Delete all editions
 ```
 
+### Formint POS Professional (merged package)
+
+> **`formint-pos/`** is the merged package that consolidates `pos-full` + `pos-solo`
+> into one product boundary with the same Tauri architecture. The backend uses
+> **Django Ninja + ninja-extra** for the REST API (django-fusion encoder/decoder
+> on every response) and **django-fusion data components** (tables + forms) for
+> HTMX fragments.
+
+```bash
+cd formint-pos/backend && python3 -m venv .venv && . .venv/bin/activate
+pip install -e . && python manage.py migrate
+python manage.py runserver 127.0.0.1:8000   # API at /api/v1/, HTMX at /htmx/
+
+cd ../frontend && pnpm install && pnpm dev  # Astro shell (proxies /api and /htmx)
+```
+
+API surface: `/api/v1/health`, `/api/v1/stats`, `/api/v1/openapi.json`, `/api/v1/docs`,
+plus paginated CRUD for 45 resources (products, sales, inventory, suppliers,
+purchase orders, loyalty, CRM, HR, …).
+
+See [`formint-pos/README.md`](formint-pos/README.md) and
+[`formint-pos/migration/compatibility-manifest.json`](formint-pos/migration/compatibility-manifest.json).
+
 ---
 
 ## 📸 Screenshots

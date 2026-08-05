@@ -1,0 +1,25 @@
+<div class="fusion-table" data-fusion-table="{{ resource }}" data-fusion-fragment="formint.tables.{{ resource }}">
+  <div class="table-toolbar">
+    <span class="table-count">{{ table_data|length }} client categories</span>
+    <button class="btn btn-primary btn-sm" hx-get="/htmx/forms/client-category/" hx-target="#formint-form-slot" hx-swap="innerHTML">+ New tier</button>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>{% for header in table_headers %}<th scope="col">{{ header.label }}</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row in table_data %}
+        <tr>
+          <td>{{ row.id }}</td>
+          <td class="cell-strong">{{ row.name }}</td>
+          <td class="cell-numeric">{{ row.min_points }}</td>
+          <td class="cell-numeric">{{ row.points_per_currency }}</td>
+          <td class="cell-numeric">{{ row.discount_rate }}%</td>
+          <td>{% if row.is_active %}<span class="badge badge-ok">Active</span>{% else %}<span class="badge badge-muted">Inactive</span>{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="table-empty">No client categories yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
