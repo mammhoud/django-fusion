@@ -39,6 +39,19 @@ describe('Fusion page contract — PageHandler + FusionDecoder', () => {
     expect(page).toContain('fusionDecoder.clearSession()');
   });
 
+  it('broadcasts local changes to other tabs via session-sync', () => {
+    expect(page).toContain("import { fusionSessionSync } from '../lib/session-sync';");
+    expect(page).toContain('fusionSessionSync.publish(next)');
+    expect(page).toContain('fusionSessionSync.publish(null)');
+  });
+
+  it('subscribes to preference changes made in other tabs', () => {
+    expect(page).toContain('fusionSessionSync.subscribe((value) => {');
+    expect(page).toContain('fusionDecoder.clearSession()');
+    expect(page).toContain('fusionDecoder.initSession(value)');
+    expect(page).toContain('loadPointer()');
+  });
+
   it('shows the effective strategy derived from pointer + session', () => {
     expect(page).toContain('data-field="strategy"');
     expect(page).toContain('renderStrategy(pointer.fusion_render_first, session)');
