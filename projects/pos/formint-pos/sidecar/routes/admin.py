@@ -155,7 +155,7 @@ def _base_context(request: Request, page: str, title: str) -> dict:
 
 def _get_version() -> str:
     try:
-        from __about__ import __version__
+        from about import __version__
         return __version__
     except ImportError:
         return "unknown"

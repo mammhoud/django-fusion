@@ -34,7 +34,7 @@ class AboutFragment(FragmentComponent):
     fragment_name = "pos.about"
 
     def get_context(self, **kwargs: Any) -> dict[str, Any]:
-        from __about__ import __title_full__, __version__
+        from about import __title_full__, __version__
         from models.node import Node
 
         # Node count (other registered devices)

@@ -8,7 +8,7 @@ from asgiref.sync import sync_to_async
 from robyn import jsonify
 
 from routes import state as S
-from __about__ import __version__, __service_name_full__, __service_desc_full__
+from about import __version__, __service_name_full__, __service_desc_full__
 
 
 def register_info_routes(app):
