@@ -50,8 +50,8 @@ where = ["."]
 include = ["models*", "routes*"]
 
 [tool.setuptools.dynamic]
-# Version from local __about__.py.
-version = { attr = "__about__.__version__" }
+# Version from local about.py.
+version = { attr = "about.__version__" }
 
 [tool.setuptools]
 py-modules = ["server"]

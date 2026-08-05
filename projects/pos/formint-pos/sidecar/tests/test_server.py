@@ -68,7 +68,7 @@ from models.token import DeviceToken
 from models.approval import SyncApproval
 from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
 from models.ops import KitchenTicket, SupportTicket
-from __about__ import __version__
+from about import __version__
 
 # Create tables for all managed=True models
 _TABLES = [

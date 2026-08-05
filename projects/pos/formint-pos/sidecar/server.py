@@ -41,10 +41,13 @@ _PATH = Path(__file__).resolve().parent
 if str(_PATH) not in sys.path:
     sys.path.insert(0, str(_PATH))
 
+# Version metadata. Module-scope import so PyInstaller bundles it (PyInstaller's
+# modulegraph silently drops dunder-named modules, so this is ``about``).
+import about  # noqa: F401  (used below and by routes/info, fragments/about)
+
 # Fast-path: --version does not require Django bootstrap
 if "--version" in sys.argv:
-    from __about__ import __title_full__, __version__
-    print(f"{__title_full__} v{__version__}")
+    print(f"{about.__title_full__} v{about.__version__}")
     sys.exit(0)
 
 from robyn import Robyn, Response, Request
@@ -610,7 +613,7 @@ def main():
     args = _parse_args()
 
     if args.version:
-        from __about__ import __title_full__, __version__
+        from about import __title_full__, __version__
         print(f"{__title_full__} v{__version__}")
         return
 

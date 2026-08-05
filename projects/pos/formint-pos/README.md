@@ -105,7 +105,11 @@ rendered fragments and lean HTMX data-only responses (see `formint/fusion.py`).
 ```bash
 cd projects/pos/formint-pos
 make install   # backend .venv + deps + migrate + frontend npm install
-make seed      # migrate + idempotent superuser (admin@formint.local / admin123)
+make seed      # migrate + superuser + demo data (admin@formint.local / admin123)
+make seed-force  # wipe + re-seed all demo data
+#   Demo data: 9 products · 5 customers · 3 loyalty tiers · 12 sales ·
+#   4 suppliers · 3 branches (nodes) · sync logs + menu/employees/CRM
+#   → populates every /htmx/tables/<resource>/ and the branch summary
 make env       # tmux: backend :8767 + frontend :4321 (health-checked)
 #   API      → http://127.0.0.1:8767/api/v1/docs
 #   Admin    → http://127.0.0.1:8767/admin/
