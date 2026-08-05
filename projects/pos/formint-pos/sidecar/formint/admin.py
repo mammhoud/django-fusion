@@ -22,6 +22,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from unfold.admin import ModelAdmin, TabularInline
 
+from formint.middleware import seed_user_settings_session
 from formint.models import (
     # POS core
     Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee,
@@ -101,18 +102,61 @@ class LoyaltyTransactionAdmin(ModelAdmin):
 
 @admin.register(UserSettings)
 class UserSettingsAdmin(ModelAdmin):
-    """Per-user POS settings — mirrors the front Settings page + preferences."""
+    """Per-user POS settings — mirrors the front Settings page + preferences.
+
+    Includes the operator-facing ``fusion_render_mode`` preference that
+    seeds the session via ``FormintSessionModeMiddleware`` (see
+    ``formint/middleware.py``) so non-technical operators can switch the
+    POS between server-rendered HTML and JSON API delivery from the admin.
+    """
 
     list_display = [
         "id", "user", "user_email", "restaurant_name", "currency",
-        "tax_rate", "theme", "language", "notifications_enabled",
+        "tax_rate", "fusion_render_mode", "theme", "language",
+        "notifications_enabled",
     ]
-    list_filter = ["theme", "language", "notifications_enabled"]
+    list_filter = ["theme", "language", "notifications_enabled", "fusion_render_mode"]
     list_filter_submit = True
     search_fields = ["user__username", "user__email", "restaurant_name", "email"]
     list_fullwidth = True
     compressed_fields = True
     readonly_fields = ["created_at", "updated_at"]
+    fieldsets = (
+        ("Account", {"fields": ("user",)}),
+        ("Business Settings", {"fields": (
+            "restaurant_name", "address", "phone", "email", "tax_rate",
+            "currency", "opening_time", "closing_time", "receipt_footer",
+            "logo", "dine_in_tables", "delivery_fee", "delivery_fee_per_km",
+        )}),
+        ("Fusion Render Mode", {
+            "fields": ("fusion_render_mode",),
+            "description": (
+                "How the POS serves content: <b>Fusion render-first</b> = finished "
+                "server HTML; <b>Data APIs</b> = JSON for the client; "
+                "<b>Default (settings)</b> = follow the configured default. "
+                "Applies to the logged-in operator on their next page load."
+            ),
+        }),
+        ("User Preferences", {"fields": (
+            "theme", "language", "notifications_enabled",
+            "inactivity_timeout", "two_factor_enabled",
+        )}),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
+
+    def save_model(self, request, obj, form, change):
+        """Persist the row, then immediately re-seed the operator's session
+        so the saved ``fusion_render_mode`` takes effect on their next
+        request (no need to wait for a new session).
+
+        Only re-seeds when the operator edits their *own* settings row
+        (``obj.user_id == request.user.id``) — the middleware seeds every
+        other user's session from their own row on their next session, so
+        cross-user edits never mutate the operator's session.
+        """
+        super().save_model(request, obj, form, change)
+        if obj.user_id == request.user.id:
+            seed_user_settings_session(request, mode=obj.fusion_render_mode)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

@@ -417,7 +417,8 @@ class UserSettingsOut(FusionModelSchema):
             "receipt_footer", "logo", "dine_in_tables", "delivery_fee",
             "delivery_fee_per_km", "theme", "language",
             "notifications_enabled", "inactivity_timeout",
-            "two_factor_enabled", "created_at", "updated_at",
+            "two_factor_enabled", "fusion_render_mode",
+            "created_at", "updated_at",
         ]
 
 

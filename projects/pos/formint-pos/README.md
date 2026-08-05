@@ -117,7 +117,7 @@ make env       # tmux: backend :8767 + frontend :4321 (health-checked)
 #   Render   → http://127.0.0.1:4321/fusion/render-mode/
 
 make status    # tmux sessions + endpoint health
-make test      # 35 backend tests + frontend contract tests
+make test      # 66 backend tests + frontend contract tests
 make stop      # stop the tmux env
 ```
 
