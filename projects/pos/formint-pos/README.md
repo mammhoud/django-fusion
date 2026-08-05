@@ -126,6 +126,34 @@ Full command list: `make help`. The parent `projects/pos/Makefile` delegates
 
 Validation: `make check` (django check + astro check), `make test`.
 
+---
+
+## 📸 Screenshots
+
+### Frontend (Astro + HTMX, seeded data)
+
+| Home — branch summary with live counts | Data — server-rendered tables |
+|----------------------------------------|-------------------------------|
+| ![Home](<../docs/screenshots/frontend/01_frontend_home.jpg>) | ![Data](<../docs/screenshots/frontend/02_frontend_data.jpg>) |
+
+### Admin (Unfold master manager)
+
+| Dashboard — KPI cards + charts | Products |
+|-------------------------------|----------|
+| ![Dashboard](<../docs/screenshots/admin/03_admin_dashboard.jpg>) | ![Products](<../docs/screenshots/admin/04_admin_products.jpg>) |
+
+| Customers | Sales |
+|-----------|-------|
+| ![Customers](<../docs/screenshots/admin/05_admin_customers.jpg>) | ![Sales](<../docs/screenshots/admin/06_admin_sales.jpg>) |
+
+| Loyalty — client categories | Settings — user preferences |
+|-----------------------------|-----------------------------|
+| ![Loyalty](<../docs/screenshots/admin/07_admin_loyalty.jpg>) | ![Settings](<../docs/screenshots/admin/08_admin_settings.jpg>) |
+
+> Captured from a seeded dev environment (`make env` + `make seed`). Re-capture
+> with `bash ../scripts/dev/capture-formint-screenshots.sh` (frontend) and
+> `python3 ../scripts/dev/capture-admin-screens.py` (admin, Selenium login).
+
 ## Frontend
 
 ```bash

@@ -92,7 +92,7 @@ help: ## Show all commands
 	@echo '  make release          check + test + web build + desktop bundle'
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
-	@echo '  make screenshots      Capture Unfold admin screenshots → docs/screenshots/admin/'
+	@echo '  make screenshots      Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/'
 	@echo ''
 
 
@@ -175,13 +175,12 @@ clean: ## Remove build artifacts + db + node_modules
 	$(MAKE) -C $(FRONTEND_DIR) clean
 	@echo '✅ Formint POS cleaned'
 
-screenshots: ## Capture Unfold admin screenshots → docs/screenshots/admin/
-	@mkdir -p docs/screenshots/admin
-	@echo 'ℹ️  Admin screenshots live in docs/screenshots/admin/ (4 images, committed).'
-	@echo '   To re-capture: start the backend (make env), log in at http://127.0.0.1:$(BACKEND_PORT)/admin/,'
-	@echo '   then run the legacy capture tool: bash ../scripts/dev/capture-admin-screenshots.sh'
-	@echo '   (that tool targets the legacy pos-full admin layout; for formint admin pages, capture'
-	@echo '   /admin/ + the formint model changelists manually at 1440px via headless Chromium.)'
+screenshots: ## Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/
+	@mkdir -p docs/screenshots/frontend docs/screenshots/admin
+	@echo 'ℹ️  Re-capturing screenshots (requires: make env + make seed, chromium, selenium, imagemagick)'
+	bash ../scripts/dev/capture-formint-screenshots.sh
+	@rm -rf docs/screenshots/_captures
+	@echo '✅ Screenshots updated in docs/screenshots/{frontend,admin}/'
 
 # ── Backend delegation ────────────────────────────────────────────────────
 
