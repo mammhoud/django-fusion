@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     # Wagtail (required by django_fusion.core.models.mixins.display_mode)
     "wagtail",
+    # django-fusion local library (DataToken sync tracking, fusion rendering)
+    "django_fusion",
     # POS Full managed models
     "models.PosFullConfig",
 ]
@@ -60,10 +62,13 @@ MIDDLEWARE = [
 ROOT_URLCONF = "configs.urls"
 
 # ── Templates (required for admin) ──
+# DIRS contains only django_templates/ (a Django-only template tree). The
+# sibling templates/ dir is the Robyn/Jinja2 admin tree and must NOT be
+# exposed to Django (its Jinja2 syntax would break Django template loading).
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [str(BASE_DIR / "django_templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -87,9 +92,15 @@ UNFOLD = {
     "SITE_URL": "/",
     "SITE_ICON": None,
     "SITE_SYMBOL": "dashboard",
+    # Legacy unfold DashboardView path (older unfold builds)
     "DASHBOARD": "configs.dashboard.POSDashboardView",
+    # Modern unfold (>= 0.80) dashboard callback — injects KPI/charts/tables
+    "DASHBOARD_CALLBACK": "configs.dashboard.pos_dashboard_callback",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
+    "LOGIN": {
+        "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+    },
     "THEME": "dark",  # dark | light
     "COLORS": {
         "primary": {
@@ -125,15 +136,24 @@ UNFOLD = {
                 {"title": "Support Tickets", "icon": "support", "link": "/admin/pos_full/supportticket/"},
                 {"title": "Menu", "icon": "menu_book", "link": "/admin/pos_full/menu/"},
             ]},
+            {"title": "Loyalty & Clients", "items": [
+                {"title": "Client Categories", "icon": "workspace_premium", "link": "/admin/pos_full/clientcategory/"},
+                {"title": "Loyalty Transactions", "icon": "stars", "link": "/admin/pos_full/loyaltytransaction/"},
+                {"title": "Customers (People)", "icon": "people_alt", "link": "/admin/pos_full/customer/"},
+            ]},
             {"title": "Nodes & Sync", "items": [
                 {"title": "Nodes", "icon": "dns", "link": "/admin/pos_full/node/"},
                 {"title": "Sync Logs", "icon": "sync", "link": "/admin/pos_full/synclog/"},
                 {"title": "Device Configs", "icon": "settings", "link": "/admin/pos_full/deviceconfig/"},
                 {"title": "Cloud Links", "icon": "cloud", "link": "/admin/pos_full/cloudlink/"},
             ]},
-            {"title": "System", "items": [
+            {"title": "Settings", "items": [
+                {"title": "User Settings", "icon": "manage_accounts", "link": "/admin/pos_full/usersettings/"},
                 {"title": "Users", "icon": "person", "link": "/admin/auth/user/"},
                 {"title": "Groups", "icon": "groups", "link": "/admin/auth/group/"},
+            ]},
+            {"title": "System", "items": [
+                {"title": "Server Settings", "icon": "tune", "link": "/admin/settings"},
             ]},
         ],
     },

@@ -28,7 +28,7 @@ Both projects depend on the shared **django-fusion** library (submodule at `libs
 | Aspect | CMS-Fusion | LMS-Fusion |
 |---|---|---|
 | `FUSION_RENDER_FIRST_DEFAULT` | `True` | `False` |
-| FusionProxy approach | `fragmentUrl` → fetch HTML directly | `slug` → bolt API fallback chain |
+| FusionProxy approach | `fragmentUrl` → fetch HTML directly | `slug` → project API fallback chain |
 | Rendering priority | Fragment-first (server HTML) | Data-first (API JSON) |
 | Theme color | Purple `#7c3aed` | Teal `#00a1b3` |
 

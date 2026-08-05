@@ -5,7 +5,7 @@
 
 The CMS Fusion core integration is complete. Remaining cleanup work (assets, templates, legacy directories) is tracked in [`docs/plans/README.md`](../README.md).
 
-The CMS Fusion project is a complete, full-featured content management system built on django-fusion + django-bolt + Wagtail with a Next.js frontend. It absorbs all features from the legacy fusion-cms project (now backed up at `projects/cms/fusion-cms.bak`).
+The CMS Fusion project is a complete, full-featured content management system built on django-fusion + Wagtail with a Next.js frontend. Its API endpoints are owned and registered by the project (the shared django-fusion library does not provide a Bolt integration). It absorbs all features from the legacy fusion-cms project (now backed up at `projects/cms/fusion-cms.bak`).
 
 ---
 
@@ -14,7 +14,7 @@ The CMS Fusion project is a complete, full-featured content management system bu
 ```
 cms-fusion/
 ├── backend/                    # Django + Wagtail backend
-│   ├── www/api/bolt_apis.py   # Bolt API — all endpoints
+│   ├── www/api/bolt_apis.py   # Project-owned API — all endpoints
 │   ├── www/api/pages.py       # Page API (Wagtail-first, static fallback)
 │   ├── plugins/               # All fusion-cms plugins merged
 │   │   ├── accounts/          # Auth, registration, profiles
@@ -41,7 +41,7 @@ cms-fusion/
 
 ## Feature Matrix
 
-| Feature | Backend | Bolt API | Next.js | Status |
+| Feature | Backend | Project API | Next.js | Status |
 |---------|:-------:|:--------:|:-------:|:------:|
 | **Pages** (about, team, services, contact) | Wagtail + STATIC_PAGES | `/api/pages/<slug>` | `[slug]/page.tsx` via FusionProxy | ✅ |
 | **Home Page** | Wagtail FusionHomePage | `/api/pages/home` | `page.tsx` via FusionProxy | ✅ |
@@ -63,7 +63,7 @@ cms-fusion/
 
 ---
 
-## Bolt API Endpoints Reference
+## Project API Endpoints Reference
 
 ### Health & Status
 - `GET /api/health` — Health check
@@ -119,9 +119,9 @@ cms-fusion/
 
 2. **FusionProxy fallback chain**: Fragment pointer → Wagtail page data → Server-rendered HTML → Error. This ensures pages render in the optimal mode based on `fusion_render_first` preference.
 
-3. **Isolated per-project design**: cms-fusion is a self-contained project with its own settings, URLs, bolt APIs, and frontend. It shares the django-fusion and django-bolt libraries but maintains its own feature set.
+3. **Isolated per-project design**: cms-fusion is a self-contained project with its own settings, URLs, project-owned APIs, and frontend. It shares django-fusion but keeps any optional API framework integration in the project boundary.
 
-4. **Branding via Wagtail**: The `branding` plugin uses a Wagtail model for site name, colors, company info. This is editable via the Wagtail admin and exposed via the bolt API.
+4. **Branding via Wagtail**: The `branding` plugin uses a Wagtail model for site name, colors, company info. This is editable via the Wagtail admin and exposed via the project-owned API.
 
 5. **FUSION_FEATURES toggle**: Individual features (blog, courses, products) can be toggled on/off via settings. Endpoints gracefully handle missing models.
 
@@ -130,8 +130,9 @@ cms-fusion/
 ## Related Plans
 
 - [LMS Fusion Migration Plan](../lms-fusion/migration-plan.md)
-- [Django Fusion Bolt Integration](../../../libs/django-fusion/src/django_fusion/plugins/bolt/)
-- [POS Full Enhancement Plan](../pos/forge-pos-enhancement.md)
+- [Django Fusion API and rendering case study](../../DJANGO_BOLT_FUSION_CASE_STUDY.md)
+- [Formint POS Professional Plan](../pos/formint-pos-professional-plan.md)
+- [Forge POS parity and retirement gates](../pos/forge-pos-plan.md)
 
 ---
 

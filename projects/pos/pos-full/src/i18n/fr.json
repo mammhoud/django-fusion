@@ -646,7 +646,8 @@
       "delivery": "Livraison",
       "employees": "Employés",
       "database": "Base de données",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "loyalty": "Fidélité"
     },
     "appearanceTab": {
       "title": "Theme Customization",
@@ -736,7 +737,38 @@
       "deliveryFee": "Frais de livraison",
       "perKmFee": "Frais/km"
     },
-    "languageNote": "Basculer entre l'anglais, l'arabe et le français. Support RTL automatique."
+    "languageNote": "Basculer entre l'anglais, l'arabe et le français. Support RTL automatique.",
+    "loyaltyTab": {
+      "title": "Fidélité et catégories de clients",
+      "description": "Classez vos clients en niveaux de fidélité basés sur des points, remises et avantages.",
+      "activeCategories": "Catégories actives",
+      "ledgerEntries": "Entrées du registre",
+      "pointsIssued": "Points émis",
+      "categoryName": "Nom de la catégorie",
+      "minPoints": "Points min.",
+      "discount": "Remise %",
+      "perks": "Avantages (séparés par des virgules)",
+      "addCategory": "Ajouter une catégorie",
+      "delete": "Supprimer",
+      "noCategories": "Aucune catégorie client pour l'instant — ajoutez votre premier niveau ci-dessus.",
+      "userSettings": "Paramètres utilisateur",
+      "userSettingsDesc": "Mêmes données que la page de paramètres POS, avec des détails par utilisateur.",
+      "theme": "Thème",
+      "language": "Langue",
+      "notifications": "Notifications",
+      "inactivityTimeout": "Délai d'inactivité",
+      "saveUserPrefs": "Enregistrer les préférences",
+      "recentTransactions": "Transactions de fidélité récentes",
+      "customer": "Client",
+      "type": "Type",
+      "change": "Variation",
+      "balance": "Solde",
+      "date": "Date",
+      "noTransactions": "Aucune transaction de fidélité pour l'instant.",
+      "saved": "Modifications de fidélité enregistrées",
+      "saveFailed": "Échec de l'enregistrement",
+      "currentUser": "utilisateur actuel"
+    }
   },
   "supportChat": {
     "title": "Support & Customer Chat",

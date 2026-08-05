@@ -56,7 +56,7 @@ class CustomersFragment(FragmentComponent):
             "total_customers": total_customers,
             "active_customers": active_customers,
             "total_loyalty_points": total_loyalty,
-            "total_lifetime_spent": str(total_spent),
+            "total_lifetime_spent": f"{total_spent:.2f}",
             "top_customers": [
                 {
                     "name": f"{c['first_name']} {c['last_name']}".strip(),

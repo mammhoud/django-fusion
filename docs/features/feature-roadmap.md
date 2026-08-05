@@ -58,7 +58,22 @@
 
 ## POS System
 
-> Desktop POS with Rust backend, Vue 3 frontend, Tauri shell.
+> **Formint POS Professional** is the canonical target for the next restaurant-focused POS releases. Legacy Solo/Full labels remain compatibility references during migration.
+
+### Formint Professional launch scope
+
+| Feature | Priority | Release gate |
+|---------|:--------:|--------------|
+| Multi-branch management | P0 | Offline branch operation, idempotent sync, permissions, transfers |
+| Kitchen Display System | P0 | Station routing, ticket lifecycle, timers, metrics |
+| QR Menu | P0 | Versioned localized menu, preview/publish, branch/table QR |
+| Loyalty System | P1 | Immutable points ledger, rewards, consent, reversals |
+| API Access | P1 | Versioned schemas, scoped keys, rate limits, webhooks |
+| Mobile Waiter | P1 | Tableside orders, kitchen handoff, split/merge, offline retry |
+
+See the [Formint POS Professional Edition plan](../plans/pos/formint-pos-professional-plan.md) for the canonical business scope, architecture, migration gates, pricing hypotheses, and launch strategy.
+
+> Target stack: Tauri 2 + Rust desktop shell, Astro + Alpine.js + HTMX + Tailwind UI, Django + django-fusion backend, and SQLite/PostgreSQL data layers.
 
 ### P0 🔴 — In Development
 
@@ -70,10 +85,10 @@
 
 | Feature | Edition | Description |
 |---------|---------|-------------|
-| **Multi-terminal Sync** | Full | Real-time sync between multiple POS terminals |
-| **Cloud Dashboard** | Full | Web-based admin dashboard for multi-store management |
-| **Offline Queue** | All | Queue transactions when offline, sync when back online |
-| **Barcode Scanner** | Solo+ | Native barcode scanning with camera/device scanner |
+| **Multi-terminal Sync** | Professional | Real-time sync between multiple POS terminals |
+| **Cloud Dashboard** | Professional/SaaS | Web-based dashboard for multi-branch management |
+| **Offline Queue** | Community+ | Queue transactions when offline, sync when back online |
+| **Barcode Scanner** | Professional | Native barcode scanning with camera/device scanner |
 
 ### ✅ Done — Shipped
 
@@ -94,20 +109,19 @@
 
 | Feature | Edition | Description |
 |---------|---------|-------------|
-| **Kitchen Display** | Full | KDS integration for restaurant mode |
-| **Loyalty Program** | Solo+ | Points-based loyalty with rewards |
-| **Gift Cards** | Solo+ | Digital gift card system |
-| **Table Management** | Full | Restaurant table layouts and order tracking |
-| **Delivery Integration** | Full | Integrate with delivery platforms (Talabat, HungerStation) |
+| **Gift Cards** | Professional+ | Digital gift card system |
+| **Table Management** | Professional+ | Restaurant table layouts and order tracking |
+| **Delivery Integration** | Professional+ | Integrate with delivery platforms (Talabat, HungerStation) |
+| **AI Forecasting** | Professional/SaaS | Advisory demand, stock, waste, and sales recommendations |
 
 ### P3 ⚪ — Backlog
 
 | Feature | Edition | Description |
 |---------|---------|-------------|
-| **Inventory Forecasting** | Full | ML-based demand prediction and auto-reorder |
-| **Employee Scheduling** | Full | Shift planning and time tracking |
-| **Customer Display** | Solo+ | Customer-facing display for order confirmation |
-| **Self-checkout Kiosk** | Full | Self-service kiosk mode |
+| **Inventory Forecasting** | Professional/SaaS | Advisory demand prediction and auto-reorder recommendations |
+| **Employee Scheduling** | Professional | Shift planning and time tracking |
+| **Customer Display** | Professional | Customer-facing display for order confirmation |
+| **Self-checkout Kiosk** | Professional/SaaS | Self-service kiosk mode |
 
 ---
 
@@ -232,7 +246,7 @@
 Q3 2026 (Jul-Sep)     Q4 2026 (Oct-Dec)     Q1 2027 (Jan-Mar)
 ─────────────────     ─────────────────     ─────────────────
 🔴 Cypercloud P0       🟡 POS P1             🟢 POS P2
-  • Stripe billing       • Multi-terminal      • Kitchen Display
+  • Stripe billing       • Multi-terminal      • Formint Professional pilot
   • API tokens           • Cloud Dashboard     • Loyalty Program
   • Customer dashboard   • Offline Queue       • Gift Cards
                        🟡 LMS P1             🟢 LMS P2
@@ -253,6 +267,6 @@ Q3 2026 (Jul-Sep)     Q4 2026 (Oct-Dec)     Q1 2027 (Jan-Mar)
 | Topic | Path |
 |-------|------|
 | Feature matrix | [`README.md`](README.md) |
-| Cypercloud platform plan | [`../projects/cypercloud/platform-plan.md`](../projects/cypercloud/platform-plan.md) |
+| Cypercloud platform plan | [`../plans/migrated/docs/projects/cypercloud/platform-plan.md`](../plans/migrated/docs/projects/cypercloud/platform-plan.md) |
 | Per-project features | [`../projects/`](../projects/) |
 | Feature matrix | [`README.md`](README.md) |

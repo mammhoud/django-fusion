@@ -1,33 +1,34 @@
-/* ── CSS Custom Properties ───────────────────────────────────────── */
-/* Centralized design tokens for easy customization of themes,          */
-/* components, and utilities. Override these in :root or html.dark.      */
+/* ── CSS Custom Properties ──────────────────────────────────────────────
+   Centralized design tokens inherited from pos-theme.css v2.
+   Override any token here for project-specific tuning.
+   ─────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Safe area insets */
+  /* Safe area insets (mobile notch support) */
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-right: env(safe-area-inset-right, 0px);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
 
-  /* Theme: Light (default) */
-  --color-bg-body: #f8fafc;
-  --color-text-body: #0f172a;
+  /* ── Legacy aliases (bridge to pos-theme v1 tokens) ──────────────── */
+  --color-bg-body: var(--pos-bg);
+  --color-text-body: var(--pos-text);
   --color-bg-dark: #0f172a;
   --color-text-dark: #f8fafc;
 
-  /* Brand / Accent */
+  /* Brand / Accent (legacy) */
   --color-primary: #667eea;
   --color-primary-dark: #764ba2;
-  --color-focus-ring: #667eea;
+  --color-focus-ring: var(--pos-primary);
 
-  /* Card modifiers */
+  /* ── Card glass (works in light + dark via pos-theme) ────────────── */
   --card-glass-bg: rgba(255, 255, 255, 0.7);
   --card-glass-border: rgba(255, 255, 255, 0.2);
   --card-glass-bg-dark: rgba(255, 255, 255, 0.1);
   --card-glass-border-dark: rgba(255, 255, 255, 0.08);
   --card-hover-translate: -2px;
-  --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  --card-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --card-hover-shadow: var(--pos-shadow-md);
+  --card-transition-timing: var(--pos-easing-spring);
   --card-transition-duration: 0.3s;
 
   /* Shimmer effect */
@@ -42,13 +43,20 @@
   /* Focus ring */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-  --focus-ring-radius: 4px;
+  --focus-ring-radius: var(--pos-radius-sm);
 
   /* Animation delays */
   --animation-delay-100: 100ms;
   --animation-delay-200: 200ms;
   --animation-delay-300: 300ms;
   --animation-delay-400: 400ms;
+
+  /* ── Responsive container max-widths ────────────────────────────────── */
+  --container-width-sm: 448px;
+  --container-width-md: 720px;
+  --container-width-lg: 960px;
+  --container-width-xl: 1200px;
+  --container-width-xxl: 1440px;
 }
 
 html.dark {
@@ -57,3 +65,29 @@ html.dark {
   --card-glass-bg: var(--card-glass-bg-dark);
   --card-glass-border: var(--card-glass-border-dark);
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE UTILITIES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Container widths */
+.container-pos { max-width: var(--container-width-xl); margin-inline: auto; padding-inline: var(--pos-space-md); }
+.container-pos--sm { max-width: var(--container-width-md); }
+.container-pos--lg { max-width: var(--container-width-xxl); }
+
+@media (min-width: 480px)  { .container-pos { padding-inline: var(--pos-space-lg); } }
+@media (min-width: 1024px) { .container-pos { padding-inline: var(--pos-space-xl); } }
+
+/* Responsive spacing utility classes */
+.pos-py-responsive { padding-top: var(--pos-space-lg); padding-bottom: var(--pos-space-lg); }
+.pos-px-responsive { padding-left: var(--pos-space-md); padding-right: var(--pos-space-md); }
+
+@media (min-width: 768px) {
+  .pos-py-responsive { padding-top: var(--pos-space-2xl); padding-bottom: var(--pos-space-2xl); }
+  .pos-px-responsive { padding-left: var(--pos-space-xl); padding-right: var(--pos-space-xl); }
+}
+
+/* Responsive text */
+.pos-text-responsive { font-size: var(--pos-text-base); }
+@media (min-width: 768px) { .pos-text-responsive { font-size: var(--pos-text-md); } }

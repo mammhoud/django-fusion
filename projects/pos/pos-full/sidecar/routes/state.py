@@ -35,6 +35,9 @@ CloudLink = None
 SyncApproval = None
 DeviceToken = None
 SignalEvent = None
+ClientCategory = None
+LoyaltyTransaction = None
+UserSettings = None
 
 sync_engine = None
 
