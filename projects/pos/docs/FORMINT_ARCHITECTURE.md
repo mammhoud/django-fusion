@@ -194,6 +194,16 @@ dashboard callbacks; `formint/dashboard.py` kept as a reference copy):
   (doughnut), hourly revenue (bar), loyalty transaction mix (doughnut).
 - **3 tables** — recent sales, recent loyalty transactions, node status.
 
+**Screenshots** (seeded dev environment):
+
+| Dashboard | Products | Customers |
+|-----------|----------|-----------|
+| ![Dashboard](screenshots/admin/03_admin_dashboard.jpg) | ![Products](screenshots/admin/04_admin_products.jpg) | ![Customers](screenshots/admin/05_admin_customers.jpg) |
+
+| Sales | Loyalty | Settings |
+|-------|---------|----------|
+| ![Sales](screenshots/admin/06_admin_sales.jpg) | ![Loyalty](screenshots/admin/07_admin_loyalty.jpg) | ![Settings](screenshots/admin/08_admin_settings.jpg) |
+
 Superuser bootstrap (idempotent): `python manage.py --ensure-superuser`,
 which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
 `FORMINT_ADMIN_NAME` (defaults in `sidecar/configs/`) and seeds a
@@ -213,6 +223,12 @@ which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
 - Frontend contract tests live in `src/tests/` (`index.test.ts`) and are
   collected by the unified vitest config (`tests/js/vitest.config.ts`).
   They are kept out of `src/pages/` so Astro never treats them as routes.
+
+**Screenshots** (seeded dev environment):
+
+| Home — branch summary | Data — tables |
+|-----------------------|---------------|
+| ![Home](screenshots/frontend/01_frontend_home.jpg) | ![Data](screenshots/frontend/02_frontend_data.jpg) |
 
 ---
 

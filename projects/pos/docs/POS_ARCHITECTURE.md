@@ -1290,9 +1290,10 @@ cd formint-pos && make seed && make env
 
 | Dashboard | Products |
 |:---:|:---:|
-| ![Dashboard](../formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg) | ![Products](../formint-pos/docs/screenshots/admin/02_admin_products.jpg) |
+| ![Dashboard](screenshots/admin/03_admin_dashboard.jpg) | ![Products](screenshots/admin/04_admin_products.jpg) |
 
 Admin panel ships with the merged **Formint POS** package (pos-mini has no admin interface).
+Screenshots live in `docs/screenshots/` (see `FORMINT_ARCHITECTURE.md` §3.6 for the full set).
 
 ---
 
