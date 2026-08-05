@@ -1,0 +1,86 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+export async function getStaticPaths() {
+  const list = await fetchPageList();
+  // Only BlogPostPage children (the seeded posts) get detail pages.
+  const slugs = list.pages
+    .filter((p) => p.type === 'BlogPostPage')
+    .map((p) => p.slug);
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
+  ]);
+} catch { /* use fallbacks */ }
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const body = String(pageData?.body || '');
+const category = String(pageData?.category || '');
+const readTime = String(pageData?.read_time || '');
+const postDate = String(pageData?.post_date || '');
+const excerpt = String(pageData?.excerpt || '');
+---
+
+<Layout
+  title={pageData?.title || 'Blog post'}
+  description={excerpt || pageData?.search_description || 'A structa.cloud blog post on the AHA stack.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug={slug}
+>
+  <Hero
+    eyebrow={category || 'insights · server-first rendering'}
+    heading={pageHero?.title || pageData?.title || 'Blog post'}
+    accent=''
+    intro={pageHero?.subtitle || excerpt}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: '← All posts', href: '/blog' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
+    status={`200 OK · ${readTime || 'text/html'}${postDate ? ` · ${postDate}` : ''} · one document`}
+  />
+
+  {body ? (
+    <article class='doc-sheet bg-fu-paper py-16 md:py-20'>
+      <div class='container-fusion'>
+        <div class='mx-auto max-w-2xl'>
+          <div class='mb-10 flex flex-wrap items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted'>
+            {category && <span class='text-fu-link'>{category}</span>}
+            {readTime && <span>{readTime}</span>}
+            {postDate && <time datetime={postDate}>{postDate}</time>}
+            <a href='/blog' class='ml-auto text-fu-link no-underline hover:text-fu-link-dark'>← All posts</a>
+          </div>
+          <div
+            class='prose-fusion'
+            style='color:hsl(var(--fu-ink));font-size:1.0625rem;line-height:1.85;'
+            set:html={body}
+          />
+        </div>
+      </div>
+    </article>
+  ) : <ContentError label="Post body unavailable" />}
+
+  <CTA
+    heading={pageCta?.title || 'Everything is open source'}
+    intro={pageCta?.subtitle || 'Explore more posts on the AHA stack.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'Back to the blog'}
+    ctaHref={pageCta?.primary_cta?.href || '/blog'}
+  />
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

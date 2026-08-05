@@ -1,0 +1,115 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Features from '@/components/blocks/Features.astro';
+import Timeline from '@/components/blocks/Timeline.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('services'),
+  ]);
+} catch { /* use fallbacks */ }
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const pageServices = (pageData?.services as any[] | undefined);
+const pageProcess = (pageData?.process as any[] | undefined);
+
+const serviceItems = pageServices?.map((s: any) => ({
+  icon: String(s.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  title: String(s.title || ''),
+  description: String(s.description || ''),
+  deliverables: (s.deliverables || []) as string[],
+  cta_label: String(s.cta_label || ''),
+  cta_href: String(s.cta_href || ''),
+}));
+
+const processSteps = pageProcess?.map((p: any) => ({
+  date: '',
+  title: String(p.title || ''),
+  description: String(p.description || ''),
+  icon: String(p.icon || ''),
+}));
+---
+
+
+<Layout
+  title={pageData?.title || 'Services'}
+  description={pageData?.search_description || 'Structa Cloud services — server-rendered sites, HTMX integrations, and Alpine-powered UX, built as you go.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="services"
+>
+  <Hero
+    eyebrow={pageHero?.badge || 'services · built as you go'}
+    heading={pageHero?.title || 'Services'}
+    accent='built as you go'
+    intro={pageHero?.subtitle || 'Server-rendered sites, HTMX integrations, and Alpine-powered UX. From brief to shipped in four steps — each one delivers working HTML.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See our products', href: '/products' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
+    status='200 OK · text/html · the offering, in one response'
+  />
+
+  {serviceItems?.length ? (
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mx-auto mb-14 max-w-2xl text-center'>
+        <p class='tag-marker mb-4'>what we do</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Sites that ship as documents</h2>
+        <p class='text-fu-muted'>Server-rendered HTML first. Every engagement below delivers a finished page — no heavy SPA, no hydration waterfall.</p>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
+        {serviceItems.map((service, i) => (
+          <div class='card reveal flex flex-col gap-4 p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+            <div class='mb-1 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
+              <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                <path stroke-linecap='round' stroke-linejoin='round' d={service.icon} />
+              </svg>
+            </div>
+            <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink'>{service.title}</h3>
+            {service.description && <p class='text-sm leading-relaxed text-fu-muted'>{service.description}</p>}
+            {service.deliverables.length > 0 && (
+              <ul class='flex flex-col gap-1.5'>
+                {service.deliverables.map((d: string) => (
+                  <li class='flex items-baseline gap-2 text-sm text-fu-muted'><span class='flex-shrink-0 text-fu-link'>•</span><span>{d}</span></li>
+                ))}
+              </ul>
+            )}
+            {service.cta_label && (
+              <a href={service.cta_href || '/contact'} class='btn-secondary mt-auto w-fit !py-2 text-sm'>{service.cta_label}</a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : <ContentError label="Services data unavailable" />}
+
+  {processSteps?.length ? (
+    <Timeline
+      eyebrow='build as you go'
+      title='From brief to shipped, in four steps'
+      description='No big-bang rewrite. We ship incrementally — each step delivers working HTML you can put in front of users.'
+      events={processSteps}
+    />
+  ) : <ContentError label="Process data unavailable" />}
+
+  <CTA
+    heading={pageCta?.title || 'Everything is open source'}
+    intro={pageCta?.subtitle || 'All structa.cloud libraries are public on GitHub. Explore the code, open issues, or contribute.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
+    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+  />
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

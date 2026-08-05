@@ -1,0 +1,28 @@
+{% load wagtailcore_tags %}
+{% comment %} A single service offering card (ServiceBlock) — mirrors the Astro
+   services page card. Icon + title + description + deliverable list + CTA. {% endcomment %}
+<article class="card service__card flex flex-col gap-4 p-6">
+  {% if value.icon %}
+  <div class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link">
+    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="{{ value.icon }}" />
+    </svg>
+  </div>
+  {% endif %}
+  <h3 class="font-display text-[1.05rem] font-semibold text-fu-ink" style="font-family:'Bricolage Grotesque',sans-serif;">{{ value.title }}</h3>
+  {% if value.description %}
+  <p class="text-sm leading-relaxed text-fu-muted">{{ value.description }}</p>
+  {% endif %}
+  {% if value.deliverables %}
+  <ul class="service__deliverables flex flex-col gap-1.5">
+    {% for item in value.deliverables %}
+    <li class="flex items-baseline gap-2 text-sm text-fu-muted">
+      <span class="flex-shrink-0 text-fu-link">•</span><span>{{ item }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if value.cta_label %}
+  <a href="{{ value.cta_href|default:'/contact/' }}" class="btn-secondary mt-auto w-fit !py-2 text-sm">{{ value.cta_label }}</a>
+  {% endif %}
+</article>

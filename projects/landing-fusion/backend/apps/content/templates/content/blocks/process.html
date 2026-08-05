@@ -1,0 +1,16 @@
+{% load wagtailcore_tags %}
+{% comment %} "Build as you go" process section (ProcessSectionBlock) — a numbered
+   step band. Numbers come from forloop.counter so reordering steps is safe. {% endcomment %}
+<div class="mx-auto max-w-2xl text-center">
+  {% if value.eyebrow %}<span class="badge-primary badge mb-4">{{ value.eyebrow }}</span>{% endif %}
+  <h2 class="text-2xl font-bold text-fu-text sm:text-3xl" style="font-family:'Bricolage Grotesque',sans-serif;">{{ value.title }}</h2>
+  {% if value.description %}<p class="mt-4 text-fu-text/70">{{ value.description }}</p>{% endif %}
+</div>
+<div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+  {% for step in value.steps %}
+  <div class="process__step-wrap">
+    <span class="process__number mb-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-fu-line bg-fu-card font-mono text-sm font-bold text-fu-link">{{ forloop.counter }}</span>
+    {% include_block step %}
+  </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,11 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ page.title }} · Fusion CMS{% endblock %}
+
+{% block content %}
+  {% comment %} Product document — hero, overview, tech, editions & pricing,
+     reference snippets, features, faq, cta — rendered by the shared
+     content-region partial. {% endcomment %}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}
