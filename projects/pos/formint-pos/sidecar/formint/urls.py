@@ -15,6 +15,8 @@ urlpatterns = [
     path('fusion/layouts/', layouts, name='formint-fusion-layouts'),
     # FusionCodec-encoded fragment pointer (session-aware; pairs with TS FusionDecoder)
     path('fusion/pointer/', fusion_pointer_api, name='formint-fusion-pointer'),
+    # Session-mode settings toggle (FusionSessionChecker) — GET report / POST set / DELETE clear
+    path('fusion/session-mode/', views.session_mode, name='formint-session-mode'),
     path('htmx/branches/summary/', views.branch_summary, name='formint-branch-summary'),
     path('htmx/tables/<str:resource>/', views.table_fragment, name='formint-table-fragment'),
     path('htmx/forms/<str:resource>/', views.form_fragment, name='formint-form-fragment'),

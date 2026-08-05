@@ -146,6 +146,7 @@ contract as `projects/landing-fusion/backend/apps/pages/api.py`:
 | `/fusion/navigation/` | Nav JSON at the fragment path |
 | `/fusion/assets/` | Asset manifest at the fragment path |
 | `/fusion/pointer/` | `FusionCodec`-encoded fragment pointer (session-aware) |
+| `/fusion/session-mode/` | Settings-UI toggle — GET report / POST store / DELETE clear (`FusionSessionChecker`, csrf-exempt) |
 | `/fusion/health/` | django-fusion `contrib.api` health (render-strategy preference) |
 | `/fusion/branding/` | django-fusion `contrib.api` branding (env/snippet fallback) |
 | `/fusion/layouts/` | django-fusion `contrib.api` layouts (available/default) |
@@ -287,7 +288,7 @@ Unified test directory: [`../tests/`](../tests/)
 
 | Suite | Location | Runner |
 |---|---|---|
-| Backend (50 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
+| Backend (57 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
 | Frontend contract | `tests/js/vitest.config.ts` | `npx vitest run` |
 | Admin selenium | `tests/selenium/formint/` | `pytest tests/selenium/formint/` |
 
@@ -335,7 +336,7 @@ landing-fusion's root + backend split):
 | `make dev-backend` / `make dev-frontend` | Foreground servers |
 | `make stop` / `make status` | Manage the running env |
 | `make check` | Django check + astro check |
-| `make test` | Backend 50-test suite + frontend contract tests |
+| `make test` | Backend 57-test suite + frontend contract tests |
 | `make build` / `make preview` | Frontend build (+ collectstatic) / preview |
 | `make clean` | Remove db + staticfiles + node_modules |
 | `make backend-*` / `make frontend-*` | Delegate to the layer Makefiles |
@@ -410,11 +411,19 @@ into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
    `data-block-*` / `data-block-id` attributes (used by the headless/CMS
    tooling in the broader fusion stack).
 3. **Session render-mode preference + `FusionCodec`** —
-   `get_effective_render_first()` now consults
-   `get_session_render_first()` (header → session → default), and
+   `get_effective_render_first()` consults an explicitly stored session
+   value (header → session → default; no UA auto-seeding), and
    `formint/fusion.py` exposes `encode_fragment_pointer()` (session-aware)
    plus `/fusion/pointer/` returning the encoded + decoded pointer
    (pairs with the TS `FusionDecoder`).
+   The **settings-UI toggle** at `/fusion/session-mode/` (GET report /
+   POST store / DELETE clear) writes the preference through
+   `FusionSessionChecker.set_preference` / `clear_preference` — the library
+   gained `set_preference()` (7-day expiry matching `get_preference`). The
+   frontend checkbox on `/fusion/` persists server-side and mirrors
+   `sessionStorage`, so `FusionDecoder` and the server agree. The endpoint
+   is `@csrf_exempt` on the URL-resolved view (a benign per-session hint; a
+   `Client(enforce_csrf_checks=True)` test guards the exemption).
 4. **`is_htmx_request`** (`django_fusion.plugins.htmx`) — replaces the
    manual `HX-Request` header checks in `formint/handlers.py`.
 5. **`PageHandler` full-page pipeline** — `FormintPageView(PageHandler)`
@@ -431,4 +440,4 @@ into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
    fixed upstream in `libs/django-fusion` with a safe fallback set).
 
 All seven are covered by `FormintFusionEnhancementTests` in
-`formint/tests.py` (50 backend tests total).
+`formint/tests.py` (57 backend tests total).

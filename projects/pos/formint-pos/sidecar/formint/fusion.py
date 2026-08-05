@@ -14,6 +14,8 @@ Endpoints exposed here:
     GET /api/v1/navigation/    — nav items from FormintSite (source of truth)
     GET /api/v1/assets/        — FUSION_ASSETS manifest for bundle parity
     GET /fusion/render-mode/   — same contract at the fragment path (HTMX)
+    GET /fusion/pointer/       — FusionCodec-encoded fragment pointer
+    GET|POST|DELETE /fusion/session-mode/  — settings-UI preference toggle
 
 The ``X-Fusion-Render-First: true|false`` request header overrides the
 configured default for a single request (see ``get_effective_render_first``).
@@ -21,16 +23,14 @@ configured default for a single request (see ``get_effective_render_first``).
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from django.conf import settings as django_settings
 from django.http import HttpRequest, JsonResponse
 
 from django_fusion.plugins.htmx import is_htmx_request
-from django_fusion.routes.rendering.session import (
-    FusionCodec,
-    get_session_render_first,
-)
+from django_fusion.routes.rendering.session import FusionCodec, session_checker
 
 __all__ = [
     "get_effective_render_first",
@@ -42,6 +42,10 @@ __all__ = [
     "assets_api",
     "encode_fragment_pointer",
     "fusion_pointer_api",
+    "session_mode_payload",
+    "session_mode_get_api",
+    "session_mode_set_api",
+    "session_mode_clear_api",
 ]
 
 
@@ -214,3 +218,64 @@ def fusion_pointer_api(request: HttpRequest) -> JsonResponse:
             "fusion_render_first": payload["fusion_render_first"],
         }
     )
+
+
+# ── Session-mode settings toggle (FusionSessionChecker) ────────────────────
+
+def session_mode_payload(request: HttpRequest | None = None) -> dict[str, Any]:
+    """Report the current session render-mode state.
+
+    Returns the effective preference (header → session → default), whether
+    an explicit session value is stored, and the stored value itself (or
+    ``None`` when unset).
+    """
+    session = request.session if request is not None else None
+    session_cached = bool(session and "fusion_render_first" in session)
+    session_value = session.get("fusion_render_first") if session_cached else None
+    return {
+        "fusion_render_first": get_effective_render_first(request),
+        "session_cached": session_cached,
+        "session_preference": session_value,
+        "default": bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", True)),
+    }
+
+
+def session_mode_get_api(request: HttpRequest) -> JsonResponse:
+    """GET /fusion/session-mode/ — report the session render-mode state."""
+    return JsonResponse(session_mode_payload(request))
+
+
+def session_mode_set_api(request: HttpRequest) -> JsonResponse:
+    """POST /fusion/session-mode/ — store an explicit render-mode preference.
+
+    Body: ``{"fusion_render_first": true|false}``. Uses
+    ``FusionSessionChecker.set_preference`` so the stored value is returned
+    by ``get_preference`` / ``get_effective_render_first`` without ever
+    running the health-check heuristic.
+
+    NOTE: ``@csrf_exempt`` is applied on the URL-resolved view
+    (``formint.views.session_mode``) — the CSRF middleware only inspects
+    that view, not these inner helpers.
+    """
+    try:
+        body = json.loads(request.body or b"{}")
+        value = body["fusion_render_first"]
+        # Guard against the bool() trap: bool("false") is True in Python.
+        if not isinstance(value, bool):
+            raise ValueError("fusion_render_first must be a boolean")
+    except (ValueError, TypeError, KeyError) as exc:
+        return JsonResponse({"detail": f"Invalid body: {exc}"}, status=400)
+
+    session_checker.set_preference(request, value)
+    return JsonResponse(session_mode_payload(request))
+
+
+def session_mode_clear_api(request: HttpRequest) -> JsonResponse:
+    """DELETE /fusion/session-mode/ — clear the stored preference.
+
+    Removes ``fusion_render_first`` from the session via
+    ``FusionSessionChecker.clear_preference``; the effective mode falls back
+    to the settings default.
+    """
+    session_checker.clear_preference(request)
+    return JsonResponse(session_mode_payload(request))
