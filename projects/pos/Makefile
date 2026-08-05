@@ -28,7 +28,7 @@
 .PHONY: server-install server-run server-dev server-check server-test server-clean
 .PHONY: server-full-install server-full-run server-full-dev server-full-check server-full-test server-full-clean
 .PHONY: cloud-install cloud-run cloud-dev cloud-check cloud-test cloud-clean
-.PHONY: formint-install formint-run formint-test formint-check formint-clean
+.PHONY: formint-install formint-run formint-env formint-stop formint-test formint-check formint-clean
 .PHONY: screenshots publish
 
 # ── Edition directories ────────────────────────────────────────────────────
@@ -104,11 +104,13 @@ help:                 ## Show this help menu
 	@echo '  make cloud-clean       Remove cloud database'
 	@echo ''
 	@echo '── Formint POS (merged package) ─────────────────────────────'
-	@echo '  make formint-install   Install formint-pos backend deps'
-	@echo '  make formint-run       Run backend (API + admin on :8000)'
-	@echo '  make formint-test      Run backend + JS contract tests'
-	@echo '  make formint-check     Validate backend'
-	@echo '  make formint-clean     Remove db + staticfiles'
+	@echo '  make formint-install   Install backend .venv + frontend npm + migrate'
+	@echo '  make formint-run       Run backend (API + admin on :8767)'
+	@echo '  make formint-env       Run full env (backend :8767 + frontend :4321 in tmux)'
+	@echo '  make formint-stop      Stop the formint tmux env'
+	@echo '  make formint-test      Run 35 backend + JS contract tests'
+	@echo '  make formint-check     Django check + astro check'
+	@echo '  make formint-clean     Remove db + staticfiles + node_modules'
 	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
 	@echo '  make screenshots       Capture marketplace screenshots'
@@ -317,25 +319,26 @@ cloud-clean:          ## Remove cloud database and bytecode cache
 
 FORMINT_POS := formint-pos
 
-formint-install:      ## Install formint-pos backend deps
-	cd $(FORMINT_POS)/backend && python3 -m venv .venv && . .venv/bin/activate && pip install -e . && python manage.py migrate
-	@echo '✓ Formint backend installed'
+formint-install:      ## Install formint-pos (backend .venv + frontend npm + migrate)
+	$(MAKE) -C $(FORMINT_POS) install
 
-formint-run:          ## Run formint-pos backend (API + admin on :8000)
-	cd $(FORMINT_POS)/backend && .venv/bin/python manage.py runserver 127.0.0.1:8000
+formint-run:          ## Run formint-pos backend (API + admin on :8767)
+	$(MAKE) -C $(FORMINT_POS) backend-dev
 
-formint-test:         ## Run formint-pos test suite (26 backend + js contract)
-	bash tests/py/formint/run.sh
-	@echo '── JS contract tests (via pos-full vitest) ──'
-	@cd $(POS_FULL) && npx vitest run --config ../tests/js/vitest.config.ts formint-pos 2>&1 | tail -6
+formint-env:          ## Run full formint env (backend :8767 + frontend :4321 in tmux)
+	$(MAKE) -C $(FORMINT_POS) env
 
-formint-check:        ## Validate formint-pos backend
-	cd $(FORMINT_POS)/backend && .venv/bin/python manage.py check
+formint-stop:         ## Stop the formint tmux env
+	$(MAKE) -C $(FORMINT_POS) stop
 
-formint-clean:        ## Clean formint-pos artifacts
-	rm -f $(FORMINT_POS)/backend/formint-phase1.sqlite3
-	rm -rf $(FORMINT_POS)/backend/staticfiles
-	@echo '✓ Formint artifacts cleaned'
+formint-test:         ## Run formint-pos tests (35 backend + js contract)
+	$(MAKE) -C $(FORMINT_POS) test
+
+formint-check:        ## Validate formint-pos (django check + astro check)
+	$(MAKE) -C $(FORMINT_POS) check
+
+formint-clean:        ## Clean formint-pos artifacts (db + staticfiles + node_modules)
+	$(MAKE) -C $(FORMINT_POS) clean
 
 
 # ── Publishing ────────────────────────────────────────────────────────────

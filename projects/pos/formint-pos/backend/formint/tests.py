@@ -46,9 +46,11 @@ class FormintPhaseOneTests(TestCase):
         self.assertIn('data-fusion-fragment="formint.branch_summary"', response.content.decode())
 
     def test_branch_summary_returns_only_data_fragment_for_htmx(self):
+        # render-first is the default; data-only requires the header override
         response = self.client.get(
             '/htmx/branches/summary/',
             HTTP_HX_REQUEST='true',
+            HTTP_X_FUSION_RENDER_FIRST='false',
         )
 
         self.assertEqual(response.status_code, 200)
@@ -173,7 +175,12 @@ class FormintHtmxFragmentsTests(TestCase):
 
     def test_table_fragment_renders_fusion_table(self):
         self._seed()
-        response = self.client.get('/htmx/tables/products/', HTTP_HX_REQUEST='true')
+        # data-only is opted into via the header (render-first is the default)
+        response = self.client.get(
+            '/htmx/tables/products/',
+            HTTP_HX_REQUEST='true',
+            HTTP_X_FUSION_RENDER_FIRST='false',
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
@@ -200,7 +207,11 @@ class FormintHtmxFragmentsTests(TestCase):
         self.assertEqual(body['data']['pagination']['total'], 2)
 
     def test_table_fragment_for_client_categories_hyphen_mapping(self):
-        response = self.client.get('/htmx/tables/client-categories/', HTTP_HX_REQUEST='true')
+        response = self.client.get(
+            '/htmx/tables/client-categories/',
+            HTTP_HX_REQUEST='true',
+            HTTP_X_FUSION_RENDER_FIRST='false',
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
@@ -245,6 +256,89 @@ class FormintHtmxFragmentsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Formint-Saved'], 'true')
+
+
+class FormintFusionRenderModeTests(TestCase):
+    """Landing-fusion parity — dual-mode render contract (render-first vs data APIs)."""
+
+    def test_render_mode_reports_fusion_render_first_default(self):
+        response = self.client.get('/fusion/render-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        # settings default is FUSION_RENDER_FIRST_DEFAULT=True
+        self.assertIs(body['fusion_render_first'], True)
+        self.assertEqual(body['mode'], 'fusion-render')
+        self.assertIn('html', body['content'])
+        self.assertIn('data', body['content'])
+
+    def test_render_mode_header_override_to_data_api(self):
+        response = self.client.get(
+            '/fusion/render-mode/',
+            HTTP_X_FUSION_RENDER_FIRST='false',
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+
+    def test_render_mode_header_override_to_fusion_render(self):
+        response = self.client.get(
+            '/fusion/render-mode/',
+            HTTP_X_FUSION_RENDER_FIRST='true',
+        )
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], True)
+        self.assertEqual(body['mode'], 'fusion-render')
+
+    def test_api_render_mode_envelope(self):
+        response = self.client.get('/api/v1/render-mode')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('status', body)
+        self.assertIn('data', body)
+        self.assertIs(body['data']['fusion_render_first'], True)
+        self.assertEqual(body['data']['mode'], 'fusion-render')
+
+    def test_api_navigation_returns_formint_site_items(self):
+        response = self.client.get('/api/v1/navigation')
+        self.assertEqual(response.status_code, 200)
+        items = response.json()['data']['nav_items']
+        labels = [item['label'] for item in items]
+        self.assertIn('Home', labels)
+        self.assertIn('Data', labels)
+        # show_in_nav is filtered out of the payload
+        self.assertTrue(all('show_in_nav' not in item for item in items))
+
+    def test_fusion_navigation_fragment_path(self):
+        response = self.client.get('/fusion/navigation/')
+        self.assertEqual(response.status_code, 200)
+        items = response.json()['nav_items']
+        self.assertEqual([item['label'] for item in items], ['Home', 'Data', 'Admin'])
+
+    def test_assets_manifest_reports_bundle_parity(self):
+        response = self.client.get('/fusion/assets/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('version', body)
+        self.assertEqual(body['static_url'], '/static/')
+        self.assertIn('top', body)
+        self.assertIn('bottom', body)
+        self.assertIn('fusion_render_first', body)
+
+    def test_htmx_branch_uses_effective_render_first(self):
+        # default (render-first) → django-fusion fragment
+        response = self.client.get('/htmx/branches/summary/', HTTP_HX_REQUEST='true')
+        self.assertEqual(response['X-Formint-Response-Mode'], 'django-fusion-fragment')
+
+    def test_htmx_branch_data_mode_via_header(self):
+        response = self.client.get(
+            '/htmx/branches/summary/',
+            HTTP_HX_REQUEST='true',
+            HTTP_X_FUSION_RENDER_FIRST='false',
+        )
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+        self.assertNotIn('<html', response.content.decode().lower())
+        self.assertIn('data-value="branches"', response.content.decode())
 
 
 class FormintAdminDashboardTests(TestCase):
