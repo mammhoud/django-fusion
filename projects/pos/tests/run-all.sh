@@ -7,6 +7,7 @@
 # Usage:
 #   bash tests/run-all.sh              — run everything (default)
 #   bash tests/run-all.sh py           — Python sidecar tests only
+#   bash tests/run-all.sh py-formint   — formint-pos backend tests only
 #   bash tests/run-all.sh js           — JS vitest tests only
 #   bash tests/run-all.sh api          — JS API endpoint tests only
 #   bash tests/run-all.sh selenium     — Selenium admin panel tests only
@@ -64,6 +65,17 @@ run_py_solo() {
     echo "  ✅ pos-solo — PASSED"; PASS=$((PASS + 1))
   else
     echo "  ❌ pos-solo — FAILED (exit $st)"; FAIL=$((FAIL + 1))
+  fi
+}
+
+run_py_formint() {
+  banner "Python: formint-pos backend (merged)"
+  bash "$TESTS/py/formint/run.sh" 2>&1 | tail -15
+  local st=${PIPESTATUS[0]}
+  if [ "$st" -eq 0 ]; then
+    echo "  ✅ formint-pos — PASSED"; PASS=$((PASS + 1))
+  else
+    echo "  ❌ formint-pos — FAILED (exit $st)"; FAIL=$((FAIL + 1))
   fi
 }
 
@@ -147,6 +159,11 @@ run_selenium() {
   cd "$TESTS"
   unset DJANGO_SETTINGS_MODULE
   python3 -m pytest selenium/ -v --tb=short --no-header 2>&1 | tail -30
+
+  # Formint-pos admin suite (has its own conftest + pytest.ini)
+  echo ""
+  echo "--- Selenium: formint-pos admin ---"
+  python3 -m pytest selenium/formint/ -v --tb=short --no-header 2>&1 | tail -20
 }
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -164,6 +181,7 @@ case "$MODE" in
   all)
     run_py_full
     run_py_solo
+    run_py_formint
     run_js
     [[ "$QUICK" == "true" ]] || run_api
     [[ "$QUICK" == "true" ]] || run_selenium
@@ -171,12 +189,16 @@ case "$MODE" in
   py)
     run_py_full
     run_py_solo
+    run_py_formint
     ;;
   py-full)
     run_py_full
     ;;
   py-solo)
     run_py_solo
+    ;;
+  py-formint)
+    run_py_formint
     ;;
   js)
     run_js
@@ -196,6 +218,7 @@ case "$MODE" in
     QUICK=true
     run_py_full
     run_py_solo
+    run_py_formint
     run_js
     ;;
   *)

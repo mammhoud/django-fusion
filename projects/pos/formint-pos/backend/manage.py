@@ -55,6 +55,14 @@ def _ensure_superuser() -> None:
     password = settings.FORMINT_ADMIN_PASSWORD
     name = settings.FORMINT_ADMIN_NAME
 
+    # Security guard: never create an admin with the default password when
+    # DEBUG is off (production). Deployment must set FORMINT_ADMIN_PASSWORD.
+    if not getattr(settings, 'DEBUG', True) and password == 'admin123':
+        raise SystemExit(
+            'Refusing to create superuser with the default password while '
+            'DEBUG=False. Set FORMINT_ADMIN_PASSWORD to a strong value first.'
+        )
+
     existing = User.objects.filter(email=email).first()
     if existing:
         print(f"✔ Superuser already exists: {email} (id={existing.id})")

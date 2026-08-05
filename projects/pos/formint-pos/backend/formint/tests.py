@@ -314,7 +314,7 @@ class FormintAdminDashboardTests(TestCase):
         self.assertTrue(self._login())
         response = self.client.get('/admin/')
         content = response.content.decode()
-        # apostrophe is HTML-escaped by Django's autoescape
-        self.assertIn("Today&#39;s Sales", content)
+        # apostrophe is HTML-escaped by Django's autoescape (&#x27;)
+        self.assertIn("Today&#x27;s Sales", content)
         self.assertIn('Loyalty Members', content)
         self.assertIn('pos-kpi-card', content)

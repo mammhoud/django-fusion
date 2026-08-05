@@ -30,6 +30,8 @@ export default defineConfig({
     include: [
       // Tests from each edition (shared identical copies — run one edition)
       path.join(ROOT, 'pos-full', 'src', 'test', '**', '*.test.{ts,tsx}'),
+      // formint-pos (merged package) frontend tests — Astro shell contract
+      path.join(ROOT, 'formint-pos', 'frontend', 'src', '**', '*.test.{ts,tsx}'),
       // New tests in the unified test directory
       path.join(__dirname, '*.test.{ts,tsx}'),
       path.join(__dirname, '..', 'api', '*.test.{ts,tsx}'),
@@ -47,6 +49,13 @@ export default defineConfig({
       '@tauri-apps/api/core': path.join(MOCKS, 'tauri-api-core.ts'),
       '@tauri-apps/plugin-dialog': path.join(MOCKS, 'tauri-plugin-dialog.ts'),
       '@tauri-apps/plugin-fs': path.join(MOCKS, 'tauri-plugin-fs.ts'),
+    },
+  },
+  server: {
+    // Allow test files outside the runner's root (pos-full) — e.g. the
+    // formint-pos merged package tests — to be loaded by vite/vitest.
+    fs: {
+      allow: [ROOT],
     },
   },
 });

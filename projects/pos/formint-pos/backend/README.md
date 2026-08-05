@@ -19,6 +19,46 @@ The Astro dev proxy and the Tauri shell use port `8767`. Browser requests to
 `/htmx/` and `/fusion/` remain same-origin from the frontend through the dev
 proxy.
 
+## Admin panel (Unfold)
+
+The merged package ships a modern Unfold-themed Django admin panel covering
+**loyalty & settings** plus the full POS domain:
+
+| Section | Models |
+|---|---|
+| **Loyalty & Clients** | Client Categories (people as a client category), Loyalty Transactions (points ledger), Customers |
+| **Settings** | User Settings (per-user POS settings mirroring the front Settings page), Users, Groups |
+| **POS Core** | Products, Categories, Sales, Employees, Inventory |
+| **Operations** | Suppliers, Purchase Orders, Kitchen Tickets, Support Tickets, Menu |
+| **Nodes & Sync** | Nodes, Heartbeats, Events, Device Configs, Master Devices, Cloud Links, Sync Logs |
+| **CRM** | Companies, Pipelines, Stages, Contacts, Deals, Activities, Notes |
+
+### Dashboard
+
+The admin index is a custom dashboard with KPI cards (today's sales, monthly
+revenue, AOV, loyalty members, points issued/redeemed, settings rows, 2FA
+coverage, …), Chart.js charts (revenue, top products, payment methods, hourly
+activity, loyalty transaction mix), and recent activity tables. Injected via
+`UNFOLD["DASHBOARD_CALLBACK"]` → `formint.dashboard.formint_dashboard_callback`.
+
+### Run
+
+```bash
+cd projects/pos/formint-pos/backend
+python manage.py migrate
+python manage.py --ensure-superuser   # auto-creates admin + UserSettings row
+python manage.py runserver 127.0.0.1:8000
+# → http://localhost:8000/admin/
+```
+
+Superuser env vars (defaults): `FORMINT_ADMIN_EMAIL=admin@formint.local`,
+`FORMINT_ADMIN_PASSWORD=admin123`, `FORMINT_ADMIN_NAME=Formint Admin`.
+The command is idempotent and seeds a `UserSettings` row for the admin user.
+
+> **Deployment warning:** when `DJANGO_DEBUG=0`, `--ensure-superuser` refuses
+to create an account with the default password — always set a strong
+`FORMINT_ADMIN_PASSWORD` (see [`../.env.example`](../.env.example)).
+
 ## Tauri sidecar packaging
 
 Build a platform-specific executable named `formint-backend` and place it in
