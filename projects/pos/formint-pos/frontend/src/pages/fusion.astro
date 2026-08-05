@@ -1,0 +1,182 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Skeleton from '../components/ui/Skeleton.astro';
+---
+
+<Layout title="Fusion — Formint POS">
+  <div class="page-shell">
+    <section class="hero">
+      <p class="eyebrow">django-fusion · PageHandler · FusionDecoder</p>
+      <h1>Fusion render contract</h1>
+      <p class="intro">
+        Two sides of the same contract: the <strong>server-rendered page</strong>
+        (django-fusion <code>PageHandler</code> — full layout for browsers, lean
+        fragment for HTMX) and the <strong>encoded fragment pointer</strong>
+        (<code>FusionCodec</code> on Django ↔ <code>FusionDecoder</code> in the
+        browser).
+      </p>
+    </section>
+
+    <!-- 1. PageHandler full page → HTMX fragment swap -->
+    <section class="card" aria-labelledby="page-handler-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">/fusion/page/ · PageHandler</p>
+          <h2 id="page-handler-title">Server-rendered page</h2>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          id="reload-page"
+          hx-get="/fusion/page/"
+          hx-trigger="click"
+          hx-target="#page-handler-content"
+          hx-swap="innerHTML"
+        >Reload fragment</button>
+      </div>
+
+      <div
+        id="page-handler-content"
+        class="page-handler-content"
+        data-skeleton-label="Server page"
+        aria-live="polite"
+        hx-get="/fusion/page/"
+        hx-trigger="load"
+        hx-swap="innerHTML"
+      >
+        <Skeleton variant="branch-summary" count={3} />
+        <p class="sr-only">Loading the PageHandler fragment…</p>
+      </div>
+
+      <p class="note">
+        The browser request sends <code>HX-Request</code>, so django-fusion
+        resolves the fragment strategy and serves
+        <code>formint/fragments/page.html</code> — the same content an Astro
+        shell swaps in without ever leaving the SPA.
+      </p>
+    </section>
+
+    <!-- 2. FusionDecoder pointer round-trip -->
+    <section class="card" aria-labelledby="pointer-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">/fusion/pointer/ · FusionDecoder</p>
+          <h2 id="pointer-title">Encoded fragment pointer</h2>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="toggle-mode">
+          Toggle session mode
+        </button>
+      </div>
+
+      <dl class="pointer-grid" id="pointer-grid">
+        <div><dt>Encoded</dt><dd class="mono" data-field="encoded">—</dd></div>
+        <div><dt>Decoded component</dt><dd class="mono" data-field="component">—</dd></div>
+        <div><dt>Pointer render-first</dt><dd data-field="pointer-mode">—</dd></div>
+        <div><dt>Session preference</dt><dd data-field="session">—</dd></div>
+        <div><dt>Effective strategy</dt><dd data-field="strategy">—</dd></div>
+      </dl>
+      <p class="note">
+        <code>FusionDecoder.decode()</code> reverses the base64
+        <code>fusion_v1:…</code> payload produced by Django's
+        <code>FusionCodec.encode()</code>. The effective strategy applies the
+        session preference (set by the toggle) before the pointer's own flag —
+        mirroring the backend's header → session → default precedence.
+      </p>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  import { fusionDecoder, FusionDecodeError } from '../lib/fusion-decoder';
+
+  type PointerBody = {
+    encoded: string;
+    decoded: { component: string; fusion_render_first: boolean; htmx?: boolean };
+    fusion_render_first: boolean;
+  };
+
+  function field(name: string): HTMLElement | null {
+    return document.querySelector(`[data-field="${name}"]`);
+  }
+
+  function renderStrategy(pointerMode: boolean, session: boolean | undefined): void {
+    const el = field('strategy');
+    if (!el) return;
+    const strategy =
+      session !== undefined
+        ? session
+          ? 'fusion-render (session)'
+          : 'data-api (session)'
+        : pointerMode
+          ? 'fusion-render (pointer)'
+          : 'data-api (pointer)';
+    el.textContent = strategy;
+    el.classList.toggle('ok', strategy.startsWith('fusion-render'));
+  }
+
+  async function loadPointer(): Promise<void> {
+    const status = field('encoded');
+    if (!status) return;
+    try {
+      const res = await fetch('/fusion/pointer/', { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = (await res.json()) as PointerBody;
+
+      const pointer = fusionDecoder.decodeFragmentPointer(body.encoded);
+      const session = fusionDecoder.getSessionPreference();
+
+      field('encoded')!.textContent = body.encoded.slice(0, 48) + '…';
+      field('encoded')!.title = body.encoded;
+      field('component')!.textContent = pointer.component;
+      field('pointer-mode')!.textContent = pointer.fusion_render_first ? 'true' : 'false';
+      field('session')!.textContent =
+        session === undefined ? 'unset' : String(session);
+      renderStrategy(pointer.fusion_render_first, session);
+    } catch (err) {
+      const msg = err instanceof FusionDecodeError ? err.message : String(err);
+      field('encoded')!.textContent = `error: ${msg}`;
+    }
+  }
+
+  // Session-mode toggle → demonstrates FusionDecoder.shouldRenderFragmentFirst()
+  const toggle = document.getElementById('toggle-mode');
+  toggle?.addEventListener('click', () => {
+    const current = fusionDecoder.getSessionPreference();
+    const next = current === undefined ? false : !current;
+    fusionDecoder.initSession(next);
+    loadPointer();
+  });
+
+  loadPointer();
+</script>
+
+<style>
+  .page-shell { max-width: 72rem; margin: 0 auto; padding: 4rem 1.25rem; }
+  .hero { max-width: 52rem; margin-bottom: 2rem; }
+  .eyebrow { margin: 0 0 0.5rem; color: #2563eb; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { margin: 0; color: #111827; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.05em; line-height: 1; }
+  h2 { margin: 0; color: #111827; font-size: 1.3rem; }
+  .intro { max-width: 42rem; margin: 1rem 0 0; color: #475569; font-size: 1.05rem; line-height: 1.6; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; background: #eef2ff; border-radius: 0.3rem; padding: 0.1rem 0.35rem; }
+  .card { padding: clamp(1rem, 3vw, 1.75rem); background: #fff; border: 1px solid #dbe3ef; border-radius: 1rem; box-shadow: 0 1rem 2.5rem rgb(15 23 42 / 0.06); margin-bottom: 1.5rem; }
+  .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+  .page-handler-content { min-height: 10rem; }
+  .note { margin: 1rem 0 0; color: #64748b; font-size: 0.85rem; line-height: 1.55; }
+  .pointer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; margin: 0; }
+  .pointer-grid div { padding: 0.9rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.7rem; }
+  .pointer-grid dt { margin: 0 0 0.3rem; color: #64748b; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .pointer-grid dd { margin: 0; color: #0f172a; font-size: 0.9rem; font-weight: 600; overflow-wrap: anywhere; }
+  .pointer-grid dd.ok { color: #059669; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem !important; }
+  .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.1rem; border-radius: 0.6rem; font-weight: 600; text-decoration: none; font-size: 0.9rem; border: 1px solid transparent; cursor: pointer; transition: all 0.15s ease; }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-ghost { background: #fff; color: #334155; border-color: #dbe3ef; }
+  .btn-ghost:hover { border-color: #93c5fd; }
+  .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.82rem; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (max-width: 700px) {
+    .page-shell { padding-top: 2.5rem; }
+    .section-heading { flex-direction: column; }
+  }
+</style>

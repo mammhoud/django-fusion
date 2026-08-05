@@ -231,9 +231,25 @@ which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
   table/form components with landing-fusion skeleton loading
   (`src/components/ui/Skeleton.astro`, `src/lib/htmx-bootstrap.ts`, global
   indicator in `src/layouts/Layout.astro`).
-- Frontend contract tests live in `src/tests/` (`index.test.ts`) and are
-  collected by the unified vitest config (`tests/js/vitest.config.ts`).
-  They are kept out of `src/pages/` so Astro never treats them as routes.
+- **`src/pages/fusion.astro`** (`/fusion/`) consumes the §12 enhancement
+  surface end-to-end:
+  - **PageHandler full page** — the section HTMX-swaps `/fusion/page/`
+    (browser request → fragment strategy → `formint/fragments/page.html`),
+    with a “Reload fragment” button re-fetching the same contract.
+  - **FusionDecoder pointer** — fetches `/fusion/pointer/`, decodes the
+    `fusion_v1:…` payload with `src/lib/fusion-decoder.ts` (the TS
+    counterpart of `FusionCodec`, Formint pointer shape
+    `{component, fusion_render_first, htmx}`), and applies the session
+    preference via a “Toggle session mode” button — mirroring the backend's
+    header → session → default precedence.
+- `src/lib/fusion-decoder.ts` + `src/lib/fusion-types.ts` — Formint-adapted
+  `FusionDecoder` (decode / decodeFragmentPointer / shouldRenderFragmentFirst /
+  session helpers with an in-memory fallback for node/SSR).
+- Frontend contract tests live in `src/tests/` (`index.test.ts`,
+  `fusion.test.ts`) and `src/lib/fusion-decoder.test.ts` (round-trips a real
+  backend-encoded pointer fixture); all are collected by the unified vitest
+  config (`tests/js/vitest.config.ts`). They are kept out of `src/pages/` so
+  Astro never treats them as routes.
 
 **Screenshots** (seeded dev environment):
 
