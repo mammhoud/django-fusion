@@ -91,7 +91,7 @@ try:
         # (admin.py registers models which requires app registry ready after setup)
     django.setup()
     # Import admin registration AFTER django.setup() (requires app registry)
-    import configs.admin  # noqa: F401 — side-effect: registers admin models
+    import formint.admin  # noqa: F401 — side-effect: registers admin models (canonical)
 
     # ── Django-managed node registry models ──
     from models.pos import (

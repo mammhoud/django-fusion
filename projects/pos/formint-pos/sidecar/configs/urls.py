@@ -1,14 +1,18 @@
 """
-POS Full — Django URL Configuration.
+Formint — Django URL Configuration (merged sidecar).
 
-Provides Django admin panel URL routing for the master manager.
-The admin index page is replaced by the custom Unfold dashboard
-(via UNFOLD["DASHBOARD"] in configs/__init__.py).
+Provides the Unfold-themed Django admin panel (master manager) plus the
+merged formint app routes:
 
-The django-bolt API routes are registered for reverse URL resolution via
-``django_bolt.urls``. They are actually served by the Rust-backed runbolt
-server (``python -m django_bolt runbolt`` or ``manage.py runbolt``), not by
-Django's URL resolver.
+* ``/admin/``                 — Unfold admin (dashboard via UNFOLD settings)
+* ``/health/``, ``/htmx/*``, ``/fusion/*`` — formint views (HTMX fragments,
+  fusion render-mode contract)
+* ``/api/v1/``                — Django Ninja + ninja-extra API (django-fusion
+  encoder/decoder, auto-discovered controllers)
+
+django-bolt is optional: when installed, its reverse-only URLs are included
+so ``reverse()`` / ``{% url %}`` resolve, and the django-fusion ``apis``
+plugin can mount Application viewsets as bolt routes.
 """
 
 import importlib.util
@@ -18,10 +22,11 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # ── Formint app (merged from backend/) ──
+    path("", include("formint.urls")),
 ]
 
 # django-bolt reverse-only URLs (so reverse()/{% url %} work).
-# Only included when the installed django_bolt build ships a urls module
-# (some builds expose it as `django_bolt.urls`; older/lean builds do not).
+# Only included when django_bolt is installed and ships a urls module.
 if importlib.util.find_spec("django_bolt.urls"):
     urlpatterns.append(path("", include("django_bolt.urls")))
