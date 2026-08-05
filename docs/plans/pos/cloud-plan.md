@@ -3,7 +3,8 @@
 
 > **Status:** Planning Phase  
 > **Target Version:** 3.0.0  
-> **Server Port:** 8767
+> **Server Port:** 8767  
+> **API ownership:** Cloud-only. django-bolt may be evaluated or used here as the cloud transport adapter; it must not be added to local Formint, django-fusion, POS Solo, or Forge plans.
 
 ---
 
@@ -52,6 +53,20 @@ A unified **Cloud Server** that links all POS editions (Solo, Full, Minimal) thr
 ---
 
 ## 3. API Types
+
+The cloud plan is the sole POS planning document allowed to define a django-bolt
+transport. Keep the transport behind a cloud adapter so the domain event
+contract remains portable and local Formint can use its own Django/HTMX/data
+endpoints. The cloud API owns tenant/branch authentication, streaming, sync
+broker operations, webhooks, and central analytics; it does not own local POS
+layout, skeletons, or business UI components.
+
+### Cloud django-bolt boundary
+
+- **Allowed here:** a cloud-side `BoltAPI` adapter for high-throughput branch sync, WebSocket streaming, authentication, and cloud-only OpenAPI exposure.
+- **Not allowed here:** importing the removed `django_fusion.plugins.bolt` package, adding django-bolt to Formint local dependencies, or coupling local Astro/HTMX rendering to Bolt.
+- **Contract:** branch clients communicate through versioned envelopes with stable IDs, event versions, idempotency keys, request IDs, scopes, retries, conflict records, and audit references.
+- **Fallback:** retain standard Django URL/view handlers for health, administration, migrations, and an operational fallback path when the cloud Bolt adapter is unavailable.
 
 | Type | Transport | Format | Use Case |
 |------|-----------|--------|----------|
@@ -192,6 +207,7 @@ Reconnect:
 - [ ] Branch list + detail views
 
 ### Phase 3: Sync Broker (Week 3-4)
+- [ ] Select and isolate the cloud transport adapter (`django-bolt` only if benchmarks and operational review justify it)
 - [ ] WebSocket broker endpoint `/ws/broker`
 - [ ] Bidirectional event forwarding
 - [ ] Sync queue with retry logic
@@ -213,6 +229,10 @@ Reconnect:
 ---
 
 ## 8. Port & Connection Map
+
+Local Formint remains independent of this cloud transport. Its local Django,
+Astro, HTMX, SQLite, and Tauri paths must continue to work without port 8767,
+WebSocket access, or django-bolt installed.
 
 | Service | Port | Protocol | Purpose |
 |---------|------|----------|---------|

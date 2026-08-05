@@ -1,5 +1,5 @@
 """
-POS Full Package — all Django ORM models.
+POS Full Package — Django ORM models.
 
 Managed models (app_label="pos_full"):
   pos.py       — Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee
@@ -9,14 +9,21 @@ Managed models (app_label="pos_full"):
   sync.py      — SyncLog
   inventory.py — Supplier, PurchaseOrder, PurchaseOrderItem
   ops.py       — KitchenTicket, SupportTicket
+  hr.py        — Payroll, EmployeeSchedule, TaxReport
+  notes.py     — Note
+  extra.py     — Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment
+  loyalty.py   — ClientCategory, LoyaltyTransaction, UserSettings
+  approval.py  — SyncApproval
+  token.py     — DeviceToken (django_fusion BaseDeviceToken subclass)
+  audit.py     — SignalEvent
+  crm.py       — Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote
 
-NOTE: This __init__.py is minimal — only imports AppConfig to avoid
-premature model loading during Django app registry initialization
-(makemigrations / migrate). Server code and tests import directly
-from sub-modules:
-    from models.pos import Category, Product, Customer, ...
-    from models.inventory import Supplier, PurchaseOrder, ...
-    from models.ops import KitchenTicket, SupportTicket
+IMPORTANT: Do NOT import model sub-modules here. Django imports the app
+module (this package) during phase 1 of apps.populate() — before the app
+registry is ready — and defining models at that point raises
+AppRegistryNotReady. Model discovery happens in the `models.models`
+sub-module, which Django loads in phase 2 via AppConfig.import_models()
+(after apps_ready=True). Keep this package light.
 """
 
 from .apps import PosFullConfig  # noqa: F401 - register AppConfig

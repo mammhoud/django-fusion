@@ -34,6 +34,7 @@ export const api = createApi({
     'DeliveryType', 'EmployeeType', 'ReceiptTemplate',
     'TaxReport', 'EmployeeSchedule', 'Payroll',
     'Transaction', 'Report', 'Settings', 'Analytics', 'Role', 'Note',
+    'ClientCategory', 'LoyaltyTransaction', 'UserSettings',
   ],
   endpoints: () => ({}),
   keepUnusedDataFor: 60, // 60s cache before garbage collection

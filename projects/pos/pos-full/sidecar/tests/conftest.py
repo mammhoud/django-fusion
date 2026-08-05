@@ -54,6 +54,12 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
             INSTALLED_APPS=[
                 "django.contrib.contenttypes",
                 "django.contrib.auth",
+                # POS Full app — required so pos_full models participate in
+                # apps.get_models()/relation graph (reverse FKs, cascading
+                # deletes, related_objects). Without it, string FKs resolve
+                # but reverse relations are never registered and deletes fail
+                # with FOREIGN KEY constraint errors.
+                "models.PosFullConfig",
             ],
             TEMPLATES=[
                 {
@@ -75,8 +81,15 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
         import django
         django.setup()
 
-    # Create tables for the models used by factory fixtures
+    # Register ALL pos_full models (string FK resolution + table creation).
+    # models.models imports every model sub-module and is the canonical
+    # discovery module Django loads during phase 2 of apps.populate().
+    import models.models  # noqa: F401, E402
+
+    # Create tables for ALL registered pos_full models (FK targets included,
+    # e.g. ClientCategory referenced by Customer.client_category).
     from django.db import connection
+    from django.apps import apps
     models_to_create = []
     try:
         from models.node import Node
@@ -98,6 +111,17 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
         models_to_create.append(SyncLog)
     except Exception:
         pass
+
+    # Append any remaining registered pos_full models (loyalty, ops, hr,
+    # inventory, menu, config, approval, token, audit, crm) so every FK
+    # target table exists. The test bootstrap does NOT install the
+    # models.PosFullConfig app, so iterate apps.all_models (which registers
+    # every imported model) instead of get_app_config().
+    seen = {m._meta.db_table for m in models_to_create}
+    for model in apps.all_models.get("pos_full", {}).values():
+        if model._meta.db_table not in seen:
+            models_to_create.append(model)
+            seen.add(model._meta.db_table)
 
     try:
         with connection.schema_editor() as schema_editor:

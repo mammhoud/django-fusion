@@ -13,6 +13,8 @@ Pages:
   GET  /admin/settings            → Cloud sync config, scheduler, database info
   POST /admin/settings/cloud-save → Save cloud config (form-encoded)
   POST /admin/settings/toggle-sync → Enable/disable scheduler
+  GET  /admin/loyalty             → Client categories, loyalty transactions, user settings
+  POST /admin/loyalty/category/save → Create/update a client category
   GET  /admin/devices             → Node list, master devices, device configs
   POST /admin/devices/:id/promote → Promote node to master
   POST /admin/devices/:id/toggle-active → Activate/deactivate node
@@ -66,8 +68,16 @@ def _redirect(location: str) -> Response:
 
 
 def _parse_form(request: Request) -> dict:
-    """Parse form-encoded or JSON body into a dict."""
-    body_bytes = request.body if hasattr(request, 'body') else b""
+    """Parse form-encoded or JSON body into a dict.
+
+    Robyn may expose ``request.body`` as either ``bytes`` or ``str`` depending
+    on the version — normalize both before parsing.
+    """
+    body = getattr(request, "body", None) or b""
+    if isinstance(body, str):
+        body_bytes = body.encode("utf-8", errors="replace")
+    else:
+        body_bytes = body
     if body_bytes:
         try:
             data = json.loads(body_bytes)
@@ -103,7 +113,8 @@ def _create_session(employee_data: dict) -> str:
 
 
 def _get_session(request: Request) -> dict | None:
-    cookie = request.headers.get("Cookie", "")
+    # Robyn's Headers.get() takes a single positional argument (no default)
+    cookie = request.headers.get("Cookie") or ""
     token = ""
     for part in cookie.split(";"):
         part = part.strip()
@@ -189,7 +200,7 @@ def register_admin_routes(app):
 
     @app.get("/admin/logout")
     async def admin_logout(request: Request):
-        cookie = request.headers.get("Cookie", "")
+        cookie = request.headers.get("Cookie") or ""
         token = ""
         for part in cookie.split(";"):
             part = part.strip()
@@ -205,31 +216,58 @@ def register_admin_routes(app):
     async def admin_login_post(request: Request):
         body = _parse_form(request)
         pin = body.get("pin", "").strip()
+        email = body.get("email", "").strip()
+        password = body.get("password", "")
 
         from routes import state as S
 
         @sync_to_async
         def _auth():
-            if not pin:
-                return None
-            try:
-                emp = S.Employee.objects.get(pin_code=pin, is_active=True)
-            except S.Employee.DoesNotExist:
-                return None
-            if emp.role not in ("admin", "manager"):
-                return None
-            return {
-                "id": emp.id,
-                "name": f"{emp.first_name} {emp.last_name}".strip(),
-                "role": emp.role,
-                "email": emp.email or "",
-            }
+            """Authenticate either a Django superuser (email+password, like Unfold admin)
+            or an Employee with admin/manager role (PIN code)."""
+            # 1) Superuser login (same credentials as the Django Unfold admin)
+            if email and password:
+                from django.contrib.auth import authenticate
+                user = authenticate(username=email, password=password)
+                if user is None:
+                    # fallback: username lookup (Django superusers created via --ensure-superuser
+                    # use the email prefix as username)
+                    from django.contrib.auth.models import User
+                    try:
+                        u = User.objects.get(email=email)
+                    except User.DoesNotExist:
+                        u = None
+                    if u is not None:
+                        user = authenticate(username=u.username, password=password)
+                if user is not None and user.is_active and user.is_staff:
+                    return {
+                        "id": user.id,
+                        "name": (user.get_full_name() or user.username),
+                        "role": "admin",
+                        "email": user.email or user.username,
+                        "superuser": True,
+                    }
+            # 2) Employee PIN login (legacy)
+            if pin:
+                try:
+                    emp = S.Employee.objects.get(pin_code=pin, is_active=True)
+                except S.Employee.DoesNotExist:
+                    return None
+                if emp.role not in ("admin", "manager"):
+                    return None
+                return {
+                    "id": emp.id,
+                    "name": f"{emp.first_name} {emp.last_name}".strip(),
+                    "role": emp.role,
+                    "email": emp.email or "",
+                }
+            return None
 
         emp_data = await _auth()
         if not emp_data:
             return _html(_render("admin/login.html", {
                 "app_name": "POS Full Admin",
-                "error": "Invalid PIN or insufficient permissions. Admin/Manager role required.",
+                "error": "Invalid credentials. Use the Django superuser (email + password) or an Admin/Manager PIN.",
             }))
 
         token = _create_session(emp_data)
@@ -362,6 +400,93 @@ def register_admin_routes(app):
         if sched:
             await sched.toggle(not sched._enabled)
         return _redirect("/admin/settings")
+
+    # ── Loyalty & Client Categories ──
+
+    @app.get("/admin/loyalty")
+    async def admin_loyalty(request: Request):
+        session = _require_admin(request)
+        if not session:
+            return _redirect("/admin")
+
+        from routes import state as S
+
+        @sync_to_async
+        def _categories():
+            return [
+                {"id": c.id, "name": c.name, "min_points": c.min_points,
+                 "points_per_currency": c.points_per_currency,
+                 "points_to_currency": c.points_to_currency,
+                 "discount_rate": float(c.discount_rate or 0),
+                 "perks": c.perks or [], "is_active": c.is_active,
+                 "customers": c.customer_count}
+                for c in S.ClientCategory.objects.all().order_by("min_points", "name")
+            ]
+
+        @sync_to_async
+        def _transactions():
+            return [
+                {"id": t.id, "customer": str(t.customer),
+                 "type": t.get_transaction_type_display(),
+                 "change": t.points_change, "balance": t.balance_after,
+                 "reason": t.reason or "",
+                 "created_at": t.created_at.strftime("%Y-%m-%d %H:%M") if t.created_at else "-"}
+                for t in S.LoyaltyTransaction.objects.select_related("customer").all()[:20]
+            ]
+
+        @sync_to_async
+        def _user_settings():
+            rows = []
+            for us in S.UserSettings.objects.select_related("user").all():
+                rows.append({
+                    "user": us.user_email,
+                    "restaurant_name": us.restaurant_name,
+                    "currency": us.currency,
+                    "tax_rate": float(us.tax_rate) if us.tax_rate is not None else None,
+                    "theme": us.theme,
+                    "language": us.language,
+                    "notifications": us.notifications_enabled,
+                })
+            return rows
+
+        ctx = _base_context(request, "loyalty", "Loyalty & Client Settings")
+        ctx["categories"] = await _categories()
+        ctx["transactions"] = await _transactions()
+        ctx["user_settings"] = await _user_settings()
+        return _html(_render("admin/loyalty.html", ctx))
+
+    @app.post("/admin/loyalty/category/save")
+    async def admin_save_loyalty_category(request: Request):
+        if not _require_admin(request):
+            return _redirect("/admin")
+        from routes import state as S
+        body = _parse_form(request)
+        cat_id = body.get("id")
+
+        @sync_to_async
+        def _save():
+            perks_raw = body.get("perks", "")
+            perks = [p.strip() for p in perks_raw.split(",") if p.strip()] if perks_raw else []
+            defaults = {
+                "name": body.get("name", "").strip(),
+                "description": body.get("description", ""),
+                "min_points": int(body.get("min_points", 0) or 0),
+                "points_per_currency": int(body.get("points_per_currency", 1) or 1),
+                "points_to_currency": int(body.get("points_to_currency", 100) or 100),
+                "discount_rate": float(body.get("discount_rate", 0) or 0),
+                "perks": perks,
+                "is_active": body.get("is_active") in (True, "1", 1, "true", "on"),
+            }
+            if cat_id:
+                S.ClientCategory.objects.filter(id=int(cat_id)).update(**defaults)
+            else:
+                S.ClientCategory.objects.create(**defaults)
+
+        try:
+            await _save()
+        except Exception as exc:
+            logger.warning("Failed to save client category: %s", exc)
+        return _redirect("/admin/loyalty")
 
     # ── Devices ──
 

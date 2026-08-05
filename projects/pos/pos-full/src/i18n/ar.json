@@ -648,7 +648,8 @@
       "delivery": "التوصيل",
       "employees": "الموظفون",
       "database": "قاعدة البيانات",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "loyalty": "ولاء"
     },
     "appearanceTab": {
       "title": "Theme Customization",
@@ -738,7 +739,38 @@
       "deliveryFee": "رسوم التوصيل",
       "perKmFee": "رسوم لكل كم"
     },
-    "languageNote": "التبديل بين الإنجليزية والعربية والفرنسية. دعم RTL تلقائي."
+    "languageNote": "التبديل بين الإنجليزية والعربية والفرنسية. دعم RTL تلقائي.",
+    "loyaltyTab": {
+      "title": "الولاء وفئات العملاء",
+      "description": "صنّف عملاءك (الأشخاص) في مستويات ولاء مدفوعة بالنقاط والخصومات والمزايا.",
+      "activeCategories": "الفئات النشطة",
+      "ledgerEntries": "حركات الرصيد",
+      "pointsIssued": "النقاط الممنوحة",
+      "categoryName": "اسم الفئة",
+      "minPoints": "الحد الأدنى للنقاط",
+      "discount": "الخصم %",
+      "perks": "المزايا (مفصولة بفاصلة)",
+      "addCategory": "إضافة فئة",
+      "delete": "حذف",
+      "noCategories": "لا توجد فئات عملاء بعد — أضف أول فئة أعلاه.",
+      "userSettings": "إعدادات المستخدم",
+      "userSettingsDesc": "نفس بيانات صفحة إعدادات نقاط البيع، مع تفاصيل لكل مستخدم.",
+      "theme": "المظهر",
+      "language": "اللغة",
+      "notifications": "الإشعارات",
+      "inactivityTimeout": "مهلة عدم النشاط",
+      "saveUserPrefs": "حفظ تفضيلات المستخدم",
+      "recentTransactions": "أحدث حركات الولاء",
+      "customer": "العميل",
+      "type": "النوع",
+      "change": "التغيير",
+      "balance": "الرصيد",
+      "date": "التاريخ",
+      "noTransactions": "لا توجد حركات ولاء بعد.",
+      "saved": "تم حفظ تغييرات الولاء",
+      "saveFailed": "فشل الحفظ",
+      "currentUser": "المستخدم الحالي"
+    }
   },
   "supportChat": {
     "title": "Support & Customer Chat",

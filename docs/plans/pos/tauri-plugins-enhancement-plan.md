@@ -1,7 +1,10 @@
-# Forge POS — Tauri Plugins & Features Enhancement Plan
+# Formint POS — Tauri Plugins & Desktop Features Plan
 
-> **Generated:** 2026-07-30 | **Scope:** Tauri v2 backend + React frontend
-> **Status:** ⬜ Research Complete — No Changes Made Yet
+> **Generated:** 2026-07-30 | **Updated:** 2026-08-04  
+> **Scope:** Formint Tauri v2 shell, native desktop capabilities, and migration from Forge POS  
+> **Status:** 🟡 Migration reference — implementation requires parity and platform gates
+>
+> Formint owns the resulting desktop contract. Forge POS is the implementation source during migration and must not be removed until the Formint feature-transfer gates pass.
 
 ---
 
@@ -17,6 +20,10 @@
 | `tray-icon` (feature) | ✅ Enabled | Feature flag only — no tray implementation yet |
 
 ### Plugins NOT in Use (14 candidates)
+
+Candidates are not automatic dependencies. Add only after confirming the current
+Tauri v2 version, platform support, capability permissions, licensing, and a
+Formint acceptance test.
 
 | Plugin | Docs |
 |--------|------|
@@ -35,6 +42,17 @@
 | Window Menu | https://tauri.app/learn/window-menu/ |
 
 ---
+
+## Formint migration boundary
+
+The plugins in this plan are local desktop capabilities only. They must not
+become a second business-data or cloud API layer:
+
+- `tauri-plugin-store` persists device settings, drafts, window state, and UI preferences; it does not replace SQLite or the sync ledger.
+- `notification`, `global-shortcut`, tray, menu, positioner, and window plugins invoke Formint actions through typed commands.
+- `localhost` is optional and local-only; public integrations use the versioned project API contract.
+- Cloud API transport is not part of the local Formint application or django-fusion integration; its boundary is defined exclusively in `cloud-plan.md`.
+- KDS notifications, combo/extras alerts, loyalty prompts, notes, and waiter actions must call Formint domain services and preserve offline/idempotent behavior.
 
 ## Enhancement Roadmap
 
@@ -202,7 +220,7 @@ let tray_menu = MenuBuilder::new(app)
 
 TrayIconBuilder::new()
     .menu(&tray_menu)
-    .tooltip("Forge POS")
+    .tooltip("Formint POS")
     .on_menu_event(|app, event| { /* handle menu clicks */ })
     .build(app)?;
 ```
@@ -272,7 +290,7 @@ TrayIconBuilder::new()
 #### 13. Localhost (`tauri-plugin-localhost`)
 **Link:** https://tauri.app/plugin/localhost/
 
-**Use Case:** Expose a local API for third-party integrations (e.g., online ordering platform pushes orders to POS via localhost). **Note:** Only if sidecar is insufficient.
+**Use Case:** Expose a local-only API for a trusted third-party integration (e.g., online ordering platform pushes orders to POS via localhost). **Note:** Only if the Formint sidecar is insufficient; this is not a cloud API and must remain separate from the cloud transport.
 
 ---
 
@@ -328,6 +346,16 @@ TrayIconBuilder::new()
 - [ ] Test on all target platforms (Windows, macOS, Linux) — especially notifications and tray
 
 ---
+
+## Formint completion and Forge retirement gate
+
+Before removing any Forge plugin wiring or UI:
+
+1. Implement the equivalent Formint command/UI path and document its owner.
+2. Cover single-instance safety, settings migration, notifications, shortcuts, tray/menu behavior, KDS second-screen behavior, and offline draft recovery.
+3. Run `cargo check`, frontend typecheck/tests, platform smoke tests, and visual tests for light/dark themes, semantic colors, RTL, responsive layouts, and reduced motion.
+4. Update the dead-code/deletion manifest with replacement paths and rollback/archive references.
+5. Keep the Forge artifact available for one release cycle after Formint parity, unless a critical security or data-loss issue requires earlier retirement.
 
 ## Files That Will Change
 
