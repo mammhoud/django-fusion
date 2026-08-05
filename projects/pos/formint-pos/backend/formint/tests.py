@@ -1,8 +1,14 @@
 import json
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from formint.models import Category, Product
+from formint.models import (
+    Category, ClientCategory, Customer, LoyaltyTransaction, Product,
+    Sale, UserSettings,
+)
+
+User = get_user_model()
 
 
 class FormintPhaseOneTests(TestCase):
@@ -239,3 +245,76 @@ class FormintHtmxFragmentsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Formint-Saved'], 'true')
+
+
+class FormintAdminDashboardTests(TestCase):
+    """Unfold admin panel — loyalty/settings models + dashboard."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = User.objects.create_superuser(
+            username='boss', email='boss@formint.local', password='secret',
+        )
+
+    def _login(self):
+        return self.client.login(username='boss', password='secret')
+
+    def test_login_page_renders(self):
+        response = self.client.get('/admin/login/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('Formint POS', content)
+        self.assertIn('Welcome back', content)
+        self.assertIn('login-form', content)
+
+    def test_admin_index_requires_auth(self):
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/admin/login/', response['Location'])
+
+    def test_admin_dashboard_index_with_kpis(self):
+        self.assertTrue(self._login())
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('Formint POS — Professional Dashboard', content)
+        self.assertIn('kpi-card', content)
+        self.assertIn('Loyalty Members', content)
+
+    def test_client_category_changelist(self):
+        ClientCategory.objects.create(name='Gold', min_points=500)
+        self.assertTrue(self._login())
+        response = self.client.get('/admin/formint/clientcategory/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('Gold', content)
+        self.assertIn('clientcategory', content)
+
+    def test_loyalty_transaction_changelist(self):
+        customer = Customer.objects.create(first_name='Ali')
+        LoyaltyTransaction.objects.create(
+            customer=customer, transaction_type='earn', points_change=120,
+            balance_after=120,
+        )
+        self.assertTrue(self._login())
+        response = self.client.get('/admin/formint/loyaltytransaction/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('120', response.content.decode())
+
+    def test_user_settings_changelist(self):
+        UserSettings.objects.create(user=self.admin, restaurant_name='Test Cafe')
+        self.assertTrue(self._login())
+        response = self.client.get('/admin/formint/usersettings/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Test Cafe', response.content.decode())
+
+    def test_dashboard_stats_use_sale_data(self):
+        customer = Customer.objects.create(first_name='Ali')
+        Sale.objects.create(customer=customer, subtotal=10, total=10)
+        self.assertTrue(self._login())
+        response = self.client.get('/admin/')
+        content = response.content.decode()
+        # apostrophe is HTML-escaped by Django's autoescape
+        self.assertIn("Today&#39;s Sales", content)
+        self.assertIn('Loyalty Members', content)
+        self.assertIn('pos-kpi-card', content)

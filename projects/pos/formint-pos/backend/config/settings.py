@@ -7,11 +7,17 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 
 INSTALLED_APPS = [
+    # Unfold — modern admin theme (must come before django.contrib.admin)
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Django admin (themed by Unfold)
+    'django.contrib.admin',
     'django_fusion',
     'ninja',
     'ninja_extra',
@@ -58,9 +64,84 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR.parent / 'assets' / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ROOT_URLCONF = 'config.urls'
+
+# ── Unfold Admin Theme Settings ──
+UNFOLD = {
+    'SITE_TITLE': 'Formint POS — Professional',
+    'SITE_HEADER': 'Formint POS Admin',
+    'SITE_SUBHEADER': 'Merged Master Manager · Loyalty & Settings',
+    'SITE_URL': '/',
+    'SITE_SYMBOL': 'storefront',
+    # Modern unfold (>= 0.80) dashboard callback — injects KPI/charts/tables
+    'DASHBOARD_CALLBACK': 'formint.dashboard.formint_dashboard_callback',
+    'SHOW_HISTORY': True,
+    'SHOW_VIEW_ON_SITE': False,
+    'LOGIN': {
+        'image': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    },
+    'THEME': 'dark',  # dark | light
+    'COLORS': {
+        'primary': {
+            '50': '239 246 255',
+            '100': '219 234 254',
+            '200': '191 219 254',
+            '300': '147 197 253',
+            '400': '96 165 250',
+            '500': '59 130 246',
+            '600': '37 99 235',
+            '700': '29 78 216',
+            '800': '30 64 175',
+            '900': '30 58 138',
+            '950': '23 37 84',
+        },
+    },
+    'SIDEBAR': {
+        'show_search': True,
+        'show_all_applications': True,
+        'navigation': [
+            {'title': 'POS Core', 'items': [
+                {'title': 'Products', 'icon': 'inventory_2', 'link': '/admin/formint/product/'},
+                {'title': 'Categories', 'icon': 'category', 'link': '/admin/formint/category/'},
+                {'title': 'Customers', 'icon': 'people', 'link': '/admin/formint/customer/'},
+                {'title': 'Sales', 'icon': 'shopping_cart', 'link': '/admin/formint/sale/'},
+                {'title': 'Employees', 'icon': 'badge', 'link': '/admin/formint/employee/'},
+                {'title': 'Inventory', 'icon': 'warehouse', 'link': '/admin/formint/inventorytransaction/'},
+            ]},
+            {'title': 'Operations', 'items': [
+                {'title': 'Suppliers', 'icon': 'local_shipping', 'link': '/admin/formint/supplier/'},
+                {'title': 'Purchase Orders', 'icon': 'receipt_long', 'link': '/admin/formint/purchaseorder/'},
+                {'title': 'Kitchen Tickets', 'icon': 'restaurant', 'link': '/admin/formint/kitchenticket/'},
+                {'title': 'Support Tickets', 'icon': 'support', 'link': '/admin/formint/supportticket/'},
+                {'title': 'Menu', 'icon': 'menu_book', 'link': '/admin/formint/menu/'},
+            ]},
+            {'title': 'Loyalty & Clients', 'items': [
+                {'title': 'Client Categories', 'icon': 'workspace_premium', 'link': '/admin/formint/clientcategory/'},
+                {'title': 'Loyalty Transactions', 'icon': 'stars', 'link': '/admin/formint/loyaltytransaction/'},
+                {'title': 'Customers (People)', 'icon': 'people_alt', 'link': '/admin/formint/customer/'},
+            ]},
+            {'title': 'Nodes & Sync', 'items': [
+                {'title': 'Nodes', 'icon': 'dns', 'link': '/admin/formint/node/'},
+                {'title': 'Sync Logs', 'icon': 'sync', 'link': '/admin/formint/synclog/'},
+                {'title': 'Device Configs', 'icon': 'settings', 'link': '/admin/formint/deviceconfig/'},
+                {'title': 'Cloud Links', 'icon': 'cloud', 'link': '/admin/formint/cloudlink/'},
+            ]},
+            {'title': 'Settings', 'items': [
+                {'title': 'User Settings', 'icon': 'manage_accounts', 'link': '/admin/formint/usersettings/'},
+                {'title': 'Users', 'icon': 'person', 'link': '/admin/auth/user/'},
+                {'title': 'Groups', 'icon': 'groups', 'link': '/admin/auth/group/'},
+            ]},
+        ],
+    },
+}
+
+# ── Superuser bootstrap (used by manage.py --ensure-superuser) ──
+FORMINT_ADMIN_EMAIL = os.environ.get('FORMINT_ADMIN_EMAIL', 'admin@formint.local')
+FORMINT_ADMIN_PASSWORD = os.environ.get('FORMINT_ADMIN_PASSWORD', 'admin123')
+FORMINT_ADMIN_NAME = os.environ.get('FORMINT_ADMIN_NAME', 'Formint Admin')
 
 # django-fusion is the server-rendered component boundary. Formint only
 # enables the component and fragment settings it actually uses; it does not
