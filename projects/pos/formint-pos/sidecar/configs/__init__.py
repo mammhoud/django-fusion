@@ -74,6 +74,10 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Seeds the session fusion render-mode from the operator's UserSettings
+    # row (admin settings page) — see formint/middleware.py. Needs auth +
+    # session middleware to have run first.
+    "formint.middleware.FormintSessionModeMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
 

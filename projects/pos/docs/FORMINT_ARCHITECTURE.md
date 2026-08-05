@@ -221,6 +221,19 @@ which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
 `FORMINT_ADMIN_NAME` (defaults in `sidecar/configs/`) and seeds a
 `UserSettings` row. **When `DJANGO_DEBUG=0` the default password is refused.**
 
+**Operator-facing render-mode setting** — `UserSettings.fusion_render_mode`
+(`default` / `fusion` / `data`) lets non-technical operators switch content
+delivery from the admin Settings page, mirroring the `/fusion/session-mode/`
+toggle without touching HTTP or cookies:
+
+- `FormintSessionModeMiddleware` seeds each authenticated session from the
+  stored value once (`_fusion_settings_synced` flag; no per-request DB hit).
+- `UserSettingsAdmin.save_model` re-seeds the operator's session immediately
+  on save, so the change applies on their next page load.
+- Mapping: `fusion` → `FusionSessionChecker.set_preference(True)`,
+  `data` → `set_preference(False)`, `default` → `clear_preference`
+  (configured `FUSION_RENDER_FIRST_DEFAULT` applies).
+
 ---
 
 ## 4. Frontend
@@ -288,7 +301,7 @@ Unified test directory: [`../tests/`](../tests/)
 
 | Suite | Location | Runner |
 |---|---|---|
-| Backend (57 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
+| Backend (66 tests) | `tests/py/formint/run.sh` | `manage.py test formint` |
 | Frontend contract | `tests/js/vitest.config.ts` | `npx vitest run` |
 | Admin selenium | `tests/selenium/formint/` | `pytest tests/selenium/formint/` |
 
@@ -336,7 +349,7 @@ landing-fusion's root + backend split):
 | `make dev-backend` / `make dev-frontend` | Foreground servers |
 | `make stop` / `make status` | Manage the running env |
 | `make check` | Django check + astro check |
-| `make test` | Backend 57-test suite + frontend contract tests |
+| `make test` | Backend 66-test suite + frontend contract tests |
 | `make build` / `make preview` | Frontend build (+ collectstatic) / preview |
 | `make clean` | Remove db + staticfiles + node_modules |
 | `make backend-*` / `make frontend-*` | Delegate to the layer Makefiles |
@@ -424,6 +437,11 @@ into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
    `sessionStorage`, so `FusionDecoder` and the server agree. The endpoint
    is `@csrf_exempt` on the URL-resolved view (a benign per-session hint; a
    `Client(enforce_csrf_checks=True)` test guards the exemption).
+   The **admin settings bridge** (see §3.6) exposes the same preference as
+   `UserSettings.fusion_render_mode` — `FormintSessionModeMiddleware` seeds
+   each operator session from the stored value, and `UserSettingsAdmin`
+   re-seeds on save, so non-technical operators can switch render modes
+   from the Unfold settings page.
 4. **`is_htmx_request`** (`django_fusion.plugins.htmx`) — replaces the
    manual `HX-Request` header checks in `formint/handlers.py`.
 5. **`PageHandler` full-page pipeline** — `FormintPageView(PageHandler)`
@@ -440,4 +458,4 @@ into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
    fixed upstream in `libs/django-fusion` with a safe fallback set).
 
 All seven are covered by `FormintFusionEnhancementTests` in
-`formint/tests.py` (57 backend tests total).
+`formint/tests.py` (66 backend tests total).

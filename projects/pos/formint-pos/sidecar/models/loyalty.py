@@ -179,6 +179,28 @@ class UserSettings(models.Model):
         help_text="Minutes before auto-lock; 'never' disables")
     two_factor_enabled = models.BooleanField(default=False)
 
+    # ── Fusion render-mode preference (operator-facing) ──────────────────
+    # Mirrors the /fusion/session-mode/ toggle: which content-delivery mode
+    # this operator prefers. 'default' follows FUSION_RENDER_FIRST_DEFAULT;
+    # 'fusion' forces server-rendered HTML first; 'data' forces JSON APIs.
+    # A ``FormintSessionModeMiddleware`` seeds each authenticated user's
+    # session from this field (see formint/middleware.py).
+    FUSION_RENDER_MODE_CHOICES = [
+        ("default", "Default (settings)"),
+        ("fusion", "Fusion render-first"),
+        ("data", "Data APIs"),
+    ]
+    fusion_render_mode = models.CharField(
+        max_length=10,
+        choices=FUSION_RENDER_MODE_CHOICES,
+        default="default",
+        help_text=(
+            "Content-delivery mode: 'Fusion render-first' serves finished server "
+            "HTML, 'Data APIs' serves JSON for the client, 'Default (settings)' "
+            "follows FUSION_RENDER_FIRST_DEFAULT."
+        ),
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

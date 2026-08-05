@@ -678,3 +678,122 @@ class FormintFusionEnhancementTests(TestCase):
         self.assertIn('data', body)
         self.assertIn('available', body['data'])
         self.assertIn('default', body['data'])
+
+
+class FormintUserSettingsRenderModeTests(TestCase):
+    """Unfold admin settings → session render-mode bridge.
+
+    Covers the operator-facing ``UserSettings.fusion_render_mode`` field:
+    model default, schema exposure, admin form rendering + save_model
+    immediate session re-seed, and the ``FormintSessionModeMiddleware``
+    that seeds each authenticated session from the stored preference.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.operator = User.objects.create_superuser(
+            username='operator', email='op@formint.local', password='secret',
+        )
+
+    def test_model_default_is_default(self):
+        settings_obj = UserSettings.objects.create(user=self.operator)
+        self.assertEqual(settings_obj.fusion_render_mode, 'default')
+        field = UserSettings._meta.get_field('fusion_render_mode')
+        self.assertEqual(field.default, 'default')
+        self.assertIn(('fusion', 'Fusion render-first'), field.choices)
+        self.assertIn(('data', 'Data APIs'), field.choices)
+
+    def test_usersettings_out_schema_exposes_field(self):
+        from formint.schemas import UserSettingsOut
+
+        self.assertIn('fusion_render_mode', UserSettingsOut.Config.include)
+
+    def test_admin_change_form_shows_render_mode(self):
+        settings_obj = UserSettings.objects.create(user=self.operator)
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+        response = self.client.get(
+            f'/admin/pos_full/usersettings/{settings_obj.pk}/change/'
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('fusion_render_mode', content)
+        self.assertIn('Fusion Render Mode', content)
+
+    def test_admin_save_model_re_seeds_operator_session(self):
+        """save_model must push the saved mode into the operator's session
+        immediately (no wait for a new session / next request)."""
+        settings_obj = UserSettings.objects.create(
+            user=self.operator, fusion_render_mode='default',
+        )
+
+        from django.contrib.admin.sites import site
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from django.test import RequestFactory
+
+        request = RequestFactory().post(f'/admin/pos_full/usersettings/{settings_obj.pk}/change/')
+        SessionMiddleware(lambda r: None).process_request(request)
+        request.user = self.operator
+
+        # the saved row now says 'data' → session must become False
+        settings_obj.fusion_render_mode = 'data'
+        settings_obj.save()
+        site._registry[UserSettings].save_model(request, settings_obj, None, change=True)
+
+        self.assertIs(request.session['fusion_render_first'], False)
+
+    def test_middleware_seeds_fusion_mode_from_settings(self):
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='fusion')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        self.client.get('/health/')
+
+        session = self.client.session
+        self.assertIs(session['fusion_render_first'], True)
+        self.assertTrue(session.get('_fusion_settings_synced'))
+
+    def test_middleware_seeds_data_mode_from_settings(self):
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='data')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        self.client.get('/health/')
+
+        session = self.client.session
+        self.assertIs(session['fusion_render_first'], False)
+        # render-mode endpoint reports data-api for this operator
+        response = self.client.get('/fusion/render-mode/')
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+
+    def test_middleware_default_mode_clears_preference(self):
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='default')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        # a previously stored session preference must be cleared so the
+        # settings default applies
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        self.client.get('/health/')
+
+        self.assertNotIn('fusion_render_first', self.client.session)
+
+    def test_middleware_is_noop_for_anonymous(self):
+        self.client.get('/health/')
+        self.assertNotIn('_fusion_settings_synced', self.client.session)
+
+    def test_render_mode_operator_end_to_end(self):
+        """Full loop: admin preference → session → render-mode report."""
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='data')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        response = self.client.get('/fusion/render-mode/')
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+        self.assertIs(body['session_cached'], True)
+
+        # the stored session preference is reported by the settings-UI endpoint
+        response = self.client.get('/fusion/session-mode/')
+        self.assertIs(response.json()['session_preference'], False)
