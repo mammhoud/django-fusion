@@ -26,13 +26,21 @@ describe('Fusion page contract — PageHandler + FusionDecoder', () => {
     expect(page).toContain('fusionDecoder.decodeFragmentPointer(body.encoded)');
   });
 
-  it('exposes a session-mode toggle that re-applies the effective strategy', () => {
-    expect(page).toContain('id="toggle-mode"');
+  it('exposes a session-mode toggle that persists via FusionSessionChecker', () => {
+    expect(page).toContain('id="session-toggle"');
+    expect(page).toContain("fetch('/fusion/session-mode/', {");
+    expect(page).toContain('persistSessionPreference(next)');
     expect(page).toContain('fusionDecoder.initSession(next)');
+  });
+
+  it('exposes a reset button that clears the server-side preference', () => {
+    expect(page).toContain('id="reset-mode"');
+    expect(page).toContain("fetch('/fusion/session-mode/', { method: 'DELETE' })");
+    expect(page).toContain('fusionDecoder.clearSession()');
   });
 
   it('shows the effective strategy derived from pointer + session', () => {
     expect(page).toContain('data-field="strategy"');
-    expect(page).toContain('shouldRenderFragmentFirst');
+    expect(page).toContain('renderStrategy(pointer.fusion_render_first, session)');
   });
 });

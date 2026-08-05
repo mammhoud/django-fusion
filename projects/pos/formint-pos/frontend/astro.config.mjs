@@ -13,6 +13,7 @@ export default defineConfig({
         // page router in dev mode).
         '/fusion/page/': 'http://127.0.0.1:8767',
         '/fusion/pointer/': 'http://127.0.0.1:8767',
+        '/fusion/session-mode/': 'http://127.0.0.1:8767',
         '/fusion/render-mode/': 'http://127.0.0.1:8767',
         '/fusion/navigation/': 'http://127.0.0.1:8767',
         '/fusion/assets/': 'http://127.0.0.1:8767',

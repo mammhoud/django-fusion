@@ -510,6 +510,110 @@ class FormintFusionEnhancementTests(TestCase):
         self.assertIs(body['decoded']['htmx'], True)
         self.assertIn('fusion_render_first', body)
 
+    # ── 8. Session-mode settings toggle (FusionSessionChecker) ────────────
+
+    def test_session_mode_reports_default_state(self):
+        response = self.client.get('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['session_cached'], False)
+        self.assertIsNone(body['session_preference'])
+        # effective mode = settings default (True)
+        self.assertIs(body['fusion_render_first'], True)
+        self.assertIs(body['default'], True)
+
+    def test_session_mode_post_stores_preference_via_checker(self):
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': False}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['session_cached'], True)
+        self.assertIs(body['session_preference'], False)
+        self.assertIs(body['fusion_render_first'], False)
+
+        # The stored preference now drives render-mode + the htmx fragment
+        response = self.client.get('/fusion/render-mode/')
+        self.assertIs(response.json()['fusion_render_first'], False)
+        self.assertEqual(response.json()['mode'], 'data-api')
+
+        # And get_effective_render_first reads it (session sits above default)
+        response = self.client.get('/htmx/branches/summary/', HTTP_HX_REQUEST='true')
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+
+    def test_session_mode_post_true_overrides(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': True}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.json()['session_preference'], True)
+        self.assertIs(response.json()['fusion_render_first'], True)
+
+    def test_session_mode_post_invalid_body(self):
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'other': 1}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_session_mode_rejects_string_boolean(self):
+        """bool('false') is True in Python — string payloads must be rejected
+        so a preference can never be silently inverted."""
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': 'false'}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # nothing was stored
+        response = self.client.get('/fusion/session-mode/')
+        self.assertIsNone(response.json()['session_preference'])
+
+    def test_session_mode_is_csrf_exempt(self):
+        """The preference toggle is csrf_exempt on the URL-resolved view.
+
+        Django's test client disables CSRF by default, so this uses a client
+        with ``enforce_csrf_checks=True`` to prove the exemption works
+        (the CSRF middleware only inspects the URL-resolved view).
+        """
+        from django.test import Client
+
+        strict = Client(enforce_csrf_checks=True)
+        response = strict.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': False}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.json()['session_preference'], False)
+
+    def test_session_mode_delete_clears_preference(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.delete('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['session_cached'], False)
+        self.assertIsNone(body['session_preference'])
+        # falls back to the settings default
+        self.assertIs(body['fusion_render_first'], True)
+
+        # render-mode reports the default again
+        response = self.client.get('/fusion/render-mode/')
+        self.assertIs(response.json()['fusion_render_first'], True)
+
     # ── 4. is_htmx_request (centralised HTMX detection) ──────────────────
 
     def test_htmx_detection_used_by_handlers(self):
