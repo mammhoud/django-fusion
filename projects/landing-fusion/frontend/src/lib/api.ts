@@ -220,6 +220,19 @@ export interface AssetManifest {
 
 // ── API Functions ──────────────────────────────────────────────────────────
 
+export interface AuthStatus {
+  authenticated: boolean;
+  user: {
+    email: string;
+    display: string;
+  } | null;
+}
+
+/** Fetch current auth status (backed by Django allauth session). */
+export function fetchAuthStatus(): Promise<AuthStatus> {
+  return fetchJSON<AuthStatus>('/apis/auth/status/');
+}
+
 /** Fetch unified asset manifest for frontend bundler integration. */
 export function fetchAssets(): Promise<AssetManifest> {
   return fetchJSON<AssetManifest>('/apis/assets/');

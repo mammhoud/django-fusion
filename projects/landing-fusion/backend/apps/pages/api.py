@@ -562,6 +562,18 @@ def page_list_api(request):
 
 # ── Newsletter Subscribe ────────────────────────────────────────────────────
 
+def auth_status_api(request):
+    """GET /apis/auth/status/ — current auth state for the frontend."""
+    user = request.user if request.user.is_authenticated else None
+    return JsonResponse({
+        "authenticated": user is not None,
+        "user": {
+            "email": user.email,
+            "display": user.email.split("@")[0] if user else None,
+        } if user else None,
+    })
+
+
 @csrf_exempt
 def htxm_ping_api(request):
     """GET /fragment/ping/ — returns the current server time as an HTML fragment.

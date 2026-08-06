@@ -41,6 +41,8 @@ export default defineConfig({
     server: {
       proxy: {
         '/accounts': { target: 'http://127.0.0.1:8074', changeOrigin: true },
+        '/apis': { target: 'http://127.0.0.1:8074', changeOrigin: true },
+        '/fragment': { target: 'http://127.0.0.1:8074', changeOrigin: true },
         '/api': { target: 'http://127.0.0.1:8074', changeOrigin: true },
         '/admin': { target: 'http://127.0.0.1:8074', changeOrigin: true },
         '/static': { target: 'http://127.0.0.1:8074', changeOrigin: true },
