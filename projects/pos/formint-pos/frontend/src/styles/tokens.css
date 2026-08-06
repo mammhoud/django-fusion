@@ -1,0 +1,139 @@
+/* Formint POS — Semantic Design Tokens
+   Source: forge-pos FlyonUI theme system, adapted for Tailwind CSS v4
+   All component classes reference these tokens — never hardcode hex colors. */
+
+@layer base {
+  :root {
+    /* ── Surface colors ── */
+    --color-surface-page: oklch(98.42% 0 0);      /* base-100 */
+    --color-surface-card: oklch(96.5% 0 0);       /* base-200 */
+    --color-surface-raised: oklch(93% 0 0);       /* base-300 */
+    --color-surface-hover: oklch(90% 0 0);
+
+    /* ── Text colors ── */
+    --color-text-primary: oklch(27.95% 0 0);      /* base-content */
+    --color-text-secondary: oklch(45% 0 0);
+    --color-text-disabled: oklch(65% 0 0);
+    --color-text-inverse: oklch(98% 0 0);
+
+    /* ── Brand / Semantic colors (Corporate variant — blue tones) ── */
+    --color-primary: oklch(54.61% 0.2152 262.88);   /* Blue #2563eb */
+    --color-primary-content: oklch(98% 0 0);
+    --color-primary-hover: oklch(45% 0.22 262.88);
+    --color-primary-light: oklch(90% 0.08 262.88);
+    --color-focus-ring: oklch(54.61% 0.2152 262.88 / 0.38);
+
+    --color-secondary: oklch(65% 0.05 280);
+    --color-secondary-content: oklch(98% 0 0);
+
+    --color-accent: oklch(70% 0.14 180);           /* Teal */
+    --color-accent-content: oklch(98% 0 0);
+
+    /* ── Semantic states (OKLCH from forge-pos FlyonUI) ── */
+    --color-info: oklch(70% 0.15 220);
+    --color-info-content: oklch(98% 0 0);
+    --color-success: oklch(62% 0.19 145);
+    --color-success-content: oklch(98% 0 0);
+    --color-warning: oklch(75% 0.15 85);
+    --color-warning-content: oklch(25% 0 0);
+    --color-error: oklch(58% 0.22 25);
+    --color-error-content: oklch(98% 0 0);
+    --color-neutral: oklch(50% 0 0);
+    --color-neutral-content: oklch(98% 0 0);
+
+    /* ── "Strong" text variants for soft pills (readable on light tints) ── */
+    --color-primary-strong: oklch(45% 0.2 262.88);
+    --color-success-strong: oklch(48% 0.17 145);
+    --color-warning-strong: oklch(45% 0.11 85);
+    --color-error-strong: oklch(47% 0.2 25);
+    --color-info-strong: oklch(45% 0.14 220);
+    --color-neutral-strong: oklch(45% 0 0);
+    --color-accent-strong: oklch(42% 0.12 180);
+
+    /* ── Borders & radius ── */
+    --color-border-subtle: oklch(90% 0 0);
+    --color-border-default: oklch(85% 0 0);
+    --color-border-emphasis: oklch(70% 0 0);
+    /* Shape system: cards 12px, fields 8px, selectors/badges pill.
+       One radius language across the app — do not add ad-hoc radii. */
+    --radius-box: 0.75rem;
+    --radius-field: 0.5rem;
+    --radius-selector: 9999px;
+    --border-width: 1px;
+
+    /* ── Shadows ── */
+    --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.06);
+    --shadow-md: 0 4px 12px oklch(0 0 0 / 0.08);
+    --shadow-lg: 0 8px 24px oklch(0 0 0 / 0.12);
+    --shadow-colored: 0 4px 14px oklch(54.61% 0.2152 262.88 / 0.25);
+
+    /* ── Typography ── */
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --font-arabic: "Noto Naskh Arabic", "Traditional Arabic", serif;
+
+    /* ── Spacing scale (POS density optimised) ── */
+    --space-pos-xs: 0.25rem;
+    --space-pos-sm: 0.5rem;
+    --space-pos-md: 0.75rem;
+    --space-pos-lg: 1rem;
+    --space-pos-xl: 1.5rem;
+
+    /* ── Data-viz palette (categorical — encodes series, not decoration) ── */
+    --color-chart-1: oklch(58% 0.19 285);     /* violet #8b5cf6 */
+    --color-chart-2: oklch(55% 0.2 262);      /* blue   #3b82f6 */
+    --color-chart-3: oklch(62% 0.19 145);     /* green  #10b981 */
+    --color-chart-4: oklch(75% 0.15 85);      /* amber  #f59e0b */
+    --color-chart-5: oklch(58% 0.22 25);      /* red    #ef4444 */
+    --color-chart-6: oklch(62% 0.19 210);     /* cyan   #06b6d4 */
+    --color-chart-7: oklch(60% 0.2 350);      /* pink   #ec4899 */
+
+    /* ── Transitions ── */
+    --transition-fast: 150ms ease;
+    --transition-normal: 200ms ease;
+    --transition-slow: 300ms ease;
+  }
+
+  /* ── Dark mode ── */
+  .dark {
+    --color-surface-page: oklch(20.77% 0 0);
+    --color-surface-card: oklch(24% 0 0);
+    --color-surface-raised: oklch(29% 0 0);
+    --color-surface-hover: oklch(33% 0 0);
+    --color-text-primary: oklch(92.88% 0 0);
+    --color-text-secondary: oklch(72% 0 0);
+    --color-text-disabled: oklch(50% 0 0);
+    --color-primary: oklch(62.31% 0.1880 259.81);
+    --color-primary-hover: oklch(68% 0.16 262);
+    --color-primary-light: oklch(32% 0.06 262.88);
+    --color-focus-ring: oklch(62.31% 0.1880 259.81 / 0.45);
+    --color-primary-strong: oklch(72% 0.16 262);
+    --color-success-strong: oklch(74% 0.16 145);
+    --color-warning-strong: oklch(80% 0.13 85);
+    --color-error-strong: oklch(70% 0.18 25);
+    --color-info-strong: oklch(74% 0.14 220);
+    --color-neutral-strong: oklch(80% 0 0);
+    --color-accent-strong: oklch(72% 0.13 180);
+    --color-border-subtle: oklch(30% 0 0);
+    --color-border-default: oklch(38% 0 0);
+    --color-border-emphasis: oklch(50% 0 0);
+    --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
+    --shadow-md: 0 4px 12px oklch(0 0 0 / 0.4);
+    --shadow-lg: 0 8px 24px oklch(0 0 0 / 0.5);
+    --shadow-colored: 0 4px 14px oklch(62.31% 0.1880 259.81 / 0.35);
+  }
+
+  /* ── RTL support ── */
+  [dir="rtl"] {
+    --font-sans: "Noto Naskh Arabic", "Traditional Arabic", serif;
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

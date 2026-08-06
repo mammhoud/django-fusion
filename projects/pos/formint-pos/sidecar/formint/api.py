@@ -34,11 +34,43 @@ api = NinjaExtraAPI(
     version="1.0.0",
     description=(
         "Formint POS Professional — merged POS Full + POS Solo REST API. "
-        "Django Ninja + ninja-extra with django-fusion encoder/decoder."
+        "Django Ninja + ninja-extra with django-fusion encoder/decoder.\n\n"
+        "## Authentication\n\n"
+        "All `/api/v1/` endpoints require an API key passed in the "
+        "`X-API-Key` header. Keys are scoped — a key with `products:read` "
+        "can only GET product endpoints, while `*:*` grants full access.\n\n"
+        "**Scoped API keys** are managed at `POST /api-keys/` — each key "
+        "maps to resource:action scopes (e.g., `products:read`, `sales:*`). "
+        "Keys can be revoked or rotated.\n\n"
+        "**Example:** `curl -H 'X-API-Key: sk_abc123...' http://localhost:8767/api/v1/products/`"
     ),
     renderer=JSONRenderer(),
     urls_namespace="formint-api",
 )
+
+# ── OpenAPI security scheme: X-API-Key header ──
+# NinjaExtraAPI supports adding security schemes via the OpenAPI extra config.
+# We inject it into the generated schema so Swagger UI / ReDoc show the auth.
+try:
+    api._openapi_extra = {
+        "components": {
+            "securitySchemes": {
+                "ApiKeyAuth": {
+                    "type": "apiKey",
+                    "in": "header",
+                    "name": "X-API-Key",
+                    "description": (
+                        "Scoped API key for the /api/v1/ contract. "
+                        "Create keys via POST /api-keys/. "
+                        "Scopes follow resource:action format (e.g., products:read, sales:*)."
+                    ),
+                },
+            },
+        },
+        "security": [{"ApiKeyAuth": []}],
+    }
+except Exception:
+    pass  # OpenAPI extra not supported in this ninja-extra version
 
 
 @api_controller("", tags=["system"], auto_import=False)

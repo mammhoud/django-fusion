@@ -1,0 +1,206 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/ui/Icon.astro';
+---
+
+<Layout title="Pipeline · CRM · Formint POS">
+  <div x-data="pipelineBoard()" x-init="load()" class="max-w-[100%] mx-auto p-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <h1 class="flex items-center gap-2 text-lg font-extrabold" style="color: var(--color-text-primary)">
+        <Icon name="columns" class="h-5 w-5" style="color: var(--color-primary)" />
+        Pipeline Board
+      </h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <select x-model="activePipelineId" @change="buildColumns()" class="input text-xs" x-show="pipelines.length > 1">
+          <template x-for="p in pipelines" :key="p.id"><option :value="p.id" x-text="p.name"></option></template>
+        </select>
+        <span class="tag tag--primary tag--sm" x-text="totalDeals + ' deals'"></span>
+        <span class="tag tag--success tag--sm" x-text="'$' + totalValue.toFixed(0)"></span>
+      </div>
+    </div>
+
+    <div x-show="loading" class="flex gap-4 overflow-x-auto pb-4">
+      <template x-for="i in 4" :key="i"><div class="flex-shrink-0 w-72 space-y-3"><div class="skeleton-shimmer h-8 rounded-lg" aria-hidden="true"></div><template x-for="j in 3" :key="j"><div class="skeleton-shimmer h-28 rounded-xl" aria-hidden="true"></div></template></div></template>
+    </div>
+
+    <div x-show="!loading && stages.length === 0" class="text-center py-16 opacity-50 text-sm"><p class="flex items-center justify-center gap-2 text-lg mb-2"><Icon name="columns" class="h-5 w-5" /> No pipelines configured</p><p>Create a pipeline with stages from the Django admin, or seed demo data.</p></div>
+
+    <div x-show="!loading && stages.length > 0" class="kanban-board">
+      <template x-for="stage in stages" :key="stage.id">
+        <div class="kanban-column" :style="'--stage-color: ' + (stage.color || 'var(--color-primary)')">
+          <div class="kanban-column__header">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="'background: ' + (stage.color || 'var(--color-primary)')"></span>
+              <span class="text-xs font-semibold" x-text="stage.name"></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button @click="openNewDeal(stage)" class="kanban-column__add" title="Add deal to this stage" aria-label="Add deal to this stage" :style="'color: ' + (stage.color || 'var(--color-primary)')"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg></button>
+              <span class="kanban-column__count" :class="animatedStages[stage.id] && 'kanban-column__count--pop'" x-text="stage.deals.length"></span>
+            </div>
+          </div>
+
+          <div class="kanban-column__body" :class="dragOverStage === stage.id ? 'kanban-column__body--drop' : ''"
+            @dragover.prevent="onDragOver($event, stage.id)" @dragleave="onDragLeave()" @drop="onDrop($event, stage.id)">
+            <template x-for="deal in stage.deals" :key="deal.id">
+              <div class="kanban-card" :class="deal.is_won ? 'kanban-card--won' : deal.is_closed && !deal.is_won ? 'kanban-card--lost' : ''" :class="dragDealId === deal.id ? 'kanban-card--dragging' : ''"
+                draggable="true" @dragstart="onDragStart($event, deal, stage.id)" @dragend="onDragEnd()" @click="openDeal(deal)">
+                <div class="kanban-card__title" x-text="deal.title"></div>
+                <div class="flex items-center justify-between mt-2 gap-2">
+                  <span class="text-sm font-bold" style="color: var(--color-text-primary)" x-text="'$' + Number(deal.value||0).toLocaleString()"></span>
+                  <span class="text-xs opacity-50" x-text="(deal.probability||0) + '%'"></span>
+                </div>
+                <div class="mt-1.5 h-1 rounded-full bg-[var(--color-border-subtle)]"><div class="h-full rounded-full transition-all" :style="'width:' + (deal.probability||0) + '%; background: ' + (stage.color || 'var(--color-primary)')"></div></div>
+                <div class="flex items-center justify-between mt-3 gap-2"><span class="text-xs opacity-50 truncate" x-text="deal.contact_name || 'No contact'"></span><span class="text-[0.6rem] opacity-40 whitespace-nowrap" x-text="deal.expected_close_date || ''"></span></div>
+              </div>
+            </template>
+            <div x-show="stage.deals.length === 0" class="text-center py-6 opacity-30 text-xs">No deals in this stage</div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Deal detail modal -->
+    <div x-show="selectedDeal" x-transition.opacity.duration.200ms class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4" @click.self="selectedDeal=null" @keydown.escape.window="selectedDeal=null">
+      <div class="card w-full max-w-md p-6 space-y-4 shadow-2xl" x-transition.scale.95.duration.200ms @click.stop>
+        <div class="flex items-center justify-between"><h2 class="text-base font-bold" x-text="selectedDeal?.title"></h2><button @click="selectedDeal=null" class="btn btn-ghost btn-sm" aria-label="Close"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg></button></div>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between"><span class="opacity-50">Value</span><span class="font-bold" x-text="'$' + Number(selectedDeal?.value||0).toLocaleString()"></span></div>
+          <div class="flex justify-between"><span class="opacity-50">Probability</span><span x-text="(selectedDeal?.probability||0) + '%'"></span></div>
+          <div class="flex justify-between"><span class="opacity-50">Stage</span><span class="badge" :style="'border-color:color-mix(in oklab, '+(getStageColor(selectedDeal?.stage_id)||'var(--color-primary)')+' 25%, transparent);background:color-mix(in oklab, '+(getStageColor(selectedDeal?.stage_id)||'var(--color-primary)')+' 10%, transparent);color:'+(getStageColor(selectedDeal?.stage_id)||'var(--color-primary)')" x-text="selectedDeal?.stage_name||'—'"></span></div>
+          <div class="flex justify-between"><span class="opacity-50">Contact</span><span x-text="selectedDeal?.contact_name||'—'"></span></div>
+          <div class="flex justify-between"><span class="opacity-50">Company</span><span x-text="selectedDeal?.company_name||'—'"></span></div>
+          <div class="flex justify-between"><span class="opacity-50">Expected Close</span><span x-text="selectedDeal?.expected_close_date||'—'"></span></div>
+          <div x-show="selectedDeal?.is_won" class="flex justify-between"><span class="opacity-50">Status</span><span class="badge badge-soft-success"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trophy" /></svg> Won</span></div>
+          <div x-show="selectedDeal?.is_closed && !selectedDeal?.is_won" class="flex justify-between"><span class="opacity-50">Status</span><span class="badge badge-soft-error"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-circle-x" /></svg> Lost</span></div>
+          <div x-show="selectedDeal?.description" class="pt-2 border-t border-[var(--color-border-subtle)]"><span class="opacity-50 text-xs block mb-1">Description</span><p class="text-xs" x-text="selectedDeal?.description"></p></div>
+        </div>
+        <div class="flex gap-2 justify-end pt-2 border-t border-[var(--color-border-subtle)]"><button @click="selectedDeal=null" class="btn btn-ghost btn-sm">Close</button><a :href="'/crm/deals'" class="btn btn-primary btn-sm">View All Deals</a></div>
+      </div>
+    </div>
+
+    <!-- New deal form modal -->
+    <div x-show="newDealStage" x-transition.opacity.duration.200ms class="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] bg-black/50 px-4 overflow-y-auto" @click.self="newDealStage=null" @keydown.escape.window="newDealStage=null">
+      <div class="card w-full max-w-md p-6 space-y-5 shadow-2xl" x-transition.scale.90.duration.200ms @click.stop>
+        <div class="flex items-center justify-between"><h2 class="text-base font-bold">New Deal in <span :style="'color:'+(newDealStage?.color||'var(--color-primary)')" x-text="newDealStage?.name"></span></h2><button @click="newDealStage=null" class="btn btn-ghost btn-sm" aria-label="Close"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg></button></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Title *</label><input type="text" x-model="newDealForm.title" class="input w-full" placeholder="e.g. New Opportunity" required /></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Value ($) *</label><input type="number" x-model="newDealForm.value" class="input w-full" step="0.01" min="0" placeholder="0.00" required /></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Contact</label><select x-model="newDealForm.contact_id" class="input w-full"><option value="">— None —</option><template x-for="c in contactList" :key="c.id"><option :value="c.id" x-text="c.first_name + ' ' + c.last_name + (c.company_name ? ' · ' + c.company_name : '')"></option></template></select></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Expected Close</label><input type="date" x-model="newDealForm.expected_close_date" class="input w-full" /></div>
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Description</label><textarea x-model="newDealForm.description" class="input w-full" rows="2" placeholder="Deal details…"></textarea></div>
+        </div>
+        <div class="flex gap-2 justify-end pt-2 border-t border-[var(--color-border-subtle)]"><button @click="newDealStage=null" class="btn btn-ghost btn-sm" :disabled="formSaving">Cancel</button><button @click="createDeal()" class="btn btn-primary btn-sm gap-1" :disabled="formSaving"><span x-show="formSaving" class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span>Create</button></div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+  document.addEventListener('alpine:init', () => { Alpine.data('pipelineBoard', () => ({
+    pipelines:[],deals:[],stages:[],contactList:[],loading:true,activePipelineId:null,
+    selectedDeal:null,dragDealId:null,dragOverStage:null,dragSourceStage:null,
+    newDealStage:null,formSaving:false,animatedStages:{},
+    newDealForm:{title:'',value:'',contact_id:'',expected_close_date:'',description:''},
+
+    get totalDeals(){return this.deals.length},
+    get totalValue(){return this.deals.filter((d:any)=>!d.is_closed||d.is_won).reduce((s:number,d:any)=>s+Number(d.value||0),0)},
+
+    async load(){
+      this.loading=true;
+      try{
+        const[p,d,c]=await Promise.all([fetch('/crm/pipelines'),fetch('/crm/deals'),fetch('/crm/contacts')]);
+        if(p.ok){const j=await p.json();this.pipelines=j.data||j||[]}
+        if(d.ok){const j=await d.json();this.deals=j.data||j||[]}
+        if(c.ok){const j=await c.json();this.contactList=j.data||j||[]}
+        if(this.pipelines.length>0)this.activePipelineId=this.pipelines[0].id;
+        this.buildColumns();
+      }catch(e){console.error(e)}
+      finally{this.loading=false}
+    },
+
+    buildColumns(){
+      this.stages=[];const pipeline=this.pipelines.find((p:any)=>p.id===this.activePipelineId);
+      if(!pipeline){const m=new Map();for(const d of this.deals){const k=d.stage_name||d.stage||'Uncategorized';if(!m.has(k))m.set(k,{id:d.stage_id||k,name:k,color:'var(--color-primary)',deals:[]});m.get(k).deals.push(d)}this.stages=Array.from(m.values());return}
+      for(const s of pipeline.stages||[]){this.stages.push({id:s.id,name:s.name,color:s.color||'var(--color-primary)',probability:s.probability||0,is_won_stage:s.is_won_stage||false,is_lost_stage:s.is_lost_stage||false,deals:this.deals.filter((d:any)=>(d.stage_id&&d.stage_id===s.id)||(d.stage===s.id))})}
+    },
+
+    getStageColor(sid:any){const s=this.stages.find((s:any)=>s.id===sid);return s?s.color:null},
+    animateCount(sid:any){this.animatedStages[sid]=true;setTimeout(()=>{this.animatedStages[sid]=false},450)},
+    openDeal(deal:any){this.selectedDeal=deal},
+
+    openNewDeal(stage:any){
+      this.newDealForm={title:'',value:'',contact_id:'',expected_close_date:'',description:''};
+      this.newDealStage=stage;
+    },
+
+    async createDeal(){
+      if(!this.newDealForm.title||!this.newDealForm.value||!this.newDealStage){this.$store.ui.toast('Title and value required','error');return}
+      this.formSaving=true;
+      const payload={
+        title:this.newDealForm.title,
+        value:parseFloat(String(this.newDealForm.value))||0,
+        contact_id:this.newDealForm.contact_id?parseInt(String(this.newDealForm.contact_id)):null,
+        expected_close_date:this.newDealForm.expected_close_date||null,
+        description:this.newDealForm.description,
+        pipeline_id:this.activePipelineId,
+        stage_id:this.newDealStage.id,
+        probability:this.newDealStage.probability||10,
+        currency:'USD',is_active:true,
+      };
+      try{
+        const r=await fetch('/crm/deals',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if(r.ok){
+          this.$store.ui.toast('Deal created in '+this.newDealStage.name,'success');
+          this.newDealStage=null;
+          // Reload deals and rebuild
+          const d=await fetch('/crm/deals');if(d.ok){const j=await d.json();this.deals=j.data||j||[]}
+          this.buildColumns();
+          this.animateCount(this.newDealStage.id);
+        }else{const e=await r.text();this.$store.ui.toast('Failed: '+(e||r.status),'error')}
+      }catch(e){this.$store.ui.toast('Network error','error')}
+      finally{this.formSaving=false}
+    },
+
+    onDragStart(e:DragEvent,deal:any,stageId:any){this.dragDealId=deal.id;this.dragSourceStage=stageId;e.dataTransfer!.effectAllowed='move';e.dataTransfer!.setData('text/plain',String(deal.id))},
+    onDragEnd(){this.dragDealId=null;this.dragSourceStage=null;this.dragOverStage=null},
+    onDragOver(e:DragEvent,stageId:any){e.preventDefault();if(this.dragSourceStage!==stageId)this.dragOverStage=stageId},
+    onDragLeave(){this.dragOverStage=null},
+    async onDrop(e:DragEvent,toStageId:any){
+      e.preventDefault();this.dragOverStage=null;const dealId=this.dragDealId,fromStageId=this.dragSourceStage;this.dragDealId=null;this.dragSourceStage=null;
+      if(!dealId||fromStageId===toStageId)return;
+      const toStage=this.stages.find((s:any)=>s.id===toStageId);if(!toStage)return;
+      const deal=this.deals.find((d:any)=>d.id===dealId);if(!deal)return;
+      deal.stage_id=toStageId;deal.stage_name=toStage.name;deal.probability=toStage.probability||deal.probability;
+      if(toStage.is_won_stage){deal.is_won=true;deal.is_closed=true}else if(toStage.is_lost_stage){deal.is_closed=true;deal.is_won=false}else{deal.is_closed=false;deal.is_won=false}
+      this.buildColumns();
+      this.animateCount(fromStageId);this.animateCount(toStageId);
+      try{
+        const r=await fetch('/crm/deals/'+dealId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({stage_id:toStageId,is_won:deal.is_won,is_closed:deal.is_closed,probability:deal.probability})});
+        if(!r.ok){deal.stage_id=fromStageId;this.buildColumns();this.$store.ui.toast('Failed to move deal','error')}
+        else{this.$store.ui.toast('Deal moved to '+toStage.name,'success')}
+      }catch(e){deal.stage_id=fromStageId;this.buildColumns();this.$store.ui.toast('Network error','error')}
+    },
+  }))});
+</script>
+
+<style>
+  .kanban-board{display:flex;gap:1rem;overflow-x:auto;padding-bottom:1rem;min-height:60vh;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .kanban-column{flex-shrink:0;width:18rem;display:flex;flex-direction:column;border-radius:.75rem;background:var(--color-surface-card);border:1px solid var(--color-border-subtle);scroll-snap-align:start;max-height:calc(100vh - 8rem)}
+  .kanban-column__header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:2px solid var(--stage-color,var(--color-primary));flex-shrink:0}
+  .kanban-column__add{width:1.35rem;height:1.35rem;border-radius:999px;border:1px dashed var(--stage-color,var(--color-primary));background:transparent;font-size:.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease;opacity:.55;line-height:1}
+  .kanban-column__add:hover{opacity:1;background:color-mix(in oklab, var(--stage-color,var(--color-primary)) 12%, transparent);border-style:solid}
+  .kanban-column__count{display:flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;border-radius:999px;font-size:.7rem;font-weight:700;background:var(--stage-color,var(--color-primary));color:var(--color-primary-content);transition:transform .15s ease}
+  .kanban-column__count--pop{animation:count-pop .45s cubic-bezier(.34,1.56,.64,1)}
+  .kanban-column__body{flex:1;overflow-y:auto;padding:.5rem;display:flex;flex-direction:column;gap:.5rem}
+  .kanban-card{background:var(--color-surface-page);border:1px solid var(--color-border-subtle);border-radius:.625rem;padding:.75rem;cursor:pointer;transition:all .15s ease;position:relative}
+  .kanban-card:hover{border-color:var(--stage-color,var(--color-primary));box-shadow:0 2px 8px color-mix(in oklab,var(--stage-color,var(--color-primary)) 15%,transparent)}
+  .kanban-card--won{border-left:3px solid var(--color-success);opacity:.85}
+  .kanban-card--lost{border-left:3px solid var(--color-error);opacity:.7}
+  .kanban-card__title{font-size:.83rem;font-weight:650;color:var(--color-text-primary);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .kanban-card--dragging{opacity:.4;transform:rotate(1deg) scale(.97);border-style:dashed}
+  .kanban-card[draggable="true"]{cursor:grab}
+  .kanban-card[draggable="true"]:active{cursor:grabbing}
+  .kanban-column__body--drop{background:color-mix(in oklab,var(--stage-color,var(--color-primary)) 6%,transparent);border-radius:.625rem;outline:2px dashed var(--stage-color,var(--color-primary));outline-offset:-4px}
+  @keyframes count-pop{0%{transform:scale(1)}30%{transform:scale(1.45)}60%{transform:scale(.85)}100%{transform:scale(1)}}
+</style>

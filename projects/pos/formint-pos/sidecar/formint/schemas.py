@@ -276,8 +276,8 @@ class KitchenTicketOut(FusionModelSchema):
     class Config:
         model = KitchenTicket
         include = [
-            "id", "sale", "status", "priority", "notes",
-            "created_at", "completed_at",
+            "id", "sale", "status", "priority", "prepare_time_minutes",
+            "notes", "created_at", "completed_at",
         ]
 
 

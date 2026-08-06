@@ -11,6 +11,8 @@ Also exposes the fusion render-mode API at the fragment path (``/fusion/``),
 which the Astro shell can query before/after HTMX swaps.
 """
 
+from pathlib import Path
+
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -82,6 +84,29 @@ def navigation(request: HttpRequest) -> JsonResponse:
 def assets(request: HttpRequest) -> JsonResponse:
     """GET /fusion/assets/ — FUSION_ASSETS manifest for bundle parity."""
     return assets_api(request)
+
+
+# ── API Documentation pages ────────────────────────────────────────────
+
+_TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
+
+
+def api_docs(request: HttpRequest) -> HttpResponse:
+    """GET /api/v1/docs/ — API documentation landing page."""
+    html = (_TEMPLATE_DIR / "api-docs.html").read_text()
+    return HttpResponse(html, content_type="text/html; charset=utf-8")
+
+
+def api_docs_swagger(request: HttpRequest) -> HttpResponse:
+    """GET /api/v1/docs/swagger — Swagger UI."""
+    html = (_TEMPLATE_DIR / "swagger.html").read_text()
+    return HttpResponse(html, content_type="text/html; charset=utf-8")
+
+
+def api_docs_redoc(request: HttpRequest) -> HttpResponse:
+    """GET /api/v1/docs/redoc — ReDoc."""
+    html = (_TEMPLATE_DIR / "redoc.html").read_text()
+    return HttpResponse(html, content_type="text/html; charset=utf-8")
 
 
 @csrf_exempt

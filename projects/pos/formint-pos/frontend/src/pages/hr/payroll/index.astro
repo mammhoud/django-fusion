@@ -1,0 +1,85 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/ui/Icon.astro';
+---
+
+<Layout title="Payroll - Formint POS">
+  <div x-data="payrollPage()" x-init="load()" class="max-w-[96rem] mx-auto p-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <h1 class="flex items-center gap-2 text-lg font-extrabold" style="color: var(--color-text-primary)">
+        <Icon name="wallet" class="h-5 w-5" style="color: var(--color-chart-3)" />
+        Payroll
+      </h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <input type="search" x-model="search" @input="page=1" placeholder="Search by employee..." class="input flex-1 sm:w-56 text-xs" />
+        <button @click="openAdd()" class="btn btn-primary btn-sm gap-1"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg> New Record</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+      <div class="stat-card"><span class="stat-card__title">Records</span><span class="stat-card__value" x-text="total" style="color: var(--color-primary)">0</span></div>
+      <div class="stat-card"><span class="stat-card__title">Paid</span><span class="stat-card__value" x-text="paidCount" style="color: var(--color-success)">0</span></div>
+      <div class="stat-card"><span class="stat-card__title">Draft</span><span class="stat-card__value" x-text="draftCount" style="color: var(--color-warning)">0</span></div>
+      <div class="stat-card"><span class="stat-card__title">Total Paid</span><span class="stat-card__value" x-text="'$' + totalPaid" style="color: var(--color-info)">$0</span></div>
+    </div>
+    <div class="flex flex-wrap gap-1 mb-3">
+      <template x-for="s in ['All','draft','calculated','approved','paid']" :key="s">
+        <button @click="filterStatus = s==='All'?'':s; page=1" :class="'btn btn-xs '+((filterStatus||'All')===s?'btn-primary':'btn-ghost')" x-text="s==='All'?'All':s.charAt(0).toUpperCase()+s.slice(1)"></button>
+      </template>
+    </div>
+    <div x-show="loading" class="space-y-2"><template x-for="i in 5" :key="i"><div class="skeleton-shimmer h-10 rounded"></div></template></div>
+    <div x-show="!loading && filteredItems.length===0" class="text-center py-12 opacity-50 text-sm">No payroll records.</div>
+    <div x-show="!loading && filteredItems.length>0" class="card overflow-x-auto">
+      <table class="data-table" role="grid">
+        <thead><tr><th>ID</th><th>Employee</th><th>Period</th><th>Hours</th><th>Rate/hr</th><th>Gross</th><th>Net</th><th>Status</th><th class="w-20">Actions</th></tr></thead>
+        <tbody>
+          <template x-for="item in pagedItems()" :key="item.id">
+            <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]">
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
+              <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.employee_name || 'Employee #'+item.employee_id"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.period_start + ' → ' + item.period_end"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.hours_worked || '-'" ></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="'$'+(Number(item.hourly_rate)||0).toFixed(2)"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums font-medium" x-text="'$'+(Number(item.gross_pay)||0).toFixed(2)"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="'$'+(Number(item.net_pay)||0).toFixed(2)"></span></td>
+              <td class="px-3 py-2">
+                <span class="badge"
+                  :class="{ 'badge-soft-neutral': item.status==='draft', 'badge-soft-info': item.status==='calculated', 'badge-soft-warning': item.status==='approved', 'badge-soft-success': item.status==='paid' }"
+                  x-text="item.status"></span>
+              </td>
+              <td class="px-3 py-2"><div class="flex gap-1">
+                <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button>
+                <button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button>
+              </div></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class="flex items-center justify-between p-3 border-t border-[var(--color-border-subtle)] text-xs">
+        <span x-text="'Showing ' + ((page-1)*perPage + 1) + '-' + Math.min(page*perPage, filteredItems.length) + ' of ' + filteredItems.length"></span>
+        <div class="flex gap-1">
+          <button @click="page=Math.max(1,page-1)" :disabled="page===1" class="btn btn-ghost btn-xs">&larr; Prev</button>
+          <button @click="page++" :disabled="page*perPage>=filteredItems.length" class="btn btn-ghost btn-xs">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('payrollPage', () => ({
+      items: [], loading: true, search: '', filterStatus: '', page: 1, perPage: 20,
+      get total() { return this.items.length; },
+      get paidCount() { return this.items.filter((i: any) => i.status==='paid').length; },
+      get draftCount() { return this.items.filter((i: any) => i.status==='draft').length; },
+      get totalPaid() { return this.items.filter((i: any) => i.status==='paid').reduce((s: number, i: any) => s + Number(i.net_pay||0), 0).toFixed(2); },
+      get filteredItems() { let l = this.items; if (this.search) { const q = this.search.toLowerCase(); l = l.filter((i: any) => Object.values(i).some(v => String(v).toLowerCase().includes(q))); } if (this.filterStatus) l = l.filter((i: any) => i.status===this.filterStatus); return l; },
+      pagedItems() { const s = (this.page-1)*this.perPage; return this.filteredItems.slice(s, s+this.perPage); },
+      async load() { this.loading=true; try { const r = await fetch('/payroll/'); if (r.ok) { const d = await r.json(); this.items = d.data || d || []; } } catch(e){} finally { this.loading=false; } },
+      openAdd() { this.$store.ui.toast('Add form coming soon', 'info'); },
+      openEdit(item: any) { this.$store.ui.toast('Editing record #' + item.id, 'info'); },
+      confirmDelete(item: any) { this.$store.ui.toast('Delete stub', 'info'); },
+    }));
+  });
+</script>
