@@ -10,7 +10,6 @@ import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
   const list = await fetchPageList();
-  // Only BlogPostPage children (the seeded posts) get detail pages.
   const slugs = list.pages
     .filter((p) => p.type === 'BlogPostPage')
     .map((p) => p.slug);
@@ -70,6 +69,104 @@ const excerpt = String(pageData?.excerpt || '');
             style='color:hsl(var(--fu-ink));font-size:1.0625rem;line-height:1.85;'
             set:html={body}
           />
+        </div>
+      </div>
+
+      <!-- Auth-gated comment section -->
+      <div class='container-fusion mt-16 pt-12 border-t border-fu-line'>
+        <div
+          client:load
+          class='mx-auto max-w-2xl'
+          x-data="{
+            authed: false,
+            user: null as { email: string; display: string } | null,
+            loading: true,
+            comment: '',
+            comments: [] as { name: string; text: string; date: string }[],
+            busy: false,
+            async init() {
+              try {
+                const res = await fetch('/apis/auth/status/', { credentials: 'include', headers: { Accept: 'application/json' } });
+                if (res.ok) {
+                  const data = await res.json();
+                  this.authed = data.authenticated;
+                  this.user = data.user;
+                }
+              } catch (e) { /* offline */ }
+              finally { this.loading = false; }
+            },
+            async submitComment() {
+              if (!this.comment.trim()) return;
+              this.busy = true;
+              // In production this would POST to a comments API.
+              // For now we show it optimistically.
+              this.comments.push({
+                name: this.user?.display || 'Reader',
+                text: this.comment.trim(),
+                date: new Date().toISOString().split('T')[0],
+              });
+              this.comment = '';
+              this.busy = false;
+              window.__showToast?.('Comment added. Thanks for your input!', 'success');
+            },
+          }"
+        >
+          <h3 class='mb-6 font-display text-xl font-semibold text-fu-ink'>Comments</h3>
+
+          <!-- Not logged in -->
+          <template x-if='!loading && !authed'>
+            <div class='card p-6 text-center'>
+              <p class='mb-3 text-sm text-fu-muted'>Sign in to join the conversation.</p>
+              <button type='button' class='btn-secondary' @click="$dispatch('fusion:open-login')">Sign in</button>
+            </div>
+          </template>
+
+          <!-- Comment form (logged in) -->
+          <template x-if='!loading && authed'>
+            <div class='mb-8'>
+              <form @submit.prevent='submitComment()' class='space-y-3'>
+                <textarea
+                  x-model='comment'
+                  rows='3'
+                  class='input-field'
+                  placeholder='Share your thoughts...'
+                  required
+                  :disabled='busy'
+                ></textarea>
+                <button type='submit' class='btn-primary !px-6 !py-2 text-sm' :disabled='busy'>
+                  <span x-show='!busy'>Post comment</span>
+                  <span x-show='busy' x-cloak>Posting…</span>
+                </button>
+              </form>
+              <p class='mt-2 font-mono text-[0.65rem] text-fu-muted'>
+                Commenting as <span class='font-semibold text-fu-ink' x-text='user?.display'></span>
+              </p>
+            </div>
+          </template>
+
+          <!-- Comments list -->
+          <template x-if='comments.length'>
+            <div class='space-y-4'>
+              <template x-for='c in comments' :key='c.date'>
+                <div class='card p-4'>
+                  <div class='mb-1 flex items-center gap-2'>
+                    <span class='inline-flex h-7 w-7 items-center justify-center rounded-full bg-fu-link text-[0.65rem] font-bold text-white' x-text='c.name[0]?.toUpperCase()'></span>
+                    <span class='text-sm font-medium text-fu-ink' x-text='c.name'></span>
+                    <span class='font-mono text-[0.65rem] text-fu-muted' x-text='c.date'></span>
+                  </div>
+                  <p class='text-sm leading-relaxed text-fu-ink' x-text='c.text'></p>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Loading -->
+          <template x-if='loading'>
+            <div class='space-y-3 animate-fusion-pulse'>
+              <span class='block h-20 rounded-md bg-fu-line/40'></span>
+              <span class='block h-4 w-24 rounded bg-fu-line/60'></span>
+            </div>
+          </template>
         </div>
       </div>
     </article>

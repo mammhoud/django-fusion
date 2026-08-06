@@ -66,7 +66,9 @@ from apps.pages.models import (
     HomePage,
     PricingPage,
     PrivacyPage,
+    PhasePage,
     ProductPage,
+    PromptPage,
     ProductsPage,
     ServicesPage,
     TeamPage,
@@ -304,6 +306,78 @@ class TeamPageView(LandingPageView):
 
     def _get_page(self) -> TeamPage:
         return TeamPage.objects.first()
+
+
+class StartupPageView(LandingPageView):
+    """About → Startup subpage (/about/startup/) — the structa.cloud origin story.
+
+    Astro-rendered only; the backend handler serves a fallback page using the
+    AboutPage content."""
+
+    template_name = "pages/startup.html"
+
+    def _get_page(self):
+        return AboutPage.objects.first() or HomePage.objects.first()
+
+
+class FounderPageView(LandingPageView):
+    """About → Founder subpage (/about/founder/) — the engineer behind the code.
+
+    Astro-rendered only; the backend handler serves a fallback page using the
+    AboutPage content."""
+
+    template_name = "pages/founder.html"
+
+    def _get_page(self):
+        return AboutPage.objects.first() or HomePage.objects.first()
+
+
+class PhasePageView(LandingPageView):
+    """A service delivery phase, resolved beneath Services by slug."""
+
+    model = PhasePage
+    template_name = "pages/phase.html"
+
+    def _get_page(self) -> PhasePage:
+        slug = self.kwargs.get("slug")
+        page = PhasePage.objects.filter(slug=slug).first() if slug else None
+        if page is None or page.get_parent().specific.__class__.__name__ != "ServicesPage":
+            raise Http404(f"No phase named {slug!r}")
+        return page
+
+    def get_context_data(self, request: HttpRequest | None = None, **kwargs) -> dict:
+        context = super().get_context_data(request=request, **kwargs)
+        phase = context["page"]
+        context["phase_outcomes"] = [line.strip() for line in phase.outcomes.splitlines() if line.strip()]
+        context["phase_prompts"] = [
+            {"title": prompt.title, "slug": prompt.slug, "href": f"/services/phases/{phase.slug}/prompts/{prompt.slug}/"}
+            for prompt in PromptPage.objects.live().child_of(phase).order_by("title")
+        ]
+        return context
+
+
+class PromptPageView(LandingPageView):
+    """A reusable implementation prompt beneath a delivery phase."""
+
+    model = PromptPage
+    template_name = "pages/prompt.html"
+
+    def _get_page(self) -> PromptPage:
+        slug = self.kwargs.get("prompt_slug")
+        page = PromptPage.objects.filter(slug=slug).first() if slug else None
+        if page is None:
+            raise Http404(f"No prompt named {slug!r}")
+        phase_slug = self.kwargs.get("slug")
+        parent = page.get_parent().specific
+        if parent.__class__.__name__ != "PhasePage" or parent.slug != phase_slug:
+            raise Http404(f"No prompt named {slug!r} under phase {phase_slug!r}")
+        return page
+
+    def get_context_data(self, request: HttpRequest | None = None, **kwargs) -> dict:
+        context = super().get_context_data(request=request, **kwargs)
+        prompt = context["page"]
+        context["phase"] = prompt.get_parent().specific
+        return context
 
 
 class FeaturesPageView(LandingPageView):

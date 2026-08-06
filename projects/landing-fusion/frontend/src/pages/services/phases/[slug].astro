@@ -1,0 +1,71 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import { cachedNavigation, cachedPageData, cachedSiteSettings, fetchPageList } from '@/lib/api';
+import type { NavigationData, PageData, SiteSettings } from '@/lib/api';
+
+export async function getStaticPaths() {
+  const list = await fetchPageList();
+  return list.pages
+    .filter((page) => page.type === 'PhasePage')
+    .map((page) => ({ params: { slug: page.slug } }));
+}
+
+const { slug } = Astro.params;
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
+  ]);
+} catch { /* use content fallback */ }
+
+const outcomes = pageData?.outcomes || [];
+const prompts = pageData?.prompts || [];
+---
+
+<Layout
+  title={pageData?.title || 'Delivery phase'}
+  description={pageData?.search_description || pageData?.title || 'A Structa Cloud delivery phase.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug={`phase:${slug}`}
+>
+  <Hero
+    eyebrow={`phase ${pageData?.phase_number || ''} · ${(pageData?.phase_label || 'delivery').toLowerCase()}`}
+    heading={pageData?.title || 'Delivery phase'}
+    accent='built as a document'
+    intro={pageData?.hero?.subtitle || ''}
+    primaryCta={{ label: 'See all services', href: '/services/' }}
+    status='200 OK · Wagtail phase'
+  />
+
+  <article class='doc-sheet bg-fu-paper py-16 md:py-24'>
+    <div class='container-fusion'>
+      {pageData?.body && <div class='prose-fusion mx-auto max-w-3xl text-fu-muted' set:html={pageData.body} />}
+      {outcomes.length > 0 && (
+        <section class='mx-auto mt-12 max-w-3xl rounded-xl border border-fu-line bg-fu-card p-6'>
+          <p class='tag-marker'>outcomes</p>
+          <ul class='mt-5 grid gap-3 sm:grid-cols-2'>
+            {outcomes.map((outcome) => <li class='flex gap-2 text-fu-muted'><span class='text-fu-link'>↗</span>{outcome}</li>)}
+          </ul>
+        </section>
+      )}
+      {prompts.length > 0 && (
+        <section class='mx-auto mt-12 max-w-3xl'>
+          <p class='tag-marker'>implementation prompts</p>
+          <div class='mt-4 grid gap-4 sm:grid-cols-2'>
+            {prompts.map((prompt) => (
+              <a href={prompt.href} class='rounded-xl border border-fu-line bg-fu-card p-5 transition hover:-translate-y-0.5 hover:border-fu-link'>
+                <h2 class='font-display text-xl font-bold text-fu-ink'>{prompt.title}</h2>
+                <span class='mt-4 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link'>Open prompt →</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  </article>
+</Layout>

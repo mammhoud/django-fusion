@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "landing-fusion-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if host.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -98,6 +98,10 @@ TEMPLATES = [
             _ASSETS_DIR / "templates" / "pages",
             _ASSETS_DIR / "templates" / "content",
             _ASSETS_DIR / "templates" / "content" / "blocks",
+            # Landing-specific shared templates (phase/prompt and future
+            # Wagtail-managed documents).
+            BASE_DIR / "backend" / "assets" / "templates",
+            BASE_DIR / "backend" / "assets" / "templates" / "pages",
             # Legacy — backend-level templates (for backward compat)
             BASE_DIR / "templates",
         ],
@@ -131,7 +135,7 @@ APPEND_SLASH = False
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": Path(os.environ.get("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))),
     }
 }
 
@@ -265,10 +269,42 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ── i18n ───────────────────────────────────────────────────────────
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+# Supported languages — mirrors the Astro frontend translations module.
+# Swedish (sv) added per request; Arabic (ar) has full RTL support.
+from django.utils.translation import gettext_lazy as _
+LANGUAGES = [
+    ("en", _("English")),
+    ("ar", _("Arabic")),
+    ("sv", _("Swedish")),
+    ("fr", _("French")),
+    ("de", _("German")),
+    ("es", _("Spanish")),
+    ("pt", _("Portuguese")),
+]
+
+# Locale paths — Django scans these for .po translation files.
+# The first entry is the project-level locale directory.
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
+# Locale middleware — detects the user's language preference from the
+# ``django_language`` cookie (set by the Astro language switcher) or the
+# Accept-Language header, and activates it for the request.
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.contrib.sessions.middleware.SessionMiddleware") + 1,
+    "django.middleware.locale.LocaleMiddleware",
+)
+
+# i18n URL pattern — when True, Django prefixes URLs with the language code
+# (e.g. /en/about/, /ar/about/). The landing site uses cookie-based switching
+# so all routes stay at root; set False for single-domain cookie switching.
+USE_I18N_URL_PATTERNS = False
 
 # ── Static / Media ─────────────────────────────────────────────────
 STATIC_URL = "/static/"

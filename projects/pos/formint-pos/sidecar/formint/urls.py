@@ -6,6 +6,7 @@ from . import views
 from .api import api
 from .handlers import FormintPageView
 from .fusion import fusion_pointer_api
+from .vertical_slice_views import vertical_kds, vertical_orders, vertical_report, vertical_sync
 
 urlpatterns = [
     path('health/', views.health, name='formint-health'),
@@ -27,6 +28,11 @@ urlpatterns = [
     path('fusion/assets/', views.assets, name='formint-assets'),
     # Full-page render pipeline (django-fusion PageHandler) — HTMX vs full page
     path('fusion/page/', FormintPageView.as_view(), name='formint-page'),
+    # ── Vertical-slice HTMX data-only endpoints ──
+    path('htmx/vertical-slice/orders/', vertical_orders, name='formint-vs-orders'),
+    path('htmx/vertical-slice/kds/', vertical_kds, name='formint-vs-kds'),
+    path('htmx/vertical-slice/sync/', vertical_sync, name='formint-vs-sync'),
+    path('htmx/vertical-slice/report/', vertical_report, name='formint-vs-report'),
     # Django Ninja + ninja-extra API (fusion encoder/decoder)
     path('api/v1/', api.urls),
     # API Documentation pages

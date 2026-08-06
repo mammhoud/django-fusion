@@ -1,0 +1,67 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { SiteSettings, NavigationData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try {
+  [siteSettings, navData] = await Promise.all([cachedSiteSettings(), cachedNavigation()]);
+} catch { /* use fallbacks */ }
+---
+
+<Layout
+  title="The Startup"
+  description="How structa.cloud started: from freelance Django projects to a monorepo of open-source products."
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageSlug="about/startup"
+>
+  <section class='section-hero reg-marks overflow-hidden py-16'>
+    <div class='container-fusion'>
+      <div class='mx-auto max-w-2xl'>
+        <p class='tag-marker mb-4'>about · the startup</p>
+        <h1 class='mb-4 font-display text-4xl font-bold tracking-tight text-fu-ink md:text-5xl'>The Startup</h1>
+        <p class='text-lg text-fu-muted'>How structa.cloud grew from freelance Django projects into a monorepo of open-source products, AI tools, and a desktop POS application.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
+    <div class='container-fusion'>
+      <div class='mx-auto max-w-2xl space-y-12'>
+        <div>
+          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink'>2019-2021: Freelance foundations</h2>
+          <p class='leading-relaxed text-fu-muted'>Started as a solo Django developer shipping Wagtail sites for clients. Wordpress had the market share but Django had the performance. Each project was a custom build: authentication, CMS, payments, analytics, hand-rolled every time.</p>
+        </div>
+        <div>
+          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink'>2022: The reusable library</h2>
+          <p class='leading-relaxed text-fu-muted'>After five projects with the same auth patterns, the same Wagtail blocks, and the same table layouts, django-fusion was extracted. A component system and routing framework that every project could share. One repo, one config, one CI pipeline.</p>
+        </div>
+        <div>
+          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink'>2023: Open source and AI</h2>
+          <p class='leading-relaxed text-fu-muted'>Published django-fusion on GitHub. Built ceptor-ai as an AI chat customizer with an MCP server. Started Formints, a desktop POS app in Tauri 2 + Rust + React, with Community, Standard, Pro, and Cloud editions.</p>
+        </div>
+        <div>
+          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink'>2024: The AHA stack</h2>
+          <p class='leading-relaxed text-fu-muted'>Migrated from heavy React SPAs to Astro + HTMX + Alpine.js. Server-rendered HTML with minimal client JS. The landing page you are reading is the framework itself: no 500 KB bundle, no hydration.</p>
+        </div>
+        <div>
+          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink'>2025-2026: Products and scale</h2>
+          <p class='leading-relaxed text-fu-muted'>Five products shipping from one monorepo: Formints POS, Precis LMS, Loop CMS, Syntara AI, vResume. Community editions are open source. Paid editions are commercial, with the Pro tier at $79/month and Cloud fully hosted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    heading="Built in the open"
+    intro="The full monorepo is public on GitHub. Community editions are free, Pro editions are commercial."
+    ctaLabel="View on GitHub"
+    ctaHref="https://github.com/mammhoud"
+  />
+  <Toast />
+</Layout>

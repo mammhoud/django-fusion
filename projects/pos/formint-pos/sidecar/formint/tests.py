@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.utils import timezone
 
 from formint.models import (
     Category, ClientCategory, Customer, LoyaltyTransaction, Product,
@@ -851,3 +852,348 @@ class FormintUserSettingsRenderModeTests(TestCase):
             self.client.get('/fusion/session-mode/').json()['admin_preference'],
             False,
         )
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# Vertical-slice HTMX data-only endpoint tests
+# ══════════════════════════════════════════════════════════════════════════
+
+class FormintVerticalSliceTests(TestCase):
+    """Phase 1: branch → order → KDS → sync → report — data-only HTMX endpoints.
+
+    Each endpoint must:
+    1. Reject non-HTMX requests with 406
+    2. Accept HTMX requests with 200 + X-Formint-Response-Mode header
+    3. Return only data fragments (no <html>, <body>, or page chrome)
+    4. Handle empty database gracefully
+    """
+
+    # ── helpers ─────────────────────────────────────────────────────────
+
+    def _htmx(self, path: str):
+        return self.client.get(path, HTTP_HX_REQUEST='true')
+
+    def _assert_data_fragment(self, response, expected_mode='htmx-data-only'):
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Formint-Response-Mode'], expected_mode)
+        self.assertEqual(response['Cache-Control'], 'no-store')
+        content = response.content.decode().lower()
+        self.assertNotIn('<html', content)
+        self.assertNotIn('<body', content)
+
+    def _assert_406(self, response):
+        self.assertEqual(response.status_code, 406)
+        body = response.json()
+        self.assertEqual(body['product'], 'formint-pos')
+        self.assertIn('HTMX', body['detail'])
+
+    # ══════════════════════════════════════════════════════════════════
+    # Orders endpoint
+    # ══════════════════════════════════════════════════════════════════
+
+    def test_orders_rejects_non_htmx(self):
+        self._assert_406(self.client.get('/htmx/vertical-slice/orders/'))
+
+    def test_orders_accepts_htmx(self):
+        response = self._htmx('/htmx/vertical-slice/orders/')
+        self._assert_data_fragment(response)
+
+    def test_orders_empty_database(self):
+        """With no sales, the fragment shows the empty state."""
+        response = self._htmx('/htmx/vertical-slice/orders/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('No sales recorded yet', content)
+        self.assertIn('data-empty', content)
+
+    def test_orders_with_data(self):
+        """With seeded sales, the fragment renders the table."""
+        customer = Customer.objects.create(first_name='Ali', last_name='Test')
+        Sale.objects.create(
+            customer=customer, subtotal=10, total=12, tax_amount=2,
+            payment_method='cash', status='completed',
+        )
+
+        response = self._htmx('/htmx/vertical-slice/orders/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('Ali Test', content)
+        self.assertIn('#1', content)
+        self.assertIn('vs-badge--cash', content)
+        self.assertNotIn('No sales recorded yet', content)
+
+    def test_orders_null_customer_shows_walk_in(self):
+        """Orders with no customer show 'Walk-in' without crashing."""
+        Sale.objects.create(subtotal=5, total=5, payment_method='mobile')
+
+        response = self._htmx('/htmx/vertical-slice/orders/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('Walk-in', content)
+
+    def test_orders_has_kpi_header(self):
+        response = self._htmx('/htmx/vertical-slice/orders/')
+        content = response.content.decode()
+        self.assertIn('data-fragment="vertical-slice.orders"', content)
+        self.assertIn('vs-kpi', content)
+        self.assertIn('orders today', content)
+
+    # ══════════════════════════════════════════════════════════════════
+    # KDS endpoint
+    # ══════════════════════════════════════════════════════════════════
+
+    def test_kds_rejects_non_htmx(self):
+        self._assert_406(self.client.get('/htmx/vertical-slice/kds/'))
+
+    def test_kds_accepts_htmx(self):
+        response = self._htmx('/htmx/vertical-slice/kds/')
+        self._assert_data_fragment(response)
+
+    def test_kds_empty_database(self):
+        """With no kitchen tickets, shows the 'all clear' empty state."""
+        response = self._htmx('/htmx/vertical-slice/kds/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('All clear', content)
+        self.assertIn('data-empty', content)
+
+    def _make_kitchen_ticket(self, **kwargs):
+        """Create a KitchenTicket with a minimal Sale."""
+        from models.ops import KitchenTicket
+        if 'sale' not in kwargs and 'sale_id' not in kwargs:
+            kwargs['sale'] = Sale.objects.create(subtotal=10, total=10)
+        return KitchenTicket.objects.create(**kwargs)
+
+    def test_kds_with_active_tickets(self):
+        s1 = Sale.objects.create(subtotal=10, total=10)
+        s2 = Sale.objects.create(subtotal=20, total=20)
+        self._make_kitchen_ticket(
+            sale=s1, status='pending', prepare_time_minutes=15,
+            notes='No onions',
+        )
+        self._make_kitchen_ticket(
+            sale=s2, status='preparing', prepare_time_minutes=8,
+        )
+
+        response = self._htmx('/htmx/vertical-slice/kds/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('No onions', content)
+        self.assertIn('vs-badge--pending', content)
+        self.assertIn('vs-badge--preparing', content)
+        self.assertNotIn('All clear', content)
+
+    def test_kds_kpi_counts_correct(self):
+        from models.ops import KitchenTicket
+        sales = [Sale.objects.create(subtotal=i * 10, total=i * 10) for i in range(1, 6)]
+        KitchenTicket.objects.bulk_create([
+            KitchenTicket(sale=sales[0], status='pending', prepare_time_minutes=10),
+            KitchenTicket(sale=sales[1], status='pending', prepare_time_minutes=10),
+            KitchenTicket(sale=sales[2], status='preparing', prepare_time_minutes=10),
+            KitchenTicket(sale=sales[3], status='ready', prepare_time_minutes=10),
+            KitchenTicket(sale=sales[4], status='delivered', prepare_time_minutes=10),
+        ])
+
+        response = self._htmx('/htmx/vertical-slice/kds/')
+        content = response.content.decode()
+        self.assertIn('data-fragment="vertical-slice.kds"', content)
+
+    def test_kds_excludes_delivered_from_active(self):
+        self._make_kitchen_ticket(status='delivered')
+
+        response = self._htmx('/htmx/vertical-slice/kds/')
+        content = response.content.decode()
+        self.assertIn('All clear', content)
+
+    def test_kds_overdue_detection(self):
+        from datetime import timedelta
+
+        past = timezone.now() - timedelta(minutes=20)
+        self._make_kitchen_ticket(
+            status='pending', prepare_time_minutes=10, created_at=past,
+        )
+
+        response = self._htmx('/htmx/vertical-slice/kds/')
+        content = response.content.decode()
+        self.assertIn('vs-overdue', content)
+
+    # ══════════════════════════════════════════════════════════════════
+    # Sync endpoint
+    # ══════════════════════════════════════════════════════════════════
+
+    def test_sync_rejects_non_htmx(self):
+        self._assert_406(self.client.get('/htmx/vertical-slice/sync/'))
+
+    def test_sync_accepts_htmx(self):
+        response = self._htmx('/htmx/vertical-slice/sync/')
+        self._assert_data_fragment(response)
+
+    def test_sync_empty_no_nodes(self):
+        """With no nodes registered, shows the 'not configured' empty state."""
+        response = self._htmx('/htmx/vertical-slice/sync/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('No nodes registered', content)
+        self.assertIn('sync not configured', content)
+        self.assertIn('data-empty', content)
+
+    def test_sync_with_online_node(self):
+        from models.node import Node
+
+        Node.objects.create(
+            node_id='branch-1', hostname='branch1.local',
+            status='online', is_active=True,
+        )
+
+        response = self._htmx('/htmx/vertical-slice/sync/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('vs-status--ok', content)
+        self.assertIn('1/1 nodes online', content)
+        self.assertIn('0 offline', content)
+
+    def test_sync_with_offline_node(self):
+        from models.node import Node
+
+        Node.objects.create(
+            node_id='branch-2', hostname='branch2.local',
+            status='offline', is_active=True,
+        )
+
+        response = self._htmx('/htmx/vertical-slice/sync/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('vs-status--warn', content)
+        self.assertIn('0/1 nodes online', content)
+        self.assertIn('1 offline', content)
+
+    def test_sync_shows_last_sync_time(self):
+        from models.sync import SyncLog
+
+        SyncLog.objects.create(
+            node_id='branch-1', entity_type='product',
+            direction='push', status='success',
+        )
+
+        response = self._htmx('/htmx/vertical-slice/sync/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('Last sync:', content)
+
+    def test_sync_only_shows_successful_syncs(self):
+        """Failed SyncLog entries should not appear as 'last sync'."""
+        from models.sync import SyncLog
+
+        SyncLog.objects.create(
+            node_id='branch-1', entity_type='product',
+            direction='push', status='failed',
+        )
+
+        response = self._htmx('/htmx/vertical-slice/sync/')
+        # failed sync doesn't count; with no nodes, empty state appears
+        content = response.content.decode()
+        self.assertNotIn('Last sync:', content)
+
+    # ══════════════════════════════════════════════════════════════════
+    # Report endpoint
+    # ══════════════════════════════════════════════════════════════════
+
+    def test_report_rejects_non_htmx(self):
+        self._assert_406(self.client.get('/htmx/vertical-slice/report/'))
+
+    def test_report_accepts_htmx(self):
+        response = self._htmx('/htmx/vertical-slice/report/')
+        self._assert_data_fragment(response)
+
+    def test_report_empty_database(self):
+        """With no data, KPI values are all zero."""
+        response = self._htmx('/htmx/vertical-slice/report/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('data-fragment="vertical-slice.report"', content)
+        self.assertIn('active products', content)
+        self.assertIn('customers', content)
+
+    def test_report_with_sales(self):
+        customer = Customer.objects.create(first_name='Ali')
+        Sale.objects.create(
+            customer=customer, subtotal=100, total=120, tax_amount=20,
+        )
+        Product.objects.create(name='Coffee', price='3.50', is_active=True)
+
+        response = self._htmx('/htmx/vertical-slice/report/')
+        self._assert_data_fragment(response)
+        content = response.content.decode()
+        self.assertIn('sales today', content)
+        self.assertIn('sales this week', content)
+        self.assertIn('active products', content)
+        self.assertIn('customers', content)
+
+    def test_report_only_counts_today(self):
+        """Sales from previous days are excluded from 'today' KPIs."""
+        from datetime import timedelta
+
+        yesterday = timezone.now() - timedelta(days=1)
+        customer = Customer.objects.create(first_name='Old')
+        Sale.objects.create(
+            customer=customer, subtotal=50, total=50, sale_date=yesterday,
+        )
+
+        response = self._htmx('/htmx/vertical-slice/report/')
+        content = response.content.decode()
+        # sale_date is yesterday so today_count is 0
+        self.assertIn('0 sales today', content)
+
+    # ══════════════════════════════════════════════════════════════════
+    # Contract compliance (all four endpoints)
+    # ══════════════════════════════════════════════════════════════════
+
+    def test_all_endpoints_set_data_only_header(self):
+        endpoints = [
+            '/htmx/vertical-slice/orders/',
+            '/htmx/vertical-slice/kds/',
+            '/htmx/vertical-slice/sync/',
+            '/htmx/vertical-slice/report/',
+        ]
+        for path in endpoints:
+            with self.subTest(path=path):
+                response = self._htmx(path)
+                self.assertEqual(
+                    response['X-Formint-Response-Mode'], 'htmx-data-only',
+                    f'{path} should return htmx-data-only',
+                )
+
+    def test_all_endpoints_no_page_chrome(self):
+        endpoints = [
+            '/htmx/vertical-slice/orders/',
+            '/htmx/vertical-slice/kds/',
+            '/htmx/vertical-slice/sync/',
+            '/htmx/vertical-slice/report/',
+        ]
+        for path in endpoints:
+            with self.subTest(path=path):
+                response = self._htmx(path)
+                content = response.content.decode().lower()
+                self.assertNotIn(
+                    '<html', content,
+                    f'{path} must not contain <html>',
+                )
+                self.assertNotIn(
+                    '<body', content,
+                    f'{path} must not contain <body>',
+                )
+                self.assertNotIn(
+                    '<head', content,
+                    f'{path} must not contain <head>',
+                )
+
+    def test_all_endpoints_reject_non_htmx(self):
+        endpoints = [
+            '/htmx/vertical-slice/orders/',
+            '/htmx/vertical-slice/kds/',
+            '/htmx/vertical-slice/sync/',
+            '/htmx/vertical-slice/report/',
+        ]
+        for path in endpoints:
+            with self.subTest(path=path):
+                self._assert_406(self.client.get(path))

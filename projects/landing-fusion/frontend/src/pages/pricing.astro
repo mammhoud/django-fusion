@@ -59,7 +59,7 @@ function editionCardClass(tier: string): string {
       <div class='mb-12 max-w-2xl'>
         <p class='tag-marker mb-4'>pricing · per product</p>
         <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Pick a product, see its editions</h2>
-        <p class='text-fu-muted'>Every edition with its price, period and capabilities. Community editions are open source — the rest are quoted per deployment or per month.</p>
+        <p class='text-fu-muted'>Every edition with its price, period and capabilities. Community editions are open source. The rest are quoted per deployment or per month.</p>
       </div>
 
       <div x-data="{ active: '${products[0].slug}' }">
@@ -133,7 +133,7 @@ function editionCardClass(tier: string): string {
   ) : <ContentError label="Pricing data unavailable" />}
 
   <section class='container-fusion py-10 text-center'>
-    <p class='text-fu-muted'>Still deciding? <a href='/faq/' class='font-medium text-fu-link underline underline-offset-2 transition-colors hover:text-fu-ink'>Read the FAQ</a> — the honest answers to the questions buyers ask.</p>
+    <p class='text-fu-muted'>Still deciding? <a href='/faq/' class='font-medium text-fu-link underline underline-offset-2 transition-colors hover:text-fu-ink'>Read the FAQ</a>, the honest answers to the questions buyers ask.</p>
   </section>
 
   <CTA

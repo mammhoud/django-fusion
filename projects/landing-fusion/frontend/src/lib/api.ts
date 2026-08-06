@@ -140,6 +140,7 @@ export interface PageData {
   projects?: Record<string, any>[];
   services?: Record<string, any>[];
   process?: Record<string, any>[];
+  phases?: { id: number; slug: string; title: string; phase_number?: number; phase_label?: string; href: string }[];
   blog?: Record<string, any>[];
   tech?: string[];
   editions?: Record<string, any>[];
@@ -162,6 +163,16 @@ export interface PageData {
   tagline?: string;
   status?: string;
   hidden?: boolean;
+  // Wagtail-managed Services subpages
+  phase_number?: number;
+  phase_label?: string;
+  outcomes?: string[];
+  prompts?: { slug: string; title: string; href: string }[];
+  prompt?: string;
+  context?: string;
+  output?: string;
+  tool?: string;
+  phase?: { title: string; slug: string; href: string };
   contact?: Record<string, any>[];
   // Blog post meta (BlogPostPage detail pages)
   category?: string;

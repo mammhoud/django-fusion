@@ -31,6 +31,14 @@ __all__ = [
 ]
 
 
+def _htmx_fragment(request: HttpRequest, template: str, context: dict) -> HttpResponse:
+    """Render a data-only fragment with standard HTMX response headers."""
+    response = render(request, template, context)
+    response["X-Formint-Response-Mode"] = "htmx-data-only"
+    response["Cache-Control"] = "no-store"
+    return response
+
+
 def _reject_non_htmx(request: HttpRequest) -> JsonResponse | None:
     if not is_htmx_request(request):
         return JsonResponse(
@@ -41,38 +49,22 @@ def _reject_non_htmx(request: HttpRequest) -> JsonResponse | None:
 
 
 def vertical_orders(request: HttpRequest) -> HttpResponse:
-    """GET /htmx/vertical-slice/orders/ — recent orders data fragment."""
     reject = _reject_non_htmx(request)
     if reject:
         return reject
 
     recent = Sale.objects.select_related("customer").order_by("-sale_date")[:12]
-    today_count = Sale.objects.filter(
-        sale_date__date=timezone.localdate()
-    ).count()
-    today_revenue = (
-        Sale.objects.filter(sale_date__date=timezone.localdate())
-        .values_list("total", flat=True)
+    today_count = Sale.objects.filter(sale_date__date=timezone.localdate()).count()
+    today_total = sum(
+        float(t or 0)
+        for t in Sale.objects.filter(sale_date__date=timezone.localdate()).values_list("total", flat=True)
     )
-    today_total = sum(float(t or 0) for t in today_revenue)
-
-    return render(
-        request,
-        "formint/vertical_slice/orders.html",
-        {
-            "orders": recent,
-            "today_count": today_count,
-            "today_revenue": today_total,
-        },
-        headers={
-            "X-Formint-Response-Mode": "htmx-data-only",
-            "Cache-Control": "no-store",
-        },
-    )
+    return _htmx_fragment(request, "formint/vertical_slice/orders.html", {
+        "orders": recent, "today_count": today_count, "today_revenue": today_total,
+    })
 
 
 def vertical_kds(request: HttpRequest) -> HttpResponse:
-    """GET /htmx/vertical-slice/kds/ — active kitchen tickets data fragment."""
     reject = _reject_non_htmx(request)
     if reject:
         return reject
@@ -82,34 +74,19 @@ def vertical_kds(request: HttpRequest) -> HttpResponse:
     preparing = KitchenTicket.objects.filter(status="preparing").count()
     ready = KitchenTicket.objects.filter(status="ready").count()
     now = timezone.now()
-    overdue = 0
-    for t in active:
-        if t.status in ("delivered", "ready"):
-            continue
-        if t.prepare_time_minutes and t.created_at:
-            deadline = t.created_at + timedelta(minutes=t.prepare_time_minutes)
-            if now > deadline:
-                overdue += 1
-
-    return render(
-        request,
-        "formint/vertical_slice/kds.html",
-        {
-            "tickets": active,
-            "pending": pending,
-            "preparing": preparing,
-            "ready": ready,
-            "overdue": overdue,
-        },
-        headers={
-            "X-Formint-Response-Mode": "htmx-data-only",
-            "Cache-Control": "no-store",
-        },
+    overdue = sum(
+        1 for t in active
+        if t.status not in ("delivered", "ready")
+        and t.prepare_time_minutes and t.created_at
+        and now > t.created_at + timedelta(minutes=t.prepare_time_minutes)
     )
+    return _htmx_fragment(request, "formint/vertical_slice/kds.html", {
+        "tickets": active, "pending": pending, "preparing": preparing,
+        "ready": ready, "overdue": overdue,
+    })
 
 
 def vertical_sync(request: HttpRequest) -> HttpResponse:
-    """GET /htmx/vertical-slice/sync/ — sync status data fragment."""
     reject = _reject_non_htmx(request)
     if reject:
         return reject
@@ -124,26 +101,14 @@ def vertical_sync(request: HttpRequest) -> HttpResponse:
         .values_list("created_at", flat=True)
         .first()
     )
-
-    return render(
-        request,
-        "formint/vertical_slice/sync.html",
-        {
-            "total": total,
-            "online": online,
-            "offline": offline,
-            "last_synced": last_synced,
-            "sync_healthy": online > 0 and offline == 0,
-        },
-        headers={
-            "X-Formint-Response-Mode": "htmx-data-only",
-            "Cache-Control": "no-store",
-        },
-    )
+    return _htmx_fragment(request, "formint/vertical_slice/sync.html", {
+        "total": total, "online": online, "offline": offline,
+        "last_synced": last_synced,
+        "sync_healthy": online > 0 and offline == 0,
+    })
 
 
 def vertical_report(request: HttpRequest) -> HttpResponse:
-    """GET /htmx/vertical-slice/report/ — summary report data fragment."""
     reject = _reject_non_htmx(request)
     if reject:
         return reject
@@ -159,22 +124,9 @@ def vertical_report(request: HttpRequest) -> HttpResponse:
     week_agg = week_sales.aggregate(total=Sum("total"))
     week_revenue = float(week_agg["total"] or 0)
 
-    product_count = Product.objects.filter(is_active=True).count()
-    customer_count = Customer.objects.filter(is_active=True).count()
-
-    return render(
-        request,
-        "formint/vertical_slice/report.html",
-        {
-            "today_count": today_count,
-            "today_revenue": today_revenue,
-            "week_count": week_count,
-            "week_revenue": week_revenue,
-            "product_count": product_count,
-            "customer_count": customer_count,
-        },
-        headers={
-            "X-Formint-Response-Mode": "htmx-data-only",
-            "Cache-Control": "no-store",
-        },
-    )
+    return _htmx_fragment(request, "formint/vertical_slice/report.html", {
+        "today_count": today_count, "today_revenue": today_revenue,
+        "week_count": week_count, "week_revenue": week_revenue,
+        "product_count": Product.objects.filter(is_active=True).count(),
+        "customer_count": Customer.objects.filter(is_active=True).count(),
+    })

@@ -5,6 +5,7 @@ import CookieConsent from '@/components/ui/CookieConsent.astro';
 import LoginModal from '@/components/ui/LoginModal.astro';
 import BrandModal from '@/components/ui/BrandModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage } from '@/lib/site';
+import { T } from '@/lib/translations';
 import '../styles/globals.css';
 
 // Self-hosted fonts (no Google Fonts <link> in production). The family names
@@ -50,6 +51,7 @@ const siteName = siteSettings?.site_name || fallbackSiteName;
 const pageTitle = title && title !== siteName ? `${title} \u00b7 ${siteName}` : siteName;
 const canonical = new URL(Astro.url.pathname, 'https://structa.cloud').href;
 
+const translationsJson = JSON.stringify(T);
 void THEME_STORAGE_KEY;
 ---
 
@@ -93,6 +95,21 @@ void THEME_STORAGE_KEY;
     </script>
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- FOUC-free language + direction. The LanguageSwitcher Alpine component
+         reads the same ``fusion-lang`` localStorage key and updates the DOM,
+         but this inline script runs first so RTL languages never flash LTR. -->
+    <script is:inline>
+      (function () {
+        var r = document.documentElement;
+        var stored = null;
+        try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
+        var dirs = { ar:'rtl' };
+        if (stored && dirs[stored]) r.dir = dirs[stored];
+        else if (stored) r.dir = 'ltr';
+        if (stored) r.lang = stored;
+      })();
+    </script>
 
     <!-- Progressive enhancement guard: without JavaScript the Alpine reveal
          classes never fire, so force all scroll-reveal content visible. -->
@@ -300,6 +317,24 @@ void THEME_STORAGE_KEY;
         document.body.classList.remove('is-hydrating');
         reduxStore.dispatch(setLoaded());
       }, 3000);
+    </script>
+
+    <script is:inline define:vars={{ translationsJson }}>
+      (function () {
+        var dict = JSON.parse(translationsJson);
+
+        function updateLanguage(code) {
+          var values = Object.fromEntries(Object.entries(dict).map(function (entry) { return [entry[0], entry[1][code] || entry[1].en || entry[0]]; }));
+          document.querySelectorAll('[data-i18n]').forEach(function (node) {
+            var key = node.getAttribute('data-i18n');
+            if (key && values[key]) node.textContent = values[key];
+          });
+        }
+        var stored = null;
+        try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
+        updateLanguage(stored || 'en');
+        window.addEventListener('fusion:lang-changed', function (event) { updateLanguage(event.detail.code); });
+      })();
     </script>
 
     <!-- HTMX bootstrap is now loaded per-page via <HtmxBootstrap /> —

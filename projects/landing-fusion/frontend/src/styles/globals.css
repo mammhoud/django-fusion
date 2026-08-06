@@ -179,6 +179,20 @@
   html {
     scroll-behavior: smooth;
   }
+  html[dir="rtl"] {
+    text-align: right;
+  }
+  html[dir="rtl"] .container-fusion {
+    direction: rtl;
+  }
+  html[dir="rtl"] .font-mono,
+  html[dir="rtl"] .tag-marker {
+    letter-spacing: 0;
+  }
+  html[dir="rtl"] .timeline__line {
+    left: auto;
+    right: 50%;
+  }
   body {
     @apply bg-fu-paper text-fu-ink antialiased;
     font-feature-settings: "cv11", "ss01";

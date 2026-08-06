@@ -22,6 +22,7 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageServices = (pageData?.services as any[] | undefined);
 const pageProcess = (pageData?.process as any[] | undefined);
+const phaseItems = (pageData?.phases as { slug: string; title: string; phase_number?: number; phase_label?: string }[] | undefined) || [];
 
 const serviceItems = pageServices?.map((s: any) => ({
   icon: String(s.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
@@ -94,6 +95,27 @@ const processSteps = pageProcess?.map((p: any) => ({
     </div>
   </section>
   ) : <ContentError label="Services data unavailable" />}
+
+  {phaseItems.length > 0 && (
+    <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
+      <div class='container-fusion'>
+        <div class='mb-10 max-w-2xl'>
+          <p class='tag-marker mb-4'>delivery phases</p>
+          <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>A path from brief to durable system</h2>
+          <p class='mt-3 text-fu-muted'>Each phase is a Wagtail document with reusable prompts, outcomes, and a clear handoff.</p>
+        </div>
+        <div class='grid gap-4 md:grid-cols-2'>
+          {phaseItems.map((phase) => (
+            <a href={`/services/phases/${phase.slug}/`} class='rounded-xl border border-fu-line bg-fu-card p-6 transition hover:-translate-y-0.5 hover:border-fu-link'>
+              <p class='tag-marker'>phase {phase.phase_number || ''} · {phase.phase_label || 'delivery'}</p>
+              <h3 class='mt-3 font-display text-2xl font-bold text-fu-ink'>{phase.title}</h3>
+              <span class='mt-5 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link'>Open phase →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   {processSteps?.length ? (
     <Timeline

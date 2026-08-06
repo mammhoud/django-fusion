@@ -334,6 +334,84 @@ class ShowInNavMixin(models.Model):
     nav_panels = [FieldPanel("show_in_nav"), FieldPanel("nav_order")]
 
 
+PHASE_KIND_CHOICES = [
+    ("discovery", _("Discovery")),
+    ("build", _("Build")),
+    ("launch", _("Launch")),
+    ("enhance", _("Enhance")),
+]
+
+
+class PhasePage(LandingPage):
+    """A Wagtail-managed delivery phase beneath the Services page.
+
+    Phases are deliberate content documents rather than hardcoded cards. Each
+    phase can own PromptPage children, so editors can publish a practical
+    prompt library alongside the service methodology.
+    """
+
+    phase_number = models.PositiveIntegerField(default=1, verbose_name=_("Phase number"))
+    phase_label = models.CharField(
+        max_length=20,
+        choices=PHASE_KIND_CHOICES,
+        default="discovery",
+        verbose_name=_("Phase type"),
+    )
+    body = RichTextField(blank=True, verbose_name=_("Phase brief"))
+    outcomes = models.TextField(
+        blank=True,
+        help_text=_("One outcome per line, shown as the phase checklist."),
+        verbose_name=_("Outcomes"),
+    )
+
+    parent_page_types = ["pages.ServicesPage"]
+    subpage_types = ["pages.PromptPage"]
+    template = "pages/phase.html"
+
+    content_panels = LandingPage.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("phase_number"), FieldPanel("phase_label")],
+            heading=_("Phase identity"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        FieldPanel("body"),
+        FieldPanel("outcomes"),
+    ]
+
+    class Meta:
+        verbose_name = _("Delivery phase")
+        verbose_name_plural = _("Delivery phases")
+
+
+class PromptPage(LandingPage):
+    """A reusable brief/prompt document owned by a PhasePage."""
+
+    prompt = models.TextField(verbose_name=_("Prompt"))
+    context = RichTextField(blank=True, verbose_name=_("Context"))
+    output = RichTextField(blank=True, verbose_name=_("Expected output"))
+    tool = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text=_("Optional tool or stack label, for example Astro + Wagtail."),
+        verbose_name=_("Tool / stack"),
+    )
+
+    parent_page_types = ["pages.PhasePage"]
+    subpage_types = []
+    template = "pages/prompt.html"
+
+    content_panels = LandingPage.content_panels + [
+        FieldPanel("prompt"),
+        FieldPanel("context"),
+        FieldPanel("output"),
+        FieldPanel("tool"),
+    ]
+
+    class Meta:
+        verbose_name = _("Implementation prompt")
+        verbose_name_plural = _("Implementation prompts")
+
+
 class PricingPage(ShowInNavMixin, LandingPage):
     """Dedicated pricing page — hero, per-product pricing tabs, faq, cta.
 
