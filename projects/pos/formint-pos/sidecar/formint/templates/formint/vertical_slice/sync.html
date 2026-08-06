@@ -1,0 +1,15 @@
+<div class="vs-sync" data-fragment="vertical-slice.sync">
+  <div class="vs-status-row {% if sync_healthy %}vs-status--ok{% else %}vs-status--warn{% endif %}">
+    <span class="vs-status-dot" aria-hidden="true"></span>
+    <strong>{{ online }}/{{ total }} nodes online</strong>
+    <span class="vs-muted">{{ offline }} offline</span>
+  </div>
+  {% if last_synced %}
+  <div class="vs-sync__detail vs-muted">
+    Last sync: {{ last_synced|date:"Y-m-d H:i" }}
+  </div>
+  {% endif %}
+  {% if total == 0 %}
+  <div class="vs-empty" data-empty>No nodes registered — sync not configured</div>
+  {% endif %}
+</div>
