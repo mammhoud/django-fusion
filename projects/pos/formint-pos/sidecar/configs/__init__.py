@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Django Channels (WebSocket support; replaces Robyn WS)
+    "channels",
     # Django admin (themed by Unfold)
     "django.contrib.admin",
     # Wagtail (required by django_fusion.core.models.mixins.display_mode)
@@ -74,11 +76,24 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Seeds the session fusion render-mode from the operator's UserSettings
+    # row (admin settings page) — see formint/middleware.py. Needs auth +
+    # session middleware to have run first.
+    "formint.middleware.FormintSessionModeMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
 # ── URL Configuration ──
 ROOT_URLCONF = "configs.urls"
+
+# ── ASGI / Channels (replaces Robyn server) ────────────────────────────
+ASGI_APPLICATION = "asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver", "0.0.0.0"]
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
@@ -89,8 +104,23 @@ USE_I18N = True
 #           HTML (or fusion-encoded JSON) as the source of truth.
 #   False → "data APIs" — the client renders from /api/v1/* JSON.
 # Per-request override: ``X-Fusion-Render-First: true|false`` header.
+# Per-session preference: ``request.session['fusion_render_first']`` (set by
+# ``django_fusion.routes.rendering.session.FusionSessionChecker``) sits
+# between the header override and the configured default.
 FUSION_RENDER_FIRST_DEFAULT = os.environ.get("FUSION_RENDER_FIRST", "1") == "1"
 COMPONENTS_DIR_NAMES = ("components", "partials", "tags")
+
+# ── django-fusion component registry (see FORMINT_ARCHITECTURE.md §12) ────
+# COMPONENTS_ENABLE_BLOCK_ATTRS — emit data-block-* attributes on components
+# for headless/CMS inspection and stable component identity in the HTML.
+COMPONENTS_ENABLE_BLOCK_ATTRS = True
+# COMPONENTS_INCLUDE_PATH_ROOTS — template subdirectories whose *.html files
+# are auto-registered as path-style components ({% comp %} / include bridge).
+COMPONENTS_INCLUDE_PATH_ROOTS = (
+    "components",
+    "partials",
+    "formint",
+)
 
 # ── Superuser bootstrap (used by manage.py --ensure-superuser) ──
 FORMINT_ADMIN_EMAIL = os.environ.get("FORMINT_ADMIN_EMAIL", "admin@formint.local")
@@ -112,6 +142,11 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            # django-fusion component tags (comp, slot, prop, var) — registered
+            # so `{% load components %}` works (mirrors landing-fusion).
+            "libraries": {
+                "components": "django_fusion.comp.templatetags.components",
+            },
         },
     },
 ]

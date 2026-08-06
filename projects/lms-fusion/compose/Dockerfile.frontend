@@ -1,33 +1,27 @@
 # =============================================================================
-# Frontend container for lms-fusion (Next.js)
+# Frontend container for lms-fusion (Astro + HTMX + Alpine.js)
 # Build context: project root (projects/lms-fusion)
 # =============================================================================
 FROM node:24-slim AS builder
 WORKDIR /app/frontend
 
-# Copy frontend dependencies
+ARG PUBLIC_FUSION_API_URL=http://lms-fusion.localhost
+ENV PUBLIC_FUSION_API_URL=${PUBLIC_FUSION_API_URL}
+
 COPY frontend/package*.json ./
 RUN npm ci --legacy-peer-deps
 
-# Copy frontend source and project assets (build:theme needs ../assets/)
 COPY frontend/. .
 COPY assets/ ../assets/
-
-# Ensure public directory exists even if the project does not provide one.
 RUN mkdir -p /app/frontend/public
-
 RUN npm run build
 
 FROM node:24-slim AS runner
 WORKDIR /app/frontend
 
 COPY --from=builder /app/frontend/package*.json ./
-COPY --from=builder /app/frontend/.next ./.next
-COPY --from=builder /app/frontend/public ./public
+COPY --from=builder /app/frontend/dist ./dist
 COPY --from=builder /app/frontend/node_modules ./node_modules
-COPY compose/entrypoint.sh /entrypoint.sh
 
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["npm", "run", "start"]
+EXPOSE 3002
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3002"]

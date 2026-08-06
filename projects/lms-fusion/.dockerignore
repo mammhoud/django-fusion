@@ -4,7 +4,9 @@
 
 # Frontend dependencies and build output
 frontend/node_modules/
-frontend/.next/
+frontend/.astro/
+frontend-next-legacy/
+frontend/node_modules/
 frontend/.cache/
 frontend/coverage/
 frontend/test-results/

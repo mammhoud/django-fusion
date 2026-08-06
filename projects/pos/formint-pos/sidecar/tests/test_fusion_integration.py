@@ -143,12 +143,39 @@ def _seed_test_data():
 
 
 def _clear_test_data():
-    """Remove all seed data from test DB."""
-    from models.pos import Product, Customer, Employee, Category
-    from models.inventory import Supplier
-    from models.extra import Ingredient
+    """Remove all seed data from test DB (comprehensive — see seed_demo).
 
-    for model in (Product, Customer, Employee, Supplier, Category, Ingredient):
+    Deletes child records first so FK cascades never leave orphan rows:
+    sales cascade to sale items + kitchen tickets; customers cascade to
+    loyalty transactions; suppliers cascade to purchase orders.
+    """
+    from models.audit import SignalEvent
+    from models.crm import Company, Contact, Deal
+    from models.extra import (
+        Ingredient, InventoryAdjustment, ReceiptTemplate, Recipe, Role,
+    )
+    from models.hr import Payroll, TaxReport
+    from models.inventory import PurchaseOrder, PurchaseOrderItem, Supplier
+    from models.loyalty import (
+        ClientCategory, LoyaltyTransaction, UserSettings,
+    )
+    from models.menu import Menu, MenuItem, MenuItemAssignment
+    from models.node import Node, NodeEvent
+    from models.ops import KitchenTicket, SupportTicket
+    from models.pos import Category, Customer, Employee, Product, Sale
+    from models.sync import SyncLog
+
+    # Children first, then parents (FKS above are CASCADE, so this is a belt-
+    # and-braces ordering that also stays correct if a FK is ever switched to
+    # SET_NULL / PROTECT).
+    for model in (
+        SignalEvent, NodeEvent, SyncLog, KitchenTicket, SupportTicket,
+        Sale, LoyaltyTransaction, PurchaseOrderItem, PurchaseOrder,
+        MenuItemAssignment, MenuItem, Menu, Payroll, TaxReport,
+        InventoryAdjustment, Recipe, ReceiptTemplate, Role,
+        Employee, Product, Customer, Category, Supplier, Ingredient,
+        ClientCategory, UserSettings, Deal, Contact, Company,
+    ):
         model.objects.all().delete()
 
 
@@ -162,6 +189,7 @@ class TestDashboardFragmentIntegration:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -193,6 +221,7 @@ class TestSuppliersFragmentIntegration:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -213,6 +242,7 @@ class TestCustomersFragmentIntegration:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -231,6 +261,7 @@ class TestEmployeesFragmentIntegration:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -249,6 +280,7 @@ class TestInventoryFragmentIntegration:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -271,6 +303,7 @@ class TestDashboardTemplateRendering:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -395,6 +428,7 @@ class TestEndToEndFlow:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()
@@ -452,6 +486,7 @@ class TestCrossLayerContract:
 
     @pytest.fixture(autouse=True)
     def _seed_and_cleanup(self):
+        _clear_test_data()  # deterministic — start from an empty DB
         _seed_test_data()
         yield
         _clear_test_data()

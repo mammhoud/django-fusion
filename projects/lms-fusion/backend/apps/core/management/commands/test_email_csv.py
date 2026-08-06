@@ -84,8 +84,8 @@ class EmailCSVTester:
         return {
             'email': email,
             'role': role,
-            'site_name': getattr(settings, 'SITE_NAME', 'Fusion CMS'),
-            'site_url': getattr(settings, 'SITE_URL', 'https://fusion-cms.com'),
+            'site_name': getattr(settings, 'SITE_NAME', 'LMS Fusion'),
+            'site_url': getattr(settings, 'SITE_URL', 'https://lms-fusion.com'),
             'current_date': datetime.now().strftime('%B %d, %Y'),
             'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@example.com')
         }

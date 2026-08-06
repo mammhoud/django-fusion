@@ -413,3 +413,441 @@ class FormintAdminDashboardTests(TestCase):
         self.assertIn("Today&#x27;s Sales", content)
         self.assertIn('Loyalty Members', content)
         self.assertIn('pos-kpi-card', content)
+
+
+class FormintFusionEnhancementTests(TestCase):
+    """§12 django-fusion enhancement surface — settings, session, PageHandler,
+    comp tags, contrib.api, and the include-path component bridge."""
+
+    # ── 1. COMPONENTS_INCLUDE_PATH_ROOTS + register_include_paths() ──────
+
+    def test_include_path_roots_setting(self):
+        from django.conf import settings
+
+        self.assertEqual(
+            settings.COMPONENTS_INCLUDE_PATH_ROOTS,
+            ('components', 'partials', 'formint'),
+        )
+
+    def test_formint_templates_registered_as_components(self):
+        """apps.py ready() bridges {% include %} templates into {% comp %}."""
+        from django_fusion.comp._init import components
+
+        for path in (
+            'formint/branch_summary.html',
+            'formint/tables/products.html',
+            'formint/forms/product.html',
+        ):
+            with self.subTest(path=path):
+                component = components.get_component(path)
+                self.assertEqual(component.name, path)
+
+    # ── 2. COMPONENTS_ENABLE_BLOCK_ATTRS ────────────────────────────────
+
+    def test_block_attrs_enabled(self):
+        from django.conf import settings
+        from django_fusion.config.conf import _settings
+
+        self.assertIs(settings.COMPONENTS_ENABLE_BLOCK_ATTRS, True)
+        self.assertIs(_settings.ENABLE_BLOCK_ATTRS, True)
+
+    # ── 3. FusionCodec + get_session_render_first (session preference) ───
+
+    def test_render_mode_respects_session_preference(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.get('/fusion/render-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+        self.assertIs(body['session_cached'], True)
+
+    def test_header_overrides_session_preference(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.get(
+            '/fusion/render-mode/',
+            HTTP_X_FUSION_RENDER_FIRST='true',
+        )
+        self.assertIs(response.json()['fusion_render_first'], True)
+
+    def test_data_api_default_respected_for_fresh_session(self):
+        """A data-API deployment (default False) must not be overridden by
+        the UA-seeding heuristic for fresh sessions."""
+        from django.test import override_settings
+
+        with override_settings(FUSION_RENDER_FIRST_DEFAULT=False):
+            response = self.client.get('/fusion/render-mode/')
+            body = response.json()
+            self.assertIs(body['fusion_render_first'], False)
+            self.assertEqual(body['mode'], 'data-api')
+            # the session must NOT have been auto-seeded to True
+            self.assertNotIn('fusion_render_first', self.client.session)
+
+    def test_render_mode_payload_includes_encoded_pointer(self):
+        from django_fusion.routes.rendering.session import FusionCodec
+
+        response = self.client.get('/fusion/render-mode/')
+        pointer = response.json()['pointer']
+        self.assertTrue(pointer.startswith('fusion_v1:'))
+        decoded = FusionCodec.decode(pointer)
+        self.assertEqual(decoded['component'], 'formint.branch_summary')
+
+    def test_fusion_pointer_api_roundtrip(self):
+        response = self.client.get(
+            '/fusion/pointer/',
+            HTTP_HX_REQUEST='true',
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body['encoded'].startswith('fusion_v1:'))
+        self.assertEqual(body['decoded']['component'], 'formint.branch_summary')
+        self.assertIs(body['decoded']['htmx'], True)
+        self.assertIn('fusion_render_first', body)
+
+    # ── 8. Session-mode settings toggle (FusionSessionChecker) ────────────
+
+    def test_session_mode_reports_default_state(self):
+        response = self.client.get('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['session_cached'], False)
+        self.assertIsNone(body['session_preference'])
+        # effective mode = settings default (True)
+        self.assertIs(body['fusion_render_first'], True)
+        self.assertIs(body['default'], True)
+
+    def test_session_mode_post_stores_preference_via_checker(self):
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': False}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['session_cached'], True)
+        self.assertIs(body['session_preference'], False)
+        self.assertIs(body['fusion_render_first'], False)
+
+        # The stored preference now drives render-mode + the htmx fragment
+        response = self.client.get('/fusion/render-mode/')
+        self.assertIs(response.json()['fusion_render_first'], False)
+        self.assertEqual(response.json()['mode'], 'data-api')
+
+        # And get_effective_render_first reads it (session sits above default)
+        response = self.client.get('/htmx/branches/summary/', HTTP_HX_REQUEST='true')
+        self.assertEqual(response['X-Formint-Response-Mode'], 'htmx-data-only')
+
+    def test_session_mode_post_true_overrides(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': True}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.json()['session_preference'], True)
+        self.assertIs(response.json()['fusion_render_first'], True)
+
+    def test_session_mode_post_invalid_body(self):
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'other': 1}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_session_mode_rejects_string_boolean(self):
+        """bool('false') is True in Python — string payloads must be rejected
+        so a preference can never be silently inverted."""
+        response = self.client.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': 'false'}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # nothing was stored
+        response = self.client.get('/fusion/session-mode/')
+        self.assertIsNone(response.json()['session_preference'])
+
+    def test_session_mode_is_csrf_exempt(self):
+        """The preference toggle is csrf_exempt on the URL-resolved view.
+
+        Django's test client disables CSRF by default, so this uses a client
+        with ``enforce_csrf_checks=True`` to prove the exemption works
+        (the CSRF middleware only inspects the URL-resolved view).
+        """
+        from django.test import Client
+
+        strict = Client(enforce_csrf_checks=True)
+        response = strict.post(
+            '/fusion/session-mode/',
+            data=json.dumps({'fusion_render_first': False}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.json()['session_preference'], False)
+
+    def test_session_mode_delete_clears_preference(self):
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        response = self.client.delete('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIs(body['session_cached'], False)
+        self.assertIsNone(body['session_preference'])
+        # falls back to the settings default
+        self.assertIs(body['fusion_render_first'], True)
+
+        # render-mode reports the default again
+        response = self.client.get('/fusion/render-mode/')
+        self.assertIs(response.json()['fusion_render_first'], True)
+
+    # ── 4. is_htmx_request (centralised HTMX detection) ──────────────────
+
+    def test_htmx_detection_used_by_handlers(self):
+        # non-HTMX → rejected with the HTMX-fragment contract
+        response = self.client.get('/htmx/branches/summary/')
+        self.assertEqual(response.status_code, 406)
+
+        # HTMX header → fragment served
+        response = self.client.get(
+            '/htmx/branches/summary/', HTTP_HX_REQUEST='true'
+        )
+        self.assertEqual(response.status_code, 200)
+
+    # ── 5. PageHandler full-page pipeline ────────────────────────────────
+
+    def test_page_view_renders_full_layout(self):
+        response = self.client.get('/fusion/page/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('<html', content)
+        self.assertIn('Formint POS', content)
+        self.assertIn('data-fusion-render-mode', content)
+
+    def test_page_view_renders_fragment_for_htmx(self):
+        response = self.client.get('/fusion/page/', HTTP_HX_REQUEST='true')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertNotIn('<html', content)
+        self.assertIn('data-fusion-fragment="formint.fragments.page"', content)
+
+    # ── 6. {% comp %} tags (component registry) ──────────────────────────
+
+    def test_comp_tag_renders_registered_component(self):
+        response = self.client.get('/fusion/page/')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        # branch_summary.html is rendered via {% comp %} inside the page
+        self.assertIn('summary-grid', content)
+        self.assertIn('data-value="branches"', content)
+
+    # ── 7. django_fusion.contrib.api ─────────────────────────────────────
+
+    def test_contrib_health(self):
+        response = self.client.get('/fusion/health/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('status', body)
+        self.assertIn('data', body)
+        self.assertIn('fusion_render_first', body['data'])
+
+    def test_contrib_branding(self):
+        response = self.client.get('/fusion/branding/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('site_name', body)
+        self.assertIn('primary_color', body)
+
+    def test_contrib_layouts(self):
+        response = self.client.get('/fusion/layouts/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn('data', body)
+        self.assertIn('available', body['data'])
+        self.assertIn('default', body['data'])
+
+
+class FormintUserSettingsRenderModeTests(TestCase):
+    """Unfold admin settings → session render-mode bridge.
+
+    Covers the operator-facing ``UserSettings.fusion_render_mode`` field:
+    model default, schema exposure, admin form rendering + save_model
+    immediate session re-seed, and the ``FormintSessionModeMiddleware``
+    that seeds each authenticated session from the stored preference.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.operator = User.objects.create_superuser(
+            username='operator', email='op@formint.local', password='secret',
+        )
+
+    def test_model_default_is_default(self):
+        settings_obj = UserSettings.objects.create(user=self.operator)
+        self.assertEqual(settings_obj.fusion_render_mode, 'default')
+        field = UserSettings._meta.get_field('fusion_render_mode')
+        self.assertEqual(field.default, 'default')
+        self.assertIn(('fusion', 'Fusion render-first'), field.choices)
+        self.assertIn(('data', 'Data APIs'), field.choices)
+
+    def test_usersettings_out_schema_exposes_field(self):
+        from formint.schemas import UserSettingsOut
+
+        self.assertIn('fusion_render_mode', UserSettingsOut.Config.include)
+
+    def test_admin_change_form_shows_render_mode(self):
+        settings_obj = UserSettings.objects.create(user=self.operator)
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+        response = self.client.get(
+            f'/admin/pos_full/usersettings/{settings_obj.pk}/change/'
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertIn('fusion_render_mode', content)
+        self.assertIn('Fusion Render Mode', content)
+
+    def test_admin_save_model_re_seeds_operator_session(self):
+        """save_model must push the saved mode into the operator's session
+        immediately (no wait for a new session / next request)."""
+        settings_obj = UserSettings.objects.create(
+            user=self.operator, fusion_render_mode='default',
+        )
+
+        from django.contrib.admin.sites import site
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from django.test import RequestFactory
+
+        request = RequestFactory().post(f'/admin/pos_full/usersettings/{settings_obj.pk}/change/')
+        SessionMiddleware(lambda r: None).process_request(request)
+        request.user = self.operator
+
+        # the saved row now says 'data' → session must become False
+        settings_obj.fusion_render_mode = 'data'
+        settings_obj.save()
+        site._registry[UserSettings].save_model(request, settings_obj, None, change=True)
+
+        self.assertIs(request.session['fusion_render_first'], False)
+
+    def test_middleware_seeds_fusion_mode_from_settings(self):
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='fusion')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        self.client.get('/health/')
+
+        session = self.client.session
+        self.assertIs(session['fusion_render_first'], True)
+        self.assertTrue(session.get('_fusion_settings_synced'))
+
+    def test_middleware_seeds_data_mode_from_settings(self):
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='data')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        self.client.get('/health/')
+
+        session = self.client.session
+        self.assertIs(session['fusion_render_first'], False)
+        # render-mode endpoint reports data-api for this operator
+        response = self.client.get('/fusion/render-mode/')
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+
+    def test_middleware_default_mode_clears_preference(self):
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='default')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        # a previously stored session preference must be cleared so the
+        # settings default applies
+        session = self.client.session
+        session['fusion_render_first'] = False
+        session.save()
+
+        self.client.get('/health/')
+
+        self.assertNotIn('fusion_render_first', self.client.session)
+
+    def test_middleware_is_noop_for_anonymous(self):
+        self.client.get('/health/')
+        self.assertNotIn('_fusion_settings_synced', self.client.session)
+
+    def test_render_mode_operator_end_to_end(self):
+        """Full loop: admin preference → session → render-mode report."""
+        UserSettings.objects.create(user=self.operator, fusion_render_mode='data')
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        response = self.client.get('/fusion/render-mode/')
+        body = response.json()
+        self.assertIs(body['fusion_render_first'], False)
+        self.assertEqual(body['mode'], 'data-api')
+        self.assertIs(body['session_cached'], True)
+
+        # the stored session preference is reported by the settings-UI endpoint
+        response = self.client.get('/fusion/session-mode/')
+        self.assertIs(response.json()['session_preference'], False)
+
+    # ── DB-truth admin preference (cross-tab sync source) ──────────────────
+
+    def _session_mode_for(self, mode: str) -> dict:
+        UserSettings.objects.create(user=self.operator, fusion_render_mode=mode)
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+        response = self.client.get('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def test_session_mode_reports_admin_fusion_preference(self):
+        body = self._session_mode_for('fusion')
+        self.assertIs(body['admin_preference'], True)
+        self.assertIsNotNone(body['admin_version'])
+
+    def test_session_mode_reports_admin_data_preference(self):
+        body = self._session_mode_for('data')
+        self.assertIs(body['admin_preference'], False)
+        self.assertIsNotNone(body['admin_version'])
+
+    def test_session_mode_reports_admin_default_as_null(self):
+        """mode=default maps to None — but a non-null version proves a row
+        exists (so the frontend clears the session instead of ignoring it)."""
+        body = self._session_mode_for('default')
+        self.assertIsNone(body['admin_preference'])
+        self.assertIsNotNone(body['admin_version'])
+
+    def test_session_mode_admin_fields_null_for_anonymous(self):
+        response = self.client.get('/fusion/session-mode/')
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIsNone(body['admin_preference'])
+        self.assertIsNone(body['admin_version'])
+
+    def test_admin_version_bumps_on_save(self):
+        settings_obj = UserSettings.objects.create(
+            user=self.operator, fusion_render_mode='fusion',
+        )
+        self.assertTrue(self.client.login(username='operator', password='secret'))
+
+        first = self.client.get('/fusion/session-mode/').json()['admin_version']
+        self.assertIsNotNone(first)
+
+        # simulate an admin save in Unfold — the row's updated_at bumps
+        settings_obj.fusion_render_mode = 'data'
+        settings_obj.save()
+
+        second = self.client.get('/fusion/session-mode/').json()['admin_version']
+        self.assertGreater(second, first)
+        # the mapped preference also flipped
+        self.assertIs(
+            self.client.get('/fusion/session-mode/').json()['admin_preference'],
+            False,
+        )

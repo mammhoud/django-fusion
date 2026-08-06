@@ -1,0 +1,245 @@
+---
+/**
+ * Skeleton — per-component content-on-the-way placeholders.
+ * Each variant matches the real component's dimensions so the page never jumps.
+ */
+interface Props {
+  variant?: 'hero-section' | 'stats-row' | 'features-grid' | 'testimonial'
+    | 'testimonials-carousel' | 'pricing-grid' | 'pricing-folded' | 'faq-list'
+    | 'cta-banner' | 'contact-form' | 'section-header'
+    | 'timeline' | 'team-grid' | 'blog-grid'
+    | 'nav-bar' | 'page-loader'
+    | 'card' | 'line' | 'hero';
+  count?: number;
+  class?: string;
+}
+
+const { variant = 'line', count, class: className = '' } = Astro.props;
+---
+
+{
+  variant === 'hero-section' && (
+    <div class={`fusion-skeleton fusion-skeleton--hero-section ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--hero-section__inner">
+        <span class="fusion-skeleton__line--tag" style="width:14rem" />
+        <span class="fusion-skeleton__line--hero" />
+        <span class="fusion-skeleton__line" style="width:60%" />
+        <div class="fusion-skeleton__cta-row">
+          <span class="fusion-skeleton__line--btn" style="width:10rem" />
+          <span class="fusion-skeleton__line--btn" style="width:9rem" />
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'stats-row' && (
+    <div class={`fusion-skeleton fusion-skeleton--stats py-14 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion">
+        <div class="fusion-skeleton--card grid-cols-2 md:grid-cols-4">
+          {Array.from({ length: count || 4 }).map(() => (
+            <span class="fusion-skeleton__stat">
+              <span class="fusion-skeleton__line--stat-value" />
+              <span class="fusion-skeleton__line" style="width:70%" />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'features-grid' && (
+    <div class={`fusion-skeleton fusion-skeleton--features py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion">
+        <span class="fusion-skeleton__line--tag" style="width:6rem" />
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:50%" />
+        <div class="fusion-skeleton--card grid-cols-2 lg:grid-cols-3" style="margin-top:3.5rem">
+          {Array.from({ length: count || 6 }).map(() => (
+            <span class="fusion-skeleton__feature-card">
+              <span class="fusion-skeleton__line--icon" />
+              <span class="fusion-skeleton__line" style="width:55%" />
+              <span class="fusion-skeleton__line" style="width:90%" />
+              <span class="fusion-skeleton__line" style="width:75%" />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'testimonials-carousel' && (
+    <div class={`fusion-skeleton fusion-skeleton--testimonials py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion">
+        <span class="fusion-skeleton__line--tag" style="width:5rem" />
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:45%" />
+        <div style="max-width:48rem;margin:3.5rem auto 0">
+          <span class="fusion-skeleton__card" style="height:15rem" />
+          <div class="fusion-skeleton__carousel-controls" style="margin-top:1.75rem">
+            <span class="fusion-skeleton__line--circle" style="width:2.5rem;height:2.5rem" />
+            <span class="fusion-skeleton__line--dot" style="width:2rem" />
+            <span class="fusion-skeleton__line--dot" style="width:2rem" />
+            <span class="fusion-skeleton__line--dot" style="width:2rem" />
+            <span class="fusion-skeleton__line--circle" style="width:2.5rem;height:2.5rem" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'faq-list' && (
+    <div class={`fusion-skeleton fusion-skeleton--faq py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion" style="max-width:42rem;margin-inline:auto">
+        <span class="fusion-skeleton__line--tag" style="width:3rem" />
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:45%" />
+        <span class="fusion-skeleton__line--search" style="margin-top:2.5rem;margin-bottom:2.5rem" />
+        <div class="space-y-3">
+          {Array.from({ length: count || 6 }).map(() => <span class="fusion-skeleton__line--accordion" />)}
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'cta-banner' && (
+    <div class={`fusion-skeleton fusion-skeleton--cta py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion" style="max-width:36rem;margin-inline:auto;text-align:center">
+        <span class="fusion-skeleton__line--tag" style="width:4rem;margin-inline:auto" />
+        <span class="fusion-skeleton__line--hero" style="margin-top:1rem" />
+        <span class="fusion-skeleton__line" style="width:60%;margin-inline:auto" />
+        <div class="fusion-skeleton__cta-row" style="justify-content:center">
+          <span class="fusion-skeleton__line--btn" style="width:10rem" />
+          <span class="fusion-skeleton__line--btn" style="width:8rem" />
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'contact-form' && (
+    <div class={`fusion-skeleton fusion-skeleton--contact py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion">
+        <div class="fusion-skeleton--card grid-cols-1 md:grid-cols-3" style="gap:2.5rem">
+          <span class="fusion-skeleton__contact-info">
+            <span class="fusion-skeleton__line--tag" style="width:5rem" />
+            <span class="fusion-skeleton__line--title" />
+            <span class="fusion-skeleton__line" style="width:85%" />
+            <span class="fusion-skeleton__card" style="height:5rem;margin-top:1.25rem" />
+            <span class="fusion-skeleton__card" style="height:5rem" />
+            <span class="fusion-skeleton__card" style="height:5rem" />
+          </span>
+          <span class="fusion-skeleton__contact-form" style="grid-column:span 2">
+            <span class="fusion-skeleton__card" style="height:24rem" />
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  (variant === 'testimonial' || variant === 'pricing-grid' || variant === 'pricing-folded' || variant === 'section-header' || variant === 'hero') && (
+    <div class={`fusion-skeleton py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion" style="max-width:48rem;margin-inline:auto">
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:60%" />
+        <span class="fusion-skeleton__card" style="height:12rem;margin-top:2rem" />
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'timeline' && (
+    <div class={`fusion-skeleton fusion-skeleton--timeline py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion" style="max-width:48rem;margin-inline:auto">
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:50%" />
+        <div class="space-y-8" style="margin-top:3rem">
+          {Array.from({ length: count || 4 }).map(() => (
+            <span class="fusion-skeleton__card" style="height:6rem" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'team-grid' && (
+    <div class={`fusion-skeleton fusion-skeleton--team py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion">
+        <span class="fusion-skeleton__line--tag" style="width:5rem;margin-inline:auto" />
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:40%;margin-inline:auto" />
+        <div class="fusion-skeleton--card grid-cols-2 md:grid-cols-3 lg:grid-cols-4" style="margin-top:3.5rem">
+          {Array.from({ length: count || 4 }).map(() => (
+            <span class="fusion-skeleton__feature-card">
+              <span class="fusion-skeleton__line--icon" style="border-radius:50%" />
+              <span class="fusion-skeleton__line" style="width:50%" />
+              <span class="fusion-skeleton__line" style="width:35%" />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'blog-grid' && (
+    <div class={`fusion-skeleton fusion-skeleton--blog py-20 ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="container-fusion">
+        <span class="fusion-skeleton__line--tag" style="width:4rem" />
+        <span class="fusion-skeleton__line--title" />
+        <span class="fusion-skeleton__line" style="width:45%" />
+        <div class="fusion-skeleton--card grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style="margin-top:3rem">
+          {Array.from({ length: count || 3 }).map(() => (
+            <span class="fusion-skeleton__card" style="height:16rem" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'nav-bar' && (
+    <div class={`fusion-skeleton fusion-skeleton--nav ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--nav__inner">
+        <span class="fusion-skeleton__line fusion-skeleton--nav__brand" />
+        <div class="fusion-skeleton--nav__links">
+          {Array.from({ length: count || 5 }).map(() => <span class="fusion-skeleton__line fusion-skeleton--nav__link" />)}
+        </div>
+        <span class="fusion-skeleton__line--btn fusion-skeleton--nav__cta" />
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'page-loader' && (
+    <div id="page-loader" class={`fusion-skeleton fusion-skeleton--page-loader ${className}`.trim()} aria-label="Loading" role="status" data-skeleton>
+      <div class="fusion-skeleton--page-loader__logo">
+        <svg class="h-12 w-12" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="6" fill="#1A1917"/>
+          <path d="M12 8L6 14l6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 8l6 6-6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 6l-4 20" stroke="#FFE14D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="fusion-skeleton--page-loader__dots">
+        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
+        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
+        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
+      </div>
+      <p class="fusion-skeleton--page-loader__label">{'Loading...'}</p>
+    </div>
+  )
+}
+{
+  (variant === 'card' || variant === 'line') && (
+    <span class={`fusion-skeleton ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <span class="fusion-skeleton__line" />
+    </span>
+  )
+}

@@ -11,9 +11,19 @@ Also exposes the fusion render-mode API at the fragment path (``/fusion/``),
 which the Astro shell can query before/after HTMX swaps.
 """
 
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from pathlib import Path
 
-from .fusion import assets_api, navigation_api, render_mode_api
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+from .fusion import (
+    assets_api,
+    navigation_api,
+    render_mode_api,
+    session_mode_clear_api,
+    session_mode_get_api,
+    session_mode_set_api,
+)
 from .handlers import (
     BranchSummaryHandler,
     FormFragmentHandler,
@@ -31,6 +41,7 @@ __all__ = [
     "render_mode",
     "navigation",
     "assets",
+    "session_mode",
 ]
 
 
@@ -73,3 +84,50 @@ def navigation(request: HttpRequest) -> JsonResponse:
 def assets(request: HttpRequest) -> JsonResponse:
     """GET /fusion/assets/ — FUSION_ASSETS manifest for bundle parity."""
     return assets_api(request)
+
+
+# ── API Documentation pages ────────────────────────────────────────────
+
+_TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
+
+
+def api_docs(request: HttpRequest) -> HttpResponse:
+    """GET /api/v1/docs/ — API documentation landing page."""
+    html = (_TEMPLATE_DIR / "api-docs.html").read_text()
+    return HttpResponse(html, content_type="text/html; charset=utf-8")
+
+
+def api_docs_swagger(request: HttpRequest) -> HttpResponse:
+    """GET /api/v1/docs/swagger — Swagger UI."""
+    html = (_TEMPLATE_DIR / "swagger.html").read_text()
+    return HttpResponse(html, content_type="text/html; charset=utf-8")
+
+
+def api_docs_redoc(request: HttpRequest) -> HttpResponse:
+    """GET /api/v1/docs/redoc — ReDoc."""
+    html = (_TEMPLATE_DIR / "redoc.html").read_text()
+    return HttpResponse(html, content_type="text/html; charset=utf-8")
+
+
+@csrf_exempt
+def session_mode(request: HttpRequest) -> JsonResponse:
+    """Settings-UI toggle for the per-session render-mode preference.
+
+    GET    → report current state (effective mode, session cache, default)
+    POST   → store an explicit preference (``{"fusion_render_first": true|false}``)
+    DELETE → clear the stored preference (falls back to the default)
+
+    All writes go through ``FusionSessionChecker`` (``set_preference`` /
+    ``clear_preference``) so the stored value drives
+    ``get_effective_render_first`` without the UA-seeding heuristic.
+
+    ``@csrf_exempt`` must live on THIS URL-resolved view — Django's CSRF
+    middleware only checks the view Django resolves from the URL pattern,
+    not the inner helpers it delegates to. The endpoint is a benign
+    per-session preference toggle served to the same-origin Astro shell.
+    """
+    if request.method == "POST":
+        return session_mode_set_api(request)
+    if request.method == "DELETE":
+        return session_mode_clear_api(request)
+    return session_mode_get_api(request)

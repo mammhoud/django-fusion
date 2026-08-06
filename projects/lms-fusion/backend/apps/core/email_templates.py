@@ -1,5 +1,5 @@
 """
-Email template utilities for fusion-cms.com.
+Email template utilities for lms-fusion.com.
 
 Uses django-fusion's canonical email template handlers.
 """

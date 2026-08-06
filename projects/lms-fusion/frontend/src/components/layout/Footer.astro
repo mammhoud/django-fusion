@@ -1,0 +1,48 @@
+---
+interface Props {
+  siteName?: string;
+  siteSettings?: {
+    site_tagline?: string;
+    footer_description?: string;
+    footer_copyright?: string;
+    footer_link_groups?: { title: string; links: { label: string; url: string }[] }[];
+  };
+}
+
+const { siteName = 'Structa Cloud', siteSettings } = Astro.props;
+const year = new Date().getFullYear();
+
+const footerGroups = siteSettings?.footer_link_groups?.length
+  ? siteSettings.footer_link_groups
+  : [
+    { title: 'Platform', links: [{ label: 'Products', url: '/products' }, { label: 'Projects', url: '/projects' }, { label: 'Pricing', url: '/pricing' }] },
+    { title: 'Insights', links: [{ label: 'Blog', url: '/blog' }, { label: 'Services', url: '/services' }] },
+    { title: 'Support', links: [{ label: 'Contact', url: '/contact' }, { label: 'FAQ', url: '/faq' }] },
+  ];
+---
+
+<footer class="doc-sheet border-t border-fu-line bg-fu-paper text-fu-muted">
+  <div class="container-fusion py-14">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-3">
+      <div>
+        <a href="/" class="mb-4 flex items-center gap-2 font-mono font-semibold text-fu-ink">
+          <span>{siteName}</span>
+        </a>
+        <p class="mb-4 text-sm">{siteSettings?.footer_description || 'Full-stack engineering.'}</p>
+      </div>
+      {footerGroups.map((column) => (
+        <div>
+          <h3 class="mb-4 font-mono text-xs uppercase tracking-wider text-fu-ink">{column.title}</h3>
+          <ul class="space-y-2">
+            {column.links.map((link) => (
+              <li><a href={link.url} class="text-sm hover:text-fu-link">{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+    <div class="mt-12 border-t border-fu-line pt-7 text-center">
+      <p class="font-mono text-xs uppercase">&copy; {year} {siteName}</p>
+    </div>
+  </div>
+</footer>

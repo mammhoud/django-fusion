@@ -170,7 +170,7 @@ help:
 		'  run-dev        - Run Django dev server for selected website' \
 		'  run-local      - Alias for run-dev for local machine use' \
 		'  check-all      - Run Django checks for ctc, structa, and vresume' \
-		'  test-fusion    - Run cms-fusion + lms-fusion tests sequentially' \
+		'  test-fusion    - Run lms-fusion tests' \
 		'  test-local     - Run local pytest via uv' \
 		'  server         - Start the ASGI server (container default)' \
 		'  migrations     - Create Django migrations for selected website' \
@@ -252,13 +252,10 @@ test-local tests-local:
 	uv run pytest
 
 test-fusion:
-	@echo '🚀 Running cms-fusion tests...'
-	@uv run python -m pytest cms-fusion/backend/tests/ -q --tb=short
-	@echo ''
 	@echo '🚀 Running lms-fusion tests...'
 	@uv run python -m pytest lms-fusion/backend/tests/ -q --tb=short
 	@echo ''
-	@echo '✅ All fusion tests complete'
+	@echo '✅ lms-fusion tests complete'
 
 run-dev:
 	$(MANAGE) runserver

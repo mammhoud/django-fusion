@@ -1,5 +1,5 @@
 #!/bin/sh
 set -e
 
-# Frontend entrypoint for the lms-fusion Next.js container.
+# Frontend entrypoint for the lms-fusion Astro preview container.
 exec "$@"

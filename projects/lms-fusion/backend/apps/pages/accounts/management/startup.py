@@ -1,5 +1,5 @@
 """
-startup.py — AppConfig.ready() startup validation for fusion-cms.com
+startup.py — AppConfig.ready() startup validation for lms-fusion.com
 =========================================================================
 Validates critical configuration at application startup and logs warnings
 for any issues found. All checks are non-fatal (the app continues to start)

@@ -1,0 +1,53 @@
+// Fusion LMS — SCSS Variables
+// Mirror of Django-side assets/static/styles/colors/_palette.scss
+// and globals.css :root tokens.
+//
+// Usage: @use "variables" as *;
+//   or:  @use "variables" as v;  // then v.$fu-paper etc.
+
+// ── Brand / theme tokens (CSS custom properties are canonical at runtime) ──
+$fu-paper: hsl(46, 25%, 98%);
+$fu-ink: hsl(40, 6%, 10%);
+$fu-muted: hsl(45, 5%, 44%);
+$fu-line: hsl(45, 14%, 88%);
+$fu-card: hsl(48, 33%, 100%);
+$fu-link: hsl(217, 91%, 43%);
+$fu-link-dark: hsl(218, 91%, 34%);
+$fu-mark: hsl(48, 100%, 60%);
+$fu-live: hsl(144, 68%, 37%);
+
+// Dark mode
+$fu-paper-dark: hsl(45, 6%, 8%);
+$fu-ink-dark: hsl(45, 20%, 93%);
+$fu-muted-dark: hsl(45, 5%, 66%);
+$fu-line-dark: hsl(45, 6%, 20%);
+$fu-card-dark: hsl(45, 6%, 11%);
+$fu-link-dark-mode: hsl(219, 100%, 77%);
+
+// ── Typography ─────────────────────────────────────────────────────
+$font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+$font-display: "Bricolage Grotesque", "Public Sans", ui-sans-serif, system-ui, sans-serif;
+$font-mono: "JetBrains Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+// ── Spacing & layout ───────────────────────────────────────────────
+$container-max: 80rem;
+$section-padding-y: 4rem;
+$section-padding-y-md: 5rem;
+$section-padding-y-lg: 6rem;
+
+// ── Breakpoints (Tailwind-compatible) ──────────────────────────────
+$break-sm: 640px;
+$break-md: 768px;
+$break-lg: 1024px;
+$break-xl: 1280px;
+
+// ── Transitions ────────────────────────────────────────────────────
+$transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast: 0.2s ease;
+$transition-slow: 0.55s ease-out;
+
+// ── Z-index scale ──────────────────────────────────────────────────
+$z-header: 50;
+$z-overlay: 60;
+$z-modal: 70;
+$z-toast: 80;

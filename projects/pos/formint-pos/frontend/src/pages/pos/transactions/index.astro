@@ -1,0 +1,403 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/ui/Icon.astro';
+---
+
+<Layout title="Transactions · Formint POS">
+  <div
+    x-data="dataTable_transactions('transactions-table', '/sales/')"
+    x-init="init()"
+    class="max-w-[96rem] mx-auto p-4"
+  >
+    <!-- Header Bar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <h1 class="flex items-center gap-2 text-lg font-extrabold" style="color: var(--color-text-primary)">
+        <Icon name="banknote" class="h-5 w-5" style="color: var(--color-primary)" />
+        Transactions
+      </h1>
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <input
+          type="search"
+          x-model="search"
+          @input="filter()"
+          placeholder="Search transactions…"
+          class="input flex-1 sm:w-56 text-xs"
+          aria-label="Search transactions"
+        />
+        <button
+          @click="openAdd()"
+          class="btn btn-primary btn-sm gap-1"
+        >
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg>
+          New Sale
+        </button>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+      <div class="stat-card">
+        <span class="stat-card__title">Total Sales</span>
+        <span class="stat-card__value" x-text="total" style="color: var(--color-primary)">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__title">Revenue</span>
+        <span class="stat-card__value" x-text="'$' + items.reduce((s,i) => s + Number(i.total||0), 0).toFixed(2)" style="color: var(--color-success)">$0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__title">Pending</span>
+        <span class="stat-card__value" x-text="items.filter(i => i.status==='pending').length" style="color: var(--color-warning)">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__title">Status</span>
+        <span class="stat-card__value text-xs" x-text="loading ? 'Loading…' : 'Ready'" style="color: var(--color-success)">Ready</span>
+      </div>
+    </div>
+
+    <!-- Status filter pills -->
+    <div class="flex flex-wrap gap-1 mb-3" role="tablist">
+      <template x-for="s in ['All','pending','completed','refunded','cancelled']" :key="s">
+        <button @click="filterStatus = s === 'All' ? '' : s; page=1"
+          :class="'btn btn-xs ' + ((filterStatus || 'All') === s ? 'btn-primary' : 'btn-ghost')"
+          x-text="s === 'All' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)">
+        </button>
+      </template>
+    </div>
+
+    <!-- Data Table -->
+    <div x-show="loading" class="space-y-2">
+      <template x-for="i in 5" :key="i">
+        <div class="skeleton-shimmer h-10 rounded" aria-hidden="true"></div>
+      </template>
+    </div>
+
+    <div x-show="!loading && filteredItems.length === 0" class="text-center py-12 opacity-50 text-sm">
+      No transactions found.
+      <span x-show="search || filterStatus"> Try a different filter.</span>
+    </div>
+
+    <div x-show="!loading && filteredItems.length > 0" class="card overflow-x-auto">
+      <table class="data-table" role="grid">
+        <thead>
+          <tr><th>ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Items</th><th class="w-20">Actions</th></tr>
+        </thead>
+        <tbody>
+          <template x-for="item in pagedItems()" :key="item.id">
+            <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
+              <td class="px-3 py-2"><span x-text="item.id" class="text-xs tabular-nums"></span></td>
+              <td class="px-3 py-2"><span x-text="item.sale_date || item.date || '—'" class="text-xs"></span></td>
+              <td class="px-3 py-2"><span x-text="item.customer_name || item.customer || 'Walk-in'" class="text-xs font-medium"></span></td>
+              <td class="px-3 py-2"><span x-text="'$' + Number(item.total||0).toFixed(2)" class="text-xs tabular-nums font-medium"></span></td>
+              <td class="px-3 py-2"><span x-text="(item.payment_method||'').charAt(0).toUpperCase() + (item.payment_method||'').slice(1)" class="text-xs"></span></td>
+              <td class="px-3 py-2">
+                <span class="badge" :class="{ 'badge-soft-success': item.status==='completed', 'badge-soft-warning': item.status==='pending', 'badge-soft-info': item.status==='refunded', 'badge-soft-error': item.status==='cancelled' }" x-text="(item.status||'').charAt(0).toUpperCase() + (item.status||'').slice(1)"></span>
+              </td>
+              <td class="px-3 py-2"><span x-text="item.item_count || '—'" class="text-xs tabular-nums"></span></td>
+              <td class="px-3 py-2">
+                <div class="flex gap-1">
+                  <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs" title="Edit" aria-label="Edit">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg>
+                  </button>
+                  <button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs" title="Delete" aria-label="Delete">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <!-- Pagination -->
+      <div class="flex items-center justify-between p-3 border-t border-[var(--color-border-subtle)] text-xs">
+        <span x-text="`Showing ${(page-1)*perPage + 1}–${Math.min(page*perPage, filteredItems.length)} of ${filteredItems.length}`"></span>
+        <div class="flex gap-1">
+          <button @click="page = Math.max(1, page-1)" :disabled="page === 1" class="btn btn-ghost btn-xs">← Prev</button>
+          <button @click="page++" :disabled="page * perPage >= filteredItems.length" class="btn btn-ghost btn-xs">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div
+      x-show="deleteTarget"
+      x-transition.opacity
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      @click.self="deleteTarget = null"
+    >
+      <div class="card max-w-sm mx-4 p-6 text-center space-y-4">
+        <p class="font-semibold">Delete this transaction?</p>
+        <p class="text-sm opacity-60" x-text="'Sale #' + deleteTarget?.id"></p>
+        <div class="flex gap-2 justify-center">
+          <button @click="deleteTarget = null" class="btn btn-ghost btn-sm">Cancel</button>
+          <button @click="doDelete()" class="btn btn-error btn-sm">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Form Modal -->
+    <div
+      x-show="formOpen"
+      x-transition.opacity.duration.200ms
+      class="fixed inset-0 z-[60] flex items-start justify-center pt-[8vh] bg-black/50 px-4 overflow-y-auto"
+      @click.self="closeForm()"
+      @keydown.escape.window="closeForm()"
+    >
+      <div
+        class="card w-full max-w-xl p-6 space-y-5 shadow-2xl"
+        x-transition.scale.90.duration.200ms
+        @click.stop
+      >
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold" x-text="editingItem ? 'Edit Sale #' + editingItem.id : 'New Sale'"></h2>
+          <button @click="closeForm()" class="btn btn-ghost btn-sm" aria-label="Close">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Customer -->
+          <div class="sm:col-span-2">
+            <label class="text-xs font-medium opacity-70 mb-1 block">Customer</label>
+            <select x-model="form.customer_id" class="input w-full">
+              <option value="">— Walk-in —</option>
+              <template x-for="c in customerList" :key="c.id">
+                <option :value="c.id" x-text="(c.first_name||'') + ' ' + (c.last_name||'') + (c.phone ? ' · ' + c.phone : '')"></option>
+              </template>
+            </select>
+          </div>
+          <!-- Subtotal -->
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Subtotal *</label>
+            <input type="number" x-model="form.subtotal" class="input w-full" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+          <!-- Tax -->
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Tax Amount</label>
+            <input type="number" x-model="form.tax_amount" class="input w-full" step="0.01" min="0" placeholder="0.00" />
+          </div>
+          <!-- Discount -->
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Discount</label>
+            <input type="number" x-model="form.discount_amount" class="input w-full" step="0.01" min="0" placeholder="0.00" />
+          </div>
+          <!-- Total -->
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Total *</label>
+            <input type="number" x-model="form.total" class="input w-full font-bold" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+          <!-- Payment Method -->
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Payment Method</label>
+            <select x-model="form.payment_method" class="input w-full">
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+              <option value="mobile">Mobile</option>
+              <option value="mixed">Mixed</option>
+              <option value="credit">Store Credit</option>
+            </select>
+          </div>
+          <!-- Status -->
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Status</label>
+            <select x-model="form.status" class="input w-full">
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="refunded">Refunded</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <!-- Notes -->
+          <div class="sm:col-span-2">
+            <label class="text-xs font-medium opacity-70 mb-1 block">Notes</label>
+            <textarea x-model="form.notes" class="input w-full" rows="2" placeholder="Sale notes…"></textarea>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-2 justify-end pt-2 border-t border-[var(--color-border-subtle)]">
+          <button @click="closeForm()" class="btn btn-ghost btn-sm" :disabled="formSaving">Cancel</button>
+          <button @click="doSave()" class="btn btn-primary btn-sm gap-1" :disabled="formSaving">
+            <span x-show="formSaving" class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+            <span x-text="editingItem ? 'Update' : 'Create'"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('dataTable_transactions', (id, endpoint) => ({
+      items: [],
+      customerList: [],
+      loading: true,
+      search: '',
+      filterStatus: '',
+      page: 1,
+      perPage: 20,
+      deleteTarget: null,
+      formOpen: false,
+      formSaving: false,
+      editingItem: null,
+      form: {
+        customer_id: '', subtotal: '', tax_amount: '0',
+        discount_amount: '0', total: '', payment_method: 'cash',
+        status: 'completed', notes: '',
+      },
+
+      get total() { return this.items.length; },
+      get filteredItems() {
+        let list = this.items;
+        if (this.search) {
+          const q = this.search.toLowerCase();
+          list = list.filter((i: any) => Object.values(i).some(v => String(v).toLowerCase().includes(q)));
+        }
+        if (this.filterStatus) list = list.filter((i: any) => i.status === this.filterStatus);
+        return list;
+      },
+      get filteredCount() { return this.filteredItems.length; },
+      pagedItems() {
+        const start = (this.page - 1) * this.perPage;
+        return this.filteredItems.slice(start, start + this.perPage);
+      },
+
+      async init() {
+        await Promise.all([this.load(), this.loadCustomers()]);
+      },
+
+      async load() {
+        this.loading = true;
+        try {
+          const res = await fetch(endpoint as string);
+          if (res.ok) {
+            const data = await res.json();
+            this.items = data.data || data || [];
+          }
+        } catch (e) {
+          console.error('Load error:', e);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      async loadCustomers() {
+        try {
+          const res = await fetch('/customers/');
+          if (res.ok) {
+            const data = await res.json();
+            this.customerList = data.data || data || [];
+          }
+        } catch (e) { /* non-critical */ }
+      },
+
+      filter() {
+        this.page = 1;
+      },
+
+      resetForm() {
+        this.form = {
+          customer_id: '', subtotal: '', tax_amount: '0',
+          discount_amount: '0', total: '', payment_method: 'cash',
+          status: 'completed', notes: '',
+        };
+        this.editingItem = null;
+      },
+
+      openAdd() {
+        this.resetForm();
+        this.formOpen = true;
+      },
+
+      openEdit(item: any) {
+        this.resetForm();
+        this.editingItem = item;
+        this.form = {
+          customer_id: item.customer_id ?? item.customer ?? '',
+          subtotal: item.subtotal ?? '',
+          tax_amount: item.tax_amount ?? '0',
+          discount_amount: item.discount_amount ?? '0',
+          total: item.total ?? '',
+          payment_method: item.payment_method || 'cash',
+          status: item.status || 'completed',
+          notes: item.notes || '',
+        };
+        this.formOpen = true;
+      },
+
+      closeForm() {
+        if (this.formSaving) return;
+        this.formOpen = false;
+        this.resetForm();
+      },
+
+      async doSave() {
+        if (this.form.total === '' || this.form.total === null) {
+          this.$store.ui.toast('Total is required', 'error');
+          return;
+        }
+        this.formSaving = true;
+        const payload = {
+          customer_id: this.form.customer_id ? parseInt(String(this.form.customer_id)) : null,
+          subtotal: parseFloat(String(this.form.subtotal)) || 0,
+          tax_amount: parseFloat(String(this.form.tax_amount)) || 0,
+          discount_amount: parseFloat(String(this.form.discount_amount)) || 0,
+          total: parseFloat(String(this.form.total)) || 0,
+          payment_method: this.form.payment_method,
+          status: this.form.status,
+          notes: this.form.notes,
+        };
+
+        try {
+          let res;
+          if (this.editingItem) {
+            res = await fetch(`${endpoint}${this.editingItem.id}/`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+          } else {
+            res = await fetch(endpoint as string, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+          }
+          if (res.ok) {
+            this.$store.ui.toast(this.editingItem ? 'Sale updated' : 'Sale created', 'success');
+            this.closeForm();
+            await this.load();
+          } else {
+            const err = await res.text();
+            this.$store.ui.toast('Save failed: ' + (err || res.status), 'error');
+          }
+        } catch (e) {
+          this.$store.ui.toast('Network error', 'error');
+        } finally {
+          this.formSaving = false;
+        }
+      },
+
+      confirmDelete(item: any) {
+        this.deleteTarget = item;
+      },
+
+      async doDelete() {
+        if (!this.deleteTarget) return;
+        const id = this.deleteTarget.id;
+        this.deleteTarget = null;
+        try {
+          const res = await fetch(`${endpoint}${id}/`, { method: 'DELETE' });
+          if (res.ok) {
+            this.items = this.items.filter((i: any) => i.id !== id);
+            this.$store.ui.toast('Deleted', 'success');
+          }
+        } catch (e) {
+          this.$store.ui.toast('Delete failed', 'error');
+        }
+      },
+    }));
+  });
+</script>

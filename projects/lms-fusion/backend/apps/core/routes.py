@@ -1,5 +1,5 @@
 """
-Fusion CMS — Routable Components Site Configuration
+LMS Fusion — Routable Components Site Configuration
 ======================================================
 
 Defines the Application and Site hierarchy for the routable-components
@@ -141,7 +141,7 @@ def get_site() -> Site:
     global _site
     if _site is None:
         _site = Site(
-            title="Fusion CMS",
+            title="LMS Fusion",
             viewsets=[
                 LMSApp(),
                 BlogApp(),

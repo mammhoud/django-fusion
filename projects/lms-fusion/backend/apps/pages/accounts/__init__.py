@@ -1,1 +1,1 @@
-"""Accounts app for fusion-cms.com."""
+"""Accounts app for lms-fusion.com."""

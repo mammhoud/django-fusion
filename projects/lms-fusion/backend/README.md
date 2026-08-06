@@ -1,62 +1,30 @@
-# lms-fusion backend
+# LMS Fusion backend
 
-The lms-fusion backend is the Django/Wagtail API and server-rendered surface
-for the Structa Cloud learning platform. It uses the canonical `django-fusion`
-component, route, asset, health, and management-command APIs directly.
+This Django/Wagtail backend is the surviving CMS + LMS backend for the
+`lms-fusion` site. The Astro frontend in `../frontend` consumes the additive
+landing contract under `/apis/` and `/fragment/` while the existing LMS
+`/api/` routes and Wagtail page models remain authoritative.
 
-## Quick start
+## Migration safety
+
+The consolidation intentionally does **not** copy `cms-fusion` initial
+migrations or rename the existing `lms-fusion` apps. The LMS migration graph
+already contains the equivalent Wagtail/content models, so preserving its
+history avoids duplicate tables and destructive data changes.
+
+Before applying migrations to an existing database, run:
 
 ```bash
-cd projects/lms-fusion/backend
-uv run --project .. pytest -q
-make check
-make dev
+cd projects
+uv run python lms-fusion/manage.py showmigrations --plan
+uv run python lms-fusion/manage.py check
 ```
 
-Useful targets:
-
-| Target | Purpose |
-|---|---|
-| `make check` | Django system checks |
-| `make test` | Backend test suite |
-| `make migrate` | Apply database migrations |
-| `make collectstatic` | Collect static files and generate the component manifest |
-| `make frontend-production` | Build project frontend assets |
-| `make webpack-validate` | Validate the webpack stats file |
-
-## Runtime structure
-
-```text
-backend/
-├── apps/pages/       LMS, blog, accounts, profile, products, and page apps
-├── apps/core/        Shared API, services, routes, and management commands
-├── apps/domain/      Domain models and site behavior
-├── templates/        Site-level overrides and entry templates
-├── settings.py       lms-fusion Django settings
-├── www/urls.py       Canonical URL composition
-└── tests/             SQLite-backed API, fixture, model, and smoke tests
-```
-
-Framework implementations live in `libs/django-fusion`; project modules only
-contain LMS-specific models, views, templates, configuration, or adapters.
-
-## Canonical imports
-
-```python
-from django_fusion.comp.registry import component_registry
-from django_fusion.config.assets import get_asset_pipeline_options
-from django_fusion.config.manifest import load_merged_asset_manifest
-from django_fusion.routes import RoutableComponent
-from django_fusion.management.commands.base import BaseCommand
-```
-
-Do not introduce local re-export modules for these symbols. A management command
-may subclass a django-fusion command only when it supplies LMS model paths or
-fixture settings.
-
-## Related documentation
-
-- [`docs/projects/lms-fusion/`](../../../docs/projects/lms-fusion/README.md)
-- [`docs/plans/`](../../../docs/plans/README.md)
-- [`libs/django-fusion/docs/INDEX.md`](../../../libs/django-fusion/docs/INDEX.md)
-- [`CHANGELOG.md`](../CHANGELOG.md)
+The development SQLite database currently has a pre-existing inconsistent
+history: `accounts.0001_initial` is recorded as applied before its declared
+`wagtailcore.0097_baselogentry_uuid_action_timestamp_indexes` dependency.
+Do not use `--fake`, delete the database, or reset migration records blindly.
+Back up the database, verify the actual Wagtail schema against migration 0097,
+and perform a database-specific repair only after that review. Production
+migration startup should remain blocked until the database owner completes
+that repair.

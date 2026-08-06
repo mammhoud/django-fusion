@@ -12,7 +12,7 @@
 | `js-test.yml` | JS Tests (vitest + Playwright E2E) | PR, push, manual | 5 | ✅ Active |
 | `pytest-core.yml` | pytest-core | PR, push, manual | 1 | ✅ Active |
 | `check-extras.yml` | check-extras | PR, push, manual | 1 | ✅ Active |
-| `fusion-ci.yml` | Fusion CI (cms-fusion + lms-fusion) | PR, push, manual | 8 | ✅ Active |
+| `fusion-ci.yml` | Fusion CI (lms-fusion) | PR, push, manual | 5 | ✅ Active |
 | `deploy-ci.yml` | deploy-ci (preflight + docs validation) | PR, push, manual | 2 | ✅ Active |
 | `lint-quality.yml` | lint-quality (typo + dead-code check) | PR, push, manual | 1 | ✅ Active |
 
@@ -55,33 +55,23 @@
 
 ---
 
-## `fusion-ci.yml` — Fusion CI (cms-fusion + lms-fusion)
+## `fusion-ci.yml` — Fusion CI (lms-fusion)
 
-**Triggers:** PR + push on `projects/cms-fusion/**`, `projects/lms-fusion/**`, lib submodules, and this workflow file.
+**Triggers:** PR + push on `projects/lms-fusion/**`, lib submodules, and this workflow file.
 
 ### Jobs (8 total, mostly parallel)
 
 | Job | Runs | Timeout |
 |-----|------|:------:|
-| `cms-fusion-backend` | Django checks + tests | 15m |
-| `cms-fusion-frontend` | Next.js build + Vitest | 10m |
-| `cms-fusion-e2e` | Playwright E2E (incl. `homepage-content.spec.ts` content verification) | 15m |
 | `lms-fusion-backend` | Django checks + tests | 15m |
-| `lms-fusion-frontend` | Next.js build + Vitest | 10m |
-| `lms-fusion-e2e` | Playwright E2E (incl. `homepage-content.spec.ts` content verification) | 15m |
-| `domain-drift-check` | Compare domain code across fusion projects | 2m |
+| `lms-fusion-frontend` | Astro build + unit tests | 10m |
+| `lms-fusion-e2e` | Astro + Django smoke test | 15m |
+| `domain-drift-check` | Domain code drift check | 2m |
 | `deploy-staging` | Manual `workflow_dispatch` deploy + smoke checks | 30m |
 
 ### E2E Backend Startup
 
-The `cms-fusion-e2e` and `lms-fusion-e2e` jobs spin up the Django backend (with `DB_TYPE=sqlite` for fast CI) before running Playwright. The backend is started via `docker compose up -d backend` and health-checked via `curl /health/`. The test run passes `NEXT_PUBLIC_API_URL` so the `homepage-content.spec.ts` tests can verify that actual rendered HTML (title, nav, hero, console errors) matches the data fetched from the Wagtail backend API.
-
-| Project | Backend Port | `NEXT_PUBLIC_API_URL` |
-|---------|:------------:|----------------------|
-| `cms-fusion` | 5075 | `http://localhost:5075` |
-| `lms-fusion` | 5074 | `http://localhost:5074` |
-
-The `homepage-content.spec.ts` tests at `projects/<project>/frontend/tests/e2e/homepage-content.spec.ts` (18 tests each) bridge the backend API and rendered frontend — they verify that titles, navigation, hero content, and console health match the data Wagtail serves. API-dependent assertions degrade gracefully (`test.skip`) if the backend is unreachable.
+The `lms-fusion-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for fast CI) before running Astro smoke tests. The backend is started via `docker compose up -d backend` and health-checked via `curl /health/`.
 
 ---
 

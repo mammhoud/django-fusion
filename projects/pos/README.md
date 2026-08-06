@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
+  <img src="docs/screenshots/admin/03_admin_dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
 </p>
 
 POS is a modern, offline-first desktop point-of-sale application for
@@ -91,10 +91,10 @@ See [`formint-pos/README.md`](formint-pos/README.md) and
 
 | | | |
 |:---:|:---:|:---:|
-| ![Dashboard](formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg) | ![Products](formint-pos/docs/screenshots/admin/02_admin_products.jpg) | ![Customers](formint-pos/docs/screenshots/admin/03_admin_customers.jpg) |
+| ![Dashboard](docs/screenshots/admin/03_admin_dashboard.jpg) | ![Products](docs/screenshots/admin/04_admin_products.jpg) | ![Customers](docs/screenshots/admin/05_admin_customers.jpg) |
 | **Unfold Admin — Dashboard** | **Unfold Admin — Products** | **Unfold Admin — Customers** |
-| ![Sales](formint-pos/docs/screenshots/admin/04_admin_sales.jpg) | | |
-| **Unfold Admin — Sales** | | |
+| ![Sales](docs/screenshots/admin/06_admin_sales.jpg) | ![Loyalty](docs/screenshots/admin/07_admin_loyalty.jpg) | ![Settings](docs/screenshots/admin/08_admin_settings.jpg) |
+| **Unfold Admin — Sales** | **Unfold Admin — Loyalty** | **Unfold Admin — Settings** |
 
 ---
 

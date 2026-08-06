@@ -1,0 +1,129 @@
+---
+import ThemeToggle from '@/components/ui/ThemeToggle.astro';
+
+interface Props {
+  siteName?: string;
+  /** Backend-fetched nav items (from /apis/navigation/). Falls back to a sensible default. */
+  navItems?: { label: string; href: string; active?: boolean; external?: boolean }[];
+}
+
+const { siteName = 'Structa Cloud', navItems } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) => {
+  if (href === '/') return pathname === '/';
+  if (href.startsWith('/#')) return pathname === '/' || pathname === '/index';
+  return pathname.startsWith(href.split('#')[0]);
+};
+
+const displayNav = navItems && navItems.length > 0
+  ? navItems
+  : [
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services/' },
+    { label: 'Products', href: '/products/' },
+    { label: 'Projects', href: '/projects/' },
+    { label: 'Blog', href: '/blog/' },
+    { label: 'Pricing', href: '/pricing/' },
+    { label: 'About', href: '/about/' },
+    { label: 'Contact', href: '/contact/' },
+  ];
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-fu-line bg-fu-paper/92 backdrop-blur-md"
+  x-data="{ open: false }"
+>
+  <div class="container-fusion">
+    <div class="flex h-16 items-center justify-between">
+      <!-- Wordmark: angle-bracket logo for Structa Cloud -->
+      <a href="/" class="flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink" aria-label={siteName}>
+        <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="6" fill="#1A1917"/>
+          <path d="M12 8L6 14l6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 8l6 6-6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 6l-4 20" stroke="#FFE14D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span>{siteName}</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
+        {displayNav.map((link) => {
+          const active = isActive(link.href);
+          return (
+            <a
+              href={link.href}
+              class:list={[
+                'text-[0.9rem] transition-colors duration-200',
+                active
+                  ? 'font-medium text-fu-ink border-b-2 border-fu-link'
+                  : 'text-fu-muted hover:text-fu-ink',
+              ]}
+            >
+              {link.label}
+            </a>
+          );
+        })}
+      </nav>
+
+      <!-- CTA + Theme toggle (desktop) -->
+      <div class="hidden items-center gap-3 md:flex">
+        <span class="status-line mr-1 hidden lg:inline-flex"><span class="dot" aria-hidden="true"></span>online</span>
+        <ThemeToggle />
+        <a href="/#cta" class="btn-primary !h-9 !px-4 !py-0 text-[0.85rem]">Get Started</a>
+      </div>
+
+      <!-- Mobile controls: theme toggle + menu button -->
+      <div class="flex items-center gap-2 md:hidden">
+        <ThemeToggle />
+        <button
+          type="button"
+          class="flex h-10 w-10 items-center justify-center rounded-md text-fu-ink transition-colors hover:bg-fu-line/40"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          :aria-expanded="open.toString()"
+          @click="open = !open"
+        >
+          <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg x-show="open" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 -translate-y-2"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-150"
+       x-transition:leave-start="opacity-100 translate-y-0"
+       x-transition:leave-end="opacity-0 -translate-y-2"
+       class="border-t border-fu-line bg-fu-paper md:hidden">
+    <nav class="container-fusion space-y-1 py-4" aria-label="Mobile">
+      {displayNav.map((link) => {
+        const active = isActive(link.href);
+        return (
+          <a
+            href={link.href}
+            @click="open = false"
+            class:list={[
+              'block rounded-md px-3 py-2 text-[0.9rem] transition-colors',
+              active
+                ? 'bg-fu-line/40 font-medium text-fu-ink'
+                : 'text-fu-muted hover:bg-fu-line/30 hover:text-fu-ink',
+            ]}
+          >
+            {link.label}
+          </a>
+        );
+      })}
+      <hr class="my-2 border-fu-line" />
+      <a href="/#cta" @click="open = false" class="btn-primary mt-2 w-full">Get Started</a>
+    </nav>
+  </div>
+</header>
