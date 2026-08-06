@@ -1,8 +1,8 @@
-# Database — Forge POS
+# Database — Formint
 
 ## Overview
 
-Forge POS uses an **embedded SQLite** database managed via **Diesel ORM** migrations. The database file (`restaurant.db`) is created automatically on first launch and stored in the project root.
+Formint uses an **embedded SQLite** database managed via **Diesel ORM** migrations. The database file (`restaurant.db`) is created automatically on first launch and stored in the project root.
 
 ---
 
@@ -314,7 +314,7 @@ make seed PRESET=coffee    # Coffee shop only
 - Suppliers (6), Customers (10), Tax Reports (3)
 
 #### Section: base (restaurant)
-- **Settings:** Restaurant defaults (Forge POS, PKR, Lahore address)
+- **Settings:** Restaurant defaults (Formint, PKR, Lahore address)
 - **Categories:** 10 (Burgers, Pizza, BBQ, Biryani, Karahi, Fast Food, Beverages, Desserts, Chinese, Breakfast)
 - **Products:** 47 menu items with prices ($1–$22)
 - **Ingredients:** 55 stock items with levels and costs

@@ -7,9 +7,9 @@
 //! | `PRESET` env   | Effect                                                                                            | Branding                       |
 //! |----------------|---------------------------------------------------------------------------------------------------|--------------------------------|
 //! | all (default)  | Layered: base + gaming + coffee. Branding = gaming (last-write-wins on `settings.restaurant_name`).| "Level Up Gaming Center"       |
-//! | base           | Layered then strips gaming + coffee. Gaming's `down.sql` restores food defaults + rebrand.         | "Forge POS"                    |
+//! | base           | Layered then strips gaming + coffee. Gaming's `down.sql` restores food defaults + rebrand.         | "Formint"                    |
 //! | gaming         | Layered then strips coffee.                                                                       | "Level Up Gaming Center"       |
-//! | coffee         | Layered then strips gaming.                                                                       | "Forge POS"                    |
+//! | coffee         | Layered then strips gaming.                                                                       | "Formint"                    |
 //!
 //! # Usage
 //!
@@ -69,9 +69,9 @@ fn print_preset_help(bad: &str) {
     eprintln!("❌ Invalid PRESET '{bad}'.");
     eprintln!("\nValid PRESET values:");
     eprintln!("  all     — layered (base + gaming + coffee); brand = 'Level Up Gaming Center'");
-    eprintln!("  base    — layered then strips gaming + coffee; brand = 'Forge POS'");
+    eprintln!("  base    — layered then strips gaming + coffee; brand = 'Formint'");
     eprintln!("  gaming  — layered then strips coffee; brand = 'Level Up Gaming Center'");
-    eprintln!("  coffee  — layered then strips gaming; brand = 'Forge POS'");
+    eprintln!("  coffee  — layered then strips gaming; brand = 'Formint'");
     eprintln!("\nNotes:");
     eprintln!("  • Strip is a no-op when a referenced preset's `down.sql` is absent from");
     eprintln!("    this branch's `src-tauri/migrations/` folder (e.g. forks shipping only");
@@ -100,9 +100,9 @@ fn sections_for_preset(preset: &str) -> &[&str] {
 fn brand_for_preset(preset: &str) -> &str {
     match preset {
         "all"    => "Level Up Gaming Center",
-        "base"   => "Forge POS",
+        "base"   => "Formint",
         "gaming" => "Level Up Gaming Center",
-        "coffee" => "Forge POS",
+        "coffee" => "Formint",
         _        => unreachable!(),
     }
 }
@@ -360,7 +360,7 @@ mod tests {
 
     #[test]
     fn test_brand_for_base_preset() {
-        assert_eq!(brand_for_preset("base"), "Forge POS");
+        assert_eq!(brand_for_preset("base"), "Formint");
     }
 
     #[test]
@@ -370,7 +370,7 @@ mod tests {
 
     #[test]
     fn test_brand_for_coffee_preset() {
-        assert_eq!(brand_for_preset("coffee"), "Forge POS");
+        assert_eq!(brand_for_preset("coffee"), "Formint");
     }
 
     // ── parse_sections ───────────────────────────────────────────────────────

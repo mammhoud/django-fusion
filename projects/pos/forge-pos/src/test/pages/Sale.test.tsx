@@ -50,6 +50,10 @@ beforeEach(() => {
   mockInvokeSuccess('get_employees', mockEmployees);
   mockInvokeSuccess('get_categories', mockCategories);
   mockInvokeSuccess('get_notes', []);
+  mockInvokeSuccess('get_customers', [
+    { id: 7, name: 'Sara Khalil', phone: '01001234567', email: 'sara@example.com', loyalty_points: 120, notes: null, created_at: '2026-01-01', updated_at: '2026-01-01' },
+    { id: 8, name: 'Omar Haddad', phone: '01009876543', email: null, loyalty_points: 45, notes: null, created_at: '2026-01-01', updated_at: '2026-01-01' },
+  ]);
   mockInvokeSuccess('check_auth_required', false);
 });
 
@@ -449,6 +453,90 @@ describe('Sale Page', () => {
       // Cart line gone + +/- controls gone (add button is back)
       expect(screen.queryAllByText(/Chicken Burger\s*×/).length).toBe(0);
       expect(screen.queryAllByLabelText(/sale\.increaseQuantity/).length).toBe(0);
+    });
+  });
+
+  // ── Checkout wizard ──
+  async function openCheckoutWizard() {
+    await waitFor(() => {
+      expect(screen.getAllByText('Chicken Burger').length).toBeGreaterThanOrEqual(1);
+    });
+    await clickAddToCart('Chicken Burger');
+    await waitFor(() => {
+      expect(screen.getAllByText(/sale\.cartSummary|Cart Summary/).length).toBeGreaterThanOrEqual(1);
+    });
+    // The Preview button opens the checkout wizard
+    const previewButtons = screen.getAllByText(/sale\.previewOrder|Preview/);
+    await userEvent.click(previewButtons[0]);
+    await waitFor(() => {
+      expect(screen.getAllByPlaceholderText(/sale\.wizardSearchCustomer|Search customers/).length).toBeGreaterThanOrEqual(1);
+    });
+  }
+
+  it('wizard: navigates through the 3 steps and shows offers + review sections', async () => {
+    renderWithRouter(<Sale />);
+    await openCheckoutWizard();
+
+    // Step 2 — Offers & Payment
+    const continueButtons = screen.getAllByText(/sale\.wizardOffers|Offers & Payment/);
+    expect(continueButtons.length).toBeGreaterThanOrEqual(1);
+    await userEvent.click(screen.getAllByText(/common\.continue|Continue/)[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/sale\.specialOffer|Special offer/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Step 3 — Review
+    await userEvent.click(screen.getAllByText(/common\.continue|Continue/)[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/sale\.wizardReview|Review/).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('wizard: selects an existing customer from the searchable list', async () => {
+    renderWithRouter(<Sale />);
+    await openCheckoutWizard();
+
+    const search = screen.getByPlaceholderText(/sale\.wizardSearchCustomer|Search customers/);
+    await userEvent.type(search, 'Sara');
+    await waitFor(() => {
+      expect(screen.getAllByText('Sara Khalil').length).toBeGreaterThanOrEqual(1);
+    });
+    await userEvent.click(screen.getAllByText('Sara Khalil')[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/120/).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('wizard: quick-adds a new customer and keeps the sale flow intact', async () => {
+    const created = { id: 99, name: 'Nadia Fawzy', phone: '01005556677', email: null, loyalty_points: 0, notes: null, created_at: '2026-01-01', updated_at: '2026-01-01' };
+    mockInvokeSuccess('add_customer', created);
+    renderWithRouter(<Sale />);
+    await openCheckoutWizard();
+
+    const nameInput = screen.getByPlaceholderText(/sale\.wizardCustomerName|Full name/);
+    await userEvent.type(nameInput, 'Nadia Fawzy');
+    await userEvent.click(screen.getAllByText(/sale\.wizardAddCustomer|Add customer/)[0]);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Nadia Fawzy').length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('wizard: applying a special offer reduces the grand total (clamped)', async () => {
+    renderWithRouter(<Sale />);
+    await openCheckoutWizard();
+
+    // Advance to step 2
+    await userEvent.click(screen.getAllByText(/common\.continue|Continue/)[0]);
+    await waitFor(() => {
+      expect(screen.getAllByText(/sale\.specialOffer|Special offer/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Chicken Burger = 350.00; apply a special offer of 100 → total 250.00
+    const offerInputs = screen.getAllByPlaceholderText(/0\.00 USD|0.00 USD/);
+    await userEvent.type(offerInputs[0], '100');
+    await waitFor(() => {
+      expect(screen.getAllByText(/250\.00/).length).toBeGreaterThanOrEqual(1);
     });
   });
 

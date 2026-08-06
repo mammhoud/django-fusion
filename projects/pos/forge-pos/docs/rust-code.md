@@ -1,4 +1,4 @@
-# Forge POS — Rust Backend Documentation
+# Formint — Rust Backend Documentation
 
 > **Path:** `src-tauri/src/` | **Language:** Rust (Edition 2021) | **ORM:** Diesel 2.x | **DB:** SQLite  
 > **No sidecar** — all data directly through Diesel ORM in-process

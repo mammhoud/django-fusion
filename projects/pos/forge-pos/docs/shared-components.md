@@ -1,4 +1,4 @@
-# Forge POS — Shared Components
+# Formint — Shared Components
 
 > **Component:** `src/components/shared/ProductFilterBar.tsx`
 

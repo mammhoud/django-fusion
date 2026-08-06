@@ -26,3 +26,4 @@ pub mod payrolls;
 pub mod reports;
 pub mod support_messages;
 pub mod sidecar;
+pub mod user_actions;

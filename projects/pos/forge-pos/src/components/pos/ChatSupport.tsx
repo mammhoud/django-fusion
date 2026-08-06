@@ -375,7 +375,7 @@ export default function ChatSupport({
             {/* Footer */}
             <div className="bg-base-200/50 px-4 py-2 border-t border-base-300/50">
               <p className="text-[10px] text-base-content/30 text-center">
-                Powered by Forge POS &mdash; structa.cloud
+                Powered by Formint &mdash; structa.cloud
               </p>
             </div>
           </div>

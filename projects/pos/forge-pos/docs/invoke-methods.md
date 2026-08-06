@@ -1,8 +1,8 @@
-# Invoke Methods — Forge POS
+# Invoke Methods — Formint
 
 ## Overview
 
-All data operations in Forge POS use **Tauri `invoke()`** from `@tauri-apps/api/core`. The frontend calls Rust command handlers directly via the Tauri IPC bridge. Each command is registered in `src-tauri/src/lib.rs` with `#[tauri::command]`.
+All data operations in Formint use **Tauri `invoke()`** from `@tauri-apps/api/core`. The frontend calls Rust command handlers directly via the Tauri IPC bridge. Each command is registered in `src-tauri/src/lib.rs` with `#[tauri::command]`.
 
 ## How It Works
 

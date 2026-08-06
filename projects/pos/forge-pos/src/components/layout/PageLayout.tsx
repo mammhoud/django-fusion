@@ -7,9 +7,9 @@ import AnimatedBackground from './AnimatedBackground';
 import { useAuth, AuthUser } from '../../contexts/AuthContext';
 import AnimatePresence from '../ui/AnimatePresence';
 import { dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
-// Built-in Forge POS crest logo — always shown in the app chrome.
+// Built-in Formint crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
-import defaultLogo from '../../../assets/images/pos-crest.svg';
+import defaultLogo from '../../../assets/images/formint-crest.svg';
 
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
@@ -95,6 +95,10 @@ function ProfileDropdown({
 interface PageLayoutProps {
   children: React.ReactNode;
   showNav?: boolean;
+  /** Full-bleed presentation for dedicated windows (e.g. the KDS popout) —
+   *  hides SideNav, the top bar and inactivity toast so the page owns the
+   *  whole viewport. */
+  standalone?: boolean;
   title?: React.ReactNode;
   background?: string;
   containerWidth?: string;
@@ -104,6 +108,7 @@ interface PageLayoutProps {
 export default function PageLayout({
   children,
   showNav = true,
+  standalone = false,
   title,
   background = 'bg-texture',
   // Wider default container — all pages get more horizontal room for grids.
@@ -150,7 +155,7 @@ export default function PageLayout({
 
   const renderLogo = (size: string) => (      <img
       src={defaultLogo}
-      alt="Forge POS"
+      alt="Formint"
       className={`${iconSpring} ${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.5'; }}
     />
@@ -164,31 +169,35 @@ export default function PageLayout({
       {/* GSAP ambient background — sits behind all content, follows the theme */}
       <AnimatedBackground />
 
-      {/* Overlay SideNav (mobile/tablet) */}
-      <SideNav isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} currentRoute={location.pathname} />
+      {!standalone && (
+        <>
+          {/* Overlay SideNav (mobile/tablet) */}
+          <SideNav isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} currentRoute={location.pathname} />
 
-      {/* Persistent hover-expand sidebar (ultra-wide screens) */}
-      <SideNav persistent currentRoute={location.pathname} />
+          {/* Persistent hover-expand sidebar (ultra-wide screens) */}
+          <SideNav persistent currentRoute={location.pathname} />
 
-      {/* Inactivity warning toast */}
-      <AnimatePresence>
-        {inactivityWarning && (
-          <div
-            className={`${toastSlideIn} fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold`}
-          >
-            <span className="ri-alert-line ri-20px shrink-0" />
-            <span>Session expiring soon. Click anywhere to stay logged in</span>              <button
-                onClick={dismissInactivityWarning}
-                className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
-            >
-              Stay
-            </button>
-          </div>
-        )}
-      </AnimatePresence>
+          {/* Inactivity warning toast */}
+          <AnimatePresence>
+            {inactivityWarning && (
+              <div
+                className={`${toastSlideIn} fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold`}
+              >
+                <span className="ri-alert-line ri-20px shrink-0" />
+                <span>Session expiring soon. Click anywhere to stay logged in</span>              <button
+                    onClick={dismissInactivityWarning}
+                    className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
+                >
+                  Stay
+                </button>
+              </div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
 
-      <div className={`4xl:ml-16 rtl:4xl:mr-16 rtl:4xl:ml-0 ${containerWidth} mx-auto px-4 sm:px-6 ${padding}`}>
-        {showNav ? (
+      <div className={`${standalone ? '' : '4xl:ml-16 rtl:4xl:mr-16 rtl:4xl:ml-0 '}${containerWidth} mx-auto px-4 sm:px-6 ${standalone ? 'py-3' : padding}`}>
+        {standalone ? null : showNav ? (
           /* Full TopBar: [Menu] [Back] [Logo + Title] [Profile] */
           <div className="relative z-30 flex items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-base-100/60 backdrop-blur-md border border-base-300/20 shadow-sm">
             <div className="flex items-center gap-2 shrink-0">

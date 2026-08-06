@@ -62,7 +62,7 @@ INSERT OR IGNORE INTO tax_reports (id, period_start, period_end, total_sales, to
 
 -- 1. Settings — realistic restaurant defaults
 UPDATE settings SET
-    restaurant_name = 'Forge POS',
+    restaurant_name = 'Formint',
     address = '123 Main Boulevard, Gulberg, Lahore',
     phone = '+92-300-1234567',
     email = 'structa.cloud@gmail.com',
@@ -840,7 +840,7 @@ UPDATE settings SET logo = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3
 
 -- 1. Settings — rebrand as coffee shop
 UPDATE settings SET
-    restaurant_name  = 'Forge POS',
+    restaurant_name  = 'Formint',
     address          = '15 Brew Lane, Downtown, Lahore',
     phone            = '+92-300-555-BREW',
     email            = 'hello@thedailygrind.com',

@@ -149,9 +149,10 @@ describe('Reports Page', () => {
     await waitFor(() => {
       expect(screen.getByText(/reports\.ordersByType|Orders by Type/)).toBeInTheDocument();
     });
-    expect(screen.getByText('Dine-in')).toBeInTheDocument();
-    expect(screen.getByText('Delivery')).toBeInTheDocument();
-    expect(screen.getByText('Takeaway')).toBeInTheDocument();
+    // Labels now appear in both the filter pills and the breakdown rows
+    expect(screen.getAllByText('Dine-in').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Delivery').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Takeaway').length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows Top Products in sales tab', async () => {

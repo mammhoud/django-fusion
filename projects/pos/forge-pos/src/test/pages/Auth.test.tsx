@@ -381,14 +381,14 @@ describe('Auth Page', () => {
     expect(screen.getByText('Inventory & Recipe Tracking')).toBeInTheDocument();
   });
 
-  it('renders the Forge POS brand heading in the illustration panel', async () => {
+  it('renders the Formint brand heading in the illustration panel', async () => {
     mockInvokeSuccess('check_auth_required', true);
     mockInvokeSuccess('has_users', false);
 
     renderWithRouter(<Auth />);
 
     await waitFor(() => {
-      expect(screen.getByText('Forge POS')).toBeInTheDocument();
+      expect(screen.getByText('Formint')).toBeInTheDocument();
     });
   });
 

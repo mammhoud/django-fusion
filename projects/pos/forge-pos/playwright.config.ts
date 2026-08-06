@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
 /**
- * Playwright configuration for Forge POS e2e / visual regression tests.
+ * Playwright configuration for Formint e2e / visual regression tests.
  *
  * The Vite dev server is started automatically via the `webServer` option.
  * Tauri's `invoke` API is mocked in each test via `page.addInitScript`

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Forge POS",
+  "productName": "Formint",
   "version": "0.1.0",
   "identifier": "com.mammhoud.pos",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Forge POS",
+        "title": "Formint",
         "width": 1200,
         "height": 800,
         "center": true,
@@ -30,8 +30,8 @@
     "publisher": "Structa Cloud",
     "copyright": "© 2026 Structa Cloud. All rights reserved.",
     "category": "Business",
-    "shortDescription": "POS - Point of Sale System",
-    "longDescription": "POS is a modern point-of-sale system for managing restaurant sales, inventory, analytics, and more. Built with Tauri, React, and Rust for optimal performance and security.",
+    "shortDescription": "Formint - Point of Sale System",
+    "longDescription": "Formint is a modern point-of-sale system for managing restaurant sales, inventory, analytics, and more. Built with Tauri, React, and Rust for optimal performance and security.",
     "homepage": "https://structa.cloud",
     "licenseFile": "../LICENSE",
     "icon": [

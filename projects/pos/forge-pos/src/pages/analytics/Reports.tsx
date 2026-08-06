@@ -17,7 +17,7 @@ import {
   Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction,
   Recipe, Employee, Product, Transaction, DeliveryType, DeliveryZone,
   Category, PaymentMethodRevenue, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS,
-  PAYMENT_ICONS
+  PAYMENT_ICONS, LoyaltyReportRow
 } from '../../types';
 import jsPDF from 'jspdf';
 import { downloadExcel } from '../../utils/export';
@@ -26,7 +26,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
-type Tab = 'overview' | 'sales' | 'inventory' | 'recipes' | 'employees' | 'transactions' | 'productsSales' | 'invoices' | 'dailyComparison' | 'deliveryTracking' | 'periodComparison' | 'taxReports';
+type Tab = 'overview' | 'sales' | 'inventory' | 'recipes' | 'employees' | 'transactions' | 'productsSales' | 'invoices' | 'dailyComparison' | 'deliveryTracking' | 'periodComparison' | 'taxReports' | 'loyalty';
 
 interface EmployeeSalesData {
   employeeId: number;
@@ -88,6 +88,7 @@ export default function Reports() {
   const [activePreset, setActivePreset] = useState<string | null>(null);
   const [zoneFilterId, setZoneFilterId] = useState<number | null>(null);
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>('');
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('');
   const [comparisonFilter, setComparisonFilter] = useState<ComparisonFilter | null>(null);
   const [searchParams] = useSearchParams();
 
@@ -113,6 +114,7 @@ export default function Reports() {
       deliveryZonesRes,
       paymentRevRes,
       categoriesRes,
+      loyaltyRes,
     ],
     isLoading: loading,
   } = useApiQueries([
@@ -129,11 +131,12 @@ export default function Reports() {
     { command: 'get_delivery_zones', params: { includeInactive: true } },
     { command: 'get_revenue_by_payment_method' },
     { command: 'get_categories' },
+    { command: 'get_all_loyalty_transactions' },
   ]);
 
   const settings = (settingsRes as Settings | undefined) ?? null;
   const { formatPrice, currency } = useCurrency();
-  const restaurantName = settings?.restaurant_name || 'Forge POS';
+  const restaurantName = settings?.restaurant_name || 'Formint';
   const analytics = (analyticsRes as AnalyticsData | null) ?? null;
   const sales = (Array.isArray(salesRes) ? (salesRes as Sale[]) : []) as Sale[];
   const ingredients = (Array.isArray(ingredientsRes) ? (ingredientsRes as Ingredient[]) : []) as Ingredient[];
@@ -146,6 +149,7 @@ export default function Reports() {
   const deliveryZones = (Array.isArray(deliveryZonesRes) ? (deliveryZonesRes as DeliveryZone[]) : []) as DeliveryZone[];
   const paymentRevenue = (Array.isArray(paymentRevRes) ? (paymentRevRes as PaymentMethodRevenue[]) : []) as PaymentMethodRevenue[];
   const categories = (Array.isArray(categoriesRes) ? (categoriesRes as Category[]) : []) as Category[];
+  const loyaltyTxns = (Array.isArray(loyaltyRes) ? (loyaltyRes as LoyaltyReportRow[]) : []) as LoyaltyReportRow[];
 
   // Product name → { category name, color } — used to color top products by
   // their category across the report tables (matches ProductManager's picker).
@@ -182,8 +186,11 @@ export default function Reports() {
     if (orderTypeFilter) {
       filtered = filtered.filter(sale => sale.order_type?.toLowerCase() === orderTypeFilter.toLowerCase());
     }
+    if (paymentMethodFilter) {
+      filtered = filtered.filter(sale => sale.payment_method?.toLowerCase() === paymentMethodFilter.toLowerCase());
+    }
     return filtered;
-  }, [sales, dateRange, zoneFilterId, orderTypeFilter]);
+  }, [sales, dateRange, zoneFilterId, orderTypeFilter, paymentMethodFilter]);
 
   // Quick date presets
   const applyDatePreset = useCallback((preset: string) => {
@@ -348,6 +355,7 @@ export default function Reports() {
     { key: 'employees' as Tab, label: 'Employees', icon: <span className="ri-group-line ri-20px" /> },
     { key: 'transactions' as Tab, label: 'Transactions', icon: <span className="ri-calendar-line ri-20px" /> },
     { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <span className="ri-bank-line ri-20px" /> },
+    { key: 'loyalty' as Tab, label: 'Loyalty', icon: <span className="ri-star-smile-line ri-20px" /> },
   ];
 
   // ── Arrow-key tab nav ──
@@ -371,7 +379,7 @@ export default function Reports() {
       }
 
       // Number keys for tab navigation
-      const tabKeys: Tab[] = ['overview', 'sales', 'productsSales', 'invoices', 'dailyComparison', 'periodComparison', 'deliveryTracking', 'inventory', 'recipes', 'employees', 'transactions', 'taxReports'];
+      const tabKeys: Tab[] = ['overview', 'sales', 'productsSales', 'invoices', 'dailyComparison', 'periodComparison', 'deliveryTracking', 'inventory', 'recipes', 'employees', 'transactions', 'taxReports', 'loyalty'];
       const num = parseInt(key);
       if (num >= 1 && num <= 9 && num <= tabKeys.length) {
         setActiveTab(tabKeys[num - 1]);
@@ -400,6 +408,7 @@ export default function Reports() {
           employees: handleExportEmployeesCSV,
           transactions: handleExportTransactionsCSV,
           deliveryTracking: handleExportDeliveryCSV,
+          loyalty: handleExportLoyaltyCSV,
         };
         csvHandlers[activeTab]?.();
         return;
@@ -774,6 +783,18 @@ export default function Reports() {
     );
   };
 
+  const handleExportLoyaltyCSV = () => {
+    downloadCSV(
+      `loyalty-${new Date().toISOString().split('T')[0]}.csv`,
+      ['Customer', 'Points', 'Reason', 'Sale ID', 'Date'],
+      loyaltyTxns.map(t => [
+        t.customer_name, String(t.points_change), t.reason,
+        t.sale_id != null ? String(t.sale_id) : '',
+        t.created_at ? t.created_at.slice(0, 10) : ''
+      ])
+    );
+  };
+
   const handleExportEmployeesCSV = () => {
     downloadCSV(
       `employees-${new Date().toISOString().split('T')[0]}.csv`,
@@ -880,57 +901,96 @@ export default function Reports() {
           </div>
         )}
 
-        {/* Filter Row: Order Type + Delivery Zone */}
+        {/* Filter Row: Order Type + Payment Method + Delivery Zone */}
         <Card className="mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            {/* Order Type Filter */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="ri-store-2-line ri-20px text-info" />
-              <span className="text-sm font-semibold text-base-content">{t('reports.orderType', 'Order Type')}</span>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+              {/* Order Type Filter — icon pills */}
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="ri-store-2-line ri-20px text-info" />
+                <span className="text-sm font-semibold text-base-content">{t('sale.orderType')}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {[
+                  { value: '', label: t('sale.allTypes'), icon: 'ri-filter-3-line' },
+                  { value: 'dine-in', label: t('sale.dineIn'), icon: 'ri-store-2-line' },
+                  { value: 'takeaway', label: t('sale.takeaway'), icon: 'ri-takeaway-line' },
+                  { value: 'delivery', label: t('sale.delivery'), icon: 'ri-truck-line' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setOrderTypeFilter(opt.value)}
+                    aria-pressed={orderTypeFilter === opt.value}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-[0.97] ${
+                      orderTypeFilter === opt.value
+                        ? 'bg-info text-info-content shadow-sm'
+                        : 'bg-base-100/50 text-base-content/70 hover:bg-info/10'
+                    }`}
+                  >
+                    <span className={`${opt.icon} ri-14px`} />
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <select
-                value={orderTypeFilter}
-                onChange={e => setOrderTypeFilter(e.target.value)}
-                className="select text-xs w-36"
-              >
-                <option value="">{t('reports.allTypes', 'All Types')}</option>
-                <option value="dine-in">{t('reports.dineIn', 'Dine-in')}</option>
-                <option value="takeaway">{t('reports.takeaway', 'Takeaway')}</option>
-                <option value="delivery">{t('reports.delivery', 'Delivery')}</option>
-              </select>
-              {orderTypeFilter && (
-                <button onClick={() => setOrderTypeFilter('')}
-                  className="text-xs text-error hover:text-error/70 transition-colors shrink-0">
-                  {t('reports.dateClear', 'Clear')}
-                </button>
-              )}
+
+            <div className="hidden sm:block w-px h-6 bg-base-300/50" />
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+              {/* Payment Method Filter — icon pills */}
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="ri-bank-card-line ri-20px text-success" />
+                <span className="text-sm font-semibold text-base-content">{t('sale.paymentMethod')}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {[{ value: '', label: t('sale.allPayments'), icon: 'ri-filter-3-line' }]
+                  .concat(PAYMENT_METHODS.map(m => ({ value: m, label: t(`payments.${m}`), icon: PAYMENT_ICONS[m] })))
+                  .map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setPaymentMethodFilter(opt.value)}
+                      aria-pressed={paymentMethodFilter === opt.value}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-[0.97] ${
+                        paymentMethodFilter === opt.value
+                          ? 'bg-success text-success-content shadow-sm'
+                          : 'bg-base-100/50 text-base-content/70 hover:bg-success/10'
+                      }`}
+                    >
+                      <span className={`${opt.icon} ri-14px`} />
+                      {opt.label}
+                    </button>
+                  ))}
+              </div>
             </div>
 
             <div className="hidden sm:block w-px h-6 bg-base-300/50" />
 
             {/* Delivery Zone Filter */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="ri-map-pin-2-line ri-20px text-warning" />
-              <span className="text-sm font-semibold text-base-content">{t('reports.zone', 'Delivery Zone')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <select
-                value={zoneFilterId ?? ''}
-                onChange={e => setZoneFilterId(e.target.value ? Number(e.target.value) : null)}
-                className="select text-xs w-40"
-              >
-                <option value="">{t('reports.allZones', 'All Zones')}</option>
-                {deliveryZones.filter(z => z.is_active).map(z => (
-                  <option key={z.id} value={z.id}>{z.name}</option>
-                ))}
-              </select>
-              {zoneFilterId != null && (
-                <button onClick={() => setZoneFilterId(null)}
-                  className="text-xs text-error hover:text-error/70 transition-colors shrink-0">
-                  {t('reports.dateClear', 'Clear')}
-                </button>
-              )}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="ri-map-pin-2-line ri-20px text-warning" />
+                <span className="text-sm font-semibold text-base-content">{t('reports.zone', 'Delivery Zone')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={zoneFilterId ?? ''}
+                  onChange={e => setZoneFilterId(e.target.value ? Number(e.target.value) : null)}
+                  className="select text-xs w-40"
+                >
+                  <option value="">{t('reports.allZones', 'All Zones')}</option>
+                  {deliveryZones.filter(z => z.is_active).map(z => (
+                    <option key={z.id} value={z.id}>{z.name}</option>
+                  ))}
+                </select>
+                {zoneFilterId != null && (
+                  <button onClick={() => setZoneFilterId(null)}
+                    className="text-xs text-error hover:text-error/70 transition-colors shrink-0">
+                    {t('reports.dateClear', 'Clear')}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </Card>
@@ -2544,6 +2604,130 @@ export default function Reports() {
 
           {activeTab === 'taxReports' && (
             <TaxReportsPanel />
+          )}
+
+          {activeTab === 'loyalty' && (
+            <div className="space-y-6">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4">
+                <StatCard
+                  title={t('reports.totalPointsEarned')}
+                  value={loyaltyTxns.reduce((s, t) => s + t.points_change, 0).toFixed(0)}
+                  icon={<span className="ri-star-smile-line ri-24px" />}
+                  color="warning"
+                  compact
+                />
+                <StatCard
+                  title={t('reports.loyaltyCustomers')}
+                  value={new Set(loyaltyTxns.map(t => t.customer_id)).size.toString()}
+                  icon={<span className="ri-user-star-line ri-24px" />}
+                  color="primary"
+                  compact
+                />
+                <StatCard
+                  title={t('reports.loyaltyTransactions')}
+                  value={loyaltyTxns.length.toString()}
+                  icon={<span className="ri-exchange-funds-line ri-24px" />}
+                  color="info"
+                  compact
+                />
+                <StatCard
+                  title={t('reports.loyaltyPurchases')}
+                  value={loyaltyTxns.filter(t => t.reason === 'purchase').length.toString()}
+                  icon={<span className="ri-shopping-cart-line ri-24px" />}
+                  color="secondary"
+                  compact
+                />
+              </div>
+
+              {/* CSV Export */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleExportLoyaltyCSV}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                >
+                  <span className="ri-download-line ri-14px" />
+                  {t('reports.exportCSV')}
+                </button>
+              </div>
+
+              {/* Points leaderboard */}
+              {loyaltyTxns.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <Card padding="xl">
+                    <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.pointsLeaderboard')}</h3>
+                    <div className="space-y-2">
+                      {(() => {
+                        // Aggregate once (O(n)) — avoids recomputing per row.
+                        const perCustomer = new Map<number, { name: string; points: number }>();
+                        for (const t of loyaltyTxns) {
+                          const cur = perCustomer.get(t.customer_id) || { name: t.customer_name, points: 0 };
+                          cur.points += t.points_change;
+                          perCustomer.set(t.customer_id, cur);
+                        }
+                        const maxPoints = Math.max(0, ...Array.from(perCustomer.values()).map(v => v.points));
+                        return Array.from(perCustomer.entries())
+                          .sort((a, b) => b[1].points - a[1].points)
+                          .slice(0, 8)
+                          .map(([id, c]) => (
+                            <div key={id} className="flex items-center gap-3">
+                              <span className="w-7 h-7 rounded-full bg-warning/15 text-warning flex items-center justify-center text-xs font-bold shrink-0">
+                                {c.name.charAt(0).toUpperCase()}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex justify-between mb-0.5">
+                                  <span className="text-sm font-medium text-base-content truncate">{c.name}</span>
+                                  <span className="text-xs font-semibold text-warning tabular-nums">{c.points.toFixed(0)} pts</span>
+                                </div>
+                                <div className="h-1.5 rounded-full bg-base-200 overflow-hidden">
+                                  <div
+                                    className="h-full rounded-full bg-gradient-to-r from-warning/70 to-warning transition-all duration-500"
+                                    style={{ width: `${maxPoints > 0 ? (c.points / maxPoints) * 100 : 0}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ));
+                      })()}
+                    </div>
+                  </Card>
+
+                  {/* Recent transactions */}
+                  <Card padding="xl">
+                    <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.recentLoyaltyTxns')}</h3>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {loyaltyTxns.slice(0, 30).map(t => (
+                        <div key={t.id} className="flex items-center justify-between gap-3 py-2 border-b border-base-300/30 last:border-0">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                              {t.customer_name.charAt(0).toUpperCase()}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-base-content truncate">{t.customer_name}</p>
+                              <p className="text-[11px] text-base-content/50">
+                                {t.created_at ? new Date(t.created_at).toLocaleDateString() : ''}
+                                {t.sale_id != null ? ` · #${t.sale_id}` : ''}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className={`text-sm font-bold tabular-nums ${t.points_change >= 0 ? 'text-success' : 'text-error'}`}>
+                              {t.points_change >= 0 ? '+' : ''}{t.points_change.toFixed(0)} pts
+                            </span>
+                            <p className="text-[10px] text-base-content/40">{t.reason}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              ) : (
+                <Card padding="xl">
+                  <p className="text-center text-base-content/50 py-8">{t('reports.noLoyaltyTxns')}</p>
+                </Card>
+              )}
+            </div>
           )}
         </div>
 

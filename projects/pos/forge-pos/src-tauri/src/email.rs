@@ -55,7 +55,7 @@ pub fn load_smtp_config(db_path: &PathBuf) -> SmtpConfig {
     let username = env::var("SMTP_USERNAME").unwrap_or_default();
     let password = env::var("SMTP_PASSWORD").unwrap_or_default();
     let recipient = env::var("SMTP_RECIPIENT").unwrap_or_default();
-    let from_name = env::var("SMTP_FROM_NAME").unwrap_or_else(|_| "Forge POS".to_string());
+    let from_name = env::var("SMTP_FROM_NAME").unwrap_or_else(|_| "Formint".to_string());
     let from_email = env::var("SMTP_FROM_EMAIL").unwrap_or_default();
 
     let mut cfg = SmtpConfig {
@@ -148,7 +148,7 @@ pub fn send_confirmation_email(db_path: &PathBuf, recipient: &str, code: &str) -
     let email_message = lettre::Message::builder()
         .from(Mailbox::new(Some(cfg.from_name.clone()), from))
         .to(recipient.parse().map_err(|e| format!("Invalid recipient address: {}", e))?)
-        .subject("Forge POS: Email Confirmation Code")
+        .subject("Formint: Email Confirmation Code")
         .header(lettre::message::header::ContentType::TEXT_HTML)
         .body(email_body)
         .map_err(|e| format!("Failed to build email: {}", e))?;

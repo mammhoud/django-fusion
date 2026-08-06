@@ -128,6 +128,8 @@ export function ProductThumb({
         <img
           src={product.image}
           alt=""
+          loading="lazy"
+          decoding="async"
           onError={() => setImageError(true)}
           className="w-full h-full object-cover"
         />
@@ -209,6 +211,8 @@ const ProductCard = memo(function ProductCard({
             <img
               src={product.image}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               onError={() => setImageError(true)}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             />

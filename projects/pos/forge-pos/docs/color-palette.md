@@ -1,4 +1,4 @@
-# Forge POS — Color Palette & Theme Reference
+# Formint — Color Palette & Theme Reference
 
 > **Applies to:** forge-pos · **Source:** `assets/styles/index.css` + `src/contexts/ThemeContext.tsx`
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-Forge POS themes are built on **FlyonUI v2.4.1** using OKLCH color tokens. Each theme variant defines the semantic tokens (`--color-primary`, `--color-base-100`, …) via `@plugin "flyonui/theme"` blocks in `assets/styles/index.css`. Switching a variant changes every component at once because the whole BEM component library references these tokens (see `assets/styles/base/_variables.css`).
+Formint themes are built on **FlyonUI v2.4.1** using OKLCH color tokens. Each theme variant defines the semantic tokens (`--color-primary`, `--color-base-100`, …) via `@plugin "flyonui/theme"` blocks in `assets/styles/index.css`. Switching a variant changes every component at once because the whole BEM component library references these tokens (see `assets/styles/base/_variables.css`).
 
 ```
 ThemeContext (variant + mode)

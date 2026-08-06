@@ -1,4 +1,4 @@
-# Forge POS — Styling & UI Package Reference
+# Formint — Styling & UI Package Reference
 
 > **Last updated:** July 2026  
 > **Stack:** Tailwind CSS v4 + FlyonUI v2.4.1 + Framer Motion v12 + Iconify
@@ -7,7 +7,7 @@
 
 ## Overview
 
-The Forge POS UI is built on **Tailwind CSS v4** with **FlyonUI** as the semantic component layer, **Iconify** for icons, and **Framer Motion** for animations. This document covers every styling package, how they integrate, and how to use them.
+The Formint UI is built on **Tailwind CSS v4** with **FlyonUI** as the semantic component layer, **Iconify** for icons, and **Framer Motion** for animations. This document covers every styling package, how they integrate, and how to use them.
 
 ---
 
@@ -29,7 +29,7 @@ The Forge POS UI is built on **Tailwind CSS v4** with **FlyonUI** as the semanti
 
 ### CSS-First Configuration
 
-Forge POS uses Tailwind v4's new **CSS-first configuration** model. Theme variants are defined directly in `src/index.css` using FlyonUI's `@plugin "flyonui/theme"` blocks — no separate `themes.css` or `theme-overrides.css` files:
+Formint uses Tailwind v4's new **CSS-first configuration** model. Theme variants are defined directly in `src/index.css` using FlyonUI's `@plugin "flyonui/theme"` blocks — no separate `themes.css` or `theme-overrides.css` files:
 
 ```css
 @import "tailwindcss";
@@ -162,7 +162,7 @@ async function reinitFlyonUI() {
 }
 ```
 
-> **Note:** Forge POS primarily uses React state for interactivity. FlyonUI's CSS classes (`badge`, `btn`) are used via semantic class names, while complex interactive components (modals, toasts) use React components.
+> **Note:** Formint primarily uses React state for interactivity. FlyonUI's CSS classes (`badge`, `btn`) are used via semantic class names, while complex interactive components (modals, toasts) use React components.
 
 ---
 
@@ -278,7 +278,7 @@ Spinners use Framer Motion's `animate` prop:
 
 ### Architecture
 
-Forge POS uses **FlyonUI's native theme system**. Each theme variant is defined via `@plugin "flyonui/theme"` blocks in `src/index.css`. Light and dark mode for each variant are separate themes (e.g., `corporate-light`, `corporate-dark`), avoiding the dual-theme conflict that existed with the prior custom `themes.css` + `theme-overrides.css` approach.
+Formint uses **FlyonUI's native theme system**. Each theme variant is defined via `@plugin "flyonui/theme"` blocks in `src/index.css`. Light and dark mode for each variant are separate themes (e.g., `corporate-light`, `corporate-dark`), avoiding the dual-theme conflict that existed with the prior custom `themes.css` + `theme-overrides.css` approach.
 
 ```
 ThemeContext (variant + mode)

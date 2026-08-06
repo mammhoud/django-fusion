@@ -1,4 +1,4 @@
-# Forge POS — AI Agent Instructions
+# Formint — AI Agent Instructions
 
 > **Project:** `projects/pos/forge-pos/`  
 > **Type:** Tauri desktop app (no sidecar)  
@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-Forge POS is the lightweight edition (formerly pos-mini). It uses Tauri with a React frontend and
+Formint is the lightweight edition (formerly pos-mini). It uses Tauri with a React frontend and
 a Rust backend that talks directly to SQLite via Diesel ORM — **no Python
 sidecar**. This makes it the simplest and fastest to deploy.
 
@@ -16,7 +16,7 @@ sidecar**. This makes it the simplest and fastest to deploy.
 
 ## Key Differences
 
-| Feature | POS Full | POS Solo | Forge POS |
+| Feature | POS Full | POS Solo | Formint |
 |---------|:--------:|:--------:|:---------:|
 | Python sidecar | ✅ | ✅ | ❌ |
 | Django ORM | ✅ | ✅ | ❌ (Diesel direct) |
@@ -78,7 +78,7 @@ Same as the merged package — see `../formint-pos/README.md` and the archived R
 
 ## No Python Sidecar
 
-Forge POS does **not** include a Python sidecar. All data operations go through
+Formint does **not** include a Python sidecar. All data operations go through
 Tauri invoke → Rust → Diesel → SQLite. This means:
 
 - **No `sidecar/` directory**

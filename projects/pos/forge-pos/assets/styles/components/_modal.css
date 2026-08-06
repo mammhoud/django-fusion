@@ -75,7 +75,7 @@ dialog.modal:not([open]) {
 .modal__overlay {
   position: fixed;
   inset: 0;
-  background: var(--modal-overlay);
+  /* background: var(--modal-overlay); */
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: -1;

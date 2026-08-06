@@ -40,7 +40,6 @@ const STATIC_EXCHANGE_RATES: Record<string, number> = {
   MYR: 4.72,
   IDR: 15600.0,
   VND: 24500.0,
-  PKR: 280.0,
   BDT: 110.0,
   NGN: 890.0,
   KES: 155.0,
@@ -102,7 +101,7 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   MNT: '₮', MOP: 'P', MRU: 'UM', MUR: '₨', MVR: '.ރ', MWK: 'MK', MXN: '$',
   MYR: 'RM', MZN: 'MT', NAD: '$', NGN: '₦', NIO: 'C$', NOK: 'kr', NPR: '₨',
   NZD: 'NZ$', OMR: 'ر.ع.', PAB: 'B/.', PEN: 'S/.', PGK: 'K', PHP: '₱',
-  PKR: '₨', PLN: 'zł', PYG: '₲', QAR: 'ر.ق', RON: 'lei', RSD: 'дин.',
+  PLN: 'zł', PYG: '₲', QAR: 'ر.ق', RON: 'lei', RSD: 'дин.',
   RUB: '₽', RWF: 'Fr', SAR: 'ر.س', SBD: '$', SCR: '₨', SDG: '£', SEK: 'kr',
   SGD: 'S$', SHP: '£', SLE: 'Le', SOS: 'Sh', SRD: '$', SSP: '£', STN: 'Db',
   SYP: '£S', SZL: 'L', THB: '฿', TJS: 'ЅМ', TMT: 'm', TND: 'د.ت', TOP: 'T$',
@@ -165,7 +164,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [locale] = useState(() => {
     try {
-      const stored = localStorage.getItem('forge-locale');
+      const stored = localStorage.getItem('formint-locale');
       return stored || (typeof navigator !== 'undefined' ? navigator.language : null) || 'en-US';
     } catch {
       return 'en-US';

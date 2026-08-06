@@ -1,6 +1,6 @@
-# Forge POS — Project Tree
+# Formint — Project Tree
 
-> **Edition:** Forge POS (formerly pos-mini)  
+> **Edition:** Formint (formerly pos-mini)  
 > **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite  
 > **No sidecar** — pure Rust/Diesel backend, no Python dependencies
 

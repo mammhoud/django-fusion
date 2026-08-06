@@ -183,7 +183,6 @@ const currencyOptions = [
   { code: 'PEN', name: 'Peruvian Sol', symbol: 'S/.' },
   { code: 'PGK', name: 'Papua New Guinean Kina', symbol: 'K' },
   { code: 'PHP', name: 'Philippine Peso', symbol: '₱' },
-  { code: 'PKR', name: 'Pakistani Rupee', symbol: '₨' },
   { code: 'PLN', name: 'Polish Zloty', symbol: 'zł' },
   { code: 'PYG', name: 'Paraguayan Guarani', symbol: '₲' },
   { code: 'QAR', name: 'Qatari Riyal', symbol: 'ر.ق' },
@@ -343,7 +342,7 @@ export default function Settings() {
   const { onKeyDown: onSettingsTabKeyDown } = useKeyboardTabNav(settingsTabKeys, activeTab, navigateToTab);
 
   const [settings, setSettings] = useState<SettingsType>({
-    restaurant_name: 'Forge POS',
+    restaurant_name: 'Formint',
     address: '',
     phone: '',
     email: '',
@@ -361,7 +360,7 @@ export default function Settings() {
     smtp_username: '',
     smtp_password: '',
     smtp_recipient: '',
-    smtp_from_name: 'Forge POS',
+    smtp_from_name: 'Formint',
     smtp_from_email: ''
   });
 

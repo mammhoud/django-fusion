@@ -1,4 +1,4 @@
-# Forge POS — Customization Guide
+# Formint — Customization Guide
 
 > **Applies to:** forge-pos (Tauri + React + Rust/Diesel)  
 > **Adapt for:** formint-pos (merged package — use the Robyn sidecar / Django Ninja API instead of Tauri invoke)

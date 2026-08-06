@@ -1,4 +1,4 @@
-# Forge POS — Modal System Reference
+# Formint — Modal System Reference
 
 > **Components:** `src/components/ui/Modal.tsx` (extended) · `src/components/ui/ModalProvider.tsx` (`useModal`)
 > **Styles:** `assets/styles/components/_modal.css` (BEM)
@@ -7,7 +7,7 @@
 
 ## Overview
 
-Forge POS has **two complementary ways** to show a modal:
+Formint has **two complementary ways** to show a modal:
 
 1. **Declarative** — render `<Modal isOpen={…} onClose={…}>` in JSX (the classic approach, used by ProductManager, Settings, etc.).
 2. **Imperative** — call `useModal().openModal({…})` from anywhere inside `<ModalProvider>` (no local `isOpen` state, ideal for confirmations and global dialogs).
@@ -130,7 +130,7 @@ function useDeleteConfirm() {
 
 ## Web Deployments (htmx / Alpine.js)
 
-FlyonUI — the component library behind Forge POS styling — supports **htmx** and **Alpine.js** as JS engines for its modals. This is useful when the same POS is embedded in a server-rendered web app (e.g. a Django/Wagtail deployment) rather than the Tauri desktop shell.
+FlyonUI — the component library behind Formint styling — supports **htmx** and **Alpine.js** as JS engines for its modals. This is useful when the same POS is embedded in a server-rendered web app (e.g. a Django/Wagtail deployment) rather than the Tauri desktop shell.
 
 ### Option A — htmx (`hx-*` attributes)
 

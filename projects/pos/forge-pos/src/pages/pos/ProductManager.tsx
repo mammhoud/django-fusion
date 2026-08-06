@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { Product, NewProduct, UpdateProductPayload, Category, NewCategory, UpdateCategoryPayload } from '../../types';
+import { Product, NewProduct, UpdateProductPayload, Category, NewCategory, UpdateCategoryPayload, Ingredient } from '../../types';
 import Card from '../../components/ui/Card';
 import DataTable, { type Column } from '../../components/ui/DataTable';
 import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT, hexToRgba } from '../../components/pos/ProductCard';
@@ -17,6 +17,7 @@ import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsMod
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import AnimatePresence from '../../components/ui/AnimatePresence';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/ui/tooltip';
 
 interface FormErrors {
   name?: string;
@@ -56,6 +57,11 @@ export default function ProductManager() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
+  // ── Add-wizard state: 3 steps (Basics → Recipe & Options → Review) ──
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [recipeRows, setRecipeRows] = useState<{ ingredient_id: number; quantity: number; unit?: string }[]>([]);
+  const [recipeYield, setRecipeYield] = useState(1);
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -147,12 +153,15 @@ export default function ProductManager() {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, categoriesRes] = await Promise.all([
+      const [productsRes, categoriesRes, ingredientsRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Category[]>('get_categories').catch(() => []),
+        // Active ingredients power the wizard's Recipe step (step 2).
+        invoke<Ingredient[]>('get_ingredients', { includeInactive: false }).catch(() => []),
       ]);
       setProducts(productsRes);
       setCategories(categoriesRes || []);
+      setIngredients(ingredientsRes || []);
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
@@ -271,6 +280,10 @@ export default function ProductManager() {
     setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
     setProductImage(null);
     setOriginalImage(null);
+    // Reset the add wizard to its first step + empty recipe rows.
+    setWizardStep(1);
+    setRecipeRows([]);
+    setRecipeYield(1);
   };
 
   const openAddModal = () => {
@@ -279,6 +292,9 @@ export default function ProductManager() {
     setProductImage(null);
     setOriginalImage(null);
     setErrors({});
+    setWizardStep(1);
+    setRecipeRows([]);
+    setRecipeYield(1);
     setShowAddModal(true);
   };
 
@@ -318,6 +334,9 @@ export default function ProductManager() {
     const nextImage: string | null = productImage || null;
 
     try {
+      // If the recipe step fails AFTER the product row is saved, surface a
+      // warning instead of dropping the newly created product from state.
+      let recipeWarning: string | null = null;
       if (editingId !== null) {
         const update: UpdateProductPayload = {
           name: trimmedName,
@@ -357,16 +376,44 @@ export default function ProductManager() {
 
         // Optimistic insert — prepend the new product so the user sees it instantly.
         setProducts(prev => [result, ...prev]);
+
+        // Wizard step 2 (Recipe) — if valid ingredient rows were added, build the
+        // recipe + its ingredients right after the product row exists. A recipe
+        // failure is caught so the already-saved product stays in the list; the
+        // user gets a warning instead of a hard error.
+        const validRows = recipeRows.filter(r => r.ingredient_id > 0 && r.quantity > 0);
+        if (validRows.length > 0) {
+          try {
+            await invoke('create_recipe', {
+              recipe: {
+                product_id: result.id,
+                recipe_type_id: 1,
+                yield_quantity: recipeYield,
+              },
+              ingredients: validRows.map(r => ({
+                recipe_id: 0,
+                ingredient_id: r.ingredient_id,
+                quantity: r.quantity,
+                unit: r.unit || null,
+                preparation_note: null,
+              })),
+            });
+          } catch (recipeError) {
+            console.error('Product saved but recipe creation failed:', recipeError);
+            recipeWarning = t('productManager.recipeSaveWarning');
+          }
+        }
       }
 
       closeModal();
 
       // Show success toast immediately (no waiting on the network refetch).
-      setSubmitStatus('success');
+      setSubmitStatus(recipeWarning ? 'error' : 'success');
       setStatusMessage(
-        editingId !== null
+        recipeWarning ||
+        (editingId !== null
           ? t('productManager.successUpdated')
-          : t('productManager.successAdded')
+          : t('productManager.successAdded'))
       );
 
       // Quiet background refetch to reconcile with backend (no skeleton flicker).
@@ -381,6 +428,15 @@ export default function ProductManager() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  /**
+   * Advance the add wizard. Step 1 (Basics) validates before moving on;
+   * step 2 (Recipe & Options) always allows moving to the Review step.
+   */
+  const handleWizardNext = () => {
+    if (wizardStep === 1 && !validateForm()) return;
+    setWizardStep(w => (w + 1) as 1 | 2 | 3);
   };
 
   const openDeleteConfirmation = (product: Product) => {
@@ -731,25 +787,39 @@ export default function ProductManager() {
       label: '',
       render: (p: Product) => (
         <div className="flex items-center gap-1 justify-end">
-          <button
-            onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
-            className="p-1.5 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
-            aria-label={t('common.edit')}
-          >
-            <span className="ri-pencil-line ri-14px" />
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(p); }}
-            className="p-1.5 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
-            disabled={deletingId === p.id}
-            aria-label={t('productManager.deleteTitle')}
-          >
-            {deletingId === p.id ? (
-              <div className="w-3.5 h-3.5 border-2 border-error border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <span className="ri-delete-bin-line ri-14px" />
-            )}
-          </button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
+                  className="p-1.5 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
+                  aria-label={t('common.edit')}
+                />
+              }
+            >
+              <span className="ri-pencil-line ri-14px" />
+            </TooltipTrigger>
+            <TooltipContent>{t('common.edit')}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(p); }}
+                  className="p-1.5 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
+                  disabled={deletingId === p.id}
+                  aria-label={t('productManager.deleteTitle')}
+                />
+              }
+            >
+              {deletingId === p.id ? (
+                <div className="w-3.5 h-3.5 border-2 border-error border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span className="ri-delete-bin-line ri-14px" />
+              )}
+            </TooltipTrigger>
+            <TooltipContent>{t('productManager.deleteTitle')}</TooltipContent>
+          </Tooltip>
         </div>
       ),
     },
@@ -789,18 +859,32 @@ export default function ProductManager() {
         </div>
       </div>
       <div className="flex gap-0.5 shrink-0">
-        <button
-          onClick={() => openEditModal(p)}
-          className="p-1.5 rounded-md text-base-content/40 hover:text-primary"
-        >
-          <span className="ri-pencil-line ri-14px" />
-        </button>
-        <button
-          onClick={() => openDeleteConfirmation(p)}
-          className="p-1.5 rounded-md text-base-content/40 hover:text-error"
-        >
-          <span className="ri-delete-bin-line ri-14px" />
-        </button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                onClick={() => openEditModal(p)}
+                className="p-1.5 rounded-md text-base-content/40 hover:text-primary"
+              />
+            }
+          >
+            <span className="ri-pencil-line ri-14px" />
+          </TooltipTrigger>
+          <TooltipContent>{t('common.edit')}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                onClick={() => openDeleteConfirmation(p)}
+                className="p-1.5 rounded-md text-base-content/40 hover:text-error"
+              />
+            }
+          >
+            <span className="ri-delete-bin-line ri-14px" />
+          </TooltipTrigger>
+          <TooltipContent>{t('productManager.deleteTitle')}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
@@ -862,17 +946,25 @@ export default function ProductManager() {
                 </select>
               </div>
             )}
-            <Button
-              variant="ghost"
-              shape="square"
-              size="sm"
-              onClick={() => setViewMode(prev => prev === 'grid' ? 'table' : 'grid')}
-              className="text-base-content/50 hover:text-base-content shrink-0"
-              aria-label={viewMode === 'grid' ? 'Switch to table view' : 'Switch to grid view'}
-              iconStart={viewMode === 'grid'
-                ? <span className="ri-file-list-3-line ri-16px" />
-                : <span className="ri-layout-grid-line ri-16px" />}
-            />
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    shape="square"
+                    size="sm"
+                    onClick={() => setViewMode(prev => prev === 'grid' ? 'table' : 'grid')}
+                    className="text-base-content/50 hover:text-base-content shrink-0"
+                    aria-label={viewMode === 'grid' ? t('common.switchToTable') : t('common.switchToGrid')}
+                  />
+                }
+              >
+                {viewMode === 'grid'
+                  ? <span className="ri-file-list-3-line ri-16px" />
+                  : <span className="ri-layout-grid-line ri-16px" />}
+              </TooltipTrigger>
+              <TooltipContent>{viewMode === 'grid' ? t('common.switchToTable') : t('common.switchToGrid')}</TooltipContent>
+            </Tooltip>
             <Button
               variant="primary"
               size="sm"
@@ -903,13 +995,19 @@ export default function ProductManager() {
               {t('productManager.manageCategories') || 'Manage'}
             </button>
             {selectedCategory !== 'all' && (
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className="tag tag--sm tag--ghost text-base-content/40 hover:text-error transition-colors"
-                title="Clear filter"
-              >
-                <span className="ri-close-line ri-12px" />
-              </button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      onClick={() => setSelectedCategory('all')}
+                      className="tag tag--sm tag--ghost text-base-content/40 hover:text-error transition-colors"
+                    />
+                  }
+                >
+                  <span className="ri-close-line ri-12px" />
+                </TooltipTrigger>
+                <TooltipContent>{t('common.clearFilter')}</TooltipContent>
+              </Tooltip>
             )}
           </>
         }
@@ -1035,38 +1133,119 @@ export default function ProductManager() {
         scroll
         contentTestId="pm-modal"
         footer={
-          <div className="flex gap-2 w-full">
-            <button
-              onClick={closeModal}
-              className="btn btn-ghost flex-1 disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {t('common.cancel')}
-            </button>
-            <button
-              onClick={handleSaveProduct}
-              data-testid="pm-submit"
-              className="btn btn-primary flex-1 disabled:opacity-50 gap-2"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <div
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
-                  />
-                  {editingProduct ? t('common.updating') || 'Updating...' : t('productManager.adding')}
-                </>
-              ) : (
-                <>
-                  {editingProduct ? <span className="ri-edit-line" /> : <span className="ri-add-line" />}
-                  {editingProduct ? t('common.update') : t('productManager.addProduct')}
-                </>
+          editingProduct ? (
+            <div className="flex gap-2 w-full">
+              <button
+                onClick={closeModal}
+                className="btn btn-ghost flex-1 disabled:opacity-50"
+                disabled={isSubmitting}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={handleSaveProduct}
+                data-testid="pm-submit"
+                className="btn btn-primary flex-1 disabled:opacity-50 gap-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    {t('common.updating') || 'Updating...'}
+                  </>
+                ) : (
+                  <>
+                    <span className="ri-edit-line" />
+                    {t('common.update')}
+                  </>
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2 w-full">
+              <button
+                onClick={closeModal}
+                className="btn btn-ghost disabled:opacity-50"
+                disabled={isSubmitting}
+              >
+                {t('common.cancel')}
+              </button>
+              {wizardStep > 1 && (
+                <button
+                  onClick={() => setWizardStep(w => (w - 1) as 1 | 2 | 3)}
+                  className="btn btn-ghost gap-1 disabled:opacity-50"
+                  disabled={isSubmitting}
+                >
+                  <span className="ri-arrow-left-s-line ri-14px" />
+                  {t('common.back') || 'Back'}
+                </button>
               )}
-            </button>
-          </div>
+              {wizardStep < 3 ? (
+                <button
+                  onClick={handleWizardNext}
+                  data-testid="pm-next"
+                  className="btn btn-primary flex-1 gap-1 disabled:opacity-50"
+                  disabled={isSubmitting}
+                >
+                  {wizardStep === 1 ? (t('productManager.wizardToRecipe') || 'Recipe') : (t('productManager.wizardToReview') || 'Review')}
+                  <span className="ri-arrow-right-s-line ri-14px" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleSaveProduct}
+                  data-testid="pm-submit"
+                  className="btn btn-primary flex-1 gap-2 disabled:opacity-50"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      {t('productManager.adding')}
+                    </>
+                  ) : (
+                    <>
+                      <span className="ri-check-line" />
+                      {t('productManager.addProduct')}
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          )
         }
       >
         <div className="space-y-4">
+              {/* Wizard steps indicator — add mode only (edit keeps the single form) */}
+              {!editingProduct && (
+                <div className="flex items-center gap-1.5 mb-1">
+                  {[
+                    { step: 1 as const, label: t('productManager.wizardBasics') || 'Basics', icon: 'ri-price-tag-3-line' },
+                    { step: 2 as const, label: t('productManager.wizardRecipe') || 'Recipe & Options', icon: 'ri-restaurant-line' },
+                    { step: 3 as const, label: t('productManager.wizardReview') || 'Review', icon: 'ri-eye-line' },
+                  ].map(({ step, label, icon }) => (
+                    <button
+                      key={step}
+                      type="button"
+                      onClick={() => step < wizardStep && setWizardStep(step)}
+                      disabled={isSubmitting}
+                      className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border text-[11px] font-semibold transition-all
+                        ${wizardStep === step
+                          ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20'
+                          : wizardStep > step
+                            ? 'border-success/40 bg-success/5 text-success/80 dark:bg-success/10'
+                            : 'border-base-300/50 text-base-content/40 hover:border-primary/30'
+                        }`}
+                    >
+                      <span className={`${icon} ri-14px`} />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Step 1 — Basics (image, name, type, pricing, units, meta) */}
+              {(editingProduct || wizardStep === 1) && (
+              <>
               {/* Product Image */}
               <div>
                 <label className="block text-base-content mb-2">{t('productManager.productImageOptional') || 'Product Image (optional)'}</label>
@@ -1078,14 +1257,21 @@ export default function ProductManager() {
                         alt="Product preview"
                         className="w-20 h-20 rounded-full object-cover border-2 border-slate-300 dark:border-gray-600"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setProductImage(null)}
-                        className="absolute -top-2 -right-2 bg-error text-error-content rounded-full p-0.5
-                          hover:brightness-90 transition-all shadow-lg"
-                      >
-                        <span className="ri-close-line ri-12px" />
-                      </button>
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <button
+                              type="button"
+                              onClick={() => setProductImage(null)}
+                              className="absolute -top-2 -right-2 bg-error text-error-content rounded-full p-0.5
+                                hover:brightness-90 transition-all shadow-lg"
+                            />
+                          }
+                        >
+                          <span className="ri-close-line ri-12px" />
+                        </TooltipTrigger>
+                        <TooltipContent>{t('common.removeImage')}</TooltipContent>
+                      </Tooltip>
                     </div>
                   ) : (
                     <button
@@ -1161,43 +1347,45 @@ export default function ProductManager() {
                 </div>
               )}
 
-              {/* Available Order Types — where this product can be sold */}
-              <div>
-                <label className="block text-base-content mb-2 flex items-center gap-2">
-                  <span className="ri-store-2-line ri-16px text-primary/70" />
-                  {t('productManager.availableOrderTypes') || 'Available Order Types'}
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                  {ORDER_TYPE_OPTIONS.map(ot => {
-                    const selected = (newProduct.available_order_types || '').split(',').map(s => s.trim()).filter(Boolean);
-                    const isOn = selected.includes(ot.value);
-                    return (
-                      <button
-                        key={ot.value}
-                        type="button"
-                        onClick={() => {
-                          const next = isOn
-                            ? selected.filter(v => v !== ot.value).join(',')
-                            : [...selected, ot.value].join(',');
-                          handleInputChange('available_order_types', next);
-                        }}
-                        disabled={isSubmitting}
-                        className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg border-2 transition-all text-xs font-medium
-                          ${isOn
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-slate-200 dark:border-slate-600 bg-base-100/50 text-slate-600 dark:text-slate-400 hover:border-primary/50'
-                          }`}
-                      >
-                        <span className={`w-2 h-2 rounded-full shrink-0 ${isOn ? '' : 'bg-base-300'}`} style={isOn ? { backgroundColor: ot.color } : undefined} />
-                        {t(ot.i18nKey, ot.label)}
-                      </button>
-                    );
-                  })}
+              {/* Available Order Types — edit mode only (add wizard shows this on step 2) */}
+              {editingProduct && (
+                <div>
+                  <label className="block text-base-content mb-2 flex items-center gap-2">
+                    <span className="ri-store-2-line ri-16px text-primary/70" />
+                    {t('productManager.availableOrderTypes') || 'Available Order Types'}
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                    {ORDER_TYPE_OPTIONS.map(ot => {
+                      const selected = (newProduct.available_order_types || '').split(',').map(s => s.trim()).filter(Boolean);
+                      const isOn = selected.includes(ot.value);
+                      return (
+                        <button
+                          key={ot.value}
+                          type="button"
+                          onClick={() => {
+                            const next = isOn
+                              ? selected.filter(v => v !== ot.value).join(',')
+                              : [...selected, ot.value].join(',');
+                            handleInputChange('available_order_types', next);
+                          }}
+                          disabled={isSubmitting}
+                          className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg border-2 transition-all text-xs font-medium
+                            ${isOn
+                              ? 'border-primary bg-primary/5 text-primary'
+                              : 'border-slate-200 dark:border-slate-600 bg-base-100/50 text-slate-600 dark:text-slate-400 hover:border-primary/50'
+                            }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full shrink-0 ${isOn ? '' : 'bg-base-300'}`} style={isOn ? { backgroundColor: ot.color } : undefined} />
+                          {t(ot.i18nKey, ot.label)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="helper-text mt-1">
+                    {t('productManager.availableOrderTypesHint') || 'Products are hidden from order types that are not selected'}
+                  </p>
                 </div>
-                <p className="helper-text mt-1">
-                  {t('productManager.availableOrderTypesHint') || 'Products are hidden from order types that are not selected'}
-                </p>
-              </div>
+              )}
 
               {/* Price + Unit in a 2-column row */}
               <div className="grid grid-cols-2 gap-3">
@@ -1312,6 +1500,200 @@ export default function ProductManager() {
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
+                </div>
+              )}
+              </>
+              )}
+
+              {/* Step 2 — Recipe & Options (ingredient rows + yield + order types) */}
+              {!editingProduct && wizardStep === 2 && (
+                <div className="space-y-4">
+                  {/* Recipe ingredients builder */}
+                  <div>
+                    <label className="block text-base-content mb-2 flex items-center gap-2">
+                      <span className="ri-restaurant-2-line ri-16px text-accent" />
+                      {t('productManager.recipeIngredients') || 'Recipe Ingredients'}
+                    </label>
+                    <p className="text-xs text-base-content/50 mb-3">
+                      {t('productManager.recipeHint') || 'Define the ingredients this product consumes — stock is deducted on sale.'}
+                    </p>
+                    {ingredients.length === 0 ? (
+                      <p className="text-xs text-base-content/40 italic">
+                        {t('productManager.noIngredients') || 'No active ingredients yet. Add them in Inventory first.'}
+                      </p>
+                    ) : (
+                      <>
+                        <div className="space-y-2">
+                          {recipeRows.map((row, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <select
+                                value={row.ingredient_id}
+                                onChange={(e) => {
+                                  const next = [...recipeRows];
+                                  next[idx] = { ...row, ingredient_id: Number(e.target.value), unit: ingredients.find(i => i.id === Number(e.target.value))?.unit || row.unit };
+                                  setRecipeRows(next);
+                                }}
+                                disabled={isSubmitting}
+                                className="select flex-1 h-9 text-sm"
+                              >
+                                <option value={0}>{t('productManager.selectIngredient') || 'Select ingredient...'}</option>
+                                {ingredients.map(i => (
+                                  <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>
+                                ))}
+                              </select>
+                              <input
+                                type="number"
+                                value={row.quantity}
+                                min="0"
+                                step="0.01"
+                                onChange={(e) => {
+                                  const next = [...recipeRows];
+                                  next[idx] = { ...row, quantity: Number(e.target.value) || 0 };
+                                  setRecipeRows(next);
+                                }}
+                                disabled={isSubmitting}
+                                className="input w-20 h-9 text-sm"
+                                placeholder="Qty"
+                              />
+                              <span className="text-xs text-base-content/50 w-10">{row.unit || 'unit'}</span>
+                              <Tooltip>
+                                <TooltipTrigger
+                                  render={
+                                    <button
+                                      type="button"
+                                      onClick={() => setRecipeRows(prev => prev.filter((_, i) => i !== idx))}
+                                      disabled={isSubmitting}
+                                      className="p-1.5 text-base-content/40 hover:text-error transition-colors"
+                                      aria-label={t('common.remove') || 'Remove'}
+                                    />
+                                  }
+                                >
+                                  <span className="ri-delete-bin-line ri-14px" />
+                                </TooltipTrigger>
+                                <TooltipContent>{t('common.remove') || 'Remove'}</TooltipContent>
+                              </Tooltip>
+                            </div>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setRecipeRows(prev => [...prev, { ingredient_id: 0, quantity: 0, unit: '' }])}
+                          disabled={isSubmitting}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                            bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+                        >
+                          <span className="ri-add-line ri-14px" />
+                          {t('productManager.addIngredient') || 'Add ingredient'}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Yield quantity */}
+                  <div>
+                    <label className="block text-base-content mb-1.5 text-xs font-medium">
+                      <span className="ri-stack-line ri-14px inline-block mr-1 text-primary/70" />
+                      {t('productManager.recipeYield') || 'Yield quantity'}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={recipeYield}
+                        min="1"
+                        step="1"
+                        onChange={(e) => setRecipeYield(Math.max(1, parseInt(e.target.value) || 1))}
+                        disabled={isSubmitting}
+                        className="input w-24 h-9 text-sm"
+                      />
+                      <span className="text-xs text-base-content/50">{t('productManager.recipeYieldHint') || 'Servings produced by one batch of the recipe above'}</span>
+                    </div>
+                  </div>
+
+                  {/* Available Order Types — where this product can be sold */}
+                  <div>
+                    <label className="block text-base-content mb-2 flex items-center gap-2">
+                      <span className="ri-store-2-line ri-16px text-primary/70" />
+                      {t('productManager.availableOrderTypes') || 'Available Order Types'}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                      {ORDER_TYPE_OPTIONS.map(ot => {
+                        const selected = (newProduct.available_order_types || '').split(',').map(s => s.trim()).filter(Boolean);
+                        const isOn = selected.includes(ot.value);
+                        return (
+                          <button
+                            key={ot.value}
+                            type="button"
+                            onClick={() => {
+                              const next = isOn
+                                ? selected.filter(v => v !== ot.value).join(',')
+                                : [...selected, ot.value].join(',');
+                              handleInputChange('available_order_types', next);
+                            }}
+                            disabled={isSubmitting}
+                            className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg border-2 transition-all text-xs font-medium
+                              ${isOn
+                                ? 'border-primary bg-primary/5 text-primary'
+                                : 'border-slate-200 dark:border-slate-600 bg-base-100/50 text-slate-600 dark:text-slate-400 hover:border-primary/50'
+                              }`}
+                          >
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${isOn ? '' : 'bg-base-300'}`} style={isOn ? { backgroundColor: ot.color } : undefined} />
+                            {t(ot.i18nKey, ot.label)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="helper-text mt-1">
+                      {t('productManager.availableOrderTypesHint') || 'Products are hidden from order types that are not selected'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3 — Review summary before saving */}
+              {!editingProduct && wizardStep === 3 && (
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-base-300/40 divide-y divide-base-300/30">
+                    <div className="flex justify-between px-3.5 py-2.5 text-sm">
+                      <span className="text-base-content/60">{t('productManager.productName')}</span>
+                      <span className="font-medium text-base-content">{newProduct.name || '—'}</span>
+                    </div>
+                    <div className="flex justify-between px-3.5 py-2.5 text-sm">
+                      <span className="text-base-content/60">{t('productManager.type') || 'Type'}</span>
+                      <span className="font-medium text-base-content capitalize">{newProduct.product_type || 'product'}</span>
+                    </div>
+                    <div className="flex justify-between px-3.5 py-2.5 text-sm">
+                      <span className="text-base-content/60">{t('productManager.category') || 'Category'}</span>
+                      <span className="font-medium text-base-content">
+                        {newProduct.category_id ? (categories.find(c => c.id === newProduct.category_id)?.name || '—') : '—'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between px-3.5 py-2.5 text-sm">
+                      <span className="text-base-content/60">Price</span>
+                      <span className="font-medium text-base-content">{currencySymbol} {Number(newProduct.price) || 0}</span>
+                    </div>
+                    <div className="flex justify-between px-3.5 py-2.5 text-sm">
+                      <span className="text-base-content/60">{t('productManager.unit') || 'Unit'}</span>
+                      <span className="font-medium text-base-content">{newProduct.unit || '—'}</span>
+                    </div>
+                    <div className="flex justify-between px-3.5 py-2.5 text-sm">
+                      <span className="text-base-content/60">{t('productManager.recipeIngredients') || 'Ingredients'}</span>
+                      <span className="font-medium text-base-content">
+                        {recipeRows.length === 0
+                          ? t('productManager.noRecipe') || 'None'
+                          : `${recipeRows.length} × ${t('productManager.recipeYield') || 'yield'} ${recipeYield}`}
+                      </span>
+                    </div>
+                  </div>
+                  {recipeRows.length > 0 && (
+                    <div className="rounded-lg bg-base-100/60 border border-base-300/30 px-3 py-2">
+                      {recipeRows.map((row, idx) => (
+                        <div key={idx} className="flex justify-between text-xs text-base-content/70 py-1">
+                          <span>{ingredients.find(i => i.id === row.ingredient_id)?.name || `#${row.ingredient_id}`}</span>
+                          <span className="tabular-nums">{row.quantity} {row.unit || ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1499,33 +1881,46 @@ export default function ProductManager() {
                 </label>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5">
                   {CATEGORY_COLOR_PALETTE.map(color => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setCategoryForm(prev => ({ ...prev, color }))}
-                      aria-label={`Color ${color}`}
-                      className={`w-7 h-7 rounded-full transition-all cursor-pointer
-                        hover:scale-110 active:scale-95 ring-2 ring-offset-2 ring-offset-base-100
-                        ${categoryForm.color === color ? 'ring-base-content/60 scale-110' : 'ring-transparent'}`}
-                      style={{ backgroundColor: color }}
-                    />
+                    <Tooltip key={color}>
+                      <TooltipTrigger
+                        render={
+                          <button
+                            type="button"
+                            onClick={() => setCategoryForm(prev => ({ ...prev, color }))}
+                            aria-label={`Color ${color}`}
+                            className={`w-7 h-7 rounded-full transition-all cursor-pointer
+                              hover:scale-110 active:scale-95 ring-2 ring-offset-2 ring-offset-base-100
+                              ${categoryForm.color === color ? 'ring-base-content/60 scale-110' : 'ring-transparent'}`}
+                            style={{ backgroundColor: color }}
+                          />
+                        }
+                      />
+                      <TooltipContent>{color}</TooltipContent>
+                    </Tooltip>
                   ))}
-                  <label className="relative w-7 h-7 rounded-full overflow-hidden border border-base-300/50 cursor-pointer hover:scale-110 transition-transform">
-                    <span
-                      className="absolute inset-0 flex items-center justify-center text-[10px]"
-                      style={{ backgroundColor: 'repeating-conic-gradient(#d1d5db 0% 25%, #f9fafb 0% 50%) 0 0/12px 12px' }}
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <label className="relative w-7 h-7 rounded-full overflow-hidden border border-base-300/50 cursor-pointer hover:scale-110 transition-transform">
+                          <span
+                            className="absolute inset-0 flex items-center justify-center text-[10px]"
+                            style={{ backgroundColor: 'repeating-conic-gradient(#d1d5db 0% 25%, #f9fafb 0% 50%) 0 0/12px 12px' }}
+                          />
+                          <input
+                            type="color"
+                            value={/^#[0-9a-fA-F]{6}$/.test(categoryForm.color) ? categoryForm.color : '#f97316'}
+                            onChange={(e) => setCategoryForm(prev => ({ ...prev, color: e.target.value }))}
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            aria-label={t('productManager.categoryCustomColor') || 'Custom color'}
+                          />
+                          <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span className="ri-dropper-line ri-12px text-base-content/70" />
+                          </span>
+                        </label>
+                      }
                     />
-                    <input
-                      type="color"
-                      value={/^#[0-9a-fA-F]{6}$/.test(categoryForm.color) ? categoryForm.color : '#f97316'}
-                      onChange={(e) => setCategoryForm(prev => ({ ...prev, color: e.target.value }))}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      aria-label={t('productManager.categoryCustomColor') || 'Custom color'}
-                    />
-                    <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <span className="ri-dropper-line ri-12px text-base-content/70" />
-                    </span>
-                  </label>
+                    <TooltipContent>{t('productManager.categoryCustomColor') || 'Custom color'}</TooltipContent>
+                  </Tooltip>
                 </div>
                 {/* Live preview */}
                 <div className="mt-3 flex items-center gap-2">
@@ -1556,20 +1951,34 @@ export default function ProductManager() {
                           style={{ backgroundColor: cat.color || '#94a3b8' }}
                         />
                         <span className="flex-1 text-sm font-medium truncate">{cat.name}</span>
-                        <button
-                          onClick={() => openEditCategory(cat)}
-                          className="p-1 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
-                          aria-label={t('common.edit')}
-                        >
-                          <span className="ri-pencil-line ri-14px" />
-                        </button>
-                        <button
-                          onClick={() => openDeleteCategoryConfirmation(cat)}
-                          className="p-1 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
-                          aria-label={t('productManager.deleteCategory')}
-                        >
-                          <span className="ri-delete-bin-line ri-14px" />
-                        </button>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <button
+                                onClick={() => openEditCategory(cat)}
+                                className="p-1 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
+                                aria-label={t('common.edit')}
+                              />
+                            }
+                          >
+                            <span className="ri-pencil-line ri-14px" />
+                          </TooltipTrigger>
+                          <TooltipContent>{t('common.edit')}</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <button
+                                onClick={() => openDeleteCategoryConfirmation(cat)}
+                                className="p-1 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
+                                aria-label={t('productManager.deleteCategory')}
+                              />
+                            }
+                          >
+                            <span className="ri-delete-bin-line ri-14px" />
+                          </TooltipTrigger>
+                          <TooltipContent>{t('productManager.deleteCategory')}</TooltipContent>
+                        </Tooltip>
                       </div>
                     ))}
                   </div>

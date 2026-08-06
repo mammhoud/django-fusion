@@ -13,7 +13,7 @@ import { useDashboardDeltas } from '../../hooks/useDashboardDeltas';
 import { useApiQueries } from '../../hooks/useApi';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, iconSpring } from '../../utils/pageTransitions';
-import defaultLogo from '../../../assets/images/pos-crest.svg';
+import defaultLogo from '../../../assets/images/formint-crest.svg';
 
 interface MenuCategory {
   id: string;
@@ -127,7 +127,7 @@ export default function Home() {
   ]);
 
   const settings = (settingsRes as Settings | undefined) ?? null;
-  const restaurantName = settings?.restaurant_name || 'Forge POS';
+  const restaurantName = settings?.restaurant_name || 'Formint';
   const { formatPrice, currencySymbol } = useCurrency();
   const sales = (Array.isArray(salesRes) ? (salesRes as Sale[]) : []) as Sale[];
 
@@ -180,7 +180,7 @@ export default function Home() {
         <div className={`${iconSpring} bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-5 shrink-0 shadow-xl border border-base-300/30 dark:border-white/5`}>
           <img
             src={defaultLogo}
-            alt="Forge POS"
+            alt="Formint"
             className="w-14 h-14 md:w-16 md:h-16 object-contain"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />

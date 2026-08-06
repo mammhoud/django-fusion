@@ -13,6 +13,7 @@ import { useKDSNotification, CHIME_VARIANTS, type ChimeVariant } from '../../hoo
 import { useCurrency } from '../../contexts/CurrencyContext';
 import StatCard from '../../components/ui/StatCard';
 import { parseNoteSteps } from '../../utils/noteSteps';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/ui/tooltip';
 
 
 // Type from the Rust KitchenTicketCategory model (ticket → product-category rows)
@@ -94,7 +95,11 @@ function saveClickRecord(record: ClickRecord): ClickRecord[] {
   return records;
 }
 
-export default function KitchenDisplay() {
+// Standalone mode = the dedicated KDS popout window (loaded with ?kds=1).
+// In that window the page renders full-bleed without the app chrome/sidebar.
+const isKdsPopout = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('kds') === '1';
+
+export default function KitchenDisplay({ standalone = isKdsPopout }: { standalone?: boolean } = {}) {
   const { t } = useTranslation();
   const { formatPrice } = useCurrency();
   const [tickets, setTickets] = useState<KitchenTicket[]>([]);
@@ -408,6 +413,20 @@ export default function KitchenDisplay() {
     setTimeout(() => reportDialogRef.current?.showModal(), 50);
   }, []);
 
+  /*** Detach the Kitchen Display into its own always-on-top window ***/
+  const handleOpenInWindow = useCallback(() => {
+    invoke('open_kds_window').catch(err => console.error('Failed to open KDS window:', err));
+  }, []);
+
+  // Live per-status ticket counts shown on the filter pills
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: tickets.length };
+    for (const ticket of tickets) {
+      counts[ticket.status] = (counts[ticket.status] || 0) + 1;
+    }
+    return counts;
+  }, [tickets]);
+
   const clearClickHistory = useCallback(() => {
     localStorage.removeItem(CLICK_STORAGE_KEY);
     setClickRecords([]);
@@ -415,7 +434,7 @@ export default function KitchenDisplay() {
   }, []);
 
   return (
-    <PageLayout title={t('kitchen.title')} background="bg-base-200/50">
+    <PageLayout title={t('kitchen.title')} background="bg-base-200/50" standalone={standalone}>
       <div className="space-y-3">
         {/* ── Header Bar ── */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -431,7 +450,7 @@ export default function KitchenDisplay() {
               loading={isFiltering}
               className="flex-1 sm:w-48"
             />
-            {/* Status filter — tag pills (same pattern as ProductManager/Sale) */}
+            {/* Status filter — tag pills with live ticket counts */}
             <div
               role="group"
               aria-label={t('kitchen.statusFilter') || 'Filter by status'}
@@ -454,80 +473,138 @@ export default function KitchenDisplay() {
                   }`}
                 >
                   {opt.label}
+                  {(statusCounts[opt.value] ?? 0) > 0 && (
+                    <span
+                      className={`ml-1 px-1 rounded-full text-[9px] font-bold leading-4 min-w-4 text-center ${
+                        filter === opt.value ? 'bg-base-content/20' : 'bg-base-content/10'
+                      }`}
+                    >
+                      {statusCounts[opt.value]}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
-            {/* Chef Report button */}
-            <button
-              type="button"
-              onClick={openChefReport}
-              className="btn btn-ghost btn-sm gap-1 text-xs"
-              title="Chef action report"
-            >
-              <span className="ri-clipboard-line ri-14px" />
-              <span className="hidden sm:inline">Report</span>
-              {ticketClickCount > 0 && (
-                <span className="badge badge-xs badge-soft badge-primary">{ticketClickCount}</span>
+
+            {/* Action cluster — compact toolbar controls, all beside each other */}
+            <div className="flex items-center gap-0.5 p-1 rounded-xl bg-base-100/70 dark:bg-white/5 border border-base-300/30 dark:border-white/10 shrink-0">
+              {/* Open in new window (hidden inside the popout itself) */}
+              {!standalone && (
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        type="button"
+                        onClick={handleOpenInWindow}
+                        className="btn btn-ghost btn-sm btn-square"
+                      />
+                    }
+                  >
+                    <span className={iconClass('lucide:external-link', 'w-3.5 h-3.5')} />
+                  </TooltipTrigger>
+                  <TooltipContent>{t('kitchen.openInWindow')}</TooltipContent>
+                </Tooltip>
               )}
-            </button>
-            {/* Preferences toggle */}
-            <button
-              type="button"
-              onClick={() => setShowPreferences(!showPreferences)}
-              className={`btn btn-ghost btn-sm gap-1 text-xs ${showPreferences ? 'btn-active' : ''}`}
-              title="Display preferences"
-            >
-              <span className="ri-equalizer-line ri-14px" />
-            </button>
-            {/* Sort toggle */}
-            <button
-              type="button"
-              onClick={() => {
-                const next = sortOrder === 'newest' ? 'overdue-first' : 'newest';
-                setSortOrder(next);
-                localStorage.setItem('kds-sort-order', next);
-              }}
-              className={`btn btn-ghost btn-sm gap-1 text-xs ${sortOrder === 'overdue-first' ? 'btn-active text-error' : ''}`}
-              title={sortOrder === 'overdue-first' ? 'Sorting: Overdue first' : 'Sorting: Newest first'}
-            >
-              <span className={iconClass('lucide:alert-triangle', `w-3.5 h-3.5 ${sortOrder === 'overdue-first' ? 'text-error' : ''}`)} />
-              <span className="hidden sm:inline">{sortOrder === 'overdue-first' ? 'Overdue' : 'Newest'}</span>
-            </button>
-            {/* Chime sound dropdown */}
-            <select
-              value={chimeVariant}
-              onChange={(e) => {
-                const v = e.target.value as ChimeVariant;
-                setChimeVariant(v);
-                localStorage.setItem('kds-chime-variant', v);
-              }}
-              className="select select-ghost select-xs text-xs max-w-[140px]"
-              title="Notification sound"
-              aria-label="Notification sound"
-            >
-              {CHIME_VARIANTS.map(c => (
-                <option key={c.id} value={c.id}>{c.label}</option>
-              ))}
-            </select>
-            {/* Mute 30min button */}
-            <button
-              type="button"
-              onClick={() => {
-                if (mutedUntil && mutedUntil > Date.now()) {
-                  setMutedUntil(null);
-                  localStorage.removeItem('kds-muted-until');
-                } else {
-                  const ts = Date.now() + 30 * 60 * 1000;
-                  setMutedUntil(ts);
-                  localStorage.setItem('kds-muted-until', String(ts));
-                }
-              }}
-              className={`btn btn-ghost btn-sm gap-1 text-xs ${mutedUntil && mutedUntil > Date.now() ? 'btn-active text-error' : ''}`}
-              title={mutedUntil && mutedUntil > Date.now() ? `Muted for ${muteRemaining}` : 'Mute notifications for 30 min'}
-            >
-              <span className={iconClass(mutedUntil && mutedUntil > Date.now() ? 'lucide:bell-off' : 'lucide:bell', 'w-3.5 h-3.5')} />
-              <span className="hidden sm:inline">{mutedUntil && mutedUntil > Date.now() ? muteRemaining : 'Mute'}</span>
-            </button>
+              {/* Chef Report */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={openChefReport}
+                      className="btn btn-ghost btn-sm btn-square relative"
+                    />
+                  }
+                >
+                  <span className="ri-clipboard-line ri-14px" />
+                  {ticketClickCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-3.5 h-3.5 px-0.5 rounded-full bg-primary text-primary-content text-[9px] font-bold flex items-center justify-center">
+                      {ticketClickCount > 99 ? '99+' : ticketClickCount}
+                    </span>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>{t('kitchen.chefReport')}</TooltipContent>
+              </Tooltip>
+              {/* Preferences toggle */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => setShowPreferences(!showPreferences)}
+                      title={t('kitchen.preferences')}
+                      aria-label={t('kitchen.preferences')}
+                      className={`btn btn-ghost btn-sm btn-square ${showPreferences ? 'btn-active text-primary' : ''}`}
+                    />
+                  }
+                >
+                  <span className="ri-equalizer-line ri-14px" />
+                </TooltipTrigger>
+                <TooltipContent>{t('kitchen.preferences')}</TooltipContent>
+              </Tooltip>
+              {/* Sort toggle */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = sortOrder === 'newest' ? 'overdue-first' : 'newest';
+                        setSortOrder(next);
+                        localStorage.setItem('kds-sort-order', next);
+                      }}
+                      className={`btn btn-ghost btn-sm btn-square ${sortOrder === 'overdue-first' ? 'btn-active text-error' : ''}`}
+                    />
+                  }
+                >
+                  <span className={iconClass('lucide:alert-triangle', `w-3.5 h-3.5 ${sortOrder === 'overdue-first' ? 'text-error' : ''}`)} />
+                </TooltipTrigger>
+                <TooltipContent>{sortOrder === 'overdue-first' ? t('kitchen.sortOverdue') : t('kitchen.sortNewest')}</TooltipContent>
+              </Tooltip>
+              {/* Chime sound — compact select with leading icon */}
+              <div className="relative flex items-center">
+                <span className="ri-music-2-line ri-14px absolute left-2 text-base-content/50 pointer-events-none" />
+                <select
+                  value={chimeVariant}
+                  onChange={(e) => {
+                    const v = e.target.value as ChimeVariant;
+                    setChimeVariant(v);
+                    localStorage.setItem('kds-chime-variant', v);
+                  }}
+                  className="select select-ghost select-xs text-xs pl-7 max-w-[104px] pr-1"
+                  aria-label={t('kitchen.notificationSound')}
+                  title={t('kitchen.notificationSound')}
+                >
+                  {CHIME_VARIANTS.map(c => (
+                    <option key={c.id} value={c.id}>{c.label}</option>
+                  ))}
+                </select>
+              </div>
+              {/* Mute 30min button */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (mutedUntil && mutedUntil > Date.now()) {
+                          setMutedUntil(null);
+                          localStorage.removeItem('kds-muted-until');
+                        } else {
+                          const ts = Date.now() + 30 * 60 * 1000;
+                          setMutedUntil(ts);
+                          localStorage.setItem('kds-muted-until', String(ts));
+                        }
+                      }}
+                      className={`btn btn-ghost btn-sm btn-square ${mutedUntil && mutedUntil > Date.now() ? 'btn-active text-error' : ''}`}
+                    />
+                  }
+                >
+                  <span className={iconClass(mutedUntil && mutedUntil > Date.now() ? 'lucide:bell-off' : 'lucide:bell', 'w-3.5 h-3.5')} />
+                </TooltipTrigger>
+                <TooltipContent>{mutedUntil && mutedUntil > Date.now() ? `${t('kitchen.mutedFor')} ${muteRemaining}` : t('kitchen.mute')}</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
 
@@ -553,13 +630,20 @@ export default function KitchenDisplay() {
                 <span className="ri-equalizer-line ri-14px" />
                 Product Display Preferences
               </span>
-              <button
-                type="button"
-                onClick={() => setShowPreferences(false)}
-                className="btn btn-ghost btn-xs btn-square"
-              >
-                <span className="ri-close-line ri-12px" />
-              </button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => setShowPreferences(false)}
+                      className="btn btn-ghost btn-xs btn-square"
+                    />
+                  }
+                >
+                  <span className="ri-close-line ri-12px" />
+                </TooltipTrigger>
+                <TooltipContent>{t('common.close')}</TooltipContent>
+              </Tooltip>
             </div>
             <p className="text-[11px] text-base-content/50 mb-2">
               Select which order types to display as kitchen tasks:
@@ -1040,13 +1124,20 @@ export default function KitchenDisplay() {
                 <span className="ri-clipboard-line ri-16px text-primary" />
                 Chef Action Report
               </h3>
-              <button
-                type="button"
-                onClick={() => { reportDialogRef.current?.close(); }}
-                className="btn btn-ghost btn-sm btn-square"
-              >
-                <span className="ri-close-line ri-16px" />
-              </button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => { reportDialogRef.current?.close(); }}
+                      className="btn btn-ghost btn-sm btn-square"
+                    />
+                  }
+                >
+                  <span className="ri-close-line ri-16px" />
+                </TooltipTrigger>
+                <TooltipContent>{t('common.close')}</TooltipContent>
+              </Tooltip>
             </div>
             {clickRecords.length === 0 ? (
               <p className="text-sm text-base-content/50 italic py-4 text-center">No actions recorded yet.</p>

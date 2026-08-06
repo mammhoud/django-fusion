@@ -221,7 +221,7 @@ BEGIN UPDATE employees SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END
 
 -- Insert default settings (singleton row — app always expects this to exist)
 INSERT OR IGNORE INTO settings (id, restaurant_name, currency, receipt_footer)
-VALUES (1, 'Forge POS', 'USD', 'Thank you for your business!');
+VALUES (1, 'Formint', 'USD', 'Thank you for your business!');
 
 -- Insert default delivery types
 INSERT OR IGNORE INTO delivery_types (id, name, description, fee_multiplier) VALUES

@@ -162,7 +162,7 @@ describe('Settings Page', () => {
     renderWithProviders(<Settings />);
 
     // Falls back to default name 'POS'
-    const nameInput = await screen.findByDisplayValue('Forge POS');
+    const nameInput = await screen.findByDisplayValue('Formint');
     expect(nameInput).toBeInTheDocument();
   });
 

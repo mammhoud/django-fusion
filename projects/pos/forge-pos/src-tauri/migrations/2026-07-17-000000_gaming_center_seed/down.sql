@@ -18,7 +18,7 @@ DELETE FROM categories WHERE id BETWEEN 11 AND 16;
 
 -- Revert gaming-specific branding in settings
 UPDATE settings SET
-    restaurant_name  = 'Forge POS',
+    restaurant_name  = 'Formint',
     address          = NULL,
     phone            = NULL,
     email            = NULL,
