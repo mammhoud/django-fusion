@@ -1,0 +1,31 @@
+{% load i18n %}
+<section class="auth-fragment" x-data="{ loading: false }">
+  <header class="text-center mb-6">
+    <h2 class="font-display text-2xl font-bold tracking-tight text-fu-ink">Sign out</h2>
+    <p class="mt-1 text-sm text-fu-muted">Are you sure you want to sign out?</p>
+  </header>
+
+  <form method="post" action="{% url 'account_logout' %}"
+        hx-post="{% url 'account_logout' %}"
+        hx-target="closest .auth-fragment"
+        hx-swap="outerHTML"
+        @submit="loading = true">
+    {% csrf_token %}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+    {% endif %}
+
+    <button type="submit" :disabled="loading"
+            class="w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-60">
+      <span x-show="!loading">Sign out</span>
+      <span x-show="loading" class="inline-flex items-center gap-2">
+        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+        Signing out...
+      </span>
+    </button>
+  </form>
+
+  <p class="mt-5 text-center text-sm text-fu-muted">
+    <a href="/" class="font-medium text-fu-link hover:text-fu-link-hover">← Back to homepage</a>
+  </p>
+</section>

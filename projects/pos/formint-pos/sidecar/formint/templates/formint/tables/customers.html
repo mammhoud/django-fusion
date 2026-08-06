@@ -1,5 +1,5 @@
 {% load components %}
-{% comp "fusion/components/table_shell.html" resource=resource count_label="customers" new_url="/htmx/forms/customer/" new_label="+ New customer" form_target="#formint-form-slot" fragment_attr="formint.tables.customers" %}
+{% comp "fusion/components/table.html" resource=resource count_label="customers" new_url="/htmx/forms/customer/" new_label="+ New customer" form_target="#formint-form-slot" fragment_attr="formint.tables.customers" table_data=table_data %}
   <table class="table">
     <thead>
       <tr>{% for header in table_headers %}<th scope="col">{{ header.label }}</th>{% endfor %}</tr>
