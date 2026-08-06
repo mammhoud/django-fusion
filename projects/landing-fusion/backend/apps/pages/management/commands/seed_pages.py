@@ -30,6 +30,8 @@ from apps.pages.models import (
     ProductPage,
     ProductsPage,
     ServicesPage,
+    PhasePage,
+    PromptPage,
     TeamPage,
 )
 
@@ -1253,6 +1255,8 @@ class Command(BaseCommand):
             HomePage,
             AboutPage,
             ServicesPage,
+            PhasePage,
+            PromptPage,
             ProductsPage,
             FeaturesPage,
             BlogPage,
@@ -1406,6 +1410,69 @@ class Command(BaseCommand):
             cta=DEFAULT_HOME_CONTENT["cta"],
         )
         self._created(created, "services")
+
+        # ── Services → delivery phases + reusable implementation prompts ──
+        phase_seed = [
+            {
+                "title": "Discover", "slug": "discover", "phase_number": 1,
+                "phase_label": "discovery",
+                "body": "<p>Turn the brief into a clear document model, visual direction, and measurable first release.</p>",
+                "outcomes": "A bounded brief\nA content and route map\nA first-release decision log",
+                "prompts": [{
+                    "title": "Shape the brief", "slug": "shape-the-brief",
+                    "prompt": "Turn this product brief into a focused first release with user, content, route, and success constraints.",
+                    "context": "Use this before design or implementation begins.",
+                    "output": "A concise scope, assumptions, risks, and acceptance checklist.",
+                    "tool": "Wagtail + product discovery",
+                }],
+            },
+            {
+                "title": "Build", "slug": "build", "phase_number": 2,
+                "phase_label": "build",
+                "body": "<p>Build the smallest complete path as server-rendered HTML, then add HTMX and Alpine where they improve the document.</p>",
+                "outcomes": "A working content model\nA responsive document route\nProgressive enhancement checks",
+                "prompts": [{
+                    "title": "Build the first vertical slice", "slug": "build-the-first-vertical-slice",
+                    "prompt": "Implement one complete user journey from Wagtail model to accessible HTML, with progressive enhancement only where needed.",
+                    "context": "Keep the server-rendered path usable without JavaScript.",
+                    "output": "A tested vertical slice with model, API, template, and browser states.",
+                    "tool": "Astro + HTMX + Alpine",
+                }],
+            },
+            {
+                "title": "Launch", "slug": "launch", "phase_number": 3,
+                "phase_label": "launch",
+                "body": "<p>Ship a dependable release with content parity, observability, and a handoff the team can own.</p>",
+                "outcomes": "SEO and accessibility checks\nDeployment runbook\nEditor handoff",
+                "prompts": [{
+                    "title": "Prepare the release", "slug": "prepare-the-release",
+                    "prompt": "Audit this release for broken routes, missing content, accessibility regressions, and backend/frontend parity before deployment.",
+                    "context": "Run the same checklist against the Astro and Django roads.",
+                    "output": "A prioritized release report with fixes and explicit sign-off criteria.",
+                    "tool": "Django + Astro verification",
+                }],
+            },
+            {
+                "title": "Enhance", "slug": "enhance", "phase_number": 4,
+                "phase_label": "enhance",
+                "body": "<p>Improve the living system through measured content, performance, and interaction enhancements.</p>",
+                "outcomes": "A measured improvement backlog\nReusable content patterns\nA safe iteration loop",
+                "prompts": [{
+                    "title": "Enhance without drift", "slug": "enhance-without-drift",
+                    "prompt": "Improve this page while preserving content ownership, render parity, accessibility, and the existing design language.",
+                    "context": "Prefer reusable components and Wagtail-managed content over one-off page markup.",
+                    "output": "A small change set with regression checks and a documented reason for each change.",
+                    "tool": "django-fusion components",
+                }],
+            },
+        ]
+        for phase_data in phase_seed:
+            prompts = phase_data.pop("prompts")
+            phase, phase_created = self._get_or_create_child(services, PhasePage, **phase_data)
+            self._created(phase_created, f"services:phase:{phase.slug}")
+            for prompt_data in prompts:
+                prompt, prompt_created = self._get_or_create_child(phase, PromptPage, **prompt_data)
+                self._created(prompt_created, f"services:phase:{phase.slug}:prompt:{prompt.slug}")
 
         # ── Products (full document, like About) ───────────────────────
         products, created = self._get_or_create_child(

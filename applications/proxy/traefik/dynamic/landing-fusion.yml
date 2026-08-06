@@ -1,0 +1,48 @@
+http:
+  routers:
+    landing-fusion-backend-http:
+      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`))'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: landing-fusion-backend
+      priority: 200
+    landing-fusion-backend-https:
+      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`))'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: landing-fusion-backend
+      priority: 200
+      tls:
+        certResolver: letsencrypt-http
+    landing-fusion-site-http:
+      rule: 'Host(`structa.cloud`) || Host(`www.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: landing-fusion-frontend
+      priority: 100
+    landing-fusion-site-https:
+      rule: 'Host(`structa.cloud`) || Host(`www.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: landing-fusion-frontend
+      priority: 100
+      tls:
+        certResolver: letsencrypt-http
+
+  services:
+    landing-fusion-backend:
+      loadBalancer:
+        servers:
+          - url: 'http://landing-fusion-backend:8074'
+        healthCheck:
+          path: /apis/pages/
+          interval: 15s
+          timeout: 10s
+    landing-fusion-frontend:
+      loadBalancer:
+        servers:
+          - url: 'http://landing-fusion-frontend:3000'
+        healthCheck:
+          path: /
+          interval: 15s
+          timeout: 10s

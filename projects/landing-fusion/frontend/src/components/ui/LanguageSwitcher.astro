@@ -1,0 +1,109 @@
+---
+/**
+ * LanguageSwitcher — Alpine-powered dropdown, persisted via localStorage.
+ *
+ * Reads / writes ``fusion-lang`` (same key used by ``detectLang()`` +
+ * ``applyLang()`` in ``lib/translations.ts``).  Updates ``<html lang>`` and
+ * ``dir`` immediately so RTL languages re-flow without a page reload.
+ *
+ * The full LANG_META table is injected into the Alpine scope via a small
+ * JSON blob so the component works without importing the module at runtime.
+ */
+import { LANG_META, LANG_CODES } from '@/lib/translations';
+
+const langs = LANG_CODES.map((code) => ({
+  code,
+  native: LANG_META[code].native,
+  flag: LANG_META[code].flag,
+  dir: LANG_META[code].dir,
+}));
+
+const defaultLang = 'en';
+const langsJson = JSON.stringify(langs);
+---
+
+<script is:inline define:vars={{ langsJson, defaultLang }}>
+  window.__FUSION_LANGS = JSON.parse(langsJson);
+  window.__FUSION_DEFAULT_LANG = defaultLang;
+</script>
+
+<div    class="relative"
+  x-data="{
+    open: false,
+    active: window.__FUSION_DEFAULT_LANG,
+    langs: window.__FUSION_LANGS,
+    init() {
+      try {
+        const stored = localStorage.getItem('fusion-lang');
+        if (stored && this.langs.some((l) => l.code === stored)) {
+          this.active = stored;
+          this.apply(stored);
+        }
+      } catch { /* noop */ }
+    },
+    apply(code: string) {
+      const meta = this.langs.find((l) => l.code === code);
+      if (!meta) return;
+      document.documentElement.lang = code;
+      document.documentElement.dir = meta.dir;
+      try {
+        localStorage.setItem('fusion-lang', code);
+        document.cookie = 'django_language=' + encodeURIComponent(code) + '; path=/; max-age=31536000; SameSite=Lax';
+      } catch { /* noop */ }
+      this.active = code;
+      this.open = false;
+      // Dispatch so any Alpine components that need to re-render can listen.
+      window.dispatchEvent(new CustomEvent('fusion:lang-changed', { detail: { code } }));
+    },
+    currentFlag() {
+      return this.langs.find((l) => l.code === this.active)?.flag || '🌐';
+    },
+  }"
+  @keydown.escape.window="open = false"
+>
+  <button
+    type="button"
+    class="flex items-center gap-1.5 rounded-md border border-fu-line bg-fu-card px-2.5 py-1.5 text-sm font-medium text-fu-ink transition-all hover:border-fu-link/50"
+    @click="open = !open"
+    aria-haspopup="listbox"
+    :aria-expanded="open.toString()"
+    aria-label="Change language"
+    title="Change language"
+  >
+    <span class="text-base leading-none" aria-hidden="true" x-text="currentFlag()"></span>
+    <span class="hidden sm:inline font-mono text-[0.72rem] uppercase tracking-[0.08em]" x-text="active"></span>
+    <svg class="h-3 w-3 text-fu-muted transition-transform" :class="open && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+
+  <div
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    @click.self="open = false"
+    class="absolute right-0 mt-2 w-48 rounded-xl border border-fu-line bg-fu-paper p-1.5 shadow-xl"
+    role="listbox"
+    aria-label="Select language"
+  >
+    <template x-for="lang in langs" :key="lang.code">
+      <button
+        type="button"
+        role="option"
+        :aria-selected="active === lang.code"
+        class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-fu-card"
+        :class="active === lang.code ? 'text-fu-link font-semibold' : 'text-fu-ink'"
+        @click="apply(lang.code)"
+      >
+        <span class="text-base" aria-hidden="true" x-text="lang.flag"></span>
+        <span x-text="lang.native"></span>
+        <span x-show="active === lang.code" class="ml-auto text-fu-link" aria-hidden="true">✓</span>
+      </button>
+    </template>
+  </div>
+</div>

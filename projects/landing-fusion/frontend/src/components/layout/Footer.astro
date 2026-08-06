@@ -58,8 +58,8 @@ const footerGroups = siteSettings?.footer_link_groups?.length
                 });
                 const d = await r.json().catch(() => ({}));
                 if (r.ok && d.success) { this.done = true; }
-                else { this.error = (d.message || 'Could not subscribe — try again.'); }
-              } catch (e) { this.error = 'Network error — try again later.'; }
+                else { this.error = (d.message || 'Could not subscribe. Try again.'); }
+              } catch (e) { this.error = 'Network error. Try again later.'; }
               finally { this.busy = false; }
             }
           }"
@@ -76,7 +76,7 @@ const footerGroups = siteSettings?.footer_link_groups?.length
             </form>
           </template>
           <template x-if="done">
-            <p class="font-mono text-xs text-fu-live">✓ Subscribed — welcome aboard.</p>
+            <p class="font-mono text-xs text-fu-live">✓ Subscribed. Welcome aboard.</p>
           </template>
           <p x-show="error" x-cloak class="mt-2 text-xs text-red-500" x-text="error"></p>
         </div>
@@ -98,9 +98,9 @@ const footerGroups = siteSettings?.footer_link_groups?.length
       <p class="font-mono text-xs uppercase">&copy; {year} {siteName}</p>
       <p class="mt-2 font-mono text-[0.65rem] uppercase tracking-wider text-fu-muted">
         <a href="https://github.com/mammhoud" class="hover:text-fu-link">GitHub</a>
-        <span class="mx-2">·</span>
+        <span class="mx-2 text-fu-line" aria-hidden="true">|</span>
         <a href="https://linkedin.com/in/mammhoud" class="hover:text-fu-link">LinkedIn</a>
-        <span class="mx-2">·</span>
+        <span class="mx-2 text-fu-line" aria-hidden="true">|</span>
         <a href="https://mammhoud.github.io" class="hover:text-fu-link">Portfolio</a>
       </p>
     </div>

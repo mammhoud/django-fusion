@@ -123,7 +123,7 @@ function forceDismiss(): void {
   // Notify via Redux toast
   const showToast = (window as any).__showToast;
   if (showToast) {
-    showToast('Request timed out — please try again.', 'warning');
+    showToast('Request timed out. Please try again.', 'warning');
   }
 }
 
@@ -174,6 +174,6 @@ document.addEventListener('htmx:responseError', (event) => {
 document.body.addEventListener('htmx:responseError', () => {
   const showToast = (window as any).__showToast;
   if (showToast) {
-    showToast('Something went wrong — please try again.', 'error');
+    showToast('Something went wrong. Please try again.', 'error');
   }
 });

@@ -310,11 +310,14 @@ def _stream_to_plain(value):
     return value
 
 
-def _get_wagtail_page(slug: str):
-    """Try to retrieve a live Wagtail page by slug."""
+def _get_wagtail_page(slug: str, page_type: str | None = None):
+    """Retrieve a live Wagtail page by slug, optionally narrowed by model type."""
     normalized = slug.strip("/") or "home"
     try:
-        return Page.objects.live().filter(slug=normalized).first()
+        queryset = Page.objects.live().filter(slug=normalized)
+        if page_type:
+            queryset = queryset.filter(content_type__model=page_type.lower())
+        return queryset.first()
     except Exception:
         return None
 
@@ -404,6 +407,27 @@ def _page_to_dict(page) -> dict:
     if hasattr(page, "body") and page.body:
         data["body"] = str(page.body)
 
+    # Delivery phase / prompt metadata and hierarchy.
+    if page.__class__.__name__ == "PhasePage":
+        data["phase_number"] = page.phase_number
+        data["phase_label"] = page.get_phase_label_display()
+        data["outcomes"] = [line.strip() for line in page.outcomes.splitlines() if line.strip()]
+        data["prompts"] = [
+            {
+                "slug": child.slug,
+                "title": child.title,
+                "href": f"/services/phases/{page.slug}/prompts/{child.slug}/",
+            }
+            for child in page.get_children().live().specific()
+        ]
+    elif page.__class__.__name__ == "PromptPage":
+        data["prompt"] = page.prompt
+        data["context"] = str(page.context) if page.context else ""
+        data["output"] = str(page.output) if page.output else ""
+        data["tool"] = page.tool
+        parent = page.get_parent().specific
+        data["phase"] = {"title": parent.title, "slug": parent.slug, "href": f"/services/phases/{parent.slug}/"}
+
     # Blog post meta (BlogPostPage) — category, date, read time, excerpt.
     # The date is serialized as an ISO string so the frontend renders it
     # without a client-side date dependency.
@@ -436,6 +460,22 @@ def _page_to_dict(page) -> dict:
                         items.append(block_data)
                 if items:
                     data[field_name] = items
+
+    # Services delivery phases — nested Wagtail documents exposed to the
+    # Astro services page without a second content source.
+    if page.__class__.__name__ == "ServicesPage":
+        data["phases"] = [
+            {
+                "id": child.pk,
+                "slug": child.slug,
+                "title": child.title,
+                "phase_number": child.phase_number,
+                "phase_label": child.get_phase_label_display(),
+                "href": f"/services/phases/{child.slug}/",
+            }
+            for child in page.get_children().live().specific()
+            if child.__class__.__name__ == "PhasePage"
+        ]
 
     # Product listing (ProductsPage) — one card per live ProductPage child.
     if hasattr(page, "get_product_cards") and page.get_product_cards():

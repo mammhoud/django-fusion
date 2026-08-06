@@ -15,12 +15,16 @@ urlpatterns = [
     path("", views.LandingHomeView.as_view(), name="home"),
     path("about/", views.AboutPageView.as_view(), name="about"),
     path("about/team/", views.TeamPageView.as_view(), name="about_team"),
+    path("about/startup/", views.StartupPageView.as_view(), name="about_startup"),
+    path("about/founder/", views.FounderPageView.as_view(), name="about_founder"),
     # Company merged into About — legacy URL redirects permanently.
     path("company/", RedirectView.as_view(url="/about/", permanent=True), name="company_redirect"),
     # Projects merged into Products — the catalog carries the repo project
     # grid; the legacy URL redirects permanently.
     path("projects/", RedirectView.as_view(url="/products/", permanent=True), name="projects_redirect"),
     path("services/", views.ServicesPageView.as_view(), name="services"),
+    path("services/phases/<slug:slug>/prompts/<slug:prompt_slug>/", views.PromptPageView.as_view(), name="service_prompt"),
+    path("services/phases/<slug:slug>/", views.PhasePageView.as_view(), name="service_phase"),
     path("pricing/", views.PricingPageView.as_view(), name="pricing"),
     path("blog/", views.BlogPageView.as_view(), name="blog"),
     path("blog/<slug:slug>/", views.BlogPostPageView.as_view(), name="blog_post"),

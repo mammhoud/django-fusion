@@ -70,10 +70,10 @@ const providersJson = JSON.stringify(providers);
         } else {
           const data = await res.json().catch(() => ({}));
           const errors = data?.errors || [];
-          this.error = errors.map((e: any) => e.message).join(' ') || 'Sign-in failed — check your email and password.';
+          this.error = errors.map((e: any) => e.message).join(' ') || 'Sign-in failed. Check your email and password.';
         }
       } catch (e) {
-        this.error = 'Network error — please try again.';
+        this.error = 'Network error. Please try again.';
       } finally {
         this.loading = false;
       }
@@ -158,6 +158,8 @@ const providersJson = JSON.stringify(providers);
 
       <p class="mt-5 text-center text-xs text-fu-muted">
         New here? <a href="/accounts/signup/" class="font-medium text-fu-link hover:text-fu-ink">Create an account</a>
+        <span class="mx-2 text-fu-line" aria-hidden="true">|</span>
+        <a href="/accounts/password/reset/" class="font-medium text-fu-link hover:text-fu-ink">Forgot password?</a>
       </p>
     </div>
   </div>

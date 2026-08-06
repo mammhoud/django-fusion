@@ -1,26 +1,27 @@
 http:
   routers:
-    structa-site-http:
-      rule: 'Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)'
+    structa-core-http:
+      rule: 'Host(`core.structa.cloud`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
-      service: structa-site-service
+      service: structa-core-service
       priority: 10
-    structa-site-https:
-      rule: 'Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)'
+    structa-core-https:
+      rule: 'Host(`core.structa.cloud`)'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
-      service: structa-site-service
+      service: structa-core-service
+      priority: 10
       tls:
         certResolver: letsencrypt-http
     structa-media-http:
-      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
+      rule: 'Host(`core.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
       middlewares: [compress, redirect-to-https]
       service: structa-media-service
       priority: 100
     structa-media-https:
-      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
+      rule: 'Host(`core.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: structa-media-service
@@ -28,13 +29,13 @@ http:
       tls:
         certResolver: letsencrypt-http
   services:
-    structa-site-service:
+    structa-core-service:
       loadBalancer:
         servers:
           - url: 'http://lms-web:5071'
         healthCheck:
           path: /health/
-          hostname: structa.cloud
+          hostname: core.structa.cloud
           interval: 30s
           timeout: 10s
     structa-media-service:

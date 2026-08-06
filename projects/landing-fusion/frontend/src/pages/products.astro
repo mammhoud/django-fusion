@@ -45,9 +45,9 @@ const restProducts = productCards.filter((c) => c !== featuredProduct);
 ---
 
 
-<Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'The full structa.cloud catalog: Formints, Precis LMS, Loop, Syntara, and vResume — every product with its editions, pricing, and tech stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
+<Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'The full structa.cloud catalog: Formints, Precis LMS, Loop, Syntara, and vResume. Every product with its editions, pricing, and tech stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
   <Hero
-    eyebrow={pageHero?.badge || 'products · the full catalog'}
+    eyebrow={pageHero?.badge || 'products, the full catalog'}
     heading={pageHero?.title || 'Most of what we build, shipped as'}
     accent='open source'
     intro={pageHero?.subtitle || 'Every product with its editions, pricing, and tech stack, from one monorepo.'}
@@ -145,7 +145,14 @@ const restProducts = productCards.filter((c) => c !== featuredProduct);
                 {card.editions.length > 3 && <span class='inline-flex items-center px-1 font-mono text-[0.62rem] text-fu-muted'>+{card.editions.length - 3}</span>}
               </div>
             ) : null}
-            <span class='mt-auto pt-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>View product →</span>
+            <div class='mt-auto flex flex-wrap items-center gap-2 pt-2'>
+              <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>View product →</span>
+              {card.tech?.length ? (
+                <span class='inline-flex items-center gap-1 rounded-full border border-fu-line bg-fu-card px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.12em] text-fu-muted'>
+                  {card.tech[0]}{card.tech.length > 1 ? ` +${card.tech.length - 1}` : ''}
+                </span>
+              ) : null}
+            </div>
           </a>
         ))}
       </div>
