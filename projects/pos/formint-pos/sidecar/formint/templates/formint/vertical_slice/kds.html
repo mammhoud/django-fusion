@@ -1,0 +1,27 @@
+<div class="vs-kds" data-fragment="vertical-slice.kds">
+  <div class="vs-kpi-row">
+    <div class="vs-kpi"><strong>{{ pending }}</strong><span>pending</span></div>
+    <div class="vs-kpi"><strong>{{ preparing }}</strong><span>preparing</span></div>
+    <div class="vs-kpi"><strong>{{ ready }}</strong><span>ready</span></div>
+    <div class="vs-kpi"><strong class="{% if overdue %}vs-overdue{% endif %}">{{ overdue }}</strong><span>overdue</span></div>
+  </div>
+  {% if tickets %}
+  <div class="vs-ticket-grid">
+  {% for t in tickets %}
+    <div class="vs-ticket">
+      <div class="vs-ticket__head">
+        <span class="vs-mono">#{{ t.sale_id|default:t.id }}</span>
+        <span class="vs-badge vs-badge--{{ t.status }}">{{ t.status }}</span>
+      </div>
+      <div class="vs-ticket__meta">
+        <span class="vs-muted">{{ t.created_at|date:"H:i" }}</span>
+        {% if t.prepare_time_minutes %}<span class="vs-muted">· {{ t.prepare_time_minutes }}m est.</span>{% endif %}
+      </div>
+      {% if t.notes %}<p class="vs-ticket__notes">{{ t.notes|truncatechars:60 }}</p>{% endif %}
+    </div>
+  {% endfor %}
+  </div>
+  {% else %}
+  <div class="vs-empty" data-empty>All clear — no active tickets</div>
+  {% endif %}
+</div>

@@ -1,0 +1,20 @@
+<div class="vs-report" data-fragment="vertical-slice.report">
+  <div class="vs-kpi-row">
+    <div class="vs-kpi">
+      <strong>${{ today_revenue|floatformat:0 }}</strong>
+      <span>{{ today_count }} sales today</span>
+    </div>
+    <div class="vs-kpi">
+      <strong>${{ week_revenue|floatformat:0 }}</strong>
+      <span>{{ week_count }} sales this week</span>
+    </div>
+    <div class="vs-kpi">
+      <strong>{{ product_count }}</strong>
+      <span>active products</span>
+    </div>
+    <div class="vs-kpi">
+      <strong>{{ customer_count }}</strong>
+      <span>customers</span>
+    </div>
+  </div>
+</div>
