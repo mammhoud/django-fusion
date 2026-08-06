@@ -144,7 +144,7 @@ mod tests {
     /// needs exclusive access, so sharing a single path would deadlock.
     fn temp_db_path(tag: &str) -> std::path::PathBuf {
         let mut path = std::env::temp_dir();
-        path.push(format!("forge-pos-wal-test-{}-{}.db", std::process::id(), tag));
+        path.push(format!("formint-pos-wal-test-{}-{}.db", std::process::id(), tag));
         let _ = std::fs::remove_file(&path);
         path
     }

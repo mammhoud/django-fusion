@@ -17,7 +17,7 @@ DELETE FROM categories WHERE id BETWEEN 17 AND 21;
 
 -- Revert coffee-specific branding in settings
 UPDATE settings SET
-    restaurant_name  = 'Forge POS',
+    restaurant_name  = 'Formint',
     address          = NULL,
     phone            = NULL,
     email            = NULL,

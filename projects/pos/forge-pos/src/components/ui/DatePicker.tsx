@@ -95,7 +95,10 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const emptyDays = Array.from({ length: firstDay }, (_, i) => i);
 
-  const months = t('datePicker.months', { returnObjects: true }) as string[];
+  // Defensive: returnObjects returns the raw key string when a locale is missing it
+  const MONTH_FALLBACK = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthsRaw = t('datePicker.months', { returnObjects: true }) as unknown;
+  const months = Array.isArray(monthsRaw) ? (monthsRaw as string[]) : MONTH_FALLBACK;
 
   const years = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - 10 + i);
 
@@ -321,7 +324,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
 
               {/* Calendar Grid */}
               <div className="grid grid-cols-7 gap-1 mb-3">
-                {(t('datePicker.daysShort', { returnObjects: true }) as string[]).map((day) => (
+                {(Array.isArray(t('datePicker.daysShort', { returnObjects: true })) ? (t('datePicker.daysShort', { returnObjects: true }) as string[]) : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']).map((day) => (
                   <div key={day} className="text-center text-xs text-base-content/60 font-medium py-1">
                     {day}
                   </div>

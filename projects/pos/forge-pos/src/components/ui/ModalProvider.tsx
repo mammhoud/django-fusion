@@ -10,7 +10,7 @@ import {
 import Modal, { type ModalPosition, type ModalSize, type ModalVariant } from './Modal';
 
 /**
- * Imperative modal management for Forge POS.
+ * Imperative modal management for Formint.
  *
  * Wrap the app (or a subtree) in `<ModalProvider>`, then call `useModal()`
  * anywhere inside to open/close dialogs without lifting state or duplicating

@@ -430,7 +430,7 @@ BEGIN UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END;
 -- ╚═══════════════════════════════════════════════════════════════════════════╝
 
 INSERT OR IGNORE INTO settings (id, restaurant_name, currency, receipt_footer)
-VALUES (1, 'Forge POS', 'USD', 'Thank you for your business!');
+VALUES (1, 'Formint', 'USD', 'Thank you for your business!');
 
 INSERT OR IGNORE INTO delivery_types (id, name, description, fee_multiplier) VALUES
     (1, 'Standard', 'Standard delivery (30-45 min)', 1.0),
@@ -500,7 +500,7 @@ INSERT OR IGNORE INTO tax_reports (id, period_start, period_end, total_sales, to
 
 -- 4. Settings — restaurant defaults
 UPDATE settings SET
-    restaurant_name = 'Forge POS',
+    restaurant_name = 'Formint',
     address = '123 Main Boulevard, Gulberg, Lahore',
     phone = '+92-300-1234567',
     email = 'structa.cloud@gmail.com',

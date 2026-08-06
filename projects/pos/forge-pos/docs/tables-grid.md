@@ -1,4 +1,4 @@
-# Forge POS — Tables & Grids Reference
+# Formint — Tables & Grids Reference
 
 > **Components:** `src/components/ui/DataTable.tsx` · **Utilities:** `.grid--auto*` in `assets/styles/index.css`
 

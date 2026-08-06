@@ -28,7 +28,7 @@ const HISTORY_SIZE = 15;
 const CONFIRM_THRESHOLD = 2;
 
 /** localStorage key for persisted patterns + history. */
-const STORAGE_KEY = 'forge-pos-nav-predictor';
+const STORAGE_KEY = 'formint-nav-predictor';
 
 // ── Types ──
 

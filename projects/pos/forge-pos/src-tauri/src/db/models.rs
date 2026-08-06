@@ -929,6 +929,29 @@ pub struct Coupon {
     pub updated_at: NaiveDateTime,
 }
 
+// ---- User Action (DB table: user_actions) — audit log for sales, coupons, offers ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::user_actions)]
+pub struct UserAction {
+    pub id: i32,
+    pub action: String,
+    pub entity_type: Option<String>,
+    pub entity_id: Option<i32>,
+    pub details: Option<String>,
+    pub user_id: Option<i32>,
+    pub created_at: NaiveDateTime,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::user_actions)]
+pub struct NewUserAction {
+    pub action: String,
+    pub entity_type: Option<String>,
+    pub entity_id: Option<i32>,
+    pub details: Option<String>,
+    pub user_id: Option<i32>,
+}
+
 fn default_true() -> bool {
     true
 }

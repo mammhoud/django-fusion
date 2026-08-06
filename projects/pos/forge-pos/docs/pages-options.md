@@ -1,4 +1,4 @@
-# Forge POS — Page Options Reference
+# Formint — Page Options Reference
 
 > What search / filter / sort / view / action options exist on each major page.
 

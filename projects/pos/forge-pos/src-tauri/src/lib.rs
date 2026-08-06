@@ -32,7 +32,7 @@ fn load_env() {
     // Walk up from the exe dir, bounded so we never read stray `~/.env` or
     // `/.env` files outside the project. In dev the exe lives at
     // src-tauri/target/debug/, so depth 0-3 covers target, src-tauri and the
-    // project root (forge-pos) where the credentials .env lives.
+    // project root (formint-pos) where the credentials .env lives.
     let home = std::env::var_os("HOME").map(std::path::PathBuf::from);
     let mut dir = exe_dir;
     let mut depth = 0u32;
@@ -673,6 +673,12 @@ fn get_loyalty_transactions(app: AppHandle, customer_id: i32) -> Result<Vec<db::
 }
 
 #[tauri::command]
+fn get_all_loyalty_transactions(app: AppHandle, limit: Option<i64>) -> Result<Vec<customers::LoyaltyReportRow>, String> {
+    let db_path = get_db_path(&app)?;
+    customers::get_all_loyalty_transactions(&db_path, limit)
+}
+
+#[tauri::command]
 fn add_loyalty_transaction(app: AppHandle, transaction: db::models::NewLoyaltyTransaction) -> Result<db::models::LoyaltyTransaction, String> {
     let db_path = get_db_path(&app)?;
     customers::add_loyalty_transaction(&db_path, transaction)
@@ -744,6 +750,19 @@ fn update_coupon(app: AppHandle, id: i32, update: db::models::UpdateCoupon) -> R
 fn delete_coupon(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     coupons::delete_coupon(&db_path, id)
+}
+
+// ---- User Action audit log commands ----
+#[tauri::command]
+fn add_user_action(app: AppHandle, action: db::models::NewUserAction) -> Result<db::models::UserAction, String> {
+    let db_path = get_db_path(&app)?;
+    user_actions::add_user_action(&db_path, action)
+}
+
+#[tauri::command]
+fn get_user_actions(app: AppHandle, limit: Option<i64>) -> Result<Vec<db::models::UserAction>, String> {
+    let db_path = get_db_path(&app)?;
+    user_actions::get_user_actions(&db_path, limit)
 }
 
 // ---- Recipe Notes commands ----
@@ -895,7 +914,7 @@ fn submit_support_message(
     let db_path = get_db_path(&app)?;
 
     let priority = priority.unwrap_or_else(|| "normal".to_string());
-    let subject = subject.unwrap_or_else(|| "Forge POS — Support Request".to_string());
+    let subject = subject.unwrap_or_else(|| "Formint — Support Request".to_string());
     let status = "new".to_string();
 
     let new_message = db::models::NewSupportMessage {
@@ -1041,7 +1060,7 @@ fn import_database_append(db_path: &std::path::Path, decoded: &[u8]) -> Result<(
     use diesel::{sql_query, Connection, RunQueryDsl};
 
     let tmp_path = std::env::temp_dir().join(format!(
-        "forge-pos-import-{}-{}.db",
+        "formint-pos-import-{}-{}.db",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1136,9 +1155,9 @@ fn update_tray_badge(app: &AppHandle, db_path: &std::path::PathBuf) {
             match kitchen_tickets::count_pending_tickets(db_path) {
                 Ok(count) => {
                     let tip = if count > 0 {
-                        format!("Forge POS — {} pending", count)
+                        format!("Formint — {} pending", count)
                     } else {
-                        "Forge POS".to_string()
+                        "Formint".to_string()
                     };
                     let _ = tray.set_tooltip(Some(&tip));
                 }
@@ -1146,6 +1165,84 @@ fn update_tray_badge(app: &AppHandle, db_path: &std::path::PathBuf) {
             }
         }
     }
+}
+
+/// Tauri command — opens the Kitchen Display in a dedicated always-on-top
+/// window (label "kds"). If the window already exists it is focused instead.
+/// The window is closed automatically when the main window closes (see setup).
+#[tauri::command]
+fn open_kds_window(app: AppHandle) -> Result<(), String> {
+    if let Some(win) = app.get_webview_window("kds") {
+        let _ = win.show();
+        let _ = win.set_focus();
+        return Ok(());
+    }
+    let mut builder = tauri::WebviewWindowBuilder::new(&app, "kds", tauri::WebviewUrl::App("index.html?kds=1".into()))
+        .title("Kitchen Display — Formint")
+        .inner_size(1280.0, 820.0)
+        .min_inner_size(960.0, 640.0)
+        .resizable(true)
+        .always_on_top(true)
+        .skip_taskbar(false);
+    // Restore the last known position/size so the popout reopens where the user left it.
+    if let Ok(Some(bounds)) = load_kds_bounds(&app) {
+        builder = builder
+            .position(bounds.0 as f64, bounds.1 as f64)
+            .inner_size(bounds.2, bounds.3);
+    } else {
+        builder = builder.center();
+    }
+    let win = builder.build().map_err(|e| e.to_string())?;
+    // Persist bounds whenever the window moves or is resized.
+    let app_handle = app.clone();
+    win.on_window_event(move |event| {
+        match event {
+            tauri::WindowEvent::Moved(_) | tauri::WindowEvent::Resized(_) => {
+                if let Some(kds) = app_handle.get_webview_window("kds") {
+                    if let (Ok(pos), Ok(size)) = (kds.outer_position(), kds.inner_size()) {
+                        let _ = save_kds_bounds(&app_handle, pos.x, pos.y, size.width as f64, size.height as f64);
+                    }
+                }
+            }
+            _ => {}
+        }
+    });
+    Ok(())
+}
+
+/// Loads the persisted KDS window bounds: (x, y, width, height).
+fn load_kds_bounds(app: &AppHandle) -> Result<Option<(i32, i32, f64, f64)>, String> {
+    let path = get_window_state_path(app)?;
+    if !path.exists() {
+        return Ok(None);
+    }
+    let content = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let state: serde_json::Value = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+    let k = state.get("kds");
+    let bounds = k.and_then(|v| {
+        Some((
+            v.get("x")?.as_i64()? as i32,
+            v.get("y")?.as_i64()? as i32,
+            v.get("width")?.as_f64()?,
+            v.get("height")?.as_f64()?,
+        ))
+    });
+    Ok(bounds)
+}
+
+/// Saves the KDS window bounds alongside the main window's maximize state.
+fn save_kds_bounds(app: &AppHandle, x: i32, y: i32, width: f64, height: f64) -> Result<(), String> {
+    let path = get_window_state_path(app)?;
+    let mut state = serde_json::json!({});
+    if path.exists() {
+        if let Ok(content) = std::fs::read_to_string(&path) {
+            if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&content) {
+                state = parsed;
+            }
+        }
+    }
+    state["kds"] = serde_json::json!({ "x": x, "y": y, "width": width, "height": height });
+    std::fs::write(path, serde_json::to_string_pretty(&state).unwrap()).map_err(|e| e.to_string())
 }
 
 /// Tauri command — lets the frontend trigger a tray badge refresh on page load
@@ -1197,6 +1294,18 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
+            // ── When the main window closes, close the dedicated KDS popout too ──
+            if let Some(main_win) = app.get_webview_window("main") {
+                let handle = app.handle().clone();
+                main_win.on_window_event(move |event| {
+                    if let tauri::WindowEvent::CloseRequested { .. } = event {
+                        if let Some(kds) = handle.get_webview_window("kds") {
+                            let _ = kds.close();
+                        }
+                    }
+                });
+            }
+
             let db_path = get_db_path(&app.handle())?;
             run_migrations(&db_path)?;
 
@@ -1216,7 +1325,7 @@ pub fn run() {
             // ── System tray icon ──
             #[cfg(not(any(target_os = "android", target_os = "ios")))]
             {
-                let show_item = MenuItemBuilder::with_id("show", "Show Forge POS")
+                let show_item = MenuItemBuilder::with_id("show", "Show Formint")
                     .build(app)?;
                 let quit_item = MenuItemBuilder::with_id("quit", "Quit")
                     .build(app)?;
@@ -1236,7 +1345,7 @@ pub fn run() {
 
                 let tray = TrayIconBuilder::new()
                     .icon(icon)
-                    .tooltip("Forge POS")
+                    .tooltip("Formint")
                     .menu(&menu)
                     .on_menu_event(|app, event| {
                         match event.id().as_ref() {
@@ -1271,9 +1380,9 @@ pub fn run() {
                 // Compute initial pending count and update the tray tooltip
                 if let Ok(count) = kitchen_tickets::count_pending_tickets(&db_path) {
                     let tip = if count > 0 {
-                        format!("Forge POS — {} pending", count)
+                        format!("Formint — {} pending", count)
                     } else {
-                        "Forge POS".to_string()
+                        "Formint".to_string()
                     };
                     let _ = tray.set_tooltip(Some(&tip));
                 }
@@ -1426,6 +1535,7 @@ pub fn run() {
             update_customer,
             delete_customer,
             get_loyalty_transactions,
+            get_all_loyalty_transactions,
             add_loyalty_transaction,
             // Receipt Templates
             get_notes,
@@ -1442,6 +1552,9 @@ pub fn run() {
             add_coupon,
             update_coupon,
             delete_coupon,
+            // User Action audit log
+            add_user_action,
+            get_user_actions,
             // Tax Reports
             get_tax_reports,
             add_tax_report,
@@ -1471,6 +1584,8 @@ pub fn run() {
             sidecar_status,
             // Tray badge
             sync_tray_badge,
+            // KDS popout window
+            open_kds_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

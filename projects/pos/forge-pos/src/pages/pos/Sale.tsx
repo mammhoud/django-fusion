@@ -4,7 +4,7 @@ import { listen } from '@tauri-apps/api/event';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone, Note, Category, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS, PAYMENT_ICONS } from '../../types';
-import type { Sale } from '../../types';
+import type { Sale, Customer } from '../../types';
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
 import { downloadInvoicePDF } from '../../utils/invoicePdf';
@@ -21,6 +21,7 @@ import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import StatusToast from '../../components/ui/StatusToast';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/ui/tooltip';
 import { iconClass } from '../../lib/icons';
 import { lookupCoupon, applyCoupon } from '../../utils/coupons';
 import type { Coupon } from '../../types';
@@ -67,13 +68,15 @@ export default function Sale() {
     deliveryZoneName?: string;
     deliveryDistance?: number;
     employeeName?: string;
+    customerName?: string;
+    specialOfferAmount?: number;
     grandTotal: number;
     discountAmount?: number;
     paymentMethod?: PaymentMethod;
   } | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<Settings>({
-    restaurant_name: 'Forge POS',
+    restaurant_name: 'Formint',
     address: '',
     phone: '',
     currency: 'USD',
@@ -114,7 +117,7 @@ export default function Sale() {
   // Status toast — errors during load, sale, print, or PDF generation must
   // surface to the user (the existing alert() calls block the main thread but
   // get swallowed by jsdom in tests, so this hook is the canonical path).
-  const { status, showError, dismiss } = useStatusToast();
+  const { status, showError, showSuccess, dismiss } = useStatusToast();
 
   // ---- Keyboard Shortcuts ----
   useEffect(() => {
@@ -139,6 +142,7 @@ export default function Sale() {
 
       // Order preview
       if ((key === 'p' || key === 'P') && cart.length > 0) {
+        setWizardStep(1);
         setShowOrderPreview(true);
         return;
       }
@@ -189,6 +193,14 @@ export default function Sale() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [showOrderPreview, setShowOrderPreview] = useState(false);
+  // ── Checkout wizard: step + customer + offers ──
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [specialOffer, setSpecialOffer] = useState(0); // extra manual discount (currency units)
+  const [specialOfferLabel, setSpecialOfferLabel] = useState('');
+  const [newCustomerForm, setNewCustomerForm] = useState({ name: '', phone: '', email: '' });
   // Bottom-bar invoice hover card (mobile sticky bar) — tap toggles on touch,
   // hover reveals on pointer devices.
   const [showBottomInvoice, setShowBottomInvoice] = useState(false);
@@ -199,7 +211,7 @@ export default function Sale() {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes, notesRes, selectableRes, couponsRes] = await Promise.all([
+      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes, notesRes, selectableRes, couponsRes, customersRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Settings>('get_settings'),
         invoke<DeliveryType[]>('get_delivery_types', { includeInactive: false }),
@@ -209,9 +221,11 @@ export default function Sale() {
         invoke<Note[]>('get_notes'),
         invoke<Note[]>('get_selectable_notes'),
         invoke<Coupon[]>('get_active_coupons'),
+        invoke<Customer[]>('get_customers'),
       ]);
 
       setProducts(productsRes);
+      setCustomers(customersRes || []);
       setCoupons(couponsRes || []);
       // Drop an applied coupon that was disabled or deleted since it was applied.
       setAppliedCoupon(prev =>
@@ -223,7 +237,7 @@ export default function Sale() {
       setSelectableNotes(selectableRes || []);
       if (settingsRes) {
         setSettings({
-          restaurant_name: settingsRes.restaurant_name || 'Forge POS',
+          restaurant_name: settingsRes.restaurant_name || 'Formint',
           address: settingsRes.address || '',
           phone: settingsRes.phone || '',
           currency: settingsRes.currency || 'USD',
@@ -321,8 +335,9 @@ export default function Sale() {
         delivery_zone_id: orderType === 'delivery' && selectedZoneId > 0 ? selectedZoneId : null,
         delivery_address: orderType === 'delivery' ? deliveryAddress || null : null,
         employee_id: employeeId > 0 ? employeeId : null,
+        customer_id: selectedCustomer ? selectedCustomer.id : null,
         discount_code: appliedCoupon ? appliedCoupon.code : null,
-        discount_amount: discountAmount,
+        discount_amount: discountAmount + specialOfferAmount,
         payment_method: paymentMethod,
       };
 
@@ -338,6 +353,50 @@ export default function Sale() {
       if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null && 'id' in result[0]) {
         savedSaleIdRef.current = (result[0] as Sale).id;
       }
+
+      // Audit row — every completed order is recorded as a user action.
+      try {
+        await invoke('add_user_action', {
+          action: 'sale.completed',
+          entity_type: 'sale',
+          entity_id: savedSaleIdRef.current,
+          details: JSON.stringify({
+            order_type: orderType,
+            payment_method: paymentMethod,
+            customer: selectedCustomer?.name || null,
+            coupon: appliedCoupon?.code || null,
+            special_offer: specialOfferLabel || null,
+            discount_amount: discountAmount + specialOfferAmount,
+            total: grandTotal,
+            items: cart.length,
+          }),
+          user_id: null,
+        });
+      } catch {
+        // Non-blocking — the sale itself already succeeded.
+      }
+
+      // Loyalty — award 1 point per 10 currency units when the order is
+      // linked to a customer. Non-blocking; the sale already succeeded.
+      if (selectedCustomer && savedSaleIdRef.current) {
+        const earned = Math.floor(grandTotal / 10);
+        if (earned > 0) {
+          try {
+            await invoke('add_loyalty_transaction', {
+              transaction: {
+                customer_id: selectedCustomer.id,
+                sale_id: savedSaleIdRef.current,
+                points_change: earned,
+                reason: 'purchase',
+              },
+            });
+            setSelectedCustomer(prev => prev ? { ...prev, loyalty_points: prev.loyalty_points + earned } : prev);
+          } catch {
+            // Non-blocking
+          }
+        }
+      }
+
 
       // Generate receipt data
       const deliveryTypeName = orderType === 'delivery'
@@ -369,6 +428,8 @@ export default function Sale() {
         deliveryZoneName: selectedZone?.name,
         deliveryDistance: orderType === 'delivery' ? deliveryDistance : undefined,
         employeeName,
+        customerName: selectedCustomer?.name,
+        specialOfferAmount: specialOfferAmount > 0 ? specialOfferAmount : undefined,
       });
 
       setShowSuccessDialog(true);
@@ -401,13 +462,44 @@ export default function Sale() {
     setAppliedCoupon(null);
     setCouponError(null);
     setCouponInput('');
+    // Reset checkout wizard state so nothing leaks into the next order.
+    setWizardStep(1);
+    setSelectedCustomer(null);
+    setCustomerSearch('');
+    setSpecialOffer(0);
+    setSpecialOfferLabel('');
+    setNewCustomerForm({ name: '', phone: '', email: '' });
     setShowOrderPreview(false);
     savedSaleIdRef.current = null;
   };
 
   /*** Validate & apply a coupon code to the cart ***/
-  const handleApplyCoupon = () => {
-    const code = couponInput.trim();
+  /*** Quick-add a new customer right inside the checkout wizard ***/
+  const handleQuickAddCustomer = async () => {
+    const name = newCustomerForm.name.trim();
+    if (!name) {
+      showError(t('sale.customerNameRequired'));
+      return;
+    }
+    try {
+      const created = await invoke<Customer>('add_customer', {
+        customer: {
+          name,
+          phone: newCustomerForm.phone.trim() || null,
+          email: newCustomerForm.email.trim() || null,
+          notes: null,
+        },
+      });
+      setSelectedCustomer(created);
+      setNewCustomerForm({ name: '', phone: '', email: '' });
+      setCustomers(prev => [created, ...prev]);
+      showSuccess(t('sale.customerAdded'));
+    } catch {
+      showError(t('sale.customerAddFailed'));
+    }
+  };
+
+  const handleApplyCoupon = () => {    const code = couponInput.trim();
     if (!code) return;
     const coupon = lookupCoupon(coupons, code, totalAmount);
     if (coupon) {
@@ -493,7 +585,7 @@ export default function Sale() {
         invoiceNumber: `INV-${receiptData.receiptNumber}`,
         date: receiptData.date,
         from: {
-          name: settings.restaurant_name || 'Forge POS',
+          name: settings.restaurant_name || 'Formint',
           address: settings.address,
           phone: settings.phone,
           email: settings.email,
@@ -554,7 +646,7 @@ export default function Sale() {
       // Header
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      const restaurantName = settings.restaurant_name || 'Forge POS';
+      const restaurantName = settings.restaurant_name || 'Formint';
       pdf.text(restaurantName, pageWidth / 2, yPos, { align: 'center' });
       yPos += 7;
 
@@ -590,6 +682,10 @@ export default function Sale() {
       }
       if (receiptData.employeeName) {
         pdf.text(`Server: ${receiptData.employeeName}`, pageWidth / 2, yPos, { align: 'center' });
+        yPos += 4;
+      }
+      if (receiptData.customerName) {
+        pdf.text(`Customer: ${receiptData.customerName}`, pageWidth / 2, yPos, { align: 'center' });
         yPos += 4;
       }
       yPos += 2;
@@ -632,6 +728,13 @@ export default function Sale() {
         pdf.text(`${settings.currency} -${receiptData.discountAmount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
         yPos += 5;
       }
+      if (receiptData.specialOfferAmount) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Special Offer', margin, yPos);
+        pdf.text(`${settings.currency} -${receiptData.specialOfferAmount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
+        yPos += 5;
+      }
       if (receiptData.deliveryFee) {
         pdf.setFontSize(9);
         pdf.setFont('helvetica', 'normal');
@@ -642,7 +745,7 @@ export default function Sale() {
 
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'bold');
-      const pdfTotal = receiptData.totalAmount + (receiptData.deliveryFee || 0) - (receiptData.discountAmount || 0);
+      const pdfTotal = receiptData.totalAmount + (receiptData.deliveryFee || 0) - (receiptData.discountAmount || 0) - (receiptData.specialOfferAmount || 0);
       pdf.text('Total', margin, yPos);
       pdf.text(`${settings.currency} ${pdfTotal.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
       yPos += 8;
@@ -722,11 +825,12 @@ export default function Sale() {
       ? settings.delivery_fee + (deliveryDistance * (settings.delivery_fee_per_km || 0))
       : 0;
 
-  // Coupon discount + final grand total (clamped at 0)
+  // Coupon discount + special offer + final grand total (clamped at 0)
   const discountAmount = appliedCoupon ? applyCoupon(appliedCoupon, totalAmount) : 0;
+  const specialOfferAmount = Math.min(specialOffer, Math.max(0, totalAmount + deliveryFee - discountAmount));
   const taxRate = settings.tax_rate ? parseFloat(settings.tax_rate) : 0;
   const taxAmount = taxRate > 0 ? (totalAmount * taxRate) / 100 : 0;
-  const grandTotal = Math.max(0, totalAmount + deliveryFee - discountAmount);
+  const grandTotal = Math.max(0, totalAmount + deliveryFee - discountAmount - specialOfferAmount);
 
   // Itemized lines shared by the preview modal, hover card + success sheet
   const invoiceLines = [
@@ -734,7 +838,19 @@ export default function Sale() {
     ...(taxAmount > 0 ? [{ key: 'tax', label: t('sale.tax', { rate: taxRate }), value: taxAmount, muted: true, negative: false }] : []),
     ...(deliveryFee > 0 ? [{ key: 'delivery', label: t('sale.deliveryFee'), value: deliveryFee, muted: true, negative: false }] : []),
     ...(discountAmount > 0 ? [{ key: 'discount', label: t('sale.discount'), value: discountAmount, muted: true, negative: true }] : []),
+    ...(specialOfferAmount > 0 ? [{ key: 'specialOffer', label: specialOfferLabel || t('sale.specialOffer'), value: specialOfferAmount, muted: true, negative: true }] : []),
   ];
+
+  // Customers filtered by the wizard search box
+  const filteredCustomers = useMemo(() => {
+    const query = customerSearch.trim().toLowerCase();
+    if (!query) return customers;
+    return customers.filter(c =>
+      c.name.toLowerCase().includes(query) ||
+      (c.phone || '').toLowerCase().includes(query) ||
+      (c.email || '').toLowerCase().includes(query)
+    );
+  }, [customers, customerSearch]);
 
   // Per-category product counts → displayed as small badges on the filter pills
   const categoryCounts = useMemo(() => {
@@ -744,6 +860,13 @@ export default function Sale() {
     });
     return map;
   }, [products]);
+
+  // Category → hex color map (drives the soft bg-tint on product cards).
+  const categoryColorMap = useMemo(() => {
+    const map = new Map<number, string>();
+    categories.forEach(c => { if (c.color) map.set(c.id, c.color); });
+    return map;
+  }, [categories]);
 
   // Filter products by search query, category, product type, and the selected
   // order type (products with a restricted `available_order_types` list are
@@ -803,7 +926,8 @@ export default function Sale() {
         {/* ── Main Content (products + cart) ── */}
         <div className="flex-1 min-w-0 pb-20 lg:pb-0">{/* Order Type Selector — visible on mobile only */}
           <div className="lg:hidden">
-              <Card className="mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <Card>
               <div className="flex items-center gap-2 mb-3">
                 <span className={iconClass('lucide:shopping-cart', 'text-primary')} />
                 <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
@@ -818,8 +942,8 @@ export default function Sale() {
                       isLoading
                         ? 'bg-base-200 text-base-content/40 cursor-not-allowed'
                         : orderType === ot.key
-                          ? 'bg-primary text-white shadow-md'
-                          : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10 dark:hover:bg-primary/20'
+                        ? 'bg-primary text-primary-content shadow-md'
+                        : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10 dark:hover:bg-primary/20'
                     }`}
                   >
                     <span className="text-sm sm:text-base">{ot.icon}</span>
@@ -945,7 +1069,8 @@ export default function Sale() {
                   )}
                 </div>
               )}
-            </Card>
+              </Card>
+              <Card>
 
             {/* Employee Assignment — mobile (inline with Table when dine-in; standalone otherwise) */}
             {orderType !== 'dine-in' && (
@@ -963,12 +1088,12 @@ export default function Sale() {
               </div>
             )}
 
-            {/* Payment Method + Coupon — mobile */}
-            <Card className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="ri-bank-card-line text-primary" />
-                <h2 className="text-sm font-semibold text-base-content">{t('sale.paymentMethod')}</h2>
-              </div>
+            {/* Payment Method + Coupon — mobile (merged into order card) */}
+              <div className="mt-3 pt-3 border-t border-base-300/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="ri-bank-card-line text-primary" />
+                  <h2 className="text-sm font-semibold text-base-content">{t('sale.paymentMethod')}</h2>
+                </div>
               <div className="grid grid-cols-2 gap-1.5">
                 {PAYMENT_METHODS.map(m => (
                   <button
@@ -979,7 +1104,7 @@ export default function Sale() {
                     aria-pressed={paymentMethod === m}
                     className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${
                       paymentMethod === m
-                        ? 'bg-primary text-white shadow-md'
+                        ? 'bg-primary text-primary-content shadow-md'
                         : 'bg-base-100/50 text-base-content/70 hover:bg-primary/10 dark:hover:bg-primary/20'
                     }`}
                   >
@@ -1033,7 +1158,9 @@ export default function Sale() {
                   </>
                 )}
               </div>
-            </Card>
+              </div>
+              </Card>
+              </div>
 
             {/* Total Amount — mobile (no card container, no flex-col) */}
               <div className="relative flex items-center text-center gap-1.5 py-1 mb-6 sm:mb-8">
@@ -1224,7 +1351,11 @@ export default function Sale() {
               const cartItem = cart.find(item => item.id === product.id);
               // Single uniform card color (theme primary) — the default look.
               const color = PRODUCT_CARD_COLORS[0];
-              const categoryColor = null;
+              // Category-driven tint — cards inherit their category's color as a soft
+              // bg tint (ProductCard already supports categoryColor with bg/border).
+              const categoryColor = product.category_id != null
+                ? (categoryColorMap.get(product.category_id) ?? null)
+                : null;
               return (
                 <ProductCard
                   key={product.id}
@@ -1391,7 +1522,7 @@ export default function Sale() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => setShowOrderPreview(true)}
+              onClick={() => { setWizardStep(1); setShowOrderPreview(true); }}
               disabled={cart.length === 0 || isSelling || isLoading}
               className="w-full border-base-300/50 bg-base-100/60 text-base-content/80 hover:bg-base-200/60 hover:text-base-content disabled:opacity-40"
               iconStart={<span className={iconClass('lucide:eye', 'text-lg')} />}
@@ -1498,7 +1629,7 @@ export default function Sale() {
               <Button
                 variant="outline"
                 shape="square"
-                onClick={() => setShowOrderPreview(true)}
+                onClick={() => { setWizardStep(1); setShowOrderPreview(true); }}
                 disabled={cart.length === 0 || isSelling || isLoading}
                 className="shrink-0 border-base-300/50 bg-base-100 text-base-content/70 hover:bg-base-200/70 disabled:opacity-40"
                 aria-label={t('sale.previewOrder')}
@@ -1525,9 +1656,11 @@ export default function Sale() {
           className="hidden lg:block relative"
         >
           <div
-            className={`sticky top-24 overflow-hidden transition-all duration-300 ${(sidebarOpen || sidebarHovered) ? 'w-[264px] opacity-100' : 'w-0 opacity-0'}`}
+            className={`sticky top-24 overflow-hidden transition-all duration-300 ${(sidebarOpen || sidebarHovered) ? 'w-[536px] opacity-100' : 'w-0 opacity-0'}`}
           >
-            <div className="w-[264px] space-y-3">
+            <div className="w-[536px] space-y-3">
+              {/* Order Type + Payment — two side-by-side card widgets */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               {/* Order Type Card */}
                 <Card>
                 <div className="flex items-center gap-2 mb-3">
@@ -1544,7 +1677,7 @@ export default function Sale() {
                         isLoading
                           ? 'bg-base-200 text-base-content/40 cursor-not-allowed'
                           : orderType === ot.key
-                            ? 'bg-primary text-white shadow-md shadow-primary/20'
+                            ? 'bg-primary text-primary-content shadow-md shadow-primary/20'
                             : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10'
                       }`}
                     >
@@ -1661,6 +1794,77 @@ export default function Sale() {
                   </div>
                 )}
               </Card>
+              {/* Payment Method + Coupon Card */}
+                <Card>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="ri-bank-card-line text-primary" />
+                    <h2 className="text-sm font-semibold text-base-content">{t('sale.paymentMethod')}</h2>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {PAYMENT_METHODS.map(m => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => setPaymentMethod(m)}
+                        disabled={isLoading}
+                        aria-pressed={paymentMethod === m}
+                        className={`flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-[0.97] ${
+                          paymentMethod === m
+                            ? 'bg-primary text-primary-content shadow-sm'
+                            : 'bg-base-100/50 text-base-content/70 hover:bg-primary/10 dark:hover:bg-primary/20'
+                        }`}
+                      >
+                        <span className={`${PAYMENT_ICONS[m]} text-xs`} />
+                        {t(`payments.${m}`)}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-base-300/30">
+                    <label className="flex items-center gap-1.5 text-[11px] font-medium text-base-content/60 mb-1">
+                      <span className="ri-ticket-2-line text-sm" />
+                      {t('sale.coupon')}
+                    </label>
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between gap-2 bg-success/10 border border-success/30 rounded-lg px-2.5 py-1.5">
+                        <span className="text-[11px] font-semibold text-success flex items-center gap-1.5">
+                          <span className="ri-checkbox-circle-line ri-14px" />
+                          {appliedCoupon.code} · -{formatPrice(discountAmount)}
+                        </span>
+                        <button type="button" onClick={clearCoupon} className="p-0.5 text-base-content/40 hover:text-error transition-colors" aria-label={t('sale.couponRemove')}>
+                          <span className="ri-close-line ri-12px" />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex gap-1.5">
+                          <input
+                            type="text"
+                            value={couponInput}
+                            onChange={e => { setCouponInput(e.target.value.toUpperCase()); if (couponError) setCouponError(null); }}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleApplyCoupon(); } }}
+                            placeholder={t('sale.couponPlaceholder')}
+                            disabled={isLoading}
+                            className="input w-full text-xs uppercase"
+                            aria-label={t('sale.coupon')}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyCoupon}
+                            disabled={!couponInput.trim() || isLoading}
+                            className="btn btn-primary btn-sm shrink-0 gap-1"
+                          >
+                            <span className="ri-check-line ri-14px" />
+                            {t('sale.couponApply')}
+                          </button>
+                        </div>
+                        {couponError && (
+                          <p className="text-[10px] text-error mt-1">{couponError}</p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </Card>
+              </div>
 
               {/* Employee Assignment Card — hidden for dine-in (shown inline next to Table above) */}
               {orderType !== 'dine-in' && (
@@ -1800,77 +2004,6 @@ export default function Sale() {
                 </Card>
               )}
 
-              {/* Payment Method + Coupon — desktop sidebar */}
-                <Card>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="ri-bank-card-line text-base-content/50" />
-                    <label className="text-sm font-medium text-base-content/80">{t('sale.paymentMethod')}</label>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {PAYMENT_METHODS.map(m => (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => setPaymentMethod(m)}
-                        disabled={isLoading}
-                        aria-pressed={paymentMethod === m}
-                        className={`flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-[0.97] ${
-                          paymentMethod === m
-                            ? 'bg-primary text-white shadow-sm'
-                            : 'bg-base-100/50 text-base-content/70 hover:bg-primary/10 dark:hover:bg-primary/20'
-                        }`}
-                      >
-                        <span className={`${PAYMENT_ICONS[m]} text-xs`} />
-                        {t(`payments.${m}`)}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-base-300/30">
-                    <label className="flex items-center gap-1.5 text-[11px] font-medium text-base-content/60 mb-1">
-                      <span className="ri-ticket-2-line text-sm" />
-                      {t('sale.coupon')}
-                    </label>
-                    {appliedCoupon ? (
-                      <div className="flex items-center justify-between gap-2 bg-success/10 border border-success/30 rounded-lg px-2.5 py-1.5">
-                        <span className="text-[11px] font-semibold text-success flex items-center gap-1.5">
-                          <span className="ri-checkbox-circle-line ri-14px" />
-                          {appliedCoupon.code} · -{formatPrice(discountAmount)}
-                        </span>
-                        <button type="button" onClick={clearCoupon} className="p-0.5 text-base-content/40 hover:text-error transition-colors" aria-label={t('sale.couponRemove')}>
-                          <span className="ri-close-line ri-12px" />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex gap-1.5">
-                          <input
-                            type="text"
-                            value={couponInput}
-                            onChange={e => { setCouponInput(e.target.value.toUpperCase()); if (couponError) setCouponError(null); }}
-                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleApplyCoupon(); } }}
-                            placeholder={t('sale.couponPlaceholder')}
-                            disabled={isLoading}
-                            className="input w-full text-xs uppercase"
-                            aria-label={t('sale.coupon')}
-                          />
-                          <button
-                            type="button"
-                            onClick={handleApplyCoupon}
-                            disabled={!couponInput.trim() || isLoading}
-                            className="btn btn-primary btn-sm shrink-0 gap-1"
-                          >
-                            <span className="ri-check-line ri-14px" />
-                            {t('sale.couponApply')}
-                          </button>
-                        </div>
-                        {couponError && (
-                          <p className="text-[10px] text-error mt-1">{couponError}</p>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </Card>
-
               {/* Total Amount — centered, no card container */}
                 <div className="text-center">
                 <h2 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-1.5 flex items-center justify-center gap-1.5">
@@ -1926,7 +2059,7 @@ export default function Sale() {
         </div>
       </div>
 
-      {/* Order Preview Modal — full summary of the current order before completing */}
+      {/* Checkout Wizard — 3 steps: Customer → Offers & Payment → Review */}
       <Modal
         isOpen={showOrderPreview}
         onClose={() => setShowOrderPreview(false)}
@@ -1937,97 +2070,397 @@ export default function Sale() {
         headerIcon={<span className={iconClass('lucide:receipt', 'w-5 h-5 text-primary')} />}
         footer={
           <div className="flex gap-3 w-full">
-            <Button
-              variant="ghost"
-              className="flex-1"
-              onClick={() => setShowOrderPreview(false)}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={() => { setShowOrderPreview(false); handleSell(); }}
-              disabled={cart.length === 0 || isSelling || isLoading}
-              loading={isSelling}
-              iconStart={<span className={iconClass('lucide:shopping-cart', 'text-lg')} />}
-            >
-              {isSelling ? t('sale.processing') : t('sale.completeSale')}
-            </Button>
+            {wizardStep > 1 ? (
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={() => setWizardStep(prev => (prev - 1) as 1 | 2 | 3)}
+                disabled={isSelling}
+              >
+                <span className="ri-arrow-left-line ri-14px" /> {t('common.back')}
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={() => setShowOrderPreview(false)}
+              >
+                {t('common.cancel')}
+              </Button>
+            )}
+            {wizardStep < 3 ? (
+              <Button
+                variant="primary"
+                className="flex-1"
+                onClick={() => setWizardStep(prev => (prev + 1) as 1 | 2 | 3)}
+                disabled={cart.length === 0 || isLoading}
+              >
+                {t('common.continue')}
+                <span className="ri-arrow-right-line ri-14px" />
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                className="flex-1"
+                onClick={() => { setShowOrderPreview(false); handleSell(); }}
+                disabled={cart.length === 0 || isSelling || isLoading}
+                loading={isSelling}
+                iconStart={<span className={iconClass('lucide:shopping-cart', 'text-lg')} />}
+              >
+                {isSelling ? t('sale.processing') : t('sale.completeSale')}
+              </Button>
+            )}
           </div>
         }
       >
         <div className="space-y-4">
-          {/* Order meta badges */}
-          <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 rounded-full text-xs font-medium">
-              {t(ORDER_TYPE_KEYS[orderType])}
-            </span>
-            {orderType === 'dine-in' && (
-              <span className="px-3 py-1 bg-info/10 dark:bg-info/20 text-info dark:text-info/80 rounded-full text-xs font-medium">
-                {t('sale.table')} {tableNumber}
-              </span>
-            )}
-            {orderType === 'delivery' && deliveryTypes.find(dt => dt.id === deliveryTypeId)?.name && (
-              <span className="px-3 py-1 bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning/80 rounded-full text-xs font-medium">
-                {deliveryTypes.find(dt => dt.id === deliveryTypeId)?.name}
-              </span>
-            )}
-            {employeeId > 0 && employees.find(e => e.id === employeeId)?.name && (
-              <span className="px-3 py-1 bg-secondary/10 dark:bg-secondary/20 text-secondary dark:text-secondary/80 rounded-full text-xs font-medium">
-                {employees.find(e => e.id === employeeId)?.name}
-              </span>
-            )}
-            <span className="px-3 py-1 bg-success/10 text-success dark:text-success/80 rounded-full text-xs font-medium flex items-center gap-1">
-              <span className={`${PAYMENT_ICONS[paymentMethod]} text-xs`} />
-              {t(`payments.${paymentMethod}`)}
-            </span>
+          {/* Step indicator */}
+          <div className="flex items-center gap-2">
+            {[t('sale.wizardCustomer'), t('sale.wizardOffers'), t('sale.wizardReview')].map((label, i) => {
+              const step = (i + 1) as 1 | 2 | 3;
+              const active = wizardStep === step;
+              const done = wizardStep > step;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => { if (wizardStep > step) setWizardStep(step); }}
+                  className={`flex-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : done
+                        ? 'bg-success/10 text-success hover:bg-success/20 cursor-pointer'
+                        : 'bg-base-200/60 text-base-content/40 cursor-default'
+                  }`}
+                >
+                  <span
+                    className={`w-4.5 h-4.5 min-w-4.5 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                      active ? 'bg-primary text-primary-content' : done ? 'bg-success text-success-content' : 'bg-base-300/70 text-base-content/50'
+                    }`}
+                  >
+                    {done ? <span className="ri-check-line ri-10px" /> : i + 1}
+                  </span>
+                  <span className="truncate">{label}</span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Items list */}
-          <div className="rounded-xl border border-base-300/40 divide-y divide-base-300/30 max-h-72 overflow-y-auto">
-            {cart.length === 0 ? (
-              <p className="p-4 text-sm text-base-content/50 text-center">{t('sale.pleaseSelectProduct')}</p>
-            ) : cart.map(item => (
-              <div key={item.id} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
-                <div className="flex items-center gap-3 min-w-0">
-                  <ProductThumb product={item} />
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-base-content truncate">{item.name}</p>
-                    <p className="text-[11px] text-base-content/50">{item.quantity} {item.unit} × {formatPrice(item.price)}</p>
+          {wizardStep === 1 && (
+            /* ── Step 1 · Customer ── */
+            <div className="space-y-3">
+              <p className="text-xs text-base-content/60">{t('sale.wizardCustomerHint')}</p>
+
+              {/* Search existing customers */}
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40 ri-search-line ri-14px" />
+                <input
+                  type="text"
+                  value={customerSearch}
+                  onChange={e => setCustomerSearch(e.target.value)}
+                  placeholder={t('sale.wizardSearchCustomer')}
+                  className="w-full input input-sm input-bordered pl-9 rounded-lg"
+                />
+              </div>
+
+              {/* Customer picker */}
+              {selectedCustomer ? (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                      {selectedCustomer.name.charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-base-content truncate">{selectedCustomer.name}</p>
+                      <p className="text-[11px] text-base-content/50 truncate">
+                        {[selectedCustomer.phone, selectedCustomer.email].filter(Boolean).join(' · ') || t('sale.wizardNoContact')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {selectedCustomer.loyalty_points > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-warning/15 text-warning text-[10px] font-semibold">
+                        <span className="ri-star-smile-line ri-11px" /> {selectedCustomer.loyalty_points}
+                      </span>
+                    )}
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCustomer(null)}
+                            className="btn btn-square btn-ghost btn-xs rounded-lg text-base-content/50 hover:text-error"
+                            aria-label={t('common.clearSearch')}
+                          >
+                            <span className="ri-close-line ri-14px" />
+                          </button>
+                        }
+                      />
+                      <TooltipContent>{t('common.clearSearch')}</TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-base-content shrink-0 tabular-nums">{formatPrice(item.price * item.quantity)}</span>
-              </div>
-            ))}
-          </div>
+              ) : (
+                <div className="rounded-xl border border-base-300/40 max-h-44 overflow-y-auto divide-y divide-base-300/20">
+                  {filteredCustomers.length === 0 ? (
+                    <p className="p-4 text-xs text-base-content/50 text-center">{t('sale.wizardNoCustomers')}</p>
+                  ) : filteredCustomers.map(c => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setSelectedCustomer(c)}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-primary/5 transition-colors"
+                    >
+                      <span className="w-7 h-7 rounded-full bg-base-200 text-base-content/70 flex items-center justify-center text-[10px] font-bold shrink-0">
+                        {c.name.charAt(0).toUpperCase()}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-base-content truncate">{c.name}</p>
+                        <p className="text-[10px] text-base-content/50 truncate">{[c.phone, c.email].filter(Boolean).join(' · ')}</p>
+                      </div>
+                      <span className="ri-add-line ri-14px text-primary shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              )}
 
-          {/* Totals — shared itemized lines (subtotal, tax, delivery, discount) */}
-          <div className="space-y-1.5 text-sm">
-            {invoiceLines.map(line => (
-              <div
-                key={line.key}
-                className={`flex justify-between ${line.muted ? 'text-base-content/70' : 'text-base-content'}`}
-              >
-                <span>{line.label}</span>
-                <span className={`tabular-nums ${line.negative ? 'text-success' : ''}`}>
-                  {line.negative ? '-' : ''}{formatPrice(line.value)}
+              {/* Quick-add new customer */}
+              <div className="rounded-xl border border-dashed border-base-300/60 p-3 space-y-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-base-content/50">
+                  <span className="ri-user-add-line ri-12px" /> {t('sale.wizardNewCustomer')}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    value={newCustomerForm.name}
+                    onChange={e => setNewCustomerForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder={t('sale.wizardCustomerName')}
+                    className="input input-sm input-bordered rounded-lg col-span-1 sm:col-span-3"
+                  />
+                  <input
+                    type="tel"
+                    value={newCustomerForm.phone}
+                    onChange={e => setNewCustomerForm(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder={t('sale.wizardCustomerPhone')}
+                    className="input input-sm input-bordered rounded-lg"
+                  />
+                  <input
+                    type="email"
+                    value={newCustomerForm.email}
+                    onChange={e => setNewCustomerForm(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder={t('sale.wizardCustomerEmail')}
+                    className="input input-sm input-bordered rounded-lg col-span-1 sm:col-span-2"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={handleQuickAddCustomer}
+                  iconStart={<span className={iconClass('lucide:user-plus', 'text-sm')} />}
+                >
+                  {t('sale.wizardAddCustomer')}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {wizardStep === 2 && (
+            /* ── Step 2 · Offers & Payment ── */
+            <div className="space-y-4">
+              {/* Coupon */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-base-content flex items-center gap-1.5">
+                  <span className="ri-coupon-line ri-14px text-primary" /> {t('sale.coupon')}
+                </p>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between gap-2 rounded-xl border border-success/30 bg-success/5 px-3 py-2.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="ri-checkbox-circle-line ri-16px text-success shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-base-content">{appliedCoupon.code}</p>
+                        <p className="text-[11px] text-success">-{formatPrice(discountAmount)}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setAppliedCoupon(null); setCouponInput(''); }}
+                      className="btn btn-square btn-ghost btn-xs rounded-lg text-base-content/50 hover:text-error"
+                      aria-label={t('sale.couponRemove')}
+                    >
+                      <span className="ri-close-line ri-14px" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponInput}
+                      onChange={e => { setCouponInput(e.target.value); setCouponError(null); }}
+                      placeholder={t('sale.couponPlaceholder')}
+                      className={`input input-sm input-bordered flex-1 rounded-lg ${couponError ? 'input-error' : ''}`}
+                    />
+                    <Button variant="secondary" size="sm" onClick={handleApplyCoupon}>
+                      {t('sale.couponApply')}
+                    </Button>
+                  </div>
+                )}
+                {couponError && <p className="text-xs text-error">{couponError}</p>}
+              </div>
+
+              {/* Special offer — manual extra discount */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-base-content flex items-center gap-1.5">
+                  <span className="ri-price-tag-3-line ri-14px text-warning" /> {t('sale.specialOffer')}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={specialOffer || ''}
+                    onChange={e => setSpecialOffer(Math.max(0, Number(e.target.value) || 0))}
+                    placeholder={`0.00 ${settings.currency}`}
+                    className="input input-sm input-bordered rounded-lg"
+                  />
+                  <input
+                    type="text"
+                    value={specialOfferLabel}
+                    onChange={e => setSpecialOfferLabel(e.target.value)}
+                    placeholder={t('sale.specialOfferLabelPlaceholder')}
+                    className="input input-sm input-bordered rounded-lg"
+                  />
+                </div>
+                {specialOfferAmount > 0 && (
+                  <p className="text-[11px] text-success">
+                    {t('sale.specialOfferApplied')}: -{formatPrice(specialOfferAmount)}
+                  </p>
+                )}
+              </div>
+
+              {/* Payment method */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-base-content flex items-center gap-1.5">
+                  <span className="ri-bank-card-line ri-14px text-info" /> {t('sale.paymentMethod')}
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {PAYMENT_METHODS.map(m => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setPaymentMethod(m)}
+                      disabled={isLoading}
+                      aria-pressed={paymentMethod === m}
+                      className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${
+                        paymentMethod === m
+                          ? 'bg-primary text-primary-content shadow-md'
+                          : 'bg-base-100/50 text-base-content/70 hover:bg-primary/10 dark:hover:bg-primary/20'
+                      }`}
+                    >
+                      <span className={`${PAYMENT_ICONS[m]} text-sm`} />
+                      {t(`payments.${m}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Live recalc — the new price after coupon + special offer */}
+              <div className="rounded-xl bg-base-200/60 dark:bg-white/5 px-3 py-2.5 space-y-1.5 text-sm">
+                {invoiceLines.map(line => (
+                  <div key={line.key} className="flex justify-between text-base-content/70">
+                    <span>{line.label}</span>
+                    <span className={`tabular-nums ${line.negative ? 'text-success' : ''}`}>
+                      {line.negative ? '-' : ''}{formatPrice(line.value)}
+                    </span>
+                  </div>
+                ))}
+                <div className="flex justify-between font-bold text-base-content border-t border-base-300/40 pt-1.5">
+                  <span>{t('sale.total')}</span>
+                  <span className="tabular-nums text-primary">{formatPrice(grandTotal)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {wizardStep === 3 && (
+            /* ── Step 3 · Review ── */
+            <div className="space-y-4">
+              {/* Order meta badges */}
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 rounded-full text-xs font-medium">
+                  {t(ORDER_TYPE_KEYS[orderType])}
+                </span>
+                {orderType === 'dine-in' && (
+                  <span className="px-3 py-1 bg-info/10 dark:bg-info/20 text-info dark:text-info/80 rounded-full text-xs font-medium">
+                    {t('sale.table')} {tableNumber}
+                  </span>
+                )}
+                {orderType === 'delivery' && deliveryTypes.find(dt => dt.id === deliveryTypeId)?.name && (
+                  <span className="px-3 py-1 bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning/80 rounded-full text-xs font-medium">
+                    {deliveryTypes.find(dt => dt.id === deliveryTypeId)?.name}
+                  </span>
+                )}
+                {employeeId > 0 && employees.find(e => e.id === employeeId)?.name && (
+                  <span className="px-3 py-1 bg-secondary/10 dark:bg-secondary/20 text-secondary dark:text-secondary/80 rounded-full text-xs font-medium">
+                    {employees.find(e => e.id === employeeId)?.name}
+                  </span>
+                )}
+                {selectedCustomer && (
+                  <span className="px-3 py-1 bg-accent/10 dark:bg-accent/20 text-accent dark:text-accent/80 rounded-full text-xs font-medium">
+                    <span className="ri-user-star-line ri-12px" /> {selectedCustomer.name}
+                  </span>
+                )}
+                <span className="px-3 py-1 bg-success/10 text-success dark:text-success/80 rounded-full text-xs font-medium flex items-center gap-1">
+                  <span className={`${PAYMENT_ICONS[paymentMethod]} text-xs`} />
+                  {t(`payments.${paymentMethod}`)}
                 </span>
               </div>
-            ))}
-            <div className="flex justify-between font-bold text-base-content border-t border-base-300/40 pt-2">
-              <span>{t('sale.total')}</span>
-              <span className="tabular-nums text-primary">{formatPrice(grandTotal)}</span>
-            </div>
-          </div>
 
-          {/* Order notes */}
-          {orderNotes.trim() && (
-            <div className="rounded-lg bg-warning/10 border border-warning/20 px-3 py-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-warning mb-0.5 flex items-center gap-1">
-                <span className="ri-sticky-note-line ri-12px" /> {t('sale.orderNotes') || 'Order Notes'}
-              </p>
-              <p className="text-xs text-base-content/80 whitespace-pre-wrap">{orderNotes}</p>
+              {/* Items list */}
+              <div className="rounded-xl border border-base-300/40 divide-y divide-base-300/30 max-h-56 overflow-y-auto">
+                {cart.length === 0 ? (
+                  <p className="p-4 text-sm text-base-content/50 text-center">{t('sale.pleaseSelectProduct')}</p>
+                ) : cart.map(item => (
+                  <div key={item.id} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <ProductThumb product={item} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-base-content truncate">{item.name}</p>
+                        <p className="text-[11px] text-base-content/50">{item.quantity} {item.unit} × {formatPrice(item.price)}</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-base-content shrink-0 tabular-nums">{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Totals — shared itemized lines (subtotal, tax, delivery, discount, offer) */}
+              <div className="space-y-1.5 text-sm">
+                {invoiceLines.map(line => (
+                  <div
+                    key={line.key}
+                    className={`flex justify-between ${line.muted ? 'text-base-content/70' : 'text-base-content'}`}
+                  >
+                    <span>{line.label}</span>
+                    <span className={`tabular-nums ${line.negative ? 'text-success' : ''}`}>
+                      {line.negative ? '-' : ''}{formatPrice(line.value)}
+                    </span>
+                  </div>
+                ))}
+                <div className="flex justify-between font-bold text-base-content border-t border-base-300/40 pt-2">
+                  <span>{t('sale.total')}</span>
+                  <span className="tabular-nums text-primary">{formatPrice(grandTotal)}</span>
+                </div>
+              </div>
+
+              {/* Order notes */}
+              {orderNotes.trim() && (
+                <div className="rounded-lg bg-warning/10 border border-warning/20 px-3 py-2.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-warning mb-0.5 flex items-center gap-1">
+                    <span className="ri-sticky-note-line ri-12px" /> {t('sale.orderNotes') || 'Order Notes'}
+                  </p>
+                  <p className="text-xs text-base-content/80 whitespace-pre-wrap">{orderNotes}</p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -2070,6 +2503,11 @@ export default function Sale() {
                     {receiptData.employeeName}
                   </span>
                 )}
+                {receiptData.customerName && (
+                  <span className="px-3 py-1 bg-accent/10 dark:bg-accent/20 text-accent dark:text-accent/80 rounded-full text-xs font-medium">
+                    <span className="ri-user-star-line ri-12px" /> {receiptData.customerName}
+                  </span>
+                )}
                 <span className="px-3 py-1 bg-success/10 text-success dark:text-success/80 rounded-full text-xs font-medium flex items-center gap-1">
                   <span className={`${PAYMENT_ICONS[paymentMethod]} text-xs`} />
                   {t(`payments.${paymentMethod}`)}
@@ -2083,7 +2521,7 @@ export default function Sale() {
                   products={receiptData.products}
                   totalAmount={receiptData.grandTotal}
                   subtotalAmount={receiptData.totalAmount}
-                  discountAmount={receiptData.discountAmount}
+                  discountAmount={(receiptData.discountAmount || 0) + (receiptData.specialOfferAmount || 0)}
                   paymentMethod={receiptData.paymentMethod}
                   taxAmount={taxAmount}
                   date={receiptData.date}

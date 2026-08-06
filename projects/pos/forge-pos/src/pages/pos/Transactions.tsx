@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
-import { Transaction, Settings } from '../../types';
+import { Transaction, Settings, PAYMENT_METHODS, PAYMENT_ICONS } from '../../types';
 import DatePicker from '../../components/ui/DatePicker';
 import Receipt from '../../components/pos/Receipt';
 import { InvoiceType } from '../../types';
@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import Card from '../../components/ui/Card';
 import StatCard from '../../components/ui/StatCard';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/ui/tooltip';
 
 type TabId = 'timeTotal' | 'productStats' | 'relatedProducts' | 'invoices';
 
@@ -31,7 +32,12 @@ export default function Transactions() {
   const [activeTab, setActiveTab] = useState<TabId>('timeTotal');
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [orderTypeFilter, setOrderTypeFilter] = useState<string>('');
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Active filter count — drives the badge on the Filters button
+  const activeFilterCount = [startDate, endDate, orderTypeFilter, paymentMethodFilter].filter(Boolean).length;
   const [productSearch, setProductSearch] = useState('');
   const [relatedSearch, setRelatedSearch] = useState('');
   type ProductSortField = 'name' | 'quantity' | 'revenue';
@@ -50,7 +56,7 @@ export default function Transactions() {
   const [isInvoiceDownloading, setIsInvoiceDownloading] = useState(false);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [settings, setSettings] = useState<Settings>({
-    restaurant_name: 'Forge POS',
+    restaurant_name: 'Formint',
     address: '',
     phone: '',
     currency: 'USD',
@@ -78,7 +84,7 @@ export default function Transactions() {
       setTransactions(transactionsRes);
       if (settingsRes) {
         setSettings({
-          restaurant_name: settingsRes.restaurant_name || 'Forge POS',
+          restaurant_name: settingsRes.restaurant_name || 'Formint',
           address: settingsRes.address || '',
           phone: settingsRes.phone || '',
           currency: settingsRes.currency || 'USD',
@@ -97,21 +103,26 @@ export default function Transactions() {
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
-      if (!startDate && !endDate) return true;
-      const transactionDate = new Date(t.date);
-      const start = startDate ? new Date(startDate) : null;
-      const end = endDate ? new Date(endDate) : null;
-
-      if (start && end) {
-        return transactionDate >= start && transactionDate <= end;
-      } else if (start) {
-        return transactionDate >= start;
-      } else if (end) {
-        return transactionDate <= end;
+      // Date range
+      if (startDate || endDate) {
+        const transactionDate = new Date(t.date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+        if (start && end) {
+          if (transactionDate < start || transactionDate > end) return false;
+        } else if (start) {
+          if (transactionDate < start) return false;
+        } else if (end) {
+          if (transactionDate > end) return false;
+        }
       }
+      // Order type
+      if (orderTypeFilter && t.order_type?.toLowerCase() !== orderTypeFilter.toLowerCase()) return false;
+      // Payment method
+      if (paymentMethodFilter && t.payment_method?.toLowerCase() !== paymentMethodFilter.toLowerCase()) return false;
       return true;
     });
-  }, [transactions, startDate, endDate]);
+  }, [transactions, startDate, endDate, orderTypeFilter, paymentMethodFilter]);
 
   // ---- Time-based grouping ----
   const timeGrouped = useMemo(() => {
@@ -224,6 +235,8 @@ export default function Transactions() {
   const clearFilters = () => {
     setStartDate("");
     setEndDate("");
+    setOrderTypeFilter('');
+    setPaymentMethodFilter('');
   };
 
   const handlePrint = () => {
@@ -239,7 +252,7 @@ export default function Transactions() {
         invoiceNumber: `INV-${showReceiptDialog.id}`,
         date: showReceiptDialog.date,
         from: {
-          name: settings.restaurant_name || 'Forge POS',
+          name: settings.restaurant_name || 'Formint',
           address: settings.address,
           phone: settings.phone,
           email: settings.email,
@@ -288,7 +301,7 @@ export default function Transactions() {
 
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      const restaurantName = settings.restaurant_name || 'Forge POS';
+      const restaurantName = settings.restaurant_name || 'Formint';
       pdf.text(restaurantName, pageWidth / 2, yPos, { align: 'center' });
       yPos += 7;
 
@@ -705,16 +718,23 @@ export default function Transactions() {
       title={t('transactions.title')}
       background="bg-linear-to-br from-base-200 via-secondary/15 to-base-200"
     >
-      {/* Filters Button */}
+      {/* Filters Button — with active-count badge */}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center text-base-content gap-2
-            bg-secondary/20 px-4 py-2 rounded-lg
-            transition-all duration-300 active:scale-[0.95]"
+          aria-expanded={showFilters}
+          className={`flex items-center text-base-content gap-2 px-4 py-2 rounded-lg
+            transition-all duration-300 active:scale-[0.95]
+            ${showFilters ? 'bg-secondary/30 shadow-sm' : 'bg-secondary/20 hover:bg-secondary/30'}`}
         >
           <span className="ri-filter-2-line ri-20px" />
           <span>{t('transactions.filters')}</span>
+          {activeFilterCount > 0 && (
+            <span className="min-w-5 h-5 px-1.5 rounded-full bg-secondary text-white text-xs font-bold
+              flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
         </button>
       </div>
 
@@ -737,36 +757,90 @@ export default function Transactions() {
         ))}
       </nav>
 
-      {/* Filters */}
+      {/* Filters — date range + order type + payment method */}
       {showFilters && (
-        <div
-        >
-          <Card padding="md" transitional className="mb-6 overflow-visible">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <DatePicker
-                label={t('transactions.startDate')}
-                value={startDate}
-                onChange={setStartDate}
-              />
-              <DatePicker
-                label={t('transactions.endDate')}
-                value={endDate}
-                onChange={setEndDate}
-              />
-            </div>
-            {(startDate || endDate) && (
-              <div className="mt-4 flex justify-end">
+        <Card padding="md" transitional className="mb-6 overflow-visible animate-slide-down">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <DatePicker
+              label={t('transactions.startDate')}
+              value={startDate}
+              onChange={setStartDate}
+            />
+            <DatePicker
+              label={t('transactions.endDate')}
+              value={endDate}
+              onChange={setEndDate}
+            />
+          </div>
+
+          {/* Order Type — icon pills */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="ri-store-2-line ri-18px text-info" />
+            <span className="text-sm font-semibold text-base-content">{t('sale.orderType')}</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 mb-4">
+            {[
+              { value: '', label: t('sale.allTypes'), icon: 'ri-filter-3-line' },
+              { value: 'dine-in', label: t('sale.dineIn'), icon: 'ri-store-2-line' },
+              { value: 'takeaway', label: t('sale.takeaway'), icon: 'ri-takeaway-line' },
+              { value: 'delivery', label: t('sale.delivery'), icon: 'ri-truck-line' },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setOrderTypeFilter(opt.value)}
+                aria-pressed={orderTypeFilter === opt.value}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-[0.97] ${
+                  orderTypeFilter === opt.value
+                    ? 'bg-info text-info-content shadow-sm'
+                    : 'bg-base-100/50 text-base-content/70 hover:bg-info/10'
+                }`}
+              >
+                <span className={`${opt.icon} ri-14px`} />
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Payment Method — icon pills */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="ri-bank-card-line ri-18px text-success" />
+            <span className="text-sm font-semibold text-base-content">{t('sale.paymentMethod')}</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[{ value: '', label: t('sale.allPayments'), icon: 'ri-filter-3-line' }]
+              .concat(PAYMENT_METHODS.map(m => ({ value: m, label: t(`payments.${m}`), icon: PAYMENT_ICONS[m] })))
+              .map(opt => (
                 <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 text-error hover:text-error
-                    hover:bg-error/10 rounded-lg transition-colors"
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setPaymentMethodFilter(opt.value)}
+                  aria-pressed={paymentMethodFilter === opt.value}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-[0.97] ${
+                    paymentMethodFilter === opt.value
+                      ? 'bg-success text-success-content shadow-sm'
+                      : 'bg-base-100/50 text-base-content/70 hover:bg-success/10'
+                  }`}
                 >
-                  {t('transactions.clearFilters')}
+                  <span className={`${opt.icon} ri-14px`} />
+                  {opt.label}
                 </button>
-              </div>
-            )}
-          </Card>
-        </div>
+              ))}
+          </div>
+
+          {activeFilterCount > 0 && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={clearFilters}
+                className="px-4 py-2 text-error hover:text-error
+                  hover:bg-error/10 rounded-lg transition-colors"
+              >
+                <span className="ri-delete-bin-line ri-14px mr-1 align-[-2px]" />
+                {t('transactions.clearFilters')}
+              </button>
+            </div>
+          )}
+        </Card>
       )}
 
       {/* ── Tab Content ── */}
@@ -916,12 +990,19 @@ export default function Transactions() {
                     className="input w-full text-xs pl-9"
                   />
                   {productSearch && (
-                    <button
-                      onClick={() => { setProductPage(1); setProductSearch(''); }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
-                    >
-                      <span className="ri-close-line ri-14px" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <button
+                            onClick={() => { setProductPage(1); setProductSearch(''); }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
+                          />
+                        }
+                      >
+                        <span className="ri-close-line ri-14px" />
+                      </TooltipTrigger>
+                      <TooltipContent>{t('common.clearSearch')}</TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
                 <div className="flex items-center gap-1 bg-base-200/50 dark:bg-white/5 rounded-lg p-0.5 border border-base-300/40 dark:border-white/10">
@@ -984,15 +1065,21 @@ export default function Transactions() {
                     );
                   })}
                 </div>
-                <button
-                  onClick={() => setShowShortcutHelp(true)}
-                  className="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-medium shrink-0
-                    bg-base-300/50 text-base-content/50
-                    hover:bg-base-300/80 transition-colors"
-                  title={t('transactions.shortcutHelp')}
-                >
-                  <span className="ri-question-line ri-16px" />
-                </button>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        onClick={() => setShowShortcutHelp(true)}
+                        className="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-medium shrink-0
+                          bg-base-300/50 text-base-content/50
+                          hover:bg-base-300/80 transition-colors"
+                      />
+                    }
+                  >
+                    <span className="ri-question-line ri-16px" />
+                  </TooltipTrigger>
+                  <TooltipContent>{t('transactions.shortcutHelp')}</TooltipContent>
+                </Tooltip>
                 <button
                   onClick={handleExportProductStatsCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0
@@ -1129,12 +1216,19 @@ export default function Transactions() {
                     className="input w-full text-xs pl-9"
                   />
                   {relatedSearch && (
-                    <button
-                      onClick={() => setRelatedSearch('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
-                    >
-                      <span className="ri-close-line ri-14px" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <button
+                            onClick={() => setRelatedSearch('')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
+                          />
+                        }
+                      >
+                        <span className="ri-close-line ri-14px" />
+                      </TooltipTrigger>
+                      <TooltipContent>{t('common.clearSearch')}</TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
                 <div className="flex items-center gap-1 bg-base-200/50 dark:bg-white/5 rounded-lg p-0.5 border border-base-300/40 dark:border-white/10">
@@ -1514,12 +1608,19 @@ export default function Transactions() {
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-base-content">{t('transactions.receipt')}</h3>
-              <button
-                onClick={() => setShowReceiptDialog(null)}
-                className="text-base-content/60 hover:text-base-content p-2"
-              >
-                <span className="ri-close-line ri-24px" />
-              </button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      onClick={() => setShowReceiptDialog(null)}
+                      className="text-base-content/60 hover:text-base-content p-2"
+                    />
+                  }
+                >
+                  <span className="ri-close-line ri-24px" />
+                </TooltipTrigger>
+                <TooltipContent>{t('common.close')}</TooltipContent>
+              </Tooltip>
             </div>
 
             {/* Invoice Type Selector */}

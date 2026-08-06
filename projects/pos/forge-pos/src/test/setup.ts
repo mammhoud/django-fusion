@@ -132,7 +132,7 @@ export function getInvokeHistory() { return _invokeHistory; }
 export function clearInvokeHistory() { _invokeHistory.length = 0; }
 
 // Mock SVG/assets imports — Vite resolves these to URLs in dev, but jsdom has no Vite server
-vi.mock('../../assets/images/pos-crest.svg', () => ({ default: 'mock-logo-url' }));
+vi.mock('../../assets/images/formint-crest.svg', () => ({ default: 'mock-logo-url' }));
 
 // Mock Tauri event API (listen/emit) — pages like Sale, KitchenDisplay, and
 // ChatSupport call `listen(...)` on mount. Without a mock, the real module

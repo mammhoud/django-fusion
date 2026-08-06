@@ -135,6 +135,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    user_actions (id) {
+        id -> Integer,
+        action -> Text,
+        entity_type -> Nullable<Text>,
+        entity_id -> Nullable<Integer>,
+        details -> Nullable<Text>,
+        user_id -> Nullable<Integer>,
+        created_at -> Timestamp,
+    }
+}
+
+diesel::table! {
     sale_items (id) {
         id -> Integer,
         sale_id -> Integer,
@@ -501,4 +513,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     delivery_zones,
     support_messages,
     coupons,
+    user_actions,
 );

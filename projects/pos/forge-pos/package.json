@@ -1,8 +1,8 @@
 {
-  "name": "forge-pos",
+  "name": "formint-pos",
   "private": true,
   "version": "0.1.0",
-  "description": "Forge POS — lightweight Tauri + Rust/Diesel POS desktop app",
+  "description": "Formint — lightweight Tauri + Rust/Diesel POS desktop app",
   "author": "mammhoud <structa.cloud@gmail.com>",
   "license": "AGPL-3.0",
   "homepage": "https://structa.cloud",

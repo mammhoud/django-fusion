@@ -156,7 +156,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
               )}
               <div>
                 <h1 className={`text-2xl font-extrabold tracking-tight leading-tight ${textHeading}`}>
-                  {from.name || 'Forge POS'}
+                  {from.name || 'Formint'}
                 </h1>
                 {from.address && <p className={`text-sm mt-0.5 ${textMuted}`}>{from.address}</p>}
                 {from.phone   && <p className={`text-sm ${textMuted}`}>{from.phone}</p>}

@@ -85,7 +85,7 @@ mod tests {
         let count: i64 = settings.count().get_result(&mut conn).unwrap();
         if count == 0 {
             diesel::insert_into(settings)
-                .values((id.eq(1), restaurant_name.eq("Forge POS"), currency.eq("USD")))
+                .values((id.eq(1), restaurant_name.eq("Formint"), currency.eq("USD")))
                 .execute(&mut conn)
                 .unwrap();
         }

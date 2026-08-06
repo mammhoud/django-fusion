@@ -1,4 +1,4 @@
-# File Structure — Forge POS
+# File Structure — Formint
 
 ## Project Root
 

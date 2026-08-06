@@ -1,6 +1,6 @@
-# Forge POS — Changelog
+# Formint — Changelog
 
-> All notable changes to the Forge POS desktop application (Tauri 2 + Rust + React).
+> All notable changes to the Formint desktop application (Tauri 2 + Rust + React).
 > Follows [Semantic Versioning](https://semver.org/).
 > See also: [`../CHANGELOG.md`](../CHANGELOG.md) for POS-wide changes.
 
@@ -53,7 +53,7 @@ All 17 sections of the UI Enhancement Master Plan complete; remaining work track
 ## v1.2.0 — July 29, 2026
 
 ### Added
-- **Branding rename** — "Daily Grind" → "Forge POS" across all code + UI
+- **Branding rename** — "Daily Grind" → "Formint" across all code + UI
 - **Tax ID field** — Added to Settings model/DB/UI, wired into InvoicePage, Sale, Transactions, and invoicePdf
 - **Enhanced order types** — `extra-order` and `dated-order` added to Sale.tsx, `ORDER_TYPES`, and Rust priority mapping
 - **Prepare time in KDS** — DB migration adds `prepare_time_minutes` to products + kitchen_tickets; displayed on KitchenDisplay ticket cards + detail modal

@@ -6,8 +6,8 @@ line silently drops every var (SUPERUSER_*, USE_AUTH, SMTP_*, ...) at runtime.
 Two failure modes are fixed here:
 
 1. Non-ASCII decorative characters (em-dash, box-drawing) in comment lines.
-2. Unquoted values containing spaces (e.g. `SMTP_FROM_NAME=Forge POS`), which
-   dotenvy rejects — quote them: `SMTP_FROM_NAME="Forge POS"`.
+2. Unquoted values containing spaces (e.g. `SMTP_FROM_NAME=Formint`), which
+   dotenvy rejects — quote them: `SMTP_FROM_NAME="Formint"`.
 
 Only comment lines and space-containing values are rewritten; all other
 KEY=VALUE bytes are left untouched.

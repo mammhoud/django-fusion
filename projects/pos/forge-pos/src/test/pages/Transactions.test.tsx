@@ -107,4 +107,34 @@ describe('Transactions page', () => {
       expect(screen.getByText(/Burger/i)).toBeInTheDocument();
     });
   });
+
+  it('filters by order type and payment method pills with an active-count badge', async () => {
+    renderWithRouter(<Transactions />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Time Total')).toBeInTheDocument();
+    });
+
+    // Open the filter panel
+    await userEvent.click(screen.getByText('Filters'));
+
+    // Order Type + Payment Method groups render their pill options
+    expect(screen.getByText('Dine-in')).toBeInTheDocument();
+    expect(screen.getByText('Takeaway')).toBeInTheDocument();
+    expect(screen.getByText('Cash')).toBeInTheDocument();
+    expect(screen.getByText('Card')).toBeInTheDocument();
+
+    // Selecting a filter marks it active and shows the count badge
+    await userEvent.click(screen.getByText('Dine-in'));
+    await waitFor(() => {
+      expect(screen.getByText('1')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Dine-in')).toHaveAttribute('aria-pressed', 'true');
+
+    // Clear all resets the filters and hides the badge
+    await userEvent.click(screen.getByText('Clear Filters'));
+    await waitFor(() => {
+      expect(screen.queryByText('1')).not.toBeInTheDocument();
+    });
+  });
 });

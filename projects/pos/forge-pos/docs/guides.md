@@ -1,4 +1,4 @@
-# Guides — Forge POS
+# Guides — Formint
 
 ---
 
@@ -118,9 +118,9 @@ SELECT name, price FROM products WHERE category_id = 1;  # Filtered query
 make build
 
 # Output:
-#   macOS: src-tauri/target/release/bundle/dmg/Forge POS.dmg
-#   Windows: src-tauri/target/release/bundle/msi/Forge POS.msi
-#   Linux: src-tauri/target/release/bundle/appimage/Forge POS.AppImage
+#   macOS: src-tauri/target/release/bundle/dmg/Formint.dmg
+#   Windows: src-tauri/target/release/bundle/msi/Formint.msi
+#   Linux: src-tauri/target/release/bundle/appimage/Formint.AppImage
 
 # Build frontend only
 make build-frontend
@@ -382,7 +382,7 @@ SMTP_PORT=587
 SMTP_USERNAME=user@example.com
 SMTP_PASSWORD=password
 SMTP_RECIPIENT=support@example.com
-SMTP_FROM_NAME=Forge POS
+SMTP_FROM_NAME=Formint
 SMTP_FROM_EMAIL=no-reply@example.com
 ```
 

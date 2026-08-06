@@ -118,6 +118,55 @@ describe('ProductManager page', () => {
       expect(screen.getByTestId('pm-modal')).toBeInTheDocument();
     });
   });
+
+  it('walks the add wizard — Basics → Recipe & Options → Review with recipe creation on save', async () => {
+    mockInvokeSuccess('get_ingredients', [
+      { id: 1, name: 'Chicken Breast', unit: 'kg', current_quantity: 25, reorder_level: 5, reorder_quantity: 10, cost_per_unit: 450, is_active: true },
+      { id: 2, name: 'Cooking Oil', unit: 'liter', current_quantity: 3, reorder_level: 10, reorder_quantity: 20, cost_per_unit: 320, is_active: true },
+    ]);
+    mockInvokeSuccess('add_product', { id: 99, name: 'Wizard Burger', price: 550, unit: 'item', product_type: 'product' });
+    mockInvokeSuccess('create_recipe', { id: 7, product_id: 99, recipe_type_id: 1, yield_quantity: 2 });
+    renderWithRouter(<ProductManager />);
+
+    await waitForHydration();
+
+    await userEvent.click(screen.getByTestId('pm-add-button'));
+    await waitFor(() => expect(screen.getByTestId('pm-modal')).toBeInTheDocument());
+
+    // Step 1 — Basics: fill name + price, then Next
+    await userEvent.type(screen.getByTestId('pm-name-input'), 'Wizard Burger');
+    await userEvent.type(screen.getByTestId('pm-price-input'), '550');
+    await userEvent.click(screen.getByTestId('pm-next'));
+
+    // Step 2 — Recipe & Options: add an ingredient row + yield, then Next
+    const modal = within(screen.getByTestId('pm-modal'));
+    expect(modal.getByText(/Recipe Ingredients/i)).toBeInTheDocument();
+    await userEvent.click(modal.getByRole('button', { name: /Add ingredient/i }));
+    const ingredientSelect = modal.getAllByRole('combobox')[0];
+    await userEvent.selectOptions(ingredientSelect, '1');
+    const qtyInput = screen.getByPlaceholderText('Qty');
+    await userEvent.type(qtyInput, '2');
+    await userEvent.click(screen.getByTestId('pm-next'));
+
+    // Step 3 — Review: summary visible, Save submits product + recipe
+    expect(screen.getByText(/Wizard Burger/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByTestId('pm-submit'));
+
+    await waitFor(() => {
+      const history = getInvokeHistory();
+      const saved = history.find(h => h.cmd === 'add_product');
+      expect(saved).toBeTruthy();
+      const recipe = history.find(h => h.cmd === 'create_recipe');
+      expect(recipe).toBeTruthy();
+      const recipeArgs = recipe!.args as {
+        recipe: { product_id: number };
+        ingredients: { ingredient_id: number }[];
+      };
+      expect(recipeArgs.recipe.product_id).toBe(99);
+      expect(recipeArgs.ingredients).toHaveLength(1);
+      expect(recipeArgs.ingredients[0].ingredient_id).toBe(1);
+    });
+  });
 });
 
 describe('Category CRUD — color round-trip through the modal', () => {

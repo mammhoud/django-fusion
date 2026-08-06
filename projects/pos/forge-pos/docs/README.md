@@ -1,11 +1,11 @@
-# Forge POS — Documentation
+# Formint — Documentation
 
 > **Version:** 0.1.0 | **Stack:** Tauri 2 + React 19 + Rust/Diesel + SQLite
 > **Repository:** [github.com/mammhoud/POS](https://github.com/mammhoud/POS)
 
 ## Overview
 
-Forge POS is a lightweight, offline-first Point of Sale desktop application built with **Tauri**, **React 19**, and **Rust/Diesel ORM**. It uses an embedded **SQLite** database — no external server or sidecar required.
+Formint is a lightweight, offline-first Point of Sale desktop application built with **Tauri**, **React 19**, and **Rust/Diesel ORM**. It uses an embedded **SQLite** database — no external server or sidecar required.
 
 ---
 

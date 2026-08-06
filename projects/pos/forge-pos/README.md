@@ -1,4 +1,4 @@
-# Forge POS
+# Formint
 
 > Minimal desktop POS — Tauri + React + Rust/Diesel ORM (embedded SQLite). No sidecar.
 

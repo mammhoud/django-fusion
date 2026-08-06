@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { useEffect, Suspense, lazy } from 'react';
 import Auth from './pages/auth/Auth';
 import ChatSupport from './components/pos/ChatSupport';
+import ScrollToTopButton from './components/ui/ScrollToTopButton';
+import BrandLoader from './components/ui/BrandLoader';
 import { useAuth } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
@@ -58,6 +60,10 @@ function AnimatedRoutes() {
   const { isAuthenticated, isAuthRequired, user } = useAuth();
   const { toggleMode } = useTheme();
 
+  // Dedicated KDS popout window (loaded with ?kds=1) — renders the Kitchen
+  // Display full-bleed with no app chrome, no auth gate and no floating widgets.
+  const isKdsPopout = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('kds') === '1';
+
   // ── Predictive route preloading — preload the most-likely next page chunk
   //     based on the user's navigation history patterns ──
   useNavigationPredictor(location.pathname);
@@ -107,35 +113,24 @@ function AnimatedRoutes() {
 
 
 
-  // ── Suspense fallback shown while lazy chunks load ──
-  const PageFallback = (
-    <div className="min-h-[100dvh] flex items-center justify-center bg-base-100">
-      <div className="text-center">
-        <span className="loading loading-spinner loading-lg text-primary" />
-        <p className="text-sm text-base-content/50 mt-3">Loading...</p>
-        <div className="flex items-center justify-center gap-1 mt-6">
-          {[0, 1, 2].map(i => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  // ── Branded Suspense fallback shown while lazy chunks load (single
+  //     loading UI for every page navigation — no duplicated spinners) ──
+  const PageFallback = <BrandLoader />;
 
-  // If auth is still being checked, show a loading screen
-  if (isAuthRequired === null) {
+  // KDS popout — dedicated kitchen display window, no chrome, no auth gate.
+  if (isKdsPopout) {
     return (
-      <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/60 text-lg">Loading...</p>
-        </div>
+      <div className="relative min-h-[100dvh] bg-base-100">
+        <Suspense fallback={<BrandLoader variant="dark" />}>
+          <KitchenDisplay standalone />
+        </Suspense>
       </div>
     );
+  }
+
+  // If auth is still being checked, show the branded loading screen
+  if (isAuthRequired === null) {
+    return <BrandLoader variant="dark" />;
   }
 
   // Auth guard: if auth is required and user is not authenticated, show Auth
@@ -183,6 +178,8 @@ function AnimatedRoutes() {
       </Suspense>
       {/* Global floating chat widget — visible on all authenticated pages */}
       <ChatSupport />
+      {/* Global scroll-to-top button — bottom-right corner (left of the chat FAB) */}
+      <ScrollToTopButton />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import AnimatedBackground from '../../components/layout/AnimatedBackground';
 import { invoke } from '@tauri-apps/api/core';
 import { iconClass, Ic } from '../../lib/icons';
 import AnimatePresence from '../../components/ui/AnimatePresence';
-import posCrest from '../../../assets/images/pos-crest.svg';
+import posCrest from '../../../assets/images/formint-crest.svg';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login' | 'forgotPassword' | 'resetPassword';
 
@@ -116,16 +116,16 @@ function AuthHeader({ title, desc }: { title: string; desc: string }) {
   );
 }
 
-// ── Brand Logo chip — uses the pos-crest.svg crest (same as app chrome) ──
+// ── Brand Logo chip — uses the formint-crest.svg crest (same as app chrome) ──
 function BrandLogo() {
   const { variant, mode } = useTheme();
   const isDark = mode === 'dark';
   return (
     <div className="flex items-center gap-2.5 mb-4">
       <div className={`bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-1.5 shadow-lg`}>
-        <img src={posCrest} alt="Forge POS" className="w-6 h-6 object-contain rounded-md" />
+        <img src={posCrest} alt="Formint" className="w-6 h-6 object-contain rounded-md" />
       </div>
-      <span className={`text-lg font-bold ${isDark ? 'text-white/80' : 'text-slate-800'}`}>Forge POS</span>
+      <span className={`text-lg font-bold ${isDark ? 'text-white/80' : 'text-slate-800'}`}>Formint</span>
     </div>
   );
 }
@@ -412,7 +412,7 @@ export default function Auth() {
           <span className="ri-shield-line w-16 h-16 text-white" />
         </div>
         <h1 className="text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
-          Forge POS
+          Formint
         </h1>
         <p className="text-lg text-white/70 leading-relaxed">
           {step === 'login' ? t('auth.loginDesc') : t('auth.registerDesc')}

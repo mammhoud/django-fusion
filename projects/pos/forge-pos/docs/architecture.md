@@ -1,8 +1,8 @@
-# Architecture — Forge POS
+# Architecture — Formint
 
 ## System Design
 
-Forge POS is a **single-process desktop application** built with Tauri 2. The frontend (React 19 + TypeScript) communicates with the Rust backend through Tauri's `invoke()` IPC mechanism. There is no HTTP server, no API gateway, and no sidecar process.
+Formint is a **single-process desktop application** built with Tauri 2. The frontend (React 19 + TypeScript) communicates with the Rust backend through Tauri's `invoke()` IPC mechanism. There is no HTTP server, no API gateway, and no sidecar process.
 
 ---
 
@@ -78,7 +78,7 @@ loadData({ quiet: true })  // background refresh
 
 ## Styling & UI Packages
 
-Forge POS uses a modern styling stack. See the dedicated **[Styling & UI Package Reference](styling.md)** document for the complete catalog of packages, installation details, and usage examples.
+Formint uses a modern styling stack. See the dedicated **[Styling & UI Package Reference](styling.md)** document for the complete catalog of packages, installation details, and usage examples.
 
 | Package | Purpose |
 |---------|---------|
@@ -116,7 +116,7 @@ import "flyonui/flyonui";
 | **Button Modifiers** | `glass`, `btn-wide`, `btn-block`, `btn-circle`, `btn-square` | Shape/layout modifiers |
 | **Icons** | `icon-[tabler--settings]` | Tabler icons via Iconify |
 
-> **Note:** Forge POS primarily uses **React state** for interactivity rather than FlyonUI's data-attribute-driven JS. FlyonUI's CSS classes (badge, btn) are used via semantic class names, while complex interactive components (modals, toasts) use React components. See [Styling & UI Package Reference](styling.md) for the full details including icon catalog, Framer Motion patterns, and bundle size analysis.
+> **Note:** Formint primarily uses **React state** for interactivity rather than FlyonUI's data-attribute-driven JS. FlyonUI's CSS classes (badge, btn) are used via semantic class names, while complex interactive components (modals, toasts) use React components. See [Styling & UI Package Reference](styling.md) for the full details including icon catalog, Framer Motion patterns, and bundle size analysis.
 
 ---
 
@@ -124,7 +124,7 @@ import "flyonui/flyonui";
 
 ### Architecture
 
-Forge POS uses **FlyonUI's native theme system** via `@plugin "flyonui/theme"` blocks in `src/index.css`. Light and dark variants are separate FlyonUI themes (e.g., `corporate-light`, `corporate-dark`), eliminating the dual-theme conflict of the old custom CSS approach.
+Formint uses **FlyonUI's native theme system** via `@plugin "flyonui/theme"` blocks in `src/index.css`. Light and dark variants are separate FlyonUI themes (e.g., `corporate-light`, `corporate-dark`), eliminating the dual-theme conflict of the old custom CSS approach.
 
 ```
 ThemeContext (variant + mode)
@@ -227,7 +227,7 @@ All routes are wrapped in `AnimatePresence` with `popLayout` mode for smooth spr
 
 ## State Management
 
-Forge POS uses **React useState/useEffect** for component-local state. There is no global state store (Zustand libraries are installed but unused in this edition).
+Formint uses **React useState/useEffect** for component-local state. There is no global state store (Zustand libraries are installed but unused in this edition).
 
 ### Data Flow Patterns
 

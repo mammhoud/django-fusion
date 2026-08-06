@@ -1,4 +1,4 @@
-# Forge POS — CLI Commands Reference
+# Formint — CLI Commands Reference
 
 > **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite  
 > **No sidecar** — all data operations through Tauri invoke/ Rust backend directly

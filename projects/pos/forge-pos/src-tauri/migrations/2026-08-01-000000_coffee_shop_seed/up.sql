@@ -7,12 +7,12 @@
 
 -- 1. Settings — rebrand as coffee shop
 UPDATE settings SET
-    restaurant_name  = 'Forge POS',
+    restaurant_name  = 'Formint',
     address          = '15 Brew Lane, Downtown, Lahore',
     phone            = '+92-300-555-BREW',
     email            = 'hello@thedailygrind.com',
     tax_rate         = '13',
-    currency         = 'PKR',
+    currency         = 'EGP',
     opening_time     = '07:00',
     closing_time     = '23:00',
     receipt_footer   = 'Brewed fresh for you! ☕ Follow @dailygrind',
@@ -80,14 +80,14 @@ INSERT OR IGNORE INTO employees (id, name, phone, email, employee_type_id, salar
 
 -- 6. Coffee shop sales (8 transactions)
 INSERT OR IGNORE INTO sales (id, total_amount, currency, date, time, order_type, status, table_number, employee_id) VALUES
-    (33, 1080.00, 'PKR', '2026-07-15', '08:30:00', 'dine_in',  'completed', 2,  20),
-    (34, 1450.00, 'PKR', '2026-07-15', '09:15:00', 'takeaway', 'completed', NULL, 21),
-    (35, 2340.00, 'PKR', '2026-07-15', '11:00:00', 'dine_in',  'completed', 5,  22),
-    (36, 860.00,  'PKR', '2026-07-15', '14:30:00', 'dine_in',  'completed', 3,  20),
-    (37, 1920.00, 'PKR', '2026-07-16', '08:00:00', 'takeaway', 'completed', NULL, 21),
-    (38, 1560.00, 'PKR', '2026-07-16', '10:45:00', 'dine_in',  'completed', 7,  22),
-    (39, 3200.00, 'PKR', '2026-07-16', '16:00:00', 'dine_in',  'completed', 1,  20),
-    (40, 750.00,  'PKR', '2026-07-17', '09:30:00', 'takeaway', 'completed', NULL, 21);
+    (33, 1080.00, 'EGP', '2026-07-15', '08:30:00', 'dine_in',  'completed', 2,  20),
+    (34, 1450.00, 'EGP', '2026-07-15', '09:15:00', 'takeaway', 'completed', NULL, 21),
+    (35, 2340.00, 'EGP', '2026-07-15', '11:00:00', 'dine_in',  'completed', 5,  22),
+    (36, 860.00,  'EGP', '2026-07-15', '14:30:00', 'dine_in',  'completed', 3,  20),
+    (37, 1920.00, 'EGP', '2026-07-16', '08:00:00', 'takeaway', 'completed', NULL, 21),
+    (38, 1560.00, 'EGP', '2026-07-16', '10:45:00', 'dine_in',  'completed', 7,  22),
+    (39, 3200.00, 'EGP', '2026-07-16', '16:00:00', 'dine_in',  'completed', 1,  20),
+    (40, 750.00,  'EGP', '2026-07-17', '09:30:00', 'takeaway', 'completed', NULL, 21);
 
 -- 7. Coffee shop sale items
 INSERT OR IGNORE INTO sale_items (sale_id, product_name, price, quantity, unit) VALUES

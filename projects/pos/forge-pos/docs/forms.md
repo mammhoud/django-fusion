@@ -1,4 +1,4 @@
-# Forge POS — Forms & Inputs Reference
+# Formint — Forms & Inputs Reference
 
 > **Stack:** Tailwind v4 + FlyonUI semantic classes + BEM `.field` wrapper
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-Every form control in Forge POS is wrapped in a **BEM `.field` block** that provides the label, control, helper text and error/success states in one consistent structure. The markup and styles live in `assets/styles/base/_reset.css` (`.field` block) and reuse FlyonUI classes (`input`, `select`, `textarea`, `checkbox`) for the control itself.
+Every form control in Formint is wrapped in a **BEM `.field` block** that provides the label, control, helper text and error/success states in one consistent structure. The markup and styles live in `assets/styles/base/_reset.css` (`.field` block) and reuse FlyonUI classes (`input`, `select`, `textarea`, `checkbox`) for the control itself.
 
 ```
 .field                    ── block (column: label → control → helper)

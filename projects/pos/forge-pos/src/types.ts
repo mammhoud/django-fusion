@@ -447,6 +447,16 @@ export interface NewCustomer {
   notes?: string | null;
 }
 
+export interface LoyaltyReportRow {
+  id: number;
+  customer_id: number;
+  customer_name: string;
+  sale_id?: number | null;
+  points_change: number;
+  reason: string;
+  created_at: string;
+}
+
 export interface LoyaltyTransaction {
   id: number;
   customer_id: number;

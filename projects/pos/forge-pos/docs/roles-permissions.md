@@ -1,4 +1,4 @@
-# Forge POS — Roles & Permissions
+# Formint — Roles & Permissions
 
 > **Related:** [Shared Role System](../../docs/ROLE_SYSTEM.md) — unified permission design across all editions
 
