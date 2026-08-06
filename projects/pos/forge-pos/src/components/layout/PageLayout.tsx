@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import SideNav from '../layout/SideNav';
+import AnimatedBackground from './AnimatedBackground';
 import { useAuth, AuthUser } from '../../contexts/AuthContext';
 import AnimatePresence from '../ui/AnimatePresence';
 import { dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
@@ -160,6 +161,9 @@ export default function PageLayout({
 
   return (
     <div className={`min-h-[100dvh] overflow-y-auto transition-colors duration-300 ${background}`}>
+      {/* GSAP ambient background — sits behind all content, follows the theme */}
+      <AnimatedBackground />
+
       {/* Overlay SideNav (mobile/tablet) */}
       <SideNav isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} currentRoute={location.pathname} />
 

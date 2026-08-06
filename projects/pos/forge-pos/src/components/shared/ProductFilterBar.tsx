@@ -10,8 +10,8 @@ import type { Category } from '../../types';
  * ProductManager and Sale. Both pages render the same visual block:
  *
  *   ┌─────────────────────────────────────────────────────────────┐
- *   │ [ 🔍 Search……  ] [type ▾] [sort ▾] [view] [＋ Add]  actions │
- *   │ [ All ] [ 🟠 Burgers ] [ 🟢 Sides ]      (category pills)   │
+ *   │ [ Search……  ] [type ▾] [sort ▾] [view] [+ Add]  actions   │
+ *   │ [ All ] [ Burgers ] [ Sides ]      (category pills)       │
  *   │ footer (result counter / legend etc.)                       │
  *   └─────────────────────────────────────────────────────────────┘
  *

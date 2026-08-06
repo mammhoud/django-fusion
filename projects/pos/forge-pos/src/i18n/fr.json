@@ -1035,6 +1035,9 @@
     "restaurantLogo": "Logo du restaurant",
     "restaurantName": "Nom du restaurant",
     "saveSettings": "Enregistrer",
+    "saveAllSettings": "Enregistrer tout",
+    "allSaved": "Toutes les modifications sont enregistrées",
+    "breadcrumbHome": "Accueil",
     "saving": "Enregistrement...",
     "searchCurrency": "Rechercher une devise...",
     "selectCurrency": "Sélectionner la devise",
@@ -1088,6 +1091,23 @@
     "validationPhone": "Veuillez entrer un numéro valide",
     "validationTaxNumber": "Le taux de taxe doit être un nombre",
     "validationTaxRange": "Le taux doit être entre 0 et 100"
+  },
+  "passwordConfirm": {
+    "saveTitle": "Enregistrer les paramètres",
+    "saveDesc": "Saisissez votre mot de passe pour enregistrer tous les paramètres.",
+    "importDesc": "Saisissez votre mot de passe pour importer une sauvegarde de la base de données.",
+    "exportDesc": "Saisissez votre mot de passe pour exporter la base de données.",
+    "resetDesc": "Saisissez votre mot de passe pour réinitialiser la base de données. Cette action est irréversible.",
+    "confirmImport": "Importer",
+    "confirmExport": "Exporter",
+    "passwordLabel": "Mot de passe",
+    "passwordRequired": "Veuillez saisir votre mot de passe",
+    "incorrectPassword": "Mot de passe incorrect. Veuillez réessayer.",
+    "importModeTitle": "Mode d'importation",
+    "modeAppend": "Ajouter les données",
+    "modeAppendDesc": "Fusionne la sauvegarde avec vos données existantes. Les enregistrements existants sont conservés.",
+    "modeReplace": "Tout remplacer",
+    "modeReplaceDesc": "Remplace votre base de données par la sauvegarde. Une copie de sécurité est créée au préalable."
   },
   "statusToast": {
     "dismiss": "Ignorer"

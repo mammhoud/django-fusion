@@ -9,6 +9,23 @@ import { useStatusToast } from '../../hooks/useStatusToast';
 import { useApiMutation } from '../../hooks/useApiMutation';
 import Card from '../../components/ui/Card';
 import StatusToast from '../../components/ui/StatusToast';
+import { accentColorFromSeed } from '../../components/pos/ProductCard';
+import { downloadCSV } from '../../utils/export';
+
+/** Initials avatar — deterministic accent color derived from the name seed. */
+function CustomerAvatar({ name }: { name: string }) {
+  const color = accentColorFromSeed(name);
+  const initials = name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  return (
+    <div
+      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm select-none"
+      style={{ backgroundColor: `${color}26`, color }}
+      aria-hidden="true"
+    >
+      {initials}
+    </div>
+  );
+}
 
 export default function Customers() {
   const { t } = useTranslation();
@@ -34,6 +51,21 @@ export default function Customers() {
   useEffect(() => {
     loadCustomers();
   }, []);
+
+  // ── CSV export of the currently-filtered customers ──
+  const handleExportCSV = () => {
+    downloadCSV(
+      `customers-${new Date().toISOString().split('T')[0]}.csv`,
+      [
+        { header: t('customers.name'), key: 'name' },
+        { header: t('customers.phone'), key: 'phone' },
+        { header: t('customers.email'), key: 'email' },
+        { header: t('customers.loyaltyPoints', 'Loyalty Points'), key: 'loyalty_points' },
+        { header: t('customers.notes'), key: 'notes' },
+      ],
+      filteredCustomers
+    );
+  };
 
   // ── Real-time customer updates from other windows ──
   useEffect(() => {
@@ -137,7 +169,7 @@ export default function Customers() {
     <PageLayout title={t('customers.title')}>
       <div className="space-y-4">
         {/* ── Title row with inline search + add button ── */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-lg font-bold text-base-content shrink-0">{t('customers.title')}</h1>
           <div className="relative flex-1 max-w-64">
             <span className="ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/50" />
@@ -165,6 +197,15 @@ export default function Customers() {
           <span className="text-[11px] text-base-content/40 whitespace-nowrap shrink-0">
             {filteredCustomers.length}/{customers.length}
           </span>
+          <button
+            onClick={handleExportCSV}
+            disabled={customers.length === 0}
+            className="btn btn-ghost btn-sm gap-1 shrink-0 disabled:opacity-40"
+            title={t('customers.exportTitle', 'Export customers')}
+          >
+            <span className="ri-download-2-line ri-14px" />
+            <span className="text-xs hidden sm:inline">{t('customers.export', 'Export')}</span>
+          </button>
           <button
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', phone: '', email: '', notes: '' }); }}
             className="btn btn-primary btn-sm gap-1 shrink-0"
@@ -217,9 +258,7 @@ export default function Customers() {
                 <Card padding="md">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <span className="ri-user-line ri-20px" />
-                    </div>
+                      <CustomerAvatar name={customer.name} />
                     <div>
                       <h3 className="font-semibold text-base-content">{customer.name}</h3>
                       <div className="flex items-center gap-1 text-sm text-base-content/50">

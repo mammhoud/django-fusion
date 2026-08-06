@@ -701,7 +701,10 @@ export default function KitchenDisplay() {
                       <span className="tag tag--sm tag--info">In Progress</span>
                     )}
                     {ticket.status === 'ready' && (
-                      <span className="tag tag--sm tag--success">Ready ✓</span>
+                      <span className="tag tag--sm tag--success flex items-center gap-1">
+                        <span className="ri-check-line ri-12px" />
+                        Ready
+                      </span>
                     )}
                   </div>
                   {/* ── Time-elapsed progress bar (green→yellow→red) ── */}

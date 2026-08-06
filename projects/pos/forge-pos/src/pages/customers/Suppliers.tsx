@@ -7,6 +7,7 @@ import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../hooks/useStatusToast';
 import { useApiMutation } from '../../hooks/useApiMutation';
 import StatusToast from '../../components/ui/StatusToast';
+import { downloadCSV } from '../../utils/export';
 
 type SortKey = 'name-asc' | 'name-desc' | 'newest';
 
@@ -35,6 +36,23 @@ export default function Suppliers() {
   useEffect(() => {
     loadSuppliers();
   }, []);
+
+  // ── CSV export of the currently-filtered suppliers ──
+  const handleExportCSV = () => {
+    downloadCSV(
+      `suppliers-${new Date().toISOString().split('T')[0]}.csv`,
+      [
+        { header: t('suppliers.name'), key: 'name' },
+        { header: t('suppliers.contactName'), key: 'contact_name' },
+        { header: t('suppliers.email'), key: 'email' },
+        { header: t('suppliers.phone'), key: 'phone' },
+        { header: t('suppliers.address'), key: 'address' },
+        { header: t('suppliers.taxId', 'Tax ID'), key: 'tax_id' },
+        { header: t('suppliers.paymentTerms'), key: 'payment_terms' },
+      ],
+      filteredSuppliers
+    );
+  };
 
   const loadSuppliers = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
@@ -140,12 +158,22 @@ export default function Suppliers() {
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-3">
           <h1 className="text-2xl font-bold text-base-content">{t('suppliers.title')}</h1>
-          <button
-            onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' }); }}
-            className="btn btn-primary gap-2 shrink-0 active:scale-[0.98] transition-all"
-          >
-            <span className="ri-add-line" /> {t('suppliers.addSupplier')}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportCSV}
+              disabled={filteredSuppliers.length === 0}
+              className="btn btn-ghost gap-2 shrink-0 disabled:opacity-40 active:scale-[0.98] transition-all"
+              title={t('suppliers.exportTitle', 'Export suppliers')}
+            >
+              <span className="ri-download-2-line" /> {t('suppliers.export', 'Export')}
+            </button>
+            <button
+              onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' }); }}
+              className="btn btn-primary gap-2 shrink-0 active:scale-[0.98] transition-all"
+            >
+              <span className="ri-add-line" /> {t('suppliers.addSupplier')}
+            </button>
+          </div>
         </div>
 
         {/* ── Search + sort bar (debounced async UX) ── */}
@@ -235,7 +263,7 @@ export default function Suppliers() {
               <div key={supplier.id} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <div className="w-10 h-10 rounded-full bg-info/10 dark:bg-info/20 flex items-center justify-center text-info dark:text-info/80">
                       <span className="ri-building-2-line ri-20px" />
                     </div>
                     <div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import PageLayout from '../../components/layout/PageLayout';
 import Card from '../../components/ui/Card';
+import StatCard from '../../components/ui/StatCard';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import {
@@ -112,67 +113,36 @@ export default function Analytics() {
       background="bg-linear-to-br from-base-200 via-secondary/15 to-base-200"
     >
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4 sm:gap-6 mb-8">
-          <div className="animate-fade-in">
-            <Card padding="xl" hover>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/20 rounded-lg">
-                  <span className="ri-money-dollar-box-line ri-24px text-info" />
-                </div>
-                <div>
-                  <p className="text-base-content/60">{t('analytics.totalRevenue')}</p>
-                  <p className="text-2xl font-bold text-base-content">
-                    {formatPrice(data.summary.total_revenue)}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <Card padding="xl" hover>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-info/20 rounded-lg">
-                  <span className="ri-stock-line ri-24px text-info" />
-                </div>
-                <div>
-                  <p className="text-base-content/60">{t('analytics.growthRate')}</p>
-                  <p className="text-2xl font-bold text-base-content">{growthRate}%</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <Card padding="xl" hover>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-secondary/20 rounded-lg">
-                  <span className="ri-shopping-cart-line ri-24px text-secondary" />
-                </div>
-                <div>
-                  <p className="text-base-content/60">{t('analytics.totalOrders')}</p>
-                  <p className="text-2xl font-bold text-base-content">{data.summary.total_orders}</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <Card padding="xl" hover>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-warning/20 rounded-lg">
-                  <span className="ri-money-dollar-box-line ri-24px text-warning" />
-                </div>
-                <div>
-                  <p className="text-base-content/60">{t('analytics.avgOrderValue')}</p>
-                  <p className="text-2xl font-bold text-base-content">
-                    {formatPrice(data.summary.average_order_value)}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
+        {/* Summary Cards — dashboard-style StatCards (same sizing as Home) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4 mb-8">
+          <StatCard
+            title={t('analytics.totalRevenue')}
+            value={formatPrice(data.summary.total_revenue)}
+            icon={<span className="ri-money-dollar-box-line ri-24px" />}
+            color="primary"
+            compact
+          />
+          <StatCard
+            title={t('analytics.growthRate')}
+            value={`${growthRate}%`}
+            icon={<span className="ri-stock-line ri-24px" />}
+            color="info"
+            compact
+          />
+          <StatCard
+            title={t('analytics.totalOrders')}
+            value={data.summary.total_orders}
+            icon={<span className="ri-shopping-cart-line ri-24px" />}
+            color="secondary"
+            compact
+          />
+          <StatCard
+            title={t('analytics.avgOrderValue')}
+            value={formatPrice(data.summary.average_order_value)}
+            icon={<span className="ri-money-dollar-box-line ri-24px" />}
+            color="warning"
+            compact
+          />
         </div>
 
         {/* Empty State Message */}

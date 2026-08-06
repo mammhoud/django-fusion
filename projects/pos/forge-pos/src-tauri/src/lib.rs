@@ -998,13 +998,123 @@ fn export_database_cmd(app: AppHandle) -> Result<String, String> {
     Ok(base64::engine::general_purpose::STANDARD.encode(&data))
 }
 
+/// Tables merged into the live database when importing in "append" mode.
+/// Auth tables (`users`, `roles`, `user_roles`) and the singleton `settings`
+/// row are intentionally excluded — those are only restored via "replace".
+const IMPORT_APPEND_TABLES: &[&str] = &[
+    "categories",
+    "products",
+    "delivery_types",
+    "employee_types",
+    "employees",
+    "customers",
+    "delivery_zones",
+    "coupons",
+    "sales",
+    "sale_items",
+    "ingredients",
+    "recipe_types",
+    "recipes",
+    "recipe_ingredients",
+    "inventory_transactions",
+    "inventory_adjustments",
+    "inventory_alerts",
+    "suppliers",
+    "purchase_orders",
+    "purchase_order_items",
+    "kitchen_tickets",
+    "loyalty_transactions",
+    "receipt_templates",
+    "tax_reports",
+    "employee_schedules",
+    "payrolls",
+    "support_messages",
+    "report_metadata",
+];
+
+/// Merge records from an imported backup file into the live database.
+/// Both databases share the same schema, so each table present in the backup
+/// is copied with `INSERT OR IGNORE` — existing rows (by primary key) stay
+/// untouched and new rows are appended. The whole merge runs in one
+/// transaction so a failure rolls everything back.
+fn import_database_append(db_path: &std::path::Path, decoded: &[u8]) -> Result<(), String> {
+    use diesel::{sql_query, Connection, RunQueryDsl};
+
+    let tmp_path = std::env::temp_dir().join(format!(
+        "forge-pos-import-{}-{}.db",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis())
+            .unwrap_or(0)
+    ));
+    std::fs::write(&tmp_path, decoded)
+        .map_err(|e| format!("Failed to write temporary database: {}", e))?;
+
+    let result = (|| -> Result<(), String> {
+        let mut conn = db::establish_connection(db_path)
+            .map_err(|e| format!("Failed to connect to database: {}", e))?;
+
+        // ATTACH requires the path as a literal — escape single quotes for SQL.
+        let src_path = tmp_path.to_string_lossy().replace('\'', "''");
+        sql_query(format!("ATTACH DATABASE '{}' AS src", src_path))
+            .execute(&mut conn)
+            .map_err(|e| format!("Failed to attach backup database: {}", e))?;
+
+        // FK enforcement must be changed outside a transaction (SQLite rule).
+        let _ = sql_query("PRAGMA foreign_keys = OFF").execute(&mut conn);
+
+        conn.transaction::<_, diesel::result::Error, _>(|conn| {
+            for table in IMPORT_APPEND_TABLES {
+                // Skip tables that don't exist in the backup (schema drift).
+                let exists: i64 = diesel::dsl::sql::<diesel::sql_types::BigInt>(&format!(
+                    "SELECT count(*) FROM src.sqlite_master WHERE type='table' AND name='{}'",
+                    table
+                ))
+                .get_result(conn)
+                .map_err(|e| {
+                    eprintln!("[db] append merge: could not inspect {}: {}", table, e);
+                    e
+                })?;
+                if exists == 0 {
+                    eprintln!("[db] append merge: {} not present in backup, skipping", table);
+                    continue;
+                }
+                sql_query(format!(
+                    "INSERT OR IGNORE INTO {} SELECT * FROM src.{}",
+                    table, table
+                ))
+                .execute(conn)
+                .map_err(|e| {
+                    eprintln!("[db] append merge failed on {}: {}", table, e);
+                    e
+                })?;
+            }
+            Ok(())
+        })
+        .map_err(|e| format!("Failed to merge backup data: {}", e))?;
+
+        let _ = sql_query("DETACH DATABASE src").execute(&mut conn);
+        Ok(())
+    })();
+
+    let _ = std::fs::remove_file(&tmp_path);
+    result
+}
+
 #[tauri::command]
-fn import_database_cmd(app: AppHandle, data: String) -> Result<(), String> {
+fn import_database_cmd(app: AppHandle, data: String, mode: Option<String>) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     use base64::Engine;
     let decoded = base64::engine::general_purpose::STANDARD
         .decode(&data)
         .map_err(|e| e.to_string())?;
+
+    // mode: "replace" (default) overwrites the whole database;
+    // "append" merges the backup data into the existing database.
+    if mode.as_deref() == Some("append") {
+        return import_database_append(&db_path, &decoded);
+    }
 
     if db_path.exists() {
         let backup_path = db_path.with_extension("db.backup");

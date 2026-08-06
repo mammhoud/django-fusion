@@ -6,6 +6,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonList, SkeletonTable } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
 import FormModal from '../../components/ui/FormModal';
+import { Badge } from '@/components/ui/badge';
 import EmployeeForm from '../../components/forms/EmployeeForm';
 import EmployeeTypeForm from '../../components/forms/EmployeeTypeForm';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -401,13 +402,13 @@ export default function Employees() {
                         <td className="px-4 py-3 text-right tabular-nums text-base-content">{emp.salary.toLocaleString()}</td>
                         <td className="px-4 py-3">
                           {emp.is_active ? (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
+                            <Badge className="border-success/30 bg-success/15 text-success">
                               {t('common.active')}
-                            </span>
+                            </Badge>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-error/15 text-error">
+                            <Badge className="border-error/30 bg-error/15 text-error">
                               {t('common.inactive')}
-                            </span>
+                            </Badge>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -566,7 +567,7 @@ export default function Employees() {
                         {t('employees.employeeCount', { count })}
                       </span>
                       {!et.is_active && (
-                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/20 text-red-500">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-error/10 text-error">
                           Inactive
                         </span>
                       )}
