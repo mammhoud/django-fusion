@@ -15,3 +15,5 @@ coverage/
 # (Re-includes over the repo-root *.png rule.)
 !src-tauri/icons/**
 sidecar/build/
+sidecar/dist/
+src-tauri/target/

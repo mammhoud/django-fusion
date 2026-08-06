@@ -710,11 +710,10 @@ Market expansion requires translated onboarding, local invoice/tax review, payme
 - [`tauri-plugins-enhancement-plan.md`](tauri-plugins-enhancement-plan.md) — Formint desktop plugin candidates and rollout
 - [`forge-pos-plan.md`](forge-pos-plan.md) — Forge parity source, current status, and retirement gates
 - [`../legacy/pos/forge-pos-ui-enhancement-master.md`](../legacy/pos/forge-pos-ui-enhancement-master.md) — archived Forge design baseline for colors, responsive UI, RTL, notes, and KDS
-- [`django-fusion-enhancements.md`](django-fusion-enhancements.md) — django-fusion component and sync integration
-- [`pos-solo-enhancement.md`](pos-solo-enhancement.md) — legacy Solo enhancement plan; superseded by this plan for Professional scope
+- *(The `django-fusion-enhancements.md` and `pos-solo-enhancement.md` plans were merged into this document; their remaining implementation references are now tracked as gates in §4 and §6.)*
 - [`../../features/feature-roadmap.md`](../../features/feature-roadmap.md) — cross-project feature roadmap
 - [`../../publish/pos-release.md`](../../publish/pos-release.md) — release and publishing guidance
-- [`../../../docs/Anytype/plans/formint-pos-professional-plan.md`](../../../docs/Anytype/plans/formint-pos-professional-plan.md) — Anytype knowledge-graph object
+- *(This document is the canonical Anytype knowledge-graph object for Formint POS Professional.)*
 
 ## Decision record
 

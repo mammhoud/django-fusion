@@ -104,18 +104,6 @@ urlpatterns += [
     path("fusion/render/suppliers", fusion_render_suppliers, name="fusion-suppliers"),
     path("fusion/render/about", fusion_render_about, name="fusion-about"),
 
-<<<<<<< HEAD
-# django-bolt reverse-only URLs (so reverse()/{% url %} work).
-# Only included when django_bolt is installed and ships a urls module.
-# find_spec() raises ModuleNotFoundError when the parent package is absent,
-# so the optionality must be wrapped in try/except (bolt is optional per
-# settings HAS_DJANGO_BOLT).
-try:
-    if importlib.util.find_spec("django_bolt.urls"):
-        urlpatterns.append(path("", include("django_bolt.urls")))
-except ModuleNotFoundError:
-    pass
-=======
     # API Keys
     path("api-keys/scopes", known_scopes, name="apikeys-scopes"),
     path("api-keys/<int:key_id>/revoke", revoke_api_key, name="apikeys-revoke"),
@@ -202,4 +190,3 @@ except ModuleNotFoundError:
     path("ops/nodes/register", node_register, name="ops-nodes-register"),
     path("ops/nodes/heartbeat", node_heartbeat, name="ops-nodes-heartbeat"),
 ]
->>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
