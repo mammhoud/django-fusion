@@ -297,6 +297,30 @@ def test_table_template_exists():
     assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "table.html").is_file()
 
 
+def test_table_shell_template_exists():
+    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "table_shell.html").is_file()
+
+
+def test_table_shell_renders_shared_toolbar():
+    rendered = _render(
+        '{% comp "fusion/components/table_shell.html" '
+        'resource="products" count_label="products" '
+        'new_url="/htmx/forms/product/" new_label="+ New product" '
+        'fragment_attr="formint.tables.products" %}'
+        '<table><tbody><tr><td>Product</td></tr></tbody></table>'
+        '{% endcomp %}',
+        {"table_data": [{"id": 1}]},
+    )
+
+    assert 'data-fusion-table="products"' in rendered
+    assert 'data-fusion-fragment="formint.tables.products"' in rendered
+    assert '1 products' in rendered
+    assert 'type="button"' in rendered
+    assert 'hx-get="/htmx/forms/product/"' in rendered
+    assert '+ New product' in rendered
+    assert '<td>Product</td>' in rendered
+
+
 def test_pagination_template_exists():
     assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "pagination" / "pagination.html").is_file()
 
