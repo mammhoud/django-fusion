@@ -20,7 +20,8 @@ component (see ``views.py``).
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Mapping
+from typing import Any, ClassVar
 
 from django.db.models import Model as DjangoModel
 from django.forms import ModelForm
@@ -31,7 +32,7 @@ from django_fusion.fragments.tables import RowGenerator, TableMixin
 from formint import models as m
 
 __all__ = [
-    "ProductsTableComponent", "CategoriesTableComponent",
+    "BaseTableComponent", "ProductsTableComponent", "CategoriesTableComponent",
     "CustomersTableComponent", "ClientCategoriesTableComponent",
     "SalesTableComponent", "SuppliersTableComponent",
     "ProductFormComponent", "CategoryFormComponent",
@@ -116,118 +117,149 @@ class FusionFormComponent(FormMixin):
 # ══════════════════════════════════════════════════════════════════════════
 
 
-class ProductsTableComponent(TableMixin):
+class BaseTableComponent(TableMixin):
+    """Shared Formint table contract.
+
+    Resource components only declare their model, columns, labels, related
+    objects, and ordering.  QuerySet construction, header normalization, and
+    the shared page size stay in one place.  ``TableMixin`` continues to own
+    row generation and pagination metadata so this base remains compatible
+    with every django-fusion table consumer.
+    """
+
+    model: ClassVar[type[DjangoModel] | None] = None
+    paginate_by: ClassVar[int] = 10
+    queryset_ordering: ClassVar[tuple[str, ...]] = ()
+    select_related_fields: ClassVar[tuple[str, ...]] = ()
+    header_labels: ClassVar[Mapping[str, str]] = {}
+    _table_queryset: Any = None
+
+    def reset_table_queryset(self) -> None:
+        """Clear the request-scoped QuerySet cache after a data mutation."""
+        self._table_queryset = None
+
+    def get_table_data(self):
+        """Return the resource QuerySet with eager-loading and ordering.
+
+        Components are request-scoped, so retaining the lazy QuerySet avoids
+        rebuilding the same query when ``TableMixin`` asks for rows and then
+        pagination totals.  Evaluation remains lazy and Django's QuerySet
+        result cache is preserved for repeated consumers in one response.
+        """
+        if self.model is None:
+            return super().get_table_data()
+
+        # Components are normally request-scoped.  Keep the lazy QuerySet
+        # stable within that request so rows, pagination, and helper methods
+        # share one configured source; callers that mutate data can explicitly
+        # call ``reset_table_queryset()`` before rendering again.
+        if self._table_queryset is not None:
+            return self._table_queryset
+
+        queryset = self.model.objects.all()
+        if self.select_related_fields:
+            queryset = queryset.select_related(*self.select_related_fields)
+        if self.queryset_ordering:
+            queryset = queryset.order_by(*self.queryset_ordering)
+        self._table_queryset = queryset
+        return queryset
+
+    def get_table_headers(self) -> list[dict[str, Any]]:
+        """Build stable headers from the declared columns and labels."""
+        if self.table_headers:
+            return super().get_table_headers()
+
+        return [
+            {
+                "key": column,
+                "label": self.header_labels.get(
+                    column, column.replace("_", " ").title()
+                ),
+                "sortable": True,
+            }
+            for column in (self.table_columns or [])
+            if column not in (self.table_exclude or [])
+        ]
+
+
+class ProductsTableComponent(BaseTableComponent):
     """Product catalog table fragment."""
 
+    model = m.Product
     table_name = "formint/tables/products"
     table_columns = ["id", "name", "category", "price", "stock_quantity", "tax_rate", "is_active"]
-    table_headers = [
-        {"label": "ID", "key": "id"},
-        {"label": "Name", "key": "name"},
-        {"label": "Category", "key": "category"},
-        {"label": "Price", "key": "price"},
-        {"label": "Stock", "key": "stock_quantity"},
-        {"label": "Tax", "key": "tax_rate"},
-        {"label": "Active", "key": "is_active"},
-    ]
-    paginate_by = 10
-
-    def get_table_data(self):
-        return m.Product.objects.select_related("category").order_by("name")
+    header_labels = {
+        "id": "ID", "name": "Name", "category": "Category", "price": "Price",
+        "stock_quantity": "Stock", "tax_rate": "Tax", "is_active": "Active",
+    }
+    queryset_ordering = ("name",)
+    select_related_fields = ("category",)
 
 
-class CategoriesTableComponent(TableMixin):
+class CategoriesTableComponent(BaseTableComponent):
     """Product category table fragment."""
 
+    model = m.Category
     table_name = "formint/tables/categories"
     table_columns = ["id", "name", "display_order", "is_active"]
-    table_headers = [
-        {"label": "ID", "key": "id"},
-        {"label": "Name", "key": "name"},
-        {"label": "Order", "key": "display_order"},
-        {"label": "Active", "key": "is_active"},
-    ]
-    paginate_by = 10
-
-    def get_table_data(self):
-        return m.Category.objects.all().order_by("display_order", "name")
+    header_labels = {
+        "id": "ID", "name": "Name", "display_order": "Order", "is_active": "Active",
+    }
+    queryset_ordering = ("display_order", "name")
 
 
-class CustomersTableComponent(TableMixin):
+class CustomersTableComponent(BaseTableComponent):
     """Customer list table fragment."""
 
+    model = m.Customer
     table_name = "formint/tables/customers"
     table_columns = ["id", "full_name", "email", "phone", "loyalty_points", "total_spent", "is_active"]
-    table_headers = [
-        {"label": "ID", "key": "id"},
-        {"label": "Name", "key": "full_name"},
-        {"label": "Email", "key": "email"},
-        {"label": "Phone", "key": "phone"},
-        {"label": "Points", "key": "loyalty_points"},
-        {"label": "Spent", "key": "total_spent"},
-        {"label": "Active", "key": "is_active"},
-    ]
-    paginate_by = 10
-
-    def get_table_data(self):
-        return m.Customer.objects.all().order_by("-created_at")
+    header_labels = {
+        "id": "ID", "full_name": "Name", "email": "Email", "phone": "Phone",
+        "loyalty_points": "Points", "total_spent": "Spent", "is_active": "Active",
+    }
+    queryset_ordering = ("-created_at",)
 
 
-class ClientCategoriesTableComponent(TableMixin):
+class ClientCategoriesTableComponent(BaseTableComponent):
     """Loyalty client category table fragment."""
 
+    model = m.ClientCategory
     table_name = "formint/tables/client_categories"
     table_columns = ["id", "name", "min_points", "points_per_currency", "discount_rate", "is_active"]
-    table_headers = [
-        {"label": "ID", "key": "id"},
-        {"label": "Name", "key": "name"},
-        {"label": "Min Points", "key": "min_points"},
-        {"label": "Pts/Currency", "key": "points_per_currency"},
-        {"label": "Discount %", "key": "discount_rate"},
-        {"label": "Active", "key": "is_active"},
-    ]
-    paginate_by = 10
-
-    def get_table_data(self):
-        return m.ClientCategory.objects.all().order_by("min_points", "name")
+    header_labels = {
+        "id": "ID", "name": "Name", "min_points": "Min Points",
+        "points_per_currency": "Pts/Currency", "discount_rate": "Discount %",
+        "is_active": "Active",
+    }
+    queryset_ordering = ("min_points", "name")
 
 
-class SalesTableComponent(TableMixin):
+class SalesTableComponent(BaseTableComponent):
     """Recent sales table fragment."""
 
+    model = m.Sale
     table_name = "formint/tables/sales"
     table_columns = ["id", "sale_date", "customer", "payment_method", "status", "total"]
-    table_headers = [
-        {"label": "ID", "key": "id"},
-        {"label": "Date", "key": "sale_date"},
-        {"label": "Customer", "key": "customer"},
-        {"label": "Payment", "key": "payment_method"},
-        {"label": "Status", "key": "status"},
-        {"label": "Total", "key": "total"},
-    ]
-    paginate_by = 10
-
-    def get_table_data(self):
-        return m.Sale.objects.select_related("customer").order_by("-sale_date")
+    header_labels = {
+        "id": "ID", "sale_date": "Date", "customer": "Customer",
+        "payment_method": "Payment", "status": "Status", "total": "Total",
+    }
+    queryset_ordering = ("-sale_date",)
+    select_related_fields = ("customer",)
 
 
-class SuppliersTableComponent(TableMixin):
+class SuppliersTableComponent(BaseTableComponent):
     """Supplier list table fragment."""
 
+    model = m.Supplier
     table_name = "formint/tables/suppliers"
     table_columns = ["id", "name", "contact_name", "email", "phone", "is_active"]
-    table_headers = [
-        {"label": "ID", "key": "id"},
-        {"label": "Name", "key": "name"},
-        {"label": "Contact", "key": "contact_name"},
-        {"label": "Email", "key": "email"},
-        {"label": "Phone", "key": "phone"},
-        {"label": "Active", "key": "is_active"},
-    ]
-    paginate_by = 10
-
-    def get_table_data(self):
-        return m.Supplier.objects.all().order_by("name")
+    header_labels = {
+        "id": "ID", "name": "Name", "contact_name": "Contact", "email": "Email",
+        "phone": "Phone", "is_active": "Active",
+    }
+    queryset_ordering = ("name",)
 
 
 TABLE_COMPONENTS: dict[str, type[TableMixin]] = {
@@ -324,7 +356,7 @@ FORM_COMPONENTS: dict[str, type[FormMixin]] = {
 RESOURCE_MAP: dict[str, Any] = {**TABLE_COMPONENTS, **FORM_COMPONENTS}
 
 
-def render_table_rows(component: TableMixin, limit: int = 50) -> list[dict]:
+def render_table_rows(component: BaseTableComponent, limit: int = 50) -> list[dict]:
     """Render ORM data to table-ready rows via django-fusion RowGenerator."""
     generator = RowGenerator(
         component.get_table_data()[:limit],

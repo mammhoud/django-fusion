@@ -1,5 +1,5 @@
 {% load components %}
-{% comp "fusion/components/table_shell.html" resource=resource count_label="products" new_url="/htmx/forms/product/" new_label="+ New product" form_target="#formint-form-slot" fragment_attr="formint.tables.products" %}
+{% comp "fusion/components/table.html" resource=resource count_label="products" new_url="/htmx/forms/product/" new_label="+ New product" form_target="#formint-form-slot" fragment_attr="formint.tables.products" table_data=table_data %}
   <table class="table">
     <thead>
       <tr>
