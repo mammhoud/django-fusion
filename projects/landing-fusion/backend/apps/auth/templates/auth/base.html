@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block head_title %}Fusion CMS{% endblock head_title %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --fu-ink: #131312;
+      --fu-paper: #fcfcfa;
+      --fu-surface: #f5f5f3;
+      --fu-card: #fff;
+      --fu-line: #e5e5e0;
+      --fu-link: #0b57d0;
+      --fu-link-hover: #0842a0;
+      --fu-muted: #6b6b66;
+      --fu-error: #dc2626;
+      --fu-success: #16a34a;
+      --radius: 12px;
+    }
+    *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Public Sans', system-ui, sans-serif;
+      background: var(--fu-surface);
+      color: var(--fu-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .auth-shell {
+      width: 100%;
+      max-width: 28rem;
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-logo a {
+      font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--fu-ink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .auth-card {
+      background: var(--fu-card);
+      border: 1px solid var(--fu-line);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-logo">
+      <a href="/">Fusion CMS</a>
+      <p style="font-size:0.85rem;color:var(--fu-muted);margin-top:0.25rem">Auth</p>
+    </div>
+    <div class="auth-card">
+      {{ fragment }}
+    </div>
+  </div>
+</div>
+</body>
+</html>
