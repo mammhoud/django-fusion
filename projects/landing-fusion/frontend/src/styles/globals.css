@@ -14,7 +14,7 @@
 @source "../../../assets/templates/";
 
 /* ────────────────────────────────────────────────────────────────────────
-   Fusion CMS — "the page as its own document"
+   Structa Cloud — "the page as its own document"
    paper + ink, hairline rules, hypermedia-blue links, mono labels.
    Light = printed sheet · Dark = the same sheet, inverted on the press.
    ──────────────────────────────────────────────────────────────────────── */
@@ -39,6 +39,18 @@
   --fu-primary: var(--fu-link);
   --fu-primary-dark: var(--fu-link-dark);
   --fu-accent: var(--fu-mark);
+
+  /* ── Product brand accents ────────────────────────────────────────
+     One muted hue per brand — the accent that carries that product's
+     identity (logo chips, brand page swatches, card hovers). Kept in the
+     same paper/ink system: medium saturation, legible on fu-paper and on
+     fu-ink (dark theme uses lighter variants). HSL triplets, used via
+     hsl(var(--brand-formints)) etc. */
+  --brand-formints: 158 42% 32%;   /* verdigris — merchant seal      */
+  --brand-precis: 238 55% 44%;     /* indigo — learning, focus      */
+  --brand-loop: 24 55% 40%;        /* terracotta — blocks, craft    */
+  --brand-syntara: 264 58% 48%;    /* iris — AI signal              */
+  --brand-vresume: 346 52% 44%;    /* madder rose — career, growth  */
 }
 
 .dark {
@@ -59,6 +71,13 @@
   --fu-primary: var(--fu-link);
   --fu-primary-dark: var(--fu-link-dark);
   --fu-accent: var(--fu-mark);
+
+  /* Brand accents — lighter variants for dark surfaces. */
+  --brand-formints: 158 55% 62%;
+  --brand-precis: 231 70% 74%;
+  --brand-loop: 27 72% 66%;
+  --brand-syntara: 264 68% 78%;
+  --brand-vresume: 346 66% 72%;
 }
 
 @theme inline {
@@ -80,12 +99,31 @@
   --color-fu-primary-dark: hsl(var(--fu-primary-dark));
   --color-fu-accent: hsl(var(--fu-accent));
 
-  /* Typography — the document voice */
-  --font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Bricolage Grotesque", "Public Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  /* Typography — the document voice. Self-hosted via @fontsource-variable
+     (imported in Layout.astro); the plain-name fallbacks keep the Django
+     render path (Google Fonts) on the same family names. */
+  --font-sans: "Public Sans Variable", "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", "Public Sans Variable", "Public Sans", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 
-  --animate-fusion-fade-in: fusion-fade-in 0.45s ease-out;
+  /* Motion — mass & spring, never linear. These are the ONLY curves the
+     site uses for state changes. --fu-ease-out is the "heavy lift" (things
+     that arrive), --fu-ease-spring the "snap" (things that settle). */
+  --fu-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --fu-ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+
+  /* The one scroll-reveal recipe (blur-fade-up) — every reveal element
+     shares it, so the motion language stays identical site-wide. */
+  --fu-reveal-transition:
+    opacity 0.8s var(--fu-ease-out),
+    transform 0.8s var(--fu-ease-out),
+    filter 0.8s var(--fu-ease-out);
+
+  /* Film grain — one fixed SVG noise sheet over the whole document, so the
+     paper reads as printed matter (see body::after). */
+  --fu-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+
+  --animate-fusion-fade-in: fusion-fade-in 0.45s var(--fu-ease-out);
   --animate-fusion-pulse: fusion-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-fusion-blink: fusion-blink 1.1s step-end infinite;
 
@@ -103,14 +141,36 @@
   }
 }
 
+/* Brand drafting-grid pulse — the grid-line alpha is a REGISTERED custom
+   property so it interpolates smoothly on the site's expo curve (4.5s,
+   never linear). @property must live at top level (invalid inside
+   @layer). Legacy browsers without @property registration fall back to a
+   discrete flip between 0.55 and 0.85 each half-cycle — a faint blink,
+   and only on 2022-2024 browsers; the resting alpha stays 0.55 via the
+   var fallback. The animation itself is gated on .reveal-visible, so
+   offscreen boards never burn frames. */
+@property --brand-grid-alpha {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0.55;
+}
+
 /* Composable utilities (usable in @apply, Tailwind 4) — top-level, not nested. */
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5
-         text-sm font-semibold transition-all duration-200
+         text-sm font-semibold cursor-pointer
          focus-visible:outline-2 focus-visible:outline-offset-2
-         focus-visible:outline-fu-link cursor-pointer
+         focus-visible:outline-fu-link
          disabled:opacity-50 disabled:cursor-not-allowed;
+  transition:
+    color 0.35s var(--fu-ease-out),
+    background-color 0.35s var(--fu-ease-out),
+    border-color 0.35s var(--fu-ease-out),
+    box-shadow 0.45s var(--fu-ease-out),
+    transform 0.45s var(--fu-ease-spring);
 }
+/* Press physics — the whole button physically depresses. */
+.btn:active { transform: scale(0.97); }
 @utility badge {
   @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
@@ -124,6 +184,26 @@
     font-feature-settings: "cv11", "ss01";
     /* Smooth theme switch (§5.1). Applied pre-paint, so no flash on load. */
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  /* Film grain — a single fixed noise sheet over the document. Purely
+     cosmetic, pointer-events none, GPU-cheap (one composited layer, no
+     repaints of content). Subtle in light, dustier in dark. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* Below the header (50) and modals (80+), above page content and the
+       BackToTop button (30) — systemic layer, nothing arbitrary. */
+    z-index: 45;
+    pointer-events: none;
+    background-image: var(--fu-grain);
+    background-size: 140px 140px;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+  }
+  .dark body::after {
+    opacity: 0.05;
+    mix-blend-mode: screen;
   }
   ::selection {
     @apply bg-fu-link text-white;
@@ -196,37 +276,145 @@
   .source-panel code {
     @apply block overflow-x-auto p-5 md:p-6;
   }
+  /* Double-bezel: the ink panel sits in a hairline tray (1px gap) so it
+     reads as a machined plate — a 0.5px white keyline, then the shell. */
+  .source-panel--bezel {
+    border: 1px solid hsl(40 6% 20% / 0.9);
+    box-shadow:
+      0 0 0 1px hsl(var(--fu-paper) / 0.5),
+      0 0 0 5px hsl(var(--fu-card)),
+      0 0 0 6px hsl(var(--fu-line) / 0.7),
+      0 18px 44px -20px hsl(var(--fu-ink) / 0.45);
+    border-radius: 0.75rem;
+  }
+  .source-panel--bezel code { border-radius: 0.625rem; }
   .source-panel .tok-tag  { color: #7cb3ff; }
   .source-panel .tok-attr { color: #ffe14d; }
   .source-panel .tok-str  { color: #b0aba0; }
   .source-panel .tok-com  { color: #b0aba0; font-style: italic; }
 
   /* ── Buttons — links you can press ──────────────────────────────── */
+  /* Double-bezel on the primary: a tinted outer shell + raised core, so
+     the CTA reads as a machined key on the paper. */
   .btn-primary {
     @apply btn bg-fu-link text-white
-           hover:bg-fu-link-dark active:translate-y-px
-           shadow-sm hover:shadow-md;
+           hover:bg-fu-link-dark
+           shadow-sm;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.5) inset,
+      0 0 0 1px hsl(var(--fu-link-dark) / 0.45),
+      0 1px 2px hsl(var(--fu-ink) / 0.18),
+      0 8px 24px -12px hsl(var(--fu-link) / 0.55);
+  }
+  .btn-primary:hover {
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.5) inset,
+      0 0 0 1px hsl(var(--fu-link-dark) / 0.55),
+      0 2px 3px hsl(var(--fu-ink) / 0.2),
+      0 14px 32px -12px hsl(var(--fu-link) / 0.65);
+  }
+  .dark .btn-primary {
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.18) inset,
+      0 0 0 1px hsl(var(--fu-link) / 0.35),
+      0 12px 32px -14px hsl(var(--fu-link) / 0.6);
+  }
+  .dark .btn-primary:hover {
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.18) inset,
+      0 0 0 1px hsl(var(--fu-link) / 0.5),
+      0 16px 40px -14px hsl(var(--fu-link) / 0.7);
   }
   .btn-secondary {
     @apply btn bg-transparent text-fu-ink border border-fu-line
-           hover:border-fu-link hover:text-fu-link active:translate-y-px;
+           hover:border-fu-link hover:text-fu-link;
   }
   .btn-outline {
     @apply btn border border-fu-link text-fu-link
-           hover:bg-fu-link/5 active:translate-y-px;
+           hover:bg-fu-link/5;
   }
   .btn-white {
     @apply btn bg-fu-paper text-fu-link border border-fu-line
-           hover:border-fu-link active:translate-y-px shadow-sm;
+           hover:border-fu-link shadow-sm;
   }
 
-  /* ── Cards — clipped sheets, not glassy tiles ───────────────────── */
+  /* Chip CTA — the trailing arrow sits in its own inset well, flush with
+     the button's right padding. Add .btn-chip to a btn-primary in markup
+     (the Hero primary CTA does this). */
+  .btn-chip svg {
+    margin-left: 0.15rem;
+    padding: 0.28rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: hsl(var(--fu-paper) / 0.18);
+    box-shadow: inset 0 0 0 1px hsl(var(--fu-paper) / 0.22);
+    transition: transform 0.45s var(--fu-ease-spring);
+  }
+  .btn-chip:hover svg {
+    transform: translate(0.1rem, -0.05rem) scale(1.08);
+  }
+  .btn-chip:active svg { transform: scale(0.94); }
+
+  /* Magnetic hero CTA — the button drifts toward the cursor (≤6px, driven by
+     the Alpine 'magnetic' component) and springs back on leave. The motion
+     lives on a wrapper so the button's own :active press-scale and btn-chip
+     arrow animation stay untouched. While the pointer is inside, the
+     transition is off so the drift tracks 1:1; on leave it re-engages so the
+     snap-back animates on the site's spring curve. */
+  .btn-magnetic {
+    display: inline-flex;
+    transition: transform 0.55s var(--fu-ease-spring);
+  }
+  .btn-magnetic--tracking {
+    transition: none;
+    will-change: transform;
+  }
+
+  /* ── Cards — clipped sheets with a machined edge ────────────────── */
+  /* Double-bezel: an outer hairline shell + a 1px inner top highlight,
+     so the sheet reads as a plate resting in a tray, not a flat div. */
   .card {
-    @apply bg-fu-card rounded-md border border-fu-line
-           transition-all duration-300 hover:border-fu-muted hover:shadow-md;
+    @apply bg-fu-card rounded-lg border border-fu-line;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 1px 2px hsl(var(--fu-ink) / 0.04),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring);
+  }
+  /* Promote the composited layer only while the card is actually being
+     hovered — permanent will-change on every card in a grid would hold
+     dozens of layers hostage. */
+  .card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-2px);
+    will-change: transform;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 2px 3px hsl(var(--fu-ink) / 0.05),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
+  .dark .card {
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.08) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.4),
+      0 14px 36px -22px hsl(var(--fu-ink) / 0.9);
+  }
+  .dark .card:hover {
+    border-color: hsl(var(--fu-muted) / 0.6);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.08) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 24px 48px -24px hsl(var(--fu-ink));
   }
   .card-gradient {
-    @apply bg-fu-ink text-fu-paper rounded-md border border-fu-line;
+    @apply bg-fu-ink text-fu-paper rounded-lg border border-fu-line;
   }
 
   /* ── Hero — the top sheet of the document ───────────────────────── */
@@ -254,6 +442,324 @@
     @apply badge bg-fu-live/10 text-fu-live border border-fu-live/30;
   }
 
+  /* ── Edition card tiers (Formints Community → Cloud) ────────────── */
+  .edition__card--outline {
+    border-style: dashed;
+  }
+  .edition__card--outline .tag-marker { opacity: 0.75; }
+  /* Pro tier — the card itself carries the accent: a link-blue shell,
+     soft glow, and a slight lift so it reads as the recommended slot. */
+  .edition__card--featured {
+    border-color: hsl(var(--fu-link) / 0.55);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-link) / 0.35),
+      0 24px 48px -24px hsl(var(--fu-link) / 0.55);
+  }
+  /* On hover the featured card keeps lifting instead of dipping back —
+     the generic .card:hover translate (-2px) would otherwise fight the
+     md:-translate-y-1 utility (specificity). */
+  .edition__card--featured:hover {
+    transform: translateY(-0.5rem);
+  }
+  .dark .edition__card--featured {
+    border-color: hsl(var(--fu-link) / 0.6);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.08) inset,
+      0 0 0 1px hsl(var(--fu-link) / 0.4),
+      0 28px 56px -24px hsl(var(--fu-link) / 0.55);
+  }
+  .edition__card--managed {
+    border-color: hsl(var(--fu-live) / 0.45);
+  }
+  .edition__card--managed .btn-secondary {
+    border-color: hsl(var(--fu-live) / 0.5);
+    color: hsl(var(--fu-live));
+  }
+  .edition__card--managed .btn-secondary:hover { border-color: hsl(var(--fu-live)); }
+
+  /* Cloud corner ribbon (tier: managed) */
+  .managed-ribbon {
+    position: absolute;
+    top: 1.05rem;
+    right: -2.6rem;
+    transform: rotate(45deg);
+    transform-origin: center;
+    background: hsl(var(--fu-live) / 0.12);
+    color: hsl(var(--fu-live));
+    border: 1px solid hsl(var(--fu-live) / 0.35);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: 0.22rem 2.6rem;
+    pointer-events: none;
+  }
+  .managed-ribbon::before { content: "☁ "; }
+
+  /* ── Catalog cards (the merged “Projects in this repo” grid) ────── */
+  .product-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-card));
+    border-radius: 0.5rem;
+    /* Default ink-blue; each brand overrides via data-brand below. */
+    color: hsl(var(--fu-link));
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+  }
+  .product-logo svg { width: 1.4rem; height: 1.4rem; }
+  /* Brand identity — one muted hue per product (see tokens above). The
+     mark glyph + chip border inherit the brand colour; the chip face gets
+     a faint brand wash so each product reads as its own identity. */
+  .product-logo[data-brand="formints"] { color: hsl(var(--brand-formints)); border-color: hsl(var(--brand-formints) / 0.35); background: hsl(var(--brand-formints) / 0.06); }
+  .product-logo[data-brand="precis"]   { color: hsl(var(--brand-precis));   border-color: hsl(var(--brand-precis) / 0.35);   background: hsl(var(--brand-precis) / 0.06); }
+  .product-logo[data-brand="loop"]     { color: hsl(var(--brand-loop));     border-color: hsl(var(--brand-loop) / 0.35);     background: hsl(var(--brand-loop) / 0.06); }
+  .product-logo[data-brand="syntara"]  { color: hsl(var(--brand-syntara));  border-color: hsl(var(--brand-syntara) / 0.35);  background: hsl(var(--brand-syntara) / 0.06); }
+  .product-logo[data-brand="vresume"]  { color: hsl(var(--brand-vresume));  border-color: hsl(var(--brand-vresume) / 0.35);  background: hsl(var(--brand-vresume) / 0.06); }
+  a:hover .product-logo {
+    border-color: currentColor;
+  }
+
+  .edition-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    border: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-card));
+    border-radius: 0.375rem;
+    padding: 0.15rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: hsl(var(--fu-muted));
+    white-space: nowrap;
+  }
+  .edition-chip strong { color: hsl(var(--fu-link)); font-weight: 600; }
+
+  /* Product status badge — amber caution for development products. */
+  .badge-dev {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #92400e;
+    border: 1px solid rgb(217 119 6 / 0.4);
+    background: rgb(251 191 36 / 0.12);
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    white-space: nowrap;
+  }
+  .badge-dev::before { content: "◌"; }
+  .dark .badge-dev {
+    color: #fbbf24;
+    border-color: rgb(251 191 36 / 0.35);
+    background: rgb(251 191 36 / 0.1);
+  }
+
+  /* ── Pricing page tabs (per-product pricing) ────────────────────── */
+  .pricing-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .pricing-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-card));
+    color: hsl(var(--fu-muted));
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem 0.35rem 0.45rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .pricing-tab:hover { border-color: hsl(var(--fu-link)); color: hsl(var(--fu-ink)); }
+  .pricing-tab[aria-selected="true"] {
+    border-color: hsl(var(--fu-link));
+    background: hsl(var(--fu-link));
+    color: #fff;
+  }
+  .pricing-tab .product-logo {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.3rem;
+  }
+  .pricing-tab .product-logo svg { width: 0.9rem; height: 0.9rem; }
+  .pricing-tab[aria-selected="true"] .product-logo {
+    border-color: rgb(255 255 255 / 0.4);
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+  }
+  /* Panels are shown/hidden by Alpine x-show; x-cloak keeps them hidden
+     before Alpine boots. No display rule here — it would fight x-show. */
+
+  /* ── Brand kit page (/brand/) — identity boards ─────────────────── */
+  @keyframes brand-grid-breathe {
+    0%, 100% { --brand-grid-alpha: 0.55; }
+    50%      { --brand-grid-alpha: 0.85; }
+  }
+  /* Each product gets a presentation board: large lockup, construction
+     geometry, colour system, essence line, typography. Follows the
+     brandkit discipline: sparse, one strong idea per board, accent
+     repeated across the system. */
+  .brand-board {
+    position: relative;
+    border: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-card));
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .brand-board__lockup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid hsl(var(--fu-line));
+  }
+  .brand-board__mark {
+    flex: none;
+  }
+  .brand-board__mark .product-logo {
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 0.75rem;
+  }
+  .brand-board__mark .product-logo svg {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+  .brand-board__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--fu-ink));
+  }
+  .brand-board__role {
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: hsl(var(--fu-muted));
+  }
+  /* Construction panel — the mark on a drafting grid with centre ticks. */
+  .brand-board__construction {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 11rem;
+    background-image:
+      linear-gradient(hsl(var(--fu-line) / var(--brand-grid-alpha, 0.55)) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--fu-line) / var(--brand-grid-alpha, 0.55)) 1px, transparent 1px);
+    background-size: 1rem 1rem;
+  }
+  /* The breathing only begins once its board has revealed — no frames
+     burned by offscreen boards, and the first pulse rides the reveal. */
+  .brand-board.reveal-visible .brand-board__construction {
+    animation: brand-grid-breathe 4.5s var(--fu-ease-out) infinite;
+  }
+  .brand-board__construction::before,
+  .brand-board__construction::after {
+    content: "";
+    position: absolute;
+    background: hsl(var(--fu-line));
+  }
+  .brand-board__construction::before {
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+  }
+  .brand-board__construction::after {
+    left: 50%; top: 0; bottom: 0;
+    width: 1px;
+  }
+  .brand-board__construction .product-logo {
+    position: relative;
+    z-index: 1;
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 0 6px hsl(var(--fu-card));
+    /* Micro spring-scale on reveal — the mark starts 10% small and lands
+       with the site's spring overshoot, just after the sheet's expo fade. */
+    transform: scale(0.9);
+    transition: transform 0.6s var(--fu-ease-spring);
+  }
+  .brand-board.reveal-visible .brand-board__construction .product-logo {
+    transform: scale(1);
+    /* Lands as the board's own fade finishes, so the overshoot reads. */
+    transition-delay: 0.15s;
+  }
+  .brand-board__construction .product-logo svg {
+    width: 3.1rem;
+    height: 3.1rem;
+  }
+  .brand-board__body {
+    padding: 1.5rem;
+  }
+  .brand-board__essence {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    color: hsl(var(--fu-ink));
+    margin-bottom: 1.25rem;
+  }
+  .brand-board__spec {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .brand-board__spec-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 0.78rem;
+  }
+  .brand-board__spec-label {
+    flex: none;
+    width: 5.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(var(--fu-muted));
+  }
+  .brand-board__spec-value {
+    color: hsl(var(--fu-ink) / 0.85);
+  }
+  /* Colour system — a swatch strip for each brand. */
+  .brand-swatches {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .brand-swatch {
+    aspect-ratio: 1;
+    border-radius: 0.375rem;
+    border: 1px solid hsl(var(--fu-line));
+  }
+  .brand-swatch--accent {
+    grid-row: span 2;
+    border: none;
+  }
+  .brand-swatch--paper { background: hsl(var(--fu-paper)); }
+  .brand-swatch--ink   { background: hsl(var(--fu-ink)); }
+  .brand-swatch--line  { background: hsl(var(--fu-line)); }
+  .brand-swatch--link  { background: hsl(var(--fu-link)); }
+  .brand-swatch--live  { background: hsl(var(--fu-live)); }
+
   /* ── Backend shell (Django render) ─────────────────────────────── */
   /* The backend templates (pages/partials/header.html, footer.html) use
      these classes instead of Tailwind utilities; they live here so the
@@ -265,14 +771,49 @@
     border-bottom: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper) / 0.92);
     backdrop-filter: blur(8px);
+    /* Smooth state change when the scroll sentinel flips the scrolled class. */
+    transition: background-color 0.35s var(--fu-ease-out), box-shadow 0.45s var(--fu-ease-out);
+  }
+  /* Scrolled past the hero — the sheet tightens (less translucent, so text
+     stays legible over content) and gains a soft shadow, reading as a
+     floating surface. Driven by Alpine x-intersect on a zero-height sentinel
+     at the bottom of the hero (no window scroll listeners). */
+  .site-header--scrolled {
+    background: hsl(var(--fu-paper) / 0.98);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-line) / 0.6),
+      0 14px 36px -20px hsl(var(--fu-ink) / 0.45);
   }
   .site-nav a {
     font-size: 0.9rem;
     color: hsl(var(--fu-muted));
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.35s var(--fu-ease-out);
   }
   .site-nav a:hover { color: hsl(var(--fu-ink)); }
+  /* Nav link underline — a hairline that grows from the left on hover and
+     sits permanently under the active page. GPU-cheap (transform only). */
+  .nav-link {
+    position: relative;
+    padding-block: 0.25rem;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.1rem;
+    height: 1.5px;
+    border-radius: 999px;
+    background: hsl(var(--fu-link));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--fu-ease-out);
+  }
+  .nav-link:hover::after,
+  .nav-link.nav-link--active::after {
+    transform: scaleX(1);
+  }
   .site-footer {
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
@@ -305,16 +846,83 @@
     @apply text-fu-muted leading-relaxed mb-4;
   }
 
-  /* Scroll-reveal (Alpine.js powered) */
+  /* Scroll-reveal (Alpine.js powered) — a gentle, heavy fade-up with a
+     blur clear, over 800ms on the site's expo curve. GPU-safe: transform
+     + opacity + filter only, and filter releases once the reveal lands.
+
+     The hero's reveal elements (.hero__eyebrow/heading/intro/actions/
+     source-toggle) and every .reveal element share ONE recipe via
+     --fu-reveal-transition, so the motion language can't drift. */
   [x-cloak] { display: none !important; }
-  .reveal {
+  .reveal,
+  .hero__eyebrow,
+  .hero__heading,
+  .hero__intro,
+  .hero__actions,
+  .hero__source-toggle {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    transform: translateY(18px);
+    filter: blur(6px);
+    transition: var(--fu-reveal-transition);
+    /* No resting will-change: holding a promoted layer + blur on every
+       offscreen reveal element would cost real memory on card-heavy
+       pages. The transition runs on the compositor without it. */
   }
-  .reveal.reveal-visible {
+  .reveal.reveal-visible,
+  .hero__eyebrow.reveal-visible,
+  .hero__heading.reveal-visible,
+  .hero__intro.reveal-visible,
+  .hero__actions.reveal-visible,
+  .hero__source-toggle.reveal-visible {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
+  }
+
+  /* Reduced motion — visitors who ask for it get content, not choreography.
+     Reveals land instantly (no blur/translate), smooth scroll turns off,
+     and every animation — status pulse, page-loader bounce, skeleton
+     shimmer — collapses to a static state. */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .site-header,
+    .btn-magnetic {
+      transition: none;
+    }
+    .reveal,
+    .hero__eyebrow,
+    .hero__heading,
+    .hero__intro,
+    .hero__actions,
+    .hero__source-toggle,
+    .reveal.reveal-visible,
+    .hero__eyebrow.reveal-visible,
+    .hero__heading.reveal-visible,
+    .hero__intro.reveal-visible,
+    .hero__actions.reveal-visible,
+    .hero__source-toggle.reveal-visible {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+      will-change: auto;
+    }
+    .status-line .dot,
+    [class*="animate-bounce"],
+    [class*="animate-pulse"],
+    [class*="fusion-shimmer"] { animation: none; }
+    /* Brand boards: grid stays static, mark stays full-size. The pulse
+       gate has higher specificity than .brand-board__construction, so the
+       animation-off rule must match it (same selector, later in source). */
+    .brand-board.reveal-visible .brand-board__construction,
+    .brand-board__construction {
+      animation: none;
+    }
+    .brand-board__construction .product-logo,
+    .brand-board.reveal-visible .brand-board__construction .product-logo {
+      transform: none;
+      transition: none;
+    }
   }
 
   /* ── BEM custom styles for the full-document pages (features/products) ── */
@@ -333,48 +941,64 @@
   }
 
   /* ── Hero BEM block ─────────────────────────────────────────────── */
+  /* Asymmetric split: copy on the left, the literal source on the right.
+     The page's own markup is the hero asset — no screenshot, no mock UI. */
   .hero {
     position: relative;
     background: hsl(var(--fu-paper));
     color: hsl(var(--fu-ink));
     overflow: hidden;
   }
-  .hero::before,
-  .hero::after {
+  /* Ambient glow — two soft radial fields behind the copy, so the sheet
+     has depth without gradients clashing with the paper identity. Painted
+     once, never animated (GPU-cheap, scroll-safe). */
+  .hero::before {
     content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(42rem 24rem at 18% 8%, hsl(var(--fu-link) / 0.07), transparent 65%),
+      radial-gradient(36rem 22rem at 88% 92%, hsl(var(--fu-mark) / 0.05), transparent 60%);
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 80rem;
+    margin-inline: auto;
+    width: 100%;
+    padding: 3rem 1.25rem 4.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .hero__corner-tl,
+  .hero__corner-br {
     position: absolute;
     width: 14px;
     height: 14px;
     pointer-events: none;
     border-color: hsl(var(--fu-line));
+    z-index: 0;
   }
-  .hero::before {
-    top: 0; left: 0;
-    border-top: 1px solid;
-    border-left: 1px solid;
+  .hero__corner-tl { top: 0; left: 0; border-top: 1px solid; border-left: 1px solid; }
+  .hero__corner-br { bottom: 0; right: 0; border-bottom: 1px solid; border-right: 1px solid; }
+  @media (min-width: 640px) { .hero__inner { padding: 3.5rem 1.75rem 5rem; } }
+  @media (min-width: 1024px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 4rem;
+      padding: 6rem 2.5rem 6.5rem; /* top padding capped at pt-24 */
+      align-items: start;
+    }
   }
-  .hero::after {
-    bottom: 0; right: 0;
-    border-bottom: 1px solid;
-    border-right: 1px solid;
-  }
-  .hero__inner {
-    max-width: 80rem;
-    margin-inline: auto;
-    width: 100%;
-    padding: 4rem 1.25rem;
-  }
-  @media (min-width: 640px) { .hero__inner { padding: 5rem 1.75rem; } }
-  @media (min-width: 768px) { .hero__inner { padding: 7rem 2.5rem; } }
   .hero__content {
-    max-width: 48rem;
-    margin-inline: auto;
-    text-align: center;
+    max-width: 40rem;
+    text-align: left;
+    min-width: 0; /* grid child: allow the source panel to shrink, not blow out */
   }
   .hero__eyebrow {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
     margin-bottom: 1.25rem;
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -384,21 +1008,18 @@
   }
   .hero__eyebrow::before { content: "‹"; opacity: 0.55; }
   .hero__eyebrow::after  { content: "›"; opacity: 0.55; }
-  .hero__eyebrow.reveal-visible { opacity: 1; transform: translateY(0); }
   .hero__heading {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
     margin-bottom: 1.25rem;
     font-family: var(--font-display);
-    font-size: 2rem;
+    font-size: clamp(2rem, 4.5vw + 0.5rem, 4.25rem);
     font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -0.025em;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
   }
-  .hero__heading.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__heading { font-size: 2.4rem; } }
-  @media (min-width: 768px) { .hero__heading { font-size: 3.75rem; } }
+  /* Fluid across the whole range — no fixed breakpoint sizes that fight
+     the clamp. 4vw + 0.5rem gives the 4rem→4.25rem feel on desktop and
+     stays readable on small phones. */
+  @media (min-width: 640px) { .hero__heading { font-size: clamp(2.4rem, 4vw + 0.5rem, 4.25rem); } }
   .hero__accent {
     position: relative;
     display: inline-block;
@@ -415,58 +1036,126 @@
     pointer-events: none;
   }
   .hero__intro {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-inline: auto;
     margin-bottom: 2rem;
     max-width: 36rem;
     font-size: 0.95rem;
     line-height: 1.625;
     color: hsl(var(--fu-muted));
   }
-  .hero__intro.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .hero__intro { font-size: 1.05rem; } }
   @media (min-width: 768px) { .hero__intro { font-size: 1.125rem; } }
   .hero__actions {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
     gap: 0.75rem;
   }
-  .hero__actions.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__actions { flex-direction: row; } }
-  .hero__status {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-top: 2rem;
+  @media (min-width: 640px) { .hero__actions { flex-direction: row; align-items: center; } }
+  .hero__source-toggle {
+    width: 100%;
+    min-width: 0; /* grid child: the <pre> must scroll inside, never widen the page */
+  }
+
+  /* Panel chrome — a browser view-source address line, not a terminal window.
+     The status line lives here, attached to the thing it describes. */
+  .hero__source-chrome {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.625rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--fu-muted));
   }
-  .hero__status.reveal-visible { opacity: 1; transform: translateY(0); }
-  .hero__source-toggle {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-inline: auto;
-    margin-top: 3rem;
-    max-width: 42rem;
+  .hero__source-path {
+    color: hsl(var(--fu-link));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  .hero__source-toggle.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__source-toggle { margin-top: 3.5rem; } }
-  .hero__source-bar {
-    margin-bottom: 0.75rem;
+  .hero__source-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+  .hero__source-kb {
+    padding: 0.125rem 0.4rem;
+    border: 1px solid hsl(var(--fu-line));
+    border-radius: 0.25rem;
+    color: hsl(var(--fu-muted));
+  }
+  .hero__source-actions {
+    margin-top: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
   }
+  .hero__source-caption {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--fu-muted));
+  }
+
+  /* Rendered view inside the panel — the real hero, miniaturized.
+     (A real component preview, not a div-built mock.) */
+  .source-panel--render {
+    background: #1a1917;
+    color: #f0eee8;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .source-panel__doc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+  .source-panel__tag {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #7cb3ff;
+  }
+  .source-panel__h1 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: #f0eee8;
+  }
+  .source-panel__accent { color: #ffe14d; }
+  .source-panel__intro {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #b0aba0;
+    max-width: 38ch;
+  }
+  .source-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .source-panel__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.8rem;
+    border-radius: 0.375rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .source-panel__btn--primary { background: hsl(var(--fu-link)); color: #ffffff; }
+  .source-panel__btn--ghost { border: 1px solid rgb(240 238 232 / 0.32); color: #f0eee8; }
 
   /* ── Stats BEM block ────────────────────────────────────────────── */
   .stats {
@@ -495,11 +1184,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .features { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .features { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .features { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .features { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .features__header {
     @apply mx-auto mb-10 sm:mb-14 max-w-2xl text-center;
   }
@@ -508,15 +1197,31 @@
   }
   .features__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
     opacity: 0;
     transform: translateY(14px);
     position: relative;
     padding: 1.5rem 1.25rem 1.25rem;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring),
+      opacity 0.8s var(--fu-ease-out);
   }
-  .features__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .features__card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-4px);
+    will-change: transform;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
   .features__card.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .features__card { padding: 1.75rem 1.5rem 1.5rem; } }
   .features__card-index {
@@ -538,29 +1243,43 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     overflow: hidden;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
     background: #1a1917;
     color: #f0eee8;
   }
-  .cta::before,
+  /* Ethereal glow on the ink CTA — two mesh fields give the dark sheet a
+     centre of gravity without breaking the no-gradient rule. */
+  .cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(48rem 26rem at 50% 0%, hsl(var(--fu-link) / 0.16), transparent 62%),
+      radial-gradient(30rem 18rem at 82% 100%, hsl(var(--fu-mark) / 0.08), transparent 60%);
+  }
   .cta::after {
     content: "";
     position: absolute;
     width: 14px;
     height: 14px;
+    bottom: 0;
+    right: 0;
+    border-bottom: 1px solid hsl(var(--fu-line));
+    border-right: 1px solid hsl(var(--fu-line));
     pointer-events: none;
   }
-  .cta::before { top: 0; left: 0; border-top: 1px solid hsl(var(--fu-line)); border-left: 1px solid hsl(var(--fu-line)); }
-  .cta::after { bottom: 0; right: 0; border-bottom: 1px solid hsl(var(--fu-line)); border-right: 1px solid hsl(var(--fu-line)); }
-  @media (min-width: 640px) { .cta { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .cta { padding-top: 6rem; padding-bottom: 6rem; } }
   .cta__inner {
+    position: relative;
+    z-index: 1;
     max-width: 80rem;
     margin-inline: auto;
     width: 100%;
     padding-inline: 1.25rem;
   }
+  @media (min-width: 640px) { .cta { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .cta { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   @media (min-width: 640px) { .cta__inner { padding-inline: 1.75rem; } }
   @media (min-width: 1024px) { .cta__inner { padding-inline: 2.5rem; } }
   .cta__content {
@@ -596,11 +1315,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .testimonials { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .testimonials { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .testimonials { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .testimonials { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .testimonials__header {
     @apply mx-auto mb-10 sm:mb-14 max-w-2xl text-center;
   }
@@ -609,13 +1328,27 @@
   }
   .testimonials__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
     position: relative;
     padding: 1.5rem;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring);
   }
-  .testimonials__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+  .testimonials__card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
   @media (min-width: 640px) { .testimonials__card { padding: 2rem; } }
   @media (min-width: 768px) { .testimonials__card { padding: 2.5rem; } }
   .testimonials__rating {
@@ -639,11 +1372,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .faq { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .faq { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .faq { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .faq { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .faq__header {
     @apply mx-auto mb-10 sm:mb-14 max-w-2xl text-center;
   }
@@ -659,11 +1392,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .pricing { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .pricing { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .pricing { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .pricing { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .pricing__header {
     @apply mx-auto mb-10 sm:mb-14 max-w-2xl text-center;
   }
@@ -672,28 +1405,39 @@
   }
   .pricing__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
     position: relative;
     padding: 1.25rem;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring);
   }
-  .pricing__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .pricing__card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
   @media (min-width: 640px) { .pricing__card { padding: 1.5rem; } }
-  .pricing__card--highlighted {
-    @apply border-fu-link shadow-lg md:-translate-y-2;
-  }
 
   /* ── Blog Preview BEM block ──────────────────────────────────────── */
   .blog-preview {
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .blog-preview { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .blog-preview { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .blog-preview { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .blog-preview { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .blog-preview__header {
     @apply flex flex-col gap-4 sm:gap-6 md:flex-row md:items-end md:justify-between;
   }
@@ -702,14 +1446,30 @@
   }
   .blog-preview__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
     opacity: 0;
     transform: translateY(14px);
     overflow: hidden;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring),
+      opacity 0.8s var(--fu-ease-out);
   }
-  .blog-preview__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-4px); }
+  .blog-preview__card:hover { will-change: transform; }
+  .blog-preview__card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
   .blog-preview__card.reveal-visible { opacity: 1; transform: translateY(0); }
   .blog-preview__image {
     @apply h-40 sm:h-48 overflow-hidden bg-fu-card;
@@ -735,11 +1495,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-surface, 48 33% 100%));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .team { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .team { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .team { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .team { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .team__header {
     @apply mx-auto max-w-2xl text-center;
   }
@@ -749,15 +1509,31 @@
   }
   .team__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
     opacity: 0;
     transform: translateY(14px);
     padding: 1.25rem;
     text-align: center;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring),
+      opacity 0.8s var(--fu-ease-out);
   }
-  .team__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-4px); }
+  .team__card:hover { will-change: transform; }
+  .team__card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
   .team__card.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .team__card { padding: 1.5rem; } }
   .team__avatar {
@@ -781,11 +1557,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .timeline { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .timeline { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .timeline { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .timeline { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .timeline__header {
     @apply mx-auto max-w-2xl;
   }
@@ -818,14 +1594,30 @@
   }
   .timeline__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
     opacity: 0;
     transform: translateY(14px);
     padding: 1rem;
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-line) / 0.5),
+      0 10px 28px -18px hsl(var(--fu-ink) / 0.25);
+    transition:
+      border-color 0.35s var(--fu-ease-out),
+      box-shadow 0.45s var(--fu-ease-out),
+      transform 0.45s var(--fu-ease-spring),
+      opacity 0.8s var(--fu-ease-out);
   }
-  .timeline__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .timeline__card:hover { will-change: transform; }
+  .timeline__card:hover {
+    border-color: hsl(var(--fu-muted));
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 0 hsl(var(--fu-paper) / 0.6) inset,
+      0 0 0 1px hsl(var(--fu-muted) / 0.35),
+      0 22px 44px -22px hsl(var(--fu-ink) / 0.35);
+  }
   .timeline__card.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .timeline__card { padding: 1.25rem; } }
   .timeline__date {
@@ -887,11 +1679,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .contact-form { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .contact-form { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .contact-form { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .contact-form { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
   .contact-form__grid {
     @apply grid gap-8 sm:gap-10 md:grid-cols-3;
   }
@@ -910,11 +1702,11 @@
     position: relative;
     border-top: 1px solid hsl(var(--fu-line));
     background: hsl(var(--fu-paper));
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
   }
-  @media (min-width: 640px) { .live-fragment { padding-top: 5rem; padding-bottom: 5rem; } }
-  @media (min-width: 768px) { .live-fragment { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 640px) { .live-fragment { padding-top: 6rem; padding-bottom: 6rem; } }
+  @media (min-width: 768px) { .live-fragment { padding-top: 7.5rem; padding-bottom: 7.5rem; } }
 
   /* Capability cards (features page) — BEM blocks composed on the theme.
      NOTE: `card` / `reveal` are component classes, not utilities, so they
@@ -1007,6 +1799,9 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  .hero__eyebrow, .hero__heading, .hero__intro, .hero__actions, .hero__source-toggle {
+    opacity: 1; transform: none; transition: none;
+  }
   .animate-fusion-pulse, .animate-fusion-blink { animation: none !important; }
   .fusion-skeleton__line, .fusion-skeleton__card { animation: none !important; }
   .htmx-indicator-progress__bar { animation: none !important; }
@@ -1412,4 +2207,36 @@
   .htmx-indicator__pulse {
     animation: none !important;
   }
+}
+
+@layer components {
+  /* ── Staggered card cascade (every reveal grid) ─────────────────────
+     Each card's index (--reveal-i, set by the component/template loop)
+     buys one 80ms step of reveal delay, capped at 560ms (7 steps) so a
+     24-card grid can't crawl. The cap keeps the entrance GPU-cheap: at
+     most ~7 cards are ever mid-flight, on one-time opacity/transform/
+     filter transitions. The delay is zeroed once the reveal lands (the
+     transitionend cleanup in alpine.js / base.html), so card hovers are
+     never delayed. Lives last so the longhand wins over every card's
+     `transition` shorthand; bespoke recipes (.features__card & friends)
+     reveal via their own .reveal-visible rules but share the rhythm. */
+  .reveal,
+  .features__card,
+  .blog-preview__card,
+  .team__card,
+  .timeline__card {
+    transition-delay: min(calc(var(--reveal-i, 0) * 80ms), 560ms);
+  }
+
+  /* Hover-lift restore — the reveal recipe writes `transform`, the same
+     property card hovers animate, so once revealed (.reveal-visible) the
+     card's own hover lift would freeze at translateY(0). Re-assert each
+     card's lift here (later source, higher specificity) without touching
+     Tailwind utility hovers (utilities layer still wins). */
+  .card.reveal.reveal-visible:hover { transform: translateY(-2px); }
+  .card.edition__card--featured.reveal-visible:hover { transform: translateY(-0.5rem); }
+  .features__card.reveal-visible:hover { transform: translateY(-4px); }
+  .blog-preview__card.reveal-visible:hover { transform: translateY(-4px); }
+  .team__card.reveal-visible:hover { transform: translateY(-4px); }
+  .timeline__card.reveal-visible:hover { transform: translateY(-2px); }
 }

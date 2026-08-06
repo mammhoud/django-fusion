@@ -2,8 +2,17 @@
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import CookieConsent from '@/components/ui/CookieConsent.astro';
+import LoginModal from '@/components/ui/LoginModal.astro';
+import BrandModal from '@/components/ui/BrandModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage } from '@/lib/site';
 import '../styles/globals.css';
+
+// Self-hosted fonts (no Google Fonts <link> in production). The family names
+// register as "… Variable"; globals.css lists the plain names as fallbacks so
+// the Django render path (Google Fonts) stays on the same families.
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/public-sans';
+import '@fontsource-variable/jetbrains-mono';
 
 interface Props {
   title?: string;
@@ -83,14 +92,25 @@ void THEME_STORAGE_KEY;
       })();
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Progressive enhancement guard: without JavaScript the Alpine reveal
+         classes never fire, so force all scroll-reveal content visible. -->
+    <noscript>
+      <style>
+        .reveal, .hero__eyebrow, .hero__heading, .hero__intro, .hero__actions, .hero__source-toggle {
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+        /* Brand boards: keep the construction mark full-size (its spring-scale
+           resting state is 0.9 and only reveal-visible would lift it). */
+        .brand-board__construction .product-logo {
+          transform: none !important;
+          transition: none !important;
+        }
+      </style>
+    </noscript>
   </head>
   <body class="is-hydrating">
     <!-- HTMX global in-flight indicator — shows a branded skeleton overlay
@@ -149,7 +169,7 @@ void THEME_STORAGE_KEY;
       </p>
     </div>
 
-    <div class="flex min-h-screen flex-col">
+    <div class="flex min-h-dvh flex-col">
       <Header siteName={siteName} navItems={navItems} />
       <main class="flex-1">
         <slot />
@@ -158,6 +178,8 @@ void THEME_STORAGE_KEY;
     </div>
 
     <CookieConsent />
+    <LoginModal />
+    <BrandModal />
 
     <!-- SSR data bridge → Redux initial state (site + page) -->
     <script type="application/json" id="fusion-site-data">

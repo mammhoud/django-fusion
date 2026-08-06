@@ -2,7 +2,7 @@
 {% comment %} A single edition card (EditionBlock) — per-product pricing tier with
    its own feature set. Mirrors the Astro PricingCard shape (name, price,
    period, features, CTA, featured). {% endcomment %}
-<article class="card edition__card relative flex flex-col p-6 sm:p-8{% if value.featured %} edition__card--featured border-fu-link shadow-lg md:-translate-y-1{% endif %}">
+<article class="card edition__card relative flex flex-col p-6 sm:p-8{% if value.featured %} edition__card--featured md:-translate-y-1{% endif %}">
   {% if value.featured %}
   <span class="badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">most shipped</span>
   {% endif %}

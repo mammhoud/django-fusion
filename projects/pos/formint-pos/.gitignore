@@ -11,3 +11,7 @@ __pycache__/
 !.env.example
 coverage/
 *.log
+# Tauri requires generated app icons at build time — keep them in the repo.
+# (Re-includes over the repo-root *.png rule.)
+!src-tauri/icons/**
+sidecar/build/

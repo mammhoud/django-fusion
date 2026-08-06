@@ -19,6 +19,7 @@ from apps.content.blocks import (
     CtaBlock,
     EditionsSectionBlock,
     FaqSectionBlock,
+    FeatureComparisonSectionBlock,
     FeaturesSectionBlock,
     HeroBlock,
     PricingSectionBlock,
@@ -27,6 +28,7 @@ from apps.content.blocks import (
     ServicesSectionBlock,
     SnippetsSectionBlock,
     StatsSectionBlock,
+    TeamSectionBlock,
     TechStackSectionBlock,
     TestimonialsSectionBlock,
 )
@@ -165,6 +167,106 @@ class AboutPage(SectionStackMixin, LandingPage):
         verbose_name_plural = _("About pages")
 
 
+class TeamPage(LandingPage):
+    """About → Team subpage — the people behind structa.cloud.
+
+    A child of AboutPage, served at /about/team/. Carries a hero, a story
+    body and the team grid (TeamSectionBlock) with member cards + social
+    links, plus a CTA. The page is seeded with the founder + the product
+    leads, each linking to their GitHub/LinkedIn/Facebook profiles.
+    """
+
+    body_heading = _("Who builds this")
+
+    body = RichTextField(
+        blank=True,
+        verbose_name=_("Body"),
+        help_text=_("Team story content."),
+    )
+    team = StreamField(
+        [("team", TeamSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Team"),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("body")],
+            heading=_("Story"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        FieldPanel("team"),
+    ]
+
+    template = "pages/team.html"
+
+    class Meta:
+        verbose_name = _("Team page")
+        verbose_name_plural = _("Team pages")
+
+
+DISPLAY_MODE_CHOICES = [
+    ("page", _("Full page")),
+    ("modal", _("Modal only")),
+    ("both", _("Page + modal")),
+]
+
+
+class DisplayModeMixin(models.Model):
+    """
+    Where a page is surfaced — as a full page, as a modal overlay, or both.
+
+    Layers the *presentation* choice onto Wagtail's ``Page`` base model. The
+    ``Page`` base already merges Wagtail's own base models (DraftStateMixin,
+    RevisionMixin, PreviewableMixin, LockableMixin, SitemapMixin) — this mixin
+    only adds the display-mode option on top, so any page type can opt in.
+
+    Used by ``BrandPage``: the brand kit renders as its own /brand/ page and
+    as a modal opened from product tooltips. Editors toggle ``display_mode``
+    in the Wagtail admin to pick page, modal, or both.
+    """
+
+    display_mode = models.CharField(
+        max_length=10,
+        choices=DISPLAY_MODE_CHOICES,
+        default="both",
+        verbose_name=_("Display mode"),
+        help_text=_(
+            "Where this page is surfaced: as its own full page (page), as a "
+            "modal overlay triggered from product logos/tooltips (modal), or "
+            "both. Modal-only hides the full-page affordance in the modal."
+        ),
+    )
+
+    class Meta:
+        abstract = True
+
+    display_panels = [FieldPanel("display_mode")]
+
+
+class BrandPage(DisplayModeMixin, LandingPage):
+    """Brand kit page — the identity system for every product.
+
+    Renders ``pages/brand.html``: one identity board per live product (lockup,
+    construction, essence, colour system, voice), derived from the catalog
+    cards + BRAND_SPEC so it can never drift from the products it describes.
+
+    ``display_mode`` (from DisplayModeMixin) decides whether the brand kit is
+    reachable as a full page, as a modal opened from product tooltips, or both
+    — the default is both.
+    """
+
+    template = "pages/brand.html"
+    max_count = 1
+
+    content_panels = LandingPage.content_panels + DisplayModeMixin.display_panels
+
+    class Meta:
+        verbose_name = _("Brand page")
+        verbose_name_plural = _("Brand pages")
+
+
 class ServicesPage(LandingPage):
     """Services page — hero, offering grid (features), and the 'build as you go' process."""
 
@@ -233,7 +335,36 @@ class ShowInNavMixin(models.Model):
 
 
 class PricingPage(ShowInNavMixin, LandingPage):
-    """Dedicated pricing page — hero, pricing tiers, faq, cta."""
+    """Dedicated pricing page — hero, per-product pricing tabs, faq, cta.
+
+    The tabbed view (Formints · Precis LMS · Loop · Syntara · vResume) is
+    driven by ``get_product_pricing()`` — every live, non-hidden product's
+    editions — plus an optional editor-authored ``pricing`` fallback stack.
+    """
+
+    def get_product_pricing(self) -> list[dict]:
+        """All live, non-hidden products with their editions, for pricing tabs."""
+        from apps.pages.models import ProductsPage as _ProductsPage
+
+        products_page = _ProductsPage.objects.first()
+        if products_page is None:
+            return []
+        result = []
+        for child in products_page.get_children().live():
+            specific = child.specific
+            if isinstance(specific, ProductPage) and not specific.hidden:
+                result.append(
+                    {
+                        "slug": specific.slug,
+                        "title": specific.title,
+                        "tagline": specific.tagline,
+                        "logo_style": specific.logo_style,
+                        "status": specific.status,
+                        "href": f"/products/{specific.slug}/",
+                        "editions": specific.get_editions(),
+                    }
+                )
+        return result
 
     pricing = StreamField(
         [("pricing", PricingSectionBlock())],
@@ -347,6 +478,26 @@ class BlogPostPage(ShowInNavMixin, LandingPage):
         verbose_name = _("Blog post page")
         verbose_name_plural = _("Blog post pages")
 
+PRODUCT_CATEGORY_CHOICES = [
+    ("application", _("Application")),
+    ("platform", _("Platform")),
+    ("library", _("Library")),
+]
+
+PRODUCT_LOGO_CHOICES = [
+    ("crest", _("Crest — Formints merchant seal")),
+    ("ribbon", _("Ribbon — Precis LMS award ribbon")),
+    ("isometric", _("Isometric — Loop blocks")),
+    ("orbit", _("Orbit — Syntara AI signal")),
+    ("ascent", _("Ascent — vResume career path")),
+]
+
+PRODUCT_STATUS_CHOICES = [
+    ("live", _("Live / released")),
+    ("development", _("Under development")),
+]
+
+
 class ProductPage(ShowInNavMixin, LandingPage):
     """
     A single product page — the reference document for one product.
@@ -357,11 +508,54 @@ class ProductPage(ShowInNavMixin, LandingPage):
     These pages live as children of ``ProductsPage`` and are listed there.
     """
 
+    category = models.CharField(
+        max_length=20,
+        choices=PRODUCT_CATEGORY_CHOICES,
+        default="application",
+        verbose_name=_("Category"),
+        help_text=_(
+            "How the product is positioned in the catalog: an Application "
+            "(desktop/web app), a Platform (hosted service), or a Library "
+            "(reusable open-source package)."
+        ),
+    )
     tagline = models.CharField(
         max_length=200,
         blank=True,
         verbose_name=_("Tagline"),
         help_text=_("One-line summary shown on the product card in the /products/ listing."),
+    )
+    logo_style = models.CharField(
+        max_length=20,
+        choices=PRODUCT_LOGO_CHOICES,
+        default="crest",
+        verbose_name=_("Logo"),
+        help_text=_(
+            "The brand mark shown on the product card and detail page — each "
+            "mark is a constructed symbol tied to the product: crest (Formints "
+            "merchant seal), ribbon (Precis LMS award ribbon), isometric (Loop "
+            "blocks), orbit (Syntara AI signal), or ascent (vResume career path)."
+        ),
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=PRODUCT_STATUS_CHOICES,
+        default="live",
+        verbose_name=_("Status"),
+        help_text=(
+            "Set to “Under development” to show the amber caution badge + "
+            "warning banner. CAUTION: development products are previews — "
+            "their APIs, editions and pricing may change before release."
+        ),
+    )
+    hidden = models.BooleanField(
+        default=False,
+        verbose_name=_("Hidden from catalog"),
+        help_text=_(
+            "Hide this product from the /products/ listing and pricing tabs "
+            "while keeping its detail page reachable by direct link "
+            "(e.g. internal libraries like ceptor-ai)."
+        ),
     )
     body = RichTextField(
         blank=True,
@@ -386,6 +580,16 @@ class ProductPage(ShowInNavMixin, LandingPage):
         blank=True,
         verbose_name=_("Reference snippets"),
     )
+    comparison = StreamField(
+        [("comparison", FeatureComparisonSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Feature comparison"),
+        help_text=_(
+            "A full edition-by-edition capability table (columns = editions, "
+            "rows = features). Cells use Yes / No / short notes."
+        ),
+    )
     features = StreamField(
         [("features", FeaturesSectionBlock())],
         use_json_field=True,
@@ -401,7 +605,13 @@ class ProductPage(ShowInNavMixin, LandingPage):
 
     content_panels = LandingPage.content_panels + [
         MultiFieldPanel(
-            [FieldPanel("tagline")],
+            [
+                FieldPanel("category"),
+                FieldPanel("tagline"),
+                FieldPanel("logo_style"),
+                FieldPanel("status"),
+                FieldPanel("hidden"),
+            ],
             heading=_("Listing card"),
             classname=SECTION_PANEL_CLASS,
         ),
@@ -412,6 +622,7 @@ class ProductPage(ShowInNavMixin, LandingPage):
         ),
         FieldPanel("tech"),
         FieldPanel("editions"),
+        FieldPanel("comparison"),
         FieldPanel("snippets"),
         FieldPanel("features"),
         FieldPanel("faq"),
@@ -424,14 +635,83 @@ class ProductPage(ShowInNavMixin, LandingPage):
         verbose_name = _("Product page")
         verbose_name_plural = _("Product pages")
 
+    def get_editions(self) -> list[dict]:
+        """The edition list (name, price, period, tier, tagline, featured) from
+        the editions StreamField, flattened for cards + pricing tabs."""
+        if not self.editions:
+            return []
+        for block in self.editions:
+            if block.block_type == "editions":
+                return [
+                    {
+                        "name": e.get("name", ""),
+                        "price": e.get("price", ""),
+                        "period": e.get("period", ""),
+                        "tagline": e.get("tagline", ""),
+                        "tier": e.get("tier", "default"),
+                        "featured": bool(e.get("featured", False)),
+                    }
+                    for e in block.value.get("editions", [])
+                ]
+        return []
+
+    def get_edition(self, name: str) -> dict | None:
+        """The full edition dict (features + CTA included) by name.
+
+        Edition names are matched case-insensitively ("Community", "community")
+        so preview URLs like /products/forge-pos/preview/community/ resolve.
+        Returns None when no edition matches.
+        """
+        if not self.editions:
+            return None
+        target = name.strip().lower()
+        for block in self.editions:
+            if block.block_type == "editions":
+                for edition in block.value.get("editions", []):
+                    if str(edition.get("name", "")).strip().lower() == target:
+                        return dict(edition)
+        return None
+
     def get_product_card(self) -> dict:
-        """The listing-card payload for the /products/ page + API."""
+        """The listing-card payload for the /products/ page + API.
+
+        Carries enough detail for the catalog listing to render rich cards
+        without a second round-trip: category, logo, status, edition names +
+        prices + tiers, tech tags, and a plain-text excerpt of the overview.
+        """
+        editions: list[dict] = self.get_editions()
+        tech: list[str] = []
+        if self.tech:
+            for block in self.tech:
+                if block.block_type == "tech":
+                    tech = [str(i) for i in block.value.get("items", [])]
+                    break
         return {
             "title": self.title,
             "slug": self.slug,
             "tagline": self.tagline,
             "href": f"/products/{self.slug}/",
+            "category": self.get_category_display().lower(),
+            "logo_style": self.logo_style,
+            "status": self.status,
+            "editions": editions,
+            "tech": tech,
+            "excerpt": self._overview_excerpt(),
         }
+
+    def _overview_excerpt(self, limit: int = 150) -> str:
+        """First ~150 plain-text characters of the overview body (for cards)."""
+        import html
+        import re
+
+        if not self.body:
+            return ""
+        text = re.sub(r"<[^>]+>", " ", str(self.body))
+        text = html.unescape(text)  # RichText entities → plain characters
+        text = re.sub(r"\s+", " ", text).strip()
+        if len(text) <= limit:
+            return text
+        return text[: limit - 1].rstrip() + "…"
 
 
 class ProductsPage(SectionStackMixin, LandingPage):
@@ -469,13 +749,13 @@ class ProductsPage(SectionStackMixin, LandingPage):
         verbose_name_plural = _("Products pages")
 
     def get_product_cards(self) -> list[dict]:
-        """Product cards — one per live ProductPage child, for the listing + API."""
+        """Product cards — one per live, non-hidden ProductPage child."""
         from apps.pages.models import ProductPage as _ProductPage
 
         return [
             child.specific.get_product_card()
             for child in self.get_children().live()
-            if isinstance(child.specific, _ProductPage)
+            if isinstance(child.specific, _ProductPage) and not child.specific.hidden
         ]
 
 
@@ -504,44 +784,6 @@ class FeaturesPage(SectionStackMixin, LandingPage):
     class Meta:
         verbose_name = _("Features page")
         verbose_name_plural = _("Features pages")
-
-
-class ProjectsPage(SectionStackMixin, LandingPage):
-    """
-    Projects page — the full project document: hero, body, the repo's project cards
-    (with editions and shared/standalone features), then the shared section stack.
-    """
-
-    body_heading = _("Built from this monorepo")
-    projects_heading = _("Projects in this repo")
-
-    body = RichTextField(
-        blank=True,
-        verbose_name=_("Body"),
-        help_text=_("Intro text above the project cards."),
-    )
-    projects = StreamField(
-        [("project", ProjectBlock())],
-        use_json_field=True,
-        blank=True,
-        verbose_name=_("Projects"),
-    )
-
-    content_panels = LandingPage.content_panels + [
-        MultiFieldPanel(
-            [FieldPanel("body")],
-            heading=_("Content"),
-            classname=SECTION_PANEL_CLASS,
-        ),
-        FieldPanel("projects"),
-        *SectionStackMixin.section_panels,
-    ]
-
-    template = "pages/projects.html"
-
-    class Meta:
-        verbose_name = _("Projects page")
-        verbose_name_plural = _("Projects pages")
 
 
 class ContactPage(LandingPage):

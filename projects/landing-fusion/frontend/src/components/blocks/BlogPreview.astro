@@ -50,7 +50,7 @@ const { eyebrow, title = 'From the blog', description, posts, viewAllHref = '/bl
             href={`/blog/${post.slug}/`}
             class="blog-preview__card"
             x-data x-intersect="$el.classList.add('reveal-visible')"
-            style={`transition-delay: ${i * 80}ms`}
+            style={`--reveal-i: ${i}`}
           >
             {post.image && (
               <div class="blog-preview__image">

@@ -1,54 +1,43 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
-import Pricing from '@/components/blocks/Pricing.astro';
-import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import ContentError from '@/components/ui/ContentError.astro';
+import ProductLogo from '@/components/ui/ProductLogo.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
-import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedPricing } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData, PricingData } from '@/lib/api';
 
 let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
 let pageData: PageData | undefined;
+let pricingData: PricingData | undefined;
 try {
-  [siteSettings, navData, pageData] = await Promise.all([
-    cachedSiteSettings(), cachedNavigation(), cachedPageData('pricing'),
+  [siteSettings, navData, pageData, pricingData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('pricing'), cachedPricing(),
   ]);
 } catch { /* use fallbacks */ }
 
 const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
-const pagePricing = (pageData?.pricing as any[] | undefined);
-const pageFaq = (pageData?.faq as any[] | undefined);
 
-// The API keeps pricing block-level ({ type: 'pricing', tiers: [...] }), so
-// flatten every block's tier list into the plan array the Pricing component
-// expects.
-const plans = (pagePricing ?? []).flatMap((block: any) =>
-  ((block?.tiers || []) as any[]).map((t: any) => ({
-    name: String(t.name || ''),
-    price: Number(String(t.price || '0').replace(/[^0-9.]/g, '') || 0),
-    period: String(t.period || '').replace(/^\//, ''),
-    description: String(t.description || ''),
-    features: (t.features || []) as string[],
-    highlighted: Boolean(t.featured),
-    cta: { label: String(t.cta_label || 'Get started'), href: String(t.cta_href || '/#cta') },
-  })),
-);
+// Per-product editions from /apis/pricing/ (excludes hidden products).
+const products = pricingData?.products ?? [];
 
-const faqItems = pageFaq?.map((f: any) => ({
-  question: String(f.question || ''),
-  answer: String(f.answer || ''),
-}));
+// Edition card treatment per tier — mirrors the Django edition.html block.
+function editionCardClass(tier: string): string {
+  if (tier === 'featured') return 'edition__card--featured md:-translate-y-1';
+  if (tier === 'managed') return 'edition__card--managed overflow-hidden';
+  if (tier === 'outline') return 'edition__card--outline';
+  return '';
+}
 ---
 
 
 <Layout
   title={pageData?.title || 'Pricing'}
-  description={pageData?.search_description || 'Simple, transparent pricing for structa.cloud — start free and scale as you grow. No hidden fees, cancel anytime.'}
+  description={pageData?.search_description || 'Every structa.cloud product with its editions and pricing: Formints POS, Precis LMS, Loop CMS, Syntara, vResume. Community editions are open source.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -58,31 +47,98 @@ const faqItems = pageFaq?.map((f: any) => ({
     eyebrow={pageHero?.badge || 'pricing · printed clearly'}
     heading={pageHero?.title || 'Pricing'}
     accent='printed clearly'
-    intro={pageHero?.subtitle || 'Simple, transparent pricing — start free and scale as you grow. No hidden fees, cancel anytime.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start free', href: '/#cta' }}
+    intro={pageHero?.subtitle || 'Every product, its editions, one price sheet. Community editions are open source.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See Formints', href: '/products/forge-pos/#editions' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact sales', href: '/contact' }}
     status='200 OK · text/html · the whole price sheet in one response'
   />
 
-  {plans?.length ? (
-    <Pricing
-      heading='Simple, transparent pricing'
-      intro='Start free and scale as you grow. No hidden fees, cancel anytime.'
-      plans={plans}
-    />
+  {products.length ? (
+  <section id='pricing' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mb-12 max-w-2xl'>
+        <p class='tag-marker mb-4'>pricing · per product</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Pick a product, see its editions</h2>
+        <p class='text-fu-muted'>Every edition with its price, period and capabilities. Community editions are open source — the rest are quoted per deployment or per month.</p>
+      </div>
+
+      <div x-data="{ active: '${products[0].slug}' }">
+        <div class='pricing-tabs' role='tablist' aria-label='Products'>
+          {products.map((product) => (
+            <button
+              type='button'
+              class='pricing-tab'
+              role='tab'
+              aria-selected={product.slug === products[0].slug}
+              :aria-selected={`active === '${product.slug}'`}
+              @click={`active = '${product.slug}'`}
+            >
+              <ProductLogo style={product.logo_style} />
+              {product.title}
+            </button>
+          ))}
+        </div>
+
+        {products.map((product) => (
+          <!-- Visibility: Alpine x-show toggles inline display; x-cloak hides
+               panels before Alpine boots (same pattern as the FAQ accordion). -->
+          <div
+            class='pricing-panel mt-12'
+            role='tabpanel'
+            aria-hidden={product.slug !== products[0].slug}
+            :aria-hidden={`active !== '${product.slug}'`}
+            x-show={`active === '${product.slug}'`}
+            x-cloak
+          >
+            <div class='mb-10 max-w-2xl'>
+              <div class='flex flex-wrap items-center gap-3'>
+                <h3 class='font-display text-2xl font-bold tracking-tight text-fu-ink'>{product.title}</h3>
+                {product.status === 'development' && <span class='badge-dev'>under development</span>}
+              </div>
+              {product.tagline && <p class='mt-2 text-sm text-fu-muted'>{product.tagline}</p>}
+            </div>
+
+            <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', product.editions.length === 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3']}>
+              {product.editions.map((ed) => (
+                <div class:list={['card edition__card relative flex flex-col p-6 sm:p-8', editionCardClass(ed.tier)]}>
+                  {ed.tier === 'featured' && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}
+                  {ed.tier === 'managed' && <span class='managed-ribbon' aria-hidden='true'>managed</span>}
+                  <p class='tag-marker mb-1'>{ed.name}</p>
+                  {ed.tagline && <p class='mb-6 text-sm text-fu-muted'>{ed.tagline}</p>}
+                  <div class='mb-7 flex items-baseline gap-2'>
+                    <span class='font-mono text-[2rem] font-semibold tracking-tight text-fu-ink'>{ed.price}</span>
+                    {ed.period && <span class='font-mono text-xs uppercase tracking-wider text-fu-muted'>{ed.period}</span>}
+                  </div>
+                  {ed.features?.length ? (
+                    <ul class='mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm'>
+                      {ed.features.map((f) => (
+                        <li class='flex items-start gap-2.5'>
+                          <svg class='mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-fu-link' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'>
+                            <path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/>
+                          </svg>
+                          <span class='text-fu-ink/80'>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  <a href={`/products/${product.slug}/#editions`} class:list={['mt-auto w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>See {product.title} →</a>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
   ) : <ContentError label="Pricing data unavailable" />}
 
-  {faqItems?.length ? (
-    <FAQ
-      heading='Pricing questions, answered'
-      intro='The honest answers to the questions buyers ask.'
-      items={faqItems}
-    />
-  ) : <ContentError label="FAQ data unavailable" />}
+  <section class='container-fusion py-10 text-center'>
+    <p class='text-fu-muted'>Still deciding? <a href='/faq/' class='font-medium text-fu-link underline underline-offset-2 transition-colors hover:text-fu-ink'>Read the FAQ</a> — the honest answers to the questions buyers ask.</p>
+  </section>
 
   <CTA
-    heading={pageCta?.title || 'Everything is open source'}
-    intro={pageCta?.subtitle || 'All structa.cloud libraries are public on GitHub. Explore the code, open issues, or contribute.'}
+    heading={pageCta?.title || 'Most of our builds are open source'}
+    intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.'}
     ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
     ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
   />

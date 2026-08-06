@@ -62,17 +62,43 @@ to create an account with the default password — always set a strong
 ## Tauri sidecar packaging
 
 Build a platform-specific executable named `formint-backend` and place it in
-`../src-tauri/binaries/` with Tauri's target-triple suffix, for example:
+`../src-tauri/binaries/` with Tauri's target-triple suffix (see
+`../src-tauri/tauri.conf.json` → `externalBin` and `src-tauri/src/sidecar.rs`).
+
+The binary is intentionally not committed (gitignored by `src-tauri/.gitignore`).
+
+From this directory, with the `.venv` already created (`make install`):
 
 ```bash
-pyinstaller --onefile --name formint-backend sidecar.py
-# rename/copy dist/formint-backend to
-# ../src-tauri/binaries/formint-backend-<target-triple>
+# 1. Install the build tool once (PyInstaller) — the app deps come from the venv.
+.venv/bin/pip install pyinstaller
+
+# 2. Freeze the Django sidecar into a onefile executable.
+.venv/bin/pyinstaller formint-backend.spec --clean --noconfirm
+
+# 3. Drop it where Tauri expects it, with the host target-triple suffix.
+cp dist/formint-backend \
+  ../src-tauri/binaries/formint-backend-$(rustc -vV | sed -n 's/^host: //p')
+
+# Smoke test: the binary must pass Django system checks.
+../src-tauri/binaries/formint-backend-$(rustc -vV | sed -n 's/^host: //p') check
 ```
 
-The binary is intentionally not committed. Release automation must build it
-from the locked backend environment, checksum it, and attach the checksum to
-the release manifest.
+Or use the convenience target: `make sidecar-binary` (root Makefile).
+
+> **Why the spec, not `pyinstaller --onefile sidecar.py`?** Django discovers
+> apps dynamically (`configs/`, `formint/`, `models/`, `wagtail`, `unfold`,
+> `django_fusion`, …), so the spec (`sidecar/formint-backend.spec`) collects
+> every app submodule plus template/metadata data files. It also adds the
+> project dir to `sys.path` — the spec process cannot import local packages
+> otherwise.
+>
+> **django-bolt is optional.** `configs/urls.py` guards its absence
+> (`HAS_DJANGO_BOLT` in `configs/__init__.py`), so the venv/recipe above
+> intentionally omits it to avoid a Rust/maturin build.
+
+Release automation should build it from the locked backend environment,
+checksum it, and attach the checksum to the release manifest.
 
 ## Rendering boundary
 

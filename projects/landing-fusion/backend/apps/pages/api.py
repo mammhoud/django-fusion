@@ -43,6 +43,24 @@ def get_effective_render_first(request=None) -> bool:
     return bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", False))
 
 
+def brand_api(request):
+    """GET /apis/brand/ — the brand kit boards, one per live product.
+
+    Single source for the /brand/ page AND the product-tooltip brand modal:
+    each board carries the product card (title, href, logo, tagline) plus the
+    brandkit story (essence, metaphor, construction, voice, palette swatches
+    pre-resolved to CSS).
+    """
+    from apps.pages.brand_spec import get_brand_boards
+
+    try:
+        boards = get_brand_boards()
+    except Exception:
+        logger.exception("brand_api error")
+        boards = []
+    return JsonResponse({"boards": boards})
+
+
 def render_mode_api(request):
     """GET /apis/render-mode/ — report the active fusion render mode.
 
@@ -221,7 +239,6 @@ def _navigation_from_wagtail_tree(request):
         nav_items = [
             {"label": "Home", "href": "/", "active": request.path == "/"},
             {"label": "Products", "href": "/products/", "active": False},
-            {"label": "Projects", "href": "/projects/", "active": False},
             {"label": "Features", "href": "/features/", "active": False},
             {"label": "About", "href": "/about/", "active": False},
             {"label": "FAQ", "href": "/faq/", "active": False},
@@ -234,7 +251,7 @@ def _navigation_from_wagtail_tree(request):
 # ── Contact ─────────────────────────────────────────────────────────────────
 
 def contact_api(request):
-    """GET /apis/contact/ — contact methods from Wagtail ContactPage."""
+    """GET /apis/contact/ — contact methods + form topics from Wagtail ContactPage."""
     try:
         from apps.pages.models import ContactPage
         page = ContactPage.objects.first()
@@ -255,6 +272,7 @@ def contact_api(request):
                         "methods": methods,
                         "form_title": block.value.get("form_title", "Send us a message"),
                         "form_description": block.value.get("form_description", ""),
+                        "topics": [str(t) for t in block.value.get("topics", [])],
                     })
     except Exception:
         pass
@@ -271,6 +289,7 @@ def contact_api(request):
         ],
         "form_title": "Send us a message",
         "form_description": "Fill out the form and our team will get back to you.",
+        "topics": [],
     })
 
 
@@ -318,12 +337,13 @@ SECTION_ITEM_LIST_KEYS = {
     "tech": "items",
     "editions": "editions",
     "snippets": "snippets",
+    "team": "members",
 }
 
 
 def _page_to_dict(page) -> dict:
     """Serialize a Wagtail page to a frontend-consumable dict."""
-    from apps.pages.models import AboutPage, ProductsPage, FeaturesPage, ProjectsPage
+    from apps.pages.models import AboutPage, ProductsPage, FeaturesPage
     from apps.content.blocks import SECTION_STACK_FIELDS
 
     data = {
@@ -335,6 +355,22 @@ def _page_to_dict(page) -> dict:
         "seo_title": getattr(page, "seo_title", "") or page.title,
         "search_description": getattr(page, "search_description", ""),
     }
+
+    # ProductPage category — lets the detail hero label the catalog section.
+    if hasattr(page, "get_category_display"):
+        data["category"] = page.get_category_display().lower()
+
+    # DisplayModeMixin — page / modal / both surfacing option (BrandPage).
+    if hasattr(page, "display_mode") and page.display_mode:
+        data["display_mode"] = page.display_mode
+
+    # ProductPage catalog fields — logo, tagline, status, hidden flag.
+    if hasattr(page, "logo_style"):
+        data["logo_style"] = page.logo_style
+        data["status"] = page.status
+        data["hidden"] = bool(page.hidden)
+    if hasattr(page, "tagline") and page.tagline:
+        data["tagline"] = page.tagline
 
     # Hero
     if hasattr(page, "hero") and page.hero:
@@ -489,6 +525,25 @@ def assets_api(request):
     return JsonResponse(data)
 
 
+def pricing_api(request):
+    """GET /apis/pricing/ — every live, non-hidden product with its editions.
+
+    Drives the tabbed /pricing/ page (Formints · Precis LMS · Loop · Syntara ·
+    vResume): each product carries its slug, title, tagline, logo style,
+    status and the edition list (name / price / period / tier / featured).
+    Hidden products (ceptor-ai) are excluded.
+    """
+    try:
+        from apps.pages.models import PricingPage
+
+        page = PricingPage.objects.first()
+        products = page.get_product_pricing() if page else []
+        return JsonResponse({"products": products})
+    except Exception:
+        logger.exception("pricing_api error")
+        return JsonResponse({"products": []})
+
+
 def page_list_api(request):
     """GET /apis/pages/ — list of all published pages."""
     try:
@@ -554,6 +609,7 @@ def contact_submit_api(request):
     name = str(data.get("name", "")).strip()
     email = str(data.get("email", "")).strip()
     subject = str(data.get("subject", "")).strip()
+    topic = str(data.get("topic", "")).strip()
     message = str(data.get("message", "")).strip()
 
     errors = []
@@ -575,7 +631,10 @@ def contact_submit_api(request):
             return fragment(detail, False)
         return JsonResponse({"success": False, "message": detail}, status=400)
 
-    logger.info("contact_submit: %s <%s> %s", name, email, subject or "(no subject)")
+    logger.info(
+        "contact_submit: %s <%s> topic=%s %s",
+        name, email, topic or "(none)", subject or "(no subject)",
+    )
 
     from django.utils.html import escape
 
@@ -595,29 +654,30 @@ def contact_submit_api(request):
 def newsletter_subscribe_api(request):
     """POST /api/newsletter/subscribe/ — subscribe an email address.
 
-    Accepts form-encoded or JSON body with ``email``. Returns an HTML
-    fragment (for HTMX swap into ``#newsletter-feedback``) on success
-    or failure.
-
-    In production this would connect to Mailchimp/SendGrid. For now it
-    validates and echoes a confirmation.
+    Accepts form-encoded or JSON body with ``email`` (and optional ``source``).
+    Upserts a ``NewsletterSubscriber`` row (re-activates if it was paused),
+    then returns an HTML fragment (HTMX swap into ``#newsletter-feedback``)
+    or JSON.
     """
     import json
     import re
 
     EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
-    # Parse the email from the request body
+    # Parse the email + source from the request body
     email = ""
+    source = "footer"
     if request.method == "POST":
         if request.content_type == "application/json":
             try:
                 body = json.loads(request.body.decode("utf-8"))
                 email = body.get("email", "").strip()
+                source = body.get("source", "footer").strip() or "footer"
             except (json.JSONDecodeError, UnicodeDecodeError):
                 pass
         else:
             email = request.POST.get("email", "").strip()
+            source = request.POST.get("source", "footer").strip() or "footer"
 
     if not email:
         return JsonResponse(
@@ -631,17 +691,49 @@ def newsletter_subscribe_api(request):
             status=400,
         )
 
-    # Success — in production, queue a Mailchimp/SendGrid API call here.
-    logger.info("newsletter_subscribe: %s", email)
+    # Persist the subscription — upsert by email, re-activate paused rows.
+    subscriber = None
+    created = False
+    try:
+        from apps.content.models.newsletter import NewsletterSubscriber
+
+        subscriber, created = NewsletterSubscriber.objects.get_or_create(
+            email__iexact=email,
+            defaults={"email": email, "source": source, "is_active": True},
+        )
+        if not created:
+            # Normalize the stored address casing + re-activate.
+            if subscriber.email != email:
+                subscriber.email = email
+            subscriber.is_active = True
+            subscriber.source = source or subscriber.source
+            subscriber.save(update_fields=["email", "is_active", "source", "updated_at"])
+        logger.info("newsletter_subscribe: %s (new=%s, source=%s)", email, created, source)
+    except Exception:
+        logger.exception("newsletter_subscribe persistence error for %s", email)
+
+    # Fire the post-subscribe side effects — a branded welcome email on fresh
+    # signups and an idempotent push to the configured email provider — without
+    # ever blocking the response (the service logs its own failures).
+    if subscriber is not None:
+        try:
+            from apps.content.services.newsletter import notify_newsletter_subscription
+            notify_newsletter_subscription(subscriber, is_new=created)
+        except Exception:
+            logger.exception("newsletter_subscribe side effects error for %s", email)
 
     # Check if this is an HTMX request — return HTML fragment for swap.
     if request.headers.get("HX-Request"):
         from django.http import HttpResponse
+        from django.utils.html import escape
+        # User input is interpolated into an HTML fragment — escape it so a
+        # crafted email cannot inject markup into the HTMX swap target.
+        safe_email = escape(email)
         return HttpResponse(
             '<div class="live-fragment__fallback" style="border-color:hsl(var(--fu-live))">'
             '<p class="text-fu-live font-medium">✓ Subscribed!</p>'
             '<p class="text-sm text-fu-muted mt-1">We\'ll send updates to '
-            f'<code class="font-mono text-fu-ink">{email}</code>.</p>'
+            f'<code class="font-mono text-fu-ink">{safe_email}</code>.</p>'
             '</div>'
         )
 
@@ -649,3 +741,18 @@ def newsletter_subscribe_api(request):
         "success": True,
         "message": f"Subscribed! We'll send updates to {email}.",
     })
+
+
+def newsletter_status_api(request):
+    """GET /api/newsletter/status/ — subscriber count for the footer badge.
+
+    Returns the number of active subscribers so the UI can show social proof
+    (e.g. "Join 1,200+ readers").
+    """
+    try:
+        from apps.content.models.newsletter import NewsletterSubscriber
+
+        count = NewsletterSubscriber.objects.filter(is_active=True).count()
+    except Exception:
+        count = 0
+    return JsonResponse({"subscriber_count": count})

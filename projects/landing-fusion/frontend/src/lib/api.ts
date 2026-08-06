@@ -106,6 +106,7 @@ export interface ContactData {
   methods: ContactMethod[];
   form_title: string;
   form_description: string;
+  topics: string[];
 }
 
 export interface PageData {
@@ -142,8 +143,25 @@ export interface PageData {
   blog?: Record<string, any>[];
   tech?: string[];
   editions?: Record<string, any>[];
+  comparison?: Record<string, any>[];
   snippets?: Record<string, any>[];
-  products?: { title: string; slug: string; tagline: string; href: string }[];
+  products?: {
+    title: string;
+    slug: string;
+    tagline: string;
+    href: string;
+    category?: string;
+    logo_style?: string;
+    status?: string;
+    excerpt?: string;
+    editions?: { name: string; price: string; period?: string; tier?: string; featured?: boolean }[];
+    tech?: string[];
+  }[];
+  // ProductPage catalog fields
+  logo_style?: string;
+  tagline?: string;
+  status?: string;
+  hidden?: boolean;
   contact?: Record<string, any>[];
   // Blog post meta (BlogPostPage detail pages)
   category?: string;
@@ -162,6 +180,30 @@ export interface PageListItem {
 export interface PageListData {
   pages: PageListItem[];
   total: number;
+}
+
+export interface PricingProduct {
+  slug: string;
+  title: string;
+  tagline: string;
+  logo_style: string;
+  status: string;
+  href: string;
+  editions: {
+    name: string;
+    price: string;
+    period: string;
+    tagline: string;
+    tier: string;
+    featured: boolean;
+    features?: string[];
+    cta_label?: string;
+    cta_href?: string;
+  }[];
+}
+
+export interface PricingData {
+  products: PricingProduct[];
 }
 
 export interface AssetManifest {
@@ -198,6 +240,11 @@ export function fetchContact(): Promise<ContactData> {
   return fetchJSON<ContactData>('/apis/contact/');
 }
 
+/** Fetch every live, non-hidden product with its editions (pricing tabs). */
+export function fetchPricing(): Promise<PricingData> {
+  return fetchJSON<PricingData>('/apis/pricing/');
+}
+
 /** Fetch full page data for a single page by slug. */
 export function fetchPageData(slug: string): Promise<PageData> {
   return fetchJSON<PageData>(`/apis/pages/${slug}/`);
@@ -230,4 +277,5 @@ export const cachedAssets = () => fetchCached('assets', fetchAssets);
 export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettings);
 export const cachedNavigation = () => fetchCached('navigation', fetchNavigation);
 export const cachedContact = () => fetchCached('contact', fetchContact);
+export const cachedPricing = () => fetchCached('pricing', fetchPricing);
 export const cachedPageData = (slug: string) => fetchCached(`page:${slug}`, () => fetchPageData(slug));

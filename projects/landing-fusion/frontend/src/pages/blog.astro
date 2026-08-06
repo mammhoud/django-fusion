@@ -35,7 +35,7 @@ const posts = pageBlog?.map((p: any) => ({
 
 <Layout
   title={pageData?.title || 'Blog'}
-  description={pageData?.search_description || 'The structa.cloud blog — notes on the AHA stack: Astro, HTMX, Alpine, Wagtail, and shipping server-rendered sites.'}
+  description={pageData?.search_description || 'The structa.cloud blog: notes on the AHA stack, Astro, HTMX, Alpine, Wagtail, and shipping server-rendered sites.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -45,8 +45,8 @@ const posts = pageBlog?.map((p: any) => ({
     eyebrow={pageHero?.badge || 'insights · server-first rendering'}
     heading={pageHero?.title || 'The Blog'}
     accent='server-first'
-    intro={pageHero?.subtitle || 'Notes on the AHA stack — Astro, HTMX, Alpine — and shipping server-rendered sites that stay fast.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore projects', href: '/projects' }}
+    intro={pageHero?.subtitle || 'Notes on the AHA stack: Astro, HTMX, Alpine, and shipping server-rendered sites that stay fast.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore products', href: '/products' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
     status='200 OK · text/html · every post in one response'
   />
@@ -61,8 +61,8 @@ const posts = pageBlog?.map((p: any) => ({
   ) : <ContentError label="Blog posts unavailable" />}
 
   <CTA
-    heading={pageCta?.title || 'Everything is open source'}
-    intro={pageCta?.subtitle || 'All structa.cloud libraries are public on GitHub. Explore the code, open issues, or contribute.'}
+    heading={pageCta?.title || 'Most of our builds are open source'}
+    intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.'}
     ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
     ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
   />

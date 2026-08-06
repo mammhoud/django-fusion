@@ -4,7 +4,6 @@ import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
 import Features from '@/components/blocks/Features.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
-import FAQ from '@/components/blocks/FAQ.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
@@ -26,7 +25,6 @@ const pageCta = pageData?.cta;
 const pageStats = (pageData?.stats as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
-const pageFaq = (pageData?.faq as any[] | undefined);
 
 // ── Mapped from backend data (no hardcoded fallbacks) ──
 const bioStats = pageStats?.map((s: any) => ({ label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || '') }));
@@ -38,9 +36,9 @@ const skills = pageFeatures?.map((f: any) => ({
 }));
 
 const missionValues = [
-  { title: 'Server-rendered by default', text: 'Every page ships as finished HTML. No heavy SPA, no hydration overhead — just the web as it was designed to work.' },
-  { title: 'Open source first', text: 'All core libraries are public. django-fusion, ceptor-ai, and django-bolt are open for contribution and use.' },
-  { title: 'Boring technology wins', text: 'Django, PostgreSQL, HTML, CSS — proven tools that keep working. No framework churn, no maintenance treadmill.' },
+  { title: 'Server-rendered by default', text: 'Every page ships as finished HTML. No heavy SPA, no hydration overhead, just the web as it was designed to work.' },
+  { title: 'Open source first', text: 'Community editions of every product and the core libraries are public. django-fusion and ceptor-ai are open for contribution and use.' },
+  { title: 'Boring technology wins', text: 'Django, PostgreSQL, HTML, CSS. Proven tools that keep working. No framework churn, no maintenance treadmill.' },
 ];
 
 const testimonialItems = pageTestimonials?.map((t: any) => ({
@@ -49,15 +47,11 @@ const testimonialItems = pageTestimonials?.map((t: any) => ({
   role: String(t.role || ''),
 }));
 
-const faqItems = pageFaq?.map((f: any) => ({
-  question: String(f.question || ''),
-  answer: String(f.answer || ''),
-}));
 ---
 
 <Layout
   title={pageData?.title || 'About'}
-  description={pageData?.search_description || 'Mahmoud Ezzat Moustafa — full-stack developer, open-source contributor, and the engineer behind structa.cloud.'}
+  description={pageData?.search_description || 'Mahmoud Ezzat Moustafa: full-stack developer, open-source contributor, and the engineer behind structa.cloud.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -67,11 +61,18 @@ const faqItems = pageFaq?.map((f: any) => ({
     eyebrow={pageHero?.badge || 'about · the engineer behind the code'}
     heading={pageHero?.title || 'Mahmoud Ezzat'}
     accent='Moustafa'
-    intro={pageHero?.subtitle || "Full-stack developer and open-source contributor specializing in Python/Django, AI tools, and cloud architecture. I build server-rendered platforms that ship as documents — no heavy SPAs, no framework overhead, just the web working the way it should."}
+    intro={pageHero?.subtitle || "Full-stack developer and open-source contributor specializing in Python/Django, AI tools, and cloud architecture. I build server-rendered platforms that ship as documents, with no heavy SPAs or framework overhead, just the web working the way it should."}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'View GitHub', href: 'https://github.com/mammhoud' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Read the blog', href: 'https://mammhoud.github.io' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Meet the team', href: '/about/team' }}
     status='200 OK · text/html · the engineer, in one response'
   />
+
+  <!-- About subpages: the team page lives under /about/team/ -->
+  <section class='container-fusion -mt-4 pb-2 text-center'>
+    <a href='/about/team/' class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link underline underline-offset-4 transition-colors hover:text-fu-ink'>
+      Meet the team →
+    </a>
+  </section>
 
   {bioStats?.length ? <Stats stats={bioStats} /> : <ContentError label="Stats data unavailable" />}
 
@@ -85,7 +86,7 @@ const faqItems = pageFaq?.map((f: any) => ({
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
         {missionValues.map((value, i) => (
-          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
             <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
               <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
                 <path stroke-linecap='round' stroke-linejoin='round'
@@ -116,7 +117,6 @@ const faqItems = pageFaq?.map((f: any) => ({
   ) : <ContentError label="Skills data unavailable" />}
 
   {testimonialItems?.length ? <Testimonials testimonials={testimonialItems} /> : <ContentError label="Testimonials unavailable" />}
-  {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
 
   <CTA
     heading={pageCta?.title || "Let's build together"}

@@ -4,7 +4,7 @@
 SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
     "services", "process", "blog",
-    "tech", "editions", "snippets",
+    "tech", "editions", "snippets", "comparison", "team",
 ]
 
 
@@ -46,7 +46,7 @@ class ProjectBlock(blocks.StructBlock):
         max_length=80,
         required=False,
         label=_("Edition"),
-        help_text=_("e.g. Minimal / Solo / Full for the POS editions."),
+        help_text=_("e.g. Community / Standard / Pro / Cloud for the POS editions."),
     )
     category = blocks.ChoiceBlock(
         choices=[
@@ -409,8 +409,8 @@ class EditionBlock(blocks.StructBlock):
     """A single product edition — a pricing tier with its own feature set.
 
     Used by product pages so each product lists its editions (e.g. Forge POS:
-    Minimal · Solo · Full) with pricing and the capabilities that ship in that
-    edition only.
+    Community · Standard · Pro · Cloud) with pricing and the capabilities
+    that ship in that edition only.
     """
 
     name = blocks.CharBlock(max_length=80, label=_("Name"))
@@ -421,6 +421,20 @@ class EditionBlock(blocks.StructBlock):
     cta_label = blocks.CharBlock(max_length=80, required=False, label=_("CTA label"))
     cta_href = blocks.CharBlock(max_length=255, required=False, label=_("CTA URL"))
     featured = blocks.BooleanBlock(required=False, default=False, label=_("Featured"))
+    tier = blocks.ChoiceBlock(
+        choices=[
+            ("outline", _("Outline — Community/open source")),
+            ("default", _("Default — Standard/Solo")),
+            ("featured", _("Featured — highlighted with accent")),
+            ("managed", _("Managed — ribbon (hosted/Cloud)")),
+        ],
+        default="default",
+        label=_("Visual tier"),
+        help_text=_(
+            "The card treatment: outline (Community), default (Standard/Solo), "
+            "featured (Pro — accent + “most shipped”), managed (Cloud — ribbon)."
+        ),
+    )
 
     class Meta:
         icon = "placeholder"
@@ -474,6 +488,52 @@ class SnippetsSectionBlock(blocks.StructBlock):
         template = "content/blocks/snippets.html"
 
 
+class ComparisonRowBlock(blocks.StructBlock):
+    """One feature row of the edition-comparison table.
+
+    ``cells`` holds one value per column (in the same order as
+    ``FeatureComparisonSectionBlock.columns``). The Django template renders
+    ``Yes``/``No`` as check/cross glyphs and any other value as plain text
+    (e.g. "60+ endpoints", "17 tables").
+    """
+
+    feature = blocks.CharBlock(max_length=200, label=_("Feature"))
+    cells = blocks.ListBlock(
+        blocks.CharBlock(max_length=120, label=_("Cell")),
+        label=_("Values per column"),
+        help_text=_("One value per edition column, in order: Yes / No / short note."),
+    )
+
+    class Meta:
+        # No template: rows render inline inside feature_comparison.html so the
+        # <tr> stays inside the table; a standalone template would fragment it.
+        icon = "placeholder"
+        label = _("Comparison row")
+
+
+class FeatureComparisonSectionBlock(blocks.StructBlock):
+    """Full feature-comparison table — edition columns vs capability rows.
+
+    Used by product pages so buyers can compare editions row by row
+    (e.g. Forge POS: Community · Standard · Pro · Cloud across ~26 rows).
+    """
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, label=_("Title"))
+    description = blocks.TextBlock(required=False, label=_("Description"))
+    columns = blocks.ListBlock(
+        blocks.CharBlock(max_length=40, label=_("Column")),
+        label=_("Edition columns"),
+        help_text=_("Edition names, left to right (e.g. Community, Standard, Pro, Cloud)."),
+    )
+    rows = blocks.ListBlock(ComparisonRowBlock(), label=_("Feature rows"))
+
+    class Meta:
+        icon = "list-ul"
+        label = _("Feature comparison")
+        template = "content/blocks/feature_comparison.html"
+
+
 class ContactSectionBlock(blocks.StructBlock):
     """Contact page info + form intro."""
 
@@ -485,8 +545,65 @@ class ContactSectionBlock(blocks.StructBlock):
         max_length=200, required=False, label=_("Form title")
     )
     form_description = blocks.TextBlock(required=False, label=_("Form description"))
+    topics = blocks.ListBlock(
+        blocks.CharBlock(max_length=120, label=_("Topic")),
+        label=_("Form topic choices"),
+        required=False,
+        help_text=_(
+            "Options for the “What can we help with?” select — one per product "
+            "or service line (e.g. Formints POS, Precis LMS, Loop CMS, "
+            "Website building)."
+        ),
+    )
 
     class Meta:
         icon = "mail"
         label = _("Contact section")
         template = "content/blocks/contact_section.html"
+
+
+class SocialLinkBlock(blocks.StructBlock):
+    """A single social/profile link for a team member (label + url)."""
+
+    platform = blocks.CharBlock(
+        max_length=40, label=_("Platform"),
+        help_text=_("e.g. GitHub, LinkedIn, Facebook, X."),
+    )
+    url = blocks.URLBlock(label=_("URL"))
+
+    class Meta:
+        icon = "link"
+        label = _("Social link")
+        template = "content/blocks/social_link.html"
+
+
+class TeamMemberBlock(blocks.StructBlock):
+    """A single team member card (name, role, bio, initials, social links)."""
+
+    name = blocks.CharBlock(max_length=120, label=_("Name"))
+    role = blocks.CharBlock(max_length=120, required=False, label=_("Role"))
+    bio = blocks.TextBlock(required=False, label=_("Bio"))
+    initials = blocks.CharBlock(
+        max_length=4, required=False, label=_("Initials"),
+        help_text=_("Avatar fallback, e.g. ME."),
+    )
+    links = blocks.ListBlock(SocialLinkBlock(), label=_("Links"), required=False)
+
+    class Meta:
+        icon = "user"
+        label = _("Team member")
+        template = "content/blocks/team_member.html"
+
+
+class TeamSectionBlock(blocks.StructBlock):
+    """Team grid — a heading plus member cards (About → Team subpage)."""
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, label=_("Title"))
+    description = blocks.TextBlock(required=False, label=_("Description"))
+    members = blocks.ListBlock(TeamMemberBlock(), label=_("Members"))
+
+    class Meta:
+        icon = "group"
+        label = _("Team section")
+        template = "content/blocks/team.html"

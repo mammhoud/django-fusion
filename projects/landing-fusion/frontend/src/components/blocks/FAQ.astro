@@ -14,7 +14,7 @@ const defaultItems = [
   {
     question: 'What exactly is the AHA stack?',
     answer:
-      'AHA stands for Astro + HTMX + Alpine.js — a lightweight alternative to heavy SPA frameworks. Astro renders server-side HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers local interactivity. No Redux, no decoder, no client-side router needed for most pages.',
+      'AHA stands for Astro + HTMX + Alpine.js, a lightweight alternative to heavy SPA frameworks. Astro renders server-side HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers local interactivity. No Redux, no decoder, no client-side router needed for most pages.',
   },
   {
     question: 'Do I need to write JavaScript?',
@@ -57,7 +57,6 @@ const itemsJson = JSON.stringify(items);
 <section id="faq" class="faq">
   <div class="container-fusion">
     <div class="faq__header">
-      <p class="tag-marker mb-4">faq</p>
       {heading && <h2 class="page-section__title">{heading}</h2>}
       {intro && <p class="text-fu-muted">{intro}</p>}
     </div>

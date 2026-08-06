@@ -1,0 +1,6 @@
+{{ message }}
+
+—
+You're receiving this because you subscribed at {{ site_name }}. Manage your
+preference anytime by replying to this email or writing to
+{{ contact_email }}. · {{ privacy_url }}

@@ -1,10 +1,12 @@
 {% load wagtailcore_tags %}
-{% comment %} A single edition card (EditionBlock) — per-product pricing tier with
-   its own feature set. Mirrors the Astro PricingCard shape (name, price,
-   period, features, CTA, featured). {% endcomment %}
-<article class="card edition__card relative flex flex-col p-6 sm:p-8{% if value.featured %} edition__card--featured border-fu-link shadow-lg md:-translate-y-1{% endif %}">
-  {% if value.featured %}
+{% comment %} A single edition card (EditionBlock) — tiered visual treatment:
+   outline (Community) · default (Standard/Solo) · featured (Pro — accent +
+   “most shipped”) · managed (Cloud — corner ribbon). Mirrors [slug].astro. {% endcomment %}
+<article class="card edition__card relative flex flex-col p-6 sm:p-8{% if value.tier == 'featured' %} edition__card--featured md:-translate-y-1{% elif value.tier == 'managed' %} edition__card--managed overflow-hidden{% elif value.tier == 'outline' %} edition__card--outline{% endif %} reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="--reveal-i: {{ reveal_i|default:0 }}">
+  {% if value.tier == "featured" %}
   <span class="badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">most shipped</span>
+  {% elif value.tier == "managed" %}
+  <span class="managed-ribbon" aria-hidden="true">managed</span>
   {% endif %}
   <p class="tag-marker mb-1">{{ value.name }}</p>
   {% if value.tagline %}<p class="mb-6 text-sm text-fu-muted">{{ value.tagline }}</p>{% endif %}
@@ -25,7 +27,7 @@
   </ul>
   {% endif %}
   {% if value.cta_label %}
-  <a href="{{ value.cta_href|default:'/contact/' }}" class="mt-auto w-full {% if value.featured %}btn-primary{% else %}btn-secondary{% endif %}">
+  <a href="{{ value.cta_href|default:'/contact/' }}" class="mt-auto w-full {% if value.tier == 'featured' %}btn-primary{% else %}btn-secondary{% endif %}">
     {{ value.cta_label }}
   </a>
   {% endif %}

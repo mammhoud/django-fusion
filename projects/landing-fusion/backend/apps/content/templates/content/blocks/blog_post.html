@@ -1,7 +1,7 @@
 {% load wagtailcore_tags %}
 {% comment %} A single blog post card (BlogPostBlock) — links to /blog/<slug>/.
    Meta row (category · read time · date), title, excerpt. {% endcomment %}
-<article class="card blog__post flex flex-col gap-3 p-6">
+<article class="card blog__post flex flex-col gap-3 p-6 reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="--reveal-i: {{ reveal_i|default:0 }}">
   {% if value.category or value.read_time or value.date %}
   <div class="blog__meta flex flex-wrap items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">
     {% if value.category %}<span class="text-fu-link">{{ value.category }}</span>{% endif %}

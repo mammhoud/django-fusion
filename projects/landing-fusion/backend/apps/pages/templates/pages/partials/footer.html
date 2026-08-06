@@ -1,10 +1,38 @@
 <footer class="site-footer">
-  <div class="container-fusion" style="display:grid;gap:2rem;padding-block:3rem;grid-template-columns:1fr;">
-    <div>
-      <div style="font-size:1.125rem;font-weight:700;color:#fff;">Fusion CMS</div>
-      <p style="margin-top:.5rem;font-size:.875rem;max-width:24rem;line-height:1.6;">
-        Landing pages powered by the AHA stack. Server-rendered HTML with HTMX and Alpine.js — no heavy SPA.
-      </p>
+  <div class="container-fusion" style="display:grid;gap:2.5rem;padding-block:3rem;grid-template-columns:1fr;">
+    <div style="display:grid;gap:2rem;grid-template-columns:1fr;">
+      <div>
+        <div style="font-size:1.125rem;font-weight:700;color:#fff;">Structa Cloud</div>
+        <p style="margin-top:.5rem;font-size:.875rem;max-width:24rem;line-height:1.6;">
+          Landing pages powered by the AHA stack. Server-rendered HTML with HTMX and Alpine.js — no heavy SPA.
+        </p>
+      </div>
+      {% comment %} Newsletter signup — posts to /api/newsletter/subscribe/ via HTMX,
+         swaps the confirmation fragment into #newsletter-feedback. Subscribers are
+         persisted to the NewsletterSubscriber Wagtail snippet (admin → Snippets). {% endcomment %}
+      <div style="max-width:26rem;">
+        <div style="font-size:.875rem;font-weight:600;margin-bottom:.5rem;">Newsletter</div>
+        <p style="font-size:.8rem;margin:0 0 .75rem;color:hsl(var(--fu-muted));line-height:1.5;">
+          Product updates and engineering notes. No spam — unsubscribe anytime.
+        </p>
+        <form
+          hx-post="/api/newsletter/subscribe/"
+          hx-target="#newsletter-feedback"
+          hx-swap="innerHTML"
+          style="display:flex;gap:.5rem;"
+          aria-label="Subscribe to newsletter"
+        >
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="you@example.com"
+            style="flex:1;min-width:0;padding:.6rem .75rem;border:1px solid hsl(var(--fu-border));border-radius:.5rem;background:hsl(var(--fu-bg));color:hsl(var(--fu-ink));font-size:.875rem;"
+          />
+          <button type="submit" class="btn btn-primary" style="padding:.6rem 1rem;font-size:.875rem;">Subscribe</button>
+        </form>
+        <div id="newsletter-feedback" aria-live="polite"></div>
+      </div>
     </div>
     <div style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));">
       <div>
@@ -13,27 +41,18 @@
           <li><a href="/features/">Features</a></li>
           <li><a href="/services/">Services</a></li>
           <li><a href="/products/">Products</a></li>
-          <li><a href="/projects/">Projects</a></li>
           <li><a href="/pricing/">Pricing</a></li>
+          <li><a href="/brand/">Brand</a></li>
           <li><a href="/about/">About</a></li>
         </ul>
       </div>
       <div>
-        <div style="font-size:.875rem;font-weight:600;margin-bottom:.75rem;">Insights</div>
+        <div style="font-size:.875rem;font-weight:600;margin-bottom:.75rem;">Resources</div>
         <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;font-size:.875rem;">
           <li><a href="/blog/">Blog</a></li>
-          <li><a href="/contact/">Contact Us</a></li>
           <li><a href="/faq/">FAQ</a></li>
           <li><a href="/privacy/">Privacy Policy</a></li>
-        </ul>
-      </div>
-      <div>
-        <div style="font-size:.875rem;font-weight:600;margin-bottom:.75rem;">Support</div>
-        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;font-size:.875rem;">
-          <li><a href="/contact/">Contact Us</a></li>
-          <li><a href="/about/">About Us</a></li>
-          <li><a href="/faq/">FAQ</a></li>
-          <li><a href="/privacy/">Privacy Policy</a></li>
+          <li><a href="/contact/">Contact</a></li>
         </ul>
       </div>
       <div>
@@ -41,13 +60,14 @@
         <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;font-size:.875rem;">
           <li><a href="/#cta">Get Started</a></li>
           <li><a href="https://github.com/mammhoud" rel="noopener">GitHub</a></li>
+          <li><a href="https://linkedin.com/in/mammhoud" rel="noopener">LinkedIn</a></li>
           <li><a href="https://mammhoud.github.io" rel="noopener">Portfolio</a></li>
         </ul>
       </div>
     </div>
   </div>
   <div class="container-fusion" style="border-top:1px solid hsl(var(--fu-border) / .4);padding-block:1.5rem;font-size:.875rem;display:flex;flex-wrap:wrap;gap:.5rem;">
-    © {% now "Y" %} mammhoud. All rights reserved. ·
+    © {% now "Y" %} Structa Cloud. All rights reserved. ·
     <a href="https://github.com/mammhoud" rel="noopener">GitHub</a> ·
     <a href="https://mammhoud.github.io" rel="noopener">Portfolio</a>
   </div>

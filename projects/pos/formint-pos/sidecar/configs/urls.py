@@ -28,5 +28,11 @@ urlpatterns = [
 
 # django-bolt reverse-only URLs (so reverse()/{% url %} work).
 # Only included when django_bolt is installed and ships a urls module.
-if importlib.util.find_spec("django_bolt.urls"):
-    urlpatterns.append(path("", include("django_bolt.urls")))
+# find_spec() raises ModuleNotFoundError when the parent package is absent,
+# so the optionality must be wrapped in try/except (bolt is optional per
+# settings HAS_DJANGO_BOLT).
+try:
+    if importlib.util.find_spec("django_bolt.urls"):
+        urlpatterns.append(path("", include("django_bolt.urls")))
+except ModuleNotFoundError:
+    pass

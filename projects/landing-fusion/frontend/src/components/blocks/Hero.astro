@@ -1,12 +1,12 @@
 ---
 import Skeleton from '@/components/ui/Skeleton.astro';
 
-// Fusion CMS hero — "the page as its own document."
+// Structa Cloud hero — "the page as its own document."
 //
-// Signature element: a real View Source toggle (Alpine) that flips the
-// rendered hero to its own literal markup, proving the AHA-stack pitch:
-// this page IS server-rendered HTML. The source shown is the actual hero
-// markup, generated from the same props, so it's always truthful.
+// Signature element: the hero's right column is its OWN literal source, shown
+// by default, proving the AHA-stack pitch: this page IS server-rendered HTML.
+// The source is generated from the same props that render the hero, so it is
+// always truthful. A toggle flips to a miniature rendered view.
 
 interface Props {
   eyebrow?: string;
@@ -19,28 +19,31 @@ interface Props {
 }
 
 const {
-  eyebrow = 'server-rendered · zero heavy SPA',
-  heading = 'Your website, delivered as',
-  accent = 'plain HTML',
+  eyebrow = 'structa.cloud · full-stack engineering',
+  heading = 'Platforms that ship as',
+  accent = 'documents',
   intro =
-    'Fusion CMS renders every page as server-rendered HTML — no 500&nbsp;KB JavaScript bundle, no hydration, no client framework to babysit. What the browser downloads is what your server sent.',
-  primaryCta = { label: 'Start building', href: '/#cta' },
-  secondaryCta = { label: 'Read the docs', href: '/about' },
-  status = '200 OK · text/html · 0 KB client JS',
+    'Structa Cloud renders every page as server-rendered HTML. No 500 KB bundle, no hydration, no framework.',
+  primaryCta = { label: 'Explore the stack', href: '/products' },
+  secondaryCta = { label: 'About the engineer', href: '/about' },
+  status = '200 OK · text/html',
 } = Astro.props;
+
+// Plain-text intro for the source block and the rendered mini-view.
+const plainIntro = intro.replace(/&nbsp;/g, ' ');
 
 const sourceMarkup = [
   '<!doctype html>',
   '<html lang="en">',
   '  <head>',
   '    <meta charset="utf-8" />',
-  '    <title>Fusion CMS</title>',
-  '    <meta name="description" content="Your website, delivered as plain HTML." />',
+  `    <title>${heading} ${accent}</title>`,
+  `    <meta name="description" content="${plainIntro}" />`,
   '  </head>',
   '  <body>',
   '    <header>',
   `      <h1>${heading} ${accent}</h1>`,
-  `      <p>${intro.replace(/&nbsp;/g, ' ')}</p>`,
+  `      <p>${plainIntro}</p>`,
   `      <a href="${primaryCta.href}">${primaryCta.label}</a>`,
   '    </header>',
   '  </body>',
@@ -49,6 +52,9 @@ const sourceMarkup = [
 ---
 
 <section class="hero">
+  <!-- Registration corners — the sheet is printed, not rendered. -->
+  <span class="hero__corner-tl" aria-hidden="true"></span>
+  <span class="hero__corner-br" aria-hidden="true"></span>
   <!-- Skeleton while Alpine boots (x-intersect reveals) — component-matched height -->
   <div data-hydrate-skeleton>
     <Skeleton variant="hero-section" />
@@ -87,68 +93,105 @@ const sourceMarkup = [
         x-data x-intersect="$el.classList.add('reveal-visible')"
         style="transition-delay: 200ms"
       >
-        <a href={primaryCta.href} class="btn-primary !px-7 !py-3">
-          {primaryCta.label}
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-        <a href={secondaryCta.href} class="btn-secondary !px-7 !py-3">
-          {secondaryCta.label}
-        </a>
+        <!-- Magnetic wrapper — the CTA drifts toward the cursor (≤6px) and
+             snaps back on leave via the Alpine 'magnetic' component
+             (registered in alpine.js). Transform lives on the wrapper so the
+             button's own :active press-scale and btn-chip arrow stay
+             untouched. -->
+        <span
+          class="btn-magnetic"
+          x-data="magnetic"
+          @pointerenter="active = true; center()"
+          @pointermove="track($event)"
+          @pointerleave="leave()"
+          :class="active && 'btn-magnetic--tracking'"
+          :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+        >
+          <a href={primaryCta.href} class="btn-primary btn-chip !px-6 !py-2.5">
+            {primaryCta.label}
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </span>
+        <span
+          class="btn-magnetic"
+          x-data="magnetic"
+          @pointerenter="active = true; center()"
+          @pointermove="track($event)"
+          @pointerleave="leave()"
+          :class="active && 'btn-magnetic--tracking'"
+          :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+        >
+          <a href={secondaryCta.href} class="btn-secondary !px-7 !py-3">
+            {secondaryCta.label}
+          </a>
+        </span>
       </div>
-
-      <p
-        class="hero__status"
-        x-data x-intersect="$el.classList.add('reveal-visible')"
-        style="transition-delay: 260ms"
-      >
-        <span class="status-line"><span class="dot" aria-hidden="true"></span>{status}</span>
-      </p>
     </div>
 
-    <!-- ── View Source toggle: the signature ───────────────────────── -->
+    <!-- ── View Source panel: the hero's own markup, shown by default ── -->
     <div
       class="hero__source-toggle"
       client:load
-      x-data="{ showSource: false }"
+      x-data="{ showSource: true }"
       x-intersect="$el.classList.add('reveal-visible')"
-      style="transition-delay: 320ms"
+      style="transition-delay: 240ms"
     >
-      <div class="hero__source-bar">
-        <p class="tag-marker">view-source:fusion-cms</p>
+      <div class="hero__source-chrome">
+        <span class="hero__source-path">view-source:structa.cloud/</span>
+        <span class="hero__source-status">
+          <span class="status-line"><span class="dot" aria-hidden="true"></span>{status}</span>
+          <span class="hero__source-kb">0 KB client JS</span>
+        </span>
+      </div>
+
+      <div id="hero-source">
+        <!-- Source view — rendered server-side so it reads without JS. -->
+        <div x-show="showSource">
+          <pre class="source-panel source-panel--bezel" role="region" aria-label="Source of this hero section"><code>{sourceMarkup}</code></pre>
+        </div>
+
+        <!-- Rendered view — the real hero, miniaturized. -->
+        <div x-show="!showSource" x-cloak class="source-panel source-panel--render" aria-hidden="true">
+          <div class="source-panel__doc">
+            <p class="source-panel__tag">rendered · index.html</p>
+            <h3 class="source-panel__h1">{heading} <span class="source-panel__accent">{accent}</span></h3>
+            <p class="source-panel__intro">{plainIntro}</p>
+            <div class="source-panel__actions">
+              <span class="source-panel__btn source-panel__btn--primary">{primaryCta.label}</span>
+              <span class="source-panel__btn source-panel__btn--ghost">{secondaryCta.label}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__source-actions">
         <button
           type="button"
-          class="btn-secondary !h-9 !px-4 !py-0 font-mono text-xs uppercase tracking-wider"
+          class="btn-secondary !h-8 !px-3.5 !py-0 font-mono text-[0.68rem] uppercase tracking-wider"
           @click="showSource = !showSource"
           :aria-expanded="showSource.toString()"
           aria-controls="hero-source"
         >
-          <svg x-show="!showSource" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9"/>
-          </svg>
-          <svg x-show="showSource" x-cloak class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 5l16 16M4 21L20 5"/>
-          </svg>
-          <span x-text="showSource ? 'Back to rendered' : 'View source'"></span>
+          <span x-text="showSource ? 'Rendered view' : 'View source'"></span>
         </button>
-      </div>
-
-      <!-- Rendered state -->
-      <div id="hero-source" x-show="!showSource">
-        <div class="source-panel" aria-hidden="true">
-          <code><span class="tok-com">&lt;!-- the hero, as it ships to the browser --&gt;</span></code>
-        </div>
-      </div>
-
-      <!-- Source state -->
-      <div x-show="showSource" x-cloak>
-        <pre class="source-panel" role="region" aria-label="Source of this hero section"><code>{sourceMarkup}</code></pre>
-        <p class="mt-2 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
-          That&apos;s it. One HTTP response, no framework.
-        </p>
+        <p class="hero__source-caption">One HTTP response, no framework.</p>
       </div>
     </div>
   </div>
   </div>
+
+  <!-- Scroll sentinel for the sticky header — zero-height element at the
+       bottom of the hero. x-intersect (IntersectionObserver, not a scroll
+       listener) tells the header when the hero has been scrolled past so it
+       can tighten its background and grow a soft shadow. Mirrors the
+       sentinel in the Django hero.html block template. -->
+  <div
+    x-data
+    aria-hidden="true"
+    style="height:0;pointer-events:none;"
+    x-intersect:enter="$dispatch('fusion:header-scrolled', { scrolled: false })"
+    x-intersect:leave="$dispatch('fusion:header-scrolled', { scrolled: true })"
+  ></div>
 </section>

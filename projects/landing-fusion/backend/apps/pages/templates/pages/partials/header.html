@@ -1,4 +1,4 @@
-<header class="site-header" x-data="{ open: false }">
+<header class="site-header" x-data="{ open: false, scrolled: false }" :class="scrolled && 'site-header--scrolled'" @fusion:header-scrolled.window="scrolled = $event.detail.scrolled">
   <div class="container-fusion" style="display:flex;height:4rem;align-items:center;justify-content:space-between;">
     <a href="/" style="display:flex;align-items:center;gap:.65rem;font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:hsl(var(--fu-ink));text-decoration:none;">
       <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -7,7 +7,7 @@
         <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
       </svg>
-      <span>Fusion CMS</span>
+      <span>Structa Cloud</span>
     </a>
 
     {% comment %} Main nav — rendered from the handler nav_items context (single
@@ -16,7 +16,7 @@
     <nav class="site-nav" aria-label="Main" style="display:none;align-items:center;gap:1.5rem;">
       {% if nav_items %}
         {% for item in nav_items %}
-        <a href="{{ item.href }}"{% if item.active %} style="color:hsl(var(--fu-link));"{% endif %}>{{ item.label }}</a>
+        <a href="{{ item.href }}" class="nav-link{% if item.active %} nav-link--active{% endif %}"{% if item.active %} style="color:hsl(var(--fu-link));"{% endif %}>{{ item.label }}</a>
         {% endfor %}
       {% else %}
         {% comment %} Fallback for pages rendered outside the handler pipeline (e.g. 404). {% endcomment %}
@@ -24,7 +24,6 @@
         <a href="/about/">About</a>
         <a href="/services/">Services</a>
         <a href="/products/">Products</a>
-        <a href="/projects/">Projects</a>
         <a href="/blog/">Blog</a>
         <a href="/pricing/">Pricing</a>
         <a href="/contact/">Contact</a>
@@ -35,7 +34,7 @@
     </style>
 
     <div style="display:none;align-items:center;gap:.75rem;">
-      <button type="button" class="btn btn-secondary" style="padding:.5rem 1rem;" @click="open = !open">Log In</button>
+      <button type="button" class="btn btn-secondary" style="padding:.5rem 1rem;" @click="$dispatch('fusion:open-login')">Log In</button>
       <a href="/#cta" class="btn btn-primary" style="padding:.5rem 1rem;">Get Started</a>
     </div>
     <style>
@@ -62,11 +61,12 @@
         <a href="/about/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">About</a>
         <a href="/services/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Services</a>
         <a href="/products/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Products</a>
-        <a href="/projects/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Projects</a>
         <a href="/blog/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Blog</a>
         <a href="/pricing/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Pricing</a>
         <a href="/contact/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Contact</a>
       {% endif %}
+      <hr style="border:none;border-top:1px solid hsl(var(--fu-border));margin:.5rem 0;">
+      <button type="button" class="btn btn-secondary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false; $dispatch('fusion:open-login')">Log In</button>
     </nav>
   </div>
 </header>

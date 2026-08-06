@@ -69,7 +69,6 @@ const iconPaths: Record<Feature['icon'], string> = {
 <section id="features" class="features">
   <div class="container-fusion">
     <div class="features__header">
-      <p class="tag-marker mb-4">features</p>
       <h2 class="page-section__title">{heading}</h2>
       <p class="text-fu-muted">{intro}</p>
     </div>
@@ -79,7 +78,7 @@ const iconPaths: Record<Feature['icon'], string> = {
         <div
           class="features__card"
           x-data x-intersect="$el.classList.add('reveal-visible')"
-          style={`transition-delay: ${i * 60}ms`}
+          style={`--reveal-i: ${i}`}
         >
           <span class="features__card-index" aria-hidden="true">
             {String(i + 1).padStart(2, '0')}

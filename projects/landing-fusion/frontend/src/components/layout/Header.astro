@@ -22,18 +22,19 @@ const displayNav = navItems && navItems.length > 0
     { label: 'Home', href: '/' },
     { label: 'Services', href: '/services/' },
     { label: 'Products', href: '/products/' },
-    { label: 'Projects', href: '/projects/' },
     { label: 'Blog', href: '/blog/' },
     { label: 'Pricing', href: '/pricing/' },
     { label: 'About', href: '/about/' },
     { label: 'Contact', href: '/contact/' },
   ];
----
-
-<header
+---  <header
   client:load
-  class="sticky top-0 z-50 border-b border-fu-line bg-fu-paper/92 backdrop-blur-md"
-  x-data="{ open: false }"
+  class="sticky top-0 z-50 border-b border-fu-line backdrop-blur-md transition ease-[var(--fu-ease-out)] duration-300 motion-reduce:transition-none"
+  x-data="{ open: false, scrolled: false }"
+  :style="scrolled
+    ? 'background-color: hsl(var(--fu-paper) / 0.98); box-shadow: 0 1px 0 hsl(var(--fu-line) / 0.6), 0 14px 36px -20px hsl(var(--fu-ink) / 0.45);'
+    : 'background-color: hsl(var(--fu-paper) / 0.92); box-shadow: 0 1px 0 hsl(var(--fu-line) / 0.6), 0 12px 32px -24px hsl(var(--fu-ink) / 0.4);'"
+  @fusion:header-scrolled.window="scrolled = $event.detail.scrolled"
 >
   <div class="container-fusion">
     <div class="flex h-16 items-center justify-between">
@@ -56,10 +57,8 @@ const displayNav = navItems && navItems.length > 0
             <a
               href={link.href}
               class:list={[
-                'text-[0.9rem] transition-colors duration-200',
-                active
-                  ? 'font-medium text-fu-ink border-b-2 border-fu-link'
-                  : 'text-fu-muted hover:text-fu-ink',
+                'nav-link text-[0.9rem]',
+                active ? 'nav-link--active font-medium text-fu-ink' : 'text-fu-muted hover:text-fu-ink',
               ]}
             >
               {link.label}
@@ -72,6 +71,13 @@ const displayNav = navItems && navItems.length > 0
       <div class="hidden items-center gap-3 md:flex">
         <span class="status-line mr-1 hidden lg:inline-flex"><span class="dot" aria-hidden="true"></span>online</span>
         <ThemeToggle />
+        <button
+          type="button"
+          class="btn-secondary !h-9 !px-4 !py-0 text-[0.85rem]"
+          @click="$dispatch('fusion:open-login')"
+        >
+          Log In
+        </button>
         <a href="/#cta" class="btn-primary !h-9 !px-4 !py-0 text-[0.85rem]">Get Started</a>
       </div>
 
@@ -124,6 +130,7 @@ const displayNav = navItems && navItems.length > 0
         );
       })}
       <hr class="my-2 border-fu-line" />
+      <button type="button" @click="open = false; $dispatch('fusion:open-login')" class="btn-secondary mt-2 w-full">Log In</button>
       <a href="/#cta" @click="open = false" class="btn-primary mt-2 w-full">Get Started</a>
     </nav>
   </div>

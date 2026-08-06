@@ -4,35 +4,36 @@ interface Props {
   intro?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  /** Optional secondary CTA (e.g. the CMS-seeded secondary button). */
+  secondaryCta?: { label: string; href: string };
 }
 
 const {
   heading = 'Ship the document, not the app',
-  intro = 'One HTTP response, finished HTML. Start building on Fusion CMS today — no framework to learn, no bundle to wait for.',
-  ctaLabel = 'Create free account',
-  ctaHref = '/#cta',
+  intro = 'One HTTP response, finished HTML. Start building on Structa Cloud today. No framework to learn, no bundle to wait for.',
+  ctaLabel = 'View on GitHub',
+  ctaHref = 'https://github.com/mammhoud',
+  secondaryCta = { label: 'Get in touch', href: '/contact' },
 } = Astro.props;
 ---
 
 <section id="cta" client:idle class="cta">
   <div class="cta__inner">
     <div class="cta__content">
-      <p class="cta__eyebrow">cta</p>
       <h2 class="cta__heading">{heading}</h2>
       <p class="cta__intro">{intro}</p>
       <div class="cta__actions">
         <a
           href={ctaHref}
           class="btn-primary !px-8 !py-3.5 text-base"
-          @click.prevent="$store.toast.show('Account created. Check your inbox.')"
         >
           {ctaLabel}
         </a>
         <a
-          href="/contact"
+          href={secondaryCta.href}
           class="btn !px-8 !py-3.5 text-base text-[#f0eee8] ring-1 ring-inset ring-[#f0eee8]/40 hover:bg-[#f0eee8]/5"
         >
-          Talk to sales
+          {secondaryCta.label}
         </a>
       </div>
       <p class="cta__status">

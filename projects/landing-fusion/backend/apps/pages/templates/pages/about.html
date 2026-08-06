@@ -1,10 +1,15 @@
 {% extends "pages/base.html" %}
 {% load components %}
 
-{% block title %}{{ page.title }} · Fusion CMS{% endblock %}
+{% block title %}{{ page.title }} · Structa Cloud{% endblock %}
 
 {% block content %}
   {% comment %} The whole document — hero, mission, stats, features+pricing, testimonials,
      faq, cta — rendered by the one shared content-region partial. {% endcomment %}
   {% comp "pages/partials/page_content.html" /%}
+
+  {% comment %} About subpages: the Team page lives under /about/team/. {% endcomment %}
+  <section class="container-fusion" style="text-align:center;padding-block:0 2.5rem;">
+    <a href="/about/team/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">Meet the team →</a>
+  </section>
 {% endblock %}

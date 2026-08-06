@@ -1,21 +1,47 @@
 {% load wagtailcore_tags %}
 <section class="section-hero">
-  <div class="container-fusion py-20 text-center sm:py-28">
-    {% if value.badge %}
-      <p class="tag-marker mb-6">{{ value.badge }}</p>
-    {% endif %}
-    <h1 class="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl" style="font-family:'Bricolage Grotesque','Public Sans',sans-serif;">
-      {{ value.title }}
-    </h1>
-    {% if value.subtitle %}
-      <p class="mx-auto mt-6 max-w-2xl text-lg" style="color:hsl(var(--fu-muted));">{{ value.subtitle }}</p>
-    {% endif %}
-    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-      {% if value.primary_cta %}{% include_block value.primary_cta %}{% endif %}
-      {% if value.secondary_cta %}{% include_block value.secondary_cta %}{% endif %}
+  <div class="container-fusion py-16 sm:py-24">
+    <div class="max-w-3xl text-left">
+      {% if value.badge %}
+        <p class="tag-marker mb-6">{{ value.badge }}</p>
+      {% endif %}
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl" style="font-family:'Bricolage Grotesque','Public Sans',sans-serif;">
+        {{ value.title }}
+      </h1>
+      {% if value.subtitle %}
+        <p class="mt-6 max-w-2xl text-lg" style="color:hsl(var(--fu-muted));">{{ value.subtitle }}</p>
+      {% endif %}
+      <div class="mt-10 flex flex-wrap items-center gap-4">
+        {% if value.primary_cta %}
+        {% comment %} Magnetic wrapper — the CTA drifts toward the cursor (≤6px)
+           and snaps back on leave via the Alpine 'magnetic' component
+           (registered in base.html). Transform lives on the wrapper so the
+           button's own :active press-scale stays untouched. {% endcomment %}
+        <span class="btn-magnetic" x-data="magnetic" @pointerenter="active = true; center()" @pointermove="track($event)" @pointerleave="leave()" :class="active && 'btn-magnetic--tracking'" :style="`transform: translate3d(${mx}px, ${my}px, 0)`">
+          {% include_block value.primary_cta %}
+        </span>
+        {% endif %}
+        {% if value.secondary_cta %}
+        <span class="btn-magnetic" x-data="magnetic" @pointerenter="active = true; center()" @pointermove="track($event)" @pointerleave="leave()" :class="active && 'btn-magnetic--tracking'" :style="`transform: translate3d(${mx}px, ${my}px, 0)`">
+          {% include_block value.secondary_cta %}
+        </span>
+        {% endif %}
+      </div>
+      {% if value.trusted_by %}
+        <p class="mt-12 text-sm" style="color:hsl(var(--fu-muted));">{{ value.trusted_by }}</p>
+      {% endif %}
     </div>
-    {% if value.trusted_by %}
-      <p class="mt-12 text-sm" style="color:hsl(var(--fu-muted));">{{ value.trusted_by }}</p>
-    {% endif %}
   </div>
+  {% comment %} Scroll sentinel for the sticky header — a zero-height element at the
+     bottom of the hero. x-intersect (IntersectionObserver, not a scroll
+     listener) tells the header when the hero has been scrolled past, so it can
+     tighten its background and grow a soft shadow. Dispatches a window event
+     the header listens for; mirrors the sentinel in Hero.astro. {% endcomment %}
+  <div
+    x-data
+    aria-hidden="true"
+    style="height:0;pointer-events:none;"
+    x-intersect:enter="$dispatch('fusion:header-scrolled', { scrolled: false })"
+    x-intersect:leave="$dispatch('fusion:header-scrolled', { scrolled: true })"
+  ></div>
 </section>

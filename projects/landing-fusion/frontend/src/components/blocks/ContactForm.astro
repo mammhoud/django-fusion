@@ -11,6 +11,8 @@ interface ContactMethod {
 interface Props {
   /** Backend-fetched contact methods (from /apis/contact/). Falls back to defaults. */
   methods?: ContactMethod[];
+  /** Topic choices for the “What can we help with?” select (per product / service). */
+  topics?: string[];
   formTitle?: string;
   formDescription?: string;
   sectionTitle?: string;
@@ -19,6 +21,7 @@ interface Props {
 
 const {
   methods: propMethods,
+  topics = [],
   formTitle = 'Send us a message',
   formDescription = 'Fill out the form and our team will get back to you.',
   sectionTitle = 'Get in touch',
@@ -49,7 +52,6 @@ const methodIcons: Record<string, string> = {
     <div class="contact-form__grid">
       <div class="contact-form__info">
         <div>
-          <p class="tag-marker mb-4">contact</p>
           <h2 class="mb-2 font-display text-3xl font-bold tracking-tight text-fu-ink">{sectionTitle}</h2>
           <p class="text-fu-muted">{sectionDescription}</p>
         </div>
@@ -80,7 +82,7 @@ const methodIcons: Record<string, string> = {
           client:idle
           class="card p-8"
           x-data="{
-            form: { name: '', email: '', subject: '', message: '' },
+            form: { name: '', email: '', subject: '', topic: '', message: '' },
             errors: {},
             submitting: false,
             validate() {
@@ -88,6 +90,7 @@ const methodIcons: Record<string, string> = {
               if (!this.form.name.trim()) this.errors.name = 'Please enter your name.';
               if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.form.email)) this.errors.email = 'Please enter a valid email.';
               if (!this.form.subject.trim()) this.errors.subject = 'Please add a subject.';
+              if (!this.form.topic.trim()) this.errors.topic = 'Please choose a topic.';
               if (this.form.message.trim().length < 10) this.errors.message = 'Message must be at least 10 characters.';
               return Object.keys(this.errors).length === 0;
             },
@@ -101,14 +104,14 @@ const methodIcons: Record<string, string> = {
               }).then((res) => {
                 this.submitting = false;
                 if (res.ok) {
-                  this.form = { name: '', email: '', subject: '', message: '' };
+                  this.form = { name: '', email: '', subject: '', topic: '', message: '' };
                   $store.toast.show('Message sent successfully! We\u2019ll get back to you soon.');
                 } else {
                   $store.toast.show('Failed to send message. Please try again.', 'error');
                 }
               }).catch(() => {
                 this.submitting = false;
-                $store.toast.show('Network error — please try again in a moment.', 'error');
+                $store.toast.show('Network error. Please try again in a moment.', 'error');
               });
             },
           }"
@@ -128,6 +131,16 @@ const methodIcons: Record<string, string> = {
                      x-model="form.email" :class="errors.email && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'" />
               <p class="mt-1 text-xs text-red-500" x-show="errors.email" x-text="errors.email"></p>
             </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="cf-topic" class="form-label">What can we help with?</label>
+            <select id="cf-topic" class="input-field" x-model="form.topic"
+                    :class="errors.topic && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'">
+              <option value="">Choose a topic…</option>
+              {topics.map((topic) => <option value={topic}>{topic}</option>)}
+            </select>
+            <p class="mt-1 text-xs text-red-500" x-show="errors.topic" x-text="errors.topic"></p>
           </div>
 
           <div class="mb-4">

@@ -38,7 +38,7 @@ FRONTEND_PORT := 4321
         build preview clean screenshots \
         backend-help backend-dev backend-check backend-migrate backend-test backend-seed backend-clean \
         frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean \
-        tauri tauri-dev tauri-build
+        tauri tauri-dev tauri-build sidecar-binary
 
 help: ## Show all commands
 	@echo ''
@@ -75,9 +75,10 @@ help: ## Show all commands
 	@echo '  make frontend-check frontend-test frontend-clean'
 	@echo ''
 	@echo '── Tauri desktop ───────────────────────────────────────────'
-	@echo '  make tauri            Run Tauri CLI (config ../src-tauri/tauri.conf.json)'
+	@echo '  make tauri            Tauri CLI info (env + config check)'
 	@echo '  make tauri-dev        Tauri dev (desktop hot-reload)'
 	@echo '  make tauri-build      Tauri production build'
+	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
 	@echo '  make screenshots      Capture Unfold admin screenshots → docs/screenshots/admin/'
@@ -180,7 +181,7 @@ frontend-install frontend-dev frontend-build frontend-preview frontend-check fro
 
 # ── Tauri desktop ─────────────────────────────────────────────────────────
 
-tauri: ## Run Tauri CLI (config ../src-tauri/tauri.conf.json)
+tauri: ## Tauri CLI info (env + config check)
 	cd $(FRONTEND_DIR) && npm run tauri
 
 tauri-dev: ## Tauri dev (desktop hot-reload)
@@ -188,3 +189,6 @@ tauri-dev: ## Tauri dev (desktop hot-reload)
 
 tauri-build: ## Tauri production build
 	cd $(FRONTEND_DIR) && npm run build:desktop
+
+sidecar-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
+	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
