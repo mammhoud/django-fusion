@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Django Channels (WebSocket support; replaces Robyn WS)
+    "channels",
     # Django admin (themed by Unfold)
     "django.contrib.admin",
     # Wagtail (required by django_fusion.core.models.mixins.display_mode)
@@ -83,6 +85,15 @@ MIDDLEWARE = [
 
 # ── URL Configuration ──
 ROOT_URLCONF = "configs.urls"
+
+# ── ASGI / Channels (replaces Robyn server) ────────────────────────────
+ASGI_APPLICATION = "asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver", "0.0.0.0"]
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"

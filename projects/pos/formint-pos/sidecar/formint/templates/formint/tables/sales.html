@@ -1,7 +1,5 @@
-<div class="fusion-table" data-fusion-table="{{ resource }}" data-fusion-fragment="formint.tables.{{ resource }}">
-  <div class="table-toolbar">
-    <span class="table-count">{{ table_data|length }} recent sales</span>
-  </div>
+{% load components %}
+{% comp "fusion/components/table_shell.html" resource=resource count_label="recent sales" form_target="#formint-form-slot" fragment_attr="formint.tables.sales" %}
   <table class="table">
     <thead>
       <tr>{% for header in table_headers %}<th scope="col">{{ header.label }}</th>{% endfor %}</tr>
@@ -21,4 +19,4 @@
       {% endfor %}
     </tbody>
   </table>
-</div>
+{% endcomp %}

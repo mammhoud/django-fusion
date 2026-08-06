@@ -1,10 +1,13 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/base",
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@assets/*": ["../assets/*"]
-    }
-  }
+      "@assets/*": ["../assets/*"],
+      "@styles/*": ["./src/styles/*"]
+    },
+    "skipLibCheck": true
+  },
+  "exclude": ["dist"]
 }

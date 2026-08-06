@@ -1,0 +1,103 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/ui/Icon.astro';
+---
+
+<Layout title="Recipes - Formint POS">
+  <div x-data="recipesPage()" x-init="load()" class="max-w-[96rem] mx-auto p-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <h1 class="flex items-center gap-2 text-lg font-extrabold" style="color: var(--color-text-primary)">
+        <Icon name="book" class="h-5 w-5" style="color: var(--color-chart-4)" />
+        Recipes & Ingredients
+      </h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <input type="search" x-model="search" @input="page=1" placeholder="Search recipes..." class="input flex-1 sm:w-56 text-xs" />
+        <button @click="tab='recipes'; openAdd()" class="btn btn-primary btn-sm gap-1"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg> Recipe</button>
+        <button @click="tab='ingredients'; openAdd()" class="btn btn-ghost btn-sm gap-1"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg> Ingredient</button>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <div class="tabs tabs-bordered mb-3">
+      <button @click="tab='recipes'; page=1" :class="'tab tab-sm '+(tab==='recipes'?'tab-active':'')">Recipes</button>
+      <button @click="tab='ingredients'; page=1" :class="'tab tab-sm '+(tab==='ingredients'?'tab-active':'')">Ingredients</button>
+    </div>
+    <div x-show="loading" class="space-y-2"><template x-for="i in 5" :key="i"><div class="skeleton-shimmer h-10 rounded"></div></template></div>
+
+    <!-- Recipes Table -->
+    <div x-show="!loading && tab==='recipes'" class="card overflow-x-auto">
+      <table class="data-table" role="grid">
+        <thead><tr><th>ID</th><th>Product</th><th>Recipe Name</th><th>Yield</th><th>Active</th><th class="w-20">Actions</th></tr></thead>
+        <tbody>
+          <template x-for="item in pagedRecipes()" :key="item.id">
+            <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]">
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
+              <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.product_name || 'Product #'+item.product_id"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.name || '-'" ></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.yield_quantity"></span></td>
+              <td class="px-3 py-2"><span class="badge" :class="item.is_active?'badge-soft-success':'badge-soft-error'" x-text="item.is_active?'Active':'Inactive'"></span></td>
+              <td class="px-3 py-2"><div class="flex gap-1">
+                <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button>
+                <button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button>
+              </div></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class="flex items-center justify-between p-3 border-t border-[var(--color-border-subtle)] text-xs">
+        <span x-text="'Showing ' + ((page-1)*perPage + 1) + '-' + Math.min(page*perPage, filteredRecipes.length) + ' of ' + filteredRecipes.length"></span>
+        <div class="flex gap-1">
+          <button @click="page=Math.max(1,page-1)" :disabled="page===1" class="btn btn-ghost btn-xs">&larr; Prev</button>
+          <button @click="page++" :disabled="page*perPage>=filteredRecipes.length" class="btn btn-ghost btn-xs">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingredients Table -->
+    <div x-show="!loading && tab==='ingredients'" class="card overflow-x-auto">
+      <table class="data-table" role="grid">
+        <thead><tr><th>ID</th><th>Name</th><th>Unit</th><th>Stock</th><th>Reorder At</th><th>Cost/Unit</th><th>Active</th><th class="w-20">Actions</th></tr></thead>
+        <tbody>
+          <template x-for="item in pagedIngredients()" :key="item.id">
+            <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]">
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
+              <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.name"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.unit"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums font-medium" :class="Number(item.current_quantity)<=Number(item.reorder_level)?'text-error':'text-success'" x-text="item.current_quantity"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.reorder_level"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="'$'+(Number(item.cost_per_unit)||0).toFixed(2)"></span></td>
+              <td class="px-3 py-2"><span class="badge" :class="item.is_active?'badge-soft-success':'badge-soft-error'" x-text="item.is_active?'Active':'Inactive'"></span></td>
+              <td class="px-3 py-2"><div class="flex gap-1">
+                <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button>
+                <button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button>
+              </div></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class="flex items-center justify-between p-3 border-t border-[var(--color-border-subtle)] text-xs">
+        <span x-text="'Showing ' + ((page-1)*perPage + 1) + '-' + Math.min(page*perPage, filteredIngredients.length) + ' of ' + filteredIngredients.length"></span>
+        <div class="flex gap-1">
+          <button @click="page=Math.max(1,page-1)" :disabled="page===1" class="btn btn-ghost btn-xs">&larr; Prev</button>
+          <button @click="page++" :disabled="page*perPage>=filteredIngredients.length" class="btn btn-ghost btn-xs">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('recipesPage', () => ({
+      recipes: [], ingredients: [], loading: true, search: '', tab: 'recipes', page: 1, perPage: 20,
+      get filteredRecipes() { let l = this.recipes; if (this.search) { const q = this.search.toLowerCase(); l = l.filter((i: any) => Object.values(i).some(v => String(v).toLowerCase().includes(q))); } return l; },
+      get filteredIngredients() { let l = this.ingredients; if (this.search) { const q = this.search.toLowerCase(); l = l.filter((i: any) => Object.values(i).some(v => String(v).toLowerCase().includes(q))); } return l; },
+      pagedRecipes() { const s = (this.page-1)*this.perPage; return this.filteredRecipes.slice(s, s+this.perPage); },
+      pagedIngredients() { const s = (this.page-1)*this.perPage; return this.filteredIngredients.slice(s, s+this.perPage); },
+      async load() { this.loading=true; try { const [rr, ri] = await Promise.all([fetch('/recipes/').then(r=>r.ok?r.json():{data:[]}), fetch('/ingredients/').then(r=>r.ok?r.json():{data:[]})]); this.recipes = rr.data || rr || []; this.ingredients = ri.data || ri || []; } catch(e){} finally { this.loading=false; } },
+      openAdd() { this.$store.ui.toast('Add ' + this.tab + ' form coming soon', 'info'); },
+      openEdit(item: any) { this.$store.ui.toast('Editing: ' + (item.name || item.product_name || '#'+item.id), 'info'); },
+      confirmDelete(item: any) { this.$store.ui.toast('Delete stub', 'info'); },
+    }));
+  });
+</script>

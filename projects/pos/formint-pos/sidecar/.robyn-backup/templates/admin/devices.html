@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+{% block title %}Devices{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="flex-between">
+    <h3>🖥️ Registered Nodes ({{ nodes|length }})</h3>
+  </div>
+  {% if nodes %}
+  <table>
+    <thead>
+      <tr>
+        <th>Node ID</th>
+        <th>Hostname</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Products</th>
+        <th>Last Seen</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for n in nodes %}
+    <tr>
+      <td><strong>{{ n.node_id }}</strong></td>
+      <td>{{ n.hostname or '-' }}</td>
+      <td><span class="badge badge-info">{{ n.node_type }}</span></td>
+      <td><span class="badge {% if n.status == 'online' %}badge-success{% else %}badge-danger{% endif %}">{{ n.status }}</span></td>
+      <td>{{ n.product_count }}</td>
+      <td>{{ n.last_seen }}</td>
+      <td>
+        <div class="actions-bar">
+          <form method="POST" action="/admin/devices/{{ n.node_id }}/toggle-active" style="display:inline;">
+            <button class="btn btn-sm {{ 'btn-danger' if n.is_active else 'btn-primary' }}">
+              {{ 'Deactivate' if n.is_active else 'Activate' }}
+            </button>
+          </form>
+          {% if n.node_type == 'pos-solo' %}
+          <form method="POST" action="/admin/devices/{{ n.node_id }}/promote" style="display:inline;">
+            <button class="btn btn-sm btn-secondary">⭐ Promote Master</button>
+          </form>
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:#94a3b8;">No nodes registered. Start a POS device to auto-register.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>⭐ Master Devices</h3>
+  {% if masters %}
+  <table>
+    <thead><tr><th>Name</th><th>Device ID</th><th>Type</th><th>Status</th><th>Managed Nodes</th><th>Last Sync</th></tr></thead>
+    <tbody>
+    {% for m in masters %}
+    <tr>
+      <td><strong>{{ m.name }}</strong></td>
+      <td>{{ m.device_id }}</td>
+      <td>{{ m.device_type }}</td>
+      <td><span class="badge {% if m.status == 'online' %}badge-success{% else %}badge-danger{% endif %}">{{ m.status }}</span></td>
+      <td>{{ m.managed_node_ids|length }}</td>
+      <td>{{ m.synced_at or 'Never' }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:#94a3b8;">No master devices configured. Promote a node to create one.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>📡 Device Configuration Per Node</h3>
+  <form method="GET" action="/admin/devices" class="form-group">
+    <label>Filter by Node ID</label>
+    <div style="display:flex;gap:0.5rem;">
+      <input type="text" name="node_filter" value="{{ node_filter or '' }}" placeholder="Enter node_id..." style="flex:1;">
+      <button type="submit" class="btn btn-secondary">Filter</button>
+    </div>
+  </form>
+  {% if device_configs %}
+  <table>
+    <thead><tr><th>Node ID</th><th>Config Key</th><th>Value</th><th>Category</th><th>Version</th></tr></thead>
+    <tbody>
+    {% for dc in device_configs %}
+    <tr>
+      <td>{{ dc.node_id }}</td>
+      <td><code>{{ dc.config_key }}</code></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ dc.config_value }}</td>
+      <td><span class="badge badge-info">{{ dc.category }}</span></td>
+      <td>v{{ dc.version }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:#94a3b8;">No device configs found for this filter.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -124,14 +124,32 @@ def encode_fragment_pointer(
 
 
 def navigation_payload(request: HttpRequest | None = None) -> dict[str, Any]:
-    """Build the nav payload from FormintSite (single source of truth)."""
+    """Build the hierarchical nav payload from FormintSite.
+
+    Returns the full nested structure::
+
+        {
+            "brand": { "label": "Formint POS", "href": "/", "tag": "Pro·P2" },
+            "modules": [
+                {
+                    "id": "pos", "label": "Point of Sale",
+                    "icon": "shopping_cart", "color": "#6366f1",
+                    "active": false,
+                    "routes": [
+                        { "label": "Sale Register", "href": "/pos/sale/",
+                          "icon": "cart", "active": true, "badge": "" },
+                        ...
+                    ]
+                },
+                ...
+            ]
+        }
+
+    The Astro Layout sidenav consumes this directly.
+    """
     from formint.core import formint_site
 
-    nav_items = formint_site.get_navigation_context(request)
-    nav_items = [item for item in nav_items if item.get("show_in_nav", True)]
-    for item in nav_items:
-        item.pop("show_in_nav", None)
-    return {"nav_items": nav_items}
+    return formint_site.get_navigation_context(request)
 
 
 def assets_payload(request: HttpRequest | None = None) -> dict[str, Any]:

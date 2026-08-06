@@ -25,6 +25,7 @@ class KitchenTicket(models.Model):
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     priority = models.IntegerField(default=0)
+    prepare_time_minutes = models.IntegerField(default=15, help_text="Estimated preparation time in minutes")
     notes = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)

@@ -1,4 +1,7 @@
 ---
+import '../styles/global.css';
+import Sprite from '../components/ui/icons/Sprite.astro';
+
 interface Props {
   title?: string;
 }
@@ -11,27 +14,193 @@ const { title = 'Formint POS Professional' } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Formint POS Professional restaurant operations shell" />
+    <meta name="description" content="Formint POS Professional — Multi-module restaurant operations: POS, Kitchen, HR, CRM, Analytics" />
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        try {
+          const ui = JSON.parse(localStorage.getItem('formint-ui') || '{}');
+          if (ui.mode === 'dark') document.documentElement.classList.add('dark');
+          if (ui.rtl) document.documentElement.setAttribute('dir', 'rtl');
+        } catch {}
+      })();
+    </script>
   </head>
-  <body>
-    <header class="site-header">
-      <a href="/" class="brand" aria-label="Formint POS home">Formint POS</a>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="/">Home</a>
-        <a href="/data/">Data</a>
-        <a href="/fusion/">Fusion</a>
+  <body
+    x-data="appShell()"
+    x-init="init()"
+    x-cloak
+    class="bg-[var(--color-surface-page)] text-[var(--color-text-primary)] font-sans antialiased"
+    :class="sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'"
+  >
+    <!-- ── Shared icon sprite (Tabler, MIT) ── -->
+    <Sprite />
+
+    <!-- ── Mobile overlay ── -->
+    <div
+      x-show="mobileOpen"
+      x-transition.opacity
+      class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+      @click="mobileOpen = false"
+      aria-hidden="true"
+    ></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SIDENAV
+         ═══════════════════════════════════════════════════════════════════ -->
+    <aside
+      class="sidenav"
+      :class="mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+      :aria-expanded="!sidebarCollapsed"
+    >
+      <!-- Brand -->
+      <div class="sidenav-brand">
+        <a href="/" class="sidenav-brand__link" :title="brand.label">
+          <span class="sidenav-brand__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <use href="#i-building-store" />
+            </svg>
+          </span>
+          <span x-show="!sidebarCollapsed" class="sidenav-brand__text">
+            <span class="sidenav-brand__name" x-text="brand.label">Formint POS</span>
+            <span class="sidenav-brand__tag" x-text="brand.tag">Pro · P2</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Collapse toggle (desktop) -->
+      <button
+        @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('formint-sidebar', sidebarCollapsed)"
+        class="sidenav-collapse-btn"
+        :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        aria-label="Toggle sidebar"
+      >
+        <svg class="h-4 w-4 transition-transform duration-300" :class="sidebarCollapsed && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Navigation modules -->
+      <nav class="sidenav-nav" role="navigation" aria-label="Main modules">
+        <template x-for="mod in modules" :key="mod.id">
+          <div class="sidenav-module" :class="mod.active && 'sidenav-module--active'">
+            <!-- Module header (toggle) -->
+            <button
+              @click="toggleModule(mod.id)"
+              class="sidenav-module__header"
+              :style="mod.active ? `--mod-color: ${mod.color}` : ''"
+              :class="mod.active && 'sidenav-module__header--active'"
+            >
+              <span class="sidenav-module__icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <use :href="'#i-' + moduleIcon(mod.icon)"></use>
+                </svg>
+              </span>
+              <span x-show="!sidebarCollapsed" class="sidenav-module__label" x-text="mod.label"></span>
+              <span x-show="!sidebarCollapsed" class="sidenav-module__arrow" :class="isModuleOpen(mod.id) && 'rotate-90'">
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </span>
+            </button>
+
+            <!-- Module routes -->
+            <div
+              x-show="!sidebarCollapsed && isModuleOpen(mod.id)"
+              class="sidenav-module__routes"
+            >
+              <template x-for="route in mod.routes" :key="route.href">
+                <a
+                  :href="route.href"
+                  class="sidenav-route"
+                  :class="route.active && 'sidenav-route--active'"
+                  :style="route.active ? `--route-color: ${mod.color}` : ''"
+                  @click="mobileOpen = false"
+                >
+                  <span x-text="route.label"></span>
+                  <span x-show="route.badge" class="sidenav-route__badge" x-text="route.badge"></span>
+                </a>
+              </template>
+            </div>
+          </div>
+        </template>
       </nav>
-      <span class="edition-badge">Professional · Phase 2</span>
-    </header>
 
-    <main>
-      <slot />
-    </main>
+      <!-- Footer -->
+      <div x-show="!sidebarCollapsed" class="sidenav-footer">
+        <span class="text-[0.65rem] opacity-40">Formint POS · Phase 2</span>
+      </div>
+    </aside>
 
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN CONTENT AREA
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="main-area">
+      <!-- Top header bar -->
+      <header class="topbar">
+        <div class="topbar__left">
+          <!-- Mobile hamburger -->
+          <button
+            @click="mobileOpen = !mobileOpen"
+            class="btn btn-ghost btn-sm lg:hidden"
+            aria-label="Toggle navigation"
+          >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <!-- Breadcrumb (client-computed) -->
+          <span class="topbar__breadcrumb text-xs opacity-50" x-text="currentPageLabel()"></span>
+        </div>
+
+        <div class="topbar__right">
+          <!-- Dark mode toggle -->
+          <button
+            type="button"
+            @click="$store.ui.toggleDark()"
+            class="btn btn-ghost btn-sm"
+            :aria-label="$store.ui.mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+            title="Toggle theme"
+          >
+            <svg x-show="$store.ui.mode === 'light'" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <use href="#i-moon" />
+            </svg>
+            <svg x-show="$store.ui.mode === 'dark'" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <use href="#i-sun" />
+            </svg>
+          </button>
+          <!-- Edition badge -->
+          <span class="tag tag--primary tag--sm hidden sm:inline-flex">Professional · Phase 2</span>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="page-content">
+        <slot />
+      </main>
+    </div>
+
+    <!-- ── Toast notifications ── -->
+    <div
+      x-data
+      class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2"
+      aria-live="polite"
+    >
+      <template x-for="toast in $store.ui.toasts" :key="toast.id">
+        <div
+          class="toast"
+          :class="'toast-' + toast.type"
+          x-text="toast.message"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 translate-y-2"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+        ></div>
+      </template>
+    </div>
+
+    <!-- ── HTMX indicators ── -->
     <div id="htmx-global-status" class="sr-only" role="status" aria-live="polite"></div>
-
-    <!-- Global HTMX indicator (landing-fusion port) — shown by htmx-bootstrap.ts -->
     <div id="htmx-global-indicator" class="htmx-indicator" role="status" aria-live="polite" aria-hidden="true">
       <div class="htmx-indicator__inner">
         <span class="htmx-indicator__spinner" aria-hidden="true"></span>
@@ -42,220 +211,359 @@ const { title = 'Formint POS Professional' } = Astro.props;
       </div>
     </div>
 
+    <!-- ── Alpine.js + HTMX init ── -->
     <script>
+      import Alpine from 'alpinejs';
+      import { cartStore, kdsStore, uiStore } from '../lib/alpine-stores';
       import '../lib/htmx-bootstrap';
+
+      Alpine.store('cart', cartStore);
+      Alpine.store('kds', kdsStore);
+      Alpine.store('ui', uiStore);
+
+      // ── App shell: sidenav state + navigation fetch ──
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('appShell', () => ({
+          modules: [],
+          brand: { label: 'Formint POS', href: '/', tag: 'Pro · P2' },
+          sidebarCollapsed: false,
+          mobileOpen: false,
+          openModules: {} as Record<string, boolean>,
+
+          async init() {
+            // Restore sidebar state
+            try {
+              const stored = localStorage.getItem('formint-sidebar');
+              if (stored === 'true') this.sidebarCollapsed = true;
+            } catch {}
+
+            // Fetch navigation from sidecar
+            await this.fetchNav();
+          },
+
+          async fetchNav() {
+            try {
+              const res = await fetch('/api/v1/navigation/');
+              if (res.ok) {
+                const data = await res.json();
+                if (data.brand) this.brand = data.brand;
+                if (data.modules) {
+                  this.modules = data.modules;
+                  this.modules.forEach((m: any) => {
+                    if (m.active) this.openModules[m.id] = true;
+                  });
+                  return;
+                }
+              }
+            } catch (e) {
+              console.warn('Navigation fetch failed, using fallback');
+            }
+            // Fallback navigation — mirrors formint/core.py MODULES
+            this.modules = [
+              { id: 'pos', label: 'Point of Sale', icon: 'shopping_cart', color: '#6366f1', active: false, routes: [
+                { label: 'Sale Register', href: '/pos/sale/', active: false },
+                { label: 'Products', href: '/pos/products/', active: false },
+                { label: 'Customers', href: '/pos/customers/', active: false },
+                { label: 'Inventory', href: '/pos/inventory/', active: false },
+                { label: 'Suppliers', href: '/pos/suppliers/', active: false },
+              ]},
+              { id: 'kitchen', label: 'Kitchen & KDS', icon: 'restaurant', color: '#f59e0b', active: false, routes: [
+                { label: 'Kitchen Display', href: '/kitchen/', active: false },
+                { label: 'Recipes', href: '/kitchen/recipes/', active: false },
+              ]},
+              { id: 'hr', label: 'HR & Staff', icon: 'people', color: '#10b981', active: false, routes: [
+                { label: 'Employees', href: '/hr/employees/', active: false },
+                { label: 'Schedules', href: '/hr/schedules/', active: false },
+                { label: 'Payroll', href: '/hr/payroll/', active: false },
+                { label: 'Roles', href: '/hr/roles/', active: false },
+              ]},
+              { id: 'crm', label: 'CRM', icon: 'contact_page', color: '#3b82f6', active: false, routes: [
+                { label: 'Dashboard', href: '/crm/dashboard', active: false },
+                { label: 'Contacts', href: '/crm/contacts', active: false },
+                { label: 'Companies', href: '/crm/companies', active: false },
+                { label: 'Deals', href: '/crm/deals', active: false },
+                { label: 'Pipeline', href: '/crm/pipelines', active: false },
+                { label: 'Activities', href: '/crm/activities', active: false },
+                { label: 'Notes', href: '/crm/notes', active: false },
+              ]},
+              { id: 'data', label: 'Data & Analytics', icon: 'analytics', color: '#8b5cf6', active: false, routes: [
+                { label: 'Dashboard', href: '/data/', active: false },
+                { label: 'Transactions', href: '/pos/transactions/', active: false },
+                { label: 'Reports', href: '/admin/reports/', active: false },
+                { label: 'Fusion', href: '/fusion/', active: false },
+              ]},
+              { id: 'ops', label: 'Operations', icon: 'settings_applications', color: '#ef4444', active: false, routes: [
+                { label: 'Coupons', href: '/ops/coupons/', active: false },
+                { label: 'Delivery Types', href: '/ops/delivery-types/', active: false },
+                { label: 'Delivery Zones', href: '/ops/delivery-zones/', active: false },
+                { label: 'Shifts', href: '/ops/shifts/', active: false },
+              ]},
+              { id: 'admin', label: 'Administration', icon: 'admin_panel_settings', color: '#64748b', active: false, routes: [
+                { label: 'Settings', href: '/admin/settings/', active: false },
+                { label: 'Notes', href: '/admin/notes/', active: false },
+                { label: 'Support', href: '/admin/support/', active: false },
+              ]},
+            ];
+            // Auto-open first module for discoverability
+            if (this.modules.length > 0) this.openModules[this.modules[0].id] = true;
+          },
+
+          toggleModule(id: string) {
+            if (this.sidebarCollapsed) {
+              this.sidebarCollapsed = false;
+              this.openModules[id] = true;
+            } else {
+              this.openModules[id] = !this.openModules[id];
+            }
+          },
+
+          isModuleOpen(id: string) {
+            return this.openModules[id] || false;
+          },
+
+          moduleIcon(icon: string) {
+            // Material icon names from the sidecar → sprite ids (see scripts/gen-tabler-sprite.mjs)
+            const map: Record<string, string> = {
+              shopping_cart: 'cart', restaurant: 'chef-hat', people: 'users',
+              contact_page: 'id-badge', analytics: 'chart-line',
+              settings_applications: 'settings', admin_panel_settings: 'shield-check',
+            };
+            return map[icon] || 'layout-dashboard';
+          },
+
+          currentPageLabel() {
+            const path = window.location.pathname;
+            for (const mod of this.modules as any[]) {
+              for (const r of mod.routes) {
+                if (path.startsWith(r.href.replace(/\/$/, ''))) {
+                  return `${mod.label} › ${r.label}`;
+                }
+              }
+            }
+            return '';
+          },
+        }));
+      });
+
+      window.Alpine = Alpine;
+      Alpine.start();
     </script>
   </body>
 </html>
 
-<style>
-  :global(:root) {
-    color-scheme: light;
-    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-    background: #f8fafc;
-    color: #172033;
+<style is:global>
+  /* ═══════════════════════════════════════════════════════════════════
+     SIDENAV
+     ═══════════════════════════════════════════════════════════════════ */
+  .sidenav {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
+    width: 16rem;
+    background: var(--color-surface-card);
+    border-right: 1px solid var(--color-border-subtle);
+    display: flex; flex-direction: column;
+    transition: transform 0.3s ease, width 0.3s ease;
+    overflow-y: auto; overflow-x: hidden;
+  }
+  .sidebar-collapsed .sidenav { width: 4rem; }
+  @media (max-width: 1023px) {
+    .sidenav { width: 16rem; }
+    .sidebar-collapsed .sidenav { width: 16rem; }
   }
 
-  :global(*) { box-sizing: border-box; }
-  :global(body) { margin: 0; min-width: 320px; }
-  :global(a) { color: inherit; }
-  .site-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    min-height: 3.5rem;
-    padding: 0 1.25rem;
-    background: #fff;
-    border-bottom: 1px solid #dbe3ef;
+  .sidenav-brand {
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    flex-shrink: 0;
   }
-  .brand { font-weight: 800; text-decoration: none; letter-spacing: -0.02em; }
-  .site-nav { display: flex; gap: 1rem; }
-  .site-nav a { color: #475569; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: color 0.15s ease; }
-  .site-nav a:hover { color: #2563eb; }
-  .edition-badge { color: #475569; font-size: 0.8rem; }
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+  .sidenav-brand__link {
+    display: flex; align-items: center; gap: 0.625rem;
+    text-decoration: none;
+  }
+  .sidenav-brand__icon {
+    flex-shrink: 0;
+    width: 2rem; height: 2rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-field);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: var(--color-primary-content);
+    box-shadow: var(--shadow-colored);
+  }
+  .sidenav-brand__text { display: grid; gap: 0.1rem; }
+  .sidenav-brand__name {
+    font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em;
+    color: var(--color-text-primary);
     white-space: nowrap;
-    border: 0;
+  }
+  .sidenav-brand__tag {
+    font-size: 0.6rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; opacity: 0.5; white-space: nowrap;
   }
 
-  /* ── Global HTMX indicator ─────────────────────────────────────────── */
+  .sidenav-collapse-btn {
+    position: absolute; top: 0.875rem; right: -0.75rem;
+    width: 1.5rem; height: 1.5rem;
+    border-radius: 50%;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+    z-index: 1;
+    display: none;
+  }
+  @media (min-width: 1024px) { .sidenav-collapse-btn { display: flex; } }
+  .sidenav-collapse-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+  .sidenav-collapse-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  .sidebar-collapsed .sidenav-collapse-btn { right: -0.75rem; }
+
+  .sidenav-nav {
+    flex: 1; overflow-y: auto; padding: 0.5rem 0;
+  }
+
+  /* Module */
+  .sidenav-module { margin: 0.125rem 0.5rem; border-radius: 0.5rem; overflow: hidden; }
+  .sidenav-module--active { background: var(--color-surface-hover); }
+
+  .sidenav-module__header {
+    display: flex; align-items: center; gap: 0.5rem;
+    width: 100%; padding: 0.5rem 0.625rem;
+    border: none; background: none; cursor: pointer;
+    font-size: 0.78rem; font-weight: 650;
+    color: var(--color-text-secondary);
+    border-radius: 0.5rem;
+    transition: all var(--transition-fast);
+    text-align: left;
+  }
+  .sidenav-module__header:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text-primary);
+  }
+  .sidenav-module__header:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: 0.5rem; }
+  .sidenav-module__header--active {
+    color: var(--mod-color, var(--color-primary));
+    background: color-mix(in srgb, var(--mod-color, var(--color-primary)) 8%, transparent);
+  }
+  .sidenav-module__icon {
+    font-size: 0.95rem; flex-shrink: 0; width: 1.25rem; text-align: center;
+  }
+  .sidenav-module__label {
+    flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sidenav-module__arrow {
+    flex-shrink: 0; transition: transform 0.2s ease;
+  }
+  .sidebar-collapsed .sidenav-module__header {
+    justify-content: center; padding: 0.5rem;
+  }
+
+  /* Routes */
+  .sidenav-module__routes {
+    padding: 0.15rem 0 0.35rem;
+  }
+  .sidenav-route {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 0.625rem 0.4rem 2.5rem;
+    font-size: 0.75rem; font-weight: 500;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: 0.375rem;
+    margin: 0.075rem 0.375rem;
+    transition: all var(--transition-fast);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sidenav-route:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text-primary);
+  }
+  .sidenav-route:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+  .sidenav-route--active {
+    background: color-mix(in srgb, var(--route-color, var(--color-primary)) 10%, transparent);
+    color: var(--route-color, var(--color-primary));
+    font-weight: 650;
+    border-left: 2px solid var(--route-color, var(--color-primary));
+    padding-left: calc(2.5rem - 2px);
+  }
+  .sidenav-route__badge {
+    margin-left: auto;
+    font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.1rem 0.35rem;
+    border-radius: 999px;
+    background: var(--route-color, var(--color-primary));
+    color: var(--color-primary-content);
+    letter-spacing: 0.03em;
+  }
+
+  .sidenav-footer {
+    padding: 0.75rem 1rem; border-top: 1px solid var(--color-border-subtle);
+    flex-shrink: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     MAIN AREA
+     ═══════════════════════════════════════════════════════════════════ */
+  .main-area {
+    margin-left: 16rem;
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    transition: margin-left 0.3s ease;
+  }
+  .sidebar-collapsed .main-area { margin-left: 4rem; }
+  @media (max-width: 1023px) {
+    .main-area { margin-left: 0 !important; }
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 3rem; padding: 0 1.25rem;
+    background: var(--color-surface-card);
+    border-bottom: 1px solid var(--color-border-subtle);
+    position: sticky; top: 0; z-index: 30;
+  }
+  .topbar__left { display: flex; align-items: center; gap: 0.75rem; }
+  .topbar__right { display: flex; align-items: center; gap: 0.5rem; }
+
+  /* Page content */
+  .page-content { flex: 1; padding: 0; }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     UTILITIES
+     ═══════════════════════════════════════════════════════════════════ */
+  [x-cloak] { display: none !important; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* HTMX indicator */
   .htmx-indicator {
-    position: fixed;
-    right: 1.25rem;
-    bottom: 1.25rem;
-    z-index: 60;
-    opacity: 0;
-    transform: translateY(0.75rem);
-    pointer-events: none;
+    position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
+    opacity: 0; transform: translateY(0.75rem); pointer-events: none;
     transition: opacity 0.18s ease, transform 0.18s ease;
   }
   .htmx-indicator.htmx-request {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1; transform: translateY(0);
   }
   .htmx-indicator__inner {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    display: flex; align-items: center; gap: 0.75rem;
     padding: 0.75rem 1rem;
-    background: #0f172a;
-    color: #e2e8f0;
-    border: 1px solid #1e293b;
+    background: oklch(15% 0 0); color: oklch(90% 0 0);
     border-radius: 0.8rem;
-    box-shadow: 0 1rem 2.5rem rgb(15 23 42 / 0.35);
+    box-shadow: 0 1rem 2.5rem oklch(15% 0 0 / 0.35);
   }
   .htmx-indicator__spinner {
-    width: 1.1rem;
-    height: 1.1rem;
-    flex: none;
-    border: 2px solid rgb(148 163 184 / 0.35);
-    border-top-color: #60a5fa;
+    width: 1.1rem; height: 1.1rem; flex: none;
+    border: 2px solid oklch(65% 0 0 / 0.35);
+    border-top-color: var(--color-primary);
     border-radius: 50%;
     animation: fusion-spin 0.8s linear infinite;
   }
   .htmx-indicator__text { display: grid; gap: 0.15rem; }
   .htmx-indicator__text strong { font-size: 0.85rem; font-weight: 650; }
-  .htmx-indicator__text span { font-size: 0.75rem; color: #94a3b8; }
-  .htmx-indicator__pulse {
-    display: inline-block;
-    width: 0.4rem;
-    height: 0.4rem;
-    margin-right: 0.35rem;
-    border-radius: 50%;
-    background: #f59e0b;
-    animation: fusion-pulse 1s ease-in-out infinite;
-  }
-  .htmx-indicator__pulse--slow { background: #f97316; }
-
+  .htmx-indicator__text span { font-size: 0.75rem; color: oklch(60% 0 0); }
   @keyframes fusion-spin { to { transform: rotate(360deg); } }
-  @keyframes fusion-pulse { 50% { opacity: 0.35; } }
-
-  /* ── Skeleton loading (default content-on-the-way state) ───────────── */
-  /* Shimmer blocks that mirror the final layout, so regions never flash
-     empty while an HTMX fragment is in flight. */
-  .fusion-skeleton {
-    display: inline-flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    width: 100%;
-  }
-  .fusion-skeleton__line {
-    display: block;
-    height: 0.9rem;
-    border-radius: 0.25rem;
-    background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%);
-    background-size: 200% 100%;
-    animation: fusion-shimmer 1.4s ease-in-out infinite;
-  }
-  .fusion-skeleton__line--tag { height: 0.65rem; width: 7rem; margin-bottom: 0.4rem; }
-  .fusion-skeleton__line--title { height: 1.6rem; width: min(24rem, 65%); margin-bottom: 0.4rem; }
-  .fusion-skeleton__line--btn { height: 2.5rem; border-radius: 0.375rem; }
-  .fusion-skeleton__line--stat-value { height: 2rem; width: 5rem; margin-bottom: 0.4rem; }
-
-  /* KPI grid */
-  .fusion-skeleton--kpi__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0.75rem; }
-  .fusion-skeleton__kpi-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 1rem;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.8rem;
-  }
-
-  /* Data table */
-  .fusion-skeleton--table { gap: 0.75rem; }
-  .fusion-skeleton__table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.5rem; }
-  .fusion-skeleton__table-row {
-    display: block;
-    height: 2.4rem;
-    border-radius: 0.5rem;
-    background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%);
-    background-size: 200% 100%;
-    animation: fusion-shimmer 1.4s ease-in-out infinite;
-  }
-  .fusion-skeleton__table-pager { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem; }
-
-  /* Form */
-  .fusion-skeleton--form__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.9rem; }
-  .fusion-skeleton__field { display: flex; flex-direction: column; gap: 0.4rem; }
-
-  /* Branch summary */
-  .fusion-skeleton--branch { gap: 0.5rem; }
-  .fusion-skeleton--branch__stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; margin-top: 1rem; }
-  .fusion-skeleton__stat {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 0.9rem;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-  }
-
-  /* Nav bar */
-  .fusion-skeleton--nav { width: 100%; }
-  .fusion-skeleton--nav__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.9rem 1.25rem;
-    background: #fff;
-    border-bottom: 1px solid #dbe3ef;
-  }
-  .fusion-skeleton--nav__brand { width: 8rem; height: 1.4rem; }
-  .fusion-skeleton--nav__links { display: flex; gap: 1rem; }
-  .fusion-skeleton--nav__link { width: 4.5rem; height: 0.9rem; }
-  .fusion-skeleton--nav__cta { width: 7rem; height: 2.2rem; }
-
-  /* Full-page loader */
-  .fusion-skeleton--page-loader {
-    position: fixed;
-    inset: 0;
-    z-index: 70;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    background: rgb(248 250 252 / 0.92);
-    backdrop-filter: blur(4px);
-  }
-  .fusion-skeleton--page-loader__logo { display: flex; justify-content: center; }
-  .fusion-skeleton--page-loader__dots { display: flex; gap: 0.4rem; margin-top: 0.6rem; }
-  .fusion-skeleton--page-loader__dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: #2563eb;
-    animation: fusion-blink 1.2s ease-in-out infinite;
-  }
-  .fusion-skeleton--page-loader__dot:nth-child(2) { animation-delay: 0.15s; }
-  .fusion-skeleton--page-loader__dot:nth-child(3) { animation-delay: 0.3s; }
-  .fusion-skeleton--page-loader__label { margin: 0.4rem 0 0; color: #475569; font-size: 0.85rem; font-weight: 600; }
-
-  @keyframes fusion-shimmer { to { background-position: -200% 0; } }
-  @keyframes fusion-blink { 50% { opacity: 0.3; } }
-
-  @media (max-width: 700px) {
-    .site-header { align-items: flex-start; flex-direction: column; padding-block: 0.8rem; }
-    .fusion-skeleton--kpi__grid, .fusion-skeleton--branch__stats,
-    .fusion-skeleton--form__grid { grid-template-columns: 1fr; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .fusion-skeleton__line, .fusion-skeleton__table-row,
-    .fusion-skeleton__line--tag, .fusion-skeleton__line--title,
-    .fusion-skeleton__line--btn, .fusion-skeleton__line--stat-value,
-    .htmx-indicator__spinner, .htmx-indicator__pulse,
-    .fusion-skeleton--page-loader__dot { animation: none !important; }
-  }
 </style>

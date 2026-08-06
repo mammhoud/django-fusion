@@ -29,4 +29,8 @@ urlpatterns = [
     path('fusion/page/', FormintPageView.as_view(), name='formint-page'),
     # Django Ninja + ninja-extra API (fusion encoder/decoder)
     path('api/v1/', api.urls),
+    # API Documentation pages
+    path('api/v1/docs/', views.api_docs, name='formint-api-docs'),
+    path('api/v1/docs/swagger', views.api_docs_swagger, name='formint-api-swagger'),
+    path('api/v1/docs/redoc', views.api_docs_redoc, name='formint-api-redoc'),
 ]
