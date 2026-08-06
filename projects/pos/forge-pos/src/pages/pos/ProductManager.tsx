@@ -829,7 +829,7 @@ export default function ProductManager() {
         <Card padding="sm">
           <div className="flex items-center justify-between">
             <span className="text-xs text-base-content/60">{t('productManager.filteredCount') || 'Visible'}</span>
-            <span className="text-lg font-bold text-purple-600 dark:text-purple-400">{filteredProducts.length}</span>
+            <span className="text-lg font-bold text-primary">{filteredProducts.length}</span>
           </div>
         </Card>
       </div>
@@ -1132,7 +1132,7 @@ export default function ProductManager() {
               {!editingProduct && (
                 <div>
                   <label className="block text-base-content mb-2 flex items-center gap-2">
-                    <span className="ri-price-tag-line ri-16px text-teal-500" />
+                    <span className="ri-price-tag-line ri-16px text-accent" />
                     {t('productManager.productType') || 'Product Type'}
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

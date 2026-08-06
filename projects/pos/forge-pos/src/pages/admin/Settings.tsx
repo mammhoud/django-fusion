@@ -9,6 +9,8 @@ import BackButton from '../../components/ui/BackButton';
 import PageLayout from '../../components/layout/PageLayout';
 import LanguageToggle from '../../components/display/LanguageToggle';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import PasswordConfirmModal, { ImportMode } from '../../components/ui/PasswordConfirmModal';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
@@ -16,6 +18,7 @@ import ThemeToggle from '../../components/display/ThemeToggle';
 import { useTheme, THEME_VARIANTS, THEME_MAP } from '../../contexts/ThemeContext';
 
 import ThemePreviewModal from '../../components/display/ThemePreviewModal';
+import ThemeStudio from '../../components/display/ThemeStudio';
 import { Ic } from '../../lib/icons';
 
 interface FormErrors {
@@ -370,6 +373,9 @@ export default function Settings() {
   const [isExporting, setIsExporting] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  // Password-gated actions: save | import | export | reset
+  const [gateAction, setGateAction] = useState<'save' | 'import' | 'export' | 'reset' | null>(null);
+  const [importMode, setImportMode] = useState<ImportMode>('replace');
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -552,6 +558,15 @@ export default function Settings() {
       }
       return;
     }
+    // Require the user's password before saving (skipped when no account is signed in)
+    if (user) {
+      setGateAction('save');
+      return;
+    }
+    await performSave();
+  };
+
+  const performSave = async () => {
     setIsSaving(true);
     setSubmitStatus('idle');
     setErrorMessage('');
@@ -559,7 +574,7 @@ export default function Settings() {
       const logoInfo = settings.logo
         ? `logo present (${settings.logo.length} chars)`
         : 'logo is undefined/null';
-      console.log(`[settings] handleSubmit: saving — ${logoInfo}, name="${settings.restaurant_name}"`);
+      console.log(`[settings] performSave: saving — ${logoInfo}, name="${settings.restaurant_name}"`);
       await invoke('save_settings', { settings });
       // Persist deferred inactivity timeout
       if (pendingInactivityTimeout !== inactivityTimeout) {
@@ -582,8 +597,15 @@ export default function Settings() {
     }
   };
 
-  const handleImportDatabase = async () => {
+  const handleImportDatabase = () => {
+    // Ask for the password (when signed in) and pick append/replace mode first.
+    setGateAction('import');
+  };
+
+  const performImport = async () => {
     setIsImporting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
     try {
       const file = await open({
         multiple: false,
@@ -598,13 +620,19 @@ export default function Settings() {
           binary += String.fromCharCode.apply(null, Array.from(chunk));
         }
         const base64 = btoa(binary);
-        await invoke('import_database_cmd', { data: base64 });
+        console.log(`[settings] performImport: importing (mode=${importMode})`);
+        await invoke('import_database_cmd', { data: base64, mode: importMode });
+        setSubmitStatus('success');
         setIsSuccess(true);
-        setTimeout(() => setIsSuccess(false), 3000);
+        setTimeout(() => { setIsSuccess(false); setSubmitStatus('idle'); }, 3000);
         loadSettings();
       }
     } catch (error) {
       console.error('Error importing database:', error);
+      setSubmitStatus('error');
+      const msg = error instanceof Error ? error.message : t('settings.errorMessage');
+      setErrorMessage(msg);
+      setTimeout(() => { setSubmitStatus('idle'); setErrorMessage(''); }, 5000);
     } finally {
       setIsImporting(false);
     }
@@ -637,16 +665,25 @@ export default function Settings() {
     }
   };
 
-  const handleResetDatabase = async () => {
+  const handleResetDatabase = () => {
+    setShowResetConfirm(false);
+    if (user) {
+      // Ask for the password before wiping the database.
+      setGateAction('reset');
+      return;
+    }
+    performReset();
+  };
+
+  const performReset = async () => {
     if (isImporting || isExporting) return;
     setIsResetting(true);
-    setShowResetConfirm(false);
     setSubmitStatus('idle');
     setErrorMessage('');
     try {
-      console.log('[settings] handleResetDatabase: resetting database...');
+      console.log('[settings] performReset: resetting database...');
       await invoke('reset_database_cmd');
-      console.log('[settings] handleResetDatabase: database reset successful');
+      console.log('[settings] performReset: database reset successful');
       setSubmitStatus('success');
       setIsSuccess(true);
       setTimeout(() => {
@@ -666,8 +703,18 @@ export default function Settings() {
     }
   };
 
-  const handleExportDatabase = async () => {
+  const handleExportDatabase = () => {
+    if (user) {
+      setGateAction('export');
+      return;
+    }
+    performExport();
+  };
+
+  const performExport = async () => {
     setIsExporting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
     try {
       const base64Data = await invoke<string>('export_database_cmd');
       const date = new Date().toISOString().split('T')[0];
@@ -682,11 +729,16 @@ export default function Settings() {
           bytes[i] = binary.charCodeAt(i);
         }
         await writeFile(filePath, bytes);
+        setSubmitStatus('success');
         setIsSuccess(true);
-        setTimeout(() => setIsSuccess(false), 3000);
+        setTimeout(() => { setIsSuccess(false); setSubmitStatus('idle'); }, 3000);
       }
     } catch (error) {
       console.error('Error exporting database:', error);
+      setSubmitStatus('error');
+      const msg = error instanceof Error ? error.message : t('settings.errorMessage');
+      setErrorMessage(msg);
+      setTimeout(() => { setSubmitStatus('idle'); setErrorMessage(''); }, 5000);
     } finally {
       setIsExporting(false);
     }
@@ -909,9 +961,9 @@ export default function Settings() {
                       {t(`settings.appearanceTab.theme${v.label}`, v.label)}
                     </span>
                     {isActive && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">
+                      <Badge className="bg-primary/10 text-primary">
                         {t('settings.appearanceTab.activeLabel')}
-                      </span>
+                      </Badge>
                     )}
                   </div>
                   <p className="text-xs text-base-content/50 mt-0.5">
@@ -924,6 +976,25 @@ export default function Settings() {
         </div>
       </div>
 
+
+      {/* ── Theme Studio — live CSS token tree (Theme Customization) ── */}
+      <div id="theme-section-studio" className="scroll-mt-20" />
+      <div className="card bg-base-200 border border-base-300 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-secondary/10 rounded-full p-2.5">
+            <span className="ri-tools-line ri-20px text-secondary" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-base-content">
+              {t('settings.themeTab.studio') || 'Theme Studio'}
+            </h3>
+            <p className="text-sm text-base-content/50">
+              Live color tokens &amp; shape variables for the active theme — click any token to copy its CSS value
+            </p>
+          </div>
+        </div>
+        <ThemeStudio />
+      </div>
 
       {/* Theme Preview Card */}
       <div id="theme-section-preview" className="scroll-mt-20" />
@@ -947,30 +1018,76 @@ export default function Settings() {
         </button>
       </div>
 
-      {/* Current Theme Info */}
+      {/* Current Theme Info — stats + live palette */}
       <div id="theme-section-active" className="scroll-mt-20" />
       <div className="card bg-base-200 border border-base-300 p-6">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-5">
           <div className="bg-info/10 rounded-full p-2.5">
             <span className="ri-information-line ri-20px text-info" />
           </div>
           <div>
             <h3 className="font-semibold text-base-content">Active Theme</h3>
-            <p className="text-sm text-base-content/50">Current theme configuration</p>
+            <p className="text-sm text-base-content/50">Current theme configuration &amp; live color palette</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="px-3 py-2 rounded-lg bg-base-100/50">
-            <span className="text-base-content/50">Mode:</span>{' '}
-            <span className="font-medium text-base-content capitalize">{followSystem ? 'System' : mode}</span>
+
+        {/* Stats chips */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm mb-6">
+          <div className="px-4 py-3 rounded-xl bg-base-100/60 border border-base-300/30 flex items-center gap-3">
+            <span className="bg-warning/10 rounded-full p-2 shrink-0">
+              <span className={`${followSystem ? 'ri-computer-line' : mode === 'dark' ? 'ri-moon-line' : 'ri-sun-line'} ri-18px text-warning`} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40">Mode</p>
+              <p className="font-semibold text-base-content capitalize truncate">{followSystem ? 'System' : mode}</p>
+            </div>
           </div>
-          <div className="px-3 py-2 rounded-lg bg-base-100/50">
-            <span className="text-base-content/50">Variant:</span>{' '}
-            <span className="font-medium text-base-content capitalize">{variant}</span>
+          <div className="px-4 py-3 rounded-xl bg-base-100/60 border border-base-300/30 flex items-center gap-3">
+            <span className="bg-primary/10 rounded-full p-2 shrink-0">
+              <span className="ri-palette-line ri-18px text-primary" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40">Variant</p>
+              <p className="font-semibold text-base-content capitalize truncate">{variant}</p>
+            </div>
           </div>
-          <div className="col-span-2 px-3 py-2 rounded-lg bg-base-100/50">
-            <span className="text-base-content/50">Resolved:</span>{' '}
-            <code className="text-primary text-xs font-mono">{THEME_MAP[variant][mode]}</code>
+          <div className="px-4 py-3 rounded-xl bg-base-100/60 border border-base-300/30 flex items-center gap-3">
+            <span className="bg-secondary/10 rounded-full p-2 shrink-0">
+              <span className="ri-code-s-slash-line ri-18px text-secondary" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40">Resolved</p>
+              <code className="text-primary text-xs font-mono font-semibold truncate block">{THEME_MAP[variant][mode]}</code>
+            </div>
+          </div>
+        </div>
+
+        {/* Live palette — resolves against the active theme via CSS vars */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-2 flex items-center gap-1.5">
+            <span className="ri-drop-line ri-14px" />
+            Live palette
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { cls: 'bg-primary', label: 'Primary' },
+              { cls: 'bg-secondary', label: 'Secondary' },
+              { cls: 'bg-accent', label: 'Accent' },
+              { cls: 'bg-neutral', label: 'Neutral' },
+              { cls: 'bg-info', label: 'Info' },
+              { cls: 'bg-success', label: 'Success' },
+              { cls: 'bg-warning', label: 'Warning' },
+              { cls: 'bg-error', label: 'Error' },
+              { cls: 'bg-base-100 ring-1 ring-base-content/20', label: 'Base 100' },
+              { cls: 'bg-base-200 ring-1 ring-base-content/20', label: 'Base 200' },
+              { cls: 'bg-base-300 ring-1 ring-base-content/20', label: 'Base 300' },
+              { cls: 'bg-base-content', label: 'Content' },
+            ].map(c => (
+              <div key={c.label} className="flex flex-col items-center gap-1" title={c.label}>
+                <span className={`${c.cls} w-10 h-10 rounded-lg shadow-sm shrink-0`} />
+                <span className="text-[9px] text-base-content/50">{c.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -1212,7 +1329,7 @@ export default function Settings() {
                   className="btn btn-primary w-full"
                 >
                   {isChangingPassword ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <><span className="ri-lock-2-line text-sm" /> {t('settings.updatePassword')}</>
                   )}
@@ -1669,7 +1786,7 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isImporting ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
             ) : (
               <><span className="ri-file-transfer-line text-lg" />{t('settings.importDatabase')}</>
             )}
@@ -1683,7 +1800,7 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isExporting ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
             ) : (
               <><span className="ri-file-transfer-line text-lg" />{t('settings.exportDatabase')}</>
             )}
@@ -1715,7 +1832,7 @@ export default function Settings() {
           >
             {isResetting ? (
               <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 <span>{t('settings.resetting') || 'Resetting...'}</span>
               </>
             ) : (
@@ -1743,7 +1860,7 @@ export default function Settings() {
   return (
     <PageLayout
       background="bg-linear-to-br from-base-200 via-primary/10 to-base-200"
-      containerWidth="max-w-5xl"
+      containerWidth="max-w-5xl xl:max-w-7xl"
       padding="py-10 md:py-16"
     >
       {/* Header */}
@@ -1766,6 +1883,33 @@ export default function Settings() {
       <form
         onSubmit={handleSubmit}
       >
+        {/* Breadcrumb + Save All bar — direct action covering every settings tab (Database has its own buttons) */}
+        <div className="sticky top-0 z-20 mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-base-300/50 bg-base-100/85 px-3 py-2 backdrop-blur-md shadow-sm">
+          <BackButton
+            onClick={handleBackNavigation}
+            disabled={isNavigating}
+            breadcrumb={[t('settings.breadcrumbHome'), t('settings.title'), t('settings.tabs.' + activeTab)]}
+            tooltip={t('common.back')}
+          />
+          <div className="flex items-center gap-2">
+            <span className={`hidden sm:inline text-xs ${hasUnsavedChanges ? 'text-warning' : 'text-base-content/40'}`}>
+              {hasUnsavedChanges ? t('settings.unsavedChanges') : t('settings.allSaved')}
+            </span>
+            <button
+              type="submit"
+              disabled={isSaving || !hasUnsavedChanges}
+              className="btn btn-primary btn-sm gap-1.5"
+            >
+              {isSaving ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span className="ri-save-3-line ri-16px" />
+              )}
+              <span>{t('settings.saveAllSettings')}</span>
+            </button>
+          </div>
+        </div>
+
         {/* Persistent Error Banner — shows when there are inline validation errors */}
         {Object.keys(errors).length > 0 && (
           <div
@@ -1857,7 +2001,7 @@ export default function Settings() {
           </div>
         </Card>
 
-        {/* Action Buttons */}
+        {/* Action Buttons — reset only (Save lives in the sticky breadcrumb bar) */}
         <div className="flex gap-4">
           <BackButton onClick={handleBackNavigation} disabled={isNavigating} />
           <button
@@ -1871,22 +2015,6 @@ export default function Settings() {
           >
             <span className="ri-refresh-line text-lg" />
             <span className="hidden sm:inline">{t('common.reset') || 'Reset'}</span>
-          </button>
-          <button
-            type="submit"
-            disabled={isSaving || !hasUnsavedChanges}
-            className="flex-1 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-xl
-              font-medium transition-all duration-200 flex items-center justify-center gap-2
-              disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSaving ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>{t('settings.saving')}</span>
-              </>
-            ) : (
-              <><span className="ri-save-3-line text-lg" /> {t('settings.saveSettings')}</>
-            )}
           </button>
         </div>
       </form>        {/* Success Toast */}
@@ -1908,6 +2036,51 @@ export default function Settings() {
             <span>{errorMessage}</span>
           </div>
         )}
+      {/* Password gate for save / import / export / reset */}
+      <PasswordConfirmModal
+        isOpen={gateAction !== null}
+        onClose={() => setGateAction(null)}
+        title={
+          gateAction === 'save'
+            ? t('passwordConfirm.saveTitle')
+            : gateAction === 'import'
+              ? t('settings.importDatabase')
+              : gateAction === 'export'
+                ? t('settings.exportDatabase')
+                : t('settings.resetConfirmTitle')
+        }
+        description={
+          gateAction === 'save'
+            ? t('passwordConfirm.saveDesc')
+            : gateAction === 'import'
+              ? t('passwordConfirm.importDesc')
+              : gateAction === 'export'
+                ? t('passwordConfirm.exportDesc')
+                : t('passwordConfirm.resetDesc')
+        }
+        confirmLabel={
+          gateAction === 'save'
+            ? t('settings.saveSettings')
+            : gateAction === 'import'
+              ? t('passwordConfirm.confirmImport')
+              : gateAction === 'export'
+                ? t('passwordConfirm.confirmExport')
+                : t('settings.resetConfirmLabel')
+        }
+        variant={gateAction === 'reset' ? 'danger' : 'default'}
+        requirePassword={!!user}
+        showModeSelector={gateAction === 'import'}
+        mode={importMode}
+        onModeChange={setImportMode}
+        onConfirm={() => {
+          const action = gateAction;
+          setGateAction(null);
+          if (action === 'save') performSave();
+          else if (action === 'import') performImport();
+          else if (action === 'export') performExport();
+          else if (action === 'reset') performReset();
+        }}
+      />
       {/* Theme Preview Modal */}
       <ThemePreviewModal isOpen={showThemePreview} onClose={() => setShowThemePreview(false)} />
     </PageLayout>

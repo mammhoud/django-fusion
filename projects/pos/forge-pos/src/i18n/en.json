@@ -1098,6 +1098,9 @@
     "restaurantLogo": "Restaurant Logo",
     "restaurantName": "Restaurant Name",
     "saveSettings": "Save Settings",
+    "saveAllSettings": "Save All Settings",
+    "allSaved": "All changes saved",
+    "breadcrumbHome": "Home",
     "saving": "Saving...",
     "searchCurrency": "Search currency...",
     "selectCurrency": "Select Currency",
@@ -1161,6 +1164,23 @@
       "email": "Email",
       "noUser": "No signed-in account."
     }
+  },
+  "passwordConfirm": {
+    "saveTitle": "Save Settings",
+    "saveDesc": "Enter your password to save all settings.",
+    "importDesc": "Enter your password to import a database backup.",
+    "exportDesc": "Enter your password to export the database.",
+    "resetDesc": "Enter your password to reset the database. This cannot be undone.",
+    "confirmImport": "Import",
+    "confirmExport": "Export",
+    "passwordLabel": "Password",
+    "passwordRequired": "Please enter your password",
+    "incorrectPassword": "Incorrect password. Please try again.",
+    "importModeTitle": "Import mode",
+    "modeAppend": "Append data",
+    "modeAppendDesc": "Merge the backup into your existing data. Existing records are kept.",
+    "modeReplace": "Replace everything",
+    "modeReplaceDesc": "Overwrite your database with the backup. A safety copy is created first."
   },
   "statusToast": {
     "dismiss": "Dismiss"

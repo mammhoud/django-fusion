@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme, type ThemeVariant } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../../components/display/LanguageToggle';
+import AnimatedBackground from '../../components/layout/AnimatedBackground';
 import { invoke } from '@tauri-apps/api/core';
 import { iconClass, Ic } from '../../lib/icons';
 import AnimatePresence from '../../components/ui/AnimatePresence';
@@ -489,6 +490,9 @@ export default function Auth() {
       className={`min-h-[100dvh] flex ${isRtl ? 'rtl flex-row-reverse' : 'ltr'}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
+      {/* GSAP ambient background — visible on the form side (desktop) and under overlays */}
+      <AnimatedBackground />
+
       {/* Top-right toggles */}
       <div className="fixed top-4 right-4 flex items-center gap-3 z-50">
         <LanguageToggle dropdownUp={false} />

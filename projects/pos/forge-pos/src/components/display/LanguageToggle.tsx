@@ -34,7 +34,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium
-          bg-white/80 dark:bg-white/10 text-slate-700 dark:text-slate-300
+          bg-base-100/70 backdrop-blur-md text-base-content/80
           hover:bg-base-200/50
           border border-base-300/30
           shadow-sm transition-all active:scale-[0.95] min-w-[120px]"
@@ -67,14 +67,14 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors ${
                     isActive
-                      ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-semibold'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
+                      ? 'bg-primary/10 text-primary font-semibold'
+                      : 'text-base-content/70 hover:bg-base-200/50'
                   }`}
                 >
                   <span className="text-base">{opt.flag}</span>
                   <span className="flex-1 text-left">{opt.label}</span>
                   {isActive && (
-                    <span className="ri-check-line ri-16px text-indigo-500" />
+                    <span className="ri-check-line ri-16px text-primary" />
                   )}
                 </button>
               );

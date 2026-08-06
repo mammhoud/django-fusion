@@ -1035,6 +1035,9 @@
     "restaurantLogo": "Restaurant-Logo",
     "restaurantName": "Restaurantname",
     "saveSettings": "Einstellungen speichern",
+    "saveAllSettings": "Alle Einstellungen speichern",
+    "allSaved": "Alle Änderungen gespeichert",
+    "breadcrumbHome": "Startseite",
     "saving": "Wird gespeichert...",
     "searchCurrency": "Währung suchen...",
     "selectCurrency": "Währung auswählen",
@@ -1088,6 +1091,23 @@
     "validationPhone": "Bitte geben Sie eine gültige Telefonnummer ein",
     "validationTaxNumber": "Der Steuersatz muss eine Zahl sein",
     "validationTaxRange": "Der Steuersatz muss zwischen 0 und 100 liegen"
+  },
+  "passwordConfirm": {
+    "saveTitle": "Einstellungen speichern",
+    "saveDesc": "Geben Sie Ihr Passwort ein, um alle Einstellungen zu speichern.",
+    "importDesc": "Geben Sie Ihr Passwort ein, um ein Datenbank-Backup zu importieren.",
+    "exportDesc": "Geben Sie Ihr Passwort ein, um die Datenbank zu exportieren.",
+    "resetDesc": "Geben Sie Ihr Passwort ein, um die Datenbank zurückzusetzen. Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    "confirmImport": "Importieren",
+    "confirmExport": "Exportieren",
+    "passwordLabel": "Passwort",
+    "passwordRequired": "Bitte geben Sie Ihr Passwort ein",
+    "incorrectPassword": "Falsches Passwort. Bitte versuchen Sie es erneut.",
+    "importModeTitle": "Importmodus",
+    "modeAppend": "Daten anhängen",
+    "modeAppendDesc": "Führt das Backup mit Ihren vorhandenen Daten zusammen. Bestehende Datensätze bleiben erhalten.",
+    "modeReplace": "Alles ersetzen",
+    "modeReplaceDesc": "Überschreibt Ihre Datenbank mit dem Backup. Zuvor wird eine Sicherungskopie erstellt."
   },
   "statusToast": {
     "dismiss": "Schließen"

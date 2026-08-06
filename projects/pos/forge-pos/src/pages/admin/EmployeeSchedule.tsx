@@ -97,7 +97,7 @@ export default function EmployeeSchedule() {
               <Card key={schedule.id}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                    <div className="w-10 h-10 rounded-full bg-secondary/10 dark:bg-secondary/20 flex items-center justify-center text-secondary dark:text-secondary/80">
                       <span className="ri-calendar-2-line ri-20px" />
                     </div>
                     <div>

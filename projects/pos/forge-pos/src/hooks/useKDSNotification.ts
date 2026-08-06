@@ -82,7 +82,7 @@ function showNativeNotification(ticket: KitchenTicket) {
     ticket.priority === 3 ? 'Delivery' : 'Order';
 
   try {
-    const notif = new Notification(`🔔 New ${orderTypeLabel} Order`, {
+    const notif = new Notification(`New ${orderTypeLabel} Order`, {
       body: `Order #${ticket.sale_id} is pending — ${ticket.prepare_time_minutes}min est. prep time`,
       // Omit icon — the Tauri webview doesn't reliably serve /favicon.png
       tag: `kds-order-${ticket.sale_id}`, // prevents duplicate notifications for the same order
@@ -103,7 +103,7 @@ function showNativeNotification(ticket: KitchenTicket) {
  * Monitors the `tickets` array for new `pending` tickets that were not
  * present in the previous render cycle. When detected, it:
  *  1. Plays a short chime via the Web Audio API
- *  2. Flashes the document title bar ("🔔 New Order!" ↔ original title)
+ *  2. Flashes the document title bar ("New Order!" ↔ original title)
  *  3. Shows a native OS notification if the window is minimized/hidden
  *
  * The title flash stops automatically when the window regains focus or
@@ -139,7 +139,7 @@ export function useKDSNotification(tickets: KitchenTicket[], mutedUntil: number 
     let showAlert = true;
     flashRef.current = setInterval(() => {
       document.title = showAlert
-        ? '🔔 New Order!'
+        ? 'New Order!'
         : originalTitleRef.current;
       showAlert = !showAlert;
     }, 800);

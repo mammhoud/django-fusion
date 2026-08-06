@@ -6,6 +6,7 @@ import { readFile } from '@tauri-apps/plugin-fs';
 import packageJson from '../../../package.json';
 import BackButton from '../../components/ui/BackButton';
 import Card from '../../components/ui/Card';
+import { Separator } from '@/components/ui/separator';
 import PageLayout from '../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
 import AnimatePresence from '../../components/ui/AnimatePresence';
@@ -361,18 +362,20 @@ export default function About() {
               </button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-base-300/30">
+            <div className="mt-6">
+              <Separator className="mb-6" />
               <p className="text-sm text-base-content/50">
                 <strong className="text-base-content/80">{t('about.otherWays')}</strong>
               </p>
               <div className="mt-3 space-y-2 text-sm text-base-content/70">
-                <p>
-                  🌐 {t('about.visitWebsite')}{' '}
+                <p className="flex items-center gap-2">
+                  <span className="ri-global-line text-primary ri-16px" aria-hidden="true" />
+                  <span>{t('about.visitWebsite')}</span>
                   <a
                     href="https://structa.cloud"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-400! hover:text-purple-400! underline! transition-colors font-semibold"
+                    className="text-primary hover:text-secondary underline! transition-colors font-semibold"
                   >
                     {t('about.officialWebsite')}
                   </a>

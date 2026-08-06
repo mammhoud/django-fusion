@@ -6,6 +6,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonCard, SkeletonList } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
 import Card from '../../components/ui/Card';
+import { Separator } from '@/components/ui/separator';
 import StatCard from '../../components/ui/StatCard';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -546,12 +547,12 @@ export default function Recipes() {
                     </div>
                   ))}
                   {rd.ingredients.length > 5 && (
-                    <p className="text-xs text-slate-400 text-center pt-1">{t('recipes.moreIngredients', { count: rd.ingredients.length - 5 })}</p>
+                    <p className="text-xs text-base-content/40 text-center pt-1">{t('recipes.moreIngredients', { count: rd.ingredients.length - 5 })}</p>
                   )}
                 </div>
 
                 {!rd.recipe.is_active && (
-                  <div className="mt-2 px-2 py-1 bg-red-100 dark:bg-red-900/20 rounded-lg text-xs text-red-500 font-medium text-center">
+                  <div className="mt-2 px-2 py-1 bg-error/10 rounded-lg text-xs text-error font-medium text-center">
                     {t('recipes.inactive')}
                   </div>
                 )}
@@ -602,7 +603,7 @@ export default function Recipes() {
           </div>
         </div>
 
-        <div className="border-t border-base-300/50 pt-4">            <h3 className="text-sm font-semibold text-base-content mb-3 flex items-center gap-2">
+        <div className="pt-4"><Separator className="mb-4" />            <h3 className="text-sm font-semibold text-base-content mb-3 flex items-center gap-2">
               <span className="ri-archive-line text-warning" /> {t('recipes.ingredients')} {newRecipeIngredients.length > 0 && `(${newRecipeIngredients.length})`}
             </h3>
 
@@ -680,7 +681,7 @@ export default function Recipes() {
             className="input w-full" />
         </div>
 
-        <div className="border-t border-base-300/50 pt-4">
+        <div className="pt-4"><Separator className="mb-4" />
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-base-content flex items-center gap-2">
               <span className="ri-archive-line text-warning" /> {t('recipes.ingredients')} ({editIngredients.length})

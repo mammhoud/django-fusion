@@ -20,11 +20,10 @@ export const THEME_MAP: Record<ThemeVariant, Record<Mode, string>> = {
   default:   { light: 'light', dark: 'dark' },
   corporate: { light: 'corporate-light', dark: 'corporate-dark' },
   luxury:    { light: 'luxury-light',    dark: 'luxury-dark' },
-  // Pastel light resolves to the built-in Perplexity theme (default light),
-  // pastel-dark stays the dark counterpart.
-  pastel:    { light: 'perplexity',     dark: 'pastel-dark' },
-  // Perplexity is a single built-in theme (no separate dark variant)
-  perplexity: { light: 'perplexity', dark: 'perplexity' },
+  // Custom pastel themes — soft candy colors in both modes.
+  pastel:    { light: 'pastel-light',    dark: 'pastel-dark' },
+  // Perplexity — minimal & intelligent, with a custom dark counterpart.
+  perplexity: { light: 'perplexity', dark: 'perplexity-dark' },
 };
 
 interface ThemeContextType {
@@ -73,10 +72,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [variant, setVariantState] = useState<ThemeVariant>(() => {
     const saved = localStorage.getItem('theme-variant') as ThemeVariant | null;
     if (saved && THEME_VARIANTS.some(v => v.id === saved)) return saved;
-    // Default to the pastel variant (soft candy colors) for both light and
-    // dark modes — matches the FlyonUI `--default` / `--prefersdark` setup
-    // in index.css where pastel-light / pastel-dark are the default themes.
-    return 'pastel';
+    // Default to the perplexity variant (minimal & intelligent) — matches
+    // the FlyonUI `--default` / `--prefersdark` setup in index.css.
+    return 'perplexity';
   });
 
   // Resolve the FlyonUI data-theme value

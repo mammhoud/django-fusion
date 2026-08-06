@@ -57,8 +57,9 @@ describe('Settings Page', () => {
   it('renders all tab navigation buttons', async () => {
     renderWithProviders(<Settings />);
 
-    // Tabs have hardcoded English labels — not translation keys
-    const generalTab = await screen.findByText('General');
+    // Tabs have hardcoded English labels — not translation keys.
+    // (role="tab" also avoids matching the breadcrumb trail segment)
+    const generalTab = await screen.findByRole('tab', { name: 'General' });
     expect(generalTab).toBeInTheDocument();
 
     expect(screen.getByText('Business')).toBeInTheDocument();
@@ -70,11 +71,72 @@ describe('Settings Page', () => {
     expect(screen.getByRole('tab', { name: 'Theme' })).toBeInTheDocument();
   });
 
-  it('shows save settings button', async () => {
+  it('shows the single save settings button in the sticky bar', async () => {
     renderWithProviders(<Settings />);
 
-    const saveBtn = await screen.findByText('Save Settings');
-    expect(saveBtn).toBeInTheDocument();
+    // Save lives in the sticky breadcrumb bar (Save All Settings) — the old
+    // duplicate bottom button was removed.
+    const saveBtns = await screen.findAllByText('Save All Settings');
+    expect(saveBtns.length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText('Save Settings')).not.toBeInTheDocument();
+  });
+
+  it('shows the breadcrumb bar with the Save All Settings quick action', async () => {
+    renderWithProviders(<Settings />);
+
+    // Quick action is always visible in the sticky bar
+    expect(await screen.findByText('Save All Settings')).toBeInTheDocument();
+    // Breadcrumb trail includes Home → Settings → current tab
+    // ('Home' also exists in the side nav, so assert at least one match)
+    expect(screen.getAllByText('Home').length).toBeGreaterThanOrEqual(1);
+    const settingsCrumb = screen.getAllByText('Settings');
+    expect(settingsCrumb.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('opens the import dialog with append/replace mode options', async () => {
+    renderWithProviders(<Settings />);
+
+    // Navigate to the Database tab
+    fireEvent.click(await screen.findByRole('tab', { name: 'Database' }));
+    fireEvent.click(await screen.findByText('Import Database'));
+
+    // Mode selector is shown (no password field when no account is signed in)
+    expect(await screen.findByText('Import mode')).toBeInTheDocument();
+    expect(screen.getByText('Append data')).toBeInTheDocument();
+    expect(screen.getByText('Replace everything')).toBeInTheDocument();
+
+    // Replace is the default selection
+    expect(screen.getByRole('button', { name: /Replace everything/ })).toHaveAttribute('aria-pressed', 'true');
+
+    // Switching to Append updates the selection
+    fireEvent.click(screen.getByRole('button', { name: /Append data/ }));
+    expect(screen.getByRole('button', { name: /Append data/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /Replace everything/ })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('asks for the password before exporting when an account is signed in', async () => {
+    // Seed a signed-in account so the password gate is enforced
+    localStorage.setItem('auth_user', JSON.stringify({ id: 1, email: 'owner@restaurant.com', name: 'Owner' }));
+    localStorage.setItem('is_authenticated', 'true');
+    mockInvokeSuccess('check_auth_required', true);
+    mockInvokeSuccess('has_users', true);
+    mockInvokeSuccess('verify_user', true);
+    mockInvokeError('login_user', 'Invalid credentials');
+
+    renderWithProviders(<Settings />);
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Database' }));
+    fireEvent.click(await screen.findByText('Export Database'));
+
+    // Gate dialog opens with a password field
+    expect(await screen.findByText('Enter your password to export the database.')).toBeInTheDocument();
+    const passwordInput = screen.getByLabelText('Password');
+    expect(passwordInput).toBeInTheDocument();
+
+    // A wrong password surfaces an inline error (login_user is mocked to fail)
+    fireEvent.change(passwordInput, { target: { value: 'wrong-password' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+    expect(await screen.findByText('Incorrect password. Please try again.')).toBeInTheDocument();
   });
 
 
@@ -173,13 +235,49 @@ describe('Settings Page', () => {
     await waitFor(() => {
       expect(screen.getByText('Theme Customization')).toBeInTheDocument();
     });
-    // Mode options (Light / Dark only) render inside the ThemeToggle
+    // Mode options (Light / Dark / System) render inside the ThemeToggle
     // dropdown — open it to reveal them. The trigger shows the current
     // mode too, so Light may appear twice (trigger + option).
     fireEvent.click(screen.getByRole('button', { name: /Theme:/ }));
     expect(screen.getAllByText('Light').length).toBeGreaterThan(0);
     expect(screen.getByText('Dark')).toBeInTheDocument();
-    expect(screen.queryByText('System')).not.toBeInTheDocument();
+    // System mode is supported (follows the OS preference) — the label
+    // comes from the i18n key settings.appearanceTab.systemMode ('System Mode')
+    expect(screen.getByText('System Mode')).toBeInTheDocument();
+  });
+
+  it('renders the Theme Studio token tree with copyable CSS variables', async () => {
+    renderWithProviders(<Settings />);
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
+
+    // Studio section (theme-section-studio anchor) renders the live token tree.
+    // 'Theme Studio' also appears on the section-nav button, so scope to the
+    // section heading role.
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Theme Studio' })).toBeInTheDocument());
+    expect(screen.getByText('--color-primary')).toBeInTheDocument();
+    expect(screen.getByText('--color-base-100')).toBeInTheDocument();
+    expect(screen.getByText('--radius-box')).toBeInTheDocument();
+
+    // Click a token copies `${token}: <value>;` to the clipboard
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    fireEvent.click(screen.getByText('--color-primary'));
+    await waitFor(() => expect(writeText).toHaveBeenCalled());
+    expect(writeText.mock.calls[0][0]).toContain('--color-primary');
+  });
+
+  it('shows the Active Theme stats and live palette', async () => {
+    renderWithProviders(<Settings />);
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Theme' }));
+
+    // Stats chips (Mode / Variant / Resolved) render in the Active Theme card
+    await waitFor(() => expect(screen.getByText('Resolved')).toBeInTheDocument());
+    expect(screen.getByText('Variant')).toBeInTheDocument();
+    // Live palette labels (Primary / Success / Base 100 …) are present
+    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.getByText('Base 100')).toBeInTheDocument();
   });
 
   it('switches through multiple tabs in succession', async () => {
@@ -224,8 +322,8 @@ describe('Settings Page', () => {
     const nameInput = await screen.findByDisplayValue('Test Restaurant');
     fireEvent.change(nameInput, { target: { value: '' } });
 
-    // Try to save
-    const saveBtn = screen.getByText('Save Settings');
+    // Try to save (single submit lives in the sticky bar)
+    const saveBtn = screen.getByText('Save All Settings');
     fireEvent.click(saveBtn);
 
     // Validation error should appear — may render in multiple spots (inline + tab badge)

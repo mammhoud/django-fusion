@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonTable, SkeletonCard } from '../../components/ui/Skeleton';
 import Card from '../../components/ui/Card';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import StatCard from '../../components/ui/StatCard';
@@ -15,7 +16,7 @@ import { useApiQueries } from '../../hooks/useApi';
 import {
   Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction,
   Recipe, Employee, Product, Transaction, DeliveryType, DeliveryZone,
-  PaymentMethodRevenue, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS,
+  Category, PaymentMethodRevenue, PaymentMethod, PAYMENT_METHODS, PAYMENT_METHOD_LABELS,
   PAYMENT_ICONS
 } from '../../types';
 import jsPDF from 'jspdf';
@@ -50,6 +51,29 @@ interface LowStockItem {
   reorderLevel: number;
   unit: string;
   shortage: number;
+}
+
+/** Colored category pill shown beside a product name in report tables. */
+function CategoryPill({ productName, productCategoryMap }: {
+  productName: string;
+  productCategoryMap: Map<string, { name: string; color: string }>;
+}) {
+  const cat = productCategoryMap.get(productName);
+  if (!cat) return null;
+  // Only 6-digit hex category colors get a color-tinted badge; anything else
+  // (named colors, rgb(), missing) falls back to a neutral theme pill.
+  const hex = cat.color && /^#[0-9a-fA-F]{6}$/.test(cat.color) ? cat.color : null;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${
+        hex ? '' : 'bg-base-200/60 text-base-content/60'
+      }`}
+      style={hex ? { backgroundColor: `${hex}26`, color: hex } : undefined}
+      title={cat.name}
+    >
+      {cat.name}
+    </span>
+  );
 }
 
 export default function Reports() {
@@ -88,6 +112,7 @@ export default function Reports() {
       deliveryTypesRes,
       deliveryZonesRes,
       paymentRevRes,
+      categoriesRes,
     ],
     isLoading: loading,
   } = useApiQueries([
@@ -103,6 +128,7 @@ export default function Reports() {
     { command: 'get_delivery_types', params: { includeInactive: true } },
     { command: 'get_delivery_zones', params: { includeInactive: true } },
     { command: 'get_revenue_by_payment_method' },
+    { command: 'get_categories' },
   ]);
 
   const settings = (settingsRes as Settings | undefined) ?? null;
@@ -119,6 +145,20 @@ export default function Reports() {
   const deliveryTypes = (Array.isArray(deliveryTypesRes) ? (deliveryTypesRes as DeliveryType[]) : []) as DeliveryType[];
   const deliveryZones = (Array.isArray(deliveryZonesRes) ? (deliveryZonesRes as DeliveryZone[]) : []) as DeliveryZone[];
   const paymentRevenue = (Array.isArray(paymentRevRes) ? (paymentRevRes as PaymentMethodRevenue[]) : []) as PaymentMethodRevenue[];
+  const categories = (Array.isArray(categoriesRes) ? (categoriesRes as Category[]) : []) as Category[];
+
+  // Product name → { category name, color } — used to color top products by
+  // their category across the report tables (matches ProductManager's picker).
+  const productCategoryMap = useMemo(() => {
+    const catById = new Map(categories.map(c => [c.id, c]));
+    const map = new Map<string, { name: string; color: string }>();
+    for (const p of products) {
+      if (p.category_id == null) continue;
+      const cat = catById.get(p.category_id);
+      if (cat) map.set(p.name, { name: cat.name, color: cat.color || '' });
+    }
+    return map;
+  }, [categories, products]);
 
   // ---- Help Modal State ----
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
@@ -969,7 +1009,7 @@ export default function Reports() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Cross-section KPI Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.totalOrders')}
                   value={filteredSales.length.toString()}
                   icon={<span className="ri-money-dollar-box-line ri-24px" />}
@@ -1020,7 +1060,7 @@ export default function Reports() {
               )}
 
               {/* Quick Stats Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4">
                 <StatCard title={t('reports.lowStockItems')}
                   value={lowStockItems.length}
                   desc={t('reports.needReordering')}
@@ -1044,7 +1084,7 @@ export default function Reports() {
           {activeTab === 'sales' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">                <StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4">                <StatCard 
                   title={t('reports.totalRevenue')}
                   value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   desc={`${salesRevDelta.direction === 'up' ? '▲' : salesRevDelta.direction === 'down' ? '▼' : '→'} ${salesRevDelta.pct} vs prev 30 days`}
@@ -1238,7 +1278,12 @@ export default function Reports() {
                         {analytics.top_products.map((p, i) => (
                           <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 text-base-content/50">{i + 1}</td>
-                            <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
+                            <td className="py-3 px-4">
+                              <span className="flex items-center gap-2 min-w-0">
+                                <span className="font-medium text-base-content truncate">{p.name}</span>
+                                <CategoryPill productName={p.name} productCategoryMap={productCategoryMap} />
+                              </span>
+                            </td>
                             <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
                             <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.revenue)}</td>
                           </tr>
@@ -1278,7 +1323,7 @@ export default function Reports() {
           {activeTab === 'productsSales' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.totalProductsSold')}
                   value={analytics?.summary?.total_orders?.toString() || '0'}
                   icon={<span className="ri-bar-chart-2-line ri-24px" />}
@@ -1336,7 +1381,12 @@ export default function Reports() {
                           return (
                             <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
                               <td className="py-3 px-4 text-base-content/50">{i + 1}</td>
-                              <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
+                              <td className="py-3 px-4">
+                                <span className="flex items-center gap-2 min-w-0">
+                                  <span className="font-medium text-base-content truncate">{p.name}</span>
+                                  <CategoryPill productName={p.name} productCategoryMap={productCategoryMap} />
+                                </span>
+                              </td>
                               <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
                               <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.revenue)}</td>
                               <td className="py-3 px-4">
@@ -1391,7 +1441,7 @@ export default function Reports() {
           {activeTab === 'invoices' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.totalInvoices')}
                   value={filteredSales.length.toString()}
                   icon={<span className="ri-receipt-line ri-24px" />}
@@ -1453,14 +1503,14 @@ export default function Reports() {
                               <td className="py-3 px-4 text-base-content/70">{sale.date}</td>
                               <td className="py-3 px-4 text-base-content/70">{sale.time}</td>
                               <td className="py-3 px-4">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-info/10 text-info">
+                                <Badge className="bg-info/10 text-info capitalize">
                                   {sale.order_type || '-'}
-                                </span>
+                                </Badge>
                               </td>
                               <td className="py-3 px-4">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${sale.status === 'completed' ? 'bg-success/20 text-success' : sale.status === 'cancelled' ? 'bg-error/20 text-error' : 'bg-warning/20 text-warning'}`}>
+                                <Badge className={`${sale.status === 'completed' ? 'bg-success/20 text-success' : sale.status === 'cancelled' ? 'bg-error/20 text-error' : 'bg-warning/20 text-warning'}`}>
                                   {sale.status}
-                                </span>
+                                </Badge>
                               </td>
                               <td className="py-3 px-4 text-right font-bold text-base-content">{formatPrice(sale.total_amount)}</td>
                               <td className="py-3 px-4 text-base-content/70">{emp?.name || '-'}</td>
@@ -1484,7 +1534,7 @@ export default function Reports() {
           {activeTab === 'dailyComparison' && (
             <div className="space-y-6">
               {/* Today's Overview Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.todayRevenue')}
                   value={`${formatPrice(todayStats.revenue)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs yesterday`}
@@ -1719,7 +1769,7 @@ export default function Reports() {
               </div>
 
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.currentPeriodRevenue')}
                   value={`${formatPrice(currentStats.revenue)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs previous`}
@@ -1872,7 +1922,7 @@ export default function Reports() {
           {activeTab === 'deliveryTracking' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.deliveryOrders')}
                   value={deliveryStats.totalOrders.toString()}
                   icon={<span className="ri-store-2-line ri-24px" />}
@@ -1968,7 +2018,7 @@ export default function Reports() {
           {activeTab === 'inventory' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${formatPrice(stockValue)}`}
                   icon={<span className="ri-money-dollar-box-line ri-24px" />}
@@ -2139,7 +2189,7 @@ export default function Reports() {
           {activeTab === 'recipes' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.totalRecipes')}
                   value={recipePerformance.length.toString()}
                   icon={<span className="ri-menu-2-line ri-24px" />}
@@ -2264,7 +2314,7 @@ export default function Reports() {
           {activeTab === 'transactions' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${formatPrice(transactions.reduce((s, t) => s + t.total_amount, 0))}`}
                   icon={<span className="ri-money-dollar-box-line ri-24px" />}
@@ -2344,7 +2394,7 @@ export default function Reports() {
           {activeTab === 'employees' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4"><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
                   icon={<span className="ri-group-line ri-24px" />}

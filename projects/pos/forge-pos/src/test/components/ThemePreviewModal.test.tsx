@@ -46,8 +46,8 @@ describe('ThemePreviewModal', () => {
 
     await waitFor(() => {
       expect(localStorage.getItem('theme-mode')).toBe('dark');
-      // Default variant dark resolves to pastel-dark
-      expect(document.documentElement.getAttribute('data-theme')).toBe('pastel-dark');
+      // Default variant dark resolves to perplexity-dark
+      expect(document.documentElement.getAttribute('data-theme')).toBe('perplexity-dark');
     });
 
     await userEvent.click(screen.getByRole('button', { name: /Light/ }));
@@ -89,7 +89,7 @@ describe('ThemePreviewModal', () => {
     await waitFor(() => {
       expect(localStorage.getItem('theme-follow-system')).toBe('true');
       // System preference is dark → dark theme applied
-      expect(document.documentElement.getAttribute('data-theme')).toBe('pastel-dark');
+      expect(document.documentElement.getAttribute('data-theme')).toBe('perplexity-dark');
     });
 
     // Restore the original so later tests aren't affected
