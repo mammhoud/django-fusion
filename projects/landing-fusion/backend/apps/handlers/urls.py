@@ -26,6 +26,7 @@ urlpatterns = [
     path("blog/<slug:slug>/", views.BlogPostPageView.as_view(), name="blog_post"),
     path("products/", views.ProductsPageView.as_view(), name="products"),
     path("products/<slug:slug>/", views.ProductPageView.as_view(), name="product"),
+    path("products/<slug:slug>/preview/<slug:edition>/", views.ProductPreviewView.as_view(), name="product_preview"),
     path("brand/", views.BrandPageView.as_view(), name="brand"),
     path("features/", views.FeaturesPageView.as_view(), name="features"),
     path("contact/", views.ContactPageView.as_view(), name="contact"),

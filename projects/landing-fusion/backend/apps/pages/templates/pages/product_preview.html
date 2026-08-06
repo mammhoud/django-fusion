@@ -1,0 +1,71 @@
+{% extends "pages/base.html" %}
+{% block extra_head %}{% endblock extra_head %}
+{% block main %}
+<article class="product-preview">
+  <section class="doc-sheet bg-fu-paper py-12 md:py-16">
+    <div class="container-fusion">
+      <nav class="mb-8 flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted">
+        <a href="/products/" class="hover:text-fu-link transition-colors">Products</a>
+        <span>/</span>
+        <a href="/products/{{ content.slug }}/" class="hover:text-fu-link transition-colors">{{ content.title }}</a>
+        <span>/</span>
+        <span class="text-fu-ink">{{ preview_edition.name }}</span>
+      </nav>
+
+      <div class="mb-10 max-w-2xl">
+        <p class="tag-marker mb-4">edition preview</p>
+        <h1 class="font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{{ preview_edition.name }}</h1>
+        <p class="mt-4 text-lg text-fu-muted">of {{ content.title }}{% if preview_edition.tagline %} — {{ preview_edition.tagline }}{% endif %}</p>
+      </div>
+
+      <!-- Edition details -->
+      <div class="card max-w-lg p-6 sm:p-8">
+        <div class="mb-6 flex items-baseline gap-2">
+          <span class="font-mono text-[2rem] font-semibold tracking-tight text-fu-ink">{{ preview_edition.price }}</span>
+          {% if preview_edition.period %}
+          <span class="font-mono text-xs uppercase tracking-wider text-fu-muted">{{ preview_edition.period }}</span>
+          {% endif %}
+        </div>
+
+        {% if preview_edition.features %}
+        <ul class="mb-6 space-y-2.5 border-t border-fu-line pt-6 text-sm">
+          {% for feature in preview_edition.features %}
+          <li class="flex items-start gap-2.5">
+            <svg class="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-fu-link" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="text-fu-ink/80">{{ feature }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if preview_edition.cta_label %}
+        <a href="{{ preview_edition.cta_href|default:'/contact/' }}" class="btn-primary w-full sm:w-auto">
+          {{ preview_edition.cta_label }}
+        </a>
+        {% endif %}
+      </div>
+
+      {% if preview_others %}
+      <div class="mt-8">
+        <p class="mb-3 text-xs font-medium uppercase tracking-wider text-fu-muted">Other editions of {{ content.title }}</p>
+        <div class="flex flex-wrap gap-2">
+          {% for other in preview_others %}
+          <a href="/products/{{ content.slug }}/preview/{{ other.slug }}/" class="inline-flex items-center rounded-full border border-fu-line bg-fu-card px-3 py-1.5 text-sm text-fu-ink transition-colors hover:border-fu-link/40 hover:text-fu-link">
+            {{ other.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="mt-10">
+        <a href="/products/{{ content.slug }}/" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink">
+          ← Back to {{ content.title }}
+        </a>
+      </div>
+    </div>
+  </section>
+</article>
+{% endblock main %}
