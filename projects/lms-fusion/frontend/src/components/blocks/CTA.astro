@@ -1,0 +1,43 @@
+---
+interface Props {
+  heading?: string;
+  intro?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  heading = 'Ship the document, not the app',
+  intro = 'One HTTP response, finished HTML. Start building on Fusion CMS today — no framework to learn, no bundle to wait for.',
+  ctaLabel = 'Create free account',
+  ctaHref = '/#cta',
+} = Astro.props;
+---
+
+<section id="cta" class="cta">
+  <div class="cta__inner">
+    <div class="cta__content">
+      <p class="cta__eyebrow">cta</p>
+      <h2 class="cta__heading">{heading}</h2>
+      <p class="cta__intro">{intro}</p>
+      <div class="cta__actions">
+        <a
+          href={ctaHref}
+          class="btn-primary !px-8 !py-3.5 text-base"
+          @click.prevent="$store.toast.show('Account created. Check your inbox.')"
+        >
+          {ctaLabel}
+        </a>
+        <a
+          href="/contact"
+          class="btn !px-8 !py-3.5 text-base text-[#f0eee8] ring-1 ring-inset ring-[#f0eee8]/40 hover:bg-[#f0eee8]/5"
+        >
+          Talk to sales
+        </a>
+      </div>
+      <p class="cta__status">
+        <span class="status-line !text-[#b0aba0]"><span class="dot" aria-hidden="true"></span>ready when you are · text/html</span>
+      </p>
+    </div>
+  </div>
+</section>

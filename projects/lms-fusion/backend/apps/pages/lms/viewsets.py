@@ -1,5 +1,5 @@
 """
-LMS Viewsets for fusion-cms.com
+LMS Viewsets for lms-fusion.com
 ===================================
 
 Routable ModelViewsets for the Learning Management System.

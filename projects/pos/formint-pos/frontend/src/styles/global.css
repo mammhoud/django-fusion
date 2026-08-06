@@ -1,0 +1,229 @@
+/* Formint POS — Global Styles (Tailwind CSS v4 entry point)
+   Source design system: forge-pos FlyonUI + semantic tokens */
+
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* ── Custom variants ── */
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
+
+/* ── Tailwind theme extension using CSS custom properties ── */
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-content: var(--color-primary-content);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-light: var(--color-primary-light);
+  --color-surface-page: var(--color-surface-page);
+  --color-surface-card: var(--color-surface-card);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-info: var(--color-info);
+}
+
+/* ── POS semantic component classes (flyonui-inspired) ── */
+@layer components {
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.15em 0.55em; font-size: 0.7rem; font-weight: 650;
+    border-radius: var(--radius-selector); line-height: 1.4;
+    white-space: nowrap;
+  }
+  .badge-primary   { background: var(--color-primary); color: var(--color-primary-content); }
+  .badge-success   { background: var(--color-success); color: var(--color-success-content); }
+  .badge-warning   { background: var(--color-warning); color: var(--color-warning-content); }
+  .badge-error     { background: var(--color-error); color: var(--color-error-content); }
+  .badge-info      { background: var(--color-info); color: var(--color-info-content); }
+  .badge-neutral   { background: var(--color-neutral); color: var(--color-neutral-content); }
+  /* Soft variants: color-mix with the state color so they adapt to dark mode
+     automatically (translucent tint over the surface instead of a fixed light pill). */
+  .badge-soft-primary { background: color-mix(in oklab, var(--color-primary) 13%, transparent); color: var(--color-primary-strong); }
+  .badge-soft-success { background: color-mix(in oklab, var(--color-success) 13%, transparent); color: var(--color-success-strong); }
+  .badge-soft-warning { background: color-mix(in oklab, var(--color-warning) 18%, transparent); color: var(--color-warning-strong); }
+  .badge-soft-error   { background: color-mix(in oklab, var(--color-error) 13%, transparent); color: var(--color-error-strong); }
+  .badge-soft-info    { background: color-mix(in oklab, var(--color-info) 13%, transparent); color: var(--color-info-strong); }
+  .badge-soft-accent  { background: color-mix(in oklab, var(--color-accent) 13%, transparent); color: var(--color-accent-strong); }
+  .badge-soft-neutral { background: color-mix(in oklab, var(--color-neutral) 13%, transparent); color: var(--color-neutral-strong); }
+  .badge-xs  { font-size: 0.6rem; padding: 0.1em 0.4em; }
+  .badge-sm  { font-size: 0.7rem; }
+  .badge-lg  { font-size: 0.85rem; padding: 0.25em 0.75em; }
+
+  /* Button */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    padding: 0.45em 0.9em; font-size: 0.8rem; font-weight: 600;
+    border: var(--border-width) solid transparent; border-radius: var(--radius-field);
+    cursor: pointer; transition: all var(--transition-fast);
+    line-height: 1.4; user-select: none; white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  .btn-primary   { background: var(--color-primary); color: var(--color-primary-content); }
+  .btn-primary:hover { background: var(--color-primary-hover); }
+  .btn-secondary { background: var(--color-surface-raised); color: var(--color-text-primary); }
+  .btn-secondary:hover { background: var(--color-surface-hover); }
+  .btn-ghost     { background: transparent; color: var(--color-text-secondary); }
+  .btn-ghost:hover { background: var(--color-surface-card); }
+  .btn-outline   { background: transparent; border-color: var(--color-border-default); color: var(--color-text-primary); }
+  .btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .btn-success   { background: var(--color-success); color: var(--color-success-content); }
+  .btn-error     { background: var(--color-error); color: var(--color-error-content); }
+  .btn-warning   { background: var(--color-warning); color: var(--color-warning-content); }
+  .btn-xs { font-size: 0.65rem; padding: 0.2em 0.5em; }
+  .btn-sm { font-size: 0.75rem; padding: 0.35em 0.7em; }
+  .btn-lg { font-size: 0.95rem; padding: 0.6em 1.3em; }
+  .btn-block { width: 100%; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Card */
+  .card {
+    background: var(--color-surface-card);
+    border: var(--border-width) solid var(--color-border-subtle);
+    border-radius: var(--radius-box);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-body { padding: var(--space-pos-lg); }
+
+  /* Input / Select */
+  .input {
+    width: 100%; padding: 0.5em 0.75em; font-size: 0.8rem;
+    background: var(--color-surface-page);
+    border: var(--border-width) solid var(--color-border-default);
+    border-radius: var(--radius-field);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast);
+  }
+  .input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-focus-ring); }
+  .select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.6rem center; padding-right: 2rem;
+  }
+  .dark .select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  }
+
+  /* Toggle switch (token-driven track + knob, dark-mode safe) */
+  .switch {
+    position: relative;
+    display: inline-flex; flex: none;
+    width: 2.75rem; height: 1.5rem;
+    border-radius: var(--radius-selector);
+    background: var(--color-border-emphasis);
+    border: 0; cursor: pointer; padding: 0;
+    transition: background var(--transition-fast);
+  }
+  .switch:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  .switch--on { background: var(--color-success); }
+  .switch__knob {
+    position: absolute; top: 50%; left: 0.2rem;
+    width: 1rem; height: 1rem;
+    border-radius: 50%;
+    background: var(--color-surface-card);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.3);
+    transform: translateY(-50%);
+    transition: transform var(--transition-fast);
+  }
+  .switch--on .switch__knob { transform: translateY(-50%) translateX(1.35rem); }
+
+  /* Tag / Filter pill */
+  .tag {
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    padding: 0.2em 0.6em; font-size: 0.7rem; font-weight: 600;
+    border: 0; border-radius: 9999px; white-space: nowrap;
+    transition: all var(--transition-fast);
+    cursor: default;
+  }
+  .tag:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  /* Soft variants use translucent color-mix tints so they read correctly in both themes. */
+  .tag--primary { background: color-mix(in oklab, var(--color-primary) 14%, transparent); color: var(--color-primary-strong); }
+  .tag--warning { background: color-mix(in oklab, var(--color-warning) 20%, transparent); color: var(--color-warning-strong); }
+  .tag--info    { background: color-mix(in oklab, var(--color-info) 15%, transparent); color: var(--color-info-strong); }
+  .tag--success { background: color-mix(in oklab, var(--color-success) 15%, transparent); color: var(--color-success-strong); }
+  .tag--error   { background: color-mix(in oklab, var(--color-error) 15%, transparent); color: var(--color-error-strong); }
+  .tag--neutral { background: color-mix(in oklab, var(--color-text-secondary) 14%, transparent); color: var(--color-neutral-strong); }
+  .tag--ghost   { background: transparent; color: var(--color-text-secondary); }
+  .tag--ghost:hover { background: var(--color-surface-card); }
+  .tag--sm { font-size: 0.65rem; padding: 0.15em 0.45em; }
+
+  /* Status toast */
+  .toast {
+    position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem; border-radius: var(--radius-box);
+    font-size: 0.8rem; font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    animation: toast-in 0.25s ease;
+  }
+  .toast-success { background: var(--color-success); color: var(--color-success-content); }
+  .toast-error   { background: var(--color-error); color: var(--color-error-content); }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(0.5rem); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Stat card */
+  .stat-card {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    padding: 0.9rem 1rem; background: var(--color-surface-card);
+    border: var(--border-width) solid var(--color-border-subtle);
+    border-radius: var(--radius-box);
+  }
+  .stat-card__title { font-size: 0.7rem; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card__value { font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat-card__desc  { font-size: 0.7rem; color: var(--color-text-secondary); }
+
+  /* Data table (dense responsive pattern from forge-pos) */
+  .data-table {
+    width: 100%; border-collapse: collapse; font-size: 0.78rem;
+  }
+  .data-table th {
+    padding: 0.5rem 0.75rem; text-align: start;
+    font-weight: 650; color: var(--color-text-secondary);
+    text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--color-border-default);
+    background: var(--color-surface-card);
+  }
+  .data-table td {
+    padding: 0.45rem 0.75rem; border-bottom: var(--border-width) solid var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+  .data-table tr:hover td { background: var(--color-surface-hover); }
+
+  /* KDS ticket card (forge-pos pattern) */
+  .kds-ticket {
+    border: 2px solid var(--color-border-subtle);
+    border-radius: var(--radius-box); padding: 0.65rem;
+    background: var(--color-surface-card);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+  }
+  .kds-ticket:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .kds-ticket:active { transform: scale(0.98); }
+  .kds-ticket--overdue {
+    border-color: var(--color-error);
+    box-shadow: 0 0 12px color-mix(in oklab, var(--color-error) 25%, transparent);
+    background: color-mix(in oklab, var(--color-error) 10%, transparent);
+  }
+
+  /* Skeleton shimmer (already exists in Layout.astro, extended here) */
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, var(--color-surface-raised) 25%, var(--color-surface-page) 50%, var(--color-surface-raised) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* RTL overrides */
+  [dir="rtl"] .data-table th,
+  [dir="rtl"] .data-table td { text-align: end; }
+  [dir="rtl"] .select { background-position: left 0.6rem center; padding-right: 0.75rem; padding-left: 2rem; }
+}
+
+/* ── Print styles ── */
+@media print {
+  .site-header, .site-nav, .btn, .toast { display: none !important; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+}

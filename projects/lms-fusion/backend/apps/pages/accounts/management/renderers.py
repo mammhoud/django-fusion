@@ -1,5 +1,5 @@
 """
-Renderer utilities for fusion-cms.com.
+Renderer utilities for lms-fusion.com.
 
 Uses django-fusion's canonical dynamic component renderer.
 """

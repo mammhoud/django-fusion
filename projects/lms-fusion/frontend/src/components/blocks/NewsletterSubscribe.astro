@@ -1,0 +1,59 @@
+---
+/** Newsletter subscription form — submits via HTMX to the Django backend.
+ *
+ * The backend endpoint POST /api/newsletter/subscribe/ accepts { email } and
+ * returns an HTML fragment showing success or error state.
+ * Falls back to a toast notification if HTMX is unavailable.
+ */
+interface Props {
+  title?: string;
+  description?: string;
+  placeholder?: string;
+  buttonLabel?: string;
+  /** Privacy note shown below the form */
+  privacyNote?: string;
+}
+
+const {
+  title = 'Stay in the loop',
+  description = 'Get product updates, new releases, and technical posts — one email a month, no spam.',
+  placeholder = 'you@example.com',
+  buttonLabel = 'Subscribe',
+  privacyNote = 'No spam. Unsubscribe anytime.',
+} = Astro.props;
+---
+
+<section class="newsletter">
+  <div class="newsletter__inner">
+    <div class="newsletter__content">
+      <h2 class="newsletter__heading">{title}</h2>
+      {description && <p class="newsletter__text">{description}</p>}
+
+    <form
+        hx-post="/api/newsletter/subscribe/"
+        hx-target="#newsletter-feedback"
+        hx-swap="innerHTML"
+        hx-indicator="#newsletter-spinner"
+        class="newsletter__form"
+      >
+        <label for="newsletter-email" class="sr-only">Email address</label>
+        <input
+          id="newsletter-email"
+          type="email"
+          name="email"
+          required
+          placeholder={placeholder}
+          class="newsletter__input"
+        />
+        <button type="submit" class="btn-primary shrink-0">
+          <span id="newsletter-spinner" class="htmx-indicator mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true"></span>
+          {buttonLabel}
+        </button>
+      </form>
+
+      <div id="newsletter-feedback" class="newsletter__feedback"></div>
+
+      {privacyNote && <p class="newsletter__privacy">{privacyNote}</p>}
+    </div>
+  </div>
+</section>

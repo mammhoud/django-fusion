@@ -1,4 +1,4 @@
-"""Views for Fusion CMS application."""
+"""Views for LMS Fusion application."""
 from .courses import (
     course_catalog,
     course_search,

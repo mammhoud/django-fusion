@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "icons": "node scripts/gen-tabler-sprite.mjs",
     "test": "vitest run --config vitest.config.ts",
     "tauri": "cd .. && tauri info",
     "dev:desktop": "cd .. && tauri dev",
@@ -16,12 +17,15 @@
   },
   "dependencies": {
     "@astrojs/alpinejs": "^1.0.0",
+    "@tailwindcss/vite": "^4.3.3",
     "alpinejs": "^3.15.12",
     "astro": "^5.6.1",
-    "htmx.org": "^2.0.4"
+    "htmx.org": "^2.0.4",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@tabler/icons": "^3.46.0",
     "@tauri-apps/cli": "^2.5.0",
     "@types/node": "^26.1.2",
     "typescript": "^5.8.3",

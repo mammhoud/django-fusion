@@ -1,0 +1,78 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/ui/Icon.astro';
+---
+
+<Layout title="Roles - Formint POS">
+  <div x-data="rolesPage()" x-init="load()" class="max-w-[96rem] mx-auto p-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <h1 class="flex items-center gap-2 text-lg font-extrabold" style="color: var(--color-text-primary)">
+        <Icon name="shield" class="h-5 w-5" style="color: var(--color-chart-3)" />
+        Roles & Permissions
+      </h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <input type="search" x-model="search" @input="page=1" placeholder="Search roles..." class="input flex-1 sm:w-56 text-xs" />
+        <button @click="openAdd()" class="btn btn-primary btn-sm gap-1"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg> New Role</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+      <div class="stat-card"><span class="stat-card__title">Total Roles</span><span class="stat-card__value" x-text="total" style="color: var(--color-primary)">0</span></div>
+      <div class="stat-card"><span class="stat-card__title">Active</span><span class="stat-card__value" x-text="activeCount" style="color: var(--color-success)">0</span></div>
+      <div class="stat-card"><span class="stat-card__title">Permission Flags</span><span class="stat-card__value" x-text="totalPerms" style="color: var(--color-info)">0</span></div>
+    </div>
+    <div x-show="loading" class="space-y-2"><template x-for="i in 5" :key="i"><div class="skeleton-shimmer h-10 rounded"></div></template></div>
+    <div x-show="!loading && filteredItems.length===0" class="text-center py-12 opacity-50 text-sm">No roles defined.</div>
+    <div x-show="!loading && filteredItems.length>0" class="card overflow-x-auto">
+      <table class="data-table" role="grid">
+        <thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Permissions</th><th>Status</th><th class="w-20">Actions</th></tr></thead>
+        <tbody>
+          <template x-for="item in pagedItems()" :key="item.id">
+            <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]">
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
+              <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.name"></span></td>
+              <td class="px-3 py-2"><span class="text-xs opacity-60" x-text="item.description || '-'" ></span></td>
+              <td class="px-3 py-2"><div class="flex flex-wrap gap-1">
+                <template x-for="(val, key) in item.permissions||{}" :key="key">
+                  <span class="badge"
+                    :class="val ? 'badge-soft-success' : 'badge-soft-neutral'"
+                    x-text="key.replace('can_','').replace(/_/g,' ')"></span>
+                </template>
+                <span x-show="!item.permissions || Object.keys(item.permissions).length===0" class="text-xs opacity-40">—</span>
+              </div></td>
+              <td class="px-3 py-2"><span class="badge" :class="item.is_active?'badge-soft-success':'badge-soft-error'" x-text="item.is_active?'Active':'Inactive'"></span></td>
+              <td class="px-3 py-2"><div class="flex gap-1">
+                <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button>
+                <button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button>
+              </div></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class="flex items-center justify-between p-3 border-t border-[var(--color-border-subtle)] text-xs">
+        <span x-text="'Showing ' + ((page-1)*perPage + 1) + '-' + Math.min(page*perPage, filteredItems.length) + ' of ' + filteredItems.length"></span>
+        <div class="flex gap-1">
+          <button @click="page=Math.max(1,page-1)" :disabled="page===1" class="btn btn-ghost btn-xs">&larr; Prev</button>
+          <button @click="page++" :disabled="page*perPage>=filteredItems.length" class="btn btn-ghost btn-xs">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('rolesPage', () => ({
+      items: [], loading: true, search: '', page: 1, perPage: 20,
+      get total() { return this.items.length; },
+      get activeCount() { return this.items.filter((i: any) => i.is_active).length; },
+      get totalPerms() { return this.items.reduce((s: number, i: any) => s + Object.keys(i.permissions||{}).length, 0); },
+      get filteredItems() { let l = this.items; if (this.search) { const q = this.search.toLowerCase(); l = l.filter((i: any) => Object.values(i).some(v => String(v).toLowerCase().includes(q))); } return l; },
+      pagedItems() { const s = (this.page-1)*this.perPage; return this.filteredItems.slice(s, s+this.perPage); },
+      async load() { this.loading=true; try { const r = await fetch('/roles/'); if (r.ok) { const d = await r.json(); this.items = d.data || d || []; } } catch(e){} finally { this.loading=false; } },
+      openAdd() { this.$store.ui.toast('Add role form coming soon', 'info'); },
+      openEdit(item: any) { this.$store.ui.toast('Editing: ' + item.name, 'info'); },
+      confirmDelete(item: any) { this.$store.ui.toast('Delete stub', 'info'); },
+    }));
+  });
+</script>

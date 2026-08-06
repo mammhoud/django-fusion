@@ -1,5 +1,5 @@
 """
-LMS signals for fusion-cms.com.
+LMS signals for lms-fusion.com.
 
 Handles automatic setup when a new User is created:
 - Creates Instructor or Student profile based on user role

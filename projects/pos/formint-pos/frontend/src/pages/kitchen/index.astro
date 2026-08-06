@@ -1,0 +1,387 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/ui/Icon.astro';
+---
+
+<Layout title="Kitchen Display · Formint POS">
+  <div
+    x-data="kitchenDisplay()"
+    x-init="loadTickets()"
+    class="kds-shell max-w-[96rem] mx-auto p-4"
+  >
+    <!-- ── KDS Header Bar ── -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <h1 class="flex items-center gap-2 text-lg font-extrabold" style="color: var(--color-text-primary)">
+        <Icon name="chef-hat" class="h-5 w-5" style="color: var(--color-chart-4)" />
+        Kitchen Display
+      </h1>
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <!-- Search -->
+        <input
+          type="search"
+          x-model="search"
+          placeholder="Search order # or notes…"
+          class="input flex-1 sm:w-48"
+          aria-label="Search kitchen tickets"
+        />
+        <!-- Status filter pills -->
+        <div role="group" aria-label="Filter by status" class="flex flex-wrap gap-1">
+          <template x-for="status in statusFilters" :key="status.value">
+            <button
+              type="button"
+              @click="$store.kds.filter = status.value"
+              :class="'tag tag--sm cursor-pointer ' + ($store.kds.filter === status.value ? status.activeClass : 'tag--ghost')"
+              x-text="status.label"
+            ></button>
+          </template>
+        </div>
+        <!-- Sort toggle -->
+        <button
+          type="button"
+          @click="$store.kds.sortOrder = $store.kds.sortOrder === 'newest' ? 'overdue-first' : 'newest'; $store.kds.persist()"
+          class="btn btn-ghost btn-sm text-xs gap-1"
+          :class="{ '!text-red-500': $store.kds.sortOrder === 'overdue-first' }"
+          title="Toggle sort order"
+        >
+          <svg x-show="$store.kds.sortOrder === 'overdue-first'" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert-triangle" /></svg>
+          <svg x-show="$store.kds.sortOrder === 'newest'" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-clock" /></svg>
+          <span x-text="$store.kds.sortOrder === 'overdue-first' ? 'Overdue first' : 'Newest first'"></span>
+        </button>
+        <!-- Mute toggle -->
+        <button
+          type="button"
+          @click="$store.kds.toggleMute(30)"
+          class="btn btn-ghost btn-sm text-xs gap-1"
+          :class="{ '!text-red-500': $store.kds.isMuted }"
+          :title="$store.kds.isMuted ? 'Muted for ' + $store.kds.muteRemaining : 'Mute 30min'"
+        >
+          <svg x-show="$store.kds.isMuted" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-bell-off" /></svg>
+          <svg x-show="!$store.kds.isMuted" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-bell" /></svg>
+          <span x-text="$store.kds.isMuted ? $store.kds.muteRemaining : 'Mute'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Stats Row ── -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+      <div class="stat-card">
+        <span class="stat-card__title">Active</span>
+        <span class="stat-card__value" x-text="stats.active" style="color: var(--color-warning)">0</span>
+        <span class="stat-card__desc" x-text="stats.overdue + ' overdue'"></span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__title">Preparing</span>
+        <span class="stat-card__value" x-text="stats.preparing" style="color: var(--color-info)">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__title">Ready</span>
+        <span class="stat-card__value" x-text="stats.ready" style="color: var(--color-success)">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__title">Completed</span>
+        <span class="stat-card__value" x-text="stats.delivered" style="color: var(--color-text-secondary)">0</span>
+      </div>
+    </div>
+
+    <!-- ── Ticket Grid ── -->
+    <div
+      x-show="isLoading"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2"
+    >
+      <template x-for="i in 6" :key="i">
+        <div class="kds-ticket skeleton-shimmer" style="min-height: 120px" aria-hidden="true"></div>
+      </template>
+    </div>
+
+    <div
+      x-show="!isLoading && filteredTickets.length === 0"
+      class="text-center py-12 opacity-50 text-sm"
+      x-text="search ? 'No tickets match the search.' : 'All clear — no tickets to display.'"
+    ></div>
+
+    <div
+      x-show="!isLoading && filteredTickets.length > 0"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2"
+    >
+      <template x-for="ticket in filteredTickets" :key="ticket.id">
+        <button
+          type="button"
+          @click="openDetail(ticket)"
+          class="kds-ticket text-left"
+          :class="{ 'kds-ticket--overdue': isOverdue(ticket) }"
+        >
+          <!-- Order number + overdue badge -->
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-sm" x-text="'#' + ticket.sale_id"></span>
+            <span
+              x-show="isOverdue(ticket)"
+              class="badge badge-error badge-sm animate-pulse"
+            >Overdue</span>
+            <span
+              x-show="!isOverdue(ticket)"
+              class="badge badge-sm"
+              :class="statusBadgeClass(ticket.status)"
+              x-text="ticket.status"
+            ></span>
+          </div>
+          <!-- Order type + elapsed -->
+          <div class="flex items-center justify-between gap-1 mb-1">
+            <span class="tag tag--sm tag--primary" x-text="orderTypeLabel(ticket.priority)"></span>
+            <span class="text-[11px] opacity-50" x-text="timeAgo(ticket.created_at)"></span>
+          </div>
+          <!-- Notes -->
+          <p
+            x-show="ticket.notes"
+            class="text-[11px] opacity-60 line-clamp-1 mb-1"
+            x-text="ticket.notes"
+          ></p>
+          <!-- Prep time + progress bar -->
+          <template x-if="ticket.prepare_time_minutes > 0 && ticket.status !== 'delivered' && ticket.status !== 'ready'">
+            <div class="mt-1">
+              <div class="flex justify-between text-[11px] opacity-40 mb-0.5">
+                <span x-text="prepPercent(ticket) + '%'"></span>
+                <span x-text="prepElapsed(ticket) + 'm / ' + ticket.prepare_time_minutes + 'm'"></span>
+              </div>
+              <div class="w-full h-1 rounded-full overflow-hidden" style="background: var(--color-surface-raised)">
+                <div
+                  class="h-full rounded-full transition-all duration-700"
+                  :class="{ 'animate-pulse': isOverdue(ticket) }"
+                  :style="{ width: prepPercent(ticket) + '%', background: prepBarColor(ticket) }"
+                ></div>
+              </div>
+            </div>
+          </template>
+          <!-- Quick action buttons -->
+          <div class="flex gap-1 mt-2">
+            <template x-if="ticket.status === 'pending'">
+              <span class="tag tag--sm tag--warning">Awaiting</span>
+            </template>
+            <template x-if="ticket.status === 'preparing'">
+              <span class="tag tag--sm tag--info">In Progress</span>
+            </template>
+            <template x-if="ticket.status === 'ready'">
+              <span class="tag tag--sm tag--success"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-check" /></svg> Ready</span>
+            </template>
+          </div>
+        </button>
+      </template>
+    </div>
+
+    <!-- ── Ticket Detail Modal ── -->
+    <div
+      x-show="selectedTicket"
+      x-transition.opacity
+      class="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] bg-black/40"
+      @click.self="closeDetail()"
+      @keydown.escape.window="closeDetail()"
+    >
+      <div
+        x-show="selectedTicket"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        class="card w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="kds-detail-title"
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 border-b border-[var(--color-border-subtle)]">
+          <h2 id="kds-detail-title" class="font-bold" x-text="selectedTicket ? 'Order #' + selectedTicket.sale_id : ''"></h2>
+          <button @click="closeDetail()" class="btn btn-ghost btn-sm" aria-label="Close">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="card-body space-y-3">
+          <!-- Status + time info -->
+          <div class="flex flex-wrap gap-2">
+            <span class="badge" :class="selectedTicket ? statusBadgeClass(selectedTicket.status) : ''" x-text="selectedTicket?.status"></span>
+            <span class="text-xs opacity-50" x-text="selectedTicket ? timeAgo(selectedTicket.created_at) + ' · Est. ' + selectedTicket.prepare_time_minutes + 'min' : ''"></span>
+          </div>
+          <!-- Notes -->
+          <div x-show="selectedTicket?.notes" class="flex items-start gap-1.5 rounded-lg p-2.5 text-xs opacity-70" style="background: var(--color-surface-raised)">
+            <svg class="h-3.5 w-3.5 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-note" /></svg>
+            <span x-text="selectedTicket?.notes"></span>
+          </div>
+          <!-- Sale Items (loaded via HTMX) -->
+          <div
+            :id="'kds-items-' + (selectedTicket?.sale_id || 0)"
+            hx-get="selectedTicket ? '/kds/items/' + selectedTicket.sale_id + '/' : ''"
+            hx-trigger="load"
+            hx-swap="innerHTML"
+          >
+            <div class="skeleton-shimmer h-12 rounded" aria-hidden="true"></div>
+          </div>
+        </div>
+        <!-- Footer actions -->
+        <div class="flex gap-2 justify-end p-4 border-t border-[var(--color-border-subtle)]">
+          <template x-if="selectedTicket?.status === 'pending'">
+            <button @click="updateStatus('preparing')" class="btn btn-primary btn-sm gap-1">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right" /></svg>
+              Start Preparing
+            </button>
+          </template>
+          <template x-if="selectedTicket?.status === 'preparing'">
+            <button @click="updateStatus('ready')" class="btn btn-success btn-sm gap-1">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-check" /></svg>
+              Mark Ready
+            </button>
+          </template>
+          <template x-if="selectedTicket?.status === 'ready'">
+            <button @click="updateStatus('delivered')" class="btn btn-ghost btn-sm gap-1">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-package" /></svg>
+              Deliver
+            </button>
+          </template>
+          <button @click="closeDetail()" class="btn btn-ghost btn-sm">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+  // Alpine.js KDS component (replaces React KitchenDisplay.tsx)
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('kitchenDisplay', () => ({
+      tickets: [],
+      isLoading: true,
+      search: '',
+      selectedTicket: null,
+      // Poll interval for real-time updates (when no Tauri event channel)
+      pollInterval: null,
+
+      statusFilters: [
+        { value: 'all', label: 'All', activeClass: 'tag--primary' },
+        { value: 'pending', label: 'Pending', activeClass: 'tag--warning' },
+        { value: 'preparing', label: 'Preparing', activeClass: 'tag--info' },
+        { value: 'ready', label: 'Ready', activeClass: 'tag--success' },
+        { value: 'delivered', label: 'Delivered', activeClass: 'tag--neutral' },
+      ],
+
+      get filteredTickets() {
+        const q = this.search.trim().toLowerCase();
+        let filtered = this.tickets.filter(t => {
+          if (this.$store.kds.filter !== 'all' && t.status !== this.$store.kds.filter) return false;
+          if (q && !String(t.sale_id).includes(q) && !(t.notes || '').toLowerCase().includes(q)) return false;
+          return this.$store.kds.preferredPriorities.includes(t.priority);
+        });
+        if (this.$store.kds.sortOrder === 'overdue-first') {
+          filtered.sort((a: any, b: any) => {
+            const aOver = this.isOverdue(a);
+            const bOver = this.isOverdue(b);
+            if (aOver && !bOver) return -1;
+            if (!aOver && bOver) return 1;
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          });
+        }
+        return filtered;
+      },
+
+      get stats() {
+        return {
+          active: this.tickets.filter((t: any) => t.status !== 'delivered').length,
+          preparing: this.tickets.filter((t: any) => t.status === 'preparing').length,
+          ready: this.tickets.filter((t: any) => t.status === 'ready').length,
+          delivered: this.tickets.filter((t: any) => t.status === 'delivered').length,
+          overdue: this.tickets.filter((t: any) => this.isOverdue(t)).length,
+        };
+      },
+
+      async loadTickets() {
+        try {
+          const res = await fetch(`/kds/tickets/?status=${this.$store.kds.filter}`);
+          if (res.ok) this.tickets = await res.json();
+        } catch (e) {
+          console.error('KDS load error:', e);
+        } finally {
+          this.isLoading = false;
+        }
+      },
+
+      async updateStatus(status: string) {
+        if (!this.selectedTicket) return;
+        try {
+          await fetch(`/kds/tickets/${this.selectedTicket.id}/`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status }),
+          });
+          this.closeDetail();
+          await this.loadTickets();
+          this.$store.ui.toast(`Order #${this.selectedTicket.sale_id} → ${status}`, 'success');
+        } catch (e) {
+          this.$store.ui.toast('Failed to update ticket', 'error');
+        }
+      },
+
+      openDetail(ticket: any) {
+        this.selectedTicket = ticket;
+      },
+
+      closeDetail() {
+        this.selectedTicket = null;
+      },
+
+      isOverdue(ticket: any) {
+        if (ticket.status === 'delivered' || ticket.status === 'ready') return false;
+        if (!ticket.prepare_time_minutes) return false;
+        const elapsed = Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime();
+        return elapsed > ticket.prepare_time_minutes * 60 * 1000;
+      },
+
+      timeAgo(dateStr: string) {
+        const diff = Date.now() - new Date(dateStr.replace(' ', 'T')).getTime();
+        if (diff < 0) return 'just now';
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours}h ${mins % 60}m ago`;
+        return `${Math.floor(hours / 24)}d ago`;
+      },
+
+      orderTypeLabel(priority: number) {
+        const map: Record<number, string> = { 1: 'Dine-in', 2: 'Takeaway', 3: 'Delivery' };
+        return map[priority] || 'Order';
+      },
+
+      statusBadgeClass(status: string) {
+        const map: Record<string, string> = {
+          pending: 'badge-warning', preparing: 'badge-info',
+          ready: 'badge-success', delivered: 'badge-neutral',
+        };
+        return map[status] || '';
+      },
+
+      prepPercent(ticket: any) {
+        const elapsed = Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime();
+        return Math.min(100, Math.round((elapsed / (ticket.prepare_time_minutes * 60 * 1000)) * 100));
+      },
+
+      prepElapsed(ticket: any) {
+        return Math.round((Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime()) / 60000);
+      },
+
+      prepBarColor(ticket: any) {
+        const pct = this.prepPercent(ticket);
+        if (pct < 50) return 'var(--color-success)';
+        if (pct < 90) return 'var(--color-warning)';
+        return 'var(--color-error)';
+      },
+
+      init() {
+        // Watch filter changes
+        this.$watch('$store.kds.filter', () => this.loadTickets());
+        // Poll every 10s for new tickets (real event channel when Tauri is wired)
+        this.pollInterval = setInterval(() => this.loadTickets(), 10000);
+      },
+
+      destroy() {
+        if (this.pollInterval) clearInterval(this.pollInterval);
+      },
+    }));
+  });
+</script>

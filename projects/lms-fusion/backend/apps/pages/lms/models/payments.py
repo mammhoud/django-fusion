@@ -1,5 +1,5 @@
 """
-Payment Models for Fusion CMS LMS
+Payment Models for LMS Fusion LMS
 
 Tracks payment provider integrations, transactions, and status
 for course enrollment and purchases.

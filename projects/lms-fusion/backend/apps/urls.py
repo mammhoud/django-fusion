@@ -24,6 +24,7 @@ except ImportError:
 from django_fusion.core.health.views import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_fusion.core.utils import get_root_redirect_pattern
 from apps.core.routes import site
+from apps.pages.pages import landing_api
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
@@ -103,6 +104,18 @@ except Exception:
 # ── Health & admin ───────────────────────────────────────────────────────────
 urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
+    # Astro/AHA landing contract. The existing LMS `/api/` contract remains
+    # untouched; these `/apis/` and `/fragment/` routes are additive.
+    path("apis/render-mode/", landing_api.render_mode_api, name="landing-render-mode"),
+    path("apis/site/settings/", landing_api.site_settings_api, name="landing-site-settings"),
+    path("apis/navigation/", landing_api.navigation_api, name="landing-navigation"),
+    path("apis/contact/", landing_api.contact_api, name="landing-contact"),
+    path("apis/pages/", landing_api.page_list_api, name="landing-page-list"),
+    path("apis/pages/<str:slug>/", landing_api.page_data_api, name="landing-page-data"),
+    path("apis/assets/", landing_api.assets_api, name="landing-assets"),
+    path("fragment/contact/", landing_api.contact_submit_api, name="landing-contact-submit"),
+    path("fragment/ping/", landing_api.htmx_ping_api, name="landing-ping"),
+    path("api/newsletter/subscribe/", landing_api.newsletter_subscribe_api, name="landing-newsletter"),
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
     path("accounts/", include("allauth.urls")),

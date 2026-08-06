@@ -60,7 +60,9 @@ FUSION_SECONDARY_COLOR = cfg("FUSION_SECONDARY_COLOR", "#008080")
 # ═══════════════════════════════════════════════════════════════════
 # Render-First — disabled by default for LMS
 # ═══════════════════════════════════════════════════════════════════
-FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", False)
+# Astro is the active document renderer after the cms-fusion consolidation.
+# Requests may still override this with X-Fusion-Render-First for compatibility.
+FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", True)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -82,6 +84,8 @@ CORS_ALLOWED_ORIGINS = cfg("CORS_ORIGINS", [
     "http://127.0.0.1:3002",
     "http://localhost:3458",
     "http://127.0.0.1:3458",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
 ])
 
 # Allow custom fusion headers for render-first negotiation.

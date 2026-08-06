@@ -125,14 +125,16 @@ services:
     build:
       context: .
       dockerfile: compose/Dockerfile.frontend
+      args:
+        PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-http://lms-fusion.localhost}
     image: lms-fusion-frontend:latest
     container_name: lms-fusion-frontend
     restart: unless-stopped
     environment:
-      # Internal port matches the container's exposed port (3002). Host port 3001
-      # is used to avoid colliding with cms-fusion's frontend on the host.
+      # Astro serves the consolidated LMS/CMS document shell.
+      HOST: "0.0.0.0"
       PORT: "3002"
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://lms-fusion.localhost/api}
+      PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-http://lms-fusion.localhost}
     ports:
       - "3001:3002"
     networks:

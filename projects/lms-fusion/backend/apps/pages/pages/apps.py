@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 class PagesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.pages.pages"
-    verbose_name = _("Fusion CMS Pages")
+    verbose_name = _("LMS Fusion Pages")
     label = "fusion_pages"
 
     def ready(self):

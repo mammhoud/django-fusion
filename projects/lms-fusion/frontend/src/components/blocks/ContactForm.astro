@@ -1,0 +1,118 @@
+---
+import { fusionApiUrl } from '@/lib/site';
+
+interface ContactMethod {
+  type: string;
+  label: string;
+  value: string;
+  href: string;
+}
+
+interface Props {
+  methods?: ContactMethod[];
+  formTitle?: string;
+  formDescription?: string;
+  sectionTitle?: string;
+  sectionDescription?: string;
+}
+
+const {
+  methods: propMethods,
+  formTitle = 'Send us a message',
+  formDescription = 'Fill out the form and our team will get back to you.',
+  sectionTitle = 'Get in touch',
+  sectionDescription = 'Have a question or want to work with us? Send a message and we\'ll reply within one business day.',
+} = Astro.props;
+
+const methods: ContactMethod[] = propMethods && propMethods.length > 0
+  ? propMethods
+  : [
+    { type: 'email', label: 'Email', value: 'structa.cloud@gmail.com', href: 'mailto:structa.cloud@gmail.com' },
+    { type: 'address', label: 'GitHub', value: 'github.com/mammhoud', href: 'https://github.com/mammhoud' },
+    { type: 'hours', label: 'Portfolio', value: 'mammhoud.github.io', href: 'https://mammhoud.github.io' },
+    { type: 'address', label: 'LinkedIn', value: 'linkedin.com/in/mammhoud', href: 'https://linkedin.com/in/mammhoud' },
+  ];
+
+const contactEndpoint = `${fusionApiUrl.replace(/\/+$/, '')}/fragment/contact/`;
+const methodIcons: Record<string, string> = {
+  email: 'M3 8l7.5 5L18 8M4 19h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z',
+  phone: 'M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012 4.2 2 2 0 014 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z',
+  address: 'M17.7 2.9A8 8 0 0010 21a8 8 0 007.7-18.1zM10 11a2 2 0 100-4 2 2 0 000 4z',
+  hours: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+};
+---
+
+<section id="contact" class="contact-form">
+  <div class="container-fusion">
+    <div class="contact-form__grid">
+      <div class="contact-form__info">
+        <div>
+          <p class="tag-marker mb-4">contact</p>
+          <h2 class="mb-2 font-display text-3xl font-bold tracking-tight text-fu-ink">{sectionTitle}</h2>
+          <p class="text-fu-muted">{sectionDescription}</p>
+        </div>
+        {methods.map((method) => (
+          <div class="card flex items-start gap-4 p-5">
+            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d={methodIcons[method.type] || methodIcons.email} /></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-fu-ink">{method.label}</h3>
+              {method.href ? <a href={method.href} class="text-sm text-fu-muted transition-colors hover:text-fu-link">{method.value}</a> : <p class="text-sm text-fu-muted">{method.value}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="contact-form__form">
+        <form class="card p-8" x-data="{
+          form: { name: '', email: '', subject: '', message: '' }, errors: {}, submitting: false,
+          validate() {
+            this.errors = {};
+            if (!this.form.name.trim()) this.errors.name = 'Please enter your name.';
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.form.email)) this.errors.email = 'Please enter a valid email.';
+            if (!this.form.subject.trim()) this.errors.subject = 'Please add a subject.';
+            if (this.form.message.trim().length < 10) this.errors.message = 'Message must be at least 10 characters.';
+            return Object.keys(this.errors).length === 0;
+          },
+          submit() {
+            if (!this.validate()) return;
+            this.submitting = true;
+            fetch('${contactEndpoint}', {
+              method: 'POST', headers: { 'Content-Type': 'application/json', 'HX-Request': 'true' },
+              body: JSON.stringify(this.form),
+            }).then((res) => {
+              this.submitting = false;
+              if (res.ok) {
+                this.form = { name: '', email: '', subject: '', message: '' };
+                $store.toast.show('Message sent successfully! We\u2019ll get back to you soon.');
+              } else $store.toast.show('Failed to send message. Please try again.', 'error');
+            }).catch(() => {
+              this.submitting = false;
+              $store.toast.show('Network error — please try again in a moment.', 'error');
+            });
+          },
+        }" @submit.prevent="submit()" novalidate>
+          <div class="contact-form__fields">
+            <div>
+              <label for="cf-name" class="form-label">Name</label>
+              <input id="cf-name" type="text" class="input-field" placeholder="Your name" x-model="form.name" :class="errors.name && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'" />
+              <p class="mt-1 text-xs text-red-500" x-show="errors.name" x-text="errors.name"></p>
+            </div>
+            <div>
+              <label for="cf-email" class="form-label">Email</label>
+              <input id="cf-email" type="email" class="input-field" placeholder="your@email.com" x-model="form.email" :class="errors.email && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'" />
+              <p class="mt-1 text-xs text-red-500" x-show="errors.email" x-text="errors.email"></p>
+            </div>
+          </div>
+          <div class="mb-4"><label for="cf-subject" class="form-label">Subject</label><input id="cf-subject" type="text" class="input-field" placeholder="How can we help?" x-model="form.subject" :class="errors.subject && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'" /><p class="mt-1 text-xs text-red-500" x-show="errors.subject" x-text="errors.subject"></p></div>
+          <div class="mb-6"><label for="cf-message" class="form-label">Message</label><textarea id="cf-message" rows="5" class="input-field resize-none" placeholder="Tell us more about your inquiry..." x-model="form.message" :class="errors.message && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'"></textarea><p class="mt-1 text-xs text-red-500" x-show="errors.message" x-text="errors.message"></p></div>
+          <button type="submit" class="btn-primary w-full" :disabled="submitting">
+            <svg x-show="submitting" x-cloak class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"></path></svg>
+            <span x-show="!submitting">Send Message</span><span x-show="submitting" x-cloak>Sending...</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

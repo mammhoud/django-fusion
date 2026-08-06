@@ -1,0 +1,263 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Stats from '@/components/blocks/Stats.astro';
+import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import LiveFragment from '@/components/ui/LiveFragment.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+import { fusionApiUrl } from '@/lib/site';
+
+// The HTMX demo fetches the backend ping fragment — always point at the
+// configured backend (Django), never same-origin (the Astro host has no
+// /fragment/ping/ route and would 404).
+const pingEndpoint = `${fusionApiUrl.replace(/\/+$/, '')}/fragment/ping/`;
+
+// ── Fetch from backend (SSG build-time), fall back to static content ──
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(),
+    cachedNavigation(),
+    cachedPageData('home'),
+  ]);
+} catch {
+  // Backend unreachable — use hardcoded fallbacks below
+}
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const pageStats = (pageData?.stats as any[] | undefined);
+const pageFeatures = (pageData?.features as any[] | undefined);
+
+// ── Fallbacks (used when backend is unreachable at build time) ──
+const techStats = pageStats?.map((s: any) => ({
+  label: String(s.label || ''),
+  value: Number(s.value || 0),
+  suffix: String(s.suffix || ''),
+}));
+
+const stackItems = pageFeatures?.map((f: any) => ({
+  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  title: String(f.title || ''),
+  description: String(f.description || ''),
+}));
+
+const productCards = [
+  {
+    name: 'django-fusion',
+    tag: 'component system · routing · fragment rendering',
+    description: 'The backbone of every structa.cloud site. Component registry, HtmxDetails, PageHandler views, and {% comp %} templates — shared across all Django projects.',
+    href: '/products#django-fusion',
+    icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
+  },
+  {
+    name: 'ceptor-ai',
+    tag: 'AI chat · MCP server · agent tooling',
+    description: 'AI chat client and Model Context Protocol server. Powers Cypercloud, agent generation, and structured prompt-to-design conversion.',
+    href: '/products#ceptor-ai',
+    icon: 'M9.8 15.5A6.7 6.7 0 0112 15a6.7 6.7 0 012.2.5M12 3a9 9 0 100 18 9 9 0 000-18zm-1 9a1 1 0 112 0 1 1 0 01-2 0z',
+  },
+  {
+    name: 'vResume',
+    tag: 'cloud resume platform · SaaS · CI/CD',
+    description: 'Create, update, and publish professional resumes with modern templates. Cloud-hosted at vresume.structa.cloud with scalable deployment.',
+    href: 'https://vresume.structa.cloud',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z',
+    external: true,
+  },
+  {
+    name: 'Forge POS',
+    tag: 'desktop app · Tauri 2 · Rust · React',
+    description: 'Desktop point-of-sale in three editions: Minimal (SQLite), Solo (embedded Python), Full (multi-terminal + cloud CRM). Built on Tauri 2 + Rust.',
+    href: '/projects#forge-pos',
+    icon: 'M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3',
+  },
+];
+---
+
+<Layout
+  title={pageData?.title || 'Structa Cloud'}
+  description={pageData?.search_description || 'Full-stack engineering — Django, Wagtail, and AI-powered systems. Built open-source, shipped as documents. By Mahmoud Ezzat Moustafa.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="home"
+>
+  <Hero
+    eyebrow={pageHero?.badge || 'structa.cloud · full-stack engineering'}
+    heading={pageHero?.title || 'Platforms that ship as'}
+    accent='documents'
+    intro={pageHero?.subtitle || 'Structa Cloud builds server-rendered web platforms, AI tools, and open-source libraries — Django + Wagtail on the backend, Astro + HTMX + Alpine on the frontend. Every page is finished HTML in one response. No heavy SPA, no framework overhead, just the web as it should be.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore the stack', href: '/products' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'About the engineer', href: '/about' }}
+    status='200 OK · text/html · 0 KB client framework'
+  />
+
+  <!-- Tech Stats — renders only when the backend provides stats (HomePage is a slim page by design) -->
+  {techStats?.length ? <Stats stats={techStats} /> : null}
+
+  <!-- The Stack — what runs under the hood -->
+  {stackItems?.length ? (
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mx-auto mb-14 max-w-2xl text-center'>
+        <p class='tag-marker mb-4'>the stack</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+          One monorepo, six projects
+        </h2>
+        <p class='text-fu-muted'>
+          Every site, library, and tool shares the same repository, the same configs, and the same CI pipeline. Django on the backend, Astro on the frontend, and HTMX bridging the two.
+        </p>
+      </div>
+
+      <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+        {stackItems.map((item: any, i: number) => (
+          <div
+            class='card reveal group relative p-6 pt-7'
+            x-data x-intersect='`$el.classList.add("reveal-visible")`'
+            style={`transition-delay: ${i * 80}ms`}
+          >
+            <span class='absolute right-4 top-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70' aria-hidden='true'>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link'>
+              <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                <path stroke-linecap='round' stroke-linejoin='round' d={item.icon} />
+              </svg>
+            </div>
+            <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{item.title}</h3>
+            <p class='text-sm leading-relaxed text-fu-muted'>{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : null}
+
+  <!-- Products preview — four key products -->
+  <section id='products' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mx-auto mb-14 max-w-2xl text-center'>
+        <p class='tag-marker mb-4'>products</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+          What we ship
+        </h2>
+        <p class='text-fu-muted'>
+          Open-source libraries, cloud platforms, and desktop apps — all from one codebase.
+        </p>
+      </div>
+
+      <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+        {productCards.map((product: any, i: number) => (
+          <a
+            href={product.href}
+            target={product.external ? '_blank' : undefined}
+            rel={product.external ? 'noopener noreferrer' : undefined}
+            class='card reveal group p-6 hover:-translate-y-0.5'
+            x-data x-intersect='`$el.classList.add("reveal-visible")`'
+            style={`transition-delay: ${i * 100}ms`}
+          >
+            <div class='mb-4 flex items-center gap-4'>
+              <div class='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link'>
+                <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d={product.icon} />
+                </svg>
+              </div>
+              <div>
+                <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink group-hover:text-fu-link transition-colors'>
+                  {product.name}
+                  {product.external && (
+                    <svg class='ml-1 inline h-3.5 w-3.5 text-fu-muted' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'>
+                      <path stroke-linecap='round' stroke-linejoin='round' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9' />
+                    </svg>
+                  )}
+                </h3>
+                <p class='font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-muted'>{product.tag}</p>
+              </div>
+            </div>
+            <p class='text-sm leading-relaxed text-fu-muted'>{product.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- HTMX + Alpine Demo — interactive proof -->
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mx-auto mb-14 max-w-2xl text-center'>
+        <p class='tag-marker mb-4'>live demo</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+          This page is the framework
+        </h2>
+        <p class='text-fu-muted'>
+          No React. No Vue. No Svelte. Just server-rendered HTML with HTMX for dynamic regions and Alpine.js for micro-interactions. Try the interactive demos below — they work because the page is a document.
+        </p>
+      </div>
+
+      <div class='grid grid-cols-1 gap-8 md:grid-cols-3'>
+        <!-- HTMX: Server time -->
+        <div class='card p-6' x-data="{ time: '' }">
+          <h3 class='mb-3 font-display text-[1.05rem] font-semibold text-fu-ink'>HTMX: Fragment Swap</h3>
+          <p class='mb-4 text-sm text-fu-muted'>Click the button — an HTML fragment streams from the backend via HTMX, swapping the content without a page reload.</p>
+          <div class='mb-4 rounded-md border border-fu-line bg-fu-card p-4 font-mono text-sm' id='htmx-demo-target'>
+            <span class='text-fu-muted'>Click &quot;Fetch from server&quot; to see HTMX in action.</span>
+          </div>
+          <button
+            class='btn-secondary w-full'
+            hx-get={pingEndpoint}
+            hx-target='#htmx-demo-target'
+            hx-swap='innerHTML'
+          >
+            Fetch from server
+          </button>
+        </div>
+
+        <!-- Alpine: Counter -->
+        <div class='card p-6' x-data="{ count: 0 }">
+          <h3 class='mb-3 font-display text-[1.05rem] font-semibold text-fu-ink'>Alpine.js: Reactive State</h3>
+          <p class='mb-4 text-sm text-fu-muted'>A self-contained counter — zero server calls, zero framework. Alpine.js manages local state with a single x-data directive.</p>
+          <div class='mb-4 flex items-center justify-center gap-4'>
+            <button class='btn-secondary !h-10 !w-10 !p-0' @click='count = Math.max(0, count - 1)' aria-label='Decrement'>−</button>
+            <span class='font-mono text-3xl font-bold text-fu-ink tabular-nums' x-text='count'>0</span>
+            <button class='btn-secondary !h-10 !w-10 !p-0' @click='count++' aria-label='Increment'>+</button>
+          </div>
+        </div>
+
+        <!-- Theme persistence -->
+        <div class='card p-6' x-data="{ storedTheme: '' }" x-init="storedTheme = localStorage.getItem('fusion-theme') || 'system default'">
+          <h3 class='mb-3 font-display text-[1.05rem] font-semibold text-fu-ink'>Theme: localStorage</h3>
+          <p class='mb-4 text-sm text-fu-muted'>Your theme preference persists across sessions via localStorage, applied before first paint — no flash, no cookie banner.</p>
+          <div class='rounded-md border border-fu-line bg-fu-card p-4'>
+            <p class='font-mono text-sm'>
+              <span class='text-fu-muted'>Current: </span>
+              <span class='font-semibold text-fu-link' x-text='storedTheme'>system default</span>
+            </p>
+            <p class='mt-2 font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted'>
+              Toggle via the header ☀️/🌙 button
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HTMX → backend: server-rendered fragment replaces this region -->
+  {pageData ? <LiveFragment route='/' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
+
+  <CTA
+    heading={pageCta?.title || 'Built open-source, shipped as HTML'}
+    intro={pageCta?.subtitle || "Everything structa.cloud builds is on GitHub at github.com/mammhoud. Explore the monorepo, try the tools, and reach out for collaboration."}
+    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
+    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+  />
+
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

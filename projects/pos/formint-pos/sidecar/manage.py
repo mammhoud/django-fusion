@@ -41,7 +41,9 @@ if not settings.configured:
         DEBUG, DATABASES, INSTALLED_APPS, MIDDLEWARE,
         TEMPLATES, ROOT_URLCONF, SECRET_KEY,
         DEFAULT_AUTO_FIELD, USE_TZ, STATIC_URL, STATIC_ROOT,
-        UNFOLD,
+        UNFOLD, FUSION_RENDER_FIRST_DEFAULT,
+        COMPONENTS_DIR_NAMES, COMPONENTS_ENABLE_BLOCK_ATTRS,
+        COMPONENTS_INCLUDE_PATH_ROOTS,
     )
     settings.configure(
         DEBUG=DEBUG,
@@ -57,6 +59,11 @@ if not settings.configured:
         STATIC_ROOT=STATIC_ROOT,
         # Unfold admin theme config (sidebar, dashboard callback, login, colors)
         UNFOLD=UNFOLD,
+        # django-fusion dual-mode + component registry settings (§12)
+        FUSION_RENDER_FIRST_DEFAULT=FUSION_RENDER_FIRST_DEFAULT,
+        COMPONENTS_DIR_NAMES=COMPONENTS_DIR_NAMES,
+        COMPONENTS_ENABLE_BLOCK_ATTRS=COMPONENTS_ENABLE_BLOCK_ATTRS,
+        COMPONENTS_INCLUDE_PATH_ROOTS=COMPONENTS_INCLUDE_PATH_ROOTS,
     )
 
 django.setup()

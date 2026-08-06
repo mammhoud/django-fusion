@@ -48,16 +48,22 @@ make -C formint-pos screenshots
 ```
 
 ### 1. Unfold Admin — Dashboard
-![POS — Dashboard](formint-pos/docs/screenshots/admin/01_admin_dashboard.jpg)
+![POS — Dashboard](docs/screenshots/admin/03_admin_dashboard.jpg)
 
 ### 2. Unfold Admin — Products
-![POS — Products](formint-pos/docs/screenshots/admin/02_admin_products.jpg)
+![POS — Products](docs/screenshots/admin/04_admin_products.jpg)
 
 ### 3. Unfold Admin — Customers
-![POS — Customers](formint-pos/docs/screenshots/admin/03_admin_customers.jpg)
+![POS — Customers](docs/screenshots/admin/05_admin_customers.jpg)
 
 ### 4. Unfold Admin — Sales
-![POS — Sales](formint-pos/docs/screenshots/admin/04_admin_sales.jpg)
+![POS — Sales](docs/screenshots/admin/06_admin_sales.jpg)
+
+### 5. Unfold Admin — Loyalty (client categories)
+![POS — Loyalty](docs/screenshots/admin/07_admin_loyalty.jpg)
+
+### 6. Unfold Admin — Settings
+![POS — Settings](docs/screenshots/admin/08_admin_settings.jpg)
 
 ---
 

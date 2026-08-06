@@ -1,0 +1,538 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="Point of Sale · Formint POS">
+  <div
+    x-data="salePage()"
+    x-init="init()"
+    class="sale-shell"
+  >
+    <!-- ═══ Left Panel: Products ═══ -->
+    <section class="sale-left" aria-label="Products">
+      <!-- Order type tabs -->
+      <div class="flex flex-wrap gap-1.5 mb-3" role="tablist" aria-label="Order type">
+        <template x-for="ot in orderTypes" :key="ot.key">
+          <button
+            type="button"
+            role="tab"
+            @click="orderType = ot.key"
+            :aria-selected="orderType === ot.key"
+            :class="'tag tag--sm cursor-pointer flex items-center gap-1 ' + (orderType === ot.key ? 'tag--primary' : 'tag--ghost')"
+          >
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use :href="'#i-' + ot.icon"></use></svg>
+            <span x-text="ot.label"></span>
+          </button>
+        </template>
+      </div>
+
+      <!-- Dine-in: table + server -->
+      <div x-show="orderType === 'dine-in'" class="flex flex-wrap items-center gap-2 mb-3 text-xs" x-transition>
+        <span class="inline-flex items-center gap-1 opacity-50"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-table" /></svg> Table</span>
+        <select x-model.number="tableNumber" class="input w-20 text-xs">
+          <template x-for="t in 20" :key="t">
+            <option :value="t" x-text="'#' + t"></option>
+          </template>
+        </select>
+        <span class="inline-flex items-center gap-1 opacity-50 ml-2"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-user" /></svg> Server</span>
+        <select x-model.number="employeeId" class="input w-28 text-xs">
+          <option value="0">None</option>
+          <template x-for="emp in employees" :key="emp.id">
+            <option :value="emp.id" x-text="emp.name"></option>
+          </template>
+        </select>
+      </div>
+
+      <!-- Delivery: address + zone + distance -->
+      <div x-show="orderType === 'delivery'" class="space-y-2 mb-3 text-xs" x-transition>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex opacity-50"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-map-pin" /></svg></span>
+          <input x-model="deliveryAddress" placeholder="Delivery address…" class="input flex-1 text-xs" />
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 opacity-50"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-ruler" /></svg> Distance (km)</span>
+          <input x-model.number="deliveryDistance" type="number" min="0" step="0.5" class="input w-20 text-xs" />
+          <span x-show="deliveryFee > 0" class="font-bold" style="color:var(--color-primary)" x-text="'Fee: $' + deliveryFee.toFixed(2)"></span>
+        </div>
+      </div>
+
+      <!-- Search + filters -->
+      <div class="flex items-center gap-2 mb-3">
+        <input
+          type="search"
+          x-model="search"
+          placeholder="Search products or scan barcode…"
+          class="input flex-1 text-xs"
+          aria-label="Search products"
+          @keydown.enter.prevent="quickAddByBarcode()"
+        />
+        <select x-model="sortKey" class="input w-28 text-xs">
+          <option value="newest">Newest</option>
+          <option value="name-asc">A→Z</option>
+          <option value="name-desc">Z→A</option>
+          <option value="price-asc">$↑</option>
+          <option value="price-desc">$↓</option>
+        </select>
+        <select x-model="productTypeFilter" class="input w-24 text-xs">
+          <option value="all">All</option>
+          <option value="product">Products</option>
+          <option value="combo">Combos</option>
+          <option value="addon">Add-ons</option>
+        </select>
+      </div>
+
+      <!-- Category pills -->
+      <div class="flex flex-wrap gap-1 mb-3" role="group" aria-label="Categories">
+        <button @click="selectedCategory='all'" :class="'tag tag--sm cursor-pointer '+(selectedCategory==='all'?'tag--primary':'tag--ghost')">All</button>
+        <template x-for="cat in categories" :key="cat.id">
+          <button
+            @click="selectedCategory=cat.id"
+            :class="'tag tag--sm cursor-pointer '+(selectedCategory===cat.id?'tag--primary':'tag--ghost')"
+            x-text="cat.name"
+          ></button>
+        </template>
+      </div>
+
+      <!-- Product grid -->
+      <div x-show="loading" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
+        <template x-for="i in 14" :key="i">
+          <div class="skeleton-shimmer rounded-lg" style="height:96px" aria-hidden="true"></div>
+        </template>
+      </div>
+      <div x-show="!loading && filteredProducts.length > 0"
+           class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
+        <template x-for="product in filteredProducts" :key="product.id">
+          <button type="button" @click="addToCart(product)"
+            class="product-card flex flex-col items-center gap-1 p-2 rounded-lg border text-center cursor-pointer
+                   transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-95"
+            style="background:var(--color-surface-card);border-color:var(--color-border-subtle)">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-secondary)" aria-hidden="true"><use :href="'#i-' + productIcon(product.name)"></use></svg>
+            <span class="text-[11px] font-semibold leading-tight line-clamp-2"
+                  style="color:var(--color-text-primary)" x-text="product.name"></span>
+            <span class="text-xs font-bold" style="color:var(--color-primary)"
+                  x-text="'$'+Number(product.price).toFixed(2)"></span>
+            <span x-show="product.barcode" class="text-[9px] opacity-30 font-mono" x-text="product.barcode"></span>
+          </button>
+        </template>
+      </div>
+      <div x-show="!loading && filteredProducts.length === 0" class="text-center py-12 opacity-50 text-sm">
+        <template x-if="search">
+          <span>No products match "<span x-text="search"></span>"</span>
+        </template>
+        <template x-if="!search">
+          <span>No products available. Add products in Products page.</span>
+        </template>
+      </div>
+    </section>
+
+    <!-- ═══ Right Panel: Cart ═══ -->
+    <aside class="sale-right" aria-label="Shopping cart">
+      <div class="card p-4 flex flex-col" style="max-height:calc(100vh - 6rem)">
+        <!-- Cart header -->
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="flex items-center gap-1.5 font-bold text-sm" style="color:var(--color-text-primary)">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-receipt" /></svg>
+            Cart
+            <span class="badge badge-primary badge-sm ml-1" x-text="itemCount"></span>
+          </h2>
+          <div class="flex items-center gap-1">
+            <span class="text-[11px] font-bold" style="color:var(--color-primary)"
+                  x-text="'$' + grandTotal.toFixed(2)"></span>
+            <span x-show="orderType!=='dine-in'"
+                  class="tag tag--sm"
+                  :class="orderType==='takeaway'?'tag--warning':orderType==='delivery'?'tag--info':'tag--ghost'"
+                  x-text="orderTypeLabel()"></span>
+          </div>
+        </div>
+
+        <!-- Cart items -->
+        <div class="flex-1 overflow-y-auto space-y-1.5 mb-3 min-h-0">
+          <template x-for="(item, idx) in cart" :key="item.id">
+            <div class="flex items-center justify-between gap-1 py-1.5 border-b text-xs"
+                 style="border-color:var(--color-border-subtle)">
+              <div class="flex-1 min-w-0">
+                <span class="font-medium block truncate" x-text="item.name" style="color:var(--color-text-primary)"></span>
+                <div class="flex items-center gap-1 opacity-50">
+                  <span x-text="'$'+item.price.toFixed(2)+' × '+item.qty"></span>
+                </div>
+                <!-- Item notes -->
+                <input
+                  x-show="itemNotes[idx] !== undefined"
+                  :value="itemNotes[idx] || ''"
+                  @input="itemNotes[idx] = $event.target.value"
+                  placeholder="Item note (no onions…)"
+                  class="input text-[10px] mt-1 w-full"
+                  style="padding:2px 4px"
+                />
+              </div>
+              <div class="flex items-center gap-0.5 shrink-0">
+                <button @click="updateQty(item.id, item.qty-1)" class="btn btn-ghost btn-xs px-1" :disabled="item.qty<=1">−</button>
+                <span class="w-4 text-center font-bold text-[11px]" x-text="item.qty"></span>
+                <button @click="updateQty(item.id, item.qty+1)" class="btn btn-ghost btn-xs px-1">+</button>
+                <button @click="removeItem(item.id)" class="btn btn-ghost btn-xs px-1" style="color:var(--color-error)">×</button>
+              </div>
+            </div>
+          </template>
+          <p x-show="!cart.length" class="text-center py-8 opacity-40 text-xs">Cart is empty. Click products to add.</p>
+        </div>
+
+        <!-- Order notes -->
+        <div class="mb-2">
+          <textarea x-model="orderNotes" class="input text-xs resize-none" rows="2"
+                    placeholder="Kitchen notes, special requests…"></textarea>
+        </div>
+
+        <!-- Payment method -->
+        <div class="mb-2">
+          <label class="text-[10px] font-semibold opacity-50 uppercase tracking-wider block mb-1">Payment</label>
+          <div class="grid grid-cols-3 gap-1">
+            <template x-for="pm in paymentMethods" :key="pm.key">
+              <button @click="paymentMethod=pm.key"
+                :class="'btn btn-xs gap-1 '+(paymentMethod===pm.key?'btn-primary':'btn-ghost')">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use :href="'#i-' + pm.icon"></use></svg>
+                <span x-text="pm.label"></span>
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Coupon -->
+        <div class="mb-2" x-show="!appliedCoupon">
+          <div class="flex gap-1">
+            <input x-model="couponInput" @keydown.enter.prevent="applyCoupon()"
+                   placeholder="Coupon code" class="input text-xs flex-1" style="text-transform:uppercase" />
+            <button @click="applyCoupon()" :disabled="!couponInput.trim()" class="btn btn-xs btn-ghost">Apply</button>
+          </div>
+          <p x-show="couponError" class="text-[10px] mt-0.5" style="color:var(--color-error)" x-text="couponError"></p>
+        </div>
+        <div x-show="appliedCoupon" class="mb-2 flex items-center justify-between p-1.5 rounded text-xs"
+             style="background: color-mix(in oklab, var(--color-success) 14%, transparent); color: var(--color-success-strong)">
+          <span class="inline-flex items-center gap-1">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-tag" /></svg>
+            <span x-text="appliedCoupon.code + ' · -$' + discountAmount.toFixed(2)"></span>
+          </span>
+          <button @click="appliedCoupon=null;couponInput=''" class="btn btn-ghost btn-xs px-1">×</button>
+        </div>
+
+        <!-- Totals -->
+        <div class="space-y-0.5 mb-3 pt-2 border-t text-xs" style="border-color:var(--color-border-subtle)">
+          <div class="flex justify-between"><span class="opacity-60">Subtotal</span><span x-text="'$'+subtotal.toFixed(2)"></span></div>
+          <div x-show="taxAmount>0" class="flex justify-between"><span class="opacity-60">Tax</span><span x-text="'$'+taxAmount.toFixed(2)"></span></div>
+          <div x-show="deliveryFee>0" class="flex justify-between"><span class="opacity-60">Delivery</span><span x-text="'$'+deliveryFee.toFixed(2)"></span></div>
+          <div x-show="discountAmount>0" class="flex justify-between"><span class="opacity-60">Discount</span><span x-text="'-$'+discountAmount.toFixed(2)"></span></div>
+          <div class="flex justify-between font-bold text-sm pt-1 border-t" style="border-color:var(--color-border-subtle);color:var(--color-text-primary)">
+            <span>Total</span><span x-text="'$'+grandTotal.toFixed(2)"></span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <button @click="checkout()" class="btn btn-primary btn-block gap-1" :disabled="!cart.length">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-credit-card" /></svg>
+          Complete Sale <span x-show="cart.length" x-text="'· $'+grandTotal.toFixed(2)"></span>
+        </button>
+        <button @click="clearCart()" class="btn btn-ghost btn-sm btn-block mt-1 text-xs" :disabled="!cart.length">
+          Clear cart
+        </button>
+
+        <!-- Keyboard hint -->
+        <p class="text-center text-[9px] opacity-30 mt-2">1/2/3 order type · Enter to sell · Esc to clear</p>
+      </div>
+    </aside>
+
+    <!-- ═══ Receipt Modal ═══ -->
+    <div x-show="showReceipt" x-transition.opacity
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+         @click.self="newSale()" @keydown.escape.window="newSale()">
+      <div x-show="showReceipt" x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+           class="card max-w-sm w-full mx-4 p-6 text-center space-y-4" role="dialog" aria-modal="true">
+        <div class="flex justify-center" style="color: var(--color-success)">
+          <svg class="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-circle-check" /></svg>
+        </div>
+        <h2 class="font-bold text-lg" style="color:var(--color-text-primary)">Sale Complete</h2>
+        <p class="text-sm opacity-60" x-text="'Receipt #' + lastReceipt"></p>
+        <div class="space-y-2 text-xs text-left rounded-lg p-3" style="background: var(--color-surface-raised)">
+          <div class="flex justify-between"><span>Order</span><span class="font-bold" x-text="orderTypeLabel()"></span></div>
+          <div x-show="orderType==='dine-in'" class="flex justify-between"><span>Table</span><span x-text="'#'+tableNumber"></span></div>
+          <div x-show="orderType==='delivery'&&deliveryAddress" class="flex justify-between"><span>Address</span><span x-text="deliveryAddress"></span></div>
+          <div class="flex justify-between"><span>Items</span><span x-text="itemCount"></span></div>
+          <div class="flex justify-between"><span>Payment</span><span class="font-bold" x-text="paymentMethodLabel()"></span></div>
+          <div class="flex justify-between font-bold text-sm pt-2 border-t" style="border-color:var(--color-border-subtle)">
+            <span>Total</span><span x-text="'$'+grandTotal.toFixed(2)"></span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button @click="printReceipt()" class="btn btn-secondary btn-sm flex-1 gap-1">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-printer" /></svg>
+            Print
+          </button>
+          <button @click="newSale()" class="btn btn-primary btn-sm flex-1">New Sale</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('salePage', () => ({
+      // ── Data ──
+      products: [],
+      categories: [],
+      employees: [],
+      cart: [],
+      itemNotes: {} as Record<number, string>,
+      loading: true,
+      search: '',
+      selectedCategory: 'all' as string | number,
+      sortKey: 'newest',
+      productTypeFilter: 'all',
+      orderNotes: '',
+
+      // ── Order type ──
+      orderType: 'dine-in',
+      tableNumber: 1,
+      employeeId: 0,
+      deliveryAddress: '',
+      deliveryDistance: 0,
+      deliveryFee: 0,
+
+      // ── Payment ──
+      paymentMethod: 'cash',
+      couponInput: '',
+      appliedCoupon: null as any,
+      couponError: null as string | null,
+
+      // ── Receipt ──
+      showReceipt: false,
+      lastReceipt: '',
+
+      orderTypes: [
+        { key: 'dine-in', label: 'Dine-in', icon: 'table' },
+        { key: 'takeaway', label: 'Takeaway', icon: 'package' },
+        { key: 'delivery', label: 'Delivery', icon: 'truck' },
+      ],
+      paymentMethods: [
+        { key: 'cash', label: 'Cash', icon: 'banknote' },
+        { key: 'card', label: 'Card', icon: 'credit-card' },
+        { key: 'wallet', label: 'Wallet', icon: 'device-mobile' },
+      ],
+
+      // ── Computed ──
+      get itemCount() { return this.cart.reduce((s: number, i: any) => s + i.qty, 0); },
+      get subtotal() { return this.cart.reduce((s: number, i: any) => s + i.price * i.qty, 0); },
+      get taxAmount() { return this.subtotal * 0.15; },
+      get discountAmount() { return this.appliedCoupon ? Math.min(this.subtotal * (this.appliedCoupon.discount_percent || 10) / 100, this.subtotal) : 0; },
+      get grandTotal() { return Math.max(0, this.subtotal + this.taxAmount + this.deliveryFee - this.discountAmount); },
+
+      get filteredProducts() {
+        let result = this.products;
+        const q = this.search.trim().toLowerCase();
+        if (q) {
+          result = result.filter((p: any) =>
+            p.name.toLowerCase().includes(q) ||
+            (p.barcode || '').toLowerCase().includes(q)
+          );
+        }
+        if (this.selectedCategory !== 'all') {
+          result = result.filter((p: any) => p.category_id === this.selectedCategory);
+        }
+        if (this.productTypeFilter !== 'all') {
+          result = result.filter((p: any) => (p.product_type || 'product') === this.productTypeFilter);
+        }
+        // Filter by order type availability
+        result = result.filter((p: any) => {
+          const avail = (p.available_order_types || '').trim();
+          if (!avail) return true;
+          return avail.split(',').map((s: string) => s.trim()).includes(this.orderType);
+        });
+        // Sort
+        return [...result].sort((a: any, b: any) => {
+          switch (this.sortKey) {
+            case 'name-asc': return a.name.localeCompare(b.name);
+            case 'name-desc': return b.name.localeCompare(a.name);
+            case 'price-asc': return (a.price||0) - (b.price||0);
+            case 'price-desc': return (b.price||0) - (a.price||0);
+            default: return (b.id||0) - (a.id||0);
+          }
+        });
+      },
+
+      // ── Actions ──
+      async init() {
+        try {
+          const [prodRes, catRes] = await Promise.all([
+            fetch('/products/'),
+            fetch('/categories/'),
+          ]);
+          if (prodRes.ok) { const d = await prodRes.json(); this.products = d.data || d || []; }
+          if (catRes.ok) { const d = await catRes.json(); this.categories = d.data || d || []; }
+          // Optional: employees
+          try {
+            const empRes = await fetch('/employees/');
+            if (empRes.ok) { const d = await empRes.json(); this.employees = d.data || d || []; }
+          } catch {}
+        } catch(e) { console.error('Load error:', e); }
+        finally { this.loading = false; }
+      },
+
+      addToCart(product: any) {
+        const existing = this.cart.find((i: any) => i.id === product.id);
+        if (existing) {
+          existing.qty += 1;
+          this.cart = [...this.cart];
+        } else {
+          this.cart = [...this.cart, { ...product, qty: 1 }];
+        }
+      },
+
+      updateQty(productId: number, qty: number) {
+        if (qty < 1) { this.removeItem(productId); return; }
+        const item = this.cart.find((i: any) => i.id === productId);
+        if (item) { item.qty = qty; this.cart = [...this.cart]; }
+      },
+
+      removeItem(productId: number) {
+        this.cart = this.cart.filter((i: any) => i.id !== productId);
+        delete this.itemNotes[productId];
+      },
+
+      clearCart() {
+        this.cart = [];
+        this.itemNotes = {};
+        this.orderNotes = '';
+        this.appliedCoupon = null;
+        this.couponInput = '';
+        this.couponError = null;
+      },
+
+      applyCoupon() {
+        const code = this.couponInput.trim().toUpperCase();
+        if (!code) return;
+        // Simple demo coupon logic — replace with API call in production
+        if (code === 'SAVE10' || code === 'WELCOME') {
+          this.appliedCoupon = { code, discount_percent: 10 };
+          this.couponError = null;
+          this.couponInput = '';
+        } else {
+          this.couponError = 'Invalid coupon code';
+          this.appliedCoupon = null;
+        }
+      },
+
+      quickAddByBarcode() {
+        const q = this.search.trim();
+        if (!q) return;
+        const product = this.products.find((p: any) => p.barcode === q || p.name.toLowerCase() === q.toLowerCase());
+        if (product) {
+          this.addToCart(product);
+          this.search = '';
+        }
+      },
+
+      async checkout() {
+        if (!this.cart.length) return;
+        try {
+          const res = await fetch('/sales/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: this.cart.map((i: any) => ({
+                product_name: i.name,
+                price: i.price,
+                quantity: i.qty,
+                unit: i.unit || 'item',
+              })),
+              order_type: this.orderType,
+              table_number: this.orderType === 'dine-in' ? this.tableNumber : null,
+              delivery_address: this.orderType === 'delivery' ? this.deliveryAddress : null,
+              employee_id: this.employeeId || null,
+              notes: this.orderNotes,
+              total_amount: this.grandTotal,
+              discount_code: this.appliedCoupon?.code || null,
+              discount_amount: this.discountAmount,
+              payment_method: this.paymentMethod,
+            }),
+          });
+          if (res.ok) {
+            this.lastReceipt = Math.random().toString(36).substr(2, 9).toUpperCase();
+            this.showReceipt = true;
+            this.$store.ui.toast('Sale completed!', 'success');
+          } else {
+            this.$store.ui.toast('Checkout failed', 'error');
+          }
+        } catch(e) {
+          this.$store.ui.toast('Network error — retry', 'error');
+        }
+      },
+
+      newSale() {
+        this.cart = [];
+        this.itemNotes = {};
+        this.orderNotes = '';
+        this.showReceipt = false;
+        this.appliedCoupon = null;
+        this.couponInput = '';
+        this.couponError = null;
+        this.orderType = 'dine-in';
+        this.tableNumber = 1;
+        this.deliveryAddress = '';
+        this.deliveryDistance = 0;
+        this.deliveryFee = 0;
+      },
+
+      printReceipt() {
+        window.print();
+      },
+
+      orderTypeLabel() {
+        const map: Record<string,string> = { 'dine-in': 'Dine-in', takeaway: 'Takeaway', delivery: 'Delivery' };
+        return map[this.orderType] || this.orderType;
+      },
+
+      paymentMethodLabel() {
+        const map: Record<string,string> = { cash: 'Cash', card: 'Card', wallet: 'Wallet' };
+        return map[this.paymentMethod] || this.paymentMethod;
+      },
+
+      productIcon(name: string) {
+        // Tabler sprite ids (see scripts/gen-tabler-sprite.mjs)
+        const icons: Record<string,string> = { burger:'burger', pizza:'pizza', coffee:'coffee', tea:'mug', water:'glass', salad:'salad', fries:'egg', chicken:'grill-fork', fish:'fish', rice:'bowl', bread:'bread', cake:'cake', ice:'ice-cream', juice:'bottle', cola:'cup', soup:'soup', pasta:'bowl-spoon', steak:'meat', sushi:'fish', taco:'burger', donut:'cookie', wine:'glass', beer:'beer', milk:'milk' };
+        for (const [k, icon] of Object.entries(icons)) { if (name.toLowerCase().includes(k)) return icon; }
+        return 'bowl';
+      },
+    }));
+  });
+
+  // ── Keyboard shortcuts ──
+  document.addEventListener('keydown', (e) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    const el = document.querySelector('[x-data="salePage()"]') as any;
+    if (!el || !el._x_dataStack) return;
+    const sale = el._x_dataStack[0];
+    if (!sale) return;
+
+    if (e.key === '1') { e.preventDefault(); sale.orderType = 'dine-in'; }
+    if (e.key === '2') { e.preventDefault(); sale.orderType = 'takeaway'; }
+    if (e.key === '3') { e.preventDefault(); sale.orderType = 'delivery'; }
+    if (e.key === 'Enter' && sale.cart.length && !sale.showReceipt) { e.preventDefault(); sale.checkout(); }
+    if (e.key === 'Escape' && sale.cart.length && !sale.showReceipt) {
+      if (confirm('Clear cart?')) sale.clearCart();
+    }
+  });
+</script>
+
+<style>
+  .sale-shell { display:grid; grid-template-columns:1fr 340px; gap:1rem; max-width:96rem; margin:0 auto; padding:1rem; }
+  .sale-left { min-width:0; }
+  .sale-right { position:relative; }
+  @media (max-width:900px) {
+    .sale-shell { grid-template-columns:1fr; }
+    .sale-right { position:fixed; bottom:0; left:0; right:0; z-index:40; }
+    .sale-right .card { border-radius:1rem 1rem 0 0; max-height:65vh; overflow-y:auto; }
+  }
+</style>

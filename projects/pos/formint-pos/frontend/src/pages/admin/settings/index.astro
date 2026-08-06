@@ -1,0 +1,220 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Icon from '../../../components/ui/Icon.astro';
+---
+
+<Layout title="Settings - Formint POS">
+  <div x-data="settingsPage()" x-init="load()" class="max-w-[96rem] mx-auto p-4">
+    <h1 class="flex items-center gap-2 text-lg font-extrabold mb-4" style="color: var(--color-text-primary)">
+      <Icon name="settings" class="h-5 w-5" style="color: var(--color-primary)" />
+      Settings
+    </h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Restaurant Settings Card -->
+      <div class="card p-4 space-y-3">
+        <h2 class="font-semibold text-sm" style="color: var(--color-text-primary)">Restaurant Profile</h2>
+        <div x-show="loading" class="space-y-2">
+          <template x-for="i in 4" :key="i"><div class="skeleton-shimmer h-8 rounded"></div></template>
+        </div>
+        <div x-show="!loading" class="space-y-3">
+          <label class="block"><span class="text-xs opacity-50">Restaurant Name</span>
+            <input type="text" x-model="settings.restaurant_name" class="input w-full mt-1" /></label>
+          <label class="block"><span class="text-xs opacity-50">Address</span>
+            <input type="text" x-model="settings.address" class="input w-full mt-1" /></label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="block"><span class="text-xs opacity-50">Phone</span>
+              <input type="text" x-model="settings.phone" class="input w-full mt-1" /></label>
+            <label class="block"><span class="text-xs opacity-50">Email</span>
+              <input type="text" x-model="settings.email" class="input w-full mt-1" /></label>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="block"><span class="text-xs opacity-50">Currency</span>
+              <select x-model="settings.currency" class="input w-full mt-1">
+                <option>USD</option><option>EUR</option><option>GBP</option><option>SAR</option></select></label>
+            <label class="block"><span class="text-xs opacity-50">Tax Rate %</span>
+              <input type="number" x-model="settings.tax_rate" step="0.01" class="input w-full mt-1" /></label>
+            <label class="block"><span class="text-xs opacity-50">Dine-in Tables</span>
+              <input type="number" x-model="settings.dine_in_tables" class="input w-full mt-1" /></label>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="block"><span class="text-xs opacity-50">Opening Time</span>
+              <input type="time" x-model="settings.opening_time" class="input w-full mt-1" /></label>
+            <label class="block"><span class="text-xs opacity-50">Closing Time</span>
+              <input type="time" x-model="settings.closing_time" class="input w-full mt-1" /></label>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="block"><span class="text-xs opacity-50">Delivery Fee</span>
+              <input type="number" x-model="settings.delivery_fee" step="0.01" class="input w-full mt-1" /></label>
+            <label class="block"><span class="text-xs opacity-50">Fee per KM</span>
+              <input type="number" x-model="settings.delivery_fee_per_km" step="0.01" class="input w-full mt-1" /></label>
+          </div>
+          <label class="block"><span class="text-xs opacity-50">Receipt Footer</span>
+            <input type="text" x-model="settings.receipt_footer" class="input w-full mt-1" /></label>
+          <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center gap-2">
+              <label class="text-xs opacity-50">Theme</label>
+              <select x-model="settings.theme" class="input text-xs">
+                <option value="light">Light</option><option value="dark">Dark</option><option value="auto">Auto</option></select>
+            </div>
+            <button @click="saveSettings()" class="btn btn-primary btn-sm" :disabled="saving">
+              <span x-show="!saving">Save Settings</span><span x-show="saving" class="animate-pulse">Saving...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Keys Card -->
+      <div class="card p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="flex items-center gap-1.5 font-semibold text-sm" style="color: var(--color-text-primary)"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary)" aria-hidden="true"><use href="#i-key" /></svg> API Keys</h2>
+          <button @click="showCreateKey = true" class="btn btn-primary btn-xs gap-1"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg> New Key</button>
+        </div>
+        <div x-show="keysLoading" class="space-y-2">
+          <template x-for="i in 3"><div class="skeleton-shimmer h-16 rounded"></div></template>
+        </div>
+        <div x-show="!keysLoading && apiKeys.length === 0" class="text-center py-8 opacity-50 text-xs">
+          No API keys yet. Create one to enable external integrations.
+        </div>
+        <div x-show="!keysLoading" class="space-y-2 max-h-[400px] overflow-y-auto">
+          <template x-for="key in apiKeys" :key="key.id">
+            <div class="border border-[var(--color-border-subtle)] rounded-lg p-3 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium" x-text="key.name"></span>
+                <span class="badge"
+                  :class="key.is_active ? 'badge-soft-success' : 'badge-soft-error'"
+                  x-text="key.is_active ? 'Active' : 'Revoked'"></span>
+              </div>
+              <div class="text-xs opacity-50 font-mono" x-text="key.prefix + '...'"></div>
+              <div class="flex flex-wrap gap-1">
+                <template x-for="s in key.scopes" :key="s">
+                  <span class="badge text-xs px-1.5 py-0 rounded border border-[var(--color-border-subtle)]" x-text="s"></span>
+                </template>
+              </div>
+              <div class="flex items-center justify-between text-xs opacity-50">
+                <span x-text="key.use_count + ' uses'"></span>
+                <div class="flex gap-1">
+                  <button @click="rotateKey(key)" class="btn btn-ghost btn-xs text-xs" x-show="key.is_active">Rotate</button>
+                  <button @click="revokeKey(key)" class="btn btn-ghost btn-xs text-xs text-rose-500" x-show="key.is_active">Revoke</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- System Info Card -->
+      <div class="card p-4 space-y-2 lg:col-span-2">
+        <h2 class="font-semibold text-sm" style="color: var(--color-text-primary)">System</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="stat-card"><span class="stat-card__title">Mode</span><span class="stat-card__value text-sm" x-text="system.render_mode || 'data'" style="color: var(--color-info)">data</span></div>
+          <div class="stat-card"><span class="stat-card__title">Phase</span><span class="stat-card__value text-sm" x-text="'Phase ' + (system.phase || 2)" style="color: var(--color-success)">Phase 2</span></div>
+          <div class="stat-card"><span class="stat-card__title">Products</span><span class="stat-card__value text-sm" x-text="stats.products" style="color: var(--color-primary)">0</span></div>
+          <div class="stat-card"><span class="stat-card__title">Sales</span><span class="stat-card__value text-sm" x-text="stats.sales" style="color: var(--color-warning)">0</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Create Key Modal -->
+    <div x-show="showCreateKey" x-transition.opacity
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      @click.self="showCreateKey = false">
+      <div class="card max-w-md w-full mx-4 p-6 space-y-3">
+        <h3 class="font-semibold">Create API Key</h3>
+        <label class="block"><span class="text-xs opacity-50">Name</span>
+          <input type="text" x-model="newKey.name" placeholder="e.g. Mobile App" class="input w-full mt-1" /></label>
+        <label class="block"><span class="text-xs opacity-50">Scopes (comma-separated)</span>
+          <input type="text" x-model="newKey.scopes" placeholder="products:read,sales:*" class="input w-full mt-1" /></label>
+        <details class="text-xs opacity-50">
+          <summary class="cursor-pointer">Available resources</summary>
+          <div class="mt-1 grid grid-cols-2 gap-1">
+            <template x-for="s in knownScopes" :key="s.resource">
+              <span x-text="s.resource + ': ' + s.actions.join(', ')" class="opacity-70"></span>
+            </template>
+          </div>
+        </details>
+        <div x-show="createdKey" class="badge-soft-success p-3 rounded-lg border border-[var(--color-success)]/25 space-y-1">
+          <p class="text-xs font-semibold" style="color: var(--color-success-strong)">Key created! Save it now:</p>
+          <code class="text-xs font-mono break-all block p-2 rounded bg-black/5 dark:bg-white/5" x-text="createdKey"></code>
+          <p class="text-xs" style="color: var(--color-error-strong)">This key will not be shown again.</p>
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button @click="showCreateKey = false; createdKey = ''" class="btn btn-ghost btn-sm">Cancel</button>
+          <button @click="createKey()" class="btn btn-primary btn-sm" :disabled="creating">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('settingsPage', () => ({
+      settings: {}, stats: {}, system: {},
+      apiKeys: [], knownScopes: [],
+      loading: true, saving: false,
+      keysLoading: true, creating: false,
+      showCreateKey: false, createdKey: '',
+      newKey: { name: '', scopes: '*:*' },
+
+      async load() {
+        try {
+          const [ss, st, sy, ak, sc] = await Promise.all([
+            fetch('/user-settings/').then(r => r.ok ? r.json() : {}),
+            fetch('/api/v1/stats').then(r => r.ok ? r.json() : {}),
+            fetch('/fusion/render-mode/').then(r => r.ok ? r.json() : {}),
+            fetch('/api-keys/').then(r => r.ok ? r.json() : {}),
+            fetch('/api-keys/scopes').then(r => r.ok ? r.json() : {}),
+          ]);
+          const sd: any = (ss as any).data || ss;
+          if (sd && sd.length) this.settings = sd[0] || {};
+          else if (sd && sd.restaurant_name) this.settings = sd;
+          this.stats = (st as any).data || st || {};
+          this.system = (sy as any).data || sy || {};
+          this.apiKeys = (ak as any).data || ak || [];
+          this.knownScopes = (sc as any).data || [];
+        } catch (e) { console.error(e); }
+        finally { this.loading = false; this.keysLoading = false; }
+      },
+
+      async saveSettings() {
+        this.saving = true;
+        try {
+          await fetch('/user-settings/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.settings) });
+          this.$store.ui.toast('Settings saved', 'success');
+        } catch (e) { this.$store.ui.toast('Save failed', 'error'); }
+        finally { this.saving = false; }
+      },
+
+      async createKey() {
+        this.creating = true;
+        try {
+          const scopes = this.newKey.scopes.split(',').map((s: string) => s.trim()).filter(Boolean);
+          const res = await fetch('/api-keys/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: this.newKey.name || 'Untitled', scopes }) });
+          const data = await res.json();
+          if (res.ok) { this.createdKey = data.api_key || ''; this.load(); this.$store.ui.toast('Key created!', 'success'); }
+          else { this.$store.ui.toast(data.error || 'Failed', 'error'); }
+        } catch (e) { this.$store.ui.toast('Create failed', 'error'); }
+        finally { this.creating = false; }
+      },
+
+      async revokeKey(key: any) {
+        if (!confirm('Revoke this key?')) return;
+        try { await fetch('/api-keys/' + key.id + '/revoke', { method: 'POST' }); this.load(); this.$store.ui.toast('Key revoked', 'success'); }
+        catch (e) { this.$store.ui.toast('Revoke failed', 'error'); }
+      },
+
+      async rotateKey(key: any) {
+        if (!confirm('Rotate this key? Old key will be revoked.')) return;
+        try {
+          const res = await fetch('/api-keys/' + key.id + '/rotate', { method: 'POST' });
+          const data = await res.json();
+          if (res.ok) { this.createdKey = data.api_key || ''; this.showCreateKey = true; this.load(); this.$store.ui.toast('Key rotated!', 'success'); }
+        } catch (e) { this.$store.ui.toast('Rotate failed', 'error'); }
+      },
+    }));
+  });
+</script>

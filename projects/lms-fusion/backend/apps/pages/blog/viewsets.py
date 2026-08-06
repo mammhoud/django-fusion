@@ -1,5 +1,5 @@
 """
-Blog Viewsets for fusion-cms.com
+Blog Viewsets for lms-fusion.com
 =====================================
 
 Routable ModelViewsets for the Blog application.

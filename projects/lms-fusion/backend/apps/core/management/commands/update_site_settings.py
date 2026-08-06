@@ -69,7 +69,7 @@ class Command(BaseCommand):
             try:
                 with open(logo_path, "rb") as f:
                     image = Image.objects.create(
-                        title="Fusion CMS Logo",
+                        title="LMS Fusion Logo",
                         file=File(f, name=logo_path.name),
                     )
                 gs.logo = image

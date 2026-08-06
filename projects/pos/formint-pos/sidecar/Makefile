@@ -16,7 +16,11 @@
 #
 # Env overrides: PORT (default 8767), ROBYN_PORT (8766), FUSION_RENDER_FIRST
 
+<<<<<<< HEAD
 .PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean sidecar-binary
+=======
+.PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean sidecar-binary sidecar-install-bin
+>>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
 
 .DEFAULT_GOAL := help
 
@@ -67,10 +71,15 @@ test: ## Django formint suite + sidecar pytest suite
 	@echo -e "$(BLUE)Running sidecar pytest suite…$(NC)"
 	unset DJANGO_SETTINGS_MODULE; $(PY) -m pytest tests/ -q --no-header -k "not rust_db" || true
 
-seed: ## Apply migrations + ensure superuser (admin@formint.local / admin123)
+seed: ## Migrate + ensure superuser + seed demo data (admin@formint.local / admin123)
 	$(MANAGE) migrate --noinput
 	$(MANAGE) --ensure-superuser
+	$(MANAGE) seed_demo
 	@echo -e "$(GREEN)✅ Seeded. Admin → http://127.0.0.1:$${PORT:-$(DEFAULT_PORT)}/admin/$(NC)"
+
+seed-force: ## Wipe + re-seed all demo data
+	$(MANAGE) seed_demo --force
+	@echo -e "$(GREEN)✅ Demo data reset."
 
 ensure-superuser: ## Idempotent admin bootstrap (refuses default pw when DEBUG=0)
 	$(MANAGE) --ensure-superuser
@@ -89,6 +98,21 @@ sidecar-binary: ## PyInstaller onefile formint-backend → ../src-tauri/binaries
 
 clean: ## Remove database + staticfiles + __pycache__
 	rm -f restaurant.db formint-phase1.sqlite3
-	rm -rf staticfiles
+	rm -rf staticfiles build dist
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	@echo -e "$(GREEN)✅ Sidecar artifacts cleaned$(NC)"
+
+sidecar-binary: ## Build the Robyn sidecar binary (PyInstaller) → dist/formint-backend
+	@echo -e "$(BLUE)Building formint-backend sidecar binary…$(NC)"
+	.venv/bin/pip show pyinstaller >/dev/null 2>&1 || .venv/bin/pip install -q pyinstaller
+	.venv/bin/pyinstaller formint-server.spec --clean --noconfirm
+	@echo -e "$(GREEN)✅ Built dist/formint-backend — run: make sidecar-install-bin$(NC)"
+
+sidecar-install-bin: ## Copy the built binary into ../src-tauri/binaries/ (Tauri externalBin)
+	@mkdir -p ../src-tauri/binaries
+	@TRIPLE="$$(rustc -vV 2>/dev/null | sed -n 's/^host: //p')"; \
+	if [ -z "$$TRIPLE" ]; then \
+	  TRIPLE="$$(.venv/bin/python3 -c "import platform; m=platform.machine(); print({'x86_64':'x86_64-unknown-linux-gnu','aarch64':'aarch64-unknown-linux-gnu'}.get(m, m+'-unknown-linux-gnu'))")"; \
+	fi; \
+	cp dist/formint-backend "../src-tauri/binaries/formint-backend-$$TRIPLE"; \
+	echo -e "$(GREEN)✅ Installed ../src-tauri/binaries/formint-backend-$$TRIPLE$(NC)"

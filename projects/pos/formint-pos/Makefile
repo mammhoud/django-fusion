@@ -36,9 +36,14 @@ FRONTEND_PORT := 4321
 
 .PHONY: help install seed migrate check test env dev-backend dev-frontend stop \
         build preview clean screenshots \
-        backend-help backend-dev backend-check backend-migrate backend-test backend-seed backend-clean \
+        backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-clean backend-sidecar-binary backend-sidecar-install-bin \
         frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean \
+<<<<<<< HEAD
         tauri tauri-dev tauri-build sidecar-binary
+=======
+        desktop desktop-dev desktop-backend tauri tauri-dev tauri-build \
+        desktop-build bundle sidecar-build sidecar-install-bin release
+>>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
 
 help: ## Show all commands
 	@echo ''
@@ -48,7 +53,8 @@ help: ## Show all commands
 	@echo ''
 	@echo '── Setup ───────────────────────────────────────────────────'
 	@echo '  make install          Backend .venv + deps + frontend npm install + migrate'
-	@echo '  make seed             Migrate + idempotent superuser (admin@formint.local)'
+	@echo '  make seed             Migrate + superuser + demo data (admin@formint.local / admin123)'
+	@echo '  make backend-seed-force  Wipe + re-seed all demo data'
 	@echo ''
 	@echo '── Running environments ────────────────────────────────────'
 	@echo '  make env              Run backend (:8767) + frontend (:4321) in tmux'
@@ -66,22 +72,39 @@ help: ## Show all commands
 	@echo '  make preview          Astro preview (:4321)'
 	@echo '  make clean            Remove build artifacts + db + node_modules'
 	@echo ''
-	@echo '── Backend (delegates to backend/Makefile) ────────────────'
-	@echo '  make backend-help backend-dev backend-check backend-migrate'
-	@echo '  make backend-test backend-seed backend-clean'
+	@echo '── Backend (delegates to sidecar/Makefile) ─────────────────'
+	@echo '  make backend-help backend-dev backend-server backend-check backend-migrate'
+	@echo '  make backend-test backend-seed backend-seed-force backend-clean'
+	@echo '  make backend-sidecar-binary backend-sidecar-install-bin'
 	@echo ''
 	@echo '── Frontend ────────────────────────────────────────────────'
 	@echo '  make frontend-install frontend-dev frontend-build frontend-preview'
 	@echo '  make frontend-check frontend-test frontend-clean'
 	@echo ''
+<<<<<<< HEAD
 	@echo '── Tauri desktop ───────────────────────────────────────────'
 	@echo '  make tauri            Tauri CLI info (env + config check)'
 	@echo '  make tauri-dev        Tauri dev (desktop hot-reload)'
 	@echo '  make tauri-build      Tauri production build'
 	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
+=======
+	@echo '── Desktop (Tauri) ─────────────────────────────────────────'
+	@echo '  make desktop          Full desktop dev: backend tmux + Tauri window (:1420)'
+	@echo '  make desktop-dev      Alias for make desktop'
+	@echo '  make tauri-dev        Raw Tauri dev window (backend must already run)'
+	@echo '  make tauri            Tauri CLI (config ../src-tauri/tauri.conf.json)'
+	@echo ''
+	@echo '── Full build / release ────────────────────────────────────'
+	@echo '  make desktop-build    Full production desktop build (frontend + collectstatic + Tauri bundle)'
+	@echo '  make bundle           Alias for make desktop-build'
+	@echo '  make tauri-build      Raw Tauri production bundle (assumes frontend built)'
+	@echo '  make sidecar-build    PyInstaller sidecar binary → dist/formint-backend'
+	@echo '  make sidecar-install-bin  Copy sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
+	@echo '  make release          check + test + web build + desktop bundle'
+>>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
-	@echo '  make screenshots      Capture Unfold admin screenshots → docs/screenshots/admin/'
+	@echo '  make screenshots      Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/'
 	@echo ''
 
 
@@ -94,8 +117,11 @@ install: ## Full install: backend venv + deps + migrate, frontend npm install
 	$(MAKE) -C $(FRONTEND_DIR) install
 	@echo '✅ Formint POS installed. Run: make env'
 
-seed: ## Migrate + ensure superuser (admin@formint.local / admin123)
+seed: ## Migrate + ensure superuser + seed demo data (admin@formint.local / admin123)
 	$(MAKE) -C $(BACKEND_DIR) seed
+
+seed-force: ## Wipe + re-seed all demo data
+	$(MAKE) -C $(BACKEND_DIR) seed-force
 
 migrate: ## Apply backend migrations
 	$(MAKE) -C $(BACKEND_DIR) migrate
@@ -161,17 +187,16 @@ clean: ## Remove build artifacts + db + node_modules
 	$(MAKE) -C $(FRONTEND_DIR) clean
 	@echo '✅ Formint POS cleaned'
 
-screenshots: ## Capture Unfold admin screenshots → docs/screenshots/admin/
-	@mkdir -p docs/screenshots/admin
-	@echo 'ℹ️  Admin screenshots live in docs/screenshots/admin/ (4 images, committed).'
-	@echo '   To re-capture: start the backend (make env), log in at http://127.0.0.1:$(BACKEND_PORT)/admin/,'
-	@echo '   then run the legacy capture tool: bash ../scripts/dev/capture-admin-screenshots.sh'
-	@echo '   (that tool targets the legacy pos-full admin layout; for formint admin pages, capture'
-	@echo '   /admin/ + the formint model changelists manually at 1440px via headless Chromium.)'
+screenshots: ## Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/
+	@mkdir -p docs/screenshots/frontend docs/screenshots/admin
+	@echo 'ℹ️  Re-capturing screenshots (requires: make env + make seed, chromium, selenium, imagemagick)'
+	bash ../scripts/dev/capture-formint-screenshots.sh
+	@rm -rf docs/screenshots/_captures
+	@echo '✅ Screenshots updated in docs/screenshots/{frontend,admin}/'
 
 # ── Backend delegation ────────────────────────────────────────────────────
 
-backend-help backend-dev backend-check backend-migrate backend-test backend-seed backend-clean:
+backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-seed-force backend-clean backend-sidecar-binary backend-sidecar-install-bin:
 	$(MAKE) -C $(BACKEND_DIR) $(@:backend-%=%)
 
 # ── Frontend delegation ───────────────────────────────────────────────────
@@ -179,16 +204,62 @@ backend-help backend-dev backend-check backend-migrate backend-test backend-seed
 frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean:
 	$(MAKE) -C $(FRONTEND_DIR) $(@:frontend-%=%)
 
-# ── Tauri desktop ─────────────────────────────────────────────────────────
+# ── Desktop (Tauri) ────────────────────────────────────────────────────────
 
-tauri: ## Tauri CLI info (env + config check)
-	cd $(FRONTEND_DIR) && npm run tauri
-
-tauri-dev: ## Tauri dev (desktop hot-reload)
+desktop: ## Run the desktop app in dev mode (backend tmux + Tauri window)
+	@echo '── Starting Formint POS desktop (dev) ──'
+	@$(MAKE) -s desktop-backend
+	@echo '  Tauri window loads the Astro dev shell at http://127.0.0.1:1420'
+	@echo '  (tauri.conf.json beforeDevCommand; proxies /api, /htmx, /fusion → :$(BACKEND_PORT))'
+	@echo '  Quit the desktop app to return. Stop backend later with: make stop'
 	cd $(FRONTEND_DIR) && npm run dev:desktop
 
-tauri-build: ## Tauri production build
+desktop-dev: desktop ## Alias for make desktop
+
+<<<<<<< HEAD
+tauri: ## Tauri CLI info (env + config check)
+=======
+desktop-backend: ## Start the backend tmux session (formint-be) for desktop dev
+	@tmux kill-session -t formint-be 2>/dev/null || true
+	@tmux new-session -d -s formint-be 'cd $(CURDIR)/$(BACKEND_DIR) && ./.venv/bin/python3 manage.py runserver 127.0.0.1:$(BACKEND_PORT)'
+	@sleep 4
+	@curl -s -o /dev/null -w '  backend  → %{http_code}\n' --max-time 3 http://127.0.0.1:$(BACKEND_PORT)/health/ || echo '  backend  → DOWN (tmux attach -t formint-be to debug)'
+
+tauri: ## Run the Tauri CLI (config ../src-tauri/tauri.conf.json)
+>>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
+	cd $(FRONTEND_DIR) && npm run tauri
+
+tauri-dev: ## Raw Tauri dev window (hot-reload; assume backend is already running)
+	cd $(FRONTEND_DIR) && npm run dev:desktop
+
+tauri-build: ## Raw Tauri production bundle (assume frontend already built)
 	cd $(FRONTEND_DIR) && npm run build:desktop
 
+<<<<<<< HEAD
 sidecar-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
 	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
+=======
+# ── Full build / release ───────────────────────────────────────────────────
+
+desktop-build: ## Full production desktop build (collectstatic + frontend + Tauri bundle)
+	@echo '── Desktop production build ──'
+	$(MAKE) -C $(BACKEND_DIR) collectstatic
+	$(MAKE) -C $(FRONTEND_DIR) build
+	cd $(FRONTEND_DIR) && npm run build:desktop
+
+bundle: desktop-build ## Alias for make desktop-build
+
+sidecar-build: ## Build the Robyn sidecar binary → sidecar/dist/formint-backend
+	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
+
+sidecar-install-bin: ## Copy the sidecar binary into src-tauri/binaries/ (Tauri externalBin)
+	$(MAKE) -C $(BACKEND_DIR) sidecar-install-bin
+
+release: ## Full release pipeline: check + test + web build + desktop bundle
+	@echo '── Release pipeline ──'
+	$(MAKE) check
+	$(MAKE) test
+	$(MAKE) build
+	$(MAKE) desktop-build
+	@echo '✅ Release complete'
+>>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
