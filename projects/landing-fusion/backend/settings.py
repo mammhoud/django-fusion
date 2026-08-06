@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.humanize",  # mfa/webauthn authenticator list uses |naturaltime
     # HTMX
@@ -35,6 +36,8 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.google",
     # MFA — TOTP authenticator app + WebAuthn passkeys/security keys (the
     # ``allauth.mfa.webauthn`` module is part of allauth.mfa; fido2 is the
     # only extra dependency and it is installed). ``allauth.headless`` mounts
@@ -64,6 +67,7 @@ INSTALLED_APPS = [
     "apps.content",  # StreamField blocks + block templates
     "apps.pages",  # Wagtail page models + page templates + seed
     "apps.handlers",  # PageHandler views (HTMX fragment rendering)
+    "apps.auth",  # Allauth auth adapters + templates (LandingAuthAdapter + social)
 ]
 
 MIDDLEWARE = [
@@ -131,6 +135,8 @@ DATABASES = {
     }
 }
 
+SITE_ID = 1
+
 # ── Auth (django-allauth headless) ────────────────────────────────
 AUTHENTICATION_BACKENDS = [
     # Needed to log in by username in Django admin, regardless of allauth
@@ -147,6 +153,10 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+
+# Adapters — custom landing-fusion adapters for HTMX/Alpine templates
+ACCOUNT_ADAPTER = "apps.auth.adapters.LandingAuthAdapter"
+SOCIALACCOUNT_ADAPTER = "apps.auth.adapters.LandingSocialAccountAdapter"
 
 # ── Two-factor authentication (allauth.mfa) ───────────────────────
 # TOTP authenticator app + recovery codes + WebAuthn passkeys/security keys.
@@ -316,9 +326,9 @@ FUSION_ASSET_PIPELINE = {
 # (``RoutableComponent.get_fusion_render_first()`` / ``FusionDualModeMixin``
 # read ``FUSION_RENDER_FIRST_DEFAULT`` or ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``):
 #
-#   True  → “fusion render first” — Django serves finished server-rendered
+#   True  → "fusion render first" — Django serves finished server-rendered
 #           HTML as the source of truth (SEO friendly, no client render).
-#   False → “data APIs” — the client (Astro build) renders from /apis/* JSON.
+#   False → "data APIs" — the client (Astro build) renders from /apis/* JSON.
 #
 # Override per request with the ``X-Fusion-Render-First: true|false`` header.
 # Env: FUSION_RENDER_FIRST=1|0

@@ -45,6 +45,10 @@ urlpatterns = [
     path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
     path("apis/assets/", pages_api.assets_api, name="assets_api"),
 
+    # ── Auth (allauth — login, register, password reset, social) ─────
+    path("accounts/", include("allauth.urls")),
+    path("apis/auth/status/", pages_api.auth_status_api, name="auth_status_api"),
+
     # ── Fragment endpoints (HTMX HTML swaps) ──────────────────────────
     path("fragment/contact/", pages_api.contact_submit_api, name="contact_submit"),
     path("api/newsletter/subscribe/", pages_api.newsletter_subscribe_api, name="newsletter_subscribe"),

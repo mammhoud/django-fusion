@@ -11,6 +11,8 @@ empty content fields added by later migrations are backfilled.
 Usage:
     python manage.py seed_pages
 """
+import os
+
 from django.core.management.base import BaseCommand
 from wagtail.models import Page, Site
 
@@ -1286,7 +1288,6 @@ class Command(BaseCommand):
         )
         self._created(created, "home")
 
-        # Site record — root_page points at the home page.
         site, _ = Site.objects.get_or_create(
             hostname="localhost",
             defaults={"port": 8074, "is_default_site": True, "root_page": home},
@@ -1294,6 +1295,32 @@ class Command(BaseCommand):
         site.root_page = home
         site.save()
         self.stdout.write(f"Site root set to {home.title} (http://localhost:{site.port}/)")
+
+        # ── Social auth apps ──────────────────────────────────────────
+        self.stdout.write("Seeding social auth apps (GitHub + Google)…")
+        from allauth.socialaccount.models import SocialApp
+
+        for provider_id, name, client_id_key, secret_key in (
+            ("github", "GitHub", "GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"),
+            ("google", "Google", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"),
+        ):
+            client_id = os.environ.get(client_id_key, "")
+            secret = os.environ.get(secret_key, "")
+            if client_id and secret:
+                app, created = SocialApp.objects.get_or_create(
+                    provider=provider_id,
+                    defaults={"name": name, "client_id": client_id, "secret": secret},
+                )
+                if created:
+                    app.sites.add(site)
+                    self.stdout.write(f"  ✓ {name} SocialApp created")
+                else:
+                    app.sites.add(site)
+                    self.stdout.write(f"  → {name} SocialApp already exists, site added")
+            else:
+                self.stdout.write(
+                    f"  ⚠ {name} skipped — set {client_id_key}/{secret_key} env vars"
+                )
 
         # ── About (the full document) ────────────────────────────────
         about, created = self._get_or_create_child(
