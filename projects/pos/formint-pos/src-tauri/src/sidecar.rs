@@ -1,6 +1,6 @@
 use once_cell::sync::OnceCell;
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use tauri_plugin_shell::{process::CommandChild, ShellExt};
 
 static PROCESS: OnceCell<Mutex<Option<CommandChild>>> = OnceCell::new();
@@ -19,10 +19,21 @@ pub fn start(app: &AppHandle) -> Result<String, String> {
         .shell()
         .sidecar("formint-backend")
         .map_err(|error| format!("formint-backend sidecar is not bundled: {error}"))?;
-    let (_events, child) = command
+    let (events, child) = command
         .args(["runserver", "127.0.0.1:8767", "--noreload"])
         .spawn()
         .map_err(|error| format!("formint-backend failed to start: {error}"))?;
+
+    // Drain stdout/stderr events in background to prevent pipe buffer deadlock
+    tauri::async_runtime::spawn(async move {
+        let mut rx = events;
+        loop {
+            match rx.recv().await {
+                Some(_event) => { /* log in production */ }
+                None => break,
+            }
+        }
+    });
 
     *guard = Some(child);
     Ok("started".to_string())
