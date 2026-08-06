@@ -155,13 +155,17 @@ class TestTableTagFunction:
         ctx = table(headers=sample_headers, rows=sample_rows)
         assert ctx["headers"] == sample_headers
         assert ctx["rows"] == sample_rows
+        assert ctx["table_data"] == sample_rows
         assert ctx["hx_target"] == "#table-container"
+        assert ctx["resource"] == ""
+        assert ctx["count_label"] == "records"
 
     def test_defaults_empty_headers_and_rows(self):
         from django_fusion.comp.templatetags.components.table import table
         ctx = table()
         assert ctx["headers"] == []
         assert ctx["rows"] == []
+        assert ctx["table_data"] == []
         assert ctx["table"] is None
 
     def test_accepts_django_tables2_object(self):
@@ -297,16 +301,17 @@ def test_table_template_exists():
     assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "table.html").is_file()
 
 
-def test_table_shell_template_exists():
-    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "table_shell.html").is_file()
+def test_table_template_supports_shell_mode():
+    assert (_FUSION_TEMPLATES_DIR / "fusion" / "components" / "table.html").is_file()
 
 
-def test_table_shell_renders_shared_toolbar():
+def test_table_component_renders_shared_toolbar():
     rendered = _render(
-        '{% comp "fusion/components/table_shell.html" '
+        '{% load components %}'
+        '{% comp "fusion/components/table.html" '
         'resource="products" count_label="products" '
         'new_url="/htmx/forms/product/" new_label="+ New product" '
-        'fragment_attr="formint.tables.products" %}'
+        'fragment_attr="formint.tables.products" table_data=table_data %}'
         '<table><tbody><tr><td>Product</td></tr></tbody></table>'
         '{% endcomp %}',
         {"table_data": [{"id": 1}]},

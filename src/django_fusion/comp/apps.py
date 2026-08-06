@@ -62,7 +62,6 @@ def _register_builtin_component_paths():
         "fusion/components/pagination/pagination.html",
         "fusion/components/search.html",
         "fusion/components/table.html",
-        "fusion/components/table_shell.html",
         # ── Multi-file subdirectories ──
         "fusion/components/pagination/numbers.html",
         "fusion/components/pagination/load_more.html",

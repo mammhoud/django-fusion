@@ -1,58 +1,78 @@
-{# django-fusion components/table.html — unified table component
-   ──────────────────────────────────────────────────────────────────────
-   Supports both django-tables2 Table objects and explicit headers/rows.
-
-   PARAMETERS (explicit mode):
-     headers        : list of dicts with {label, sort_url, is_sorted, direction}
-     rows           : list of lists (each inner list is cells)
-     hx_target      : HTMX target selector for sort links (default: '#table-container')
-     table_class    : extra CSS classes on <table> (optional)
-     empty_message  : text shown when no rows (default: translated "No records found")
-
-   PARAMETERS (django-tables2 mode):
-     table          : django_tables2.Table object
-
-   USAGE — explicit mode:
-     {% comp "components/table.html" headers=headers rows=rows hx_target="#list-container" / %}
-
-   USAGE — django-tables2 mode:
-     {% comp "components/table.html" table=table / %}
-
-   USAGE — template tag:
-     {% load components %}
-     {% fusion_table headers=headers rows=rows hx_target="#list-container" %}
-#}
+{% comment %}Canonical django-fusion table component.
+Supports django-tables2, explicit headers/rows, and optional CRUD shell mode.
+See the component/tag documentation for usage examples.{% endcomment %}
 {% load i18n %}
+{% load components %}
 
-{% if table %}
-  {# ── django-tables2 mode ──────────────────────────────────────────── #}
-  {% load django_tables2 %}
-  <div class="table-responsive shadow-sm rounded-3 w-100">
-    {% render_table table %}
+{# Component props use the fallback context variables below for inclusion-tag callers. #}
+{% prop headers="" %}
+{% prop rows="" %}
+{% prop table="" %}
+{% prop hx_target="#table-container" %}
+{% prop table_class="" %}
+{% prop empty_message="" %}
+{% prop resource="" %}
+{% prop count_label="records" %}
+{% prop new_url="" %}
+{% prop new_label="New record" %}
+{% prop form_target="" %}
+{% prop fragment_attr="" %}
+{% prop table_data="" %}
+
+{% with resolved_resource=props.resource %}
+{% with resolved_new_url=props.new_url %}
+{% with resolved_fragment=props.fragment_attr %}
+{% with resolved_headers=props.headers %}
+{% with resolved_rows=props.rows %}
+{% with resolved_table=props.table %}
+
+{% with count_source=props.table_data|default:props.rows %}
+{% if resolved_resource or resolved_new_url or resolved_fragment %}
+  {# ── Optional CRUD shell mode ─────────────────────────────────────── #}
+  <div class="fusion-table {{ attrs }}"
+       data-fusion-table="{{ resolved_resource }}"
+       {% if resolved_fragment %}data-fusion-fragment="{{ resolved_fragment }}"{% endif %}>
+    <div class="table-toolbar">
+      <span class="table-count">{{ count_source|length }} {{ props.count_label }}</span>
+      {% if resolved_new_url %}
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          hx-get="{{ resolved_new_url }}"
+          {% if props.form_target %}hx-target="{{ props.form_target }}"{% endif %}
+          hx-swap="innerHTML"> {{ props.new_label }}</button>
+      {% endif %}
+      {% slot toolbar %}{% endslot %}
+    </div>
+    {% slot %}{% endslot %}
   </div>
+
+{% elif resolved_table %}
+  {# ── Optional django-tables2 mode; loaded only when this branch renders. #}
+  {% include "fusion/components/table_tables2.html" with table=resolved_table only %}
 
 {% else %}
   {# ── Explicit headers/rows mode ───────────────────────────────────── #}
   <div class="table-responsive shadow-sm rounded-3 w-100">
-    <table class="table table-hover align-middle mb-0 {{ table_class|default:'' }}">
-      {% if headers %}
+    <table class="table table-hover align-middle mb-0 {{ props.table_class }}">
+      {% if resolved_headers %}
       <thead class="table-light">
         <tr>
-          {% for col in headers %}
+          {% for col in resolved_headers %}
           <th scope="col"
               class="py-3 px-4 border-0 text-secondary fw-semibold small text-uppercase{% if col.sort_url %} user-select-none{% endif %}"
               {% if col.sort_url %}
               hx-get="{{ col.sort_url }}"
-              hx-target="{{ hx_target|default:'#table-container' }}"
+              hx-target="{{ props.hx_target }}"
               style="cursor: pointer;"
               role="columnheader"
               {% endif %}>
             {{ col.label }}
             {% if col.is_sorted %}
               {% if col.direction == "asc" %}
-              <i class="bi bi-arrow-up ms-1"></i>
+              <i class="bi bi-arrow-up ms-1" aria-hidden="true"></i>
               {% else %}
-              <i class="bi bi-arrow-down ms-1"></i>
+              <i class="bi bi-arrow-down ms-1" aria-hidden="true"></i>
               {% endif %}
             {% endif %}
           </th>
@@ -61,21 +81,29 @@
       </thead>
       {% endif %}
       <tbody class="border-top-0">
-          {% for row in rows %}
-          <tr>
-            {% for cell in row %}
-            <td class="py-3 px-4 border-bottom-1">{{ cell|safe }}</td>
-            {% endfor %}
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="{{ headers|length }}" class="text-center py-5 text-muted">
-              <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
-              {{ empty_message|default:_("No records found") }}
-            </td>
-          </tr>
+        {% for row in resolved_rows %}
+        <tr>
+          {% for cell in row %}
+          <td class="py-3 px-4 border-bottom-1">{{ cell|safe }}</td>
           {% endfor %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="{{ resolved_headers|length|default:1 }}" class="text-center py-5 text-muted">
+            <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50" aria-hidden="true"></i>
+            {{ props.empty_message|default:_('No records found') }}
+          </td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 {% endif %}
+
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
