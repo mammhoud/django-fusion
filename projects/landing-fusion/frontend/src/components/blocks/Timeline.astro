@@ -45,7 +45,7 @@ const { eyebrow, title = 'Our journey', description, events } = Astro.props;
                 ></div>
 
                 <div class={`timeline__content ${isLeft ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
-                  <div class="timeline__card" x-data x-intersect="$el.classList.add('reveal-visible')">
+                  <div class="timeline__card" x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
                     {event.date && <time class="timeline__date">{event.date}</time>}
                     <h3 class="timeline__title">{event.title}</h3>
                     <p class="timeline__text">{event.description}</p>

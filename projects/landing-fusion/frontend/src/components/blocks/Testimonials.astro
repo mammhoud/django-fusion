@@ -16,7 +16,7 @@ interface Props {
 const defaultTestimonials: Testimonial[] = [
   {
     quote:
-      'We swapped a 480 KB React bundle for server-rendered HTML and our load time halved. The page is the document — nothing in between.',
+      'We swapped a 480 KB React bundle for server-rendered HTML and our load time halved. The page is the document itself, nothing in between.',
     author: 'Sarah Mitchell',
     role: 'CTO, EduStart',
   },
@@ -44,7 +44,6 @@ const {
 <section class="testimonials">
   <div class="container-fusion">
     <div class="testimonials__header">
-      <p class="tag-marker mb-4">reviews</p>
       <h2 class="page-section__title">{heading}</h2>
       <p class="text-fu-muted">{intro}</p>
     </div>
@@ -59,17 +58,6 @@ const {
           {testimonials.map((t) => (
             <div class="w-full flex-shrink-0 px-1">
               <figure class="testimonials__card">
-                <span class="absolute left-6 top-5 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-fu-muted/70" aria-hidden="true">
-                  {String(testimonials.indexOf(t) + 1).padStart(2, '0')} / {String(testimonials.length).padStart(2, '0')}
-                </span>
-
-                <div class="testimonials__rating" aria-label="Rated 5 out of 5">
-                  <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path d="M10 15l-5.9 3.1 1.1-6.6L.5 6.9l6.6-1L10 0l2.9 5.9 6.6 1-4.7 4.6 1.1 6.6z" />
-                  </svg>
-                  5.0 / 5.0
-                </div>
-
                 <blockquote class="testimonials__quote">
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>

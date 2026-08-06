@@ -1,0 +1,21 @@
+{% extends "account/base_reauthenticate.html" %}
+{% load i18n %}
+{% block reauthenticate_content %}
+<p style="margin:0 0 1rem;font-size:.85rem;color:hsl(var(--fu-muted));">Enter an authenticator code:</p>
+{% url 'mfa_reauthenticate' as action_url %}
+<form method="post" action="{{ action_url }}">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.is_hidden %}{{ field }}{% else %}
+    <div style="margin-bottom:1rem;">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+      {% if field.errors %}<ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  {{ redirect_field }}
+  <button type="submit" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;">Confirm</button>
+</form>
+{% endblock %}

@@ -59,6 +59,7 @@ from apps.pages.models import (
     AboutPage,
     BlogPage,
     BlogPostPage,
+    BrandPage,
     ContactPage,
     FaqPage,
     FeaturesPage,
@@ -67,8 +68,8 @@ from apps.pages.models import (
     PrivacyPage,
     ProductPage,
     ProductsPage,
-    ProjectsPage,
     ServicesPage,
+    TeamPage,
 )
 
 # The dotted fragment identifier → template ``pages/fragments/page.html``.
@@ -102,7 +103,7 @@ class LandingPageView(PageHandler):
             {
                 "page": page,
                 "content": page,
-                "site_name": "Fusion CMS",
+                "site_name": "Structa Cloud",
                 # Main nav (show_in_nav items only) — single source of truth is
                 # LandingSite.NAV_ITEMS; the header partial renders from this.
                 "nav_items": self._get_nav_items(),
@@ -228,18 +229,88 @@ class ProductPageView(LandingPageView):
         return page
 
 
+class ProductPreviewView(LandingPageView):
+    """Per-edition preview page — /products/<slug>/preview/<edition>/.
+
+    A flexible subpage that previews ONE edition of a product (e.g. the
+    Formints Community terminal, the vResume resume mock, the Loop site
+    builder). Renders the product lockup, the edition's price/tagline/
+    features, and a stylized product mock keyed by product slug. Unknown
+    slugs or edition names are 404s.
+    """
+
+    model = ProductPage
+    template_name = "pages/product_preview.html"
+
+    def _get_page(self) -> ProductPage:
+        """Resolve the product page by slug — unknown slugs are 404."""
+        slug = self.kwargs.get("slug")
+        page = ProductPage.objects.filter(slug=slug).first() if slug else None
+        if page is None:
+            raise Http404(f"No product page with slug {slug!r}")
+        return page
+
+    def get_context_data(self, request: HttpRequest | None = None, **kwargs) -> dict:
+        context = super().get_context_data(request=request, **kwargs)
+        page = context.get("page") or self._get_page()
+        edition_name = self.kwargs.get("edition", "")
+        edition = page.get_edition(edition_name)
+        if edition is None:
+            raise Http404(f"No edition named {edition_name!r} on {page.slug}")
+        # Other editions of the same product — links for switching previews.
+        context["preview_edition"] = edition
+        context["preview_slug"] = edition_name.lower()
+        context["preview_others"] = [
+            {"name": e.get("name", ""), "slug": str(e.get("name", "")).lower()}
+            for e in page.get_editions()
+            if str(e.get("name", "")).lower() != edition_name.lower()
+        ]
+        return context
+
+
+class BrandPageView(LandingPageView):
+    """Brand kit page — the product family's identity system.
+
+    Renders ``pages/brand.html``: one identity board per live product
+    (lockup, construction, essence, colour system, voice), driven by
+    ``get_brand_boards()`` (BRAND_SPEC + the seeded product cards). The page
+    is a real Wagtail model (``BrandPage``) whose ``display_mode`` field
+    decides page / modal / both surfacing.
+    """
+
+    model = BrandPage
+    template_name = "pages/brand.html"
+    fragment_name = "pages.fragments.brand"
+
+    def _get_page(self) -> BrandPage:
+        """Resolve the brand page — fall back to the products page tree root."""
+        page = BrandPage.objects.first()
+        return page or ProductsPage.objects.first()
+
+    def get_context_data(self, request: HttpRequest | None = None, **kwargs) -> dict:
+        context = super().get_context_data(request=request, **kwargs)
+        from apps.pages.brand_spec import get_brand_boards
+
+        context["brand_boards"] = get_brand_boards()
+        page = context.get("page") or self._get_page()
+        context["display_mode"] = getattr(page, "display_mode", "both")
+        return context
+
+
+class TeamPageView(LandingPageView):
+    """About → Team subpage (/about/team/) — the people behind the products."""
+
+    template_name = "pages/team.html"
+
+    def _get_page(self) -> TeamPage:
+        return TeamPage.objects.first()
+
+
 class FeaturesPageView(LandingPageView):
     template_name = "pages/features.html"
 
     def _get_page(self) -> FeaturesPage:
         return FeaturesPage.objects.first()
-
-
-class ProjectsPageView(LandingPageView):
-    template_name = "pages/projects.html"
-
-    def _get_page(self) -> ProjectsPage:
-        return ProjectsPage.objects.first()
 
 
 class ContactPageView(LandingPageView):

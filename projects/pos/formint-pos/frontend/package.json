@@ -10,9 +10,9 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run --config vitest.config.ts",
-    "tauri": "tauri --config ../src-tauri/tauri.conf.json",
-    "dev:desktop": "tauri --config ../src-tauri/tauri.conf.json dev",
-    "build:desktop": "tauri --config ../src-tauri/tauri.conf.json build"
+    "tauri": "cd .. && tauri info",
+    "dev:desktop": "cd .. && tauri dev",
+    "build:desktop": "cd .. && tauri build"
   },
   "dependencies": {
     "@astrojs/alpinejs": "^1.0.0",

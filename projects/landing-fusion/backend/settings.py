@@ -24,8 +24,25 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",  # mfa/webauthn authenticator list uses |naturaltime
     # HTMX
     "django_htmx",
+    # Auth — django-allauth (headless API + social providers). The React
+    # reference (cms-fusion frontend) used /auth/login JSON endpoints; here
+    # allauth's headless API serves the same shape: POST /api/auth/login,
+    # /api/auth/session, /api/auth/logout + provider redirects, consumed by
+    # the Alpine login modal on both render roads.
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    # MFA — TOTP authenticator app + WebAuthn passkeys/security keys (the
+    # ``allauth.mfa.webauthn`` module is part of allauth.mfa; fido2 is the
+    # only extra dependency and it is installed). ``allauth.headless`` mounts
+    # the same 2FA flows through the /api/auth/* endpoints the Alpine login
+    # modal consumes (gated on allauth.mfa being installed), so both render
+    # roads cover the journey.
+    "allauth.mfa",
+    "allauth.headless",
     # Wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -56,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
@@ -99,6 +117,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "wsgi.application"
 
+# allauth headless URL patterns carry no trailing slash (e.g.
+# /api/auth/browser/v1/auth/login). With APPEND_SLASH=True the common
+# middleware tries to 301-redirect POST bodies — a RuntimeError — so slash
+# appending is disabled. All landing routes declare their slashes explicitly
+# and Wagtail serves its own tree without relying on APPEND_SLASH.
+APPEND_SLASH = False
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -106,7 +131,122 @@ DATABASES = {
     }
 }
 
-# ── Auth ───────────────────────────────────────────────────────────
+# ── Auth (django-allauth headless) ────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    # Needed to log in by username in Django admin, regardless of allauth
+    "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by email
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+# Mandatory email verification: signups must confirm their address before
+# they can log in (the branded confirmation email + /accounts/confirm-email/
+# flow carry that step). Production behaviour, on by default.
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGIN_BY_CODE_ENABLED = False
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+
+# ── Two-factor authentication (allauth.mfa) ───────────────────────
+# TOTP authenticator app + recovery codes + WebAuthn passkeys/security keys.
+# Passkeys use the WebAuthn browser flow (fido2 installed); in dev they need
+# the insecure-origin escape hatch because localhost is not a secure context.
+MFA_SUPPORTED_TYPES = ["recovery_codes", "totp", "webauthn"]
+MFA_PASSKEY_LOGIN_ENABLED = True
+MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = DEBUG
+
+# Dual-mode auth: the headless API (/api/auth/*, consumed by the Alpine login
+# modal on both render roads) AND server-rendered allauth pages (/accounts/*,
+# login / signup / password reset / email management / confirmation). Keeping
+# HEADLESS_ONLY=False lets both coexist — pages for no-JS/progressive flows,
+# JSON endpoints for the modal.
+HEADLESS_ONLY = False
+
+# Server-rendered allauth page URLs (fallback for non-JS + full-page flows).
+# The modal posts to /api/auth/browser/v1/auth/login directly; these URLs are
+# used by login_required redirects and the account management pages.
+ACCOUNT_LOGIN_URL = "/accounts/login/"
+ACCOUNT_SIGNUP_URL = "/accounts/signup/"
+ACCOUNT_EMAIL_URL = "/accounts/email/"
+ACCOUNT_PASSWORD_CHANGE_URL = "/accounts/password/change/"
+ACCOUNT_PASSWORD_RESET_URL = "/accounts/password/reset/"
+
+# Branded transactional email. Console backend in dev so the messages render to
+# the server log (visible in the preview run); swap to SMTP in production via
+# EMAIL_BACKEND/EMAIL_HOST/… env vars.
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Structa Cloud <structa.cloud@gmail.com>")
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_SUBJECT_PREFIX = ""  # subjects already carry the brand via templates
+
+# ── Newsletter provider (Mailchimp / Brevo / webhook) ─────────────
+# NEWSLETTER_PROVIDER selects the sync target for NewsletterSubscriber
+# signups: "" (off), "mailchimp", "brevo", or "webhook". The subscribe API
+# pushes every signup to the provider (idempotent) and the
+# sync_newsletter_provider management command bulk-exports the whole list.
+# All values come from env so no secrets live in the repo.
+NEWSLETTER_PROVIDER = os.environ.get("NEWSLETTER_PROVIDER", "")
+NEWSLETTER_MAILCHIMP_API_KEY = os.environ.get("NEWSLETTER_MAILCHIMP_API_KEY", "")
+NEWSLETTER_MAILCHIMP_LIST_ID = os.environ.get("NEWSLETTER_MAILCHIMP_LIST_ID", "")
+NEWSLETTER_MAILCHIMP_SERVER_PREFIX = os.environ.get("NEWSLETTER_MAILCHIMP_SERVER_PREFIX", "us1")
+NEWSLETTER_BREVO_API_KEY = os.environ.get("NEWSLETTER_BREVO_API_KEY", "")
+NEWSLETTER_BREVO_LIST_ID = os.environ.get("NEWSLETTER_BREVO_LIST_ID", "")
+NEWSLETTER_WEBHOOK_URL = os.environ.get("NEWSLETTER_WEBHOOK_URL", "")
+
+# CORS: the Astro frontend (:4321) posts credentials to the headless API.
+# The LandingCorsMiddleware already allows credentialed reads on the landing
+# routes; the allauth headless API answers on /api/auth/* so we permit that
+# origin list there too.
+ALLAUTH_CORS_ORIGIN_WHITELIST = [
+    o.strip()
+    for o in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:4321,http://localhost:3000").split(",")
+    if o.strip()
+]
+
+# CSRF: the Astro dev server proxies /accounts/* to this backend, so the
+# browser's Origin header on form POSTs is the Astro origin (:3000) while the
+# proxied Host is :8074. Those Astro origins must be trusted or every auth
+# form 403s with "Origin checking failed". The backend's own origins are
+# included too (same-host form posts), plus any env-provided entries.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8074",
+    "http://127.0.0.1:8074",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    *[o.strip() for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()],
+]
+
+# Social providers — GitHub + Google. Client IDs/secrets come from env vars;
+# in dev both accept the login flow and redirect back to the callback.
+# Values are read at request time so empty IDs simply disable the button.
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("GITHUB_CLIENT_ID", ""),
+            "secret": os.environ.get("GITHUB_CLIENT_SECRET", ""),
+        },
+        "SCOPE": ["read:user", "user:email"],
+    },
+    "google": {
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID", ""),
+            "secret": os.environ.get("GOOGLE_CLIENT_SECRET", ""),
+        },
+        "SCOPE": ["profile", "email"],
+    },
+}
+
+# The login URL drives redirect-after-login targets. For headless mode the
+# modal handles redirects itself; LOGIN_REDIRECT_URL is used by the Django
+# admin fallback.
+LOGIN_REDIRECT_URL = "/"
+# login_required redirects land on the server-rendered page (browser flow);
+# the headless API is still consumed directly by the Alpine modal.
+LOGIN_URL = "/accounts/login/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -136,7 +276,7 @@ STATICFILES_DIRS = [
 ] if _PROJECT_STATIC_DIR.exists() else []
 
 # ── Wagtail ────────────────────────────────────────────────────────
-WAGTAIL_SITE_NAME = "Fusion Landing"
+WAGTAIL_SITE_NAME = "StructAI Softwares"
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "http://localhost:8074")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

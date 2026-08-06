@@ -2,7 +2,6 @@
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
-import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
@@ -24,7 +23,6 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
-const pageFaq = (pageData?.faq as any[] | undefined);
 
 const capabilities = pageFeatures?.map((f: any) => ({
   title: String(f.title || ''),
@@ -33,8 +31,8 @@ const capabilities = pageFeatures?.map((f: any) => ({
 }));
 ---
 
-<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'The full feature document — capabilities, server-rendered HTML, HTMX fragments, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
-  <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Built to ship as'} accent='documents' intro={pageHero?.subtitle || 'No SPA, no JSON API, no hydration waterfall. Every page is finished HTML in one response. Here\'s what makes it work.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Explore projects', href: '/projects' }} status='200 OK · text/html · every capability in one response' />
+<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'The full feature document: capabilities, server-rendered HTML, HTMX fragments, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
+  <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Built to ship as'} accent='documents' intro={pageHero?.subtitle || 'No SPA, no JSON API, no hydration waterfall. Every page is finished HTML in one response. Here\'s what makes it work.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Browse the repo', href: 'https://github.com/mammhoud' }} status='200 OK · text/html · every capability in one response' />
 
   {capabilities?.length ? (
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
@@ -46,7 +44,7 @@ const capabilities = pageFeatures?.map((f: any) => ({
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
         {capabilities!.map((cap, i) => (
-          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
             <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
               <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} /></svg>
             </div>
@@ -60,7 +58,6 @@ const capabilities = pageFeatures?.map((f: any) => ({
   ) : <ContentError label="Capabilities data unavailable" />}
 
   {pageTestimonials?.length ? <Testimonials testimonials={pageTestimonials.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} /> : null}
-  {pageFaq?.length ? <FAQ items={pageFaq.map((f: any) => ({ question: String(f.question || ''), answer: String(f.answer || '') }))} /> : null}
   <LiveFragment route='/features/' />
   <CTA heading={pageCta?.title || 'Ship the document, not the app'} intro={pageCta?.subtitle || 'One HTTP response, finished HTML.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />

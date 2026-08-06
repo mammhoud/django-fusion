@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}{{ page.title|default:"Fusion CMS" }}{% endblock %}</title>
+  <title>{% block title %}{{ page.title|default:"Structa Cloud" }}{% endblock %}</title>
   <meta name="description" content="{% block description %}A modern landing experience built with Astro, HTMX and Alpine.js.{% endblock %}" />
   <meta name="theme-color" content="#FCFCFA" />
   <!-- Fusion render mode (django-fusion settings config) — the content-delivery
@@ -94,6 +94,24 @@
     #htmx-indicator { display: none; }
     #htmx-indicator.htmx-request { display: block; }
   </style>
+  <!-- Progressive enhancement guard: without JavaScript the Alpine reveal
+       classes never fire, so force all scroll-reveal content visible. -->
+  <noscript>
+    <style>
+      .reveal, .features__card, .blog-preview__card, .team__card, .timeline__card {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        transition: none !important;
+      }
+      /* Brand boards: keep the construction mark full-size (its spring-scale
+         resting state is 0.9 and only reveal-visible would lift it). */
+      .brand-board__construction .product-logo {
+        transform: none !important;
+        transition: none !important;
+      }
+    </style>
+  </noscript>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -105,12 +123,218 @@
     <div class="fusion-skeleton__bar"><span class="fusion-skeleton__line" style="width:7rem;"></span></div>
   </div>
 
-  <div style="display:flex;min-height:100vh;flex-direction:column;">
+  <div style="display:flex;min-height:100dvh;flex-direction:column;">
     {% include "pages/partials/header.html" %}
     <main style="flex:1;">
-      {% block content %}{% endblock %}
+      {% comment %} auth_shell — a wrapper block that the allauth layout overrides
+         to wrap auth pages in the centered auth card. Default (non-auth) pages
+         render through it unchanged, so this wrapper is a no-op for them. {% endcomment %}
+      {% block auth_shell %}{% block content %}{% endblock %}{% endblock %}
     </main>
     {% include "pages/partials/footer.html" %}
+  </div>
+
+  {% comment %} Cookie consent banner — mirrors the Astro CookieConsent
+     component: Alpine-managed, localStorage-persisted, essential cookies
+     only (theme preference + HTMX state). Accept/Deny stored locally. {% endcomment %}
+  <div
+    x-data="{ visible: false, init() { let s = null; try { s = localStorage.getItem('cookie-consent'); } catch (e) {} if (!s) this.visible = true; }, accept() { try { localStorage.setItem('cookie-consent', 'accepted'); } catch (e) {} this.visible = false; }, deny() { try { localStorage.setItem('cookie-consent', 'denied'); } catch (e) {} this.visible = false; } }"
+    x-show="visible"
+    x-cloak
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 translate-y-0"
+    x-transition:leave-end="opacity-0 translate-y-4"
+    role="dialog"
+    aria-label="Cookie consent"
+    style="position:fixed;bottom:1rem;left:1rem;right:1rem;z-index:70;max-width:42rem;margin-inline:auto;border:1px solid hsl(var(--fu-border));border-radius:.75rem;background:hsl(var(--fu-card));padding:1.25rem;box-shadow:0 10px 30px rgba(0,0,0,.15);"
+  >
+    <div style="display:flex;flex-direction:column;gap:1rem;align-items:flex-start;justify-content:space-between;">
+      <div style="flex:1;">
+        <p style="margin:0;font-size:.875rem;line-height:1.6;color:hsl(var(--fu-muted));">
+          This site uses cookies only for essential functionality. Theme preference and HTMX navigation state. No tracking, no ads.
+          <a href="/privacy/" style="font-weight:500;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:2px;">Privacy policy</a>
+        </p>
+        <p style="margin:.35rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">accepting sets no tracking · denying keeps the site fully functional</p>
+      </div>
+      <div style="display:flex;gap:.5rem;">
+        <button type="button" @click="deny()" class="btn btn-secondary" style="padding:.5rem 1rem;font-size:.75rem;">Deny</button>
+        <button type="button" @click="accept()" class="btn btn-primary" style="padding:.5rem 1rem;font-size:.75rem;">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} Login modal — django-allauth headless (mirrors the Astro
+     LoginModal component). Alpine posts JSON to /api/auth/browser/v1/auth/login
+     (the React reference's JSON auth endpoints, on the AHA stack); social
+     buttons redirect to the allauth provider redirect. {% endcomment %}
+  <div
+    x-data="{ open: false, email: '', password: '', loading: false, error: '', async submit() { this.loading = true; this.error = ''; try { const r = await fetch('/api/auth/browser/v1/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ email: this.email, password: this.password }) }); if (r.status === 200 || r.status === 201) { this.open = false; this.email = ''; this.password = ''; window.__showToast ? window.__showToast('Signed in. Welcome back!', 'success') : alert('Signed in!'); setTimeout(() => location.reload(), 700); } else { const d = await r.json().catch(() => ({})); const errs = d.errors || []; this.error = errs.map(function (e) { return e.message; }).join(' ') || 'Sign-in failed — check your email and password.'; } } catch (e) { this.error = 'Network error — please try again.'; } finally { this.loading = false; } }, social(p) { window.location.href = '/api/auth/browser/v1/auth/provider/redirect?provider=' + p; } }"
+    @keydown.escape.window="open = false"
+    @fusion:open-login.window="open = true"
+  >
+    <div x-show="open" x-cloak x-transition.opacity class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Sign in" @click.self="open = false">
+      <div style="width:100%;max-width:28rem;border:1px solid hsl(var(--fu-border));border-radius:1rem;background:hsl(var(--fu-card));padding:1.75rem;box-shadow:0 25px 60px rgba(0,0,0,.25);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
+          <div>
+            <p class="tag-marker" style="margin:0 0 .25rem;">account</p>
+            <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;color:hsl(var(--fu-ink));">Sign in</h2>
+            <p style="margin:.25rem 0 0;font-size:.8rem;color:hsl(var(--fu-muted));">django-allauth headless · the AHA stack, no SPA</p>
+          </div>
+          <button type="button" @click="open = false" aria-label="Close" style="background:none;border:none;cursor:pointer;color:hsl(var(--fu-muted));padding:.35rem;">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem;">
+          <button type="button" @click="social('github')" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.65rem 1rem;border:1px solid hsl(var(--fu-border));border-radius:.5rem;background:hsl(var(--fu-bg));font-size:.85rem;font-weight:500;color:hsl(var(--fu-ink));cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.85.09-.66.35-1.12.64-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.22 10.22 0 0 0 22 12.2C22 6.58 17.52 2 12 2z"/></svg>
+            GitHub
+          </button>
+          <button type="button" @click="social('google')" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.65rem 1rem;border:1px solid hsl(var(--fu-border));border-radius:.5rem;background:hsl(var(--fu-bg));font-size:.85rem;font-weight:500;color:hsl(var(--fu-ink));cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/></svg>
+            Google
+          </button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:hsl(var(--fu-muted));">
+          <span style="flex:1;height:1px;background:hsl(var(--fu-border));"></span>or email<span style="flex:1;height:1px;background:hsl(var(--fu-border));"></span>
+        </div>
+
+        <form @submit.prevent="submit()" style="display:flex;flex-direction:column;gap:1rem;">
+          <div>
+            <label for="login-email" style="display:block;margin-bottom:.35rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--fu-muted));">Email</label>
+            <input id="login-email" type="email" required autocomplete="email" x-model="email" class="input-field" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label for="login-password" style="display:block;margin-bottom:.35rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--fu-muted));">Password</label>
+            <input id="login-password" type="password" required autocomplete="current-password" x-model="password" class="input-field" placeholder="••••••••" />
+          </div>
+          <p x-show="error" x-cloak style="margin:0;font-size:.8rem;font-weight:500;color:#ef4444;" role="alert" x-text="error"></p>
+          <button type="submit" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;" :disabled="loading">
+            <span x-show="!loading">Sign in</span>
+            <span x-show="loading" x-cloak>Signing in…</span>
+          </button>
+        </form>
+        <p style="margin:1.25rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">New here? <a href="/accounts/signup/" style="font-weight:500;color:hsl(var(--fu-link));">Create an account</a></p>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} Brand modal — the brandkit story for ONE product, opened from
+     product tooltips/cards. Any element with [data-open-brand="<slug>"]
+     dispatches fusion:open-brand (see the delegated click handler below),
+     exactly like the Astro BrandModal component. Fetches /apis/brand/ and
+     renders the board for the requested slug; display_mode on BrandPage
+     (page / modal / both) decides whether the "full page" link is offered. {% endcomment %}
+  <div
+    x-data="{
+      open: false,
+      loading: false,
+      boards: [],
+      board: null,
+      marks: {
+        crest: '<path d=\'M16 2.5l11.5 4v9.5c0 6.8-4.9 11.6-11.5 13.5C9.4 27.6 4.5 22.8 4.5 16.5V6.5L16 2.5z\' stroke-linejoin=\'round\'/><path d=\'M9.5 19.5h13\' stroke-linecap=\'round\'/><path d=\'M11.8 14.8l2.9 2.9 5.8-6.3\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
+        ribbon: '<path d=\'M4 8.5h24v7.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5z\' stroke-linejoin=\'round\'/><path d=\'M10.5 19.5l2.4 4.5M16 19.5v4.5M21.5 19.5l-2.4 4.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M12.5 12.5l2.6 2.6 5-5.4M15.1 15.1V9\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
+        isometric: '<path d=\'M16 3l11 6v14L16 29 5 23V9l11-6z\' stroke-linejoin=\'round\'/><path d=\'M5 9l11 6 11-6M16 15v14\' stroke-linejoin=\'round\'/><path d=\'M16 10.5l5.8 3.2v6.6L16 23.5l-5.8-3.2v-6.6l5.8-3.2z\' stroke-linejoin=\'round\'/><path d=\'M10.2 13.7l5.8 3.2 5.8-3.2M16 16.9v6.6\' stroke-linejoin=\'round\'/>',
+        orbit: '<circle cx=\'16\' cy=\'16\' r=\'2.6\' fill=\'currentColor\' stroke=\'none\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(-24 16 16)\' stroke-linejoin=\'round\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(24 16 16)\' stroke-linejoin=\'round\'/><circle cx=\'25.2\' cy=\'12.4\' r=\'1.4\' fill=\'currentColor\' stroke=\'none\'/>',
+        ascent: '<path d=\'M4 26h7v-7h7v-7h7\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M24.8 12.2l2.4 2.4 4-4.4\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M4 6v20\' stroke-linecap=\'round\'/>'
+      },
+      async open(slug) {
+        if (!slug) return;
+        this.open = true;
+        this.loading = true;
+        this.board = null;
+        try {
+          if (!this.boards.length) {
+            const res = await fetch('/apis/brand/');
+            const data = await res.json();
+            this.boards = data.boards || [];
+          }
+          this.board = this.boards.find(function (b) { return b.slug === slug; }) || null;
+        } catch (e) {
+          this.board = null;
+        } finally {
+          this.loading = false;
+        }
+      },
+      close() { this.open = false; }
+    }"
+    @keydown.escape.window="open = false"
+    @fusion:open-brand.window="open($event.detail.slug)"
+  >
+    <div x-show="open" x-cloak x-transition.opacity class="fixed inset-0 z-[85] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Brand" @click.self="open = false">
+      <div style="width:100%;max-width:34rem;max-height:85dvh;overflow-y:auto;border:1px solid hsl(var(--fu-border));border-radius:1rem;background:hsl(var(--fu-card));box-shadow:0 25px 60px rgba(0,0,0,.25);">
+        <div x-show="loading" x-cloak style="padding:3rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">loading brand…</div>
+
+        <template x-if="!loading && board">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.5rem;border-bottom:1px solid hsl(var(--fu-border));">
+              <div style="display:flex;align-items:center;gap:.9rem;">
+                <span class="product-logo" :data-brand="(board.brand || 'formints').toLowerCase()" style="width:2.75rem;height:2.75rem;">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" x-html="marks[board.mark] || marks['orbit']"></svg>
+                </span>
+                <div>
+                  <p class="tag-marker" style="margin:0 0 .2rem;">brand · identity</p>
+                  <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;font-weight:700;color:hsl(var(--fu-ink));" x-text="board.name"></h2>
+                  <p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));" x-text="board.role"></p>
+                </div>
+              </div>
+              <button type="button" @click="close()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:hsl(var(--fu-muted));padding:.35rem;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div style="position:relative;display:grid;place-items:center;min-height:10rem;background-image:linear-gradient(hsl(var(--fu-border) / .55) 1px,transparent 1px),linear-gradient(90deg,hsl(var(--fu-border) / .55) 1px,transparent 1px);background-size:1rem 1rem;">
+              <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:hsl(var(--fu-border));"></div>
+              <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:hsl(var(--fu-border));"></div>
+              <div style="position:relative;z-index:1;box-shadow:0 0 0 6px hsl(var(--fu-card));border-radius:1rem;">
+                <span class="product-logo" :data-brand="(board.brand || 'formints').toLowerCase()" style="width:3.5rem;height:3.5rem;">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" x-html="marks[board.mark] || marks['orbit']"></svg>
+                </span>
+              </div>
+            </div>
+
+            <div style="padding:1.5rem;">
+              <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;line-height:1.35;margin:0 0 1.25rem;color:hsl(var(--fu-ink));" x-text="board.essence"></p>
+              <div style="display:grid;gap:.75rem;font-size:.8rem;">
+                <div style="display:flex;gap:.75rem;align-items:baseline;">
+                  <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">metaphor</span>
+                  <span style="color:hsl(var(--fu-ink) / .85);" x-text="board.metaphor"></span>
+                </div>
+                <div style="display:flex;gap:.75rem;align-items:baseline;">
+                  <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">construction</span>
+                  <span style="color:hsl(var(--fu-ink) / .85);" x-text="board.construction"></span>
+                </div>
+                <div style="display:flex;gap:.75rem;align-items:baseline;">
+                  <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">voice</span>
+                  <span style="color:hsl(var(--fu-ink) / .85);" x-text="board.voice"></span>
+                </div>
+                <div style="display:flex;gap:.75rem;align-items:center;">
+                  <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">palette</span>
+                  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;width:100%;">
+                    <template x-for="(swatch, i) in (board.swatches || [])" :key="i">
+                      <div style="display:flex;flex-direction:column;gap:.25rem;min-width:0;" :title="swatch.token">
+                        <div style="aspect-ratio:1;border-radius:.375rem;border:1px solid hsl(var(--fu-border));" :style="swatch.style"></div>
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--fu-muted));" x-text="swatch.token"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.25rem;border-top:1px solid hsl(var(--fu-border));padding-top:1rem;">
+                <a :href="board.href || '/products/'" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">See the product →</a>
+                <a href="/brand/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));text-decoration:none;">Full brand page →</a>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <div x-show="!loading && !board" x-cloak style="padding:3rem;text-align:center;font-size:.8rem;color:hsl(var(--fu-muted));">No brand data for this product yet.</div>
+      </div>
+    </div>
   </div>
 
   <!-- AHA runtime: HTMX + Alpine (bundled in the Astro frontend; CDN for the backend templates)
@@ -119,8 +343,79 @@
        plugin after alpine causes "You can't use [x-collapse] without first installing
        the Collapse plugin" warnings and breaks the FAQ accordion. -->
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  <script src="https://unpkg.com/@alpinejs/intersect@3.14.8/dist/cdn.min.js" defer></script>
   <script src="https://unpkg.com/@alpinejs/collapse@3.14.8/dist/cdn.min.js" defer></script>
   <script src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
+
+  <script>
+    // Magnetic hero CTA — Alpine component for the .btn-magnetic wrappers in
+    // the hero templates. The button drifts toward the cursor (≤6px) and
+    // snaps back on leave; the transform lives on the wrapper so the button's
+    // own :active press-scale and btn-chip arrow stay untouched. Registered on
+    // alpine:init (before Alpine.start), mirroring the Alpine.data call in the
+    // Astro alpine.js entrypoint. GPU-cheap: one layout read per enter.
+    document.addEventListener('alpine:init', function () {
+      Alpine.data('magnetic', () => ({
+        mx: 0,
+        my: 0,
+        active: false,
+        reduce: false,
+        cx: 0,
+        cy: 0,
+        init() {
+          this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        },
+        center() {
+          const r = this.$el.getBoundingClientRect();
+          this.cx = r.left + r.width / 2;
+          this.cy = r.top + r.height / 2;
+        },
+        track(e) {
+          if (this.reduce) return;
+          this.mx = Math.max(-6, Math.min(6, (e.clientX - this.cx) * 0.08));
+          this.my = Math.max(-6, Math.min(6, (e.clientY - this.cy) * 0.08));
+        },
+        leave() {
+          this.active = false;
+          this.mx = 0;
+          this.my = 0;
+        },
+      }));
+    });
+  </script>
+
+  <script>
+    // Staggered-cascade cleanup — grid cards carry an inline `--reveal-i`
+    // (their cascade index). Once the reveal transition lands, drop the delay
+    // so card hovers are never delayed. Mirrors the Astro alpine.js listener,
+    // so both render roads share one motion behavior.
+    (function () {
+      document.addEventListener('transitionend', function (e) {
+        var el = e.target;
+        if (el && el.style && el.style.getPropertyValue('--reveal-i') && e.propertyName === 'opacity') {
+          el.style.transitionDelay = '0ms';
+        }
+      }, true);
+    })();
+  </script>
+
+  <script>
+    // Brand modal trigger — any [data-open-brand="<slug>"] element (product
+    // lockups, cards, tooltips) opens the brand modal. Works without an
+    // Alpine scope, so plain server-rendered cards can open it. Mirrors the
+    // delegated handler in the Astro BrandModal component.
+    (function () {
+      document.addEventListener('click', function (e) {
+        var t = e.target && e.target.closest ? e.target.closest('[data-open-brand]') : null;
+        if (t) {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('fusion:open-brand', {
+            detail: { slug: t.getAttribute('data-open-brand') },
+          }));
+        }
+      });
+    })();
+  </script>
 
   <script>
     // Global HTMX in-flight indicator — HTMX toggles `.htmx-request` only on

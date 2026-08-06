@@ -34,8 +34,18 @@ class LandingCorsMiddleware:
     def __call__(self, request: HttpRequest) -> HttpResponse:
         response = self.get_response(request)
         # Only the public landing routes serve fragments; leave admin/Wagtail
-        # responses untouched.
-        if request.path in ("/", "/about/", "/services/", "/products/", "/features/", "/projects/", "/blog/", "/pricing/", "/contact/", "/faq/", "/privacy/"):
+        # responses untouched. The allauth headless API (/api/auth/*) is also
+        # allowed so the Astro frontend can post login JSON cross-origin.
+        cors_paths = (
+            "/", "/about/", "/about/team/", "/services/", "/products/",
+            "/features/", "/blog/", "/pricing/", "/contact/", "/faq/",
+            "/privacy/", "/brand/",
+        )
+        if (
+            request.path in cors_paths
+            or request.path.startswith("/api/auth/")
+            or request.path.startswith("/api/newsletter/")
+        ):
             origin = request.headers.get("Origin")
             if origin and (origin in self.allowed_origins or "*" in self.allowed_origins):
                 response["Access-Control-Allow-Origin"] = origin
@@ -44,5 +54,5 @@ class LandingCorsMiddleware:
                 response["Vary"] = "Origin"
             if request.method == "OPTIONS":
                 response.status_code = 200
-                response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+                response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, DELETE"
         return response

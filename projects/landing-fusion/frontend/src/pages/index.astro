@@ -2,7 +2,8 @@
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
-import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
@@ -51,31 +52,31 @@ const stackItems = pageFeatures?.map((f: any) => ({
 const productCards = [
   {
     name: 'django-fusion',
-    tag: 'component system · routing · fragment rendering',
-    description: 'The backbone of every structa.cloud site. Component registry, HtmxDetails, PageHandler views, and {% comp %} templates — shared across all Django projects.',
-    href: '/products#django-fusion',
+    tag: 'component system, routing, fragment rendering',
+    description: 'The backbone of every structa.cloud site. Component registry, HtmxDetails, PageHandler views, and {% comp %} templates, shared across all Django projects.',
+    href: '/products/cms/',
     icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
   },
   {
-    name: 'ceptor-ai',
-    tag: 'AI chat · MCP server · agent tooling',
-    description: 'AI chat client and Model Context Protocol server. Powers Cypercloud, agent generation, and structured prompt-to-design conversion.',
-    href: '/products#ceptor-ai',
+    name: 'Syntara',
+    tag: 'AI chat customizer, MCP server',
+    description: 'AI chat customizer. Embed ceptor-ai powered chat into any site — branded, behavior-ruled, multi-model. Currently under development.',
+    href: '/products/cypercloud/',
     icon: 'M9.8 15.5A6.7 6.7 0 0112 15a6.7 6.7 0 012.2.5M12 3a9 9 0 100 18 9 9 0 000-18zm-1 9a1 1 0 112 0 1 1 0 01-2 0z',
   },
   {
     name: 'vResume',
-    tag: 'cloud resume platform · SaaS · CI/CD',
-    description: 'Create, update, and publish professional resumes with modern templates. Cloud-hosted at vresume.structa.cloud with scalable deployment.',
+    tag: 'cloud resume platform, SaaS, CI/CD',
+    description: 'Create, update, and publish professional resumes with modern templates and Syntara-powered AI summaries. Cloud-hosted at vresume.structa.cloud.',
     href: 'https://vresume.structa.cloud',
     icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z',
     external: true,
   },
   {
-    name: 'Forge POS',
-    tag: 'desktop app · Tauri 2 · Rust · React',
-    description: 'Desktop point-of-sale in three editions: Minimal (SQLite), Solo (embedded Python), Full (multi-terminal + cloud CRM). Built on Tauri 2 + Rust.',
-    href: '/projects#forge-pos',
+    name: 'Formints',
+    tag: 'desktop POS, Tauri 2, Rust, React',
+    description: 'Desktop point-of-sale in four editions: Community (open source), Standard (sidecar + cloud sync), Pro (multi-terminal, $79/mo), Cloud (fully hosted). Built on Tauri 2 + Rust.',
+    href: '/products/forge-pos/',
     icon: 'M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3',
   },
 ];
@@ -83,7 +84,7 @@ const productCards = [
 
 <Layout
   title={pageData?.title || 'Structa Cloud'}
-  description={pageData?.search_description || 'Full-stack engineering — Django, Wagtail, and AI-powered systems. Built open-source, shipped as documents. By Mahmoud Ezzat Moustafa.'}
+  description={pageData?.search_description || 'Full-stack engineering. Django, Wagtail, and AI-powered systems. Built in the open, shipped as documents. By Mahmoud Ezzat Moustafa.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -93,120 +94,142 @@ const productCards = [
     eyebrow={pageHero?.badge || 'structa.cloud · full-stack engineering'}
     heading={pageHero?.title || 'Platforms that ship as'}
     accent='documents'
-    intro={pageHero?.subtitle || 'Structa Cloud builds server-rendered web platforms, AI tools, and open-source libraries — Django + Wagtail on the backend, Astro + HTMX + Alpine on the frontend. Every page is finished HTML in one response. No heavy SPA, no framework overhead, just the web as it should be.'}
+    intro={pageHero?.subtitle || 'Structa Cloud builds server-rendered web platforms, AI tools, and open-source libraries. Every page ships as finished HTML in one response.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore the stack', href: '/products' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'About the engineer', href: '/about' }}
-    status='200 OK · text/html · 0 KB client framework'
+    status='200 OK · text/html'
   />
 
   <!-- Tech Stats — renders only when the backend provides stats (HomePage is a slim page by design) -->
   {techStats?.length ? <Stats stats={techStats} /> : null}
 
-  <!-- The Stack — what runs under the hood -->
-  {stackItems?.length ? (
+  <!-- The Stack — what runs under the hood (renders only when the backend
+       provides features; the home page is a slim page by design) -->
+  {stackItems?.length ? (() => {
+    const featured = stackItems[0];
+    const rest = stackItems.slice(1);
+    const lastSpans = rest.length > 0 && rest.length % 2 === 1;
+    return (
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
-      <div class='mx-auto mb-14 max-w-2xl text-center'>
-        <p class='tag-marker mb-4'>the stack</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+      <div class='mb-14 max-w-2xl'>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
           One monorepo, six projects
         </h2>
-        <p class='text-fu-muted'>
-          Every site, library, and tool shares the same repository, the same configs, and the same CI pipeline. Django on the backend, Astro on the frontend, and HTMX bridging the two.
+        <p class='mt-3 max-w-xl text-fu-muted'>
+          Every site, library, and tool shares one repository, one config, one CI pipeline. Django backend, Astro frontend, HTMX between.
         </p>
       </div>
 
-      <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
-        {stackItems.map((item: any, i: number) => (
-          <div
-            class='card reveal group relative p-6 pt-7'
-            x-data x-intersect='`$el.classList.add("reveal-visible")`'
-            style={`transition-delay: ${i * 80}ms`}
-          >
-            <span class='absolute right-4 top-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70' aria-hidden='true'>
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link'>
-              <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
-                <path stroke-linecap='round' stroke-linejoin='round' d={item.icon} />
-              </svg>
-            </div>
-            <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{item.title}</h3>
-            <p class='text-sm leading-relaxed text-fu-muted'>{item.description}</p>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+        <div
+          class='reveal card-gradient group relative flex flex-col gap-5 p-6 md:col-span-2 md:flex-row md:items-center md:gap-8 md:p-8'
+          x-data x-intersect='`$el.classList.add("reveal-visible")`'
+        >
+          <div class='inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md border border-fu-paper/15 bg-fu-paper/10 text-fu-link'>
+            <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+              <path stroke-linecap='round' stroke-linejoin='round' d={featured.icon} />
+            </svg>
           </div>
-        ))}
+          <div>
+            <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-paper'>{featured.title}</h3>
+            <p class='text-sm leading-relaxed text-fu-paper/75'>{featured.description}</p>
+          </div>
+        </div>
+
+        {rest.map((item: any, i: number) => {
+          const isLast = i === rest.length - 1;
+          return (
+            <div
+              class:list={[
+                'reveal card group relative p-6',
+                isLast && lastSpans ? 'md:col-span-2' : '',
+              ]}
+              x-data x-intersect='`$el.classList.add("reveal-visible")`'
+              style={`--reveal-i: ${i + 1}`}
+            >
+              <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link'>
+                <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d={item.icon} />
+                </svg>
+              </div>
+              <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{item.title}</h3>
+              <p class='text-sm leading-relaxed text-fu-muted'>{item.description}</p>
+            </div>
+          );
+        })}
       </div>
     </div>
   </section>
-  ) : null}
+    );
+  })() : null}
 
-  <!-- Products preview — four key products -->
-  <section id='products' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+  <!-- Products preview — an editorial index with hairline rows -->
+  <section id='products' class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
-      <div class='mx-auto mb-14 max-w-2xl text-center'>
+      <div class='mb-14 max-w-2xl'>
         <p class='tag-marker mb-4'>products</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
           What we ship
         </h2>
-        <p class='text-fu-muted'>
-          Open-source libraries, cloud platforms, and desktop apps — all from one codebase.
+        <p class='mt-3 max-w-xl text-fu-muted'>
+          Open-source libraries, cloud platforms, and desktop apps from one codebase.
         </p>
       </div>
 
-      <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+      <div>
         {productCards.map((product: any, i: number) => (
           <a
             href={product.href}
             target={product.external ? '_blank' : undefined}
             rel={product.external ? 'noopener noreferrer' : undefined}
-            class='card reveal group p-6 hover:-translate-y-0.5'
+            class='reveal group grid grid-cols-1 gap-1.5 border-t border-fu-line px-0 py-6 transition-colors duration-300 hover:bg-fu-card md:grid-cols-12 md:items-baseline md:gap-6 md:px-4 md:py-7'
             x-data x-intersect='`$el.classList.add("reveal-visible")`'
-            style={`transition-delay: ${i * 100}ms`}
+            style={`--reveal-i: ${i}`}
           >
-            <div class='mb-4 flex items-center gap-4'>
-              <div class='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link'>
-                <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
-                  <path stroke-linecap='round' stroke-linejoin='round' d={product.icon} />
+            <span class='font-display text-xl font-semibold tracking-tight text-fu-ink transition-colors duration-300 group-hover:text-fu-link md:col-span-4 md:text-2xl'>
+              {product.name}
+              {product.external && (
+                <svg class='ml-2 inline h-4 w-4 text-fu-muted' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9' />
                 </svg>
-              </div>
-              <div>
-                <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink group-hover:text-fu-link transition-colors'>
-                  {product.name}
-                  {product.external && (
-                    <svg class='ml-1 inline h-3.5 w-3.5 text-fu-muted' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'>
-                      <path stroke-linecap='round' stroke-linejoin='round' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9' />
-                    </svg>
-                  )}
-                </h3>
-                <p class='font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-muted'>{product.tag}</p>
-              </div>
-            </div>
-            <p class='text-sm leading-relaxed text-fu-muted'>{product.description}</p>
+              )}
+            </span>
+            <p class='font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-muted md:col-span-3'>
+              {product.tag}
+            </p>
+            <p class='text-sm leading-relaxed text-fu-muted md:col-span-4'>
+              {product.description}
+            </p>
+            <span class='hidden items-center justify-end text-fu-muted transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-fu-link md:col-span-1 md:flex' aria-hidden='true'>
+              <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+                <path stroke-linecap='round' stroke-linejoin='round' d='M9 5l7 7-7 7'/>
+              </svg>
+            </span>
           </a>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- HTMX + Alpine Demo — interactive proof -->
+  <!-- HTMX + Alpine Demo — asymmetric bento: one tall feature cell + a stacked rail -->
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
-      <div class='mx-auto mb-14 max-w-2xl text-center'>
-        <p class='tag-marker mb-4'>live demo</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+      <div class='mb-14 max-w-2xl'>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
           This page is the framework
         </h2>
-        <p class='text-fu-muted'>
-          No React. No Vue. No Svelte. Just server-rendered HTML with HTMX for dynamic regions and Alpine.js for micro-interactions. Try the interactive demos below — they work because the page is a document.
+        <p class='mt-3 max-w-xl text-fu-muted'>
+          No React, no Vue, no Svelte. Server-rendered HTML with HTMX for dynamic regions and Alpine.js for micro-interactions. Try the demos below.
         </p>
       </div>
 
-      <div class='grid grid-cols-1 gap-8 md:grid-cols-3'>
-        <!-- HTMX: Server time -->
-        <div class='card p-6' x-data="{ time: '' }">
+      <div class='grid grid-cols-1 gap-6 lg:grid-cols-3'>
+        <!-- HTMX: Fragment Swap — the tall feature cell -->
+        <div class='card flex flex-col p-6 lg:col-span-2 lg:row-span-2'>
           <h3 class='mb-3 font-display text-[1.05rem] font-semibold text-fu-ink'>HTMX: Fragment Swap</h3>
-          <p class='mb-4 text-sm text-fu-muted'>Click the button — an HTML fragment streams from the backend via HTMX, swapping the content without a page reload.</p>
-          <div class='mb-4 rounded-md border border-fu-line bg-fu-card p-4 font-mono text-sm' id='htmx-demo-target'>
+          <p class='mb-4 max-w-md text-sm text-fu-muted'>Click the button. An HTML fragment streams from the backend via HTMX, swapping the content without a page reload.</p>
+          <div class='mb-4 flex-1 rounded-md border border-fu-line bg-fu-card p-4 font-mono text-sm' id='htmx-demo-target'>
             <span class='text-fu-muted'>Click &quot;Fetch from server&quot; to see HTMX in action.</span>
           </div>
           <button
@@ -220,10 +243,10 @@ const productCards = [
         </div>
 
         <!-- Alpine: Counter -->
-        <div class='card p-6' x-data="{ count: 0 }">
+        <div class='card flex flex-col p-6 lg:col-start-3 lg:row-start-1' x-data="{ count: 0 }">
           <h3 class='mb-3 font-display text-[1.05rem] font-semibold text-fu-ink'>Alpine.js: Reactive State</h3>
-          <p class='mb-4 text-sm text-fu-muted'>A self-contained counter — zero server calls, zero framework. Alpine.js manages local state with a single x-data directive.</p>
-          <div class='mb-4 flex items-center justify-center gap-4'>
+          <p class='mb-4 text-sm text-fu-muted'>A self-contained counter. Zero server calls, zero framework.</p>
+          <div class='mt-auto flex items-center justify-center gap-4'>
             <button class='btn-secondary !h-10 !w-10 !p-0' @click='count = Math.max(0, count - 1)' aria-label='Decrement'>−</button>
             <span class='font-mono text-3xl font-bold text-fu-ink tabular-nums' x-text='count'>0</span>
             <button class='btn-secondary !h-10 !w-10 !p-0' @click='count++' aria-label='Increment'>+</button>
@@ -231,16 +254,16 @@ const productCards = [
         </div>
 
         <!-- Theme persistence -->
-        <div class='card p-6' x-data="{ storedTheme: '' }" x-init="storedTheme = localStorage.getItem('fusion-theme') || 'system default'">
+        <div class='card flex flex-col p-6 lg:col-start-3 lg:row-start-2' x-data="{ storedTheme: '' }" x-init="storedTheme = localStorage.getItem('fusion-theme') || 'system default'">
           <h3 class='mb-3 font-display text-[1.05rem] font-semibold text-fu-ink'>Theme: localStorage</h3>
-          <p class='mb-4 text-sm text-fu-muted'>Your theme preference persists across sessions via localStorage, applied before first paint — no flash, no cookie banner.</p>
-          <div class='rounded-md border border-fu-line bg-fu-card p-4'>
+          <p class='mb-4 text-sm text-fu-muted'>Your theme preference persists across sessions via localStorage, applied before first paint. No flash, no cookie banner.</p>
+          <div class='mt-auto rounded-md border border-fu-line bg-fu-card p-4'>
             <p class='font-mono text-sm'>
               <span class='text-fu-muted'>Current: </span>
               <span class='font-semibold text-fu-link' x-text='storedTheme'>system default</span>
             </p>
             <p class='mt-2 font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted'>
-              Toggle via the header ☀️/🌙 button
+              Toggle via the header theme button
             </p>
           </div>
         </div>
@@ -252,10 +275,11 @@ const productCards = [
   {pageData ? <LiveFragment route='/' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
 
   <CTA
-    heading={pageCta?.title || 'Built open-source, shipped as HTML'}
-    intro={pageCta?.subtitle || "Everything structa.cloud builds is on GitHub at github.com/mammhoud. Explore the monorepo, try the tools, and reach out for collaboration."}
+    heading={pageCta?.title || 'Built in the open, shipped as HTML'}
+    intro={pageCta?.subtitle || "Community editions and the core libraries are on GitHub at github.com/mammhoud. Paid editions are commercial."}
     ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
     ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    secondaryCta={pageCta?.secondary_cta ? { label: pageCta.secondary_cta.label, href: pageCta.secondary_cta.href } : undefined}
   />
 
   <Toast />

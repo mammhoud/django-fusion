@@ -1,4 +1,4 @@
-<div class="text-center">
+<div class="border-t border-fu-line pt-4 sm:pt-5">
   <div class="text-3xl font-bold text-fu-primary sm:text-4xl">
     <span x-data="{ n: 0, target: 0 }"
           x-init="target = parseInt('{{ value.value|default:"0" }}'.replace(/[^0-9]/g, '')) || 0; let s = 0; const step = Math.max(1, Math.round(target / 60)); const t = setInterval(() => { s += step; if (s >= target) { s = target; clearInterval(t); } n = s; }, 24);">

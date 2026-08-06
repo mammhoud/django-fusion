@@ -25,7 +25,7 @@ class LandingSite(Site):
     frontend (via /apis/navigation/).
     """
 
-    title = "Landing Fusion"
+    title = "StructAI Softwares"
     app_name = "landing_site"
 
     # ── Navigation ──────────────────────────────────────────────────────────
@@ -36,17 +36,22 @@ class LandingSite(Site):
     # from the footer only (legal/support pages don't belong in the header).
     NAV_ITEMS: list[tuple[str, str, bool]] = [
         ("home", "Home", True),
-        ("about", "About Us", True),
+        ("about", "About", True),
         ("services", "Services", True),
         ("products", "Products", True),
         ("features", "Features", False),       # linked from /products
-        ("projects", "Projects", True),
         ("blog", "Blog", True),
         ("pricing", "Pricing", True),
         ("contact", "Contact", True),
+        # Brand, FAQ + Privacy are footer-only (legal/support identity links
+        # don't belong in the header).
+        ("brand", "Brand", False),
         ("faq", "FAQ", False),                 # footer only
         ("privacy", "Privacy Policy", False),  # footer only
     ]
+    # NOTE: Projects is intentionally NOT in the nav — the Projects page was
+    # merged into Products (/products/ carries the repo project grid and
+    # /projects/ redirects permanently to /products/).
 
     def get_navigation_context(self, request: Any = None) -> list[dict[str, Any]]:
         """Return navigation items for the frontend.

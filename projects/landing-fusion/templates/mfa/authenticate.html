@@ -1,0 +1,52 @@
+{% extends "mfa/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}{% trans "Two-Factor Authentication" %}{% endblock %}
+{% block auth_inner %}
+<p class="tag-marker" style="margin:0 0 .25rem;">account · two-factor</p>
+<h2 style="margin:0 0 .5rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;color:hsl(var(--fu-ink));">Two-factor authentication</h2>
+<p style="margin:0 0 1.5rem;font-size:.8rem;color:hsl(var(--fu-muted));">Your account is protected by two-factor authentication. Please enter an authenticator code:</p>
+
+{% url 'mfa_authenticate' as action_url %}
+<form method="post" action="{{ action_url }}">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.is_hidden %}{{ field }}{% else %}
+    <div style="margin-bottom:1rem;">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+      {% if field.errors %}<ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  <button type="submit" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;">Sign In</button>
+</form>
+
+{% if "webauthn" in MFA_SUPPORTED_TYPES %}
+  <div class="auth-divider">alternative options</div>
+  <button id="mfa_webauthn_authenticate" type="button" form="webauthn_form" class="btn btn-secondary" style="width:100%;padding:.7rem 1rem;">Use a security key</button>
+
+  <form id="webauthn_form" method="post" action="{{ action_url }}">
+    {% csrf_token %}
+    {% for field in webauthn_form %}{% if field.is_hidden %}{{ field }}{% endif %}{% endfor %}
+  </form>
+  {{ js_data|json_script:"js_data" }}
+  {% include "mfa/webauthn/snippets/scripts.html" %}
+  <script data-allauth-onload="allauth.webauthn.forms.authenticateForm" type="application/json">{
+    "ids": {
+      "authenticate": "mfa_webauthn_authenticate",
+      "credential": "{{ webauthn_form.credential.auto_id }}",
+      "data": "js_data"
+    }
+  }
+  </script>
+  <button type="submit" form="logout-from-stage" class="btn btn-secondary" style="width:100%;padding:.7rem 1rem;margin-top:.5rem;">Cancel</button>
+{% else %}
+  <button type="submit" form="logout-from-stage" class="btn btn-secondary" style="width:100%;padding:.7rem 1rem;margin-top:1rem;">Cancel</button>
+{% endif %}
+
+<form id="logout-from-stage" method="post" action="{% url 'account_logout' %}">
+  <input type="hidden" name="next" value="{% url 'account_login' %}">
+  {% csrf_token %}
+</form>
+{% endblock %}

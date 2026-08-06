@@ -1,0 +1,28 @@
+{% extends "mfa/webauthn/base.html" %}
+{% load i18n %}
+{% block head_title %}{% trans "Edit Security Key" %}{% endblock %}
+{% block auth_inner %}
+<p class="tag-marker" style="margin:0 0 .25rem;">account · security · passkeys</p>
+<h2 style="margin:0 0 .5rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;color:hsl(var(--fu-ink));">Edit security key</h2>
+<p style="margin:0 0 1.5rem;font-size:.8rem;color:hsl(var(--fu-muted));">Give this key a name you'll recognise.</p>
+
+{% url 'mfa_edit_webauthn' as action_url %}
+<form method="post" action="{{ action_url }}">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.is_hidden %}{{ field }}{% else %}
+    <div style="margin-bottom:1rem;">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+      {% if field.errors %}<ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  <button id="mfa_webauthn_edit" type="submit" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;">Save</button>
+</form>
+
+<p style="margin:1.25rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">
+  <a href="{% url 'mfa_list_webauthn' %}" style="font-weight:500;color:hsl(var(--fu-link));">&larr; Back to security keys</a>
+</p>
+{% endblock %}

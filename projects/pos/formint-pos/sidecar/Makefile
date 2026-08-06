@@ -16,7 +16,7 @@
 #
 # Env overrides: PORT (default 8767), ROBYN_PORT (8766), FUSION_RENDER_FIRST
 
-.PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean
+.PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean sidecar-binary
 
 .DEFAULT_GOAL := help
 
@@ -81,6 +81,11 @@ shell: ## Django shell
 static: collectstatic ## Alias for collectstatic
 collectstatic: ## Collect static files
 	$(MANAGE) collectstatic --noinput
+
+sidecar-binary: ## PyInstaller onefile formint-backend → ../src-tauri/binaries/<target-triple>
+	.venv/bin/pyinstaller formint-backend.spec --clean --noconfirm
+	cp dist/formint-backend ../src-tauri/binaries/formint-backend-$$(rustc -vV | sed -n 's/^host: //p')
+	@echo '✅ Sidecar binary ready in ../src-tauri/binaries/'
 
 clean: ## Remove database + staticfiles + __pycache__
 	rm -f restaurant.db formint-phase1.sqlite3

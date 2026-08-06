@@ -51,9 +51,9 @@ interface Props {
 
 const {
   route,
-  label = 'live · from the backend',
+  label,
   heading = 'The same component, served by Django',
-  intro = 'This section is fetched with HTMX from the Wagtail backend — skeleton while it loads, then the server-rendered fragment swaps in.',
+  intro = 'This section is fetched with HTMX from the Wagtail backend. A skeleton shows while it loads, then the server-rendered fragment swaps in.',
   skeletonCards = 3,
   skeletonVariant,
 } = Astro.props;
@@ -70,7 +70,7 @@ const hasBackend = fusionApiUrl !== '';
 <section class="live-fragment doc-sheet bg-fu-paper py-20 md:py-24" data-live-fragment>
   <div class="container-fusion">
     <div class="mx-auto mb-14 max-w-2xl text-center">
-      <p class="tag-marker mb-4">{label}</p>
+      {label && <p class="tag-marker mb-4">{label}</p>}
       <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>
       <p class="text-fu-muted">{intro}</p>
     </div>

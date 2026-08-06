@@ -65,6 +65,7 @@ const privacy = readPage('privacy', 'index.html');
 const blog = readPage('blog', 'index.html');
 const pricing = readPage('pricing', 'index.html');
 const services = readPage('services', 'index.html');
+const brand = readPage('brand', 'index.html');
 const forgePos = readPage('products', 'forge-pos', 'index.html');
 const lms = readPage('products', 'lms', 'index.html');
 const cms = readPage('products', 'cms', 'index.html');
@@ -88,7 +89,7 @@ test('home is a slim hero + CTA entry page with seeded hero/CTA', () => {
   assert.match(home, /documents/);
   assert.match(home, /structa\.cloud · full-stack engineering/);
   // Seeded CTA.
-  assert.match(home, /Everything is open source/);
+  assert.match(home, /Most of our builds are open source/);
   // Products preview section (frontend design).
   assert.match(home, /What we ship/);
   // Slim page — none of the full-document markers or error cards.
@@ -114,11 +115,13 @@ test('about carries the full seeded document', () => {
   for (const author of ['Sarah Mitchell', 'David Chen', 'Amira Hassan']) {
     assert.ok(about.includes(author), `about should contain testimonial author: ${author}`);
   }
-  // Seeded FAQ items.
-  assert.match(about, /What is structa\.cloud\?/);
-  assert.match(about, /What is the AHA stack\?/);
+  // FAQ is deduplicated onto /faq/ — About carries no duplicate FAQ section,
+  // and instead links to the team subpage.
+  assert.ok(!about.includes('Frequently asked questions'), 'about should NOT contain a duplicate FAQ section');
+  assert.match(about, /Meet the team/);
+  assert.match(about, /\/about\/team\//);
   // Seeded CTA.
-  assert.match(about, /Built open-source, shipped as HTML/);
+  assert.match(about, /Built in the open, shipped as HTML/);
 });
 
 test('features is a full document like about', () => {
@@ -127,59 +130,64 @@ test('features is a full document like about', () => {
   // Seeded capabilities (features section item cards).
   assert.match(features, /Django \+ Wagtail/);
   assert.match(features, /HTMX Fragment Rendering/);
-  // Seeded testimonials + FAQ.
+  // Seeded testimonials. FAQ is deduplicated onto /faq/ only.
   assert.match(features, /Sarah Mitchell/);
-  assert.match(features, /What is structa\.cloud\?/);
+  assert.ok(!features.includes('Frequently asked questions'), 'features should NOT contain a duplicate FAQ section');
   // Seeded CTA.
-  assert.match(features, /Built open-source, shipped as HTML/);
+  assert.match(features, /Built in the open, shipped as HTML/);
 });
 
-test('products is a full document with the six product lines', () => {
-  // Seeded hero: "Everything we build, shipped as" + accent "open source".
-  assert.match(products, /Everything we build, shipped as/);
+test('products is the merged catalog: renamed product cards with logos, status, monorepo link', () => {
+  // Seeded hero: "Most of what we build, shipped as" + accent "open source".
+  assert.match(products, /Most of what we build, shipped as/);
   assert.match(products, /open source/);
   // Seeded stats.
   assert.ok(products.includes('Open-source repos'), 'products should contain seeded stat label');
-  // Product lines (frontend design).
-  assert.match(products, /From libraries to platforms/);
-  for (const name of ['django-fusion', 'ceptor-ai', 'django-bolt', 'vResume', 'Forge POS', 'Cypercloud']) {
-    assert.ok(products.includes(name), `products should contain product line: ${name}`);
+  // The merged section heading + monorepo link (product line + project grid folded together).
+  assert.match(products, /Projects in this repo/);
+  assert.match(products, /Browse the monorepo on GitHub/);
+  // Data-driven catalog — renamed products, no removed/hidden ones.
+  for (const name of ['Formints', 'Precis LMS', 'Loop', 'Syntara', 'vResume']) {
+    assert.ok(products.includes(name), `products should contain product: ${name}`);
+  }
+  // Removed/hidden products get no card and no link (prose mentions in the
+  // shared FAQ are fine — ceptor-ai is still the AI library).
+  assert.ok(!products.includes('django-bolt'), 'products should NOT contain: django-bolt');
+  assert.ok(!products.includes('/products/ceptor-ai/'), 'products should NOT link to hidden ceptor-ai');
+  assert.ok(!products.includes('The product line'), 'products should NOT contain: The product line');
+  // The flagship card shows the Formints editions + pricing inline.
+  for (const marker of ['Community', 'Standard', 'Pro', 'Cloud']) {
+    assert.ok(products.includes(marker), `products should show POS edition: ${marker}`);
+  }
+  // Category badges render on the cards.
+  assert.match(products, /application/);
+  assert.match(products, /platform/);
+  // Logo marks + edition chips render (the merged-card design).
+  assert.match(products, /product-logo/);
+  assert.match(products, /edition-chip/);
+  // Each product renders its own brand-identity chip (no shared generic mark).
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"']) {
+    assert.ok(products.includes(chip), `products should render mark chip: ${chip}`);
   }
   // Seeded CTA (full-document pages close with the about-style CTA).
-  assert.match(products, /Built open-source, shipped as HTML/);
+  assert.match(products, /Built in the open, shipped as HTML/);
 });
 
-test('projects is a full document with the seeded repo grid', () => {
-  // Seeded hero: "Everything we build, shipped as" + accent "one monorepo".
-  assert.match(projects, /Everything we build, shipped as/);
-  assert.match(projects, /one monorepo/);
-  assert.match(projects, /Projects in this repo/);
-  // Seeded project cards: name + edition + description.
-  const seededProjects = [
-    ['Fusion CMS', 'Wagtail backend', 'The Wagtail content engine behind every landing page'],
-    ['Fusion Sites', 'Astro frontend', 'The AHA shell'],
-    ['Forge POS', 'Minimal · Solo · Full', 'desktop point-of-sale'],
-    ['django-fusion', 'library · generic', 'component system'],
-    ['ceptor-ai', 'library · generic', 'MCP server'],
-    ['Cypercloud', 'AI platform', 'chat customizer'],
-  ];
-  for (const [name, edition, descriptionSnippet] of seededProjects) {
-    assert.ok(projects.includes(name), `projects should contain: ${name}`);
-    assert.ok(projects.includes(edition), `projects should contain edition: ${edition}`);
-    assert.ok(projects.includes(descriptionSnippet), `projects should render description for: ${name}`);
-  }
-  // Shared/own feature flags.
-  assert.match(projects, /shared/);
-  assert.match(projects, /own/);
-  // BEM classes present.
-  assert.match(projects, /project__grid/);
-  assert.match(projects, /project__feature--shared/);
+test('projects is a permanent redirect to the merged products catalog', () => {
+  // The legacy route now redirects — Astro emits a meta-refresh document.
+  assert.match(projects, /redirect/i);
+  assert.match(projects, /\/products/);
 });
 
-test('contact shows seeded contact methods', () => {
+test('contact shows seeded contact methods + topic choices', () => {
   assert.match(contact, /We'd love to hear from you/);
   assert.match(contact, /structa\.cloud@gmail\.com/);
   assert.match(contact, /\+1 \(555\) 010-2030/);
+  // The topic select offers the product/service choices.
+  assert.match(contact, /Formints POS/);
+  assert.match(contact, /Precis LMS/);
+  assert.match(contact, /Loop CMS/);
+  assert.match(contact, /Syntara/);
 });
 
 test('faq page shows seeded FAQ items', () => {
@@ -192,7 +200,10 @@ test('privacy page renders its legal document', () => {
   // The Astro privacy page ships its own full legal policy (8 sections); the
   // backend seeds a short RichText body used by the backend render only.
   assert.match(privacy, /Information we collect/);
-  assert.match(privacy, /Cookies and tracking/);
+  // The restructured policy has a dedicated cookies/consent section (section 3)
+  // covering what data is collected and what accepting consent enables.
+  assert.match(privacy, /Cookies and consent/);
+  assert.match(privacy, /What accepting consent does/);
   assert.match(privacy, /Your rights/);
 });
 
@@ -204,45 +215,105 @@ test('blog page shows the seeded post grid', () => {
   assert.match(blog, /monorepo-six-products/);
 });
 
-test('pricing page shows seeded tiers + faq', () => {
-  assert.match(pricing, /Simple, transparent pricing/);
-  for (const tier of ['Starter', 'Pro', 'Team']) {
-    assert.ok(pricing.includes(tier), `pricing should contain tier: ${tier}`);
+test('pricing page shows per-product tabs + faq', () => {
+  assert.match(pricing, /Pick a product, see its editions/);
+  for (const product of ['Formints', 'Precis LMS', 'Loop', 'Syntara', 'vResume']) {
+    assert.ok(pricing.includes(product), `pricing should contain product tab: ${product}`);
   }
-  assert.match(pricing, /What is structa\.cloud\?/);
+  // The default tab shows Formints' four editions incl. the new pricing.
+  for (const marker of ['Community', 'Standard', 'Pro', 'Cloud', '$119', '$79']) {
+    assert.ok(pricing.includes(marker), `pricing should contain: ${marker}`);
+  }
+  // Syntara's development caution badge renders in its tab.
+  assert.match(pricing, /under development/);
+  // Hidden products are not tabbed.
+  assert.ok(!pricing.includes('/products/ceptor-ai/'), 'pricing should not link to hidden products');
+  // FAQ is deduplicated — pricing points buyers to the dedicated page.
+  assert.ok(!pricing.includes('Frequently asked questions'), 'pricing should NOT contain a duplicate FAQ section');
+  assert.match(pricing, /Read the FAQ/);
+  assert.match(pricing, /\/faq\//);
 });
 
-test('services page shows offering grid + build-as-you-go process', () => {
-  assert.match(services, /Sites that ship as documents/);
-  assert.match(services, /Django \+ Wagtail build/);
+test('services page shows the three service lines + build-as-you-go process', () => {
+  assert.match(services, /From marketing sites to full products/);
+  for (const line of ['Website building', 'Product &amp; project development', 'Enhancements &amp; extensions']) {
+    assert.ok(services.includes(line), `services should contain: ${line}`);
+  }
   assert.match(services, /From brief to shipped, in four steps/);
   assert.match(services, /Discover/);
   assert.match(services, /Ship &amp; grow/);  // `&` is HTML-escaped in the build
 });
 
+test('brand page renders the identity system: one board per product with its constructed mark', () => {
+  assert.match(brand, /One family, five marks/);
+  // Each brand's essence line + its own data-brand mark chip.
+  for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'Content, composed.', 'Chat, routed around your brand.', 'Your career, on the record.']) {
+    assert.ok(brand.includes(essence), `brand should contain essence: ${essence}`);
+  }
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"']) {
+    assert.ok(brand.includes(chip), `brand should render mark chip: ${chip}`);
+  }
+  // Brand story labels + construction notes are present.
+  assert.match(brand, /construction/);
+  assert.match(brand, /palette/);
+  // The palette is driven by the spec — brand accent swatch + shared system
+  // tokens render on every board (brand-swatch chips with token titles).
+  assert.match(brand, /brand-swatch/);
+  assert.match(brand, /title="paper"/);
+  assert.match(brand, /title="ink"/);
+  assert.match(brand, /title="line"/);
+});
+
 test('products page lists every product page card', () => {
-  assert.match(products, /Every product, one page each/);
-  for (const href of ['/products/forge-pos/', '/products/lms/', '/products/cms/']) {
+  assert.match(products, /Projects in this repo/);
+  for (const href of ['/products/forge-pos/', '/products/lms/', '/products/cms/', '/products/vresume/']) {
     assert.ok(products.includes(href), `products should link to: ${href}`);
   }
 });
 
-test('forge-pos page shows all editions with per-edition pricing', () => {
-  assert.match(forgePos, /Forge POS/);
-  for (const marker of ['Minimal', 'Solo', 'Full', '$0', '$49', '$99']) {
-    assert.ok(forgePos.includes(marker), `forge-pos should contain: ${marker}`);
+test('formints page shows all four tiered editions with per-edition pricing', () => {
+  assert.match(forgePos, /Formints/);
+  for (const marker of ['Community', 'Standard', 'Pro', 'Cloud', '$0', '$119', '$79', 'Custom']) {
+    assert.ok(forgePos.includes(marker), `formints should contain: ${marker}`);
   }
+  // The visual tiering system: outline Community, featured Pro, managed Cloud.
+  assert.match(forgePos, /edition__card--outline/);
+  assert.match(forgePos, /most shipped/);
+  assert.match(forgePos, /managed-ribbon/);
   // Reference snippets (SQLite schema + Rust model).
   assert.match(forgePos, /SQLite schema/);
   assert.match(forgePos, /Rust model/);
   assert.match(forgePos, /CREATE TABLE sales/);
 });
 
-test('lms and cms pages render their editions', () => {
-  assert.match(lms, /Fusion LMS/);
-  assert.match(lms, /Starter/);
-  assert.match(cms, /Fusion CMS/);
-  assert.match(cms, /Basic/);
+test('forge-pos page ships the full feature-comparison table', () => {
+  // The Wagtail-managed comparison block: ~26 capability rows across 4 editions.
+  assert.match(forgePos, /Compare editions/);
+  assert.match(forgePos, /Community vs Standard vs Pro vs Cloud/);
+  for (const row of [
+    'React 19 + TypeScript frontend',
+    'Tauri 2 + Rust backend',
+    'SQLite database (37 tables)',
+    'Python/Robyn sidecar API',
+    'WebSocket real-time streaming',
+    'High-throughput Rust API (60k+ RPS)',
+    'Hosted deployment + managed backups',
+  ]) {
+    assert.ok(forgePos.includes(row), `forge-pos comparison should contain row: ${row}`);
+  }
+  // Cells render as plain text where a note is present (not only Yes/No).
+  assert.match(forgePos, /60\+ endpoints/);
+  assert.match(forgePos, /cloud master/);
+});
+
+test('precis-lms and loop pages render their editions', () => {
+  assert.match(lms, /Precis LMS/);
+  assert.match(lms, /Community/);
+  assert.match(lms, /Solo/);
+  assert.match(lms, /Business/);
+  assert.match(cms, /Loop/);
+  assert.match(cms, /Community/);
+  assert.match(cms, /Business/);
 });
 
 test('blog post detail pages render seeded bodies and link back to /blog', () => {

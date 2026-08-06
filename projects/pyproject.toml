@@ -97,6 +97,7 @@ dependencies = [
     "httpx>=0.25.0",
     "markdown>=3.5",
     "msgspec>=0.21.1",
+    "qrcode>=8.2",
 ]
 
 [project.optional-dependencies]

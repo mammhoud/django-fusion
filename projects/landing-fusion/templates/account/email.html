@@ -1,0 +1,57 @@
+{% extends "account/base_manage_email.html" %}
+{% load i18n %}
+{% block head_title %}{% trans "Email Addresses" %}{% endblock %}
+{% block auth_inner %}
+<p class="tag-marker" style="margin:0 0 .25rem;">account · email</p>
+<h2 style="margin:0 0 .5rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;color:hsl(var(--fu-ink));">Email addresses</h2>
+<p style="margin:0 0 1.5rem;font-size:.8rem;color:hsl(var(--fu-muted));">Manage the emails connected to your account.</p>
+
+{% if emailaddresses %}
+<p style="margin:0 0 .75rem;font-size:.8rem;color:hsl(var(--fu-muted));">The following emails are associated with your account:</p>
+<form method="post" action="{% url 'account_email' %}" style="margin-bottom:1.5rem;">
+  {% csrf_token %}
+  {% for radio in emailaddress_radios %}
+  {% with emailaddress=radio.emailaddress %}
+  <label for="{{ radio.id }}" style="display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;margin-bottom:.5rem;border:1px solid hsl(var(--fu-border));border-radius:.5rem;cursor:pointer;font-size:.85rem;color:hsl(var(--fu-ink));">
+    <input type="radio" name="email" id="{{ radio.id }}" value="{{ emailaddress.email }}" {% if radio.checked %}checked{% endif %}>
+    <span style="flex:1;">{{ emailaddress.email }}</span>
+    {% if emailaddress.verified %}
+      <span class="status-line" style="color:hsl(var(--fu-live));">verified</span>
+    {% else %}
+      <span class="status-line" style="color:hsl(var(--fu-mark));">unverified</span>
+    {% endif %}
+    {% if emailaddress.primary %}<span class="status-line" style="color:hsl(var(--fu-link));">primary</span>{% endif %}
+  </label>
+  {% endwith %}
+  {% endfor %}
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem;">
+    <button type="submit" name="action_primary" class="btn btn-secondary" style="padding:.5rem .9rem;font-size:.8rem;">Make Primary</button>
+    <button type="submit" name="action_send" class="btn btn-secondary" style="padding:.5rem .9rem;font-size:.8rem;">Re-send Verification</button>
+    <button type="submit" name="action_remove" class="btn btn-secondary" style="padding:.5rem .9rem;font-size:.8rem;color:#ef4444;border-color:hsl(0 70% 55% / .4);">Remove</button>
+  </div>
+</form>
+{% else %}
+<p style="margin:0 0 1rem;font-size:.85rem;color:hsl(var(--fu-muted));">You have no verified email address connected.</p>
+{% endif %}
+
+{% if can_add_email %}
+<h3 style="margin:0 0 .75rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;color:hsl(var(--fu-ink));">Add email address</h3>
+<form method="post" action="{% url 'account_email' %}">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.is_hidden %}{{ field }}{% else %}
+    <div style="margin-bottom:1rem;">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  <button type="submit" name="action_add" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;">Add Email</button>
+</form>
+{% endif %}
+
+<p style="margin:1.5rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">
+  <a href="{% url 'account_change_password' %}" style="font-weight:500;color:hsl(var(--fu-link));">Change password</a>
+</p>
+{% endblock %}

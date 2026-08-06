@@ -1,0 +1,18 @@
+{% extends "account/email/base_email.html" %}
+{% load account i18n %}
+{% block email_body %}
+{% user_display user as user_display %}
+<h1 style="margin:0 0 16px;font-size:20px;color:#1A1917;font-family:'Courier New',monospace;letter-spacing:-0.02em;">Confirm your email</h1>
+<p style="margin:0 0 16px;">Hi {% if user_display %}{{ user_display }}{% else %}there{% endif %},</p>
+<p style="margin:0 0 16px;">You're receiving this because {{ user_display }} used this email to create an account on <strong>{{ current_site.domain }}</strong>. Confirm the address to activate your account.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+  <tr>
+    <td style="border-radius:6px;background:#0B57D0;padding:12px 22px;font-size:14px;font-weight:600;">
+      <a href="{{ activate_url }}" style="color:#FFFFFF;text-decoration:none;display:inline-block;">Confirm email address</a>
+    </td>
+  </tr>
+</table>
+<p style="margin:0 0 8px;font-size:12px;color:#8A857C;">Or copy this link into your browser:</p>
+<p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0B57D0;word-break:break-all;">{{ activate_url }}</p>
+<p style="margin:0;font-size:12px;color:#8A857C;">If you didn't create this account, you can safely ignore this email.</p>
+{% endblock %}

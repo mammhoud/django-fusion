@@ -19,7 +19,7 @@
         hx-post="/fragment/contact/"
         hx-target="#contact-form-result"
         hx-swap="innerHTML"
-        x-data="{ name: '', email: '', message: '', valid: false }"
+        x-data="{ name: '', email: '', topic: '', message: '', valid: false }"
         x-effect="valid = name.trim() && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && message.trim()"
         @submit="if (!valid) $event.preventDefault()"
       >
@@ -31,6 +31,13 @@
         <div>
           <label for="cf-email" class="form-label">Email</label>
           <input id="cf-email" name="email" type="email" x-model="email" class="input-field" placeholder="you@example.com" required />
+        </div>
+        <div>
+          <label for="cf-topic" class="form-label">What can we help with?</label>
+          <select id="cf-topic" name="topic" x-model="topic" class="input-field">
+            <option value="">Choose a topic…</option>
+            {% for topic in value.topics %}<option value="{{ topic }}">{{ topic }}</option>{% endfor %}
+          </select>
         </div>
         <div>
           <label for="cf-message" class="form-label">Message</label>

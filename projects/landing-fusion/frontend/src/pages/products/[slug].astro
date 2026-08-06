@@ -6,6 +6,7 @@ import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
+import ProductLogo from '@/components/ui/ProductLogo.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -33,6 +34,7 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageTech = (pageData?.tech as any[] | undefined);
 const pageEditions = (pageData?.editions as any[] | undefined);
+const pageComparison = (pageData?.comparison as any[] | undefined);
 const pageSnippets = (pageData?.snippets as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
@@ -45,8 +47,23 @@ const editions = pageEditions?.map((e: any) => ({
   period: String(e.period || ''),
   features: (e.features || []) as string[],
   cta: { label: String(e.cta_label || 'Get started'), href: String(e.cta_href || '/#cta') },
-  highlighted: Boolean(e.featured),
+  tier: String(e.tier || 'default'),
 }));
+
+// Edition card treatment per tier — mirrors the Django edition.html block.
+function editionCardClass(tier: string): string {
+  if (tier === 'featured') return 'edition__card--featured md:-translate-y-1';
+  if (tier === 'managed') return 'edition__card--managed overflow-hidden';
+  if (tier === 'outline') return 'edition__card--outline';
+  return '';
+}
+const comparison = pageComparison?.[0] && ({
+  eyebrow: String(pageComparison[0].eyebrow || ''),
+  title: String(pageComparison[0].title || 'Compare editions'),
+  description: String(pageComparison[0].description || ''),
+  columns: (pageComparison[0].columns || []) as string[],
+  rows: (pageComparison[0].rows || []) as { feature: string; cells: string[] }[],
+});
 const snippets = pageSnippets?.map((s: any) => ({
   title: String(s.title || ''),
   language: String(s.language || ''),
@@ -73,7 +90,7 @@ const faqItems = pageFaq?.map((f: any) => ({
   pageSlug={slug}
 >
   <Hero
-    eyebrow={pageHero?.badge || `products · ${slug}`}
+    eyebrow={pageHero?.badge || `products · ${pageData?.category || slug}`}
     heading={pageHero?.title || pageData?.title || 'Product'}
     accent=''
     intro={pageHero?.subtitle || ''}
@@ -82,12 +99,43 @@ const faqItems = pageFaq?.map((f: any) => ({
     status='200 OK · text/html · the product, in one response'
   />
 
+  {pageData?.logo_style && (
+    <section class='container-fusion' style='padding-top:1.75rem'>
+      <div class='product-lockup flex flex-wrap items-center gap-4'>
+        <ProductLogo style={pageData.logo_style} />
+        <div>
+          <h2 class='font-display text-2xl font-bold tracking-tight text-fu-ink' style='margin:0'>{pageData.title}</h2>
+          {pageData.tagline && <p class='mt-0.5 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted' style='margin:0'>{pageData.tagline}</p>}
+        </div>
+        <button
+          type='button'
+          data-open-brand={slug}
+          aria-label={`${pageData.title} brand kit`}
+          title='Brand kit — the story behind the mark'
+          class='ml-auto inline-flex items-center gap-2 rounded-full border border-fu-line bg-fu-card px-3.5 py-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted transition-colors hover:border-fu-link/50 hover:text-fu-link'
+        >
+          <svg class='h-3.5 w-3.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'><circle cx='12' cy='12' r='9'/><path stroke-linecap='round' d='M12 11v5M12 8h.01'/></svg>
+          brand
+        </button>
+      </div>
+    </section>
+  )}
+
+  {pageData?.status === 'development' && (
+    <section class='container-fusion pt-6'>
+      <span class='badge-dev' role='note'>under development</span>
+      <p class='mt-3 max-w-2xl text-sm text-fu-muted'>
+        This product is an early preview — its APIs, editions and pricing may
+        change before the 1.0 release. Treat what you see as a roadmap, not a contract.
+      </p>
+    </section>
+  )}
+
   {techItems?.length ? (
     <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
       <div class='container-fusion'>
-        <div class='mx-auto mb-8 max-w-2xl text-center'>
-          <p class='tag-marker mb-4'>stack</p>
-          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl'>Built on</h2>
+        <div class='mb-8 max-w-2xl'>
+          <h2 class='font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl'>Built on</h2>
         </div>
         <div class='flex flex-wrap items-center justify-center gap-2.5'>
           {techItems.map((t) => (
@@ -101,14 +149,15 @@ const faqItems = pageFaq?.map((f: any) => ({
   {editions?.length ? (
     <section id='editions' class='doc-sheet bg-fu-surface py-20 md:py-24'>
       <div class='container-fusion'>
-        <div class='mx-auto mb-14 max-w-2xl text-center'>
+        <div class='mb-14 max-w-2xl'>
           <p class='tag-marker mb-4'>editions &amp; pricing</p>
           <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Editions</h2>
         </div>
-        <div class='grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3'>
+        <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', editions.length === 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3']}>
           {editions.map((ed) => (
-            <div class:list={['card relative flex flex-col p-6 sm:p-8', ed.highlighted && 'border-fu-link shadow-lg md:-translate-y-1']}>
-              {ed.highlighted && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}
+            <div class:list={['card edition__card relative flex flex-col p-6 sm:p-8', editionCardClass(ed.tier)]}>
+              {ed.tier === 'featured' && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}
+              {ed.tier === 'managed' && <span class='managed-ribbon' aria-hidden='true'>managed</span>}
               <p class='tag-marker mb-1'>{ed.name}</p>
               {ed.tagline && <p class='mb-6 text-sm text-fu-muted'>{ed.tagline}</p>}
               <div class='mb-7 flex items-baseline gap-2'>
@@ -125,9 +174,55 @@ const faqItems = pageFaq?.map((f: any) => ({
                   </li>
                 ))}
               </ul>
-              <a href={ed.cta.href} class:list={['mt-auto w-full', ed.highlighted ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
+              <a href={ed.cta.href} class:list={['mt-auto w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {comparison?.rows?.length ? (
+    <section id='comparison' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-12 max-w-2xl'>
+          {comparison.eyebrow && <p class='tag-marker mb-4'>{comparison.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{comparison.title}</h2>
+          {comparison.description && <p class='text-fu-muted'>{comparison.description}</p>}
+        </div>
+        <div class='overflow-x-auto rounded-xl border border-fu-line bg-fu-card'>
+          <table class='w-full min-w-[640px] border-collapse text-left text-sm'>
+            <thead>
+              <tr class='border-b border-fu-line bg-fu-paper/60'>
+                <th scope='col' class='px-4 py-3.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-fu-muted'>Feature</th>
+                {comparison.columns.map((col: string) => (
+                  <th scope='col' class='px-4 py-3.5 text-center font-display text-[0.95rem] font-semibold text-fu-ink'>{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {comparison.rows.map((row: { feature: string; cells: string[] }) => (
+                <tr class='border-b border-fu-line/50 last:border-b-0'>
+                  <th scope='row' class='px-4 py-3 align-top font-medium text-fu-ink'>{row.feature}</th>
+                  {row.cells.map((cell) => (
+                    <td class='px-4 py-3 text-center'>
+                      {cell === 'Yes' ? (
+                        <span class='inline-flex items-center justify-center text-fu-live' title='Included' aria-label='Included'>
+                          <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/></svg>
+                        </span>
+                      ) : cell === 'No' ? (
+                        <span class='inline-flex items-center justify-center text-fu-muted/70' title='Not included' aria-label='Not included'>
+                          <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M6 6l12 12M18 6L6 18'/></svg>
+                        </span>
+                      ) : (
+                        <span class='text-fu-text/80'>{cell}</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -136,8 +231,7 @@ const faqItems = pageFaq?.map((f: any) => ({
   {snippets?.length ? (
     <section id='snippets' class='doc-sheet bg-fu-paper py-20 md:py-24'>
       <div class='container-fusion'>
-        <div class='mx-auto mb-14 max-w-2xl text-center'>
-          <p class='tag-marker mb-4'>reference</p>
+        <div class='mb-14 max-w-2xl'>
           <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Models &amp; snippets</h2>
           <p class='text-fu-muted'>Copy these patterns into your own Fusion project.</p>
         </div>
@@ -159,13 +253,12 @@ const faqItems = pageFaq?.map((f: any) => ({
   {capabilities?.length ? (
     <section class='doc-sheet bg-fu-surface py-20 md:py-24'>
       <div class='container-fusion'>
-        <div class='mx-auto mb-14 max-w-2xl text-center'>
-          <p class='tag-marker mb-4'>capabilities</p>
+        <div class='mb-14 max-w-2xl'>
           <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>What it ships</h2>
         </div>
         <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
           {capabilities.map((cap, i) => (
-            <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+            <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
               <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
                 <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
                   <path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} />
@@ -183,7 +276,7 @@ const faqItems = pageFaq?.map((f: any) => ({
   {faqItems?.length ? <FAQ items={faqItems} heading='Questions, answered' intro='The honest answers to product questions.' /> : null}
 
   <CTA
-    heading={pageCta?.title || 'Everything is open source'}
+    heading={pageCta?.title || 'Most of our builds are open source'}
     intro={pageCta?.subtitle || 'Explore the full product line.'}
     ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
     ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}

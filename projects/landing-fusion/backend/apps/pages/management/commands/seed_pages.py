@@ -18,6 +18,7 @@ from apps.pages.models import (
     AboutPage,
     BlogPage,
     BlogPostPage,
+    BrandPage,
     ContactPage,
     FaqPage,
     FeaturesPage,
@@ -26,71 +27,48 @@ from apps.pages.models import (
     PrivacyPage,
     ProductPage,
     ProductsPage,
-    ProjectsPage,
     ServicesPage,
+    TeamPage,
 )
 
 # Services the project offers — the “feature” grid on the Services page.
-# Mirrors the frontend services page (feature cards with deliverables).
+# Three service lines: website building, product & project development, and
+# enhancements — mirrors the frontend services page (cards + deliverables).
 DEFAULT_SERVICES_SECTIONS = {
     "services": [
         (
             "services",
             {
-                "eyebrow": "What we do",
-                "title": "Sites that ship as documents",
+                "title": "From marketing sites to full products",
                 "description": (
-                    "Server-rendered HTML first. Every engagement below delivers "
-                    "a finished page — no heavy SPA, no hydration waterfall."
+                    "Three service lines, one promise: finished, server-rendered "
+                    "deliverables you can put in front of users. Websites, custom "
+                    "products, and enhancements built on the AHA stack."
                 ),
                 "services": [
                     {
-                        "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
-                        "title": "Django + Wagtail build",
-                        "description": "Content-managed sites with StreamField blocks — editors compose, Django renders server-side.",
-                        "deliverables": ["Wagtail page tree", "StreamField sections", "django-fusion rendering"],
+                        "icon": "M4 5h16v14H4z M4 12h16",
+                        "title": "Website building",
+                        "description": "Marketing sites, landing pages and content-driven websites. Wagtail StreamFields composed into fast, server-rendered HTML.",
+                        "deliverables": ["Wagtail page tree + StreamField sections", "Astro SSG shell, zero-JS pages", "django-fusion component rendering", "Hosting, domains + HTTPS setup"],
                         "cta_label": "See the stack",
                         "cta_href": "/features/",
                     },
                     {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
-                        "title": "HTMX integrations",
-                        "description": "Dynamic regions stream from Django as HTML fragments — no JSON API layer, no decoder to maintain.",
-                        "deliverables": ["Fragment endpoints", "HTMX swap targets", "In-flight indicators"],
-                        "cta_label": "See a live demo",
-                        "cta_href": "/#cta",
-                    },
-                    {
-                        "icon": "M4 5h16v14H4z M4 12h16",
-                        "title": "Astro + Alpine frontends",
-                        "description": "Zero-JS landing pages with Alpine micro-interactions only where the page needs them.",
-                        "deliverables": ["Astro SSG shell", "Alpine components", "Theme persistence"],
-                        "cta_label": "Read the docs",
-                        "cta_href": "/about/",
-                    },
-                    {
-                        "icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87",
-                        "title": "Monorepo architecture",
-                        "description": "Shared configs, assets and components across every site — one repo, one CI pipeline.",
-                        "deliverables": ["Shared settings", "Shared assets", "Reusable libraries"],
-                        "cta_label": "Browse the repo",
-                        "cta_href": "/projects/",
-                    },
-                    {
-                        "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
-                        "title": "AI-powered tooling",
-                        "description": "ceptor-ai MCP server for agent communication, code generation, and prompt-to-design conversion.",
-                        "deliverables": ["MCP server", "AI chat client", "Agent scaffolding"],
-                        "cta_label": "Meet ceptor-ai",
+                        "title": "Product & project development",
+                        "description": "Custom software built as a product: POS systems, learning platforms, AI tools and internal tooling. Desktop or web, from brief to deployed.",
+                        "deliverables": ["Desktop apps with Tauri 2 + Rust", "Web platforms on Django + Wagtail", "REST / fragment APIs + HTMX", "Cloud deployment + CI/CD"],
+                        "cta_label": "See our products",
                         "cta_href": "/products/",
                     },
                     {
-                        "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
-                        "title": "Open-source first",
-                        "description": "django-fusion, ceptor-ai and django-bolt are public on GitHub under permissive licenses.",
-                        "deliverables": ["Public libraries", "Contribution guides", "Semver releases"],
-                        "cta_label": "Contribute",
-                        "cta_href": "https://github.com/mammhoud",
+                        "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
+                        "title": "Enhancements & extensions",
+                        "description": "Upgrade an existing site: new sections and blocks, performance tuning, content migrations, and ongoing CMS support.",
+                        "deliverables": ["New StreamField blocks + sections", "Performance audit + Core Web Vitals", "Content migration to Wagtail", "CMS training + maintenance"],
+                        "cta_label": "Contact us",
+                        "cta_href": "/contact/",
                     },
                 ],
             },
@@ -100,10 +78,9 @@ DEFAULT_SERVICES_SECTIONS = {
         (
             "process",
             {
-                "eyebrow": "Build as you go",
                 "title": "From brief to shipped, in four steps",
                 "description": (
-                    "No big-bang rewrite. We ship incrementally — each step "
+                    "No big-bang rewrite. We ship incrementally, and each step "
                     "delivers working HTML you can put in front of users."
                 ),
                 "steps": [
@@ -114,7 +91,7 @@ DEFAULT_SERVICES_SECTIONS = {
                     },
                     {
                         "title": "Design",
-                        "description": "Tokens first — type, color, spacing — then the page as a component tree.",
+                        "description": "Tokens first: type, color, spacing, then the page as a component tree.",
                         "deliverable": "Fusion token set",
                     },
                     {
@@ -145,7 +122,7 @@ DEFAULT_BLOG_POSTS = [
         "category": "Architecture",
         "date": "2026-07-28",
         "read_time": "6 min read",
-        "excerpt": "Every page is finished HTML in one response. No SPA shell, no hydration waterfall — just the web as it should be.",
+        "excerpt": "Every page is finished HTML in one response. No SPA shell, no hydration waterfall, just the web as it should be.",
     },
     {
         "title": "HTMX fragments vs. JSON APIs",
@@ -169,7 +146,7 @@ DEFAULT_BLOG_POSTS = [
         "category": "Frontend",
         "date": "2026-06-12",
         "read_time": "4 min read",
-        "excerpt": "Accordions, toggles, counters — a few x-data attributes instead of a framework.",
+        "excerpt": "Accordions, toggles, counters, a few x-data attributes instead of a framework.",
     },
     {
         "title": "A monorepo that ships six products",
@@ -195,7 +172,6 @@ DEFAULT_BLOG_SECTION = {
         (
             "blog",
             {
-                "eyebrow": "Insights",
                 "title": "From the blog",
                 "description": (
                     "Notes on the AHA stack, Wagtail, HTMX, and shipping "
@@ -323,69 +299,125 @@ DEFAULT_BLOG_POST_BODIES = {
 
 DEFAULT_PRODUCT_PAGES = {
     "forge-pos": {
-        "title": "Forge POS",
-        "tagline": "Desktop point-of-sale in three editions — Minimal, Solo, Full.",
+        "title": "Formints",
+        "logo_style": "crest",
+        "category": "application",
+        "tagline": "Desktop point-of-sale in four editions: Community, Standard, Pro, Cloud.",
         "hero": [
             (
                 "hero",
                 {
-                    "title": "Forge POS",
-                    "subtitle": "A desktop point-of-sale application in three editions — Tauri 2 + Rust core, React/Vite shell, SQLite storage.",
+                    "title": "Formints",
+                    "subtitle": "A desktop point-of-sale application with a Tauri 2 + Rust core, React/Vite shell, and SQLite storage.",
                     "primary_cta": {"label": "See the editions", "href": "/products/forge-pos/#editions", "style": "secondary"},
                     "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/forge-pos", "style": "white"},
-                    "trusted_by": "Minimal · Solo · Full — one codebase, three ships",
+                    "trusted_by": "Community · Standard · Pro · Cloud",
                 },
             )
         ],
         "body": (
-            "<p>Forge POS is a desktop point-of-sale application built on "
+            "<p>Formints is a desktop point-of-sale application built on "
             "Tauri 2 + Rust with a React/Vite frontend and SQLite storage.</p>"
-            "<p>It ships in three editions that share one codebase: Minimal "
-            "(bare-bones Tauri + Rust + SQLite), Solo (embedded Python "
-            "sidecar), and Full (multi-terminal with an external sidecar and "
-            "cloud CRM).</p>"
+            "<p>It ships in four editions that share one codebase: Community "
+            "(free, offline-first single terminal), Standard (standalone with "
+            "an embedded Python sidecar + cloud sync), Pro (multi-terminal "
+            "with a cloud master), and Cloud (fully hosted multi-terminal "
+            "with managed cloud CRM).</p>"
         ),
         "tech": [
-            ("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Rust", "Tauri 2", "React", "TypeScript", "SQLite", "Diesel"]}),
+            ("tech", {"title": "Built on", "items": ["Rust", "Tauri 2", "React", "TypeScript", "SQLite", "Diesel"]}),
         ],
         "editions": [
             (
                 "editions",
                 {
                     "eyebrow": "Editions & pricing",
-                    "title": "Three editions, one codebase",
+                    "title": "Four editions, one codebase",
                     "description": "Every edition shares the Tauri + Rust core. Upgrade as your terminal grows.",
                     "editions": [
                         {
-                            "name": "Minimal",
-                            "tagline": "Bare-bones Tauri + Rust + SQLite for a single terminal.",
+                            "name": "Community",
+                            "tagline": "Free and open source. The offline-first POS for a single terminal.",
                             "price": "$0",
                             "period": "/open source",
-                            "features": ["Tauri 2 + Rust core", "SQLite storage", "Sales + receipting", "Local dashboard"],
+                            "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage (37 tables)", "Sales, receipting + inventory", "Kitchen display + payroll", "i18n: en, fr, ar", "No sidecar, no server needed"],
                             "cta_label": "Download",
                             "cta_href": "https://github.com/mammhoud/forge-pos",
                             "featured": False,
+                            "tier": "outline",
                         },
                         {
-                            "name": "Solo",
-                            "tagline": "Standalone terminal with an embedded Python sidecar.",
-                            "price": "$49",
-                            "period": "/one-time",
-                            "features": ["Everything in Minimal", "Embedded Python sidecar", "Inventory tracking", "Sales analytics", "Receipt branding"],
-                            "cta_label": "Buy Solo",
-                            "cta_href": "/contact/",
-                            "featured": True,
-                        },
-                        {
-                            "name": "Full",
-                            "tagline": "Multi-terminal with external sidecar + cloud CRM.",
-                            "price": "$99",
-                            "period": "/month",
-                            "features": ["Everything in Solo", "Multi-terminal sync", "External sidecar", "Cloud CRM", "Employee scheduling", "Kitchen display", "Time-bucketed KPIs"],
-                            "cta_label": "Contact Sales",
+                            "name": "Standard",
+                            "tagline": "Standalone terminal with an embedded Python sidecar + cloud sync client.",
+                            "price": "$119",
+                            "period": "/one-time license",
+                            "features": ["Everything in Community", "Embedded Robyn sidecar (60+ endpoints)", "REST API for integrations", "Inventory + sales analytics", "Invoice PDF generation", "Cloud CRM sync client", "Token-based device auth", "Deployment & support quoted per site"],
+                            "cta_label": "Buy Standard",
                             "cta_href": "/contact/",
                             "featured": False,
+                            "tier": "default",
                         },
+                        {
+                            "name": "Pro",
+                            "tagline": "Multi-terminal with a cloud master, WebSocket streaming, and a high-throughput Rust API.",
+                            "price": "$79",
+                            "period": "/per month",
+                            "features": ["Everything in Standard", "Multi-terminal sync (cloud master)", "High-throughput Rust API (60k+ RPS)", "WebSocket real-time streaming", "Product sync engine (master)", "Employee scheduling + KPIs", "Change signals + approvals", "Deployment & support fees apply"],
+                            "cta_label": "Contact Sales",
+                            "cta_href": "/contact/",
+                            "featured": True,
+                            "tier": "featured",
+                        },
+                        {
+                            "name": "Cloud",
+                            "tagline": "Fully hosted multi-terminal. The Pro cloud master, managed for you.",
+                            "price": "Custom",
+                            "period": "/per month",
+                            "features": ["Everything in Pro", "Hosted cloud CRM master", "Unlimited terminals", "Cross-device data sync", "Backups + monitoring", "Dedicated onboarding + support", "Contact us for a managed-cloud quote"],
+                            "cta_label": "Talk to Sales",
+                            "cta_href": "/contact/",
+                            "featured": False,
+                            "tier": "managed",
+                        },
+                    ],
+                },
+            )
+        ],
+        "comparison": [
+            (
+                "comparison",
+                {
+                    "eyebrow": "Compare editions",
+                    "title": "Community vs Standard vs Pro vs Cloud",
+                    "description": "Every edition shares the Tauri + Rust core. Rows below show exactly what moves you up the ladder.",
+                    "columns": ["Community", "Standard", "Pro", "Cloud"],
+                    "rows": [
+                        {"feature": "React 19 + TypeScript frontend", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Tauri 2 + Rust backend", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "SQLite database (37 tables)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "i18n (en/fr/ar)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "POS terminal + inventory + analytics", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Employees, payroll, scheduling", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Kitchen display system", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "POS-KO Gaming Center", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Django Portal (admin UI)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Python/Robyn sidecar API", "cells": ["No", "60+ endpoints", "70+ endpoints", "70+ endpoints"]},
+                        {"feature": "REST API (35+ endpoints)", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Invoice PDF generation", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Chat support widget", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Cloud CRM sync client", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Django ORM models (organized packages)", "cells": ["No", "17 tables", "7+30 tables", "7+30 tables"]},
+                        {"feature": "WebSocket real-time streaming", "cells": ["No", "/ws/config", "/ws/config + /ws/nodes", "/ws/config + /ws/nodes"]},
+                        {"feature": "Django Signals (config_changed, etc.)", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Token-based auth (DeviceToken)", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Moderated Approvals (SyncApproval)", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Product Sync Engine", "cells": ["No", "child", "master", "master"]},
+                        {"feature": "Cross-device data sync", "cells": ["No", "push to master", "cloud master", "cloud master"]},
+                        {"feature": "Cloud CRM (shared-portal)", "cells": ["No", "sync client", "sync master", "sync master"]},
+                        {"feature": "JSON seed fixtures", "cells": ["No", "No", "Yes", "Yes"]},
+                        {"feature": "Change signals (broadcast)", "cells": ["No", "No", "Yes", "Yes"]},
+                        {"feature": "High-throughput Rust API (60k+ RPS)", "cells": ["No", "No", "Yes", "Yes"]},
+                        {"feature": "Hosted deployment + managed backups", "cells": ["No", "No", "No", "Yes"]},
                     ],
                 },
             )
@@ -394,9 +426,8 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "snippets",
                 {
-                    "eyebrow": "Reference",
                     "title": "Models & snippets you can reuse",
-                    "description": "The core schema and entrypoint — the same patterns LMS and other projects borrow.",
+                    "description": "The core schema and entrypoint. The same patterns LMS and other projects borrow.",
                     "snippets": [
                         {
                             "title": "SQLite schema (Diesel up.sql)",
@@ -416,13 +447,12 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "features",
                 {
-                    "eyebrow": "Capabilities",
-                    "title": "What Forge POS ships",
+                    "title": "What Formints POS ships",
                     "description": "The features that move a terminal from a cash register to a business tool.",
                     "features": [
-                        {"icon": "M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3", "title": "Fast, native checkout", "description": "A Rust core keeps every keystroke instant — no web latency on the counter."},
-                        {"icon": "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z", "title": "SQLite by default", "description": "Zero-config local storage that scales up to a synced multi-terminal setup in Full."},
-                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Three editions", "description": "Minimal, Solo, Full — one codebase, feature-gated per edition."},
+                        {"icon": "M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3", "title": "Fast, native checkout", "description": "A Rust core keeps every keystroke instant, with no web latency on the counter."},
+                        {"icon": "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z", "title": "SQLite by default", "description": "Zero-config local storage that scales up to a synced multi-terminal setup in Pro."},
+                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Four editions, one codebase", "description": "Community, Standard, Pro, Cloud, feature-gated from a single Tauri + Rust core."},
                     ],
                 },
             )
@@ -431,11 +461,10 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "faq",
                 {
-                    "eyebrow": "FAQ",
-                    "title": "Forge POS questions",
+                    "title": "Formints POS questions",
                     "items": [
-                        {"question": "Which edition should I start with?", "answer": "Minimal is open source and perfect for a single terminal. Upgrade to Solo for inventory + analytics, or Full for multi-terminal + cloud CRM."},
-                        {"question": "Can I reuse the schema in another project?", "answer": "Yes — the SQLite schema and Rust models are public reference material under the repo's license."},
+                        {"question": "Which edition should I start with?", "answer": "Community is open source and perfect for a single terminal. Upgrade to Standard for the sidecar API + cloud sync, to Pro for a multi-terminal cloud master, or to Cloud for the fully hosted setup."},
+                        {"question": "Can I reuse the schema in another project?", "answer": "Yes. The SQLite schema and Rust models are public reference material under the repo's license."},
                     ],
                 },
             )
@@ -445,7 +474,7 @@ DEFAULT_PRODUCT_PAGES = {
                 "cta",
                 {
                     "title": "Run a terminal in minutes",
-                    "subtitle": "Clone the repo, run the Minimal edition, and upgrade editions as you grow.",
+                    "subtitle": "Clone the repo, run the Community edition, and upgrade editions as you grow.",
                     "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/forge-pos", "style": "white"},
                     "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
                 },
@@ -453,13 +482,15 @@ DEFAULT_PRODUCT_PAGES = {
         ],
     },
     "lms": {
-        "title": "Fusion LMS",
-        "tagline": "The learning platform behind structa.cloud — courses, enrollments, payments.",
+        "title": "Precis LMS",
+        "logo_style": "ribbon",
+        "category": "platform",
+        "tagline": "The learning platform behind structa.cloud: courses, enrollments, payments.",
         "hero": [
             (
                 "hero",
                 {
-                    "title": "Fusion LMS",
+                    "title": "Precis LMS",
                     "subtitle": "A content-driven learning platform built on Django + django-fusion with a Next.js frontend.",
                     "primary_cta": {"label": "See the editions", "href": "/products/lms/#editions", "style": "secondary"},
                     "secondary_cta": {"label": "Learn more", "href": "/about/", "style": "white"},
@@ -467,15 +498,15 @@ DEFAULT_PRODUCT_PAGES = {
             )
         ],
         "body": (
-            "<p>Fusion LMS powers the Structa Cloud learning platform — courses, "
+            "<p>Precis LMS powers the Structa Cloud learning platform: courses, "
             "enrollments, payments (Stripe), and progress tracking, all served "
             "by Django/Wagtail with django-fusion's component pipeline.</p>"
             "<p>Its frontend is a Next.js app consuming django-fusion APIs and "
-            "server-rendered fragments — the same content-driven pattern the "
+            "server-rendered fragments, the same content-driven pattern the "
             "landing CMS uses.</p>"
         ),
         "tech": [
-            ("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Django", "Wagtail", "django-fusion", "Next.js", "React", "Stripe"]}),
+            ("tech", {"title": "Built on", "items": ["Django", "Wagtail", "django-fusion", "Next.js", "React", "Stripe"]}),
         ],
         "editions": [
             (
@@ -485,34 +516,37 @@ DEFAULT_PRODUCT_PAGES = {
                     "title": "Scale from one course to a cohort",
                     "editions": [
                         {
-                            "name": "Starter",
+                            "name": "Community",
                             "tagline": "For solo creators publishing their first course.",
                             "price": "$0",
                             "period": "/forever",
                             "features": ["Up to 3 courses", "Community support", "Basic progress tracking", "Public profile"],
                             "cta_label": "Start Free",
-                            "cta_href": "/#cta",
+                            "cta_href": "https://github.com/mammhoud",
                             "featured": False,
+                            "tier": "outline",
                         },
                         {
-                            "name": "Pro",
+                            "name": "Solo",
                             "tagline": "For active creators and small academies.",
                             "price": "$29",
                             "period": "/per month",
                             "features": ["Unlimited courses", "Priority support", "Advanced analytics", "Offline downloads", "Certificates"],
-                            "cta_label": "Go Pro",
-                            "cta_href": "/#cta",
+                            "cta_label": "Go Solo",
+                            "cta_href": "/contact/",
                             "featured": True,
+                            "tier": "featured",
                         },
                         {
-                            "name": "Team",
+                            "name": "Business",
                             "tagline": "For organizations with cohorts and staff.",
                             "price": "$99",
                             "period": "/per month",
-                            "features": ["Everything in Pro", "SSO & role management", "Dedicated success manager", "Custom branding", "API access"],
+                            "features": ["Everything in Solo", "SSO & role management", "Dedicated success manager", "Custom branding", "API access"],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
                             "featured": False,
+                            "tier": "default",
                         },
                     ],
                 },
@@ -522,9 +556,8 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "snippets",
                 {
-                    "eyebrow": "Reference",
                     "title": "Content-driven models & snippets",
-                    "description": "How the LMS models content — the pattern the CMS site builder generalizes.",
+                    "description": "How the LMS models content. The pattern the CMS site builder generalizes.",
                     "snippets": [
                         {
                             "title": "Wagtail course page",
@@ -544,8 +577,7 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "features",
                 {
-                    "eyebrow": "Capabilities",
-                    "title": "What Fusion LMS ships",
+                    "title": "What Precis LMS ships",
                     "features": [
                         {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Content-driven courses", "description": "Lessons, quizzes and certificates composed in Wagtail StreamFields."},
                         {"icon": "M3 3v18h18M7 15l4-4 3 3 5-6", "title": "Payments built in", "description": "Stripe checkout for courses, enrollments, and subscriptions."},
@@ -558,11 +590,10 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "faq",
                 {
-                    "eyebrow": "FAQ",
-                    "title": "Fusion LMS questions",
+                    "title": "Precis LMS questions",
                     "items": [
                         {"question": "How does this relate to the landing CMS?", "answer": "LMS and CMS share django-fusion. The CMS is the content-driven website builder; LMS is its highest-value use case."},
-                        {"question": "Can I embed LMS on my own site?", "answer": "Yes — courses and progress are served as server-rendered fragments that any Fusion site can embed."},
+                        {"question": "Can I embed LMS on my own site?", "answer": "Yes. Courses and progress are served as server-rendered fragments that any Fusion site can embed."},
                     ],
                 },
             )
@@ -572,7 +603,7 @@ DEFAULT_PRODUCT_PAGES = {
                 "cta",
                 {
                     "title": "Teach on the AHA stack",
-                    "subtitle": "From one course to a full academy — content-driven, payment-enabled, server-rendered.",
+                    "subtitle": "From one course to a full academy: content-driven, payment-enabled, server-rendered.",
                     "primary_cta": {"label": "See pricing", "href": "/products/lms/#editions", "style": "white"},
                     "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "outline"},
                 },
@@ -580,28 +611,30 @@ DEFAULT_PRODUCT_PAGES = {
         ],
     },
     "cms": {
-        "title": "Fusion CMS",
-        "tagline": "Build content-driven websites from Wagtail blocks — this very site is built with it.",
+        "title": "Loop",
+        "logo_style": "isometric",
+        "category": "platform",
+        "tagline": "Build content-driven websites from Wagtail blocks. This very site is built with it.",
         "hero": [
             (
                 "hero",
                 {
-                    "title": "Fusion CMS",
-                    "subtitle": "A content-driven website builder — Wagtail StreamFields composed into server-rendered pages by django-fusion.",
+                    "title": "Loop",
+                    "subtitle": "A content-driven website builder. Wagtail StreamFields composed into server-rendered pages by django-fusion.",
                     "primary_cta": {"label": "See the editions", "href": "/products/cms/#editions", "style": "secondary"},
                     "secondary_cta": {"label": "Explore the stack", "href": "/features/", "style": "white"},
                 },
             )
         ],
         "body": (
-            "<p>Fusion CMS is the content-driven website builder behind every "
+            "<p>Loop is the content-driven website builder behind every "
             "structa.cloud landing page. Editors compose Wagtail StreamField "
             "blocks; django-fusion renders them as finished server-side HTML.</p>"
-            "<p>It powers both render roads — Django's fusion-render HTML and the "
-            "Astro frontend's data APIs — from one source of content.</p>"
+            "<p>It powers both render roads: Django's fusion-render HTML and the "
+            "Astro frontend's data APIs, from one source of content.</p>"
         ),
         "tech": [
-            ("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Wagtail", "Django", "django-fusion", "HTMX", "Alpine.js", "Astro"]}),
+            ("tech", {"title": "Built on", "items": ["Wagtail", "Django", "django-fusion", "HTMX", "Alpine.js", "Astro"]}),
         ],
         "editions": [
             (
@@ -611,7 +644,7 @@ DEFAULT_PRODUCT_PAGES = {
                     "title": "From one page to a whole site",
                     "editions": [
                         {
-                            "name": "Basic",
+                            "name": "Community",
                             "tagline": "A single landing page with the core section blocks.",
                             "price": "$0",
                             "period": "/open source",
@@ -619,26 +652,18 @@ DEFAULT_PRODUCT_PAGES = {
                             "cta_label": "Self-host",
                             "cta_href": "https://github.com/mammhoud/django-fusion",
                             "featured": False,
+                            "tier": "outline",
                         },
                         {
-                            "name": "Pro",
-                            "tagline": "A full marketing site with custom blocks + analytics.",
-                            "price": "$149",
-                            "period": "/project",
-                            "features": ["Everything in Basic", "Custom StreamField blocks", "Blog + FAQ sections", "Analytics + SEO", "HTMX forms"],
-                            "cta_label": "Get Started",
-                            "cta_href": "/contact/",
-                            "featured": True,
-                        },
-                        {
-                            "name": "Enterprise",
-                            "tagline": "Multi-site, multi-editor, fully managed.",
+                            "name": "Business",
+                            "tagline": "A full marketing site with custom blocks + analytics. Multi-site, multi-editor, fully managed.",
                             "price": "Custom",
-                            "period": "",
-                            "features": ["Everything in Pro", "Multi-site + roles", "Design system tokens", "Dedicated support", "SLAs"],
+                            "period": "/project",
+                            "features": ["Everything in Community", "Custom StreamField blocks", "Blog + FAQ sections", "Analytics + SEO", "HTMX forms", "Multi-site + roles", "Dedicated support"],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
-                            "featured": False,
+                            "featured": True,
+                            "tier": "featured",
                         },
                     ],
                 },
@@ -648,9 +673,8 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "snippets",
                 {
-                    "eyebrow": "Reference",
                     "title": "Blocks & snippets you can reuse",
-                    "description": "The building blocks that make a site content-driven — copy them into any Fusion project.",
+                    "description": "The building blocks that make a site content-driven. Copy them into any Fusion project.",
                     "snippets": [
                         {
                             "title": "A StreamField section block",
@@ -670,8 +694,7 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "features",
                 {
-                    "eyebrow": "Capabilities",
-                    "title": "What Fusion CMS ships",
+                    "title": "What Loop ships",
                     "features": [
                         {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Block-based editing", "description": "Editors compose sections; developers own the templates."},
                         {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Two render roads", "description": "Fusion-render HTML and data APIs from one Wagtail source of truth."},
@@ -684,11 +707,10 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "faq",
                 {
-                    "eyebrow": "FAQ",
-                    "title": "Fusion CMS questions",
+                    "title": "Loop questions",
                     "items": [
-                        {"question": "Is this the same CMS that runs this site?", "answer": "Yes — every page you're reading is composed from these StreamField blocks and rendered by django-fusion."},
-                        {"question": "Can I add my own blocks?", "answer": "Absolutely. Blocks are plain Wagtail StructBlocks with Django templates — no framework lock-in."},
+                        {"question": "Is this the same CMS that runs this site?", "answer": "Yes. Every page you're reading is composed from these StreamField blocks and rendered by django-fusion."},
+                        {"question": "Can I add my own blocks?", "answer": "Absolutely. Blocks are plain Wagtail StructBlocks with Django templates, no framework lock-in."},
                     ],
                 },
             )
@@ -706,26 +728,32 @@ DEFAULT_PRODUCT_PAGES = {
         ],
     },
     "cypercloud": {
-        "title": "Cypercloud",
-        "tagline": "AI chat customizer — embed ceptor-ai powered chat into any site.",
+        "title": "Syntara",
+        "logo_style": "orbit",
+        "status": "development",
+        "category": "platform",
+        "tagline": "AI chat customizer. Embed Syntara-powered chat into any site.",
         "hero": [
             (
                 "hero",
                 {
-                    "title": "Cypercloud",
-                    "subtitle": "An AI chat customizer platform — ceptor-ai powered chat embedded into customer sites.",
+                    "title": "Syntara",
+                    "subtitle": "An AI chat customizer platform. Ceptor-ai powered chat embedded into customer sites, fully branded.",
                     "primary_cta": {"label": "See the editions", "href": "/products/cypercloud/#editions", "style": "secondary"},
-                    "secondary_cta": {"label": "About ceptor-ai", "href": "/products/ceptor-ai/", "style": "white"},
+                    "secondary_cta": {"label": "View ceptor-ai on GitHub", "href": "https://github.com/mammhoud/ceptor-ai", "style": "white"},
                 },
             )
         ],
         "body": (
-            "<p>Cypercloud lets you embed intelligent chat into customer sites with "
-            "full customization — branding, behavior, and model selection.</p>"
+            "<p>Syntara lets you embed intelligent chat into customer sites with "
+            "full customization: branding, behavior, and model selection.</p>"
             "<p>It is powered by ceptor-ai (the MCP server + chat client library) "
             "and ships as an embeddable widget.</p>"
+            "<p><strong>Status: under development.</strong> Syntara is an early "
+            "preview — its APIs, editions and pricing may change before the 1.0 "
+            "release. Treat everything below as a roadmap, not a contract.</p>"
         ),
-        "tech": [("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Python", "Django", "ceptor-ai", "MCP"]})],
+        "tech": [("tech", {"title": "Built on", "items": ["Python", "Django", "ceptor-ai", "MCP"]})],
         "editions": [
             (
                 "editions",
@@ -733,23 +761,25 @@ DEFAULT_PRODUCT_PAGES = {
                     "eyebrow": "Editions & pricing",
                     "title": "Free to embed, paid to customize",
                     "editions": [
-                        {"name": "Free", "tagline": "The open-source chat client, self-hosted.", "price": "$0", "period": "/open source", "features": ["ceptor-ai chat client", "MCP server", "Multi-model support"], "cta_label": "Self-host", "cta_href": "https://github.com/mammhoud/ceptor-ai", "featured": False},
-                        {"name": "Pro", "tagline": "Managed chat with full branding.", "price": "$39", "period": "/per month", "features": ["Everything in Free", "Branded widget", "Behavior rules", "Analytics"], "cta_label": "Get Started", "cta_href": "/contact/", "featured": True},
+                        {"name": "Community", "tagline": "The open-source chat client, self-hosted.", "price": "$0", "period": "/open source", "features": ["ceptor-ai chat client", "MCP server", "Multi-model support"], "cta_label": "Self-host", "cta_href": "https://github.com/mammhoud/ceptor-ai", "featured": False, "tier": "outline"},
+                        {"name": "Business", "tagline": "Managed chat with full branding.", "price": "$39", "period": "/per month", "features": ["Everything in Community", "Branded widget", "Behavior rules", "Analytics"], "cta_label": "Get Started", "cta_href": "/contact/", "featured": True, "tier": "featured"},
                     ],
                 },
             )
         ],
-        "cta": [("cta", {"title": "Chat that looks like your brand", "subtitle": "Embed ceptor-ai chat in an afternoon.", "primary_cta": {"label": "Get Started", "href": "/contact/", "style": "white"}, "secondary_cta": {"label": "See the library", "href": "/products/ceptor-ai/", "style": "outline"}})],
+        "cta": [("cta", {"title": "Chat that looks like your brand", "subtitle": "Embed Syntara-powered chat in an afternoon.", "primary_cta": {"label": "Get Started", "href": "/contact/", "style": "white"}, "secondary_cta": {"label": "View ceptor-ai on GitHub", "href": "https://github.com/mammhoud/ceptor-ai", "style": "outline"}})],
     },
     "vresume": {
         "title": "vResume",
-        "tagline": "Cloud resume platform — create, update, publish professional resumes.",
+        "logo_style": "ascent",
+        "category": "platform",
+        "tagline": "Cloud resume platform. Create, update, publish professional resumes — with Syntara-powered AI summaries.",
         "hero": [
             (
                 "hero",
                 {
                     "title": "vResume",
-                    "subtitle": "A cloud-hosted resume builder with modern templates, custom domains, and CI/CD deployments.",
+                    "subtitle": "A cloud-hosted resume builder with modern templates, custom domains, CI/CD deployments, and Syntara-powered AI profile summaries.",
                     "primary_cta": {"label": "Launch vResume", "href": "https://vresume.structa.cloud", "style": "secondary"},
                     "secondary_cta": {"label": "See the editions", "href": "/products/vresume/#editions", "style": "white"},
                 },
@@ -757,11 +787,13 @@ DEFAULT_PRODUCT_PAGES = {
         ],
         "body": (
             "<p>vResume lets you create, update, and publish professional resumes "
-            "with modern templates — cloud-hosted at vresume.structa.cloud.</p>"
+            "with modern templates, cloud-hosted at vresume.structa.cloud.</p>"
             "<p>Custom domains and a CI/CD pipeline make it a production showcase "
             "of the monorepo's deploy tooling.</p>"
+            "<p>It pairs with Syntara, the AI chat customizer, for AI-assisted "
+            "resume summaries and a chat-ready profile on every page.</p>"
         ),
-        "tech": [("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Django", "Wagtail", "Next.js", "Cloud", "CI/CD"]})],
+        "tech": [("tech", {"title": "Built on", "items": ["Django", "Wagtail", "Next.js", "Syntara", "CI/CD"]})],
         "editions": [
             (
                 "editions",
@@ -769,68 +801,37 @@ DEFAULT_PRODUCT_PAGES = {
                     "eyebrow": "Editions & pricing",
                     "title": "From one resume to a hosted portfolio",
                     "editions": [
-                        {"name": "Free", "tagline": "One resume with the default template.", "price": "$0", "period": "/forever", "features": ["Modern resume templates", "Live preview", "PDF export"], "cta_label": "Try it", "cta_href": "https://vresume.structa.cloud", "featured": False},
-                        {"name": "Pro", "tagline": "Custom domain + multiple resumes.", "price": "$9", "period": "/per month", "features": ["Everything in Free", "Custom domain", "Multiple resumes", "Analytics"], "cta_label": "Upgrade", "cta_href": "/contact/", "featured": True},
+                        {"name": "Community", "tagline": "One resume with the default template.", "price": "$0", "period": "/forever", "features": ["Modern resume templates", "Live preview", "PDF export"], "cta_label": "View on GitHub", "cta_href": "https://github.com/mammhoud", "featured": False, "tier": "outline"},
+                        {"name": "Business", "tagline": "Custom domain + multiple resumes.", "price": "$9", "period": "/per month", "features": ["Everything in Community", "Custom domain", "Multiple resumes", "Syntara AI summaries", "Analytics"], "cta_label": "Upgrade", "cta_href": "/contact/", "featured": True, "tier": "featured"},
                     ],
                 },
             )
         ],
         "cta": [("cta", {"title": "Your career, published", "subtitle": "Build a resume that ships like a product.", "primary_cta": {"label": "Launch vResume", "href": "https://vresume.structa.cloud", "style": "white"}, "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "outline"}})],
     },
-    "django-bolt": {
-        "title": "django-bolt",
-        "tagline": "High-performance Rust-backed API framework for Django.",
-        "hero": [
-            (
-                "hero",
-                {
-                    "title": "django-bolt",
-                    "subtitle": "A high-performance Rust-backed API framework that integrates with Django models.",
-                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/dj-bolt/django-bolt", "style": "secondary"},
-                    "secondary_cta": {"label": "See the editions", "href": "/products/django-bolt/#editions", "style": "white"},
-                },
-            )
-        ],
-        "body": (
-            "<p>django-bolt is a Rust-backed API framework (BoltAPI) for Django — "
-            "fast, concurrent request handling while keeping Django ORM "
-            "compatibility.</p>"
-        ),
-        "tech": [("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Rust", "Python", "Django", "API"]})],
-        "editions": [
-            (
-                "editions",
-                {
-                    "eyebrow": "Editions & pricing",
-                    "title": "One library, one license",
-                    "editions": [
-                        {"name": "Open Source", "tagline": "The full BoltAPI framework.", "price": "$0", "period": "/MIT", "features": ["Rust-powered API framework", "Django ORM compatibility", "Performance-optimized serialization"], "cta_label": "View on GitHub", "cta_href": "https://github.com/dj-bolt/django-bolt", "featured": True},
-                    ],
-                },
-            )
-        ],
-        "cta": [("cta", {"title": "Fast APIs, Django models", "subtitle": "Drop BoltAPI into any Django project.", "primary_cta": {"label": "View on GitHub", "href": "https://github.com/dj-bolt/django-bolt", "style": "white"}, "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "outline"}})],
-    },
     "ceptor-ai": {
         "title": "ceptor-ai",
-        "tagline": "AI chat client + MCP server — agent communication and generation.",
+        "logo_style": "orbit",
+        "category": "library",
+        "hidden": True,
+        "tagline": "AI chat client + MCP server. Agent communication and generation.",
         "hero": [
             (
                 "hero",
                 {
                     "title": "ceptor-ai",
-                    "subtitle": "An AI chat client with a Model Context Protocol (MCP) server — powers Cypercloud and agent tooling.",
+                    "subtitle": "An AI chat client with a Model Context Protocol (MCP) server. Powers Syntara and agent tooling.",
                     "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/ceptor-ai", "style": "secondary"},
                     "secondary_cta": {"label": "See the editions", "href": "/products/ceptor-ai/#editions", "style": "white"},
                 },
             )
         ],
         "body": (
-            "<p>ceptor-ai is the AI layer of the monorepo — an MCP server for agent "
+            "<p>ceptor-ai is the AI layer of the monorepo: an MCP server for agent "
             "communication, a chat client with multi-model support, and a BEM "
             "converter for prompt-to-component generation.</p>"
         ),
-        "tech": [("tech", {"eyebrow": "Stack", "title": "Built on", "items": ["Python", "MCP", "AI/ML", "Node.js"]})],
+        "tech": [("tech", {"title": "Built on", "items": ["Python", "MCP", "AI/ML", "Node.js"]})],
         "editions": [
             (
                 "editions",
@@ -843,7 +844,7 @@ DEFAULT_PRODUCT_PAGES = {
                 },
             )
         ],
-        "cta": [("cta", {"title": "Agents that talk to your tools", "subtitle": "ceptor-ai connects LLMs to anything via MCP.", "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/ceptor-ai", "style": "white"}, "secondary_cta": {"label": "See Cypercloud", "href": "/products/cypercloud/", "style": "outline"}})],
+        "cta": [("cta", {"title": "Agents that talk to your tools", "subtitle": "ceptor-ai connects LLMs to anything via MCP.", "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/ceptor-ai", "style": "white"}, "secondary_cta": {"label": "See Syntara", "href": "/products/cypercloud/", "style": "outline"}})],
     },
 }
 
@@ -860,8 +861,7 @@ DEFAULT_HOME_CONTENT = {
                 "title": "Platforms that ship as",
                 "subtitle": (
                     "Structa Cloud builds server-rendered web platforms, AI tools, "
-                    "and open-source libraries — Django + Wagtail on the backend, "
-                    "Astro + HTMX + Alpine on the frontend. Every page is finished HTML."
+                    "and open-source libraries. Every page ships as finished HTML."
                 ),
                 "primary_cta": {"label": "Explore the stack", "href": "/products", "style": "secondary"},
                 "secondary_cta": {"label": "About the engineer", "href": "/about", "style": "white"},
@@ -873,129 +873,13 @@ DEFAULT_HOME_CONTENT = {
         (
             "cta",
             {
-                "title": "Everything is open source",
-                "subtitle": "All structa.cloud libraries are public on GitHub. Explore the monorepo at github.com/mammhoud.",
+                "title": "Most of our builds are open source",
+                "subtitle": "Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.",
                 "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
                 "secondary_cta": {"label": "Read the Docs", "href": "/about", "style": "outline"},
             },
         )
     ],
-}
-
-
-# Projects the repo ships — name, edition, category, path and features that
-# are either shared across the monorepo (reused by other projects) or
-# standalone (project-only). Mirrors frontend/src/pages/projects.astro.
-DEFAULT_PROJECTS = {
-    "projects": [
-        (
-            "project",
-            {
-                "name": "Fusion CMS",
-                "edition": "Wagtail backend",
-                "category": "website",
-                "path": "projects/landing-fusion/backend",
-                "description": (
-                    "The Wagtail content engine behind every landing page — StreamField "
-                    "sections rendered server-side by django-fusion handlers."
-                ),
-                "features": [
-                    {"label": "django-fusion fragment pipeline", "shared": True},
-                    {"label": "HTMX fragment rendering", "shared": True},
-                    {"label": "Wagtail StreamField blocks", "shared": False},
-                ],
-            },
-        ),
-        (
-            "project",
-            {
-                "name": "Fusion Sites",
-                "edition": "Astro frontend",
-                "category": "website",
-                "path": "projects/landing-fusion/frontend",
-                "description": (
-                    "The AHA shell — Astro SSG, HTMX fragment swaps, Alpine "
-                    "micro-interactions. Zero framework JS in the critical path."
-                ),
-                "features": [
-                    {"label": "Astro SSG", "shared": False},
-                    {"label": "HTMX + Alpine runtime", "shared": True},
-                    {"label": "Fusion design tokens", "shared": True},
-                ],
-            },
-        ),
-        (
-            "project",
-            {
-                "name": "Forge POS",
-                "edition": "Minimal · Solo · Full",
-                "category": "product",
-                "path": "projects/pos/forge-pos",
-                "description": (
-                    "A desktop point-of-sale app in three editions — Tauri 2 + Rust "
-                    "core with a React/Vite frontend and SQLite storage."
-                ),
-                "features": [
-                    {"label": "Tauri 2 + Rust core", "shared": True},
-                    {"label": "SQLite schema", "shared": True},
-                    {"label": "Kitchen display", "shared": False},
-                    {"label": "Employee scheduling", "shared": False},
-                ],
-            },
-        ),
-        (
-            "project",
-            {
-                "name": "django-fusion",
-                "edition": "library · generic",
-                "category": "library",
-                "path": "libs/django-fusion",
-                "description": (
-                    "The component system + routing framework shared by every site — "
-                    "PageHandler views, fragment rendering, {% comp %} templates."
-                ),
-                "features": [
-                    {"label": "Component registry", "shared": True},
-                    {"label": "FragmentHandlerMixin", "shared": True},
-                    {"label": "Wagtail blocks bridge", "shared": True},
-                ],
-            },
-        ),
-        (
-            "project",
-            {
-                "name": "ceptor-ai",
-                "edition": "library · generic",
-                "category": "library",
-                "path": "libs/ceptor-ai",
-                "description": (
-                    "AI chat client + MCP server used by the Cypercloud platform "
-                    "and agent tooling."
-                ),
-                "features": [
-                    {"label": "MCP server", "shared": True},
-                    {"label": "Chat client", "shared": True},
-                ],
-            },
-        ),
-        (
-            "project",
-            {
-                "name": "Cypercloud",
-                "edition": "AI platform",
-                "category": "product",
-                "path": "projects/cypercloud",
-                "description": (
-                    "The AI chat customizer platform — ceptor-ai powered chat "
-                    "embedded into customer sites."
-                ),
-                "features": [
-                    {"label": "ceptor-ai chat", "shared": True},
-                    {"label": "Customizer UI", "shared": False},
-                ],
-            },
-        ),
-    ]
 }
 
 
@@ -1021,7 +905,6 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "features",
             {
-                "eyebrow": "Features",
                 "title": "Everything you need to launch",
                 "description": (
                     "A complete landing and marketing stack, ported from the heavy "
@@ -1031,12 +914,12 @@ DEFAULT_ABOUT_SECTIONS = {
                     {
                         "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
                         "title": "Django + Wagtail",
-                        "description": "Content managed in Wagtail 7.4 with StreamField blocks — editors compose, django-fusion renders server-side.",
+                        "description": "Content managed in Wagtail 7.4 with StreamField blocks. Editors compose, django-fusion renders server-side.",
                     },
                     {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
                         "title": "HTMX Fragment Rendering",
-                        "description": "Dynamic updates stream from Django as HTML fragments — no JSON API layer, no decoder to maintain.",
+                        "description": "Dynamic updates stream from Django as HTML fragments, with no JSON API layer or decoder to maintain.",
                     },
                     {
                         "icon": "M4 5h16v14H4z M4 12h16",
@@ -1056,7 +939,7 @@ DEFAULT_ABOUT_SECTIONS = {
                     {
                         "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
                         "title": "Open Source First",
-                        "description": "All core libraries are public on GitHub. django-fusion, ceptor-ai, and django-bolt are open for contribution.",
+                        "description": "All core libraries are public on GitHub. django-fusion and ceptor-ai are open for contribution.",
                     },
                 ],
             },
@@ -1066,7 +949,6 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "testimonials",
             {
-                "eyebrow": "Testimonials",
                 "title": "Trusted by developers",
                 "description": "What teams say about building with django-fusion and the AHA stack.",
                 "testimonials": [
@@ -1096,7 +978,6 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "pricing",
             {
-                "eyebrow": "Pricing",
                 "title": "Simple, transparent pricing",
                 "description": "Start free and scale as you grow. No hidden fees, cancel anytime.",
                 "tiers": [
@@ -1151,37 +1032,180 @@ DEFAULT_ABOUT_SECTIONS = {
             },
         )
     ],
+    "cta": [
+        (
+            "cta",
+            {
+                "title": "Built in the open, shipped as HTML",
+                "subtitle": "Community editions and the core libraries are public on GitHub. Paid editions are commercial.",
+                "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
+                "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
+            },
+        )
+    ],
+}
+
+
+# The dedicated FAQ page — the single home for general questions. Unlike the
+# section stacks on About/Products/Features (which no longer carry a generic
+# FAQ), this list is the one place with the platform-wide answers, expanded
+# across the domain: the stack, the products, editions, licensing, auth,
+# privacy/cookies and support. Product pages keep their own short
+# product-specific FAQ (e.g. "Formints POS questions").
+DEFAULT_FAQ_SECTIONS = {
     "faq": [
         (
             "faq",
             {
-                "eyebrow": "FAQ",
-                "title": "Frequently asked questions",
-                "description": "Everything you need to know about structa.cloud, django-fusion, and the stack.",
+                "title": "Frequently Asked Questions",
+                "description": "The honest answers to the questions technical buyers ask — the stack, the products, the editions, and the fine print.",
                 "items": [
                     {
                         "question": "What is structa.cloud?",
-                        "answer": "Structa Cloud is the portfolio and product hub for Mahmoud Ezzat Moustafa — a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.",
+                        "answer": "Structa Cloud is the portfolio and product hub for Mahmoud Ezzat Moustafa: a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.",
                     },
                     {
                         "question": "What is the AHA stack?",
-                        "answer": "AHA stands for Astro + HTMX + Alpine.js — a server-first rendering stack that ships minimal client-side JavaScript.",
+                        "answer": "AHA stands for Astro + HTMX + Alpine.js: a server-first rendering stack that ships minimal client-side JavaScript. Astro renders the document, HTMX swaps server-rendered fragments, and Alpine hydrates micro-interactions.",
+                    },
+                    {
+                        "question": "Which products are available and in what editions?",
+                        "answer": "Formints POS (Community, Standard, Pro, Cloud), Precis LMS (Community, Solo, Business), Loop CMS (Community, Business), Syntara AI chat (Community, Business) and vResume (Community, Business). Community editions are open source; paid editions add sidecars, cloud sync, multi-terminal and hosted features.",
                     },
                     {
                         "question": "Are the libraries free to use?",
-                        "answer": "Yes. django-fusion, ceptor-ai, and django-bolt are all open-source on GitHub under permissive licenses.",
+                        "answer": "Yes. django-fusion, ceptor-ai, and the Formints POS core are all open-source on GitHub under permissive licenses. You can use them in commercial and client projects.",
                     },
                     {
                         "question": "Can I use this for a client project?",
-                        "answer": "Absolutely. The libraries are production-tested across vResume, Cypercloud, and the landing pages.",
+                        "answer": "Absolutely. The libraries are production-tested across vResume, Syntara, and the landing pages. The monorepo even documents the licensing terms for reuse.",
                     },
                     {
                         "question": "How do I get started?",
-                        "answer": "Clone the monorepo from github.com/mammhoud, run 'make dev' in projects/landing-fusion, and explore the Wagtail admin at /admin/.",
+                        "answer": "Clone the monorepo from github.com/mammhoud, run 'make dev' in projects/landing-fusion, and explore the Wagtail admin at /admin/. Each product page ships reference snippets and models you can copy.",
                     },
                     {
                         "question": "How do I deploy a Fusion site?",
-                        "answer": "The monorepo includes Docker Compose orchestration with Traefik + Nginx + Postgres. One 'make deploy' provisions the full stack with HTTPS.",
+                        "answer": "The monorepo includes Docker Compose orchestration with Traefik + Nginx + Postgres. One 'make deploy' provisions the full stack with HTTPS, and the docs cover DNS-01 Let's Encrypt via Cloudflare.",
+                    },
+                    {
+                        "question": "What is django-fusion?",
+                        "answer": "django-fusion is the component system + routing framework used across every structa.cloud product: StreamField blocks rendered server-side, HTMX fragments, and a dual-mode API pipeline.",
+                    },
+                    {
+                        "question": "What is ceptor-ai?",
+                        "answer": "ceptor-ai is the AI layer of the monorepo: an MCP server for agent communication, a chat client with multi-model support, and a BEM converter for prompt-to-component generation. It powers Syntara.",
+                    },
+                    {
+                        "question": "Is there an account or login system?",
+                        "answer": "Yes — sign-in is powered by django-allauth (headless API + social providers like GitHub and Google). The Log In button in the header opens a modal; after sign-in your session is stored server-side.",
+                    },
+                    {
+                        "question": "What data does the site collect, and what about cookies?",
+                        "answer": "We only use essential cookies (theme preference + HTMX navigation state) and never sell data. The privacy policy lists exactly what is collected and how you can request deletion. Non-essential analytics are opt-in via the cookie banner.",
+                    },
+                    {
+                        "question": "Which editions need a license vs. deployment fees?",
+                        "answer": "Community editions are open source. Standard/Pro list a per-month license; deployment and support are quoted per site. Cloud is fully hosted and quoted on contact. Pricing pages always state the exact model.",
+                    },
+                    {
+                        "question": "How do the POS editions differ?",
+                        "answer": "Community is a free offline single-terminal POS. Standard adds an embedded Python sidecar + cloud sync client. Pro is multi-terminal with a cloud master and high-throughput Rust API. Cloud is the Pro master, hosted and managed for you.",
+                    },
+                    {
+                        "question": "How is this different from a React or Vue site?",
+                        "answer": "A React site sends a shell plus a bundle, then builds the page in the browser. Fusion sends the finished HTML in one response. Less to download, less to run, and search engines read exactly what visitors see.",
+                    },
+                    {
+                        "question": "Can I still build dynamic dashboards?",
+                        "answer": "Yes. HTMX streams HTML fragments from Django over plain HTTP — the same technology as the landing page. Dynamic regions stay server-rendered, so there is never a second, parallel API to maintain.",
+                    },
+                    {
+                        "question": "How do I get support?",
+                        "answer": "Open an issue on GitHub for open-source questions, or use the contact form on the Contact page for deployment, licensing and Cloud quoting. Business and Cloud editions include dedicated support.",
+                    },
+                ],
+            },
+        )
+    ],
+}
+
+
+# About → Team subpage (child of About, served at /about/team/).
+# The people behind structa.cloud: the founder + product leads, each with
+# their social links. Links use the mammhoud handles (GitHub / LinkedIn /
+# Facebook) so the team page and the rest of the site stay consistent.
+DEFAULT_TEAM_SECTIONS = {
+    "hero": [
+        (
+            "hero",
+            {
+                "title": "The people behind structa.cloud",
+                "subtitle": "One engineer, three product leads, and the open-source contributors who make the monorepo ship.",
+                "primary_cta": {"label": "Meet the founder", "href": "/about/", "style": "secondary"},
+                "secondary_cta": {"label": "Get in touch", "href": "/contact/", "style": "white"},
+            },
+        )
+    ],
+    "body": (
+        "<p>structa.cloud is built in the open. The founder runs the "
+        "architecture; each product has a named lead; the libraries are "
+        "public on GitHub for anyone to contribute to.</p>"
+    ),
+    "team": [
+        (
+            "team",
+            {
+                "eyebrow": "the team",
+                "title": "Who builds what",
+                "description": "Every product is a project in the monorepo, and every project has an owner.",
+                "members": [
+                    {
+                        "name": "Mahmoud Ezzat Moustafa",
+                        "role": "Founder · full-stack engineer",
+                        "bio": "Architect of the monorepo: Django/Wagtail platforms, the AHA landing stack, and the AI libraries. Ships everything as server-rendered documents.",
+                        "initials": "ME",
+                        "links": [
+                            {"platform": "GitHub", "url": "https://github.com/mammhoud"},
+                            {"platform": "LinkedIn", "url": "https://linkedin.com/in/mammhoud"},
+                            {"platform": "Facebook", "url": "https://facebook.com/mammhoud"},
+                            {"platform": "Portfolio", "url": "https://mammhoud.github.io"},
+                        ],
+                    },
+                    {
+                        "name": "Formints",
+                        "role": "Product lead · point-of-sale",
+                        "bio": "The Tauri 2 + Rust desktop POS: SQLite, four editions, one codebase. Community is open source on GitHub.",
+                        "initials": "FP",
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/forge-pos"}],
+                    },
+                    {
+                        "name": "Precis LMS",
+                        "role": "Product lead · learning platform",
+                        "bio": "Courses, enrollments and Stripe payments on django-fusion. The highest-value use case of the CMS.",
+                        "initials": "PL",
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud"}],
+                    },
+                    {
+                        "name": "Loop CMS",
+                        "role": "Product lead · website builder",
+                        "bio": "Wagtail StreamField blocks rendered by django-fusion. This very site is built with it.",
+                        "initials": "LC",
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/django-fusion"}],
+                    },
+                    {
+                        "name": "Syntara",
+                        "role": "Product lead · AI chat",
+                        "bio": "Ceptor-ai powered chat embedded into any site. Under development — a preview of what's next.",
+                        "initials": "SY",
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/ceptor-ai"}],
+                    },
+                    {
+                        "name": "vResume",
+                        "role": "Product lead · cloud resume",
+                        "bio": "Create, update and publish professional resumes with custom domains and CI/CD deployments.",
+                        "initials": "VR",
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud"}],
                     },
                 ],
             },
@@ -1191,10 +1215,10 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "cta",
             {
-                "title": "Built open-source, shipped as HTML",
-                "subtitle": "Everything structa.cloud builds is on GitHub. Explore the monorepo and reach out for collaboration.",
+                "title": "Built in the open",
+                "subtitle": "Every line of structa.cloud is public on GitHub. Come build with us.",
                 "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
-                "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
+                "secondary_cta": {"label": "Back to About", "href": "/about/", "style": "outline"},
             },
         )
     ],
@@ -1229,8 +1253,8 @@ class Command(BaseCommand):
             ServicesPage,
             ProductsPage,
             FeaturesPage,
-            ProjectsPage,
             BlogPage,
+            BrandPage,
             PricingPage,
             ContactPage,
             FaqPage,
@@ -1283,29 +1307,45 @@ class Command(BaseCommand):
                     {
                         # "Mahmoud Ezzat" + Astro accent "Moustafa" → clean H1.
                         "title": "Mahmoud Ezzat",
-                        "subtitle": "The story behind Fusion CMS and the AHA stack.",
+                        "subtitle": "The story behind Structa Cloud and the AHA stack.",
                         "primary_cta": {"label": "Our Features", "href": "/#features", "style": "secondary"},
                         "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
                     },
                 )
             ],
             body=(
-                "<p>Fusion CMS started with a simple belief: marketing sites "
+                "<p>Structa Cloud started with a simple belief: marketing sites "
                 "should be fast, secure, and easy to maintain.</p>"
                 "<p>We migrated our own landing pages from a heavy Next.js SPA "
-                "to the AHA stack — Astro for server rendering, HTMX for dynamic "
+                "to the AHA stack: Astro for server rendering, HTMX for dynamic "
                 "updates, and Alpine.js for client-side polish.</p>"
                 "<p>The result: sub-second loads, perfect SEO, and a codebase "
                 "that a small team can own.</p>"
-                "<p>Fusion CMS is built by a small team that believes the web "
+                "<p>Structa Cloud is built by a small team that believes the web "
                 "should be fast by default. Our mission is to give every team a "
-                "landing stack that ships as plain HTML — no heavy SPA, no "
+                "landing stack that ships as plain HTML, with no heavy SPA or "
                 "maintenance treadmill. We value performance, simplicity, and "
                 "boring technology that keeps working.</p>"
             ),
-            **DEFAULT_ABOUT_SECTIONS,
+            # About tells the story — the dedicated /pricing/ page carries the
+            # per-product price sheets, so no generic pricing stack here.
+            pricing=[],
+            **{k: v for k, v in DEFAULT_ABOUT_SECTIONS.items() if k != "pricing"},
         )
         self._created(created, "about")
+
+        # ── About → Team (subpage, /about/team/) ────────────────────────
+        team, created = self._get_or_create_child(
+            about,
+            TeamPage,
+            title="Team",
+            slug="team",
+            hero=DEFAULT_TEAM_SECTIONS["hero"],
+            body=DEFAULT_TEAM_SECTIONS["body"],
+            team=DEFAULT_TEAM_SECTIONS["team"],
+            cta=DEFAULT_TEAM_SECTIONS["cta"],
+        )
+        self._created(created, "about:team")
 
         # ── Services ────────────────────────────────────────────────────
         services, created = self._get_or_create_child(
@@ -1318,18 +1358,20 @@ class Command(BaseCommand):
                     "hero",
                     {
                         "title": "Services",
-                        "subtitle": "Server-rendered sites, HTMX integrations, and Alpine-powered UX — built as you go.",
+                        "subtitle": "Website building, product development, and enhancements, all shipped as fast, server-rendered HTML.",
                         "primary_cta": {"label": "Our Products", "href": "/products/", "style": "secondary"},
                         "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "white"},
-                        "trusted_by": "From brief to shipped in four steps — each one delivers working HTML",
+                        "trusted_by": "From brief to shipped in four steps, each one delivering working HTML",
                     },
                 )
             ],
             body=(
-                "<p>We design and build landing pages on the AHA stack — Astro, "
-                "HTMX, and Alpine.js.</p>"
-                "<p>From static marketing sites to dynamic, form-driven pages, "
-                "every deliverable is server-rendered HTML.</p>"
+                "<p>Three service lines: website building, product and project "
+                "software development, and enhancements for sites that already "
+                "exist.</p>"
+                "<p>Every engagement is built on the AHA stack: Astro, HTMX "
+                "and Alpine.js, so the deliverable is always fast, "
+                "server-rendered HTML that editors can manage in Wagtail.</p>"
                 "<p>Ongoing support covers hosting, CMS content editing, and "
                 "performance tuning.</p>"
             ),
@@ -1349,22 +1391,22 @@ class Command(BaseCommand):
                     "hero",
                     {
                         # + Astro accent "open source"
-                        "title": "Everything we build, shipped as",
-                        "subtitle": "Fusion CMS and the tools that ship your sites as plain HTML.",
-                        "primary_cta": {"label": "See the Features", "href": "/features/", "style": "secondary"},
-                        "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
+                        "title": "Most of what we build, shipped as",
+                        "subtitle": "The full catalog: products with editions and pricing, plus the projects behind them, from one monorepo.",
+                        "primary_cta": {"label": "See the editions", "href": "/products/forge-pos/#editions", "style": "secondary"},
+                        "secondary_cta": {"label": "Browse the repo", "href": "https://github.com/mammhoud", "style": "white"},
                     },
                 )
             ],
             body=(
-                "<p>Fusion CMS is our flagship — a Wagtail-powered content engine "
-                "that renders every page server-side.</p>"
-                "<p>Paired with the Astro frontend, HTMX fragments, and Alpine "
-                "components, it covers the full landing stack.</p>"
-                "<p>Every product ships with the same promise: 0 KB of framework "
-                "JavaScript in the critical path.</p>"
+                "<p>Every project in the structa.cloud monorepo, one card "
+                "each: desktop applications, hosted platforms, and open-source "
+                "libraries. Every card links to a reference page with editions "
+                "&amp; pricing, tech stack, and snippets/models you can reuse.</p>"
+                "<p>The product cards and the repo project grid were merged "
+                "into one list — each product IS a project in this repo.</p>"
             ),
-            **DEFAULT_PROJECTS,
+            projects=[],
             **DEFAULT_ABOUT_SECTIONS,
         )
         self._created(created, "products")
@@ -1377,17 +1419,30 @@ class Command(BaseCommand):
                 ProductPage,
                 slug=slug,
                 title=product["title"],
+                category=product.get("category", "application"),
                 tagline=product.get("tagline", ""),
+                logo_style=product.get("logo_style", "crest"),
+                status=product.get("status", "live"),
+                hidden=product.get("hidden", False),
                 hero=product.get("hero", []),
                 body=product.get("body", ""),
                 tech=product.get("tech", []),
                 editions=product.get("editions", []),
+                comparison=product.get("comparison", []),
                 snippets=product.get("snippets", []),
                 features=product.get("features", []),
                 faq=product.get("faq", []),
                 cta=product.get("cta", []),
             )
             self._created(created, f"product:{slug}")
+
+        # Removed-product cleanup — django-bolt was dropped from the catalog
+        # (its capability lives on inside Formints' Pro tier). Any page seeded
+        # by an older revision is removed so the tree mirrors the catalog.
+        stale_bolt = ProductPage.objects.filter(slug="django-bolt").first()
+        if stale_bolt is not None:
+            stale_bolt.delete()
+            self.stdout.write("Removed removed-product page: django-bolt")
 
         # ── Blog (index grid, mirror of the frontend /blog) ───────────────
         blog, created = self._get_or_create_child(
@@ -1400,8 +1455,8 @@ class Command(BaseCommand):
                     "hero",
                     {
                         "title": "The Blog",
-                        "subtitle": "Notes on the AHA stack — Astro, HTMX, Alpine — and shipping server-rendered sites.",
-                        "primary_cta": {"label": "Explore Projects", "href": "/projects/", "style": "secondary"},
+                        "subtitle": "Notes on the AHA stack: Astro, HTMX, Alpine, and shipping server-rendered sites.",
+                        "primary_cta": {"label": "Explore Products", "href": "/products/", "style": "secondary"},
                         "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "white"},
                     },
                 )
@@ -1454,14 +1509,16 @@ class Command(BaseCommand):
                     "hero",
                     {
                         "title": "Pricing",
-                        "subtitle": "Simple, transparent pricing — start free and scale as you grow.",
+                        "subtitle": "Simple, transparent pricing. Start free and scale as you grow.",
                         "primary_cta": {"label": "Start Free", "href": "/#cta", "style": "secondary"},
                         "secondary_cta": {"label": "Contact Sales", "href": "/contact/", "style": "white"},
                     },
                 )
             ],
-            pricing=DEFAULT_ABOUT_SECTIONS["pricing"],
-            faq=DEFAULT_ABOUT_SECTIONS["faq"],
+            # The tabbed per-product pricing (get_product_pricing) supersedes
+            # the old generic tier stack — no tiers seeded here. The generic
+            # FAQ moved to the dedicated /faq/ page — no FAQ seeded here.
+            pricing=[],
             cta=DEFAULT_HOME_CONTENT["cta"],
         )
         self._created(created, "pricing")
@@ -1478,14 +1535,14 @@ class Command(BaseCommand):
                     {
                         # + Astro accent "documents"
                         "title": "Built to ship as",
-                        "subtitle": "The AHA stack, documented — every capability of Fusion CMS.",
+                        "subtitle": "The AHA stack, documented. Every capability of Structa Cloud.",
                         "primary_cta": {"label": "Our Products", "href": "/products/", "style": "secondary"},
                         "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
                     },
                 )
             ],
             body=(
-                "<p>The AHA stack is Astro + HTMX + Alpine.js — a server-first "
+                "<p>The AHA stack is Astro + HTMX + Alpine.js: a server-first "
                 "rendering stack that ships finished HTML in one response.</p>"
                 "<p>Every capability below exists to keep the page a document: "
                 "fast by default, secure by default, editable by editors.</p>"
@@ -1494,31 +1551,38 @@ class Command(BaseCommand):
         )
         self._created(created, "features")
 
-        # ── Projects (full document, like About) ────────────────────────
-        projects, created = self._get_or_create_child(
+        # ── Brand (identity system, page + product-tooltip modal) ─────────
+        # A real Wagtail page (BrandPage) so editors can toggle display_mode
+        # (page / modal / both) in the admin. The identity boards themselves
+        # are derived from the catalog + BRAND_SPEC — they can never drift.
+        brand, created = self._get_or_create_child(
             home,
-            ProjectsPage,
-            title="Projects",
-            slug="projects",
+            BrandPage,
+            title="Brand",
+            slug="brand",
+            display_mode="both",
             hero=[
                 (
                     "hero",
                     {
-                        # + Astro accent "one monorepo"
-                        "title": "Everything we build, shipped as",
-                        "subtitle": "The monorepo at a glance — every project, its edition, and what it shares.",
-                        "primary_cta": {"label": "See the Features", "href": "/features/", "style": "secondary"},
-                        "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
+                        # + Astro accent "five marks"
+                        "title": "One family, five marks",
+                        "subtitle": "Every product carries its own constructed mark — a symbol built from what it does, not a generic glyph. Same system, five distinct identities.",
+                        "primary_cta": {"label": "See the products", "href": "/products/", "style": "secondary"},
+                        "secondary_cta": {"label": "Pricing", "href": "/pricing/", "style": "white"},
                     },
                 )
             ],
-            # No body — the frontend /projects goes straight from hero to the
-            # project grid, so the backend mirrors it (the grid section header
-            # carries the "Projects in this repo" heading).
-            **DEFAULT_PROJECTS,
-            **DEFAULT_ABOUT_SECTIONS,
+            cta=DEFAULT_HOME_CONTENT["cta"],
         )
-        self._created(created, "projects")
+        self._created(created, "brand")
+
+        # ── Projects merged into Products ─────────────────────────────
+        # The Projects page was folded into the Products catalog: the product
+        # cards ARE the repo project grid (the separate project grid seed was
+        # removed) and the legacy /projects/ URL permanently redirects
+        # (apps/handlers/urls.py). The ProjectsPage model was removed by
+        # migration 0012 so there is nothing to clean up here.
 
         # ── Contact ─────────────────────────────────────────────────────
         contact, created = self._get_or_create_child(
@@ -1539,7 +1603,6 @@ class Command(BaseCommand):
                 (
                     "contact",
                     {
-                        "eyebrow": "Contact",
                         "title": "We'd love to hear from you",
                         "description": "Send us a message and we'll respond within 24 hours.",
                         "methods": [
@@ -1568,6 +1631,18 @@ class Command(BaseCommand):
                         ],
                         "form_title": "Send us a message",
                         "form_description": "Fill out the form and our team will get back to you.",
+                        "topics": [
+                            "General inquiry",
+                            "Formints POS",
+                            "Precis LMS",
+                            "Loop CMS",
+                            "Syntara",
+                            "vResume",
+                            "Website building",
+                            "Product development",
+                            "Enhancements & extensions",
+                            "Partnership",
+                        ],
                     },
                 )
             ],
@@ -1595,11 +1670,11 @@ class Command(BaseCommand):
                     "hero",
                     {
                         "title": "Frequently Asked Questions",
-                        "subtitle": "Quick answers to the most common questions.",
+                        "subtitle": "The honest answers to the questions technical buyers ask.",
                     },
                 )
             ],
-            faq=DEFAULT_ABOUT_SECTIONS["faq"],
+            faq=DEFAULT_FAQ_SECTIONS["faq"],
             cta=DEFAULT_HOME_CONTENT["cta"],
         )
         self._created(created, "faq")
@@ -1611,18 +1686,61 @@ class Command(BaseCommand):
             title="Privacy Policy",
             slug="privacy",
             body=(
-                "<p>This privacy policy explains how Fusion CMS collects, uses, "
-                "and protects your information.</p>"
+                "<p>This privacy policy explains how Structa Cloud collects, uses, "
+                "and protects your information. We keep data collection minimal "
+                "by design: this site is a static-first document, not a data "
+                "platform.</p>"
                 "<h3>What we collect</h3>"
-                "<p>Account details, course progress, and usage analytics.</p>"
+                "<p>Contact form submissions (name, email, message), account "
+                "details for authenticated features, and anonymous usage "
+                "patterns. We never sell your personal information to third "
+                "parties.</p>"
                 "<h3>How we use it</h3>"
-                "<p>To deliver courses, personalize content, and improve the platform.</p>"
+                "<p>To respond to inquiries, deliver requested services, "
+                "personalize your experience, and improve the platform.</p>"
+                "<h3>Cookies and consent</h3>"
+                "<p>We only use <strong>essential cookies</strong>: a theme "
+                "preference and HTMX navigation state. No tracking, no ads, "
+                "no third-party cookies. The cookie banner on first visit asks "
+                "for consent; your choice (Accept or Deny) is stored locally in "
+                "your browser, and no non-essential cookie is ever set without "
+                "it.</p>"
+                "<p>When you accept, no additional data is collected — consent "
+                "only permits the same essential cookies. When you deny, the "
+                "site works identically, minus the persisted theme "
+                "preference.</p>"
                 "<h3>Your rights</h3>"
                 "<p>You can request a copy or deletion of your data at any time "
-                "by contacting us.</p>"
+                "by contacting us, and you can withdraw cookie consent at any "
+                "time by clearing your browser storage.</p>"
             ),
         )
         self._created(created, "privacy")
+
+        # ── Social links (Wagtail snippets) ─────────────────────────────
+        # Seeded idempotently: existing links are left untouched unless the
+        # URL differs from the seed (then the seed wins — the mammhoud handles
+        # are the canonical identity).
+        try:
+            from apps.content.models.settings import SocialLink
+
+            default_links = [
+                {"platform": "github", "label": "GitHub", "url": "https://github.com/mammhoud"},
+                {"platform": "linkedin", "label": "LinkedIn", "url": "https://linkedin.com/in/mammhoud"},
+                {"platform": "facebook", "label": "Facebook", "url": "https://facebook.com/mammhoud"},
+                {"platform": "twitter", "label": "X / Twitter", "url": "https://x.com/mammhoud", "is_active": False},
+            ]
+            for i, link in enumerate(default_links):
+                obj, _ = SocialLink.objects.get_or_create(
+                    platform=link["platform"],
+                    defaults={**link, "sort_order": i},
+                )
+                if obj.url != link["url"]:
+                    obj.url = link["url"]
+                    obj.sort_order = i
+                    obj.save()
+        except Exception:
+            self.stdout.write(self.style.WARNING("Social links seed skipped."))
 
         self.stdout.write(self.style.SUCCESS("✅ Landing pages seeded."))
 
@@ -1658,7 +1776,12 @@ class Command(BaseCommand):
         """
         changed = False
         for name, value in fields.items():
-            if name in ("title", "slug"):
+            if name == "slug":
+                continue  # slugs anchor the tree; never rewritten
+            # Titles are only rewritten for ProductPage (the catalog rename
+            # path); every other page keeps its title even under --force so
+            # editor-customized About/Blog titles are never clobbered.
+            if name == "title" and not isinstance(existing, ProductPage):
                 continue
             current = getattr(existing, name, None)
             # StreamFields/RichTextFields are falsy when empty.
