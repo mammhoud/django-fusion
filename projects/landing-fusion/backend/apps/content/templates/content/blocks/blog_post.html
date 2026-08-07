@@ -10,12 +10,12 @@
   </div>
   {% endif %}
   <h3 class="font-display text-[1.05rem] font-semibold text-fu-ink" style="font-family:'Bricolage Grotesque',sans-serif;">
-    {% if value.slug %}<a href="/blog/{{ value.slug }}/" class="transition-colors hover:text-fu-link">{{ value.title }}</a>{% else %}{{ value.title }}{% endif %}
+    {% if value.page %}<a href="{{ value.page.url }}" class="transition-colors hover:text-fu-link">{{ value.title }}</a>{% elif value.slug %}<a href="/blog/{{ value.slug }}/" class="transition-colors hover:text-fu-link">{{ value.title }}</a>{% else %}{{ value.title }}{% endif %}
   </h3>
   {% if value.excerpt %}
   <p class="text-sm leading-relaxed text-fu-muted">{{ value.excerpt }}</p>
   {% endif %}
-  {% if value.slug %}
-  <a href="/blog/{{ value.slug }}/" class="blog__read-more mt-auto inline-flex items-center gap-1 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link">Read more <span aria-hidden="true">→</span></a>
+  {% if value.page or value.slug %}
+  <a href="{% if value.page %}{{ value.page.url }}{% else %}/blog/{{ value.slug }}/{% endif %}" class="blog__read-more mt-auto inline-flex items-center gap-1 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link">Read more <span aria-hidden="true">→</span></a>
   {% endif %}
 </article>

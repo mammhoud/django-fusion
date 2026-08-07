@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
@@ -12,7 +13,7 @@ import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
   const list = await fetchPageList();
-  // Only ProductPage children (forge-pos, lms, cms, …) get detail pages.
+  // Only ProductPage children (formint-pos, lms, cms, …) get detail pages.
   const slugs = list.pages
     .filter((p) => p.type === 'ProductPage')
     .map((p) => p.slug);
@@ -48,6 +49,8 @@ const editions = pageEditions?.map((e: any) => ({
   price: String(e.price || ''),
   period: String(e.period || ''),
   features: (e.features || []) as string[],
+  offerLabel: String(e.offer_label || ''),
+  offerOldPrice: String(e.offer_old_price || ''),
   cta: { label: String(e.cta_label || ''), href: String(e.cta_href || '') },
   tier: String(e.tier || 'default'),
 }));
@@ -91,6 +94,11 @@ const faqItems = pageFaq?.map((f: any) => ({
   pageData={pageData}
   pageSlug={slug}
 >
+  <Breadcrumb
+    items={[{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }]}
+    current={pageData?.title || slug}
+  />
+
   <Hero
     eyebrow={pageHero?.badge}
     heading={pageHero?.title || pageData?.title}
@@ -162,9 +170,11 @@ const faqItems = pageFaq?.map((f: any) => ({
               {ed.tier === 'managed' && <span class='managed-ribbon' aria-hidden='true'>managed</span>}
               <p class='tag-marker mb-1'>{ed.name}</p>
               {ed.tagline && <p class='mb-6 text-sm text-fu-muted'>{ed.tagline}</p>}
-              <div class='mb-7 flex items-baseline gap-2'>
+              <div class='mb-7 flex flex-wrap items-baseline gap-2'>
+                {ed.offerOldPrice && <span class='offer-old-price'>{ed.offerOldPrice}</span>}
                 <span class='font-mono text-[2rem] font-semibold tracking-tight text-fu-ink'>{ed.price}</span>
                 {ed.period && <span class='font-mono text-xs uppercase tracking-wider text-fu-muted'>{ed.period}</span>}
+                {ed.offerLabel && <span class='badge-offer self-center'>{ed.offerLabel}</span>}
               </div>
               <ul class='mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm'>
                 {ed.features.map((f) => (

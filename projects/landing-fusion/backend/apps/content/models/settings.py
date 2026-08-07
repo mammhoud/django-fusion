@@ -169,7 +169,7 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
         help_text="Show contact link in header CTA area")
     nav_cta_label = models.CharField(max_length=50, blank=True, default="Get Started",
         help_text="CTA button label in header")
-    nav_cta_url = models.CharField(max_length=300, blank=True, default="/#cta",
+    nav_cta_url = models.CharField(max_length=300, blank=True, default="/contact/",
         help_text="CTA button link in header")
 
     # ── App store links ──

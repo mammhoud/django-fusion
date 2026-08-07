@@ -70,10 +70,22 @@ class ProjectBlock(blocks.StructBlock):
 
 
 class LinkBlock(blocks.StructBlock):
-    """A simple link with a label (used by buttons and footer links)."""
+    """A simple link with a label (used by buttons and footer links).
+
+    Editors can pick an internal Wagtail page (``page``) or type a manual
+    URL (``href``). The chosen page always wins — its live URL replaces the
+    manual one at render/API time, so links never go stale when a page moves.
+    """
 
     label = blocks.CharBlock(max_length=80, label=_("Label"))
-    href = blocks.CharBlock(max_length=255, required=False, label=_("URL"))
+    href = blocks.CharBlock(max_length=255, required=False, label=_("URL"), help_text=_(
+        "External URL (e.g. https://github.com/…). Ignored when a page is chosen."
+    ))
+    page = blocks.PageChooserBlock(
+        required=False,
+        label=_("Link to a page"),
+        help_text=_("Pick an internal page — its URL wins over the manual URL field."),
+    )
 
     class Meta:
         icon = "link"
@@ -81,10 +93,27 @@ class LinkBlock(blocks.StructBlock):
 
 
 class ButtonBlock(blocks.StructBlock):
-    """CTA button with the four Fusion styles (primary/secondary/outline/white)."""
+    """CTA button with the four Fusion styles (primary/secondary/outline/white).
 
-    label = blocks.CharBlock(max_length=80, label=_("Label"))
-    href = blocks.CharBlock(max_length=255, required=False, label=_("URL"))
+    The label is optional when a page is chosen — the linked page's title
+    becomes the button's visible text (the button's "header"). Editors can
+    override it at any time by typing a custom label.
+    """
+
+    label = blocks.CharBlock(
+        max_length=80,
+        required=False,
+        label=_("Label"),
+        help_text=_("Leave empty to use the linked page's title."),
+    )
+    href = blocks.CharBlock(max_length=255, required=False, label=_("URL"), help_text=_(
+        "External URL (e.g. https://github.com/…). Ignored when a page is chosen."
+    ))
+    page = blocks.PageChooserBlock(
+        required=False,
+        label=_("Link to a page"),
+        help_text=_("Pick an internal page — its URL wins over the manual URL field."),
+    )
     style = blocks.ChoiceBlock(
         choices=[
             ("primary", _("Primary")),
@@ -102,10 +131,24 @@ class ButtonBlock(blocks.StructBlock):
 
 
 class HeroBlock(blocks.StructBlock):
-    """Homepage hero — badge, headline, subtitle, CTAs and trusted-by line."""
+    """Homepage hero — badge, headline + accent, subtitle, CTAs and trusted-by line.
+
+    ``title`` and ``accent`` render separately (mirroring the Astro Hero
+    component's ``heading`` + ``accent`` props): the accent word gets the
+    highlighter-mark treatment, so keep it short ("documents", "السوق").
+    """
 
     badge = blocks.CharBlock(max_length=80, required=False, label=_("Badge"))
     title = blocks.CharBlock(max_length=200, label=_("Title"))
+    accent = blocks.CharBlock(
+        max_length=60,
+        required=False,
+        label=_("Accent word"),
+        help_text=_(
+            "The emphasized word rendered with the highlighter mark (e.g. "
+            "'documents'). One or two words — not part of the title."
+        ),
+    )
     subtitle = blocks.TextBlock(required=False, label=_("Subtitle"))
     primary_cta = ButtonBlock(required=False, label=_("Primary CTA"))
     secondary_cta = ButtonBlock(required=False, label=_("Secondary CTA"))
@@ -208,6 +251,11 @@ class PricingTierBlock(blocks.StructBlock):
     features = blocks.ListBlock(blocks.CharBlock(max_length=160), label=_("Features"))
     cta_label = blocks.CharBlock(max_length=80, required=False, label=_("CTA label"))
     cta_href = blocks.CharBlock(max_length=255, required=False, label=_("CTA URL"))
+    cta_page = blocks.PageChooserBlock(
+        required=False,
+        label=_("CTA page"),
+        help_text=_("Pick an internal page instead of typing a CTA URL."),
+    )
     featured = blocks.BooleanBlock(required=False, default=False, label=_("Featured"))
 
     class Meta:
@@ -299,6 +347,11 @@ class ServiceBlock(blocks.StructBlock):
     )
     cta_label = blocks.CharBlock(max_length=80, required=False, label=_("CTA label"))
     cta_href = blocks.CharBlock(max_length=255, required=False, label=_("CTA URL"))
+    cta_page = blocks.PageChooserBlock(
+        required=False,
+        label=_("CTA page"),
+        help_text=_("Pick an internal page instead of typing a CTA URL."),
+    )
 
     class Meta:
         icon = "placeholder"
@@ -327,6 +380,11 @@ class BlogPostBlock(blocks.StructBlock):
     slug = blocks.CharBlock(
         max_length=200, required=False, label=_("Slug"),
         help_text=_("URL slug — links the card to /blog/<slug>/."),
+    )
+    page = blocks.PageChooserBlock(
+        required=False,
+        label=_("Linked post"),
+        help_text=_("Pick the BlogPostPage instead of typing a slug — its URL wins."),
     )
     category = blocks.CharBlock(max_length=80, required=False, label=_("Category"))
     date = blocks.DateBlock(required=False, label=_("Date"))
@@ -384,7 +442,14 @@ class ContactMethodBlock(blocks.StructBlock):
     )
     label = blocks.CharBlock(max_length=80, label=_("Label"))
     value = blocks.CharBlock(max_length=255, label=_("Value"))
-    href = blocks.CharBlock(max_length=255, required=False, label=_("Link"))
+    href = blocks.CharBlock(max_length=255, required=False, label=_("Link"), help_text=_(
+        "External link (mailto:, tel:, https://…). Ignored when a page is chosen."
+    ))
+    page = blocks.PageChooserBlock(
+        required=False,
+        label=_("Link to a page"),
+        help_text=_("Pick an internal page instead of typing a link."),
+    )
 
     class Meta:
         icon = "placeholder"
@@ -408,7 +473,7 @@ class TechStackSectionBlock(blocks.StructBlock):
 class EditionBlock(blocks.StructBlock):
     """A single product edition — a pricing tier with its own feature set.
 
-    Used by product pages so each product lists its editions (e.g. Forge POS:
+    Used by product pages so each product lists its editions (e.g. Formints:
     Community · Standard · Pro · Cloud) with pricing and the capabilities
     that ship in that edition only.
     """
@@ -418,8 +483,31 @@ class EditionBlock(blocks.StructBlock):
     price = blocks.CharBlock(max_length=20, label=_("Price"))
     period = blocks.CharBlock(max_length=40, required=False, label=_("Period"))
     features = blocks.ListBlock(blocks.CharBlock(max_length=200), label=_("Features"))
+    offer_label = blocks.CharBlock(
+        max_length=60,
+        required=False,
+        label=_("Offer badge"),
+        help_text=_(
+            "Short deal/discount chip shown on the card (e.g. '50% off · launch'). "
+            "Works on any edition — course, special, or standard."
+        ),
+    )
+    offer_old_price = blocks.CharBlock(
+        max_length=20,
+        required=False,
+        label=_("Old price"),
+        help_text=_(
+            "Original price struck through next to the current price (e.g. '$158'). "
+            "Keep it short — the price row stays on one line."
+        ),
+    )
     cta_label = blocks.CharBlock(max_length=80, required=False, label=_("CTA label"))
     cta_href = blocks.CharBlock(max_length=255, required=False, label=_("CTA URL"))
+    cta_page = blocks.PageChooserBlock(
+        required=False,
+        label=_("CTA page"),
+        help_text=_("Pick an internal page instead of typing a CTA URL."),
+    )
     featured = blocks.BooleanBlock(required=False, default=False, label=_("Featured"))
     tier = blocks.ChoiceBlock(
         choices=[
@@ -461,7 +549,7 @@ class SnippetBlock(blocks.StructBlock):
 
     Pairs a title with a code block (e.g. a Rust struct, a SQLite schema, a
     Wagtail model) so a product page doubles as a reference for other projects
-    (e.g. LMS reusing Forge POS patterns).
+    (e.g. LMS reusing Formints patterns).
     """
 
     title = blocks.CharBlock(max_length=200, label=_("Title"))
@@ -515,7 +603,7 @@ class FeatureComparisonSectionBlock(blocks.StructBlock):
     """Full feature-comparison table — edition columns vs capability rows.
 
     Used by product pages so buyers can compare editions row by row
-    (e.g. Forge POS: Community · Standard · Pro · Cloud across ~26 rows).
+    (e.g. Formints: Community · Standard · Pro · Cloud across ~26 rows).
     """
 
     eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))

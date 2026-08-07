@@ -109,7 +109,7 @@ const defaultSlug = productTabs[0]?.slug || 'general';
                 <FAQ items={items} heading={tab.title} searchable={true} />
               ) : (
                 <div class='py-12 text-center'>
-                  <p class='text-fu-muted'>No questions yet for {tab.title}. <a href='/contact' class='font-medium text-fu-link hover:text-fu-ink'>Ask us one</a>.</p>
+                  <p class='text-fu-muted'>No questions yet for {tab.title}. <a href='/contact/' class='font-medium text-fu-link hover:text-fu-ink'>Ask us one</a>.</p>
                 </div>
               )}
             </div>
@@ -124,6 +124,6 @@ const defaultSlug = productTabs[0]?.slug || 'general';
     </div>
   )}
 
-  <CTA heading={pageCta?.title || 'Still have questions?'} intro={pageCta?.subtitle || "Reach out through the contact form or open an issue on GitHub."} ctaLabel={pageCta?.primary_cta?.label || 'Contact us'} ctaHref={pageCta?.primary_cta?.href || '/contact'} />
+  <CTA heading={pageCta?.title || 'Still have questions?'} intro={pageCta?.subtitle || "Reach out through the contact form or open an issue on GitHub."} ctaLabel={pageCta?.primary_cta?.label || 'Contact us'} ctaHref={pageCta?.primary_cta?.href || '/contact/'} />
   <Toast />
 </Layout>

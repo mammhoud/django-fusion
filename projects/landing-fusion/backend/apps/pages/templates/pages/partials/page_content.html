@@ -35,6 +35,12 @@
    ────────────────────────────────────────────────────────────────────── {% endcomment %}
 {% load wagtailcore_tags %}
 
+{% comment %} Breadcrumb trail for subpages (team/founder/startup, phases +
+   prompts, product detail/preview, blog posts) — rendered at the top of the
+   shared content region so the full page and the HTMX fragment show the
+   same in-page navigation. Empty for top-level pages. {% endcomment %}
+{% include "pages/partials/breadcrumbs.html" %}
+
 {% if page.hero %}{% include_block page.hero %}{% endif %}
 
 {% comment %} Product lockup strip (ProductPage) — the brand mark + wordmark +
@@ -189,9 +195,11 @@
           {% if edition.tier == 'featured' %}<span class="badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">most shipped</span>{% elif edition.tier == 'managed' %}<span class="managed-ribbon" aria-hidden="true">managed</span>{% endif %}
           <p class="tag-marker mb-1">{{ edition.name }}</p>
           {% if edition.tagline %}<p class="mb-6 text-sm text-fu-muted">{{ edition.tagline }}</p>{% endif %}
-          <div class="mb-7 flex items-baseline gap-2">
+          <div class="mb-7 flex flex-wrap items-baseline gap-2">
+            {% if edition.offer_old_price %}<span class="offer-old-price">{{ edition.offer_old_price }}</span>{% endif %}
             <span class="font-mono text-[2rem] font-semibold tracking-tight text-fu-ink">{{ edition.price }}</span>
             {% if edition.period %}<span class="font-mono text-xs uppercase tracking-wider text-fu-muted">{{ edition.period }}</span>{% endif %}
+            {% if edition.offer_label %}<span class="badge-offer self-center">{{ edition.offer_label }}</span>{% endif %}
           </div>
           {% if edition.features %}
           <ul class="mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm">

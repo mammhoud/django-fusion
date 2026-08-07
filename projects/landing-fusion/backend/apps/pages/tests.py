@@ -10,12 +10,14 @@ from apps.pages.models import (
     ContactPage,
     FaqPage,
     FeaturesPage,
+    FounderPage,
     HomePage,
     PricingPage,
     PrivacyPage,
     ProductPage,
     ProductsPage,
     ServicesPage,
+    StartupPage,
     TeamPage,
 )
 from apps.pages.management.commands.seed_pages import Command as SeedCommand
@@ -29,11 +31,12 @@ class LandingPagesTestCase(TestCase):
         SeedCommand().handle()
 
     def test_all_pages_render(self):
-        # Hero titles are stored WITHOUT the accent word — the Astro frontend
-        # renders ``title`` + its own ``accent`` ("documents", "Moustafa", …)
-        # so the stored titles must stay free of the accent phrase.
+        # Hero titles are stored WITHOUT the accent word — both render roads
+        # (Astro Hero.astro and content/blocks/hero.html) render ``title`` +
+        # ``accent`` separately, so the stored titles must stay free of the
+        # accent phrase.
         expected_hero = {
-            "/": b"Digital products for",
+            "/": b"Digital products, shipped as",
             "/about/": b"A clearer path to market",
             "/services/": b"From idea to market",
             "/products/": b"Most of what we build, shipped as",
@@ -53,37 +56,35 @@ class LandingPagesTestCase(TestCase):
     def test_home_is_slim_entry(self):
         """Home renders hero + CTA only — the section stack moved to About."""
         response = self.client.get("/")
-        self.assertIn(b"Platforms that ship as", response.content)
-        self.assertIn(b"Most of our builds are open source", response.content)
+        self.assertIn(b"Digital products, shipped as", response.content)
+        self.assertIn(b"A useful first release beats a noisy roadmap", response.content)
         for moved in (
-            b"Numbers that speak for themselves",
-            b"Everything you need to launch",
-            b"Trusted by developers",
+            b"Built for steady growth",
+            b"The details that make a service usable",
+            b"Designed around the people using it",
             b"Simple, transparent pricing",
             b"Frequently asked questions",
         ):
             self.assertNotIn(moved, response.content)
 
     def test_about_carries_full_document(self):
-        """About renders the whole stack: mission, stats, features, testimonials, cta.
+        """About renders the whole stack: mission, stats, founder features, pricing, testimonials, cta.
 
-        The generic pricing + FAQ sections moved off About — /pricing/ and
-        /faq/ own those, so About stays a story page (with a Meet-the-team
-        subpage link).
+        Pricing moved onto About (from the home page) and the feature grid was
+        reframed around the founder + company; the generic FAQ stays on /faq/.
         """
         response = self.client.get("/about/")
         self.assertEqual(response.status_code, 200)
         for marker in (
-            b"Our mission",
-            b"Numbers that speak for themselves",
-            b"Everything you need to launch",
-            b"Trusted by developers",
+            b"Built for steady growth",
+            b"Built by one engineer, for real teams",
+            b"Designed around the people using it",
+            b"Simple, transparent pricing",
             b"Built in the open, shipped as HTML",
             b"Meet the team",
         ):
             self.assertIn(marker, response.content)
-        for marker in (b"Simple, transparent pricing", b"Frequently asked questions"):
-            self.assertNotIn(marker, response.content)
+        self.assertNotIn(b"Frequently asked questions", response.content)
 
     def test_team_subpage_renders(self):
         """About → Team (/about/team/) renders the member cards + social links."""
@@ -104,17 +105,58 @@ class LandingPagesTestCase(TestCase):
         self.assertTrue(members)
         self.assertEqual(members[0]["name"], "Mahmoud Ezzat Moustafa")
 
+    def test_founder_subpage_renders(self):
+        """About → Founder (/about/founder/) renders the engineer story + stack + skills."""
+        response = self.client.get("/about/founder/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (
+            b"Mahmoud Ezzat Moustafa",
+            b"The engineer",
+            b"Full-stack developer",
+            b"Built on",
+            b"django-fusion",
+            b"Tauri 2",
+            b"Ships as documents",
+            b"Built in the open",
+        ):
+            self.assertIn(marker, response.content)
+        # The founder API carries the tech stack + skills grid.
+        data = self.client.get("/apis/pages/founder/").json()
+        self.assertEqual(data["type"], "FounderPage")
+        self.assertIn("Python", data.get("tech", []))
+        self.assertTrue(data.get("features"))
+
+    def test_startup_subpage_renders(self):
+        """About → Startup (/about/startup/) renders the timeline + stats."""
+        response = self.client.get("/about/startup/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (
+            b"The Startup",
+            b"The story",
+            b"Freelance foundations",
+            b"The reusable library",
+            b"Open source and AI",
+            b"Products and scale",
+            b"The story in numbers",
+            b"Five products, one repo",
+        ):
+            self.assertIn(marker, response.content)
+        # The startup API carries the timeline steps + stats.
+        data = self.client.get("/apis/pages/startup/").json()
+        self.assertEqual(data["type"], "StartupPage")
+        self.assertTrue(data.get("process"))
+        self.assertTrue(data.get("stats"))
+
     def test_products_and_features_carry_full_document(self):
-        """Products + Features render the full stack like About: stats, features, pricing, testimonials, cta."""
+        """Products + Features render the full stack like About: stats, features, testimonials, cta."""
         for path in ("/products/", "/features/"):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200, path)
                 for marker in (
-                    b"Numbers that speak for themselves",
-                    b"Everything you need to launch",
-                    b"Simple, transparent pricing",
-                    b"Trusted by developers",
+                    b"Built for steady growth",
+                    b"Built by one engineer, for real teams",
+                    b"Designed around the people using it",
                     b"Built in the open, shipped as HTML",
                 ):
                     self.assertIn(marker, response.content)
@@ -129,7 +171,7 @@ class LandingPagesTestCase(TestCase):
         # The merged catalog carries the product cards (projects grid folded in).
         data = self.client.get("/apis/pages/products/").json()
         slugs = [p["slug"] for p in data.get("products", [])]
-        self.assertIn("forge-pos", slugs)
+        self.assertIn("formint-pos", slugs)
         self.assertNotIn("django-bolt", slugs)
         self.assertNotIn("ceptor-ai", slugs)  # hidden products are excluded
         # No Projects item in the nav (API or HTML).
@@ -161,25 +203,61 @@ class LandingPagesTestCase(TestCase):
         missing = self.client.get("/fragment/pages/does-not-exist/", HTTP_HX_REQUEST="true")
         self.assertEqual(missing.status_code, 404)
 
+    def test_page_list_api_skips_orphaned_pages(self):
+        """The page list API must survive a page whose specific class is unresolvable.
+
+        Orphaned/stale content types (removed models or old seeds) used to crash
+        the whole /apis/pages/ endpoint — the frontend then silently built zero
+        dynamic pages. Guarded pages are skipped, not fatal.
+        """
+        from django.contrib.contenttypes.models import ContentType
+        from wagtail.models import Page
+
+        data = self.client.get("/apis/pages/").json()
+        self.assertGreater(data["total"], 0)
+        slugs = {p["slug"] for p in data["pages"]}
+        self.assertIn("products", slugs)
+        self.assertIn("formint-pos", slugs)
+
+        # Simulate an orphan: detach the "privacy" page's content type so its
+        # specific class can no longer resolve (models removed in a migration
+        # leave exactly this state behind), then confirm the API still lists
+        # every other page instead of returning an empty list.
+        privacy = Page.objects.get(slug="privacy")
+        stale_ct, _ = ContentType.objects.get_or_create(
+            app_label="pages", model="removedmodel"
+        )
+        original_ct = privacy.content_type
+        privacy.content_type = stale_ct
+        privacy.save()
+        try:
+            data = self.client.get("/apis/pages/").json()
+        finally:
+            privacy.content_type = original_ct
+            privacy.save()
+        self.assertGreater(data["total"], 0)
+        self.assertNotIn("privacy", {p["slug"] for p in data["pages"]})
+        self.assertIn("formint-pos", {p["slug"] for p in data["pages"]})
+
     def test_edition_preview_uses_shared_slug_normalization(self):
         """Backend preview links resolve the same normalized edition slugs as Astro."""
         for edition in ("community", "standard", "pro", "cloud"):
             with self.subTest(edition=edition):
-                response = self.client.get(f"/products/forge-pos/preview/{edition}/")
+                response = self.client.get(f"/products/formint-pos/preview/{edition}/")
                 self.assertEqual(response.status_code, 200)
                 self.assertIn(edition.title().encode(), response.content)
 
         self.assertEqual(
-            self.client.get("/products/forge-pos/preview/not-an-edition/").status_code,
+            self.client.get("/products/formint-pos/preview/not-an-edition/").status_code,
             404,
         )
 
-    def test_pricing_moved_off_about(self):
-        """About no longer carries a pricing section — the /pricing/ page owns the price sheets."""
+    def test_pricing_on_about_and_dedicated_page(self):
+        """The transparent-pricing section moved onto About AND lives on /pricing/."""
         response = self.client.get("/about/")
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn(b'id="pricing"', response.content)
-        self.assertNotIn(b"Simple, transparent pricing", response.content)
+        self.assertIn(b'id="pricing"', response.content)
+        self.assertIn(b"Simple, transparent pricing", response.content)
         # The dedicated pricing page still has the section (not removed).
         pricing_response = self.client.get("/pricing/")
         self.assertIn(b'id="pricing"', pricing_response.content)
@@ -334,6 +412,48 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(labels.get("/about/"), "من نحن")
         self.assertEqual(labels.get("/products/"), "المنتجات")
 
+    def test_navigation_children_feed_dropdowns(self):
+        """Nav items with subpages carry a children list for the hover dropdown."""
+        nav = self.client.get("/apis/navigation/").json()
+        by_href = {item["href"]: item for item in nav["nav_items"]}
+
+        # About → curated children (team/founder/startup routes).
+        about = by_href["/about/"]
+        self.assertEqual(
+            [c["href"] for c in about["children"]],
+            ["/about/team/", "/about/founder/", "/about/startup/"],
+        )
+        self.assertEqual(about["children"][0]["label"], "Team")
+
+        # Products → live product pages, hidden ones excluded.
+        products = by_href["/products/"]
+        product_hrefs = [c["href"] for c in products["children"]]
+        self.assertIn("/products/formint-pos/", product_hrefs)
+        self.assertNotIn("/products/ceptor-ai/", product_hrefs)  # hidden product
+
+        # Services → delivery phases.
+        services = by_href["/services/"]
+        self.assertTrue(any(c["href"].startswith("/services/phases/") for c in services["children"]))
+
+        # Blog → posts.
+        blog = by_href["/blog/"]
+        self.assertTrue(blog["children"])
+
+        # Leaf pages (home, pricing, contact) have no dropdown.
+        for href in ("/", "/pricing/", "/contact/"):
+            self.assertEqual(by_href[href]["children"], [])
+
+    def test_header_renders_dropdown_markup(self):
+        """The backend header renders the hover-dropdown affordance for pages with subpages."""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"nav-dropdown", response.content)
+        self.assertIn(b"@mouseenter=\"openSoon()\"", response.content)
+        # About's children appear in the rendered dropdown panel.
+        self.assertIn(b"/about/team/", response.content)
+        self.assertIn(b"/about/founder/", response.content)
+        self.assertIn(b"/about/startup/", response.content)
+
     def test_translation_model_is_unique_per_page_and_language(self):
         """Wagtail editors cannot accidentally create duplicate locale records."""
         from django.db import IntegrityError
@@ -353,7 +473,7 @@ class LandingPagesTestCase(TestCase):
         self.assertFalse(django_settings.FUSION_RENDER_FIRST_DEFAULT)
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Platforms that ship as", response.content)
+        self.assertIn(b"Digital products, shipped as", response.content)
         self.assertIn(b'name="fusion-render-mode" content="data-api"', response.content)
 
         # The same seeded content is available via JSON.
@@ -417,6 +537,135 @@ class LandingPagesTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    def test_seeded_buttons_navigate_to_real_pages(self):
+        """Every seeded button/link href points at a real page — no dead /#cta
+        anchors and no slash-less internal links (APPEND_SLASH is off, so
+        "/contact" without a trailing slash would 404)."""
+        # The site settings API serves the header CTA pointing at the page.
+        settings = self.client.get("/apis/site/settings/").json()
+        self.assertEqual(settings["nav_cta_url"], "/contact/")
+        self.assertEqual(settings["nav_cta_label"], "Get Started")
+
+        # No dead anchors anywhere on the rendered homepage.
+        home = self.client.get("/").content.decode()
+        self.assertNotIn("/#cta", home)
+        self.assertNotIn('href="/contact"', home)
+        self.assertNotIn('href="/about"', home)
+        self.assertNotIn('href="/products"', home)
+        self.assertNotIn('href="#"', home)
+        # Real internal pages are linked with trailing slashes.
+        self.assertIn('href="/contact/"', home)
+        self.assertIn('href="/about/"', home)
+
+        # The header/footer partials never fall back to /#cta either.
+        for path in ("/about/", "/products/"):
+            with self.subTest(path=path):
+                content = self.client.get(path).content.decode()
+                self.assertNotIn("/#cta", content)
+                self.assertIn('href="/contact/"', content)
+
+    def test_button_page_chooser_resolves_url_and_title(self):
+        """A ButtonBlock whose editor picked a Wagtail page resolves to the
+        live page URL — and the page title fills the button label — on both
+        the data road (/apis/*) and the render road (Django fragments)."""
+        home = HomePage.objects.first()
+        target = ContactPage.objects.first()
+        self.assertIsNotNone(target)
+
+        home.hero = [
+            {
+                "type": "hero",
+                "value": {
+                    "badge": "",
+                    "title": home.title,
+                    "subtitle": "",
+                    # Page chooser only — label + href left empty on purpose.
+                    "primary_cta": {"label": "", "href": "", "page": target.pk, "style": "primary"},
+                    # Manual external URL — must stay untouched.
+                    "secondary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "secondary"},
+                    "trusted_by": "",
+                },
+            }
+        ]
+        home.save_revision().publish()
+
+        # Data road: the API resolves the chosen page to its URL + title label.
+        data = self.client.get("/apis/pages/home/").json()
+        primary = data["hero"]["primary_cta"]
+        self.assertEqual(primary["href"], target.url)
+        self.assertEqual(primary["label"], target.title)
+        self.assertEqual(primary["page"]["url"], target.url)
+        self.assertEqual(primary["page"]["title"], target.title)
+        # Manual hrefs are preserved verbatim.
+        self.assertEqual(data["hero"]["secondary_cta"]["href"], "https://github.com/mammhoud")
+        self.assertEqual(data["hero"]["secondary_cta"]["label"], "View on GitHub")
+
+        # Render road: the backend fragment renders the resolved link + title
+        # (the anchor is multiline, so a whitespace-tolerant regex is used).
+        import re
+
+        fragment = self.client.get("/fragment/pages/home/").content.decode()
+        self.assertIn(f'href="{target.url}"', fragment)
+        self.assertRegex(
+            fragment,
+            rf'btn-primary">\s*{re.escape(target.title)}\s*</a>',
+        )
+
+    def test_edition_cta_page_resolves_on_pricing_road(self):
+        """A cta_page chooser on a product edition resolves to the live URL on
+        every edition road: get_editions (pricing API), get_edition (preview),
+        and the /apis/pricing/ output — not just the page-data API."""
+        import json
+
+        from apps.pages.models import ProductPage
+
+        product = ProductPage.objects.get(slug="formint-pos")
+        target = ContactPage.objects.first()
+        field = ProductPage._meta.get_field("editions")
+        # Round-trip through the field's own JSON (use_json_field wraps every
+        # item as {"type": "item", "value": {...}}) instead of mutating
+        # StructValue/ListValue in place — those aren't JSON-serializable when
+        # save_revision() re-serializes the stream. Patch Community's CTA to
+        # point at an internal page, then re-assign the plain JSON form.
+        raw = json.loads(field.value_to_string(product))
+        block_item = next(i for i in raw if i["type"] == "editions")
+        wrapped = next(
+            t for t in block_item["value"]["editions"]
+            if str(t.get("value", {}).get("name", "")).lower() == "community"
+        )
+        wrapped["value"].update({"cta_page": target.pk, "cta_label": "", "cta_href": ""})
+        product.editions = raw
+        product.save_revision().publish()
+
+        # get_editions → the pricing tabs / product cards.
+        editions = ProductPage.objects.get(slug="formint-pos").get_editions()
+        community = next(e for e in editions if e["name"].lower() == "community")
+        self.assertEqual(community["cta_href"], target.url)
+        self.assertEqual(community["cta_label"], target.title)
+
+        # get_edition → the per-edition preview road.
+        edition = ProductPage.objects.get(slug="formint-pos").get_edition("community")
+        self.assertEqual(edition["cta_href"], target.url)
+        self.assertEqual(edition["cta_label"], target.title)
+
+        # /apis/pricing/ carries the resolved CTA to the Astro pricing tabs.
+        data = self.client.get("/apis/pricing/").json()
+        forge = next(p for p in data["products"] if p["slug"] == "formint-pos")
+        community_pricing = next(
+            e for e in forge["editions"] if e["name"].lower() == "community"
+        )
+        self.assertEqual(community_pricing["cta_href"], target.url)
+
+        # The rendered preview page (get_edition → product_preview.html) links
+        # to the resolved page too — covers the template that consumes the dict.
+        import re
+
+        preview = self.client.get("/products/formint-pos/preview/community/").content.decode()
+        self.assertRegex(
+            preview,
+            rf'href="{re.escape(target.url)}"[^>]*>\s*{re.escape(target.title)}\s*</a>',
+        )
+
     def test_htmx_fragment_serves_content_region_only(self):
         """HTMX requests get the fragment (content region), not the full document."""
         response = self.client.get("/about/", HTTP_HX_REQUEST="true")
@@ -444,6 +693,8 @@ class LandingPagesTestCase(TestCase):
             PrivacyPage,
             ProductPage,
             TeamPage,
+            FounderPage,
+            StartupPage,
             BrandPage,
         ):
             self.assertTrue(model.objects.exists(), model.__name__)
@@ -471,10 +722,13 @@ class LandingPagesTestCase(TestCase):
         for child in home.get_children():
             self.assertEqual(child.depth, 3, child.slug)
 
-        # About → Team subpage lives one level deeper (/about/team/).
+        # About subpages live one level deeper (/about/team/, /about/founder/,
+        # /about/startup/).
         about = AboutPage.objects.first()
         team_slugs = {c.slug for c in about.get_children().live()}
-        self.assertIn("team", team_slugs)
+        self.assertEqual(
+            team_slugs, {"team", "founder", "startup"},
+        )
 
     def test_company_redirects_to_about(self):
         """Company merged into About — /company/ permanently redirects and Company is not in the tree."""
@@ -487,7 +741,7 @@ class LandingPagesTestCase(TestCase):
 
     def test_product_pages_render_with_editions_and_snippets(self):
         """Each ProductPage renders hero + editions & pricing + reference snippets."""
-        for slug, hero in (("forge-pos", b"Formints"), ("lms", b"Precis LMS"), ("cms", b"Loop")):
+        for slug, hero in (("formint-pos", b"Formints"), ("lms", b"Precis LMS"), ("cms", b"Loop")):
             with self.subTest(slug=slug):
                 response = self.client.get(f"/products/{slug}/")
                 self.assertEqual(response.status_code, 200, slug)
@@ -500,14 +754,19 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
         # Known slugs still resolve (no regression from the 404 change).
-        self.assertEqual(self.client.get("/products/forge-pos/").status_code, 200)
+        self.assertEqual(self.client.get("/products/formint-pos/").status_code, 200)
 
-    def test_forge_pos_renders_all_editions_with_pricing(self):
+    def test_formint_pos_renders_all_editions_with_pricing(self):
         """The POS reference page lists Community · Standard · Pro · Cloud with per-edition pricing."""
-        response = self.client.get("/products/forge-pos/")
+        response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
         for marker in (b"Community", b"Standard", b"Pro", b"Cloud", b"$0", b"$119", b"$79", b"Custom", b"Models &amp; snippets you can reuse", b"SQLite", b"Rust"):
             self.assertIn(marker, response.content)
+        # The Pro edition carries the seeded 50% launch offer: badge chip +
+        # struck-through original price next to the discounted price.
+        self.assertIn(b"badge-offer", response.content)
+        self.assertIn(b"50% off", response.content)
+        self.assertIn(b"$158", response.content)
         # The tiered card system renders: outline Community, featured Pro (most
         # shipped), managed Cloud (corner ribbon).
         self.assertIn(b"edition__card--outline", response.content)
@@ -515,52 +774,90 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"most shipped", response.content)
         self.assertIn(b"managed-ribbon", response.content)
 
-    def test_forge_pos_renders_feature_comparison_table(self):
-        """The POS reference page ships the full edition-vs-edition comparison table (~26 rows)."""
-        response = self.client.get("/products/forge-pos/")
+    def test_formint_pos_renders_feature_comparison_table(self):
+        """The POS reference page ships the full edition-vs-edition comparison table (~33 rows)."""
+        response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
         for marker in (
             b"Compare editions",
             b"Community vs Standard vs Pro vs Cloud",
             b"React 19 + TypeScript frontend",
-            b"Python/Robyn sidecar API",
+            b"High-end interface design",
+            b"Food &amp; beverage (F&amp;B) menu support",
+            b"Inventory adjustments + stock control",
+            b"Kitchen display system",
             b"High-throughput Rust API (60k+ RPS)",
             b"Hosted deployment + managed backups",
         ):
             self.assertIn(marker, response.content)
         # The table body carries per-edition cells with the 4 columns aligned.
-        self.assertIn(b"60+ endpoints", response.content)
         self.assertIn(b"cloud master", response.content)
+        # Kitchen display moved from Community → Standard (Community column No).
+        kitchen_row = next(
+            row for row in self.client.get("/apis/pages/formint-pos/").json().get("comparison", [])[0]["rows"]
+            if row["feature"] == "Kitchen display system"
+        )
+        self.assertEqual(kitchen_row["cells"], ["No", "Yes", "Yes", "Yes"])
 
         # The API exports the comparison block with columns + rows intact.
-        data = self.client.get("/apis/pages/forge-pos/").json()
+        data = self.client.get("/apis/pages/formint-pos/").json()
         comparison = data.get("comparison", [])
         self.assertTrue(comparison, "products API should carry the comparison block")
         block = comparison[0]
         self.assertEqual(block["columns"], ["Community", "Standard", "Pro", "Cloud"])
-        self.assertGreaterEqual(len(block["rows"]), 25)
+        self.assertGreaterEqual(len(block["rows"]), 32)
+
+        # New capability rows are present with the right per-edition cells.
+        by_feature = {row["feature"]: row["cells"] for row in block["rows"]}
+        self.assertEqual(by_feature["Offline-first mode"], ["Yes", "Yes", "Yes", "Yes"])
+        self.assertEqual(by_feature["Loyalty & rewards program"], ["No", "Yes", "Yes", "Yes"])
+        self.assertEqual(by_feature["Multi-currency & tax profiles"], ["No", "Yes", "Yes", "Yes"])
+        self.assertEqual(by_feature["Custom roles & permissions"], ["No", "Yes", "Yes", "Yes"])
+        self.assertEqual(by_feature["Data export (CSV/JSON)"], ["No", "Yes", "Yes", "Yes"])
+        self.assertEqual(by_feature["Automatic cloud backups"], ["No", "No", "No", "Yes"])
+
+    def test_formint_pos_renders_roadmap_and_new_snippets(self):
+        """The POS reference page ships the product roadmap section + new reference snippets."""
+        response = self.client.get("/products/formint-pos/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (
+            b"Product roadmap",
+            b"Loyalty &amp; rewards engine",
+            b"Multi-currency &amp; tax profiles",
+            b"Automatic cloud backups",
+            b"Diesel migration (up.sql)",
+            b"Tauri command (invoice PDF)",
+        ):
+            self.assertIn(marker, response.content)
+        # The API carries the roadmap items under the flattened features list.
+        data = self.client.get("/apis/pages/formint-pos/").json()
+        features = data.get("features", [])
+        self.assertTrue(any(f.get("title") == "Loyalty & rewards engine" for f in features))
+        snippets = data.get("snippets", [])
+        self.assertTrue(any(s.get("title") == "Diesel migration (up.sql)" for s in snippets))
+        self.assertTrue(any(s.get("title") == "Tauri command (invoice PDF)" for s in snippets))
 
     def test_products_lists_product_pages(self):
         """/products/ lists the product pages (cards) alongside the project grid."""
         response = self.client.get("/products/")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Projects in this repo", response.content)
-        for href in (b"/products/forge-pos/", b"/products/lms/", b"/products/cms/"):
+        for href in (b"/products/formint-pos/", b"/products/lms/", b"/products/cms/"):
             self.assertIn(href, response.content)
 
         data = self.client.get("/apis/pages/products/").json()
-        self.assertTrue(any(p["slug"] == "forge-pos" for p in data["products"]), data.get("products"))
+        self.assertTrue(any(p["slug"] == "formint-pos" for p in data["products"]), data.get("products"))
 
     def test_services_carries_offering_and_process(self):
         """Services renders the three service lines + the 'build as you go' process."""
         response = self.client.get("/services/")
         self.assertEqual(response.status_code, 200)
         for marker in (
-            b"From marketing sites to full products",
-            b"Website building",
-            b"Product &amp; project development",
-            b"Enhancements &amp; extensions",
-            b"From brief to shipped, in four steps",
+            b"Build for the market you serve",
+            b"Market-ready websites",
+            b"Digital product delivery",
+            b"Improve what already works",
+            b"A measured path to launch",
             b"Discover",
             b"Ship &amp; grow",  # Wagtail escapes the ampersand in template output
         ):
@@ -607,7 +904,7 @@ class LandingPagesTestCase(TestCase):
         """Each seeded product carries its own constructed logo style — the
         family system, not shared generic marks."""
         expected = {
-            "forge-pos": "crest",
+            "formint-pos": "crest",
             "lms": "ribbon",
             "cms": "isometric",
             "cypercloud": "orbit",
@@ -763,7 +1060,7 @@ class LandingPagesTestCase(TestCase):
         data = self.client.get("/apis/brand/").json()
         boards = data.get("boards", [])
         slugs = [b["slug"] for b in boards]
-        self.assertEqual(slugs, ["forge-pos", "lms", "cms", "cypercloud", "vresume"])
+        self.assertEqual(slugs, ["formint-pos", "lms", "cms", "cypercloud", "vresume"])
         board = boards[0]
         self.assertEqual(board["name"], "Formints")
         self.assertEqual(board["mark"], "crest")
@@ -775,16 +1072,16 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(page_data.get("display_mode"), "both")
 
         # Product pages render the modal trigger + the shared brand modal.
-        response = self.client.get("/products/forge-pos/")
+        response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'data-open-brand="forge-pos"', response.content)
+        self.assertIn(b'data-open-brand="formint-pos"', response.content)
         self.assertIn(b"fusion:open-brand", response.content)
         self.assertIn(b"/apis/brand/", response.content)
 
         # The products listing carries a trigger per card.
         listing = self.client.get("/products/")
         self.assertEqual(listing.status_code, 200)
-        for slug in ("forge-pos", "lms", "cms", "cypercloud", "vresume"):
+        for slug in ("formint-pos", "lms", "cms", "cypercloud", "vresume"):
             self.assertIn(f'data-open-brand="{slug}"'.encode(), listing.content)
         # Hidden products get no trigger.
         self.assertNotIn(b'data-open-brand="ceptor-ai"', listing.content)
@@ -794,11 +1091,11 @@ class LandingPagesTestCase(TestCase):
         response = self.client.get("/blog/")
         self.assertEqual(response.status_code, 200)
         for marker in (
-            b"From the blog",
-            b"Why we ship landing pages as documents",
-            b"HTMX fragments vs. JSON APIs",
+            b"Ideas for the next release",
+            b"A fast first visit is a product decision",
+            b"Designing bilingual journeys without duplication",
             b"monorepo-six-products",
-            b"Most of our builds are open source",
+            b"A useful first release beats a noisy roadmap",
         ):
             self.assertIn(marker, response.content)
 
@@ -868,7 +1165,7 @@ class LandingPagesTestCase(TestCase):
         data = self.client.get("/apis/pricing/").json()
         slugs = [p["slug"] for p in data["products"]]
         self.assertEqual(
-            slugs, ["forge-pos", "lms", "cms", "cypercloud", "vresume"], slugs
+            slugs, ["formint-pos", "lms", "cms", "cypercloud", "vresume"], slugs
         )
 
     def test_faq_and_privacy_not_in_nav(self):

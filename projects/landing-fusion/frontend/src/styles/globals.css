@@ -455,6 +455,20 @@
   .badge-success {
     @apply badge bg-fu-live/10 text-fu-live border border-fu-live/30;
   }
+  /* Offer/discount chip — a live-green deal tag on any edition card
+     (course, special, or standard). Works alongside .badge-primary/.badge-dev. */
+  .badge-offer {
+    @apply badge font-mono text-[0.65rem] uppercase tracking-[0.14em]
+           bg-fu-live/10 text-fu-live border border-fu-live/30;
+  }
+  /* Struck-through original price next to the discounted price. */
+  .offer-old-price {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: hsl(var(--fu-muted));
+    text-decoration: line-through;
+    text-decoration-color: hsl(var(--fu-muted) / 0.6);
+  }
 
   /* ── Edition card tiers (Formints Community → Cloud) ────────────── */
   .edition__card--outline {
@@ -987,6 +1001,46 @@
     gap: 2.5rem;
     align-items: center;
   }
+
+  /* ── Cinematic hero (home road) — ultra-wide centered chapter ──────────
+     Text flows horizontally on a max-w-5xl stage; the heading clamps to a
+     2-line maximum, no pill-tags, no floating stamps. */
+  .hero--cinematic .hero__inner {
+    max-width: 100%;
+    padding: clamp(4.5rem, 9vw, 8.5rem) 1.25rem clamp(5rem, 10vw, 9rem);
+    text-align: center;
+  }
+  .hero--cinematic .hero__content {
+    max-width: 72rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .hero--cinematic .hero__heading {
+    max-width: 56rem;
+    margin-inline: auto;
+    font-size: clamp(2.75rem, 6vw + 0.5rem, 5.75rem);
+    line-height: 1.01;
+  }
+  .hero--cinematic .hero__eyebrow {
+    justify-content: center;
+  }
+  .hero--cinematic .hero__intro {
+    margin-inline: auto;
+    max-width: 42rem;
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  }
+  .hero--cinematic .hero__actions {
+    justify-content: center;
+    align-items: center;
+  }
+  /* GSAP scrubbed word-reveal — inline words keep their baseline, so the
+     line-height never jumps while opacities scrub with the scroll. */
+  .gsap-scrub-word {
+    display: inline;
+    will-change: opacity;
+  }
+  [data-gsap="rise"] { will-change: transform, opacity; }
+
   .hero__corner-tl,
   .hero__corner-br {
     position: absolute;
@@ -1113,6 +1167,27 @@
     font-family: var(--font-mono);
     font-size: 0.66rem;
     letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--fu-muted));
+  }
+
+  /* Trusted-by band — its OWN strip below the hero grid, never a tagline
+     inside the hero content (the hero carries the value prop, the strip is
+     the proof). Reads as a quiet mono caption, like a footer on the sheet. */
+  .hero__trusted {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-paper));
+  }
+  .hero__trusted-text {
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: 0.9rem 1.25rem 1.4rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: hsl(var(--fu-muted));
   }

@@ -34,7 +34,30 @@
     <nav class="site-nav" aria-label="Main" style="display:none;align-items:center;gap:1.5rem;">
       {% if nav_items %}
         {% for item in nav_items %}
-        <a href="{{ item.href }}" class="nav-link{% if item.active %} nav-link--active{% endif %}"{% if item.active %} style="color:hsl(var(--fu-link));"{% endif %}>{{ item.label }}</a>
+        <div class="nav-dropdown" x-data="{ open: false, hoverTimer: null,
+          openSoon() { this.cancelClose(); this.hoverTimer = setTimeout(() => { this.open = true; }, 120); },
+          cancelClose() { if (this.hoverTimer) { clearTimeout(this.hoverTimer); this.hoverTimer = null; } },
+          closeSoon() { this.cancelClose(); this.hoverTimer = setTimeout(() => { this.open = false; }, 180); },
+          toggle(event) { this.cancelClose(); this.open = !this.open; if (this.open && event) { event.preventDefault(); } },
+          close() { this.cancelClose(); this.open = false; },
+        }" @mouseenter="openSoon()" @mouseleave="closeSoon()" @click.outside="close()" @keydown.escape.window="open = false" style="position:relative;">
+          <a href="{{ item.href }}" class="nav-link{% if item.active %} nav-link--active{% endif %}"{% if item.active %} style="color:hsl(var(--fu-link));"{% endif %} aria-haspopup="{{ item.children|length|yesno:'true,false' }}" :aria-expanded="open.toString()" @click="toggle($event)">
+            {{ item.label }}
+            {% if item.children %}<span style="display:inline-block;margin-left:.25rem;font-size:.65rem;" :class="open && 'rotate-180'" class="nav-dropdown__caret">▾</span>{% endif %}
+          </a>
+          {% if item.children %}
+          <div x-show="open" x-cloak x-transition class="nav-dropdown__panel" style="position:absolute;left:0;top:100%;z-index:40;padding-top:.5rem;" @mouseenter="cancelClose()" @mouseleave="closeSoon()">
+            <div style="min-width:13rem;border:1px solid hsl(var(--fu-border));border-radius:.75rem;background:hsl(var(--fu-card));padding:.35rem;box-shadow:0 12px 30px rgba(0,0,0,.16);">
+              {% for child in item.children %}
+              <a href="{{ child.href }}" @click="close()" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;font-size:.85rem;{% if child.active %}color:hsl(var(--fu-link));font-weight:600;{% else %}color:hsl(var(--fu-text) / .8);{% endif %}" onmouseover="this.style.background='hsl(var(--fu-paper))'" onmouseout="this.style.background='transparent'">
+                <span>{{ child.label }}</span>
+                {% if child.active %}<span style="color:hsl(var(--fu-link));" aria-hidden="true">✓</span>{% endif %}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
         {% endfor %}
       {% else %}
         {% comment %} Fallback for pages rendered outside the handler pipeline (e.g. 404). {% endcomment %}
@@ -49,6 +72,7 @@
     </nav>
     <style>
       @media (min-width: 768px) { nav[aria-label="Main"] { display: flex !important; } }
+      .nav-dropdown__caret { transition: transform .2s ease; }
     </style>
 
     <div
@@ -111,7 +135,7 @@
       <template x-if="!authLoading && !authed">
         <div style="display:flex;align-items:center;gap:.75rem;">
           <button type="button" class="btn btn-secondary" style="padding:.5rem 1rem;" @click="$dispatch('fusion:open-login')"><span data-fusion-i18n="nav_login">Log In</span></button>
-          <a href="/#cta" class="btn btn-primary" style="padding:.5rem 1rem;"><span data-fusion-i18n="nav_get_started">Get Started</span></a>
+          <a href="/contact/" class="btn btn-primary" style="padding:.5rem 1rem;"><span data-fusion-i18n="nav_get_started">Get Started</span></a>
         </div>
       </template>
       <template x-if="!authLoading && authed">
@@ -152,7 +176,19 @@
     <nav class="container-fusion" aria-label="Mobile" style="display:flex;flex-direction:column;gap:.25rem;padding-block:1rem;">
       {% if nav_items %}
         {% for item in nav_items %}
-        <a href="{{ item.href }}" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">{{ item.label }}</a>
+        <div x-data="{ sub: false }">
+          <a href="{{ item.href }}" style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">
+            <span>{{ item.label }}</span>
+            {% if item.children %}<span style="font-size:.65rem;transition:transform .2s ease;" :class="sub && 'rotate-180'" @click.stop.prevent="sub = !sub">▾</span>{% endif %}
+          </a>
+          {% if item.children %}
+          <div x-show="sub" x-cloak style="margin-left:.75rem;padding-left:.75rem;border-left:1px solid hsl(var(--fu-border));">
+            {% for child in item.children %}
+            <a href="{{ child.href }}" style="display:block;padding:.4rem .75rem;border-radius:.5rem;text-decoration:none;font-size:.85rem;{% if child.active %}color:hsl(var(--fu-link));font-weight:600;{% else %}color:hsl(var(--fu-text) / .7);{% endif %}" @click="open = false">{{ child.label }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
         {% endfor %}
       {% else %}
         <a href="/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Home</a>
@@ -189,7 +225,7 @@
       <template x-if="!authLoading && !authed">
         <div>
           <button type="button" class="btn btn-secondary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false; $dispatch('fusion:open-login')"><span data-fusion-i18n="nav_login">Log In</span></button>
-          <a href="/#cta" class="btn btn-primary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false"><span data-fusion-i18n="nav_get_started">Get Started</span></a>
+          <a href="/contact/" class="btn btn-primary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false"><span data-fusion-i18n="nav_get_started">Get Started</span></a>
         </div>
       </template>
       <template x-if="!authLoading && authed">

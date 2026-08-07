@@ -1,3 +1,0 @@
-# ctc-research
-
-Documentation incoming.

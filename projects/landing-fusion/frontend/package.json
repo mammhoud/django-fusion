@@ -25,6 +25,7 @@
     "alpinejs": "^3.15.12",
     "astro": "^5.6.1",
     "clsx": "^2.1.1",
+    "gsap": "^3.15.0",
     "htmx.org": "^2.0.4",
     "tailwind-merge": "^2.6.0"
   },

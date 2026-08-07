@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { SiteSettings, NavigationData } from '@/lib/api';
 
@@ -20,6 +21,10 @@ try {
   siteSettings={siteSettings}
   pageSlug="about/startup"
 >
+  <div class='container-fusion pt-8'>
+    <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about/' }]} current='Startup' />
+  </div>
+
   <section class='section-hero reg-marks overflow-hidden py-16'>
     <div class='container-fusion'>
       <div class='mx-auto max-w-2xl'>

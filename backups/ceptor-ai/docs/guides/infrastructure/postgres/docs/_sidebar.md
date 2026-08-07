@@ -1,7 +1,0 @@
-* [PostgreSQL Overview](README.md)
-* [Configuration Files](README.md#configuration-files)
-* [Initialization Scripts](README.md#initialization-scripts)
-* [Docker Configuration](README.md#docker-configuration)
-* [Connection Strings](README.md#connection-strings)
-* [Maintenance Commands](README.md#maintenance-commands)
-* [Backup Procedures](README.md#backup-procedures)

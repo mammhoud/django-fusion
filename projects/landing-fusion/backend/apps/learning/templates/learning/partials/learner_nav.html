@@ -1,0 +1,26 @@
+{% comment %} ──────────────────────────────────────────────────────────────
+   learning/partials/learner_nav.html — the learner section navigation.
+
+   Self-contained: computes the active item from request.path, so every
+   learning template can include it with no extra context. Mirrors the
+   LearningApplication.get_learner_nav() items (Catalog / Dashboard /
+   Profile) so the served HTML and the fusion menu agree on the surface.
+   ─────────────────────────────────────────────────────────────────────── {% endcomment %}
+{% load wagtailcore_tags %}
+<nav class="container-fusion" aria-label="Learning sections" style="padding-block:1.75rem 0;">
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;">
+    <a href="/learning/"
+       style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .95rem;border:1px solid hsl(var(--fu-border));border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:.66rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));text-decoration:none;transition:border-color .2s,color .2s,background .2s;{% if request.path == '/learning/' %}background:hsl(var(--fu-link));border-color:hsl(var(--fu-link));color:#fff;{% endif %}">
+      Catalog</a>
+    <a href="/learning/dashboard/"
+       style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .95rem;border:1px solid hsl(var(--fu-border));border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:.66rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));text-decoration:none;transition:border-color .2s,color .2s,background .2s;{% if request.path|slice:":19" == '/learning/dashboard' %}background:hsl(var(--fu-link));border-color:hsl(var(--fu-link));color:#fff;{% endif %}">
+      Dashboard</a>
+    <a href="/learning/profile/"
+       style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .95rem;border:1px solid hsl(var(--fu-border));border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:.66rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));text-decoration:none;transition:border-color .2s,color .2s,background .2s;{% if request.path|slice:":17" == '/learning/profile' %}background:hsl(var(--fu-link));border-color:hsl(var(--fu-link));color:#fff;{% endif %}">
+      Profile</a>
+    {% if request.user.is_authenticated %}
+    <span style="margin-inline-start:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--fu-muted));">
+      {{ request.user.email }}</span>
+    {% endif %}
+  </div>
+</nav>

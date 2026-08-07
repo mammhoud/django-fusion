@@ -1,3 +1,0 @@
-# INDEX.md
-
-Documentation incoming.

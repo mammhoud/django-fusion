@@ -40,7 +40,7 @@ const productCards = (pageData?.products as ProductCard[] | undefined) ?? [];
 // The flagship gets the featured treatment — Formints (the deepest product
 // with four editions) when present, otherwise the first card in the tree.
 const featuredProduct =
-  productCards.find((c) => c.slug === 'forge-pos') ?? productCards[0];
+  productCards.find((c) => c.slug === 'formint-pos') ?? productCards[0];
 const restProducts = productCards.filter((c) => c !== featuredProduct);
 ---
 
@@ -51,7 +51,7 @@ const restProducts = productCards.filter((c) => c !== featuredProduct);
     heading={pageHero?.title || 'Most of what we build, shipped as'}
     accent='open source'
     intro={pageHero?.subtitle || 'Every product with its editions, pricing, and tech stack, from one monorepo.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See the editions', href: '/products/forge-pos/#editions' }}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See the editions', href: '/products/formint-pos/#editions' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse the repo', href: 'https://github.com/mammhoud' }}
     status='200 OK · text/html · the full catalog in one response'
   />

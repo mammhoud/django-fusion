@@ -1,3 +1,0 @@
-# ceptor-ai
-
-Documentation incoming.

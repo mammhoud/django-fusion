@@ -206,6 +206,98 @@ class TeamPage(LandingPage):
         verbose_name_plural = _("Team pages")
 
 
+class FounderPage(LandingPage):
+    """About → Founder subpage — the engineer behind structa.cloud.
+
+    A child of AboutPage, served at /about/founder/. Carries a hero, the
+    engineer's story body, a tech-stack band (TechStackSectionBlock), a
+    skills/values grid (FeaturesSectionBlock), plus a CTA — mirroring the
+    Astro founder page so both render roads show the same document.
+    """
+
+    body_heading = _("The engineer")
+
+    body = RichTextField(
+        blank=True,
+        verbose_name=_("Body"),
+        help_text=_("The founder's story — background, focus and working style."),
+    )
+    tech = StreamField(
+        [("tech", TechStackSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Tech stack"),
+    )
+    features = StreamField(
+        [("features", FeaturesSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Skills & values"),
+        help_text=_("The capabilities and working principles the founder brings to every project."),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("body")],
+            heading=_("Story"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        FieldPanel("tech"),
+        FieldPanel("features"),
+    ]
+
+    template = "pages/founder.html"
+
+    class Meta:
+        verbose_name = _("Founder page")
+        verbose_name_plural = _("Founder pages")
+
+
+class StartupPage(LandingPage):
+    """About → Startup subpage — the structa.cloud origin story.
+
+    A child of AboutPage, served at /about/startup/. Carries a hero, the
+    story body, a numbered timeline (ProcessSectionBlock — one step per
+    era), a stats band, plus a CTA — mirroring the Astro startup page.
+    """
+
+    body_heading = _("The story")
+
+    body = RichTextField(
+        blank=True,
+        verbose_name=_("Body"),
+        help_text=_("How structa.cloud grew from freelance projects into a monorepo of products."),
+    )
+    process = StreamField(
+        [("process", ProcessSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Timeline"),
+        help_text=_("One numbered step per era — the build-as-you-go story rendered as a process band."),
+    )
+    stats = StreamField(
+        [("stats", StatsSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Stats"),
+    )
+
+    content_panels = LandingPage.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("body")],
+            heading=_("Story"),
+            classname=SECTION_PANEL_CLASS,
+        ),
+        FieldPanel("process"),
+        FieldPanel("stats"),
+    ]
+
+    template = "pages/startup.html"
+
+    class Meta:
+        verbose_name = _("Startup page")
+        verbose_name_plural = _("Startup pages")
+
 DISPLAY_MODE_CHOICES = [
     ("page", _("Full page")),
     ("modal", _("Modal only")),
@@ -581,7 +673,7 @@ class ProductPage(ShowInNavMixin, LandingPage):
     A single product page — the reference document for one product.
 
     Carries everything another project needs to reuse it (e.g. LMS reusing
-    Forge POS patterns): an overview, its tech stack, its editions with
+    Formints patterns): an overview, its tech stack, its editions with
     per-edition pricing, reference snippets/models, features, FAQ and CTA.
     These pages live as children of ``ProductsPage`` and are listed there.
     """
@@ -713,31 +805,60 @@ class ProductPage(ShowInNavMixin, LandingPage):
         verbose_name = _("Product page")
         verbose_name_plural = _("Product pages")
 
+    def _resolve_edition_cta(self, edition) -> dict:
+        """Flatten one edition card for JSON/API consumers (CTA resolved).
+
+        A chosen ``cta_page`` wins over the manual ``cta_href`` and fills an
+        empty ``cta_label`` (the button's visible header) — matching the
+        ButtonBlock resolution on the page API. Values are JSON-safe.
+        """
+        from wagtail.models import Page as WagtailPage
+
+        cta_page = edition.get("cta_page")
+        cta_href = edition.get("cta_href", "")
+        cta_label = edition.get("cta_label", "")
+        if isinstance(cta_page, WagtailPage):
+            # Resolve the URL first so an unresolvable page leaves the manual
+            # href/label untouched (no partial state) instead of falling into
+            # a broad except.
+            page_url = cta_page.url or ""
+            if page_url:
+                cta_href = cta_href or page_url
+                cta_label = cta_label or cta_page.title
+                cta_page = {"id": cta_page.pk, "title": cta_page.title, "url": page_url}
+            else:
+                cta_page = None
+        else:
+            cta_page = None
+        return {
+            "name": edition.get("name", ""),
+            "price": edition.get("price", ""),
+            "period": edition.get("period", ""),
+            "tagline": edition.get("tagline", ""),
+            "tier": edition.get("tier", "default"),
+            "featured": bool(edition.get("featured", False)),
+            "offer_label": edition.get("offer_label", ""),
+            "offer_old_price": edition.get("offer_old_price", ""),
+            "cta_label": cta_label,
+            "cta_href": cta_href,
+            "cta_page": cta_page,
+        }
+
     def get_editions(self) -> list[dict]:
-        """The edition list (name, price, period, tier, tagline, featured) from
-        the editions StreamField, flattened for cards + pricing tabs."""
+        """The edition list (name, price, period, tier, tagline, featured, CTA)
+        from the editions StreamField, flattened for cards + pricing tabs."""
         if not self.editions:
             return []
         for block in self.editions:
             if block.block_type == "editions":
-                return [
-                    {
-                        "name": e.get("name", ""),
-                        "price": e.get("price", ""),
-                        "period": e.get("period", ""),
-                        "tagline": e.get("tagline", ""),
-                        "tier": e.get("tier", "default"),
-                        "featured": bool(e.get("featured", False)),
-                    }
-                    for e in block.value.get("editions", [])
-                ]
+                return [self._resolve_edition_cta(e) for e in block.value.get("editions", [])]
         return []
 
     def get_edition(self, name: str) -> dict | None:
         """The full edition dict (features + CTA included) by name.
 
         Edition names are matched case-insensitively ("Community", "community")
-        so preview URLs like /products/forge-pos/preview/community/ resolve.
+        so preview URLs like /products/formint-pos/preview/community/ resolve.
         Returns None when no edition matches.
         """
         if not self.editions:
@@ -749,7 +870,10 @@ class ProductPage(ShowInNavMixin, LandingPage):
             if block.block_type == "editions":
                 for edition in block.value.get("editions", []):
                     if slugify(str(edition.get("name", ""))) == target:
-                        return dict(edition)
+                        data = self._resolve_edition_cta(edition)
+                        # Features are CharBlocks — already plain strings.
+                        data["features"] = list(edition.get("features", []))
+                        return data
         return None
 
     def get_product_card(self) -> dict:

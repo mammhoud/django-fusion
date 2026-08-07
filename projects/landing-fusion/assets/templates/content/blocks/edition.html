@@ -8,9 +8,11 @@
   {% endif %}
   <p class="tag-marker mb-1">{{ value.name }}</p>
   {% if value.tagline %}<p class="mb-6 text-sm text-fu-muted">{{ value.tagline }}</p>{% endif %}
-  <div class="mb-7 flex items-baseline gap-2">
+  <div class="mb-7 flex flex-wrap items-baseline gap-2">
+    {% if value.offer_old_price %}<span class="offer-old-price">{{ value.offer_old_price }}</span>{% endif %}
     <span class="font-mono text-[2rem] font-semibold tracking-tight text-fu-ink">{{ value.price }}</span>
     {% if value.period %}<span class="font-mono text-xs uppercase tracking-wider text-fu-muted">{{ value.period }}</span>{% endif %}
+    {% if value.offer_label %}<span class="badge-offer self-center">{{ value.offer_label }}</span>{% endif %}
   </div>
   {% if value.features %}
   <ul class="mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm">
@@ -24,9 +26,15 @@
     {% endfor %}
   </ul>
   {% endif %}
-  {% if value.cta_label %}
+  {% if value.cta_label or value.cta_page %}
+  {% if value.cta_page %}
+  <a href="{{ value.cta_page.url }}" class="mt-auto w-full {% if value.featured %}btn-primary{% else %}btn-secondary{% endif %}">
+    {{ value.cta_label|default:value.cta_page.title }}
+  </a>
+  {% else %}
   <a href="{{ value.cta_href|default:'/contact/' }}" class="mt-auto w-full {% if value.featured %}btn-primary{% else %}btn-secondary{% endif %}">
     {{ value.cta_label }}
   </a>
+  {% endif %}
   {% endif %}
 </article>

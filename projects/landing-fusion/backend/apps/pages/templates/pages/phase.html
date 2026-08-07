@@ -1,9 +1,10 @@
 {% extends "pages/base.html" %}
-{% load static %}
+{% load static wagtailcore_tags %}
 
 {% block content %}
 <article class="doc-sheet bg-fu-paper py-16 md:py-24">
   <div class="container-fusion">
+    {% include "pages/partials/breadcrumbs.html" %}
     <header class="mx-auto max-w-3xl">
       <p class="tag-marker">phase {{ page.phase_number }} · {{ page.get_phase_label_display|lower }}</p>
       <h1 class="mt-4 font-display text-4xl font-bold tracking-tight text-fu-ink md:text-6xl">{{ page.title }}</h1>

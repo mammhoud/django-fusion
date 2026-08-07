@@ -1,2 +1,0 @@
-- separate plugins/accounts/allauth_views.py to be at plugins/accounts/views as files separated with names
-- check the managements file all has bee moved files at last commit make sure all files is could be imported at old path as accounts app or accounts/registration s what moved files and used update its imports 

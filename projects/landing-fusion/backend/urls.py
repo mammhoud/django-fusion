@@ -9,6 +9,8 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from apps.content.views import BroadcastEmailView
+from apps.handlers.fusion import landing_pages_application
+from apps.learning.fusion import learning_application
 from apps.pages import api as pages_api
 
 urlpatterns = [
@@ -29,10 +31,19 @@ urlpatterns = [
     # redirects: /api/auth/provider/login?provider=github …
     path("api/auth/", include("allauth.headless.urls")),
 
-    # ── Learning — backend-owned HTML + HTMX learner surface ─────────
-    # Kept separate from the marketing Wagtail tree; authenticated mutations
-    # use the same allauth session cookie as the Astro header/profile.
-    path("learning/", include("apps.learning.urls")),
+    # ── Learning — django-fusion Application (dual-mode HTMX surface) ──
+    # Mounts LearningApplication at /learning/ with the ``learning``
+    # namespace (the same namespace apps.learning.urls exposed, so
+    # reverse("learning:course") and {% url 'learning:...' %} keep resolving).
+    # Authenticated mutations use the same allauth session cookie as the
+    # Astro header/profile.
+    path(
+        "learning/",
+        # Mount the Application's declared patterns with the ``learning``
+        # namespace (same namespace apps.learning.urls exposed, so
+        # reverse("learning:course") keeps resolving).
+        include((learning_application.urlpatterns, "learning"), namespace="learning"),
+    ),
 
     # ── Auth — server-rendered allauth pages (/accounts/login/, signup,
     #    password reset, email management, email confirmation…). Mirrors the
@@ -61,10 +72,16 @@ urlpatterns = [
     path("api/newsletter/status/", pages_api.newsletter_status_api, name="newsletter_status"),
     path("fragment/ping/", pages_api.htxm_ping_api, name="htmx_ping"),
 
-    # Landing page handlers — django-fusion PageHandler views that render each
-    # Wagtail page through the unified fragment/layout pipeline (HTMX-aware).
-    # They sit BEFORE Wagtail's catch-all so fragments serve the same templates.
-    path("", include("apps.handlers.urls")),
+    # Landing page handlers — django-fusion LandingPagesApplication: the same
+    # PageHandler views rendered through the unified fragment/layout pipeline
+    # (HTMX-aware), now registered with menu metadata (name/icon/title). It
+    # sits BEFORE Wagtail's catch-all so fragments serve the same templates.
+    path(
+        "",
+        # LandingPagesApplication — the PageHandler routes with menu metadata,
+        # mounted at the site root with the ``pages`` namespace.
+        include((landing_pages_application.urlpatterns, "pages"), namespace="pages"),
+    ),
     # 404 — Wagtail serves unknown page paths, so this only catches admin/API misses
     path("404/", TemplateView.as_view(template_name="pages/404.html"), name="error-404"),
     path("", include(wagtail_urls)),

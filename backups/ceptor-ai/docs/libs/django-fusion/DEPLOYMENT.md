@@ -1,3 +1,0 @@
-# DEPLOYMENT.md
-
-Documentation incoming.

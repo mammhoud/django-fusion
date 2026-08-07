@@ -169,7 +169,9 @@ def site_settings_api(request):
         "nav_show_home": getattr(settings, "nav_show_home", True) if settings else True,
         "nav_show_contact": getattr(settings, "nav_show_contact", True) if settings else True,
         "nav_cta_label": getattr(settings, "nav_cta_label", "Get Started") if settings else "Get Started",
-        "nav_cta_url": getattr(settings, "nav_cta_url", "/#cta") if settings else "/#cta",
+        # The header CTA points at a real page (contact) — a bare /#cta anchor
+        # would dead-end on pages without a CTA section (APPEND_SLASH=False).
+        "nav_cta_url": getattr(settings, "nav_cta_url", "/contact/") if settings else "/contact/",
         # ── Footer ──
         "footer_description": settings.footer_description if settings else "",
         "footer_address": settings.footer_address if settings else "",
@@ -208,9 +210,10 @@ def navigation_api(request):
         nav_items = landing_site.get_navigation_context(request)
         # Filter to show_in_nav=True only
         nav_items = [item for item in nav_items if item.get("show_in_nav", True)]
-        # Remove the show_in_nav key from the response
+        # Remove the show_in_nav key from the response (children carry their own)
         for item in nav_items:
             item.pop("show_in_nav", None)
+            item["children"] = item.get("children") or []
     except Exception:
         nav_items = _navigation_from_wagtail_tree(request)
 
@@ -232,6 +235,13 @@ def navigation_api(request):
                 translation = PageTranslation.for_page(page, "ar") if page else None
                 if translation and translation.title:
                     item["label"] = translation.title
+                # Translate dropdown children whose pages carry an Arabic title.
+                for child in item.get("children", []):
+                    child_slug = str(child.get("href", "")).strip("/").split("/")[-1]
+                    child_page = landing_pages.filter(slug=child_slug).first()
+                    child_translation = PageTranslation.for_page(child_page, "ar") if child_page else None
+                    if child_translation and child_translation.title:
+                        child["label"] = child_translation.title
         except Exception:
             logger.exception("navigation translation lookup failed")
     return JsonResponse({"nav_items": nav_items, "language": language, "available_languages": ["en", "ar"]})
@@ -256,10 +266,16 @@ def content_languages_api(request):
 
     if not languages:
         # Fallback — mirrors the seeded DEFAULT_SITE_LANGUAGES so a fresh DB
-        # (before the seed command runs) still reports the editorial pair.
+        # (before the seed command runs) still reports the full offered catalog
+        # (Django LANGUAGES + the Astro LANG_META table all list these seven).
         languages = [
             {"code": "en", "name": "English", "native": "English", "dir": "ltr", "flag": "🇬🇧"},
             {"code": "ar", "name": "Arabic", "native": "العربية", "dir": "rtl", "flag": "🇸🇦"},
+            {"code": "sv", "name": "Swedish", "native": "Svenska", "dir": "ltr", "flag": "🇸🇪"},
+            {"code": "fr", "name": "French", "native": "Français", "dir": "ltr", "flag": "🇫🇷"},
+            {"code": "de", "name": "German", "native": "Deutsch", "dir": "ltr", "flag": "🇩🇪"},
+            {"code": "es", "name": "Spanish", "native": "Español", "dir": "ltr", "flag": "🇪🇸"},
+            {"code": "pt", "name": "Portuguese", "native": "Português", "dir": "ltr", "flag": "🇧🇷"},
         ]
 
     # Coverage stays en/ar — the only languages with model-level editorial
@@ -284,7 +300,7 @@ def _navigation_from_wagtail_tree(request):
         from apps.pages.models import HomePage
         home = HomePage.objects.first()
         if home:
-            nav_items.append({"label": home.title, "href": "/", "active": request.path == "/"})
+            nav_items.append({"label": home.title, "href": "/", "active": request.path == "/", "children": []})
             for child in home.get_children().live().order_by("title"):
                 show = getattr(child.specific, "show_in_nav", True)
                 if not show:
@@ -293,18 +309,19 @@ def _navigation_from_wagtail_tree(request):
                     "label": child.title,
                     "href": f"/{child.slug}/",
                     "active": request.path.startswith(f"/{child.slug}/"),
+                    "children": [],
                 })
     except Exception:
         pass
 
     if not nav_items:
         nav_items = [
-            {"label": "Home", "href": "/", "active": request.path == "/"},
-            {"label": "Products", "href": "/products/", "active": False},
-            {"label": "Features", "href": "/features/", "active": False},
-            {"label": "About", "href": "/about/", "active": False},
-            {"label": "FAQ", "href": "/faq/", "active": False},
-            {"label": "Contact", "href": "/contact/", "active": False},
+            {"label": "Home", "href": "/", "active": request.path == "/", "children": []},
+            {"label": "Products", "href": "/products/", "active": False, "children": []},
+            {"label": "Features", "href": "/features/", "active": False, "children": []},
+            {"label": "About", "href": "/about/", "active": False, "children": []},
+            {"label": "FAQ", "href": "/faq/", "active": False, "children": []},
+            {"label": "Contact", "href": "/contact/", "active": False, "children": []},
         ]
 
     return nav_items
@@ -322,11 +339,17 @@ def contact_api(request):
                 if block.block_type == "contact":
                     methods = []
                     for method in block.value.get("methods", []):
+                        # A chosen page wins over the manual link (mailto:/tel:/
+                        # URLs still work when no page is picked).
+                        page = method.get("page")
+                        href = method.get("href", "")
+                        if page is not None:
+                            href = href or getattr(page, "url", "") or ""
                         methods.append({
                             "type": method.get("method_type", "email"),
                             "label": method.get("label", ""),
                             "value": method.get("value", ""),
-                            "href": method.get("href", ""),
+                            "href": href,
                         })
                     return JsonResponse({
                         "title": block.value.get("title", "Get in touch"),
@@ -362,13 +385,77 @@ import wagtail.blocks
 
 def _stream_to_plain(value):
     """Recursively convert Wagtail StreamField values to plain JSON-serializable
-    Python dicts/lists. Handles StructValue and ListValue from wagtail.blocks."""
+    Python dicts/lists. Handles StructValue/ListValue from wagtail.blocks and
+    resolves PageChooserBlock values to ``{id, title, url}`` dicts."""
+    if isinstance(value, Page):
+        # PageChooserBlock value — expose id/title/url so JSON keeps working.
+        try:
+            return {"id": value.pk, "title": value.title, "url": value.url}
+        except Exception:
+            return {"id": value.pk, "title": value.title, "url": ""}
     if hasattr(value, 'items') and hasattr(value, 'get'):
         # StructValue or dict-like
         return {k: _stream_to_plain(v) for k, v in value.items()}
     if hasattr(value, '__iter__') and not isinstance(value, (str, bytes)):
         # ListValue or list-like
         return [_stream_to_plain(v) for v in value]
+    return value
+
+
+def _button_to_dict(btn) -> dict | None:
+    """Serialize a ButtonBlock StructValue (label/href/page/style) to a dict.
+
+    A chosen page resolves to its live URL; the label falls back to the page
+    title (the button's visible header) when the editor left it empty.
+    """
+    if not btn:
+        return None
+    label = btn.get("label") or ""
+    href = btn.get("href") or ""
+    style = btn.get("style") or "primary"
+    page = btn.get("page")
+    page_dict = None
+    if page is not None:
+        try:
+            page_dict = {"id": page.pk, "title": page.title, "url": page.url}
+        except Exception:
+            page_dict = None
+        if page_dict and page_dict.get("url"):
+            href = href or page_dict["url"]
+            label = label or page_dict["title"]
+    return {"label": label, "href": href, "style": style, "page": page_dict}
+
+
+def _normalize_page_links(value):
+    """Recursively promote serialized PageChooserBlock values to href keys.
+
+    ``_stream_to_plain`` turns a chosen page into ``{id, title, url}``.
+    Editors may pick a page instead of typing a URL, so ``page`` → ``href``
+    and ``<name>_page`` → ``<name>_href``; the page title fills an empty
+    label. Applies to nested dicts/lists so section item lists (pricing
+    tiers, editions, services, blog posts) are covered too.
+    """
+    if isinstance(value, list):
+        for item in value:
+            if isinstance(item, dict):
+                _normalize_page_links(item)
+        return value
+    if not isinstance(value, dict):
+        return value
+    for key, item in list(value.items()):
+        if isinstance(item, list):
+            for sub in item:
+                if isinstance(sub, dict):
+                    _normalize_page_links(sub)
+            continue
+        if isinstance(item, dict) and item.get("url"):
+            if key == "page":
+                value["href"] = value.get("href") or item["url"]
+                value["label"] = value.get("label") or item.get("title")
+            elif key.endswith("_page"):
+                base = key[: -len("_page")]
+                value[f"{base}_href"] = value.get(f"{base}_href") or item["url"]
+                value[f"{base}_label"] = value.get(f"{base}_label") or item.get("title")
     return value
 
 
@@ -450,9 +537,10 @@ def _page_to_dict(page) -> dict:
                 data["hero"] = {
                     "badge": hero_val.get("badge", ""),
                     "title": hero_val.get("title", page.title),
+                    "accent": hero_val.get("accent", ""),
                     "subtitle": hero_val.get("subtitle", ""),
-                    "primary_cta": hero_val.get("primary_cta", None),
-                    "secondary_cta": hero_val.get("secondary_cta", None),
+                    "primary_cta": _button_to_dict(hero_val.get("primary_cta")),
+                    "secondary_cta": _button_to_dict(hero_val.get("secondary_cta")),
                     "trusted_by": hero_val.get("trusted_by", ""),
                 }
                 break
@@ -465,8 +553,8 @@ def _page_to_dict(page) -> dict:
                 data["cta"] = {
                     "title": cta_val.get("title", ""),
                     "subtitle": cta_val.get("subtitle", ""),
-                    "primary_cta": cta_val.get("primary_cta", None),
-                    "secondary_cta": cta_val.get("secondary_cta", None),
+                    "primary_cta": _button_to_dict(cta_val.get("primary_cta")),
+                    "secondary_cta": _button_to_dict(cta_val.get("secondary_cta")),
                 }
                 break
 
@@ -516,6 +604,10 @@ def _page_to_dict(page) -> dict:
                     if not isinstance(block_data, dict):
                         items.append(block_data)
                         continue
+                    # Resolve PageChooserBlock values (page/cta_page) to hrefs
+                    # before flattening so both frontends keep the plain href
+                    # contract even when an editor picked an internal page.
+                    _normalize_page_links(block_data)
                     # Flatten section blocks to their item list (see
                     # SECTION_ITEM_LIST_KEYS); keep projects/pricing block-level.
                     item_key = SECTION_ITEM_LIST_KEYS.get(block.block_type)
@@ -566,6 +658,7 @@ def _page_to_dict(page) -> dict:
         for block in page.contact:
             block_data = _stream_to_plain(block.value)
             if isinstance(block_data, dict):
+                _normalize_page_links(block_data)
                 block_data["type"] = block.block_type
             contact_blocks.append(block_data)
         if contact_blocks:
@@ -749,14 +842,20 @@ def page_list_api(request):
     try:
         pages = []
         for p in Page.objects.live().filter(depth__gt=1).order_by("title"):
+            specific_class = getattr(p, "specific_class", None)
+            if specific_class is None:
+                # Orphaned/stale content types (removed models, old seeds) —
+                # skip rather than fail the whole list.
+                continue
             pages.append({
                 "id": p.pk,
                 "slug": p.slug,
                 "title": p.title,
-                "type": p.specific_class.__name__,
+                "type": specific_class.__name__,
             })
         return JsonResponse({"pages": pages, "total": len(pages)})
     except Exception:
+        logger.exception("page_list_api error")
         return JsonResponse({"pages": [], "total": 0})
 
 

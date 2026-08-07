@@ -48,8 +48,8 @@ function editionCardClass(tier: string): string {
     heading={pageHero?.title || 'Pricing'}
     accent='printed clearly'
     intro={pageHero?.subtitle || 'Every product, its editions, one price sheet. Community editions are open source.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See Formints', href: '/products/forge-pos/#editions' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact sales', href: '/contact' }}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See Formints', href: '/products/formint-pos/#editions' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact sales', href: '/contact/' }}
     status='200 OK · text/html · the whole price sheet in one response'
   />
 
@@ -105,9 +105,11 @@ function editionCardClass(tier: string): string {
                   {ed.tier === 'managed' && <span class='managed-ribbon' aria-hidden='true'>managed</span>}
                   <p class='tag-marker mb-1'>{ed.name}</p>
                   {ed.tagline && <p class='mb-6 text-sm text-fu-muted'>{ed.tagline}</p>}
-                  <div class='mb-7 flex items-baseline gap-2'>
+                  <div class='mb-7 flex flex-wrap items-baseline gap-2'>
+                    {ed.offer_old_price && <span class='offer-old-price'>{ed.offer_old_price}</span>}
                     <span class='font-mono text-[2rem] font-semibold tracking-tight text-fu-ink'>{ed.price}</span>
                     {ed.period && <span class='font-mono text-xs uppercase tracking-wider text-fu-muted'>{ed.period}</span>}
+                    {ed.offer_label && <span class='badge-offer self-center'>{ed.offer_label}</span>}
                   </div>
                   {ed.features?.length ? (
                     <ul class='mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm'>

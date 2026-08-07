@@ -1,1 +1,0 @@
-"""VResume website application package."""

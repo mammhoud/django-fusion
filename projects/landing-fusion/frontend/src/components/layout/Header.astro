@@ -2,10 +2,25 @@
 import ThemeToggle from '@/components/ui/ThemeToggle.astro';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.astro';
 
+interface NavChild {
+  label: string;
+  href: string;
+  active?: boolean;
+}
+
+interface NavLink {
+  label: string;
+  href: string;
+  active?: boolean;
+  external?: boolean;
+  /** Dropdown subpages (live Wagtail children) — hover menu on desktop. */
+  children?: NavChild[];
+}
+
 interface Props {
   siteName?: string;
   /** Backend-fetched nav items (from /apis/navigation/). Falls back to a sensible default. */
-  navItems?: { label: string; href: string; active?: boolean; external?: boolean }[];
+  navItems?: NavLink[];
 }
 
 const { siteName = 'Structa Cloud', navItems } = Astro.props;
@@ -89,16 +104,75 @@ const displayNav = navItems && navItems.length > 0
       <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
         {displayNav.map((link) => {
           const active = isActive(link.href);
+          const hasChildren = !!(link.children && link.children.length > 0);
           return (
-            <a
-              href={link.href}
-              class:list={[
-                'nav-link text-[0.9rem]',
-                active ? 'nav-link--active font-medium text-fu-ink' : 'text-fu-muted hover:text-fu-ink',
-              ]}
+            <div
+              class="relative"
+              x-data="{
+                open: false,
+                hoverTimer: null as ReturnType<typeof setTimeout> | null,
+                openSoon() { this.cancelClose(); this.hoverTimer = setTimeout(() => { this.open = true; }, 120); },
+                cancelClose() { if (this.hoverTimer) { clearTimeout(this.hoverTimer); this.hoverTimer = null; } },
+                closeSoon() { this.cancelClose(); this.hoverTimer = setTimeout(() => { this.open = false; }, 180); },
+                toggle(e) { this.cancelClose(); this.open = !this.open; if (this.open && e) { e.preventDefault(); } },
+                close() { this.cancelClose(); this.open = false; },
+              }"
+              @mouseenter="openSoon()"
+              @mouseleave="closeSoon()"
+              @focusin="openSoon()"
+              @focusout="closeSoon()"
+              @click.outside="close()"
+              @keydown.escape.window="open = false"
             >
-              <span data-i18n={navTranslationKey(link.href)}>{link.label}</span>
-            </a>
+              <a
+                href={link.href}
+                class:list={[
+                  'nav-link flex items-center gap-1 text-[0.9rem]',
+                  active ? 'nav-link--active font-medium text-fu-ink' : 'text-fu-muted hover:text-fu-ink',
+                ]}
+                aria-haspopup={hasChildren ? 'true' : undefined}
+                x-bind:aria-expanded={hasChildren ? 'open.toString()' : undefined}
+                @click="toggle($event)"
+              >
+                <span data-i18n={navTranslationKey(link.href)}>{link.label}</span>
+                {hasChildren && (
+                  <svg class="h-3 w-3 text-fu-muted transition-transform duration-200" :class="open && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                )}
+              </a>
+              {hasChildren && (
+                <div
+                  x-show="open"
+                  x-cloak
+                  x-transition:enter="transition ease-out duration-150"
+                  x-transition:enter-start="opacity-0 translate-y-1"
+                  x-transition:enter-end="opacity-100 translate-y-0"
+                  x-transition:leave="transition ease-in duration-100"
+                  x-transition:leave-start="opacity-100"
+                  x-transition:leave-end="opacity-0"
+                  class="absolute left-0 top-full z-40 pt-2"
+                  @mouseenter="cancelClose()"
+                  @mouseleave="closeSoon()"
+                >
+                  <div class="min-w-[13rem] rounded-xl border border-fu-line bg-fu-paper p-1.5 shadow-xl">
+                    {link.children!.map((child) => (
+                      <a
+                        href={child.href}
+                        @click="close()"
+                        class:list={[
+                          'flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-[0.85rem] transition-colors',
+                          child.active ? 'bg-fu-line/40 font-medium text-fu-ink' : 'text-fu-muted hover:bg-fu-card hover:text-fu-ink',
+                        ]}
+                      >
+                        <span>{child.label}</span>
+                        {child.active && <span class="text-fu-link" aria-hidden="true">✓</span>}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           );
         })}
       </nav>
@@ -112,7 +186,7 @@ const displayNav = navItems && navItems.length > 0
         <template x-if="!authLoading && !authed">
           <div class="flex items-center gap-3">
             <button type="button" class="btn-secondary !h-9 !px-4 !py-0 text-[0.85rem]" @click="$dispatch('fusion:open-login')">            <span data-i18n="nav_login">Log In</span></button>
-            <a href="/#cta" class="btn-primary !h-9 !px-4 !py-0 text-[0.85rem]" data-i18n="nav_get_started">Get Started</a>
+            <a href="/contact/" class="btn-primary !h-9 !px-4 !py-0 text-[0.85rem]" data-i18n="nav_get_started">Get Started</a>
           </div>
         </template>
         <!-- Logged in: user dropdown -->
@@ -211,26 +285,50 @@ const displayNav = navItems && navItems.length > 0
     <nav class="container-fusion space-y-1 py-4" aria-label="Mobile">
       {displayNav.map((link) => {
         const active = isActive(link.href);
+        const hasChildren = !!(link.children && link.children.length > 0);
         return (
-          <a
-            href={link.href}
-            @click="open = false"
-            class:list={[
-              'block rounded-md px-3 py-2 text-[0.9rem] transition-colors',
-              active
-                ? 'bg-fu-line/40 font-medium text-fu-ink'
-                : 'text-fu-muted hover:bg-fu-line/30 hover:text-fu-ink',
-            ]}
-          >
-            <span data-i18n={navTranslationKey(link.href)}>{link.label}</span>
-          </a>
+          <div x-data="{ sub: false }">
+            <a
+              href={link.href}
+              @click="open = false"
+              class:list={[
+                'flex items-center justify-between rounded-md px-3 py-2 text-[0.9rem] transition-colors',
+                active
+                  ? 'bg-fu-line/40 font-medium text-fu-ink'
+                  : 'text-fu-muted hover:bg-fu-line/30 hover:text-fu-ink',
+              ]}
+            >
+              <span data-i18n={navTranslationKey(link.href)}>{link.label}</span>
+              {hasChildren && (
+                <svg class="h-3.5 w-3.5 text-fu-muted transition-transform duration-200" :class="sub && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" @click.stop.prevent="sub = !sub">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+              )}
+            </a>
+            {hasChildren && (
+              <div x-show="sub" x-cloak x-collapse class="ml-3 mt-1 space-y-1 border-l border-fu-line pl-3">
+                {link.children!.map((child) => (
+                  <a
+                    href={child.href}
+                    @click="open = false"
+                    class:list={[
+                      'block rounded-md px-3 py-2 text-[0.85rem] transition-colors',
+                      child.active ? 'text-fu-link font-medium' : 'text-fu-muted hover:bg-fu-line/30 hover:text-fu-ink',
+                    ]}
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
         );
       })}
       <hr class="my-2 border-fu-line" />
       <template x-if="!authed">
         <div>
           <button type="button" @click="open = false; $dispatch('fusion:open-login')" class="btn-secondary mt-2 w-full"><span data-i18n="nav_login">Log In</span></button>
-          <a href="/#cta" @click="open = false" class="btn-primary mt-2 w-full" data-i18n="nav_get_started">Get Started</a>
+          <a href="/contact/" @click="open = false" class="btn-primary mt-2 w-full" data-i18n="nav_get_started">Get Started</a>
         </div>
       </template>
       <template x-if="authed">

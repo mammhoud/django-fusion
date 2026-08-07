@@ -16,6 +16,8 @@ interface Props {
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
   status?: string;
+  /** 'cinematic' — ultra-wide centered hero (home road). */
+  variant?: 'default' | 'cinematic';
 }
 
 const {
@@ -27,7 +29,21 @@ const {
   primaryCta = { label: 'Explore the stack', href: '/products' },
   secondaryCta = { label: 'About the engineer', href: '/about' },
   status = '200 OK · text/html',
+  variant = 'default',
 } = Astro.props;
+
+const cinematic = variant === 'cinematic';
+
+// Entrance ownership: the default road reveals via Alpine x-intersect (the
+// site-wide blur-fade-up language); the cinematic road lets GSAP own the
+// hero intro, so the Alpine reveal wiring is dropped there entirely — two
+// animators must never fight over the same opacity/transform.
+const revealWiring = cinematic
+  ? {}
+  : {
+      'x-data': '',
+      'x-intersect': "$el.classList.add('reveal-visible')",
+    };
 
 // Plain-text intro for the source block and the rendered mini-view.
 const plainIntro = intro.replace(/&nbsp;/g, ' ');
@@ -51,7 +67,7 @@ const sourceMarkup = [
 ].join('\n');
 ---
 
-<section class="hero">
+<section class={`hero${cinematic ? ' hero--cinematic' : ''}`} data-gsap={cinematic ? 'hero-intro' : undefined}>
   <!-- Registration corners — the sheet is printed, not rendered. -->
   <span class="hero__corner-tl" aria-hidden="true"></span>
   <span class="hero__corner-br" aria-hidden="true"></span>
@@ -64,14 +80,17 @@ const sourceMarkup = [
     <div class="hero__content">
       <p
         class="hero__eyebrow"
-        x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak
+        x-cloak={cinematic ? undefined : ''}
+        {...revealWiring}
+        data-gsap={cinematic ? 'hero-child' : undefined}
       >
         {eyebrow}
       </p>
 
       <h1
         class="hero__heading"
-        x-data x-intersect="$el.classList.add('reveal-visible')"
+        {...revealWiring}
+        data-gsap={cinematic ? 'hero-child' : undefined}
       >
         {heading}{' '}
         <span class="hero__accent">
@@ -82,16 +101,18 @@ const sourceMarkup = [
 
       <p
         class="hero__intro"
-        x-data x-intersect="$el.classList.add('reveal-visible')"
-        style="transition-delay: 100ms"
+        {...revealWiring}
+        style={cinematic ? undefined : 'transition-delay: 100ms'}
+        data-gsap={cinematic ? 'hero-child' : undefined}
       >
         {intro}
       </p>
 
       <div
         class="hero__actions"
-        x-data x-intersect="$el.classList.add('reveal-visible')"
-        style="transition-delay: 200ms"
+        {...revealWiring}
+        style={cinematic ? undefined : 'transition-delay: 200ms'}
+        data-gsap={cinematic ? 'hero-child' : undefined}
       >
         <!-- Magnetic wrapper — the CTA drifts toward the cursor (≤6px) and
              snaps back on leave via the Alpine 'magnetic' component
@@ -130,6 +151,7 @@ const sourceMarkup = [
       </div>
     </div>
 
+    {cinematic ? null : (
     <!-- ── View Source panel: the hero's own markup, shown by default ── -->
     <div
       class="hero__source-toggle"
@@ -178,6 +200,7 @@ const sourceMarkup = [
         <p class="hero__source-caption">One HTTP response, no framework.</p>
       </div>
     </div>
+    )}
   </div>
   </div>
 

@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import { contentSlug } from '@/lib/slug';
@@ -66,12 +67,21 @@ const editionName = editionData ? String(editionData.name || edition) : edition;
   pageData={pageData}
   pageSlug={slug}
 >
+  <Breadcrumb
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Products', href: '/products/' },
+      { label: pageData?.title || slug, href: `/products/${slug}` },
+    ]}
+    current={editionName}
+  />
+
   <Hero
     eyebrow={`edition preview · ${pageData?.title || slug}`}
     heading={editionName}
     accent=''
     intro={editionData?.tagline || ''}
-    primaryCta={editionData?.cta_label ? { label: editionData.cta_label, href: editionData.cta_href || '/contact' } : { label: 'Back to product', href: `/products/${slug}` }}
+    primaryCta={editionData?.cta_label ? { label: editionData.cta_label, href: editionData.cta_href || '/contact/' } : { label: 'Back to product', href: `/products/${slug}` }}
     status='200 OK · edition preview'
   />
 
@@ -79,9 +89,11 @@ const editionName = editionData ? String(editionData.name || edition) : edition;
     <section class='doc-sheet bg-fu-paper py-12 md:py-16'>
       <div class='container-fusion'>
         <div class='card max-w-lg p-6 sm:p-8'>
-          <div class='mb-6 flex items-baseline gap-2'>
+          <div class='mb-6 flex flex-wrap items-baseline gap-2'>
+            {editionData.offer_old_price && <span class='offer-old-price'>{editionData.offer_old_price}</span>}
             <span class='font-mono text-[2rem] font-semibold tracking-tight text-fu-ink'>{editionData.price || 'Free'}</span>
             {editionData.period && <span class='font-mono text-xs uppercase tracking-wider text-fu-muted'>{editionData.period}</span>}
+            {editionData.offer_label && <span class='badge-offer self-center'>{editionData.offer_label}</span>}
           </div>
           {editionData.features?.length > 0 && (
             <ul class='mb-6 space-y-2.5 border-t border-fu-line pt-6 text-sm'>
@@ -96,7 +108,7 @@ const editionName = editionData ? String(editionData.name || edition) : edition;
             </ul>
           )}
           {editionData.cta_label && (
-            <a href={editionData.cta_href || '/contact'} class='btn-primary w-full sm:w-auto'>
+            <a href={editionData.cta_href || '/contact/'} class='btn-primary w-full sm:w-auto'>
               {editionData.cta_label}
             </a>
           )}
