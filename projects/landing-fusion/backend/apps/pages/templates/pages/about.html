@@ -8,8 +8,28 @@
      faq, cta — rendered by the one shared content-region partial. {% endcomment %}
   {% comp "pages/partials/page_content.html" /%}
 
-  {% comment %} About subpages: the Team page lives under /about/team/. {% endcomment %}
-  <section class="container-fusion" style="text-align:center;padding-block:0 2.5rem;">
-    <a href="/about/team/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">Meet the team →</a>
+  {% comment %} Services brief — a short line about what Structa Cloud does plus
+     a services button, so About hands visitors to the offering. {% endcomment %}
+  <section class="container-fusion" style="padding-block:0 1rem;">
+    <div class="card" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.25rem;padding:1.5rem 1.75rem;">
+      <div style="max-width:34rem;">
+        <p class="tag-marker" style="margin-bottom:.5rem;">services</p>
+        <p style="margin:0;font-size:.95rem;color:hsl(var(--fu-text) / .8);line-height:1.65;">
+          Market-ready websites, digital product delivery, and focused
+          improvements to services that already have customers — bilingual by default.
+        </p>
+      </div>
+      <a href="/services/" class="btn btn-primary" style="padding:.7rem 1.35rem;font-size:.85rem;">Explore services →</a>
+    </div>
+  </section>
+
+  {% comment %} About subpages: the Startup, Founder and Team pages live under
+     /about/ — a small mono nav for the story pages. {% endcomment %}
+  <section class="container-fusion" style="text-align:center;padding-block:1.5rem 2.5rem;">
+    <nav aria-label="About subpages" style="display:flex;flex-wrap:wrap;gap:1rem 1.75rem;justify-content:center;">
+      <a href="/about/startup/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">The startup →</a>
+      <a href="/about/founder/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">The founder →</a>
+      <a href="/about/team/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">Meet the team →</a>
+    </nav>
   </section>
 {% endblock %}

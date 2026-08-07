@@ -22,7 +22,11 @@
     {% endfor %}
   </ul>
   {% endif %}
-  {% if value.cta_label %}
+  {% if value.cta_label or value.cta_page %}
+  {% if value.cta_page %}
+  <a href="{{ value.cta_page.url }}" class="btn-secondary mt-auto w-fit !py-2 text-sm">{{ value.cta_label|default:value.cta_page.title }}</a>
+  {% else %}
   <a href="{{ value.cta_href|default:'/contact/' }}" class="btn-secondary mt-auto w-fit !py-2 text-sm">{{ value.cta_label }}</a>
+  {% endif %}
   {% endif %}
 </article>

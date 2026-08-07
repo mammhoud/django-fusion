@@ -23,7 +23,7 @@ How a product is positioned in the catalog: application, platform, or library.
 _Avoid_: type, kind
 
 **Flagship**:
-The product given featured treatment at the top of the catalog (Forge POS). Determined by product identity, not by tree order.
+The product given featured treatment at the top of the catalog (Formints). Determined by product identity, not by tree order.
 
 **Edition**:
 A priced tier of a product, each with its own name, price, and feature set.

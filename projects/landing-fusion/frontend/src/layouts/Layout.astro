@@ -188,7 +188,9 @@ void THEME_STORAGE_KEY;
 
     <div class="flex min-h-dvh flex-col">
       <Header siteName={siteName} navItems={navItems} />
-      <main class="flex-1">
+      <!-- overflow-x-hidden: GSAP pinning/scrubbing/scale animations must
+           never leak horizontal scrollbars on any road. -->
+      <main class="flex-1 w-full max-w-full overflow-x-hidden">
         <slot />
       </main>
       <Footer siteSettings={siteSettings} siteName={siteName} />

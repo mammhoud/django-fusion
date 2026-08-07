@@ -13,8 +13,8 @@
     </svg>
   </div>
   <h3 class="text-sm font-semibold text-fu-text">{{ value.label }}</h3>
-  {% if value.href %}
-    <a href="{{ value.href }}" class="mt-1 block text-sm text-fu-text/70 hover:text-fu-primary">{{ value.value }}</a>
+  {% if value.href or value.page %}
+    <a href="{% if value.page %}{{ value.page.url }}{% else %}{{ value.href }}{% endif %}" class="mt-1 block text-sm text-fu-text/70 hover:text-fu-primary">{{ value.value }}</a>
   {% else %}
     <p class="mt-1 text-sm text-fu-text/70">{{ value.value }}</p>
   {% endif %}

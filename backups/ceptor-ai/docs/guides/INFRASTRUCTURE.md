@@ -1,3 +1,0 @@
-# INFRASTRUCTURE.md
-
-Documentation incoming.

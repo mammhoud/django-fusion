@@ -2,6 +2,7 @@
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
@@ -44,13 +45,18 @@ const excerpt = String(pageData?.excerpt || '');
   pageData={pageData}
   pageSlug={slug}
 >
+  <Breadcrumb
+    items={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog/' }]}
+    current={pageData?.title || 'Blog post'}
+  />
+
   <Hero
     eyebrow={category || 'insights · server-first rendering'}
     heading={pageHero?.title || pageData?.title || 'Blog post'}
     accent=''
     intro={pageHero?.subtitle || excerpt}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: '← All posts', href: '/blog' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
     status={`200 OK · ${readTime || 'text/html'}${postDate ? ` · ${postDate}` : ''} · one document`}
   />
 

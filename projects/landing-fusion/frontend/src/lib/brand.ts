@@ -24,8 +24,8 @@ export interface BrandSpec {
 }
 
 export const BRAND_SPEC: Record<string, BrandSpec> = {
-  'forge-pos': {
-    slug: 'forge-pos',
+  'formint-pos': {
+    slug: 'formint-pos',
     brand: 'formints',
     mark: 'crest',
     name: 'Formints',

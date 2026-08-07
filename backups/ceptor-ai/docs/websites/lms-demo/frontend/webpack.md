@@ -1,3 +1,0 @@
-# webpack.md
-
-Documentation incoming.

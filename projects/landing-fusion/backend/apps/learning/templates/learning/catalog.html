@@ -8,6 +8,7 @@
     <p class="mt-4 max-w-2xl text-lg text-fu-muted">Practical courses, clear progress, and certificates when the work is complete.</p>
   </div>
 </section>
+{% include "learning/partials/learner_nav.html" %}
 <section class="doc-sheet bg-fu-paper py-12 md:py-16" x-data="{ filtersOpen: false }">
   <div class="container-fusion">
     <form class="mb-8 flex flex-col gap-3 sm:flex-row" hx-get="{% url 'learning:catalog' %}" hx-target="#course-list" hx-swap="innerHTML" hx-push-url="true">

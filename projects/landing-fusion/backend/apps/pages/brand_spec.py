@@ -15,7 +15,7 @@ Each entry carries the brandkit-style story for one product:
 
 BRAND_SPEC = {
 
-    "forge-pos": {
+    "formint-pos": {
         "brand": "formints",
         "mark": "crest",
         "name": "Formints",

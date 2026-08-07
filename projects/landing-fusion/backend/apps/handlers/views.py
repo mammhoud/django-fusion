@@ -68,6 +68,7 @@ from apps.pages.models import (
     ContactPage,
     FaqPage,
     FeaturesPage,
+    FounderPage,
     HomePage,
     PricingPage,
     PrivacyPage,
@@ -76,6 +77,7 @@ from apps.pages.models import (
     PromptPage,
     ProductsPage,
     ServicesPage,
+    StartupPage,
     TeamPage,
 )
 
@@ -118,6 +120,11 @@ class LandingPageView(PageHandler):
                 # Main nav (show_in_nav items only) — single source of truth is
                 # LandingSite.NAV_ITEMS; the header partial renders from this.
                 "nav_items": self._get_nav_items(),
+                # Breadcrumb trail for subpages (team/founder/startup, phases +
+                # prompts, product detail/preview, blog posts). Rendered by
+                # pages/partials/breadcrumbs.html at the top of the shared
+                # content region — empty for top-level pages.
+                "breadcrumbs": self._get_breadcrumbs(page),
                 # django-fusion settings config — which content-delivery option
                 # this request is served under (see settings.FUSION_RENDER_FIRST_DEFAULT
                 # and the X-Fusion-Render-First per-request override).
@@ -129,6 +136,32 @@ class LandingPageView(PageHandler):
         )
         return context
 
+    def _get_breadcrumbs(self, page) -> list[dict]:
+        """The in-page trail for subpages — a list of ancestor links, newest last.
+
+        Top-level pages (home, about, services, products, …) return an empty
+        list so the breadcrumb partial renders nothing there. The final crumb
+        (the current page title) is added by the partial itself.
+        """
+        page_name = page.__class__.__name__
+        if page_name in ("TeamPage", "FounderPage", "StartupPage"):
+            return [{"label": "Home", "href": "/"}, {"label": "About", "href": "/about/"}]
+        if page_name == "PhasePage":
+            return [{"label": "Home", "href": "/"}, {"label": "Services", "href": "/services/"}]
+        if page_name == "PromptPage":
+            phase = getattr(page, "get_parent", lambda: None)()
+            phase_href = f"/services/phases/{phase.slug}/" if phase is not None else "/services/"
+            return [
+                {"label": "Home", "href": "/"},
+                {"label": "Services", "href": "/services/"},
+                {"label": phase.title, "href": phase_href},
+            ]
+        if page_name == "ProductPage":
+            return [{"label": "Home", "href": "/"}, {"label": "Products", "href": "/products/"}]
+        if page_name == "BlogPostPage":
+            return [{"label": "Home", "href": "/"}, {"label": "Blog", "href": "/blog/"}]
+        return []
+
     def _get_nav_items(self) -> list[dict]:
         """Return the main navigation items (show_in_nav only), for the header partial."""
         from apps.core.site import landing_site
@@ -137,7 +170,9 @@ class LandingPageView(PageHandler):
         for item in landing_site.get_navigation_context(self.request):
             if not item.get("show_in_nav", True):
                 continue
-            items.append({k: v for k, v in item.items() if k != "show_in_nav"})
+            clean = {k: v for k, v in item.items() if k != "show_in_nav"}
+            clean["children"] = clean.get("children") or []
+            items.append(clean)
         return items
 
     def _get_page(self) -> HomePage:
@@ -278,6 +313,14 @@ class ProductPreviewView(LandingPageView):
             for e in page.get_editions()
             if slugify(str(e.get("name", ""))) != slugify(edition_name)
         ]
+        # Preview trail: Home → Products → <product> → <edition> (the edition
+        # name is rendered as the current crumb via breadcrumb_current).
+        context["breadcrumbs"] = [
+            {"label": "Home", "href": "/"},
+            {"label": "Products", "href": "/products/"},
+            {"label": page.title, "href": f"/products/{page.slug}/"},
+        ]
+        context["breadcrumb_current"] = edition.get("name", edition_name)
         return context
 
 
@@ -322,25 +365,29 @@ class TeamPageView(LandingPageView):
 class StartupPageView(LandingPageView):
     """About → Startup subpage (/about/startup/) — the structa.cloud origin story.
 
-    Astro-rendered only; the backend handler serves a fallback page using the
-    AboutPage content."""
+    A real Wagtail page (``StartupPage``, child of About) carrying hero, story
+    body, a numbered timeline (process) and stats — mirroring the Astro
+    startup page. Falls back to the About page only if the page is missing.
+    """
 
     template_name = "pages/startup.html"
 
-    def _get_page(self):
-        return AboutPage.objects.first() or HomePage.objects.first()
+    def _get_page(self) -> StartupPage:
+        return StartupPage.objects.first() or AboutPage.objects.first() or HomePage.objects.first()
 
 
 class FounderPageView(LandingPageView):
     """About → Founder subpage (/about/founder/) — the engineer behind the code.
 
-    Astro-rendered only; the backend handler serves a fallback page using the
-    AboutPage content."""
+    A real Wagtail page (``FounderPage``, child of About) carrying hero, story
+    body, tech stack and skills grid — mirroring the Astro founder page.
+    Falls back to the About page only if the page is missing.
+    """
 
     template_name = "pages/founder.html"
 
-    def _get_page(self):
-        return AboutPage.objects.first() or HomePage.objects.first()
+    def _get_page(self) -> FounderPage:
+        return FounderPage.objects.first() or AboutPage.objects.first() or HomePage.objects.first()
 
 
 class PhasePageView(LandingPageView):

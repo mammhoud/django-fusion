@@ -4,13 +4,10 @@
 <article class="product-preview">
   <section class="doc-sheet bg-fu-paper py-12 md:py-16">
     <div class="container-fusion">
-      <nav class="mb-8 flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted">
-        <a href="/products/" class="hover:text-fu-link transition-colors">Products</a>
-        <span>/</span>
-        <a href="/products/{{ content.slug }}/" class="hover:text-fu-link transition-colors">{{ content.title }}</a>
-        <span>/</span>
-        <span class="text-fu-ink">{{ preview_edition.name }}</span>
-      </nav>
+      {% comment %} Breadcrumb trail — Home → Products → <product> → <edition>,
+         driven by the handler context (see ProductPreviewView). The edition
+         name becomes the current crumb automatically. {% endcomment %}
+      {% include "pages/partials/breadcrumbs.html" %}
 
       <div class="mb-10 max-w-2xl">
         <p class="tag-marker mb-4">edition preview</p>

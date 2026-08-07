@@ -93,6 +93,8 @@ export interface NavItem {
   label: string;
   href: string;
   active?: boolean;
+  /** Dropdown subpages (live Wagtail children) — empty for leaf nav items. */
+  children?: { label: string; href: string; active?: boolean }[];
 }
 
 export interface NavigationData {
@@ -142,6 +144,7 @@ export interface PageData {
   hero?: {
     badge?: string;
     title?: string;
+    accent?: string;
     subtitle?: string;
     primary_cta?: { label: string; href: string; style?: string } | null;
     secondary_cta?: { label: string; href: string; style?: string } | null;
@@ -177,7 +180,7 @@ export interface PageData {
     logo_style?: string;
     status?: string;
     excerpt?: string;
-    editions?: { name: string; price: string; period?: string; tier?: string; featured?: boolean }[];
+    editions?: { name: string; price: string; period?: string; tier?: string; featured?: boolean; offer_label?: string; offer_old_price?: string }[];
     tech?: string[];
   }[];
   // ProductPage catalog fields
@@ -234,6 +237,8 @@ export interface PricingProduct {
     tier: string;
     featured: boolean;
     features?: string[];
+    offer_label?: string;
+    offer_old_price?: string;
     cta_label?: string;
     cta_href?: string;
   }[];
@@ -290,7 +295,7 @@ export async function fetchSiteSettingsWithFallback(): Promise<SiteSettings> {
       meta_description: 'Platforms, AI tools, and open-source libraries shipped as finished HTML.',
       meta_keywords: '', meta_author: 'Mahmoud Ezzat Moustafa', og_image_url: null, twitter_handle: '',
       analytics_provider: '', google_tag_manager_id: '', google_analytics_id: '',
-      nav_show_home: true, nav_show_contact: true, nav_cta_label: 'Get Started', nav_cta_url: '/#cta',
+      nav_show_home: true, nav_show_contact: true, nav_cta_label: 'Get Started', nav_cta_url: '/contact/',
       footer_description: 'Platforms, AI tools, and open-source libraries.', footer_address: '', footer_phone: '',
       footer_email: 'structa.cloud@gmail.com', footer_copyright: '© 2026 structa.cloud. All rights reserved.',
       newsletter_prompt: '', google_play_url: '', apple_store_url: '', privacy_policy_url: '/privacy/',
@@ -329,32 +334,6 @@ export async function fetchNavigationWithFallback(language: 'en' | 'ar' = CONTEN
 /** Fetch backend editorial language metadata and translation coverage. */
 export function fetchContentLanguages(): Promise<ContentLanguagesData> {
   return fetchJSON<ContentLanguagesData>('/apis/content/languages/');
-}
-
-/**
- * Fetch the backend language catalog with a bundled fallback.
- *
- * The ``LANG_META`` table in ``lib/translations.ts`` stays the offline/bundled
- * source of truth (and the source for flags/native names of UI chrome); the
- * Wagtail ``SiteLanguage`` catalog remains authoritative whenever reachable.
- */
-export async function fetchContentLanguagesWithFallback(): Promise<ContentLanguagesData> {
-  try {
-    return await fetchContentLanguages();
-  } catch {
-    const { LANG_META, LANG_CODES } = await import('./translations');
-    return {
-      languages: LANG_CODES.map((code) => ({
-        code,
-        name: LANG_META[code].label,
-        native: LANG_META[code].native,
-        dir: LANG_META[code].dir,
-        flag: LANG_META[code].flag,
-      })),
-      coverage: { en: 0, ar: 0 },
-      ui_languages: LANG_CODES,
-    };
-  }
 }
 
 /** Fetch contact methods + form info from Wagtail ContactPage. */

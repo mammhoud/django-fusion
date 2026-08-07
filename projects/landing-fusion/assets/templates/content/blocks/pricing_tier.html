@@ -14,7 +14,11 @@
       </li>
     {% endfor %}
   </ul>
-  {% if value.cta_label %}
-    <a href="{{ value.cta_href|default:'#' }}" class="{% if value.featured %}btn-white{% else %}btn-outline{% endif %} mt-6 w-full">{{ value.cta_label }}</a>
+  {% if value.cta_label or value.cta_page %}
+    {% if value.cta_page %}
+    <a href="{{ value.cta_page.url }}" class="{% if value.featured %}btn-white{% else %}btn-outline{% endif %} mt-6 w-full">{{ value.cta_label|default:value.cta_page.title }}</a>
+    {% else %}
+    <a href="{{ value.cta_href|default:'/contact/' }}" class="{% if value.featured %}btn-white{% else %}btn-outline{% endif %} mt-6 w-full">{{ value.cta_label }}</a>
+    {% endif %}
   {% endif %}
 </div>

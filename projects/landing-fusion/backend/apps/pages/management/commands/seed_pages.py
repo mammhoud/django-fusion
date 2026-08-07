@@ -24,12 +24,14 @@ from apps.pages.models import (
     ContactPage,
     FaqPage,
     FeaturesPage,
+    FounderPage,
     HomePage,
     PricingPage,
     PrivacyPage,
     ProductPage,
     ProductsPage,
     ServicesPage,
+    StartupPage,
     PhasePage,
     PromptPage,
     TeamPage,
@@ -43,7 +45,7 @@ DEFAULT_PAGE_TRANSLATIONS = {
         "title": "الرئيسية",
         "search_description": "منتجات رقمية هادئة وسريعة للفرق التي تخدم أسواق الخليج والمشرق وشمال أفريقيا.",
         "content": {
-            "hero": {"title": "منتجات رقمية تنمو مع السوق", "subtitle": "نساعد الفرق على إطلاق تجارب عربية وإنجليزية واضحة، سريعة، وقابلة للتوسع."},
+            "hero": {"title": "منتجات رقمية تنمو مع", "accent": "السوق", "subtitle": "نساعد الفرق على إطلاق تجارب عربية وإنجليزية واضحة، سريعة، وقابلة للتوسع."},
             "cta": {"title": "ابدأ من احتياج حقيقي", "subtitle": "نحوّل الفكرة أو النظام الحالي إلى تجربة عملية يمكن لفريقك امتلاكها."},
         },
     },
@@ -355,10 +357,10 @@ DEFAULT_BLOG_POST_BODIES = {
 # /products/ lists them (get_product_cards) and each gets /products/<slug>/.
 # Each page is a reference document: overview + tech stack + editions with
 # per-edition pricing + reference snippets/models other projects can copy
-# (e.g. LMS reusing Forge POS patterns).
+# (e.g. LMS reusing Formints patterns).
 
 DEFAULT_PRODUCT_PAGES = {
-    "forge-pos": {
+    "formint-pos": {
         "title": "Formints",
         "logo_style": "crest",
         "category": "application",
@@ -369,8 +371,8 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "Formints",
                     "subtitle": "A desktop point-of-sale application with a Tauri 2 + Rust core, React/Vite shell, and SQLite storage.",
-                    "primary_cta": {"label": "See the editions", "href": "/products/forge-pos/#editions", "style": "secondary"},
-                    "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/forge-pos", "style": "white"},
+                    "primary_cta": {"label": "See the editions", "href": "/products/formint-pos/#editions", "style": "secondary"},
+                    "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/formint-pos", "style": "white"},
                     "trusted_by": "Community · Standard · Pro · Cloud",
                 },
             )
@@ -400,28 +402,29 @@ DEFAULT_PRODUCT_PAGES = {
                             "tagline": "Free and open source. The offline-first POS for a single terminal.",
                             "price": "$0",
                             "period": "/open source",
-                            "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage (37 tables)", "Sales, receipting + inventory", "Kitchen display + payroll", "i18n: en, fr, ar", "No sidecar, no server needed"],
+                            "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage", "Sales, receipting + inventory", "Payment types: cash, card, split", "Offline-first mode", "Refunds & returns", "i18n: en, fr, ar", "No sidecar, no server needed"],
                             "cta_label": "Download",
-                            "cta_href": "https://github.com/mammhoud/forge-pos",
+                            "cta_href": "https://github.com/mammhoud/formint-pos",
                             "featured": False,
                             "tier": "outline",
                         },
                         {
                             "name": "Standard",
-                            "tagline": "Standalone terminal with an embedded Python sidecar + cloud sync client.",
+                            "tagline": "Standalone terminal for growing businesses: high-end design, food & beverage tools, and integrations.",
                             "price": "$119",
                             "period": "/one-time license",
-                            "features": ["Everything in Community", "Embedded Robyn sidecar (60+ endpoints)", "REST API for integrations", "Inventory + sales analytics", "Invoice PDF generation", "Cloud CRM sync client", "Token-based device auth", "Deployment & support quoted per site"],
+                            "features": ["Everything in Community", "High-end interface design", "Inventory adjustments + stock control", "Food & beverage (F&B) menu support", "Kitchen display + payroll", "REST API for integrations", "Inventory + sales analytics", "Invoice PDF generation", "Loyalty & rewards program", "Multi-currency & tax profiles", "Custom roles & permissions", "Data export (CSV/JSON)", "Deployment & support quoted per site"],
                             "cta_label": "Buy Standard",
                             "cta_href": "/contact/",
                             "featured": False,
                             "tier": "default",
                         },
-                        {
-                            "name": "Pro",
-                            "tagline": "Multi-terminal with a cloud master, WebSocket streaming, and a high-throughput Rust API.",
-                            "price": "$79",
-                            "period": "/per month",
+                        {        "name": "Pro",
+        "tagline": "Multi-terminal with a cloud master, WebSocket streaming, and a high-throughput Rust API.",
+        "price": "$79",
+        "period": "/per month",
+        "offer_label": "50% off · launch",
+        "offer_old_price": "$158",
                             "features": ["Everything in Standard", "Multi-terminal sync (cloud master)", "High-throughput Rust API (60k+ RPS)", "WebSocket real-time streaming", "Product sync engine (master)", "Employee scheduling + KPIs", "Change signals + approvals", "Deployment & support fees apply"],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
@@ -433,7 +436,7 @@ DEFAULT_PRODUCT_PAGES = {
                             "tagline": "Fully hosted multi-terminal. The Pro cloud master, managed for you.",
                             "price": "Custom",
                             "period": "/per month",
-                            "features": ["Everything in Pro", "Hosted cloud CRM master", "Unlimited terminals", "Cross-device data sync", "Backups + monitoring", "Dedicated onboarding + support", "Contact us for a managed-cloud quote"],
+                            "features": ["Everything in Pro", "Hosted cloud CRM master", "Unlimited terminals", "Cross-device data sync", "Automatic cloud backups + monitoring", "Dedicated onboarding + support", "Contact us for a managed-cloud quote"],
                             "cta_label": "Talk to Sales",
                             "cta_href": "/contact/",
                             "featured": False,
@@ -454,22 +457,22 @@ DEFAULT_PRODUCT_PAGES = {
                     "rows": [
                         {"feature": "React 19 + TypeScript frontend", "cells": ["Yes", "Yes", "Yes", "Yes"]},
                         {"feature": "Tauri 2 + Rust backend", "cells": ["Yes", "Yes", "Yes", "Yes"]},
-                        {"feature": "SQLite database (37 tables)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "SQLite database", "cells": ["Yes", "Yes", "Yes", "Yes"]},
                         {"feature": "i18n (en/fr/ar)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
                         {"feature": "POS terminal + inventory + analytics", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Payment types (cash, card, split)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
                         {"feature": "Employees, payroll, scheduling", "cells": ["Yes", "Yes", "Yes", "Yes"]},
-                        {"feature": "Kitchen display system", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "High-end interface design", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Inventory adjustments + stock control", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Food & beverage (F&B) menu support", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Kitchen display system", "cells": ["No", "Yes", "Yes", "Yes"]},
                         {"feature": "POS-KO Gaming Center", "cells": ["Yes", "Yes", "Yes", "Yes"]},
                         {"feature": "Django Portal (admin UI)", "cells": ["Yes", "Yes", "Yes", "Yes"]},
-                        {"feature": "Python/Robyn sidecar API", "cells": ["No", "60+ endpoints", "70+ endpoints", "70+ endpoints"]},
                         {"feature": "REST API (35+ endpoints)", "cells": ["No", "Yes", "Yes", "Yes"]},
                         {"feature": "Invoice PDF generation", "cells": ["No", "Yes", "Yes", "Yes"]},
                         {"feature": "Chat support widget", "cells": ["No", "Yes", "Yes", "Yes"]},
-                        {"feature": "Cloud CRM sync client", "cells": ["No", "Yes", "Yes", "Yes"]},
-                        {"feature": "Django ORM models (organized packages)", "cells": ["No", "17 tables", "7+30 tables", "7+30 tables"]},
                         {"feature": "WebSocket real-time streaming", "cells": ["No", "/ws/config", "/ws/config + /ws/nodes", "/ws/config + /ws/nodes"]},
                         {"feature": "Django Signals (config_changed, etc.)", "cells": ["No", "Yes", "Yes", "Yes"]},
-                        {"feature": "Token-based auth (DeviceToken)", "cells": ["No", "Yes", "Yes", "Yes"]},
                         {"feature": "Moderated Approvals (SyncApproval)", "cells": ["No", "Yes", "Yes", "Yes"]},
                         {"feature": "Product Sync Engine", "cells": ["No", "child", "master", "master"]},
                         {"feature": "Cross-device data sync", "cells": ["No", "push to master", "cloud master", "cloud master"]},
@@ -478,6 +481,13 @@ DEFAULT_PRODUCT_PAGES = {
                         {"feature": "Change signals (broadcast)", "cells": ["No", "No", "Yes", "Yes"]},
                         {"feature": "High-throughput Rust API (60k+ RPS)", "cells": ["No", "No", "Yes", "Yes"]},
                         {"feature": "Hosted deployment + managed backups", "cells": ["No", "No", "No", "Yes"]},
+                        {"feature": "Offline-first mode", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Refunds & returns", "cells": ["Yes", "Yes", "Yes", "Yes"]},
+                        {"feature": "Loyalty & rewards program", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Multi-currency & tax profiles", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Custom roles & permissions", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Data export (CSV/JSON)", "cells": ["No", "Yes", "Yes", "Yes"]},
+                        {"feature": "Automatic cloud backups", "cells": ["No", "No", "No", "Yes"]},
                     ],
                 },
             )
@@ -499,6 +509,16 @@ DEFAULT_PRODUCT_PAGES = {
                             "language": "rust",
                             "code": "#[derive(Queryable, Insertable, Serialize)]\n#[diesel(table_name = crate::db::schema::sales)]\npub struct Sale {\n    pub id: i32,\n    pub terminal_id: String,\n    pub total_cents: i32,\n    pub payment_method: String,\n    pub created_at: String,\n}",
                         },
+                        {
+                            "title": "Diesel migration (up.sql)",
+                            "language": "sql",
+                            "code": "-- Loyalty + refunds land on top of the core schema.\nALTER TABLE sales ADD COLUMN loyalty_points INTEGER NOT NULL DEFAULT 0;\n\nCREATE TABLE refunds (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  sale_id INTEGER NOT NULL REFERENCES sales(id),\n  amount_cents INTEGER NOT NULL,\n  reason TEXT NOT NULL,\n  created_at TEXT NOT NULL DEFAULT (datetime('now'))\n);",
+                        },
+                        {
+                            "title": "Tauri command (invoice PDF)",
+                            "language": "rust",
+                            "code": "#[tauri::command]\npub fn generate_invoice(sale_id: i32, state: State<AppState>) -> Result<String, String> {\n    let conn = &mut state.pool.get().map_err(|e| e.to_string())?;\n    let sale: Sale = sales::table\n        .find(sale_id)\n        .first(conn)\n        .map_err(|e| e.to_string())?;\n    let items: Vec<SaleItem> = sale_items::table\n        .filter(sale_items::sale_id.eq(sale_id))\n        .load(conn)\n        .map_err(|e| e.to_string())?;\n    render_invoice_pdf(&sale, &items)\n}",
+                        },
                     ],
                 },
             )
@@ -513,6 +533,18 @@ DEFAULT_PRODUCT_PAGES = {
                         {"icon": "M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3", "title": "Fast, native checkout", "description": "A Rust core keeps every keystroke instant, with no web latency on the counter."},
                         {"icon": "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z", "title": "SQLite by default", "description": "Zero-config local storage that scales up to a synced multi-terminal setup in Pro."},
                         {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Four editions, one codebase", "description": "Community, Standard, Pro, Cloud, feature-gated from a single Tauri + Rust core."},
+                    ],
+                },
+            ),
+            (
+                "features",
+                {
+                    "title": "Product roadmap",
+                    "description": "What ships next across the four editions — the loyalty engine, multi-currency, and managed backups are already in the comparison above.",
+                    "features": [
+                        {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Loyalty & rewards engine", "description": "Points, tiers and voucher redemption built into the sale flow — Standard and up."},
+                        {"icon": "M3 3v18h18M7 15l4-4 3 3 5-6", "title": "Multi-currency & tax profiles", "description": "Per-terminal currency and tax profiles for border regions — Standard and up."},
+                        {"icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87", "title": "Automatic cloud backups", "description": "Scheduled encrypted backups of the cloud master with point-in-time restore — Cloud."},
                     ],
                 },
             )
@@ -535,7 +567,7 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "Run a terminal in minutes",
                     "subtitle": "Clone the repo, run the Community edition, and upgrade editions as you grow.",
-                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/forge-pos", "style": "white"},
+                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/formint-pos", "style": "white"},
                     "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
                 },
             )
@@ -915,16 +947,18 @@ DEFAULT_HOME_CONTENT = {
             "hero",
             {
                 "badge": "structa.cloud · digital product partner",
-                # NB: the Astro Hero component renders ``title`` + ``accent``
-                # separately, so the accent word ("documents") is NOT part of
-                # the stored title. Keep titles free of the accent phrase.
-                "title": "Digital products for",
+                # NB: the Hero renders ``title`` + ``accent`` separately (both
+                # roads — Astro Hero.astro and content/blocks/hero.html), so
+                # the accent word is NOT part of the stored title. Keep titles
+                # free of the accent phrase.
+                "title": "Digital products, shipped as",
+                "accent": "documents",
                 "subtitle": (
                     "We help teams serving the Gulf, Levant, and North Africa launch clear, "
                     "bilingual services that feel fast and stay easy to operate."
                 ),
-                "primary_cta": {"label": "Explore products", "href": "/products", "style": "secondary"},
-                "secondary_cta": {"label": "Work with us", "href": "/contact", "style": "white"},
+                "primary_cta": {"label": "Explore products", "href": "/products/", "style": "secondary"},
+                "secondary_cta": {"label": "Work with us", "href": "/contact/", "style": "white"},
                 "trusted_by": "Arabic-ready · English-ready · built for real teams",
             },
         )
@@ -936,7 +970,7 @@ DEFAULT_HOME_CONTENT = {
                 "title": "A useful first release beats a noisy roadmap",
                 "subtitle": "We start with the customer journey, launch a focused slice, and leave your team with the content and tools to keep improving it.",
                 "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
-                "secondary_cta": {"label": "Read the Docs", "href": "/about", "style": "outline"},
+                "secondary_cta": {"label": "Read the Docs", "href": "/about/", "style": "outline"},
             },
         )
     ],
@@ -965,21 +999,22 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "features",
             {
-                "title": "The details that make a service usable",
+                "title": "Built by one engineer, for real teams",
                 "description": (
-                    "A calm product foundation for regional teams: clear content, fast first visits, "
-                    "and an interface that stays understandable as the service grows."
+                    "Structa Cloud is a one-person studio with an open-source backbone: "
+                    "the founder designs, builds, and ships every product, and the "
+                    "libraries that make them possible are public on GitHub."
                 ),
                 "features": [
                     {
                         "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
-                        "title": "Your team owns the content",
-                        "description": "Structured content lets marketing and operations teams update Arabic and English pages without waiting for engineering.",
+                        "title": "A founder who ships",
+                        "description": "One engineer owns the full stack — Django, Wagtail, Rust, React — and ships every product as finished, server-rendered documents.",
                     },
                     {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
-                        "title": "A fast first visit",
-                        "description": "The initial document arrives ready to read. Small interactive areas load only when they add value to the journey.",
+                        "title": "Your team owns the content",
+                        "description": "Structured content lets marketing and operations teams update Arabic and English pages without waiting for engineering.",
                     },
                     {
                         "icon": "M4 5h16v14H4z M4 12h16",
@@ -1053,7 +1088,7 @@ DEFAULT_ABOUT_SECTIONS = {
                             "Public profile",
                         ],
                         "cta_label": "Start Free",
-                        "cta_href": "/#cta",
+                        "cta_href": "/contact/",
                         "featured": False,
                     },
                     {
@@ -1069,7 +1104,7 @@ DEFAULT_ABOUT_SECTIONS = {
                             "Certificates",
                         ],
                         "cta_label": "Go Pro",
-                        "cta_href": "/#cta",
+                        "cta_href": "/contact/",
                         "featured": True,
                     },
                     {
@@ -1237,7 +1272,7 @@ DEFAULT_TEAM_SECTIONS = {
                         "role": "Product lead · point-of-sale",
                         "bio": "The Tauri 2 + Rust desktop POS: SQLite, four editions, one codebase. Community is open source on GitHub.",
                         "initials": "FP",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/forge-pos"}],
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/formint-pos"}],
                     },
                     {
                         "name": "Precis LMS",
@@ -1279,6 +1314,176 @@ DEFAULT_TEAM_SECTIONS = {
                 "subtitle": "Every line of structa.cloud is public on GitHub. Come build with us.",
                 "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
                 "secondary_cta": {"label": "Back to About", "href": "/about/", "style": "outline"},
+            },
+        )
+    ],
+}
+
+
+# About → Founder subpage (child of About, served at /about/founder/).
+# The engineer behind structa.cloud — mirrors the Astro founder page: hero,
+# story body, tech-stack band (TechStackSectionBlock) and a skills grid
+# (FeaturesSectionBlock).
+DEFAULT_FOUNDER_SECTIONS = {
+    "hero": [
+        (
+            "hero",
+            {
+                "title": "Mahmoud Ezzat Moustafa",
+                "subtitle": "Full-stack developer, open-source contributor, and the engineer behind structa.cloud. Django, Wagtail, and AI-powered systems.",
+                "primary_cta": {"label": "Meet the team", "href": "/about/team/", "style": "secondary"},
+                "secondary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
+                "trusted_by": "Python · Django · Wagtail · AI tooling",
+            },
+        )
+    ],
+    "body": (
+        "<p>Mahmoud Ezzat Moustafa is a full-stack developer specializing in "
+        "Python/Django, Wagtail CMS, and AI tooling. He builds server-rendered "
+        "platforms that ship as documents — no heavy SPAs, no framework "
+        "overhead. Every project in the structa.cloud monorepo carries his "
+        "signature: finished HTML in one response.</p>"
+        "<p>He works in the open: the libraries, the products, and the "
+        "documentation that explains them are all public on GitHub.</p>"
+    ),
+    "tech": [
+        (
+            "tech",
+            {
+                "eyebrow": "the stack",
+                "title": "Built on",
+                "description": "The tools that ship every product in the monorepo.",
+                "items": ["Python", "Django", "Wagtail", "django-fusion", "ceptor-ai", "Astro", "HTMX", "Alpine.js", "Tauri 2", "Rust", "React", "PostgreSQL", "Redis", "Docker", "Traefik", "GitHub Actions"],
+            },
+        )
+    ],
+    "features": [
+        (
+            "features",
+            {
+                "eyebrow": "skills & values",
+                "title": "How the work gets done",
+                "description": "The capabilities and principles that show up in every project.",
+                "features": [
+                    {
+                        "icon": "M13 10V3L4 14h7v7l9-11h-7z",
+                        "title": "Ships as documents",
+                        "description": "Server-rendered HTML in one response — no hydration waterfalls, no 500 KB bundles.",
+                    },
+                    {
+                        "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
+                        "title": "Reusable systems",
+                        "description": "django-fusion and ceptor-ai extracted from real projects, so every site inherits the patterns.",
+                    },
+                    {
+                        "icon": "M4 5h16v14H4z M4 12h16",
+                        "title": "Bilingual by default",
+                        "description": "Arabic and English considered from the first page — direction, content fallbacks, editorial fields.",
+                    },
+                    {
+                        "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
+                        "title": "Performance as trust",
+                        "description": "A fast first visit gives customers confidence before the first conversation.",
+                    },
+                ],
+            },
+        )
+    ],
+    "cta": [
+        (
+            "cta",
+            {
+                "title": "Built in the open",
+                "subtitle": "The full monorepo is public on GitHub. Community editions are free, Pro editions are commercial.",
+                "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
+                "secondary_cta": {"label": "Contact", "href": "/contact/", "style": "outline"},
+            },
+        )
+    ],
+}
+
+
+# About → Startup subpage (child of About, served at /about/startup/).
+# The origin story — mirrors the Astro startup page: hero, story body, a
+# numbered timeline (ProcessSectionBlock, one step per era) and a stats band.
+DEFAULT_STARTUP_SECTIONS = {
+    "hero": [
+        (
+            "hero",
+            {
+                "title": "The Startup",
+                "subtitle": "How structa.cloud grew from freelance Django projects into a monorepo of open-source products, AI tools, and a desktop POS application.",
+                "primary_cta": {"label": "See the products", "href": "/products/", "style": "secondary"},
+                "secondary_cta": {"label": "Meet the founder", "href": "/about/founder/", "style": "white"},
+                "trusted_by": "2019 · freelance → 2026 · five products",
+            },
+        )
+    ],
+    "body": (
+        "<p>Structa Cloud started as one developer shipping Wagtail sites. "
+        "Each project repeated the same auth patterns, the same blocks, the "
+        "same table layouts — until the reusable parts became a library, and "
+        "the library became a monorepo of products.</p>"
+    ),
+    "process": [
+        (
+            "process",
+            {
+                "eyebrow": "the timeline",
+                "title": "From freelance to five products",
+                "description": "A measured path: learn the pattern, extract it, open it, productize it.",
+                "steps": [
+                    {
+                        "title": "2019–2021 · Freelance foundations",
+                        "description": "Solo Django developer shipping Wagtail sites. WordPress had the market share; Django had the performance. Auth, CMS, payments, analytics — hand-rolled every time.",
+                        "deliverable": "Five client projects",
+                    },
+                    {
+                        "title": "2022 · The reusable library",
+                        "description": "After five projects with the same auth, blocks, and tables, django-fusion was extracted — a component system and routing framework every project could share.",
+                        "deliverable": "django-fusion v1",
+                    },
+                    {
+                        "title": "2023 · Open source and AI",
+                        "description": "Published django-fusion on GitHub, built ceptor-ai (AI chat customizer + MCP server), and started Formints, a desktop POS in Tauri 2 + Rust + React.",
+                        "deliverable": "ceptor-ai · Formints",
+                    },
+                    {
+                        "title": "2024 · The AHA stack",
+                        "description": "Migrated from heavy React SPAs to Astro + HTMX + Alpine.js — server-rendered HTML with minimal client JS. This landing page is the framework itself.",
+                        "deliverable": "Astro + HTMX + Alpine",
+                    },
+                    {
+                        "title": "2025–2026 · Products and scale",
+                        "description": "Five products shipping from one monorepo: Formints POS, Precis LMS, Loop CMS, Syntara AI, vResume. Community editions open source, paid editions commercial.",
+                        "deliverable": "Five products, one repo",
+                    },
+                ],
+            },
+        )
+    ],
+    "stats": [
+        (
+            "stats",
+            {
+                "title": "The story in numbers",
+                "stats": [
+                    {"value": "5", "suffix": "+", "label": "Years building"},
+                    {"value": "5", "suffix": "", "label": "Products shipping"},
+                    {"value": "15", "suffix": "+", "label": "Open-source repos"},
+                    {"value": "1", "suffix": "", "label": "Monorepo"},
+                ],
+            },
+        )
+    ],
+    "cta": [
+        (
+            "cta",
+            {
+                "title": "Built in the open, shipped as HTML",
+                "subtitle": "Community editions and the core libraries are public on GitHub. Paid editions are commercial.",
+                "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
+                "secondary_cta": {"label": "Read the About page", "href": "/about/", "style": "outline"},
             },
         )
     ],
@@ -1410,10 +1615,10 @@ class Command(BaseCommand):
             "<p>Arabic and English content, quick first visits, and clear editorial controls are part of the product brief from the beginning.</p>"
             "<p>The handover matters as much as the launch. Your team gets a system it can understand, update, and improve without a permanent dependency on a development queue.</p>"
         ),
-            # About tells the story — the dedicated /pricing/ page carries the
-            # per-product price sheets, so no generic pricing stack here.
-            pricing=[],
-            **{k: v for k, v in DEFAULT_ABOUT_SECTIONS.items() if k != "pricing"},
+            # About tells the full story — stats, features, testimonials AND
+            # the simple transparent pricing stack. The dedicated /pricing/
+            # page carries the per-product price sheets on top.
+            **DEFAULT_ABOUT_SECTIONS,
         )
         self._created(created, "about")
 
@@ -1429,6 +1634,34 @@ class Command(BaseCommand):
             cta=DEFAULT_TEAM_SECTIONS["cta"],
         )
         self._created(created, "about:team")
+
+        # ── About → Founder (subpage, /about/founder/) ───────────────────
+        founder, created = self._get_or_create_child(
+            about,
+            FounderPage,
+            title="Founder",
+            slug="founder",
+            hero=DEFAULT_FOUNDER_SECTIONS["hero"],
+            body=DEFAULT_FOUNDER_SECTIONS["body"],
+            tech=DEFAULT_FOUNDER_SECTIONS["tech"],
+            features=DEFAULT_FOUNDER_SECTIONS["features"],
+            cta=DEFAULT_FOUNDER_SECTIONS["cta"],
+        )
+        self._created(created, "about:founder")
+
+        # ── About → Startup (subpage, /about/startup/) ───────────────────
+        startup, created = self._get_or_create_child(
+            about,
+            StartupPage,
+            title="Startup",
+            slug="startup",
+            hero=DEFAULT_STARTUP_SECTIONS["hero"],
+            body=DEFAULT_STARTUP_SECTIONS["body"],
+            process=DEFAULT_STARTUP_SECTIONS["process"],
+            stats=DEFAULT_STARTUP_SECTIONS["stats"],
+            cta=DEFAULT_STARTUP_SECTIONS["cta"],
+        )
+        self._created(created, "about:startup")
 
         # ── Services ────────────────────────────────────────────────────
         services, created = self._get_or_create_child(
@@ -1534,7 +1767,7 @@ class Command(BaseCommand):
                         # + Astro accent "open source"
                         "title": "Most of what we build, shipped as",
                         "subtitle": "The full catalog: products with editions and pricing, plus the projects behind them, from one monorepo.",
-                        "primary_cta": {"label": "See the editions", "href": "/products/forge-pos/#editions", "style": "secondary"},
+                        "primary_cta": {"label": "See the editions", "href": "/products/formint-pos/#editions", "style": "secondary"},
                         "secondary_cta": {"label": "Browse the repo", "href": "https://github.com/mammhoud", "style": "white"},
                     },
                 )
@@ -1553,6 +1786,20 @@ class Command(BaseCommand):
         self._created(created, "products")
 
         # ── Product pages (children of Products) ─────────────────────────
+        # Rename cleanup — the POS product moved from slug ``forge-pos`` to
+        # ``formint-pos`` (Formints). Rename in place BEFORE the creation loop
+        # so an older page keeps its tree position (the flagship leads the
+        # catalog); only delete when the new slug was already created.
+        stale_forge = ProductPage.objects.filter(slug="forge-pos").first()
+        if stale_forge is not None:
+            if ProductPage.objects.filter(slug="formint-pos").exists():
+                stale_forge.delete()
+                self.stdout.write("Removed stale product page: forge-pos")
+            else:
+                stale_forge.slug = "formint-pos"
+                stale_forge.save()
+                self.stdout.write("Renamed product page: forge-pos → formint-pos")
+
         # Each is a reference document with editions & pricing + snippets.
         for slug, product in DEFAULT_PRODUCT_PAGES.items():
             product_page, created = self._get_or_create_child(
@@ -1576,6 +1823,26 @@ class Command(BaseCommand):
                 cta=product.get("cta", []),
             )
             self._created(created, f"product:{slug}")
+
+        # Catalog order — product children follow DEFAULT_PRODUCT_PAGES so the
+        # flagship (Formints) leads the tree on fresh DBs and after renames.
+        desired_order = [slug for slug in DEFAULT_PRODUCT_PAGES]
+        current_order = [
+            c.slug
+            for c in products.get_children().live()
+            if isinstance(c.specific, ProductPage)
+        ]
+        if current_order != desired_order:
+            placed = None
+            for slug in desired_order:
+                node = products.get_children().live().filter(slug=slug).first()
+                if node is None:
+                    continue
+                if placed is None:
+                    node.move(products, pos="first-child")
+                else:
+                    node.move(placed, pos="right")
+                placed = node
 
         # Removed-product cleanup — django-bolt was dropped from the catalog
         # (its capability lives on inside Formints' Pro tier). Any page seeded
@@ -1651,7 +1918,7 @@ class Command(BaseCommand):
                     {
                         "title": "Pricing",
                         "subtitle": "Simple, transparent pricing. Start free and scale as you grow.",
-                        "primary_cta": {"label": "Start Free", "href": "/#cta", "style": "secondary"},
+                        "primary_cta": {"label": "Start Free", "href": "/contact/", "style": "secondary"},
                         "secondary_cta": {"label": "Contact Sales", "href": "/contact/", "style": "white"},
                     },
                 )
@@ -1678,7 +1945,7 @@ class Command(BaseCommand):
                         "title": "Built to ship as",
                         "subtitle": "The AHA stack, documented. Every capability of Structa Cloud.",
                         "primary_cta": {"label": "Our Products", "href": "/products/", "style": "secondary"},
-                        "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
+                        "secondary_cta": {"label": "Get Started", "href": "/contact/", "style": "white"},
                     },
                 )
             ],

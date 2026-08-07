@@ -1,3 +1,0 @@
-# structa-cloud
-
-Documentation incoming.

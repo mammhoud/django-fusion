@@ -6,6 +6,8 @@ interface BlogPost {
   slug: string;
   excerpt: string;
   date: string;
+  /** Resolved post URL — wins over the slug-derived route when present. */
+  href?: string;
   author?: string;
   category?: string;
   image?: string;
@@ -47,7 +49,7 @@ const { eyebrow, title = 'From the blog', description, posts, viewAllHref = '/bl
       <div class="blog-preview__grid">
         {posts.map((post, i) => (
           <a
-            href={`/blog/${post.slug}/`}
+            href={post.href || (post.slug ? `/blog/${post.slug}/` : '/blog/')}
             class="blog-preview__card"
             x-data x-intersect="$el.classList.add('reveal-visible')"
             style={`--reveal-i: ${i}`}

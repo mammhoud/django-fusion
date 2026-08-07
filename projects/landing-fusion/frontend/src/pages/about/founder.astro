@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { SiteSettings, NavigationData } from '@/lib/api';
 
@@ -20,6 +21,10 @@ try {
   siteSettings={siteSettings}
   pageSlug="about/founder"
 >
+  <div class='container-fusion pt-8'>
+    <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about/' }]} current='Founder' />
+  </div>
+
   <section class='section-hero reg-marks overflow-hidden py-16'>
     <div class='container-fusion'>
       <div class='mx-auto max-w-2xl'>
@@ -80,7 +85,7 @@ try {
           <p class='text-sm leading-relaxed text-fu-muted'>
             Open to collaboration, consulting, and new projects. Reach out at
             <a href='mailto:structa.cloud@gmail.com' class='font-medium text-fu-link hover:text-fu-ink'> structa.cloud@gmail.com</a> or through the
-            <a href='/contact' class='font-medium text-fu-link hover:text-fu-ink'> contact form</a>.
+            <a href='/contact/' class='font-medium text-fu-link hover:text-fu-ink'> contact form</a>.
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import { cachedNavigation, cachedPageData, cachedSiteSettings, fetchPageList } from '@/lib/api';
 import type { NavigationData, PageData, SiteSettings } from '@/lib/api';
 
@@ -33,6 +34,11 @@ const prompts = pageData?.prompts || [];
   pageData={pageData}
   pageSlug={`phase:${slug}`}
 >
+  <Breadcrumb
+    items={[{ label: 'Home', href: '/' }, { label: 'Services', href: '/services/' }]}
+    current={pageData?.title || 'Delivery phase'}
+  />
+
   <Hero
     eyebrow={`phase ${pageData?.phase_number || ''} · ${(pageData?.phase_label || 'delivery').toLowerCase()}`}
     heading={pageData?.title || 'Delivery phase'}

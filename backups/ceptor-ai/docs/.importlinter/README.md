@@ -1,3 +1,0 @@
-# .importlinter
-
-Documentation incoming.

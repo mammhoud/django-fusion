@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Course, Enrollment, Lesson, LessonProgress, Wishlist
+from .models import Certificate, Course, Enrollment, Lesson, LessonProgress, Wishlist
 
 
 def _is_htmx(request) -> bool:
@@ -221,9 +221,30 @@ def complete_lesson(request, lesson_id):
 @learning_login_required
 @require_GET
 def profile_dashboard(request):
-    """Profile surface shared by auth users; no duplicate Person model."""
+    """Profile surface shared by auth users; no duplicate Person model.
+
+    One page, three lenses: the learner's enrollments (active + completed),
+    saved courses, and issued certificates — plus a lean recent-activity
+    stream derived from lesson progress timestamps.
+    """
     enrollments = _verified_enrollments(request.user).filter(
         status__in=[Enrollment.Status.ACTIVE, Enrollment.Status.COMPLETED],
     ).select_related("course")
     wishlist = Wishlist.objects.filter(user=request.user).select_related("course")
-    return render(request, "learning/profile.html", {"enrollments": enrollments, "wishlist": wishlist})
+    certificates = Certificate.objects.filter(user=request.user).select_related("course").order_by("-issued_at")
+    # Recent activity: the 6 most recently touched lessons across enrollments.
+    recent = (
+        LessonProgress.objects.filter(enrollment__user=request.user, completed=True)
+        .select_related("lesson__module__course", "enrollment")
+        .order_by("-completed_at")[:6]
+    )
+    return render(
+        request,
+        "learning/profile.html",
+        {
+            "enrollments": enrollments,
+            "wishlist": wishlist,
+            "certificates": certificates,
+            "recent": recent,
+        },
+    )

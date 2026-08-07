@@ -1,3 +1,0 @@
-# ARCHITECTURE.md
-
-Documentation incoming.

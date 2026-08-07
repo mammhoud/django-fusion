@@ -1,7 +1,0 @@
-* [Traefik Overview](README.md)
-* [Architecture](README.md#architecture)
-* [Configuration Files](README.md#configuration-files)
-* [Main Configuration](README.md#main-configuration)
-* [Dynamic Configuration](README.md#dynamic-configuration)
-* [Docker Labels](README.md#docker-labels)
-* [Quick Commands](README.md#quick-commands)

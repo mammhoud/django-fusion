@@ -12,7 +12,7 @@
  * backend is unreachable the bundled table stays — the switcher never breaks.
  */
 import { LANG_META, LANG_CODES } from '@/lib/translations';
-import { fetchContentLanguages } from '@/lib/api';
+import { API_BASE } from '@/lib/api';
 
 // Bundled fallback — mirrors the seeded DEFAULT_SITE_LANGUAGES catalog.
 const langs = LANG_CODES.map((code) => ({
@@ -24,11 +24,13 @@ const langs = LANG_CODES.map((code) => ({
 
 const defaultLang = 'en';
 const langsJson = JSON.stringify(langs);
+const apiBase = API_BASE;
 ---
 
-<script is:inline define:vars={{ langsJson, defaultLang }}>
+<script is:inline define:vars={{ langsJson, defaultLang, apiBase }}>
   window.__FUSION_LANGS = JSON.parse(langsJson);
   window.__FUSION_DEFAULT_LANG = defaultLang;
+  window.__FUSION_API_BASE = apiBase;
 </script>
 
 <div    class="relative"
@@ -38,19 +40,25 @@ const langsJson = JSON.stringify(langs);
     langs: window.__FUSION_LANGS,
     async init() {
       // Hydrate from the backend catalog; the bundled table is the fallback.
+      // NOTE: x-data runs in browser scope, so this uses the global injected
+      // via define:vars (window.__FUSION_API_BASE) + plain fetch — module
+      // imports are not reachable inside Alpine expressions.
       try {
-        const data = await fetchContentLanguages();
-        if (data && Array.isArray(data.languages) && data.languages.length) {
-          // Merge: server order wins, bundled meta fills any missing detail.
-          this.langs = data.languages.map((lang) => {
-            const bundled = window.__FUSION_LANGS.find((l) => l.code === lang.code);
-            return {
-              code: lang.code,
-              native: lang.native || bundled?.native || lang.code,
-              flag: lang.flag || bundled?.flag || '🌐',
-              dir: lang.dir === 'rtl' ? 'rtl' : 'ltr',
-            };
-          });
+        const res = await fetch(window.__FUSION_API_BASE + '/apis/content/languages/');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.languages) && data.languages.length) {
+            // Merge: server order wins, bundled meta fills any missing detail.
+            this.langs = data.languages.map((lang) => {
+              const bundled = window.__FUSION_LANGS.find((l) => l.code === lang.code);
+              return {
+                code: lang.code,
+                native: lang.native || bundled?.native || lang.code,
+                flag: lang.flag || bundled?.flag || '🌐',
+                dir: lang.dir === 'rtl' ? 'rtl' : 'ltr',
+              };
+            });
+          }
         }
       } catch { /* backend offline — keep bundled catalog */ }
 

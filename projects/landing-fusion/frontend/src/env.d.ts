@@ -34,6 +34,11 @@ declare global {
       store(name: 'toast'): ToastStore;
     } & Record<string, unknown>;
     gtag?: (...args: unknown[]) => void;
+    /** Bundled language catalog injected by the LanguageSwitcher (fallback). */
+    __FUSION_LANGS?: { code: string; native: string; flag: string; dir: 'ltr' | 'rtl' }[];
+    __FUSION_DEFAULT_LANG?: string;
+    /** Backend base URL (from lib/api.ts) used by the switcher hydration fetch. */
+    __FUSION_API_BASE?: string;
   }
 }
 

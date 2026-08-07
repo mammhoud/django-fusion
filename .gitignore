@@ -26,7 +26,7 @@ playwright-report/
 *.tsbuildinfo
 safe_loaddata.py
 *.png
-
+appmap.log
 # ── Docs artifacts & archives ────────────────────────────────────────
 .archives/
 archives/
@@ -40,3 +40,4 @@ libs/django-bolt
 libs/ceptor-ai
 
 .freebuff
+.tmp

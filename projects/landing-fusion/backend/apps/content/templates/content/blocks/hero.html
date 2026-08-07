@@ -1,42 +1,192 @@
 {% load wagtailcore_tags %}
-<section class="section-hero">
-  <div class="container-fusion py-16 sm:py-24">
-    <div class="max-w-3xl text-left">
+{% comment %} ────────────────────────────────────────────────────────────────
+   content/blocks/hero.html — the SHARED hero, mirroring Hero.astro exactly.
+
+   Both render roads render the SAME composition from the SAME CSS classes:
+   - Asymmetric split: copy (badge / title + accent / subtitle / CTAs) on the
+     left, the hero's own literal source in a view-source panel on the right.
+   - Registration corners, ambient glow, magnetic CTAs, reveal cascade and
+     the scroll sentinel for the sticky header — all identical to the Astro
+     component so the two roads can never drift apart.
+   - The trusted-by line renders BELOW the grid as its own band (never inside
+     the hero content — the hero carries the value prop, the strip is proof).
+   ────────────────────────────────────────────────────────────────────────── {% endcomment %}
+<section class="hero">
+  <!-- Registration corners — the sheet is printed, not rendered. -->
+  <span class="hero__corner-tl" aria-hidden="true"></span>
+  <span class="hero__corner-br" aria-hidden="true"></span>
+
+  <div class="hero__inner">
+    <div class="hero__content">
       {% if value.badge %}
-        <p class="tag-marker mb-6">{{ value.badge }}</p>
+      <p
+        class="hero__eyebrow"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+        x-cloak
+      >
+        {{ value.badge }}
+      </p>
       {% endif %}
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl" style="font-family:'Bricolage Grotesque','Public Sans',sans-serif;">
-        {{ value.title }}
+
+      <h1
+        class="hero__heading"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+      >
+        {{ value.title }}{% if value.accent %}
+        <span class="hero__accent">
+          <span class="relative z-10">{{ value.accent }}</span>
+          <span class="hero__accent-mark" aria-hidden="true"></span>
+        </span>{% endif %}
       </h1>
+
       {% if value.subtitle %}
-        <p class="mt-6 max-w-2xl text-lg" style="color:hsl(var(--fu-muted));">{{ value.subtitle }}</p>
+      <p
+        class="hero__intro"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 100ms"
+      >
+        {{ value.subtitle }}
+      </p>
       {% endif %}
-      <div class="mt-10 flex flex-wrap items-center gap-4">
+
+      {% if value.primary_cta or value.secondary_cta %}
+      <div
+        class="hero__actions"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 200ms"
+      >
         {% if value.primary_cta %}
         {% comment %} Magnetic wrapper — the CTA drifts toward the cursor (≤6px)
            and snaps back on leave via the Alpine 'magnetic' component
            (registered in base.html). Transform lives on the wrapper so the
            button's own :active press-scale stays untouched. {% endcomment %}
-        <span class="btn-magnetic" x-data="magnetic" @pointerenter="active = true; center()" @pointermove="track($event)" @pointerleave="leave()" :class="active && 'btn-magnetic--tracking'" :style="`transform: translate3d(${mx}px, ${my}px, 0)`">
+        <span
+          class="btn-magnetic"
+          x-data="magnetic"
+          @pointerenter="active = true; center()"
+          @pointermove="track($event)"
+          @pointerleave="leave()"
+          :class="active && 'btn-magnetic--tracking'"
+          :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+        >
           {% include_block value.primary_cta %}
         </span>
         {% endif %}
         {% if value.secondary_cta %}
-        <span class="btn-magnetic" x-data="magnetic" @pointerenter="active = true; center()" @pointermove="track($event)" @pointerleave="leave()" :class="active && 'btn-magnetic--tracking'" :style="`transform: translate3d(${mx}px, ${my}px, 0)`">
+        <span
+          class="btn-magnetic"
+          x-data="magnetic"
+          @pointerenter="active = true; center()"
+          @pointermove="track($event)"
+          @pointerleave="leave()"
+          :class="active && 'btn-magnetic--tracking'"
+          :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+        >
           {% include_block value.secondary_cta %}
         </span>
         {% endif %}
       </div>
-      {% if value.trusted_by %}
-        <p class="mt-12 text-sm" style="color:hsl(var(--fu-muted));">{{ value.trusted_by }}</p>
       {% endif %}
     </div>
+
+    {% comment %} View-source panel: the hero's own markup, generated from the
+       same values that render the hero (title, accent, subtitle, CTA label),
+       so it is always truthful. A toggle flips to a miniature rendered view —
+       the real hero, not a mock. Mirrors Hero.astro's sourceMarkup. {% endcomment %}
+    <div
+      class="hero__source-toggle"
+      x-data="{ showSource: true }"
+      x-intersect="$el.classList.add('reveal-visible')"
+      style="transition-delay: 240ms"
+    >
+      <div class="hero__source-chrome">
+        <span class="hero__source-path">view-source:{% if request %}{{ request.path }}{% else %}/{% endif %}</span>
+        <span class="hero__source-status">
+          <span class="status-line"><span class="dot" aria-hidden="true"></span>200 OK · text/html</span>
+          <span class="hero__source-kb">0 KB client JS</span>
+        </span>
+      </div>
+
+      <div id="hero-source">
+        <!-- Source view — rendered server-side so it reads without JS. -->
+        <div x-show="showSource">
+          <pre class="source-panel source-panel--bezel" role="region" aria-label="Source of this hero section"><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;title&gt;{{ value.title }}{% if value.accent %} {{ value.accent }}{% endif %}&lt;/title&gt;
+    &lt;meta name="description" content="{{ value.subtitle|default:'' }}" /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;header&gt;
+      &lt;h1&gt;{{ value.title }}{% if value.accent %} {{ value.accent }}{% endif %}&lt;/h1&gt;
+      {% if value.subtitle %}&lt;p&gt;{{ value.subtitle }}&lt;/p&gt;{% endif %}
+      {% if value.primary_cta %}
+      {% if value.primary_cta.page %}
+      &lt;a href="{{ value.primary_cta.page.url }}"&gt;{{ value.primary_cta.label|default:value.primary_cta.page.title }}&lt;/a&gt;
+      {% else %}
+      &lt;a href="{{ value.primary_cta.href|default:'/' }}"&gt;{{ value.primary_cta.label|default:'Get started' }}&lt;/a&gt;
+      {% endif %}
+      {% endif %}
+    &lt;/header&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <!-- Rendered view — the real hero, miniaturized. -->
+        <div x-show="!showSource" x-cloak class="source-panel source-panel--render" aria-hidden="true">
+          <div class="source-panel__doc">
+            <p class="source-panel__tag">rendered · index.html</p>
+            <h3 class="source-panel__h1">{{ value.title }}{% if value.accent %} <span class="source-panel__accent">{{ value.accent }}</span>{% endif %}</h3>
+            {% if value.subtitle %}<p class="source-panel__intro">{{ value.subtitle }}</p>{% endif %}
+            <div class="source-panel__actions">
+              {% if value.primary_cta %}
+              <span class="source-panel__btn source-panel__btn--primary">
+                {% if value.primary_cta.page %}{{ value.primary_cta.label|default:value.primary_cta.page.title }}{% else %}{{ value.primary_cta.label|default:'Get started' }}{% endif %}
+              </span>
+              {% endif %}
+              {% if value.secondary_cta %}
+              <span class="source-panel__btn source-panel__btn--ghost">
+                {% if value.secondary_cta.page %}{{ value.secondary_cta.label|default:value.secondary_cta.page.title }}{% else %}{{ value.secondary_cta.label|default:'Learn more' }}{% endif %}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__source-actions">
+        <button
+          type="button"
+          class="btn-secondary !h-8 !px-3.5 !py-0 font-mono text-[0.68rem] uppercase tracking-wider"
+          @click="showSource = !showSource"
+          :aria-expanded="showSource.toString()"
+          aria-controls="hero-source"
+        >
+          <span x-text="showSource ? 'Rendered view' : 'View source'"></span>
+        </button>
+        <p class="hero__source-caption">One HTTP response, no framework.</p>
+      </div>
+    </div>
   </div>
-  {% comment %} Scroll sentinel for the sticky header — a zero-height element at the
-     bottom of the hero. x-intersect (IntersectionObserver, not a scroll
+
+  {% comment %} Trusted-by band — its OWN strip below the hero grid (never a
+     tagline inside the hero content): the hero carries the value prop, the
+     strip is the proof. Mirrors the logo-wall placement rule. {% endcomment %}
+  {% if value.trusted_by %}
+  <div class="hero__trusted" aria-label="Built for">
+    <p class="hero__trusted-text">{{ value.trusted_by }}</p>
+  </div>
+  {% endif %}
+
+  {% comment %} Scroll sentinel for the sticky header — a zero-height element at
+     the bottom of the hero. x-intersect (IntersectionObserver, not a scroll
      listener) tells the header when the hero has been scrolled past, so it can
-     tighten its background and grow a soft shadow. Dispatches a window event
-     the header listens for; mirrors the sentinel in Hero.astro. {% endcomment %}
+     tighten its background and grow a soft shadow. Mirrors Hero.astro. {% endcomment %}
   <div
     x-data
     aria-hidden="true"
