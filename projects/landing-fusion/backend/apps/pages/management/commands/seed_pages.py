@@ -422,7 +422,7 @@ DEFAULT_PRODUCT_PAGES = {
                         {        "name": "Pro",
         "tagline": "Multi-terminal with a cloud master, WebSocket streaming, and a high-throughput Rust API.",
         "price": "$79",
-        "period": "/per month",
+        "period": "/per year",
         "offer_label": "50% off · launch",
         "offer_old_price": "$158",
                             "features": ["Everything in Standard", "Multi-terminal sync (cloud master)", "High-throughput Rust API (60k+ RPS)", "WebSocket real-time streaming", "Product sync engine (master)", "Employee scheduling + KPIs", "Change signals + approvals", "Deployment & support fees apply"],

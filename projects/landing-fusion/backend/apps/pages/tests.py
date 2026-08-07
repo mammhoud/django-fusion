@@ -762,8 +762,10 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for marker in (b"Community", b"Standard", b"Pro", b"Cloud", b"$0", b"$119", b"$79", b"Custom", b"Models &amp; snippets you can reuse", b"SQLite", b"Rust"):
             self.assertIn(marker, response.content)
-        # The Pro edition carries the seeded 50% launch offer: badge chip +
-        # struck-through original price next to the discounted price.
+        # The Pro edition carries the seeded annual 50% launch offer: badge
+        # chip + struck-through original price next to the discounted price.
+        self.assertIn(b"/per year", response.content)
+        self.assertNotIn(b"$79</span>\n                    <span class=\"font-mono text-xs uppercase tracking-wider text-fu-muted\">/per month", response.content)
         self.assertIn(b"badge-offer", response.content)
         self.assertIn(b"50% off", response.content)
         self.assertIn(b"$158", response.content)
@@ -801,6 +803,11 @@ class LandingPagesTestCase(TestCase):
 
         # The API exports the comparison block with columns + rows intact.
         data = self.client.get("/apis/pages/formint-pos/").json()
+        pro = next(
+            edition for edition in data.get("editions", [])
+            if edition.get("name") == "Pro"
+        )
+        self.assertEqual(pro["period"], "/per year")
         comparison = data.get("comparison", [])
         self.assertTrue(comparison, "products API should carry the comparison block")
         block = comparison[0]
