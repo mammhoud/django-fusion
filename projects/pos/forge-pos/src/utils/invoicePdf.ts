@@ -142,7 +142,7 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
 
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(148, 163, 184);
+  pdf.setTextColor(100, 116, 139); // slate-500 — AA-compliant on slate-50 (≈4.5:1)
   pdf.text('FROM', margin + 4, y + 7);
   pdf.text('BILL TO', margin + contentWidth / 2 + 9, y + 7);
 
@@ -198,7 +198,7 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   y += 7;
 
   if (deliveryFeeAmount > 0) {
-    pdf.setTextColor(234, 88, 12); // orange-600
+    pdf.setTextColor(194, 65, 12); // copper-700 — AA-compliant text on white (5.18:1)
     let delLabel = 'Delivery Fee:';
     if (data.deliveryZoneName) {
       delLabel = `${data.deliveryZoneName}:`;
@@ -210,7 +210,7 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
     y += 5;
     if (data.deliveryDistance != null && data.deliveryDistance > 0) {
       pdf.setFontSize(8);
-      pdf.setTextColor(148, 163, 184); // slate-400
+      pdf.setTextColor(100, 116, 139); // slate-500 — AA-compliant on white (4.76:1)
       pdf.text(`${data.deliveryDistance} km at zone rate`, totalsX + 2, y + 6);
       y += 5;
       pdf.setFontSize(10);
@@ -226,7 +226,7 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   pdf.setDrawColor(13, 148, 136);
   pdf.roundedRect(totalsX - 5, y, 75, 10, 2, 2, 'FD');
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(13, 148, 136);
+  pdf.setTextColor(15, 118, 110); // teal-700 — AA-compliant on teal-50 (≈5.2:1)
   pdf.text('Total:', totalsX, y + 7);
   pdf.text(`${data.currency} ${total.toFixed(2)}`, pageWidth - margin, y + 7, { align: 'right' });
   y += 18;
@@ -235,7 +235,7 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   if (data.notes) {
     pdf.setFontSize(9);
     pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(148, 163, 184);
+    pdf.setTextColor(100, 116, 139); // slate-500 — AA-compliant on white (4.76:1)
     pdf.text('NOTES', margin, y);
     y += 6;
     pdf.setFont('helvetica', 'normal');

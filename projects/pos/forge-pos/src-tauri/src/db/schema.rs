@@ -477,6 +477,32 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    finance_transactions (id) {
+        id -> Integer,
+        date -> Text,
+        category_id -> Text,
+        direction -> Text,
+        amount -> Double,
+        description -> Nullable<Text>,
+        reference -> Nullable<Text>,
+        created_at -> Text,
+        updated_at -> Text,
+    }
+}
+
+diesel::table! {
+    budgets (id) {
+        id -> Integer,
+        category_id -> Nullable<Text>,
+        period_start -> Text,
+        period_end -> Text,
+        amount -> Double,
+        created_at -> Text,
+        updated_at -> Text,
+    }
+}
+
 diesel::joinable!(user_roles -> users (user_id));
 diesel::joinable!(user_roles -> roles (role_id));
 diesel::joinable!(report_metadata -> users (generated_by));
@@ -524,4 +550,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     support_messages,
     coupons,
     user_actions,
+    finance_transactions,
+    budgets,
 );

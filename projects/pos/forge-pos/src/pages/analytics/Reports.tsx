@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import StatCard from '../../components/ui/StatCard';
 import TaxReportsPanel from '../../components/analytics/TaxReportsPanel';
+import FinancePanel from '../../components/analytics/FinancePanel';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import ComparisonTable, { type ComparisonFilter } from '../../components/ui/ComparisonTable';
 import { useApiQueries } from '../../hooks/useApi';
@@ -26,7 +27,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
-type Tab = 'overview' | 'sales' | 'inventory' | 'recipes' | 'employees' | 'transactions' | 'productsSales' | 'invoices' | 'dailyComparison' | 'deliveryTracking' | 'periodComparison' | 'taxReports' | 'loyalty';
+type Tab = 'overview' | 'sales' | 'inventory' | 'recipes' | 'employees' | 'transactions' | 'productsSales' | 'invoices' | 'dailyComparison' | 'deliveryTracking' | 'periodComparison' | 'taxReports' | 'loyalty' | 'finance';
 
 interface EmployeeSalesData {
   employeeId: number;
@@ -101,6 +102,7 @@ export default function Reports() {
   // (used by the sidebar / dashboard menu items).
   useEffect(() => {
     if (searchParams.get('tab') === 'taxReports') setActiveTab('taxReports');
+    if (searchParams.get('tab') === 'finance') setActiveTab('finance');
   }, [searchParams]);
 
   // ── Data fetching via shared useApiQueries hook ──
@@ -355,6 +357,7 @@ export default function Reports() {
     { key: 'employees' as Tab, label: 'Employees', icon: <span className="ri-group-line ri-20px" /> },
     { key: 'transactions' as Tab, label: 'Transactions', icon: <span className="ri-calendar-line ri-20px" /> },
     { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <span className="ri-bank-line ri-20px" /> },
+    { key: 'finance' as Tab, label: 'Finance', icon: <span className="ri-wallet-3-line ri-20px" /> },
     { key: 'loyalty' as Tab, label: 'Loyalty', icon: <span className="ri-star-smile-line ri-20px" /> },
   ];
 
@@ -379,7 +382,7 @@ export default function Reports() {
       }
 
       // Number keys for tab navigation
-      const tabKeys: Tab[] = ['overview', 'sales', 'productsSales', 'invoices', 'dailyComparison', 'periodComparison', 'deliveryTracking', 'inventory', 'recipes', 'employees', 'transactions', 'taxReports', 'loyalty'];
+      const tabKeys: Tab[] = ['overview', 'sales', 'productsSales', 'invoices', 'dailyComparison', 'periodComparison', 'deliveryTracking', 'inventory', 'recipes', 'employees', 'transactions', 'taxReports', 'finance', 'loyalty'];
       const num = parseInt(key);
       if (num >= 1 && num <= 9 && num <= tabKeys.length) {
         setActiveTab(tabKeys[num - 1]);
@@ -2604,6 +2607,10 @@ export default function Reports() {
 
           {activeTab === 'taxReports' && (
             <TaxReportsPanel />
+          )}
+
+          {activeTab === 'finance' && (
+            <FinancePanel />
           )}
 
           {activeTab === 'loyalty' && (

@@ -635,9 +635,9 @@ export default function Auth() {
                           className={`w-10 h-12 sm:w-12 sm:h-14 rounded-xl border-2 flex items-center justify-center
                             text-xl font-bold font-mono transition-all duration-200
                             ${code.length > i
-                              ? 'border-primary bg-primary/20 shadow-lg shadow-primary/10 text-white'
+                              ? 'border-primary bg-primary/20 shadow-lg shadow-primary/10 text-primary-content'
                               : code.length === i
-                                ? 'border-primary/60 animate-pulse ' + (isDark ? 'bg-white/10 text-white' : 'bg-primary/5 text-slate-700')
+                                ? 'border-primary/60 animate-pulse ' + (isDark ? 'bg-white/10 text-primary-content' : 'bg-primary/5 text-slate-700')
                                 : (isDark ? 'border-white/10 bg-white/5 text-white' : 'border-slate-200 bg-slate-50 text-slate-500')
                             }`}
                         >
@@ -788,7 +788,7 @@ export default function Auth() {
                         className={`relative flex items-center justify-center gap-2 px-3 py-3 rounded-xl border text-sm font-medium transition-all duration-200
                           disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]
                           ${isActive
-                            ? 'bg-linear-to-r from-primary to-primary/80 text-white border-primary shadow-lg shadow-primary/25 ring-1 ring-primary/40'
+                            ? 'bg-linear-to-r from-primary to-primary/80 text-primary-content border-primary shadow-lg shadow-primary/25 ring-1 ring-primary/40'
                             : isDark
                               ? 'border-white/10 bg-white/5 text-white/60 hover:text-white/80 hover:border-white/25'
                               : 'border-slate-200 bg-slate-50 text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -998,9 +998,9 @@ export default function Auth() {
                           className={`w-10 h-12 sm:w-12 sm:h-14 rounded-xl border-2 flex items-center justify-center
                             text-xl font-bold font-mono transition-all duration-200
                             ${resetCode.length > i
-                              ? 'border-primary bg-primary/20 shadow-lg shadow-primary/10 text-white'
+                              ? 'border-primary bg-primary/20 shadow-lg shadow-primary/10 text-primary-content'
                               : resetCode.length === i
-                                ? 'border-primary/60 animate-pulse ' + (isDark ? 'bg-white/10 text-white' : 'bg-primary/5 text-slate-700')
+                                ? 'border-primary/60 animate-pulse ' + (isDark ? 'bg-white/10 text-primary-content' : 'bg-primary/5 text-slate-700')
                                 : (isDark ? 'border-white/10 bg-white/5 text-white' : 'border-slate-200 bg-slate-50 text-slate-500')
                             }`}
                         >

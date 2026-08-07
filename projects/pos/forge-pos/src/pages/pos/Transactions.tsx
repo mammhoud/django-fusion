@@ -730,7 +730,7 @@ export default function Transactions() {
           <span className="ri-filter-2-line ri-20px" />
           <span>{t('transactions.filters')}</span>
           {activeFilterCount > 0 && (
-            <span className="min-w-5 h-5 px-1.5 rounded-full bg-secondary text-white text-xs font-bold
+            <span className="min-w-5 h-5 px-1.5 rounded-full bg-secondary text-secondary-content text-xs font-bold
               flex items-center justify-center">
               {activeFilterCount}
             </span>

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import FormModal from '../../components/ui/FormModal';
 import { Badge } from '@/components/ui/badge';
 import EmployeeWizard from '../../components/forms/EmployeeWizard';
+import EmployeeDetail from '../../components/forms/EmployeeDetail';
 import EmployeeTypeForm from '../../components/forms/EmployeeTypeForm';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import StatusToast from '../../components/ui/StatusToast';
@@ -78,6 +79,7 @@ export default function Employees() {
   const [employeeModal, setEmployeeModal] = useState<EmployeeModalState>(null);
   const [employeeForm, setEmployeeForm] = useState<NewEmployee>({ ...initialNewEmployee });
   const [showDeleteEmployee, setShowDeleteEmployee] = useState<Employee | null>(null);
+  const [detailEmployee, setDetailEmployee] = useState<Employee | null>(null);
 
   type TypeModalState = { mode: 'add' } | { mode: 'edit'; type: EmployeeType } | null;
   const [typeModal, setTypeModal] = useState<TypeModalState>(null);
@@ -329,7 +331,7 @@ export default function Employees() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] shrink-0 ${
                 activeTab === tab.key
-                  ? 'bg-info text-white shadow-lg'
+                  ? 'bg-info text-info-content shadow-lg'
                   : 'bg-base-100/70 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
               }`}
             >
@@ -371,7 +373,7 @@ export default function Employees() {
                       onClick={() => setStatusFilter(s)}
                       className={`px-3 py-1.5 text-xs font-medium ${
                         statusFilter === s
-                          ? 'bg-info text-white'
+                          ? 'bg-info text-info-content'
                           : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                       }`}
                     >
@@ -386,7 +388,7 @@ export default function Employees() {
                     title={t('employees.gridView') || 'Grid view'}
                     className={`px-3 py-1.5 text-xs font-medium ${
                       viewMode === 'grid'
-                        ? 'bg-info text-white'
+                        ? 'bg-info text-info-content'
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
@@ -397,7 +399,7 @@ export default function Employees() {
                     title={t('employees.listView') || 'List view'}
                     className={`px-3 py-1.5 text-xs font-medium ${
                       viewMode === 'list'
-                        ? 'bg-info text-white'
+                        ? 'bg-info text-info-content'
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
@@ -407,7 +409,7 @@ export default function Employees() {
               </div>
               <button
                 onClick={openAddEmployee}
-                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-info-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
                 <span className="ri-add-line" /> {t('employees.addEmployee')}
               </button>
@@ -460,6 +462,10 @@ export default function Employees() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex justify-end gap-1">
+                            <button onClick={() => setDetailEmployee(emp)}
+                              className="text-secondary hover:text-secondary/70 p-1.5 rounded-lg hover:bg-secondary/10" title={t('employees.viewDetail') || 'View details'}>
+                              <span className="ri-profile-line ri-16px" />
+                            </button>
                             <button onClick={() => openEditEmployee(emp)}
                               className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
                               <span className="ri-pencil-line ri-16px" />
@@ -510,6 +516,10 @@ export default function Employees() {
                         </div>
                       </div>
                       <div className="flex gap-1">
+                        <button onClick={() => setDetailEmployee(emp)}
+                          className="text-secondary hover:text-secondary/70 p-1.5 rounded-lg hover:bg-secondary/10" title={t('employees.viewDetail') || 'View details'}>
+                          <span className="ri-profile-line ri-16px" />
+                        </button>
                         <button onClick={() => openEditEmployee(emp)}
                           className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
                           <span className="ri-pencil-line ri-16px" />
@@ -592,7 +602,7 @@ export default function Employees() {
               <h2 className="text-lg font-semibold text-base-content">{t('employees.employeeTypes')}</h2>
               <button
                 onClick={openAddType}
-                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-info-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
                 <span className="ri-add-line" /> {t('employees.addType')}
               </button>
@@ -669,6 +679,13 @@ export default function Employees() {
         cancelLabel={t('common.cancel')}
         onSubmit={handleSaveEmployee}
         contentTestId="employee-form-modal"
+      />
+
+      {/* Employee detail — full profile, payroll history, audit trail */}
+      <EmployeeDetail
+        employee={detailEmployee}
+        employeeTypes={employeeTypes}
+        onClose={() => setDetailEmployee(null)}
       />
 
       <ConfirmDialog
