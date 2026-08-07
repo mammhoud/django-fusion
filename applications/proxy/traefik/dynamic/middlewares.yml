@@ -1,3 +1,12 @@
+# =============================================================================
+# Shared middlewares — Traefik config  [INFRASTRUCTURE]
+# =============================================================================
+# Reusable middleware definitions used by all site router configs.
+# Always active — no backend dependency.
+# Middlewares: redirect-to-https, security-headers, compress,
+#             csrf-headers, rate-limit, basic-auth, redirect-www-to-root.
+# =============================================================================
+
 http:
   middlewares:
     redirect-to-https:

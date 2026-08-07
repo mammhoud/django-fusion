@@ -28,7 +28,9 @@ try {
   [siteSettings, navData, pageData] = await Promise.all([
     cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
   ]);
-} catch { /* use fallbacks */ }
+} catch (error) {
+  throw new Error(`Unable to load product page ${slug}: ${String(error)}`);
+}
 
 const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
@@ -39,14 +41,14 @@ const pageSnippets = (pageData?.snippets as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 
-const techItems = pageTech?.map((t: any) => String(t || ''));
+const techItems = pageTech?.map((t: any) => String(t || '')).filter(Boolean);
 const editions = pageEditions?.map((e: any) => ({
   name: String(e.name || ''),
   tagline: String(e.tagline || ''),
   price: String(e.price || ''),
   period: String(e.period || ''),
   features: (e.features || []) as string[],
-  cta: { label: String(e.cta_label || 'Get started'), href: String(e.cta_href || '/#cta') },
+  cta: { label: String(e.cta_label || ''), href: String(e.cta_href || '') },
   tier: String(e.tier || 'default'),
 }));
 
@@ -59,7 +61,7 @@ function editionCardClass(tier: string): string {
 }
 const comparison = pageComparison?.[0] && ({
   eyebrow: String(pageComparison[0].eyebrow || ''),
-  title: String(pageComparison[0].title || 'Compare editions'),
+  title: String(pageComparison[0].title || ''),
   description: String(pageComparison[0].description || ''),
   columns: (pageComparison[0].columns || []) as string[],
   rows: (pageComparison[0].rows || []) as { feature: string; cells: string[] }[],
@@ -70,7 +72,7 @@ const snippets = pageSnippets?.map((s: any) => ({
   code: String(s.code || ''),
 }));
 const capabilities = pageFeatures?.map((f: any) => ({
-  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  icon: String(f.icon || ''),
   title: String(f.title || ''),
   description: String(f.description || ''),
 }));
@@ -82,20 +84,20 @@ const faqItems = pageFaq?.map((f: any) => ({
 
 
 <Layout
-  title={pageData?.title || 'Product'}
-  description={pageData?.search_description || pageData?.title || 'Product page'}
+  title={pageData?.title}
+  description={pageData?.search_description}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
   pageSlug={slug}
 >
   <Hero
-    eyebrow={pageHero?.badge || `products · ${pageData?.category || slug}`}
-    heading={pageHero?.title || pageData?.title || 'Product'}
+    eyebrow={pageHero?.badge}
+    heading={pageHero?.title || pageData?.title}
     accent=''
-    intro={pageHero?.subtitle || ''}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Back to products', href: '/products' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
+    intro={pageHero?.subtitle}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : undefined}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : undefined}
     status='200 OK · text/html · the product, in one response'
   />
 
@@ -273,13 +275,14 @@ const faqItems = pageFaq?.map((f: any) => ({
     </section>
   ) : <ContentError label="Product data unavailable" />}
 
-  {faqItems?.length ? <FAQ items={faqItems} heading='Questions, answered' intro='The honest answers to product questions.' /> : null}
+  {faqItems?.length ? <FAQ items={faqItems} /> : null}
 
   <CTA
-    heading={pageCta?.title || 'Most of our builds are open source'}
-    intro={pageCta?.subtitle || 'Explore the full product line.'}
-    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
-    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    heading={pageCta?.title}
+    intro={pageCta?.subtitle}
+    ctaLabel={pageCta?.primary_cta?.label}
+    ctaHref={pageCta?.primary_cta?.href}
+    secondaryCta={pageCta?.secondary_cta ? { label: pageCta.secondary_cta.label, href: pageCta.secondary_cta.href } : undefined}
   />
   <Toast />
   <HtmxBootstrap />

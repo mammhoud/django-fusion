@@ -52,7 +52,7 @@ const {
       <Skeleton variant="testimonials-carousel" />
     </div>
 
-    <div data-hydrate-content class="testimonials__carousel" client:visible x-data={`{ active: 0, total: ${testimonials.length} }`}>
+    <div data-hydrate-content class="testimonials__carousel" x-data={`{ active: 0, total: ${testimonials.length} }`}>
       <div class="overflow-hidden">
         <div class="flex transition-transform duration-500 ease-out" :style="`transform: translateX(-${active * 100}%)`">
           {testimonials.map((t) => (

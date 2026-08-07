@@ -34,6 +34,20 @@
       root.classList.add(dark ? 'dark' : 'light');
     })();
   </script>
+  <!-- Match the Astro road before first paint: persisted language controls
+       document direction and lets the backend header hydrate the same menu. -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var supported = { en: 'ltr', ar: 'rtl', sv: 'ltr', fr: 'ltr', de: 'ltr', es: 'ltr', pt: 'ltr' };
+      var stored = null;
+      try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
+      if (stored && supported[stored]) {
+        root.lang = stored;
+        root.dir = supported[stored];
+      }
+    })();
+  </script>
 
   <!-- Shared design system — compiled from frontend/src/styles/globals.css by
        `make css` (@tailwindcss/cli) into assets/static/css/fusion.css. Single
@@ -171,7 +185,8 @@
      (the React reference's JSON auth endpoints, on the AHA stack); social
      buttons redirect to the allauth provider redirect. {% endcomment %}
   <div
-    x-data="{ open: false, email: '', password: '', loading: false, error: '', async submit() { this.loading = true; this.error = ''; try { const r = await fetch('/api/auth/browser/v1/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ email: this.email, password: this.password }) }); if (r.status === 200 || r.status === 201) { this.open = false; this.email = ''; this.password = ''; window.__showToast ? window.__showToast('Signed in. Welcome back!', 'success') : alert('Signed in!'); setTimeout(() => location.reload(), 700); } else { const d = await r.json().catch(() => ({})); const errs = d.errors || []; this.error = errs.map(function (e) { return e.message; }).join(' ') || 'Sign-in failed — check your email and password.'; } } catch (e) { this.error = 'Network error — please try again.'; } finally { this.loading = false; } }, social(p) { window.location.href = '/api/auth/browser/v1/auth/provider/redirect?provider=' + p; } }"
+    x-data="{ open: false, email: '', password: '', loading: false, error: '', async submit() { this.loading = true; this.error = ''; try { const r = await fetch('/api/auth/browser/v1/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ email: this.email, password: this.password }) }); if (r.status === 200 || r.status === 201) { this.open = false; this.email = ''; this.password = ''; window.__showToast ? window.__showToast('Signed in. Welcome back!', 'success') : alert('Signed in!'); setTimeout(() => location.reload(), 700); } else { const d = await r.json().catch(() => ({})); const errs = d.errors || []; this.error = errs.map(function (e) { return e.message; }).join(' ') || 'Sign-in failed — check your email and password.';    } } catch (e) { this.error = 'Network error — please try again.'; } finally { this.loading = false; } }, social(p) { const next = encodeURIComponent(window.location.pathname + window.location.search); window.location.href = '/accounts/' + encodeURIComponent(p) + '/login/?next=' + next; } }"
+
     @keydown.escape.window="open = false"
     @fusion:open-login.window="open = true"
   >
@@ -218,7 +233,7 @@
             <span x-show="loading" x-cloak>Signing in…</span>
           </button>
         </form>
-        <p style="margin:1.25rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">New here? <a href="/accounts/signup/" style="font-weight:500;color:hsl(var(--fu-link));">Create an account</a></p>
+        <p style="margin:1.25rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">New here? <a href="/accounts/signup/" style="font-weight:500;color:hsl(var(--fu-link));">Create an account</a><span style="margin-inline:.5rem;color:hsl(var(--fu-line));" aria-hidden="true">|</span><a href="/accounts/password/reset/" style="font-weight:500;color:hsl(var(--fu-link));">Forgot password?</a></p>
       </div>
     </div>
   </div>
@@ -413,6 +428,35 @@
             detail: { slug: t.getAttribute('data-open-brand') },
           }));
         }
+      });
+    })();
+  </script>
+
+  <script>
+    // Keep backend-rendered auth controls in sync with the same language
+    // contract as the Astro road. The selector persists `django_language` and
+    // this small bridge updates the labels that are present in the header.
+    (function () {
+      var translations = {
+        en: { nav_login: 'Log In', nav_get_started: 'Get Started' },
+        ar: { nav_login: 'تسجيل الدخول', nav_get_started: 'ابدأ الآن' },
+        sv: { nav_login: 'Logga in', nav_get_started: 'Kom igång' },
+        fr: { nav_login: 'Connexion', nav_get_started: 'Démarrer' },
+        de: { nav_login: 'Anmelden', nav_get_started: 'Loslegen' },
+        es: { nav_login: 'Iniciar', nav_get_started: 'Empezar' },
+        pt: { nav_login: 'Entrar', nav_get_started: 'Começar' }
+      };
+      function updateFusionLanguage(code) {
+        var values = translations[code] || translations.en;
+        document.querySelectorAll('[data-fusion-i18n]').forEach(function (node) {
+          var key = node.getAttribute('data-fusion-i18n');
+          if (values[key]) node.textContent = values[key];
+        });
+      }
+      var current = document.documentElement.lang || 'en';
+      updateFusionLanguage(current);
+      window.addEventListener('fusion:lang-changed', function (event) {
+        updateFusionLanguage(event.detail && event.detail.code);
       });
     })();
   </script>

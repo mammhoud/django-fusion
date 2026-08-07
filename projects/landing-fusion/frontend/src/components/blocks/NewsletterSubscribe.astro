@@ -3,7 +3,7 @@
  *
  * The backend endpoint POST /api/newsletter/subscribe/ accepts { email } and
  * returns an HTML fragment showing success or error state.
- * Falls back to a toast notification if HTMX is unavailable.
+ * The endpoint is same-origin in production; Astro dev may proxy it to Django.
  */
 interface Props {
   title?: string;

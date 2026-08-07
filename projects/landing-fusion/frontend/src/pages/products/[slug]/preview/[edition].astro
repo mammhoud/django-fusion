@@ -5,6 +5,7 @@ import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import { contentSlug } from '@/lib/slug';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
@@ -21,12 +22,14 @@ export async function getStaticPaths() {
       const pageData = await cachedPageData(slug);
       const editions = (pageData?.editions as any[] | undefined) || [];
       for (const ed of editions) {
-        const editionName = String(ed.name || '').toLowerCase().replace(/\s+/g, '-');
+        const editionName = contentSlug(String(ed.name || ''));
         if (editionName) {
           paths.push({ params: { slug, edition: editionName } });
         }
       }
-    } catch { /* skip if product data unavailable */ }
+    } catch (error) {
+    throw new Error(`Unable to load product preview paths for ${slug}: ${String(error)}`);
+  }
   }
   return paths;
 }
@@ -40,14 +43,16 @@ try {
   [siteSettings, navData, pageData] = await Promise.all([
     cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
   ]);
-} catch { /* fallbacks */ }
+} catch (error) {
+  throw new Error(`Unable to load preview data for ${slug}: ${String(error)}`);
+}
 
 const pageEditions = (pageData?.editions as any[] | undefined) || [];
 const editionData = pageEditions.find(
-  (e: any) => String(e.name || '').toLowerCase().replace(/\s+/g, '-') === edition
+  (e: any) => contentSlug(String(e.name || '')) === edition
 );
 const otherEditions = pageEditions.filter(
-  (e: any) => String(e.name || '').toLowerCase().replace(/\s+/g, '-') !== edition
+  (e: any) => contentSlug(String(e.name || '')) !== edition
 );
 
 const editionName = editionData ? String(editionData.name || edition) : edition;
@@ -102,7 +107,7 @@ const editionName = editionData ? String(editionData.name || edition) : edition;
             <p class='mb-3 text-xs font-medium uppercase tracking-wider text-fu-muted'>Other editions of {pageData?.title || slug}</p>
             <div class='flex flex-wrap gap-2'>
               {otherEditions.map((ed: any) => {
-                const edSlug = String(ed.name || '').toLowerCase().replace(/\s+/g, '-');
+                const edSlug = contentSlug(String(ed.name || ''));
                 return (
                   <a href={`/products/${slug}/preview/${edSlug}/`} class='inline-flex items-center rounded-full border border-fu-line bg-fu-card px-3 py-1.5 text-sm text-fu-ink transition-colors hover:border-fu-link/40 hover:text-fu-link'>
                     {ed.name}

@@ -7,7 +7,6 @@ const { threshold = 400 } = Astro.props;
 ---
 
 <button
-  client:idle
   type="button"
   x-data="{ visible: false, threshold: ${threshold} }"
   x-init="() => { const cb = () => { visible = window.scrollY > threshold }; window.addEventListener('scroll', cb, { passive: true }); }"

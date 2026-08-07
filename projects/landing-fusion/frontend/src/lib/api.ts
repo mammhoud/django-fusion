@@ -1,3 +1,5 @@
+import { staticPageData } from './content-translations';
+
 /**
  * Landing-fusion API client — fetches all data from the Wagtail/django-fusion backend.
  *
@@ -13,9 +15,13 @@
  *   GET /apis/pages/           — page list
  */
 
+/** Build-time content locale for static Astro output (override with PUBLIC_CONTENT_LANGUAGE=ar). */
+export const CONTENT_LANGUAGE: 'en' | 'ar' = import.meta.env.PUBLIC_CONTENT_LANGUAGE === 'ar' ? 'ar' : 'en';
+
 /** Base URL for the Django backend. Set PUBLIC_FUSION_API_URL env var to override. */
 export const API_BASE: string =
-  (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || 'http://localhost:8074';
+  (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) ||
+  'http://localhost:8074';
 
 async function fetchJSON<T>(path: string): Promise<T> {
   const url = `${API_BASE}${path}`;
@@ -91,6 +97,22 @@ export interface NavItem {
 
 export interface NavigationData {
   nav_items: NavItem[];
+  language?: 'en' | 'ar';
+  available_languages?: ('en' | 'ar')[];
+}
+
+export interface ContentLanguage {
+  code: string;
+  name: string;
+  native: string;
+  dir: 'ltr' | 'rtl';
+  flag?: string;
+}
+
+export interface ContentLanguagesData {
+  languages: ContentLanguage[];
+  coverage: Record<string, number>;
+  ui_languages?: string[];
 }
 
 export interface ContactMethod {
@@ -110,7 +132,7 @@ export interface ContactData {
 }
 
 export interface PageData {
-  id: number;
+  id?: number;
   slug: string;
   title: string;
   type: string;
@@ -179,6 +201,10 @@ export interface PageData {
   post_date?: string;
   read_time?: string;
   excerpt?: string;
+  language?: 'en' | 'ar';
+  available_languages?: ('en' | 'ar')[];
+  translation_source?: 'model' | 'fallback' | 'canonical';
+  translation_language?: 'en' | 'ar';
 }
 
 export interface PageListItem {
@@ -254,9 +280,81 @@ export function fetchSiteSettings(): Promise<SiteSettings> {
   return fetchJSON<SiteSettings>('/apis/site/settings/');
 }
 
+export async function fetchSiteSettingsWithFallback(): Promise<SiteSettings> {
+  try {
+    return await fetchSiteSettings();
+  } catch {
+    return {
+      site_name: 'Structa Cloud', site_tagline: 'Platforms that ship as finished HTML.',
+      logo_url: null, favicon_url: null, primary_color: '#0B57D0', accent_color: '#FFE14D',
+      meta_description: 'Platforms, AI tools, and open-source libraries shipped as finished HTML.',
+      meta_keywords: '', meta_author: 'Mahmoud Ezzat Moustafa', og_image_url: null, twitter_handle: '',
+      analytics_provider: '', google_tag_manager_id: '', google_analytics_id: '',
+      nav_show_home: true, nav_show_contact: true, nav_cta_label: 'Get Started', nav_cta_url: '/#cta',
+      footer_description: 'Platforms, AI tools, and open-source libraries.', footer_address: '', footer_phone: '',
+      footer_email: 'structa.cloud@gmail.com', footer_copyright: '© 2026 structa.cloud. All rights reserved.',
+      newsletter_prompt: '', google_play_url: '', apple_store_url: '', privacy_policy_url: '/privacy/',
+      terms_of_use_url: '', chat_enabled: false, chat_provider: '', chat_widget_id: '', social_links: [], footer_link_groups: [],
+    };
+  }
+}
+
 /** Fetch main navigation from published Wagtail pages. */
-export function fetchNavigation(): Promise<NavigationData> {
-  return fetchJSON<NavigationData>('/apis/navigation/');
+export function fetchNavigation(language: 'en' | 'ar' = CONTENT_LANGUAGE): Promise<NavigationData> {
+  const query = language === 'en' ? '' : '?lang=ar';
+  return fetchJSON<NavigationData>(`/apis/navigation/${query}`);
+}
+
+export async function fetchNavigationWithFallback(language: 'en' | 'ar' = CONTENT_LANGUAGE): Promise<NavigationData> {
+  try {
+    return await fetchNavigation(language);
+  } catch {
+    const arabic = language === 'ar';
+    return {
+      language,
+      available_languages: ['en', 'ar'],
+      nav_items: [
+        { label: arabic ? 'الرئيسية' : 'Home', href: '/' },
+        { label: arabic ? 'الخدمات' : 'Services', href: '/services/' },
+        { label: arabic ? 'المنتجات' : 'Products', href: '/products/' },
+        { label: arabic ? 'المدونة' : 'Blog', href: '/blog/' },
+        { label: arabic ? 'الأسعار' : 'Pricing', href: '/pricing/' },
+        { label: arabic ? 'من نحن' : 'About', href: '/about/' },
+        { label: arabic ? 'تواصل معنا' : 'Contact', href: '/contact/' },
+      ],
+    };
+  }
+}
+
+/** Fetch backend editorial language metadata and translation coverage. */
+export function fetchContentLanguages(): Promise<ContentLanguagesData> {
+  return fetchJSON<ContentLanguagesData>('/apis/content/languages/');
+}
+
+/**
+ * Fetch the backend language catalog with a bundled fallback.
+ *
+ * The ``LANG_META`` table in ``lib/translations.ts`` stays the offline/bundled
+ * source of truth (and the source for flags/native names of UI chrome); the
+ * Wagtail ``SiteLanguage`` catalog remains authoritative whenever reachable.
+ */
+export async function fetchContentLanguagesWithFallback(): Promise<ContentLanguagesData> {
+  try {
+    return await fetchContentLanguages();
+  } catch {
+    const { LANG_META, LANG_CODES } = await import('./translations');
+    return {
+      languages: LANG_CODES.map((code) => ({
+        code,
+        name: LANG_META[code].label,
+        native: LANG_META[code].native,
+        dir: LANG_META[code].dir,
+        flag: LANG_META[code].flag,
+      })),
+      coverage: { en: 0, ar: 0 },
+      ui_languages: LANG_CODES,
+    };
+  }
 }
 
 /** Fetch contact methods + form info from Wagtail ContactPage. */
@@ -270,8 +368,26 @@ export function fetchPricing(): Promise<PricingData> {
 }
 
 /** Fetch full page data for a single page by slug. */
-export function fetchPageData(slug: string): Promise<PageData> {
-  return fetchJSON<PageData>(`/apis/pages/${slug}/`);
+export function fetchPageData(slug: string, language: 'en' | 'ar' = CONTENT_LANGUAGE): Promise<PageData> {
+  const query = language === 'en' ? '' : '?lang=ar';
+  return fetchJSON<PageData>(`/apis/pages/${slug}/${query}`);
+}
+
+/**
+ * Fetch backend-owned content with a static bilingual fallback for Astro
+ * builds/offline previews. Wagtail remains authoritative whenever reachable.
+ */
+export async function fetchPageDataWithFallback(
+  slug: string,
+  language: 'en' | 'ar' = CONTENT_LANGUAGE,
+): Promise<PageData> {
+  try {
+    return await fetchPageData(slug, language);
+  } catch (error) {
+    const fallback = staticPageData(slug, language);
+    if (fallback) return fallback;
+    throw error;
+  }
 }
 
 /** Fetch list of all published pages. */
@@ -298,8 +414,9 @@ async function fetchCached<T>(key: string, fetcher: () => Promise<T>): Promise<T
 }
 
 export const cachedAssets = () => fetchCached('assets', fetchAssets);
-export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettings);
-export const cachedNavigation = () => fetchCached('navigation', fetchNavigation);
+export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettingsWithFallback);
+export const cachedNavigation = (language: 'en' | 'ar' = CONTENT_LANGUAGE) => fetchCached(`navigation:${language}`, () => fetchNavigationWithFallback(language));
 export const cachedContact = () => fetchCached('contact', fetchContact);
 export const cachedPricing = () => fetchCached('pricing', fetchPricing);
-export const cachedPageData = (slug: string) => fetchCached(`page:${slug}`, () => fetchPageData(slug));
+export const cachedPageData = (slug: string, language: 'en' | 'ar' = CONTENT_LANGUAGE) =>
+  fetchCached(`page:${slug}:${language}`, () => fetchPageDataWithFallback(slug, language));

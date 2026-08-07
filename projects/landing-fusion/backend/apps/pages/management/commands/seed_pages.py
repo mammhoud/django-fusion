@@ -34,6 +34,62 @@ from apps.pages.models import (
     PromptPage,
     TeamPage,
 )
+from apps.content.models.translations import PageTranslation
+
+# Bilingual overlays are deliberately partial: untranslated fields continue to
+# use the canonical Wagtail content through the API fallback contract.
+DEFAULT_PAGE_TRANSLATIONS = {
+    "home": {
+        "title": "الرئيسية",
+        "search_description": "منتجات رقمية هادئة وسريعة للفرق التي تخدم أسواق الخليج والمشرق وشمال أفريقيا.",
+        "content": {
+            "hero": {"title": "منتجات رقمية تنمو مع السوق", "subtitle": "نساعد الفرق على إطلاق تجارب عربية وإنجليزية واضحة، سريعة، وقابلة للتوسع."},
+            "cta": {"title": "ابدأ من احتياج حقيقي", "subtitle": "نحوّل الفكرة أو النظام الحالي إلى تجربة عملية يمكن لفريقك امتلاكها."},
+        },
+    },
+    "about": {
+        "title": "من نحن",
+        "search_description": "شريك منتج للفرق التي تبني خدمات رقمية في أسواق الخليج والمشرق وشمال أفريقيا.",
+        "body": "<p>Structa Cloud استوديو منتجات يساعد الفرق على تحويل الأفكار والأنظمة القديمة إلى خدمات رقمية واضحة وقابلة للاستخدام.</p><p>نصمم تجارب عربية وإنجليزية، ونبدأ من رحلة العميل قبل اختيار التقنية. النتيجة منصة سريعة يستطيع فريقك إدارتها بعد الإطلاق.</p>",
+        "content": {"hero": {"title": "شريكك في المنتج الرقمي", "subtitle": "نربط الاستراتيجية والتصميم والهندسة في مسار واحد من الفكرة إلى السوق."}, "cta": {"title": "لنصمم الخطوة التالية", "subtitle": "أخبرنا عن السوق والعميل والقيود، وسنقترح مساراً عملياً."}},
+    },
+    "services": {
+        "title": "الخدمات",
+        "body": "<p>نبني مواقع ومنتجات تساعد فرق التسويق والعمليات على خدمة العملاء في المنطقة بثقة.</p>",
+        "content": {"hero": {"title": "من الفكرة إلى السوق", "subtitle": "نصمم ونبني ونحسن تجارب رقمية سريعة، ثنائية اللغة، ومهيأة للنمو."}},
+    },
+    "products": {
+        "title": "المنتجات",
+        "body": "<p>منتجات عملية لنقاط البيع والتعلم والمحتوى والملفات المهنية، مصممة لتناسب إيقاع الفرق والأسواق المتنوعة.</p>",
+        "content": {"hero": {"title": "منتجات جاهزة للنمو", "subtitle": "أدوات ومنصات تساعد فريقك على البيع والتعلم والنشر وخدمة العملاء."}},
+    },
+    "features": {
+        "title": "الميزات",
+        "body": "<p>نوازن بين سرعة التجربة ومرونة الإدارة: صفحات خفيفة، محتوى ثنائي اللغة، وتفاعلات صغيرة لا تعيق العميل.</p>",
+        "content": {"hero": {"title": "سريع من أول زيارة", "subtitle": "نظام محتوى وتجربة مصمم للأداء، والوضوح، والعمل عبر العربية والإنجليزية."}},
+    },
+    "blog": {"title": "المدونة", "content": {"hero": {"title": "أفكار من واقع الإطلاق", "subtitle": "ملاحظات عملية عن المنتجات الرقمية، الأداء، والمحتوى الذي يخدم أسواق المنطقة."}}},
+    "pricing": {"title": "الأسعار", "content": {"hero": {"title": "اختر المنتج، ثم الإصدار", "subtitle": "ابدأ مجاناً وتوسع عندما ينمو مشروعك."}}},
+    "contact": {"title": "تواصل معنا", "content": {"hero": {"title": "لنتحدث", "subtitle": "أرسل رسالتك وسنعود إليك قريباً."}}},
+    "faq": {"title": "الأسئلة الشائعة", "content": {"hero": {"title": "الأسئلة الشائعة", "subtitle": "إجابات واضحة حول المكدس والمنتجات والإصدارات."}}},
+    "privacy": {"title": "الخصوصية", "content": {"hero": {"title": "سياسة الخصوصية", "subtitle": "نحافظ على جمع البيانات بالحد الأدنى."}}},
+    "brand": {"title": "الهوية", "content": {"hero": {"title": "عائلة واحدة، علامات متعددة", "subtitle": "نظام الهوية البصري لمنتجات Structa Cloud."}}},
+}
+
+# Seeded language catalog — mirrors the Astro ``LANG_META`` table in
+# frontend/src/lib/translations.ts. Each row becomes a ``SiteLanguage``
+# Wagtail snippet (admin-editable), and ``GET /apis/content/languages/``
+# serves the active rows to the frontend switcher. Keep this list in sync
+# with ``LANG_META`` and Django's ``LANGUAGES`` setting.
+DEFAULT_SITE_LANGUAGES = [
+    {"code": "en", "name": "English", "native_name": "English", "direction": "ltr", "flag": "🇬🇧", "is_active": True, "sort_order": 0},
+    {"code": "ar", "name": "Arabic", "native_name": "العربية", "direction": "rtl", "flag": "🇸🇦", "is_active": True, "sort_order": 10},
+    {"code": "sv", "name": "Swedish", "native_name": "Svenska", "direction": "ltr", "flag": "🇸🇪", "is_active": True, "sort_order": 20},
+    {"code": "fr", "name": "French", "native_name": "Français", "direction": "ltr", "flag": "🇫🇷", "is_active": True, "sort_order": 30},
+    {"code": "de", "name": "German", "native_name": "Deutsch", "direction": "ltr", "flag": "🇩🇪", "is_active": True, "sort_order": 40},
+    {"code": "es", "name": "Spanish", "native_name": "Español", "direction": "ltr", "flag": "🇪🇸", "is_active": True, "sort_order": 50},
+    {"code": "pt", "name": "Portuguese", "native_name": "Português", "direction": "ltr", "flag": "🇧🇷", "is_active": True, "sort_order": 60},
+]
 
 # Services the project offers — the “feature” grid on the Services page.
 # Three service lines: website building, product & project development, and
@@ -43,34 +99,34 @@ DEFAULT_SERVICES_SECTIONS = {
         (
             "services",
             {
-                "title": "From marketing sites to full products",
+                "title": "Build for the market you serve",
                 "description": (
-                    "Three service lines, one promise: finished, server-rendered "
-                    "deliverables you can put in front of users. Websites, custom "
-                    "products, and enhancements built on the AHA stack."
+                    "A focused path from customer need to a dependable digital service. "
+                    "We help teams across the Gulf, Levant, and North Africa launch "
+                    "clear, bilingual experiences without unnecessary complexity."
                 ),
                 "services": [
                     {
                         "icon": "M4 5h16v14H4z M4 12h16",
-                        "title": "Website building",
-                        "description": "Marketing sites, landing pages and content-driven websites. Wagtail StreamFields composed into fast, server-rendered HTML.",
-                        "deliverables": ["Wagtail page tree + StreamField sections", "Astro SSG shell, zero-JS pages", "django-fusion component rendering", "Hosting, domains + HTTPS setup"],
+                        "title": "Market-ready websites",
+                        "description": "Clear Arabic and English journeys for campaigns, services, and products. Editors can update content without waiting for a release.",
+                        "deliverables": ["Bilingual page structure", "Editorial sections your team can own", "Fast first visits on mobile networks", "Hosting, domains + HTTPS setup"],
                         "cta_label": "See the stack",
                         "cta_href": "/features/",
                     },
                     {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
-                        "title": "Product & project development",
-                        "description": "Custom software built as a product: POS systems, learning platforms, AI tools and internal tooling. Desktop or web, from brief to deployed.",
-                        "deliverables": ["Desktop apps with Tauri 2 + Rust", "Web platforms on Django + Wagtail", "REST / fragment APIs + HTMX", "Cloud deployment + CI/CD"],
+                        "title": "Digital product delivery",
+                        "description": "Customer portals, learning services, commerce tools, and internal workflows shaped around how your team actually operates.",
+                        "deliverables": ["Journey mapping and product direction", "Web or desktop delivery", "Arabic and English-ready interfaces", "Cloud deployment and handover"],
                         "cta_label": "See our products",
                         "cta_href": "/products/",
                     },
                     {
                         "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
-                        "title": "Enhancements & extensions",
-                        "description": "Upgrade an existing site: new sections and blocks, performance tuning, content migrations, and ongoing CMS support.",
-                        "deliverables": ["New StreamField blocks + sections", "Performance audit + Core Web Vitals", "Content migration to Wagtail", "CMS training + maintenance"],
+                        "title": "Improve what already works",
+                        "description": "Make an existing service easier to use and faster to operate, without forcing a risky rewrite.",
+                        "deliverables": ["Conversion and content review", "Performance budget and Core Web Vitals", "Safe content migration", "Team training and ongoing support"],
                         "cta_label": "Contact us",
                         "cta_href": "/contact/",
                     },
@@ -82,31 +138,31 @@ DEFAULT_SERVICES_SECTIONS = {
         (
             "process",
             {
-                "title": "From brief to shipped, in four steps",
+                "title": "A measured path to launch",
                 "description": (
-                    "No big-bang rewrite. We ship incrementally, and each step "
-                    "delivers working HTML you can put in front of users."
+                    "We keep the work visible and incremental. Each phase leaves your team "
+                    "with a clearer decision, a working slice, or a useful handoff."
                 ),
                 "steps": [
                     {
                         "title": "Discover",
-                        "description": "We map the content, the routes, and the one thing each page must do.",
-                        "deliverable": "Content + route map",
+                        "description": "We map the customer, the offer, the languages, and the moments that need to work first.",
+                        "deliverable": "Customer and route map",
                     },
                     {
                         "title": "Design",
-                        "description": "Tokens first: type, color, spacing, then the page as a component tree.",
-                        "deliverable": "Fusion token set",
+                        "description": "We turn the direction into a calm interface with clear content hierarchy and a flexible visual system.",
+                        "deliverable": "Approved experience direction",
                     },
                     {
                         "title": "Build",
-                        "description": "Wagtail models + block templates render finished HTML on day one.",
-                        "deliverable": "Live server-rendered pages",
+                        "description": "We build the first useful slice, connect content, and test the critical path on real devices.",
+                        "deliverable": "Working product slice",
                     },
                     {
                         "title": "Ship & grow",
-                        "description": "Deploy behind the proxy, then add fragments, analytics and content editing.",
-                        "deliverable": "Production site + CMS",
+                        "description": "We launch with a performance budget, an editor handoff, and a simple plan for the next market.",
+                        "deliverable": "Live service + growth plan",
                     },
                 ],
             },
@@ -121,52 +177,52 @@ DEFAULT_SERVICES_SECTIONS = {
 # to live /blog/<slug>/ detail pages — slugs here must match those pages.
 DEFAULT_BLOG_POSTS = [
     {
-        "title": "Why we ship landing pages as documents",
+        "title": "A fast first visit is a product decision",
         "slug": "why-landing-pages-as-documents",
-        "category": "Architecture",
+        "category": "Product",
         "date": "2026-07-28",
         "read_time": "6 min read",
-        "excerpt": "Every page is finished HTML in one response. No SPA shell, no hydration waterfall, just the web as it should be.",
+        "excerpt": "Performance is part of trust. A clear page that arrives quickly gives customers more confidence before the first conversation.",
     },
     {
-        "title": "HTMX fragments vs. JSON APIs",
+        "title": "Designing bilingual journeys without duplication",
         "slug": "htmx-fragments-vs-json-apis",
-        "category": "HTMX",
+        "category": "Content",
         "date": "2026-07-14",
         "read_time": "5 min read",
-        "excerpt": "Streaming HTML from Django removes the decoder, the API contract, and half the frontend state.",
+        "excerpt": "A practical way to keep Arabic and English content aligned while letting each language sound natural.",
     },
     {
-        "title": "Wagtail StreamField for marketing sites",
+        "title": "Give content teams a useful control room",
         "slug": "wagtail-streamfield-marketing",
-        "category": "Wagtail",
+        "category": "Operations",
         "date": "2026-06-30",
         "read_time": "8 min read",
-        "excerpt": "Section blocks give editors composition superpowers without handing them a page builder.",
+        "excerpt": "Good editorial structure helps marketing teams move quickly without turning every page into a design negotiation.",
     },
     {
-        "title": "Alpine.js is all the reactivity a landing page needs",
+        "title": "Small interactions, better focus",
         "slug": "alpine-reactivity-landing",
-        "category": "Frontend",
+        "category": "Experience",
         "date": "2026-06-12",
         "read_time": "4 min read",
-        "excerpt": "Accordions, toggles, counters, a few x-data attributes instead of a framework.",
+        "excerpt": "Use interaction where it clarifies a decision, not where it adds noise to a page that should simply help someone move forward.",
     },
     {
-        "title": "A monorepo that ships six products",
+        "title": "Build a system your team can inherit",
         "slug": "monorepo-six-products",
-        "category": "Monorepo",
+        "category": "Delivery",
         "date": "2026-05-20",
         "read_time": "7 min read",
-        "excerpt": "Shared configs, assets and libraries across Django sites, an Astro frontend, and a desktop POS.",
+        "excerpt": "The best platform handoff is not a technical monument. It is a set of understandable decisions that people can safely extend.",
     },
     {
-        "title": "Server time, streamed: a tiny HTMX fragment",
+        "title": "A practical performance budget for launch",
         "slug": "server-time-streamed-htmx",
-        "category": "HTMX",
+        "category": "Performance",
         "date": "2026-05-04",
         "read_time": "3 min read",
-        "excerpt": "The smallest useful fragment endpoint, and why /fragment/ping/ proves the whole pipeline.",
+        "excerpt": "Reserve space for the content that matters, keep the critical path small, and measure the experience on real regional networks.",
     },
 ]
 
@@ -176,10 +232,10 @@ DEFAULT_BLOG_SECTION = {
         (
             "blog",
             {
-                "title": "From the blog",
+                "title": "Ideas for the next release",
                 "description": (
-                    "Notes on the AHA stack, Wagtail, HTMX, and shipping "
-                    "server-rendered sites that stay fast."
+                    "Practical notes on launching digital services, keeping first visits fast, "
+                    "and giving content teams control after handover."
                 ),
                 "posts": DEFAULT_BLOG_POSTS,
             },
@@ -858,18 +914,18 @@ DEFAULT_HOME_CONTENT = {
         (
             "hero",
             {
-                "badge": "structa.cloud · full-stack engineering",
+                "badge": "structa.cloud · digital product partner",
                 # NB: the Astro Hero component renders ``title`` + ``accent``
                 # separately, so the accent word ("documents") is NOT part of
                 # the stored title. Keep titles free of the accent phrase.
-                "title": "Platforms that ship as",
+                "title": "Digital products for",
                 "subtitle": (
-                    "Structa Cloud builds server-rendered web platforms, AI tools, "
-                    "and open-source libraries. Every page ships as finished HTML."
+                    "We help teams serving the Gulf, Levant, and North Africa launch clear, "
+                    "bilingual services that feel fast and stay easy to operate."
                 ),
-                "primary_cta": {"label": "Explore the stack", "href": "/products", "style": "secondary"},
-                "secondary_cta": {"label": "About the engineer", "href": "/about", "style": "white"},
-                "trusted_by": "Trusted by teams building on Django + Wagtail",
+                "primary_cta": {"label": "Explore products", "href": "/products", "style": "secondary"},
+                "secondary_cta": {"label": "Work with us", "href": "/contact", "style": "white"},
+                "trusted_by": "Arabic-ready · English-ready · built for real teams",
             },
         )
     ],
@@ -877,8 +933,8 @@ DEFAULT_HOME_CONTENT = {
         (
             "cta",
             {
-                "title": "Most of our builds are open source",
-                "subtitle": "Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.",
+                "title": "A useful first release beats a noisy roadmap",
+                "subtitle": "We start with the customer journey, launch a focused slice, and leave your team with the content and tools to keep improving it.",
                 "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
                 "secondary_cta": {"label": "Read the Docs", "href": "/about", "style": "outline"},
             },
@@ -895,7 +951,7 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "stats",
             {
-                "title": "Numbers that speak for themselves",
+                "title": "Built for steady growth",
                 "stats": [
                     {"value": "15", "suffix": "+", "label": "Open-source repos"},
                     {"value": "18", "suffix": "", "label": "Blog posts"},
@@ -909,41 +965,41 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "features",
             {
-                "title": "Everything you need to launch",
+                "title": "The details that make a service usable",
                 "description": (
-                    "A complete landing and marketing stack, ported from the heavy "
-                    "Next.js SPA to a lightweight AHA architecture."
+                    "A calm product foundation for regional teams: clear content, fast first visits, "
+                    "and an interface that stays understandable as the service grows."
                 ),
                 "features": [
                     {
                         "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
-                        "title": "Django + Wagtail",
-                        "description": "Content managed in Wagtail 7.4 with StreamField blocks. Editors compose, django-fusion renders server-side.",
+                        "title": "Your team owns the content",
+                        "description": "Structured content lets marketing and operations teams update Arabic and English pages without waiting for engineering.",
                     },
                     {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
-                        "title": "HTMX Fragment Rendering",
-                        "description": "Dynamic updates stream from Django as HTML fragments, with no JSON API layer or decoder to maintain.",
+                        "title": "A fast first visit",
+                        "description": "The initial document arrives ready to read. Small interactive areas load only when they add value to the journey.",
                     },
                     {
                         "icon": "M4 5h16v14H4z M4 12h16",
-                        "title": "Astro + Alpine.js",
-                        "description": "Astro SSG for zero-JS landing pages. Alpine.js for micro-interactions only where the page needs them.",
+                        "title": "Arabic and English by design",
+                        "description": "Language direction, navigation, content fallbacks, and editorial fields are considered from the first page, not added at the end.",
                     },
                     {
                         "icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87",
-                        "title": "Monorepo Architecture",
-                        "description": "Six projects, one repository, one CI pipeline. Shared configs, assets, and components across all sites.",
+                        "title": "A system that can be handed over",
+                        "description": "Reusable blocks, clear controls, and practical documentation keep the service maintainable after launch.",
                     },
                     {
                         "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
-                        "title": "AI-Powered Tools",
-                        "description": "ceptor-ai MCP server for agent communication, code generation, and prompt-to-design conversion.",
+                        "title": "Automation with a human check",
+                        "description": "AI can accelerate research, support, and content workflows while your team keeps the final say.",
                     },
                     {
                         "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
-                        "title": "Open Source First",
-                        "description": "All core libraries are public on GitHub. django-fusion and ceptor-ai are open for contribution.",
+                        "title": "A performance budget, not a promise",
+                        "description": "We reserve room for content, images, and future features, then check Core Web Vitals on the devices and networks your customers use.",
                     },
                 ],
             },
@@ -953,8 +1009,8 @@ DEFAULT_ABOUT_SECTIONS = {
         (
             "testimonials",
             {
-                "title": "Trusted by developers",
-                "description": "What teams say about building with django-fusion and the AHA stack.",
+                "title": "Designed around the people using it",
+                "description": "The strongest product decisions come from clear journeys, useful content, and teams who can keep the experience moving.",
                 "testimonials": [
                     {
                         "quote": "The switch from a heavy React SPA to HTMX fragments cut our page load time in half. django-fusion's component system made the migration straightforward.",
@@ -1279,18 +1335,23 @@ class Command(BaseCommand):
                 self.stdout.write(f"Removing default site: {site.hostname}")
                 site.delete()
 
-        # Remove Wagtail's default "Welcome" page (created by migrations) so
-        # this command can own the site root and the '/' route.
-        for child in root.get_children():
-            if child.specific_class not in landing_models:
-                self.stdout.write(f"Removing default page: {child.title} (slug={child.slug})")
-                child.delete()
-
         # ── Home page (root child) ──────────────────────────────────────
+        # Create the owned page before deleting Wagtail's migration-time
+        # "Welcome" sibling. Older treebeard versions calculate a new
+        # sibling path from the current last child and can return None when
+        # the root has just been emptied in a fresh TestCase database.
         home, created = self._get_or_create_child(
             root, HomePage, title="Home", slug="home", **DEFAULT_HOME_CONTENT
         )
         self._created(created, "home")
+
+        # Remove Wagtail's default "Welcome" page and any other non-landing
+        # root child now that the root has a valid landing sibling. This keeps
+        # the command idempotent while making fresh test databases reliable.
+        for child in root.get_children():
+            if child.pk != home.pk and child.specific_class not in landing_models:
+                self.stdout.write(f"Removing default page: {child.title} (slug={child.slug})")
+                child.delete()
 
         site, _ = Site.objects.get_or_create(
             hostname="localhost",
@@ -1330,34 +1391,25 @@ class Command(BaseCommand):
         about, created = self._get_or_create_child(
             home,
             AboutPage,
-            title="About Us",
-            slug="about",
-            hero=[
-                (
-                    "hero",
-                    {
-                        # "Mahmoud Ezzat" + Astro accent "Moustafa" → clean H1.
-                        "title": "Mahmoud Ezzat",
-                        "subtitle": "The story behind Structa Cloud and the AHA stack.",
-                        "primary_cta": {"label": "Our Features", "href": "/#features", "style": "secondary"},
-                        "secondary_cta": {"label": "Get Started", "href": "/#cta", "style": "white"},
-                    },
-                )
-            ],
-            body=(
-                "<p>Structa Cloud started with a simple belief: marketing sites "
-                "should be fast, secure, and easy to maintain.</p>"
-                "<p>We migrated our own landing pages from a heavy Next.js SPA "
-                "to the AHA stack: Astro for server rendering, HTMX for dynamic "
-                "updates, and Alpine.js for client-side polish.</p>"
-                "<p>The result: sub-second loads, perfect SEO, and a codebase "
-                "that a small team can own.</p>"
-                "<p>Structa Cloud is built by a small team that believes the web "
-                "should be fast by default. Our mission is to give every team a "
-                "landing stack that ships as plain HTML, with no heavy SPA or "
-                "maintenance treadmill. We value performance, simplicity, and "
-                "boring technology that keeps working.</p>"
-            ),
+        title="About Us",
+        slug="about",
+        hero=[
+            (
+                "hero",
+                {
+                    "title": "A clearer path to market",
+                    "subtitle": "We connect strategy, design, and delivery for teams building services in Arabic and English.",
+                    "primary_cta": {"label": "See how we work", "href": "/services/", "style": "secondary"},
+                    "secondary_cta": {"label": "Start a conversation", "href": "/contact/", "style": "white"},
+                },
+            )
+        ],
+        body=(
+            "<p>Structa Cloud helps teams across the Gulf, Levant, and North Africa turn important ideas into useful digital services.</p>"
+            "<p>We start with the customer journey, the content, and the operating reality of your team. Then we choose the simplest technology that can carry the experience well.</p>"
+            "<p>Arabic and English content, quick first visits, and clear editorial controls are part of the product brief from the beginning.</p>"
+            "<p>The handover matters as much as the launch. Your team gets a system it can understand, update, and improve without a permanent dependency on a development queue.</p>"
+        ),
             # About tells the story — the dedicated /pricing/ page carries the
             # per-product price sheets, so no generic pricing stack here.
             pricing=[],
@@ -1388,24 +1440,19 @@ class Command(BaseCommand):
                 (
                     "hero",
                     {
-                        "title": "Services",
-                        "subtitle": "Website building, product development, and enhancements, all shipped as fast, server-rendered HTML.",
-                        "primary_cta": {"label": "Our Products", "href": "/products/", "style": "secondary"},
-                        "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "white"},
-                        "trusted_by": "From brief to shipped in four steps, each one delivering working HTML",
+                "title": "From idea to market",
+                "subtitle": "Focused digital services for teams that need a clear customer journey and a dependable launch.",
+                "primary_cta": {"label": "Explore products", "href": "/products/", "style": "secondary"},
+                "secondary_cta": {"label": "Start a conversation", "href": "/contact/", "style": "white"},
+                "trusted_by": "Arabic-ready · English-ready · built for real teams",
                     },
                 )
             ],
-            body=(
-                "<p>Three service lines: website building, product and project "
-                "software development, and enhancements for sites that already "
-                "exist.</p>"
-                "<p>Every engagement is built on the AHA stack: Astro, HTMX "
-                "and Alpine.js, so the deliverable is always fast, "
-                "server-rendered HTML that editors can manage in Wagtail.</p>"
-                "<p>Ongoing support covers hosting, CMS content editing, and "
-                "performance tuning.</p>"
-            ),
+    body=(
+        "<p>We shape three kinds of work: market-ready websites, digital products, and focused improvements to services that already have customers.</p>"
+        "<p>Every engagement balances brand, content, accessibility, and the realities of mobile networks across the region.</p>"
+        "<p>We leave teams with a performance budget, bilingual content controls, and a practical handover instead of a black box.</p>"
+    ),
             **DEFAULT_SERVICES_SECTIONS,
             cta=DEFAULT_HOME_CONTENT["cta"],
         )
@@ -1548,10 +1595,10 @@ class Command(BaseCommand):
                 (
                     "hero",
                     {
-                        "title": "The Blog",
-                        "subtitle": "Notes on the AHA stack: Astro, HTMX, Alpine, and shipping server-rendered sites.",
-                        "primary_cta": {"label": "Explore Products", "href": "/products/", "style": "secondary"},
-                        "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "white"},
+                "title": "Ideas from real launches",
+                "subtitle": "Practical notes on digital services, performance, and content for teams serving the region.",
+                "primary_cta": {"label": "Explore products", "href": "/products/", "style": "secondary"},
+                "secondary_cta": {"label": "Start a conversation", "href": "/contact/", "style": "white"},
                     },
                 )
             ],
@@ -1836,7 +1883,73 @@ class Command(BaseCommand):
         except Exception:
             self.stdout.write(self.style.WARNING("Social links seed skipped."))
 
+        self._seed_site_languages()
+        self._seed_page_translations()
         self.stdout.write(self.style.SUCCESS("✅ Landing pages seeded."))
+
+    def _seed_site_languages(self):
+        """Create/update the seeded ``SiteLanguage`` catalog idempotently.
+
+        Existing rows keep their editor changes unless ``--force`` is passed
+        (then active/order are refreshed). New languages added to
+        ``DEFAULT_SITE_LANGUAGES`` are created; languages removed from the
+        default list are left untouched (editors may re-enable them later).
+        """
+        from apps.content.models.languages import SiteLanguage
+
+        try:
+            for entry in DEFAULT_SITE_LANGUAGES:
+                code = entry["code"]
+                language, created = SiteLanguage.objects.get_or_create(
+                    code=code,
+                    defaults=entry,
+                )
+                if not created and self.force:
+                    changed = False
+                    for field in ("name", "native_name", "direction", "flag"):
+                        if getattr(language, field) != entry[field]:
+                            setattr(language, field, entry[field])
+                            changed = True
+                    if language.is_active != entry["is_active"] or language.sort_order != entry["sort_order"]:
+                        language.is_active = entry["is_active"]
+                        language.sort_order = entry["sort_order"]
+                        changed = True
+                    if changed:
+                        language.save(update_fields=["name", "native_name", "direction", "flag", "is_active", "sort_order"])
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"Seeded language {code} ({entry['name']})."))
+        except Exception:
+            self.stdout.write(self.style.WARNING("Site language seed skipped."))
+
+    def _seed_page_translations(self):
+        """Create/update the seeded English/Arabic editorial overlays."""
+        for slug, values in DEFAULT_PAGE_TRANSLATIONS.items():
+            landing_root = HomePage.objects.first()
+            page = (
+                landing_root.get_descendants(inclusive=True).live().filter(slug=slug).first()
+                if landing_root is not None
+                else Page.objects.live().filter(slug=slug).first()
+            )
+            if page is None:
+                continue
+            for language in ("en", "ar"):
+                # English records are useful as an explicit editorial source;
+                # they remain empty until an editor adds an override.
+                payload = values if language == "ar" else {}
+                translation, created = PageTranslation.objects.get_or_create(
+                    page=page,
+                    language=language,
+                    defaults=payload,
+                )
+                if not created and payload:
+                    changed = False
+                    for field in ("title", "search_description", "body", "content"):
+                        seeded = payload.get(field, {} if field == "content" else "")
+                        if self.force or not getattr(translation, field):
+                            setattr(translation, field, seeded)
+                            changed = True
+                    if changed:
+                        translation.save(update_fields=["title", "search_description", "body", "content", "updated_at"])
 
     # ── Helpers ─────────────────────────────────────────────────────
     def _get_or_create_child(self, parent, model, **fields):
@@ -1852,12 +1965,31 @@ class Command(BaseCommand):
         later migration (e.g. Products upgraded to a full document).
         """
         slug = fields["slug"]
-        existing = model.objects.filter(slug=slug, depth=parent.depth + 1).first()
-        if existing is not None:
-            self._backfill_empty_fields(existing, fields)
-            return existing, False
+        # Scope the lookup to this exact parent. A depth-only lookup can find
+        # an identically-slugged page elsewhere in a fresh test tree, then
+        # still attempt to add a duplicate child under the current parent.
+        existing_node = parent.get_children().filter(slug=slug).first()
+        if existing_node is not None:
+            existing = existing_node.specific
+            if not isinstance(existing, model):
+                # Wagtail's migration fixture can leave a generic Page at the
+                # exact slug we now own. Keep it temporarily as a Treebeard
+                # sibling while allocating the concrete landing node; deleting
+                # the only child first makes older Treebeard releases call
+                # _inc_path() on None. The cleanup below removes this renamed
+                # placeholder after the concrete page exists.
+                placeholder_slug = f"{slug}-placeholder"
+                existing_node.slug = placeholder_slug
+                existing_node.save(update_fields=["slug"])
+            else:
+                self._backfill_empty_fields(existing, fields)
+                return existing, False
         page = model(**fields)
         parent.add_child(instance=page)
+        # If a generic placeholder occupied this exact parent/slug, remove it
+        # after the concrete sibling has been allocated safely.
+        if existing_node is not None and not isinstance(existing_node.specific, model):
+            existing_node.delete()
         return page, True
 
     def _backfill_empty_fields(self, existing, fields):

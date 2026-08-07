@@ -1,4 +1,22 @@
-<header class="site-header" x-data="{ open: false, scrolled: false }" :class="scrolled && 'site-header--scrolled'" @fusion:header-scrolled.window="scrolled = $event.detail.scrolled">
+<header class="site-header" x-data="{ open: false, scrolled: false, authed: false, user: null, authLoading: true, userMenu: false,
+  async checkAuth() {
+    try {
+      const response = await fetch('/apis/auth/status/', { credentials: 'include', headers: { Accept: 'application/json' } });
+      if (response.ok) {
+        const data = await response.json();
+        this.authed = Boolean(data.authenticated);
+        this.user = data.user;
+      }
+    } catch (e) {}
+    finally { this.authLoading = false; }
+  },
+  async logout() {
+    try { await fetch('/api/auth/browser/v1/auth/session', { method: 'DELETE', credentials: 'include', headers: { Accept: 'application/json' } }); } catch (e) {}
+    window.location.href = '/';
+  },
+  userInitial() { return this.user?.display?.[0]?.toUpperCase() || '?'; },
+  init() { this.checkAuth(); }
+}" :class="scrolled && 'site-header--scrolled'" @fusion:header-scrolled.window="scrolled = $event.detail.scrolled" @keydown.escape.window="userMenu = false">
   <div class="container-fusion" style="display:flex;height:4rem;align-items:center;justify-content:space-between;">
     <a href="/" style="display:flex;align-items:center;gap:.65rem;font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:hsl(var(--fu-ink));text-decoration:none;">
       <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -33,9 +51,89 @@
       @media (min-width: 768px) { nav[aria-label="Main"] { display: flex !important; } }
     </style>
 
-    <div style="display:none;align-items:center;gap:.75rem;">
-      <button type="button" class="btn btn-secondary" style="padding:.5rem 1rem;" @click="$dispatch('fusion:open-login')">Log In</button>
-      <a href="/#cta" class="btn btn-primary" style="padding:.5rem 1rem;">Get Started</a>
+    <div
+      x-data="{
+        open: false,
+        active: 'en',
+        languages: [
+          { code: 'en', native: 'English', flag: '🇬🇧', dir: 'ltr' },
+          { code: 'ar', native: 'العربية', flag: '🇸🇦', dir: 'rtl' },
+          { code: 'sv', native: 'Svenska', flag: '🇸🇪', dir: 'ltr' },
+          { code: 'fr', native: 'Français', flag: '🇫🇷', dir: 'ltr' },
+          { code: 'de', native: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
+          { code: 'es', native: 'Español', flag: '🇪🇸', dir: 'ltr' },
+          { code: 'pt', native: 'Português', flag: '🇧🇷', dir: 'ltr' }
+        ],
+        init() {
+          let stored = null;
+          try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
+          const browser = (navigator.language || '').split('-')[0];
+          const initial = [stored, browser, 'en'].find((code) => this.languages.some((language) => language.code === code));
+          if (initial) this.apply(initial, true);
+        },
+        apply(code, persist = true) {
+          const language = this.languages.find((item) => item.code === code);
+          if (!language) return;
+          document.documentElement.lang = language.code;
+          document.documentElement.dir = language.dir;
+          if (persist) {
+            try {
+              localStorage.setItem('fusion-lang', language.code);
+              document.cookie = 'django_language=' + encodeURIComponent(language.code) + '; path=/; max-age=31536000; SameSite=Lax';
+            } catch (e) {}
+          }
+          this.active = language.code;
+          this.open = false;
+          window.dispatchEvent(new CustomEvent('fusion:lang-changed', { detail: { code: language.code } }));
+        },
+        current() { return this.languages.find((item) => item.code === this.active) || this.languages[0]; }
+      }"
+      @keydown.escape.window="open = false"
+      @click.outside="open = false"
+      style="display:none;align-items:center;gap:.75rem;"
+    >
+      <div class="relative">
+        <button type="button" class="btn btn-secondary" style="display:flex;align-items:center;gap:.35rem;padding:.5rem .7rem;font-size:.8rem;" @click="open = !open" aria-haspopup="listbox" :aria-expanded="open.toString()" aria-label="Change language">
+          <span aria-hidden="true" x-text="current().flag"></span>
+          <span style="font-family:'JetBrains Mono',monospace;text-transform:uppercase;" x-text="active"></span>
+          <span aria-hidden="true">⌄</span>
+        </button>
+        <div x-show="open" x-cloak x-transition class="absolute right-0 z-20 mt-2" style="width:12rem;border:1px solid hsl(var(--fu-border));border-radius:.75rem;background:hsl(var(--fu-card));padding:.35rem;box-shadow:0 12px 30px rgba(0,0,0,.16);" role="listbox" aria-label="Select language">
+          <template x-for="language in languages" :key="language.code">
+            <button type="button" role="option" class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm" :class="active === language.code ? 'text-fu-link font-semibold' : 'text-fu-ink'" :aria-selected="(active === language.code).toString()" @click="apply(language.code)">
+              <span aria-hidden="true" x-text="language.flag"></span>
+              <span x-text="language.native"></span>
+              <span x-show="active === language.code" class="ml-auto" aria-hidden="true">✓</span>
+            </button>
+          </template>
+        </div>
+      </div>
+      <template x-if="!authLoading && !authed">
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <button type="button" class="btn btn-secondary" style="padding:.5rem 1rem;" @click="$dispatch('fusion:open-login')"><span data-fusion-i18n="nav_login">Log In</span></button>
+          <a href="/#cta" class="btn btn-primary" style="padding:.5rem 1rem;"><span data-fusion-i18n="nav_get_started">Get Started</span></a>
+        </div>
+      </template>
+      <template x-if="!authLoading && authed">
+        <div class="relative" style="display:flex;align-items:center;">
+          <button type="button" class="btn btn-secondary" style="display:flex;align-items:center;gap:.5rem;padding:.4rem .65rem;" @click="userMenu = !userMenu" aria-haspopup="true" :aria-expanded="userMenu.toString()">
+            <span style="display:inline-flex;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;border-radius:9999px;background:hsl(var(--fu-link));color:#fff;font-size:.75rem;font-weight:700;" x-text="userInitial()"></span>
+            <span style="max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" x-text="user?.display"></span>
+            <span aria-hidden="true">⌄</span>
+          </button>
+          <div x-show="userMenu" x-cloak x-transition class="absolute right-0 z-20 mt-2" style="top:100%;width:14rem;border:1px solid hsl(var(--fu-border));border-radius:.75rem;background:hsl(var(--fu-card));padding:.45rem;box-shadow:0 12px 30px rgba(0,0,0,.16);">
+            <div style="border-bottom:1px solid hsl(var(--fu-border));padding:.4rem .65rem .6rem;">
+              <strong style="display:block;font-size:.85rem;color:hsl(var(--fu-ink));" x-text="user?.display"></strong>
+              <span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.7rem;color:hsl(var(--fu-muted));" x-text="user?.email"></span>
+            </div>
+            <a href="/profile/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="userMenu = false"><span data-fusion-i18n="nav_profile">Profile</span></a>
+            <a href="/learning/dashboard/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="userMenu = false">Learning dashboard</a>
+            <a href="/accounts/email/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="userMenu = false"><span data-fusion-i18n="profile_email_addresses">Email addresses</span></a>
+            <a href="/accounts/password/change/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="userMenu = false"><span data-fusion-i18n="profile_change_password">Change password</span></a>
+            <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-sm text-red-500 hover:bg-fu-paper" @click="userMenu = false; logout()"><span data-fusion-i18n="nav_sign_out">Sign out</span></button>
+          </div>
+        </div>
+      </template>
     </div>
     <style>
       @media (min-width: 768px) { .site-header > .container-fusion > div:last-of-type { display: flex !important; } }
@@ -66,7 +164,47 @@
         <a href="/contact/" style="padding:.5rem .75rem;border-radius:.5rem;text-decoration:none;color:hsl(var(--fu-text) / .8);" @click="open = false">Contact</a>
       {% endif %}
       <hr style="border:none;border-top:1px solid hsl(var(--fu-border));margin:.5rem 0;">
-      <button type="button" class="btn btn-secondary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false; $dispatch('fusion:open-login')">Log In</button>
+      <div
+        x-data="{
+          open: false,
+          active: (function () { try { return localStorage.getItem('fusion-lang'); } catch (e) { return null; } })() || document.documentElement.lang || 'en',
+          languages: [{code:'en',native:'English',flag:'🇬🇧',dir:'ltr'},{code:'ar',native:'العربية',flag:'🇸🇦',dir:'rtl'},{code:'sv',native:'Svenska',flag:'🇸🇪',dir:'ltr'},{code:'fr',native:'Français',flag:'🇫🇷',dir:'ltr'},{code:'de',native:'Deutsch',flag:'🇩🇪',dir:'ltr'},{code:'es',native:'Español',flag:'🇪🇸',dir:'ltr'},{code:'pt',native:'Português',flag:'🇧🇷',dir:'ltr'}],
+          apply(language) {
+            document.documentElement.lang = language.code;
+            document.documentElement.dir = language.dir;
+            this.active = language.code;
+            this.open = false;
+            try { localStorage.setItem('fusion-lang', language.code); document.cookie = 'django_language=' + encodeURIComponent(language.code) + '; path=/; max-age=31536000; SameSite=Lax'; } catch (e) {}
+            window.dispatchEvent(new CustomEvent('fusion:lang-changed', { detail: { code: language.code } }));
+          }
+        }"
+        @click.outside="open = false"
+        style="position:relative;display:flex;align-items:center;gap:.5rem;padding:.25rem .75rem;"
+      >
+        <button type="button" class="btn btn-secondary" style="padding:.45rem .7rem;font-size:.8rem;" @click="open = !open" aria-haspopup="listbox" :aria-expanded="open.toString()" aria-label="Change language"><span x-text="active.toUpperCase()"></span>⌄</button>
+        <div x-show="open" x-cloak class="absolute z-20 mt-2" style="left:1rem;width:12rem;border:1px solid hsl(var(--fu-border));border-radius:.75rem;background:hsl(var(--fu-card));padding:.35rem;box-shadow:0 12px 30px rgba(0,0,0,.16);" role="listbox">
+          <template x-for="language in languages" :key="language.code"><button type="button" role="option" class="block w-full rounded-md px-3 py-2 text-left text-sm text-fu-ink" @click="apply(language)"><span x-text="language.flag"></span> <span x-text="language.native"></span></button></template>
+        </div>
+      </div>
+      <template x-if="!authLoading && !authed">
+        <div>
+          <button type="button" class="btn btn-secondary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false; $dispatch('fusion:open-login')"><span data-fusion-i18n="nav_login">Log In</span></button>
+          <a href="/#cta" class="btn btn-primary" style="padding:.5rem .75rem;margin:.25rem .75rem;font-size:.875rem;" @click="open = false"><span data-fusion-i18n="nav_get_started">Get Started</span></a>
+        </div>
+      </template>
+      <template x-if="!authLoading && authed">
+        <div>
+          <div style="display:flex;align-items:center;gap:.65rem;padding:.5rem .75rem;">
+            <span style="display:inline-flex;width:2rem;height:2rem;align-items:center;justify-content:center;border-radius:9999px;background:hsl(var(--fu-link));color:#fff;font-size:.75rem;font-weight:700;" x-text="userInitial()"></span>
+            <div><strong style="display:block;font-size:.8rem;color:hsl(var(--fu-ink));" x-text="user?.display"></strong><span style="font-size:.7rem;color:hsl(var(--fu-muted));" x-text="user?.email"></span></div>
+          </div>
+          <a href="/profile/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="open = false"><span data-fusion-i18n="nav_profile">Profile</span></a>
+          <a href="/learning/dashboard/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="open = false">Learning dashboard</a>
+          <a href="/accounts/email/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="open = false"><span data-fusion-i18n="profile_email_addresses">Email addresses</span></a>
+          <a href="/accounts/password/change/" class="block rounded-md px-3 py-2 text-sm text-fu-ink hover:bg-fu-paper" @click="open = false"><span data-fusion-i18n="profile_change_password">Change password</span></a>
+          <button type="button" class="mt-1 block w-full rounded-md px-3 py-2 text-left text-sm text-red-500 hover:bg-fu-paper" @click="open = false; logout()"><span data-fusion-i18n="nav_sign_out">Sign out</span></button>
+        </div>
+      </template>
     </nav>
   </div>
 </header>

@@ -1,8 +1,12 @@
 # =============================================================================
-# CTC Research — Traefik router config
+# CTC Research — Traefik router config  [DORMANT]
 # =============================================================================
+# Container "ctc-research-website" is NOT currently running.
+# Routes ctc-research.com / www.ctc-research.com / arch.ctc-research.com
+# → no backend available.
 # Serving Let's Encrypt certs via HTTP-01 challenge (certResolver: letsencrypt-http).
 # Self-signed fallback certs in applications/proxy/certs/ are kept on disk for rollback.
+# To activate: deploy the CTC Research compose stack.
 # =============================================================================
 
 http:

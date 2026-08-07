@@ -19,6 +19,7 @@ RUN uv sync --project /app/projects --no-install-project
 
 COPY projects/assets /app/assets
 COPY projects/landing-fusion/backend /app/landing-fusion/backend
+COPY projects/landing-fusion/templates /app/landing-fusion/templates
 
 WORKDIR /app/landing-fusion/backend
 RUN mkdir -p assets/static assets/staticfiles assets/media \

@@ -1,13 +1,25 @@
+# =============================================================================
+# Landing-Fusion — Traefik router config  [ACTIVE]
+# =============================================================================
+# Containers: landing-fusion-backend (Django/Wagtail, port 8074)
+#             landing-fusion-frontend (Astro static, port 3000)
+# Domain: structa.cloud / www.structa.cloud
+# Backend paths (/accounts, /apis, /admin, /static, /media, /fragment, /learning)
+#   are routed to the backend with priority 200.
+# All other paths (the public document shell) are served from the frontend.
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
+# =============================================================================
+
 http:
   routers:
     landing-fusion-backend-http:
-      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`))'
+      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: landing-fusion-backend
       priority: 200
     landing-fusion-backend-https:
-      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`))'
+      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: landing-fusion-backend

@@ -53,7 +53,12 @@ from django.http import Http404, HttpRequest
 
 from django_fusion.routes.pages.handler import PageHandler
 
-from apps.pages.api import get_effective_render_first
+from apps.pages.api import (
+    _apply_page_translation,
+    _page_to_dict,
+    _requested_content_language,
+    get_effective_render_first,
+)
 
 from apps.pages.models import (
     AboutPage,
@@ -101,10 +106,14 @@ class LandingPageView(PageHandler):
         """Attach the Wagtail page instance + fusion render mode to the context."""
         context = super().get_context_data(request=request, **kwargs)
         page = self._get_page()
+        language = _requested_content_language(self.request)
+        serialized = _apply_page_translation(page, _page_to_dict(page), language)
         context.update(
             {
                 "page": page,
                 "content": page,
+                "localized_content": serialized,
+                "content_language": language,
                 "site_name": "Structa Cloud",
                 # Main nav (show_in_nav items only) — single source of truth is
                 # LandingSite.NAV_ITEMS; the header partial renders from this.
@@ -261,11 +270,13 @@ class ProductPreviewView(LandingPageView):
             raise Http404(f"No edition named {edition_name!r} on {page.slug}")
         # Other editions of the same product — links for switching previews.
         context["preview_edition"] = edition
-        context["preview_slug"] = edition_name.lower()
+        from django.utils.text import slugify
+
+        context["preview_slug"] = slugify(edition_name)
         context["preview_others"] = [
-            {"name": e.get("name", ""), "slug": str(e.get("name", "")).lower()}
+            {"name": e.get("name", ""), "slug": slugify(str(e.get("name", "")))}
             for e in page.get_editions()
-            if str(e.get("name", "")).lower() != edition_name.lower()
+            if slugify(str(e.get("name", ""))) != slugify(edition_name)
         ]
         return context
 

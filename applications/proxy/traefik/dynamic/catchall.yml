@@ -1,3 +1,11 @@
+# =============================================================================
+# Catch-all — Traefik router config  [INFRASTRUCTURE]
+# =============================================================================
+# Lowest-priority (1) router that catches any unmatched host.
+# Redirects HTTP → HTTPS, serves a silent noop response on HTTPS.
+# Always active — required for safe default handling of unknown hosts.
+# =============================================================================
+
 http:
   routers:
     catchall-http:

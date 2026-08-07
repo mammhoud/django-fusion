@@ -1,0 +1,29 @@
+{% extends "pages/base.html" %}
+{% block title %}Learning · Structa Cloud{% endblock %}
+{% block content %}
+<section class="section-hero reg-marks py-16 md:py-20">
+  <div class="container-fusion">
+    <p class="tag-marker mb-4">learning</p>
+    <h1 class="font-display text-4xl font-bold tracking-tight text-fu-ink md:text-6xl">Learn by shipping.</h1>
+    <p class="mt-4 max-w-2xl text-lg text-fu-muted">Practical courses, clear progress, and certificates when the work is complete.</p>
+  </div>
+</section>
+<section class="doc-sheet bg-fu-paper py-12 md:py-16" x-data="{ filtersOpen: false }">
+  <div class="container-fusion">
+    <form class="mb-8 flex flex-col gap-3 sm:flex-row" hx-get="{% url 'learning:catalog' %}" hx-target="#course-list" hx-swap="innerHTML" hx-push-url="true">
+      <label class="sr-only" for="course-search">Search courses</label>
+      <input id="course-search" class="input-field flex-1" name="q" value="{{ query }}" placeholder="Search courses…" />
+      <select class="input-field sm:max-w-xs" name="difficulty" aria-label="Difficulty">
+        <option value="">All levels</option>
+        <option value="beginner" {% if difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+        <option value="intermediate" {% if difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+        <option value="advanced" {% if difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+      </select>
+      <button class="btn-primary" type="submit">Search</button>
+    </form>
+    <div id="course-list">
+      {% include "learning/fragments/course_list.html" %}
+    </div>
+  </div>
+</section>
+{% endblock %}

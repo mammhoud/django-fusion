@@ -6,9 +6,9 @@
  * element lives in plain template body: inside a JSX expression the Astro
  * compiler flattens `<template>` content and the emitted code fails to parse.
  *
- * Fires `hx-get` on load (client:visible island). The backend answers the
+ * Fires `hx-get` when the region is revealed. The backend answers the
  * HX-Request header with the fragment (content region only); errors swap in
- * the quiet fallback note (listener lives in htmx-bootstrap.ts).
+ * the explicit fallback note (listener lives in htmx-bootstrap.ts).
  */
 import Skeleton from '@/components/ui/Skeleton.astro';
 
@@ -38,9 +38,8 @@ const {
 
 <div
   class="live-fragment__target"
-  client:visible
   hx-get={endpoint}
-  hx-trigger="load"
+  hx-trigger="revealed once"
   hx-target="this"
   hx-swap="innerHTML"
   data-fragment-endpoint={endpoint}

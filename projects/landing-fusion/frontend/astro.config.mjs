@@ -47,8 +47,9 @@ export default defineConfig({
         '/admin': { target: 'http://127.0.0.1:8074', changeOrigin: true },
         '/static': { target: 'http://127.0.0.1:8074', changeOrigin: true },
         '/media': { target: 'http://127.0.0.1:8074', changeOrigin: true },
+        '/learning': { target: 'http://127.0.0.1:8074', changeOrigin: true },
       },
     },
   },
-  server: { port: 3000 },
+  server: { port: 3000, host: true },
 });

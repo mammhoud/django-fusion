@@ -1,3 +1,13 @@
+# =============================================================================
+# Media servers — Traefik router config  [DORMANT]
+# =============================================================================
+# Container "shared-media" is NOT currently running.
+# All media.* subdomains route to shared-media:80 — no backend available.
+# Domains: media.structa.cloud, media.ctc-research.com, media.lms.com,
+#          media.vresume.structa.cloud
+# To activate: deploy the shared-media Nginx container.
+# =============================================================================
+
 http:
   routers:
     shared-media-http:
@@ -66,8 +76,6 @@ http:
       - compress
       - security-headers
       service: vresume-media-service
-      tls:
-        certResolver: letsencrypt-http
   services:
     shared-media-service:
       loadBalancer:

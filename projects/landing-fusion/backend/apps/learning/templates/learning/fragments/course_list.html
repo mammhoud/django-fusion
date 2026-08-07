@@ -1,0 +1,19 @@
+{% if courses %}
+<div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+  {% for course in courses %}
+  <article class="card flex flex-col p-6">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <span class="badge-primary">{{ course.get_difficulty_display }}</span>
+      {% if course.is_free %}<span class="badge-success">free</span>{% else %}<span class="font-mono text-sm text-fu-ink">${{ course.price }}</span>{% endif %}
+    </div>
+    <h2 class="font-display text-xl font-semibold text-fu-ink"><a class="hover:text-fu-link" href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
+    <p class="mt-2 flex-1 text-sm leading-relaxed text-fu-muted">{{ course.short_description|default:"A structured course with practical lessons and measurable progress." }}</p>
+    <div class="mt-5 flex items-center justify-between border-t border-fu-line pt-4 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-fu-muted">
+      <span>{{ course.lesson_count }} lessons</span><span>{{ course.duration_hours }}h</span>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card p-10 text-center"><p class="font-display text-xl font-semibold text-fu-ink">No courses match those filters.</p><p class="mt-2 text-sm text-fu-muted">Try a broader search or check back soon.</p></div>
+{% endif %}

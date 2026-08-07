@@ -29,6 +29,11 @@ urlpatterns = [
     # redirects: /api/auth/provider/login?provider=github …
     path("api/auth/", include("allauth.headless.urls")),
 
+    # ── Learning — backend-owned HTML + HTMX learner surface ─────────
+    # Kept separate from the marketing Wagtail tree; authenticated mutations
+    # use the same allauth session cookie as the Astro header/profile.
+    path("learning/", include("apps.learning.urls")),
+
     # ── Auth — server-rendered allauth pages (/accounts/login/, signup,
     #    password reset, email management, email confirmation…). Mirrors the
     #    headless API flows with full pages for no-JS + management screens.
@@ -38,15 +43,16 @@ urlpatterns = [
     path("apis/render-mode/", pages_api.render_mode_api, name="render_mode_api"),
     path("apis/site/settings/", pages_api.site_settings_api, name="site_settings_api"),
     path("apis/navigation/", pages_api.navigation_api, name="navigation_api"),
+    path("apis/content/languages/", pages_api.content_languages_api, name="content_languages_api"),
     path("apis/contact/", pages_api.contact_api, name="contact_api"),
     path("apis/pricing/", pages_api.pricing_api, name="pricing_api"),
     path("apis/brand/", pages_api.brand_api, name="brand_api"),
     path("apis/pages/", pages_api.page_list_api, name="page_list_api"),
     path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
+    path("fragment/pages/<slug:slug>/", pages_api.page_fragment_api, name="page_fragment_api"),
     path("apis/assets/", pages_api.assets_api, name="assets_api"),
 
-    # ── Auth (allauth — login, register, password reset, social) ─────
-    path("accounts/", include("allauth.urls")),
+    # ── Auth status (allauth pages are registered once above) ─────────
     path("apis/auth/status/", pages_api.auth_status_api, name="auth_status_api"),
 
     # ── Fragment endpoints (HTMX HTML swaps) ──────────────────────────
