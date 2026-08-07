@@ -297,6 +297,25 @@ fn soft_delete_employee_type(app: AppHandle, id: i32) -> Result<(), String> {
 }
 
 // ---- Employee commands ----
+
+/// Best-effort audit-log entry. Failures are non-fatal (the primary operation
+/// already succeeded); we only log a warning so the audit trail never blocks
+/// the caller.
+fn log_user_action(db_path: &std::path::PathBuf, action: &str, entity_type: &str, entity_id: i32, details: serde_json::Value) {
+    if let Err(e) = user_actions::add_user_action(
+        db_path,
+        db::models::NewUserAction {
+            action: action.to_string(),
+            entity_type: Some(entity_type.to_string()),
+            entity_id: Some(entity_id),
+            details: Some(details.to_string()),
+            user_id: None,
+        },
+    ) {
+        eprintln!("[audit] failed to record user action '{action}': {e}");
+    }
+}
+
 #[tauri::command]
 fn get_employees(app: AppHandle, include_inactive: bool) -> Result<Vec<db::models::Employee>, String> {
     let db_path = get_db_path(&app)?;
@@ -310,6 +329,19 @@ fn add_employee(app: AppHandle, employee: db::models::NewEmployee) -> Result<db:
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "added"})) {
         eprintln!("[events] failed to emit employees-updated: {e}");
     }
+    // Audit trail — record the "addition record" for this user/employee.
+    log_user_action(
+        &db_path,
+        "add_employee",
+        "employee",
+        result.id,
+        serde_json::json!({
+            "name": result.name,
+            "employee_type_id": result.employee_type_id,
+            "salary": result.salary,
+            "pay_frequency": result.pay_frequency,
+        }),
+    );
     Ok(result)
 }
 
@@ -320,6 +352,18 @@ fn update_employee(app: AppHandle, id: i32, update: db::models::UpdateEmployee) 
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "updated"})) {
         eprintln!("[events] failed to emit employees-updated: {e}");
     }
+    log_user_action(
+        &db_path,
+        "update_employee",
+        "employee",
+        id,
+        serde_json::json!({
+            "name": result.name,
+            "is_active": result.is_active,
+            "employee_type_id": result.employee_type_id,
+            "salary": result.salary,
+        }),
+    );
     Ok(result)
 }
 
@@ -330,6 +374,7 @@ fn soft_delete_employee(app: AppHandle, id: i32) -> Result<(), String> {
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "deleted"})) {
         eprintln!("[events] failed to emit employees-updated: {e}");
     }
+    log_user_action(&db_path, "deactivate_employee", "employee", id, serde_json::json!({}));
     Ok(())
 }
 
@@ -845,6 +890,16 @@ fn update_payroll(app: AppHandle, id: i32, update: db::models::UpdatePayroll) ->
 fn delete_payroll(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     payrolls::delete_payroll(&db_path, id)
+}
+
+/// Generates a `pending` payroll record per active employee for the given
+/// period, sourced from each employee's salary/payroll settings.
+#[tauri::command]
+fn generate_payrolls(app: AppHandle, period_start: String, period_end: String) -> Result<Vec<db::models::Payroll>, String> {
+    let db_path = get_db_path(&app)?;
+    let created = payrolls::generate_payrolls(&db_path, period_start, period_end)?;
+    log_user_action(&db_path, "generate_payrolls", "payroll", 0, serde_json::json!({ "created": created.len() }));
+    Ok(created)
 }
 
 // ---- Report Metadata commands ----
@@ -1569,6 +1624,7 @@ pub fn run() {
             add_payroll,
             update_payroll,
             delete_payroll,
+            generate_payrolls,
             // Report Metadata
             get_report_metadata,
             add_report_metadata,

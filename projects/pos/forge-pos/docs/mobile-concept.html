@@ -11,11 +11,12 @@
     --surface: #ffffff;
     --hair: rgba(42, 33, 27, 0.09);
     --text: #2a211b;
-    --text-2: rgba(42, 33, 27, 0.58);
+    --text-2: rgba(42, 33, 27, 0.64); /* secondary text (revised: 64%, was 58%) */
     --text-3: rgba(42, 33, 27, 0.34);
-    --copper: #ea580c;
+    --copper: #ea580c;              /* fills / large UI only — never normal-size text in light mode */
     --copper-soft: #fb923c;
-    --copper-deep: #9a3412;
+    --copper-deep: #9a3412;         /* crest gradient end / on-accent fills */
+    --copper-text: #c2410c;         /* copper text token (≈ 4.6:1 on #FAF7F2) */
     --copper-tint: rgba(234, 88, 12, 0.09);
     --copper-tint-2: rgba(234, 88, 12, 0.16);
     --success: #2e7d4f;
@@ -42,7 +43,7 @@
   .kicker {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--copper-deep); background: rgba(234, 88, 12, 0.10);
+    color: var(--copper-text); background: rgba(234, 88, 12, 0.10);
     padding: 6px 12px; border-radius: 999px; margin-bottom: 16px;
   }
   header h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
@@ -134,7 +135,7 @@
     padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--text-2);
     background: var(--surface); border: 1px solid var(--hair);
   }
-  .chip.on { color: var(--copper-deep); background: var(--copper-tint); border-color: transparent; }
+  .chip.on { color: var(--copper-text); background: var(--copper-tint); border-color: transparent; }
   .icon { width: 20px; height: 20px; flex-shrink: 0; }
 
   /* ── crest mark ── */
@@ -164,7 +165,7 @@
     font-size: 14px; font-weight: 600; color: var(--text); margin-top: 16px;
   }
   .auth .footnote { text-align: center; font-size: 12.5px; color: var(--text-3); margin-top: 22px; }
-  .auth .footnote b { color: var(--copper-deep); }
+  .auth .footnote b { color: var(--copper-text); }
 
   /* ── home ── */
   .home-hero {
@@ -175,7 +176,7 @@
   .home-hero::before { content: ''; position: absolute; right: -60px; top: -70px; width: 200px; height: 200px;
     background: radial-gradient(circle, var(--copper-tint-2), transparent 65%); }
   .home-hero .lbl { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
-  .home-hero .big { font-size: 42px; font-weight: 700; letter-spacing: -0.03em; color: var(--copper-deep); margin: 6px 0 2px; }
+  .home-hero .big { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; color: var(--copper-text); margin: 6px 0 2px; }
   .home-hero .delta { font-size: 12.5px; font-weight: 600; color: var(--success); }
   .hero-foot { display: flex; gap: 10px; margin-top: 16px; }
   .hero-foot .mini { flex: 1; text-align: center; background: rgba(234, 88, 12, 0.05); border-radius: 14px; padding: 10px 6px; }
@@ -183,14 +184,14 @@
   .hero-foot .mini span { font-size: 10.5px; color: var(--text-2); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
 
   .sec-h { display: flex; align-items: center; justify-content: space-between; margin: 18px 2px 10px; }
-  .sec-h .more { font-size: 12.5px; font-weight: 600; color: var(--copper-deep); }
+  .sec-h .more { font-size: 12.5px; font-weight: 600; color: var(--copper-text); }
   .order-row {
     display: flex; align-items: center; gap: 11px; padding: 11px 12px;
     background: var(--surface); border-radius: 17px; border: 1px solid var(--hair); margin-bottom: 9px;
   }
   .order-row .badge {
     width: 38px; height: 38px; border-radius: 13px; display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700; color: var(--copper-deep); background: var(--copper-tint); flex-shrink: 0;
+    font-size: 15px; font-weight: 700; color: var(--copper-text); background: var(--copper-tint); flex-shrink: 0;
   }
   .order-row .nm { font-size: 14.5px; font-weight: 600; color: var(--text); }
   .order-row .mt { font-size: 12px; color: var(--text-2); margin-top: 1px; }
@@ -200,7 +201,7 @@
   .quick2 { display: flex; gap: 10px; margin-top: 14px; }
   .quick2 .q { flex: 1; display: flex; align-items: center; gap: 9px; background: var(--surface);
     border: 1px solid var(--hair); border-radius: 17px; padding: 12px 13px; font-size: 13.5px; font-weight: 600; color: var(--text); }
-  .quick2 .q i { width: 34px; height: 34px; border-radius: 11px; background: var(--copper-tint); color: var(--copper-deep);
+  .quick2 .q i { width: 34px; height: 34px; border-radius: 11px; background: var(--copper-tint); color: var(--copper-text);
     display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
   /* ── menu ── */
@@ -215,7 +216,7 @@
   .pcard .ph svg { width: 34px; height: 34px; }
   .pcard .body { padding: 9px 11px 11px; }
   .pcard .pn { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.25; }
-  .pcard .pp { font-size: 13px; font-weight: 700; color: var(--copper-deep); margin-top: 3px; }
+  .pcard .pp { font-size: 13px; font-weight: 700; color: var(--copper-text); margin-top: 3px; }
   .pcard .add { position: absolute; right: 7px; bottom: 7px; width: 26px; height: 26px; border-radius: 9px;
     background: var(--copper); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600;
     box-shadow: 0 6px 12px -4px rgba(234, 88, 12, 0.5); }
@@ -239,7 +240,7 @@
   .summary { margin-top: 4px; }
   .srow { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--text-2); padding: 5px 0; }
   .srow.tot { font-size: 17px; font-weight: 700; color: var(--text); padding-top: 9px; margin-top: 2px; }
-  .srow.tot b { color: var(--copper-deep); }
+  .srow.tot b { color: var(--copper-text); }
   .guestbar { display: flex; gap: 8px; margin: 12px 0 4px; }
   .guestbar .g { flex: 1; text-align: center; font-size: 12px; font-weight: 600; padding: 9px 4px; border-radius: 12px;
     color: var(--text-2); background: var(--surface); border: 1px solid var(--hair); }
@@ -274,7 +275,7 @@
   .ring::before { content: ''; position: absolute; inset: 0; border-radius: 50%;
     background: conic-gradient(var(--copper) 0 78%, rgba(42,33,27,0.08) 78% 100%); }
   .ring::after { content: ''; position: absolute; inset: 9px; border-radius: 50%; background: var(--bg); }
-  .ring b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: var(--copper-deep); z-index: 1; }
+  .ring b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: var(--copper-text); z-index: 1; }
 
   /* ── receipt ── */
   .receipt-card { background: var(--surface); border-radius: 22px; padding: 20px 18px; border: 1px solid var(--hair); }
@@ -286,13 +287,13 @@
   .r-line { display: flex; justify-content: space-between; font-size: 13.5px; padding: 8px 0; color: var(--text); }
   .r-line.mut { color: var(--text-2); font-size: 12.5px; }
   .r-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: var(--text); padding-top: 10px; }
-  .r-total b { color: var(--copper-deep); }
+  .r-total b { color: var(--copper-text); }
 
   /* ── inventory ── */
   .inv-row { display: flex; align-items: center; gap: 11px; padding: 12px; background: var(--surface);
     border: 1px solid var(--hair); border-radius: 17px; margin-bottom: 9px; }
   .inv-row .ic { width: 38px; height: 38px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    background: var(--copper-tint); color: var(--copper-deep); }
+    background: var(--copper-tint); color: var(--copper-text); }
   .inv-row .nm { font-size: 14px; font-weight: 600; color: var(--text); }
   .inv-row .mt { font-size: 12px; color: var(--text-2); margin-top: 1px; }
   .qty-pill { font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 999px; }
@@ -324,15 +325,26 @@
     display: flex; padding: 8px 10px 20px; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; color: var(--text-3); }
   .tab i { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
-  .tab.on { color: var(--copper-deep); }
+  .tab.on { color: var(--copper-text); }
   .tab.on i { color: var(--copper); }
   .dark .tabbar { background: rgba(23, 20, 18, 0.92); border-top-color: rgba(255,255,255,0.08); }
   .dark .tab { color: rgba(245, 239, 232, 0.4); }
   .dark .tab.on { color: var(--copper-soft); }
+  /* dark accent-text elements use copper-soft for contrast on warm black */
+  .dark .pcard .pp, .dark .sec-h .more, .dark .inv-row .ic, .dark .quick2 .q i,
+  .dark .order-row .badge, .dark .chip.on, .dark .ring b { color: var(--copper-soft); }
+  /* dark payment sheet */
+  .dark .pay-opt { background: #211d19; border-color: rgba(255,255,255,0.1); }
+  .dark .pay-opt .nm { color: #f5efe8; }
+  .dark .pay-opt .mt { color: rgba(245, 239, 232, 0.6); }
+  .dark .pay-opt.on { background: rgba(251, 146, 60, 0.12); border-color: var(--copper-soft); }
+  .dark .pay-opt.on .radio { border-color: var(--copper-soft); }
+  .dark .pay-opt.on .radio::after { background: var(--copper-soft); }
+  .dark .btn-p { box-shadow: 0 12px 24px -10px rgba(234, 88, 12, 0.4); }
 
   /* dark-mode overrides for inner surfaces */
   .dark .t1, .dark .t2 { color: #f5efe8; }
-  .dark .muted { color: rgba(245, 239, 232, 0.6); }
+  .dark .muted { color: rgba(245, 239, 232, 0.64); }
   .dark .home-hero, .dark .order-row, .dark .quick2 .q, .dark .pcard, .dark .line .ln b,
   .dark .search, .dark .receipt-card, .dark .inv-row, .dark .stat-tiles .st { background: #211d19; }
   .dark .hair { background: rgba(255, 255, 255, 0.09); }
@@ -367,7 +379,7 @@
 <body>
 
 <header>
-  <span class="kicker">Concept · v0 · iOS-native premium</span>
+  <span class="kicker">Concept · v1 · iOS-native premium</span>
   <h1>Formint POS — mobile</h1>
   <p>A staff POS for iPhone: take orders, check out, watch stock and revenue — from
   the counter or the floor. One design system, warm neutral base, single copper accent.</p>
@@ -455,7 +467,7 @@
 
         <div class="quick2">
           <div class="q"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i>New order</div>
-          <div class="q"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-6 4 3 5-7"/></svg></i>Reports</div>
+          <div class="q"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Close shift</div>
         </div>
       </div>
       <div class="tabbar">
@@ -467,7 +479,7 @@
       <div class="homeindicator"></div>
     </div>
   </div>
-  <figcaption><span class="step"><b>3</b>Home · Today</span><span class="note">One hero metric, active orders list, two quick actions — nothing else above the fold.</span></figcaption>
+  <figcaption><span class="step"><b>3</b>Home · Today</span><span class="note">One 52 px hero metric, active orders list, New Order + Close Shift — nothing else above the fold.</span></figcaption>
 </figure>
 
 <!-- 4 · New order / Menu -->
@@ -723,7 +735,30 @@
       <div class="homeindicator"></div>
     </div>
   </div>
-  <figcaption><span class="step"><b>10</b>Dark variant</span><span class="note">Same system, warm near-black base — for evening/night shifts.</span></figcaption>
+  <figcaption><span class="step"><b>10</b>Dark · Home</span><span class="note">Same system, warm near-black base — for evening/night shifts.</span></figcaption>
+</figure>
+
+<!-- 11 · Dark variant — Payment sheet -->
+<figure class="variant">
+  <div class="phone dark">
+    <div class="screen">
+      <div class="statusbar"><span>9:41</span><span class="sb-right"><i class="sig"><b></b><b></b><b></b><b></b></i><i class="wifi"></i><i class="batt"><b></b></i></span></div>
+      <div class="sbody">
+        <div class="row" style="margin:8px 0 16px;"><div class="t1" style="font-size:24px;">Payment</div></div>
+        <div class="receipt-card">
+          <div class="srow"><span>Table 4 · Dine-in</span><span class="num">5 items</span></div>
+          <div class="srow tot" style="border-top:1px solid rgba(255,255,255,0.09);margin-top:6px;padding-top:10px;"><span>Total due</span><b class="num">$19.14</b></div>
+        </div>
+        <p class="muted" style="margin:14px 2px 8px;">Choose how the guest pays</p>
+        <div class="pay-opt on"><div class="pi cash"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg></div><div><div class="nm">Cash</div><div class="mt">Received $20 · change $0.86</div></div><span class="space"></span><span class="radio"></span></div>
+        <div class="pay-opt"><div class="pi card"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div><div class="nm">Card</div><div class="mt">Tap · chip · swipe</div></div><span class="space"></span><span class="radio"></span></div>
+        <div class="pay-opt"><div class="pi mob"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div><div><div class="nm">Mobile</div><div class="mt">Vodafone Cash · InstaPay</div></div><span class="space"></span><span class="radio"></span></div>
+        <div class="btn btn-p btn-block" style="margin-top:6px;">Charge $19.14</div>
+      </div>
+      <div class="homeindicator"></div>
+    </div>
+  </div>
+  <figcaption><span class="step"><b>11</b>Dark · Payment</span><span class="note">The highest-stakes screen in night mode — copper-soft states stay readable on warm black.</span></figcaption>
 </figure>
 
 </div>

@@ -32,31 +32,38 @@ numbers. One accent does all the work — the copper of the crest.
 | Surface raised   | `#FFFFFF`                           | `#211D19`                            |
 | Hairlines        | `#000000` @ 8%                      | `#FFFFFF` @ 10%                      |
 | Text primary     | `#2A211B` warm charcoal             | `#F5EFE8`                            |
-| Text secondary   | `#2A211B` @ 58%                     | `#F5EFE8` @ 60%                      |
+| Text secondary   | `#2A211B` @ 64%                     | `#F5EFE8` @ 64%                      |
 | **Accent (only)**| `#EA580C` copper (→ `#FB923C` soft) | `#FB923C` copper-light               |
+| Accent text      | `#C2410C` copper-deep (text/hero digits) | `#FB923C` (already ≥ 4.5:1)     |
 | On-accent        | `#FFFFFF`                           | `#1B0F07`                            |
 | Success          | `#2E7D4F` (muted emerald)           | `#6FBF8F`                            |
 | Danger           | `#C2402F` (muted brick)             | `#E2725F`                            |
 
 Rules: no secondary accent competing with copper, no purple/blue gradients,
-numbers always tabular. Soft surfaces are layered with a faint film-grain texture
-(svg noise at ~3% opacity) so nothing reads sterile-flat.
+numbers always tabular. Light-mode copper **text** uses the deeper `#C2410C` token
+(≈ 4.6:1 on `#FAF7F2`); the brighter `#EA580C` (≈ 3.2:1) is reserved for fills and
+large UI, and `on-accent` white is used only on `#C2410C`+ fills — `#EA580C` never
+carries normal-size text in light mode. Secondary text sits at 64% opacity; 58% is
+reserved for disabled content only. Soft surfaces are layered with a faint
+film-grain texture (svg noise at ~3% opacity) so nothing reads sterile-flat.
 
 ## 3. Typography — Outfit (refined grotesk)
 
-- **Display / big numbers:** Outfit 700, `tracking-tight`, tabular-nums for money.
+- **Display / big numbers:** Outfit 700, `tracking-tight`, tabular-nums for money;
+  the hero "Today" metric runs **48–56 px** — it is the one number that should feel big.
 - **Screen titles:** 26–28 px semibold.
-- **Body / labels:** 14–15 px regular; secondary 12 px at 58% opacity.
+- **Body / labels:** 14–15 px regular; secondary 12 px at 64% opacity (58% = disabled only).
 - **Buttons:** 15 px semibold, one tap target ≥ 44 px.
-- Scale rhythm: 40 (hero metric) → 26 (title) → 15 (body) → 12 (label). Never
-  below 11 px.
+- Scale rhythm: 52 (hero metric, 48–56) → 26 (title) → 15 (body) → 12 (label).
+  Never below 11 px.
 
 ## 4. Structure Bias
 
 Tab-bar-led utility app. Composition logic per screen:
 
 - **Home:** one hero metric ("Today" revenue), one active-orders list, two inline
-  quick actions. Nothing else above the fold.
+  quick actions — **New Order** + **Close Shift** (not Reports — that's a tab).
+  Nothing else above the fold.
 - **Order:** search + category chips + product cards (image-led, fixed 4:3 crops).
 - **Checkout:** line-item list → payment sheet (Cash / Card / Mobile) → totals.
 - **Inventory:** list-led with low-stock state chips.
@@ -64,7 +71,8 @@ Tab-bar-led utility app. Composition logic per screen:
 
 ## 5. Signature Components (chosen 4)
 
-1. **Hero metric card** — Home's "Today" revenue, copper number on raised surface.
+1. **Hero metric card** — Home's "Today" revenue, 48–56 px copper-deep (`#C2410C`)
+   number on raised surface, soft copper radial glow behind it.
 2. **Framed product card stack** — Order menu grid, 4:3 image frames, add-on buttons.
 3. **Bottom action sheet** — Payment method picker docking from the bottom.
 4. **Progress ring block** — reused from the desktop branded loader as the
@@ -100,7 +108,7 @@ Screen-by-screen:
 
 1. **Welcome** — crest, "Formint", one line, one CTA. First screen stays calm.
 2. **Sign in** — email + 6-digit PIN, Face ID hint, "shift handover" link.
-3. **Home / Today** — hero revenue, active orders (staggered list), New Order + Reports quick actions.
+3. **Home / Today** — hero revenue, active orders (staggered list), New Order + Close Shift quick actions.
 4. **New Order — Menu** — search, category chips, image-led product grid.
 5. **Cart / Checkout** — order lines with qty steppers, guest/table, totals.
 6. **Payment** — sheet with Cash / Card / Mobile, progress ring while processing.
@@ -112,5 +120,6 @@ Screen-by-screen:
 
 Screens are presented inside a clean, even iPhone-style frame (2.6 mm border,
 soft controlled shadow), consistent scale across the set, equal gutters, content
-always primary. One dark-mode variant screen (Home) is shown at the end to
+always primary. Two dark-mode variant screens are shown at the end — **Home** and
+the **Payment sheet** (the highest-stakes screen: money, processing, success) — to
 demonstrate the palette without breaking the set's coherence.

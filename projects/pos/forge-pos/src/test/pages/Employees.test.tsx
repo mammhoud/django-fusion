@@ -4,8 +4,10 @@ import {
   screen,
   waitFor,
   userEvent,
+  within,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
+import { getInvokeHistory } from '../setup';
 import Employees from '../../pages/admin/Employees';
 
 const mockEmployees = [
@@ -95,8 +97,8 @@ describe('Employees Page', () => {
     expect(screen.getByRole('button', { name: 'Inactive' })).toBeInTheDocument();
   });
 
-  it('opens Add Employee modal', async () => {
-    mockInvokeSuccess('add_employee', { id: 4, name: 'New Employee', employee_type_id: 1, salary: 35000, is_active: true });
+  it('walks through the 4-step Add Employee wizard', async () => {
+    mockInvokeSuccess('add_employee', { id: 4, name: 'New Employee', employee_type_id: 1, salary: 35000, is_active: true, pay_frequency: 'monthly' });
     renderWithRouter(<Employees />);
 
     await waitFor(() => {
@@ -108,10 +110,85 @@ describe('Employees Page', () => {
     await waitFor(() => {
       expect(screen.getByText(/employees\.addEmployeeTitle|Add New Employee/)).toBeInTheDocument();
     });
-    expect(screen.getByPlaceholderText(/employees\.namePlaceholder|Enter employee name/)).toBeInTheDocument();
-    // "Employee Type" label inside the modal (test key fallback pattern)
-    const typeLabels = screen.getAllByText(/Employee Type|employees\.employeeType/);
-    expect(typeLabels.length).toBeGreaterThan(0);
+
+    // ── Step 1 · Personal (name + date of birth + national ID) ──
+    const nameInput = screen.getByPlaceholderText(/employees\.namePlaceholder|Enter employee name/);
+    expect(nameInput).toBeInTheDocument();
+    expect(screen.getByText(/Date of birth|employees\.dateOfBirth/)).toBeInTheDocument();
+    const nextBtn = screen.getByRole('button', { name: /Next/ });
+    expect(nextBtn).toBeDisabled(); // name is required
+    await userEvent.type(nameInput, 'New Employee');
+    expect(nextBtn).toBeEnabled();
+
+    // ── Step 1 → 2 · Contact (address + notes) ──
+    await userEvent.click(nextBtn);
+    expect(screen.getByText(/^Address$|employees\.address/)).toBeInTheDocument();
+
+    // ── Step 2 → 3 · Role & employment ──
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+    const roleStep = screen.getByTestId('employee-form-modal-step-role');
+    const typeSelect = within(roleStep).getByRole('combobox');
+    await userEvent.selectOptions(typeSelect, '1');
+
+    // ── Step 3 → 4 · Salary & payroll (Next lives in the modal footer) ──
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+    const salaryStep = screen.getByTestId('employee-form-modal-step-salary');
+    expect(within(salaryStep).getByText(/Pay frequency|employees\.payFrequency/)).toBeInTheDocument();
+    const salaryInput = within(salaryStep).getByPlaceholderText('0');
+    await userEvent.clear(salaryInput);
+    await userEvent.type(salaryInput, '35000');
+
+    // ── Submit ──
+    await userEvent.click(screen.getByTestId('employee-form-modal-submit'));
+
+    await waitFor(() => {
+      const addCall = getInvokeHistory().find(h => h.cmd === 'add_employee');
+      expect(addCall).toBeDefined();
+      expect(addCall!.args).toEqual({
+        employee: {
+          name: 'New Employee',
+          phone: null,
+          email: null,
+          employee_type_id: 1,
+          salary: 35000,
+          joined_at: null,
+          address: null,
+          date_of_birth: null,
+          national_id: null,
+          emergency_contact: null,
+          pay_frequency: 'monthly',
+          hourly_rate: 0,
+          bank_name: null,
+          bank_account: null,
+          tax_number: null,
+          notes: null,
+        },
+      });
+    });
+  });
+
+  it('reactivates an inactive employee', async () => {
+    mockInvokeSuccess('update_employee', { id: 3, name: 'Zara', is_active: true, pay_frequency: 'monthly' });
+    renderWithRouter(<Employees />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/employees\.addEmployee|Add Employee/)).toBeInTheDocument();
+    });
+
+    // Switch to the Inactive filter so Zara's card appears.
+    await userEvent.click(screen.getByRole('button', { name: 'Inactive' }));
+
+    await waitFor(() => {
+      expect(screen.getAllByTitle('Activate').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getAllByTitle('Activate')[0]);
+
+    await waitFor(() => {
+      const updCall = getInvokeHistory().find(h => h.cmd === 'update_employee');
+      expect(updCall).toBeDefined();
+      expect(updCall!.args).toEqual({ id: 3, update: { is_active: true } });
+    });
   });
 
   it('switches to Employee Types tab', async () => {
