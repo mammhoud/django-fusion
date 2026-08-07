@@ -1,3 +1,11 @@
+# =============================================================================
+# vResume — Traefik router config  [DORMANT]
+# =============================================================================
+# Container "vresume-web" is NOT currently running.
+# Route vresume.structa.cloud → no backend available.
+# To activate: deploy the vResume/portfolio compose stack.
+# =============================================================================
+
 http:
   routers:
     vresume-site-http:

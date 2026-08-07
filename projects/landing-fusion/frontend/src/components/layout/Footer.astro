@@ -1,4 +1,6 @@
 ---
+import { browserApiUrl } from '@/lib/site';
+
 interface Props {
   siteName?: string;
   siteSettings?: {
@@ -12,9 +14,9 @@ interface Props {
 const { siteName = 'Structa Cloud', siteSettings } = Astro.props;
 const year = new Date().getFullYear();
 
-// Newsletter API base — same origin in production, dev backend on :8074.
-const apiBase: string =
-  (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || 'http://localhost:8074';
+// Newsletter endpoint is same-origin in production; Astro dev can set
+// PUBLIC_BROWSER_API_URL when Django is served on another public origin.
+const apiBase: string = browserApiUrl;
 
 const footerGroups = siteSettings?.footer_link_groups?.length
   ? siteSettings.footer_link_groups
@@ -42,7 +44,7 @@ const footerGroups = siteSettings?.footer_link_groups?.length
         </script>
         <div
           x-data="{
-            api: window.__FUSION_NEWSLETTER_API || 'http://localhost:8074',
+            api: window.__FUSION_NEWSLETTER_API || '',
             email: '',
             done: false,
             busy: false,
@@ -51,7 +53,7 @@ const footerGroups = siteSettings?.footer_link_groups?.length
               this.busy = true;
               this.error = '';
               try {
-                const r = await fetch(this.api + '/api/newsletter/subscribe/', {
+                const r = await fetch((this.api || window.location.origin) + '/api/newsletter/subscribe/', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ email: this.email, source: 'footer' }),

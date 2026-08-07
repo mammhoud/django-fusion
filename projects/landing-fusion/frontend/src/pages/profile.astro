@@ -33,11 +33,10 @@ try {
   <section class="py-14">
     <div class="container-fusion">
       <div
-        client:load
         class="mx-auto max-w-3xl"
         x-data="{
           authed: false,
-          user: null as { email: string; display: string } | null,
+          user: null,
           loading: true,
           async init() {
             try {
@@ -109,6 +108,18 @@ try {
 
             <!-- Account management cards -->
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <!-- Email addresses -->
+              <!-- Learning dashboard -->
+              <a href="/learning/profile/" class="card group flex items-start gap-4 p-5 transition-all hover:-translate-y-0.5 hover:border-fu-link/40">
+                <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-muted transition-colors group-hover:border-fu-link/50 group-hover:text-fu-link">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 014 17V5a2 2 0 012.5-2.5H20v17H6.5A2.5 2.5 0 014 19.5z"/></svg>
+                </span>
+                <div>
+                  <h3 class="font-display text-[1.05rem] font-semibold text-fu-ink transition-colors group-hover:text-fu-link">Learning profile</h3>
+                  <p class="mt-1 text-sm text-fu-muted">Open your courses, progress dashboard, certificates, and saved learning paths.</p>
+                </div>
+              </a>
+
               <!-- Email addresses -->
               <a href="/accounts/email/" class="card group flex items-start gap-4 p-5 transition-all hover:-translate-y-0.5 hover:border-fu-link/40">
                 <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-muted transition-colors group-hover:border-fu-link/50 group-hover:text-fu-link">

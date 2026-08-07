@@ -7,19 +7,18 @@
  *   POST /api/auth/browser/v1/auth/login   { email, password }
  *   GET  /api/auth/browser/v1/auth/session
  *   POST /api/auth/browser/v1/auth/logout
- *   GET  /api/auth/browser/v1/auth/provider/redirect?provider=github  (social)
+ *   GET  /accounts/github/login/ (social; allauth provider flow)
  *
  * The modal is Alpine-managed: email/password posts JSON with credentials,
  * social buttons hit the provider redirect (302 → OAuth), and a session
  * check drives the logged-in "sign out" state in the header.
  */
-import { API_BASE } from '@/lib/api';
+import { browserApiUrl, browserEndpoint } from '@/lib/site';
 
-const apiBase = API_BASE.replace(/\/$/, '');
-const loginUrl = `${apiBase}/api/auth/browser/v1/auth/login`;
-const sessionUrl = `${apiBase}/api/auth/browser/v1/auth/session`;
-const logoutUrl = `${apiBase}/api/auth/browser/v1/auth/logout`;
-const providerUrl = (provider: string) => `${apiBase}/api/auth/browser/v1/auth/provider/redirect?provider=${provider}`;
+const apiBase = browserApiUrl.replace(/\/$/, '');
+const loginUrl = browserEndpoint('/api/auth/browser/v1/auth/login');
+const sessionUrl = browserEndpoint('/api/auth/browser/v1/auth/session');
+const logoutUrl = browserEndpoint('/api/auth/browser/v1/auth/logout');
 
 const providers = [
   { id: 'github', label: 'GitHub', icon: 'M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.85.09-.66.35-1.12.64-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.22 10.22 0 0 0 22 12.2C22 6.58 17.52 2 12 2z' },
@@ -43,7 +42,6 @@ const providersJson = JSON.stringify(providers);
 </script>
 
 <div
-  client:load
   x-data="{
     open: false,
     email: '',
@@ -70,7 +68,7 @@ const providersJson = JSON.stringify(providers);
         } else {
           const data = await res.json().catch(() => ({}));
           const errors = data?.errors || [];
-          this.error = errors.map((e: any) => e.message).join(' ') || 'Sign-in failed. Check your email and password.';
+          this.error = errors.map((e) => e.message).join(' ') || 'Sign-in failed. Check your email and password.';
         }
       } catch (e) {
         this.error = 'Network error. Please try again.';
@@ -79,9 +77,11 @@ const providersJson = JSON.stringify(providers);
       }
     },
     social(provider) {
-      // Provider redirect (OAuth) — falls back to the contact page when the
-      // provider has no client ID configured (dev without env vars).
-      window.location.href = window.__FUSION_AUTH.apiBase + '/api/auth/browser/v1/auth/provider/redirect?provider=' + provider;
+      // Use allauth's normal provider route. It owns the OAuth state,
+      // callback URL, and configured SocialApp, just like the server-rendered
+      // `{% provider_login_url %}` buttons.
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = '/accounts/' + encodeURIComponent(provider) + '/login/?next=' + next;
     },
   }"
   @keydown.escape.window="open = false"
@@ -90,10 +90,12 @@ const providersJson = JSON.stringify(providers);
   <!-- Trigger: the header wires its Log In button to this via the
        fusion:open-login window event (Alpine $dispatch bubbles to window). -->
 
-  <!-- Backdrop + dialog -->
+  <!-- Backdrop + dialog — pre-hidden with inline display:none to prevent FOUC
+       before Alpine initializes. x-show toggles it once Alpine is ready. -->
   <div
     x-show="open"
     x-cloak
+    style="display:none"
     x-transition:enter="transition ease-out duration-200"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
@@ -123,7 +125,7 @@ const providersJson = JSON.stringify(providers);
         {providers.map((p) => (
           <button
             type="button"
-            @click="social('${p.id}')"
+            @click={ `social('${p.id}')` }
             class="flex items-center justify-center gap-2 rounded-lg border border-fu-line bg-fu-card px-4 py-2.5 text-sm font-medium text-fu-ink transition-colors hover:border-fu-link/50 hover:text-fu-link"
           >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={p.icon} /></svg>

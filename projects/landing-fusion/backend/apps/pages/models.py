@@ -742,11 +742,13 @@ class ProductPage(ShowInNavMixin, LandingPage):
         """
         if not self.editions:
             return None
-        target = name.strip().lower()
+        from django.utils.text import slugify
+
+        target = slugify(name)
         for block in self.editions:
             if block.block_type == "editions":
                 for edition in block.value.get("editions", []):
-                    if str(edition.get("name", "")).strip().lower() == target:
+                    if slugify(str(edition.get("name", ""))) == target:
                         return dict(edition)
         return None
 

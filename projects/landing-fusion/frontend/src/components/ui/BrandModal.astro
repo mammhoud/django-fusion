@@ -14,14 +14,12 @@
  * BrandPage.display_mode (page / modal / both) decides whether the
  * "Full brand page" link is offered.
  */
-import { API_BASE } from '@/lib/api';
+import { browserEndpoint } from '@/lib/site';
 
-const apiBase = API_BASE.replace(/\/$/, '');
-const brandUrl = `${apiBase}/apis/brand/`;
+const brandUrl = browserEndpoint('/apis/brand/');
 ---
 
 <div
-  client:load
   x-data="{
     open: false,
     loading: false,
@@ -44,7 +42,7 @@ const brandUrl = `${apiBase}/apis/brand/`;
       this.board = null;
       try {
         if (!this.boards.length) {
-          const res = await fetch('${brandUrl}');
+          const res = await fetch(window.__FUSION_BRAND_URL || '/apis/brand/');
           const data = await res.json();
           this.boards = data.boards || [];
         }
@@ -63,6 +61,7 @@ const brandUrl = `${apiBase}/apis/brand/`;
   <div
     x-show="open"
     x-cloak
+    style="display:none"
     x-transition:enter="transition ease-out duration-200"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
@@ -149,7 +148,8 @@ const brandUrl = `${apiBase}/apis/brand/`;
   </div>
 </div>
 
-<script is:inline>
+<script is:inline define:vars={{ brandUrl }}>
+  window.__FUSION_BRAND_URL = brandUrl;
   // Delegated trigger — any [data-open-brand="<slug>"] element (product
   // lockups, cards, tooltips) opens the brand modal without needing an Alpine
   // scope. Mirrors the backend base.html handler so both roads share one

@@ -33,12 +33,12 @@ class LandingPagesTestCase(TestCase):
         # renders ``title`` + its own ``accent`` ("documents", "Moustafa", …)
         # so the stored titles must stay free of the accent phrase.
         expected_hero = {
-            "/": b"Platforms that ship as",
-            "/about/": b"Mahmoud Ezzat",
-            "/services/": b"Services",
+            "/": b"Digital products for",
+            "/about/": b"A clearer path to market",
+            "/services/": b"From idea to market",
             "/products/": b"Most of what we build, shipped as",
             "/features/": b"Built to ship as",
-            "/blog/": b"The Blog",
+            "/blog/": b"Ideas from real launches",
             "/pricing/": b"Pricing",
             "/contact/": b"Get in Touch",
             "/faq/": b"Frequently Asked Questions",
@@ -148,6 +148,32 @@ class LandingPagesTestCase(TestCase):
         self.assertNotIn(b"<html", response.content)
         self.assertNotIn(b"site-header", response.content)
 
+    def test_direct_page_fragment_api_is_content_only(self):
+        """The Astro LiveFragment endpoint returns Django content, never a document shell."""
+        response = self.client.get("/fragment/pages/products/", HTTP_HX_REQUEST="true")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'id="page-content"', response.content)
+        self.assertIn(b"Formints", response.content)
+        self.assertNotIn(b"<!doctype", response.content.lower())
+        self.assertNotIn(b"<html", response.content.lower())
+        self.assertNotIn(b"site-header", response.content)
+
+        missing = self.client.get("/fragment/pages/does-not-exist/", HTTP_HX_REQUEST="true")
+        self.assertEqual(missing.status_code, 404)
+
+    def test_edition_preview_uses_shared_slug_normalization(self):
+        """Backend preview links resolve the same normalized edition slugs as Astro."""
+        for edition in ("community", "standard", "pro", "cloud"):
+            with self.subTest(edition=edition):
+                response = self.client.get(f"/products/forge-pos/preview/{edition}/")
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(edition.title().encode(), response.content)
+
+        self.assertEqual(
+            self.client.get("/products/forge-pos/preview/not-an-edition/").status_code,
+            404,
+        )
+
     def test_pricing_moved_off_about(self):
         """About no longer carries a pricing section — the /pricing/ page owns the price sheets."""
         response = self.client.get("/about/")
@@ -216,9 +242,108 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"Log In", response.content)
         self.assertIn(b"fusion:open-login", response.content)
         self.assertIn(b"api/auth/browser/v1/auth/login", response.content)
+        self.assertIn(b"GitHub", response.content)
+        self.assertIn(b"Google", response.content)
+
+    def test_login_and_language_controls_in_page_markup(self):
+        """The backend road exposes working auth and language controls."""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Log In", response.content)
+        self.assertIn(b"fusion:open-login", response.content)
+        self.assertIn(b"api/auth/browser/v1/auth/login", response.content)
+        self.assertIn(b"Change language", response.content)
+        self.assertIn(b"data-fusion-i18n=\"nav_login\"", response.content)
+        self.assertIn(b"Svenska", response.content)
+        self.assertIn(b"/accounts/password/reset/", response.content)
+        self.assertIn(b"/learning/dashboard/", response.content)
         # Social buttons (GitHub + Google) are rendered.
         self.assertIn(b"GitHub", response.content)
         self.assertIn(b"Google", response.content)
+
+    def test_english_arabic_content_api_and_fallback(self):
+        """Arabic model overlays merge over canonical Wagtail content."""
+        from apps.content.models.translations import PageTranslation
+
+        arabic = self.client.get("/apis/pages/about/?lang=ar")
+        self.assertEqual(arabic.status_code, 200)
+        payload = arabic.json()
+        self.assertEqual(payload["language"], "ar")
+        self.assertEqual(payload["available_languages"], ["en", "ar"])
+        self.assertEqual(payload["title"], "من نحن")
+        self.assertEqual(payload["hero"]["title"], "شريكك في المنتج الرقمي")
+        # Stats are not translated in the seed and therefore remain available.
+        self.assertTrue(payload["stats"])
+        self.assertEqual(payload["translation_source"], "model")
+        self.assertEqual(payload["translation_language"], "ar")
+
+        english = self.client.get("/apis/pages/about/?lang=en")
+        self.assertEqual(english.status_code, 200)
+        self.assertEqual(english.json()["language"], "en")
+        self.assertEqual(english.json()["title"], AboutPage.objects.first().title)
+        self.assertEqual(english.json()["translation_source"], "model")
+        self.assertEqual(english.json()["translation_language"], "en")
+
+        languages = self.client.get("/apis/content/languages/").json()
+        self.assertEqual(
+            [item["code"] for item in languages["languages"]],
+            ["en", "ar", "sv", "fr", "de", "es", "pt"],
+        )
+        self.assertEqual(languages["coverage"]["ar"], PageTranslation.objects.filter(language="ar").count())
+
+    def test_site_languages_are_seeded_and_served(self):
+        """The SiteLanguage catalog is seeded idempotently and drives the API."""
+        from apps.content.models.languages import SiteLanguage
+
+        # All seven offered languages exist as seeded snippet rows.
+        self.assertEqual(SiteLanguage.objects.count(), 7)
+        active = list(SiteLanguage.active().values_list("code", flat=True))
+        self.assertEqual(active, ["en", "ar", "sv", "fr", "de", "es", "pt"])
+
+        # Swedish is active and carries its native name + flag for the switcher.
+        sv = SiteLanguage.objects.get(code="sv")
+        self.assertTrue(sv.is_active)
+        self.assertEqual(sv.native_name, "Svenska")
+        self.assertEqual(sv.flag, "🇸🇪")
+
+        # The API serves the seeded catalog with UI chrome metadata.
+        data = self.client.get("/apis/content/languages/").json()
+        self.assertEqual(data["ui_languages"], ["en", "ar", "sv", "fr", "de", "es", "pt"])
+        by_code = {item["code"]: item for item in data["languages"]}
+        self.assertEqual(by_code["ar"]["dir"], "rtl")
+        self.assertEqual(by_code["ar"]["native"], "العربية")
+        self.assertEqual(by_code["sv"]["flag"], "🇸🇪")
+
+        # Seeding is idempotent — a second run creates no duplicates.
+        SeedCommand().handle()
+        self.assertEqual(SiteLanguage.objects.count(), 7)
+
+        # Re-running with --force refreshes metadata without adding rows.
+        command = SeedCommand()
+        command.force = True
+        command.handle()
+        self.assertEqual(SiteLanguage.objects.count(), 7)
+        self.assertEqual(SiteLanguage.objects.get(code="de").flag, "🇩🇪")
+
+    def test_arabic_navigation_uses_page_translation_titles(self):
+        """The navigation API translates labels without changing URLs."""
+        response = self.client.get("/apis/navigation/?lang=ar")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["language"], "ar")
+        labels = {item["href"]: item["label"] for item in response.json()["nav_items"]}
+        self.assertEqual(labels.get("/about/"), "من نحن")
+        self.assertEqual(labels.get("/products/"), "المنتجات")
+
+    def test_translation_model_is_unique_per_page_and_language(self):
+        """Wagtail editors cannot accidentally create duplicate locale records."""
+        from django.db import IntegrityError
+        from apps.content.models.translations import PageTranslation
+
+        page = AboutPage.objects.first()
+        existing = PageTranslation.objects.get(page=page, language="en")
+        self.assertIsNotNone(existing)
+        with self.assertRaises(IntegrityError):
+            PageTranslation.objects.create(page=page, language="en")
 
     def test_fusion_render_mode_both_options(self):
         """Seeded content is served under both content-delivery options."""

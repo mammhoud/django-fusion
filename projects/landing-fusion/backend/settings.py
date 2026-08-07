@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "apps.pages",  # Wagtail page models + page templates + seed
     "apps.handlers",  # PageHandler views (HTMX fragment rendering)
     "apps.auth",  # Allauth auth adapters + templates (LandingAuthAdapter + social)
+    "apps.learning",  # Commercial LMS catalog, enrollment, progress, and learner profile
 ]
 
 MIDDLEWARE = [
@@ -100,9 +101,9 @@ TEMPLATES = [
             _ASSETS_DIR / "templates" / "content" / "blocks",
             # Landing-specific shared templates (phase/prompt and future
             # Wagtail-managed documents).
-            BASE_DIR / "backend" / "assets" / "templates",
-            BASE_DIR / "backend" / "assets" / "templates" / "pages",
-            # Legacy — backend-level templates (for backward compat)
+            BASE_DIR.parent / "templates",
+            BASE_DIR.parent / "templates" / "pages",
+            # Backend-local templates (for backward compatibility).
             BASE_DIR / "templates",
         ],
         "APP_DIRS": True,
@@ -256,6 +257,14 @@ SOCIALACCOUNT_PROVIDERS = {
 # modal handles redirects itself; LOGIN_REDIRECT_URL is used by the Django
 # admin fallback.
 LOGIN_REDIRECT_URL = "/"
+
+# ── Learning commerce ─────────────────────────────────────────────
+# The learning core owns entitlements independently of payment providers.
+# Checkout stays disabled until a provider is explicitly configured, avoiding
+# false-positive commercial flows in local/dev environments.
+LEARNING_PAYMENT_PROVIDER = os.environ.get("LEARNING_PAYMENT_PROVIDER", "")
+LEARNING_PAYMENT_ENABLED = bool(LEARNING_PAYMENT_PROVIDER)
+LEARNING_COURSE_CURRENCY = os.environ.get("LEARNING_COURSE_CURRENCY", "USD")
 # login_required redirects land on the server-rendered page (browser flow);
 # the headless API is still consumed directly by the Alpine modal.
 LOGIN_URL = "/accounts/login/"

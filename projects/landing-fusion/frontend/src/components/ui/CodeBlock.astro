@@ -58,7 +58,6 @@ const lines = code.trim().split('\n');
 
     {/* Copy button */}
     <button
-      client:idle
       type="button"
       x-data="{ copied: false }"
       @click="navigator.clipboard.writeText($el.closest('.fusion-code-block').querySelector('code').textContent || ''); copied = true; setTimeout(() => copied = false, 2000)"

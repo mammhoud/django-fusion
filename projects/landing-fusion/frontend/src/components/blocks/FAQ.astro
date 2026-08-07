@@ -65,7 +65,7 @@ const itemsJson = JSON.stringify(items);
       <Skeleton variant="faq-list" count={items.length} />
     </div>
 
-    <div data-hydrate-content class="mx-auto max-w-2xl" client:idle x-data={`{ query: '', items: ${itemsJson} }`}>
+    <div data-hydrate-content class="mx-auto max-w-2xl" x-data={`{ query: '', items: ${itemsJson} }`}>
       {searchable && (
         <div class="faq__search">
           <div class="relative">

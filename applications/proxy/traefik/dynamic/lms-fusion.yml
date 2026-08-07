@@ -1,8 +1,11 @@
 # =============================================================================
-# lms-fusion — Traefik router config
+# lms-fusion — Traefik router config  [DORMANT]
 # =============================================================================
+# Containers "lms-fusion-frontend" and "lms-fusion-backend" NOT currently running.
+# Routes lms-fusion.com / www.lms-fusion.com / lms-fusion.localhost
+# → no backend available.
 # Local development host: lms-fusion.localhost
-# Adjust host rules for production domains.
+# To activate: deploy the LMS-Fusion compose stack.
 # =============================================================================
 
 http:

@@ -9,14 +9,15 @@ import LiveFragment from '@/components/ui/LiveFragment.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
-import { fusionApiUrl } from '@/lib/site';
+import { browserEndpoint } from '@/lib/site';
 
 // The HTMX demo fetches the backend ping fragment — always point at the
 // configured backend (Django), never same-origin (the Astro host has no
 // /fragment/ping/ route and would 404).
-const pingEndpoint = `${fusionApiUrl.replace(/\/+$/, '')}/fragment/ping/`;
+const pingEndpoint = browserEndpoint('/fragment/ping/');
+const hasBackend = Boolean(import.meta.env.PUBLIC_FUSION_API_URL || import.meta.env.PUBLIC_BROWSER_API_URL);
 
-// ── Fetch from backend (SSG build-time), fall back to static content ──
+// ── Fetch backend-owned content at build time ──
 let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
 let pageData: PageData | undefined;
@@ -28,7 +29,7 @@ try {
     cachedPageData('home'),
   ]);
 } catch {
-  // Backend unreachable — use hardcoded fallbacks below
+  // Backend unreachable — page-level components render explicit error states.
 }
 
 const pageHero = pageData?.hero;
@@ -36,7 +37,7 @@ const pageCta = pageData?.cta;
 const pageStats = (pageData?.stats as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 
-// ── Fallbacks (used when backend is unreachable at build time) ──
+// ── Presentation mapping for backend-owned content ──
 const techStats = pageStats?.map((s: any) => ({
   label: String(s.label || ''),
   value: Number(s.value || 0),
@@ -49,54 +50,31 @@ const stackItems = pageFeatures?.map((f: any) => ({
   description: String(f.description || ''),
 }));
 
-const productCards = [
-  {
-    name: 'django-fusion',
-    tag: 'component system, routing, fragment rendering',
-    description: 'The backbone of every structa.cloud site. Component registry, HtmxDetails, PageHandler views, and {% comp %} templates, shared across all Django projects.',
-    href: '/products/cms/',
-    icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
-  },
-  {
-    name: 'Syntara',
-    tag: 'AI chat customizer, MCP server',
-    description: 'AI chat customizer. Embed ceptor-ai powered chat into any site: branded, behavior-ruled, multi-model. Currently under development.',
-    href: '/products/cypercloud/',
-    icon: 'M9.8 15.5A6.7 6.7 0 0112 15a6.7 6.7 0 012.2.5M12 3a9 9 0 100 18 9 9 0 000-18zm-1 9a1 1 0 112 0 1 1 0 01-2 0z',
-  },
-  {
-    name: 'vResume',
-    tag: 'cloud resume platform, SaaS, CI/CD',
-    description: 'Create, update, and publish professional resumes with modern templates and Syntara-powered AI summaries. Cloud-hosted at vresume.structa.cloud.',
-    href: 'https://vresume.structa.cloud',
-    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z',
-    external: true,
-  },
-  {
-    name: 'Formints',
-    tag: 'desktop POS, Tauri 2, Rust, React',
-    description: 'Desktop point-of-sale in four editions: Community (open source), Standard (sidecar + cloud sync), Pro (multi-terminal, $79/mo), Cloud (fully hosted). Built on Tauri 2 + Rust.',
-    href: '/products/forge-pos/',
-    icon: 'M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3',
-  },
-];
+const productCards = (pageData?.products || []).map((product: any) => ({
+  name: String(product.title || ''),
+  tag: String(product.category || ''),
+  description: String(product.excerpt || product.tagline || ''),
+  href: String(product.href || `/products/${product.slug}/`),
+  icon: String(product.logo_style || ''),
+  external: String(product.href || '').startsWith('http'),
+}));
 ---
 
 <Layout
-  title={pageData?.title || 'Structa Cloud'}
-  description={pageData?.search_description || 'Full-stack engineering. Django, Wagtail, and AI-powered systems. Built in the open, shipped as documents. By Mahmoud Ezzat Moustafa.'}
+  title={pageData?.title}
+  description={pageData?.search_description}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
   pageSlug="home"
 >
   <Hero
-    eyebrow={pageHero?.badge || 'structa.cloud, full-stack engineering'}
-    heading={pageHero?.title || 'Platforms that ship as'}
+    eyebrow={pageHero?.badge}
+    heading={pageHero?.title}
     accent='documents'
-    intro={pageHero?.subtitle || 'Structa Cloud builds server-rendered web platforms, AI tools, and open-source libraries. Every page ships as finished HTML in one response.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore the stack', href: '/products' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'About the engineer', href: '/about' }}
+    intro={pageHero?.subtitle}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : undefined}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : undefined}
     status='200 OK · text/html'
   />
 
@@ -114,10 +92,10 @@ const productCards = [
     <div class='container-fusion'>
       <div class='mb-14 max-w-2xl'>
         <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
-          One monorepo, six projects
+          {pageFeatures?.[0]?.title || pageData?.title || 'One monorepo, six projects'}
         </h2>
         <p class='mt-3 max-w-xl text-fu-muted'>
-          Every site, library, and tool shares one repository, one config, one CI pipeline. Django backend, Astro frontend, HTMX between.
+          {pageFeatures?.[0]?.description || pageData?.search_description || 'Every site, library, and tool shares one repository, one config, one CI pipeline.'}
         </p>
       </div>
 
@@ -170,10 +148,10 @@ const productCards = [
       <div class='mb-14 max-w-2xl'>
         <p class='tag-marker mb-4'>products</p>
         <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
-          What we ship
+          {pageData?.title || 'What we ship'}
         </h2>
         <p class='mt-3 max-w-xl text-fu-muted'>
-          Open-source libraries, cloud platforms, and desktop apps from one codebase.
+          {pageData?.search_description || 'Open-source libraries, cloud platforms, and desktop apps from one codebase.'}
         </p>
       </div>
 
@@ -232,14 +210,13 @@ const productCards = [
           <div class='mb-4 flex-1 rounded-md border border-fu-line bg-fu-card p-4 font-mono text-sm' id='htmx-demo-target'>
             <span class='text-fu-muted'>Click &quot;Fetch from server&quot; to see HTMX in action.</span>
           </div>
-          <button
-            class='btn-secondary w-full'
-            hx-get={pingEndpoint}
-            hx-target='#htmx-demo-target'
-            hx-swap='innerHTML'
-          >
-            Fetch from server
-          </button>
+          {hasBackend ? (
+            <button class='btn-secondary w-full' hx-get={pingEndpoint} hx-target='#htmx-demo-target' hx-swap='innerHTML'>
+              Fetch from server
+            </button>
+          ) : (
+            <p class='live-fragment__fallback'>Server demo unavailable in this static build.</p>
+          )}
         </div>
 
         <!-- Alpine: Counter -->
@@ -275,10 +252,10 @@ const productCards = [
   {pageData ? <LiveFragment route='/' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
 
   <CTA
-    heading={pageCta?.title || 'Built in the open, shipped as HTML'}
-    intro={pageCta?.subtitle || "Community editions and the core libraries are on GitHub at github.com/mammhoud. Paid editions are commercial."}
-    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
-    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    heading={pageCta?.title}
+    intro={pageCta?.subtitle}
+    ctaLabel={pageCta?.primary_cta?.label}
+    ctaHref={pageCta?.primary_cta?.href}
     secondaryCta={pageCta?.secondary_cta ? { label: pageCta.secondary_cta.label, href: pageCta.secondary_cta.href } : undefined}
   />
 

@@ -29,7 +29,7 @@ const { stats = defaultStats } = Astro.props;
         <Skeleton variant="stats-row" count={stats.length} />
       </div>
 
-      <div data-hydrate-content class="stats__grid" client:visible>
+      <div data-hydrate-content class="stats__grid">
         {stats.map((stat) => (
           <div
             class="stats__item"

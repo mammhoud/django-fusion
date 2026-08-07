@@ -133,7 +133,6 @@ const sourceMarkup = [
     <!-- ── View Source panel: the hero's own markup, shown by default ── -->
     <div
       class="hero__source-toggle"
-      client:load
       x-data="{ showSource: true }"
       x-intersect="$el.classList.add('reveal-visible')"
       style="transition-delay: 240ms"

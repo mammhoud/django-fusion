@@ -1,3 +1,13 @@
+# =============================================================================
+# CRM — Traefik router config  [DORMANT]
+# =============================================================================
+# Container "crm-website" is NOT currently running.
+# Routes crm.structa.cloud / www.crm.structa.cloud → no backend available.
+# DNS records for these domains do not exist (NXDOMAIN).
+# TLS certResolver removed to suppress ACME noise — uses fallback cert.
+# To activate: deploy the CRM compose stack and restore certResolver.
+# =============================================================================
+
 http:
   routers:
     crm-site-http:
@@ -11,8 +21,6 @@ http:
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: crm-site-service
-      tls:
-        certResolver: letsencrypt-http
     crm-site-media-http:
       rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
@@ -25,8 +33,6 @@ http:
       middlewares: [compress, security-headers]
       service: crm-site-media-service
       priority: 100
-      tls:
-        certResolver: letsencrypt-http
   services:
     crm-site-service:
       loadBalancer:

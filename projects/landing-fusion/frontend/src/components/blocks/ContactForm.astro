@@ -1,5 +1,5 @@
 ---
-import { fusionApiUrl } from '@/lib/site';
+import { browserEndpoint } from '@/lib/site';
 
 interface ContactMethod {
   type: string;
@@ -37,7 +37,7 @@ const methods: ContactMethod[] = propMethods && propMethods.length > 0
     { type: 'address', label: 'LinkedIn', value: 'linkedin.com/in/mammhoud', href: 'https://linkedin.com/in/mammhoud' },
   ];
 
-const contactEndpoint = `${fusionApiUrl}/fragment/contact/`.replace(/\/+/g, '/');
+const contactEndpoint = browserEndpoint('/fragment/contact/');
 
 const methodIcons: Record<string, string> = {
   email: 'M3 8l7.5 5L18 8M4 19h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z',
@@ -79,7 +79,6 @@ const methodIcons: Record<string, string> = {
 
       <div class="contact-form__form">
         <form
-          client:idle
           class="card p-8"
           x-data="{
             form: { name: '', email: '', subject: '', topic: '', message: '' },

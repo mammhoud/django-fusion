@@ -1,3 +1,13 @@
+# =============================================================================
+# Structa Cloud (core) — Traefik router config  [DORMANT]
+# =============================================================================
+# Container "lms-web" is NOT currently running.
+# Route core.structa.cloud → no backend available.
+# This was the original structa.cloud site — now replaced by landing-fusion.yml
+# which serves structa.cloud and www.structa.cloud via landing-fusion-backend.
+# To activate: deploy the LMS compose stack.
+# =============================================================================
+
 http:
   routers:
     structa-core-http:

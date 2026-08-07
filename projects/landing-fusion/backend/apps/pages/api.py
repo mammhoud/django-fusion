@@ -11,9 +11,11 @@ Endpoints:
 Mirrors lms-fusion's /apis/ pattern but trimmed to landing needs.
 """
 
+import copy
 import logging
 
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.models import Page
 
@@ -212,7 +214,67 @@ def navigation_api(request):
     except Exception:
         nav_items = _navigation_from_wagtail_tree(request)
 
-    return JsonResponse({"nav_items": nav_items})
+    language = _requested_content_language(request)
+    if language == "ar":
+        try:
+            from apps.content.models.translations import PageTranslation
+            from apps.pages.models import HomePage
+
+            landing_root = HomePage.objects.first()
+            landing_pages = (
+                landing_root.get_descendants(inclusive=True).live()
+                if landing_root is not None
+                else Page.objects.none()
+            )
+            for item in nav_items:
+                slug = str(item.get("href", "")).strip("/").split("/")[-1] or "home"
+                page = landing_pages.filter(slug=slug).first()
+                translation = PageTranslation.for_page(page, "ar") if page else None
+                if translation and translation.title:
+                    item["label"] = translation.title
+        except Exception:
+            logger.exception("navigation translation lookup failed")
+    return JsonResponse({"nav_items": nav_items, "language": language, "available_languages": ["en", "ar"]})
+
+
+def content_languages_api(request):
+    """GET /apis/content/languages/ — editorial languages and coverage.
+
+    The language catalog is a seeded, admin-editable ``SiteLanguage`` snippet
+    (mirroring the Astro ``LANG_META`` table). If the snippet is empty or
+    unavailable (fresh DB before seeding), a static en/ar fallback is served so
+    the switcher never loses the editorial languages.
+    """
+    from apps.content.models.languages import SiteLanguage
+    from apps.content.models.translations import PageTranslation
+
+    try:
+        languages = [lang.as_dict() for lang in SiteLanguage.active().order_by("sort_order", "code")]
+    except Exception:
+        logger.exception("content_languages_api SiteLanguage query failed")
+        languages = []
+
+    if not languages:
+        # Fallback — mirrors the seeded DEFAULT_SITE_LANGUAGES so a fresh DB
+        # (before the seed command runs) still reports the editorial pair.
+        languages = [
+            {"code": "en", "name": "English", "native": "English", "dir": "ltr", "flag": "🇬🇧"},
+            {"code": "ar", "name": "Arabic", "native": "العربية", "dir": "rtl", "flag": "🇸🇦"},
+        ]
+
+    # Coverage stays en/ar — the only languages with model-level editorial
+    # overlays today (PageTranslation). Other offered languages fall back to
+    # English UI chrome + canonical content.
+    pages = Page.objects.live().filter(depth__gt=1)
+    coverage = {
+        language: PageTranslation.objects.filter(page__in=pages, language=language).count()
+        for language in ("en", "ar")
+    }
+    return JsonResponse({
+        "languages": languages,
+        "coverage": coverage,
+        "ui_languages": [lang["code"] for lang in languages],
+    })
 
 
 def _navigation_from_wagtail_tree(request):
@@ -345,7 +407,12 @@ SECTION_ITEM_LIST_KEYS = {
 
 
 def _page_to_dict(page) -> dict:
-    """Serialize a Wagtail page to a frontend-consumable dict."""
+    """Serialize a Wagtail page to a frontend-consumable dict.
+
+    This is the canonical English/base representation. Locale overlays are
+    applied by ``page_data_api`` after serialization so every caller retains a
+    predictable fallback payload.
+    """
     from apps.pages.models import AboutPage, ProductsPage, FeaturesPage
     from apps.content.blocks import SECTION_STACK_FIELDS
 
@@ -478,8 +545,20 @@ def _page_to_dict(page) -> dict:
         ]
 
     # Product listing (ProductsPage) — one card per live ProductPage child.
-    if hasattr(page, "get_product_cards") and page.get_product_cards():
-        data["products"] = page.get_product_cards()
+    # The home document also exposes the catalog so every Astro road can render
+    # the same backend-owned product cards without a second content source.
+    if hasattr(page, "get_product_cards"):
+        product_cards = page.get_product_cards()
+        if product_cards:
+            data["products"] = product_cards
+    elif page.__class__.__name__ == "HomePage":
+        from apps.pages.models import ProductsPage
+
+        products_page = ProductsPage.objects.first()
+        if products_page:
+            product_cards = products_page.get_product_cards()
+            if product_cards:
+                data["products"] = product_cards
 
     # Contact section
     if hasattr(page, "contact") and page.contact:
@@ -495,18 +574,99 @@ def _page_to_dict(page) -> dict:
     return data
 
 
+def page_fragment_api(request, slug="home"):
+    """GET /fragment/pages/<slug>/ — render one backend content fragment.
+
+    The public Astro shell lives behind the frontend proxy, so a fragment
+    request must not fetch ``/<slug>/`` directly: that would return the Astro
+    document again. This endpoint deliberately renders the shared Django
+    content partial and is safe to swap into an Astro shell.
+    """
+    page = _get_wagtail_page(slug)
+    if page is None:
+        return JsonResponse({"error": "Page not found"}, status=404)
+    specific = page.specific
+    language = _requested_content_language(request)
+    return render(
+        request,
+        "pages/fragments/page.html",
+        {
+            "page": specific,
+            "content": specific,
+            "localized_content": _apply_page_translation(specific, _page_to_dict(specific), language),
+            "content_language": language,
+            "site_name": "Structa Cloud",
+            "fusion_render_first": get_effective_render_first(request),
+            "fusion_render_mode": "fusion-render",
+        },
+    )
+
+
+def _deep_merge(base: dict, overlay: dict) -> dict:
+    """Merge nested translation overrides without mutating the base payload."""
+    result = copy.deepcopy(base)
+    for key, value in overlay.items():
+        if isinstance(result.get(key), dict) and isinstance(value, dict):
+            result[key] = _deep_merge(result[key], value)
+        else:
+            result[key] = value
+    return result
+
+
+def _requested_content_language(request) -> str:
+    """Return the requested editorial language, limited to English/Arabic."""
+    requested = (request.GET.get("lang") or "").lower().split("-")[0]
+    if requested in {"en", "ar"}:
+        return requested
+    cookie = (request.COOKIES.get("django_language") or "").lower().split("-")[0]
+    if cookie in {"en", "ar"}:
+        return cookie
+    header = (request.headers.get("Accept-Language") or "").lower()
+    if header.startswith("ar") or ",ar" in header:
+        return "ar"
+    return "en"
+
+
+def _apply_page_translation(page, data: dict, language: str) -> dict:
+    """Apply an optional PageTranslation overlay and expose locale metadata."""
+    from apps.content.models.translations import PageTranslation
+
+    translation = PageTranslation.for_page(page, language)
+    requested_translation = translation = PageTranslation.for_page(page, language)
+    if translation is None and language != "en":
+        # Arabic may be partial; English is the explicit final fallback.
+        translation = PageTranslation.for_page(page, "en")
+    if translation is not None:
+        data = _deep_merge(data, translation.as_overrides())
+    data["language"] = language
+    data["available_languages"] = ["en", "ar"]
+    if requested_translation is not None:
+        data["translation_source"] = "model"
+    elif translation is not None:
+        data["translation_source"] = "fallback"
+    else:
+        data["translation_source"] = "canonical"
+    data["translation_language"] = translation.language if translation is not None else "en"
+    return data
+
+
 def page_data_api(request, slug):
     """GET /apis/pages/<slug>/ — full page data as JSON.
 
-    Returns all StreamField content for the requested Wagtail page.
-    Used by Astro pages to render server-driven content.
+    ``?lang=en|ar`` selects the editorial overlay. Missing Arabic fields fall
+    back to the canonical Wagtail content, so partial translations never blank
+    a page. The same response contract is used by Astro and other clients.
     """
     page = _get_wagtail_page(slug)
     if page is None:
         return JsonResponse({"error": "Page not found"}, status=404)
 
     try:
-        data = _page_to_dict(page.specific)
+        data = _apply_page_translation(
+            page.specific,
+            _page_to_dict(page.specific),
+            _requested_content_language(request),
+        )
         return JsonResponse(data)
     except Exception as exc:
         logger.exception("page_data_api error for slug=%s", slug)
@@ -603,14 +763,38 @@ def page_list_api(request):
 # ── Newsletter Subscribe ────────────────────────────────────────────────────
 
 def auth_status_api(request):
-    """GET /apis/auth/status/ — current auth state for the frontend."""
+    """GET /apis/auth/status/ — auth state plus learner entitlements.
+
+    The account remains owned by allauth; learning only contributes a compact
+    summary for the shared Astro header/profile dropdown.
+    """
     user = request.user if request.user.is_authenticated else None
+    learning = {"active": 0, "completed": 0, "next": None}
+    if user:
+        try:
+            from apps.learning.models import Enrollment
+
+            rows = Enrollment.objects.filter(user=user)
+            active = rows.filter(status=Enrollment.Status.ACTIVE)
+            next_enrollment = active.select_related("course").order_by("-last_accessed_at", "-enrolled_at").first()
+            learning = {
+                "active": active.count(),
+                "completed": rows.filter(status=Enrollment.Status.COMPLETED).count(),
+                "next": {
+                    "title": next_enrollment.course.title,
+                    "href": next_enrollment.course.get_absolute_url(),
+                    "progress": next_enrollment.progress,
+                } if next_enrollment else None,
+            }
+        except Exception:
+            logger.exception("auth_status learning summary failed")
     return JsonResponse({
         "authenticated": user is not None,
         "user": {
             "email": user.email,
             "display": user.email.split("@")[0] if user else None,
         } if user else None,
+        "learning": learning,
     })
 
 

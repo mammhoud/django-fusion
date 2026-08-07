@@ -6,11 +6,15 @@
  * ``applyLang()`` in ``lib/translations.ts``).  Updates ``<html lang>`` and
  * ``dir`` immediately so RTL languages re-flow without a page reload.
  *
- * The full LANG_META table is injected into the Alpine scope via a small
- * JSON blob so the component works without importing the module at runtime.
+ * Hydration: the bundled ``LANG_META`` table is injected as the immediate
+ * (offline-safe) source, then ``GET /apis/content/languages/`` replaces it
+ * with the Wagtail ``SiteLanguage`` catalog (seeded + admin-editable). If the
+ * backend is unreachable the bundled table stays — the switcher never breaks.
  */
 import { LANG_META, LANG_CODES } from '@/lib/translations';
+import { fetchContentLanguages } from '@/lib/api';
 
+// Bundled fallback — mirrors the seeded DEFAULT_SITE_LANGUAGES catalog.
 const langs = LANG_CODES.map((code) => ({
   code,
   native: LANG_META[code].native,
@@ -32,24 +36,43 @@ const langsJson = JSON.stringify(langs);
     open: false,
     active: window.__FUSION_DEFAULT_LANG,
     langs: window.__FUSION_LANGS,
-    init() {
+    async init() {
+      // Hydrate from the backend catalog; the bundled table is the fallback.
       try {
-        const stored = localStorage.getItem('fusion-lang');
-        if (stored && this.langs.some((l) => l.code === stored)) {
-          this.active = stored;
-          this.apply(stored);
+        const data = await fetchContentLanguages();
+        if (data && Array.isArray(data.languages) && data.languages.length) {
+          // Merge: server order wins, bundled meta fills any missing detail.
+          this.langs = data.languages.map((lang) => {
+            const bundled = window.__FUSION_LANGS.find((l) => l.code === lang.code);
+            return {
+              code: lang.code,
+              native: lang.native || bundled?.native || lang.code,
+              flag: lang.flag || bundled?.flag || '🌐',
+              dir: lang.dir === 'rtl' ? 'rtl' : 'ltr',
+            };
+          });
         }
-      } catch { /* noop */ }
+      } catch { /* backend offline — keep bundled catalog */ }
+
+      let stored = null;
+      try { stored = localStorage.getItem('fusion-lang'); } catch { /* noop */ }
+      const browser = (navigator.language || '').split('-')[0];
+      const initial = [stored, browser, this.active].find((code) =>
+        code && this.langs.some((lang) => lang.code === code)
+      );
+      if (initial) this.apply(initial, true);
     },
-    apply(code: string) {
+    apply(code, persist = true) {
       const meta = this.langs.find((l) => l.code === code);
       if (!meta) return;
       document.documentElement.lang = code;
       document.documentElement.dir = meta.dir;
-      try {
-        localStorage.setItem('fusion-lang', code);
-        document.cookie = 'django_language=' + encodeURIComponent(code) + '; path=/; max-age=31536000; SameSite=Lax';
-      } catch { /* noop */ }
+      if (persist) {
+        try {
+          localStorage.setItem('fusion-lang', code);
+          document.cookie = 'django_language=' + encodeURIComponent(code) + '; path=/; max-age=31536000; SameSite=Lax';
+        } catch { /* noop */ }
+      }
       this.active = code;
       this.open = false;
       // Dispatch so any Alpine components that need to re-render can listen.
@@ -60,6 +83,7 @@ const langsJson = JSON.stringify(langs);
     },
   }"
   @keydown.escape.window="open = false"
+  @click.outside="open = false"
 >
   <button
     type="button"
@@ -99,6 +123,7 @@ const langsJson = JSON.stringify(langs);
         class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-fu-card"
         :class="active === lang.code ? 'text-fu-link font-semibold' : 'text-fu-ink'"
         @click="apply(lang.code)"
+        @keydown.enter.prevent="apply(lang.code)"
       >
         <span class="text-base" aria-hidden="true" x-text="lang.flag"></span>
         <span x-text="lang.native"></span>
