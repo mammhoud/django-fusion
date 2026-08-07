@@ -810,6 +810,17 @@ fn get_user_actions(app: AppHandle, limit: Option<i64>) -> Result<Vec<db::models
     user_actions::get_user_actions(&db_path, limit)
 }
 
+#[tauri::command]
+fn get_user_actions_for_entity(
+    app: AppHandle,
+    entity_type: String,
+    entity_id: i32,
+    limit: Option<i64>,
+) -> Result<Vec<db::models::UserAction>, String> {
+    let db_path = get_db_path(&app)?;
+    user_actions::get_user_actions_for_entity(&db_path, &entity_type, entity_id, limit)
+}
+
 // ---- Recipe Notes commands ----
 #[tauri::command]
 fn get_recipe_notes(app: AppHandle, recipe_id: i32) -> Result<Vec<db::models::Note>, String> {
@@ -900,6 +911,69 @@ fn generate_payrolls(app: AppHandle, period_start: String, period_end: String) -
     let created = payrolls::generate_payrolls(&db_path, period_start, period_end)?;
     log_user_action(&db_path, "generate_payrolls", "payroll", 0, serde_json::json!({ "created": created.len() }));
     Ok(created)
+}
+
+// ---- Finance & Budget commands ----
+#[tauri::command]
+fn get_finance_transactions(app: AppHandle) -> Result<Vec<db::models::FinanceTransaction>, String> {
+    let db_path = get_db_path(&app)?;
+    finance::get_finance_transactions(&db_path)
+}
+
+#[tauri::command]
+fn add_finance_transaction(app: AppHandle, tx: db::models::NewFinanceTransaction) -> Result<db::models::FinanceTransaction, String> {
+    let db_path = get_db_path(&app)?;
+    let created = finance::add_finance_transaction(&db_path, tx)?;
+    log_user_action(
+        &db_path,
+        "add_finance_transaction",
+        "finance",
+        created.id,
+        serde_json::json!({ "direction": created.direction, "amount": created.amount, "category": created.category_id }),
+    );
+    Ok(created)
+}
+
+#[tauri::command]
+fn update_finance_transaction(app: AppHandle, id: i32, update: db::models::UpdateFinanceTransaction) -> Result<db::models::FinanceTransaction, String> {
+    let db_path = get_db_path(&app)?;
+    finance::update_finance_transaction(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_finance_transaction(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    finance::delete_finance_transaction(&db_path, id)
+}
+
+#[tauri::command]
+fn get_budgets(app: AppHandle) -> Result<Vec<db::models::Budget>, String> {
+    let db_path = get_db_path(&app)?;
+    finance::get_budgets(&db_path)
+}
+
+#[tauri::command]
+fn add_budget(app: AppHandle, budget: db::models::NewBudget) -> Result<db::models::Budget, String> {
+    let db_path = get_db_path(&app)?;
+    finance::add_budget(&db_path, budget)
+}
+
+#[tauri::command]
+fn update_budget(app: AppHandle, id: i32, update: db::models::UpdateBudget) -> Result<db::models::Budget, String> {
+    let db_path = get_db_path(&app)?;
+    finance::update_budget(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_budget(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    finance::delete_budget(&db_path, id)
+}
+
+#[tauri::command]
+fn get_finance_summary(app: AppHandle) -> Result<db::models::FinanceSummary, String> {
+    let db_path = get_db_path(&app)?;
+    finance::get_finance_summary(&db_path)
 }
 
 // ---- Report Metadata commands ----
@@ -1610,6 +1684,7 @@ pub fn run() {
             // User Action audit log
             add_user_action,
             get_user_actions,
+            get_user_actions_for_entity,
             // Tax Reports
             get_tax_reports,
             add_tax_report,
@@ -1624,6 +1699,15 @@ pub fn run() {
             add_payroll,
             update_payroll,
             delete_payroll,
+            get_finance_transactions,
+            add_finance_transaction,
+            update_finance_transaction,
+            delete_finance_transaction,
+            get_budgets,
+            add_budget,
+            update_budget,
+            delete_budget,
+            get_finance_summary,
             generate_payrolls,
             // Report Metadata
             get_report_metadata,

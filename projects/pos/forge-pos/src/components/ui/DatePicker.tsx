@@ -214,7 +214,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                                   className={`w-full px-3 py-2 text-left rtl:text-right text-sm hover:bg-primary/20 
                                     dark:hover:bg-primary/30 transition-colors
                                     ${selectedMonth === originalIdx 
-                                      ? 'bg-primary text-white hover:bg-primary/90' 
+                                      ? 'bg-primary text-primary-content hover:bg-primary/90' 
                                       : 'text-base-content'
                                     }`}
                                 >
@@ -303,7 +303,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                                 className={`w-full px-3 py-2 text-left rtl:text-right text-sm hover:bg-primary/20 
                                   dark:hover:bg-primary/30 transition-colors
                                   ${selectedYear === year 
-                                    ? 'bg-primary text-white hover:bg-primary/90' 
+                                    ? 'bg-primary text-primary-content hover:bg-primary/90' 
                                     : 'text-base-content'
                                   }`}
                               >
@@ -346,7 +346,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       className={`
                         p-2 text-sm rounded hover:bg-primary hover:text-white transition-colors
                         ${isSelected 
-                          ? 'bg-primary text-white font-semibold' 
+                          ? 'bg-primary text-primary-content font-semibold' 
                           : 'text-base-content hover:bg-primary/20'}
                       `}
                     >

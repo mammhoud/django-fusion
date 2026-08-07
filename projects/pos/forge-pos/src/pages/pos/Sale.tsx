@@ -1412,7 +1412,7 @@ export default function Sale() {
                             product.unit
                           )
                         }
-                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white bg-primary/90 hover:bg-primary
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-primary-content bg-primary/90 hover:bg-primary
                           rounded-lg transition-all active:scale-90 text-sm sm:text-base"
                         aria-label={t('sale.increaseQuantity')}
                       >
@@ -2638,7 +2638,7 @@ export default function Sale() {
           </p>
           <button
             onClick={() => setShowPDFSuccessDialog(false)}
-            className="w-full py-3 px-4 bg-success hover:bg-success/90 text-white rounded-xl font-semibold
+            className="w-full py-3 px-4 bg-success hover:bg-success/90 text-success-content rounded-xl font-semibold
               transition-all duration-300 flex items-center justify-center gap-2"
           >
             <span className="ri-check-double-line ri-16px" />

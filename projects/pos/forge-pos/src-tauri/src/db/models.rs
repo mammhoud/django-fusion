@@ -1170,3 +1170,102 @@ pub struct UpdatePayroll {
     pub total_pay: Option<f64>,
     pub status: Option<String>,
 }
+
+// ---- Finance & Budget ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::finance_transactions)]
+pub struct FinanceTransaction {
+    pub id: i32,
+    pub date: String,
+    pub category_id: String,
+    pub direction: String,
+    pub amount: f64,
+    pub description: Option<String>,
+    pub reference: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::finance_transactions)]
+pub struct NewFinanceTransaction {
+    pub date: String,
+    pub category_id: String,
+    pub direction: String,
+    pub amount: f64,
+    pub description: Option<String>,
+    pub reference: Option<String>,
+}
+
+#[derive(Debug, AsChangeset, Deserialize, Default)]
+#[diesel(table_name = crate::db::schema::finance_transactions)]
+pub struct UpdateFinanceTransaction {
+    pub date: Option<String>,
+    pub category_id: Option<String>,
+    pub direction: Option<String>,
+    pub amount: Option<f64>,
+    pub description: Option<Option<String>>,
+    pub reference: Option<Option<String>>,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::budgets)]
+pub struct Budget {
+    pub id: i32,
+    pub category_id: Option<String>,
+    pub period_start: String,
+    pub period_end: String,
+    pub amount: f64,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::budgets)]
+pub struct NewBudget {
+    pub category_id: Option<String>,
+    pub period_start: String,
+    pub period_end: String,
+    pub amount: f64,
+}
+
+#[derive(Debug, AsChangeset, Deserialize, Default)]
+#[diesel(table_name = crate::db::schema::budgets)]
+pub struct UpdateBudget {
+    pub category_id: Option<Option<String>>,
+    pub period_start: Option<String>,
+    pub period_end: Option<String>,
+    pub amount: Option<f64>,
+}
+
+/// Row for the finance summary — income/expense totals per category (or global).
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FinanceCategorySummary {
+    pub category_id: String,
+    pub direction: String,
+    pub total: f64,
+}
+
+/// Row for budget tracking — budget vs. actual spend per category (or global).
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct BudgetTracking {
+    pub budget_id: i32,
+    pub category_id: Option<String>,
+    pub period_start: String,
+    pub period_end: String,
+    pub budget_amount: f64,
+    pub spent: f64,
+    pub remaining: f64,
+    pub over: bool,
+}
+
+/// Aggregated finance summary returned to the UI.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FinanceSummary {
+    pub total_income: f64,
+    pub total_expense: f64,
+    pub net: f64,
+    pub income_by_category: Vec<FinanceCategorySummary>,
+    pub expense_by_category: Vec<FinanceCategorySummary>,
+    pub budgets: Vec<BudgetTracking>,
+}

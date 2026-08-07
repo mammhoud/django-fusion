@@ -447,7 +447,7 @@ export default function Recipes() {
           </div>
           <button
             onClick={() => setShowAddRecipe(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-warning text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-warning text-warning-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
           >
             <span className="ri-add-line" /> {t('recipes.addRecipe')}
           </button>
@@ -463,7 +463,7 @@ export default function Recipes() {
               <Card padding="md">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-warning flex items-center justify-center text-white text-lg">
+                    <div className="w-10 h-10 rounded-lg bg-warning flex items-center justify-center text-warning-content text-lg">
                       <span className="ri-restaurant-2-line" />
                     </div>
                     <div>
@@ -574,7 +574,7 @@ export default function Recipes() {
           <button onClick={() => setShowAddRecipe(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleCreateRecipe}
             disabled={newRecipe.product_id === 0 || newRecipe.yield_quantity <= 0 || newRecipeIngredients.length === 0}
-            className="flex-1 py-2.5 rounded-lg bg-warning text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-warning text-warning-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
             <span className="ri-save-3-line" /> {t('recipes.createRecipeTitle')}
           </button>
         </>}
@@ -633,7 +633,7 @@ export default function Recipes() {
               <button onClick={handleAddNewIngredient} disabled={newIngredientInput.ingredient_id === 0 || newIngredientInput.quantity === 0}
                 data-testid="add-ingredient"
                 aria-label={t('recipes.addIngredient')}
-                className="w-full h-full flex items-center justify-center bg-warning text-white rounded-lg disabled:opacity-50 text-xs font-bold">
+                className="w-full h-full flex items-center justify-center bg-warning text-warning-content rounded-lg disabled:opacity-50 text-xs font-bold">
                 <span className="ri-add-line ri-16px" />
               </button>
             </div>
@@ -719,7 +719,7 @@ export default function Recipes() {
                 <button onClick={handleAddEditIngredient} disabled={editIngredientInput.ingredient_id === 0 || editIngredientInput.quantity === 0}
                   data-testid="add-edit-ingredient"
                   aria-label={t('recipes.addIngredient')}
-                  className="w-full h-full flex items-center justify-center bg-warning text-white rounded-lg disabled:opacity-50 text-xs font-bold">
+                  className="w-full h-full flex items-center justify-center bg-warning text-warning-content rounded-lg disabled:opacity-50 text-xs font-bold">
                   <span className="ri-add-line" />
                 </button>
               </div>
