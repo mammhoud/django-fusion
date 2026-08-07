@@ -163,7 +163,7 @@ const faqItems = pageFaq?.map((f: any) => ({
           <p class='tag-marker mb-4'>editions &amp; pricing</p>
           <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Editions</h2>
         </div>
-        <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', editions.length === 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3']}>
+        <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', editions.length === 4 ? 'xl:grid-cols-4' : editions.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3']}>
           {editions.map((ed) => (
             <div class:list={['card edition__card relative flex flex-col p-6 sm:p-8', editionCardClass(ed.tier)]}>
               {ed.tier === 'featured' && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}

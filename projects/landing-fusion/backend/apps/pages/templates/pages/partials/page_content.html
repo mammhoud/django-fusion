@@ -189,7 +189,7 @@
         </div>
         {% if product.tagline %}<p style="margin:.5rem 0 0;font-size:.875rem;color:hsl(var(--fu-text) / .7);">{{ product.tagline }}</p>{% endif %}
       </div>
-      <div class="editions__grid grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="editions__grid grid items-stretch gap-6 md:grid-cols-2 {% if product.editions|length == 4 %}xl:grid-cols-4{% elif product.editions|length == 2 %}lg:grid-cols-2{% else %}lg:grid-cols-3{% endif %}">
         {% for edition in product.editions %}
         <article class="card edition__card relative flex flex-col p-6 sm:p-8{% if edition.tier == 'featured' %} edition__card--featured md:-translate-y-1{% elif edition.tier == 'managed' %} edition__card--managed overflow-hidden{% elif edition.tier == 'outline' %} edition__card--outline{% endif %} reveal" style="--reveal-i: {{ forloop.counter0 }}" x-data x-intersect="$el.classList.add('reveal-visible')">
           {% if edition.tier == 'featured' %}<span class="badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">most shipped</span>{% elif edition.tier == 'managed' %}<span class="managed-ribbon" aria-hidden="true">managed</span>{% endif %}
