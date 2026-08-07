@@ -486,6 +486,17 @@ pub struct Employee {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
+    // ---- Employee detail & payroll fields (Formint wizard) ----
+    pub address: Option<String>,
+    pub date_of_birth: Option<String>,
+    pub national_id: Option<String>,
+    pub emergency_contact: Option<String>,
+    pub pay_frequency: String,
+    pub hourly_rate: f64,
+    pub bank_name: Option<String>,
+    pub bank_account: Option<String>,
+    pub tax_number: Option<String>,
+    pub notes: Option<String>,
 }
 
 #[derive(Debug, Insertable, Deserialize)]
@@ -496,6 +507,28 @@ pub struct NewEmployee {
     pub email: Option<String>,
     pub employee_type_id: i32,
     pub salary: f64,
+    #[serde(default)]
+    pub joined_at: Option<String>,
+    #[serde(default)]
+    pub address: Option<String>,
+    #[serde(default)]
+    pub date_of_birth: Option<String>,
+    #[serde(default)]
+    pub national_id: Option<String>,
+    #[serde(default)]
+    pub emergency_contact: Option<String>,
+    #[serde(default = "default_pay_frequency")]
+    pub pay_frequency: String,
+    #[serde(default)]
+    pub hourly_rate: f64,
+    #[serde(default)]
+    pub bank_name: Option<String>,
+    #[serde(default)]
+    pub bank_account: Option<String>,
+    #[serde(default)]
+    pub tax_number: Option<String>,
+    #[serde(default)]
+    pub notes: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -508,6 +541,17 @@ pub struct UpdateEmployee {
     pub salary: Option<f64>,
     pub is_active: Option<bool>,
     pub uploaded: Option<bool>,
+    pub joined_at: Option<Option<String>>,
+    pub address: Option<Option<String>>,
+    pub date_of_birth: Option<Option<String>>,
+    pub national_id: Option<Option<String>>,
+    pub emergency_contact: Option<Option<String>>,
+    pub pay_frequency: Option<String>,
+    pub hourly_rate: Option<f64>,
+    pub bank_name: Option<Option<String>>,
+    pub bank_account: Option<Option<String>>,
+    pub tax_number: Option<Option<String>>,
+    pub notes: Option<Option<String>>,
 }
 
 // ---- InventoryAdjustment ----
@@ -956,6 +1000,10 @@ fn default_true() -> bool {
     true
 }
 
+fn default_pay_frequency() -> String {
+    "monthly".to_string()
+}
+
 #[derive(Debug, Insertable, Deserialize)]
 #[diesel(table_name = crate::db::schema::coupons)]
 pub struct NewCoupon {
@@ -1121,4 +1169,103 @@ pub struct UpdatePayroll {
     pub overtime_hours: Option<f64>,
     pub total_pay: Option<f64>,
     pub status: Option<String>,
+}
+
+// ---- Finance & Budget ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::finance_transactions)]
+pub struct FinanceTransaction {
+    pub id: i32,
+    pub date: String,
+    pub category_id: String,
+    pub direction: String,
+    pub amount: f64,
+    pub description: Option<String>,
+    pub reference: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::finance_transactions)]
+pub struct NewFinanceTransaction {
+    pub date: String,
+    pub category_id: String,
+    pub direction: String,
+    pub amount: f64,
+    pub description: Option<String>,
+    pub reference: Option<String>,
+}
+
+#[derive(Debug, AsChangeset, Deserialize, Default)]
+#[diesel(table_name = crate::db::schema::finance_transactions)]
+pub struct UpdateFinanceTransaction {
+    pub date: Option<String>,
+    pub category_id: Option<String>,
+    pub direction: Option<String>,
+    pub amount: Option<f64>,
+    pub description: Option<Option<String>>,
+    pub reference: Option<Option<String>>,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::budgets)]
+pub struct Budget {
+    pub id: i32,
+    pub category_id: Option<String>,
+    pub period_start: String,
+    pub period_end: String,
+    pub amount: f64,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::budgets)]
+pub struct NewBudget {
+    pub category_id: Option<String>,
+    pub period_start: String,
+    pub period_end: String,
+    pub amount: f64,
+}
+
+#[derive(Debug, AsChangeset, Deserialize, Default)]
+#[diesel(table_name = crate::db::schema::budgets)]
+pub struct UpdateBudget {
+    pub category_id: Option<Option<String>>,
+    pub period_start: Option<String>,
+    pub period_end: Option<String>,
+    pub amount: Option<f64>,
+}
+
+/// Row for the finance summary — income/expense totals per category (or global).
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FinanceCategorySummary {
+    pub category_id: String,
+    pub direction: String,
+    pub total: f64,
+}
+
+/// Row for budget tracking — budget vs. actual spend per category (or global).
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct BudgetTracking {
+    pub budget_id: i32,
+    pub category_id: Option<String>,
+    pub period_start: String,
+    pub period_end: String,
+    pub budget_amount: f64,
+    pub spent: f64,
+    pub remaining: f64,
+    pub over: bool,
+}
+
+/// Aggregated finance summary returned to the UI.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FinanceSummary {
+    pub total_income: f64,
+    pub total_expense: f64,
+    pub net: f64,
+    pub income_by_category: Vec<FinanceCategorySummary>,
+    pub expense_by_category: Vec<FinanceCategorySummary>,
+    pub budgets: Vec<BudgetTracking>,
 }

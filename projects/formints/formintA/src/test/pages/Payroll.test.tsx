@@ -6,6 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
+import { getInvokeHistory } from '../setup';
 import Payroll from '../../pages/admin/Payroll';
 
 const mockEmployees = [
@@ -133,5 +134,50 @@ describe('Payroll Page', () => {
 
     // Check loading text is visible immediately (no async needed since promise never resolves)
     expect(screen.getByText(/common\.loading|Loading\.\.\./)).toBeInTheDocument();
+  });
+
+  it('generates payroll from employee salaries', async () => {
+    mockInvokeSuccess('generate_payrolls', [
+      { id: 3, employee_id: 1, period_start: '2026-02-01', period_end: '2026-02-28', regular_hours: 0, overtime_hours: 0, total_pay: 3000, status: 'pending' },
+    ]);
+    renderWithRouter(<Payroll />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/payroll\.title|Payroll/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    // Open the generate panel
+    await userEvent.click(screen.getByText(/Generate from salaries|payroll\.generatePayrolls/));
+
+    // Fill the period
+    const start = screen.getByLabelText(/Period start|payroll\.periodStart/);
+    const end = screen.getByLabelText(/Period end|payroll\.periodEnd/);
+    await userEvent.type(start, '2026-02-01');
+    await userEvent.type(end, '2026-02-28');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Generate' }));
+
+    await waitFor(() => {
+      const genCall = getInvokeHistory().find(h => h.cmd === 'generate_payrolls');
+      expect(genCall).toBeDefined();
+      expect(genCall!.args).toEqual({ period_start: '2026-02-01', period_end: '2026-02-28' });
+    });
+  });
+
+  it('marks a pending payroll as paid', async () => {
+    mockInvokeSuccess('update_payroll', { id: 2, employee_id: 2, period_start: '2026-01-01', period_end: '2026-01-31', regular_hours: 160, overtime_hours: 5, total_pay: 3800, status: 'paid' });
+    renderWithRouter(<Payroll />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/payroll\.title|Payroll/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getAllByText(/Mark paid|payroll\.markPaid/)[0]);
+
+    await waitFor(() => {
+      const updCall = getInvokeHistory().find(h => h.cmd === 'update_payroll');
+      expect(updCall).toBeDefined();
+      expect(updCall!.args).toEqual({ id: 2, update: { status: 'paid' } });
+    });
   });
 });

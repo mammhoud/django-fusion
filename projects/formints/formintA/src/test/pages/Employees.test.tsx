@@ -4,14 +4,21 @@ import {
   screen,
   waitFor,
   userEvent,
+  within,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
+import { getInvokeHistory } from '../setup';
 import Employees from '../../pages/admin/Employees';
 
 const mockEmployees = [
-  { id: 1, name: 'Ali', phone: '03001111111', email: null, employee_type_id: 1, salary: 30000, is_active: true, joined_at: '2026-01-01' },
-  { id: 2, name: 'Usman', phone: '03002222222', email: 'usman@test.com', employee_type_id: 2, salary: 45000, is_active: true, joined_at: '2026-01-15' },
-  { id: 3, name: 'Zara', phone: null, email: null, employee_type_id: 3, salary: 20000, is_active: false, joined_at: null },
+  {
+    id: 1, name: 'Ali', phone: '03001111111', email: null, employee_type_id: 1, salary: 30000, is_active: true,
+    joined_at: '2026-01-01', address: 'Lahore', date_of_birth: '1990-05-10', national_id: '35202-1234567-1',
+    emergency_contact: 'Bilal · 03001234567', pay_frequency: 'monthly', hourly_rate: 0,
+    bank_name: 'HBL', bank_account: '1234-5678', tax_number: 'TN-001', notes: 'Works weekends',
+  },
+  { id: 2, name: 'Usman', phone: '03002222222', email: 'usman@test.com', employee_type_id: 2, salary: 45000, is_active: true, joined_at: '2026-01-15', pay_frequency: 'monthly', hourly_rate: 0 },
+  { id: 3, name: 'Zara', phone: null, email: null, employee_type_id: 3, salary: 20000, is_active: false, joined_at: null, pay_frequency: 'hourly', hourly_rate: 250 },
 ];
 
 const mockEmployeeTypes = [
@@ -95,8 +102,8 @@ describe('Employees Page', () => {
     expect(screen.getByRole('button', { name: 'Inactive' })).toBeInTheDocument();
   });
 
-  it('opens Add Employee modal', async () => {
-    mockInvokeSuccess('add_employee', { id: 4, name: 'New Employee', employee_type_id: 1, salary: 35000, is_active: true });
+  it('walks through the 4-step Add Employee wizard', async () => {
+    mockInvokeSuccess('add_employee', { id: 4, name: 'New Employee', employee_type_id: 1, salary: 35000, is_active: true, pay_frequency: 'monthly' });
     renderWithRouter(<Employees />);
 
     await waitFor(() => {
@@ -108,10 +115,181 @@ describe('Employees Page', () => {
     await waitFor(() => {
       expect(screen.getByText(/employees\.addEmployeeTitle|Add New Employee/)).toBeInTheDocument();
     });
-    expect(screen.getByPlaceholderText(/employees\.namePlaceholder|Enter employee name/)).toBeInTheDocument();
-    // "Employee Type" label inside the modal (test key fallback pattern)
-    const typeLabels = screen.getAllByText(/Employee Type|employees\.employeeType/);
-    expect(typeLabels.length).toBeGreaterThan(0);
+
+    // ── Step 1 · Personal (name + date of birth + national ID) ──
+    const nameInput = screen.getByPlaceholderText(/employees\.namePlaceholder|Enter employee name/);
+    expect(nameInput).toBeInTheDocument();
+    expect(screen.getByText(/Date of birth|employees\.dateOfBirth/)).toBeInTheDocument();
+    const nextBtn = screen.getByRole('button', { name: /Next/ });
+    expect(nextBtn).toBeDisabled(); // name is required
+    await userEvent.type(nameInput, 'New Employee');
+    expect(nextBtn).toBeEnabled();
+
+    // ── Step 1 → 2 · Contact (address + notes) ──
+    await userEvent.click(nextBtn);
+    expect(screen.getByText(/^Address$|employees\.address/)).toBeInTheDocument();
+
+    // ── Step 2 → 3 · Role & employment ──
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+    const roleStep = screen.getByTestId('employee-form-modal-step-role');
+    const typeSelect = within(roleStep).getByRole('combobox');
+    await userEvent.selectOptions(typeSelect, '1');
+
+    // ── Step 3 → 4 · Salary & payroll (Next lives in the modal footer) ──
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+    const salaryStep = screen.getByTestId('employee-form-modal-step-salary');
+    expect(within(salaryStep).getByText(/Pay frequency|employees\.payFrequency/)).toBeInTheDocument();
+    const salaryInput = within(salaryStep).getByPlaceholderText('0');
+    await userEvent.clear(salaryInput);
+    await userEvent.type(salaryInput, '35000');
+
+    // ── Submit ──
+    await userEvent.click(screen.getByTestId('employee-form-modal-submit'));
+
+    await waitFor(() => {
+      const addCall = getInvokeHistory().find(h => h.cmd === 'add_employee');
+      expect(addCall).toBeDefined();
+      expect(addCall!.args).toEqual({
+        employee: {
+          name: 'New Employee',
+          phone: null,
+          email: null,
+          employee_type_id: 1,
+          salary: 35000,
+          joined_at: null,
+          address: null,
+          date_of_birth: null,
+          national_id: null,
+          emergency_contact: null,
+          pay_frequency: 'monthly',
+          hourly_rate: 0,
+          bank_name: null,
+          bank_account: null,
+          tax_number: null,
+          notes: null,
+        },
+      });
+    });
+  });
+
+  it('allows hourly employees to submit with an hourly rate instead of monthly salary', async () => {
+    mockInvokeSuccess('add_employee', { id: 4, name: 'Hourly Employee', employee_type_id: 1, salary: 0, hourly_rate: 250, is_active: true, pay_frequency: 'hourly' });
+    renderWithRouter(<Employees />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/employees\\.addEmployee|Add Employee/)).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText(/employees\\.addEmployee|Add Employee/));
+
+    const nameInput = screen.getByPlaceholderText(/employees\\.namePlaceholder|Enter employee name/);
+    await userEvent.type(nameInput, 'Hourly Employee');
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+
+    const roleStep = screen.getByTestId('employee-form-modal-step-role');
+    await userEvent.selectOptions(within(roleStep).getByRole('combobox'), '1');
+    await userEvent.click(screen.getByRole('button', { name: /Next/ }));
+
+    const salaryStep = screen.getByTestId('employee-form-modal-step-salary');
+    await userEvent.selectOptions(within(salaryStep).getByRole('combobox'), 'hourly');
+    const numericInputs = within(salaryStep).getAllByRole('spinbutton');
+    const hourlyRateInput = numericInputs[numericInputs.length - 1];
+    await userEvent.clear(hourlyRateInput);
+    await userEvent.type(hourlyRateInput, '250');
+
+    const submit = screen.getByTestId('employee-form-modal-submit');
+    expect(submit).toBeEnabled();
+    await userEvent.click(submit);
+
+    await waitFor(() => {
+      const addCalls = getInvokeHistory().filter(h => h.cmd === 'add_employee');
+      const addCall = addCalls[addCalls.length - 1];
+      expect(addCall?.args?.employee).toMatchObject({
+        name: 'Hourly Employee',
+        salary: 0,
+        pay_frequency: 'hourly',
+        hourly_rate: 250,
+      });
+    });
+  });
+
+  it('opens the employee detail view with profile, payroll history, and audit trail', async () => {
+    mockInvokeSuccess('get_payrolls', [
+      { id: 10, employee_id: 1, period_start: '2026-11-01', period_end: '2026-11-30', regular_hours: 0, overtime_hours: 0, total_pay: 30000, status: 'pending', created_at: '2026-11-01T00:00:00', updated_at: '2026-11-01T00:00:00' },
+      { id: 9, employee_id: 1, period_start: '2026-10-01', period_end: '2026-10-31', regular_hours: 0, overtime_hours: 0, total_pay: 30000, status: 'paid', created_at: '2026-10-01T00:00:00', updated_at: '2026-10-02T00:00:00' },
+    ]);
+    mockInvokeSuccess('get_user_actions_for_entity', [
+      { id: 5, action: 'add_employee', entity_type: 'employee', entity_id: 1, details: '{}', user_id: null, created_at: '2026-01-01T09:00:00' },
+      { id: 6, action: 'update_employee', entity_type: 'employee', entity_id: 1, details: '{"salary": 30000}', user_id: null, created_at: '2026-06-15T12:30:00' },
+    ]);
+
+    renderWithRouter(<Employees />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/employees\.addEmployee|Add Employee/)).toBeInTheDocument();
+    });
+
+    // Open the detail modal for Ali via the list-row view button.
+    await userEvent.click(screen.getAllByTitle('View details')[0]);
+
+    // ── Profile ──
+    await waitFor(() => {
+      expect(screen.getByTestId('employee-detail-modal')).toBeInTheDocument();
+    });
+    expect(screen.getByText(/National ID/)).toBeInTheDocument();
+    expect(screen.getByText('35202-1234567-1')).toBeInTheDocument();
+    expect(screen.getByText(/Emergency contact/)).toBeInTheDocument();
+    expect(screen.getByText('Bilal · 03001234567')).toBeInTheDocument();
+    expect(screen.getByText(/Bank name/)).toBeInTheDocument();
+    expect(screen.getByText('HBL')).toBeInTheDocument();
+    expect(screen.getByText('TN-001')).toBeInTheDocument();
+    expect(screen.getByText(/Works weekends/)).toBeInTheDocument();
+
+    // ── Payroll history (paid + pending totals, periods) ──
+    expect(screen.getByText(/Payroll history/)).toBeInTheDocument();
+    expect(screen.getByText('2026-11-01 → 2026-11-30')).toBeInTheDocument();
+    expect(screen.getByText('2026-10-01 → 2026-10-31')).toBeInTheDocument();
+    // Paid total 30000 (one paid row) + pending total 30000 (one pending row)
+    const totals = screen.getAllByText(/30,?000/);
+    expect(totals.length).toBeGreaterThanOrEqual(2);
+
+    // ── Audit trail ──
+    expect(screen.getByText(/Audit trail/)).toBeInTheDocument();
+    expect(screen.getByText('add employee')).toBeInTheDocument();
+    expect(screen.getByText('update employee')).toBeInTheDocument();
+    expect(screen.getByText(/salary: 30000/)).toBeInTheDocument();
+
+    // ── Invoke args match the entity filter ──
+    const auditCall = getInvokeHistory().find(h => h.cmd === 'get_user_actions_for_entity');
+    expect(auditCall).toBeDefined();
+    expect(auditCall!.args).toEqual({ entityType: 'employee', entityId: 1, limit: 50 });
+    const payrollCall = getInvokeHistory().find(h => h.cmd === 'get_payrolls');
+    expect(payrollCall).toBeDefined();
+    expect(payrollCall!.args).toEqual({ employeeId: 1 });
+  });
+
+  it('reactivates an inactive employee', async () => {
+    mockInvokeSuccess('update_employee', { id: 3, name: 'Zara', is_active: true, pay_frequency: 'monthly' });
+    renderWithRouter(<Employees />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/employees\.addEmployee|Add Employee/)).toBeInTheDocument();
+    });
+
+    // Switch to the Inactive filter so Zara's card appears.
+    await userEvent.click(screen.getByRole('button', { name: 'Inactive' }));
+
+    await waitFor(() => {
+      expect(screen.getAllByTitle('Activate').length).toBeGreaterThanOrEqual(1);
+    });
+
+    await userEvent.click(screen.getAllByTitle('Activate')[0]);
+
+    await waitFor(() => {
+      const updCall = getInvokeHistory().find(h => h.cmd === 'update_employee');
+      expect(updCall).toBeDefined();
+      expect(updCall!.args).toEqual({ id: 3, update: { is_active: true } });
+    });
   });
 
   it('switches to Employee Types tab', async () => {
