@@ -98,7 +98,7 @@ function editionCardClass(tier: string): string {
               {product.tagline && <p class='mt-2 text-sm text-fu-muted'>{product.tagline}</p>}
             </div>
 
-            <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', product.editions.length === 4 ? 'xl:grid-cols-4' : 'lg:grid-cols-3']}>
+            <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', product.editions.length === 4 ? 'xl:grid-cols-4' : product.editions.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3']}>
               {product.editions.map((ed) => (
                 <div class:list={['card edition__card relative flex flex-col p-6 sm:p-8', editionCardClass(ed.tier)]}>
                   {ed.tier === 'featured' && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}

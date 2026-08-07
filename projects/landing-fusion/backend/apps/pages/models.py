@@ -835,6 +835,7 @@ class ProductPage(ShowInNavMixin, LandingPage):
             "price": edition.get("price", ""),
             "period": edition.get("period", ""),
             "tagline": edition.get("tagline", ""),
+            "features": list(edition.get("features", [])),
             "tier": edition.get("tier", "default"),
             "featured": bool(edition.get("featured", False)),
             "offer_label": edition.get("offer_label", ""),

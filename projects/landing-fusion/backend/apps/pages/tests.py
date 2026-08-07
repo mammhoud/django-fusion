@@ -748,6 +748,41 @@ class LandingPagesTestCase(TestCase):
                 self.assertIn(hero, response.content)
                 self.assertIn(b"editions", response.content.lower())
 
+    def test_precis_lms_has_solo_and_business_only(self):
+        """Precis LMS keeps organization features in the two paid tiers."""
+        from apps.pages.models import ProductPage
+
+        product = ProductPage.objects.get(slug="lms")
+        editions = product.get_editions()
+        self.assertEqual([edition["name"] for edition in editions], ["Solo", "Business"])
+
+        solo = editions[0]
+        business = editions[1]
+        self.assertIn("SSO & role management", solo["features"])
+        self.assertIn("Dedicated success manager", solo["features"])
+        self.assertIn("High-end learning experience design", solo["features"])
+        self.assertEqual(business["features"], ["Everything in Solo", "Custom branding", "API access"])
+
+        response = self.client.get("/products/lms/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"High-end learning experience design", response.content)
+        self.assertNotIn(b"For solo creators publishing their first course", response.content)
+        self.assertNotIn(b"Up to 3 courses", response.content)
+        self.assertIn(b"lg:grid-cols-2", response.content)
+
+        pricing_page = self.client.get("/pricing/")
+        self.assertEqual(pricing_page.status_code, 200)
+        self.assertIn(b"Precis LMS", pricing_page.content)
+        self.assertIn(b"Solo", pricing_page.content)
+        self.assertIn(b"Business", pricing_page.content)
+        self.assertNotIn(b"For solo creators publishing their first course", pricing_page.content)
+        self.assertIn(b"lg:grid-cols-2", pricing_page.content)
+
+        pricing = self.client.get("/apis/pricing/").json()
+        lms = next(product for product in pricing["products"] if product["slug"] == "lms")
+        self.assertEqual([edition["name"] for edition in lms["editions"]], ["Solo", "Business"])
+        self.assertIn("SSO & role management", lms["editions"][0]["features"])
+
     def test_unknown_product_slug_404s(self):
         """An unknown product slug is a 404 — never a silent fallback to another product."""
         response = self.client.get("/products/does-not-exist/")
@@ -762,6 +797,10 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for marker in (b"Community", b"Standard", b"Pro", b"Cloud", b"$0", b"$119", b"$79", b"Custom", b"Models &amp; snippets you can reuse", b"SQLite", b"Rust"):
             self.assertIn(marker, response.content)
+        self.assertNotIn(b"No sidecar, no server needed", response.content)
+        api = self.client.get("/apis/pages/formint-pos/").json()
+        community = next(edition for edition in api["editions"] if edition["name"] == "Community")
+        self.assertNotIn("No sidecar, no server needed", community["features"])
         # The Pro edition carries the seeded annual 50% launch offer: badge
         # chip + struck-through original price next to the discounted price.
         self.assertIn(b"/per year", response.content)

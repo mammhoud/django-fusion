@@ -327,9 +327,13 @@ test('formint-pos page ships the full feature-comparison table', () => {
 
 test('precis-lms and loop pages render their editions', () => {
   assert.match(lms, /Precis LMS/);
-  assert.match(lms, /Community/);
   assert.match(lms, /Solo/);
   assert.match(lms, /Business/);
+  assert.match(lms, /SSO &amp; role management/);
+  assert.match(lms, /Dedicated success manager/);
+  assert.match(lms, /High-end learning experience design/);
+  assert.doesNotMatch(lms, /For solo creators publishing their first course/);
+  assert.doesNotMatch(lms, /Up to 3 courses/);
   assert.match(cms, /Loop/);
   assert.match(cms, /Community/);
   assert.match(cms, /Business/);
