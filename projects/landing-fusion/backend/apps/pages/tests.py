@@ -252,6 +252,66 @@ class LandingPagesTestCase(TestCase):
             404,
         )
 
+    def test_edition_cards_link_to_edition_previews(self):
+        """Edition cards on the product page link to /products/<slug>/preview/<edition>/."""
+        response = self.client.get("/products/formint-pos/")
+        self.assertEqual(response.status_code, 200)
+        for edition in ("community", "standard", "pro", "cloud"):
+            self.assertIn(
+                f"/products/formint-pos/preview/{edition}/".encode(),
+                response.content,
+            )
+        self.assertIn(b"Preview this edition", response.content)
+
+    def test_pricing_page_links_edition_previews(self):
+        """Every pricing tab edition card carries a preview link."""
+        response = self.client.get("/pricing/")
+        self.assertEqual(response.status_code, 200)
+        # One preview link per edition card across the tabbed products —
+        # assert the count is at least the seeded total (4 + 3 + 2 + 2 + 2
+        # = 13) plus the per-edition URLs actually resolve by slug, so the
+        # test stays honest when editors add editions/products.
+        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 13)
+        for url in (
+            b"/products/formint-pos/preview/community/",
+            b"/products/formint-pos/preview/standard/",
+            b"/products/lms/preview/solo/",
+            b"/products/lms/preview/business/",
+            b"/products/cms/preview/community/",
+            b"/products/cypercloud/preview/community/",
+            b"/products/vresume/preview/community/",
+        ):
+            self.assertIn(url, response.content)
+
+    def test_loop_lists_built_with_applications(self):
+        """The Loop (cms) page lists real applications built with it, incl. vResume."""
+        response = self.client.get("/products/cms/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (
+            b"Sites and apps running on Loop",
+            b"vResume",
+            b"structa.cloud",
+            b"Precis LMS",
+            b"Open preview",
+        ):
+            self.assertIn(marker, response.content)
+        # The vResume card links straight to the community edition preview.
+        self.assertIn(b"/products/vresume/preview/community/", response.content)
+
+    def test_vresume_community_preview_renders_mock(self):
+        """The vResume community preview is a live page with the resume mock."""
+        response = self.client.get("/products/vresume/preview/community/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (b"live preview", b"preview-mock__slug", b"vresume", b"Mina Mammhoud"):
+            self.assertIn(marker, response.content)
+
+    def test_formint_pos_preview_renders_register_mock(self):
+        """The Formints community preview renders the POS register mock."""
+        response = self.client.get("/products/formint-pos/preview/community/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (b"live preview", b"Espresso", b"preview-mock__slug"):
+            self.assertIn(marker, response.content)
+
     def test_pricing_on_about_and_dedicated_page(self):
         """The transparent-pricing section moved onto About AND lives on /pricing/."""
         response = self.client.get("/about/")
@@ -1085,6 +1145,58 @@ class LandingPagesTestCase(TestCase):
             self.assertIn(f'data-open-brand="{slug}"'.encode(), listing.content)
         # Hidden products get no trigger.
         self.assertNotIn(b'data-open-brand="ceptor-ai"', listing.content)
+
+    def test_display_mode_mixin_applied_to_product_and_team_pages(self):
+        """DisplayModeMixin (page / modal / both) covers ProductPage + TeamPage
+        with the same field, admin panel and API exposure as BrandPage."""
+        from apps.pages.models import ProductPage, TeamPage
+
+        # Field present with the shared default on every page type.
+        for model in (ProductPage, TeamPage):
+            self.assertIn("display_mode", [f.name for f in model._meta.fields])
+        self.assertEqual(ProductPage.objects.first().display_mode, "both")
+        self.assertEqual(TeamPage.objects.first().display_mode, "both")
+
+        # Admin panel present (the same display_panels the BrandPage uses).
+        for model in (ProductPage, TeamPage):
+            panel_fields = [getattr(p, "field_name", None) for p in model.content_panels]
+            self.assertIn("display_mode", panel_fields)
+
+        # Page API exposes it for both page types (same hasattr road as Brand).
+        for slug in ("formint-pos", "team"):
+            page_data = self.client.get(f"/apis/pages/{slug}/").json()
+            self.assertEqual(page_data.get("display_mode"), "both")
+
+    def test_display_mode_flows_to_product_and_pricing_apis(self):
+        """Product cards + pricing tabs carry display_mode, so the frontend
+        can surface modal-only products consistently across every API road."""
+        # Product cards (the /products/ listing payload on the page API).
+        listing = self.client.get("/apis/pages/products/").json()
+        cards = listing.get("products", [])
+        self.assertTrue(cards)
+        self.assertTrue(all(card.get("display_mode") == "both" for card in cards))
+
+        # Pricing tabs (PricingPage.get_product_pricing → /apis/pricing/).
+        pricing_data = self.client.get("/apis/pricing/").json()
+        products = pricing_data.get("products", [])
+        self.assertTrue(products)
+        self.assertTrue(all(p.get("display_mode") == "both" for p in products))
+
+        # The dedicated pricing page HTML renders from the same payload.
+        pricing_page = self.client.get("/pricing/")
+        self.assertEqual(pricing_page.status_code, 200)
+        # Editing the flag propagates to the live API roads.
+        product = ProductPage.objects.first()
+        product.display_mode = "page"
+        product.save()
+        try:
+            fresh = self.client.get("/apis/pages/products/").json()["products"]
+            self.assertEqual(next(c for c in fresh if c["slug"] == product.slug)["display_mode"], "page")
+            fresh_pricing = self.client.get("/apis/pricing/").json()["products"]
+            self.assertEqual(next(p for p in fresh_pricing if p["slug"] == product.slug)["display_mode"], "page")
+        finally:
+            product.display_mode = "both"
+            product.save()
 
     def test_blog_renders_post_grid(self):
         """Blog renders the seeded post grid (hero + cards + cta)."""

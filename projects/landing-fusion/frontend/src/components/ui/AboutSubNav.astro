@@ -1,0 +1,51 @@
+---
+/**
+ * AboutSubNav — the About section's subpage navigation.
+ *
+ * Rendered on the main About page and on every About subpage (startup,
+ * founder, team) so visitors can move through the whole section from any
+ * page. Mirrors the Django pages/partials/about_subnav.html include (same
+ * mono-uppercase link style, same four destinations), keeping both render
+ * roads in parity.
+ *
+ * Usage:
+ *   <AboutSubNav current="about" />     // main About page
+ *   <AboutSubNav current="startup" />   // /about/startup/
+ *   <AboutSubNav current="founder" />   // /about/founder/
+ *   <AboutSubNav current="team" />      // /about/team/
+ */
+interface Props {
+  current: 'about' | 'startup' | 'founder' | 'team';
+}
+
+const { current } = Astro.props;
+
+const links = [
+  { id: 'about', label: 'About', href: '/about/' },
+  { id: 'startup', label: 'The startup', href: '/about/startup/' },
+  { id: 'founder', label: 'The founder', href: '/about/founder/' },
+  { id: 'team', label: 'Meet the team', href: '/about/team/' },
+] as const;
+---
+
+<nav aria-label="About subpages" class="container-fusion" style="padding-block:1.5rem 0;">
+  <div
+    class="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-center"
+    style="border-top:1px solid hsl(var(--fu-line));padding-top:1.5rem;"
+  >
+    {links.map((l) => (
+      <a
+        href={l.href}
+        aria-current={current === l.id ? 'page' : undefined}
+        class:list={[
+          'font-mono text-[0.7rem] uppercase tracking-[0.14em] underline underline-offset-4 transition-colors',
+          current === l.id
+            ? 'font-medium text-fu-ink'
+            : 'text-fu-muted hover:text-fu-link',
+        ]}
+      >
+        {l.label}
+      </a>
+    ))}
+  </div>
+</nav>

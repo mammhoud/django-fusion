@@ -5,6 +5,7 @@ SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
     "services", "process", "blog",
     "tech", "editions", "snippets", "comparison", "team",
+    "applications",
 ]
 
 
@@ -67,6 +68,60 @@ class ProjectBlock(blocks.StructBlock):
         icon = "folder-open-inverse"
         label = _("Project")
         template = "content/blocks/project.html"
+
+
+class ApplicationItemBlock(blocks.StructBlock):
+    """One application/site built with a product — name, edition, link, description.
+
+    Used by the “Built with …” list on product pages (e.g. Loop listing
+    vResume and this site), so buyers can see real usage with a one-line
+    description and a live link to the running product or its preview.
+    Editors can pick an internal Wagtail page (``page``) or type a manual
+    URL (``url``) — the chosen page wins, matching LinkBlock/ButtonBlock.
+    """
+
+    name = blocks.CharBlock(max_length=120, label=_("Application"))
+    edition = blocks.CharBlock(
+        max_length=80,
+        required=False,
+        label=_("Edition"),
+        help_text=_("e.g. Community / Business — shown as a chip on the card."),
+    )
+    url = blocks.CharBlock(
+        max_length=255,
+        required=False,
+        label=_("URL"),
+        help_text=_("External URL (e.g. the edition preview). Ignored when a page is chosen."),
+    )
+    page = blocks.PageChooserBlock(
+        required=False,
+        label=_("Link to a page"),
+        help_text=_("Pick an internal page — its URL wins over the manual URL field."),
+    )
+    description = blocks.TextBlock(required=False, label=_("Description"))
+
+    class Meta:
+        icon = "doc-full-inverse"
+        label = _("Application")
+
+
+class ApplicationsSectionBlock(blocks.StructBlock):
+    """A “Built with …” grid — real applications/sites running on a product.
+
+    Editors add one card per application (vResume, this site, …); each card
+    links out to the running product or its edition preview page. Mirrors the
+    frontend applications section on the Astro road.
+    """
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, label=_("Title"))
+    description = blocks.TextBlock(required=False, label=_("Description"))
+    applications = blocks.ListBlock(ApplicationItemBlock(), label=_("Applications"))
+
+    class Meta:
+        icon = "doc-full-inverse"
+        label = _("Applications built with this product")
+        template = "content/blocks/applications.html"
 
 
 class LinkBlock(blocks.StructBlock):

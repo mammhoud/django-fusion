@@ -95,7 +95,7 @@ const {
               class="h-1.5 rounded-full transition-all duration-300"
               :class={`active === ${i} ? 'w-7 bg-fu-link' : 'w-4 bg-fu-line hover:bg-fu-link/50'`}
               @click={`active = ${i}`}
-              :aria-label={`Go to testimonial ${i + 1}`}
+              aria-label={`Go to testimonial ${i + 1}`}
               title={testimonial.author}
             ></button>
           ))}

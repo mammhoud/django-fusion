@@ -1,0 +1,25 @@
+{% comment %} ──────────────────────────────────────────────────────────
+   pages/partials/stack_links.html — "stack" entry strip on product pages.
+
+   A compact card under the products hero (catalog + product detail) that
+   hands buyers two destinations: the stack itself (the /features/ document
+   that breaks the AHA stack down) and the services offering (/services/).
+   Mirrors the frontend StackLinks.astro component so both render roads
+   carry the same entry point.
+   ────────────────────────────────────────────────────────────────────── {% endcomment %}
+<section class="container-fusion" style="padding-top:1.5rem;">
+  <div class="card" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.25rem;padding:1.5rem 1.75rem;">
+    <div style="max-width:36rem;">
+      <p class="tag-marker" style="margin-bottom:.5rem;">stack</p>
+      <p style="margin:0;font-size:.95rem;color:hsl(var(--fu-text) / .8);line-height:1.65;">
+        Every product ships on the AHA stack — server-rendered HTML, HTMX
+        fragments, Alpine micro-interactions — with Wagtail content and
+        allauth auth behind it. Or bring us in to build yours.
+      </p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;">
+      <a href="/features/" class="btn btn-primary" style="padding:.6rem 1.25rem;font-size:.85rem;">The stack →</a>
+      <a href="/services/" class="btn btn-secondary" style="padding:.6rem 1.25rem;font-size:.85rem;">Services →</a>
+    </div>
+  </div>
+</section>

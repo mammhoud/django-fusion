@@ -110,7 +110,7 @@ const displayNav = navItems && navItems.length > 0
               class="relative"
               x-data="{
                 open: false,
-                hoverTimer: null as ReturnType<typeof setTimeout> | null,
+                hoverTimer: null,
                 openSoon() { this.cancelClose(); this.hoverTimer = setTimeout(() => { this.open = true; }, 120); },
                 cancelClose() { if (this.hoverTimer) { clearTimeout(this.hoverTimer); this.hoverTimer = null; } },
                 closeSoon() { this.cancelClose(); this.hoverTimer = setTimeout(() => { this.open = false; }, 180); },

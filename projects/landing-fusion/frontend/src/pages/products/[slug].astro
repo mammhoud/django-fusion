@@ -8,7 +8,9 @@ import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
 import ProductLogo from '@/components/ui/ProductLogo.astro';
+import StackLinks from '@/components/ui/StackLinks.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
+import { contentSlug } from '@/lib/slug';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
@@ -38,6 +40,7 @@ const pageCta = pageData?.cta;
 const pageTech = (pageData?.tech as any[] | undefined);
 const pageEditions = (pageData?.editions as any[] | undefined);
 const pageComparison = (pageData?.comparison as any[] | undefined);
+const pageApplications = (pageData?.applications as any[] | undefined)?.[0] as any | undefined;
 const pageSnippets = (pageData?.snippets as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
@@ -108,6 +111,9 @@ const faqItems = pageFaq?.map((f: any) => ({
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : undefined}
     status='200 OK · text/html · the product, in one response'
   />
+
+  {/* The stack entry strip — links to the stack doc and services */}
+  <StackLinks />
 
   {pageData?.logo_style && (
     <section class='container-fusion' style='padding-top:1.75rem'>
@@ -187,7 +193,32 @@ const faqItems = pageFaq?.map((f: any) => ({
                 ))}
               </ul>
               <a href={ed.cta.href} class:list={['mt-auto w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
+              <a href={`/products/${slug}/preview/${contentSlug(ed.name)}/`} class='edition__preview'>Preview this edition →</a>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {pageApplications?.applications?.length ? (
+    <section id='applications' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-12 max-w-2xl'>
+          {pageApplications.eyebrow && <p class='tag-marker mb-4'>{pageApplications.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{pageApplications.title}</h2>
+          {pageApplications.description && <p class='text-fu-muted'>{pageApplications.description}</p>}
+        </div>
+        <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+          {pageApplications.applications.map((app: any, i: number) => (
+            <a href={app.href || app.url || '#'} class='card application__card reveal p-6' style={`--reveal-i: ${i}`} x-data x-intersect='`$el.classList.add("reveal-visible")`'>
+              <div class='flex items-center justify-between gap-3'>
+                <span class='tag-marker' style='margin:0'>{app.name}</span>
+                {app.edition && <span class='edition-chip'>{app.edition}</span>}
+              </div>
+              {app.description && <p class='mt-3 text-sm leading-relaxed text-fu-muted'>{app.description}</p>}
+              <span class='mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>Open preview →</span>
+            </a>
           ))}
         </div>
       </div>

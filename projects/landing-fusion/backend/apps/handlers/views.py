@@ -125,6 +125,17 @@ class LandingPageView(PageHandler):
                 # pages/partials/breadcrumbs.html at the top of the shared
                 # content region — empty for top-level pages.
                 "breadcrumbs": self._get_breadcrumbs(page),
+                # About-section subpage nav — the About page and its subpages
+                # (team / startup / founder) render the shared about_subnav
+                # partial right after the hero. Empty for every other page, so
+                # the shared content region renders nothing there. Mirrors the
+                # AboutSubNav.astro component on the frontend road.
+                "about_subnav_current": self._get_about_subnav_current(page),
+                # Product-road stack strip (ProductsPage catalog + ProductPage
+                # detail) — the shared stack_links partial right after the hero.
+                # A view-computed flag so the template never evaluates
+                # get_product_cards twice on the catalog page.
+                "show_stack_strip": page.__class__.__name__ in ("ProductsPage", "ProductPage"),
                 # django-fusion settings config — which content-delivery option
                 # this request is served under (see settings.FUSION_RENDER_FIRST_DEFAULT
                 # and the X-Fusion-Render-First per-request override).
@@ -135,6 +146,18 @@ class LandingPageView(PageHandler):
             }
         )
         return context
+
+    def _get_about_subnav_current(self, page) -> str:
+        """Which About-section link is active for ``page`` ("" when not an
+        About-family page, so the shared subnav partial renders nothing).
+        Keys are the page class names; values are the AboutSubNav ids.
+        """
+        return {
+            "AboutPage": "about",
+            "TeamPage": "team",
+            "StartupPage": "startup",
+            "FounderPage": "founder",
+        }.get(page.__class__.__name__, "")
 
     def _get_breadcrumbs(self, page) -> list[dict]:
         """The in-page trail for subpages — a list of ancestor links, newest last.
