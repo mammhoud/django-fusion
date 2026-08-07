@@ -728,6 +728,40 @@ DEFAULT_PRODUCT_PAGES = {
         "tech": [
             ("tech", {"title": "Built on", "items": ["Wagtail", "Django", "django-fusion", "HTMX", "Alpine.js", "Astro"]}),
         ],
+        "applications": [
+            (
+                "applications",
+                {
+                    "eyebrow": "Built with Loop",
+                    "title": "Sites and apps running on Loop",
+                    "description": (
+                        "Real usage, not mockups: every structa.cloud property is a "
+                        "Loop build — composed from the same Wagtail blocks you see "
+                        "on this page and rendered server-side."
+                    ),
+                    "applications": [
+                        {
+                            "name": "vResume",
+                            "edition": "Community",
+                            "url": "/products/vresume/preview/community/",
+                            "description": "The cloud resume platform — modern templates, PDF export, and Syntara-powered AI summaries, served from the same content pipeline.",
+                        },
+                        {
+                            "name": "structa.cloud",
+                            "edition": "Community",
+                            "url": "/",
+                            "description": "This site. Every landing page you are reading is composed from StreamField blocks and rendered as finished HTML.",
+                        },
+                        {
+                            "name": "Precis LMS",
+                            "edition": "Business",
+                            "url": "/products/lms/",
+                            "description": "The learning platform — courses, enrollments and payments built on the same django-fusion component system.",
+                        },
+                    ],
+                },
+            )
+        ],
         "editions": [
             (
                 "editions",
@@ -1817,6 +1851,7 @@ class Command(BaseCommand):
                 tech=product.get("tech", []),
                 editions=product.get("editions", []),
                 comparison=product.get("comparison", []),
+                applications=product.get("applications", []),
                 snippets=product.get("snippets", []),
                 features=product.get("features", []),
                 faq=product.get("faq", []),

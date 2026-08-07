@@ -949,6 +949,9 @@
   .gap-x-6 {
     column-gap: calc(var(--spacing) * 6);
   }
+  .gap-x-7 {
+    column-gap: calc(var(--spacing) * 7);
+  }
   .gap-y-2 {
     row-gap: calc(var(--spacing) * 2);
   }
@@ -1186,6 +1189,9 @@
   }
   .\!px-4 {
     padding-inline: calc(var(--spacing) * 4) !important;
+  }
+  .\!px-5 {
+    padding-inline: calc(var(--spacing) * 5) !important;
   }
   .\!px-6 {
     padding-inline: calc(var(--spacing) * 6) !important;
@@ -2851,6 +2857,21 @@
   }
   .managed-ribbon::before {
     content: "☁ ";
+  }
+  .edition__preview {
+    display: block;
+    margin-top: 0.625rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(var(--fu-muted));
+    text-decoration: none;
+    transition: color 0.35s var(--fu-ease-out);
+  }
+  .edition__preview:hover {
+    color: hsl(var(--fu-link));
   }
   .product-logo {
     display: inline-flex;

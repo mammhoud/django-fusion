@@ -4,6 +4,7 @@ import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import Breadcrumb from '@/components/ui/Breadcrumb.astro';
+import PreviewMock from '@/components/ui/PreviewMock.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import { contentSlug } from '@/lib/slug';
@@ -88,6 +89,19 @@ const editionName = editionData ? String(editionData.name || edition) : edition;
   {editionData ? (
     <section class='doc-sheet bg-fu-paper py-12 md:py-16'>
       <div class='container-fusion'>
+        {/* Live preview — a stylized screen of the product, keyed by slug.
+            Mirrors the Django preview_mock partial on the backend road. */}
+        <div class='mb-10 max-w-3xl'>
+          <p class='mb-3 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted'>live preview</p>
+          <PreviewMock
+            slug={slug || ''}
+            edition={editionName}
+            price={String(editionData.price || '')}
+            period={String(editionData.period || '')}
+            features={(editionData.features || []) as string[]}
+          />
+        </div>
+
         <div class='card max-w-lg p-6 sm:p-8'>
           <div class='mb-6 flex flex-wrap items-baseline gap-2'>
             {editionData.offer_old_price && <span class='offer-old-price'>{editionData.offer_old_price}</span>}

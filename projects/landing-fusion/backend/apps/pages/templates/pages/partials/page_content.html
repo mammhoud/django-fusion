@@ -43,6 +43,21 @@
 
 {% if page.hero %}{% include_block page.hero %}{% endif %}
 
+{% comment %} About-section subpage nav (AboutPage + team/startup/founder) —
+   the shared about_subnav partial right after the hero, so visitors can move
+   through the whole About section from any of its pages. Mirrors the
+   frontend AboutSubNav.astro component. {% endcomment %}
+{% if about_subnav_current %}
+  {% include "pages/partials/about_subnav.html" %}
+{% endif %}
+
+{% comment %} Stack entry strip (ProductsPage + ProductPage) — a compact card
+   under the hero linking to the stack document (/features/) and the services
+   offering (/services/). Mirrors the frontend StackLinks.astro component. {% endcomment %}
+{% if show_stack_strip %}
+  {% include "pages/partials/stack_links.html" %}
+{% endif %}
+
 {% comment %} Product lockup strip (ProductPage) — the brand mark + wordmark +
    tagline under the hero, so each product page leads with its identity. {% endcomment %}
 {% if page.logo_style %}
@@ -212,6 +227,7 @@
           </ul>
           {% endif %}
           <a href="/products/{{ product.slug }}/#editions" class="mt-auto w-full {% if edition.tier == 'featured' %}btn-primary{% else %}btn-secondary{% endif %}">See {{ product.title }} →</a>
+          <a href="/products/{{ product.slug }}/preview/{{ edition.name|slugify }}/" class="edition__preview">Preview this edition →</a>
         </article>
         {% endfor %}
       </div>
@@ -243,6 +259,14 @@
 {% if page.editions %}
 <section id="editions" class="container-fusion" style="padding-block:4rem 5rem;">
   {% include_block page.editions %}
+</section>
+{% endif %}
+
+{% comment %} Applications built with this product (ProductPage) — the
+   “Built with …” grid (e.g. Loop listing vResume + this site). {% endcomment %}
+{% if page.applications %}
+<section id="applications" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.applications %}
 </section>
 {% endif %}
 

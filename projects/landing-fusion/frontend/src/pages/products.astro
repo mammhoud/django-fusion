@@ -8,6 +8,7 @@ import Toast from '@/components/ui/Toast.astro';
 import LiveFragment from '@/components/ui/LiveFragment.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import ProductLogo from '@/components/ui/ProductLogo.astro';
+import StackLinks from '@/components/ui/StackLinks.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -55,6 +56,9 @@ const restProducts = productCards.filter((c) => c !== featuredProduct);
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse the repo', href: 'https://github.com/mammhoud' }}
     status='200 OK · text/html · the full catalog in one response'
   />
+  <!-- The stack entry strip — links to the stack doc and services -->
+  <StackLinks />
+
   {productStats?.length ? <Stats stats={productStats} /> : <ContentError label="Stats data unavailable" />}
 
   <!-- The merged catalog — every product is a project in this repo -->

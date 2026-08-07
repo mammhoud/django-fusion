@@ -525,6 +525,24 @@
   }
   .managed-ribbon::before { content: "☁ "; }
 
+  /* Edition preview link — the quiet “Preview this edition →” line under
+     each edition card's CTA, linking to /products/<slug>/preview/<edition>/
+     (the flexible subpage previewing that exact edition). Sits below the
+     mt-auto CTA, so it rides the bottom edge of the card. */
+  .edition__preview {
+    display: block;
+    margin-top: 0.625rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(var(--fu-muted));
+    text-decoration: none;
+    transition: color 0.35s var(--fu-ease-out);
+  }
+  .edition__preview:hover { color: hsl(var(--fu-link)); }
+
   /* ── Catalog cards (the merged “Projects in this repo” grid) ────── */
   .product-logo {
     display: inline-flex;

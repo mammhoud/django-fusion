@@ -517,7 +517,10 @@ def _page_to_dict(page) -> dict:
     if hasattr(page, "get_category_display"):
         data["category"] = page.get_category_display().lower()
 
-    # DisplayModeMixin — page / modal / both surfacing option (BrandPage).
+    # DisplayModeMixin — page / modal / both surfacing option. Any page type
+    # carrying the mixin (BrandPage, ProductPage, TeamPage) exposes it, so
+    # every render road sees the same field. The default ("both") is always
+    # truthy, so the key is present whenever the page has the mixin.
     if hasattr(page, "display_mode") and page.display_mode:
         data["display_mode"] = page.display_mode
 

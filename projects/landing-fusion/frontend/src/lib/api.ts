@@ -170,6 +170,7 @@ export interface PageData {
   tech?: string[];
   editions?: Record<string, any>[];
   comparison?: Record<string, any>[];
+  applications?: Record<string, any>[];
   snippets?: Record<string, any>[];
   products?: {
     title: string;
@@ -179,6 +180,7 @@ export interface PageData {
     category?: string;
     logo_style?: string;
     status?: string;
+    display_mode?: string;
     excerpt?: string;
     editions?: { name: string; price: string; period?: string; tier?: string; featured?: boolean; offer_label?: string; offer_old_price?: string }[];
     tech?: string[];
@@ -187,6 +189,8 @@ export interface PageData {
   logo_style?: string;
   tagline?: string;
   status?: string;
+  // DisplayModeMixin — how the page is surfaced: page / modal / both.
+  display_mode?: string;
   hidden?: boolean;
   // Wagtail-managed Services subpages
   phase_number?: number;
@@ -228,6 +232,7 @@ export interface PricingProduct {
   tagline: string;
   logo_style: string;
   status: string;
+  display_mode?: string;
   href: string;
   editions: {
     name: string;

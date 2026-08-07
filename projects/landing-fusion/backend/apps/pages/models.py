@@ -14,6 +14,7 @@ from wagtail.models import Page
 from wagtail.search import index
 
 from apps.content.blocks import (
+    ApplicationsSectionBlock,
     BlogSectionBlock,
     ContactSectionBlock,
     CtaBlock,
@@ -123,6 +124,48 @@ class SectionStackMixin(models.Model):
     ]
 
 
+DISPLAY_MODE_CHOICES = [
+    ("page", _("Full page")),
+    ("modal", _("Modal only")),
+    ("both", _("Page + modal")),
+]
+
+
+class DisplayModeMixin(models.Model):
+    """
+    Where a page is surfaced — as a full page, as a modal overlay, or both.
+
+    Layers the *presentation* choice onto Wagtail's ``Page`` base model. The
+    ``Page`` base already merges Wagtail's own base models (DraftStateMixin,
+    RevisionMixin, PreviewableMixin, LockableMixin, SitemapMixin) — this mixin
+    only adds the display-mode option on top, so any page type can opt in.
+
+    Applied to ``BrandPage`` (which consumes it: the brand kit renders as
+    its own /brand/ page and as a modal opened from product tooltips),
+    ``ProductPage`` and ``TeamPage`` (which carry the option for future
+    surfacing). The same admin panel and API field everywhere. Editors
+    toggle ``display_mode`` in the Wagtail admin to pick page, modal, or
+    both.
+    """
+
+    display_mode = models.CharField(
+        max_length=10,
+        choices=DISPLAY_MODE_CHOICES,
+        default="both",
+        verbose_name=_("Display mode"),
+        help_text=_(
+            "Where this page is surfaced: as its own full page (page), as a "
+            "modal overlay triggered from product logos/tooltips (modal), or "
+            "both. Modal-only hides the full-page affordance in the modal."
+        ),
+    )
+
+    class Meta:
+        abstract = True
+
+    display_panels = [FieldPanel("display_mode")]
+
+
 class HomePage(LandingPage):
     """
     Landing homepage — a slim one-screen entry (hero + CTA).
@@ -167,13 +210,14 @@ class AboutPage(SectionStackMixin, LandingPage):
         verbose_name_plural = _("About pages")
 
 
-class TeamPage(LandingPage):
+class TeamPage(DisplayModeMixin, LandingPage):
     """About → Team subpage — the people behind structa.cloud.
 
     A child of AboutPage, served at /about/team/. Carries a hero, a story
     body and the team grid (TeamSectionBlock) with member cards + social
     links, plus a CTA. The page is seeded with the founder + the product
     leads, each linking to their GitHub/LinkedIn/Facebook profiles.
+    Carries ``display_mode`` (DisplayModeMixin) for future surfacing.
     """
 
     body_heading = _("Who builds this")
@@ -197,6 +241,7 @@ class TeamPage(LandingPage):
             classname=SECTION_PANEL_CLASS,
         ),
         FieldPanel("team"),
+        *DisplayModeMixin.display_panels,
     ]
 
     template = "pages/team.html"
@@ -297,45 +342,6 @@ class StartupPage(LandingPage):
     class Meta:
         verbose_name = _("Startup page")
         verbose_name_plural = _("Startup pages")
-
-DISPLAY_MODE_CHOICES = [
-    ("page", _("Full page")),
-    ("modal", _("Modal only")),
-    ("both", _("Page + modal")),
-]
-
-
-class DisplayModeMixin(models.Model):
-    """
-    Where a page is surfaced — as a full page, as a modal overlay, or both.
-
-    Layers the *presentation* choice onto Wagtail's ``Page`` base model. The
-    ``Page`` base already merges Wagtail's own base models (DraftStateMixin,
-    RevisionMixin, PreviewableMixin, LockableMixin, SitemapMixin) — this mixin
-    only adds the display-mode option on top, so any page type can opt in.
-
-    Used by ``BrandPage``: the brand kit renders as its own /brand/ page and
-    as a modal opened from product tooltips. Editors toggle ``display_mode``
-    in the Wagtail admin to pick page, modal, or both.
-    """
-
-    display_mode = models.CharField(
-        max_length=10,
-        choices=DISPLAY_MODE_CHOICES,
-        default="both",
-        verbose_name=_("Display mode"),
-        help_text=_(
-            "Where this page is surfaced: as its own full page (page), as a "
-            "modal overlay triggered from product logos/tooltips (modal), or "
-            "both. Modal-only hides the full-page affordance in the modal."
-        ),
-    )
-
-    class Meta:
-        abstract = True
-
-    display_panels = [FieldPanel("display_mode")]
-
 
 class BrandPage(DisplayModeMixin, LandingPage):
     """Brand kit page — the identity system for every product.
@@ -530,6 +536,7 @@ class PricingPage(ShowInNavMixin, LandingPage):
                         "tagline": specific.tagline,
                         "logo_style": specific.logo_style,
                         "status": specific.status,
+                        "display_mode": specific.display_mode,
                         "href": f"/products/{specific.slug}/",
                         "editions": specific.get_editions(),
                     }
@@ -668,7 +675,7 @@ PRODUCT_STATUS_CHOICES = [
 ]
 
 
-class ProductPage(ShowInNavMixin, LandingPage):
+class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
     """
     A single product page — the reference document for one product.
 
@@ -676,6 +683,7 @@ class ProductPage(ShowInNavMixin, LandingPage):
     Formints patterns): an overview, its tech stack, its editions with
     per-edition pricing, reference snippets/models, features, FAQ and CTA.
     These pages live as children of ``ProductsPage`` and are listed there.
+    Carries ``display_mode`` (DisplayModeMixin) for future surfacing.
     """
 
     category = models.CharField(
@@ -760,6 +768,17 @@ class ProductPage(ShowInNavMixin, LandingPage):
             "rows = features). Cells use Yes / No / short notes."
         ),
     )
+    applications = StreamField(
+        [("applications", ApplicationsSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Built with this product"),
+        help_text=_(
+            "Real applications/sites running on this product (e.g. Loop "
+            "listing vResume + this site). One card each, linking out to the "
+            "running product or its edition preview."
+        ),
+    )
     features = StreamField(
         [("features", FeaturesSectionBlock())],
         use_json_field=True,
@@ -793,10 +812,12 @@ class ProductPage(ShowInNavMixin, LandingPage):
         FieldPanel("tech"),
         FieldPanel("editions"),
         FieldPanel("comparison"),
+        FieldPanel("applications"),
         FieldPanel("snippets"),
         FieldPanel("features"),
         FieldPanel("faq"),
         *ShowInNavMixin.nav_panels,
+        *DisplayModeMixin.display_panels,
     ]
 
     template = "pages/product.html"
@@ -898,6 +919,7 @@ class ProductPage(ShowInNavMixin, LandingPage):
             "category": self.get_category_display().lower(),
             "logo_style": self.logo_style,
             "status": self.status,
+            "display_mode": self.display_mode,
             "editions": editions,
             "tech": tech,
             "excerpt": self._overview_excerpt(),
