@@ -94,6 +94,16 @@ diesel::table! {
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
+        address -> Nullable<Text>,
+        date_of_birth -> Nullable<Text>,
+        national_id -> Nullable<Text>,
+        emergency_contact -> Nullable<Text>,
+        pay_frequency -> Text,
+        hourly_rate -> Double,
+        bank_name -> Nullable<Text>,
+        bank_account -> Nullable<Text>,
+        tax_number -> Nullable<Text>,
+        notes -> Nullable<Text>,
     }
 }
 

@@ -129,6 +129,17 @@ export interface Employee {
   salary: number;
   is_active: boolean;
   joined_at?: string;
+  // ---- Employee detail & payroll fields (wizard) ----
+  address?: string | null;
+  date_of_birth?: string | null;
+  national_id?: string | null;
+  emergency_contact?: string | null;
+  pay_frequency: string;
+  hourly_rate: number;
+  bank_name?: string | null;
+  bank_account?: string | null;
+  tax_number?: string | null;
+  notes?: string | null;
 }
 
 export interface NewEmployee {
@@ -137,6 +148,18 @@ export interface NewEmployee {
   email?: string | null;
   employee_type_id: number;
   salary: number;
+  // ---- Employee detail & payroll fields (wizard) ----
+  joined_at?: string | null;
+  address?: string | null;
+  date_of_birth?: string | null;
+  national_id?: string | null;
+  emergency_contact?: string | null;
+  pay_frequency?: string;
+  hourly_rate?: number;
+  bank_name?: string | null;
+  bank_account?: string | null;
+  tax_number?: string | null;
+  notes?: string | null;
 }
 
 export interface SaleItem {
