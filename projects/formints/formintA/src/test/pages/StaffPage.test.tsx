@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import StaffPage from '../../pages/admin/StaffPage';
+import StaffPage from '../../app/pages/admin/StaffPage';
 
 const mockEmployees = [
   { id: 1, name: 'Sarah Johnson', employee_type_id: 1, is_active: true, salary: 2500, phone: '03005555555' },

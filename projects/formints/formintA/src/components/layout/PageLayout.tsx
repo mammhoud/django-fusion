@@ -154,7 +154,7 @@ export default function PageLayout({
   };
 
   const renderLogo = (size: string) => (      <img
-      src={defaultLogo}
+      src={defaultLogo as unknown as string}
       alt="Formint"
       className={`${iconSpring} ${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.5'; }}

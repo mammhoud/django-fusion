@@ -1399,6 +1399,53 @@ class LandingPagesTestCase(TestCase):
             product.display_mode = "both"
             product.save()
 
+    def test_brand_palette_overrides_replace_default_swatches(self):
+        """BrandPage.palette_overrides (editor hex palette per product) replaces
+        the hardcoded BRAND_SPEC swatches on every brand road — the /apis/brand/
+        boards, the rendered /brand/ page, and the BrandPage API — while
+        products without an override keep the default system palette."""
+        from apps.pages.models import BrandPage, ProductPage
+
+        brand = BrandPage.objects.first()
+        product = ProductPage.objects.get(slug="formint-pos")
+        hexes = ["#123456", "#abcdef", "#f0f0f0", "#111111", "#999999"]
+        # A malformed/non-hex entry is filtered out by get_palette_overrides,
+        # so it can never reach the inline background styles.
+        brand.palette_overrides = [
+            {
+                "type": "palette",
+                "value": {"product": product.pk, "swatches": [*hexes, "red;position:fixed"]},
+            }
+        ]
+        brand.save()
+        try:
+            # The override helper resolves the chooser to the product slug.
+            self.assertEqual(
+                brand.get_palette_overrides(),
+                {"formint-pos": hexes},
+            )
+
+            # API road: the board swatches are the override hexes.
+            boards = self.client.get("/apis/brand/").json()["boards"]
+            formints = next(b for b in boards if b["slug"] == "formint-pos")
+            self.assertEqual([s["token"] for s in formints["swatches"]], hexes)
+            self.assertEqual(formints["swatches"][0]["style"], f"background:{hexes[0]}")
+            # Products without an override keep the default token palette.
+            lms = next(b for b in boards if b["slug"] == "lms")
+            self.assertEqual([s["token"] for s in lms["swatches"]], ["precis", "paper", "ink", "line", "live"])
+
+            # Render road: the /brand/ page paints the override hex inline.
+            rendered = self.client.get("/brand/")
+            self.assertEqual(rendered.status_code, 200)
+            self.assertIn(b"#123456", rendered.content)
+
+            # BrandPage API carries the overrides for the Astro road.
+            page_data = self.client.get("/apis/pages/brand/").json()
+            self.assertEqual(page_data["palette_overrides"], {"formint-pos": hexes})
+        finally:
+            brand.palette_overrides = []
+            brand.save()
+
     def test_blog_renders_post_grid(self):
         """Blog renders the seeded post grid (hero + cards + cta)."""
         response = self.client.get("/blog/")
@@ -1451,9 +1498,124 @@ class LandingPagesTestCase(TestCase):
                 "alpine-reactivity-landing",
                 "monorepo-six-products",
                 "server-time-streamed-htmx",
+                "formint-pos-data-model",
+                "precis-lms-content-model",
+                "loop-block-library",
             },
         )
         self.assertTrue(BlogPostPage.objects.exists())
+
+    def test_deep_dive_posts_render_code_variants_and_comments(self):
+        """The code moved off product pages renders on the deep-dive posts,
+        with screenshot variants + a logged-in-only comment section."""
+        response = self.client.get("/blog/formint-pos-data-model/")
+        self.assertEqual(response.status_code, 200)
+        # The moved code section (SnippetsSectionBlock on BlogPostPage).
+        self.assertIn(b"SQLite schema (Diesel up.sql)", response.content)
+        self.assertIn(b"Tauri command (invoice PDF)", response.content)
+        # Screenshot variants with hyperlinks.
+        self.assertIn(b"post-variant__frame", response.content)
+        self.assertIn(b"Preview Community", response.content)
+        self.assertIn(b"/products/formint-pos/preview/community/", response.content)
+        # Anonymous visitors see the sign-in prompt, never the form.
+        self.assertIn(b"Sign in to join the conversation", response.content)
+        self.assertNotIn(b"hx-post=\"/apis/blog/", response.content)
+
+    def test_product_snippets_link_to_deep_dive_posts(self):
+        """Product snippet cards link out to the deep-dive posts (the code
+        moved into the blog) instead of inlining the code."""
+        for slug, post_title in (
+            ("formint-pos", b"The Formints data model"),
+            ("lms", b"The Precis LMS content model"),
+            ("cms", b"The Loop block library"),
+        ):
+            with self.subTest(slug=slug):
+                response = self.client.get(f"/products/{slug}/")
+                self.assertEqual(response.status_code, 200, slug)
+                self.assertIn(b"Read the deep dive:", response.content)
+                self.assertIn(post_title, response.content)
+                data = self.client.get(f"/apis/pages/{slug}/")
+                snippets = data.json().get("snippets", [])
+                self.assertTrue(snippets, slug)
+                self.assertTrue(
+                    all(s.get("related_post_href") for s in snippets),
+                    f"{slug} snippets should carry related_post_href",
+                )
+                self.assertTrue(
+                    all(s.get("related_post_title") for s in snippets),
+                    f"{slug} snippets should carry related_post_title",
+                )
+
+    def test_blog_comments_api_requires_login_and_serves_approved(self):
+        """Comments: public GET of approved only, POST gated on auth, and the
+        moderation flag hides comments from every road."""
+        from django.contrib.auth import get_user_model
+        from apps.content.models.comments import PostComment
+
+        post = BlogPostPage.objects.get(slug="why-landing-pages-as-documents")
+        user = get_user_model().objects.create_user(
+            "commenter@structa.cloud", "commenter@structa.cloud", "pass-1234"
+        )
+        approved = PostComment.objects.create(
+            post=post, author=user, body="A genuinely useful comment.", is_approved=True
+        )
+        PostComment.objects.create(
+            post=post, author=user, body="Hidden by moderation.", is_approved=False
+        )
+
+        # Public GET serves only approved comments.
+        data = self.client.get(f"/apis/blog/{post.slug}/comments/").json()
+        self.assertEqual(data["total"], 1)
+        self.assertEqual(data["comments"][0]["body"], "A genuinely useful comment.")
+
+        # Anonymous POST is rejected with 401.
+        anon = self.client.post(
+            f"/apis/blog/{post.slug}/comments/", {"body": "no auth"}
+        )
+        self.assertEqual(anon.status_code, 401)
+
+        # Authenticated POST creates + returns the comment.
+        self.client.force_login(user)
+        created = self.client.post(
+            f"/apis/blog/{post.slug}/comments/",
+            data='{"body": "Signed in, so this works."}',
+            content_type="application/json",
+        )
+        self.assertEqual(created.status_code, 201)
+        payload = created.json()
+        self.assertEqual(payload["display"], "commenter")
+        self.assertEqual(payload["body"], "Signed in, so this works.")
+        self.assertTrue(
+            PostComment.objects.filter(post=post, body="Signed in, so this works.").exists()
+        )
+
+        # The logged-in render road shows the form; moderation hides comments.
+        page = self.client.get(f"/blog/{post.slug}/")
+        self.assertIn(b"hx-post=\"/apis/blog/", page.content)
+        self.assertIn(b"A genuinely useful comment.", page.content)
+        self.assertNotIn(b"Hidden by moderation.", page.content)
+        self.assertEqual(PostComment.objects.filter(post=post, is_approved=True).count(), 2)
+
+    def test_blog_post_hero_and_variants_serialized(self):
+        """The page API exposes hero_screenshot_url + variants (with links)."""
+        post = BlogPostPage.objects.get(slug="formint-pos-data-model")
+        post.hero_screenshot_url = "https://example.com/formints.png"
+        post.save(update_fields=["hero_screenshot_url"])
+        try:
+            data = self.client.get("/apis/pages/formint-pos-data-model/").json()
+            self.assertEqual(
+                data.get("hero_screenshot_url"), "https://example.com/formints.png"
+            )
+            variants = data.get("variants", [])
+            self.assertEqual(len(variants), 2)
+            self.assertEqual(variants[0]["name"], "Community terminal")
+            self.assertEqual(
+                variants[0]["link_href"], "/products/formint-pos/preview/community/"
+            )
+            self.assertIn("snippets", data)
+        finally:
+            post.hero_screenshot_url = ""
+            post.save(update_fields=["hero_screenshot_url"])
 
     def test_pricing_renders_product_tabs_and_faq(self):
         """Pricing renders the tabbed per-product editions and links out to the FAQ."""

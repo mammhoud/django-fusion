@@ -1,0 +1,71 @@
+---
+// Cart drawer — Alpine controls the open/close state; the body is an HTMX
+// fragment swapped from the Django backend (/shop/fragments/cart/drawer/).
+// The cart count badge in the header listens for `cartUpdated` events.
+---
+
+<div
+  x-data="{ open: false }"
+  @fusion:open-cart.window="open = true"
+  @keydown.escape.window="open = false"
+>
+  <!-- Backdrop -->
+  <div
+    x-show="open"
+    x-cloak
+    style="display:none"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-[70] bg-fu-ink/40 backdrop-blur-sm"
+    @click="open = false"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Panel -->
+  <div
+    x-show="open"
+    x-cloak
+    style="display:none"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+    class="fixed inset-y-0 right-0 z-[80] flex w-full max-w-md flex-col border-l border-fu-line bg-fu-paper shadow-2xl"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Shopping cart"
+  >
+    <div class="flex items-center justify-between border-b border-fu-line px-6 py-4">
+      <div>
+        <p class="tag-marker">Your cart</p>
+        <h2 class="font-display text-xl font-bold tracking-tight text-fu-ink">Shopping cart</h2>
+      </div>
+      <button
+        type="button"
+        @click="open = false"
+        class="rounded-md p-2 text-fu-muted transition-colors hover:bg-fu-line/40 hover:text-fu-ink"
+        aria-label="Close cart"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- HTMX body — swapped on every cartUpdated -->
+    <div id="cart-drawer" class="flex-1 overflow-y-auto px-6 py-4">
+      <div hx-get="/shop/fragments/cart/drawer/" hx-trigger="load, cartUpdated from:body" hx-swap="innerHTML" class="h-full">
+        <div class="flex h-full flex-col items-center justify-center gap-3 py-16">
+          <div class="skeleton-shimmer h-8 w-8 rounded-full"></div>
+          <p class="font-mono text-xs uppercase tracking-widest text-fu-muted">Loading cart…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

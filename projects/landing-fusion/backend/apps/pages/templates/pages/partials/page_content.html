@@ -94,12 +94,101 @@
 </section>
 {% endif %}
 
+{% comment %} Blog post hero screenshot (BlogPostPage.hero_screenshot_url) — an
+   optional product shot under the hero, before the body. {% endcomment %}
+{% if page.is_blog_post and page.hero_screenshot_url %}
+<section class="container-fusion" style="padding-block:2rem 0;">
+  <div style="max-width:56rem;">
+    <img
+      src="{{ page.hero_screenshot_url }}"
+      alt="{{ page.title }} screenshot"
+      loading="lazy"
+      style="width:100%;border:1px solid hsl(var(--fu-border));border-radius:1.25rem;box-shadow:0 20px 60px -30px rgba(0,0,0,.35);display:block;"
+    />
+  </div>
+</section>
+{% endif %}
+
 {% comment %} Body / story — the "about this page" prose section. {% endcomment %}
 {% if page.body %}
 <section class="container-fusion" style="padding-block:4rem 5rem;">
   <div style="max-width:42rem;">
     <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{{ page.body_heading|default:page.title }}</h2>
     <div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>
+  </div>
+</section>
+{% endif %}
+
+{% comment %} Blog post screenshot variants (BlogPostPage.variants) — a gallery
+   of product variants, each with an optional image, caption and hyperlink.
+   Rendered only for blog posts that carry them. {% endcomment %}
+{% if page.is_blog_post and page.variants %}
+<section class="container-fusion" style="padding-block:4rem 5rem;">
+  <div style="max-width:56rem;">
+    <div class="mb-8 max-w-2xl">
+      <span class="tag-marker">variants &amp; screenshots</span>
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.875rem;margin:.75rem 0 .5rem;">See it in each edition</h2>
+      <p style="color:hsl(var(--fu-text) / .7);font-size:.875rem;margin:0;">
+        A screenshot per variant — open any one to jump straight to the live preview.
+      </p>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      {% for block in page.variants %}{% include_block block %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% comment %} Blog post comments (BlogPostPage) — logged-in-only thread. The form
+   is server-rendered for authenticated users and posts through HTMX to
+   /apis/blog/<slug>/comments/ (which returns a comment-card fragment for an
+   instant swap). Anonymous visitors see a sign-in prompt that opens the login
+   modal. Moderation: PostComment.is_approved in the Wagtail admin. {% endcomment %}
+{% if page.is_blog_post %}
+<section id="comments" class="container-fusion" style="padding-block:4rem 5rem;">
+  <div style="max-width:42rem;">
+    <div class="mb-8 max-w-2xl">
+      <span class="tag-marker">community</span>
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;margin:.6rem 0 0;">Comments</h2>
+    </div>
+    {% if request.user.is_authenticated %}
+      <form
+        hx-post="/apis/blog/{{ page.slug }}/comments/"
+        hx-target="#blog-comments"
+        hx-swap="afterbegin"
+        hx-on::after-request="this.reset()"
+        style="margin-bottom:2.5rem;"
+      >
+        <textarea
+          name="body"
+          rows="3"
+          required
+          placeholder="Share your thoughts on this post…"
+          maxlength="2000"
+          style="width:100%;border:1px solid hsl(var(--fu-border));border-radius:.75rem;background:hsl(var(--fu-card));color:hsl(var(--fu-ink));padding:.75rem 1rem;font:inherit;font-size:.9rem;resize:vertical;"
+        ></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.75rem;">
+          <p style="margin:0;font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">
+            Commenting as <span style="color:hsl(var(--fu-ink));font-weight:600;">{{ request.user.email|default:request.user.username }}</span>
+          </p>
+          <button type="submit" class="btn-primary" style="white-space:nowrap;">Post comment</button>
+        </div>
+      </form>
+    {% else %}
+      <div class="card" style="padding:1.5rem;text-align:center;">
+        <p style="margin:0 0 .75rem;font-size:.9rem;color:hsl(var(--fu-muted));">Sign in to join the conversation.</p>
+        <button type="button" class="btn-secondary" @click="$dispatch('fusion:open-login')">Sign in</button>
+      </div>
+    {% endif %}
+    <div id="blog-comments" class="space-y-4" style="display:grid;gap:1rem;">
+      {% for comment in page.get_approved_comments %}
+        {% include "content/partials/comment.html" %}
+      {% empty %}
+        {% if request.user.is_authenticated %}
+          <p style="margin:0;font-size:.875rem;color:hsl(var(--fu-muted));">No comments yet — be the first to share your thoughts.</p>
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 </section>
 {% endif %}

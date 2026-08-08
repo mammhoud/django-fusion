@@ -5,7 +5,7 @@ SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
     "services", "process", "blog",
     "tech", "editions", "snippets", "comparison", "team", "gallery",
-    "applications",
+    "applications", "variants",
 ]
 
 
@@ -125,6 +125,40 @@ class ApplicationsSectionBlock(blocks.StructBlock):
         icon = "doc-full-inverse"
         label = _("Applications built with this product")
         template = "content/blocks/applications.html"
+
+
+class BrandPaletteBlock(blocks.StructBlock):
+    """A per-brand palette override for the brand kit boards.
+
+    Editors pick the product and enter up to 5 hex swatches (accent first).
+    The override replaces the product's default system palette on the
+    /brand/ page and in the brand modal — resolved by ``get_brand_boards()``
+    (BrandPage.get_palette_overrides → board swatches). Swatches use a hex
+    CharBlock rather than a ColorBlock (not available in this Wagtail
+    version), with a colour input hint in the help text.
+    """
+
+    product = blocks.PageChooserBlock(
+        page_type="pages.ProductPage",
+        required=True,
+        label=_("Product"),
+        help_text=_("The product whose system palette this overrides."),
+    )
+    swatches = blocks.ListBlock(
+        blocks.CharBlock(
+            max_length=9,
+            label=_("Colour"),
+            help_text=_("Hex colour, e.g. #0B57D0."),
+        ),
+        label=_("Swatches"),
+        min_num=1,
+        max_num=5,
+        help_text=_("Up to 5 swatches, accent first. Empty list falls back to the system palette."),
+    )
+
+    class Meta:
+        icon = "pick"
+        label = _("Brand palette override")
 
 
 class LinkBlock(blocks.StructBlock):
@@ -693,16 +727,79 @@ class SnippetBlock(blocks.StructBlock):
     Pairs a title with a code block (e.g. a Rust struct, a SQLite schema, a
     Wagtail model) so a product page doubles as a reference for other projects
     (e.g. LMS reusing Formints patterns).
+
+    ``related_post`` links the snippet to a blog deep dive that hosts the
+    full walkthrough. When set, the card renders as a link out to the post
+    instead of inlining the code — so code sections can move into blog posts
+    while the product page keeps a reference card pointing at them.
     """
 
     title = blocks.CharBlock(max_length=200, label=_("Title"))
     language = blocks.CharBlock(max_length=40, required=False, label=_("Language"))
     code = blocks.TextBlock(label=_("Code"), help_text=_("The snippet body — kept verbatim."))
+    related_post = blocks.PageChooserBlock(
+        page_type="pages.BlogPostPage",
+        required=False,
+        label=_("Deep-dive post"),
+        help_text=_(
+            "Pick the blog post that hosts this code. When set, the card links "
+            "to the post instead of rendering the code inline."
+        ),
+    )
 
     class Meta:
         icon = "code"
         label = _("Snippet")
         template = "content/blocks/snippet.html"
+
+
+class PostVariantBlock(blocks.StructBlock):
+    """A screenshot variant of a product — image (or stylized frame), caption, link.
+
+    Used by blog posts so writers can show multiple screenshots/hero variants
+    of a product with a hyperlink on each (e.g. the Community terminal vs the
+    Cloud dashboard, each linking to its edition preview). ``screenshot_url``
+    is a CharBlock (not URLBlock) so editors can paste any URL — including a
+    data-URI screenshot — and ``link_page`` wins over the manual ``link_href``.
+    """
+
+    name = blocks.CharBlock(max_length=120, label=_("Name"))
+    screenshot_url = blocks.CharBlock(
+        max_length=500,
+        required=False,
+        label=_("Screenshot URL"),
+        help_text=_(
+            "Image URL (https://… or a data: URI). Leave empty to render a "
+            "stylized screen frame with the variant name."
+        ),
+    )
+    caption = blocks.TextBlock(
+        required=False,
+        label=_("Caption"),
+        help_text=_("One line describing what this variant shows."),
+    )
+    link_label = blocks.CharBlock(
+        max_length=80,
+        required=False,
+        label=_("Link label"),
+        help_text=_("e.g. Open the Community preview. Leave empty to use the page title."),
+    )
+    link_href = blocks.CharBlock(
+        max_length=255,
+        required=False,
+        label=_("Link URL"),
+        help_text=_("External URL. Ignored when a page is chosen."),
+    )
+    link_page = blocks.PageChooserBlock(
+        required=False,
+        label=_("Link to a page"),
+        help_text=_("Pick an internal page — its URL wins over the manual link."),
+    )
+
+    class Meta:
+        icon = "image"
+        label = _("Screenshot variant")
+        template = "content/blocks/post_variant.html"
 
 
 class SnippetsSectionBlock(blocks.StructBlock):

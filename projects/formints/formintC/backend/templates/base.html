@@ -1,0 +1,110 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{% endblock %} · {{ shop_name }}</title>
+    {% block extra_head %}{% endblock %}
+    <style>
+        /* ── Fusion design tokens (paper + ink, verdigris accent) ── */
+        :root {
+            --fu-paper: 46 25% 98%;
+            --fu-ink: 40 6% 10%;
+            --fu-muted: 45 5% 44%;
+            --fu-line: 45 14% 88%;
+            --fu-card: 48 33% 100%;
+            --fu-link: 158 42% 32%;
+            --fu-mark: 48 100% 60%;
+            --fu-live: 144 68% 37%;
+        }
+        html { color-scheme: light; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: hsl(var(--fu-paper));
+            color: hsl(var(--fu-ink));
+            line-height: 1.6;
+        }
+        a { color: hsl(var(--fu-link)); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .container { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+        .kicker {
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+            font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+            color: hsl(var(--fu-muted));
+        }
+        .h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; letter-spacing: -0.03em; margin: 0.4rem 0 1rem; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            border-radius: 999px; padding: 0.7rem 1.4rem; font-weight: 600; font-size: 0.95rem;
+            border: 1px solid transparent; cursor: pointer; transition: transform 0.16s ease, background 0.16s ease;
+        }
+        .btn:active { transform: translateY(1px) scale(0.99); }
+        .btn-primary { background: hsl(var(--fu-link)); color: #fff; }
+        .btn-primary:hover { background: hsl(158 42% 27%); text-decoration: none; }
+        .btn-ghost { background: transparent; border-color: hsl(var(--fu-line)); color: hsl(var(--fu-ink)); }
+        .btn-ghost:hover { background: hsl(var(--fu-line) / 0.4); text-decoration: none; }
+        .field { margin-bottom: 1.1rem; }
+        .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .field input, .field select, .field textarea {
+            width: 100%; padding: 0.65rem 0.85rem; font: inherit;
+            border: 1px solid hsl(var(--fu-line)); border-radius: 0.6rem; background: hsl(var(--fu-card));
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: 2px solid hsl(var(--fu-link) / 0.35); outline-offset: 1px;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            border-radius: 999px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 600;
+            font-family: "JetBrains Mono", ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .badge-amber { background: rgb(251 191 36 / 0.15); color: rgb(146 64 14); }
+        .badge-sky { background: rgb(56 189 248 / 0.15); color: rgb(3 105 161); }
+        .badge-violet { background: rgb(167 139 250 / 0.18); color: rgb(91 33 182); }
+        .badge-emerald { background: rgb(52 211 153 / 0.18); color: rgb(4 120 87); }
+        .badge-zinc { background: rgb(161 161 170 / 0.2); color: rgb(63 63 70); }
+        .badge-rose { background: rgb(251 113 133 / 0.18); color: rgb(159 18 57); }
+        .card {
+            background: hsl(var(--fu-card));
+            border: 1px solid hsl(var(--fu-line));
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+        }
+        .row { display: flex; gap: 1rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .muted { color: hsl(var(--fu-muted)); }
+        .mt-1 { margin-top: 0.5rem; } .mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; } .mb-2 { margin-bottom: 1rem; }
+        .right { justify-content: flex-end; }
+        @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header style="border-bottom:1px solid hsl(var(--fu-line)); background:hsl(var(--fu-card) / 0.8); backdrop-filter:blur(8px); position:sticky; top:0; z-index:40;">
+        <div class="container" style="display:flex; align-items:center; justify-content:space-between; height:4rem;">
+            <a href="/" style="font-weight:700; color:hsl(var(--fu-ink)); display:flex; align-items:center; gap:0.6rem;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem;">{{ shop_name }}</span>
+            </a>
+            <nav style="display:flex; gap:1.2rem; align-items:center; font-size:0.9rem;">
+                {% if user.is_authenticated %}
+                    <span class="muted" style="font-size:0.8rem;">{{ user.email }}</span>
+                    {% if user.is_staff %}<a href="{% url 'employee:dashboard' %}">Staff desk</a>{% endif %}
+                    <a href="{% url 'shop:my_orders' %}">My orders</a>
+                    <form method="post" action="{% url 'account_logout' %}" style="display:inline;">
+                        {% csrf_token %}<button type="submit" class="btn btn-ghost" style="padding:0.4rem 1rem;">Sign out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'account_login' %}">Sign in</a>
+                    <a href="{% url 'account_signup' %}" class="btn btn-primary" style="padding:0.45rem 1.1rem;">Create account</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    <main class="container" style="padding-top:2.5rem; padding-bottom:4rem;">
+        {% block content %}{% endblock %}
+    </main>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

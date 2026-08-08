@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
-import Transactions from '../../pages/pos/Transactions';
+import Transactions from '../../app/pages/pos/Transactions';
 
 const mockTransactions = [
   {

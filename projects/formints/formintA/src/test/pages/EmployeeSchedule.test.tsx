@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
-import EmployeeSchedule from '../../pages/admin/EmployeeSchedule';
+import EmployeeSchedule from '../../app/pages/admin/EmployeeSchedule';
 
 const mockEmployees = [
   { id: 1, name: 'John Doe', phone: '1234567890', email: 'john@example.com', employee_type_id: 1, salary: 3000, is_active: true, joined_at: '2024-01-15' },

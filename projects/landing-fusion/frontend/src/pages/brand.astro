@@ -29,9 +29,23 @@ const boards = productCards
   .map((card) => ({ ...card, ...(BRAND_SPEC[card.slug] ?? {}) }))
   .filter((b) => b.essence);
 
-// Map a palette token to the CSS variable backing its swatch.
-// Brand tokens (formints/precis/…) use --brand-*; system tokens map to fu-*.
+// Editor-authored palette overrides (BrandPage.palette_overrides, served on
+// /apis/pages/brand/). When a product has an override, its hex swatches
+// replace the hardcoded BRAND_SPEC palette — matching the backend boards.
+const paletteOverrides =
+  (pageData?.palette_overrides as Record<string, string[]> | undefined) ?? {};
+const boardsWithOverrides = boards.map((board) => ({
+  ...board,
+  palette: paletteOverrides[board.slug]?.length
+    ? paletteOverrides[board.slug]
+    : board.palette,
+}));
+
+// Map a palette entry to the CSS value backing its swatch: an editor hex
+// override renders as-is; a token (formints/precis/…) uses --brand-* or the
+// shared fu-* system variables.
 function swatchVar(token: string): string {
+  if (token.startsWith('#')) return token;
   const system: Record<string, string> = {
     paper: '--fu-paper', ink: '--fu-ink', line: '--fu-line',
     link: '--fu-link', live: '--fu-live', mark: '--fu-mark',
@@ -59,7 +73,7 @@ function swatchVar(token: string): string {
     status="200 OK · text/html · the identity system, in one response"
   />
 
-  {boards.length ? (
+  {boardsWithOverrides.length ? (
   <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
     <div class='container-fusion'>
       <div class='mb-12 max-w-2xl'>
@@ -69,7 +83,7 @@ function swatchVar(token: string): string {
       </div>
 
       <div class='grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
-        {boards.map((board, i) => (
+        {boardsWithOverrides.map((board, i) => (
           <article class='brand-board reveal' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
             <div class='brand-board__lockup'>
               <div class='brand-board__mark'>

@@ -8,7 +8,7 @@ import {
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
 import { getInvokeHistory } from '../setup';
-import Employees from '../../pages/admin/Employees';
+import Employees from '../../app/pages/admin/Employees';
 
 const mockEmployees = [
   {

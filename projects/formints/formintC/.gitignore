@@ -11,6 +11,16 @@ node_modules
 dist
 dist-ssr
 *.local
+# Astro generated types/artifacts
+.astro/
+
+# Django backend runtime
+.venv/
+*.pyc
+__pycache__/
+staticfiles/
+media/
+db.sqlite3
 
 # Editor directories and files
 .vscode/*

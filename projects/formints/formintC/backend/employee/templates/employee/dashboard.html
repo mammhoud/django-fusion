@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Staff desk{% endblock %}
+{% block content %}
+<p class="kicker">Staff desk</p>
+<h1 class="h1">Order inbox</h1>
+
+<!-- KPI chips — polled every 20s via HTMX -->
+<div
+  id="staff-stats"
+  hx-get="{% url 'employee:stats_fragment' %}"
+  hx-trigger="load, every 20s, ordersStatsUpdated from:body"
+  hx-swap="innerHTML"
+  class="mt-3"
+>
+  {% include "employee/fragments/stats.html" %}
+</div>
+
+<!-- Status filter tabs -->
+<div class="mt-3 row" style="flex-wrap:wrap;">
+  <a href="?status=" class="btn btn-ghost" style="padding:0.45rem 1rem;">All</a>
+  {% for value, label in order_statuses %}
+  <a href="?status={{ value }}" class="btn btn-ghost" style="padding:0.45rem 1rem;">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<!-- Order inbox -->
+<div
+  id="order-inbox"
+  class="mt-2"
+  hx-get="{% url 'employee:orders_fragment' %}{% if request.GET.status %}?status={{ request.GET.status }}{% endif %}"
+  hx-trigger="load, every 30s"
+  hx-swap="innerHTML"
+>
+  <div class="card" style="text-align:center; padding:2rem;">
+    <div class="kicker">Loading inbox…</div>
+  </div>
+</div>
+{% endblock %}

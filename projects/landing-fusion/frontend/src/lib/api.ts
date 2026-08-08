@@ -206,6 +206,8 @@ export interface PageData {
   status?: string;
   // DisplayModeMixin — how the page is surfaced: page / modal / both.
   display_mode?: string;
+  // BrandPage — editor-authored hex palettes keyed by product slug.
+  palette_overrides?: Record<string, string[]>;
   hidden?: boolean;
   // Wagtail-managed Services subpages
   phase_number?: number;
@@ -225,6 +227,16 @@ export interface PageData {
   excerpt?: string;
   language?: LangCode;
   available_languages?: LangCode[];
+  // BlogPostPage enhancements — hero screenshot + screenshot variants.
+  hero_screenshot_url?: string;
+  variants?: {
+    type?: string;
+    name?: string;
+    screenshot_url?: string;
+    caption?: string;
+    link_label?: string;
+    link_href?: string;
+  }[];
   translation_source?: 'model' | 'fallback' | 'canonical';
   translation_language?: LangCode;
 }

@@ -8,7 +8,7 @@ import {
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
 import { getInvokeHistory, clearInvokeHistory } from '../setup';
-import Recipes from '../../pages/kitchen/Recipes';
+import Recipes from '../../app/pages/kitchen/Recipes';
 
 const mockRecipes = [
   { id: 1, product_id: 1, recipe_type_id: 1, yield_quantity: 4, is_active: true },

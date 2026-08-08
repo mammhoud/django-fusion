@@ -64,6 +64,7 @@ urlpatterns = [
     path("apis/brand/", pages_api.brand_api, name="brand_api"),
     path("apis/pages/", pages_api.page_list_api, name="page_list_api"),
     path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
+    path("apis/blog/<slug:slug>/comments/", pages_api.blog_comments_api, name="blog_comments"),
     path("fragment/pages/<slug:slug>/", pages_api.page_fragment_api, name="page_fragment_api"),
     path("apis/assets/", pages_api.assets_api, name="assets_api"),
 
