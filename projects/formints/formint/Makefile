@@ -38,12 +38,8 @@ FRONTEND_PORT := 4321
         build preview clean screenshots \
         backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-clean backend-sidecar-binary backend-sidecar-install-bin \
         frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean \
-<<<<<<< HEAD
-        tauri tauri-dev tauri-build sidecar-binary
-=======
         desktop desktop-dev desktop-backend tauri tauri-dev tauri-build \
-        desktop-build bundle sidecar-build sidecar-install-bin release
->>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
+        desktop-build bundle sidecar-build sidecar-install-bin release sidecar-binary
 
 help: ## Show all commands
 	@echo ''
@@ -81,13 +77,6 @@ help: ## Show all commands
 	@echo '  make frontend-install frontend-dev frontend-build frontend-preview'
 	@echo '  make frontend-check frontend-test frontend-clean'
 	@echo ''
-<<<<<<< HEAD
-	@echo '── Tauri desktop ───────────────────────────────────────────'
-	@echo '  make tauri            Tauri CLI info (env + config check)'
-	@echo '  make tauri-dev        Tauri dev (desktop hot-reload)'
-	@echo '  make tauri-build      Tauri production build'
-	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
-=======
 	@echo '── Desktop (Tauri) ─────────────────────────────────────────'
 	@echo '  make desktop          Full desktop dev: backend tmux + Tauri window (:1420)'
 	@echo '  make desktop-dev      Alias for make desktop'
@@ -100,8 +89,9 @@ help: ## Show all commands
 	@echo '  make tauri-build      Raw Tauri production bundle (assumes frontend built)'
 	@echo '  make sidecar-build    PyInstaller sidecar binary → dist/formint-backend'
 	@echo '  make sidecar-install-bin  Copy sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
+	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
 	@echo '  make release          check + test + web build + desktop bundle'
->>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
+
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
 	@echo '  make screenshots      Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/'
@@ -216,9 +206,6 @@ desktop: ## Run the desktop app in dev mode (backend tmux + Tauri window)
 
 desktop-dev: desktop ## Alias for make desktop
 
-<<<<<<< HEAD
-tauri: ## Tauri CLI info (env + config check)
-=======
 desktop-backend: ## Start the backend tmux session (formint-be) for desktop dev
 	@tmux kill-session -t formint-be 2>/dev/null || true
 	@tmux new-session -d -s formint-be 'cd $(CURDIR)/$(BACKEND_DIR) && ./.venv/bin/python3 manage.py runserver 127.0.0.1:$(BACKEND_PORT)'
@@ -226,7 +213,6 @@ desktop-backend: ## Start the backend tmux session (formint-be) for desktop dev
 	@curl -s -o /dev/null -w '  backend  → %{http_code}\n' --max-time 3 http://127.0.0.1:$(BACKEND_PORT)/health/ || echo '  backend  → DOWN (tmux attach -t formint-be to debug)'
 
 tauri: ## Run the Tauri CLI (config ../src-tauri/tauri.conf.json)
->>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
 	cd $(FRONTEND_DIR) && npm run tauri
 
 tauri-dev: ## Raw Tauri dev window (hot-reload; assume backend is already running)
@@ -235,10 +221,6 @@ tauri-dev: ## Raw Tauri dev window (hot-reload; assume backend is already runnin
 tauri-build: ## Raw Tauri production bundle (assume frontend already built)
 	cd $(FRONTEND_DIR) && npm run build:desktop
 
-<<<<<<< HEAD
-sidecar-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
-	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
-=======
 # ── Full build / release ───────────────────────────────────────────────────
 
 desktop-build: ## Full production desktop build (collectstatic + frontend + Tauri bundle)
@@ -248,6 +230,9 @@ desktop-build: ## Full production desktop build (collectstatic + frontend + Taur
 	cd $(FRONTEND_DIR) && npm run build:desktop
 
 bundle: desktop-build ## Alias for make desktop-build
+
+sidecar-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
+	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
 
 sidecar-build: ## Build the Robyn sidecar binary → sidecar/dist/formint-backend
 	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
@@ -262,4 +247,3 @@ release: ## Full release pipeline: check + test + web build + desktop bundle
 	$(MAKE) build
 	$(MAKE) desktop-build
 	@echo '✅ Release complete'
->>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
