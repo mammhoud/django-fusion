@@ -1,8 +1,7 @@
 """POS Cloud — API URL routing via django-fusion viewset auto-registration."""
 
 from django.urls import path, include
-from . import sync_dashboard
-from .views import (
+from apps.core.views import (
     OrganizationViewSet,
     BranchViewSet,
     LeadViewSet,
@@ -11,7 +10,7 @@ from .views import (
     InventoryReportViewSet,
     BranchReportViewSet,
 )
-from .sync_api import (
+from apps.handlers.sync_api import (
     BranchSyncLogViewSet,
     BranchProductViewSet,
     BranchSaleViewSet,
@@ -21,6 +20,7 @@ from .sync_api import (
     sync_receive_inventory,
     sync_receive_heartbeat,
 )
+from apps.handlers import sync_dashboard
 
 
 def _inc(viewset):

@@ -15,7 +15,7 @@ class POSCloudDashboard(UnfoldModelAdminViewMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         from django.db.models import Sum
-        from core.models import Organization, Branch, Lead, InventoryReport, BranchSyncLog
+        from apps.core.models import Organization, Branch, Lead, InventoryReport, BranchSyncLog
 
         # ── Live sync activity counters (total items synced; JS increments by batch delta) ──
         sync_logs = BranchSyncLog.objects

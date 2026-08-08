@@ -1,0 +1,61 @@
+[project]
+name = "pos-cloud-sidecar"
+dynamic = ["version"]
+description = "POS Cloud — Robyn + Django ORM sidecar (REST + WebSocket APIs for the pos-cloud SaaS)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "Structa Cloud", email = "dev@structa.cloud" },
+]
+
+dependencies = [
+    "robyn>=0.50,<1.0",
+    "django>=4.2,<5.1",
+    "django-bolt[pydantic]",
+    "django-fusion",
+    "django-unfold>=0.40",
+    "channels>=4.0",
+    "daphne>=4.0",
+    "asgiref>=3.8",
+    "sqlparse>=0.4",        # Django management commands (migrate, makemigrations)
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "Jinja2>=3.1",          # Robyn template rendering
+    "django-tables2>=2.7",   # Required by django_fusion.comp.generic.table
+    "wagtail>=6.0,<7.0",    # Compatible with Django>=4.2,<5.1
+    "djangorestframework>=3.15",
+    "django-filter>=24.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+pos-cloud-sidecar = "server:main"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["routes*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "about.__version__" }
+
+[tool.setuptools]
+py-modules = ["server", "handlers", "about"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+
+[tool.uv.sources]
+django-fusion = { path = "../../../../libs/django-fusion", editable = true }
+django-bolt = { path = "../../../../libs/django-bolt", editable = true }

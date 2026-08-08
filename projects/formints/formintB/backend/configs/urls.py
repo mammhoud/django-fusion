@@ -711,7 +711,7 @@ async def _bolt_dispatch(request, route: str = ""):
     if route == "sync-monitor":
         return HttpResponse(SYNC_MONITOR_HTML)
 
-    from core.api import api
+    from apps.core.api import api
 
     full_path = f"/{route}" if route else "/"
     if not full_path.startswith("/"):
@@ -755,5 +755,8 @@ urlpatterns = [
     re_path(r"^apis/data/(?P<route>.*)$", _bolt_catch_all, name="bolt_catch_all"),
 
     # REST API (django-fusion viewsets + sync receivers)
-    path("api/", include("core.urls")),
+    path("api/", include("apps.core.urls")),
+
+    # django-fusion API-first handlers (sidecar contract)
+    path("fusion/", include("apps.handlers.urls")),
 ]

@@ -43,6 +43,14 @@
 
 {% if page.hero %}{% include_block page.hero %}{% endif %}
 
+{% comment %} About-section subpage nav (AboutPage + team/startup/founder) —
+   the shared about_subnav partial right after the hero, so visitors can move
+   through the whole About section from any of its pages. Mirrors the
+   frontend AboutSubNav.astro component. {% endcomment %}
+{% if about_subnav_current %}
+  {% include "pages/partials/about_subnav.html" %}
+{% endif %}
+
 {% comment %} Product lockup strip (ProductPage) — the brand mark + wordmark +
    tagline under the hero, so each product page leads with its identity. {% endcomment %}
 {% if page.logo_style %}
