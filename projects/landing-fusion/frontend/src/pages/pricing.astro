@@ -126,7 +126,7 @@ function editionCardClass(tier: string): string {
                   ) : null}
                   <div class='mt-auto flex flex-wrap gap-2'>
                     <a href={`/products/${product.slug}/#editions`} class:list={['w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>See {product.title} →</a>
-                    <a href={ed.preview_href || `/products/${product.slug}/preview/${ed.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}/`} class='w-full text-center font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>View edition preview →</a>
+                    <a href={ed.preview_href || `/products/${product.slug}/preview/${ed.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}/`} class='w-full text-center font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Preview this edition →</a>
                   </div>
                 </div>
               ))}

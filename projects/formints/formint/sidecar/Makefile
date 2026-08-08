@@ -87,18 +87,13 @@ static: collectstatic ## Alias for collectstatic
 collectstatic: ## Collect static files
 	$(MANAGE) collectstatic --noinput
 
-sidecar-binary: ## PyInstaller onefile formint-backend → ../src-tauri/binaries/<target-triple>
-	.venv/bin/pyinstaller formint-backend.spec --clean --noconfirm
-	cp dist/formint-backend ../src-tauri/binaries/formint-backend-$$(rustc -vV | sed -n 's/^host: //p')
-	@echo '✅ Sidecar binary ready in ../src-tauri/binaries/'
-
 clean: ## Remove database + staticfiles + __pycache__
 	rm -f restaurant.db formint-phase1.sqlite3
 	rm -rf staticfiles build dist
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	@echo -e "$(GREEN)✅ Sidecar artifacts cleaned$(NC)"
 
-sidecar-binary: ## Build the Robyn sidecar binary (PyInstaller) → dist/formint-backend
+sidecar-binary: ## Build the Robyn sidecar binary (PyInstaller) → dist/formint-backend; run sidecar-install-bin to copy it
 	@echo -e "$(BLUE)Building formint-backend sidecar binary…$(NC)"
 	.venv/bin/pip show pyinstaller >/dev/null 2>&1 || .venv/bin/pip install -q pyinstaller
 	.venv/bin/pyinstaller formint-server.spec --clean --noconfirm

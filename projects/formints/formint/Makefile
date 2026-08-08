@@ -89,7 +89,7 @@ help: ## Show all commands
 	@echo '  make tauri-build      Raw Tauri production bundle (assumes frontend built)'
 	@echo '  make sidecar-build    PyInstaller sidecar binary → dist/formint-backend'
 	@echo '  make sidecar-install-bin  Copy the sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
-	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
+	@echo '  make sidecar-binary   Build PyInstaller formint-backend → sidecar/dist'
 	@echo '  make release          check + test + web build + desktop bundle'
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
