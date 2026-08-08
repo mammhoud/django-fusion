@@ -278,7 +278,54 @@
           this.loading = false;
         }
       },
-      close() { this.open = false; }
+      close() { this.open = false; },
+      rgbToHex(rgb) {
+        var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(rgb || '');
+        if (!m) return null;
+        return '#' + m.slice(1, 4).map(function (n) { return parseInt(n, 10).toString(16).padStart(2, '0'); }).join('').toUpperCase();
+      },
+      // Resolve every palette chip's live background colour to a hex and write
+      // it under the token label — designers can grab real colour codes. Runs
+      // via x-effect keyed on the board; the data-resolved guard keeps it a
+      // one-shot per chip (theme toggles re-resolve when the colour changes).
+      resolveHexes(board) {
+        if (!board) return;
+        var self = this;
+        this.$nextTick(function () {
+          self.$root.querySelectorAll('[data-swatch-hex]').forEach(function (label) {
+            var wrapper = label.parentElement;
+            var chip = wrapper ? wrapper.querySelector('[data-swatch-chip]') : null;
+            if (!chip) return;
+            var hex = self.rgbToHex(getComputedStyle(chip).backgroundColor);
+            if (!hex) return;
+            if (label.dataset.resolved === '1' && label.textContent === hex) return;
+            label.textContent = hex;
+            label.dataset.resolved = '1';
+            label.title = 'Copy ' + hex;
+          });
+        });
+      },
+      // Click-to-copy on the resolved hex — flashes "copied", restores after a beat.
+      async copyHex(e) {
+        var label = e.currentTarget;
+        var hex = (label.textContent || '').trim();
+        if (!/^#[0-9A-F]{6}$/i.test(hex)) return;
+        try {
+          await navigator.clipboard.writeText(hex);
+        } catch (err) {
+          var ta = document.createElement('textarea');
+          ta.value = hex;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } catch (e2) { /* no-op */ }
+          ta.remove();
+        }
+        label.textContent = 'copied';
+        label.dataset.resolved = '1';
+        setTimeout(function () { label.textContent = hex; }, 900);
+      }
     }"
     @keydown.escape.window="open = false"
     @fusion:open-brand.window="open($event.detail.slug)"
@@ -332,11 +379,12 @@
                 </div>
                 <div style="display:flex;gap:.75rem;align-items:center;">
                   <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">palette</span>
-                  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;width:100%;">
+                  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;width:100%;" x-effect="resolveHexes(board)">
                     <template x-for="(swatch, i) in (board.swatches || [])" :key="i">
-                      <div style="display:flex;flex-direction:column;gap:.25rem;min-width:0;" :title="swatch.token">
-                        <div style="aspect-ratio:1;border-radius:.375rem;border:1px solid hsl(var(--fu-border));" :style="swatch.style"></div>
+                      <div style="display:flex;flex-direction:column;gap:.2rem;min-width:0;" :title="swatch.token">
+                        <div data-swatch-chip style="aspect-ratio:1;border-radius:.375rem;border:1px solid hsl(var(--fu-border));" :style="swatch.style"></div>
                         <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--fu-muted));" x-text="swatch.token"></span>
+                        <span data-swatch-hex x-cloak x-show="!/^#[0-9a-fA-F]{6}$/.test(swatch.token || '')" @click="copyHex($event)" role="button" tabindex="0" title="Copy colour" style="cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:hsl(var(--fu-link) / .8);transition:color .2s;"></span>
                       </div>
                     </template>
                   </div>

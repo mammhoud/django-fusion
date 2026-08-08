@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>POS CLOUD / SYNC MONITOR — Desktop Concept (1440)</title>
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     POS CLOUD / SYNC MONITOR — DESKTOP CONCEPT BOARD (1440)
+     Same design bible as the MOBILE OPS set:
+     substrate #0A0A0A · phosphor #EAEAEA · hazard #E61919 · green #4AF626
+     zero radius · monospace telemetry · ASCII framing · CRT texture
+     Presentation: dashboard inside a desktop browser frame,
+     spec rail + editorial annotation cards.
+     ═══════════════════════════════════════════════════════════════ */
+  :root {
+    --bg: #0A0A0A;
+    --bg-panel: #121212;
+    --bg-inset: #0D0D0D;
+    --board: #0f0f0f;
+    --ink: #EAEAEA;
+    --ink-dim: #8A8A8A;
+    --ink-faint: #555555;
+    --hazard: #E61919;
+    --green: #4AF626;
+    --line: #2A2A2A;
+    --line-strong: #444444;
+    --mono: 'JetBrains Mono', 'IBM Plex Mono', 'Space Mono', ui-monospace, 'Courier New', monospace;
+    --display: 'Outfit', system-ui, -apple-system, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+  html { background: var(--board); }
+  body {
+    background: var(--board);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 56px;
+  }
+  .board { max-width: 1440px; margin: 0 auto; padding: 0 20px; }
+
+  /* ── Board header — editorial masthead ────────────────────────── */
+  .board-head {
+    border-bottom: 2px solid var(--line-strong);
+    padding: 26px 0 18px;
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: 16px 32px;
+  }
+  .board-head .kicker { font-size: 10px; letter-spacing: .22em; color: var(--hazard); text-transform: uppercase; }
+  .board-head h1 {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    letter-spacing: -.03em; line-height: .92; margin-top: 8px;
+    font-size: clamp(1.9rem, 4.5vw, 3.4rem);
+  }
+  .board-head h1 .red { color: var(--hazard); }
+  .board-head .meta { margin-top: 10px; font-size: 10px; letter-spacing: .16em; color: var(--ink-dim); text-transform: uppercase; }
+  .board-head .rail-r { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .legend { display: flex; gap: 18px; font-size: 9px; letter-spacing: .14em; color: var(--ink-dim); text-transform: uppercase; }
+  .legend .sw { display: inline-block; width: 8px; height: 8px; margin-right: 6px; vertical-align: baseline; }
+  .sw.g { background: var(--green); } .sw.r { background: var(--hazard); } .sw.d { background: var(--ink-faint); }
+  .companion {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line-strong); padding: 7px 12px;
+    font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .companion a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hazard); }
+  .companion a:hover { color: var(--hazard); }
+
+  /* ── Main grid: browser frame + spec rail ────────────────────── */
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; margin-top: 24px; }
+  @media (max-width: 1100px) { .main { grid-template-columns: 1fr; } .spec { display: grid; grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px)  { .spec { grid-template-columns: 1fr; } }
+
+  /* ── Desktop browser frame ───────────────────────────────────── */
+  .browser {
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    box-shadow: 0 30px 70px -24px rgba(0,0,0,.9);
+    display: flex; flex-direction: column;
+  }
+  .chrome {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
+    background: var(--bg-panel); border-bottom: 1px solid var(--line);
+    padding: 9px 14px;
+  }
+  .chrome .leds { display: flex; gap: 7px; }
+  .chrome .leds i { width: 10px; height: 10px; display: inline-block; background: var(--ink-faint); }
+  .chrome .leds i.r { background: var(--hazard); }
+  .chrome .tabs { display: flex; gap: 2px; overflow: hidden; }
+  .chrome .tab { padding: 6px 12px; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim); border: 1px solid var(--line); background: var(--bg-inset); }
+  .chrome .tab.active { color: var(--ink); border-bottom-color: var(--hazard); }
+  .chrome .url {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border: 1px solid var(--line); background: var(--bg-inset);
+    padding: 6px 12px; font-size: 11px; letter-spacing: .06em; color: var(--ink-dim);
+    min-width: 0;
+  }
+  .chrome .url .host { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  .chrome .url .lock { width: 10px; height: 8px; border: 1px solid var(--ink-dim); position: relative; flex: 0 0 auto; }
+  .chrome .url .lock::before { content: ''; position: absolute; top: -5px; left: 1px; width: 6px; height: 5px; border: 1px solid var(--ink-dim); border-bottom: 0; }
+  .chrome .live { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line-strong); padding: 2px 8px; font-size: 9px; letter-spacing: .16em; color: var(--ink-dim); text-transform: uppercase; white-space: nowrap; }
+  .chrome .live::before { content: ''; width: 6px; height: 6px; background: var(--ink-faint); }
+
+  /* ── The monitor viewport (mirrors the live SYNC_MONITOR_HTML) ── */
+  .monitor { position: relative; overflow: hidden; }
+  .monitor::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 40; opacity: .32;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.25) 2px, rgba(0,0,0,.25) 4px);
+  }
+  .monitor::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 41; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .monitor-inner { position: relative; z-index: 2; padding: 0 22px 26px; }
+
+  .topbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 2px solid var(--line-strong); padding: 13px 0; letter-spacing: .08em; text-transform: uppercase; font-size: 10px; color: var(--ink-dim); }
+  .topbar .brand { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: .02em; }
+  .topbar .brand .hazard { color: var(--hazard); }
+  .topbar .nav { display: flex; gap: 16px; justify-content: flex-end; }
+  .topbar .nav .active { color: var(--ink); }
+  .topbar .nav .active::before { content: '>> '; color: var(--hazard); }
+
+  .masthead { padding: 20px 0 16px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; }
+  @media (max-width: 720px) { .masthead { grid-template-columns: 1fr; } .masthead-meta { text-align: left; } }
+  .masthead h2 { font-size: clamp(1.6rem, 4vw, 2.9rem); font-weight: 700; text-transform: uppercase; letter-spacing: -.03em; line-height: .92; }
+  .masthead h2 .block { display: block; }
+  .masthead h2 .red { color: var(--hazard); }
+  .masthead h2 .thin { font-weight: 400; color: var(--ink-dim); }
+  .masthead-meta { text-align: right; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-dim); line-height: 1.9; border: 1px solid var(--line-strong); padding: 9px 13px; }
+  .masthead-meta b { color: var(--ink); font-weight: 600; }
+
+  .status-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin: 18px 0; }
+  @media (max-width: 720px) { .status-strip { grid-template-columns: repeat(2, 1fr); } }
+  .status-cell { background: var(--bg-panel); padding: 11px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-dim); display: flex; align-items: center; gap: 10px; }
+  .status-cell .val { font-size: clamp(1.3rem, 2.6vw, 1.9rem); font-weight: 700; color: var(--ink); letter-spacing: 0; line-height: 1; }
+  .status-cell .val.red { color: var(--hazard); }
+  .status-cell .val.green { color: var(--green); }
+  .led { width: 8px; height: 8px; display: inline-block; background: var(--ink-faint); flex: 0 0 auto; }
+  .led.on { background: var(--green); }
+  .led.warn { background: var(--hazard); }
+
+  .tab-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin-bottom: 18px; }
+  .tab { background: var(--bg-panel); color: var(--ink-dim); border: 0; padding: 10px 8px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+  .tab.active { color: var(--ink); background: var(--bg-inset); box-shadow: inset 0 -2px 0 var(--hazard); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin-bottom: 18px; }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+  .panel { background: var(--bg-panel); padding: 15px; min-width: 0; }
+  .panel-title { font-size: 10px; text-transform: uppercase; letter-spacing: .18em; color: var(--ink-dim); margin-bottom: 11px; padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+  .panel-title::before { content: '[ '; color: var(--hazard); }
+  .panel-title::after { content: ' ]'; color: var(--hazard); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { text-align: left; padding: 6px 8px; font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-dim); border-bottom: 1px solid var(--line-strong); font-weight: 600; white-space: nowrap; }
+  td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  tr:hover td { background: var(--bg-inset); }
+  td .code { color: var(--ink-dim); font-size: 10px; }
+
+  .badge { display: inline-block; padding: 2px 7px; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--line-strong); color: var(--ink-dim); white-space: nowrap; }
+  .badge.on { border-color: rgba(234,234,234,.55); color: var(--ink); }
+  .badge.red { border-color: var(--hazard); color: var(--hazard); }
+  .badge.blue { border-color: #3B82F6; color: #3B82F6; }
+
+  .feed-row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+  .feed-row:last-child { border-bottom: 0; }
+  .feed-row .who { color: var(--ink-dim); }
+  .feed-row .ok { color: var(--ink); }
+  .feed-row .err { color: var(--hazard); }
+
+  .m-foot { border-top: 1px solid var(--line-strong); margin-top: 18px; padding-top: 11px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; font-size: 9px; letter-spacing: .14em; color: var(--ink-faint); text-transform: uppercase; }
+
+  /* ── Spec rail ───────────────────────────────────────────────── */
+  .spec { border: 1px solid var(--line-strong); background: var(--bg); align-self: start; }
+  .spec .spec-h { padding: 11px 14px; border-bottom: 2px solid var(--line-strong); font-size: 10px; font-weight: 700; letter-spacing: .2em; color: var(--ink); text-transform: uppercase; }
+  .spec .spec-h::before { content: '[ '; color: var(--hazard); }
+  .spec .spec-h::after { content: ' ]'; color: var(--hazard); }
+  .spec .spec-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--line); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .spec .spec-row:last-child { border-bottom: 0; }
+  .spec .spec-row .k { color: var(--ink-dim); }
+  .spec .spec-row .v { color: var(--ink); text-align: right; white-space: nowrap; }
+  .spec .spec-row .v.red { color: var(--hazard); }
+  .spec .spec-row .v.green { color: var(--green); }
+  .spec .spec-swatch { display: flex; gap: 6px; }
+  .spec .spec-swatch i { width: 18px; height: 10px; display: inline-block; border: 1px solid var(--line-strong); }
+  .spec .spec-swatch i.crt { background: #0A0A0A; }
+  .spec .spec-swatch i.ink { background: #EAEAEA; }
+  .spec .spec-swatch i.hz { background: #E61919; }
+  .spec .spec-swatch i.gn { background: #4AF626; }
+
+  /* ── Editorial annotation cards ──────────────────────────────── */
+  .annot { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin-top: 28px; }
+  @media (max-width: 1100px) { .annot { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 760px)  { .annot { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px)  { .annot { grid-template-columns: 1fr; } }
+  .annot .card { background: var(--bg); padding: 14px; min-width: 0; }
+  .annot .card .no { font-size: 22px; font-weight: 700; color: var(--hazard); font-family: var(--display); letter-spacing: -.02em; }
+  .annot .card .t { margin-top: 6px; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+  .annot .card .d { margin-top: 6px; font-size: 9px; letter-spacing: .1em; color: var(--ink-dim); text-transform: uppercase; line-height: 1.7; }
+  .annot .card .demo { margin-top: 10px; border: 1px solid var(--line); height: 34px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 9px; color: var(--ink-dim); letter-spacing: .14em; text-transform: uppercase; }
+  .annot .card .demo .mini-swatch { width: 26px; height: 12px; border: 1px solid var(--line-strong); }
+  .annot .card .demo.scan { background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(234,234,234,.16) 2px, rgba(234,234,234,.16) 4px); }
+  .annot .card .demo.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-strong); padding: 1px; }
+  .annot .card .demo.grid i { background: var(--bg-panel); }
+
+  /* ── Board footer ────────────────────────────────────────────── */
+  .board-foot { margin-top: 34px; border-top: 1px solid var(--line-strong); padding-top: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; font-size: 9px; letter-spacing: .14em; color: var(--ink-faint); text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+  <div class="board">
+
+    <!-- ── Board header ── -->
+    <header class="board-head">
+      <div>
+        <p class="kicker">Desktop Concept / 1440 × 900 · Editorial Board</p>
+        <h1>[ POS CLOUD <span class="red">/ SYNC MONITOR</span> ]</h1>
+        <p class="meta">UNIT / POS-CLOUD-01&nbsp;·&nbsp;REV / 2.6&nbsp;·&nbsp;MODE / TELEMETRY&nbsp;·&nbsp;© 2026 FORMINT CLOUD ®</p>
+      </div>
+      <div class="rail-r">
+        <p class="legend">
+          <span><i class="sw g"></i>ONLINE</span>
+          <span><i class="sw r"></i>ALERT / ACCENT</span>
+          <span><i class="sw d"></i>OFFLINE / DIM</span>
+        </p>
+        <p class="companion">COMPANION SET · <a href="mobile_ops_preview.html">MOBILE OPS / 6 SCREENS →</a></p>
+      </div>
+    </header>
+
+    <!-- ── Browser frame + spec rail ── -->
+    <div class="main">
+
+      <!-- Desktop browser frame -->
+      <div class="browser">
+        <div class="chrome">
+          <div class="leds" aria-hidden="true"><i class="r"></i><i></i><i></i></div>
+          <div class="tabs">
+            <span class="tab active">Sync Monitor</span>
+            <span class="tab">Unfold Admin</span>
+            <span class="tab">Fusion</span>
+          </div>
+          <div class="url">
+            <span class="lock" aria-hidden="true"></span>
+            <span class="host">https://cloud.formint.app/apis/data/sync-monitor</span>
+            <span class="live">LIVE / 10S</span>
+          </div>
+        </div>
+
+        <div class="monitor">
+          <div class="monitor-inner">
+            <!-- Monitor topbar -->
+            <div class="topbar">
+              <span class="brand">FORMINT <span class="hazard">CLOUD</span> · SYNC MESH</span>
+              <span>MONITOR / BRANCH FLEET</span>
+              <nav class="nav"><span>DASHBOARD</span><span class="active">SYNC MONITOR</span></nav>
+            </div>
+
+            <!-- Masthead -->
+            <div class="masthead">
+              <h2><span class="block">BRANCH <span class="red">SYNC</span></span><span class="thin">TELEMETRY</span></h2>
+              <div class="masthead-meta">
+                <b>UNIT</b> / POS-CLOUD-01<br />
+                <b>REV</b> / 2.6 · <b>MODE</b> / TELEMETRY<br />
+                <b>STREAM</b> / WS · LIVE
+              </div>
+            </div>
+
+            <!-- Status strip — fleet rate is the ONE green element -->
+            <div class="status-strip">
+              <div class="status-cell"><span class="led"></span><div><div class="val green">75.0%</div>FLEET SYNC-RATE</div></div>
+              <div class="status-cell"><span class="led"></span><div><div class="val">12</div>QUEUED</div></div>
+              <div class="status-cell"><span class="led warn"></span><div><div class="val red">2</div>CONFLICTS</div></div>
+              <div class="status-cell"><span class="led warn"></span><div><div class="val">24S</div>BACKLOG / EST</div></div>
+            </div>
+
+            <!-- Tab rail -->
+            <div class="tab-bar">
+              <span class="tab active">BRANCHES</span>
+              <span class="tab">QUEUE</span>
+              <span class="tab">CONFLICTS</span>
+              <span class="tab">ACTIVITY</span>
+              <span class="tab">LOGS</span>
+            </div>
+
+            <!-- Roster + activity -->
+            <div class="grid-2">
+              <div class="panel">
+                <p class="panel-title">BRANCH ROSTER / 4 UNITS</p>
+                <table>
+                  <thead>
+                    <tr><th>CODE</th><th>BRANCH</th><th>NODE</th><th>TERM</th><th>SYNC</th><th>STATUS</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="code">BR001</td><td>Downtown</td><td class="code">N-A1</td><td>2</td><td>ON</td><td><span class="badge on">ONLINE</span></td></tr>
+                    <tr><td class="code">BR004</td><td>Mall</td><td class="code">N-D4</td><td>3</td><td>ON</td><td><span class="badge on">ONLINE</span></td></tr>
+                    <tr><td class="code">BR002</td><td>Harbor</td><td class="code">N-B2</td><td>0</td><td>ON</td><td><span class="badge red">DEGRADED</span></td></tr>
+                    <tr><td class="code">BR003</td><td>Airport</td><td class="code">N-C3</td><td>0</td><td>OFF</td><td><span class="badge">OFFLINE</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="panel">
+                <p class="panel-title">ACTIVITY FEED / RECENT</p>
+                <div class="feed-row"><span class="who">BR001 · SALE</span><span class="ok">SYNCED 14 · 02:14</span></div>
+                <div class="feed-row"><span class="who">BR004 · PRODUCT</span><span class="ok">SYNCED 3 · 02:10</span></div>
+                <div class="feed-row"><span class="who">BR002 · INVENTORY</span><span class="err">FAILED · 02:03</span></div>
+                <div class="feed-row"><span class="who">BR001 · HEARTBEAT</span><span class="ok">ACK · 02:01</span></div>
+                <div class="feed-row"><span class="who">BR004 · SALE</span><span class="ok">SYNCED 8 · 01:58</span></div>
+                <div class="feed-row"><span class="who">BR003 · HEARTBEAT</span><span class="err">NO ACK · 01:52</span></div>
+              </div>
+            </div>
+
+            <div class="m-foot">
+              <span>© 2026 FORMINT CLOUD ® · POS-CLOUD / SYNC MESH</span>
+              <span>POLL / 10S · UPDATED / 3:14:52 PM · WS / CONNECTED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spec rail -->
+      <aside class="spec">
+        <p class="spec-h">SPEC SHEET</p>
+        <div class="spec-row"><span class="k">BOARD</span><span class="v">1440 × 900</span></div>
+        <div class="spec-row"><span class="k">GRID</span><span class="v">12 COL / 1PX GAP</span></div>
+        <div class="spec-row"><span class="k">DISPLAY</span><span class="v">OUTFIT BLACK</span></div>
+        <div class="spec-row"><span class="k">MONO</span><span class="v">JETBRAINS MONO</span></div>
+        <div class="spec-row"><span class="k">SUBSTRATE</span><span class="v">#0A0A0A</span></div>
+        <div class="spec-row"><span class="k">PHOSPHOR</span><span class="v">#EAEAEA</span></div>
+        <div class="spec-row"><span class="k">ACCENT</span><span class="v red">#E61919</span></div>
+        <div class="spec-row"><span class="k">GREEN</span><span class="v green">#4AF626</span></div>
+        <div class="spec-row"><span class="k">RADIUS</span><span class="v">0</span></div>
+        <div class="spec-row"><span class="k">TEXTURE</span><span class="v">SCAN + GRAIN</span></div>
+        <div class="spec-row"><span class="k">SWATCHES</span>
+          <span class="spec-swatch"><i class="crt"></i><i class="ink"></i><i class="hz"></i><i class="gn"></i></span>
+        </div>
+        <div class="spec-row"><span class="k">COMPANION</span><span class="v">MOBILE OPS / 6</span></div>
+        <div class="spec-row"><span class="k">MODE</span><span class="v">TELEMETRY</span></div>
+        <div class="spec-row"><span class="k">REV</span><span class="v">2.6</span></div>
+      </aside>
+    </div>
+
+    <!-- ── Design-bible annotations ── -->
+    <section class="annot">
+      <div class="card">
+        <p class="no">01</p>
+        <p class="t">SUBSTRATE</p>
+        <p class="d">DEACTIVATED CRT #0A0A0A · NO PURE BLACK · PANELS #121212</p>
+        <div class="demo"><i class="mini-swatch" style="background:#0A0A0A;"></i><i class="mini-swatch" style="background:#121212;"></i><i class="mini-swatch" style="background:#EAEAEA;"></i></div>
+      </div>
+      <div class="card">
+        <p class="no">02</p>
+        <p class="t">TYPE</p>
+        <p class="d">JETBRAINS MONO 9–13PX · TRACK .1EM · UPPERCASE · OUTFIT BLACK MACRO</p>
+        <div class="demo"><span style="font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:-.02em;">Aa</span><span style="font-size:12px;">Aa 0123</span></div>
+      </div>
+      <div class="card">
+        <p class="no">03</p>
+        <p class="t">ACCENT</p>
+        <p class="d">HAZARD RED #E61919 · ONLY ACCENT · ONE GREEN #4AF626 (FLEET RATE)</p>
+        <div class="demo"><i class="mini-swatch" style="background:#E61919;"></i><i class="mini-swatch" style="background:#4AF626;"></i></div>
+      </div>
+      <div class="card">
+        <p class="no">04</p>
+        <p class="t">GEOMETRY</p>
+        <p class="d">ZERO RADIUS · 1PX DIVIDERS · GAP:1PX GRID · NO FLOAT, ANCHORED</p>
+        <div class="demo grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="card">
+        <p class="no">05</p>
+        <p class="t">TEXTURE</p>
+        <p class="d">CRT SCANLINES + MECHANICAL GRAIN · FIXED · POINTER-EVENTS NONE</p>
+        <div class="demo scan"></div>
+      </div>
+    </section>
+
+    <!-- ── Board footer ── -->
+    <footer class="board-foot">
+      <span>© 2026 FORMINT CLOUD ® · DESKTOP CONCEPT / SYNC MONITOR · REV 2.6</span>
+      <span>COMPANION TO MOBILE OPS / 06-SCREEN SET · MODE / TELEMETRY</span>
+    </footer>
+  </div>
+</body>
+</html>

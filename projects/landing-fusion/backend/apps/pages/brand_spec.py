@@ -96,33 +96,52 @@ def swatch_style(token: str) -> str:
     return f"background:hsl({system})" if system else f"background:hsl(var(--brand-{token}))"
 
 
-def get_brand_boards(products_page=None) -> list[dict]:
+def _swatches_from_tokens(tokens) -> list[dict]:
+    """Resolve palette tokens to ``{token, style}`` swatch dicts."""
+    return [{"token": token, "style": swatch_style(token)} for token in tokens]
+
+
+def _swatches_from_hex(hexes: list[str]) -> list[dict]:
+    """Resolve hex colours to ``{token, style}`` swatch dicts (editor override)."""
+    return [{"token": hex_value, "style": f"background:{hex_value}"} for hex_value in hexes]
+
+
+def get_brand_boards(products_page=None, brand_page=None) -> list[dict]:
     """The brand kit boards — one per live, non-hidden product card.
 
     Single source of truth for the /brand/ page, the Astro brand.astro road
     and the product-tooltip brand modal: each board joins the product card
     (title/href/logo) with its BRAND_SPEC story and pre-resolved swatches.
+
+    ``brand_page`` (a BrandPage) carries editor-authored palette overrides
+    (BrandPage.palette_overrides → get_palette_overrides); when a product has
+    an override its board swatches replace the hardcoded BRAND_SPEC palette.
     """
-    from apps.pages.models import ProductsPage
+    from apps.pages.models import BrandPage, ProductsPage
 
     page = products_page or ProductsPage.objects.first()
     if page is None:
         return []
+    if brand_page is None:
+        brand_page = BrandPage.objects.first()
+    overrides = brand_page.get_palette_overrides() if brand_page is not None else {}
     cards = page.get_product_cards()
     boards = []
     for card in cards:
         spec = BRAND_SPEC.get(card["slug"], {})
         if not spec:
             continue
+        override = overrides.get(card["slug"])
         boards.append(
             {
                 **card,
                 **spec,
                 "mark": spec.get("mark", card["logo_style"]),
-                "swatches": [
-                    {"token": token, "style": swatch_style(token)}
-                    for token in spec.get("palette", [])
-                ],
+                "swatches": (
+                    _swatches_from_hex(override)
+                    if override
+                    else _swatches_from_tokens(spec.get("palette", []))
+                ),
                 # href comes from the product card (get_product_cards sets it).
             }
         )

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.reference }}{% endblock %}
+{% block content %}
+<div style="text-align:center; padding:3rem 0 2rem;">
+  <div style="width:56px; height:56px; margin:0 auto 1.2rem; border-radius:50%; background:hsl(158 42% 32%); display:flex; align-items:center; justify-content:center;">
+    <span style="color:#fff; font-size:1.5rem;">✓</span>
+  </div>
+  <p class="kicker">Order placed</p>
+  <h1 class="h1" style="margin-bottom:0.4rem;">Thanks, {{ order.customer_name }}.</h1>
+  <p class="muted">Your reference is <strong style="font-family:'JetBrains Mono',monospace; color:hsl(var(--fu-ink)); letter-spacing:0.1em;">{{ order.reference }}</strong> — show it at pickup.</p>
+</div>
+
+<div class="card" style="max-width:34rem; margin:0 auto;">
+  <p class="kicker">Summary · {{ order.created_at|date:"g:i A" }}</p>
+  <ul style="list-style:none; margin:0.6rem 0 0; padding:0;">
+    {% for item in order.items.all %}
+    <li style="display:flex; justify-content:space-between; gap:1rem; padding:0.55rem 0; border-bottom:1px solid hsl(var(--fu-line));">
+      <span>{{ item.quantity }} × {{ item.product_name }}</span>
+      <span class="muted" style="font-family:'JetBrains Mono',monospace;">${{ item.line_total }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="mt-2" style="display:flex; justify-content:space-between;"><span class="muted">Subtotal</span><span>${{ order.subtotal }}</span></div>
+  <div style="display:flex; justify-content:space-between;"><span class="muted">Tax</span><span>${{ order.tax }}</span></div>
+  <div style="display:flex; justify-content:space-between; font-weight:700;"><span>Total</span><span>${{ order.total }}</span></div>
+  <p class="mt-2 muted" style="font-size:0.9rem;">{{ order.get_order_type_display }}{% if order.notes %} · {{ order.notes }}{% endif %}</p>
+</div>
+
+<div style="text-align:center; margin-top:2rem;">
+  <a href="/" class="btn btn-primary">Back to the menu</a>
+</div>
+{% endblock %}

@@ -9,6 +9,7 @@ import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
 import ProductLogo from '@/components/ui/ProductLogo.astro';
+import StackLinks from '@/components/ui/StackLinks.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -39,6 +40,8 @@ const pageCta = pageData?.cta;
 const pageTech = (pageData?.tech as any[] | undefined);
 const pageEditions = (pageData?.editions as any[] | undefined);
 const pageComparison = (pageData?.comparison as any[] | undefined);
+const pageApplications = (pageData?.applications as any[] | undefined)?.[0] as any | undefined;
+const pageSnippets = (pageData?.snippets as any[] | undefined);
 const pagePreviewGallery = (pageData?.preview_gallery as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
@@ -80,6 +83,14 @@ const previewGallery = pagePreviewGallery?.map((media: any) => ({
   label: String(media.label || ''),
   alt: String(media.alt || 'Product preview'),
 })).filter((media) => media.url);
+const snippets = pageSnippets?.map((s: any) => ({
+  title: String(s.title || ''),
+  language: String(s.language || ''),
+  code: String(s.code || ''),
+  // SnippetBlock.related_post — the blog deep dive that hosts this code.
+  relatedPostHref: String(s.related_post_href || ''),
+  relatedPostTitle: String(s.related_post_title || ''),
+}));
 const capabilities = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || ''),
   title: String(f.title || ''),
@@ -114,6 +125,9 @@ const faqItems = pageFaq?.map((f: any) => ({
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : undefined}
     status='200 OK · text/html · the product, in one response'
   />
+
+  {/* The stack entry strip — links to the stack doc and services */}
+  <StackLinks />
 
   {pageData?.logo_style && (
     <section class='container-fusion' style='padding-top:1.75rem'>
@@ -206,6 +220,30 @@ const faqItems = pageFaq?.map((f: any) => ({
     </section>
   ) : null}
 
+  {pageApplications?.applications?.length ? (
+    <section id='applications' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-12 max-w-2xl'>
+          {pageApplications.eyebrow && <p class='tag-marker mb-4'>{pageApplications.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{pageApplications.title}</h2>
+          {pageApplications.description && <p class='text-fu-muted'>{pageApplications.description}</p>}
+        </div>
+        <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+          {pageApplications.applications.map((app: any, i: number) => (
+            <a href={app.href || app.url || '#'} class='card application__card reveal p-6' style={`--reveal-i: ${i}`} x-data x-intersect='`$el.classList.add("reveal-visible")`'>
+              <div class='flex items-center justify-between gap-3'>
+                <span class='tag-marker' style='margin:0'>{app.name}</span>
+                {app.edition && <span class='edition-chip'>{app.edition}</span>}
+              </div>
+              {app.description && <p class='mt-3 text-sm leading-relaxed text-fu-muted'>{app.description}</p>}
+              <span class='mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>Open preview →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
   {comparison?.rows?.length ? (
     <section id='comparison' class='doc-sheet bg-fu-paper py-20 md:py-24'>
       <div class='container-fusion'>
@@ -282,6 +320,34 @@ const faqItems = pageFaq?.map((f: any) => ({
             </figure>
           ))}
         </div>
+
+        {snippets?.length ? (
+          <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+            {snippets.map((snip) => snip.relatedPostHref ? (
+              <figure class='card overflow-hidden'>
+                <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
+                  <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
+                  {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
+                </figcaption>
+                <div class='p-5'>
+                  <p class='text-sm text-fu-muted'>The full code for this section now lives in a blog deep dive — read the walkthrough, then copy the patterns from there.</p>
+                  <a href={snip.relatedPostHref} class='mt-4 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link no-underline transition-colors hover:text-fu-link-dark'>
+                    <svg class='h-3.5 w-3.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2'/></svg>
+                    Read the deep dive: {snip.relatedPostTitle || 'the post'} →
+                  </a>
+                </div>
+              </figure>
+            ) : (
+              <figure class='card overflow-hidden'>
+                <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
+                  <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
+                  {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
+                </figcaption>
+                <pre class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{snip.code}</code></pre>
+              </figure>
+            ))}
+          </div>
+        ) : null}
         {firstEditionPreviewHref && <a href={firstEditionPreviewHref} class='mt-6 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Open an edition preview →</a>}
       </div>
     </section>

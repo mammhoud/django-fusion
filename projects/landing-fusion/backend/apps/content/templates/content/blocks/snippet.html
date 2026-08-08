@@ -1,7 +1,26 @@
 {% load wagtailcore_tags %}
 {% comment %} A single reference snippet (SnippetBlock) — title + language label +
-   verbatim code. Used as a reference for other projects (e.g. LMS reusing
-   Formints models). {% endcomment %}
+   verbatim code. When a deep-dive post is linked (related_post) the card
+   becomes a reference link to the post that hosts the code — the product page
+   keeps the section, the code lives in the blog post. {% endcomment %}
+{% if value.related_post %}
+<figure class="card snippet__card snippet__card--deep-dive overflow-hidden">
+  <figcaption class="snippet__head flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5">
+    <span class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink">{{ value.title }}</span>
+    {% if value.language %}<span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{{ value.language }}</span>{% endif %}
+  </figcaption>
+  <div class="p-5">
+    <p class="text-sm text-fu-text/70">
+      The full code for this section now lives in a blog deep dive — read the
+      walkthrough, then copy the patterns from there.
+    </p>
+    <a href="{{ value.related_post.url }}" class="mt-4 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-link-dark">
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      Read the deep dive: {{ value.related_post.title }} →
+    </a>
+  </div>
+</figure>
+{% else %}
 <figure class="card snippet__card overflow-hidden">
   <figcaption class="snippet__head flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5">
     <span class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink">{{ value.title }}</span>
@@ -9,3 +28,4 @@
   </figcaption>
   <pre class="snippet__code overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed" style="color:#e6e6e6;"><code>{{ value.code }}</code></pre>
 </figure>
+{% endif %}

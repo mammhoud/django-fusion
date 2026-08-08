@@ -181,10 +181,12 @@ export interface PageData {
   tech?: string[];
   editions?: Record<string, any>[];
   comparison?: Record<string, any>[];
-  /** Deduplicated edition captures used by the product detail gallery. */
-  preview_gallery?: PreviewMedia[];
+  applications?: Record<string, any>[];
+  snippets?: Record<string, any>[];
   /** Editorial media-gallery blocks (ProductPage.gallery — screenshots, GIFs, videos). */
   gallery?: Record<string, any>[];
+  /** Deduplicated edition captures used by the product detail gallery. */
+  preview_gallery?: PreviewMedia[];
   products?: {
     title: string;
     slug: string;
@@ -194,6 +196,7 @@ export interface PageData {
     category?: string;
     logo_style?: string;
     status?: string;
+    display_mode?: string;
     excerpt?: string;
     editions?: { name: string; price: string; period?: string; tier?: string; featured?: boolean; offer_label?: string; offer_old_price?: string }[];
     tech?: string[];
@@ -203,6 +206,10 @@ export interface PageData {
   version?: string;
   tagline?: string;
   status?: string;
+  // DisplayModeMixin — how the page is surfaced: page / modal / both.
+  display_mode?: string;
+  // BrandPage — editor-authored hex palettes keyed by product slug.
+  palette_overrides?: Record<string, string[]>;
   hidden?: boolean;
   // Wagtail-managed Services subpages
   phase_number?: number;
@@ -222,6 +229,16 @@ export interface PageData {
   excerpt?: string;
   language?: LangCode;
   available_languages?: LangCode[];
+  // BlogPostPage enhancements — hero screenshot + screenshot variants.
+  hero_screenshot_url?: string;
+  variants?: {
+    type?: string;
+    name?: string;
+    screenshot_url?: string;
+    caption?: string;
+    link_label?: string;
+    link_href?: string;
+  }[];
   translation_source?: 'model' | 'fallback' | 'canonical';
   translation_language?: LangCode;
 }
@@ -253,6 +270,7 @@ export interface PricingProduct {
   version?: string;
   logo_style: string;
   status: string;
+  display_mode?: string;
   href: string;
   editions: {
     name: string;

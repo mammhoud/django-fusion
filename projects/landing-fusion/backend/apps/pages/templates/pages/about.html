@@ -23,13 +23,8 @@
     </div>
   </section>
 
-  {% comment %} About subpages: the Startup, Founder and Team pages live under
-     /about/ — a small mono nav for the story pages. {% endcomment %}
-  <section class="container-fusion" style="text-align:center;padding-block:1.5rem 2.5rem;">
-    <nav aria-label="About subpages" style="display:flex;flex-wrap:wrap;gap:1rem 1.75rem;justify-content:center;">
-      <a href="/about/startup/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">The startup →</a>
-      <a href="/about/founder/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">The founder →</a>
-      <a href="/about/team/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:underline;text-underline-offset:4px;">Meet the team →</a>
-    </nav>
-  </section>
+  {% comment %} About section subpage nav (About / Startup / Founder / Team)
+     renders in the shared content region right after the hero via
+     pages/partials/about_subnav.html (active state from the view's
+     about_subnav_current). {% endcomment %}
 {% endblock %}

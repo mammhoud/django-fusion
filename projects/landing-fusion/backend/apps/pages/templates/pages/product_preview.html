@@ -15,6 +15,15 @@
         <p class="mt-4 text-lg text-fu-muted">of {{ content.title }}{% if preview_edition.tagline %} — {{ preview_edition.tagline }}{% endif %}</p>
       </div>
 
+      {% comment %} Live preview — a stylized screen of the product, keyed by
+         product slug (formint-pos → register, vresume → resume, cms → page
+         builder, lms → course player, cypercloud → chat widget, fallback →
+         edition sheet). Mirrors the frontend PreviewMock component. {% endcomment %}
+      <div class="mb-10 max-w-3xl">
+        <p class="mb-3 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted">live preview</p>
+        {% include "pages/partials/preview_mock.html" %}
+      </div>
+
       {% if preview_edition.preview_images %}
       <section class="mb-10" aria-labelledby="preview-gallery-title">
         <div class="mb-5 max-w-2xl">

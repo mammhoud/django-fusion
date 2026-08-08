@@ -1,0 +1,151 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div id="pos-cloud-dashboard">
+
+  <!-- ═══ Masthead ═══ -->
+  <div class="tactical-masthead">
+    <p class="tactical-masthead-eyebrow">&gt;&gt;&gt; OPERATIONS CONSOLE // LIVE TELEMETRY</p>
+    <h1 class="tactical-masthead-title">POS CLOUD / SYNC OPS</h1>
+    <div class="tactical-masthead-meta">
+      [ FLEET LINK
+      <span id="sync-status-dot" data-sync-status="disconnected" title="WebSocket status"></span>
+      <span id="sync-status-label">connecting</span>
+      ] // UNIT COUNT
+      <span data-tactical-stat>{{ branch_count }}</span>
+    </div>
+  </div>
+
+  <!-- ═══ KPI Strip ═══ -->
+  <div class="tactical-strip">
+    {% for card in cards %}
+    <div class="tactical-stat" data-tactical-stat>
+      <span class="tactical-stat-label">{{ card.title|upper }}</span>
+      <span class="tactical-stat-value">{{ card.value }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ═══ Live Sync Activity ═══ -->
+  <div class="tactical-panel" data-sync-section="activity">
+    <div class="tactical-panel-head">
+      <h2 class="tactical-panel-title">[ LIVE SYNC ACTIVITY ]</h2>
+      <span class="tactical-stat-note">[ WS // RECEIVER ACTIVE ]</span>
+    </div>
+    <div class="tactical-panel-body">
+      <div class="tactical-strip">
+        <!-- Products -->
+        <div class="tactical-stat" data-sync-card="products">
+          <span class="tactical-stat-label">PRODUCTS SYNCED</span>
+          <span class="tactical-stat-value" data-sync-count="products">{{ sync_stats.products_synced }}</span>
+          <span class="tactical-tag" data-sync-badge="products" style="display:none">
+            <span data-sync-delta="products">+0</span> JUST NOW
+          </span>
+        </div>
+        <!-- Sales -->
+        <div class="tactical-stat" data-sync-card="sales">
+          <span class="tactical-stat-label">SALES SYNCED</span>
+          <span class="tactical-stat-value" data-sync-count="sales">{{ sync_stats.sales_synced }}</span>
+          <span class="tactical-tag" data-sync-badge="sales" style="display:none">
+            <span data-sync-delta="sales">+0</span> JUST NOW
+          </span>
+        </div>
+        <!-- Inventory -->
+        <div class="tactical-stat" data-sync-card="inventory">
+          <span class="tactical-stat-label">INVENTORY SYNCED</span>
+          <span class="tactical-stat-value" data-sync-count="inventory">{{ sync_stats.inventory_synced }}</span>
+          <span class="tactical-tag" data-sync-badge="inventory" style="display:none">
+            <span data-sync-delta="inventory">+0</span> JUST NOW
+          </span>
+        </div>
+        <!-- Heartbeat -->
+        <div class="tactical-stat" data-sync-card="heartbeat">
+          <span class="tactical-stat-label">LAST SYNC</span>
+          <span class="tactical-stat-value tactical-stat-value--small" data-sync-last-branch>{{ sync_stats.last_sync_branch }}</span>
+          <span class="tactical-stat-note" data-sync-last-time="{% if sync_stats.last_sync_at %}{{ sync_stats.last_sync_at }}{% endif %}">
+            {% if sync_stats.last_sync_time %}{{ sync_stats.last_sync_time }}{% else %}NEVER{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Main Grid ═══ -->
+  <div class="tactical-grid">
+    <!-- Recent Leads -->
+    <div class="tactical-panel">
+      <div class="tactical-panel-head">
+        <h2 class="tactical-panel-title">[ RECENT LEADS ]</h2>
+        <a href="/admin/core/lead/" class="tactical-btn tactical-btn-outline">VIEW ALL</a>
+      </div>
+      <div class="tactical-panel-body">
+        {% if recent_leads %}
+        <table class="tactical-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lead in recent_leads %}
+            <tr>
+              <td>{{ lead.first_name }} {{ lead.last_name }}</td>
+              <td>
+                <span class="tactical-tag {% if lead.status == 'lost' %}tactical-tag--red{% else %}tactical-tag--muted{% endif %}">
+                  {{ lead.get_status_display|upper }}
+                </span>
+              </td>
+              <td>{{ lead.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="tactical-frame">
+          NO LEADS ON RECORD //
+          <a href="/admin/core/lead/add/">INITIALIZE FIRST LEAD</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="tactical-panel">
+      <div class="tactical-panel-head">
+        <h2 class="tactical-panel-title">[ QUICK ACTIONS ]</h2>
+      </div>
+      <div class="tactical-panel-body">
+        <div class="tactical-actions">
+          <a href="/admin/core/lead/add/" class="tactical-btn tactical-btn-primary">+ NEW LEAD</a>
+          <a href="/admin/core/organization/add/" class="tactical-btn tactical-btn-outline">+ NEW ORGANIZATION</a>
+          <a href="/admin/core/branch/add/" class="tactical-btn tactical-btn-outline">+ NEW BRANCH</a>
+          <a href="/reports/" class="tactical-btn tactical-btn-outline">GENERATE REPORT</a>
+        </div>
+
+        {% if recent_reports %}
+        <h3 class="tactical-panel-title tactical-panel-title--small">RECENT REPORTS</h3>
+        <table class="tactical-table">
+          <tbody>
+            {% for report in recent_reports %}
+            <tr>
+              <td>{{ report.title }}</td>
+              <td class="tactical-stat-note">{{ report.created_at|timesince }} AGO</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Footer ═══ -->
+  <div class="tactical-footer">
+    <span>[ POS CLOUD // SYNC OPS CONSOLE ]</span>
+    <span>REV 2.6 // UNIT-01</span>
+    <span>® © ™</span>
+  </div>
+</div>
+{% endblock %}

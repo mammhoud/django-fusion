@@ -238,8 +238,10 @@ test('privacy page renders its legal document', () => {
 test('blog page shows the seeded post grid', () => {
   assert.match(blog, /Ideas from real launches/);
   assert.match(blog, /From the blog/);
-  assert.match(blog, /Why we ship landing pages as documents/);
-  assert.match(blog, /HTMX fragments vs\. JSON APIs/);
+  // Grid cards carry the current seeded titles (seed_pages.py renamed the
+  // posts while keeping their stable slugs).
+  assert.match(blog, /A fast first visit is a product decision/);
+  assert.match(blog, /Designing bilingual journeys without duplication/);
   assert.match(blog, /monorepo-six-products/);
 });
 
@@ -367,6 +369,37 @@ test('precis-lms and loop pages render their editions', () => {
   assert.match(cms, /Loop/);
   assert.match(cms, /Community/);
   assert.match(cms, /Business/);
+});
+
+test('edition cards link to flexible preview subpages (both roads)', () => {
+  // Every Formints edition card carries a “Preview this edition →” link.
+  for (const edition of ['community', 'standard', 'pro', 'cloud']) {
+    assert.ok(
+      formintsPos.includes(`/products/formint-pos/preview/${edition}/`),
+      `formint-pos card should link the ${edition} preview`,
+    );
+  }
+  // The dedicated pricing page carries a preview link per edition card.
+  assert.ok(pricing.includes('Preview this edition'), 'pricing should show preview links');
+});
+
+test('loop lists applications built with it, including vResume', () => {
+  assert.match(cms, /Sites and apps running on Loop/);
+  assert.ok(cms.includes('vResume'), 'cms should list vResume as a Loop build');
+  assert.ok(
+    cms.includes('/products/vresume/preview/community/'),
+    'cms vResume card should link the community preview',
+  );
+});
+
+test('edition preview subpages render the live product mock', () => {
+  const formintCommunity = readPage('products', 'formint-pos', 'preview', 'community', 'index.html');
+  const vresumeCommunity = readPage('products', 'vresume', 'preview', 'community', 'index.html');
+  // The POS preview shows the register mock; the vResume preview the resume.
+  assert.match(formintCommunity, /live preview/);
+  assert.match(formintCommunity, /Espresso/);
+  assert.match(vresumeCommunity, /live preview/);
+  assert.match(vresumeCommunity, /Mina Mammhoud/);
 });
 
 test('blog post detail pages render seeded bodies and link back to /blog', () => {

@@ -39,7 +39,7 @@ FRONTEND_PORT := 4321
         backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-clean backend-sidecar-binary backend-sidecar-install-bin \
         frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean \
         desktop desktop-dev desktop-backend tauri tauri-dev tauri-build \
-        desktop-build bundle sidecar-build sidecar-install-bin release
+        desktop-build bundle sidecar-build sidecar-install-bin release sidecar-binary
 
 help: ## Show all commands
 	@echo ''
@@ -89,6 +89,7 @@ help: ## Show all commands
 	@echo '  make tauri-build      Raw Tauri production bundle (assumes frontend built)'
 	@echo '  make sidecar-build    PyInstaller sidecar binary → dist/formint-backend'
 	@echo '  make sidecar-install-bin  Copy the sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
+	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
 	@echo '  make release          check + test + web build + desktop bundle'
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
@@ -226,6 +227,9 @@ desktop-build: ## Full production desktop build (collectstatic + frontend + Taur
 	cd $(FRONTEND_DIR) && npm run build:desktop
 
 bundle: desktop-build ## Alias for make desktop-build
+
+sidecar-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
+	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
 
 sidecar-build: ## Build the Robyn sidecar binary → sidecar/dist/formint-backend
 	$(MAKE) -C $(BACKEND_DIR) sidecar-binary

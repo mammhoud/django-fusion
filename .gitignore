@@ -43,3 +43,20 @@ libs/ceptor-ai
 
 .freebuff
 .tmpprojects/formints/*.gif
+
+# Databases and build artifacts (SQLite, Astro, Tauri/PyInstaller)
+*.db
+*.db-shm
+*.db-wal
+restaurant.db
+.astro/
+src-tauri/gen/
+src-tauri/binaries/
+sidecar/build/
+*.pyz
+*.toc
+*.pkg
+base_library.zip
+**/src-tauri/gen/
+**/src-tauri/binaries/
+**/sidecar/build/

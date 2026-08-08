@@ -49,3 +49,33 @@
 - **Python sidecar** for complex business logic (sync, webhooks, reporting)
 - **RTK Query** for API caching and optimistic UI updates
 - **Shared database** between Rust and Python via `restaurant.db`
+
+---
+
+## Cloud Edition — `formintB/` (pos-cloud)
+
+> Hosted multi-terminal SaaS master. Not a Tauri app — a single Django package
+> (`pos-cloud`, `backend/`) serving the full surface on `:8767` (API + fusion
+> contract + Community-UI bridges) and the bolt/unfold admin on `:8082`, over
+> `pos_cloud.db`. The Robyn sidecar that previously served this surface has
+> been removed — Django answers the same paths.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│            Django backend (backend/, pos-cloud) :8767        │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │ apps/core     models, Ninja API, viewsets, admin       │  │
+│  │ apps/domain   sync_broker, sync_queue, conflict_resolver│  │
+│  │ apps/handlers sync_api, sync_dashboard, consumers,      │  │
+│  │               fusion.py + surface.py (fusion contract,  │  │
+│  │               root CRUD, /api/* bridges, /stats)       │  │
+│  │ configs/      asgi/wsgi (channels/daphne), Unfold+bolt  │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow (Cloud)
+
+1. **Branches** → `sync_push` / `heartbeat` WebSockets → Django channels consumers (`apps/handlers/consumers.py`) → broker → `SyncQueueItem` → conflict resolution → broadcast back
+2. **Read-heavy clients** → Django (`:8767`) → Django ORM → `pos_cloud.db` (the `/fusion/*` contract, root CRUD, and `/api/*` bridges are served directly by Django)
+3. **Fusion contract** — `apps/handlers/fusion.py` mirrors the endpoint contract the sidecar previously exposed so consumers can target the same paths unchanged

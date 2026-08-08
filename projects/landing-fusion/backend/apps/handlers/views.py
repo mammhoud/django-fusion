@@ -134,6 +134,17 @@ class LandingPageView(PageHandler):
                 # pages/partials/breadcrumbs.html at the top of the shared
                 # content region — empty for top-level pages.
                 "breadcrumbs": self._get_breadcrumbs(page),
+                # About-section subpage nav — the About page and its subpages
+                # (team / startup / founder) render the shared about_subnav
+                # partial right after the hero. Empty for every other page, so
+                # the shared content region renders nothing there. Mirrors the
+                # AboutSubNav.astro component on the frontend road.
+                "about_subnav_current": self._get_about_subnav_current(page),
+                # Product-road stack strip (ProductsPage catalog + ProductPage
+                # detail) — the shared stack_links partial right after the hero.
+                # A view-computed flag so the template never evaluates
+                # get_product_cards twice on the catalog page.
+                "show_stack_strip": page.__class__.__name__ in ("ProductsPage", "ProductPage"),
                 # django-fusion settings config — which content-delivery option
                 # this request is served under (see settings.FUSION_RENDER_FIRST_DEFAULT
                 # and the X-Fusion-Render-First per-request override).
@@ -169,31 +180,14 @@ class LandingPageView(PageHandler):
         return ""
 
     def _get_localized_blocks(self, page, language: str) -> dict[str, list]:
-        """Bind translated section headings onto the canonical Wagtail blocks.
-
-        Translation records intentionally store partial dictionaries (for
-        example ``{"title": "المكدس التقني"}``) rather than duplicating whole
-        StreamFields. The original block supplies all non-translated fields;
-        the bound copy supplies the same Wagtail template and safely renders
-        the merged value.
-        """
+        """Bind translated section headings onto the canonical Wagtail blocks."""
         translation = self._get_translation(page, language)
         overrides = translation.content if translation and isinstance(translation.content, dict) else {}
         localized = {
             field_name: []
             for field_name in (
-                "cta",
-                "stats",
-                "features",
-                "services",
-                "process",
-                "tech",
-                "team",
-                "blog",
-                "pricing",
-                "faq",
-                "testimonials",
-                "contact",
+                "cta", "stats", "features", "services", "process", "tech",
+                "team", "blog", "pricing", "faq", "testimonials", "contact",
             )
         }
         for field_name in localized:
@@ -211,6 +205,15 @@ class LandingPageView(PageHandler):
                     bound.append(child)
             localized[field_name] = bound
         return localized
+
+    def _get_about_subnav_current(self, page) -> str:
+        """Return the active About-section link, or an empty value elsewhere."""
+        return {
+            "AboutPage": "about",
+            "TeamPage": "team",
+            "StartupPage": "startup",
+            "FounderPage": "founder",
+        }.get(page.__class__.__name__, "")
 
     def _get_breadcrumbs(self, page) -> list[dict]:
         """The in-page trail for subpages — localized when an overlay exists."""
@@ -464,8 +467,10 @@ class BrandPageView(LandingPageView):
         context = super().get_context_data(request=request, **kwargs)
         from apps.pages.brand_spec import get_brand_boards
 
-        context["brand_boards"] = get_brand_boards()
         page = context.get("page") or self._get_page()
+        # Pass the brand page itself so editor palette overrides
+        # (palette_overrides StreamField) apply to the rendered boards.
+        context["brand_boards"] = get_brand_boards(brand_page=page if page.__class__.__name__ == "BrandPage" else None)
         context["display_mode"] = getattr(page, "display_mode", "both")
         return context
 

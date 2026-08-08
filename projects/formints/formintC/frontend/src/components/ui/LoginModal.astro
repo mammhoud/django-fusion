@@ -1,0 +1,92 @@
+---
+// LoginModal — sign-in powered by django-allauth headless API (mirrors
+// landing-fusion's modal on the same contract):
+//   POST /api/auth/browser/v1/auth/login   { email, password }
+//   GET  /api/auth/browser/v1/auth/session
+//   DELETE /api/auth/browser/v1/auth/session
+---
+
+<div
+  x-data="{
+    open: false, email: '', password: '', loading: false, error: '',
+    async submit() {
+      this.loading = true; this.error = '';
+      try {
+        const res = await fetch('/api/auth/browser/v1/auth/login', {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ email: this.email, password: this.password }),
+        });
+        if (res.status === 200 || res.status === 201) {
+          this.open = false; this.email = ''; this.password = '';
+          window.dispatchEvent(new CustomEvent('fusion:toast', { detail: { message: 'Signed in. Welcome back.', kind: 'success' } }));
+          setTimeout(() => location.reload(), 700);
+        } else {
+          const data = await res.json().catch(() => ({}));
+          const errors = data?.errors || [];
+          this.error = errors.map((e: any) => e.message).join(' ') || 'Sign-in failed. Check your email and password.';
+        }
+      } catch (e) {
+        this.error = 'Network error. Please try again.';
+      } finally {
+        this.loading = false;
+      }
+    },
+  }"
+  @keydown.escape.window="open = false"
+  @fusion:open-login.window="open = true"
+>
+  <div
+    x-show="open"
+    x-cloak
+    style="display:none"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-[90] flex items-center justify-center bg-fu-ink/40 p-4 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Sign in"
+    @click.self="open = false"
+  >
+    <div class="w-full max-w-md rounded-3xl border border-fu-line bg-fu-card p-7 shadow-2xl">
+      <div class="mb-6 flex items-start justify-between">
+        <div>
+          <p class="tag-marker mb-1">account</p>
+          <h2 class="font-display text-2xl font-bold tracking-tight text-fu-ink">Sign in</h2>
+          <p class="mt-1 text-sm text-fu-muted">django-allauth headless · the AHA stack, no SPA</p>
+        </div>
+        <button type="button" @click="open = false" class="rounded-md p-2 text-fu-muted transition-colors hover:bg-fu-line/40 hover:text-fu-ink" aria-label="Close">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <form @submit.prevent="submit()" class="space-y-4">
+        <div>
+          <label for="login-email" class="mb-1.5 block font-mono text-[0.65rem] uppercase tracking-wider text-fu-muted">Email</label>
+          <input id="login-email" type="email" required autocomplete="email" x-model="email" class="input-field" placeholder="you@example.com" />
+        </div>
+        <div>
+          <label for="login-password" class="mb-1.5 block font-mono text-[0.65rem] uppercase tracking-wider text-fu-muted">Password</label>
+          <input id="login-password" type="password" required autocomplete="current-password" x-model="password" class="input-field" placeholder="••••••••" />
+        </div>
+
+        <p x-show="error" x-cloak x-transition class="text-sm font-medium text-rose-600" role="alert" x-text="error"></p>
+
+        <button type="submit" class="btn-primary w-full" :disabled="loading">
+          <span x-show="!loading">Sign in</span>
+          <span x-show="loading" x-cloak>Signing in…</span>
+        </button>
+      </form>
+
+      <p class="mt-5 text-center text-xs text-fu-muted">
+        New here? <a href="/accounts/signup/" class="font-medium text-fu-link hover:text-fu-ink">Create an account</a>
+        <span class="mx-2 text-fu-line" aria-hidden="true">|</span>
+        <a href="/accounts/password/reset/" class="font-medium text-fu-link hover:text-fu-ink">Forgot password?</a>
+      </p>
+    </div>
+  </div>
+</div>

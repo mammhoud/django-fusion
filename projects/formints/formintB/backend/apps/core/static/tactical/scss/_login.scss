@@ -1,0 +1,134 @@
+// ══════════════════════════════════════════════════════════════════════
+// TACTICAL TELEMETRY — Login / Operator Gate
+// ──────────────────────────────────────────────────────────────────────
+// Re-skins the Unfold unauthenticated layout (body.login) and the
+// masthead markup injected by templates/admin/login.html.
+// ══════════════════════════════════════════════════════════════════════
+
+@use "tokens" as *;
+
+body.login {
+    background: $tactical-bg;
+    color: $tactical-fg;
+
+    // Terminal scanlines over the whole gate.
+    #page {
+        background:
+            $tactical-scanlines,
+            radial-gradient(ellipse at 50% 0%, $tactical-bg-raised 0%, $tactical-bg 70%);
+    }
+
+    // ── Masthead ──────────────────────────────────────────────────────
+    .tactical-login-masthead {
+        margin-bottom: $tactical-space-6;
+        border-bottom: $tactical-line-strong solid $tactical-red;
+        padding-bottom: $tactical-space-4;
+    }
+
+    .tactical-login-eyebrow {
+        margin: 0 0 $tactical-space-2;
+        color: $tactical-red;
+        font-size: $tactical-size-micro;
+        letter-spacing: $tactical-tracking-wide;
+        text-transform: uppercase;
+    }
+
+    .tactical-login-title {
+        margin: 0;
+        font-family: $tactical-font-grotesk;
+        font-size: $tactical-size-hero;
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+        color: $tactical-fg;
+    }
+
+    .tactical-login-sub {
+        margin: $tactical-space-3 0 0;
+        color: $tactical-fg-dim;
+        font-size: $tactical-size-small;
+        letter-spacing: $tactical-tracking;
+        text-transform: uppercase;
+    }
+
+    // ── Form controls ─────────────────────────────────────────────────
+    form#login-form {
+        .field {
+            margin-bottom: $tactical-space-4;
+        }
+
+        label {
+            display: block;
+            margin-bottom: $tactical-space-2;
+            color: $tactical-fg-dim;
+            font-size: $tactical-size-micro;
+            letter-spacing: $tactical-tracking-wide;
+            text-transform: uppercase;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: $tactical-space-3 $tactical-space-3;
+            background: $tactical-bg-raised;
+            border: $tactical-line solid $tactical-grid-strong;
+            color: $tactical-fg;
+            font-family: $tactical-font-mono;
+            font-size: $tactical-size-body;
+            letter-spacing: $tactical-tracking;
+            border-radius: 0 !important;
+
+            &:focus {
+                border-color: $tactical-red;
+                outline: none;
+                box-shadow: none;
+            }
+
+            &::placeholder {
+                color: $tactical-fg-faint;
+            }
+        }
+
+        .helptext,
+        .errorlist {
+            font-size: $tactical-size-small;
+            letter-spacing: 0.04em;
+        }
+
+        .errorlist {
+            color: $tactical-red;
+            list-style: none;
+            padding: $tactical-space-2;
+            margin: $tactical-space-2 0 0;
+            border-left: $tactical-line-strong solid $tactical-red;
+            background: $tactical-red-faint;
+        }
+    }
+
+    // ── Messages (unfold/helpers/messages.html) ───────────────────────
+    .message,
+    .error-note {
+        border-left: $tactical-line-strong solid $tactical-red;
+        background: $tactical-red-faint;
+        color: $tactical-fg;
+        font-size: $tactical-size-small;
+        letter-spacing: 0.04em;
+        border-radius: 0 !important;
+    }
+
+    .tactical-login-footer {
+        margin-top: $tactical-space-6;
+        padding-top: $tactical-space-3;
+        border-top: $tactical-line solid $tactical-grid;
+        color: $tactical-fg-faint;
+        font-size: $tactical-size-micro;
+        letter-spacing: $tactical-tracking;
+        text-transform: uppercase;
+    }
+
+    // Side branding block is hidden — the gate is pure terminal.
+    .login-image {
+        display: none;
+    }
+}

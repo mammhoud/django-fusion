@@ -25,16 +25,12 @@ const brandUrl = browserEndpoint('/apis/brand/');
     loading: false,
     boards: [],
     board: null,
-    // SVG glyphs per mark — single-quoted SVG attrs so no double quote ever
-    // appears inside this (double-quoted) x-data attribute. Mirrors
-    // product_logo.html / ProductLogo.astro.
-    marks: {
-      crest: '<path d=\'M16 2.5l11.5 4v9.5c0 6.8-4.9 11.6-11.5 13.5C9.4 27.6 4.5 22.8 4.5 16.5V6.5L16 2.5z\' stroke-linejoin=\'round\'/><path d=\'M9.5 19.5h13\' stroke-linecap=\'round\'/><path d=\'M11.8 14.8l2.9 2.9 5.8-6.3\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
-      ribbon: '<path d=\'M4 8.5h24v7.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5z\' stroke-linejoin=\'round\'/><path d=\'M10.5 19.5l2.4 4.5M16 19.5v4.5M21.5 19.5l-2.4 4.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M12.5 12.5l2.6 2.6 5-5.4M15.1 15.1V9\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
-      isometric: '<path d=\'M16 3l11 6v14L16 29 5 23V9l11-6z\' stroke-linejoin=\'round\'/><path d=\'M5 9l11 6 11-6M16 15v14\' stroke-linejoin=\'round\'/><path d=\'M16 10.5l5.8 3.2v6.6L16 23.5l-5.8-3.2v-6.6l5.8-3.2z\' stroke-linejoin=\'round\'/><path d=\'M10.2 13.7l5.8 3.2 5.8-3.2M16 16.9v6.6\' stroke-linejoin=\'round\'/>',
-      orbit: '<circle cx=\'16\' cy=\'16\' r=\'2.6\' fill=\'currentColor\' stroke=\'none\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(-24 16 16)\' stroke-linejoin=\'round\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(24 16 16)\' stroke-linejoin=\'round\'/><circle cx=\'25.2\' cy=\'12.4\' r=\'1.4\' fill=\'currentColor\' stroke=\'none\'/>',
-      ascent: '<path d=\'M4 26h7v-7h7v-7h7\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M24.8 12.2l2.4 2.4 4-4.4\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M4 6v20\' stroke-linecap=\'round\'/>',
-    },
+    // SVG glyphs per mark — defined in a real <script> block below (Astro's
+    // compiler unescapes \' inside static HTML attributes, which would break
+    // these single-quoted strings; window.__FUSION_MARKS survives untouched).
+    // The || {} keeps the modal degradable if that inline script ever gets
+    // blocked (CSP) — matching the __FUSION_BRAND_URL fallback style.
+    marks: window.__FUSION_MARKS || {},
     async open(slug) {
       if (!slug) return;
       this.open = true;
@@ -54,6 +50,54 @@ const brandUrl = browserEndpoint('/apis/brand/');
       }
     },
     close() { this.open = false; },
+    rgbToHex(rgb) {
+      const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(rgb || '');
+      if (!m) return null;
+      return '#' + m.slice(1, 4).map((n) => parseInt(n, 10).toString(16).padStart(2, '0')).join('').toUpperCase();
+    },
+    // Resolve every palette chip's live background colour to a hex and write
+    // it under the token label — designers can grab real colour codes without
+    // tracing CSS variables. Runs via x-effect keyed on the board, so it
+    // fires after each board renders; the data-resolved guard keeps it a
+    // one-shot per chip (theme toggles re-resolve because the chip's computed
+    // colour actually changes).
+    resolveHexes(board) {
+      if (!board) return;
+      this.$nextTick(() => {
+        this.$root.querySelectorAll('[data-swatch-hex]').forEach((label) => {
+          const chip = label.parentElement && label.parentElement.querySelector('[data-swatch-chip]');
+          if (!chip) return;
+          const hex = this.rgbToHex(getComputedStyle(chip).backgroundColor);
+          if (!hex) return;
+          if (label.dataset.resolved === '1' && label.textContent === hex) return;
+          label.textContent = hex;
+          label.dataset.resolved = '1';
+          label.title = 'Copy ' + hex;
+        });
+      });
+    },
+    // Click-to-copy on the resolved hex — flashes 'copied', restores after a beat.
+    async copyHex(e) {
+      const label = e.currentTarget;
+      const hex = (label.textContent || '').trim();
+      if (!/^#[0-9A-F]{6}$/i.test(hex)) return;
+      try {
+        await navigator.clipboard.writeText(hex);
+      } catch (err) {
+        // Non-secure context fallback — a hidden textarea + execCommand.
+        const ta = document.createElement('textarea');
+        ta.value = hex;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e2) { /* no-op */ }
+        ta.remove();
+      }
+      label.textContent = 'copied';
+      label.dataset.resolved = '1';
+      setTimeout(() => { label.textContent = hex; }, 900);
+    },
   }"
   @keydown.escape.window="open = false"
   @fusion:open-brand.window="open($event.detail.slug)"
@@ -125,11 +169,21 @@ const brandUrl = browserEndpoint('/apis/brand/');
               </div>
               <div class="flex items-center gap-3">
                 <span class="w-[5.5rem] flex-none font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted">palette</span>
-                <div class="grid w-full grid-cols-5 gap-1.5">
+                <div class="grid w-full grid-cols-5 gap-1.5" x-effect="resolveHexes(board)">
                   <template x-for="(swatch, i) in (board.swatches || [])" :key="i">
                     <div class="flex flex-col items-stretch gap-1" :title="swatch.token">
-                      <div class="aspect-square rounded-md border border-fu-line" :style="swatch.style"></div>
+                      <div class="aspect-square rounded-md border border-fu-line" :style="swatch.style" data-swatch-chip></div>
                       <span class="truncate text-center font-mono text-[0.55rem] uppercase tracking-[0.08em] text-fu-muted" x-text="swatch.token"></span>
+                      <span
+                        data-swatch-hex
+                        x-cloak
+                        x-show="!/^#[0-9a-fA-F]{6}$/.test(swatch.token || '')"
+                        @click="copyHex($event)"
+                        role="button"
+                        tabindex="0"
+                        title="Copy colour"
+                        class="cursor-pointer truncate text-center font-mono text-[0.5rem] text-fu-link/80 transition-colors hover:text-fu-link"
+                      ></span>
                     </div>
                   </template>
                 </div>
@@ -150,6 +204,15 @@ const brandUrl = browserEndpoint('/apis/brand/');
 
 <script is:inline define:vars={{ brandUrl }}>
   window.__FUSION_BRAND_URL = brandUrl;
+  // Brand glyphs per mark style — plain JS so backslash escapes survive.
+  // Mirrors product_logo.html / ProductLogo.astro.
+  window.__FUSION_MARKS = {
+    crest: '<path d=\'M16 2.5l11.5 4v9.5c0 6.8-4.9 11.6-11.5 13.5C9.4 27.6 4.5 22.8 4.5 16.5V6.5L16 2.5z\' stroke-linejoin=\'round\'/><path d=\'M9.5 19.5h13\' stroke-linecap=\'round\'/><path d=\'M11.8 14.8l2.9 2.9 5.8-6.3\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
+    ribbon: '<path d=\'M4 8.5h24v7.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5z\' stroke-linejoin=\'round\'/><path d=\'M10.5 19.5l2.4 4.5M16 19.5v4.5M21.5 19.5l-2.4 4.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M12.5 12.5l2.6 2.6 5-5.4M15.1 15.1V9\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
+    isometric: '<path d=\'M16 3l11 6v14L16 29 5 23V9l11-6z\' stroke-linejoin=\'round\'/><path d=\'M5 9l11 6 11-6M16 15v14\' stroke-linejoin=\'round\'/><path d=\'M16 10.5l5.8 3.2v6.6L16 23.5l-5.8-3.2v-6.6l5.8-3.2z\' stroke-linejoin=\'round\'/><path d=\'M10.2 13.7l5.8 3.2 5.8-3.2M16 16.9v6.6\' stroke-linejoin=\'round\'/>',
+    orbit: '<circle cx=\'16\' cy=\'16\' r=\'2.6\' fill=\'currentColor\' stroke=\'none\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(-24 16 16)\' stroke-linejoin=\'round\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(24 16 16)\' stroke-linejoin=\'round\'/><circle cx=\'25.2\' cy=\'12.4\' r=\'1.4\' fill=\'currentColor\' stroke=\'none\'/>',
+    ascent: '<path d=\'M4 26h7v-7h7v-7h7\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M24.8 12.2l2.4 2.4 4-4.4\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M4 6v20\' stroke-linecap=\'round\'/>',
+  };
   // Delegated trigger — any [data-open-brand="<slug>"] element (product
   // lockups, cards, tooltips) opens the brand modal without needing an Alpine
   // scope. Mirrors the backend base.html handler so both roads share one

@@ -56,9 +56,10 @@ def brand_api(request):
     pre-resolved to CSS).
     """
     from apps.pages.brand_spec import get_brand_boards
+    from apps.pages.models import BrandPage
 
     try:
-        boards = get_brand_boards()
+        boards = get_brand_boards(brand_page=BrandPage.objects.first())
     except Exception:
         logger.exception("brand_api error")
         boards = []
@@ -466,6 +467,11 @@ def _normalize_page_links(value):
                 base = key[: -len("_page")]
                 value[f"{base}_href"] = value.get(f"{base}_href") or item["url"]
                 value[f"{base}_label"] = value.get(f"{base}_label") or item.get("title")
+            elif key.endswith("_post"):
+                # SnippetBlock.related_post → related_post_href/title so the
+                # Astro road can render a deep-dive link card from the API.
+                value[f"{key}_href"] = value.get(f"{key}_href") or item["url"]
+                value[f"{key}_title"] = value.get(f"{key}_title") or item.get("title")
     return value
 
 
@@ -527,9 +533,20 @@ def _page_to_dict(page) -> dict:
     if hasattr(page, "get_category_display"):
         data["category"] = page.get_category_display().lower()
 
-    # DisplayModeMixin — page / modal / both surfacing option (BrandPage).
+    # DisplayModeMixin — page / modal / both surfacing option. Any page type
+    # carrying the mixin (BrandPage, ProductPage, TeamPage) exposes it, so
+    # every render road sees the same field. The default ("both") is always
+    # truthy, so the key is present whenever the page has the mixin.
     if hasattr(page, "display_mode") and page.display_mode:
         data["display_mode"] = page.display_mode
+
+    # BrandPage palette overrides — editor-authored hex swatches per product
+    # slug, so the Astro /brand/ road applies the same overrides as the
+    # backend boards (get_brand_boards). Absent when no overrides are set.
+    if page.__class__.__name__ == "BrandPage":
+        overrides = page.get_palette_overrides()
+        if overrides:
+            data["palette_overrides"] = overrides
 
     # ProductPage catalog fields — logo, tagline, status, hidden flag.
     if hasattr(page, "logo_style"):
@@ -604,6 +621,9 @@ def _page_to_dict(page) -> dict:
             data[field_name] = str(value)
     if getattr(page, "post_date", None):
         data["post_date"] = page.post_date.isoformat()
+    # BlogPostPage hero screenshot — the optional image under the post hero.
+    if getattr(page, "hero_screenshot_url", ""):
+        data["hero_screenshot_url"] = page.hero_screenshot_url
 
     # Section stack fields (stats, features, testimonials, pricing, faq, projects)
     for field_name in SECTION_STACK_FIELDS:
@@ -1047,6 +1067,75 @@ def auth_status_api(request):
         } if user else None,
         "learning": learning,
     })
+
+
+def _comment_to_dict(comment) -> dict:
+    """Flatten one approved PostComment for the JSON roads."""
+    return {
+        "id": comment.pk,
+        "author": comment.display_name,
+        "display": comment.display_name,
+        "body": comment.body,
+        "created_at": comment.created_at.isoformat() if comment.created_at else "",
+    }
+
+
+@csrf_exempt
+def blog_comments_api(request, slug):
+    """GET/POST /apis/blog/<slug>/comments/ — the post comment thread.
+
+    GET — the approved comments (public, drives the Astro road and any
+    embed). POST — creates a comment; requires an authenticated session.
+    Accepts form-encoded (HTMX) or JSON bodies with ``body``. HTMX requests
+    get a rendered comment-card fragment back for an instant swap; everyone
+    else gets JSON (201 / 400 / 401 / 404).
+    """
+    from apps.pages.models import BlogPostPage
+    from apps.content.models.comments import PostComment
+
+    post = BlogPostPage.objects.filter(slug=slug).first()
+    if post is None:
+        return JsonResponse({"error": "Post not found"}, status=404)
+
+    if request.method == "POST":
+        user = request.user if request.user.is_authenticated else None
+        if user is None:
+            return JsonResponse(
+                {"error": "Authentication required — sign in to comment."},
+                status=401,
+            )
+        import json
+
+        body = ""
+        if request.content_type == "application/json":
+            try:
+                body = json.loads(request.body.decode("utf-8")).get("body", "")
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                body = ""
+        else:
+            body = request.POST.get("body", "")
+        body = str(body).strip()
+        if not body or len(body) > 2000:
+            return JsonResponse(
+                {"error": "Comments must be between 1 and 2000 characters."},
+                status=400,
+            )
+
+        comment = PostComment.objects.create(
+            post=post, author=user, body=body, is_approved=True
+        )
+        logger.info("blog_comment: %s on %s (id=%s)", user, post.slug, comment.pk)
+        payload = _comment_to_dict(comment)
+        if request.headers.get("HX-Request"):
+            return render(
+                request,
+                "content/partials/comment.html",
+                {"comment": comment},
+            )
+        return JsonResponse(payload, status=201)
+
+    comments = [_comment_to_dict(c) for c in post.get_approved_comments()]
+    return JsonResponse({"comments": comments, "total": len(comments)})
 
 
 @csrf_exempt

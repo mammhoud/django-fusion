@@ -16,11 +16,7 @@
 #
 # Env overrides: PORT (default 8767), ROBYN_PORT (8766), FUSION_RENDER_FIRST
 
-<<<<<<< HEAD
-.PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean sidecar-binary
-=======
 .PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean sidecar-binary sidecar-install-bin
->>>>>>> e8ec0abc06a3630ce312422887fd10e383d18e26
 
 .DEFAULT_GOAL := help
 

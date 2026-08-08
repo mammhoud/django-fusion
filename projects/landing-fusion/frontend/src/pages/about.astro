@@ -7,6 +7,7 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
+import AboutSubNav from '@/components/ui/AboutSubNav.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -84,6 +85,9 @@ const hasHero = pageHero?.title || pageHero?.badge;
           )
         }
 
+        <!-- About subpages: startup, founder, team — shared section nav -->
+        <AboutSubNav current="about" />
+
         <!-- Services brief — short line + button, hands About visitors to the offering -->
         <section class="container-fusion" style='padding-top:1.5rem'>
           <div class="card flex flex-wrap items-center justify-between gap-5 p-6">
@@ -95,23 +99,6 @@ const hasHero = pageHero?.title || pageHero?.badge;
               </p>
             </div>
             <a href="/services/" class="btn-primary !px-6 !py-3 text-sm">Explore services →</a>
-          </div>
-        </section>
-
-        <!-- About subpages: team, startup, founder -->
-        <section class="container-fusion pt-8">
-          <div class="flex flex-wrap items-center justify-center gap-4 text-center">
-            <a href="/about/team/" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link underline underline-offset-4 transition-colors hover:text-fu-ink">
-              Meet the team →
-            </a>
-            <span class="text-fu-line" aria-hidden="true">|</span>
-            <a href="/about/startup/" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link underline underline-offset-4 transition-colors hover:text-fu-ink">
-              The startup →
-            </a>
-            <span class="text-fu-line" aria-hidden="true">|</span>
-            <a href="/about/founder/" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link underline underline-offset-4 transition-colors hover:text-fu-ink">
-              The founder →
-            </a>
           </div>
         </section>
 

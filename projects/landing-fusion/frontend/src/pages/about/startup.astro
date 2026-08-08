@@ -4,6 +4,7 @@ import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import Breadcrumb from '@/components/ui/Breadcrumb.astro';
+import AboutSubNav from '@/components/ui/AboutSubNav.astro';
 import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { SiteSettings, NavigationData } from '@/lib/api';
 
@@ -34,6 +35,8 @@ try {
       </div>
     </div>
   </section>
+
+  <AboutSubNav current="startup" />
 
   <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
     <div class='container-fusion'>
