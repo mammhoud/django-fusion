@@ -1,8 +1,9 @@
 # POS Sidecar v2 — Robyn + Django ORM Architecture
 
 > **Status:** Production Ready (with known test issues)  
-> **Last Updated:** 2026-07-24 (fusion audit)  
-> **Editions:** pos-solo (standalone) + pos-full (cloud master) — **both merged into `formint-pos/sidecar/`**
+> **Last Updated:** 2026-08-08 (pos-cloud sidecar)  
+> **Editions:** pos-solo (standalone) + pos-full (cloud master) — **both merged into `formint-pos/sidecar/`**  
+> **See also:** the pos-cloud SaaS ships its own Robyn sidecar at `formintB/sidecar/` (package `pos-cloud-sidecar`, port `:8767`) — see [editions.md](architecture/editions.md#cloud--formintb--pos-cloud)
 
 ---
 

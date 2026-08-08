@@ -12,18 +12,20 @@
 | **Astro frontend** | ❌ | ✅ | ❌ | ❌ |
 | **Rust backend** | ✅ | ✅ (minimal shell) | ❌ | ✅ |
 | **Django Ninja backend** | ❌ | ✅ | ✅ | ❌ |
-| **Robyn sidecar** | ❌ | ✅ | ❌ | ❌ |
+| **Robyn sidecar** | ❌ | ✅ | ✅ (pos-cloud-sidecar) | ❌ |
 | **Unfold admin** | ❌ | ✅ | ✅ | ❌ |
-| **WebSocket streams** | ❌ | ✅ | ✅ (channels) | ❌ |
+| **WebSocket streams** | ❌ | ✅ | ✅ (channels + sidecar) | ❌ |
 | **Cloud sync** | ❌ (sync client target) | ✅ | ✅ (cloud master) | ❌ |
-| **Port** | 1420 | 8767 (backend) / 4321 (frontend) | — (SaaS) | 1420 |
+| **Port** | 1420 | 8767 (backend) / 4321 (frontend) | 8767 (sidecar) | 1420 |
 
 > **Note**: The former `pos-full` (Cloud Master) and `pos-solo` (Standalone)
 > editions were merged into the Pro package at `formint/` — the merged package
-> owns the single Robyn sidecar (`formint/sidecar/`) and both legacy React UIs
+> owns the Pro Robyn sidecar (`formint/sidecar/`) and both legacy React UIs
 > were removed (the Astro + Alpine + HTMX frontend is canonical). The Cloud
-> master lives in `formintB/` (`pos-cloud`); `formintA/` is the Community tier
-> (formerly forge-pos / pos-mini).
+> master lives in `formintB/` and now ships two packages: the Django backend
+> (`backend/`, `pos-cloud`) plus its own Robyn sidecar (`sidecar/`,
+> `pos-cloud-sidecar`); `formintA/` is the Community tier (formerly
+> forge-pos / pos-mini).
 
 ## Version matrix
 
@@ -32,7 +34,7 @@
 | **Community** | [`formintA/`](../../formintA/) | `formint-pos` | **0.1.0** | Formint | `com.mammhoud.pos` |
 | **Standard** | *(merged into `formint/`)* | `formint-pos-sidecar` / `formint-pos-backend` | **0.1.0** | — | — |
 | **Pro** | [`formint/`](../../formint/) | `formint-pos` (frontend `formint-pos-frontend` 0.1.0 · backend `formint-pos-backend` 0.1.0 · sidecar `formint-pos-sidecar` 0.1.0) | **0.1.0** | Formint POS Professional | `cloud.structa.formint.pos` |
-| **Cloud** | [`formintB/`](../../formintB/) | `pos-cloud` | **0.1.0** | — | — |
+| **Cloud** | [`formintB/`](../../formintB/) | `pos-cloud` + `pos-cloud-sidecar` | **0.1.0** | — | — |
 | **pos-client** | [`formintC/`](../../formintC/) | `pos-client` | **1.0.0** (package) / **0.1.0** (Cargo + Tauri) | POS Client | `com.pos-client.app` |
 
 ### Edition → directory mapping (canonical names)
@@ -150,20 +152,40 @@
 
 ### Cloud — `formintB/` (pos-cloud)
 
-> Hosted multi-terminal SaaS: Django ASGI + channels/daphne + Unfold + django-bolt.
-> Cloud master that terminals push their data to; automatic backups + monitoring (Cloud capability, landing sync Aug 2026).
+> Hosted multi-terminal SaaS. Two cooperating packages under one tree: the
+> **Django backend** (`backend/`, package `pos-cloud`) for the hosted server +
+> admin, and a **Robyn sidecar** (`sidecar/`, package `pos-cloud-sidecar`)
+> exposing the same models over a fast async REST API. Both share
+> `pos_cloud.db`. Cloud master that terminals push their data to; automatic
+> backups + monitoring (Cloud capability, landing sync Aug 2026).
 
-#### Added components (Django `core/` app)
+#### Added components — backend (`backend/`)
 
-| Area | Components |
-|------|-----------|
-| **Models** | `Organization`, `Branch`, `Lead`, `Contact`, `Deal`, `InventoryReport`, `BranchReport`, `BranchSyncLog`, `BranchProduct`, `BranchSale`, `BranchInventory`, `DeviceToken`, `SyncConflict`, `SyncQueueItem` |
-| **API** | `api.py` — `/stats`, `/products`, `/sales`, `/inventory`, `/branches`, `/sync-logs` (Ninja, Pydantic-typed) |
-| **Sync** | `sync_api.py` (sync_receive_products/sales/inventory/heartbeat + broadcast), `sync_broker.py`, `sync_queue.py`, `conflict_resolver.py` |
-| **WebSocket** | `consumers.py` (channels ASGI), `middleware.py` |
-| **Sync dashboard** | `sync_dashboard.py` — branch health, queue summary/by-branch/list/retry/cancel, conflict list/resolve/dismiss/stats, recent activity |
-| **Fragments** | `fragments/{layouts, modals, reports, skeletons, tables}.py` (django-fusion) |
-| **Viewsets** | `views.py` — Organization/Branch/Lead/Contact/Deal/InventoryReport/BranchReport `ModelViewset`s with filtersets + report generation |
+| Layer | App | Components |
+|-------|-----|-----------|
+| **Models** | `apps/core/` | `Organization`, `Branch`, `Lead`, `Contact`, `Deal`, `InventoryReport`, `BranchReport`, `BranchSyncLog`, `BranchProduct`, `BranchSale`, `BranchInventory`, `DeviceToken`, `SyncConflict`, `SyncQueueItem` |
+| **API / viewsets** | `apps/core/` | `api.py` — `/stats`, `/products`, `/sales`, `/inventory`, `/branches`, `/sync-logs` (Ninja, Pydantic-typed); `views.py` — Organization/Branch/Lead/Contact/Deal/InventoryReport/BranchReport `ModelViewset`s with filtersets + report generation |
+| **Domain services** | `apps/domain/` | `sync_broker.py`, `sync_queue.py`, `conflict_resolver.py` |
+| **Request handlers** | `apps/handlers/` | `sync_api.py` (sync_receive_products/sales/inventory/heartbeat + broadcast), `sync_dashboard.py` (branch health, queue summary/by-branch/list/retry/cancel, conflict list/resolve/dismiss/stats, recent activity), `consumers.py` (channels ASGI), `middleware.py`, `fragments/{layouts, modals, reports, skeletons, tables}.py` (django-fusion) |
+| **Config** | `configs/` | `asgi.py`, `wsgi.py`, `urls.py`, `dashboard.py` (django-bolt) + `manage.py` |
+
+#### Added components — sidecar (`sidecar/`, package `pos-cloud-sidecar`)
+
+> Robyn async server that bootstraps the pos-cloud Django ORM (shared
+> `pos_cloud.db`), mirrors the Pro sidecar's `handlers.py` pattern, and serves
+> the same models + django-fusion contract over REST. Default port `:8767`.
+
+| File | Role |
+|------|------|
+| `server.py` | Robyn bootstrap — Django ORM setup, CORS middleware, `/`, `/health`, `/stats`, generic CRUD registration for all 14 core models (`/organizations`, `/branches`, `/leads`, `/contacts`, `/deals`, `/inventory-reports`, `/branch-reports`, `/sync/logs`, `/sync/products`, `/sync/sales`, `/sync/inventory`, `/device-tokens`, `/conflicts`, `/queue`) |
+| `handlers.py` | JSON-safe serialization + generic CRUD helpers (mirrors `formint/sidecar/handlers.py`) |
+| `about.py` | version metadata (dunder-free so PyInstaller bundles it) |
+| `routes/fusion.py` | django-fusion API-first contract over the sidecar — `/fusion/health`, `/fusion/render-mode`, `/fusion/nav`, `/fusion/session-mode`, `/fusion/assets` |
+| `tests/test_server.py` | smoke test (pytest, `asyncio_mode = auto`) |
+
+Entry point: `pos-cloud-sidecar` (via `[project.scripts]`). Dependencies mirror
+the backend (`robyn`, `django`, `django-fusion`, `django-bolt`, `channels`, …)
+plus `Jinja2` + `wagtail` for the fusion component renderer.
 
 #### Features added (Cloud tier)
 
@@ -173,6 +195,7 @@
 - **CRM SaaS** — Leads, Contacts, Deals pipelines
 - Device token auth (`DeviceToken` → BaseDeviceToken) for terminal registration
 - django-bolt + django-fusion dashboard on ASGI (channels/daphne), PostgreSQL via psycopg2
+- **Robyn sidecar** (`pos-cloud-sidecar`, `:8767`) — same Django ORM + `/fusion/*` render-mode contract exposed over a fast async REST API
 - Automatic cloud backups + monitoring (Cloud capability, landing sync Aug 2026)
 
 ---
@@ -219,10 +242,11 @@ React → Tauri Commands → Rust/Diesel → SQLite
 
 ### pos-cloud (Cloud)
 ```
-Branches → sync push → Django ASGI (channels/daphne)
+Branches → sync push → Django ASGI (channels/daphne)   [backend/]
   └── SyncQueue → SyncBroker → ConflictResolver → Broadcast to branches
   └── Unfold admin + Bolt dashboard (CRM + reports)
-  └── PostgreSQL
+  └── SQLite (pos_cloud.db) — PostgreSQL in production via psycopg2
+  └── Robyn sidecar (:8767)  [sidecar/] — same Django ORM + /fusion/* contract
 ```
 
 ### pos-client (Vue 3 desktop)
