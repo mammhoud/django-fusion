@@ -26,6 +26,7 @@ PLATFORM_CHOICES = [
     ("facebook", "Facebook"),
     ("instagram", "Instagram"),
     ("whatsapp", "WhatsApp"),
+    ("tiktok", "TikTok"),
     ("discord", "Discord"),
     ("other", "Other"),
 ]
@@ -39,8 +40,10 @@ class SocialLink(models.Model):
     label = models.CharField(max_length=100, blank=True, default="",
                               help_text="Display name (e.g., 'Follow on GitHub')")
     url = models.URLField(max_length=300)
+    icon_svg = models.CharField(max_length=200, blank=True, default="",
+                                 help_text="Path to SVG icon (e.g., '/assets/img/icons/github.svg')")
     icon_class = models.CharField(max_length=100, blank=True, default="",
-                                   help_text="CSS class for icon (e.g., 'fab fa-github')")
+                                   help_text="CSS class for icon font (e.g., 'fab fa-github')")
     is_active = models.BooleanField(default=True, db_index=True)
     sort_order = models.IntegerField(default=0)
 
@@ -48,9 +51,14 @@ class SocialLink(models.Model):
         FieldPanel("platform"),
         FieldPanel("label"),
         FieldPanel("url"),
-        FieldPanel("icon_class"),
-        FieldPanel("is_active"),
-        FieldPanel("sort_order"),
+        MultiFieldPanel([
+            FieldPanel("icon_svg"),
+            FieldPanel("icon_class"),
+        ], heading=_("Icon")),
+        MultiFieldPanel([
+            FieldPanel("is_active"),
+            FieldPanel("sort_order"),
+        ], heading=_("Display")),
     ]
 
     class Meta:
@@ -293,6 +301,61 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
             "gtm_id": self.google_tag_manager_id,
             "ga4_id": self.google_analytics_id,
         }
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Branding (Wagtail snippet — lightweight site-wide branding)
+# ═══════════════════════════════════════════════════════════════════
+
+@register_snippet
+class FusionBranding(models.Model):
+    """Site-wide branding configuration managed via Wagtail snippets.
+
+    Serves as a lightweight branding companion to SiteSettings. Editors
+    can update the brand identity from the Snippets menu without navigating
+    the full SiteSettings panel. Mirrors the Precis LMS FusionBranding
+    pattern (apps/pages/branding/models.py).
+    """
+
+    site_name = models.CharField(max_length=100, default="Structa Cloud",
+                                  help_text="Brand name used in the header and meta titles")
+    company_name = models.CharField(max_length=100, default="Structa Cloud",
+                                     help_text="Legal company name for footer copyright")
+    creator_name = models.CharField(max_length=100, default="Mahmoud Ezzat",
+                                     help_text="Creator/author name for meta tags and credits")
+    primary_color = models.CharField(max_length=7, default="#0B57D0",
+                                      help_text="Primary brand color (hex)")
+    secondary_color = models.CharField(max_length=7, default="#5b21b6",
+                                        help_text="Secondary accent color (hex)")
+    favicon = models.ImageField(upload_to="branding/", blank=True,
+                                 help_text="Upload a favicon image")
+    logo = models.ForeignKey(
+        "wagtailimages.Image", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="+", help_text="Brand logo (overrides SiteSettings logo when set)",
+    )
+
+    panels = [
+        MultiFieldPanel([
+            FieldPanel("site_name"),
+            FieldPanel("company_name"),
+            FieldPanel("creator_name"),
+        ], heading=_("Brand Identity")),
+        MultiFieldPanel([
+            FieldPanel("primary_color"),
+            FieldPanel("secondary_color"),
+        ], heading=_("Colors")),
+        MultiFieldPanel([
+            FieldPanel("favicon"),
+            FieldPanel("logo"),
+        ], heading=_("Assets")),
+    ]
+
+    class Meta:
+        app_label = "content"
+        verbose_name = _("fusion branding")
+        verbose_name_plural = _("fusion branding")
+
+    def __str__(self):
+        return self.site_name
 
     def get_brand_context(self) -> dict:
         """Return brand/theme fields as a frontend-consumable dict."""
