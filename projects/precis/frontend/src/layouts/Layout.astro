@@ -2,7 +2,7 @@
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import CookieConsent from '@/components/ui/CookieConsent.astro';
-import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage } from '@/lib/site';
+import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage, siteUrl } from '@/lib/site';
 import '../styles/globals.css';
 import faviconPath from '@assets/static/images/favicon.png';
 
@@ -40,7 +40,7 @@ const {
 
 const siteName = siteSettings?.site_name || fallbackSiteName;
 const pageTitle = title && title !== siteName ? `${title} \u00b7 ${siteName}` : siteName;
-const canonical = new URL(Astro.url.pathname, 'https://lms-fusion.com').href;
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
 
 void THEME_STORAGE_KEY;
 ---
@@ -61,12 +61,12 @@ void THEME_STORAGE_KEY;
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, 'https://lms-fusion.com').href} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).href} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, 'https://lms-fusion.com').href} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
 
     <meta name="theme-color" content="#FCFCFA" />
 

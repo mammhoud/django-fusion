@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}{{ page.title|default:"Structa Cloud" }}{% endblock %}</title>
+  <title>{% block title %}{{ localized_content.title|default:page.title|default:"Structa Cloud" }}{% endblock %}</title>
   <meta name="description" content="{% block description %}A modern landing experience built with Astro, HTMX and Alpine.js.{% endblock %}" />
   <meta name="theme-color" content="#FCFCFA" />
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />

@@ -1,7 +1,7 @@
 {% extends "pages/base.html" %}
 {% load components %}
 
-{% block title %}{{ page.title }} · Structa Cloud{% endblock %}
+{% block title %}{{ localized_content.title|default:page.title }} · Structa Cloud{% endblock %}
 
 {% block content %}
   {% comment %} Pricing — hero, pricing tiers, faq, cta — rendered by the shared content-region partial. {% endcomment %}

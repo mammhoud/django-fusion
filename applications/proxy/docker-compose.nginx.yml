@@ -66,11 +66,11 @@ services:
           memory: 256M
 
 volumes:
-    external: true
+  # Shared media volumes are named explicitly so standalone proxy and app
+  # Compose invocations resolve the same resources without a pre-create step.
   lms-fusion-static:
-    external: true
     name: lms-fusion-static
     external: true
   lms-fusion-media:
-    external: true
     name: lms-fusion-media
+    external: true

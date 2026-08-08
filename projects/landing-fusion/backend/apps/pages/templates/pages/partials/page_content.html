@@ -41,7 +41,15 @@
    same in-page navigation. Empty for top-level pages. {% endcomment %}
 {% include "pages/partials/breadcrumbs.html" %}
 
-{% if page.hero %}{% include_block page.hero %}{% endif %}
+{% if content_language == "ar" and localized_content.hero %}
+<section class="hero-block container-fusion" dir="rtl">
+  {% if localized_content.hero.badge %}<p class="tag-marker">{{ localized_content.hero.badge }}</p>{% endif %}
+  <h1>{{ localized_content.hero.title|default:localized_content.title|default:page.title }}{% if localized_content.hero.accent %} <em>{{ localized_content.hero.accent }}</em>{% endif %}</h1>
+  {% if localized_content.hero.subtitle %}<p>{{ localized_content.hero.subtitle }}</p>{% endif %}
+  {% if localized_content.hero.primary_cta.href and localized_content.hero.primary_cta.label %}<a href="{{ localized_content.hero.primary_cta.href }}" class="btn-primary">{{ localized_content.hero.primary_cta.label }}</a>{% endif %}
+  {% if localized_content.hero.secondary_cta.href and localized_content.hero.secondary_cta.label %}<a href="{{ localized_content.hero.secondary_cta.href }}" class="btn-secondary">{{ localized_content.hero.secondary_cta.label }}</a>{% endif %}
+</section>
+{% elif page.hero %}{% include_block page.hero %}{% endif %}
 
 {% comment %} Homepage learning catalog — the backend road mirrors the Astro
    course cards and links into the full HTMX learning surface. {% endcomment %}
@@ -70,7 +78,7 @@
 <section class="container-fusion" style="padding-block:1.75rem 0;">
   <div class="product-lockup" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
     {% include "content/blocks/product_logo.html" with logo_style=page.logo_style %}
-    <div>        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ page.title }}</h2>
+    <div>        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ localized_content.title|default:page.title }}</h2>
       {% if page.version %}<p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">{{ page.version }}</p>{% endif %}
       {% if page.tagline %}<p style="margin:.15rem 0 0;color:hsl(var(--fu-text) / .7);font-size:.875rem;">{{ page.tagline }}</p>{% endif %}
     </div>
@@ -116,11 +124,11 @@
 {% endif %}
 
 {% comment %} Body / story — the "about this page" prose section. {% endcomment %}
-{% if page.body %}
-<section class="container-fusion" style="padding-block:4rem 5rem;">
+{% if localized_body or page.body %}
+<section class="container-fusion" style="padding-block:4rem 5rem;"{% if content_language == "ar" %} dir="rtl"{% endif %}>
   <div style="max-width:42rem;">
-    <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{{ page.body_heading|default:page.title }}</h2>
-    <div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>
+    <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{% if localized_content.title %}{{ localized_content.title }}{% else %}{{ page.body_heading|default:page.title }}{% endif %}</h2>
+    {% if localized_body %}<div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ localized_body|linebreaksbr }}</div>{% else %}<div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>{% endif %}
   </div>
 </section>
 {% endif %}
@@ -251,18 +259,22 @@
 {% endwith %}
 
 {% comment %} Services grid (ServicesPage) — offering cards rendered by content/blocks/services.html. {% endcomment %}
-{% if page.services %}
+{% with service_blocks=localized_blocks.services %}
+{% if service_blocks %}
 <section id="services" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.services %}
+  {% include_block service_blocks %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Tech stack (ProductPage) — technology tags rendered by content/blocks/tech_stack.html. {% endcomment %}
-{% if page.tech %}
+{% with tech_blocks=localized_blocks.tech %}
+{% if tech_blocks %}
 <section id="tech" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.tech %}
+  {% include_block tech_blocks %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Editions & pricing (ProductPage) — per-edition pricing cards rendered by content/blocks/editions.html. {% endcomment %}
 {% if page.editions %}
@@ -275,6 +287,14 @@
 {% if page.comparison %}
 <section id="comparison" class="container-fusion" style="padding-block:4rem 5rem;">
   {% include_block page.comparison %}
+</section>
+{% endif %}
+
+{% comment %} Product media gallery — editor-curated screenshot/screencast blocks.
+   Edition captures remain below as the compatibility/detail-page gallery. {% endcomment %}
+{% if page.gallery %}
+<section id="gallery" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.gallery %}
 </section>
 {% endif %}
 
@@ -310,39 +330,49 @@
 {% endwith %}
 
 {% comment %} Team grid (TeamPage, /about/team/) — member cards rendered by content/blocks/team.html. {% endcomment %}
-{% if page.team %}
+{% with team_blocks=localized_blocks.team %}
+{% if team_blocks %}
 <section id="team" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.team %}
+  {% include_block team_blocks %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} “Build as you go” process (ServicesPage) — numbered steps rendered by content/blocks/process.html. {% endcomment %}
-{% if page.process %}
+{% with process_blocks=localized_blocks.process %}
+{% if process_blocks %}
 <section id="process" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.process %}
+  {% include_block process_blocks %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Blog grid (BlogPage) — post cards rendered by content/blocks/blog.html. {% endcomment %}
-{% if page.blog %}
+{% with blog_blocks=localized_blocks.blog %}
+{% if blog_blocks %}
 <section id="blog" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.blog %}
+  {% include_block blog_blocks %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Stats band. {% endcomment %}
-{% if page.stats %}{% include_block page.stats %}{% endif %}
+{% with stats_blocks=localized_blocks.stats %}{% if stats_blocks %}{% include_block stats_blocks %}{% endif %}{% endwith %}
 
 {% comment %} Features with pricing folded into the same section (mirrors the Astro side). {% endcomment %}
-{% if page.features or page.pricing %}
+{% with feature_blocks=localized_blocks.features %}
+{% with pricing_blocks=localized_blocks.pricing %}
+{% if feature_blocks or pricing_blocks %}
 <section id="features" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% if page.features %}{% include_block page.features %}{% endif %}
-  {% if page.pricing %}{% include_block page.pricing %}{% endif %}
+  {% if feature_blocks %}{% include_block feature_blocks %}{% endif %}
+  {% if pricing_blocks %}{% include_block pricing_blocks %}{% endif %}
 </section>
 {% endif %}
+{% endwith %}
+{% endwith %}
 
 {% comment %} Proof / answers / contact / close. {% endcomment %}
-{% if page.testimonials %}{% include_block page.testimonials %}{% endif %}
-{% if page.faq %}{% include_block page.faq %}{% endif %}
-{% if page.contact %}{% include_block page.contact %}{% endif %}
-{% if page.cta %}{% include_block page.cta %}{% endif %}
+{% with testimonial_blocks=localized_blocks.testimonials %}{% if testimonial_blocks %}{% include_block testimonial_blocks %}{% endif %}{% endwith %}
+{% with faq_blocks=localized_blocks.faq %}{% if faq_blocks %}{% include_block faq_blocks %}{% endif %}{% endwith %}
+{% with contact_blocks=localized_blocks.contact %}{% if contact_blocks %}{% include_block contact_blocks %}{% endif %}{% endwith %}
+{% with cta_blocks=localized_blocks.cta %}{% if cta_blocks %}{% include_block cta_blocks %}{% endif %}{% endwith %}

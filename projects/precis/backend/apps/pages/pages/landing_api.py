@@ -31,14 +31,33 @@ def _live_page(slug: str):
 
 
 def _plain(value):
-    """Convert common Wagtail Struct/List values to JSON-safe values."""
+    """Convert Wagtail values and related model objects to JSON-safe values."""
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
     if hasattr(value, "items"):
-        return {key: _plain(item) for key, item in value.items()}
+        return {str(key): _plain(item) for key, item in value.items()}
     if isinstance(value, (list, tuple)):
         return [_plain(item) for item in value]
     if hasattr(value, "isoformat"):
         return value.isoformat()
-    return value
+
+    # StreamField values frequently contain RichText and Wagtail image
+    # instances.  Passing those objects directly to JsonResponse raises a
+    # TypeError and turns otherwise healthy page API requests into HTTP 500s.
+    # Preserve useful image metadata while reducing other Wagtail values to a
+    # stable string representation.
+    if hasattr(value, "pk"):
+        result = {"id": value.pk, "title": str(value)}
+        try:
+            result["url"] = value.file.url
+        except (AttributeError, ValueError, OSError):
+            pass
+        return result
+    if hasattr(value, "__str__"):
+        return str(value)
+    return str(value)
 
 
 def _stream_items(page, field_name: str) -> list[dict]:

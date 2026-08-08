@@ -11,11 +11,13 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
+from .languages import SUPPORTED_LANGUAGE_CHOICES
 
-CONTENT_LANGUAGE_CHOICES = [
-    ("en", _("English")),
-    ("ar", _("Arabic")),
-]
+
+# Keep editorial overlays aligned with the Wagtail/UI language catalog. Empty
+# overlays intentionally fall back to canonical content until an editor adds
+# a translation; the schema must still accept every advertised language.
+CONTENT_LANGUAGE_CHOICES = list(SUPPORTED_LANGUAGE_CHOICES)
 
 
 @register_snippet
@@ -35,7 +37,7 @@ class PageTranslation(models.Model):
         verbose_name=_("Page"),
     )
     language = models.CharField(
-        max_length=2,
+        max_length=10,
         choices=CONTENT_LANGUAGE_CHOICES,
         verbose_name=_("Language"),
     )
@@ -99,7 +101,7 @@ class PageTranslation(models.Model):
 
     @classmethod
     def for_page(cls, page, language: str) -> "PageTranslation | None":
-        """Resolve one requested translation, restricting to en/ar."""
+        """Resolve one requested translation from the supported catalog."""
         if language not in dict(CONTENT_LANGUAGE_CHOICES):
             return None
         return cls.objects.filter(page=page, language=language).first()

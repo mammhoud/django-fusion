@@ -10,7 +10,7 @@ name: Fusion CI (lms-fusion)
 on:
   pull_request:
     paths:
-      - 'projects/lms-fusion/**'
+      - 'projects/precis/**'
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
@@ -19,7 +19,7 @@ on:
   push:
     branches: ['**']
     paths:
-      - 'projects/lms-fusion/**'
+      - 'projects/precis/**'
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
@@ -74,13 +74,13 @@ jobs:
         run: make lms-fusion migrate
 
       - name: Validate fixture files
-        run: uv run python lms-fusion/backend/manage.py load_fusion_fixtures --full --dry-run
+        run: uv run python precis/backend/manage.py load_fusion_fixtures --full --dry-run
 
       - name: Run fixture content tests
-        run: uv run python -m pytest lms-fusion/backend/tests/test_fixture_content.py -v --tb=short
+        run: uv run python -m pytest precis/backend/tests/test_fixture_content.py -v --tb=short
 
       - name: Run remaining tests
-        run: uv run python -m pytest lms-fusion/backend/tests/ --ignore=lms-fusion/backend/tests/test_fixture_content.py -q
+        run: uv run python -m pytest precis/backend/tests/ --ignore=precis/backend/tests/test_fixture_content.py -q
 
   # ── LMS-Fusion Frontend (Astro) ─────────────────────────────────────
 
@@ -90,7 +90,7 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: projects/lms-fusion/frontend
+        working-directory: projects/precis/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -99,7 +99,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
+          cache-dependency-path: projects/precis/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -116,9 +116,12 @@ jobs:
     name: LMS-Fusion — Astro + Django Smoke
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      POSTGRES_PASSWORD: ci-postgres-password
+      REDIS_PASSWORD: ci-redis-password
     defaults:
       run:
-        working-directory: projects/lms-fusion/frontend
+        working-directory: projects/precis/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -127,7 +130,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
+          cache-dependency-path: projects/precis/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -151,13 +154,13 @@ jobs:
 
       - name: Build lms-fusion backend image
         run: |
-          docker compose -f projects/lms-fusion/docker-compose.yml build \
-            --build-arg PROJECT_PATH=lms-fusion backend
+          docker compose -f projects/precis/docker-compose.yml build \
+            --build-arg PROJECT_PATH=lms-fusion --build-arg SOURCE_PATH=precis backend
 
       - name: Start lms-fusion backend (SQLite for CI E2E)
         run: |
           DB_TYPE=sqlite DB_HOST=127.0.0.1 \
-            docker compose -f projects/lms-fusion/docker-compose.yml up -d --remove-orphans backend
+            docker compose -f projects/precis/docker-compose.yml up -d --remove-orphans backend
 
       - name: Wait for lms-fusion backend health
         run: |
@@ -170,7 +173,7 @@ jobs:
             sleep 10
           done
           echo "✗ LMS-Fusion backend did not become healthy"
-          docker compose -f projects/lms-fusion/docker-compose.yml logs --tail=50 backend
+          docker compose -f projects/precis/docker-compose.yml logs --tail=50 backend
           exit 1
 
       # AI tests fetch homepage data from this URL. The fallback in
@@ -178,6 +181,28 @@ jobs:
       # unavailable (API-dependent assertions degrade gracefully).
       - name: Run Astro frontend smoke tests
         run: npm run test
+
+      - name: Start Astro preview server
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 3001 > /tmp/lms-fusion-astro-preview.log 2>&1 &
+          echo $! > /tmp/lms-fusion-astro-preview.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3001/ >/dev/null; then
+              echo "✓ LMS-Fusion frontend healthy"
+              exit 0
+            fi
+            echo "  attempt $i/30 — waiting for frontend..."
+            sleep 2
+          done
+          echo "✗ LMS-Fusion frontend did not become healthy"
+          cat /tmp/lms-fusion-astro-preview.log
+          exit 1
+
+      - name: Run LMS-Fusion Compose E2E tests
+        env:
+          E2E_BACKEND_URL: http://127.0.0.1:5074
+          E2E_FRONTEND_URL: http://127.0.0.1:3001
+        run: npm run test:e2e
 
 
   # ── Domain Drift Check ─────────────────────────────────────────────
@@ -199,6 +224,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      POSTGRES_PASSWORD: ci-postgres-password
+      REDIS_PASSWORD: ci-redis-password
     needs:
       - lms-fusion-backend
       - lms-fusion-frontend
@@ -222,17 +250,17 @@ jobs:
 
       - name: Build lms-fusion backend image
         run: |
-          docker compose -f projects/lms-fusion/docker-compose.yml build \
-            --build-arg PROJECT_PATH=lms-fusion backend
+          docker compose -f projects/precis/docker-compose.yml build \
+            --build-arg PROJECT_PATH=lms-fusion --build-arg SOURCE_PATH=precis backend
 
       - name: Build lms-fusion frontend image
         run: |
-          docker compose -f projects/lms-fusion/docker-compose.yml build frontend
+          docker compose -f projects/precis/docker-compose.yml build frontend
 
       - name: Start lms-fusion services (SQLite for staging)
         run: |
           DB_TYPE=sqlite DB_HOST=127.0.0.1 \
-            docker compose -f projects/lms-fusion/docker-compose.yml up -d --remove-orphans backend frontend
+            docker compose -f projects/precis/docker-compose.yml up -d --remove-orphans backend frontend
 
       - name: Wait for lms-fusion backend health
         run: |
@@ -246,14 +274,14 @@ jobs:
           done
           echo "✗ LMS-Fusion backend did not become healthy"
           echo "=== LMS-Fusion backend logs ==="
-          docker compose -f projects/lms-fusion/docker-compose.yml logs --tail=50 backend
+          docker compose -f projects/precis/docker-compose.yml logs --tail=50 backend
           exit 1
 
       - name: Show deployment status
         run: |
           echo "=== Docker Services Status ==="
           echo ""
-          docker compose -f projects/lms-fusion/docker-compose.yml ps
+          docker compose -f projects/precis/docker-compose.yml ps
           echo ""
           echo "=== Health Checks ==="
           curl -s http://127.0.0.1:5074/health/ && echo " — LMS-Fusion"

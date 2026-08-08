@@ -1293,7 +1293,7 @@ cd formint-pos && make seed && make env
 | ![Dashboard](screenshots/admin/03_admin_dashboard.jpg) | ![Products](screenshots/admin/04_admin_products.jpg) |
 
 Admin panel ships with the merged **Formint POS** package (pos-mini has no admin interface).
-Screenshots live in `docs/screenshots/` (see `FORMINT_ARCHITECTURE.md` §3.6 for the full set).
+Product screenshots live in Landing-Fusion `backend/assets/static/related/formints/` (mirrored to the Astro public static tree).
 
 ---
 

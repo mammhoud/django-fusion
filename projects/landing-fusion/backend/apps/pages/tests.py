@@ -163,7 +163,7 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for marker in (
             b"Mahmoud Ezzat Moustafa",
-            b"The engineer",
+            b"the engineer",
             b"Full-stack developer",
             b"Built on",
             b"django-fusion",
@@ -445,6 +445,84 @@ class LandingPagesTestCase(TestCase):
             ["en", "ar", "sv", "fr", "de", "es", "pt"],
         )
         self.assertEqual(languages["coverage"]["ar"], PageTranslation.objects.filter(language="ar").count())
+
+    def test_arabic_subpages_are_seeded_and_exposed(self):
+        """Nested About, service, prompt, and blog pages receive Arabic overlays."""
+        expected = {
+            "team": "الفريق",
+            "founder": "المؤسس",
+            "startup": "قصة الشركة الناشئة",
+            "discover": "الاكتشاف",
+            "shape-the-brief": "صياغة الموجز",
+            "why-landing-pages-as-documents": "الزيارة الأولى السريعة قرار منتج",
+        }
+        for slug, title in expected.items():
+            with self.subTest(slug=slug):
+                response = self.client.get(f"/apis/pages/{slug}/?lang=ar")
+                self.assertEqual(response.status_code, 200)
+                payload = response.json()
+                self.assertEqual(payload["title"], title)
+                self.assertEqual(payload["language"], "ar")
+                self.assertEqual(payload["translation_source"], "model")
+                self.assertEqual(payload["translation_language"], "ar")
+
+        discover = self.client.get("/apis/pages/discover/?lang=ar").json()
+        self.assertEqual(discover["phase_label"], "الاكتشاف")
+        self.assertEqual(discover["outcomes"][0], "موجز محدد")
+
+        prompt = self.client.get("/apis/pages/shape-the-brief/?lang=ar").json()
+        self.assertIn("حوّل موجز هذا المنتج", prompt["prompt"])
+        self.assertEqual(prompt["tool"], "Wagtail واكتشاف المنتج")
+
+        navigation = self.client.get("/apis/navigation/?lang=ar").json()
+        about = next(item for item in navigation["nav_items"] if item["href"] == "/about/")
+        about_children = {child["href"]: child["label"] for child in about["children"]}
+        self.assertEqual(about_children["/about/team/"], "الفريق")
+        self.assertEqual(about_children["/about/founder/"], "المؤسس")
+        self.assertEqual(about_children["/about/startup/"], "قصة الشركة الناشئة")
+
+        # The Django render road consumes the same overlay for nested pages.
+        team_html = self.client.get("/about/team/?lang=ar")
+        self.assertEqual(team_html.status_code, 200)
+        self.assertIn("الأشخاص الذين يقفون خلف المنتجات".encode(), team_html.content)
+        self.assertIn("الفريق".encode(), team_html.content)
+        self.assertIn("الأشخاص الذين يقفون خلف المنتجات".encode(), team_html.content)
+        self.assertIn("لنبنِ شيئاً مفيداً".encode(), team_html.content)
+        self.assertIn('<span itemprop="name">الفريق</span>'.encode(), team_html.content)
+
+        founder_html = self.client.get("/about/founder/?lang=ar")
+        self.assertEqual(founder_html.status_code, 200)
+        self.assertIn("المكدس التقني".encode(), founder_html.content)
+        self.assertIn("هل لديك منتج يحتاج إلى مسار أوضح؟".encode(), founder_html.content)
+        self.assertIn('<span itemprop="name">المؤسس</span>'.encode(), founder_html.content)
+
+        startup_html = self.client.get("/about/startup/?lang=ar")
+        self.assertEqual(startup_html.status_code, 200)
+        self.assertIn("المحطات الرئيسية".encode(), startup_html.content)
+        self.assertIn("القصة بالأرقام".encode(), startup_html.content)
+
+        team_fragment = self.client.get("/fragment/pages/team/?lang=ar")
+        self.assertEqual(team_fragment.status_code, 200)
+        self.assertIn("الأشخاص الذين يقفون خلف المنتجات".encode(), team_fragment.content)
+        self.assertIn("لنبنِ شيئاً مفيداً".encode(), team_fragment.content)
+
+        phase_html = self.client.get("/services/phases/discover/?lang=ar")
+        self.assertEqual(phase_html.status_code, 200)
+        self.assertIn("الاكتشاف".encode(), phase_html.content)
+        self.assertIn("ما الذي تقدمه هذه المرحلة".encode(), phase_html.content)
+
+        prompt_html = self.client.get(
+            "/services/phases/discover/prompts/shape-the-brief/?lang=ar"
+        )
+        self.assertEqual(prompt_html.status_code, 200)
+        self.assertIn("صياغة الموجز".encode(), prompt_html.content)
+        self.assertIn("حوّل موجز هذا المنتج".encode(), prompt_html.content)
+
+        post_html = self.client.get(
+            "/blog/why-landing-pages-as-documents/?lang=ar"
+        )
+        self.assertEqual(post_html.status_code, 200)
+        self.assertIn("الزيارة الأولى السريعة قرار منتج".encode(), post_html.content)
 
     def test_site_languages_are_seeded_and_served(self):
         """The SiteLanguage catalog is seeded idempotently and drives the API."""
@@ -893,14 +971,14 @@ class LandingPagesTestCase(TestCase):
         from apps.content.blocks import EditionPreviewImageBlock
 
         block = EditionPreviewImageBlock()
-        valid_image = block.clean({"url": "/static/previews/formints/standard-front.jpg", "kind": "image", "poster": "", "label": "", "alt": ""})
+        valid_image = block.clean({"url": "/static/related/formints/standard-checkout.jpg", "kind": "image", "poster": "", "label": "", "alt": ""})
         self.assertEqual(valid_image["kind"], "image")
-        self.assertEqual(block.clean({"url": "/static/previews/formints/standard-walkthrough.gif", "kind": "gif", "poster": "", "label": "", "alt": ""})["kind"], "gif")
-        self.assertEqual(block.clean({"url": "/static/previews/demo.webm", "kind": "video", "poster": "/static/previews/poster.jpg", "label": "", "alt": ""})["kind"], "video")
+        self.assertEqual(block.clean({"url": "/static/related/formints/standard-walkthrough.gif", "kind": "gif", "poster": "", "label": "", "alt": ""})["kind"], "gif")
+        self.assertEqual(block.clean({"url": "/static/related/demo.webm", "kind": "video", "poster": "/static/related/poster.jpg", "label": "", "alt": ""})["kind"], "video")
         with self.assertRaises(ValidationError):
-            block.clean({"url": "/static/previews/demo.jpg", "kind": "video", "poster": "", "label": "", "alt": ""})
+            block.clean({"url": "/static/related/demo.jpg", "kind": "video", "poster": "", "label": "", "alt": ""})
         with self.assertRaises(ValidationError):
-            block.clean({"url": "/static/previews/demo.jpg", "kind": "image", "poster": "/static/previews/poster.jpg", "label": "", "alt": ""})
+            block.clean({"url": "/static/related/demo.jpg", "kind": "image", "poster": "/static/related/poster.jpg", "label": "", "alt": ""})
 
     def test_scoped_product_refresh_preserves_editor_content(self):
         """Refreshing captures updates only media/version and publishes a live revision."""
@@ -922,16 +1000,22 @@ class LandingPagesTestCase(TestCase):
 
         command = Command()
         command._refresh_product("formint-pos")
+        revisions_after_first_refresh = ProductPage.objects.get(pk=product.pk).revisions.count()
         # A second refresh is a no-op and must not create another content
         # change or duplicate gallery entries.
         command._refresh_product("formint-pos")
         refreshed = ProductPage.objects.get(slug="formint-pos")
+        self.assertEqual(refreshed.revisions.count(), revisions_after_first_refresh)
         self.assertEqual(refreshed.body, "<p>Editor-owned overview.</p>")
         self.assertEqual(refreshed.body != original_body, True)
         self.assertEqual(refreshed.version, "beta 0.2")
         refreshed_standard = next(e for e in refreshed.get_editions() if e["name"] == "Standard")
         self.assertEqual(refreshed_standard["tagline"], "Editor-owned tagline")
         self.assertEqual(len(refreshed_standard["preview_images"]), 4)
+        refreshed_gallery = json.loads(ProductPage._meta.get_field("gallery").value_to_string(refreshed))
+        self.assertEqual(len(refreshed_gallery), 1)
+        gallery_items = refreshed_gallery[0]["value"]["items"]
+        self.assertEqual(gallery_items[1]["value"]["kind"], "gif")
         self.assertTrue(ProductPage.objects.get(pk=refreshed.pk).live)
 
         from django.core.management.base import CommandError
@@ -947,10 +1031,10 @@ class LandingPagesTestCase(TestCase):
         """
         from django.contrib.staticfiles import finders
 
-        path = finders.find("previews/formints/standard-sale-complete.png")
+        path = finders.find("related/formints/standard-sale-complete.png")
         self.assertIsNotNone(path)
         path = str(path)
-        self.assertTrue(path.endswith("/previews/formints/standard-sale-complete.png"))
+        self.assertTrue(path.endswith("/related/formints/standard-sale-complete.png"))
         self.assertGreater(__import__("os").path.getsize(path), 1000)
 
     def test_all_product_apis_expose_visual_gallery_without_snippets(self):
@@ -985,10 +1069,10 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(
             [image["url"] for image in standard["preview_images"]],
             [
-                "/static/previews/formints/standard-front.jpg",
-                "/static/previews/formints/standard-back.jpg",
-                "/static/previews/formints/standard-walkthrough.gif",
-                "/static/previews/formints/standard-sale-complete.png",
+                "/static/related/formints/standard-checkout.jpg",
+                "/static/related/formints/standard-operations.jpg",
+                "/static/related/formints/standard-walkthrough.gif",
+                "/static/related/formints/standard-sale-complete.png",
             ],
         )
         self.assertEqual(
@@ -999,8 +1083,8 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(
             [image["url"] for image in pro["preview_images"]],
             [
-                "/static/previews/formints/pro-admin-dashboard.jpg",
-                "/static/previews/formints/pro-admin-products.jpg",
+                "/static/related/formints/pro-admin-dashboard.jpg",
+                "/static/related/formints/pro-admin-products.jpg",
             ],
         )
         # The product detail page exposes the visual gallery, while the
@@ -1034,6 +1118,46 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"edition__card--featured", response.content)
         self.assertIn(b"most shipped", response.content)
         self.assertIn(b"managed-ribbon", response.content)
+
+    def test_formint_pos_gallery_is_seeded_and_rendered(self):
+        """ProductPage.gallery carries one screenshot and one screencast on both roads."""
+        import json
+
+        product = ProductPage.objects.get(slug="formint-pos")
+        field = ProductPage._meta.get_field("gallery")
+        raw_gallery = json.loads(field.value_to_string(product))
+        self.assertEqual(len(raw_gallery), 1)
+        section = raw_gallery[0]["value"]
+        self.assertEqual(section["title"], "A real checkout, in two views")
+        gallery_items = [item["value"] for item in section["items"]]
+        self.assertEqual(
+            [item["url"] for item in gallery_items],
+            [
+                "/static/related/formints/standard-checkout.jpg",
+                "/static/related/formints/standard-sale-complete.png",
+                "/static/related/formints/standard-walkthrough.gif",
+            ],
+        )
+        self.assertEqual([item["kind"] for item in gallery_items], ["image", "image", "gif"])
+
+        data = self.client.get("/apis/pages/formint-pos/").json()
+        self.assertEqual(len(data["gallery"]), 1)
+        self.assertEqual(
+            [item["url"] for item in data["gallery"][0]["items"]],
+            [
+                "/static/related/formints/standard-checkout.jpg",
+                "/static/related/formints/standard-walkthrough.gif",
+            ],
+        )
+        page = self.client.get("/products/formint-pos/")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn(b"A real checkout, in two views", page.content)
+        self.assertIn(b"Checkout screenshot", page.content)
+        self.assertIn(b"Sale complete", page.content)
+        self.assertIn(b"Standard screencast", page.content)
+        self.assertIn(b"/static/related/formints/standard-checkout.jpg", page.content)
+        self.assertIn(b"/static/related/formints/standard-sale-complete.png", page.content)
+        self.assertIn(b"/static/related/formints/standard-walkthrough.gif", page.content)
 
     def test_formint_pos_renders_feature_comparison_table(self):
         """The POS reference page ships the full edition-vs-edition comparison table (~33 rows)."""

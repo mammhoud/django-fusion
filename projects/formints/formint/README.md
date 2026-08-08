@@ -136,21 +136,21 @@ Validation: `make check` (django check + astro check), `make test`.
 
 | Home — branch summary with live counts | Data — server-rendered tables |
 |----------------------------------------|-------------------------------|
-| ![Home](<../../docs/screenshots/frontend/01_frontend_home.jpg>) | ![Data](<../../docs/screenshots/frontend/02_frontend_data.jpg>) |
+| ![Home](<../../landing-fusion/backend/assets/static/related/formints/standard-checkout.jpg>) | ![Data](<../../landing-fusion/backend/assets/static/related/formints/standard-operations.jpg>) |
 
 ### Admin (Unfold master manager)
 
 | Dashboard — KPI cards + charts | Products |
 |-------------------------------|----------|
-| ![Dashboard](<../../docs/screenshots/admin/03_admin_dashboard.jpg>) | ![Products](<../../docs/screenshots/admin/04_admin_products.jpg>) |
+| ![Dashboard](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg>) | ![Products](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-products.jpg>) |
 
 | Customers | Sales |
 |-----------|-------|
-| ![Customers](<../../docs/screenshots/admin/05_admin_customers.jpg>) | ![Sales](<../../docs/screenshots/admin/06_admin_sales.jpg>) |
+| ![Customers](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-customers.jpg>) | ![Sales](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-sales.jpg>) |
 
 | Loyalty — client categories | Settings — user preferences |
 |-----------------------------|-----------------------------|
-| ![Loyalty](<../../docs/screenshots/admin/07_admin_loyalty.jpg>) | ![Settings](<../../docs/screenshots/admin/08_admin_settings.jpg>) |
+| ![Loyalty](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-loyalty.jpg>) | ![Settings](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-settings.jpg>) |
 
 > Captured from a seeded dev environment (`make env` + `make seed`).
 -->

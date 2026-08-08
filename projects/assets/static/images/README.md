@@ -22,37 +22,34 @@ projects/assets/static/images/
 │   └── favicon.svg          # Primary favicon (shared across sites)
 ├── backgrounds/             # Page background patterns
 │   └── pattern-*.jpg
-├── element/                 # UI illustration elements (SVG)
+├── element/                # UI illustration elements (SVG)
 │   └── *.svg
 └── avatar/                  # Default avatar images
     └── *.jpg
 ```
 
-## Product Previews
+## Related Product Media
 
-Product screenshots and screencasts live under each project:
+Product screenshots and screencasts are consolidated under the project that
+publishes them:
 
 ```
-projects/landing-fusion/backend/assets/static/previews/formints/
-├── standard-front.jpg         # Checkout screen
-├── standard-back.jpg          # Data & operations
-├── standard-walkthrough.gif   # Animated walkthrough
-├── standard-sale-complete.png # Completed sale receipt
-├── pro-admin-dashboard.jpg    # Admin dashboard
-└── pro-admin-products.jpg     # Product administration
-
-projects/formints/docs/screenshots/
-├── admin/                     # Admin panel screenshots
-│   ├── 03_admin_dashboard.jpg
-│   ├── 04_admin_products.jpg
-│   ├── 05_admin_customers.jpg
-│   ├── 06_admin_sales.jpg
-│   ├── 07_admin_loyalty.jpg
-│   └── 08_admin_settings.jpg
-└── frontend/                  # POS frontend screenshots
-    ├── 01_frontend_home.jpg
-    └── 02_frontend_data.jpg
+projects/landing-fusion/backend/assets/static/related/formints/
+├── standard-checkout.jpg          # Checkout screen
+├── standard-operations.jpg        # Data and operations
+├── standard-sale-complete.png     # Completed sale receipt
+├── standard-screencast.gif        # Full screencast
+├── standard-walkthrough.gif       # Animated walkthrough
+├── pro-admin-dashboard.jpg        # Admin dashboard
+├── pro-admin-products.jpg         # Product administration
+├── pro-admin-customers.jpg        # Customer administration
+├── pro-admin-sales.jpg            # Sales administration
+├── pro-admin-loyalty.jpg          # Loyalty administration
+└── pro-admin-settings.jpg         # Settings administration
 ```
+
+The Astro public mirror is at
+`projects/landing-fusion/frontend/public/static/related/formints/`.
 
 ## Favicon Locations
 
@@ -67,30 +64,31 @@ All favicons should be kept in sync. Update all three when changing the icon.
 ## Naming Conventions
 
 ### Screenshots
-```
-<product>-<context>-<label>.<ext>
-```
-- `formint-pos-checkout.jpg`
-- `precis-lms-course-detail.png`
 
-### Previews
+```text
+<edition>-<context>-<label>.<ext>
 ```
-previews/<product-slug>/<edition>-<label>.<ext>
-```
-- `previews/formints/standard-front.jpg`
 
-### Generated Images
+### Related media
+
+```text
+related/<product-slug>/<edition>-<label>.<ext>
 ```
+
+Use edition-first descriptive kebab-case names, for example
+`related/formints/standard-checkout.jpg`.
+
+### Generated images
+
+```text
 generated/<tool>-<description>-<date>.<ext>
 ```
 - `generated/chatgpt-preview-2026-08-07.png`
 
----
-
 ## Cross-References
 
 | Topic | Link |
-|-------|------|
+|------|------|
 | Landing-Fusion | `../../projects/landing-fusion/README.md` |
 | Precis LMS | `../../projects/precis/README.md` |
 | Formints POS | `../../projects/formints/README.md` |

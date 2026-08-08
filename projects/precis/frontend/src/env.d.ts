@@ -10,6 +10,7 @@ interface ToastStore {
 declare global {
   interface ImportMetaEnv {
     readonly PUBLIC_FUSION_API_URL?: string;
+    readonly PUBLIC_BUILD_API_URL?: string;
   }
 
   interface Window {

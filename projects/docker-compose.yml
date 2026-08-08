@@ -4,12 +4,10 @@
 # Infrastructure Services (Traefik, PostgreSQL, Redis) are defined 
 # in the root docker-compose.yml and automatically connected via shared networks.
 #
-# This file includes application containers that need rebuilding:
-#   - ctc-research-website, lms-web, vresume-web, crm-website
+# This file includes the active application containers that need rebuilding:
+#   - Precis LMS and Landing-Fusion
 # ============================================================
 
 include:
-  - path: ./lms/docker-compose.yml
-  - path: ./ctc-research/docker-compose.yml
-  - path: ./portfolio/docker-compose.yml
-  # - path: ./crm/docker-compose.yml  # CRM directory is empty, not available
+  - path: ./precis/docker-compose.yml
+  - path: ./landing-fusion/docker-compose.yml

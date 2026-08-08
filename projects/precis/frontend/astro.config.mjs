@@ -4,13 +4,15 @@ import mdx from '@astrojs/mdx';
 
 import alpinejs from '@astrojs/alpinejs';
 
+const siteUrl = process.env.PUBLIC_SITE_URL || 'https://ctc-research.com';
+
 // https://astro.build/config
 export default defineConfig({
   // Landing site is fully static — HTML + HTMX/Alpine only.
   // Switch to `output: 'server'` + @astrojs/node when porting
   // CMS-backed dynamic pages (see ASTRO_MIGRATION_PLAN §7).
   output: 'static',
-  site: 'https://lms-fusion.com',
+  site: siteUrl,
   integrations: [
     mdx(),
     // Alpine with the Intersect + Collapse plugins (see src/alpine.js) —
@@ -18,6 +20,12 @@ export default defineConfig({
     alpinejs({ entrypoint: '@/alpine' }),
   ],
   vite: {
+    server: {
+      allowedHosts: true,
+    },
+    preview: {
+      allowedHosts: true,
+    },
     resolve: {
       alias: {
         // Project-level assets (fonts, icons, theme styles) — used by Layout

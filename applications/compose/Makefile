@@ -1,5 +1,5 @@
 # ============================================================
-# Applications Makefile – ctc, lms, vresume, docs, workers
+# Applications Makefile – Precis/Landing Fusion web services and workers
 # ============================================================
 SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.applications.yml
@@ -10,7 +10,7 @@ TASKS_FILE := docker-compose.tasks.yml
 help:
 	@echo "Applications Makefile"
 	@echo "====================="
-	@echo "  make up            - Start web services (ctc-research, lms-web, vresume-web)"
+	@echo "  make up            - Start active Precis/Landing Fusion web services"
 	@echo "  make down          - Stop web services"
 	@echo "  make tasks-up      - Start shared Celery worker and scheduler"
 	@echo "  make tasks-down    - Stop shared Celery worker and scheduler"
@@ -23,8 +23,7 @@ help:
 
 up:
 	@echo "🟢 Starting applications..."
-	@docker compose -f $(COMPOSE_FILE) up -d \
-		ctc-research-website lms-web vresume-web
+	@docker compose -f $(COMPOSE_FILE) up -d backend frontend worker
 	@echo "✅ Applications are up (run 'make tasks-up' to also start Celery workers)"
 
 up-with-tasks: up tasks-up
@@ -40,8 +39,7 @@ down:
 
 build:
 	@echo "🔨 Building application images..."
-	@docker compose -f $(COMPOSE_FILE) build \
-		ctc-research-website lms-web vresume-web
+	@docker compose -f $(COMPOSE_FILE) build backend frontend worker
 
 build-docs:
 	@echo "🔨 Building docs image..."

@@ -16,6 +16,7 @@ import logging
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from wagtail.models import Page
@@ -283,13 +284,17 @@ def content_languages_api(request):
             {"code": "pt", "name": "Portuguese", "native": "Português", "dir": "ltr", "flag": "🇧🇷"},
         ]
 
-    # Coverage stays en/ar — the only languages with model-level editorial
-    # overlays today (PageTranslation). Other offered languages fall back to
-    # English UI chrome + canonical content.
+    # Coverage is reported for every advertised language. Only seeded Arabic
+    # and explicit English overlays have editorial records today; other
+    # languages intentionally fall back to canonical Wagtail content until an
+    # editor adds translations.
     pages = Page.objects.live().filter(depth__gt=1)
     coverage = {
-        language: PageTranslation.objects.filter(page__in=pages, language=language).count()
-        for language in ("en", "ar")
+        language["code"]: PageTranslation.objects.filter(
+            page__in=pages,
+            language=language["code"],
+        ).count()
+        for language in languages
     }
     return JsonResponse({
         "languages": languages,
@@ -698,20 +703,55 @@ def page_fragment_api(request, slug="home"):
         return JsonResponse({"error": "Page not found"}, status=404)
     specific = page.specific
     language = _requested_content_language(request)
-    return render(
-        request,
-        "pages/fragments/page.html",
-        {
-            "page": specific,
-            "content": specific,
-            "localized_content": _apply_page_translation(specific, _page_to_dict(specific), language),
-            "content_language": language,
-            "courses": get_home_courses() if specific.slug == "home" else [],
-            "site_name": "Structa Cloud",
-            "fusion_render_first": get_effective_render_first(request),
-            "fusion_render_mode": "fusion-render",
-        },
-    )
+    localized_content = _apply_page_translation(specific, _page_to_dict(specific), language)
+    # Reuse the handler's bound-block/body/breadcrumb helpers so HTMX fragments
+    # follow the exact same localization road as full-page requests.
+    from apps.handlers.views import LandingPageView
+
+    localization_view = LandingPageView()
+    localization_view.request = request
+    fragment_context = {
+        "page": specific,
+        "content": specific,
+        "localized_content": localized_content,
+        "localized_blocks": localization_view._get_localized_blocks(specific, language),
+        "localized_body": localization_view._get_localized_body(specific, language),
+        "breadcrumb_current": localization_view._get_localized_title(specific, language),
+        "breadcrumbs": localization_view._get_breadcrumbs(specific),
+        "content_language": language,
+        "courses": get_home_courses() if specific.slug == "home" else [],
+        "site_name": "Structa Cloud",
+        "fusion_render_first": get_effective_render_first(request),
+        "fusion_render_mode": "fusion-render",
+    }
+    if specific.__class__.__name__ == "PhasePage":
+        from apps.pages.models import PromptPage
+
+        outcomes = localized_content.get("outcomes")
+        fragment_context["phase_outcomes"] = (
+            outcomes
+            if isinstance(outcomes, list)
+            else [line.strip() for line in specific.outcomes.splitlines() if line.strip()]
+        )
+        fragment_context["phase_prompts"] = [
+            {
+                "title": _apply_page_translation(
+                    prompt, _page_to_dict(prompt), language
+                ).get("title", prompt.title),
+                "slug": prompt.slug,
+                "href": f"/services/phases/{specific.slug}/prompts/{prompt.slug}/",
+            }
+            for prompt in PromptPage.objects.live().child_of(specific).order_by("title")
+        ]
+    elif specific.__class__.__name__ == "PromptPage":
+        from apps.pages.models import PromptPage
+
+        phase = specific.get_parent().specific
+        fragment_context["phase"] = phase
+        fragment_context["localized_phase"] = _apply_page_translation(
+            phase, _page_to_dict(phase), language
+        )
+    return render(request, "pages/fragments/page.html", fragment_context)
 
 
 def _deep_merge(base: dict, overlay: dict) -> dict:
@@ -761,13 +801,16 @@ def _apply_page_translation(page, data: dict, language: str) -> dict:
     """Apply an optional PageTranslation overlay and expose locale metadata."""
     from apps.content.models.translations import PageTranslation
 
-    translation = PageTranslation.for_page(page, language)
-    requested_translation = translation = PageTranslation.for_page(page, language)
+    requested_translation = PageTranslation.for_page(page, language)
+    translation = requested_translation
     if translation is None and language != "en":
         # Arabic may be partial; English is the explicit final fallback.
         translation = PageTranslation.for_page(page, "en")
     if translation is not None:
-        data = _deep_merge(data, translation.as_overrides())
+        overrides = translation.as_overrides()
+        if overrides.get("body"):
+            overrides["body"] = strip_tags(overrides["body"])
+        data = _deep_merge(data, overrides)
     # Product detail pages never expose legacy code snippets, including when
     # a translated override was authored before the visual gallery migration.
     if page.__class__.__name__ == "ProductPage":

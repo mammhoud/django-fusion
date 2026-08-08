@@ -12,10 +12,14 @@ Usage:
     python manage.py seed_pages
 """
 import json
+import logging
 import os
 
 from django.core.management.base import BaseCommand, CommandError
-from wagtail.models import Page, Site
+from django.db import transaction
+from wagtail.models import Locale, Page, Site
+
+logger = logging.getLogger(__name__)
 
 from apps.pages.models import (
     AboutPage,
@@ -55,6 +59,115 @@ DEFAULT_PAGE_TRANSLATIONS = {
         "search_description": "شريك منتج للفرق التي تبني خدمات رقمية في أسواق الخليج والمشرق وشمال أفريقيا.",
         "body": "<p>Structa Cloud استوديو منتجات يساعد الفرق على تحويل الأفكار والأنظمة القديمة إلى خدمات رقمية واضحة وقابلة للاستخدام.</p><p>نصمم تجارب عربية وإنجليزية، ونبدأ من رحلة العميل قبل اختيار التقنية. النتيجة منصة سريعة يستطيع فريقك إدارتها بعد الإطلاق.</p>",
         "content": {"hero": {"title": "شريكك في المنتج الرقمي", "subtitle": "نربط الاستراتيجية والتصميم والهندسة في مسار واحد من الفكرة إلى السوق."}, "cta": {"title": "لنصمم الخطوة التالية", "subtitle": "أخبرنا عن السوق والعميل والقيود، وسنقترح مساراً عملياً."}},
+    },
+    # About subpages — these overlays use the same partial contract as the
+    # top-level pages, so missing fields continue to fall back to Wagtail.
+    "team": {
+        "title": "الفريق",
+        "search_description": "الأشخاص الذين يبنون منتجات Structa Cloud الرقمية.",
+        "body": "<p>فريق صغير يملك القرار من الفكرة إلى الإطلاق، ويحوّل الخبرة اليومية إلى أدوات يمكن للفرق استخدامها بثقة.</p>",
+        "content": {
+            "hero": {"title": "الأشخاص الذين يقفون خلف المنتجات", "subtitle": "خبرة عملية في التصميم والهندسة والمحتوى، من شخص واحد إلى فرق متعاونة."},
+            "cta": {"title": "لنبنِ شيئاً مفيداً", "subtitle": "أخبرنا عن فريقك والعميل والنتيجة التي تريد الوصول إليها."},
+        },
+    },
+    "founder": {
+        "title": "المؤسس",
+        "search_description": "المهندس الذي يبني Structa Cloud ومنتجاتها ومكتباتها المفتوحة.",
+        "body": "<p>أبني المنتجات من طبقة البيانات إلى الواجهة، مع اهتمام خاص بسرعة الوصول ووضوح المحتوى وسهولة امتلاك الفريق للنظام بعد الإطلاق.</p>",
+        "content": {
+            "hero": {"title": "مهندس يبني من الفكرة إلى الإطلاق", "subtitle": "هندسة عملية تجمع Django وWagtail وRust وواجهات الويب في مسار واحد."},
+            "tech": {"title": "المكدس التقني"},
+            "cta": {"title": "هل لديك منتج يحتاج إلى مسار أوضح؟", "subtitle": "لنحوّل الفكرة إلى أول إصدار يمكن استخدامه وقياسه."},
+        },
+    },
+    "startup": {
+        "title": "قصة الشركة الناشئة",
+        "search_description": "كيف نمت Structa Cloud من مشاريع مستقلة إلى عائلة من المنتجات والمكتبات.",
+        "body": "<p>بدأت الرحلة من مشاريع صغيرة، ثم تحولت الأدوات المتكررة إلى مكتبات ومنتجات مستقلة تشترك في بنية واحدة.</p>",
+        "content": {
+            "hero": {"title": "من مشروع صغير إلى نظام منتجات", "subtitle": "قصة نمو تدريجي مبني على إعادة الاستخدام والإطلاق المستمر."},
+            "process": {"title": "المحطات الرئيسية"},
+            "stats": {"title": "القصة بالأرقام"},
+            "cta": {"title": "ابدأ من خطوتك الأولى", "subtitle": "الإصدار الأول المفيد أفضل من خارطة طريق لا تنتهي."},
+        },
+    },
+    # Delivery phases and prompts are also Wagtail subpages. Their scalar
+    # prompt fields are overridden through ``content`` by the page API.
+    "discover": {
+        "title": "الاكتشاف",
+        "search_description": "تحويل الموجز إلى نموذج محتوى ومسار إصدار أول واضح.",
+        "body": "<p>نحوّل الموجز إلى نموذج مستند واضح واتجاه بصري وقرار قابل للقياس للإصدار الأول.</p>",
+        "content": {"phase_label": "الاكتشاف", "outcomes": ["موجز محدد", "خريطة محتوى ومسارات", "سجل قرارات الإصدار الأول"]},
+    },
+    "build": {
+        "title": "البناء",
+        "search_description": "بناء أصغر مسار مكتمل يبدأ من نموذج المحتوى وينتهي بواجهة قابلة للاستخدام.",
+        "body": "<p>نبني المسار الكامل الأصغر كصفحة HTML من الخادم، ثم نضيف التحسين التدريجي حيث يخدم المستند.</p>",
+        "content": {"phase_label": "البناء", "outcomes": ["نموذج محتوى يعمل", "مسار مستجيب", "اختبارات للتحسين التدريجي"]},
+    },
+    "launch": {
+        "title": "الإطلاق",
+        "search_description": "إطلاق يمكن الاعتماد عليه مع تكافؤ المحتوى وتسليم واضح للفريق.",
+        "body": "<p>نشحن إصداراً يمكن الاعتماد عليه مع تكافؤ المحتوى والمراقبة وتسليم يستطيع الفريق امتلاكه.</p>",
+        "content": {"phase_label": "الإطلاق", "outcomes": ["فحوص SEO وإتاحة", "دليل نشر وتشغيل", "تسليم للمحررين"]},
+    },
+    "enhance": {
+        "title": "التحسين",
+        "search_description": "تحسين النظام الحي عبر قياس المحتوى والأداء والتفاعلات.",
+        "body": "<p>نحسّن النظام الحي عبر تغييرات مقاسة في المحتوى والأداء والتفاعل، من دون فقدان ملكية الفريق.</p>",
+        "content": {"phase_label": "التحسين", "outcomes": ["قائمة تحسينات مقاسة", "أنماط محتوى قابلة لإعادة الاستخدام", "دورة تكرار آمنة"]},
+    },
+    "shape-the-brief": {
+        "title": "صياغة الموجز",
+        "search_description": "تحويل موجز المنتج إلى نطاق واضح للإصدار الأول.",
+        "content": {"prompt": "حوّل موجز هذا المنتج إلى إصدار أول مركز، مع تحديد المستخدم والمحتوى والمسارات وقيود النجاح.", "context": "استخدم هذا قبل بدء التصميم أو التنفيذ.", "output": "نطاق مختصر مع الافتراضات والمخاطر وقائمة قبول.", "tool": "Wagtail واكتشاف المنتج"},
+    },
+    "build-the-first-vertical-slice": {
+        "title": "بناء المسار الرأسي الأول",
+        "search_description": "تنفيذ رحلة مستخدم كاملة من نموذج Wagtail إلى HTML قابل للوصول.",
+        "content": {"prompt": "نفّذ رحلة مستخدم كاملة من نموذج Wagtail إلى HTML قابل للوصول، مع تحسين تدريجي عند الحاجة فقط.", "context": "حافظ على قابلية استخدام المسار المولّد من الخادم من دون JavaScript.", "output": "مسار رأسي مختبر يضم النموذج وواجهة API والقالب وحالات المتصفح.", "tool": "Astro وHTMX وAlpine"},
+    },
+    "prepare-the-release": {
+        "title": "تجهيز الإصدار",
+        "search_description": "مراجعة المسارات والمحتوى والإتاحة وتكافؤ الواجهات قبل النشر.",
+        "content": {"prompt": "راجع هذا الإصدار بحثاً عن المسارات المكسورة والمحتوى الناقص ومشكلات الإتاحة واختلافات الواجهة قبل النشر.", "context": "طبّق قائمة الفحص نفسها على مساري Astro وDjango.", "output": "تقرير إصدار مرتب حسب الأولوية مع الإصلاحات ومعايير موافقة واضحة.", "tool": "التحقق من Django وAstro"},
+    },
+    "enhance-without-drift": {
+        "title": "التحسين من دون انحراف",
+        "search_description": "تحسين الصفحة مع الحفاظ على ملكية المحتوى وتكافؤ العرض وإمكانية الوصول.",
+        "content": {"prompt": "حسّن هذه الصفحة مع الحفاظ على ملكية المحتوى وتكافؤ العرض وإمكانية الوصول ولغة التصميم الحالية.", "context": "فضّل المكونات القابلة لإعادة الاستخدام ومحتوى Wagtail على markup خاص بصفحة واحدة.", "output": "مجموعة تغييرات صغيرة مع فحوص تراجع وسبب موثق لكل تغيير.", "tool": "مكونات django-fusion"},
+    },
+    # Blog post children.
+    "why-landing-pages-as-documents": {
+        "title": "الزيارة الأولى السريعة قرار منتج",
+        "search_description": "لماذا تعد سرعة الصفحة الأولى جزءاً من الثقة بالمنتج.",
+        "content": {"hero": {"title": "الزيارة الأولى السريعة قرار منتج", "subtitle": "الأداء جزء من الثقة، والصفحة الواضحة التي تصل بسرعة تمنح العميل يقيناً أكبر."}},
+    },
+    "htmx-fragments-vs-json-apis": {
+        "title": "تصميم مسارات ثنائية اللغة بلا تكرار",
+        "search_description": "طريقة عملية للحفاظ على اتساق المحتوى العربي والإنجليزي.",
+        "content": {"hero": {"title": "تصميم مسارات ثنائية اللغة بلا تكرار", "subtitle": "كيف يبقى المحتوى متسقاً مع السماح لكل لغة بأن تبدو طبيعية."}},
+    },
+    "wagtail-streamfield-marketing": {
+        "title": "امنح فريق المحتوى غرفة تحكم مفيدة",
+        "search_description": "كيف تساعد بنية التحرير فرق التسويق على التحرك بسرعة بأمان.",
+        "content": {"hero": {"title": "امنح فريق المحتوى غرفة تحكم مفيدة", "subtitle": "بنية تحرير واضحة تمنح الفريق سرعة من دون تحويل كل صفحة إلى تفاوض تصميمي."}},
+    },
+    "alpine-reactivity-landing": {
+        "title": "تفاعلات صغيرة، تركيز أفضل",
+        "search_description": "استخدم التفاعل لتوضيح القرار، لا لإضافة ضجيج إلى الصفحة.",
+        "content": {"hero": {"title": "تفاعلات صغيرة، تركيز أفضل", "subtitle": "التفاعل الجيد يوضح الخطوة التالية ولا يشتت عن الهدف."}},
+    },
+    "monorepo-six-products": {
+        "title": "ابنِ نظاماً يستطيع فريقك وراثته",
+        "search_description": "دروس عملية لبناء منتجات متعددة من مستودع واحد يمكن للفريق توسيعه.",
+        "content": {"hero": {"title": "ابنِ نظاماً يستطيع فريقك وراثته", "subtitle": "أفضل تسليم ليس نصباً تقنياً، بل قرارات مفهومة يمكن توسيعها بأمان."}},
+    },
+    "server-time-streamed-htmx": {
+        "title": "ميزانية أداء عملية للإطلاق",
+        "search_description": "حافظ على المسار الحرج صغيراً وقِس التجربة على الشبكات الحقيقية.",
+        "content": {"hero": {"title": "ميزانية أداء عملية للإطلاق", "subtitle": "اترك مساحة للمحتوى المهم، وقِس التجربة على الشبكات الإقليمية الفعلية."}},
     },
     "services": {
         "title": "الخدمات",
@@ -435,10 +548,10 @@ DEFAULT_PRODUCT_PAGES = {
                             "period": "/one-time license",
                             "features": ["Everything in Community", "High-end interface design", "Inventory adjustments + stock control", "Food & beverage (F&B) menu support", "Kitchen display + payroll", "REST API for integrations", "Inventory + sales analytics", "Invoice PDF generation", "Loyalty & rewards program", "Multi-currency & tax profiles", "Custom roles & permissions", "Data export (CSV/JSON)", "Deployment & support quoted per site"],
                             "preview_images": [
-                                {"url": "/static/previews/formints/standard-front.jpg", "kind": "image", "label": "Front of house", "alt": "Formints Standard point-of-sale checkout screen"},
-                                {"url": "/static/previews/formints/standard-back.jpg", "kind": "image", "label": "Data and operations", "alt": "Formints Standard data and operations screen"},
-                                {"url": "/static/previews/formints/standard-walkthrough.gif", "kind": "gif", "label": "Standard walkthrough", "alt": "Animated walkthrough of the Formints Standard point-of-sale interface"},
-                                {"url": "/static/previews/formints/standard-sale-complete.png", "kind": "image", "label": "Sale complete", "alt": "Formints Standard completed sale receipt with PDF, print, and new sale actions"},
+                                {"url": "/static/related/formints/standard-checkout.jpg", "kind": "image", "label": "Front of house", "alt": "Formints Standard point-of-sale checkout screen"},
+                                {"url": "/static/related/formints/standard-operations.jpg", "kind": "image", "label": "Data and operations", "alt": "Formints Standard data and operations screen"},
+                                {"url": "/static/related/formints/standard-walkthrough.gif", "kind": "gif", "label": "Standard walkthrough", "alt": "Animated walkthrough of the Formints Standard point-of-sale interface"},
+                                {"url": "/static/related/formints/standard-sale-complete.png", "kind": "image", "label": "Sale complete", "alt": "Formints Standard completed sale receipt with PDF, print, and new sale actions"},
                             ],
                             "cta_label": "Buy Standard",
                             "cta_href": "/contact/",
@@ -453,8 +566,8 @@ DEFAULT_PRODUCT_PAGES = {
         "offer_old_price": "$158",
                             "features": ["Everything in Standard", "Multi-terminal sync (cloud master)", "High-throughput Rust API (60k+ RPS)", "WebSocket real-time streaming", "Product sync engine (master)", "Employee scheduling + KPIs", "Change signals + approvals", "Deployment & support fees apply"],
                             "preview_images": [
-                                {"url": "/static/previews/formints/pro-admin-dashboard.jpg", "label": "Admin dashboard", "alt": "Formints Pro admin dashboard"},
-                                {"url": "/static/previews/formints/pro-admin-products.jpg", "label": "Product administration", "alt": "Formints Pro product administration screen"},
+                                {"url": "/static/related/formints/pro-admin-dashboard.jpg", "label": "Admin dashboard", "alt": "Formints Pro admin dashboard"},
+                                {"url": "/static/related/formints/pro-admin-products.jpg", "label": "Product administration", "alt": "Formints Pro product administration screen"},
                             ],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
@@ -471,6 +584,37 @@ DEFAULT_PRODUCT_PAGES = {
                             "cta_href": "/contact/",
                             "featured": False,
                             "tier": "managed",
+                        },
+                    ],
+                },
+            )
+        ],
+        "gallery": [
+            (
+                "gallery",
+                {
+                    "eyebrow": "Inside Standard",
+                    "title": "A real checkout, in two views",
+                    "description": "See the counter experience, completed receipt, and full flow before you choose an edition.",
+                    "display": "grid",
+                    "items": [
+                        {
+                            "url": "/static/related/formints/standard-checkout.jpg",
+                            "kind": "image",
+                            "label": "Checkout screenshot",
+                            "alt": "Formints Standard point-of-sale checkout screenshot",
+                        },
+                        {
+                            "url": "/static/related/formints/standard-sale-complete.png",
+                            "kind": "image",
+                            "label": "Sale complete",
+                            "alt": "Formints Standard completed sale receipt with PDF, print, and new sale actions",
+                        },
+                        {
+                            "url": "/static/related/formints/standard-walkthrough.gif",
+                            "kind": "gif",
+                            "label": "Standard screencast",
+                            "alt": "Formints Standard point-of-sale screencast",
                         },
                     ],
                 },
@@ -1857,6 +2001,7 @@ class Command(BaseCommand):
                 tech=product.get("tech", []),
                 editions=product.get("editions", []),
                 comparison=product.get("comparison", []),
+                gallery=product.get("gallery", []),
                 snippets=product.get("snippets", []),
                 features=product.get("features", []),
                 faq=product.get("faq", []),
@@ -2217,12 +2362,31 @@ class Command(BaseCommand):
                     obj.url = link["url"]
                     obj.sort_order = i
                     obj.save()
-        except Exception:
-            self.stdout.write(self.style.WARNING("Social links seed skipped."))
+        except Exception as exc:
+            logger.exception("Social links seed failed")
+            raise CommandError("Unable to seed social links") from exc
 
+        self._seed_wagtail_locales()
         self._seed_site_languages()
         self._seed_page_translations()
         self.stdout.write(self.style.SUCCESS("✅ Landing pages seeded."))
+
+    def _seed_wagtail_locales(self):
+        """Ensure every configured content language has a Wagtail Locale row.
+
+        Landing Fusion keeps one canonical page tree plus partial editorial
+        overlays, but Wagtail still needs native Locale records for the admin
+        language picker, translation workflows, and future page translations.
+        This is additive and idempotent: it never changes existing locale rows.
+        """
+        from django.conf import settings
+
+        language_codes = [code for code, _label in settings.LANGUAGES]
+        with transaction.atomic():
+            for code in language_codes:
+                locale, created = Locale.objects.get_or_create(language_code=code)
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"Seeded Wagtail locale {code}."))
 
     def _seed_site_languages(self):
         """Create/update the seeded ``SiteLanguage`` catalog idempotently.
@@ -2255,8 +2419,9 @@ class Command(BaseCommand):
                         language.save(update_fields=["name", "native_name", "direction", "flag", "is_active", "sort_order"])
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"Seeded language {code} ({entry['name']})."))
-        except Exception:
-            self.stdout.write(self.style.WARNING("Site language seed skipped."))
+        except Exception as exc:
+            logger.exception("Site language seed failed")
+            raise CommandError("Unable to seed site languages") from exc
 
     def _seed_page_translations(self):
         """Create/update the seeded English/Arabic editorial overlays."""
@@ -2355,6 +2520,29 @@ class Command(BaseCommand):
 
         field = ProductPage._meta.get_field("editions")
         raw_editions = json.loads(field.value_to_string(existing))
+        gallery_field = ProductPage._meta.get_field("gallery")
+        raw_gallery = json.loads(gallery_field.value_to_string(existing))
+        seeded_gallery = product.get("gallery", [])
+
+        def normalize_gallery(value):
+            """Compare seed tuple syntax with Wagtail's persisted block JSON."""
+            normalized = []
+            for block in value:
+                if isinstance(block, (list, tuple)):
+                    block_type, block_value = block
+                else:
+                    block_type = block.get("type")
+                    block_value = block.get("value", {})
+                block_value = dict(block_value or {})
+                items = []
+                for item in block_value.get("items", []):
+                    if isinstance(item, dict) and item.get("type") == "item":
+                        item = item.get("value", {})
+                    items.append(item)
+                block_value["items"] = items
+                normalized.append({"type": block_type, "value": block_value})
+            return normalized
+
         seeded_editions = {
             str(edition.get("name", "")).casefold(): edition
             for block_type, section in product.get("editions", [])
@@ -2363,6 +2551,9 @@ class Command(BaseCommand):
         }
         changed = existing.version != product.get("version", "")
         existing.version = product.get("version", "")
+        if normalize_gallery(raw_gallery) != normalize_gallery(seeded_gallery):
+            raw_gallery = seeded_gallery
+            changed = True
 
         for block in raw_editions:
             if block.get("type") != "editions":
@@ -2379,6 +2570,7 @@ class Command(BaseCommand):
 
         if changed:
             existing.editions = raw_editions
+            existing.gallery = raw_gallery
             existing.save()
             existing.save_revision().publish()
             self.stdout.write(self.style.SUCCESS(f"Refreshed and published product: {slug}"))

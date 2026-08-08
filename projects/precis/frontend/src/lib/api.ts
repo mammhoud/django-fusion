@@ -4,6 +4,8 @@
  * Every piece of content (branding, navigation, page data, contact info,
  * footer links) comes from the backend via these endpoints. No content is
  * hardcoded in the frontend — site.ts holds only config (URLs, keys).
+ * An empty API base uses the current host, which lets the same static build
+ * work behind both the ctc-research.com and lms-fusion hostnames.
  *
  * Backend endpoints (see apps/pages/api.py):
  *   GET /apis/site/settings/   — branding, social links, footer
@@ -14,8 +16,14 @@
  */
 
 /** Base URL for the Django backend. Set PUBLIC_FUSION_API_URL env var to override. */
-export const API_BASE: string =
-  (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || 'http://localhost:5074';
+const browserApiBase = (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || '';
+const buildApiBase = (import.meta.env.PUBLIC_BUILD_API_URL as string | undefined) || 'https://ctc-research.com';
+
+// Astro runs these fetches at build time for SSG pages. Keep browser requests
+// same-origin for dual-host deployment, but give Node an absolute URL so the
+// built HTML can include the reloaded Wagtail content instead of silently
+// falling back when fetch() receives a relative path.
+export const API_BASE: string = import.meta.env.SSR ? buildApiBase : browserApiBase;
 
 async function fetchJSON<T>(path: string): Promise<T> {
   const url = `${API_BASE}${path}`;
@@ -206,6 +214,80 @@ export function fetchPageData(slug: string): Promise<PageData> {
 /** Fetch list of all published pages. */
 export function fetchPageList(): Promise<PageListData> {
   return fetchJSON<PageListData>('/apis/pages/');
+}
+
+export interface CourseCard {
+  id: number;
+  title: string;
+  slug: string;
+  short_description: string;
+  image_url: string | null;
+  instructor: string;
+  price: number;
+  original_price: number | null;
+  difficulty: string;
+  language: string;
+  duration: number;
+  rating: number;
+  reviews_count: number;
+  is_featured: boolean;
+  has_certificate: boolean;
+}
+
+export interface CourseListData {
+  data: CourseCard[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_pages: number;
+  };
+}
+
+export interface CourseDetail extends Omit<CourseCard, 'instructor'> {
+  description: string;
+  overview: unknown;
+  preview_video_url: string[];
+  objectives: string[];
+  requirements: string[];
+  target_audience: string[];
+  specializations: string[];
+  tags: string[];
+  discount_percentage: number;
+  enrollment_count: number;
+  instructor: { name: string; bio: string };
+  modules: {
+    id: string | number;
+    title: string;
+    description: string;
+    lessons: { id: string | number; title: string; is_preview: boolean; duration: number }[];
+  }[];
+}
+
+/** Fetch the published medical-research course catalog. */
+const COURSE_CONTENT_VERSION = '2026-08-08-medical-catalog-v2';
+
+export async function fetchCourseList(): Promise<CourseListData> {
+  const firstPage = await fetchJSON<CourseListData>(`/api/courses/?page=1&per_page=100&content_version=${COURSE_CONTENT_VERSION}`);
+  const pages = [firstPage];
+
+  for (let page = 2; page <= firstPage.pagination.total_pages; page += 1) {
+    pages.push(await fetchJSON<CourseListData>(`/api/courses/?page=${page}&per_page=100&content_version=${COURSE_CONTENT_VERSION}`));
+  }
+
+  return {
+    data: pages.flatMap((page) => page.data),
+    pagination: {
+      ...firstPage.pagination,
+      per_page: 100,
+      total_pages: pages.length,
+    },
+  };
+}
+
+/** Fetch a single published course for the preview/detail page. */
+export function fetchCourseDetail(slug: string): Promise<CourseDetail> {
+  return fetchJSON<CourseDetail>(`/api/courses/${encodeURIComponent(slug)}/?content_version=${COURSE_CONTENT_VERSION}`);
 }
 
 // ── Caching helpers (build-time dedup for SSG, TTL for dev-server HMR) ─────

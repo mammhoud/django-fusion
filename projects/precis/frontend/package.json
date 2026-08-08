@@ -11,7 +11,8 @@
     "astro": "astro",
     "check": "astro check",
     "build:scss": "sass src/styles/fusion.scss dist/css/fusion.css --style=compressed --no-source-map",
-    "test": "node --test tests/frontend-smoke.test.mjs"
+    "test": "node --test tests/frontend-smoke.test.mjs",
+    "test:e2e": "node --test tests/e2e.test.mjs"
   },
   "dependencies": {
     "@alpinejs/collapse": "^3.14.9",
@@ -34,6 +35,7 @@
     "postcss": "^8.5.25",
     "sass": "^1.102.0",
     "tailwindcss": "^4.1.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite": "^6.4.1"
   }
 }

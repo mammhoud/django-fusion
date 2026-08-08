@@ -4,6 +4,7 @@ Imports shared Fusion defaults from configs.default, then applies
 LMS-specific branding, CORS origins, and feature flags.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -64,6 +65,23 @@ FUSION_SECONDARY_COLOR = cfg("FUSION_SECONDARY_COLOR", "#008080")
 # Requests may still override this with X-Fusion-Render-First for compatibility.
 FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", True)
 
+# Keep the Wagtail locale contract aligned with dump-data.json. In particular,
+# pt-br is an existing public fixture locale and must not be normalized to pt.
+# The shared CD settings provide the Wagtail switches; these explicit values
+# make this site's supported content languages unambiguous.
+LANGUAGES = [
+    ("en", "English"),
+    ("fr", "French"),
+    ("de", "German"),
+    ("es", "Spanish"),
+    ("ar", "Arabic"),
+    ("pt-br", "Portuguese (Brazil)"),
+]
+LANGUAGES_BIDI = ["ar"]
+WAGTAIL_I18N_ENABLED = True
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
+WAGTAIL_I18N_LOCALE_MODEL = "wagtailcore.Locale"
+
 
 # ═══════════════════════════════════════════════════════════════════
 # Branding Context Processor — resolved from _site.yml
@@ -84,8 +102,11 @@ CORS_ALLOWED_ORIGINS = cfg("CORS_ORIGINS", [
     "http://127.0.0.1:3002",
     "http://localhost:3458",
     "http://127.0.0.1:3458",
-    "http://localhost:3002",
-    "http://127.0.0.1:3002",
+    "https://ctc-research.com",
+    "https://www.ctc-research.com",
+    "https://arch.ctc-research.com",
+    "https://lms-fusion.com",
+    "https://www.lms-fusion.com",
 ])
 
 # Allow custom fusion headers for render-first negotiation.
@@ -109,6 +130,11 @@ FUSION_BOLT = {
         "http://localhost:3002",
         "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
+        "https://ctc-research.com",
+        "https://www.ctc-research.com",
+        "https://arch.ctc-research.com",
+        "https://lms-fusion.com",
+        "https://www.lms-fusion.com",
     ],
     "component_auto_register": True,
 }
@@ -134,7 +160,7 @@ for _sub in ("blog", "lms", "profile", "products", "pages", "accounts",
         TEMPLATES[0]["DIRS"].append(str(_sub_path))
 
 # Media: override the shared default (backend/assets/media) → workspace assets/media.
-MEDIA_ROOT = str(_WORKSPACE_DIR / "assets" / "media")
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(_WORKSPACE_DIR / "assets" / "media"))
 
 # Static: ensure workspace-level assets/static is in STATICFILES_DIRS.
 _ASSETS_STATIC = _WORKSPACE_DIR / "assets" / "static"

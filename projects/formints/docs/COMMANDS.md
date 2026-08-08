@@ -153,7 +153,7 @@ make cargo-check        # Rust compilation check
 | `make format` | Format Rust code (`cargo fmt`) |
 | `make clean` | Remove `dist/`, `src-tauri/target/`, `node_modules/`, `src-tauri/gen/` |
 | `make clean-build` | Clean everything, reinstall, rebuild from scratch |
-| `make screenshots` | Capture 6 polished screenshots into `docs/screenshots/` |
+| `make screenshots` | Capture 6 polished screenshots into Landing-Fusion `related/formints/` |
 | `make info` | Show installed tool versions (pnpm, node, rustc, cargo, tauri, sqlite) |
 | `make port-kill` | Kill any process on port 1420 (prevents port conflict) |
 
@@ -196,7 +196,7 @@ make cargo-check        # Rust compilation check
 | Command | Description |
 |---------|-------------|
 | `make backend-seed` | Create/update superuser from env (idempotent) |
-| `make screenshots` | Capture Unfold admin dashboard screenshots → `docs/screenshots/admin/` |
+| `make screenshots` | Capture Unfold admin dashboard screenshots → Landing-Fusion `related/formints/` |
 
 ### Build & Maintenance
 

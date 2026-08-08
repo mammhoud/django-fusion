@@ -489,7 +489,7 @@ class EditionPreviewImageBlock(blocks.StructBlock):
     url = blocks.CharBlock(
         max_length=255,
         label=_("Media URL"),
-        help_text=_("Use a site static URL, for example /static/previews/formints/standard-front.jpg."),
+        help_text=_("Use a site static URL, for example /static/related/formints/standard-checkout.jpg."),
     )
     kind = blocks.ChoiceBlock(
         choices=[
@@ -505,7 +505,7 @@ class EditionPreviewImageBlock(blocks.StructBlock):
         max_length=255,
         required=False,
         label=_("Video poster"),
-        help_text=_("Optional static poster path for video. Use /static/... or a relative previews/... path."),
+        help_text=_("Optional static poster path for video. Use /static/... or a relative related/... path."),
     )
     label = blocks.CharBlock(max_length=80, required=False, label=_("View label"))
     alt = blocks.CharBlock(max_length=160, required=False, label=_("Alt text"))

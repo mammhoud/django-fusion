@@ -62,7 +62,7 @@ help:                 ## Show this help menu
 	@echo '  make clean-db         Delete the database file only (preserves build artifacts)'
 	@echo '  make full-clean       Clean everything — db, artifacts, node_modules, target (fresh start)'
 	@echo '  make clean-build      Clean everything, reinstall, rebuild the app from scratch'
-	@echo '  make screenshots      Capture 6 polished screenshots into docs/screenshots/'
+	@echo '  make screenshots      Capture 6 polished screenshots into related/formints/'
 	@echo '  make seed             Reset DB + apply preset; PRESET=all (default)'
 	@echo '  make seed PRESET=foo  Reset DB + apply one preset: all|base|gaming|coffee'
 	@echo '  make db-seed          [DEPRECATED] → forwards to `make seed`'
@@ -120,10 +120,9 @@ build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. bu
 # The script requires in PATH: chromium-browser (or chromium), ImageMagick
 # `convert`, and pnpm. Each is checked at script entry with a hint to install.
 #
-# Outputs land at docs/screenshots/{01_pos_overview,02_dashboard,
-# 03_point_of_sale,04_inventory,05_reports,06_settings}.jpg — the canonical
-# filenames referenced by docs/PUBLISH.md#visual-preview.
-screenshots: port-kill  ## Capture 6 polished JPG screenshots into docs/screenshots/
+# Outputs are staged into Landing-Fusion's related/formints directory by the
+# active Formint capture workflow; the canonical names are edition-first.
+screenshots: port-kill  ## Capture 6 polished JPG screenshots into related/formints/
 	@bash ../scripts/dev/capture-screenshots.sh
 
 # ── Clean Build ────────────────────────────────────────────────────────────

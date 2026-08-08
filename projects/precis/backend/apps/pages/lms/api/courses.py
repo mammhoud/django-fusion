@@ -9,10 +9,32 @@ Mount: /api/courses, /api/courses/<slug>, /api/courses/filters
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 
 from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
+
+
+def _json_value(value):
+    """Convert Wagtail values into JSON-safe data without rendering templates."""
+    if value is None:
+        return ""
+    if hasattr(value, "stream_block"):
+        return [
+            {
+                "type": block.block_type,
+                "value": _json_value(block.value),
+            }
+            for block in value
+        ]
+    if isinstance(value, Mapping):
+        return {str(key): _json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_value(item) for item in value]
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
 
 
 def _qp(request, key: str, default: str = "") -> str:
@@ -26,6 +48,33 @@ def _qp_int(request, key: str, default: int = 1) -> int:
         return int(_qp(request, key, str(default)))
     except (TypeError, ValueError):
         return default
+
+
+def _lines(value) -> list[str]:
+    """Return newline-delimited model content as clean JSON strings."""
+    return [line.strip() for line in str(value or "").splitlines() if line.strip()]
+
+
+def _media_urls(value) -> list[str]:
+    """Extract URL-like values from a Wagtail media StreamField."""
+    urls: list[str] = []
+
+    def visit(item):
+        if isinstance(item, str):
+            if item.startswith(("http://", "https://", "/")):
+                urls.append(item)
+            return
+        if isinstance(item, Mapping):
+            for key in ("url", "embed_url", "src", "value"):
+                if key in item:
+                    visit(item[key])
+            return
+        if isinstance(item, (list, tuple)):
+            for child in item:
+                visit(child)
+
+    visit(_json_value(value))
+    return list(dict.fromkeys(urls))
 
 
 def list_courses(request):
@@ -87,7 +136,8 @@ def list_courses(request):
     except Exception:
         logger.exception("Error listing courses")
         return JsonResponse(
-            {"data": [], "pagination": {"page": 1, "per_page": 12, "total": 0, "total_pages": 0}}
+            {"status": "error", "message": "Unable to load course catalog"},
+            status=500,
         )
 
 
@@ -121,14 +171,19 @@ def course_detail(request, slug):
 
         return JsonResponse({
             "id": course.pk, "title": course.title, "slug": course.slug,
-            "description": getattr(course, "description", ""),
+            "description": _json_value(getattr(course, "description", "")),
             "short_description": getattr(course, "short_description", ""),
-            "overview": getattr(course, "overview", ""),
+            "overview": _json_value(getattr(course, "overview", "")),
             "image_url": course.image.file.url if getattr(course, "image", None) else None,
-            "preview_video_url": getattr(course, "preview_video", ""),
+            "preview_video_url": _media_urls(getattr(course, "preview_video", "")),
+            "objectives": _lines(getattr(course, "objectives", "")),
+            "requirements": _lines(getattr(course, "requirements", "")),
+            "target_audience": _lines(getattr(course, "target_audience", "")),
+            "specializations": list(course.specializations.values_list("title", flat=True)),
+            "tags": list(course.tags.values_list("name", flat=True)),
             "instructor": {
                 "name": course.instructor.get_full_name() if getattr(course, "instructor", None) else "",
-                "bio": getattr(course.instructor, "bio", "") if getattr(course, "instructor", None) else "",
+                "bio": _json_value(getattr(course.instructor, "bio", "")) if getattr(course, "instructor", None) else "",
             },
             "price": float(getattr(course, "current_price", 0)),
             "original_price": float(getattr(course, "original_price", 0)) if getattr(course, "original_price", 0) else None,
@@ -142,7 +197,6 @@ def course_detail(request, slug):
             "is_featured": getattr(course, "is_featured", False),
             "has_certificate": getattr(course, "has_certificate", False),
             "modules": modules_data,
-            "requirements": list(getattr(course, "requirements", "").split("\n")) if getattr(course, "requirements", "") else [],
         })
     except Exception:
         logger.exception("Error loading course detail")

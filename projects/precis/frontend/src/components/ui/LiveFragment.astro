@@ -13,8 +13,8 @@
  *   - On success the backend HTML replaces the skeleton (`hx-swap`).
  *   - On error (backend down) the section falls back to a quiet note.
  *
- * `fusionApiUrl` defaults to '' (same-origin). Set PUBLIC_FUSION_API_URL to
- * point at the Django backend directly (e.g. http://localhost:8074).
+ * `fusionApiUrl` defaults to '' (same-origin). Production enables the
+ * relative backend contract with PUBLIC_ENABLE_BACKEND=true.
  *
  * Recursion guard: on a standalone static build (no PUBLIC_FUSION_API_URL)
  * the endpoint resolves same-origin, so `hx-get` would fetch *this very page*
@@ -63,7 +63,7 @@ const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
 
 // Recursion guard — see header comment. Only fire HTMX when a backend is
 // configured; otherwise show the quiet fallback note.
-const hasBackend = fusionApiUrl !== '';
+const hasBackend = fusionApiUrl !== '' || import.meta.env.PUBLIC_ENABLE_BACKEND === 'true';
 ---
 
 
@@ -86,8 +86,8 @@ const hasBackend = fusionApiUrl !== '';
       <div class="live-fragment__target">
         <div class="live-fragment__fallback">
           The live fragment for <code class="font-mono">{route}</code> needs the Django backend.
-          Rebuild the frontend with <code class="font-mono">PUBLIC_FUSION_API_URL</code> set to point
-          at the backend (e.g. <code class="font-mono">http://localhost:8074</code>) to enable it.
+          Rebuild the frontend with <code class="font-mono">PUBLIC_ENABLE_BACKEND=true</code>
+          to enable the live backend fragment.
           The static sections on this page render the same content.
         </div>
       </div>

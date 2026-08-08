@@ -66,7 +66,7 @@
 | `make format` | Format Rust code (`cargo fmt`) |
 | `make clean` | Remove all build artifacts (`dist/`, `target/`, `node_modules/`) |
 | `make clean-build` | Clean everything + reinstall + rebuild |
-| `make screenshots` | Capture 6 polished JPG screenshots → `docs/screenshots/` |
+| `make screenshots` | Capture 6 polished JPG screenshots → Landing-Fusion `related/formints/` |
 | `make info` | Show installed tool versions |
 | `make port-kill` | Kill any process on port 1420 |
 

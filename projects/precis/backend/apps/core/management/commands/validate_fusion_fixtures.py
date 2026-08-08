@@ -41,7 +41,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 
 # ── Fixture directory (relative to this command file) ────────────────
-FIXTURE_DIR = Path(__file__).resolve().parents[5] / "assets" / "fixtures"
+FIXTURE_DIR = Path(__file__).resolve().parents[4] / "assets" / "fixtures"
 
 # ── Known model prefixes for type-aware validation ───────────────────
 STREAMFIELD_MODELS = {

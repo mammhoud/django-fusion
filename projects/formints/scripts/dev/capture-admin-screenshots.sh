@@ -14,8 +14,8 @@
 #   Option B: After the script starts runserver, log in manually at :8000/admin/
 #             before the screenshots are taken.
 #
-# The SVG placeholders in docs/screenshots/admin/ already show the fully
-# authenticated dashboard. This script captures real JPGs for replacement.
+# The canonical related/formints directory contains the published captures.
+# This script captures fresh JPGs there for replacement.
 #
 # Requires:
 #   - chromium-browser OR chromium        (screenshot capture)
@@ -23,8 +23,8 @@
 #   - python3 + django-unfold installed   (runserver)
 #
 # Usage:
-#   bash scripts/dev/capture-admin-screenshots.sh               # default: 6 pages
-#   bash scripts/dev/capture-admin-screenshots.sh --all          # capture all 6 pages
+#   bash scripts/dev/capture-admin-screenshots.sh               # capture 6 admin pages
+#   bash scripts/dev/capture-admin-screenshots.sh --all          # capture all 6 admin pages
 #   bash scripts/dev/capture-admin-screenshots.sh --keep        # leave _captures/ in place
 #
 # Exit codes:
@@ -39,8 +39,9 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 SIDECAR="${ROOT}/sidecar"
-CAPTURES_DIR="${ROOT}/docs/screenshots/admin/_captures"
-SCREENSHOTS_DIR="${ROOT}/docs/screenshots/admin"
+RELATED_DIR="${ROOT}/../landing-fusion/backend/assets/static/related/formints"
+MIRROR_DIR="${ROOT}/../landing-fusion/frontend/public/static/related/formints"
+CAPTURES_DIR="${ROOT}/.tmp-screenshot-captures"
 LOG="/tmp/django-shots.log"
 
 # ── Args ─────────────────────────────────────────────────────────────────
@@ -79,21 +80,12 @@ ADMIN_PASSWORD="${POS_FULL_ADMIN_PASSWORD:-admin123}"
 # ── 2. Route table ───────────────────────────────────────────────────────
 #  NAME|URL|WINDOW(WxH)
 shots=(
-  "01_admin_dashboard|http://127.0.0.1:8000/admin/|1440,1080"
-  "02_admin_products|http://127.0.0.1:8000/admin/pos_full/product/|1440,900"
-  "03_admin_customers|http://127.0.0.1:8000/admin/pos_full/customer/|1440,900"
-  "04_admin_sales|http://127.0.0.1:8000/admin/pos_full/sale/|1440,900"
-  "05_admin_nodes|http://127.0.0.1:8000/admin/pos_full/node/|1440,900"
-  "06_admin_add_product|http://127.0.0.1:8000/admin/pos_full/product/add/|1440,1080"
-)
-
-declare -A OUT=(
-  [01_admin_dashboard]="01_admin_dashboard"
-  [02_admin_products]="02_admin_products"
-  [03_admin_customers]="03_admin_customers"
-  [04_admin_sales]="04_admin_sales"
-  [05_admin_nodes]="05_admin_nodes"
-  [06_admin_add_product]="06_admin_add_product"
+  "03_admin_dashboard|http://127.0.0.1:8000/admin/|1440,1080"
+  "04_admin_products|http://127.0.0.1:8000/admin/pos_full/product/|1440,900"
+  "05_admin_customers|http://127.0.0.1:8000/admin/pos_full/customer/|1440,900"
+  "06_admin_sales|http://127.0.0.1:8000/admin/pos_full/sale/|1440,900"
+  "07_admin_loyalty|http://127.0.0.1:8000/admin/pos_full/clientcategory/|1440,900"
+  "08_admin_settings|http://127.0.0.1:8000/admin/pos_full/usersettings/|1440,900"
 )
 
 # ── 3. Cleanup trap ──────────────────────────────────────────────────────
@@ -163,15 +155,25 @@ CAPTURED=0
 for shot_info in "${shots[@]}"; do
   NAME="${shot_info%%|*}"
   SRC="${CAPTURES_DIR}/${NAME}.png"
-  DEST="${SCREENSHOTS_DIR}/${OUT[$NAME]}.jpg"
+    case "${NAME}" in
+      03_admin_dashboard) DEST_NAME="pro-admin-dashboard" ;;
+      04_admin_products) DEST_NAME="pro-admin-products" ;;
+      05_admin_customers) DEST_NAME="pro-admin-customers" ;;
+      06_admin_sales) DEST_NAME="pro-admin-sales" ;;
+      07_admin_loyalty) DEST_NAME="pro-admin-loyalty" ;;
+      08_admin_settings) DEST_NAME="pro-admin-settings" ;;
+    esac
+    mkdir -p "${RELATED_DIR}" "${MIRROR_DIR}"
+    DEST="${RELATED_DIR}/${DEST_NAME}.jpg"
   if [ -f "${SRC}" ]; then
     convert "${SRC}" -quality 88 -background white -alpha remove "${DEST}"
-    printf '   %-22s → %s.jpg\n' "${NAME}.png" "${OUT[$NAME]}"
+    cp "${DEST}" "${MIRROR_DIR}/${DEST_NAME}.jpg"
+    printf '   %-22s → related/formints/%s.jpg\n' "${NAME}.png" "${DEST_NAME}"
     ((CAPTURED++))
   fi
 done
 
 # ── 7. Done ─────────────────────────────────────────────────────────────
-echo "── ✓ Done — ${CAPTURED} admin screenshots written to ${SCREENSHOTS_DIR}/ ──"
+echo "── ✓ Done — ${CAPTURED} admin screenshots written to related/formints/ ──"
 echo "  SVG placeholders: admin-dashboard.svg, admin-products.svg"
 echo "  Replace JPGs with screenshots from your instance for best results."

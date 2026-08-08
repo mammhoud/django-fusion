@@ -9,9 +9,13 @@
 /** Theme localStorage key — shared between Layout.astro (FOUC-free init) and ThemeToggle.astro. */
 export const THEME_STORAGE_KEY = 'fusion-theme';
 
-/** Backend API base URL. Set PUBLIC_FUSION_API_URL to point at Django directly. */
+/** Backend API base URL; empty means the current host via Traefik. */
 export const fusionApiUrl: string =
-  (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || 'http://localhost:5074';
+  (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || '';
+
+/** Canonical public URL used for SEO metadata and social previews. */
+export const siteUrl: string =
+  (import.meta.env.PUBLIC_SITE_URL as string | undefined) || 'https://ctc-research.com';
 
 /** Fallback site name (used only when the backend is unreachable). */
 export const fallbackSiteName = 'Fusion LMS';

@@ -54,9 +54,9 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 # ── Fixture directory (relative to this command file) ────────────────
-# Navigate up from apps/core/management/commands/ to the fusion project root.
-# commands → management → core → apps → backend → cms-fusion (5 parents)
-FIXTURE_DIR = Path(__file__).resolve().parents[5] / "assets" / "fixtures"
+# Navigate up from apps/core/management/commands/ to the backend root.
+# commands → management → core → apps → backend (4 parents)
+FIXTURE_DIR = Path(__file__).resolve().parents[4] / "assets" / "fixtures"
 
 
 # ── Fixture categories with dependency-ordered paths ─────────────────

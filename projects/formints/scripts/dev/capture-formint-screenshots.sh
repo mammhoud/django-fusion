@@ -3,7 +3,7 @@
 # scripts/dev/capture-formint-screenshots.sh
 #
 # Captures the Formint POS frontend and Unfold admin dashboard screenshots
-# into docs/screenshots/ for the README and architecture docs.
+# into Landing-Fusion's canonical related media directory for the README and product pages.
 #
 #   Frontend (headless Chromium, no auth):
 #     01_frontend_home        → http://127.0.0.1:4321/
@@ -27,8 +27,9 @@ set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-SHOTS_DIR="${ROOT}/docs/screenshots"
-CAPTURES_DIR="${SHOTS_DIR}/_captures"
+RELATED_DIR="${ROOT}/../landing-fusion/backend/assets/static/related/formints"
+MIRROR_DIR="${ROOT}/../landing-fusion/frontend/public/static/related/formints"
+CAPTURES_DIR="${ROOT}/.tmp-screenshot-captures"
 FE_BASE="http://127.0.0.1:4321"
 ADMIN_BASE="http://127.0.0.1:8767"
 ADMIN_USERNAME="admin"   # Django auth username (formint --ensure-superuser keeps 'admin')
@@ -70,18 +71,24 @@ FORMINT_CAPTURE_DIR="${CAPTURES_DIR}" \
 CHROME_BIN="${CHROME_BIN}" \
   python3 "${SCRIPT_DIR}/capture-admin-screens.py"
 
-# ── 3. Convert PNG → JPG into the canonical subdirs ───────────────────────
+# ── 3. Convert PNG → JPG into the canonical related directory ─────────────
 echo "▸ Converting PNG → JPG (q=88, white bg)…"
-mkdir -p "${SHOTS_DIR}/frontend" "${SHOTS_DIR}/admin"
-find "${CAPTURES_DIR}" -name '*.png' | while read -r png; do
-  name="$(basename "${png}" .png)"
-  case "${name}" in
-    0[12]_frontend_*) SUBDIR="frontend" ;;
-    0[3-9]_admin_*|1*_admin_*) SUBDIR="admin" ;;
-    *) SUBDIR="frontend" ;;
-  esac
-  convert "${png}" -quality 88 -background white -alpha remove "${SHOTS_DIR}/${SUBDIR}/${name}.jpg"
-  echo "   ${name}.png → ${SUBDIR}/${name}.jpg"
+mkdir -p "${RELATED_DIR}" "${MIRROR_DIR}"
+for mapping in \
+  "01_frontend_home|standard-checkout" \
+  "02_frontend_data|standard-operations" \
+  "03_admin_dashboard|pro-admin-dashboard" \
+  "04_admin_products|pro-admin-products" \
+  "05_admin_customers|pro-admin-customers" \
+  "06_admin_sales|pro-admin-sales" \
+  "07_admin_loyalty|pro-admin-loyalty" \
+  "08_admin_settings|pro-admin-settings"; do
+  name="${mapping%%|*}"
+  output="${mapping##*|}"
+  convert "${CAPTURES_DIR}/${name}.png" -quality 88 -background white -alpha remove "${RELATED_DIR}/${output}.jpg"
+  cp "${RELATED_DIR}/${output}.jpg" "${MIRROR_DIR}/${output}.jpg"
+  echo "   ${name}.png → related/formints/${output}.jpg"
 done
 
-echo "── ✓ Screenshots written to ${SHOTS_DIR}/{frontend,admin}/ ──"
+rm -rf "${CAPTURES_DIR}"
+echo "── ✓ Screenshots written to Landing-Fusion related/formints/ ──"

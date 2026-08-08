@@ -13,7 +13,7 @@
 - **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
 - **Robyn sidecar** — Merged from the former Full/Solo sidecars (streams, ws_client, sync signals, services, middleware, routes) into `formint-pos/sidecar/`
 - **Sidecar test fixes** — `bolt_api` collection crash fixed (removed stale `namespace` kwarg); `test_bolt_api` gracefully skips when `AsyncTestClient` is unavailable
-- **Screenshots** — Unfold admin screenshots moved to `formint-pos/docs/screenshots/admin/`
+- **Screenshots** — Unfold admin screenshots consolidated into Landing-Fusion `related/formints/`
 
 ### Removed (repository)
 - **`pos-solo/` and `pos-full/` editions deleted** — fully merged into `formint-pos/` (content preserved in `legacy-react/` archive and git history)

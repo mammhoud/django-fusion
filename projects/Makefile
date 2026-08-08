@@ -91,10 +91,13 @@ else ifeq ($(WEBSITE),cms-fusion)
   PYTHON := uv run python
 
 else ifeq ($(WEBSITE),lms-fusion)
+  # lms-fusion is the runtime/site identity; Precis is its current
+  # filesystem location after the project migration.
   SITE := lms-fusion
+  PROJECT_DIR := precis
   TEST_WEBSITE := lms-fusion
-  COMPOSE_FILE ?= docker-compose.yml
-  MANAGE := uv run python $(SITE)/backend/__main__.py
+  COMPOSE_FILE ?= precis/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
 else ifeq ($(WEBSITE),landing-fusion)
@@ -115,16 +118,16 @@ MANAGE ?= uv run $(RUN_MODULE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),portfolio,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
-DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(SITE))))
+DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),lms-fusion),backend,$(SITE)))))
 # Internal health-check port for the selected website container.
-DOCKER_HEALTH_PORT := $(if $(filter $(SITE),ctc-research),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,8000)))
+DOCKER_HEALTH_PORT := $(if $(filter $(SITE),ctc-research),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),lms-fusion),5074,8000))))
 # Per-site celery worker service name, resolved from the per-site docker-compose.yml.
 # Mirrors the SITE→service mapping pattern used by DOCKER_SERVICE.
 #   ctc-research  → ctc-worker      (NOT ctc-research-worker; that's the global tasks compose name)
 #   lms      → lms-worker
 #   vresume       → vresume-worker
 # Override per-call:  make docker-redeploy-with-worker WEBSITE=ctc-research DOCKER_WORKER=my-worker
-DOCKER_WORKER ?= $(if $(filter $(SITE),ctc-research),ctc-worker,$(if $(filter $(SITE),lms),lms-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(SITE)-worker)))
+DOCKER_WORKER ?= $(if $(filter $(SITE),ctc-research),ctc-worker,$(if $(filter $(SITE),lms),lms-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms-fusion),worker,$(SITE)-worker))))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
@@ -253,7 +256,7 @@ test-local tests-local:
 
 test-fusion:
 	@echo '🚀 Running lms-fusion tests...'
-	@uv run python -m pytest lms-fusion/backend/tests/ -q --tb=short
+	@uv run python -m pytest precis/backend/tests/ -q --tb=short
 	@echo ''
 	@echo '✅ lms-fusion tests complete'
 
