@@ -21,7 +21,7 @@
 
    Each section is guarded by a page-field check so a page renders exactly
    its own stack:
-   - Home             → hero + cta
+   - Home             → hero + learning preview + cta
    - About/Products/Features → full document (hero, body, stats,
      features+pricing, testimonials, faq, cta)
    - Company/Services → hero + body + cta
@@ -42,6 +42,27 @@
 {% include "pages/partials/breadcrumbs.html" %}
 
 {% if page.hero %}{% include_block page.hero %}{% endif %}
+
+{% comment %} Homepage learning catalog — the backend road mirrors the Astro
+   course cards and links into the full HTMX learning surface. {% endcomment %}
+{% if page.slug == "home" %}
+<section id="courses" class="learning-sheet" style="padding-block:4rem 5rem;">
+  <div class="container-fusion">
+    <div class="learning-section-head">
+      <div>
+        <p class="learning-kicker">[ LEARNING / PUBLIC CATALOG ]</p>
+        <h2 class="learning-section-title">Learn by shipping.</h2>
+      </div>
+      <a class="learning-button learning-button--primary" href="/learning/">BROWSE COURSES <span aria-hidden="true">&gt;&gt;</span></a>
+    </div>
+    {% if courses %}
+      {% include "learning/fragments/course_list.html" %}
+    {% else %}
+      <div class="learning-empty"><p class="learning-empty__title">Courses are being prepared.</p><p>Visit the learning catalog for the latest paths.</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
 
 {% comment %} Product lockup strip (ProductPage) — the brand mark + wordmark +
    tagline under the hero, so each product page leads with its identity. {% endcomment %}

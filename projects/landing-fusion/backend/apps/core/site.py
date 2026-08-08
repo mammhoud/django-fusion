@@ -134,10 +134,15 @@ class LandingSite(Site):
                 children: list[dict[str, Any]] = []
                 for child in children_pages:
                     # ``hidden`` excludes e.g. ceptor-ai from the Products
-                    # dropdown; ``show_in_nav`` is NOT consulted (it defaults
-                    # to False on ProductPage/BlogPostPage and only governs the
-                    # top-level nav, never dropdown children).
+                    # dropdown; ``show_on_home=False`` excludes subproducts
+                    # (vResume) from the top-level dropdown — both stay
+                    # reachable from the /products/ catalog and pricing tabs.
+                    # ``show_in_nav`` is NOT consulted (it defaults to False on
+                    # ProductPage/BlogPostPage and only governs the top-level
+                    # nav, never dropdown children).
                     if getattr(child, "hidden", False):
+                        continue
+                    if getattr(child, "show_on_home", True) is False:
                         continue
                     child_href = self._child_href(child)
                     children.append(

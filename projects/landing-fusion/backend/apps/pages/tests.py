@@ -53,8 +53,50 @@ class LandingPagesTestCase(TestCase):
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(hero, response.content)
 
-    def test_home_is_slim_entry(self):
-        """Home renders hero + CTA only — the section stack moved to About."""
+    def test_courses_api_serves_published_home_catalog(self):
+        """The homepage course cards come from the published learning catalog."""
+        from django.contrib.auth import get_user_model
+        from apps.learning.models import Course, Module, Lesson
+
+        instructor = get_user_model().objects.create_user(
+            username="course-instructor",
+            email="course-instructor@example.com",
+        )
+        published = Course.objects.create(
+            title="Build a calm product",
+            short_description="A practical path from idea to release.",
+            instructor=instructor,
+            is_published=True,
+            is_featured=True,
+            duration_hours="2.5",
+        )
+        module = Module.objects.create(course=published, title="Start", order=1)
+        Lesson.objects.create(module=module, title="Ship", order=1, is_active=True)
+        Course.objects.create(
+            title="Draft course",
+            short_description="Not public yet.",
+            instructor=instructor,
+            is_published=False,
+        )
+
+        response = self.client.get("/apis/courses/")
+        self.assertEqual(response.status_code, 200)
+        courses = response.json()["courses"]
+        self.assertEqual([course["slug"] for course in courses], [published.slug])
+        self.assertEqual(courses[0]["lesson_count"], 1)
+        self.assertEqual(courses[0]["href"], published.get_absolute_url())
+        self.assertTrue(courses[0]["is_featured"])
+
+        home = self.client.get("/")
+        self.assertEqual(home.status_code, 200)
+        self.assertContains(home, "Learn by shipping.")
+        self.assertContains(home, "Build a calm product")
+        self.assertContains(home, "/learning/")
+        self.assertNotContains(home, "This page is the framework")
+        self.assertNotContains(home, "No React, no Vue, no Svelte")
+
+    def test_home_is_focused_entry(self):
+        """Home renders hero + course preview + CTA; the section stack stays on About."""
         response = self.client.get("/")
         self.assertIn(b"Digital products, shipped as", response.content)
         self.assertIn(b"A useful first release beats a noisy roadmap", response.content)
@@ -199,6 +241,28 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"Formints", response.content)
         self.assertNotIn(b"<html", response.content)
         self.assertNotIn(b"site-header", response.content)
+
+    def test_home_fragment_includes_course_preview(self):
+        """The direct HTMX home fragment carries the same course preview."""
+        from django.contrib.auth import get_user_model
+        from apps.learning.models import Course
+
+        instructor = get_user_model().objects.create_user(
+            username="fragment-course-instructor",
+            email="fragment-course-instructor@example.com",
+        )
+        Course.objects.create(
+            title="Build a calm product",
+            short_description="A practical path from idea to release.",
+            instructor=instructor,
+            is_published=True,
+            is_featured=True,
+        )
+        response = self.client.get("/fragment/pages/home/", HTTP_HX_REQUEST="true")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Learn by shipping.")
+        self.assertContains(response, "Build a calm product")
+        self.assertNotContains(response, "This page is the framework")
 
     def test_direct_page_fragment_api_is_content_only(self):
         """The Astro LiveFragment endpoint returns Django content, never a document shell."""
@@ -1048,6 +1112,72 @@ class LandingPagesTestCase(TestCase):
 
         data = self.client.get("/apis/pages/products/").json()
         self.assertTrue(any(p["slug"] == "formint-pos" for p in data["products"]), data.get("products"))
+
+    def test_catalog_only_products_stay_out_of_home_and_product_dropdown(self):
+        """Catalog-only and hidden subproducts keep their distinct visibility contracts.
+
+        vResume is a public subproduct: it remains on the full catalog and
+        pricing tabs, but is absent from the curated homepage and Products
+        dropdown. ceptor-ai is an internal library: it is explicitly marked
+        catalog-ineligible and hidden from every listing while its detail route
+        remains directly addressable.
+        """
+        from apps.pages.models import ProductPage
+
+        products_data = self.client.get("/apis/pages/products/").json()
+        catalog_slugs = [p["slug"] for p in products_data.get("products", [])]
+        pricing_slugs = [p["slug"] for p in self.client.get("/apis/pricing/").json()["products"]]
+        home_slugs = [p["slug"] for p in self.client.get("/apis/pages/home/").json().get("products", [])]
+        nav = self.client.get("/apis/navigation/").json()["nav_items"]
+        product_children = next(item["children"] for item in nav if item["href"] == "/products/")
+        dropdown_slugs = [child["href"].strip("/").split("/")[-1] for child in product_children]
+
+        # Public catalog-only subproduct: catalog + pricing yes; home + nav no.
+        self.assertIn("vresume", catalog_slugs)
+        self.assertIn("vresume", pricing_slugs)
+        self.assertNotIn("vresume", home_slugs)
+        self.assertNotIn("vresume", dropdown_slugs)
+        self.assertFalse(ProductPage.objects.get(slug="vresume").show_on_home)
+        self.assertFalse(ProductPage.objects.get(slug="vresume").hidden)
+
+        # Internal library: explicit home exclusion plus hidden listing exclusion.
+        self.assertNotIn("ceptor-ai", catalog_slugs)
+        self.assertNotIn("ceptor-ai", pricing_slugs)
+        self.assertNotIn("ceptor-ai", home_slugs)
+        self.assertNotIn("ceptor-ai", dropdown_slugs)
+        ceptor = ProductPage.objects.get(slug="ceptor-ai")
+        self.assertFalse(ceptor.show_on_home)
+        self.assertTrue(ceptor.hidden)
+
+        # Flagships remain visible on the homepage and in the product dropdown.
+        for slug in ("formint-pos", "lms", "cms", "cypercloud"):
+            self.assertIn(slug, home_slugs)
+            self.assertIn(slug, dropdown_slugs)
+            self.assertTrue(ProductPage.objects.get(slug=slug).show_on_home)
+
+        # Listing visibility does not remove direct detail routes.
+        self.assertEqual(self.client.get("/products/vresume/").status_code, 200)
+        self.assertEqual(self.client.get("/products/ceptor-ai/").status_code, 200)
+
+    def test_seed_repairs_stale_catalog_flags_idempotently(self):
+        """A seed rerun repairs stale listing flags only in this catalog tree."""
+        vresume = ProductPage.objects.get(slug="vresume")
+        ceptor = ProductPage.objects.get(slug="ceptor-ai")
+        vresume.show_on_home = True
+        vresume.hidden = True
+        vresume.save(update_fields=["show_on_home", "hidden"])
+        ceptor.show_on_home = True
+        ceptor.hidden = False
+        ceptor.save(update_fields=["show_on_home", "hidden"])
+
+        SeedCommand().handle()
+
+        vresume.refresh_from_db()
+        ceptor.refresh_from_db()
+        self.assertFalse(vresume.show_on_home)
+        self.assertFalse(vresume.hidden)
+        self.assertFalse(ceptor.show_on_home)
+        self.assertTrue(ceptor.hidden)
 
     def test_services_carries_offering_and_process(self):
         """Services renders the three service lines + the 'build as you go' process."""

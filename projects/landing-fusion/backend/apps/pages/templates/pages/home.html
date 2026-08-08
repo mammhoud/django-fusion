@@ -4,7 +4,7 @@
 {% block title %}{{ page.title|default:"Structa Cloud" }}{% endblock %}
 
 {% block content %}
-  {% comment %} Slim entry page: the shared partial renders only hero + CTA because HomePage
-     carries no section-stack fields (the full document lives on /about/). {% endcomment %}
+  {# Focused entry page: hero, public learning preview, and CTA. #}
+  {# The full editorial document lives on /about/. #}
   {% comp "pages/partials/page_content.html" /%}
 {% endblock %}

@@ -6,7 +6,7 @@
  * (apps/pages/management/commands/seed_pages.py) and that each page shows
  * exactly the sections its design intends:
  *
- *   - `/`        (Home)    — slim hero + CTA entry; no section stack, no error cards
+ *   - `/`        (Home)    — hero + CTA + backend-owned course preview; no framework demo
  *   - `/about`   (About)   — full document: stats, features, testimonials, faq, cta
  *   - `/features`          — capabilities + testimonials + faq
  *   - `/products`          — stats + the six product lines
@@ -84,16 +84,31 @@ const fullDocumentMarkers = [
   '>503<',                             // ContentError cards must never render
 ];
 
-test('home is a slim hero + CTA entry page with seeded hero/CTA', () => {
+test('home is a focused hero + course preview entry page with seeded hero/CTA', () => {
   // Seeded hero: title "Digital products, shipped as" + accent "documents".
   assert.match(home, /Digital products, shipped as/);
   assert.match(home, /documents/);
   assert.match(home, /structa\.cloud · digital product partner/);
   // Seeded CTA.
   assert.match(home, /A useful first release beats a noisy roadmap/);
-  // Products preview section (frontend design).
+  // Products preview section — the simple themed card grid (frontend design).
   assert.match(home, /tag-marker mb-4">products/);
-  // Slim page — none of the full-document markers or error cards.
+  assert.match(home, /card reveal group flex flex-col gap-3 p-6 hover:-translate-y-0\.5/);
+  // The homepage preview is curated: flagship + main products, never the
+  // vResume subproduct (it stays catalog-only on /products/ and pricing).
+  assert.ok(home.includes('/products/formint-pos/'), 'home should link the flagship product');
+  assert.ok(!home.includes('/products/vresume/'), 'home should NOT link the vResume subproduct');
+  // The product dropdown is also curated from the same backend flag, so the
+  // catalog-only and hidden records never leak into header navigation.
+  assert.ok(!home.includes('/products/ceptor-ai/'), 'home should NOT link hidden ceptor-ai');
+  // The former framework demo is intentionally gone; learning now has a
+  // real backend-owned destination instead.
+  assert.match(home, /Learn by shipping\./);
+  assert.match(home, /Browse all courses/);
+  assert.ok(!home.includes('This page is the framework'), 'home should hide the framework demo heading');
+  assert.ok(!home.includes('No React, no Vue, no Svelte'), 'home should hide implementation-pitch copy');
+  assert.ok(!home.includes('/fragment/ping/'), 'home should not expose the old framework ping demo');
+  // Home still avoids the full document stack and error cards.
   for (const marker of fullDocumentMarkers) {
     assert.ok(!home.includes(marker), `home should NOT contain: ${marker}`);
   }
@@ -157,6 +172,10 @@ test('products is the merged catalog: renamed product cards with logos, status, 
   assert.ok(!products.includes('django-bolt'), 'products should NOT contain: django-bolt');
   assert.ok(!products.includes('/products/ceptor-ai/'), 'products should NOT link to hidden ceptor-ai');
   assert.ok(!products.includes('The product line'), 'products should NOT contain: The product line');
+  // vResume is public catalog-only; ceptor-ai is internal and excluded from
+  // both the catalog and its product-dropdown navigation.
+  assert.ok(products.includes('/products/vresume/'), 'catalog should link to vResume');
+  assert.ok(!products.includes('/products/ceptor-ai/'), 'catalog should exclude ceptor-ai');
   // The flagship card shows the Formints editions + pricing inline.
   for (const marker of ['Community', 'Standard', 'Pro', 'Cloud']) {
     assert.ok(products.includes(marker), `products should show POS edition: ${marker}`);
@@ -237,6 +256,7 @@ test('pricing page shows per-product tabs + faq', () => {
   assert.match(pricing, /under development/);
   // Hidden products are not tabbed.
   assert.ok(!pricing.includes('/products/ceptor-ai/'), 'pricing should not link to hidden products');
+  assert.ok(pricing.includes('/products/vresume/'), 'pricing should link to catalog-only vResume');
   // FAQ is deduplicated — pricing points buyers to the dedicated page.
   assert.ok(!pricing.includes('Frequently asked questions'), 'pricing should NOT contain a duplicate FAQ section');
   assert.match(pricing, /Read the FAQ/);
@@ -273,7 +293,7 @@ test('brand page renders the identity system: one board per product with its con
   assert.match(brand, /title="line"/);
 });
 
-test('products page lists every product page card', () => {
+test('products page lists every product page card incl. the vResume subproduct', () => {
   assert.match(products, /Projects in this repo/);
   for (const href of ['/products/formint-pos/', '/products/lms/', '/products/cms/', '/products/vresume/']) {
     assert.ok(products.includes(href), `products should link to: ${href}`);

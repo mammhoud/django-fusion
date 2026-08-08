@@ -17,6 +17,7 @@ import logging
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 from wagtail.models import Page
 
 logger = logging.getLogger(__name__)
@@ -663,7 +664,9 @@ def _page_to_dict(page) -> dict:
 
         products_page = ProductsPage.objects.first()
         if products_page:
-            product_cards = products_page.get_product_cards()
+            # Home preview grid is curated — subproducts (vResume) stay
+            # catalog-only and never appear on the homepage cards.
+            product_cards = products_page.get_product_cards(for_home=True)
             if product_cards:
                 data["products"] = product_cards
 
@@ -703,6 +706,7 @@ def page_fragment_api(request, slug="home"):
             "content": specific,
             "localized_content": _apply_page_translation(specific, _page_to_dict(specific), language),
             "content_language": language,
+            "courses": get_home_courses() if specific.slug == "home" else [],
             "site_name": "Structa Cloud",
             "fusion_render_first": get_effective_render_first(request),
             "fusion_render_mode": "fusion-render",
@@ -869,6 +873,58 @@ def assets_api(request):
         "preconnect": fusion_assets.get("preconnect", []),
     }
     return JsonResponse(data)
+
+
+def get_home_courses():
+    """Return the bounded, annotated course queryset shared by both roads."""
+    from django.db.models import Count, Q
+    from apps.learning.models import Course
+
+    return (
+        Course.objects.filter(is_published=True)
+        .select_related("instructor")
+        .annotate(
+            _module_count=Count("modules", distinct=True),
+            _lesson_count=Count(
+                "modules__lessons",
+                filter=Q(modules__lessons__is_active=True),
+                distinct=True,
+            ),
+        )
+        .order_by("-is_featured", "title")[:6]
+    )
+
+
+@require_GET
+def courses_api(request):
+    """GET /apis/courses/ — the public, published learning catalog.
+
+    The homepage uses this compact contract for its course cards while
+    ``/learning/`` remains the full HTMX catalog. Counts are annotated here so
+    rendering several cards never creates one count query per course.
+    """
+    courses = get_home_courses()
+    return JsonResponse({
+        "courses": [
+            {
+                "slug": course.slug,
+                "title": course.title,
+                "short_description": course.short_description,
+                "difficulty": str(course.get_difficulty_display()),
+                "language": course.language,
+                "duration_hours": str(course.duration_hours),
+                "price": str(course.price),
+                "is_free": course.is_free,
+                "is_featured": course.is_featured,
+                "has_certificate": course.has_certificate,
+                "module_count": course.module_count,
+                "lesson_count": course.lesson_count,
+                "instructor": course.instructor.get_full_name() or course.instructor.get_username(),
+                "href": course.get_absolute_url(),
+            }
+            for course in courses
+        ],
+    })
 
 
 def pricing_api(request):

@@ -58,6 +58,7 @@ from apps.pages.api import (
     _page_to_dict,
     _requested_content_language,
     get_effective_render_first,
+    get_home_courses,
 )
 
 from apps.pages.models import (
@@ -134,6 +135,8 @@ class LandingPageView(PageHandler):
                 else "data-api",
             }
         )
+        if page.slug == "home":
+            context["courses"] = get_home_courses()
         return context
 
     def _get_breadcrumbs(self, page) -> list[dict]:

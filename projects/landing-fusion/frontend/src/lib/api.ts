@@ -183,6 +183,8 @@ export interface PageData {
   comparison?: Record<string, any>[];
   /** Deduplicated edition captures used by the product detail gallery. */
   preview_gallery?: PreviewMedia[];
+  /** Editorial media-gallery blocks (ProductPage.gallery — screenshots, GIFs, videos). */
+  gallery?: Record<string, any>[];
   products?: {
     title: string;
     slug: string;
@@ -271,6 +273,27 @@ export interface PricingProduct {
 
 export interface PricingData {
   products: PricingProduct[];
+}
+
+export interface CourseCard {
+  slug: string;
+  title: string;
+  short_description: string;
+  difficulty: string;
+  language: string;
+  duration_hours: string;
+  price: string;
+  is_free: boolean;
+  is_featured: boolean;
+  has_certificate: boolean;
+  module_count: number;
+  lesson_count: number;
+  instructor: string;
+  href: string;
+}
+
+export interface CoursesData {
+  courses: CourseCard[];
 }
 
 export interface AssetManifest {
@@ -371,6 +394,39 @@ export function fetchPricing(): Promise<PricingData> {
   return fetchJSON<PricingData>('/apis/pricing/');
 }
 
+/** Fetch the published course cards used by the homepage learning section. */
+export function fetchCourses(): Promise<CoursesData> {
+  return fetchJSON<CoursesData>('/apis/courses/');
+}
+
+export async function fetchCoursesWithFallback(): Promise<CoursesData> {
+  try {
+    return await fetchCourses();
+  } catch {
+    // Keep the replacement section useful in an offline/static preview. The
+    // backend remains authoritative whenever it is reachable; this mirrors
+    // the idempotently seeded public course rather than hiding the section.
+    return {
+      courses: [{
+        slug: 'ship-django-products',
+        title: 'Ship Django Products with HTMX and Alpine',
+        short_description: 'A practical, document-first course for building fast, content-driven products that teams can own.',
+        difficulty: 'Intermediate',
+        language: 'en',
+        duration_hours: '6.5',
+        price: '0.00',
+        is_free: true,
+        is_featured: true,
+        has_certificate: true,
+        module_count: 4,
+        lesson_count: 12,
+        instructor: 'Mahmoud Ezzat',
+        href: '/learning/course/ship-django-products/',
+      }],
+    };
+  }
+}
+
 /** Fetch full page data for a single page by slug. */
 export function fetchPageData(slug: string, language: LangCode = CONTENT_LANGUAGE): Promise<PageData> {
   const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
@@ -422,5 +478,6 @@ export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSetting
 export const cachedNavigation = (language: LangCode = CONTENT_LANGUAGE) => fetchCached(`navigation:${language}`, () => fetchNavigationWithFallback(language));
 export const cachedContact = () => fetchCached('contact', fetchContact);
 export const cachedPricing = () => fetchCached('pricing', fetchPricing);
+export const cachedCourses = () => fetchCached('courses', fetchCoursesWithFallback);
 export const cachedPageData = (slug: string, language: LangCode = CONTENT_LANGUAGE) =>
   fetchCached(`page:${slug}:${language}`, () => fetchPageDataWithFallback(slug, language));

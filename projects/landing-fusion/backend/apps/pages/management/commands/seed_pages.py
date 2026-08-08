@@ -885,6 +885,9 @@ DEFAULT_PRODUCT_PAGES = {
         "title": "vResume",
         "logo_style": "ascent",
         "category": "platform",
+        # Subproduct — stays catalog-only (visible on /products/ + pricing
+        # tabs) but is excluded from the homepage preview cards.
+        "show_on_home": False,
         "tagline": "Cloud resume platform. Create, update, publish professional resumes — with Syntara-powered AI summaries.",
         "hero": [
             (
@@ -925,6 +928,9 @@ DEFAULT_PRODUCT_PAGES = {
         "title": "ceptor-ai",
         "logo_style": "orbit",
         "category": "library",
+        # Internal library — keep it out of the homepage, catalog, pricing,
+        # and product dropdown even if its hidden state is changed later.
+        "show_on_home": False,
         "hidden": True,
         "tagline": "AI chat client + MCP server. Agent communication and generation.",
         "hero": [
@@ -1845,6 +1851,7 @@ class Command(BaseCommand):
                 logo_style=product.get("logo_style", "crest"),
                 status=product.get("status", "live"),
                 hidden=product.get("hidden", False),
+                show_on_home=product.get("show_on_home", True),
                 hero=product.get("hero", []),
                 body=product.get("body", ""),
                 tech=product.get("tech", []),
@@ -1856,6 +1863,36 @@ class Command(BaseCommand):
                 cta=product.get("cta", []),
             )
             self._created(created, f"product:{slug}")
+
+        # Catalog flags follow the seed spec on every run. This keeps public
+        # subproducts (vResume) out of the curated home/dropdown surfaces and
+        # keeps internal libraries (ceptor-ai) explicitly ineligible even if a
+        # stale database row predates these flags.
+        for slug, product in DEFAULT_PRODUCT_PAGES.items():
+            # Scope the backfill to this landing catalog. A shared Wagtail
+            # database may contain another site's ProductPage with the same
+            # slug; never mutate that page while refreshing landing content.
+            page = products.get_children().filter(slug=slug).first()
+            if page is None:
+                continue
+            page = page.specific
+            if not isinstance(page, ProductPage):
+                continue
+            wanted_show_on_home = product.get("show_on_home", True)
+            wanted_hidden = product.get("hidden", False)
+            updates = []
+            if page.show_on_home != wanted_show_on_home:
+                page.show_on_home = wanted_show_on_home
+                updates.append("show_on_home")
+            if page.hidden != wanted_hidden:
+                page.hidden = wanted_hidden
+                updates.append("hidden")
+            if updates:
+                page.save(update_fields=updates)
+                self.stdout.write(
+                    f"Updated product flags: {slug} "
+                    f"show_on_home={wanted_show_on_home} hidden={wanted_hidden}"
+                )
 
         # Catalog order — product children follow DEFAULT_PRODUCT_PAGES so the
         # flagship (Formints) leads the tree on fresh DBs and after renames.

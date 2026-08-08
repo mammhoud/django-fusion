@@ -9,12 +9,13 @@
  * Paradigms wired here:
  *   1. Hero intro — cinematic staggered entrance (eyebrow, heading, intro,
  *      actions) with a soft blur-fade, driven on load.
- *   2. Scrubbed word reveal — the framework pitch paragraph: each word's
- *      opacity scrubs from 0.12 to 1 as the reader scrolls through it.
- *   3. Pinned rail — the Products preview keeps its header pinned to the
- *      viewport left edge while the product rows scroll beneath it.
- *   4. Scale & fade cards — bento cells rise (scale 0.92 → 1) as they enter
+ *   2. Scale & fade cards — course and content cards rise (scale 0.92 → 1)
+ *      as they enter and dim as they leave.
+ *   3. Gallery scale-in — visual previews ease into view after content settles
  *      and darken/fade (opacity → 0.25) as they exit.
+ *
+ * (The products preview moved from a pinned editorial rail to a simple
+ * responsive card grid, so the rail pinning paradigm was removed.)
  */
 
 import { gsap } from 'gsap';
@@ -53,92 +54,8 @@ function heroIntro(): void {
   );
 }
 
-// ── 2. Scrubbed word reveal ─────────────────────────────────────────────────
-function scrubWords(): void {
-  if (reduceMotion) return;
-  const block = document.querySelector<HTMLElement>('[data-gsap="scrub"]');
-  if (!block) return;
+// ── 2. Scale & fade cards ───────────────────────────────────────────────────
 
-  const words = block.textContent?.trim().split(/\s+/) ?? [];
-  if (words.length < 4) return;
-
-  block.setAttribute('aria-label', words.join(' '));
-  block.textContent = '';
-
-  const frag = document.createDocumentFragment();
-  const spans: HTMLElement[] = [];
-  for (const word of words) {
-    const span = document.createElement('span');
-    span.className = 'gsap-scrub-word';
-    span.textContent = word;
-    frag.appendChild(span);
-    frag.appendChild(document.createTextNode(' '));
-    spans.push(span);
-  }
-  block.appendChild(frag);
-
-  gsap.fromTo(
-    spans,
-    { opacity: 0.12 },
-    {
-      opacity: 1,
-      ease: 'none',
-      stagger: 0.06,
-      scrollTrigger: {
-        trigger: block,
-        start: 'top 78%',
-        end: 'bottom 45%',
-        scrub: 0.6,
-      },
-    },
-  );
-}
-
-// ── 3. Pinned products rail ─────────────────────────────────────────────────
-function pinnedRail(): void {
-  if (reduceMotion) return;
-  const section = document.querySelector<HTMLElement>('[data-gsap="rail"]');
-  const header = section?.querySelector<HTMLElement>('[data-gsap="rail-head"]');
-  const rows = section?.querySelector<HTMLElement>('[data-gsap="rail-rows"]');
-  if (!section || !header || !rows) return;
-
-  // Pin the header while the row list travels past it — only on wide
-  // viewports where the split layout exists. gsap.matchMedia() creates the
-  // pin inside the media query and tears it down on resize (loading desktop
-  // then shrinking to mobile would otherwise leave a stray pin on a
-  // full-width block). pinSpacing reserves space so the next section never
-  // scrolls underneath the pinned header.
-  const mm = gsap.matchMedia();
-  mm.add('(min-width: 1024px)', () => {
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: () => `+=${rows.offsetHeight + 160}`,
-      pin: header,
-      pinSpacing: true,
-      anticipatePin: 1,
-    });
-  });
-
-  gsap.fromTo(
-    rows.querySelectorAll<HTMLElement>('[data-gsap="rail-row"]'),
-    { opacity: 0, y: 44 },
-    {
-      opacity: 1,
-      y: 0,
-      duration: 0.9,
-      ease: 'power2.out',
-      stagger: 0.08,
-      scrollTrigger: {
-        trigger: rows,
-        start: 'top 85%',
-        once: true,
-      },
-    },
-  );
-}
-
-// ── 4. Scale & fade bento cells ─────────────────────────────────────────────
 function scaleAndFade(): void {
   if (reduceMotion) return;
   const cards = document.querySelectorAll<HTMLElement>('[data-gsap="rise"]');
@@ -177,7 +94,7 @@ function scaleAndFade(): void {
   });
 }
 
-// ── 5. Gallery scale-in ─────────────────────────────────────────────────
+// ── 3. Gallery scale-in ──────────────────────────────────────────────────────
 function galleryScaleIn(): void {
   if (reduceMotion) return;
   const items = document.querySelectorAll<HTMLElement>('[data-gsap="gallery-child"]');
@@ -214,12 +131,10 @@ function init(): void {
 
 function mount(): void {
   heroIntro();
-  scrubWords();
-  pinnedRail();
   scaleAndFade();
   galleryScaleIn();
 
-  // Pinned offsets are measured before webfonts/images settle — recompute
+  // Offsets are measured before webfonts/images settle — recompute
   // once everything is painted so pin start/end stays accurate.
   const refresh = (): void => ScrollTrigger.refresh();
   window.addEventListener('load', refresh, { once: true });
