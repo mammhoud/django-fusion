@@ -100,11 +100,31 @@ def _get(model, pk: int):
     return _ser(obj)
 
 
+def _field_map(model) -> dict[str, str]:
+    """Map accepted JSON keys → model field attnames.
+
+    Accepts both the field name (``organization``) and the attname
+    (``organization_id``) for foreign keys, so API clients can POST
+    ``{"organization_id": 2}`` and it lands on the FK column.
+    """
+    mapping: dict[str, str] = {}
+    for f in model._meta.fields:
+        mapping[f.name] = f.attname
+        mapping[f.attname] = f.attname
+    return mapping
+
+
 @sync_to_async
 def _create(model, data: dict) -> dict:
     """Create a row, mapping JSON keys to model fields (skipping unknown)."""
-    field_names = {f.name for f in model._meta.fields}
-    clean = {k: v for k, v in data.items() if k in field_names and k != "id"}
+    field_map = _field_map(model)
+    clean = {}
+    for key, value in data.items():
+        if key == "id":
+            continue
+        attname = field_map.get(key)
+        if attname:
+            clean[attname] = value
     obj = model.objects.create(**clean)
     return _ser(obj)
 
@@ -115,10 +135,13 @@ def _update(model, pk: int, data: dict):
         obj = model.objects.get(pk=pk)
     except model.DoesNotExist:
         return None
-    field_names = {f.name for f in model._meta.fields}
-    for k, v in data.items():
-        if k in field_names and k != "id":
-            setattr(obj, k, v)
+    field_map = _field_map(model)
+    for key, value in data.items():
+        if key == "id":
+            continue
+        attname = field_map.get(key)
+        if attname:
+            setattr(obj, attname, value)
     obj.save()
     return _ser(obj)
 
