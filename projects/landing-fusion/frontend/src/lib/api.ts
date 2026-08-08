@@ -183,6 +183,7 @@ export interface PageData {
   comparison?: Record<string, any>[];
   applications?: Record<string, any>[];
   snippets?: Record<string, any>[];
+  gallery?: Record<string, any>[];
   /** Deduplicated edition captures used by the product detail gallery. */
   preview_gallery?: PreviewMedia[];
   products?: {
