@@ -230,7 +230,6 @@ WAGTAIL_I18N_ENABLED = False
 # ══════════════════════════════════════════════════════════════════════
 
 COMPONENTS_INCLUDE_PATH_ROOTS = [
-    str(BASE_DIR / "apps" / "core" / "fragments"),
     str(BASE_DIR / "apps" / "handlers" / "fragments"),
 ]
 
