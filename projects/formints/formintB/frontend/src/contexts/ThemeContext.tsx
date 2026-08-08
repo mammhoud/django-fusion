@@ -1,0 +1,141 @@
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+
+type Mode = 'light' | 'dark';
+export type ThemeVariant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'perplexity';
+
+export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; description: string }[] = [
+  { id: 'default', label: 'Default', icon: 'ri-palette-line', description: 'Clean slate & indigo' },
+  { id: 'corporate', label: 'Corporate', icon: 'ri-briefcase-4-line', description: 'Professional blue tones' },
+  { id: 'luxury', label: 'Luxury', icon: 'ri-vip-crown-2-line', description: 'Rich gold & warm hues' },
+  { id: 'pastel', label: 'Pastel', icon: 'ri-flower-line', description: 'Soft candy colors' },
+  { id: 'perplexity', label: 'Perplexity', icon: 'ri-star-smile-line', description: 'Minimal & intelligent' },
+];
+
+/**
+ * Maps (variant, mode) → FlyonUI data-theme attribute value.
+ * Each variant has separate light and dark themes defined in index.css
+ * via @plugin "flyonui/theme" blocks.
+ */
+export const THEME_MAP: Record<ThemeVariant, Record<Mode, string>> = {
+  default:   { light: 'light', dark: 'dark' },
+  corporate: { light: 'corporate-light', dark: 'corporate-dark' },
+  luxury:    { light: 'luxury-light',    dark: 'luxury-dark' },
+  // Custom pastel themes — soft candy colors in both modes.
+  pastel:    { light: 'pastel-light',    dark: 'pastel-dark' },
+  // Perplexity — minimal & intelligent, with a custom dark counterpart.
+  perplexity: { light: 'perplexity', dark: 'perplexity-dark' },
+};
+
+interface ThemeContextType {
+  /** The resolved visual mode (always 'light' or 'dark') */
+  mode: Mode;
+  /** The active theme variant */
+  variant: ThemeVariant;
+  /** Whether the mode follows the OS preference */
+  followSystem: boolean;
+  /** Toggle between light and dark (disables followSystem) */
+  toggleMode: () => void;
+  /** Set a specific mode and disable followSystem */
+  setMode: (mode: Mode) => void;
+  /** Set theme variant */
+  setVariant: (variant: ThemeVariant) => void;
+  /** Enable or disable OS preference following */
+  setFollowSystem: (follow: boolean) => void;
+  /** The resolved FlyonUI data-theme value */
+  resolvedTheme: string;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+function getSystemPreference(): Mode {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [followSystem, setFollowSystemState] = useState<boolean>(() => {
+    const saved = localStorage.getItem('theme-follow-system');
+    return saved === 'true';
+  });
+
+  const [mode, setModeState] = useState<Mode>(() => {
+    // Migrate from legacy 'theme' key (light/dark) if present
+    const legacy = localStorage.getItem('theme') as Mode | null;
+    if (legacy === 'light' || legacy === 'dark') {
+      localStorage.removeItem('theme');
+      return legacy;
+    }
+    const saved = localStorage.getItem('theme-mode') as Mode | null;
+    if (saved === 'light' || saved === 'dark') return saved;
+    return getSystemPreference();
+  });
+
+  const [variant, setVariantState] = useState<ThemeVariant>(() => {
+    const saved = localStorage.getItem('theme-variant') as ThemeVariant | null;
+    if (saved && THEME_VARIANTS.some(v => v.id === saved)) return saved;
+    // Default to the perplexity variant (minimal & intelligent) — matches
+    // the FlyonUI `--default` / `--prefersdark` setup in index.css.
+    return 'perplexity';
+  });
+
+  // Resolve the FlyonUI data-theme value
+  const resolvedTheme = THEME_MAP[variant][mode];
+
+  // Listen for OS preference changes when followSystem is active
+  useEffect(() => {
+    if (!followSystem) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => {
+      setModeState(e.matches ? 'dark' : 'light');
+    };
+    mq.addEventListener('change', handler);
+    // Sync immediately in case preference changed since initial load
+    setModeState(mq.matches ? 'dark' : 'light');
+    return () => mq.removeEventListener('change', handler);
+  }, [followSystem]);
+
+  // Apply mode + variant to <html>
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(mode);
+    root.setAttribute('data-theme', resolvedTheme);
+    localStorage.setItem('theme-mode', mode);
+    localStorage.setItem('theme-variant', variant);
+    localStorage.setItem('theme-follow-system', String(followSystem));
+  }, [mode, variant, followSystem, resolvedTheme]);
+
+  const toggleMode = useCallback(() => {
+    setFollowSystemState(false);
+    setModeState(prev => (prev === 'light' ? 'dark' : 'light'));
+  }, []);
+
+  const setMode = useCallback((newMode: Mode) => {
+    setFollowSystemState(false);
+    setModeState(newMode);
+  }, []);
+
+  const setVariant = useCallback((newVariant: ThemeVariant) => {
+    setVariantState(newVariant);
+  }, []);
+
+  const setFollowSystem = useCallback((follow: boolean) => {
+    setFollowSystemState(follow);
+    if (follow) {
+      setModeState(getSystemPreference());
+    }
+  }, []);
+
+  return (
+    <ThemeContext.Provider value={{ mode, variant, followSystem, toggleMode, setMode, setVariant, setFollowSystem, resolvedTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+}

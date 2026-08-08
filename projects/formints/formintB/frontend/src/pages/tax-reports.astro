@@ -1,0 +1,20 @@
+---
+// Legacy route — kept for bookmarks/links. Tax reports live inside the
+// Reports page, selected via the ?tab=taxReports query param.
+const target = '/reports?tab=taxReports';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <p style="font-family: system-ui; padding: 2rem; text-align: center">
+      Redirecting to
+      <a href={target}>Tax Reports</a>…
+    </p>
+  </body>
+</html>
