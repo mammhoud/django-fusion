@@ -5,9 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 
 // POS Cloud frontend (formintA Community UI + pos-cloud data layer).
-// The sidecar (Robyn, :8767) owns the REST APIs; the Django backend
-// (:8082) owns /admin and the fusion-render road. Both are proxied in dev
-// so cookies/session stay on one host, mirroring formintC's proxy pattern.
+// Django (pos-cloud, :8767) owns the REST/API surface (sidecar-compatible
+// contract after the Robyn sidecar was removed) and the admin/fusion road
+// (:8082). Both are proxied in dev so cookies/session stay on one host,
+// mirroring formintC's proxy pattern.
 const SIDECAR = process.env.SIDECAR_URL || 'http://127.0.0.1:8767';
 const BACKEND = process.env.BACKEND_URL || 'http://127.0.0.1:8082';
 

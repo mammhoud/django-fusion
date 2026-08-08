@@ -8,6 +8,7 @@ from django_filters import rest_framework as filters
 from .models import (
     Organization, Branch, Lead, Contact, Deal,
     InventoryReport, BranchReport,
+    DeviceToken, SyncConflict, SyncQueueItem,
 )
 
 
@@ -148,3 +149,61 @@ class BranchReportViewSet(ModelViewset):
             summary={"status": "generated", "branch": branch.name},
         )
         return {"status": "generated", "report_id": report.id}
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Cloud registry viewsets — formerly served by the Robyn sidecar
+# (device-tokens / conflicts / queue) now exposed directly by Django.
+# ══════════════════════════════════════════════════════════════════════
+
+class DeviceTokenFilter(filters.FilterSet):
+    status = filters.ChoiceFilter(field_name="sync_status", choices=DeviceToken.Status.choices)
+    branch = filters.NumberFilter(field_name="branch_id")
+
+    class Meta:
+        model = DeviceToken
+        fields = ["status", "branch", "app_type", "is_active"]
+
+
+class DeviceTokenViewSet(ModelViewset):
+    model = DeviceToken
+    url_prefix = "device-tokens"
+    url_namespace = "device_tokens"
+    list_display = ["device_id", "branch", "app_type", "role", "sync_status", "is_active", "issued_at"]
+    filterset_class = DeviceTokenFilter
+
+
+class SyncConflictFilter(filters.FilterSet):
+    status = filters.ChoiceFilter(choices=SyncConflict.ResolutionStatus.choices)
+    branch = filters.NumberFilter(field_name="branch_id")
+    entity_type = filters.CharFilter(lookup_expr="iexact")
+
+    class Meta:
+        model = SyncConflict
+        fields = ["status", "branch", "entity_type"]
+
+
+class SyncConflictViewSet(ModelViewset):
+    model = SyncConflict
+    url_prefix = "conflicts"
+    url_namespace = "sync_conflicts"
+    list_display = ["entity_type", "entity_id", "branch", "status", "resolver_used", "created_at"]
+    filterset_class = SyncConflictFilter
+
+
+class SyncQueueFilter(filters.FilterSet):
+    status = filters.ChoiceFilter(choices=SyncQueueItem.QueueStatus.choices)
+    branch = filters.NumberFilter(field_name="branch_id")
+    entity_type = filters.CharFilter(lookup_expr="iexact")
+
+    class Meta:
+        model = SyncQueueItem
+        fields = ["status", "branch", "entity_type", "operation"]
+
+
+class SyncQueueItemViewSet(ModelViewset):
+    model = SyncQueueItem
+    url_prefix = "queue"
+    url_namespace = "sync_queue"
+    list_display = ["node_id", "branch", "entity_type", "operation", "status", "attempt_count", "next_retry_at"]
+    filterset_class = SyncQueueFilter

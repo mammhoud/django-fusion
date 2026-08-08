@@ -1,27 +1,16 @@
 """POS Cloud — Handlers URL routing (django-fusion API-first surface)."""
 
-from django.http import JsonResponse
 from django.urls import path
 
-
-def _fusion_health(request):
-    """GET /fusion/health — sidecar contract health for the frontend."""
-    return JsonResponse(
-        {
-            "status": "healthy",
-            "service": "pos-cloud",
-            "fusion": True,
-            "render_modes": ["data-api", "fusion-render"],
-        }
-    )
-
-
-def _render_mode(request):
-    """GET /fusion/render-mode — current default render mode."""
-    return JsonResponse({"render_first": False, "render_mode": "data-api"})
-
+from apps.handlers.fusion import (
+    assets, fusion_health, navigation, render_mode, session_mode,
+)
 
 urlpatterns = [
-    path("health", _fusion_health, name="fusion_health"),
-    path("render-mode", _render_mode, name="fusion_render_mode"),
+    # Fusion contract — served at /fusion/* (sidecar-compatible)
+    path("health", fusion_health, name="fusion_health"),
+    path("render-mode", render_mode, name="fusion_render_mode"),
+    path("nav", navigation, name="fusion_nav"),
+    path("session-mode", session_mode, name="fusion_session_mode"),
+    path("assets", assets, name="fusion_assets"),
 ]

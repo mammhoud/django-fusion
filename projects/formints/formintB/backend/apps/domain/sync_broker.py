@@ -206,6 +206,19 @@ class SyncBroker:
             logger.error("Failed to broadcast message: %s", exc)
             return False
 
+    def reset(self, *, keep_handlers: bool = True) -> None:
+        """Reset the broker's runtime state (used by the test suite).
+
+        Clears the connection registry so branch health checks start
+        clean between tests.  Message handlers registered by
+        ``AppConfig.ready()`` are preserved by default; pass
+        ``keep_handlers=False`` to also wipe them (test-only escape
+        hatch for validating handler registration).
+        """
+        self._connected_branches.clear()
+        if not keep_handlers:
+            self._message_handlers.clear()
+
     def branch_health_check(self, branch_code: str) -> dict[str, Any]:
         """Check if a branch has any connected WebSocket terminals.
 

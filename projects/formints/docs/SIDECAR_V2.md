@@ -3,7 +3,7 @@
 > **Status:** Production Ready (with known test issues)  
 > **Last Updated:** 2026-08-08 (pos-cloud sidecar)  
 > **Editions:** pos-solo (standalone) + pos-full (cloud master) — **both merged into `formint-pos/sidecar/`**  
-> **See also:** the pos-cloud SaaS ships its own Robyn sidecar at `formintB/sidecar/` (package `pos-cloud-sidecar`, port `:8767`) — see [editions.md](architecture/editions.md#cloud--formintb--pos-cloud)
+> **See also:** the pos-cloud SaaS (`formintB/`, package `pos-cloud`) serves the full API surface directly from Django on `:8767` — its Robyn sidecar was removed in favour of the full Django setup — see [editions.md](architecture/editions.md#cloud--formintb--pos-cloud)
 
 ---
 

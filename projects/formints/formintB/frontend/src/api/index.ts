@@ -29,3 +29,10 @@ export type {
   InvoiceType,
   InvoiceDesign,
 } from './data';
+
+export { createSyncEventsWs } from './sync-events';
+export type {
+  SyncEventFrame,
+  SyncEventsOptions,
+  SyncEventsConnection,
+} from './sync-events';
