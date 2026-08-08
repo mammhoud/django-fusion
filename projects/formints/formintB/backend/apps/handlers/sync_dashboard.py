@@ -22,11 +22,11 @@ from django.utils import timezone as django_timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import (
+from apps.core.models import (
     Branch, SyncConflict, SyncQueueItem, BranchSyncLog,
 )
-from .sync_broker import broker
-from .sync_queue import sync_queue
+from apps.domain.sync_broker import broker
+from apps.domain.sync_queue import sync_queue
 
 logger = logging.getLogger("pos.sync_dashboard")
 

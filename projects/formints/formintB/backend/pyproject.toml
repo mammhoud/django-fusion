@@ -2,7 +2,7 @@
 name = "pos-cloud"
 version = "0.1.0"
 description = "POS Cloud — Django SaaS Platform with django-unfold admin, django-fusion components, and django-bolt"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "AGPL-3.0" }
 authors = [{ name = "Structa Cloud", email = "dev@structa.cloud" }]
 
@@ -37,8 +37,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["core*", "configs*"]
+include = ["apps*", "configs*"]
 
 [tool.uv.sources]
-django-fusion = { path = "../../../libs/django-fusion", editable = true }
-django-bolt = { path = "../../../libs/django-bolt", editable = true }
+django-fusion = { path = "../../../../libs/django-fusion", editable = true }
+django-bolt = { path = "../../../../libs/django-bolt", editable = true }

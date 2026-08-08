@@ -108,7 +108,7 @@ class SyncQueue:
             The created ``SyncQueueItem`` instance, or ``None`` if a
             duplicate was detected.
         """
-        from .models import SyncQueueItem
+        from apps.core.models import SyncQueueItem
 
         payload = payload or {}
         now = _now or django_timezone.now()
@@ -165,7 +165,7 @@ class SyncQueue:
             Number of items processed.
         """
         from django.db import transaction
-        from .models import SyncQueueItem
+        from apps.core.models import SyncQueueItem
 
         now = _now or django_timezone.now()
         processed = 0
@@ -196,7 +196,7 @@ class SyncQueue:
 
         On failure, schedules a retry with exponential backoff.
         """
-        from .sync_broker import BrokerMessage, broker
+        from apps.domain.sync_broker import BrokerMessage, broker
 
         # Lock the row and update status atomically
         from django.db import transaction
@@ -261,7 +261,7 @@ class SyncQueue:
         Returns:
             The updated item, or ``None`` if not found.
         """
-        from .models import SyncQueueItem
+        from apps.core.models import SyncQueueItem
 
         try:
             item = SyncQueueItem.objects.get(pk=item_id)
@@ -286,7 +286,7 @@ class SyncQueue:
         Returns:
             ``True`` if the item was cancelled, ``False`` if not found.
         """
-        from .models import SyncQueueItem
+        from apps.core.models import SyncQueueItem
 
         updated = SyncQueueItem.objects.filter(
             pk=item_id,
@@ -300,7 +300,7 @@ class SyncQueue:
 
     def pending_count(self, branch_code: str | None = None) -> int:
         """Count pending queue items, optionally filtered by branch."""
-        from .models import SyncQueueItem
+        from apps.core.models import SyncQueueItem
 
         qs = SyncQueueItem.objects.filter(status=SyncQueueItem.QueueStatus.PENDING)
         if branch_code:
@@ -309,7 +309,7 @@ class SyncQueue:
 
     def failed_count(self, branch_code: str | None = None) -> int:
         """Count failed queue items, optionally filtered by branch."""
-        from .models import SyncQueueItem
+        from apps.core.models import SyncQueueItem
 
         qs = SyncQueueItem.objects.filter(status=SyncQueueItem.QueueStatus.FAILED)
         if branch_code:

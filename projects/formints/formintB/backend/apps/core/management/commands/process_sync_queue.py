@@ -123,7 +123,7 @@ class Command(BaseCommand):
 
     def _process_once(self, limit: int) -> int:
         """Run one processing cycle and return the number of items processed."""
-        from core.sync_queue import sync_queue
+        from apps.domain.sync_queue import sync_queue
 
         processed = sync_queue.process_pending_items(limit=limit)
 

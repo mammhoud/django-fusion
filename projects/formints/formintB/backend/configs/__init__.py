@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     "django_filters",
     "django_bolt",
 
-    # POS Cloud
-    "core.apps.CoreConfig",
+    # POS Cloud (precis-style apps/ package)
+    "apps.core.apps.CoreConfig",
+    "apps.domain.apps.DomainConfig",
+    "apps.handlers.apps.HandlersConfig",
 ]
 
 MIDDLEWARE = [
@@ -54,7 +56,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Inject WebSocket event listener into bolt dashboard pages
-    "core.middleware.BoltSyncEventsMiddleware",
+    "apps.handlers.middleware.BoltSyncEventsMiddleware",
 ]
 
 ROOT_URLCONF = "configs.urls"
@@ -228,7 +230,8 @@ WAGTAIL_I18N_ENABLED = False
 # ══════════════════════════════════════════════════════════════════════
 
 COMPONENTS_INCLUDE_PATH_ROOTS = [
-    str(BASE_DIR / "core" / "fragments"),
+    str(BASE_DIR / "apps" / "core" / "fragments"),
+    str(BASE_DIR / "apps" / "handlers" / "fragments"),
 ]
 
 FUSION_SITE_NAME = "pos_cloud"

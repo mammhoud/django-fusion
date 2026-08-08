@@ -13,12 +13,12 @@ from django_fusion.routes.models.crud import ModelViewset
 from django_fusion.fragments.forms.search import SearchableViewMixin
 from django_filters import rest_framework as filters
 
-from .models import (
+from apps.core.models import (
     Organization, Branch, Lead, Contact, Deal,
     InventoryReport, BranchReport,
     BranchSyncLog, BranchProduct, BranchSale, BranchInventory,
 )
-from .sync_broker import BrokerMessage, broker
+from apps.domain.sync_broker import BrokerMessage, broker
 
 logger = logging.getLogger("pos.sync_api")
 

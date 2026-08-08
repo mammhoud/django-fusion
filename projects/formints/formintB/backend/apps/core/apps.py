@@ -4,18 +4,18 @@ from django.apps import AppConfig
 
 
 class CoreConfig(AppConfig):
-    name = "core"
+    name = "apps.core"
     label = "core"
     verbose_name = "POS Cloud — Branches, Orgs, Leads & Reports"
     default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
         """Register django-fusion fragments and sync broker handlers at startup."""
-        from .fragments import tables, modals, reports, layouts, skeletons  # noqa: F401
+        from apps.handlers.fragments import tables, modals, reports, layouts, skeletons  # noqa: F401
 
         # Register broker handlers for incoming messages from POS terminals
-        from .sync_broker import broker
-        from .sync_api import _broadcast_sync_event
+        from apps.domain.sync_broker import broker
+        from apps.handlers.sync_api import _broadcast_sync_event
 
         from datetime import datetime, timezone
 

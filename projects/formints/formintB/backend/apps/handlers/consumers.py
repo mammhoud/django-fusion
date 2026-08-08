@@ -17,7 +17,7 @@ import logging
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .sync_broker import BrokerMessage, broker
+from apps.domain.sync_broker import BrokerMessage, broker
 
 logger = logging.getLogger("pos.sync_events")
 
