@@ -1,0 +1,131 @@
+// ══════════════════════════════════════════════════════════════════════
+// TACTICAL TELEMETRY — Design Tokens
+// ──────────────────────────────────────────────────────────────────────
+// The industrial-brutalist token layer shared by every surface of the
+// POS Cloud admin: login, KPI dashboard, CRUD changelists, and the
+// bolt sync monitor.  Single source of truth for the design bible.
+//
+// Palette discipline (from the design bible):
+//   • ONE substrate: dark CRT.  Never mix light/dark surfaces.
+//   • Hazard red is the ONLY accent colour.
+//   • Terminal green is used for exactly ONE element per surface
+//     (the live sync-link indicator) — never as general text.
+//   • Absolute rejection of border-radius.  All corners 90°.
+// ══════════════════════════════════════════════════════════════════════
+
+// ── Substrate / Ink ────────────────────────────────────────────────────
+$tactical-bg:          #0a0a0a;  // deactivated CRT — never pure #000
+$tactical-bg-raised:   #121212;  // panels, tables, forms
+$tactical-bg-hover:    #1a1a1a;  // hover wells
+$tactical-grid:        #1e1e1e;  // 1px mechanical dividers
+$tactical-grid-strong: #2a2a2a;  // emphasized dividers (header rules)
+
+$tactical-fg:          #eaeaea;  // white phosphor — primary text
+$tactical-fg-dim:      #8a8a8a;  // dim phosphor — metadata
+$tactical-fg-faint:    #555555;  // ghost phosphor — disabled / placeholders
+
+$tactical-red:         #e61919;  // aviation / hazard red — ONLY accent
+$tactical-red-bright:  #ff2a2a;
+$tactical-red-dim:     #5a1010;  // red wash — banners, error wells
+$tactical-red-faint:   #2a0d0d;  // red tint — hover wells
+
+$tactical-green:       #4af626;  // terminal green — ONE element per surface
+
+// ── Typography ─────────────────────────────────────────────────────────
+$tactical-font-mono: "JetBrains Mono", "IBM Plex Mono", "Space Mono",
+    ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+$tactical-font-grotesk: "Archivo Black", "Neue Haas Grotesk", "Arial Black",
+    "Inter", system-ui, sans-serif;
+
+// Micro-typography (data & telemetry): fixed small, generous tracking.
+$tactical-size-micro:   10px;
+$tactical-size-small:   12px;
+$tactical-size-body:    14px;
+$tactical-size-stat:    28px;
+$tactical-size-macro:   44px;
+$tactical-size-hero:    clamp(2.5rem, 6vw, 5rem);
+
+$tactical-tracking:     0.08em;   // mechanical typewriter spacing
+$tactical-tracking-wide: 0.14em;  // eyebrows / section labels
+$tactical-leading:      1.25;
+
+// ── Geometry ───────────────────────────────────────────────────────────
+$tactical-radius:       0;        // absolute rejection of border-radius
+$tactical-line:         1px;      // hairline dividers
+$tactical-line-strong:  2px;      // structural rules (hazard red)
+
+// ── Spacing scale (visible compartmentalization) ───────────────────────
+$tactical-space-1: 4px;
+$tactical-space-2: 8px;
+$tactical-space-3: 12px;
+$tactical-space-4: 16px;
+$tactical-space-5: 24px;
+$tactical-space-6: 32px;
+$tactical-space-7: 48px;
+
+// ── Texture ────────────────────────────────────────────────────────────
+// CRT electron-beam sweep — horizontal scanlines.
+$tactical-scanlines: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.22) 2px,
+    rgba(0, 0, 0, 0.22) 4px
+);
+
+// Mechanical noise — low-opacity SVG static applied to the DOM root.
+$tactical-grain-url: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
+
+// ── Transitions (mechanical, not fluid) ────────────────────────────────
+$tactical-transition: 120ms step-end;
+$tactical-transition-hover: 120ms steps(2, end);
+
+// ── Shared mechanical button (mixin so every surface shares one source) ─
+@mixin tactical-btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $tactical-space-2;
+    padding: $tactical-space-2 $tactical-space-4;
+    border: $tactical-line solid $tactical-fg-dim;
+    background: transparent;
+    color: $tactical-fg;
+    font-family: $tactical-font-mono;
+    font-size: $tactical-size-small;
+    letter-spacing: $tactical-tracking-wide;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 0;
+    transition: background $tactical-transition, color $tactical-transition,
+        border-color $tactical-transition;
+
+    &:hover {
+        background: $tactical-bg-hover;
+        color: $tactical-fg;
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+}
+
+@mixin tactical-btn-primary {
+    border-color: $tactical-red;
+    background: $tactical-red;
+    color: #fff;
+
+    &:hover {
+        background: $tactical-red-bright;
+        border-color: $tactical-red-bright;
+        color: #fff;
+    }
+}
+
+@mixin tactical-btn-outline {
+    border-color: $tactical-fg-dim;
+
+    &:hover {
+        border-color: $tactical-fg;
+    }
+}

@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FORMINT CLOUD / MOBILE OPS — Tactical Telemetry (6 screens)</title>
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     FORMINT CLOUD / MOBILE OPS — Tactical Telemetry design bible
+     substrate #0A0A0A · phosphor #EAEAEA · hazard #E61919 · green #4AF626
+     zero radius · monospace telemetry · ASCII framing · CRT texture
+     ═══════════════════════════════════════════════════════════════ */
+  :root {
+    --crt: #0A0A0A;
+    --panel: #101010;
+    --panel-2: #151515;
+    --phosphor: #EAEAEA;
+    --hazard: #E61919;
+    --green: #4AF626;
+    --line: rgba(234, 234, 234, 0.15);
+    --line-soft: rgba(234, 234, 234, 0.10);
+    --dim: rgba(234, 234, 234, 0.50);
+    --dim-2: rgba(234, 234, 234, 0.35);
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --display: 'Outfit', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+  html { background: #0d0d0d; }
+  body {
+    font-family: var(--mono);
+    color: var(--phosphor);
+    padding: 40px 24px 64px;
+  }
+
+  /* ── Page header ── */
+  .page-head { max-width: 1200px; margin: 0 auto 36px; border: 1px solid var(--line); background: var(--crt); position: relative; overflow: hidden; }
+  .page-head .scan { position: absolute; inset: 0; pointer-events: none; opacity: .35; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.4) 2px, rgba(0,0,0,.4) 4px); }
+  .page-head .in { position: relative; padding: 18px 22px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 20px; }
+  .page-head h1 { font-family: var(--display); font-size: 22px; font-weight: 800; letter-spacing: -.02em; text-transform: uppercase; }
+  .page-head h1 em { color: var(--hazard); font-style: normal; }
+  .page-head .meta { font-size: 10px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+  .page-head .legend { display: flex; gap: 18px; font-size: 10px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; }
+  .page-head .legend .sw { display: inline-block; width: 8px; height: 8px; margin-right: 6px; vertical-align: baseline; }
+  .sw.on { background: var(--green); } .sw.deg { background: var(--hazard); } .sw.off { background: var(--dim-2); }
+
+  /* ── Screen set grid ── */
+  .set {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 44px 28px; justify-items: center;
+  }
+  @media (max-width: 1100px) { .set { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 760px)  { .set { grid-template-columns: 1fr; } }
+
+  /* ── Phone mockup — clean premium frame, content-first ── */
+  figure.phone {
+    width: 330px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .mock {
+    width: 330px; height: 690px;
+    background: #1b1b1b;
+    border: 1px solid rgba(255,255,255,0.10);
+    padding: 10px;
+    position: relative;
+    box-shadow: 0 24px 60px -20px rgba(0,0,0,0.85);
+  }
+  .screen {
+    width: 100%; height: 100%;
+    background: var(--crt);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    border: 1px solid rgba(234,234,234,0.06);
+  }
+  /* CRT texture on every screen */
+  .screen::before {
+    content: ''; position: absolute; inset: 0; z-index: 30; pointer-events: none; opacity: .35;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.4) 2px, rgba(0,0,0,.4) 4px);
+  }
+  .screen::after {
+    content: ''; position: absolute; inset: 0; z-index: 31; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ── iOS chrome ── */
+  .statusbar { height: 30px; flex: 0 0 30px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 20px 4px; font-size: 10px; letter-spacing: .08em; z-index: 32; }
+  .statusbar .time { font-weight: 700; }
+  .statusbar .sig { display: flex; align-items: center; gap: 4px; color: var(--dim); }
+  .island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #000; z-index: 33; }
+  .home { flex: 0 0 24px; display: flex; align-items: center; justify-content: center; z-index: 32; }
+  .home::after { content: ''; width: 110px; height: 4px; background: rgba(234,234,234,0.85); }
+
+  /* ── Shared screen atoms ── */
+  .hdr { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px 8px; border-bottom: 1px solid var(--line-soft); z-index: 32; }
+  .hdr .t { font-size: 10px; font-weight: 700; letter-spacing: .18em; color: var(--hazard); white-space: nowrap; }
+  .hdr .m { font-size: 8px; letter-spacing: .12em; color: var(--dim-2); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .body { flex: 1 1 auto; overflow: hidden; display: flex; flex-direction: column; z-index: 32; }
+
+  .label { font-size: 8px; letter-spacing: .2em; color: var(--dim); text-transform: uppercase; }
+  .dim { color: var(--dim-2); }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .16em;
+    text-transform: uppercase; padding: 11px 14px; cursor: pointer; border: 1px solid transparent;
+  }
+  .btn.red { background: var(--hazard); color: var(--crt); border-color: var(--hazard); }
+  .btn.line { background: transparent; color: var(--hazard); border-color: var(--hazard); }
+  .btn.line-dim { background: transparent; color: var(--dim); border-color: var(--line); }
+  .btn.sm { padding: 7px 10px; font-size: 9px; }
+
+  .banner {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 10px 14px; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; z-index: 32;
+  }
+  .banner.red { background: var(--hazard); color: var(--crt); }
+  .banner.red .sub { font-weight: 400; opacity: .8; }
+  .banner.red .btn { background: var(--crt); color: var(--hazard); border: 1px solid var(--crt); padding: 5px 9px; font-size: 9px; }
+
+  .dot { width: 7px; height: 7px; display: inline-block; }
+  .dot.g { background: var(--green); animation: breathe 2.4s ease-in-out infinite; }
+  .dot.r { background: var(--hazard); animation: breathe 2.4s ease-in-out infinite; }
+  .dot.d { background: var(--dim-2); }
+  @keyframes breathe { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.78); } }
+
+  .badge { border: 1px solid; padding: 2px 7px; font-size: 8px; font-weight: 700; letter-spacing: .14em; white-space: nowrap; }
+  .badge.on { color: var(--phosphor); border-color: rgba(234,234,234,.55); }
+  .badge.deg { color: var(--hazard); border-color: rgba(230,25,25,.65); }
+  .badge.off { color: var(--dim-2); border-color: rgba(234,234,234,.22); }
+  .badge.cache { color: var(--dim-2); border-color: rgba(234,234,234,.22); }
+
+  .row {
+    display: grid; grid-template-columns: 8px 1fr auto; align-items: center; gap: 10px;
+    padding: 11px 14px; border-bottom: 1px solid var(--line-soft);
+  }
+  .row .n { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+  .row .s { margin-top: 2px; font-size: 8px; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; }
+  .row .meta-r { text-align: right; font-size: 8px; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; white-space: nowrap; }
+
+  .statbar { flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); z-index: 32; }
+  .statbar .cell { background: var(--panel); padding: 10px 12px; }
+  .statbar .cell .v { margin-top: 4px; font-family: var(--display); font-size: 17px; font-weight: 800; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+  .statbar .cell .k { font-size: 7px; letter-spacing: .16em; color: var(--dim); text-transform: uppercase; }
+
+  .tabbar { flex: 0 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); z-index: 32; }
+  .tabbar .tab { padding: 8px 2px 6px; text-align: center; font-size: 7px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim-2); border-top: 2px solid transparent; }
+  .tabbar .tab.active { color: var(--phosphor); border-top-color: var(--hazard); }
+  .tabbar .tab .glyph { display: block; font-size: 11px; margin-bottom: 3px; letter-spacing: 0; }
+
+  .footnote { text-align: center; font-size: 9px; letter-spacing: .14em; color: var(--dim-2); text-transform: uppercase; }
+  figcaption { text-align: center; font-size: 10px; letter-spacing: .16em; color: var(--phosphor); text-transform: uppercase; }
+  figcaption .tag { display: block; margin-top: 3px; font-size: 8px; letter-spacing: .12em; color: var(--hazard); }
+  figcaption .tag.g { color: var(--green); }
+  figcaption .tag.dim { color: var(--dim-2); }
+
+  /* ── Screen-specific ── */
+  .enroll .token { margin: 16px 14px; border: 1px dashed var(--hazard); padding: 14px; }
+  .enroll .token .tkn { font-size: 21px; font-weight: 700; letter-spacing: .08em; color: var(--hazard); font-variant-numeric: tabular-nums; }
+  .enroll .mode { margin: 0 14px 12px; }
+  .enroll .mode .opt { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border: 1px solid var(--line); margin-bottom: 6px; }
+  .enroll .mode .opt.sel { border-color: var(--hazard); }
+  .enroll .mode .opt .radio { width: 9px; height: 9px; border: 1px solid var(--dim); flex: 0 0 auto; }
+  .enroll .mode .opt.sel .radio { border-color: var(--hazard); background: var(--hazard); }
+  .enroll .readouts { margin: 0 14px 12px; border-top: 1px solid var(--line-soft); }
+  .enroll .readouts .ro { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+  .enroll .readouts .ro b { font-weight: 700; color: var(--phosphor); }
+  .enroll .toggle { display: flex; align-items: center; justify-content: space-between; margin: 0 14px; padding: 9px 0; border-top: 1px solid var(--line-soft); }
+  .enroll .toggle .sw-track { width: 34px; height: 17px; border: 1px solid var(--line); position: relative; }
+  .enroll .toggle .sw-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; background: var(--green); }
+  .enroll .cta { margin: 14px; }
+
+  .rate { padding: 16px 14px 14px; border-bottom: 1px solid var(--line); }
+  .rate .num { font-family: var(--display); font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+  .rate .num.stale { color: var(--dim-2); }
+  .rate .num.live { color: var(--green); }
+  .rate .sub { margin-top: 6px; font-size: 8px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; }
+
+  .filters { flex: 0 0 auto; display: flex; border-bottom: 1px solid var(--line); z-index: 32; }
+  .filters .f { flex: 1; padding: 8px 6px; text-align: center; font-size: 8px; font-weight: 700; letter-spacing: .14em; color: var(--dim-2); border-right: 1px solid var(--line-soft); background: var(--crt); }
+  .filters .f.active { background: var(--hazard); color: var(--crt); }
+  .filters .f .c { opacity: .7; font-variant-numeric: tabular-nums; }
+
+  .queue-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+  .queue-meta .cell { background: var(--panel); padding: 9px 12px; }
+  .queue-meta .cell .v { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .queue-meta .cell .k { font-size: 7px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+  .item {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center;
+    padding: 11px 14px; border-bottom: 1px solid var(--line-soft);
+  }
+  .item .who { font-size: 8px; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; }
+  .item .what { font-family: var(--display); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+  .item .state { font-size: 8px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; font-variant-numeric: tabular-nums; }
+  .item .act { grid-column: 2; }
+
+  .conflict-sheet { margin: 12px 14px; border: 1px solid var(--line); background: var(--panel); }
+  .conflict-sheet .cs-h { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line-soft); }
+  .conflict-sheet .cs-h .id { font-size: 12px; font-weight: 700; color: var(--hazard); }
+  .conflict-sheet .opt { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; border-bottom: 1px solid var(--line-soft); }
+  .conflict-sheet .opt.hot { background: rgba(230,25,25,.12); border-bottom: 1px solid var(--hazard); }
+  .conflict-sheet .opt .radio { width: 10px; height: 10px; border: 1px solid var(--dim); flex: 0 0 auto; }
+  .conflict-sheet .opt.sel .radio { border-color: var(--hazard); background: var(--hazard); }
+  .conflict-sheet .opt .t { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .conflict-sheet .opt .d { font-size: 7px; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; }
+  .conflict-sheet .opt .pol { font-size: 7px; letter-spacing: .14em; color: var(--hazard); text-transform: uppercase; }
+
+  .empty-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 28px; text-align: center; }
+  .empty-zone .frame { font-size: 40px; font-weight: 700; letter-spacing: -.02em; color: var(--dim-2); line-height: 1; }
+  .empty-zone .msg { font-size: 10px; font-weight: 700; letter-spacing: .16em; color: var(--phosphor); text-transform: uppercase; }
+  .empty-zone .hint { font-size: 8px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; line-height: 1.7; max-width: 240px; }
+  .empty-zone .ready { display: inline-flex; align-items: center; gap: 7px; margin-top: 4px; padding: 6px 10px; border: 1px solid var(--line); font-size: 8px; letter-spacing: .16em; color: var(--green); text-transform: uppercase; }
+  .empty-zone .ctas { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 6px; }
+
+  .stale-flag { display: inline-block; margin-left: 8px; padding: 1px 6px; border: 1px solid var(--line); font-size: 7px; letter-spacing: .12em; color: var(--dim-2); text-transform: uppercase; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+  <!-- ── Page header ── -->
+  <header class="page-head">
+    <div class="scan"></div>
+    <div class="in">
+      <h1>FORMINT CLOUD <em>/ MOBILE OPS</em></h1>
+      <p class="meta">UNIT / POS-CLOUD-01&nbsp;·&nbsp;REV / 2.6&nbsp;·&nbsp;MODE / TELEMETRY&nbsp;·&nbsp;© 2026 ®</p>
+      <p class="legend">
+        <span><i class="sw on"></i>ONLINE</span>
+        <span><i class="sw deg"></i>DEGRADED / ALERT</span>
+        <span><i class="sw off"></i>OFFLINE / CACHED</span>
+      </p>
+    </div>
+  </header>
+
+  <div class="set">
+
+    <!-- ══════════ 01 · UNIT REGISTRATION ══════════ -->
+    <figure class="phone">
+      <div class="mock"><div class="screen enroll">
+        <div class="island"></div>
+        <div class="statusbar"><span class="time">9:41</span><span class="sig">5G ▮▮▮ ▮ 92%</span></div>
+        <div class="hdr">
+          <span class="t">[ UNIT REGISTRATION ]</span>
+          <span class="m">STEP 1 / 4</span>
+        </div>
+        <div class="body">
+          <div class="token">
+            <p class="label">Device Token</p>
+            <p class="tkn">TKN-7F2A-91C4</p>
+            <p class="dim" style="margin-top:6px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;">SCAN QR OR ENTER MANUALLY</p>
+          </div>
+          <div class="mode">
+            <p class="label" style="margin-bottom:6px;">Sync Mode</p>
+            <div class="opt sel"><span class="radio"></span><span>PUSH / REAL-TIME</span><span class="dim">REC</span></div>
+            <div class="opt"><span class="radio"></span><span>PULL / INTERVAL</span><span class="dim">300S</span></div>
+            <div class="opt"><span class="radio"></span><span>AUTO / ADAPTIVE</span><span class="dim">AI</span></div>
+          </div>
+          <div class="readouts">
+            <div class="ro"><span>WS ENDPOINT</span><b>wss://cloud.formint.app/ws</b></div>
+            <div class="ro"><span>SYNC CONTRACT</span><b>/api/dashboard/v1</b></div>
+            <div class="ro"><span>NODE ID</span><b>POS-01 · BR001</b></div>
+          </div>
+          <div class="toggle">
+            <span style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;">OFFLINE BUFFER</span>
+            <span class="sw-track"></span>
+          </div>
+          <div class="cta"><button class="btn red" style="width:100%;">ENROLL UNIT&nbsp;>>>&nbsp;REGISTER</button></div>
+          <p class="footnote" style="margin:0 14px;">REGISTRATION IS REVOCABLE / REV 2.6</p>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>01 · UNIT REGISTRATION<span class="tag dim">DEVICE ENROLLMENT</span></figcaption>
+    </figure>
+
+    <!-- ══════════ 02 · BRANCH OVERVIEW ══════════ -->
+    <figure class="phone">
+      <div class="mock"><div class="screen">
+        <div class="island"></div>
+        <div class="statusbar"><span class="time">9:41</span><span class="sig">5G ▮▮▮ ▮ 92%</span></div>
+        <div class="hdr">
+          <span class="t">[ BRANCH OVERVIEW ]</span>
+          <span class="m">LIVE / 10S</span>
+        </div>
+        <div class="body">
+          <div class="rate">
+            <p class="label">FLEET SYNC-RATE</p>
+            <p class="num live">94.2<span style="font-size:18px;vertical-align:top;">%</span></p>
+            <p class="sub">ONLINE 5 / 6 BRANCHES · 1 ALERT</p>
+          </div>
+          <div class="statbar">
+            <div class="cell"><p class="v">12</p><p class="k">QUEUED</p></div>
+            <div class="cell"><p class="v">2</p><p class="k">CONFLICTS</p></div>
+            <div class="cell"><p class="v">1</p><p class="k">OFFLINE</p></div>
+          </div>
+          <div class="filters">
+            <span class="f active">ALL <span class="c">6</span></span>
+            <span class="f">ONLINE <span class="c">5</span></span>
+            <span class="f">ALERT <span class="c">1</span></span>
+          </div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="row"><span class="dot g"></span><div><p class="n">Downtown</p><p class="s">BR001 · NODE / N-A1 · POS-FULL</p></div><span class="badge on">ONLINE</span></div>
+            <div class="row"><span class="dot g"></span><div><p class="n">Mall</p><p class="s">BR004 · NODE / N-D4 · POS-FULL</p></div><span class="badge on">ONLINE</span></div>
+            <div class="row"><span class="dot r"></span><div><p class="n">Harbor</p><p class="s">BR002 · NODE / N-B2 · POS-MINI</p></div><span class="badge deg">DEGRADED</span></div>
+            <div class="row"><span class="dot d"></span><div><p class="n">Airport</p><p class="s">BR003 · NODE / N-C3 · POS-FULL</p></div><span class="badge off">OFFLINE</span></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <span class="tab active"><span class="glyph">▦</span>OVERVIEW</span>
+          <span class="tab"><span class="glyph">≣</span>QUEUE</span>
+          <span class="tab"><span class="glyph">⚡</span>CONFLICTS</span>
+          <span class="tab"><span class="glyph">▲</span>ALERTS</span>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>02 · BRANCH OVERVIEW<span class="tag">LIVE ROSTER — ONLINE / DEGRADED</span></figcaption>
+    </figure>
+
+    <!-- ══════════ 03 · SYNC QUEUE ══════════ -->
+    <figure class="phone">
+      <div class="mock"><div class="screen">
+        <div class="island"></div>
+        <div class="statusbar"><span class="time">9:41</span><span class="sig">5G ▮▮▮ ▮ 92%</span></div>
+        <div class="hdr">
+          <span class="t">[ SYNC QUEUE ]</span>
+          <span class="m">BR001 · DOWNTOWN</span>
+        </div>
+        <div class="body">
+          <div class="queue-meta">
+            <div class="cell"><p class="v">12</p><p class="k">PENDING</p></div>
+            <div class="cell"><p class="v">3</p><p class="k">FAILED</p></div>
+            <div class="cell"><p class="v">24S</p><p class="k">BACKLOG</p></div>
+          </div>
+          <div style="border-bottom:1px solid var(--line-soft);padding:8px 14px;display:flex;justify-content:space-between;font-size:8px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;">
+            <span>OLDEST / 02:14</span><span>RATE / 14/S</span><span>WINDOW / 10S</span>
+          </div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="item">
+              <div><p class="who">SALE · BR001</p><p class="what">SALE · TXN-22841</p></div>
+              <span class="state">02:14 · 14/S</span>
+              <div class="act"><button class="btn line-dim sm">RETRY</button></div>
+            </div>
+            <div class="item">
+              <div><p class="who">INVENTORY · BR001</p><p class="what">STOCK · ITM-5519</p></div>
+              <span class="state">02:10 · PUSHED</span>
+              <div class="act"><span class="badge on">SYNCED</span></div>
+            </div>
+            <div class="item">
+              <div><p class="who">PRODUCT · BR004</p><p class="what">MENU · PRD-8821</p></div>
+              <span class="state">02:03 · FAILED</span>
+              <div class="act"><button class="btn line-dim sm">RETRY</button></div>
+            </div>
+            <div class="item">
+              <div><p class="who">SALE · BR002</p><p class="what">SALE · TXN-22837</p></div>
+              <span class="state">01:58 · 14/S</span>
+              <div class="act"><button class="btn line-dim sm">RETRY</button></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);">
+            <button class="btn line sm" style="flex:1;">FLUSH</button>
+            <button class="btn red sm" style="flex:1;">PAUSE</button>
+          </div>
+        </div>
+        <div class="tabbar">
+          <span class="tab"><span class="glyph">▦</span>OVERVIEW</span>
+          <span class="tab active"><span class="glyph">≣</span>QUEUE</span>
+          <span class="tab"><span class="glyph">⚡</span>CONFLICTS</span>
+          <span class="tab"><span class="glyph">▲</span>ALERTS</span>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>03 · SYNC QUEUE<span class="tag dim">PER-BRANCH INSPECTION</span></figcaption>
+    </figure>
+
+    <!-- ══════════ 04 · CONFLICT LOG ══════════ -->
+    <figure class="phone">
+      <div class="mock"><div class="screen">
+        <div class="island"></div>
+        <div class="statusbar"><span class="time">9:41</span><span class="sig">5G ▮▮▮ ▮ 92%</span></div>
+        <div class="hdr">
+          <span class="t">[ CONFLICT LOG ]</span>
+          <span class="m">2 PENDING</span>
+        </div>
+        <div class="body">
+          <div class="conflict-sheet">
+            <div class="cs-h">
+              <span class="id">CNF-117</span>
+              <span class="dim" style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;">SALE · TXN-22841</span>
+            </div>
+            <div style="padding:10px 12px;border-bottom:1px solid var(--line-soft);">
+              <p class="label">RESOLUTION POLICY</p>
+              <p class="dim" style="margin-top:4px;font-size:8px;letter-spacing:.1em;line-height:1.7;text-transform:uppercase;">FIELD CONFLICT ON PRICE / QTY — LAST-WRITE-WINS UNAVAILABLE</p>
+            </div>
+            <div class="opt hot sel">
+              <span class="radio"></span>
+              <span><span class="t">USE REMOTE</span><br /><span class="d">CLOUD VERSION / AUTHORITATIVE</span></span>
+              <span class="pol">POLICY</span>
+            </div>
+            <div class="opt">
+              <span class="radio"></span>
+              <span><span class="t">USE LOCAL</span><br /><span class="d">BR001 VERSION / OFFLINE COPY</span></span>
+            </div>
+            <div class="opt">
+              <span class="radio"></span>
+              <span><span class="t">MERGE FIELDS</span><br /><span class="d">3-WAY / FIELD-LEVEL MERGE</span></span>
+            </div>
+          </div>
+          <div style="margin:0 14px 12px;display:flex;gap:8px;">
+            <button class="btn line sm" style="flex:1;">DISMISS</button>
+            <button class="btn red sm" style="flex:1;">APPLY &amp; SYNC</button>
+          </div>
+          <p class="footnote" style="margin:0 14px;">RESOLUTION LOGS TO AUDIT / REV 2.6</p>
+        </div>
+        <div class="tabbar">
+          <span class="tab"><span class="glyph">▦</span>OVERVIEW</span>
+          <span class="tab"><span class="glyph">≣</span>QUEUE</span>
+          <span class="tab active"><span class="glyph">⚡</span>CONFLICTS</span>
+          <span class="tab"><span class="glyph">▲</span>ALERTS</span>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>04 · CONFLICT LOG<span class="tag">RESOLUTION SHEET — USE REMOTE</span></figcaption>
+    </figure>
+
+    <!-- ══════════ 05 · LINK LOST — WS ERROR STATE (NEW) ══════════ -->
+    <figure class="phone">
+      <div class="mock"><div class="screen">
+        <div class="island"></div>
+        <div class="statusbar"><span class="time">9:41</span><span class="sig" style="color:var(--hazard);">— — — 0%</span></div>
+        <div class="hdr">
+          <span class="t" style="color:var(--dim);">[ BRANCH OVERVIEW ]</span>
+          <span class="m">STALE / 04:12</span>
+        </div>
+        <div class="banner red">
+          <span>&gt;&gt;&gt; LINK LOST / WS DISCONNECTED<span class="sub" style="display:block;margin-top:2px;">AUTO-RETRY IN 04S</span></span>
+          <button class="btn">RETRY</button>
+        </div>
+        <div class="body">
+          <div class="rate">
+            <p class="label">FLEET SYNC-RATE <span class="stale-flag">STALE</span></p>
+            <p class="num stale">94.2<span style="font-size:18px;vertical-align:top;">%</span></p>
+            <p class="sub">LAST KNOWN / 04:12 AGO · DATA CACHED LOCALLY</p>
+          </div>
+          <div style="flex:1;overflow:hidden;opacity:.55;">
+            <div class="row"><span class="dot d"></span><div><p class="n">Downtown</p><p class="s">BR001 · NODE / N-A1</p></div><span class="badge cache">CACHED</span></div>
+            <div class="row"><span class="dot d"></span><div><p class="n">Mall</p><p class="s">BR004 · NODE / N-D4</p></div><span class="badge cache">CACHED</span></div>
+            <div class="row"><span class="dot d"></span><div><p class="n">Harbor</p><p class="s">BR002 · NODE / N-B2</p></div><span class="badge cache">CACHED</span></div>
+            <div class="row"><span class="dot d"></span><div><p class="n">Airport</p><p class="s">BR003 · NODE / N-C3</p></div><span class="badge cache">CACHED</span></div>
+          </div>
+          <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);">
+            <button class="btn line red sm" style="flex:1;border-color:var(--hazard);color:var(--hazard);">RETRY LINK</button>
+            <button class="btn line-dim sm" style="flex:1;">GO OFFLINE</button>
+          </div>
+        </div>
+        <div class="tabbar">
+          <span class="tab active" style="color:var(--dim-2);border-top-color:transparent;"><span class="glyph">▦</span>OVERVIEW</span>
+          <span class="tab"><span class="glyph">≣</span>QUEUE</span>
+          <span class="tab"><span class="glyph">⚡</span>CONFLICTS</span>
+          <span class="tab"><span class="glyph">▲</span>ALERTS</span>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>05 · LINK LOST<span class="tag">WS ERROR STATE — RETRY</span></figcaption>
+    </figure>
+
+    <!-- ══════════ 06 · FIRST RUN — EMPTY QUEUE (NEW) ══════════ -->
+    <figure class="phone">
+      <div class="mock"><div class="screen">
+        <div class="island"></div>
+        <div class="statusbar"><span class="time">9:41</span><span class="sig">5G ▮▮▮ ▮ 92%</span></div>
+        <div class="hdr">
+          <span class="t">[ SYNC QUEUE ]</span>
+          <span class="m">MODE / FIRST RUN</span>
+        </div>
+        <div class="body">
+          <div class="queue-meta">
+            <div class="cell"><p class="v">0</p><p class="k">PENDING</p></div>
+            <div class="cell"><p class="v">0</p><p class="k">FAILED</p></div>
+            <div class="cell"><p class="v">0S</p><p class="k">BACKLOG</p></div>
+          </div>
+          <div class="empty-zone">
+            <p class="frame">&lt; [ &nbsp;&nbsp;] &gt;</p>
+            <p class="msg">QUEUE EMPTY / NO PENDING ITEMS</p>
+            <p class="hint">OUTBOUND ITEMS APPEAR HERE WHEN A BRANCH SYNCES — SALES, INVENTORY &amp; PRODUCT CHANGES</p>
+            <p class="ready"><span class="dot g"></span>CHANNEL READY / RECEIVER LISTENING</p>
+            <div class="ctas">
+              <button class="btn red" style="width:100%;">START INITIAL SYNC</button>
+              <button class="btn line-dim" style="width:100%;">ENROLL FIRST TERMINAL</button>
+            </div>
+          </div>
+          <p class="footnote" style="margin:0 14px 10px;">NEXT POLL / 10S · EST BACKLOG / 0S</p>
+        </div>
+        <div class="tabbar">
+          <span class="tab"><span class="glyph">▦</span>OVERVIEW</span>
+          <span class="tab active"><span class="glyph">≣</span>QUEUE</span>
+          <span class="tab"><span class="glyph">⚡</span>CONFLICTS</span>
+          <span class="tab"><span class="glyph">▲</span>ALERTS</span>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>06 · FIRST RUN<span class="tag g">EMPTY QUEUE — READY</span></figcaption>
+    </figure>
+
+  </div>
+
+  <footer style="max-width:1200px;margin:48px auto 0;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;font-size:9px;letter-spacing:.14em;color:var(--dim-2);text-transform:uppercase;">
+    <span>© 2026 FORMINT CLOUD ® · MOBILE OPS / CONCEPT SET · REV 2.6</span>
+    <span>SCREENS 05–06 · ERROR + FIRST-RUN STATES</span>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,205 @@
+// ══════════════════════════════════════════════════════════════════════
+// TACTICAL TELEMETRY — Base / Admin Skeleton
+// ──────────────────────────────────────────────────────────────────────
+// Global overrides that re-skin Unfold's compiled Tailwind skeleton.
+// Loaded AFTER unfold's styles.css via UNFOLD["STYLES"], so rules here
+// win on specificity or !important.  Every surface inherits this layer.
+// ══════════════════════════════════════════════════════════════════════
+
+@use "tokens" as *;
+
+// ── Shared token bridge (CSS custom properties) ───────────────────────
+// SCSS variables are compile-time; these runtime variables let inline
+// styles, dashboard templates, and JS read the same tokens.
+:root {
+    --tactical-bg: #{$tactical-bg};
+    --tactical-bg-raised: #{$tactical-bg-raised};
+    --tactical-bg-hover: #{$tactical-bg-hover};
+    --tactical-grid: #{$tactical-grid};
+    --tactical-grid-strong: #{$tactical-grid-strong};
+    --tactical-fg: #{$tactical-fg};
+    --tactical-fg-dim: #{$tactical-fg-dim};
+    --tactical-fg-faint: #{$tactical-fg-faint};
+    --tactical-red: #{$tactical-red};
+    --tactical-red-bright: #{$tactical-red-bright};
+    --tactical-green: #{$tactical-green};
+    --tactical-font-mono: #{$tactical-font-mono};
+    --tactical-font-grotesk: #{$tactical-font-grotesk};
+    --tactical-radius: #{$tactical-radius};
+    --tactical-tracking: #{$tactical-tracking};
+}
+
+// ── Geometry mandate: zero radius everywhere, unconditionally ──────────
+*,
+*::before,
+*::after {
+    border-radius: 0 !important;
+}
+
+// ── Substrate ──────────────────────────────────────────────────────────
+body {
+    background-color: $tactical-bg;
+    color: $tactical-fg;
+    font-family: $tactical-font-mono;
+    font-size: $tactical-size-body;
+    line-height: $tactical-leading;
+    letter-spacing: 0.02em;
+}
+
+// Mechanical noise — fixed, pointer-events-none, never on scroll content.
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    background-image: $tactical-grain-url;
+    opacity: 0.35;
+}
+
+// ── Selection & focus (hazard red, mechanical) ─────────────────────────
+::selection {
+    background: $tactical-red;
+    color: $tactical-fg;
+}
+
+:focus-visible {
+    outline: $tactical-line-strong solid $tactical-red;
+    outline-offset: 1px;
+}
+
+// ── Scrollbars (square, phosphor-on-grid) ──────────────────────────────
+* {
+    scrollbar-width: thin;
+    scrollbar-color: $tactical-grid-strong $tactical-bg;
+}
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+*::-webkit-scrollbar-track {
+    background: $tactical-bg;
+}
+*::-webkit-scrollbar-thumb {
+    background: $tactical-grid-strong;
+    border: 1px solid $tactical-grid;
+}
+
+// ── Unfold skeleton re-skin ────────────────────────────────────────────
+// Topbar: a machined rail with a hazard underline.
+#header {
+    background: $tactical-bg-raised !important;
+    border-bottom: $tactical-line solid $tactical-grid !important;
+    border-radius: 0 !important;
+    color: $tactical-fg !important;
+
+    a,
+    .header-link {
+        color: $tactical-fg-dim !important;
+        text-transform: uppercase;
+        letter-spacing: $tactical-tracking;
+        font-size: $tactical-size-small;
+
+        &:hover {
+            color: $tactical-red !important;
+        }
+    }
+}
+
+// Sidebar: compartment with a vertical hazard edge.
+#nav-sidebar,
+aside[class*="navigation"] {
+    background: $tactical-bg !important;
+    border-right: $tactical-line solid $tactical-grid !important;
+
+    .nav-link,
+    a {
+        color: $tactical-fg-dim !important;
+        text-transform: uppercase;
+        letter-spacing: $tactical-tracking;
+        font-size: $tactical-size-small;
+        border-radius: 0 !important;
+
+        &:hover {
+            background: $tactical-bg-hover !important;
+            color: $tactical-fg !important;
+        }
+    }
+}
+
+// Main content well.
+#main {
+    background: $tactical-bg !important;
+}
+
+#content {
+    color: $tactical-fg;
+}
+
+// Links inside content: phosphor underline → hazard on hover.
+#content a:not(.tactical-btn) {
+    color: $tactical-fg;
+    text-decoration: underline;
+    text-decoration-color: $tactical-grid-strong;
+    text-underline-offset: 3px;
+
+    &:hover {
+        color: $tactical-red;
+        text-decoration-color: $tactical-red;
+    }
+}
+
+// Breadcrumbs — mono metadata.
+.breadcrumbs {
+    color: $tactical-fg-dim !important;
+    font-size: $tactical-size-small;
+    letter-spacing: $tactical-tracking;
+    text-transform: uppercase;
+
+    a {
+        color: $tactical-fg-dim;
+    }
+}
+
+// Headings — grotesk macro type, tight tracking, uppercase.
+h1,
+h2,
+h3 {
+    font-family: $tactical-font-grotesk;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: $tactical-fg;
+}
+
+// Data values — monospace with wide tracking.
+.small,
+.stat,
+[data-tactical-stat] {
+    font-family: $tactical-font-mono;
+    letter-spacing: $tactical-tracking;
+}
+
+// Shared mechanical button — used by login, dashboard, object-tools.
+.tactical-btn {
+    @include tactical-btn-base;
+}
+
+.tactical-btn-primary {
+    @include tactical-btn-primary;
+}
+
+.tactical-btn-outline {
+    @include tactical-btn-outline;
+}
+
+// Reduced motion: kill the phosphor blink + grain cost.
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

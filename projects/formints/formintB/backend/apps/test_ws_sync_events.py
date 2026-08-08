@@ -184,3 +184,50 @@ class SyncEventsWebSocketTests(TransactionTestCase):
         frame = await comm.receive_json_from(timeout=5)
         self.assertEqual(frame["type"], "error")
         await comm.disconnect()
+
+    async def test_terminal_connect_broadcasts_link_event(self):
+        """Connecting a terminal pushes a sync_event to other clients.
+
+        The sync monitor depends on this signal to refetch branch health in
+        real time. The frame keeps the documented sync_event shape, and the
+        originating connection does not receive its own broadcast.
+        """
+        monitor = await self._connect()  # dashboard-style client, no identify
+        terminal = WebsocketCommunicator(SyncEventConsumer.as_asgi(), "/ws/sync-events/")
+        connected, _ = await terminal.connect()
+        self.assertTrue(connected)
+        try:
+            frame = await monitor.receive_json_from(timeout=5)
+            self.assertEqual(frame["entity_type"], "terminal_connected")
+            self.assertEqual(frame["synced"], 1)
+            self.assertEqual(set(frame), {
+                "entity_type", "synced", "branch", "node_id", "timestamp",
+            })
+            # The terminal itself must NOT receive its own connect broadcast.
+            from asgiref.timeout import timeout
+            with self.assertRaises(asyncio.TimeoutError):
+                async with timeout(0.3):
+                    await terminal.receive_json_from()
+        finally:
+            await terminal.disconnect()
+            await monitor.disconnect()
+
+    async def test_terminal_disconnect_broadcasts_link_event(self):
+        """Disconnecting a terminal pushes terminal_disconnected to peers."""
+        monitor = await self._connect()
+        terminal = await self._connect({"branch_code": "WS001", "node_id": "node-2"})
+        try:
+            # Drain the terminal's connect broadcast first.
+            first = await monitor.receive_json_from(timeout=5)
+            self.assertEqual(first["entity_type"], "terminal_connected")
+
+            await terminal.disconnect()
+            frame = await monitor.receive_json_from(timeout=5)
+            self.assertEqual(frame["entity_type"], "terminal_disconnected")
+            self.assertEqual(frame["branch"], "WS001")
+            self.assertEqual(frame["node_id"], "node-2")
+            self.assertEqual(set(frame), {
+                "entity_type", "synced", "branch", "node_id", "timestamp",
+            })
+        finally:
+            await monitor.disconnect()

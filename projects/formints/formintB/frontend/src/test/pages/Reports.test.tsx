@@ -169,10 +169,10 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.overview|Overview/)).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Overview/ })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText(/reports\.overview|Overview/));
+    await userEvent.click(screen.getByRole('tab', { name: /Overview/ }));
 
     await waitFor(() => {
       expect(screen.getByText(/reports\.totalOrders|Total Orders/)).toBeInTheDocument();

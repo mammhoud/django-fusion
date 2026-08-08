@@ -57,6 +57,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Inject WebSocket event listener into bolt dashboard pages
     "apps.handlers.middleware.BoltSyncEventsMiddleware",
+    # JSON 401 (not a login redirect) for anonymous /api/* viewset calls
+    "apps.handlers.middleware.ApiAuthMiddleware",
 ]
 
 ROOT_URLCONF = "configs.urls"
@@ -133,10 +135,14 @@ UNFOLD = {
         "dark": "/static/pos-crest.svg",
     },
     "SITE_SYMBOL": "store",
-    "DASHBOARD": "configs.dashboard.POSCloudDashboard",
+    # Custom KPI dashboard context (rendered by templates/admin/index.html).
+    "DASHBOARD_CALLBACK": "configs.dashboard.dashboard_callback",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
     "THEME": "dark",
+    # Tactical Telemetry design system — shared SCSS token layer
+    # (source: apps/core/static/tactical/scss/, build: make styles).
+    "STYLES": ["/static/tactical/css/tactical.css"],
     "COLORS": {
         "primary": {
             "50": "240 253 244",

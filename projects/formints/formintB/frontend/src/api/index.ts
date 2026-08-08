@@ -36,3 +36,12 @@ export type {
   SyncEventsOptions,
   SyncEventsConnection,
 } from './sync-events';
+
+export { dashboard } from './dashboard';
+export type {
+  BranchHealth,
+  BranchesHealthResponse,
+  QueueSummary,
+  ConflictStats,
+  DashboardResponse,
+} from './dashboard';
