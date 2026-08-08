@@ -24,6 +24,8 @@ export default defineConfig({
         '/employee': { target: 'http://127.0.0.1:8075', changeOrigin: true },
         '/checkout': { target: 'http://127.0.0.1:8075', changeOrigin: true },
         '/orders': { target: 'http://127.0.0.1:8075', changeOrigin: true },
+        // django-fusion render-mode / navigation / assets / session-mode
+        '/fusion': { target: 'http://127.0.0.1:8075', changeOrigin: true },
         '/static': { target: 'http://127.0.0.1:8075', changeOrigin: true },
         '/media': { target: 'http://127.0.0.1:8075', changeOrigin: true },
         '/django-admin': { target: 'http://127.0.0.1:8075', changeOrigin: true },
