@@ -30,6 +30,7 @@ services:
       sh -c "python manage.py migrate --noinput
       && python manage.py collectstatic --noinput
       && python manage.py seed_pages
+      && python manage.py seed_learning
       && exec gunicorn wsgi:application --bind 0.0.0.0:8074 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8074/apis/pages/\", timeout=4)' "]

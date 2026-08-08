@@ -49,9 +49,9 @@
 <section class="container-fusion" style="padding-block:1.75rem 0;">
   <div class="product-lockup" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
     {% include "content/blocks/product_logo.html" with logo_style=page.logo_style %}
-    <div>
-      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ page.title }}</h2>
-      {% if page.tagline %}<p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">{{ page.tagline }}</p>{% endif %}
+    <div>        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ page.title }}</h2>
+      {% if page.version %}<p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">{{ page.version }}</p>{% endif %}
+      {% if page.tagline %}<p style="margin:.15rem 0 0;color:hsl(var(--fu-text) / .7);font-size:.875rem;">{{ page.tagline }}</p>{% endif %}
     </div>
     {% comment %} Brand tooltip trigger — opens the brand modal (base.html).
        Hover shows the essence tooltip; click opens the full brand board. {% endcomment %}
@@ -140,6 +140,7 @@
         </div>
       </div>
       <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;margin:0;color:hsl(var(--fu-ink));">{{ card.title }}</h3>
+      {% if card.version %}<p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted">{{ card.version }}</p>{% endif %}
       {% if card.tagline %}<p style="color:hsl(var(--fu-text) / .7);font-size:.875rem;line-height:1.6;margin:0;">{{ card.tagline }}</p>{% endif %}
       {% if card.editions %}
       <div style="display:flex;flex-wrap:wrap;gap:.35rem;">
@@ -211,7 +212,10 @@
             {% endfor %}
           </ul>
           {% endif %}
-          <a href="/products/{{ product.slug }}/#editions" class="mt-auto w-full {% if edition.tier == 'featured' %}btn-primary{% else %}btn-secondary{% endif %}">See {{ product.title }} →</a>
+          <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:.5rem;">
+            <a href="/products/{{ product.slug }}/#editions" class="w-full {% if edition.tier == 'featured' %}btn-primary{% else %}btn-secondary{% endif %}">See {{ product.title }} →</a>
+            <a href="{{ edition.preview_href }}" class="w-full text-center" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">View edition preview →</a>
+          </div>
         </article>
         {% endfor %}
       </div>
@@ -253,12 +257,36 @@
 </section>
 {% endif %}
 
-{% comment %} Reference snippets (ProductPage) — code/models other projects can copy. {% endcomment %}
-{% if page.snippets %}
-<section id="snippets" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.snippets %}
+{% comment %} Product preview gallery — edition captures are the public visual
+   preview road. Legacy ``page.snippets`` remains editable in Wagtail and is
+   intentionally not rendered here. {% endcomment %}
+{% with preview_gallery=page.get_preview_gallery %}
+{% if preview_gallery %}
+<section id="previews" class="container-fusion" style="padding-block:4rem 5rem;">
+  <div class="mb-12 max-w-2xl">
+    <span class="tag-marker">product preview</span>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.875rem;margin:.75rem 0 .5rem;">See it in motion</h2>
+    <p style="color:hsl(var(--fu-text) / .7);font-size:.875rem;margin:0;">A few real screens and captures from the editions, served from the same gallery used by the preview pages.</p>
+  </div>
+  <div class="preview-gallery__grid" style="display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+    {% for image in preview_gallery %}
+    <figure class="preview-gallery__item card overflow-hidden bg-fu-card reveal" style="--reveal-i: {{ forloop.counter0 }}" x-data x-intersect.once="$el.classList.add('reveal-visible')">
+      <div class="preview-gallery__media">
+        {% if image.kind == "video" %}
+        <video src="{{ image.url }}"{% if image.poster %} poster="{{ image.poster }}"{% endif %} controls muted playsinline preload="metadata"{% if image.alt %} aria-label="{{ image.alt }}"{% elif image.label %} aria-label="{{ image.label }}"{% else %} aria-label="Product preview video"{% endif %} class="block aspect-[16/10] w-full object-cover object-top" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">Your browser cannot play this video.</video>
+        <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">Video preview unavailable. <a href="{{ image.url }}">Open the recording</a>.</p>
+        {% else %}
+        <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy" decoding="async" class="block aspect-[16/10] w-full object-cover object-top" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+        <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">Preview unavailable. <a href="{{ image.url }}">Open this capture</a>.</p>
+        {% endif %}
+      </div>
+      {% if image.label %}<figcaption class="border-t border-fu-line px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{{ image.label }}</figcaption>{% endif %}
+    </figure>
+    {% endfor %}
+  </div>
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Team grid (TeamPage, /about/team/) — member cards rendered by content/blocks/team.html. {% endcomment %}
 {% if page.team %}

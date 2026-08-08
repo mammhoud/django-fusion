@@ -1,4 +1,7 @@
 import { staticPageData } from './content-translations';
+import type { LangCode } from './translations';
+
+export const SUPPORTED_LANGUAGE_CODES: LangCode[] = ['en', 'ar', 'sv', 'fr', 'de', 'es', 'pt'];
 
 /**
  * Landing-fusion API client — fetches all data from the Wagtail/django-fusion backend.
@@ -16,12 +19,20 @@ import { staticPageData } from './content-translations';
  */
 
 /** Build-time content locale for static Astro output (override with PUBLIC_CONTENT_LANGUAGE=ar). */
-export const CONTENT_LANGUAGE: 'en' | 'ar' = import.meta.env.PUBLIC_CONTENT_LANGUAGE === 'ar' ? 'ar' : 'en';
+export const CONTENT_LANGUAGE: LangCode = (() => {
+  const requested = import.meta.env.PUBLIC_CONTENT_LANGUAGE as string | undefined;
+  return requested && SUPPORTED_LANGUAGE_CODES.includes(requested as LangCode)
+    ? (requested as LangCode)
+    : 'en';
+})();
 
 /** Base URL for the Django backend. Set PUBLIC_FUSION_API_URL env var to override. */
 export const API_BASE: string =
   (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) ||
-  'http://localhost:8074';
+  // Use an explicit IPv4 loopback by default. On Linux, `localhost` can
+  // resolve to ::1 first while Django's development server is bound to
+  // 127.0.0.1, which makes Astro's static build fail with ECONNREFUSED.
+  'http://127.0.0.1:8074';
 
 async function fetchJSON<T>(path: string): Promise<T> {
   const url = `${API_BASE}${path}`;
@@ -99,8 +110,8 @@ export interface NavItem {
 
 export interface NavigationData {
   nav_items: NavItem[];
-  language?: 'en' | 'ar';
-  available_languages?: ('en' | 'ar')[];
+  language?: LangCode;
+  available_languages?: LangCode[];
 }
 
 export interface ContentLanguage {
@@ -170,11 +181,13 @@ export interface PageData {
   tech?: string[];
   editions?: Record<string, any>[];
   comparison?: Record<string, any>[];
-  snippets?: Record<string, any>[];
+  /** Deduplicated edition captures used by the product detail gallery. */
+  preview_gallery?: PreviewMedia[];
   products?: {
     title: string;
     slug: string;
     tagline: string;
+    version?: string;
     href: string;
     category?: string;
     logo_style?: string;
@@ -185,6 +198,7 @@ export interface PageData {
   }[];
   // ProductPage catalog fields
   logo_style?: string;
+  version?: string;
   tagline?: string;
   status?: string;
   hidden?: boolean;
@@ -204,10 +218,10 @@ export interface PageData {
   post_date?: string;
   read_time?: string;
   excerpt?: string;
-  language?: 'en' | 'ar';
-  available_languages?: ('en' | 'ar')[];
+  language?: LangCode;
+  available_languages?: LangCode[];
   translation_source?: 'model' | 'fallback' | 'canonical';
-  translation_language?: 'en' | 'ar';
+  translation_language?: LangCode;
 }
 
 export interface PageListItem {
@@ -222,10 +236,19 @@ export interface PageListData {
   total: number;
 }
 
+export interface PreviewMedia {
+  url: string;
+  kind?: 'image' | 'gif' | 'video';
+  poster?: string;
+  label?: string;
+  alt?: string;
+}
+
 export interface PricingProduct {
   slug: string;
   title: string;
   tagline: string;
+  version?: string;
   logo_style: string;
   status: string;
   href: string;
@@ -241,6 +264,8 @@ export interface PricingProduct {
     offer_old_price?: string;
     cta_label?: string;
     cta_href?: string;
+    preview_href?: string;
+    preview_images?: PreviewMedia[];
   }[];
 }
 
@@ -305,19 +330,19 @@ export async function fetchSiteSettingsWithFallback(): Promise<SiteSettings> {
 }
 
 /** Fetch main navigation from published Wagtail pages. */
-export function fetchNavigation(language: 'en' | 'ar' = CONTENT_LANGUAGE): Promise<NavigationData> {
-  const query = language === 'en' ? '' : '?lang=ar';
+export function fetchNavigation(language: LangCode = CONTENT_LANGUAGE): Promise<NavigationData> {
+  const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
   return fetchJSON<NavigationData>(`/apis/navigation/${query}`);
 }
 
-export async function fetchNavigationWithFallback(language: 'en' | 'ar' = CONTENT_LANGUAGE): Promise<NavigationData> {
+export async function fetchNavigationWithFallback(language: LangCode = CONTENT_LANGUAGE): Promise<NavigationData> {
   try {
     return await fetchNavigation(language);
   } catch {
     const arabic = language === 'ar';
     return {
       language,
-      available_languages: ['en', 'ar'],
+      available_languages: SUPPORTED_LANGUAGE_CODES,
       nav_items: [
         { label: arabic ? 'الرئيسية' : 'Home', href: '/' },
         { label: arabic ? 'الخدمات' : 'Services', href: '/services/' },
@@ -347,8 +372,8 @@ export function fetchPricing(): Promise<PricingData> {
 }
 
 /** Fetch full page data for a single page by slug. */
-export function fetchPageData(slug: string, language: 'en' | 'ar' = CONTENT_LANGUAGE): Promise<PageData> {
-  const query = language === 'en' ? '' : '?lang=ar';
+export function fetchPageData(slug: string, language: LangCode = CONTENT_LANGUAGE): Promise<PageData> {
+  const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
   return fetchJSON<PageData>(`/apis/pages/${slug}/${query}`);
 }
 
@@ -358,7 +383,7 @@ export function fetchPageData(slug: string, language: 'en' | 'ar' = CONTENT_LANG
  */
 export async function fetchPageDataWithFallback(
   slug: string,
-  language: 'en' | 'ar' = CONTENT_LANGUAGE,
+  language: LangCode = CONTENT_LANGUAGE,
 ): Promise<PageData> {
   try {
     return await fetchPageData(slug, language);
@@ -394,8 +419,8 @@ async function fetchCached<T>(key: string, fetcher: () => Promise<T>): Promise<T
 
 export const cachedAssets = () => fetchCached('assets', fetchAssets);
 export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettingsWithFallback);
-export const cachedNavigation = (language: 'en' | 'ar' = CONTENT_LANGUAGE) => fetchCached(`navigation:${language}`, () => fetchNavigationWithFallback(language));
+export const cachedNavigation = (language: LangCode = CONTENT_LANGUAGE) => fetchCached(`navigation:${language}`, () => fetchNavigationWithFallback(language));
 export const cachedContact = () => fetchCached('contact', fetchContact);
 export const cachedPricing = () => fetchCached('pricing', fetchPricing);
-export const cachedPageData = (slug: string, language: 'en' | 'ar' = CONTENT_LANGUAGE) =>
+export const cachedPageData = (slug: string, language: LangCode = CONTENT_LANGUAGE) =>
   fetchCached(`page:${slug}:${language}`, () => fetchPageDataWithFallback(slug, language));

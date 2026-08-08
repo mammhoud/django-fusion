@@ -42,6 +42,10 @@ class LandingSite(Site):
         ("about", "About", True),
         ("services", "Services", True),
         ("products", "Products", True),
+        # Learning remains directly reachable at /learning/ and available from
+        # authenticated profile/dashboard surfaces, but is intentionally not a
+        # primary marketing-header destination.
+        ("learning", "Learn", False),
         ("features", "Features", False),       # linked from /products
         ("blog", "Blog", True),
         ("pricing", "Pricing", True),
@@ -59,8 +63,7 @@ class LandingSite(Site):
     # Dropdown children for nav items whose subpages are NOT all real Wagtail
     # children (e.g. About → founder/startup are Astro/view-backed routes, not
     # seeded pages). Merged with tree-derived children; ``href`` keys dedupe.
-    NAV_CHILDREN_CURATED: dict[str, list[dict[str, str]]] = {
-        "about": [
+    NAV_CHILDREN_CURATED: dict[str, list[dict[str, str]]] = {            "about": [
             {"label": "Team", "href": "/about/team/"},
             {"label": "Founder", "href": "/about/founder/"},
             {"label": "Startup", "href": "/about/startup/"},

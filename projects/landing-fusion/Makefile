@@ -4,7 +4,7 @@
 NODE_BIN := $(shell ls -d $(HOME)/.nvm/versions/node/v22.* 2>/dev/null | sort -V | tail -1)/bin
 export PATH := $(NODE_BIN):$(PATH)
 
-.PHONY: help install dev build preview check css clean \
+.PHONY: help install dev build preview check css clean e2e \
         backend-help backend-dev backend-check backend-migrate backend-seed backend-test
 
 help:
@@ -35,6 +35,10 @@ preview:
 
 check:
 	cd frontend && npm run check
+
+e2e:
+	@echo "The Django backend and Astro dev server must be running before this browser smoke test."
+	cd frontend && npm run test:e2e
 
 clean:
 	cd frontend && rm -rf dist .astro node_modules

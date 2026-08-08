@@ -38,7 +38,7 @@ const pageCta = pageData?.cta;
 const pageTech = (pageData?.tech as any[] | undefined);
 const pageEditions = (pageData?.editions as any[] | undefined);
 const pageComparison = (pageData?.comparison as any[] | undefined);
-const pageSnippets = (pageData?.snippets as any[] | undefined);
+const pagePreviewGallery = (pageData?.preview_gallery as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 
@@ -52,6 +52,7 @@ const editions = pageEditions?.map((e: any) => ({
   offerLabel: String(e.offer_label || ''),
   offerOldPrice: String(e.offer_old_price || ''),
   cta: { label: String(e.cta_label || ''), href: String(e.cta_href || '') },
+  previewHref: String(e.preview_href || ''),
   tier: String(e.tier || 'default'),
 }));
 
@@ -62,6 +63,7 @@ function editionCardClass(tier: string): string {
   if (tier === 'outline') return 'edition__card--outline';
   return '';
 }
+const firstEditionPreviewHref = editions?.find((edition) => edition.previewHref)?.previewHref;
 const comparison = pageComparison?.[0] && ({
   eyebrow: String(pageComparison[0].eyebrow || ''),
   title: String(pageComparison[0].title || ''),
@@ -69,11 +71,13 @@ const comparison = pageComparison?.[0] && ({
   columns: (pageComparison[0].columns || []) as string[],
   rows: (pageComparison[0].rows || []) as { feature: string; cells: string[] }[],
 });
-const snippets = pageSnippets?.map((s: any) => ({
-  title: String(s.title || ''),
-  language: String(s.language || ''),
-  code: String(s.code || ''),
-}));
+const previewGallery = pagePreviewGallery?.map((media: any) => ({
+  url: String(media.url || ''),
+  kind: String(media.kind || 'image') as 'image' | 'gif' | 'video',
+  poster: String(media.poster || ''),
+  label: String(media.label || ''),
+  alt: String(media.alt || 'Product preview'),
+})).filter((media) => media.url);
 const capabilities = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || ''),
   title: String(f.title || ''),
@@ -114,8 +118,11 @@ const faqItems = pageFaq?.map((f: any) => ({
       <div class='product-lockup flex flex-wrap items-center gap-4'>
         <ProductLogo style={pageData.logo_style} />
         <div>
-          <h2 class='font-display text-2xl font-bold tracking-tight text-fu-ink' style='margin:0'>{pageData.title}</h2>
-          {pageData.tagline && <p class='mt-0.5 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted' style='margin:0'>{pageData.tagline}</p>}
+          <div>
+            <h2 class='font-display text-2xl font-bold tracking-tight text-fu-ink' style='margin:0'>{pageData.title}</h2>
+            {pageData.version && <p class='mt-0.5 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted' style='margin:0'>{pageData.version}</p>}
+            {pageData.tagline && <p class='mt-0.5 text-sm text-fu-muted' style='margin:0'>{pageData.tagline}</p>}
+          </div>
         </div>
         <button
           type='button'
@@ -186,7 +193,10 @@ const faqItems = pageFaq?.map((f: any) => ({
                   </li>
                 ))}
               </ul>
-              <a href={ed.cta.href} class:list={['mt-auto w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
+              <div class='mt-auto flex flex-wrap gap-2'>
+                <a href={ed.cta.href} class:list={['w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
+                {ed.previewHref && <a href={ed.previewHref} class='w-full text-center font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>View edition preview →</a>}
+              </div>
             </div>
           ))}
         </div>
@@ -240,24 +250,37 @@ const faqItems = pageFaq?.map((f: any) => ({
     </section>
   ) : null}
 
-  {snippets?.length ? (
-    <section id='snippets' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+  {previewGallery?.length ? (
+    <section id='previews' class='doc-sheet bg-fu-paper py-20 md:py-24' aria-labelledby='product-preview-title'>
       <div class='container-fusion'>
         <div class='mb-14 max-w-2xl'>
-          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Models &amp; snippets</h2>
-          <p class='text-fu-muted'>Copy these patterns into your own Fusion project.</p>
+          <p class='tag-marker mb-4'>product preview</p>
+          <h2 id='product-preview-title' class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>See it in motion</h2>
+          <p class='text-fu-muted'>Real screens and captures from the editions, served from the same gallery as the focused preview pages.</p>
         </div>
-        <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          {snippets.map((snip) => (
-            <figure class='card overflow-hidden'>
-              <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
-                <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
-                {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
-              </figcaption>
-              <pre class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{snip.code}</code></pre>
+        <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+          {previewGallery.map((media, i) => (
+            <figure class='preview-gallery__item card reveal overflow-hidden bg-fu-card' style={`--reveal-i: ${i}`} x-data x-intersect.once='$el.classList.add("reveal-visible")'>
+              <div class='preview-gallery__media'>
+                {media.kind === 'video' ? (
+                  <>
+                    <video src={media.url} poster={media.poster || undefined} controls muted playsinline preload='metadata' aria-label={media.alt || media.label || 'Product preview video'} class='block aspect-[16/10] w-full object-cover object-top' onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                      Your browser cannot play this video.
+                    </video>
+                    <p hidden class='preview-media-fallback p-5 text-sm text-fu-muted' role='status'>Video preview unavailable. <a href={media.url}>Open the recording</a>.</p>
+                  </>
+                ) : (
+                  <>
+                    <img src={media.url} alt={media.alt} loading='lazy' decoding='async' class='block aspect-[16/10] w-full object-cover object-top' onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+                    <p hidden class='preview-media-fallback p-5 text-sm text-fu-muted' role='status'>Preview unavailable. <a href={media.url}>Open this capture</a>.</p>
+                  </>
+                )}
+              </div>
+              {media.label && <figcaption class='border-t border-fu-line px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{media.label}</figcaption>}
             </figure>
           ))}
         </div>
+        {firstEditionPreviewHref && <a href={firstEditionPreviewHref} class='mt-6 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Open an edition preview →</a>}
       </div>
     </section>
   ) : null}

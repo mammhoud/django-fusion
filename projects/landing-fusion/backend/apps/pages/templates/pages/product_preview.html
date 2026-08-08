@@ -15,6 +15,34 @@
         <p class="mt-4 text-lg text-fu-muted">of {{ content.title }}{% if preview_edition.tagline %} — {{ preview_edition.tagline }}{% endif %}</p>
       </div>
 
+      {% if preview_edition.preview_images %}
+      <section class="mb-10" aria-labelledby="preview-gallery-title">
+        <div class="mb-5 max-w-2xl">
+          <p class="tag-marker mb-2">inside the edition</p>
+          <h2 id="preview-gallery-title" class="font-display text-2xl font-bold tracking-tight text-fu-ink">A closer look</h2>
+        </div>
+        <div class="grid gap-5 md:grid-cols-2">
+          {% for image in preview_edition.preview_images %}
+          <figure class="preview-gallery__item card overflow-hidden bg-fu-card reveal" style="--reveal-i: {{ forloop.counter0 }}" x-data x-intersect.once="$el.classList.add('reveal-visible')">
+            <div class="preview-gallery__media">
+              {% if image.kind == "video" %}
+              <video src="{{ image.url }}"{% if image.poster %} poster="{{ image.poster }}"{% endif %} controls muted playsinline preload="metadata"{% if image.alt %} aria-label="{{ image.alt }}"{% elif image.label %} aria-label="{{ image.label }}"{% else %} aria-label="Product preview video"{% endif %} class="block aspect-[16/10] w-full object-cover object-top" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                Your browser cannot play this video.
+              </video>
+              <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">Video preview unavailable. <a href="{{ image.url }}">Open the recording</a>.</p>
+              {% else %}
+              <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy" decoding="async" class="block aspect-[16/10] w-full object-cover object-top" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+              <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">Preview unavailable. <a href="{{ image.url }}">Open this capture</a>.</p>
+              {% endif %}
+            </div>
+            {% if image.label %}<figcaption class="border-t border-fu-line px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{{ image.label }}</figcaption>{% endif %}
+          </figure>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if content.version %}<p class="mb-5 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{{ content.version }}</p>{% endif %}
       <!-- Edition details -->
       <div class="card max-w-lg p-6 sm:p-8">
         <div class="mb-6 flex items-baseline gap-2">
