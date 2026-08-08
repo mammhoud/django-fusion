@@ -177,6 +177,31 @@ function scaleAndFade(): void {
   });
 }
 
+// ── 5. Gallery scale-in ─────────────────────────────────────────────────
+function galleryScaleIn(): void {
+  if (reduceMotion) return;
+  const items = document.querySelectorAll<HTMLElement>('[data-gsap="gallery-child"]');
+  if (!items.length) return;
+
+  gsap.fromTo(
+    items,
+    { opacity: 0, scale: 0.94, y: 16 },
+    {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      duration: 0.7,
+      ease: 'power2.out',
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: items[0].closest('[data-gsap="gallery"]') || items[0].parentElement,
+        start: 'top 84%',
+        once: true,
+      },
+    },
+  );
+}
+
 // ── Boot ────────────────────────────────────────────────────────────────────
 function init(): void {
   if (typeof document === 'undefined') return;
@@ -192,6 +217,7 @@ function mount(): void {
   scrubWords();
   pinnedRail();
   scaleAndFade();
+  galleryScaleIn();
 
   // Pinned offsets are measured before webfonts/images settle — recompute
   // once everything is painted so pin start/end stays accurate.
