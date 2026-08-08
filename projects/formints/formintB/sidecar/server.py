@@ -229,6 +229,76 @@ _register_crud(app, "conflicts", SyncConflict, "SyncConflict")
 _register_crud(app, "queue", SyncQueueItem, "SyncQueueItem")
 
 
+# ── Community-UI bridge routes ────────────────────────────────────────
+# The formintA Community UI's data layer talks to ``/api/sales``,
+# ``/api/products`` and ``/api/settings``. These read-only bridges map
+# those endpoints onto the pos-cloud branch-sync models so the UI works
+# against the Cloud master without frontend rewrites.
+from asgiref.sync import sync_to_async  # noqa: E402
+from django.db.models import Q  # noqa: E402
+
+
+@sync_to_async
+def _bridge_sales():
+    return [_ser_sale(s) for s in BranchSale.objects.all().select_related("branch")]
+
+
+def _ser_sale(s):
+    return {
+        "id": s.id,
+        "branch": s.branch.code if s.branch else None,
+        "branch_id": s.branch_id,
+        "total_amount": float(s.total_amount) if s.total_amount else 0.0,
+        "payment_method": s.payment_method,
+        "status": s.status,
+        "sale_date": s.sale_date.isoformat() if s.sale_date else None,
+        "items": [],
+    }
+
+
+@sync_to_async
+def _bridge_products():
+    return [
+        {
+            "id": p.id,
+            "name": p.name,
+            "sku": p.sku,
+            "price": float(p.price) if p.price else 0.0,
+            "stock_quantity": p.stock_quantity,
+            "branch": p.branch.code if p.branch else None,
+            "branch_id": p.branch_id,
+        }
+        for p in BranchProduct.objects.all().select_related("branch")
+    ]
+
+
+@sync_to_async
+def _bridge_settings():
+    orgs = Organization.objects.count()
+    branches = Branch.objects.count()
+    return {
+        "restaurant_name": "POS Cloud",
+        "organizations": orgs,
+        "branches": branches,
+        "sync": True,
+    }
+
+
+@app.get("/api/sales")
+async def api_sales(request):
+    return jsonify(await _bridge_sales())
+
+
+@app.get("/api/products")
+async def api_products(request):
+    return jsonify(await _bridge_products())
+
+
+@app.get("/api/settings")
+async def api_settings(request):
+    return jsonify(await _bridge_settings())
+
+
 # ── Fusion feature routes ──
 from routes.fusion import register_fusion_routes  # noqa: E402
 register_fusion_routes(app)
