@@ -1,0 +1,307 @@
+// ══════════════════════════════════════════════════════════════════════
+// TACTICAL TELEMETRY — Change Form (detail pages)
+// ──────────────────────────────────────────────────────────────────────
+// Deep theming of the add/edit form: fieldset modules, the inline tab
+// rail, inline formsets, read-only values, error wells, and the
+// history sidebar — matching the changelist treatment.
+// ══════════════════════════════════════════════════════════════════════
+
+@use "tokens" as *;
+
+#content-main {
+    // ── Fieldset modules ──────────────────────────────────────────────
+    fieldset.module {
+        background: $tactical-bg-raised;
+        border: $tactical-line solid $tactical-grid-strong;
+        box-shadow: none !important;
+        margin-bottom: $tactical-space-5;
+
+        // Fieldset heading — grotesk macro, hazard bottom rule.
+        h2 {
+            margin: 0;
+            padding: $tactical-space-3 $tactical-space-5;
+            background: $tactical-bg;
+            border-bottom: $tactical-line solid $tactical-grid-strong;
+            border-top: none;
+            border-style: solid !important;
+            font-family: $tactical-font-grotesk;
+            font-size: $tactical-size-body;
+            font-weight: 900;
+            letter-spacing: $tactical-tracking-wide;
+            text-transform: uppercase;
+            color: $tactical-fg;
+        }
+
+        // Fieldset description.
+        p,
+        .description {
+            color: $tactical-fg-dim;
+            font-size: $tactical-size-small;
+            letter-spacing: 0.04em;
+        }
+    }
+
+    // ── Rows container (fieldsets + tab rail wrapper) ─────────────────
+    .form-rows.aligned {
+        background: $tactical-bg-raised;
+        border-color: $tactical-grid-strong;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    // Row dividers — mechanical 1px rules.
+    .form-row {
+        border-bottom: $tactical-line solid $tactical-grid;
+        border-radius: 0 !important;
+
+        &.last {
+            border-bottom: none;
+        }
+
+        &:hover {
+            background: $tactical-bg-hover;
+        }
+    }
+
+    .field-line {
+        padding: $tactical-space-3 $tactical-space-5;
+    }
+
+    // Read-only values — dim phosphor telemetry.
+    .readonly,
+    .field-readonly {
+        color: $tactical-fg-dim;
+        font-size: $tactical-size-small;
+        letter-spacing: 0.03em;
+    }
+
+    // Help text — ghost phosphor.
+    .help,
+    .helptext {
+        color: $tactical-fg-faint;
+        font-size: $tactical-size-micro;
+        letter-spacing: $tactical-tracking;
+        text-transform: uppercase;
+    }
+
+    // ── Inline tab rail (fieldsets_tabs.html) ─────────────────────────
+    .form-rows nav {
+        background: transparent !important;
+        border-bottom: $tactical-line solid $tactical-grid-strong;
+        border-radius: 0 !important;
+        gap: 0;
+
+        > a {
+            padding: $tactical-space-2 $tactical-space-4;
+            font-family: $tactical-font-mono;
+            font-size: $tactical-size-small;
+            letter-spacing: $tactical-tracking;
+            text-transform: uppercase;
+            color: $tactical-fg-dim !important;
+            border-radius: 0 !important;
+            border-bottom: $tactical-line-strong solid transparent;
+
+            &:hover {
+                background: $tactical-bg-hover !important;
+                color: $tactical-fg !important;
+            }
+
+            &.active {
+                background: transparent !important;
+                box-shadow: none !important;
+                color: $tactical-fg !important;
+                border-bottom-color: $tactical-red;
+            }
+        }
+    }
+
+    // ── Inline formsets (stacked + tabular) ───────────────────────────
+    .formset-wrapper {
+        background: $tactical-bg-raised;
+        border: $tactical-line solid $tactical-grid-strong;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin-bottom: $tactical-space-5;
+
+        // Inline heading — mono uppercase with hazard rule.
+        h3,
+        .inline-heading {
+            margin: 0;
+            padding: $tactical-space-3 $tactical-space-5;
+            background: $tactical-bg;
+            border-bottom: $tactical-line solid $tactical-grid-strong;
+            font-family: $tactical-font-mono;
+            font-size: $tactical-size-small;
+            letter-spacing: $tactical-tracking-wide;
+            text-transform: uppercase;
+            color: $tactical-fg;
+        }
+
+        .form-group {
+            background: transparent;
+            border-bottom: $tactical-line solid $tactical-grid;
+
+            &.last {
+                border-bottom: none;
+            }
+
+            &:hover {
+                background: $tactical-bg-hover;
+            }
+        }
+
+        // Tabular headers — same treatment as changelist thead.
+        th {
+            font-size: $tactical-size-micro !important;
+            letter-spacing: $tactical-tracking-wide !important;
+            text-transform: uppercase !important;
+            color: $tactical-fg-dim !important;
+            background: $tactical-bg !important;
+            border-bottom: $tactical-line solid $tactical-grid-strong !important;
+            border-radius: 0 !important;
+        }
+
+        td {
+            color: $tactical-fg !important;
+            border-color: $tactical-grid !important;
+            font-size: $tactical-size-small;
+            letter-spacing: 0.03em;
+        }
+
+        // Add another / delete links.
+        .add-row {
+            font-family: $tactical-font-mono;
+            font-size: $tactical-size-small;
+            letter-spacing: $tactical-tracking;
+            text-transform: uppercase;
+            color: $tactical-fg;
+
+            &:hover {
+                color: $tactical-red;
+            }
+        }
+    }
+
+    // ── Error wells ───────────────────────────────────────────────────
+    .errornote,
+    .errorlist,
+    .errors .errorlist {
+        background: $tactical-red-faint;
+        border-left: $tactical-line-strong solid $tactical-red;
+        color: $tactical-fg;
+        font-size: $tactical-size-small;
+        letter-spacing: 0.04em;
+        border-radius: 0 !important;
+    }
+
+    // ── Submit bar refinements ────────────────────────────────────────
+    .cancel-link {
+        @include tactical-btn-base;
+        @include tactical-btn-outline;
+    }
+
+    .deletelink {
+        @include tactical-btn-base;
+        border-color: $tactical-red;
+        color: $tactical-red;
+
+        &:hover {
+            background: $tactical-red-faint;
+            color: $tactical-red-bright;
+            border-color: $tactical-red-bright;
+        }
+    }
+}
+
+// ── Sticky submit/save bar (unfold 0.90 renders <button> components) ──
+#submit-row {
+    // Container rail — kill the translucent backdrop, use the substrate.
+    > div {
+        background: $tactical-bg !important;
+        backdrop-filter: none !important;
+        border-top: $tactical-line solid $tactical-grid-strong !important;
+        border-radius: 0 !important;
+    }
+
+    // Every save/close/delete control is a mechanical button.
+    button,
+    a {
+        @include tactical-btn-base;
+    }
+
+    // Primary save — hazard red (replaces unfold's green primary).
+    button[name="_save"] {
+        @include tactical-btn-primary;
+    }
+
+    // Danger links (delete) — red outline on hover wash.
+    a.bg-red-600 {
+        border-color: $tactical-red;
+        background: transparent;
+        color: $tactical-red;
+
+        &:hover {
+            background: $tactical-red-faint;
+            color: $tactical-red-bright;
+            border-color: $tactical-red-bright;
+        }
+    }
+}
+
+// ── History sidebar (recent actions) ───────────────────────────────────
+#content-related {
+    border-left: $tactical-line solid $tactical-grid;
+    padding-left: $tactical-space-4;
+
+    #recent-actions-module {
+        background: $tactical-bg-raised;
+        border: $tactical-line solid $tactical-grid-strong;
+        border-radius: 0 !important;
+
+        h2 {
+            margin: 0 0 $tactical-space-3;
+            padding-bottom: $tactical-space-2;
+            border-bottom: $tactical-line solid $tactical-grid-strong;
+            font-family: $tactical-font-mono;
+            font-size: $tactical-size-micro;
+            letter-spacing: $tactical-tracking-wide;
+            text-transform: uppercase;
+            color: $tactical-fg;
+        }
+
+        .actionlist li {
+            background: $tactical-bg;
+            border: $tactical-line solid $tactical-grid !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+
+            a {
+                color: $tactical-fg;
+                text-decoration: none;
+
+                &:hover {
+                    color: $tactical-red;
+                }
+            }
+
+            // ASCII action markers instead of emoji/symbol glyphs.
+            &.addlink::before {
+                content: "[+] ";
+                color: $tactical-fg-dim;
+                font-size: $tactical-size-micro;
+            }
+
+            &.changelink::before {
+                content: "[~] ";
+                color: $tactical-fg-dim;
+                font-size: $tactical-size-micro;
+            }
+
+            &.deletelink::before {
+                content: "[-] ";
+                color: $tactical-red;
+                font-size: $tactical-size-micro;
+            }
+        }
+    }
+}

@@ -465,11 +465,17 @@
     "switchToEs": "Switch to Spanish",
     "switchToFr": "Switch to French"
   },
+  "telemetry": {
+    "title": "Branch Overview",
+    "emptyHint": "register a branch to begin syncing"
+  },
   "nav": {
     "about": "About",
     "aboutDesc": "App information",
     "analytics": "Analytics Dashboard",
     "analyticsDesc": "View sales insights",
+    "branchOverview": "Branch Overview",
+    "branchOverviewDesc": "Live sync telemetry roster",
     "categoryProducts": "Inventory & Products",
     "categoryReports": "Reports & Analytics",
     "categorySales": "Sales & Operations",

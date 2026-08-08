@@ -24,6 +24,9 @@
 # Env overrides: BACKEND_PORT (8082), API_PORT (8767), FRONTEND_PORT (4323)
 
 NODE_BIN := $(shell dirname $$(command -v node 2>/dev/null) 2>/dev/null)
+ifeq ($(strip $(NODE_BIN)),)
+NODE_BIN := $(shell ls -d $$HOME/.nvm/versions/node/*/bin 2>/dev/null | tail -1)
+endif
 export PATH := $(NODE_BIN):$(PATH)
 
 BACKEND_DIR   := backend
@@ -32,9 +35,9 @@ BACKEND_PORT  := 8082
 API_PORT      := 8767
 FRONTEND_PORT := 4323
 
-.PHONY: help install migrate seed check test dev-backend dev-api dev-frontend stop \
-        backend-help backend-check backend-migrate backend-test \
-        frontend-install frontend-dev frontend-build frontend-check
+.PHONY: help install migrate seed check test verify-stack dev-backend dev-api \
+        dev-frontend stop styles backend-help backend-check backend-migrate \
+        backend-test frontend-install frontend-dev frontend-build frontend-check
 
 help: ## Show all commands
 	@echo 'POS Cloud (formintB) — Cloud Master edition'
@@ -43,6 +46,8 @@ help: ## Show all commands
 	@echo '  make dev-backend      Django :$(BACKEND_PORT) (Unfold admin + bolt)'
 	@echo '  make dev-api          Django :$(API_PORT) (sidecar-compatible API)'
 	@echo '  make dev-frontend     Astro :$(FRONTEND_PORT)'
+	@echo '  make verify-stack     boot :$(API_PORT)+:$(BACKEND_PORT), sweep full surface'
+	@echo '  make styles           compile tactical SCSS token layer → static CSS'
 	@echo '  make check            django check + astro check'
 	@echo '  make test             backend Django test suite'
 	@echo '  make stop             kill dev processes'
@@ -66,6 +71,15 @@ dev-sidecar: dev-api ## Legacy alias — the Robyn sidecar was replaced by Djang
 
 dev-frontend: ## Astro dev server (proxies API :8767 + admin :8082)
 	cd $(FRONTEND_DIR) && pnpm dev
+
+verify-stack: ## Live end-to-end: boot :8767 + :8082, sweep the full surface
+	node scripts/dev/verify-stack.mjs
+
+styles: ## Compile the tactical SCSS token layer → committed static CSS
+	cd $(BACKEND_DIR) && npx --yes sass \
+		apps/core/static/tactical/scss/tactical.scss \
+		apps/core/static/tactical/css/tactical.css \
+		--style=compressed --no-source-map
 
 check: ## Django system checks + Astro typecheck
 	cd $(BACKEND_DIR) && ./.venv/bin/python manage.py check

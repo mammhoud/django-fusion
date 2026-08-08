@@ -364,6 +364,27 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
     z-index: 70;
   }
 
+  /* ── WS link-lost banner ─────────────────────────────────────── */
+  .ws-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--hazard);
+    color: var(--bg);
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .ws-banner .title { font-weight: 700; }
+  .ws-banner .sub { opacity: 0.85; display: block; margin-top: 2px; }
+  .ws-banner .btn { background: var(--bg); color: var(--hazard); border: 1px solid var(--bg); }
+  .ws-banner .btn:hover { background: var(--bg-inset); }
+  .stream-lost { color: var(--hazard); }
+  .stream-live { color: var(--phosphor); }
+
   /* ── Crosshair at grid intersections ──────────────────────────── */
   .crosshair { color: var(--ink-faint); font-size: 9px; line-height: 1; user-select: none; }
 
@@ -412,6 +433,15 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
     </div>
   </div>
 
+  <!-- ── WS link-lost banner (hidden while the stream is live) ── -->
+  <div class="ws-banner" id="ws-banner" role="alert" style="display:none">
+    <div>
+      <span class="title">&gt;&gt;&gt; LINK LOST / WS DISCONNECTED</span>
+      <span class="sub">AUTO-RETRY IN <span id="ws-retry-in">05S</span> &nbsp;·&nbsp; DATA SHOWN IS STALE</span>
+    </div>
+    <button class="btn" id="ws-retry-btn" type="button">RETRY LINK</button>
+  </div>
+
   <!-- ── Status strip ────────────────────────────────────────────── -->
   <div class="status-strip">
     <div class="status-cell">
@@ -454,9 +484,10 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
     <div class="status">
       <span class="crosshair">+</span>
       <span>LAST POLL // <span id="last-poll">—</span></span>
-      <span>INTERVAL // 15s</span>
+      <span>LAST PUSH // <span id="last-push">—</span></span>
+      <span id="stream-state">STREAM // STANDBY</span>
     </div>
-    <button class="btn" onclick="refreshAll()">⟳ FORCE POLL</button>
+    <button class="btn" id="force-poll" type="button">⟳ FORCE POLL</button>
   </div>
 
   <!-- ═══ TAB: OVERVIEW ═══ -->
@@ -464,11 +495,11 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
     <div class="grid-2">
       <div class="panel">
         <div class="panel-title">BRANCH STATUS</div>
-        <div id="branch-summary-table"><div class="loading">POLLING</div></div>
+        <div id="branch-summary-table"><div class="loading">POLLING…</div></div>
       </div>
       <div class="panel">
         <div class="panel-title">PENDING CONFLICTS</div>
-        <div id="conflicts-preview"><div class="loading">POLLING</div></div>
+        <div id="conflicts-preview"><div class="loading">POLLING…</div></div>
       </div>
     </div>
     <div class="grid-3">
@@ -494,7 +525,7 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
   <div class="tab-content" id="tab-branches">
     <div class="panel">
       <div class="panel-title">ALL BRANCHES — HEALTH &amp; SYNC STATUS</div>
-      <div id="branches-table"><div class="loading">POLLING</div></div>
+      <div id="branches-table"><div class="loading">POLLING…</div></div>
     </div>
   </div>
 
@@ -502,11 +533,11 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
   <div class="tab-content" id="tab-queue">
     <div class="panel" style="margin-bottom:20px">
       <div class="panel-title">QUEUE ITEMS BY BRANCH</div>
-      <div id="queue-table"><div class="loading">POLLING</div></div>
+      <div id="queue-table"><div class="loading">POLLING…</div></div>
     </div>
     <div class="panel">
       <div class="panel-title">PENDING QUEUE ITEMS</div>
-      <div id="queue-pending-list"><div class="loading">POLLING</div></div>
+      <div id="queue-pending-list"><div class="loading">POLLING…</div></div>
     </div>
   </div>
 
@@ -514,15 +545,19 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
   <div class="tab-content" id="tab-conflicts">
     <div class="panel">
       <div class="panel-title">PENDING CONFLICTS — RESOLUTION REQUIRED</div>
-      <div id="conflicts-list"><div class="loading">POLLING</div></div>
+      <div id="conflicts-list"><div class="loading">POLLING…</div></div>
     </div>
   </div>
 
   <!-- ═══ TAB: ACTIVITY ═══ -->
   <div class="tab-content" id="tab-activity">
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-title">LIVE FEED // WS STREAM</div>
+      <div id="live-feed"><div class="empty">AWAITING STREAM EVENTS…</div></div>
+    </div>
     <div class="panel">
       <div class="panel-title">RECENT SYNC ACTIVITY</div>
-      <div id="activity-list"><div class="loading">POLLING</div></div>
+      <div id="activity-list"><div class="loading">POLLING…</div></div>
     </div>
   </div>
 
@@ -571,6 +606,7 @@ function esc(str) {
 function showToast(msg, type) {
   var t = document.createElement('div');
   t.className = 'toast';
+  t.setAttribute('aria-live', 'polite');
   t.textContent = (type === 'ok' ? '[ OK ] ' : '[ ERR ] ') + msg;
   document.body.appendChild(t);
   setTimeout(function(){ t.remove(); }, 3000);
@@ -589,7 +625,8 @@ async function refreshAll() {
     refreshActivity(),
   ]);
 }
-setInterval(refreshAll, 15000);
+// No interval polling — the WS stream drives refreshes (scheduleRefresh on
+// each frame, throttled to 2s). A 10s fallback poll runs only while LOST.
 
 // ── Overview ──
 async function refreshOverview() {
@@ -787,32 +824,158 @@ async function refreshActivity() {
   } catch(e) { console.error('Activity poll failed:', e); }
 }
 
-// ── WebSocket link status ──
-(function() {
-  var ws = null;
-  function connect() {
-    var proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    var url = proto + '//' + location.host + '/ws/sync-events/';
-    ws = new WebSocket(url);
-    ws.onopen = function() {
-      document.getElementById('ws-led').className = 'led on';
-      document.getElementById('ws-status').textContent = 'LINKED';
-      document.getElementById('ws-status').className = 'val green';
-    };
-    ws.onclose = function() {
-      document.getElementById('ws-led').className = 'led warn';
-      document.getElementById('ws-status').textContent = 'LOST';
-      document.getElementById('ws-status').className = 'val red';
-      setTimeout(connect, 3000);
-    };
-    ws.onerror = function() {
-      document.getElementById('ws-led').className = 'led warn';
-      document.getElementById('ws-status').textContent = 'ERR';
-      document.getElementById('ws-status').className = 'val red';
-    };
+// ── WebSocket sync-events stream ──
+// The monitor consumes /ws/sync-events/ (served by daphne on the API port).
+// Frames push live activity into the LIVE FEED and trigger quiet refreshes
+// of the REST tiles — no interval polling while the stream is up.
+var WS_PORT = '8767'; // daphne API port (make dev-api) — serves /ws/sync-events/
+var wsSocket = null;
+var wsBanner = document.getElementById('ws-banner');
+var wsReconnectTimer = null;
+var wsCountdownTimer = null;
+var wsRetryDelay = 5000;          // auto-retry cadence while LOST
+var wsRetryIn = 0;                // seconds shown in the countdown
+var fallbackPollTimer = null;     // slow REST poll ONLY while LOST
+var lastRefreshAt = 0;            // throttle for WS-triggered refetches
+var liveActivity = [];            // frames pushed over the stream (LIVE FEED)
+
+function setStreamState(state) {
+  var led = document.getElementById('ws-led');
+  var st = document.getElementById('ws-status');
+  var bar = document.getElementById('stream-state');
+  if (state === 'LIVE') {
+    led.className = 'led on';
+    st.textContent = 'LINKED';
+    st.className = 'val green';
+    if (bar) { bar.textContent = 'STREAM // LIVE'; bar.className = 'stream-live'; }
+  } else if (state === 'LOST') {
+    led.className = 'led warn';
+    st.textContent = 'LOST';
+    st.className = 'val red';
+    if (bar) { bar.textContent = 'STREAM // LOST'; bar.className = 'stream-lost'; }
+  } else {
+    led.className = 'led';
+    st.textContent = 'STANDBY';
+    st.className = 'val';
+    if (bar) { bar.textContent = 'STREAM // STANDBY'; bar.className = ''; }
   }
-  connect();
-})();
+}
+
+function showLostBanner(show) {
+  if (!wsBanner) return;
+  wsBanner.style.display = show ? 'flex' : 'none';
+  wsBanner.setAttribute('aria-live', 'assertive');
+}
+
+function updateRetryCountdown() {
+  var el = document.getElementById('ws-retry-in');
+  if (el) el.textContent = String(Math.max(0, wsRetryIn)).padStart(2, '0') + 'S';
+}
+
+function startFallbackPoll() {
+  if (fallbackPollTimer) return;
+  fallbackPollTimer = setInterval(function () { refreshAll(); }, 10000);
+}
+
+function stopFallbackPoll() {
+  if (fallbackPollTimer) { clearInterval(fallbackPollTimer); fallbackPollTimer = null; }
+}
+
+function scheduleRefresh() {
+  var now = Date.now();
+  if (now - lastRefreshAt < 2000) return;
+  lastRefreshAt = now;
+  refreshAll();
+}
+
+function renderLiveFeed() {
+  var el = document.getElementById('live-feed');
+  if (!el) return;
+  if (liveActivity.length === 0) {
+    el.innerHTML = '<div class="empty">AWAITING STREAM EVENTS…</div>';
+    return;
+  }
+  var html = '<table><thead><tr><th>PUSH</th><th>BRANCH</th><th>TYPE</th><th>COUNT</th><th>STATUS</th></tr></thead><tbody>';
+  liveActivity.forEach(function (e) {
+    var badge = e.status === 'link'
+      ? '<span class="badge blue">LINK</span>'
+      : '<span class="badge green">PUSHED</span>';
+    html += '<tr><td class="code">' + formatTime(e.received_at) + '</td>' +
+      '<td>' + esc(e.branch || '—') + '</td>' +
+      '<td>' + esc(e.entity_type) + '</td>' +
+      '<td>' + e.entity_count + '</td>' +
+      '<td>' + badge + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function handleFrame(frame) {
+  // sync_event frames: receiver broadcasts + terminal link changes.
+  if (frame && typeof frame.entity_type === 'string') {
+    var now = new Date();
+    document.getElementById('last-push').textContent = now.toLocaleTimeString();
+    liveActivity.unshift({
+      received_at: now.toISOString(),
+      branch: frame.branch || '',
+      entity_type: frame.entity_type,
+      entity_count: frame.synced == null ? 1 : frame.synced,
+      status: frame.entity_type.indexOf('terminal') === 0 ? 'link' : 'pushed',
+    });
+    if (liveActivity.length > 20) liveActivity.pop();
+    renderLiveFeed();
+    scheduleRefresh(); // refresh health/queue/conflict tiles (throttled)
+  }
+  // broker_message frames target branch groups the monitor does not join;
+  // identify_ack / error frames are not expected — ignored defensively.
+}
+
+function connectWs() {
+  var proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  var url = proto + '//' + location.hostname + ':' + WS_PORT + '/ws/sync-events/';
+  wsSocket = new WebSocket(url);
+  wsSocket.onopen = function () {
+    if (wsCountdownTimer) { clearInterval(wsCountdownTimer); wsCountdownTimer = null; }
+    showLostBanner(false);
+    setStreamState('LIVE');
+    stopFallbackPoll();
+    refreshAll(); // fresh tiles on (re)connect
+  };
+  wsSocket.onmessage = function (ev) {
+    var frame;
+    try { frame = JSON.parse(ev.data); } catch (e) { return; }
+    handleFrame(frame);
+  };
+  wsSocket.onerror = function () { /* onclose handles reconnect */ };
+  wsSocket.onclose = function () {
+    setStreamState('LOST');
+    showLostBanner(true);
+    startFallbackPoll();
+    wsRetryIn = Math.round(wsRetryDelay / 1000);
+    updateRetryCountdown();
+    if (wsCountdownTimer) clearInterval(wsCountdownTimer);
+    wsCountdownTimer = setInterval(function () {
+      wsRetryIn -= 1;
+      if (wsRetryIn < 0) wsRetryIn = 0;
+      updateRetryCountdown();
+    }, 1000);
+    if (wsReconnectTimer) clearTimeout(wsReconnectTimer);
+    wsReconnectTimer = setTimeout(connectWs, wsRetryDelay);
+  };
+}
+
+document.getElementById('ws-retry-btn').addEventListener('click', function () {
+  if (wsReconnectTimer) clearTimeout(wsReconnectTimer);
+  if (wsCountdownTimer) clearInterval(wsCountdownTimer);
+  if (wsSocket) { try { wsSocket.close(); } catch (e) {} }
+  connectWs();
+});
+
+document.getElementById('force-poll').addEventListener('click', function () {
+  refreshAll();
+});
+
+connectWs();
 
 // ── Initial poll ──
 refreshAll();

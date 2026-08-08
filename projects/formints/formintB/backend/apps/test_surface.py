@@ -248,7 +248,8 @@ class CrudAuthGatingTests(TestCase):
         "/conflicts/",
         "/queue/",
     ]
-    # Pre-existing /api/ mount keeps its own HTML-viewset behaviour.
+    # Pre-existing /api/ viewset mount (django-fusion CRUD) — now returns
+    # the same JSON 401 for anonymous callers via ApiAuthMiddleware.
     LEGACY_API_PATHS = [
         "/api/organizations/",
         "/api/device-tokens/",
@@ -267,11 +268,24 @@ class CrudAuthGatingTests(TestCase):
                 self.assertEqual(r.status_code, 401)
                 self.assertIn(b"authentication required", r.content)
 
-    def test_legacy_api_still_gates(self):
+    def test_legacy_api_anonymous_gets_json_401(self):
+        """Anonymous /api/* viewset calls get JSON 401, not a login redirect."""
         for path in self.LEGACY_API_PATHS:
             with self.subTest(path=path):
                 r = self.client.get(path)
-                self.assertIn(r.status_code, (302, 301))
+                self.assertEqual(r.status_code, 401)
+                self.assertIn(b"authentication required", r.content)
+
+    def test_legacy_api_post_anonymous_gets_json_401(self):
+        """Anonymous POST on /api/* is also rewritten to JSON 401."""
+        r = self.client.post(
+            "/api/organizations/",
+            data=json.dumps({"name": "Nope"}),
+            content_type="application/json",
+        )
+        self.assertEqual(r.status_code, 401)
+        self.assertIn(b"authentication required", r.content)
+
 
     def test_surface_authenticated_serves_json(self):
         self.client.force_login(self.user)
@@ -332,6 +346,63 @@ class CrudAuthGatingTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(r.status_code, 401)
+
+
+class ApiAuthMiddlewareUnitTests(TestCase):
+    """ApiAuthMiddleware rewrites only anonymous login redirects on /api/*."""
+
+    def setUp(self):
+        from apps.handlers.middleware import ApiAuthMiddleware
+        self.middleware = ApiAuthMiddleware(get_response=None)
+
+    def _make_request(self, path):
+        from django.test import RequestFactory
+        return RequestFactory().get(path)
+
+    def test_login_redirect_rewritten_to_json_401(self):
+        from django.http import HttpResponseRedirect, JsonResponse
+
+        def get_response(request):
+            return HttpResponseRedirect("/accounts/login/?next=/api/organizations/")
+
+        self.middleware.get_response = get_response
+        response = self.middleware(self._make_request("/api/organizations/"))
+        self.assertIsInstance(response, JsonResponse)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(json.loads(response.content), {"error": "authentication required"})
+
+    def test_non_login_redirect_passes_through(self):
+        from django.http import HttpResponseRedirect
+
+        def get_response(request):
+            return HttpResponseRedirect("/admin/")
+
+        self.middleware.get_response = get_response
+        response = self.middleware(self._make_request("/api/queue/"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/admin/")
+
+    def test_non_api_login_redirect_passes_through(self):
+        from django.http import HttpResponseRedirect
+
+        def get_response(request):
+            return HttpResponseRedirect("/accounts/login/?next=/dashboard/")
+
+        self.middleware.get_response = get_response
+        response = self.middleware(self._make_request("/dashboard/"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response["Location"])
+
+    def test_json_response_passes_through(self):
+        from django.http import JsonResponse
+
+        def get_response(request):
+            return JsonResponse({"ok": True})
+
+        self.middleware.get_response = get_response
+        response = self.middleware(self._make_request("/api/health"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), {"ok": True})
 
 
 class DeviceTokenProtectionTests(TestCase):

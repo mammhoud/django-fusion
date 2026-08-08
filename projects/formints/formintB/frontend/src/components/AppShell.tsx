@@ -45,6 +45,7 @@ const Roles = lazy(() => import('../app/pages/admin/Roles'));
 const SupportChat = lazy(() => import('../app/pages/admin/SupportChat'));
 const StaffPage = lazy(() => import('../app/pages/admin/StaffPage'));
 const ProductsPage = lazy(() => import('../app/pages/pos/ProductsPage'));
+const BranchOverview = lazy(() => import('../app/pages/analytics/BranchOverview'));
 
 // ── Route → page mapping (Astro file-based routing supplies the pathname) ──
 const ROUTE_PAGES: Record<string, LazyExoticComponent<ComponentType>> = {
@@ -70,6 +71,7 @@ const ROUTE_PAGES: Record<string, LazyExoticComponent<ComponentType>> = {
   '/support-chat': SupportChat,
   '/staff': StaffPage,
   '/products': ProductsPage,
+  '/telemetry': BranchOverview,
 };
 
 // ── Employee-accessible routes (shared with SideNav filtering) ──

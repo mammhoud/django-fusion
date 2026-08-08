@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime, timezone
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
@@ -53,10 +54,14 @@ class SyncEventConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.channel_layer.group_add(self.broadcast_group, self.channel_name)
         await self.accept()
+        # Tell connected dashboards (e.g. the sync monitor) that a terminal
+        # joined — they refetch branch health on this signal.
+        await self._broadcast_link_change("terminal_connected")
         logger.debug("WebSocket client connected (channel=%s)", self.channel_name)
 
     async def disconnect(self, close_code: int) -> None:
         """Leave all groups and unregister from the broker."""
+        await self._broadcast_link_change("terminal_disconnected")
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
         await self.channel_layer.group_discard(self.broadcast_group, self.channel_name)
 
@@ -173,14 +178,43 @@ class SyncEventConsumer(AsyncWebsocketConsumer):
             "payload": {"message": message},
         }))
 
+    async def _broadcast_link_change(self, event_type: str) -> None:
+        """Broadcast a terminal connect/disconnect to the sync_events group.
+
+        Connected dashboards (e.g. the sync monitor) use this signal to
+        refetch branch health in real time. The wire payload keeps the
+        documented ``sync_event`` shape
+        ``{entity_type, synced, branch, node_id, timestamp}``; the origin
+        channel travels on the envelope only so the originating connection
+        does not receive its own link-change frame.
+        """
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                "type": "sync_event",
+                "origin_channel": self.channel_name,
+                "data": {
+                    "entity_type": event_type,
+                    "synced": 1,
+                    "branch": self._branch_code,
+                    "node_id": self._node_id,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                },
+            },
+        )
+
     # ── Event handlers (called by channel_layer.group_send) ──────────
 
     async def sync_event(self, event: dict) -> None:
         """Forward a ``sync_event`` to the WebSocket client.
 
         Matches the ``type`` key in the event dict sent by
-        ``channel_layer.group_send``.
+        ``channel_layer.group_send``. Link-change frames a connection
+        originated itself are skipped (``origin_channel`` travels on the
+        envelope, never on the wire payload).
         """
+        if event.get("origin_channel") == self.channel_name:
+            return
         try:
             await self.send(text_data=json.dumps(event["data"]))
         except (TypeError, ValueError) as exc:

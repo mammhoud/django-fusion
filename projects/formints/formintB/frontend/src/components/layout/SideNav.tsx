@@ -24,7 +24,7 @@ export const ROLE_ROUTES: Record<string, Set<string>> = {
     '/dashboard', '/sale', '/kitchen', '/transactions',
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
     '/employees', '/schedule', '/payroll', '/customers', '/roles',
-    '/analytics', '/reports', '/reports?tab=taxReports',
+    '/analytics', '/reports', '/reports?tab=taxReports', '/telemetry',
     '/settings', '/notes', '/coupons', '/support-chat', '/about',
   ]),
   employee: new Set([
@@ -107,6 +107,7 @@ const navCategories: NavCategory[] = [
       { label: 'nav.analytics', desc: 'nav.analyticsDesc', route: '/analytics', icon: Ic('hi:chart-bar'), colorClass: 'bg-error' },
       { label: 'nav.reports', desc: 'nav.reportsDesc', route: '/reports', icon: Ic('hi:document-chart-bar'), colorClass: 'bg-error' },
       { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/reports?tab=taxReports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error' },
+      { label: 'nav.branchOverview', desc: 'nav.branchOverviewDesc', route: '/telemetry', icon: Ic('hi:activity'), colorClass: 'bg-error' },
     ],
   },
   {

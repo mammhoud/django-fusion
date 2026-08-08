@@ -105,11 +105,86 @@ Client protocol (JSON frames):
 ← {"type": "broker_message", "message": {"subtype": "entity_event", "payload": {…}}}              // branch group only
 ```
 
+**This protocol is contract-tested.**
+[`apps/test_ws_parity_contract.py`](backend/apps/test_ws_parity_contract.py)
+pins the exact frame shapes to the README — `identify_ack` by exact value
+(fully deterministic), `sync_event` as the raw payload with *no*
+`{type, …}` envelope, `broker_message` as the outer `{type, message}`
+envelope wrapping the full `BrokerMessage.to_dict()` shape, and the
+`error` frame. `make verify-stack` additionally runs a live end-to-end
+parity check (real WebSocket connect → identify → sync push → frame
+shape assertions) via `scripts/dev/verify-stack.mjs`.
+
 The frontend wraps this in `src/api/sync-events.ts` (`createSyncEventsWs`)
 with auto-reconnect and typed frames; connect with `branchCode` to join the
 per-branch group. Sync receivers (`POST /api/sync/push/*`) broadcast entity
 events as they ingest branch data, and the broker pushes targeted messages
 back to a branch's connected terminals.
+
+The sync monitor (`/apis/data/sync-monitor`) consumes this stream directly:
+it renders a live feed from `sync_event` frames, refreshes its branch-health
+and queue tiles on each push (no interval polling while connected), and shows
+a red `LINK LOST` banner with auto-retry + manual retry when the socket
+drops. Terminal connect/disconnect frames (`terminal_connected` /
+`terminal_disconnected`) let the monitor update health in real time. The
+monitor connects to the daphne API port (`:8767`) — the `WS_PORT` constant at
+the top of its embedded script.
+
+## Admin design system — Tactical Telemetry
+
+The whole Unfold admin surface (login, KPI dashboard, CRUD changelists)
+runs the `industrial-brutalist-ui` Tactical Telemetry design language from
+the sync monitor: CRT substrate `#0A0A0A`, phosphor `#EAEAEA`, hazard red
+`#E61919` as the only accent, exactly one terminal-green `#4AF626` element
+per surface (the live WebSocket fleet-link dot), zero border-radius,
+monospace telemetry, scanline + grain texture.
+
+**Shared SCSS token layer** — single source of truth:
+
+```
+backend/apps/core/static/tactical/scss/
+├── _tokens.scss      # design tokens: colors, fonts, spacing, texture, button mixins
+├── _base.scss        # admin skeleton re-skin (header, sidebar, focus, scrollbars)
+├── _login.scss       # operator gate (login)
+├── _dashboard.scss   # KPI dashboard components + floating sync-log panel re-skin
+├── _changelist.scss  # CRUD list overrides (tables, filters, pagination)
+├── _changeform.scss  # change-form detail pages (fieldsets, tabs, inlines,
+│                     #   save bar, history sidebar)
+└── tactical.scss     # entry point
+```
+
+Compiled to `apps/core/static/tactical/css/tactical.css` and wired into
+`UNFOLD["STYLES"]` in `backend/configs/__init__.py`. Rebuild after editing:
+
+```bash
+make styles    # npx sass … --style=compressed
+```
+
+The compiled CSS is committed, so the app works without a Sass toolchain.
+`tokens` are also bridged to CSS custom properties (`--tactical-*`) for
+inline styles, templates, and JS.
+
+## Design references
+
+Static concept boards — open directly in a browser, no build step. Both
+follow the same Tactical Telemetry design bible. Full index with open
+instructions: [`docs/README.md`](docs/README.md).
+
+| Board | Path | Contents |
+|-------|------|----------|
+| Mobile ops companion | [`docs/mobile_ops_preview.html`](docs/mobile_ops_preview.html) | 6-screen iPhone concept set: unit registration, branch overview roster, sync queue, conflict resolution, plus WS link-lost and first-run empty-queue states |
+| Desktop sync monitor | [`docs/desktop_monitor_preview.html`](docs/desktop_monitor_preview.html) | 1440px editorial board: the brutalist telemetry dashboard in a desktop browser frame, spec sheet + design-bible annotation cards |
+
+### Screenshots
+
+| Mobile ops companion | Desktop sync monitor |
+|---|---|
+| ![Mobile ops concept board](docs/images/mobile-ops-preview.png) | ![Desktop sync monitor concept board](docs/images/desktop-monitor-preview.png) |
+
+Regenerate the PNGs with `node scripts/dev/screenshot-boards.mjs` (headless
+Chromium via the frontend's Playwright) whenever the boards change. The script
+captures at 2× DPR, then downscales to 1280px wide and palette-quantizes to
+256 colors (via Pillow in `backend/.venv`) so the committed PNGs stay lean.
 
 ## Notes
 
