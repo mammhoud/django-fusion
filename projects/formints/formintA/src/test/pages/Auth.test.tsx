@@ -8,7 +8,7 @@ import {
   cleanup,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, mockInvokePending, resetInvokeMocks } from '../mocks/tauri';
-import Auth from '../../pages/auth/Auth';
+import Auth from '../../app/pages/auth/Auth';
 
 beforeEach(() => {
   resetInvokeMocks();

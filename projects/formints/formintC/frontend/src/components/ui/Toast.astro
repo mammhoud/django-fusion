@@ -1,0 +1,39 @@
+---
+// Toast — listens for `fusion:toast` window events (used by the LoginModal
+// and cart actions) and renders a transient pill.
+---
+
+<div
+  x-data="{
+    toasts: [],
+    push(message, kind) {
+      const id = Date.now() + Math.random();
+      this.toasts.push({ id, message, kind: kind || 'success' });
+      setTimeout(() => { this.toasts = this.toasts.filter((t) => t.id !== id); }, 3200);
+    },
+    init() {
+      window.addEventListener('fusion:toast', (e) => {
+        const detail = e.detail || {};
+        this.push(detail.message || 'Done.', detail.kind);
+      });
+    },
+  }"
+  class="pointer-events-none fixed bottom-6 right-6 z-[95] flex flex-col gap-2"
+  aria-live="polite"
+>
+  <template x-for="t in toasts" :key="t.id">
+    <div
+      x-show="true"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 translate-y-3"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      class="pointer-events-auto flex items-center gap-2.5 rounded-full border border-fu-line bg-fu-card px-5 py-3 text-sm font-medium text-fu-ink shadow-xl"
+    >
+      <span
+        class="h-2 w-2 rounded-full"
+        x-bind:class="t.kind === 'error' ? 'bg-rose-500' : t.kind === 'info' ? 'bg-sky-500' : 'bg-emerald-500'"
+      ></span>
+      <span x-text="t.message"></span>
+    </div>
+  </template>
+</div>

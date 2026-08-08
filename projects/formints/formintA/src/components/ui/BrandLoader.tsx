@@ -74,7 +74,7 @@ export default function BrandLoader({ variant = 'default' }: BrandLoaderProps) {
           />
         </svg>
         <img
-          src={crest}
+          src={crest as unknown as string}
           alt=""
           className="absolute inset-0 w-full h-full object-contain drop-shadow-lg animate-scale-in"
         />

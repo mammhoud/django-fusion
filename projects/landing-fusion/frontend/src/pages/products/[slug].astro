@@ -83,6 +83,14 @@ const previewGallery = pagePreviewGallery?.map((media: any) => ({
   label: String(media.label || ''),
   alt: String(media.alt || 'Product preview'),
 })).filter((media) => media.url);
+const snippets = pageSnippets?.map((s: any) => ({
+  title: String(s.title || ''),
+  language: String(s.language || ''),
+  code: String(s.code || ''),
+  // SnippetBlock.related_post — the blog deep dive that hosts this code.
+  relatedPostHref: String(s.related_post_href || ''),
+  relatedPostTitle: String(s.related_post_title || ''),
+}));
 const capabilities = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || ''),
   title: String(f.title || ''),
@@ -311,6 +319,35 @@ const faqItems = pageFaq?.map((f: any) => ({
               {media.label && <figcaption class='border-t border-fu-line px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{media.label}</figcaption>}
             </figure>
           ))}
+        </div>
+
+        {snippets?.length ? (
+          <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+            {snippets.map((snip) => snip.relatedPostHref ? (
+              <figure class='card overflow-hidden'>
+                <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
+                  <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
+                  {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
+                </figcaption>
+                <div class='p-5'>
+                  <p class='text-sm text-fu-muted'>The full code for this section now lives in a blog deep dive — read the walkthrough, then copy the patterns from there.</p>
+                  <a href={snip.relatedPostHref} class='mt-4 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link no-underline transition-colors hover:text-fu-link-dark'>
+                    <svg class='h-3.5 w-3.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2'/></svg>
+                    Read the deep dive: {snip.relatedPostTitle || 'the post'} →
+                  </a>
+                </div>
+              </figure>
+            ) : (
+              <figure class='card overflow-hidden'>
+                <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
+                  <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
+                  {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
+                </figcaption>
+                <pre class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{snip.code}</code></pre>
+              </figure>
+            ))}
+          </div>
+        ) : null}
         </div>
         {firstEditionPreviewHref && <a href={firstEditionPreviewHref} class='mt-6 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Open an edition preview →</a>}
       </div>

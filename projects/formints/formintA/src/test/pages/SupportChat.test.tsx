@@ -5,7 +5,7 @@ import {
   waitFor,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import SupportChat from '../../pages/admin/SupportChat';
+import SupportChat from '../../app/pages/admin/SupportChat';
 
 beforeEach(() => {
   resetInvokeMocks();

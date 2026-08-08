@@ -8,7 +8,7 @@ import {
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
 import { getInvokeHistory, clearInvokeHistory } from '../setup';
-import Inventory from '../../pages/kitchen/Inventory';
+import Inventory from '../../app/pages/kitchen/Inventory';
 
 const mockIngredients = [
   { id: 1, name: 'Chicken Breast', unit: 'kg', current_quantity: 25, reorder_level: 5, reorder_quantity: 10, cost_per_unit: 450, is_active: true },

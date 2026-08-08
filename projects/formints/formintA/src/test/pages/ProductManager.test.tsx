@@ -9,7 +9,7 @@ import {
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
 import { getInvokeHistory, clearInvokeHistory } from '../setup';
-import ProductManager from '../../pages/pos/ProductManager';
+import ProductManager from '../../app/pages/pos/ProductManager';
 
 const mockProducts = [
   { id: 1, name: 'Chicken Burger', price: 350, unit: 'item',  category_id: 1, product_type: 'product' },

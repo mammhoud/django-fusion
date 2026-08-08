@@ -370,8 +370,10 @@ class BrandPageView(LandingPageView):
         context = super().get_context_data(request=request, **kwargs)
         from apps.pages.brand_spec import get_brand_boards
 
-        context["brand_boards"] = get_brand_boards()
         page = context.get("page") or self._get_page()
+        # Pass the brand page itself so editor palette overrides
+        # (palette_overrides StreamField) apply to the rendered boards.
+        context["brand_boards"] = get_brand_boards(brand_page=page if page.__class__.__name__ == "BrandPage" else None)
         context["display_mode"] = getattr(page, "display_mode", "both")
         return context
 

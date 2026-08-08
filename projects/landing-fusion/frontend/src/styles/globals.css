@@ -586,6 +586,54 @@
   }
   .edition__preview:hover { color: hsl(var(--fu-link)); }
 
+  /* ── Blog post screenshot variants (PostVariantBlock) ─────────────
+     A screenshot per variant. When no screenshot URL is set, a stylized
+     screen frame stands in — browser chrome + a centred mark — so a deep
+     dive always reads as "screenshots", never as a broken image. */
+  .post-variant__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 12rem;
+    background: hsl(40 6% 12%);
+    border-bottom: 1px solid hsl(var(--fu-line));
+  }
+  .post-variant__chrome {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid rgb(240 238 232 / 0.1);
+  }
+  .post-variant__chrome span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: rgb(240 238 232 / 0.22);
+  }
+  .post-variant__screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.5rem;
+  }
+  .post-variant__mark {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--fu-link));
+  }
+  .post-variant__line {
+    width: 7rem;
+    height: 1px;
+    background: rgb(240 238 232 / 0.25);
+  }
+  .post-variant__line--short { width: 4.5rem; }
+
   /* ── Catalog cards (the merged “Projects in this repo” grid) ────── */
   .product-logo {
     display: inline-flex;

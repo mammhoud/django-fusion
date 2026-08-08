@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
-import Suppliers from '../../pages/customers/Suppliers';
+import Suppliers from '../../app/pages/customers/Suppliers';
 
 const mockSuppliers = [
   { id: 3, name: 'Zebra Foods',  contact_name: 'Zane',  email: 'z@z.com', phone: '1', address: 'a', tax_id: '', payment_terms: '', is_active: true },

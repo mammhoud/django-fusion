@@ -1,0 +1,12 @@
+{% if orders %}
+<div style="display:grid; gap:1rem;">
+  {% for order in orders %}
+  {% include "employee/fragments/order_row.html" with order=order %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align:center; padding:3rem 1rem;">
+  <p class="kicker">Inbox clear</p>
+  <p class="muted">No orders match this filter right now.</p>
+</div>
+{% endif %}

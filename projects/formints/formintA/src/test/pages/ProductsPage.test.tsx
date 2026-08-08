@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderWithRouter, screen, waitFor, userEvent } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import ProductsPage from '../../pages/pos/ProductsPage';
+import ProductsPage from '../../app/pages/pos/ProductsPage';
 
 const mockSettings = {
   restaurant_name: 'Test',

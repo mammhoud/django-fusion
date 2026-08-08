@@ -7,7 +7,7 @@ import {
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
 import { getInvokeHistory, clearInvokeHistory } from '../setup';
-import Notes from '../../pages/admin/Notes';
+import Notes from '../../app/pages/admin/Notes';
 
 const mockTemplates = [
   { id: 1, name: 'Standard Receipt', template_body: 'Receipt #{{num}}\nTotal: {{total}}', is_default: true },

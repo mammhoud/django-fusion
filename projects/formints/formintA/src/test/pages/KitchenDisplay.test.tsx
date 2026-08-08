@@ -7,7 +7,7 @@ import {
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
 import { getInvokeHistory, clearInvokeHistory } from '../setup';
-import KitchenDisplay from '../../pages/kitchen/KitchenDisplay';
+import KitchenDisplay from '../../app/pages/kitchen/KitchenDisplay';
 
 // priority: 1=dine-in, 2=takeaway, 3=delivery — required so the KDS
 // preferred-priorities filter (default [1,2,3]) keeps these tickets visible.

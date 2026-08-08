@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+/* Dark mode driven by the `.dark` class on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Content sources — the Django backend templates use the same Tailwind
+   utilities (product cards, cart drawer, order rows) and must be scanned so
+   those classes are emitted in this one build. Mirrors landing-fusion. */
+@source "../../backend/**/templates/";
+
+/* ────────────────────────────────────────────────────────────────────────
+   The Daily Grind — paper + ink, hairline rules, verdigris accent.
+   A coffee-shop purchase app in the same visual system as the structa.cloud
+   landing (fu-* tokens): warm paper, ink type, a single muted accent.
+   ──────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Paper & ink */
+  --fu-paper: 46 25% 98%;        /* #FCFCFA — warm technical paper  */
+  --fu-ink: 40 6% 10%;           /* #1A1917 — ink                    */
+  --fu-muted: 45 5% 44%;         /* #6F6D66 — secondary text         */
+  --fu-line: 45 14% 88%;         /* #E6E3DA — hairline rules         */
+  --fu-card: 48 33% 100%;        /* #FFFFFF — card / overlay sheet    */
+
+  /* The single accent — verdigris merchant seal (muted, sub-80% sat). */
+  --fu-link: 158 42% 32%;        /* #2F6F5B — verdigris             */
+  --fu-link-dark: 158 44% 26%;   /* hover                            */
+  --fu-mark: 48 100% 60%;        /* #FFE14D — marker (one job only)  */
+  --fu-live: 144 68% 37%;        /* server "OK" green                */
+
+  --fu-bg: var(--fu-paper);
+  --fu-text: var(--fu-ink);
+  --fu-border: var(--fu-line);
+  --fu-primary: var(--fu-link);
+
+  --fu-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark {
+  --fu-paper: 45 6% 8%;          /* #131312 — press field            */
+  --fu-ink: 45 20% 93%;          /* #F0EEE8 — paper text             */
+  --fu-muted: 45 5% 66%;
+  --fu-line: 45 6% 20%;
+  --fu-card: 45 6% 11%;
+
+  --fu-link: 158 50% 62%;        /* lighter verdigris for dark surf  */
+  --fu-link-dark: 158 55% 70%;
+  --fu-mark: 48 100% 62%;
+  --fu-live: 145 64% 52%;
+
+  --fu-bg: var(--fu-paper);
+  --fu-text: var(--fu-ink);
+  --fu-border: var(--fu-line);
+  --fu-primary: var(--fu-link);
+}
+
+@theme inline {
+  --color-fu-paper: hsl(var(--fu-paper));
+  --color-fu-ink: hsl(var(--fu-ink));
+  --color-fu-muted: hsl(var(--fu-muted));
+  --color-fu-line: hsl(var(--fu-line));
+  --color-fu-card: hsl(var(--fu-card));
+  --color-fu-link: hsl(var(--fu-link));
+  --color-fu-link-dark: hsl(var(--fu-link-dark));
+  --color-fu-mark: hsl(var(--fu-mark));
+  --color-fu-live: hsl(var(--fu-live));
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
+  --font-sans: "Public Sans Variable", "Public Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* ── Base layer ─────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: hsl(var(--fu-paper));
+    color: hsl(var(--fu-ink));
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: hsl(var(--fu-mark) / 0.4);
+  }
+}
+
+/* ── Components ─────────────────────────────────────────────────────────── */
+@layer components {
+  .container-fusion {
+    @apply mx-auto w-full max-w-[1200px] px-5 sm:px-8;
+  }
+  .tag-marker {
+    @apply font-mono text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-fu-muted;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-fu-link px-6 py-3 text-sm font-semibold text-white transition-[transform,background-color] duration-200 active:scale-[0.98] motion-reduce:transition-none;
+  }
+  .btn-primary:hover {
+    @apply bg-fu-link-dark;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-fu-line bg-transparent px-6 py-3 text-sm font-semibold text-fu-ink transition-colors duration-200 hover:bg-fu-line/40 active:scale-[0.98];
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-fu-line bg-fu-card px-4 py-2.5 text-sm text-fu-ink placeholder:text-fu-muted/70 focus:outline-none focus:ring-2 focus:ring-fu-link/30;
+  }
+  .card-sheet {
+    @apply rounded-3xl border border-fu-line bg-fu-card p-6;
+  }
+  .hairline {
+    @apply border-fu-line;
+  }
+}
+
+/* ── Utilities ──────────────────────────────────────────────────────────── */
+@layer utilities {
+  .shadow-diffusion {
+    box-shadow: 0 20px 40px -15px hsl(var(--fu-ink) / 0.05);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ── Skeleton shimmer (matches landing-fusion) ─────────────────────────── */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: hsl(var(--fu-line) / 0.5);
+}
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--fu-card) / 0.7),
+    transparent
+  );
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ── Perpetual micro-interactions (motion 6) ───────────────────────────── */
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}
+.live-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: hsl(var(--fu-live));
+  animation: breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float-slow {
+  animation: float-y 6s var(--fu-ease-out) infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+
+/* ── HTMX indicator ────────────────────────────────────────────────────── */
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+  opacity: 1;
+}
+
+/* Reveal-on-intersect helper (paired with x-intersect) */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s var(--fu-ease-out), transform 0.6s var(--fu-ease-out);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

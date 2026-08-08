@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
-import Coupons from '../../pages/admin/Coupons';
+import Coupons from '../../app/pages/admin/Coupons';
 
 const mockCoupons = [
   { id: 1, code: 'SAVE10', kind: 'percent', value: 10, min_subtotal: 500, is_active: true },

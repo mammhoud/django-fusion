@@ -50,10 +50,11 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "astro dev",
     "dev:desktop": "pnpm tauri dev",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
     "tauri": "tauri",
     "lint:contrast": "node scripts/lint-contrast.mjs",
     "lint:contrast:fix": "node scripts/lint-contrast.mjs --fix",
@@ -76,12 +77,14 @@
     "db:reset": "rm -f restaurant.db && cargo run --manifest-path src-tauri/Cargo.toml --bin seed"
   },
   "dependencies": {
+    "@astrojs/react": "^4.4.2",
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2",
     "@tauri-apps/plugin-fs": "^2",
     "@tauri-apps/plugin-opener": "^2",
+    "astro": "^5.18.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -103,8 +106,10 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

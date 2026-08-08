@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<p class="kicker">Checkout</p>
+<h1 class="h1">Almost there.</h1>
+<p class="muted" style="max-width:56ch;">Tell us who's picking it up and how you'd like it served. Your card never leaves your hands — this is a cash-on-pickup demo flow.</p>
+
+<div class="grid-2 mt-3">
+  <form method="post" action="{% url 'shop:place_order' %}" class="card">
+    {% csrf_token %}
+    <div class="field">
+      <label for="customer_name">Name</label>
+      <input id="customer_name" name="customer_name" required value="{{ user.first_name|default:'' }}" />
+    </div>
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+      <div class="field">
+        <label for="customer_email">Email</label>
+        <input id="customer_email" name="customer_email" type="email" value="{{ user.email|default:'' }}" />
+      </div>
+      <div class="field">
+        <label for="customer_phone">Phone</label>
+        <input id="customer_phone" name="customer_phone" type="tel" placeholder="+1 (312) 555-0148" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="order_type">How it's served</label>
+      <select id="order_type" name="order_type">
+        {% for value, label in shop.order_types %}
+        <option value="{{ value }}" {% if forloop.first %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes" rows="2" placeholder="Allergies, extra shot, ring the bell..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%; padding:0.9rem;">Place order — ${{ cart_payload.total }}</button>
+  </form>
+
+  <div class="card" style="align-self:start;">
+    <p class="kicker">Your cart · {{ cart_payload.count }} items</p>
+    <ul style="list-style:none; margin:0; padding:0;">
+      {% for item in cart_payload.items %}
+      <li style="display:flex; justify-content:space-between; gap:1rem; padding:0.6rem 0; border-bottom:1px solid hsl(var(--fu-line));">
+        <span>{{ item.quantity }} × {{ item.name }}</span>
+        <span class="muted" style="font-family:'JetBrains Mono',monospace;">${{ item.line_total }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="mt-2" style="display:flex; justify-content:space-between;"><span class="muted">Subtotal</span><span>${{ cart_payload.subtotal }}</span></div>
+    <div style="display:flex; justify-content:space-between;"><span class="muted">Tax (10%)</span><span>${{ cart_payload.tax }}</span></div>
+    <div style="display:flex; justify-content:space-between; font-weight:700;"><span>Total</span><span>${{ cart_payload.total }}</span></div>
+  </div>
+</div>
+{% endblock %}
