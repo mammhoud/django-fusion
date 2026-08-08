@@ -2,8 +2,9 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -25,6 +26,9 @@ urlpatterns = [
     ),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
+    # Browsers commonly probe the legacy ICO path even when the document
+    # advertises the shared SVG favicon. Keep that probe quiet on both roads.
+    path("favicon.ico", RedirectView.as_view(url="/static/favicon.svg", permanent=False)),
 
     # ── Auth — django-allauth headless API (/api/auth/login, session, …)
     # Consumed by the Alpine login modal (both render roads). Social provider
@@ -84,9 +88,16 @@ urlpatterns = [
     ),
     # 404 — Wagtail serves unknown page paths, so this only catches admin/API misses
     path("404/", TemplateView.as_view(template_name="pages/404.html"), name="error-404"),
-    path("", include(wagtail_urls)),
 ]
 
+# These finder routes must precede Wagtail's catch-all: otherwise a request
+# for /static/... is treated as a page path and Wagtail returns its 404. The
+# finder route is kept available in every mode for deterministic health checks
+# and local fallback; production proxies should still serve STATIC_ROOT
+# directly after collectstatic.
+urlpatterns += staticfiles_urlpatterns()
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Wagtail is deliberately last because it owns the remaining document paths.
+urlpatterns += [path("", include(wagtail_urls))]

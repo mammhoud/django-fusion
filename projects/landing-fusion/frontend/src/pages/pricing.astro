@@ -95,6 +95,7 @@ function editionCardClass(tier: string): string {
                 <h3 class='font-display text-2xl font-bold tracking-tight text-fu-ink'>{product.title}</h3>
                 {product.status === 'development' && <span class='badge-dev'>under development</span>}
               </div>
+              {product.version && <p class='mt-1 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted'>{product.version}</p>}
               {product.tagline && <p class='mt-2 text-sm text-fu-muted'>{product.tagline}</p>}
             </div>
 
@@ -123,7 +124,10 @@ function editionCardClass(tier: string): string {
                       ))}
                     </ul>
                   ) : null}
-                  <a href={`/products/${product.slug}/#editions`} class:list={['mt-auto w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>See {product.title} →</a>
+                  <div class='mt-auto flex flex-wrap gap-2'>
+                    <a href={`/products/${product.slug}/#editions`} class:list={['w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>See {product.title} →</a>
+                    <a href={ed.preview_href || `/products/${product.slug}/preview/${ed.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}/`} class='w-full text-center font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>View edition preview →</a>
+                  </div>
                 </div>
               ))}
             </div>

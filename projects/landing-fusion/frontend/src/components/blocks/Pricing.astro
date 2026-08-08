@@ -3,7 +3,7 @@ import PricingCard from '@/components/ui/PricingCard.astro';
 
 export interface Plan {
   name: string;
-  price: number;
+  price: string;
   period: string;
   description: string;
   features: string[];
@@ -21,44 +21,44 @@ interface Props {
 
 const defaultPlans: Plan[] = [
   {
-    name: 'Starter',
-    price: 0,
-    period: 'forever',
-    description: 'For evaluating the stack on your own.',
+    name: 'Open source',
+    price: '$0',
+    period: 'where available',
+    description: 'For exploring the public libraries and products that offer a self-hosted edition.',
     features: [
-      'Static landing pages',
-      'Community support',
-      'Basic analytics',
-      'Open-source license',
+      'Public source code',
+      'Self-hosted documentation',
+      'Core product capabilities',
+      'Product-specific licensing',
     ],
-    cta: { label: 'Start free', href: '/contact/' },
+    cta: { label: 'Explore products', href: '/products/' },
   },
   {
     name: 'Pro',
-    price: 29,
+    price: 'From $29',
     period: 'per month',
-    description: 'For teams shipping production sites.',
+    description: 'For teams that need production workflows and room to grow.',
     highlighted: true,
     features: [
-      'Wagtail page builder',
-      'HTMX dynamic fragments',
-      'Priority support',
-      'Custom domains',
-      'Team roles',
+      'Production-ready capabilities',
+      'Priority support options',
+      'Advanced analytics where included',
+      'Deployment guidance',
+      'Product-specific feature set',
     ],
     cta: { label: 'Go Pro', href: '/contact/' },
   },
   {
-    name: 'Enterprise',
-    price: 99,
-    period: 'per month',
-    description: 'For organizations with real traffic.',
+    name: 'Business',
+    price: 'Custom',
+    period: 'per deployment',
+    description: 'For organizations that need governance, integrations, or managed delivery.',
     features: [
-      'Everything in Pro',
-      'SSO & audit logs',
-      'Dedicated success manager',
-      'Custom branding',
-      'API access',
+      'Organization workflows',
+      'Roles and permissions where included',
+      'Custom branding options',
+      'API and integration support',
+      'Deployment and success support',
     ],
     cta: { label: 'Contact sales', href: '/contact/' },
   },
@@ -66,7 +66,7 @@ const defaultPlans: Plan[] = [
 
 const {
   heading = 'Pricing, printed clearly',
-  intro = 'No hidden fees, no per-seat math. Pick a sheet, ship a site.',
+  intro = 'Edition names and availability vary by product. Compare the catalog before choosing the right path.',
   plans = defaultPlans,
   folded = false,
 } = Astro.props;

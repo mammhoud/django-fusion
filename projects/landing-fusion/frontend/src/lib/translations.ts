@@ -68,6 +68,7 @@ export const T: TranslationTable = {
   'nav_home':        { en:'Home',       ar:'الرئيسية',     sv:'Hem',        fr:'Accueil',    de:'Start',      es:'Inicio',     pt:'Início' },
   'nav_services':    { en:'Services',   ar:'الخدمات',      sv:'Tjänster',   fr:'Services',   de:'Dienste',    es:'Servicios',  pt:'Serviços' },
   'nav_products':    { en:'Products',   ar:'المنتجات',     sv:'Produkter',  fr:'Produits',   de:'Produkte',   es:'Productos',  pt:'Produtos' },
+  'nav_learning':    { en:'Learn',      ar:'تعلّم',         sv:'Lär dig',    fr:'Apprendre',  de:'Lernen',     es:'Aprender',   pt:'Aprender' },
   'nav_blog':        { en:'Blog',       ar:'المدونة',      sv:'Blogg',      fr:'Blog',       de:'Blog',       es:'Blog',       pt:'Blog' },
   'nav_pricing':     { en:'Pricing',    ar:'الأسعار',      sv:'Priser',     fr:'Tarifs',     de:'Preise',     es:'Precios',    pt:'Preços' },
   'nav_about':       { en:'About',      ar:'حول',          sv:'Om',         fr:'À propos',   de:'Über',       es:'Acerca de',  pt:'Sobre' },

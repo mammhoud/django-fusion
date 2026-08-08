@@ -67,6 +67,7 @@ const pricing = readPage('pricing', 'index.html');
 const services = readPage('services', 'index.html');
 const brand = readPage('brand', 'index.html');
 const formintsPos = readPage('products', 'formint-pos', 'index.html');
+const legacyForgePos = readPage('products', 'forge-pos', 'index.html');
 const lms = readPage('products', 'lms', 'index.html');
 const cms = readPage('products', 'cms', 'index.html');
 const blogDoc = readPage('blog', 'why-landing-pages-as-documents', 'index.html');
@@ -172,6 +173,13 @@ test('products is the merged catalog: renamed product cards with logos, status, 
   }
   // Seeded CTA (full-document pages close with the about-style CTA).
   assert.match(products, /Built in the open, shipped as HTML/);
+});
+
+test('legacy product slug redirects to canonical Formints route', () => {
+  // Static Astro output emits a redirect document; the dev server/proxy also
+  // serves it as a 301, covered by the live smoke test.
+  assert.match(legacyForgePos, /redirect/i);
+  assert.match(legacyForgePos, /\/products\/formint-pos\//);
 });
 
 test('projects is a permanent redirect to the merged products catalog', () => {
@@ -281,12 +289,14 @@ test('formints page shows all four tiered editions with per-edition pricing', ()
   assert.match(formintsPos, /edition__card--outline/);
   assert.match(formintsPos, /most shipped/);
   assert.match(formintsPos, /managed-ribbon/);
-  // Reference snippets (SQLite schema + Rust model + new Diesel migration + invoice command).
-  assert.match(formintsPos, /SQLite schema/);
-  assert.match(formintsPos, /Rust model/);
-  assert.match(formintsPos, /CREATE TABLE sales/);
-  assert.match(formintsPos, /Diesel migration \(up\.sql\)/);
-  assert.match(formintsPos, /Tauri command \(invoice PDF\)/);
+  // Product details use visual captures instead of public code/snippet blocks.
+  assert.match(formintsPos, /See it in motion/);
+  assert.match(formintsPos, /preview-gallery__item/);
+  assert.match(formintsPos, /alt="Animated walkthrough of the Formints Standard point-of-sale interface"/);
+  assert.doesNotMatch(formintsPos, /Models &amp; snippets/);
+  assert.doesNotMatch(formintsPos, /CREATE TABLE sales/);
+  assert.doesNotMatch(formintsPos, /Diesel migration \(up\.sql\)/);
+  assert.doesNotMatch(formintsPos, /Tauri command \(invoice PDF\)/);
   // New capability chips + roadmap cards (the Astro road flattens feature
   // blocks into cards; the block title "Product roadmap" renders on Django).
   assert.match(formintsPos, /Offline-first mode/);

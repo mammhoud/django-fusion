@@ -88,7 +88,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = "urls"
 
 _PROJECT_DIR = BASE_DIR.parent  # projects/
-_ASSETS_DIR = _PROJECT_DIR / "assets"
+# Landing-fusion owns a colocated assets directory at
+# projects/landing-fusion/assets (not the monorepo-level projects/assets).
+_ASSETS_DIR = BASE_DIR.parent / "assets"
 
 TEMPLATES = [
     {
@@ -317,18 +319,23 @@ USE_I18N_URL_PATTERNS = False
 
 # ── Static / Media ─────────────────────────────────────────────────
 STATIC_URL = "/static/"
-STATIC_ROOT = _ASSETS_DIR / "staticfiles"
+# Static files are owned by this standalone landing backend. Keep source and
+# collected paths beside settings.py so local Django, the Docker image, and
+# the proxy all resolve the same product screenshots and compiled CSS.
+_BACKEND_DIR = Path(__file__).resolve().parent
+STATIC_ROOT = _BACKEND_DIR / "assets" / "staticfiles"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = _ASSETS_DIR / "media"
+MEDIA_ROOT = _BACKEND_DIR / "assets" / "media"
 
-# STATICFILES_DIRS: the landing project's own assets/static/ (compiled
-# fusion.css from `make css`). Note: _ASSETS_DIR resolves to the shared
-# projects/assets/ (a legacy path that does not exist here), so we point at
-# BASE_DIR/assets/static — the real location of the compiled stylesheet.
-_PROJECT_STATIC_DIR = BASE_DIR / "assets" / "static"
+# Source assets are split between the backend-owned preview captures and the
+# shared landing assets. Keep both directories separate from STATIC_ROOT so
+# Django's development finder and collectstatic see the same CSS, favicon, and
+# product media used by the Astro and Wagtail roads.
+_BACKEND_STATIC_DIR = _BACKEND_DIR / "assets" / "static"
+_SHARED_STATIC_DIR = BASE_DIR / "assets" / "static"
 STATICFILES_DIRS = [
-    _PROJECT_STATIC_DIR,
-] if _PROJECT_STATIC_DIR.exists() else []
+    path for path in (_BACKEND_STATIC_DIR, _SHARED_STATIC_DIR) if path.exists()
+]
 
 # ── Wagtail ────────────────────────────────────────────────────────
 WAGTAIL_SITE_NAME = "StructAI Softwares"
