@@ -304,6 +304,12 @@ DEFAULT_BLOG_POST_BODIES = {
         "<p>Blocks are plain Python classes with plain Django templates. New "
         "sections ship in a day, and the API serializer and server renderer "
         "pick them up automatically from the same field list.</p>"
+        "<h2>Real StreamField blocks from Loop</h2>"
+        "<p>A Hero block — the simplest section that starts every page document:</p>"
+        "<pre><code>from wagtail import blocks\n\nclass HeroBlock(blocks.StructBlock):\n    badge = blocks.CharBlock(max_length=80, required=False)\n    title = blocks.CharBlock(max_length=200)\n    accent = blocks.CharBlock(max_length=60, required=False)\n    subtitle = blocks.TextBlock(required=False)\n    primary_cta = ButtonBlock(required=False)\n    secondary_cta = ButtonBlock(required=False)\n\n    class Meta:\n        template = 'content/blocks/hero.html'\n        label = 'Hero'\n</code></pre>"
+        "<p>A course page — content-driven with a curriculum StreamField:</p>"
+        "<pre><code>class CoursePage(Page):\n    title = models.CharField(max_length=255)\n    description = RichTextField(blank=True)\n    price_cents = models.IntegerField(default=0)\n    curriculum = StreamField([\n        ('lesson', LessonBlock()),\n        ('quiz', QuizBlock()),\n    ], use_json_field=True)\n\n    content_panels = Page.content_panels + [\n        FieldPanel('description'),\n        FieldPanel('price_cents'),\n        FieldPanel('curriculum'),\n    ]\n</code></pre>"
+        "<p>These blocks ship from one codebase and render on both Django and Astro — the API auto-exposes every field from the same block list.</p>"
     ),
     "alpine-reactivity-landing": (
         "<p>Landing pages need a little reactivity — an accordion, a theme "
@@ -334,6 +340,17 @@ DEFAULT_BLOG_POST_BODIES = {
         "code is validated against every consumer before it lands.</p>"
         "<p>For a small team shipping products that share a stack, the "
         "trade is worth it.</p>"
+        "<h2>Formints: the SQLite schema shared across editions</h2>"
+        "<p>Every Formints edition starts from the same local schema. Community "
+        "uses it directly, Standard adds a sync layer, and Pro turns it into "
+        "a cloud master. Here is the core of it:</p>"
+        "<pre><code>CREATE TABLE sales (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  terminal_id TEXT NOT NULL,\n  total_cents INTEGER NOT NULL,\n  payment_method TEXT NOT NULL,\n  created_at TEXT NOT NULL DEFAULT (datetime('now'))\n);\n\nCREATE TABLE sale_items (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  sale_id INTEGER NOT NULL REFERENCES sales(id),\n  product_id TEXT NOT NULL,\n  quantity INTEGER NOT NULL,\n  unit_cents INTEGER NOT NULL\n);\n</code></pre>"
+        "<p>The Rust model that maps to this schema via Diesel ORM:</p>"
+        "<pre><code>#[derive(Queryable, Insertable, Serialize)]\n#[diesel(table_name = crate::db::schema::sales)]\npub struct Sale {\n    pub id: i32,\n    pub terminal_id: String,\n    pub total_cents: i32,\n    pub payment_method: String,\n    pub created_at: String,\n}\n</code></pre>"
+        "<p>The Tauri command that generates an invoice — reusable across Standard and Pro:</p>"
+        "<pre><code>#[tauri::command]\npub fn generate_invoice(sale_id: i32, state: State<AppState>) -> Result<String, String> {\n    let conn = &mut state.pool.get().map_err(|e| e.to_string())?;\n    let sale: Sale = sales::table.find(sale_id).first(conn).map_err(|e| e.to_string())?;\n    let items: Vec<SaleItem> = sale_items::table\n        .filter(sale_items::sale_id.eq(sale_id)).load(conn).map_err(|e| e.to_string())?;\n    render_invoice_pdf(&sale, &items)\n}\n</code></pre>"
+        "<p>One codebase, four editions — the schema and commands stay the same, "
+        "and each edition gates features on top of them.</p>"
     ),
     "server-time-streamed-htmx": (
         "<p>The smallest useful fragment endpoint proves the whole pipeline: "
@@ -344,6 +361,7 @@ DEFAULT_BLOG_POST_BODIES = {
         "small <code>div</code>. A request with the <code>HX-Request</code> "
         "header swaps it into the page — no JSON, no re-render of the "
         "document, no client state.</p>"
+        "<pre><code>from django.http import HttpResponse\nfrom django.utils import timezone\n\ndef server_time(request):\n    now = timezone.now().isoformat()\n    if request.headers.get('HX-Request'):\n        return HttpResponse(f'<div id=\"server-time\">{now}</div>')\n    return HttpResponse(f'<p>Server time: {now}</p>')\n</code></pre>"
         "<h2>Why it matters</h2>"
         "<p>If a five-line fragment endpoint works end to end, the heavier "
         "regions — contact forms, newsletter signup, product filters — ride "

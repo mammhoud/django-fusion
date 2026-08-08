@@ -121,6 +121,18 @@ class TestFixtureData(TestCase):
         # ── 3. Wagtail collection tree (image FK targets) ────────────
         cls._ensure_collections()
 
+        # ── 3.5 Purge auto-created initial site/pages ────────────────
+        # Wagtail's post-migrate hook creates a "Welcome to your new
+        # Wagtail site!" page at url_path "/home/" (path 00010001), which
+        # collides with the fixture's own home page during natural-key
+        # resolution of the site record ("get() returned more than one
+        # Page"). Delete the auto-created site + non-root pages so the
+        # fixture tree installs cleanly. (Same pattern as
+        # test_setup_wagtail_home_creates_home_when_missing.)
+        Site.objects.all().delete()
+        for page in Page.objects.exclude(depth=1):
+            page.delete()
+
         # ── 4. Load the fixture ──────────────────────────────────────
         call_command("loaddata", str(FIXTURE_PATH), verbosity=0)
 

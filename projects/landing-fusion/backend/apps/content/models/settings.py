@@ -198,6 +198,16 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
     footer_copyright = models.CharField(max_length=200,
                                          default="\u00a9 2026 structa.cloud. All rights reserved.",
                                          help_text="Copyright text in footer bottom")
+    footer_banner_enabled = models.BooleanField(default=False,
+        help_text="Show a site-wide announcement banner above the footer")
+    footer_banner_text = models.TextField(blank=True, default="",
+        help_text="Announcement text. HTML allowed. Shown when enabled above.")
+    footer_banner_style = models.CharField(max_length=20, blank=True, default="",
+        choices=[("", "None"), ("info", "Info (blue)"), ("offer", "Offer (amber)"),
+                 ("alert", "Alert (red)"), ("success", "Success (green)")],
+        help_text="Visual style for the announcement banner")
+    footer_text_secondary = models.TextField(blank=True, default="",
+        help_text="Secondary footer text row (e.g., 'Proudly built in MENA region')")
     newsletter_prompt = models.TextField(blank=True, default="",
         help_text="Text above the newsletter signup in footer")
 
@@ -253,11 +263,17 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
             FieldPanel("apple_store_url"),
         ], heading=_("App Store Links")),
         MultiFieldPanel([
+            FieldPanel("footer_banner_enabled"),
+            FieldPanel("footer_banner_text"),
+            FieldPanel("footer_banner_style"),
+        ], heading=_("Announcement Banner")),
+        MultiFieldPanel([
             FieldPanel("footer_description"),
             FieldPanel("footer_address"),
             FieldPanel("footer_phone"),
             FieldPanel("footer_email"),
             FieldPanel("footer_copyright"),
+            FieldPanel("footer_text_secondary"),
             FieldPanel("newsletter_prompt"),
         ], heading=_("Footer Content")),
         MultiFieldPanel([

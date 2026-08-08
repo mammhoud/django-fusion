@@ -9,14 +9,13 @@ from wagtail.admin.panels import (
     FieldPanel,
     InlinePanel,
     MultiFieldPanel,
-    PageChooserPanel,
 )
 from wagtail.api import APIField
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import DraftStateMixin, Orderable, Page
 from wagtail.search import index
 
-from ..manage import Person
+from apps.domain.models.users.users import Person
 
 
 # ---------------------------------------------------------------------
@@ -117,7 +116,7 @@ class BlogPage(Page, DraftStateMixin):
 
     # Enhanced tagging
     tags = ClusterTaggableManager(
-        through='blog.BlogPageTag',
+        through='accounts.BlogPageTag',
         blank=True,
         verbose_name=_("Tags"),
         help_text=_("Categorize this blog post with relevant tags")
@@ -202,8 +201,9 @@ class BlogPage(Page, DraftStateMixin):
             InlinePanel("tagged_items", label=_("Tag Management")),
         ], heading=_("Tagging & Categorization")),
 
+        # Self-referential M2M: no page-type target needed.
         MultiFieldPanel([
-            PageChooserPanel("related_posts", "blog.BlogPage"),
+            FieldPanel("related_posts"),
         ], heading=_("Related Content")),
     ]
 

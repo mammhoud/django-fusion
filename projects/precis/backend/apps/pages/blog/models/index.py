@@ -113,7 +113,7 @@ class BlogIndexPage(RoutablePageMixin, Page):
 
     def get_authors(self):
         """Get all authors who have written posts in this blog."""
-        from apps.pages.accounts.models.profiles.contact import Person
+        from apps.domain.models.users.users import Person
         return Person.objects.filter(
             blog_posts__page__live=True,
             blog_posts__page__path__startswith=self.path
