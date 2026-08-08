@@ -22,6 +22,7 @@ from apps.content.blocks import (
     FeatureComparisonSectionBlock,
     FeaturesSectionBlock,
     HeroBlock,
+    MediaGalleryBlock,
     PricingSectionBlock,
     ProcessSectionBlock,
     ProjectBlock,
@@ -775,6 +776,13 @@ class ProductPage(ShowInNavMixin, LandingPage):
         blank=True,
         verbose_name=_("Features"),
     )
+    gallery = StreamField(
+        [("gallery", MediaGalleryBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Media gallery"),
+        help_text=_("Visual gallery: screenshots, GIFs and videos in a grid, carousel or stack."),
+    )
     faq = StreamField(
         [("faq", FaqSectionBlock())],
         use_json_field=True,
@@ -805,6 +813,7 @@ class ProductPage(ShowInNavMixin, LandingPage):
         FieldPanel("comparison"),
         FieldPanel("snippets"),
         FieldPanel("features"),
+        FieldPanel("gallery"),
         FieldPanel("faq"),
         *ShowInNavMixin.nav_panels,
     ]

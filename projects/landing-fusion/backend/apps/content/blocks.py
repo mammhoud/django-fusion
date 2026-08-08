@@ -4,7 +4,7 @@
 SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
     "services", "process", "blog",
-    "tech", "editions", "snippets", "comparison", "team",
+    "tech", "editions", "snippets", "comparison", "team", "gallery",
 ]
 
 
@@ -662,6 +662,50 @@ class SnippetsSectionBlock(blocks.StructBlock):
         icon = "code"
         label = _("Snippets section")
         template = "content/blocks/snippets.html"
+
+
+class MediaGalleryBlock(blocks.StructBlock):
+    """A visual gallery — screenshots, GIF walkthroughs and videos in a grid.
+
+    Wraps multiple ``EditionPreviewImageBlock`` items into a single section
+    with a display mode: grid (default), carousel (horizontal scroll with
+    snap), or stack (full-bleed stack with lightbox). Used on product pages
+    and edition previews to showcase multiple captures at once.
+
+    The frontend GSAP layer animates gallery items on scroll in
+    (scale+fade rise). The Django template renders the same grid with
+    CSS-animated cards so the two render roads stay visually identical.
+    """
+
+    DISPLAY_CHOICES = [
+        ("grid", _("Grid — responsive 2-3 column masonry")),
+        ("carousel", _("Carousel — horizontal snap scroll")),
+        ("stack", _("Stack — full-bleed with lightbox")),
+    ]
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, label=_("Title"))
+    description = blocks.TextBlock(required=False, label=_("Description"))
+    display = blocks.ChoiceBlock(
+        choices=DISPLAY_CHOICES,
+        default="grid",
+        label=_("Display mode"),
+        help_text=_(
+            "Grid shows a responsive 2-3 column layout. Carousel scrolls "
+            "horizontally with snap points. Stack renders full-bleed images "
+            "with a click-to-expand lightbox."
+        ),
+    )
+    items = blocks.ListBlock(
+        EditionPreviewImageBlock(),
+        label=_("Gallery items"),
+        help_text=_("Screenshots, GIFs and videos to display in the gallery."),
+    )
+
+    class Meta:
+        icon = "image"
+        label = _("Media gallery")
+        template = "content/blocks/media_gallery.html"
 
 
 class ComparisonRowBlock(blocks.StructBlock):

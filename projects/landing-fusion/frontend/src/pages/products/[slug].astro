@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
+import Gallery from '@/components/blocks/Gallery.astro';
 import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
@@ -41,6 +42,7 @@ const pageComparison = (pageData?.comparison as any[] | undefined);
 const pagePreviewGallery = (pageData?.preview_gallery as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
+const pageGallery = (pageData?.gallery as any[] | undefined);
 
 const techItems = pageTech?.map((t: any) => String(t || '')).filter(Boolean);
 const editions = pageEditions?.map((e: any) => ({
@@ -283,6 +285,28 @@ const faqItems = pageFaq?.map((f: any) => ({
         {firstEditionPreviewHref && <a href={firstEditionPreviewHref} class='mt-6 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Open an edition preview →</a>}
       </div>
     </section>
+  ) : null}
+
+  {pageGallery?.length ? (
+    (() => {
+      const gal = pageGallery[0];
+      const items = (gal?.items || []).map((item: any) => ({
+        url: String(item.url || ''),
+        kind: (String(item.kind || 'image')) as 'image' | 'gif' | 'video',
+        poster: String(item.poster || ''),
+        label: String(item.label || ''),
+        alt: String(item.alt || item.label || 'Gallery preview'),
+      })).filter((m: any) => m.url);
+      return items.length ? (
+        <Gallery
+          eyebrow={gal?.eyebrow || ''}
+          title={gal?.title || ''}
+          description={gal?.description || ''}
+          display={(gal?.display || 'grid') as 'grid' | 'carousel' | 'stack'}
+          items={items}
+        />
+      ) : null;
+    })()
   ) : null}
 
   {capabilities?.length ? (
