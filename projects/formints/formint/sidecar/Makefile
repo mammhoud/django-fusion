@@ -65,7 +65,7 @@ check: ## Django system checks
 test: ## Django formint suite + sidecar pytest suite
 	$(MANAGE) test formint -v 1
 	@echo -e "$(BLUE)Running sidecar pytest suite…$(NC)"
-	unset DJANGO_SETTINGS_MODULE; $(PY) -m pytest tests/ -q --no-header -k "not rust_db" || true
+	unset DJANGO_SETTINGS_MODULE; $(PY) -m pytest tests/ -q --no-header -k "not rust_db"
 
 seed: ## Migrate + ensure superuser + seed demo data (admin@formint.local / admin123)
 	$(MANAGE) migrate --noinput

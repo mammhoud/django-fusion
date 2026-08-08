@@ -92,45 +92,16 @@ async def bolt_client(bolt_database):
 
 @pytest.fixture(scope="session")
 def bolt_database(django_bootstrap):
-    """Use a shared on-disk test DB so async ORM connections see the tables."""
-    import os
-    import tempfile
+    """Shared file-backed test DB provided by conftest.
+
+    conftest configures Django once with a file-backed SQLite database and
+    creates all tables (incl. the pos_full models bolt_api serves). Using the
+    shared DB — instead of swapping DATABASES["default"]["NAME"] mid-session —
+    keeps every test file on the same connection pool, so async ORM calls in
+    the bolt client see the same tables.
+    """
     from django.conf import settings
-    from django.db import connection, connections
-
-    fd, path = tempfile.mkstemp(prefix="pos_bolt_test_", suffix=".db")
-    os.close(fd)
-
-    settings.DATABASES["default"]["NAME"] = path
-    connections.close_all()
-
-    from models.pos import Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee
-
-    # Customer has an FK to ClientCategory (loyalty) — create it first so
-    # SQLite FK targets exist when Customer's table is built.
-    try:
-        from models.loyalty import ClientCategory
-        loyalty_models = [ClientCategory]
-    except Exception:
-        loyalty_models = []
-
-    models_to_create = [
-        *loyalty_models,
-        Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee,
-    ]
-    with connection.schema_editor() as schema_editor:
-        for model in models_to_create:
-            try:
-                schema_editor.create_model(model)
-            except Exception:
-                pass
-
-    yield path
-
-    try:
-        os.remove(path)
-    except FileNotFoundError:
-        pass
+    return settings.DATABASES["default"]["NAME"]
 
 
 @pytest.fixture
