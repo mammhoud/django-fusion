@@ -29,6 +29,7 @@
   </ul>
   {% endif %}
   {% if value.cta_label or value.cta_page %}
+  <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:.5rem;">
   {% if value.cta_page %}
   <a href="{{ value.cta_page.url }}" class="mt-auto w-full {% if value.tier == 'featured' %}btn-primary{% else %}btn-secondary{% endif %}">
     {{ value.cta_label|default:value.cta_page.title }}
@@ -38,6 +39,8 @@
     {{ value.cta_label }}
   </a>
   {% endif %}
+  <a href="/products/{{ page.slug }}/preview/{{ value.name|slugify }}/" class="w-full text-center" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">View edition preview →</a>
+  </div>
   {% endif %}
   {% comment %} Edition preview link — /products/<slug>/preview/<edition>/ —
      opens the flexible subpage previewing this exact edition (driven by

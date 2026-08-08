@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from apps.content.models.languages import SUPPORTED_LANGUAGE_CHOICES
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.fields import RichTextField
 from wagtail.search import index
@@ -32,7 +33,12 @@ class Course(ClusterableModel, index.Indexed):
         related_name="learning_courses",
         verbose_name=_("Instructor"),
     )
-    language = models.CharField(max_length=10, default="en")
+    language = models.CharField(
+        max_length=10,
+        choices=SUPPORTED_LANGUAGE_CHOICES,
+        default="en",
+        verbose_name=_("Language"),
+    )
     difficulty = models.CharField(
         max_length=20,
         choices=[
@@ -47,6 +53,8 @@ class Course(ClusterableModel, index.Indexed):
     is_published = models.BooleanField(default=False, db_index=True)
     is_featured = models.BooleanField(default=False)
     has_certificate = models.BooleanField(default=False)
+    youtube_channel_url = models.URLField(blank=True, verbose_name=_("YouTube channel"))
+    youtube_channel_name = models.CharField(max_length=120, blank=True, verbose_name=_("YouTube channel name"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -62,6 +70,10 @@ class Course(ClusterableModel, index.Indexed):
         MultiFieldPanel(
             [FieldPanel("price"), FieldPanel("is_published"), FieldPanel("is_featured"), FieldPanel("has_certificate")],
             heading=_("Commercial settings"),
+        ),
+        MultiFieldPanel(
+            [FieldPanel("youtube_channel_name"), FieldPanel("youtube_channel_url")],
+            heading=_("Instructor channel"),
         ),
         InlinePanel("modules", heading=_("Modules"), label=_("Module")),
     ]
@@ -95,11 +107,17 @@ class Course(ClusterableModel, index.Indexed):
 
     @property
     def module_count(self):
-        return self.modules.count()
+        annotated = getattr(self, "_module_count", None)
+        return annotated if annotated is not None else self.modules.count()
 
     @property
     def lesson_count(self):
-        return Lesson.objects.filter(module__course=self, is_active=True).count()
+        annotated = getattr(self, "_lesson_count", None)
+        return (
+            annotated
+            if annotated is not None
+            else Lesson.objects.filter(module__course=self, is_active=True).count()
+        )
 
 
 class Module(Orderable, ClusterableModel):

@@ -1,6 +1,12 @@
 {% extends "pages/base.html" %}
 {% block title %}Learning profile · Structa Cloud{% endblock %}
 {% block content %}
-<section class="section-hero reg-marks py-16"><div class="container-fusion"><p class="tag-marker mb-4">profile · learning</p><h1 class="font-display text-4xl font-bold tracking-tight text-fu-ink md:text-6xl">Your learning record.</h1><p class="mt-4 text-fu-muted">Courses, progress, and saved paths in one place.</p></div></section>
-<section class="doc-sheet bg-fu-paper py-12"><div class="container-fusion max-w-5xl"><div class="mb-8 flex flex-wrap items-center justify-between gap-3"><div><p class="text-sm text-fu-muted">Signed in as <strong class="text-fu-ink">{{ request.user.email }}</strong></p></div><a class="btn-secondary" href="/profile/">Account settings →</a></div><div class="grid gap-6 md:grid-cols-2"><div class="card p-6"><p class="tag-marker mb-3">enrolled</p><p class="font-mono text-3xl font-semibold text-fu-ink">{{ enrollments|length }}</p><a class="mt-4 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link" href="{% url 'learning:dashboard' %}">Open dashboard →</a></div><div class="card p-6"><p class="tag-marker mb-3">saved</p><p class="font-mono text-3xl font-semibold text-fu-ink">{{ wishlist|length }}</p><a class="mt-4 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link" href="{% url 'learning:catalog' %}">Browse catalog →</a></div></div></div></section>
+<main class="learning-surface">
+  <section class="learning-hero learning-hero--compact reg-marks"><div class="container-fusion"><p class="learning-kicker">[ LEARNING / USER RECORD ]</p><h1 class="learning-hero__title">Your learning<br><span>record.</span></h1><p class="learning-hero__intro">Courses, progress, and saved paths in one place.</p></div></section>
+  {% include "learning/partials/learner_nav.html" %}
+  <section class="learning-sheet"><div class="container-fusion">
+    <div class="learning-record-head"><div><p class="learning-kicker">ACCOUNT HOLDER</p><p class="learning-record-email">{{ request.user.email }}</p></div><a class="learning-button" href="/profile/">Account settings <span aria-hidden="true">&gt;&gt;</span></a></div>
+    <div class="learning-record-grid"><article class="learning-record-card"><span class="learning-stamp">INDEX / 01</span><strong>{{ enrollments|length }}</strong><span>ENROLLED COURSES</span><a href="{% url 'learning:dashboard' %}">OPEN DASHBOARD &gt;&gt;&gt;</a></article><article class="learning-record-card"><span class="learning-stamp">INDEX / 02</span><strong>{{ wishlist|length }}</strong><span>SAVED PATHS</span><a href="{% url 'learning:catalog' %}">BROWSE CATALOG &gt;&gt;&gt;</a></article></div>
+  </div></section>
+</main>
 {% endblock %}

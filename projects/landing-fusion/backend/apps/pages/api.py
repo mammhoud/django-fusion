@@ -244,7 +244,11 @@ def navigation_api(request):
                         child["label"] = child_translation.title
         except Exception:
             logger.exception("navigation translation lookup failed")
-    return JsonResponse({"nav_items": nav_items, "language": language, "available_languages": ["en", "ar"]})
+    return JsonResponse({
+        "nav_items": nav_items,
+        "language": language,
+        "available_languages": _supported_language_codes(),
+    })
 
 
 def content_languages_api(request):
@@ -529,6 +533,8 @@ def _page_to_dict(page) -> dict:
         data["logo_style"] = page.logo_style
         data["status"] = page.status
         data["hidden"] = bool(page.hidden)
+    if hasattr(page, "version") and page.version:
+        data["version"] = page.version
     if hasattr(page, "tagline") and page.tagline:
         data["tagline"] = page.tagline
 
@@ -623,6 +629,15 @@ def _page_to_dict(page) -> dict:
                 if items:
                     data[field_name] = items
 
+    # Product detail pages use edition captures as their public visual
+    # preview gallery. Keep the legacy editor field stored in Wagtail for
+    # migrations/history, but remove it from the public product payload so
+    # clients cannot accidentally render code blocks again.
+    if page.__class__.__name__ == "ProductPage":
+        data.pop("snippets", None)
+        data["editions"] = page.get_editions()
+        data["preview_gallery"] = page.get_preview_gallery()
+
     # Services delivery phases — nested Wagtail documents exposed to the
     # Astro services page without a second content source.
     if page.__class__.__name__ == "ServicesPage":
@@ -709,17 +724,35 @@ def _deep_merge(base: dict, overlay: dict) -> dict:
     return result
 
 
+def _supported_language_codes() -> list[str]:
+    """Return the shared language catalog codes in stable switcher order."""
+    try:
+        from apps.content.models.languages import SUPPORTED_LANGUAGE_CODES
+
+        return list(SUPPORTED_LANGUAGE_CODES)
+    except Exception:
+        return ["en", "ar", "sv", "fr", "de", "es", "pt"]
+
+
 def _requested_content_language(request) -> str:
-    """Return the requested editorial language, limited to English/Arabic."""
+    """Return a supported request language, with English as the safe fallback.
+
+    Editorial overlays currently cover English and Arabic; other supported
+    languages therefore resolve to canonical English content rather than
+    failing or silently advertising an unsupported code.
+    """
+    supported = set(_supported_language_codes())
     requested = (request.GET.get("lang") or "").lower().split("-")[0]
-    if requested in {"en", "ar"}:
+    if requested in supported:
         return requested
     cookie = (request.COOKIES.get("django_language") or "").lower().split("-")[0]
-    if cookie in {"en", "ar"}:
+    if cookie in supported:
         return cookie
     header = (request.headers.get("Accept-Language") or "").lower()
-    if header.startswith("ar") or ",ar" in header:
-        return "ar"
+    for language in header.replace(";", ",").split(","):
+        code = language.strip().split("-")[0]
+        if code in supported:
+            return code
     return "en"
 
 
@@ -734,8 +767,28 @@ def _apply_page_translation(page, data: dict, language: str) -> dict:
         translation = PageTranslation.for_page(page, "en")
     if translation is not None:
         data = _deep_merge(data, translation.as_overrides())
+    # Product detail pages never expose legacy code snippets, including when
+    # a translated override was authored before the visual gallery migration.
+    if page.__class__.__name__ == "ProductPage":
+        data.pop("snippets", None)
+        # Preserve translated edition fields while filling the stable routing
+        # and media contract from the canonical edition records.
+        canonical_editions = {
+            str(edition.get("name", "")).casefold(): edition
+            for edition in page.get_editions()
+        }
+        localized_editions = data.get("editions", [])
+        if isinstance(localized_editions, list):
+            for edition in localized_editions:
+                if not isinstance(edition, dict):
+                    continue
+                canonical = canonical_editions.get(str(edition.get("name", "")).casefold(), {})
+                for key in ("preview_href", "preview_images", "tier", "featured"):
+                    if key not in edition and key in canonical:
+                        edition[key] = copy.deepcopy(canonical[key])
+        data["preview_gallery"] = page.get_preview_gallery()
     data["language"] = language
-    data["available_languages"] = ["en", "ar"]
+    data["available_languages"] = _supported_language_codes()
     if requested_translation is not None:
         data["translation_source"] = "model"
     elif translation is not None:

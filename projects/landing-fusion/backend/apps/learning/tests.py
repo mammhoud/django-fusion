@@ -43,6 +43,7 @@ class LearningCoreTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Syllabus")
         self.assertContains(response, "First deploy")
+        self.assertNotContains(response, "Open YouTube channel")
 
     def test_enrollment_requires_auth_and_htmx_opens_login(self):
         url = reverse("learning:enroll", kwargs={"slug": self.course.slug})
@@ -101,6 +102,34 @@ class LearningCoreTestCase(TestCase):
         self.assertContains(dashboard, "Shipping with Django")
         self.assertEqual(profile.status_code, 200)
         self.assertContains(profile, "Account settings")
+
+    def test_course_instructor_channel_renders_safely(self):
+        self.course.youtube_channel_url = "https://www.youtube.com/@mammhoud"
+        self.course.youtube_channel_name = "Mahmoud Ezzat · @mammhoud"
+        self.course.save(update_fields=["youtube_channel_url", "youtube_channel_name"])
+        response = self.client.get(reverse("learning:course", kwargs={"slug": self.course.slug}))
+        self.assertContains(response, "Mahmoud Ezzat · @mammhoud")
+        self.assertContains(response, 'href="https://www.youtube.com/@mammhoud"')
+        self.assertContains(response, 'rel="noopener noreferrer"')
+
+    def test_seeded_course_contract_is_idempotent(self):
+        from apps.learning.management.commands.seed_learning import Command
+
+        Command().handle()
+        course = Course.objects.get(slug="ship-django-products")
+        self.assertTrue(course.is_published)
+        self.assertTrue(course.is_featured)
+        self.assertTrue(course.has_certificate)
+        self.assertEqual(course.youtube_channel_url, "https://www.youtube.com/@mammhoud")
+        self.assertEqual(course.modules.count(), 4)
+        self.assertEqual(course.lesson_count, 12)
+
+        # A second seed must preserve the editor-managed course and not create
+        # duplicate modules or lessons.
+        Command().handle()
+        self.assertEqual(Course.objects.filter(slug="ship-django-products").count(), 1)
+        self.assertEqual(Course.objects.get(slug="ship-django-products").modules.count(), 4)
+        self.assertEqual(Course.objects.get(slug="ship-django-products").lesson_count, 12)
 
     def test_auth_status_includes_learning_summary(self):
         self.client.force_login(self.learner)

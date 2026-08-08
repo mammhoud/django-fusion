@@ -23,6 +23,7 @@ from apps.content.blocks import (
     FeatureComparisonSectionBlock,
     FeaturesSectionBlock,
     HeroBlock,
+    MediaGalleryBlock,
     PricingSectionBlock,
     ProcessSectionBlock,
     ProjectBlock,
@@ -534,6 +535,7 @@ class PricingPage(ShowInNavMixin, LandingPage):
                         "slug": specific.slug,
                         "title": specific.title,
                         "tagline": specific.tagline,
+                        "version": specific.version,
                         "logo_style": specific.logo_style,
                         "status": specific.status,
                         "display_mode": specific.display_mode,
@@ -681,7 +683,9 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
 
     Carries everything another project needs to reuse it (e.g. LMS reusing
     Formints patterns): an overview, its tech stack, its editions with
-    per-edition pricing, reference snippets/models, features, FAQ and CTA.
+    per-edition pricing, preview captures, features, FAQ and CTA. Legacy
+    reference snippets remain stored for editorial compatibility but are no
+    longer rendered on public product detail pages.
     These pages live as children of ``ProductsPage`` and are listed there.
     Carries ``display_mode`` (DisplayModeMixin) for future surfacing.
     """
@@ -702,6 +706,12 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         blank=True,
         verbose_name=_("Tagline"),
         help_text=_("One-line summary shown on the product card in the /products/ listing."),
+    )
+    version = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name=_("Product version"),
+        help_text=_("Release label shown on catalog and product detail pages, for example beta 0.2 or v2.7."),
     )
     logo_style = models.CharField(
         max_length=20,
@@ -785,6 +795,13 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         blank=True,
         verbose_name=_("Features"),
     )
+    gallery = StreamField(
+        [("gallery", MediaGalleryBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Media gallery"),
+        help_text=_("Visual gallery: screenshots, GIFs and videos in a grid, carousel or stack."),
+    )
     faq = StreamField(
         [("faq", FaqSectionBlock())],
         use_json_field=True,
@@ -797,6 +814,7 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
             [
                 FieldPanel("category"),
                 FieldPanel("tagline"),
+                FieldPanel("version"),
                 FieldPanel("logo_style"),
                 FieldPanel("status"),
                 FieldPanel("hidden"),
@@ -815,6 +833,7 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         FieldPanel("applications"),
         FieldPanel("snippets"),
         FieldPanel("features"),
+        FieldPanel("gallery"),
         FieldPanel("faq"),
         *ShowInNavMixin.nav_panels,
         *DisplayModeMixin.display_panels,
@@ -851,11 +870,42 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
                 cta_page = None
         else:
             cta_page = None
+        from django.utils.text import slugify
+
+        preview_images = []
+        for image in edition.get("preview_images", []):
+            # StructValue and plain dict are both used here: the former comes
+            # from Wagtail's editor, the latter from seeded JSON/tests.
+            url = image.get("url", "") if hasattr(image, "get") else ""
+            if not url:
+                continue
+            kind = image.get("kind", "image") if hasattr(image, "get") else "image"
+            poster = image.get("poster", "") if hasattr(image, "get") else ""
+            label = image.get("label", "") if hasattr(image, "get") else ""
+            alt = image.get("alt", "") if hasattr(image, "get") else ""
+            normalized_url = str(url)
+            if normalized_url.startswith("previews/"):
+                normalized_url = f"/static/{normalized_url}"
+            normalized_poster = str(poster)
+            if normalized_poster.startswith("previews/"):
+                normalized_poster = f"/static/{normalized_poster}"
+            preview_images.append(
+                {
+                    "url": normalized_url,
+                    "kind": str(kind) if str(kind) in {"image", "gif", "video"} else "image",
+                    "poster": normalized_poster,
+                    "label": str(label),
+                    "alt": str(alt) or str(label) or "Edition preview",
+                }
+            )
         return {
             "name": edition.get("name", ""),
             "price": edition.get("price", ""),
             "period": edition.get("period", ""),
             "tagline": edition.get("tagline", ""),
+            "features": list(edition.get("features", [])),
+            "preview_images": preview_images,
+            "preview_href": f"/products/{self.slug}/preview/{slugify(str(edition.get('name', '')))}/",
             "tier": edition.get("tier", "default"),
             "featured": bool(edition.get("featured", False)),
             "offer_label": edition.get("offer_label", ""),
@@ -897,6 +947,40 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
                         return data
         return None
 
+    def get_preview_gallery(self) -> list[dict]:
+        """Collect the product's edition captures for the detail-page gallery.
+
+        Edition previews remain the editorial source of truth. The detail page
+        gets one deduplicated gallery, while edition preview routes keep their
+        own focused galleries. Prefixing labels with the edition keeps a mixed
+        product gallery understandable without adding another content field.
+        """
+        gallery: list[dict] = []
+        seen: set[tuple[str, str]] = set()
+        for edition in self.get_editions():
+            edition_name = str(edition.get("name", "")).strip()
+            for media in edition.get("preview_images", []):
+                url = str(media.get("url", "")).strip()
+                if not url:
+                    continue
+                kind = str(media.get("kind", "image"))
+                identity = (url, kind)
+                if identity in seen:
+                    continue
+                seen.add(identity)
+                label = str(media.get("label", "")).strip()
+                gallery.append(
+                    {
+                        "url": url,
+                        "kind": kind,
+                        "poster": str(media.get("poster", "")),
+                        "label": f"{edition_name} · {label}" if label else edition_name,
+                        "alt": str(media.get("alt", "")) or f"{edition_name} product preview",
+                        "edition": edition_name,
+                    }
+                )
+        return gallery
+
     def get_product_card(self) -> dict:
         """The listing-card payload for the /products/ page + API.
 
@@ -915,6 +999,7 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
             "title": self.title,
             "slug": self.slug,
             "tagline": self.tagline,
+            "version": self.version,
             "href": f"/products/{self.slug}/",
             "category": self.get_category_display().lower(),
             "logo_style": self.logo_style,

@@ -102,6 +102,37 @@ const editionName = editionData ? String(editionData.name || edition) : edition;
           />
         </div>
 
+        {Array.isArray(editionData.preview_images) && editionData.preview_images.length > 0 && (
+          <section class='mb-10' aria-labelledby='preview-gallery-title'>
+            <div class='mb-5 max-w-2xl'>
+              <p class='tag-marker mb-2'>inside the edition</p>
+              <h2 id='preview-gallery-title' class='font-display text-2xl font-bold tracking-tight text-fu-ink'>A closer look</h2>
+            </div>
+            <div class='grid gap-5 md:grid-cols-2'>
+              {editionData.preview_images.map((image: { url: string; kind?: 'image' | 'gif' | 'video'; poster?: string; label?: string; alt?: string }, i: number) => (
+                <figure class='preview-gallery__item card reveal overflow-hidden bg-fu-card' style={`--reveal-i: ${i}`} x-data x-intersect.once='$el.classList.add("reveal-visible")'>
+                  <div class='preview-gallery__media'>
+                    {image.kind === 'video' ? (
+                      <>
+                        <video src={image.url} poster={image.poster} controls muted playsinline preload='metadata' aria-label={image.alt || image.label || `${editionName} preview video`} class='block aspect-[16/10] w-full object-cover object-top' onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                          Your browser cannot play this video.
+                        </video>
+                        <p hidden class='preview-media-fallback p-5 text-sm text-fu-muted' role='status'>Video preview unavailable. <a href={image.url}>Open the recording</a>.</p>
+                      </>
+                    ) : (
+                      <>
+                        <img src={image.url} alt={image.alt || image.label || `${editionName} preview`} loading='lazy' decoding='async' class='block aspect-[16/10] w-full object-cover object-top' onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+                        <p hidden class='preview-media-fallback p-5 text-sm text-fu-muted' role='status'>Preview unavailable. <a href={image.url}>Open this capture</a>.</p>
+                      </>
+                    )}
+                  </div>
+                  {image.label && <figcaption class='border-t border-fu-line px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{image.label}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+        {pageData?.version && <p class='mb-5 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{pageData.version}</p>}
         <div class='card max-w-lg p-6 sm:p-8'>
           <div class='mb-6 flex flex-wrap items-baseline gap-2'>
             {editionData.offer_old_price && <span class='offer-old-price'>{editionData.offer_old_price}</span>}

@@ -1,7 +1,1 @@
-<div class="rounded-md border border-fu-line bg-fu-card p-4" role="status">
-  <p class="font-medium text-fu-ink">Checkout is not available yet.</p>
-  <p class="mt-1 text-sm text-fu-muted">
-    {% if payment_provider %}The {{ payment_provider }} checkout is not connected in this environment.{% else %}This paid course needs a configured payment provider before enrollment can be activated.{% endif %}
-  </p>
-  <a class="mt-3 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link" href="{% url 'learning:catalog' %}">Back to catalog →</a>
-</div>
+<div class="learning-status-panel learning-status-panel--warning" role="status"><p class="learning-alert">[ ACCESS / HOLD ]</p><p>Checkout is not available yet.</p><p>{% if payment_provider %}The {{ payment_provider }} checkout is being connected. Your enrollment will remain locked until payment is verified.{% else %}This course requires checkout, which is disabled in this environment.{% endif %}</p><a class="learning-link learning-link--arrow" href="{% url 'learning:catalog' %}">BACK TO CATALOG <span aria-hidden="true">&gt;&gt;&gt;</span></a></div>

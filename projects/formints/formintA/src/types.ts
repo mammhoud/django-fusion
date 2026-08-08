@@ -129,6 +129,17 @@ export interface Employee {
   salary: number;
   is_active: boolean;
   joined_at?: string;
+  // ---- Employee detail & payroll fields (wizard) ----
+  address?: string | null;
+  date_of_birth?: string | null;
+  national_id?: string | null;
+  emergency_contact?: string | null;
+  pay_frequency?: string;
+  hourly_rate?: number;
+  bank_name?: string | null;
+  bank_account?: string | null;
+  tax_number?: string | null;
+  notes?: string | null;
 }
 
 export interface NewEmployee {
@@ -137,6 +148,17 @@ export interface NewEmployee {
   email?: string | null;
   employee_type_id: number;
   salary: number;
+  joined_at?: string | null;
+  address?: string | null;
+  date_of_birth?: string | null;
+  national_id?: string | null;
+  emergency_contact?: string | null;
+  pay_frequency?: string;
+  hourly_rate?: number;
+  bank_name?: string | null;
+  bank_account?: string | null;
+  tax_number?: string | null;
+  notes?: string | null;
 }
 
 export interface SaleItem {
@@ -600,5 +622,106 @@ export interface Payroll {
   status: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface UserAction {
+  id: number;
+  action: string;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  details?: string | null;
+  user_id?: number | null;
+  created_at: string;
+}
+
+export interface NewUserAction {
+  action: string;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  details?: string | null;
+  user_id?: number | null;
+}
+
+// ---- Finance & Budget ----
+export interface FinanceTransaction {
+  id: number;
+  date: string;
+  category_id: string;
+  /** 'collection' = income, 'payment' = expense (mirrors INVOICE_CATEGORIES). */
+  direction: string;
+  amount: number;
+  description?: string | null;
+  reference?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewFinanceTransaction {
+  date: string;
+  category_id: string;
+  direction: string;
+  amount: number;
+  description?: string | null;
+  reference?: string | null;
+}
+
+export interface UpdateFinanceTransactionPayload {
+  date?: string;
+  category_id?: string;
+  direction?: string;
+  amount?: number;
+  description?: string | null;
+  reference?: string | null;
+}
+
+export interface Budget {
+  id: number;
+  /** INVOICE_CATEGORIES id, or null for a global budget. */
+  category_id?: string | null;
+  period_start: string;
+  period_end: string;
+  amount: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewBudget {
+  category_id?: string | null;
+  period_start: string;
+  period_end: string;
+  amount: number;
+}
+
+export interface UpdateBudgetPayload {
+  category_id?: string | null;
+  period_start?: string;
+  period_end?: string;
+  amount?: number;
+}
+
+export interface FinanceCategorySummary {
+  category_id: string;
+  direction: string;
+  total: number;
+}
+
+export interface BudgetTracking {
+  budget_id: number;
+  category_id?: string | null;
+  period_start: string;
+  period_end: string;
+  budget_amount: number;
+  spent: number;
+  remaining: number;
+  over: boolean;
+}
+
+export interface FinanceSummary {
+  total_income: number;
+  total_expense: number;
+  net: number;
+  income_by_category: FinanceCategorySummary[];
+  expense_by_category: FinanceCategorySummary[];
+  budgets: BudgetTracking[];
 }
 

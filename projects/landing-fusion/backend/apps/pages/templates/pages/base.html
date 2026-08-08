@@ -6,6 +6,7 @@
   <title>{% block title %}{{ page.title|default:"Structa Cloud" }}{% endblock %}</title>
   <meta name="description" content="{% block description %}A modern landing experience built with Astro, HTMX and Alpine.js.{% endblock %}" />
   <meta name="theme-color" content="#FCFCFA" />
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
   <!-- Fusion render mode (django-fusion settings config) — the content-delivery
        option this document was served under: fusion-render (server HTML) or
        data-api (client renders from /apis/* JSON). Controlled by

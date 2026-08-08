@@ -17,12 +17,28 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.snippets.models import register_snippet
 
 
+# Keep the learner catalog aligned with the site switcher. Editorial overlays
+# currently exist for English and Arabic, while the remaining languages use
+# the canonical content fallback until translated fields are added.
+SUPPORTED_LANGUAGE_CHOICES = (
+    ("en", _("English")),
+    ("ar", _("Arabic")),
+    ("sv", _("Swedish")),
+    ("fr", _("French")),
+    ("de", _("German")),
+    ("es", _("Spanish")),
+    ("pt", _("Portuguese")),
+)
+SUPPORTED_LANGUAGE_CODES = tuple(code for code, _ in SUPPORTED_LANGUAGE_CHOICES)
+
+
 @register_snippet
 class SiteLanguage(models.Model):
     """One supported language offered in the site language switcher."""
 
     code = models.CharField(
         max_length=10,
+        choices=SUPPORTED_LANGUAGE_CHOICES,
         unique=True,
         verbose_name=_("Code"),
         help_text=_("BCP-47 language tag, for example en, ar, sv."),

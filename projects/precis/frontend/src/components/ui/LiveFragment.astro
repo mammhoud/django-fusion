@@ -52,8 +52,8 @@ interface Props {
 const {
   route,
   label = 'live · from the backend',
-  heading = 'The same component, served by Django',
-  intro = 'This section is fetched with HTMX from the Wagtail backend — skeleton while it loads, then the server-rendered fragment swaps in.',
+  heading = '',
+  intro = '',
   skeletonCards = 3,
   skeletonVariant,
 } = Astro.props;
@@ -71,8 +71,8 @@ const hasBackend = fusionApiUrl !== '';
   <div class="container-fusion">
     <div class="mx-auto mb-14 max-w-2xl text-center">
       <p class="tag-marker mb-4">{label}</p>
-      <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>
-      <p class="text-fu-muted">{intro}</p>
+      {heading && <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>}
+      {intro && <p class="text-fu-muted">{intro}</p>}
     </div>
 
     {hasBackend ? (

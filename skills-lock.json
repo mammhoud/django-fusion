@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "deployment-documentation": {
+      "source": "aj-geddes/useful-ai-prompts",
+      "sourceType": "github",
+      "skillPath": "skills/deployment-documentation/SKILL.md",
+      "computedHash": "3c80a2212b917111252ad975b18d0ad9e8db49570dcf592448aa19a2ef199abd"
+    },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",

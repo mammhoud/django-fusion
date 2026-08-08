@@ -11,9 +11,10 @@ empty content fields added by later migrations are backfilled.
 Usage:
     python manage.py seed_pages
 """
+import json
 import os
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from wagtail.models import Page, Site
 
 from apps.pages.models import (
@@ -362,6 +363,7 @@ DEFAULT_BLOG_POST_BODIES = {
 DEFAULT_PRODUCT_PAGES = {
     "formint-pos": {
         "title": "Formints",
+        "version": "beta 0.2",
         "logo_style": "crest",
         "category": "application",
         "tagline": "Desktop point-of-sale in four editions: Community, Standard, Pro, Cloud.",
@@ -402,7 +404,7 @@ DEFAULT_PRODUCT_PAGES = {
                             "tagline": "Free and open source. The offline-first POS for a single terminal.",
                             "price": "$0",
                             "period": "/open source",
-                            "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage", "Sales, receipting + inventory", "Payment types: cash, card, split", "Offline-first mode", "Refunds & returns", "i18n: en, fr, ar", "No sidecar, no server needed"],
+                            "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage", "Sales, receipting + inventory", "Payment types: cash, card, split", "Offline-first mode", "Refunds & returns", "i18n: en, fr, ar"],
                             "cta_label": "Download",
                             "cta_href": "https://github.com/mammhoud/formint-pos",
                             "featured": False,
@@ -414,6 +416,12 @@ DEFAULT_PRODUCT_PAGES = {
                             "price": "$119",
                             "period": "/one-time license",
                             "features": ["Everything in Community", "High-end interface design", "Inventory adjustments + stock control", "Food & beverage (F&B) menu support", "Kitchen display + payroll", "REST API for integrations", "Inventory + sales analytics", "Invoice PDF generation", "Loyalty & rewards program", "Multi-currency & tax profiles", "Custom roles & permissions", "Data export (CSV/JSON)", "Deployment & support quoted per site"],
+                            "preview_images": [
+                                {"url": "/static/previews/formints/standard-front.jpg", "kind": "image", "label": "Front of house", "alt": "Formints Standard point-of-sale checkout screen"},
+                                {"url": "/static/previews/formints/standard-back.jpg", "kind": "image", "label": "Data and operations", "alt": "Formints Standard data and operations screen"},
+                                {"url": "/static/previews/formints/standard-walkthrough.gif", "kind": "gif", "label": "Standard walkthrough", "alt": "Animated walkthrough of the Formints Standard point-of-sale interface"},
+                                {"url": "/static/previews/formints/standard-sale-complete.png", "kind": "image", "label": "Sale complete", "alt": "Formints Standard completed sale receipt with PDF, print, and new sale actions"},
+                            ],
                             "cta_label": "Buy Standard",
                             "cta_href": "/contact/",
                             "featured": False,
@@ -422,10 +430,14 @@ DEFAULT_PRODUCT_PAGES = {
                         {        "name": "Pro",
         "tagline": "Multi-terminal with a cloud master, WebSocket streaming, and a high-throughput Rust API.",
         "price": "$79",
-        "period": "/per month",
+        "period": "/per year",
         "offer_label": "50% off · launch",
         "offer_old_price": "$158",
                             "features": ["Everything in Standard", "Multi-terminal sync (cloud master)", "High-throughput Rust API (60k+ RPS)", "WebSocket real-time streaming", "Product sync engine (master)", "Employee scheduling + KPIs", "Change signals + approvals", "Deployment & support fees apply"],
+                            "preview_images": [
+                                {"url": "/static/previews/formints/pro-admin-dashboard.jpg", "label": "Admin dashboard", "alt": "Formints Pro admin dashboard"},
+                                {"url": "/static/previews/formints/pro-admin-products.jpg", "label": "Product administration", "alt": "Formints Pro product administration screen"},
+                            ],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
                             "featured": True,
@@ -608,22 +620,11 @@ DEFAULT_PRODUCT_PAGES = {
                     "title": "Scale from one course to a cohort",
                     "editions": [
                         {
-                            "name": "Community",
-                            "tagline": "For solo creators publishing their first course.",
-                            "price": "$0",
-                            "period": "/forever",
-                            "features": ["Up to 3 courses", "Community support", "Basic progress tracking", "Public profile"],
-                            "cta_label": "Start Free",
-                            "cta_href": "https://github.com/mammhoud",
-                            "featured": False,
-                            "tier": "outline",
-                        },
-                        {
                             "name": "Solo",
-                            "tagline": "For active creators and small academies.",
+                            "tagline": "For active creators and small academies who want a polished learning experience.",
                             "price": "$29",
                             "period": "/per month",
-                            "features": ["Unlimited courses", "Priority support", "Advanced analytics", "Offline downloads", "Certificates"],
+                            "features": ["Unlimited courses", "Priority support", "Advanced analytics", "Offline downloads", "Certificates", "SSO & role management", "Dedicated success manager", "High-end learning experience design"],
                             "cta_label": "Go Solo",
                             "cta_href": "/contact/",
                             "featured": True,
@@ -631,10 +632,10 @@ DEFAULT_PRODUCT_PAGES = {
                         },
                         {
                             "name": "Business",
-                            "tagline": "For organizations with cohorts and staff.",
+                            "tagline": "For organizations with cohorts, staff, and connected systems.",
                             "price": "$99",
                             "period": "/per month",
-                            "features": ["Everything in Solo", "SSO & role management", "Dedicated success manager", "Custom branding", "API access"],
+                            "features": ["Everything in Solo", "Custom branding", "API access"],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
                             "featured": False,
@@ -704,6 +705,7 @@ DEFAULT_PRODUCT_PAGES = {
     },
     "cms": {
         "title": "Loop",
+        "version": "v2.7",
         "logo_style": "isometric",
         "category": "platform",
         "tagline": "Build content-driven websites from Wagtail blocks. This very site is built with it.",
@@ -1108,50 +1110,50 @@ DEFAULT_ABOUT_SECTIONS = {
             "pricing",
             {
                 "title": "Simple, transparent pricing",
-                "description": "Start free and scale as you grow. No hidden fees, cancel anytime.",
+                "description": "A clear starting point for the products we ship. Edition names, availability, and pricing are product-specific — Precis LMS, for example, is offered as Solo and Business rather than a Community tier.",
                 "tiers": [
                     {
-                        "name": "Starter",
-                        "description": "Perfect for individuals exploring the platform.",
+                        "name": "Open source",
+                        "description": "For exploring the public libraries and products that offer a self-hosted edition.",
                         "price": "$0",
-                        "period": "/forever",
+                        "period": "/where available",
                         "features": [
-                            "Up to 3 courses",
-                            "Community support",
-                            "Basic progress tracking",
-                            "Public profile",
+                            "Public source code",
+                            "Self-hosted documentation",
+                            "Core product capabilities",
+                            "Product-specific licensing",
                         ],
-                        "cta_label": "Start Free",
-                        "cta_href": "/contact/",
+                        "cta_label": "Explore products",
+                        "cta_href": "/products/",
                         "featured": False,
                     },
                     {
                         "name": "Pro",
-                        "description": "For active learners and content creators.",
-                        "price": "$29",
+                        "description": "For teams that need production workflows and room to grow.",
+                        "price": "From $29",
                         "period": "/per month",
                         "features": [
-                            "Unlimited courses",
-                            "Priority support",
-                            "Advanced analytics",
-                            "Offline downloads",
-                            "Certificates",
+                            "Production-ready capabilities",
+                            "Priority support options",
+                            "Advanced analytics where included",
+                            "Deployment guidance",
+                            "Product-specific feature set",
                         ],
-                        "cta_label": "Go Pro",
-                        "cta_href": "/contact/",
+                        "cta_label": "Compare products",
+                        "cta_href": "/pricing/",
                         "featured": True,
                     },
                     {
-                        "name": "Team",
-                        "description": "For teams and organizations of any size.",
-                        "price": "$99",
-                        "period": "/per month",
+                        "name": "Business",
+                        "description": "For organizations that need governance, integrations, or managed delivery.",
+                        "price": "Custom",
+                        "period": "/per deployment",
                         "features": [
-                            "Everything in Pro",
-                            "SSO & role management",
-                            "Dedicated success manager",
-                            "Custom branding",
-                            "API access",
+                            "Organization workflows",
+                            "Roles and permissions where included",
+                            "Custom branding options",
+                            "API and integration support",
+                            "Deployment and success support",
                         ],
                         "cta_label": "Contact Sales",
                         "cta_href": "/contact/",
@@ -1166,7 +1168,7 @@ DEFAULT_ABOUT_SECTIONS = {
             "cta",
             {
                 "title": "Built in the open, shipped as HTML",
-                "subtitle": "Community editions and the core libraries are public on GitHub. Paid editions are commercial.",
+                "subtitle": "Some products and the core libraries are public on GitHub. Edition availability and licensing vary by product; Precis LMS is offered as Solo and Business.",
                 "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
                 "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
             },
@@ -1199,7 +1201,7 @@ DEFAULT_FAQ_SECTIONS = {
                     },
                     {
                         "question": "Which products are available and in what editions?",
-                        "answer": "Formints POS (Community, Standard, Pro, Cloud), Precis LMS (Community, Solo, Business), Loop CMS (Community, Business), Syntara AI chat (Community, Business) and vResume (Community, Business). Community editions are open source; paid editions add sidecars, cloud sync, multi-terminal and hosted features.",
+                        "answer": "Formints POS (Community, Standard, Pro, Cloud), Precis LMS (Solo, Business), Loop CMS (Community, Business), Syntara AI chat (Community, Business) and vResume (Community, Business). Product editions are priced by capability; paid tiers add richer learning operations, integrations, cloud sync, multi-terminal and hosted features.",
                     },
                     {
                         "question": "Are the libraries free to use?",
@@ -1536,9 +1538,21 @@ class Command(BaseCommand):
                 "(default: only backfill empty fields, preserving edits)."
             ),
         )
+        parser.add_argument(
+            "--refresh-product",
+            metavar="SLUG",
+            help=(
+                "Refresh and publish one seeded ProductPage only (for example "
+                "formint-pos), preserving unrelated editor-managed pages."
+            ),
+        )
 
     def handle(self, *args, **options):
         self.force = options.get("force", False)
+        refresh_product = options.get("refresh_product")
+        if refresh_product:
+            self._refresh_product(refresh_product)
+            return
         self.stdout.write("Seeding landing pages…")
 
         root = Page.objects.filter(depth=1).first()
@@ -1843,6 +1857,7 @@ class Command(BaseCommand):
                 title=product["title"],
                 category=product.get("category", "application"),
                 tagline=product.get("tagline", ""),
+                version=product.get("version", ""),
                 logo_style=product.get("logo_style", "crest"),
                 status=product.get("status", "live"),
                 hidden=product.get("hidden", False),
@@ -2294,6 +2309,62 @@ class Command(BaseCommand):
             existing_node.delete()
         return page, True
 
+    def _refresh_product(self, slug):
+        """Refresh only a product's release metadata and preview gallery.
+
+        Gallery captures are deployment metadata, but the rest of a product
+        page is editor-owned content. This deliberately avoids ``--force`` so
+        a media refresh cannot overwrite a curated hero, body, pricing, FAQ,
+        or CTA. The resulting revision is published for the live API.
+        """
+        product = DEFAULT_PRODUCT_PAGES.get(slug)
+        if product is None:
+            raise CommandError(f"Unknown seeded product: {slug}")
+
+        products_page = ProductsPage.objects.first()
+        existing = (
+            products_page.get_children().filter(slug=slug).first()
+            if products_page is not None
+            else None
+        )
+        if existing is None or not isinstance(existing.specific, ProductPage):
+            raise CommandError(
+                f"ProductPage with slug '{slug}' does not exist; run seed_pages first."
+            )
+        existing = existing.specific
+
+        field = ProductPage._meta.get_field("editions")
+        raw_editions = json.loads(field.value_to_string(existing))
+        seeded_editions = {
+            str(edition.get("name", "")).casefold(): edition
+            for block_type, section in product.get("editions", [])
+            if block_type == "editions"
+            for edition in section.get("editions", [])
+        }
+        changed = existing.version != product.get("version", "")
+        existing.version = product.get("version", "")
+
+        for block in raw_editions:
+            if block.get("type") != "editions":
+                continue
+            for wrapped in block.get("value", {}).get("editions", []):
+                value = wrapped.get("value", {})
+                seeded = seeded_editions.get(str(value.get("name", "")).casefold())
+                if seeded is None:
+                    continue
+                preview_images = seeded.get("preview_images", [])
+                if value.get("preview_images", []) != preview_images:
+                    value["preview_images"] = preview_images
+                    changed = True
+
+        if changed:
+            existing.editions = raw_editions
+            existing.save()
+            existing.save_revision().publish()
+            self.stdout.write(self.style.SUCCESS(f"Refreshed and published product: {slug}"))
+        else:
+            self.stdout.write(f"Product already current: {slug}")
+
     def _backfill_empty_fields(self, existing, fields):
         """Apply seed values to an existing page's content fields.
 
@@ -2318,6 +2389,7 @@ class Command(BaseCommand):
                 changed = True
         if changed:
             existing.save()
+        return changed
 
     def _created(self, created, label):
         if created:
