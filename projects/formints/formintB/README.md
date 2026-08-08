@@ -61,6 +61,14 @@ make check          # django check + astro check
 make test           # backend Django test suite
 ```
 
+> **Run `make migrate` before first boot.** A fresh clone ships with an
+> un-migrated (or stale) `backend/pos_cloud.db`, so the first server start
+> prints "unapplied migrations" warnings (e.g. the dependency migrations
+> django-fusion pulls in via wagtailcore) and clutters the boot log.
+> `make migrate` applies everything up front and keeps `make dev-backend` /
+> `make dev-api` boots clean. The seeded dev DB is gitignored, so this is
+> required on every fresh checkout.
+>
 > `make dev-sidecar` is kept as an alias for `make dev-api` for
 > backwards compatibility with older muscle memory / scripts.
 
