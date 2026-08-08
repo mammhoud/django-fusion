@@ -1,13 +1,5 @@
 ---
-interface Plan {
-  name: string;
-  price: number;
-  period: string;
-  description: string;
-  features: string[];
-  highlighted?: boolean;
-  cta: { label: string; href: string };
-}
+import type { Plan } from '@/components/blocks/Pricing.astro';
 
 interface Props {
   plan: Plan;
@@ -29,7 +21,7 @@ const { plan } = Astro.props;
   <p class="mb-6 text-sm text-fu-muted">{plan.description}</p>
 
   <div class="mb-7 flex items-baseline gap-2">
-    <span class="font-mono text-[2.6rem] font-semibold tracking-tight text-fu-ink">${plan.price}</span>
+    <span class="font-mono text-[2.6rem] font-semibold tracking-tight text-fu-ink">{plan.price}</span>
     <span class="font-mono text-xs uppercase tracking-wider text-fu-muted">/{plan.period}</span>
   </div>
 

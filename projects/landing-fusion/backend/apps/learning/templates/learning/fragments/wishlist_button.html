@@ -1,6 +1,1 @@
-<form hx-post="{% url 'learning:wishlist' course.slug %}" hx-target="this" hx-swap="outerHTML">
-  {% csrf_token %}
-  <button class="btn-secondary mt-3 w-full" type="submit">
-    {% if wishlisted %}Saved to wishlist{% else %}Save to wishlist{% endif %}
-  </button>
-</form>
+<form hx-post="{% url 'learning:wishlist' course.slug %}" hx-target="this" hx-swap="outerHTML"><button class="learning-button learning-button--full" type="submit">{% if wishlisted %}REMOVE FROM WISHLIST{% else %}SAVE TO WISHLIST{% endif %}</button></form>

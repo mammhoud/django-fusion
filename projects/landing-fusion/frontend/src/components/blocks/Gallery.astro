@@ -1,0 +1,183 @@
+---
+/** Gallery.astro — Visual media gallery for product pages.
+ *
+ *  Display modes (mirrors the Django MediaGalleryBlock):
+ *    grid     — responsive 2-3 column masonry (default)
+ *    carousel — horizontal snap scroll with dot indicators
+ *    stack    — full-bleed stack with Alpine lightbox
+ *
+ *  Animation: GSAP scale+fade rise (data-gsap="gallery-child").
+ *  Fallback: CSS x-intersect reveal when GSAP is absent.
+ */
+export interface GalleryMedia {
+  url: string;
+  kind: 'image' | 'gif' | 'video';
+  poster?: string;
+  label?: string;
+  alt?: string;
+}
+
+export interface Props {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  display?: 'grid' | 'carousel' | 'stack';
+  items?: GalleryMedia[];
+}
+
+const { eyebrow, title, description, display = 'grid', items = [] } = Astro.props;
+
+if (!items.length) return;
+---
+
+<section class="doc-sheet bg-fu-paper py-20 md:py-24" data-gsap="gallery">
+  <div class="container-fusion">
+    {eyebrow && <p class="tag-marker mb-4">{eyebrow}</p>}
+    {title && <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{title}</h2>}
+    {description && <p class="mb-10 max-w-2xl text-fu-muted">{description}</p>}
+
+    {display === 'carousel' ? (
+      <!--- ── Carousel: horizontal snap scroll ── -->
+      <div
+        x-data="{ index: 0, count: 0 }"
+        x-init="count = $el.querySelectorAll('.gallery-item').length"
+        role="region"
+        aria-label={title || 'Product gallery'}
+        class="relative"
+      >
+        <div
+          class="gallery-carousel flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
+          @scroll.debounce.50ms="index = Math.round($el.scrollLeft / ($el.firstElementChild?.getBoundingClientRect().width || 320))"
+        >
+          {items.map((media) => (
+            <div class="gallery-item flex-shrink-0 snap-center" style="width: min(85vw, 640px)" data-gsap="gallery-child">
+              <div class="overflow-hidden rounded-xl border border-fu-line bg-fu-card">
+                {media.kind === 'video' ? (
+                  <>
+                    <video
+                      src={media.url}
+                      poster={media.poster || undefined}
+                      controls muted playsinline preload="metadata"
+                      aria-label={media.alt || media.label || 'Product preview'}
+                      class="block aspect-[16/10] w-full object-cover"
+                      onerror="this.hidden=true;this.nextElementSibling.hidden=false;"
+                    ></video>
+                    <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">
+                      Video preview unavailable. <a href={media.url}>Open the recording</a>.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <img
+                      src={media.url} alt={media.alt || media.label || 'Product preview'}
+                      loading="lazy" decoding="async"
+                      class="block aspect-[16/10] w-full object-cover object-top"
+                      onerror="this.hidden=true;this.nextElementSibling.hidden=false;"
+                    />
+                    <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">
+                      Preview unavailable. <a href={media.url}>Open this capture</a>.
+                    </p>
+                  </>
+                )}
+              </div>
+              {media.label && (
+                <p class="mt-2 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{media.label}</p>
+              )}
+            </div>
+          ))}
+        </div>
+        {/* Dot indicators */}
+        <div class="mt-3 flex justify-center gap-1.5" aria-hidden="true" x-show="count > 1">
+          {items.map((_, i) => (
+            <button
+              type="button"
+              class="h-2 w-2 rounded-full bg-fu-line transition-colors hover:bg-fu-link/50"
+              :class="{ '!bg-fu-link !w-5': index === String(i) }"
+              @click="document.querySelector('.gallery-carousel')?.children[String(i)]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })"
+            ><span class="sr-only">Slide {i + 1}</span></button>
+          ))}
+        </div>
+      </div>
+
+    ) : display === 'stack' ? (
+      <!--- ── Stack: full-bleed with lightbox ── -->
+      <div x-data="{ lightbox: null }" class="gallery-stack space-y-6">
+        {items.map((media) => (
+          <div
+            class="gallery-item cursor-pointer overflow-hidden rounded-xl border border-fu-line bg-fu-card transition hover:border-fu-link/40"
+            data-gsap="gallery-child"
+            @click="lightbox = $el.querySelector('img')?.src || $el.querySelector('video')?.src || null"
+          >
+            {media.kind === 'video' ? (
+              <video src={media.url} controls muted playsinline preload="metadata" class="block w-full"></video>
+            ) : (
+              <img src={media.url} alt={media.alt || media.label || 'Product preview'} loading="lazy" decoding="async" class="block w-full object-cover" />
+            )}
+            {media.label && (
+              <div class="flex items-center justify-between px-5 py-3">
+                <span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{media.label}</span>
+              </div>
+            )}
+          </div>
+        ))}
+        {/* Lightbox overlay */}
+        <div
+          x-show="lightbox" x-cloak
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-fu-ink/80 p-8"
+          @click.self="lightbox = null"
+          @keydown.escape.window="lightbox = null"
+        >
+          <img :src="lightbox" alt="" class="max-h-[90vh] max-w-full rounded-lg" />
+          <button @click="lightbox = null" class="absolute top-4 right-4 rounded-full bg-fu-paper p-2 text-fu-ink">✕</button>
+        </div>
+      </div>
+
+    ) : (
+      <!--- ── Grid (default): responsive 2-3 column ── -->
+      <div class="gallery-grid grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((media) => (
+          <div
+            class="gallery-item overflow-hidden rounded-xl border border-fu-line bg-fu-card transition hover:-translate-y-0.5 hover:border-fu-link/40 hover:shadow-lg"
+            data-gsap="gallery-child"
+          >
+            {media.kind === 'video' ? (
+              <>
+                <video
+                  src={media.url}
+                  poster={media.poster || undefined}
+                  controls muted playsinline preload="metadata"
+                  aria-label={media.alt || media.label || 'Product preview'}
+                  class="block aspect-[16/10] w-full object-cover"
+                  onerror="this.hidden=true;this.nextElementSibling.hidden=false;"
+                ></video>
+                <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">
+                  Video unavailable. <a href={media.url}>Open the recording</a>.
+                </p>
+              </>
+            ) : (
+              <>
+                <img
+                  src={media.url} alt={media.alt || media.label || 'Product preview'}
+                  loading="lazy" decoding="async"
+                  class="block aspect-[16/10] w-full object-cover object-top"
+                  onerror="this.hidden=true;this.nextElementSibling.hidden=false;"
+                />
+                <p hidden class="preview-media-fallback p-5 text-sm text-fu-muted" role="status">
+                  Preview unavailable. <a href={media.url}>Open this capture</a>.
+                </p>
+              </>
+            )}
+            {media.label && (
+              <div class="flex items-center justify-between border-t border-fu-line/60 px-5 py-3">
+                <span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{media.label}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>

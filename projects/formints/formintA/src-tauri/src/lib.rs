@@ -296,6 +296,24 @@ fn soft_delete_employee_type(app: AppHandle, id: i32) -> Result<(), String> {
     employee_types::soft_delete_employee_type(&db_path, id)
 }
 
+/// Best-effort audit-log entry. Failures are non-fatal (the primary operation
+/// already succeeded); we only log a warning so the audit trail never blocks
+/// the caller.
+fn log_user_action(db_path: &std::path::PathBuf, action: &str, entity_type: &str, entity_id: i32, details: serde_json::Value) {
+    if let Err(e) = user_actions::add_user_action(
+        db_path,
+        db::models::NewUserAction {
+            action: action.to_string(),
+            entity_type: Some(entity_type.to_string()),
+            entity_id: Some(entity_id),
+            details: Some(details.to_string()),
+            user_id: None,
+        },
+    ) {
+        eprintln!("[audit] failed to record user action '{action}': {e}");
+    }
+}
+
 // ---- Employee commands ----
 #[tauri::command]
 fn get_employees(app: AppHandle, include_inactive: bool) -> Result<Vec<db::models::Employee>, String> {
@@ -307,6 +325,19 @@ fn get_employees(app: AppHandle, include_inactive: bool) -> Result<Vec<db::model
 fn add_employee(app: AppHandle, employee: db::models::NewEmployee) -> Result<db::models::Employee, String> {
     let db_path = get_db_path(&app)?;
     let result = employees::add_employee(&db_path, employee)?;
+    // Audit trail — record the "addition record" for this user/employee.
+    log_user_action(
+        &db_path,
+        "add_employee",
+        "employee",
+        result.id,
+        serde_json::json!({
+            "name": result.name,
+            "employee_type_id": result.employee_type_id,
+            "salary": result.salary,
+            "pay_frequency": result.pay_frequency,
+        }),
+    );
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "added"})) {
         eprintln!("[events] failed to emit employees-updated: {e}");
     }
@@ -317,6 +348,18 @@ fn add_employee(app: AppHandle, employee: db::models::NewEmployee) -> Result<db:
 fn update_employee(app: AppHandle, id: i32, update: db::models::UpdateEmployee) -> Result<db::models::Employee, String> {
     let db_path = get_db_path(&app)?;
     let result = employees::update_employee(&db_path, id, update)?;
+    log_user_action(
+        &db_path,
+        "update_employee",
+        "employee",
+        id,
+        serde_json::json!({
+            "name": result.name,
+            "is_active": result.is_active,
+            "employee_type_id": result.employee_type_id,
+            "salary": result.salary,
+        }),
+    );
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "updated"})) {
         eprintln!("[events] failed to emit employees-updated: {e}");
     }
@@ -327,6 +370,7 @@ fn update_employee(app: AppHandle, id: i32, update: db::models::UpdateEmployee) 
 fn soft_delete_employee(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     employees::soft_delete_employee(&db_path, id)?;
+    log_user_action(&db_path, "deactivate_employee", "employee", id, serde_json::json!({}));
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "deleted"})) {
         eprintln!("[events] failed to emit employees-updated: {e}");
     }
@@ -765,6 +809,17 @@ fn get_user_actions(app: AppHandle, limit: Option<i64>) -> Result<Vec<db::models
     user_actions::get_user_actions(&db_path, limit)
 }
 
+#[tauri::command]
+fn get_user_actions_for_entity(
+    app: AppHandle,
+    entity_type: String,
+    entity_id: i32,
+    limit: Option<i64>,
+) -> Result<Vec<db::models::UserAction>, String> {
+    let db_path = get_db_path(&app)?;
+    user_actions::get_user_actions_for_entity(&db_path, &entity_type, entity_id, limit)
+}
+
 // ---- Recipe Notes commands ----
 #[tauri::command]
 fn get_recipe_notes(app: AppHandle, recipe_id: i32) -> Result<Vec<db::models::Note>, String> {
@@ -839,6 +894,79 @@ fn add_payroll(app: AppHandle, payroll: db::models::NewPayroll) -> Result<db::mo
 fn update_payroll(app: AppHandle, id: i32, update: db::models::UpdatePayroll) -> Result<db::models::Payroll, String> {
     let db_path = get_db_path(&app)?;
     payrolls::update_payroll(&db_path, id, update)
+}
+
+/// Generates a `pending` payroll record per active employee for the given
+/// period, sourced from each employee's salary/payroll settings.
+#[tauri::command]
+fn generate_payrolls(app: AppHandle, period_start: String, period_end: String) -> Result<Vec<db::models::Payroll>, String> {
+    let db_path = get_db_path(&app)?;
+    let created = payrolls::generate_payrolls(&db_path, period_start, period_end)?;
+    log_user_action(&db_path, "generate_payrolls", "payroll", 0, serde_json::json!({ "created": created.len() }));
+    Ok(created)
+}
+
+// ---- Finance & Budget commands ----
+#[tauri::command]
+fn get_finance_transactions(app: AppHandle) -> Result<Vec<db::models::FinanceTransaction>, String> {
+    let db_path = get_db_path(&app)?;
+    finance::get_finance_transactions(&db_path)
+}
+
+#[tauri::command]
+fn add_finance_transaction(app: AppHandle, tx: db::models::NewFinanceTransaction) -> Result<db::models::FinanceTransaction, String> {
+    let db_path = get_db_path(&app)?;
+    let created = finance::add_finance_transaction(&db_path, tx)?;
+    log_user_action(
+        &db_path,
+        "add_finance_transaction",
+        "finance",
+        created.id,
+        serde_json::json!({ "direction": created.direction, "amount": created.amount, "category": created.category_id }),
+    );
+    Ok(created)
+}
+
+#[tauri::command]
+fn update_finance_transaction(app: AppHandle, id: i32, update: db::models::UpdateFinanceTransaction) -> Result<db::models::FinanceTransaction, String> {
+    let db_path = get_db_path(&app)?;
+    finance::update_finance_transaction(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_finance_transaction(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    finance::delete_finance_transaction(&db_path, id)
+}
+
+#[tauri::command]
+fn get_budgets(app: AppHandle) -> Result<Vec<db::models::Budget>, String> {
+    let db_path = get_db_path(&app)?;
+    finance::get_budgets(&db_path)
+}
+
+#[tauri::command]
+fn add_budget(app: AppHandle, budget: db::models::NewBudget) -> Result<db::models::Budget, String> {
+    let db_path = get_db_path(&app)?;
+    finance::add_budget(&db_path, budget)
+}
+
+#[tauri::command]
+fn update_budget(app: AppHandle, id: i32, update: db::models::UpdateBudget) -> Result<db::models::Budget, String> {
+    let db_path = get_db_path(&app)?;
+    finance::update_budget(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_budget(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    finance::delete_budget(&db_path, id)
+}
+
+#[tauri::command]
+fn get_finance_summary(app: AppHandle) -> Result<db::models::FinanceSummary, String> {
+    let db_path = get_db_path(&app)?;
+    finance::get_finance_summary(&db_path)
 }
 
 #[tauri::command]
@@ -1336,7 +1464,7 @@ pub fn run() {
                     .item(&quit_item)
                     .build()?;
 
-                let img_data = include_bytes!("../icons/icon.png");
+                let img_data = include_bytes!("../../assets/icons/icon.png");
                 let img = image::load_from_memory(img_data)
                     .expect("Failed to decode tray icon PNG");
                 let rgba = img.to_rgba8();
@@ -1555,6 +1683,7 @@ pub fn run() {
             // User Action audit log
             add_user_action,
             get_user_actions,
+            get_user_actions_for_entity,
             // Tax Reports
             get_tax_reports,
             add_tax_report,
@@ -1569,6 +1698,17 @@ pub fn run() {
             add_payroll,
             update_payroll,
             delete_payroll,
+            // Finance & Budget
+            get_finance_transactions,
+            add_finance_transaction,
+            update_finance_transaction,
+            delete_finance_transaction,
+            get_budgets,
+            add_budget,
+            update_budget,
+            delete_budget,
+            get_finance_summary,
+            generate_payrolls,
             // Report Metadata
             get_report_metadata,
             add_report_metadata,

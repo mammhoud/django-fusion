@@ -4,7 +4,7 @@
 SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
     "services", "process", "blog",
-    "tech", "editions", "snippets", "comparison", "team",
+    "tech", "editions", "snippets", "comparison", "team", "gallery",
     "applications",
 ]
 
@@ -17,6 +17,9 @@ hero, stats, features, testimonials, pricing, faq, cta and contact info.
 Templates live under ``apps/content/templates/content/blocks/`` and render the
 same class names / Fusion tokens as the Astro side (see plan §5.1).
 """
+from urllib.parse import urlsplit
+
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
@@ -525,6 +528,84 @@ class TechStackSectionBlock(blocks.StructBlock):
         template = "content/blocks/tech_stack.html"
 
 
+class EditionPreviewImageBlock(blocks.StructBlock):
+    """A labelled product capture shown on an edition preview page.
+
+    URLs intentionally point at static assets rather than Wagtail image IDs so
+    the Django and Astro render roads share the same portable contract and
+    build without a database/media lookup. The media kind is validated here,
+    at the editor boundary, so a video can never silently become a broken
+    ``<img>`` element on one render road.
+    """
+
+    _VIDEO_SUFFIXES = {".mp4", ".webm", ".ogv"}
+    _IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"}
+
+    url = blocks.CharBlock(
+        max_length=255,
+        label=_("Media URL"),
+        help_text=_("Use a site static URL, for example /static/previews/formints/standard-front.jpg."),
+    )
+    kind = blocks.ChoiceBlock(
+        choices=[
+            ("image", _("Image")),
+            ("gif", _("Animated GIF")),
+            ("video", _("Video")),
+        ],
+        default="image",
+        label=_("Media type"),
+        help_text=_("Use GIF for a walkthrough. Use Video for an MP4/WebM recording."),
+    )
+    poster = blocks.CharBlock(
+        max_length=255,
+        required=False,
+        label=_("Video poster"),
+        help_text=_("Optional static poster path for video. Use /static/... or a relative previews/... path."),
+    )
+    label = blocks.CharBlock(max_length=80, required=False, label=_("View label"))
+    alt = blocks.CharBlock(max_length=160, required=False, label=_("Alt text"))
+
+    def clean(self, value):
+        """Validate the media contract before it reaches a live revision."""
+        cleaned = super().clean(value)
+        url = str(cleaned.get("url", "")).strip()
+        kind = str(cleaned.get("kind", "image"))
+        path = urlsplit(url).path.lower()
+        suffix = ""
+        for candidate in self._VIDEO_SUFFIXES | self._IMAGE_SUFFIXES:
+            if path.endswith(candidate):
+                suffix = candidate
+                break
+
+        errors = {}
+        if kind == "video" and suffix not in self._VIDEO_SUFFIXES:
+            errors["url"] = ValidationError(
+                _("Video previews must use an MP4, WebM, or OGV URL.")
+            )
+        elif kind == "gif" and suffix != ".gif":
+            errors["url"] = ValidationError(
+                _("Animated GIF previews must use a .gif URL.")
+            )
+        elif kind == "image" and suffix in self._VIDEO_SUFFIXES:
+            errors["kind"] = ValidationError(
+                _("Choose Video for MP4, WebM, or OGV media.")
+            )
+
+        poster = str(cleaned.get("poster", "")).strip()
+        if poster and kind != "video":
+            errors["poster"] = ValidationError(
+                _("A poster is only used with Video previews.")
+            )
+
+        if errors:
+            raise blocks.StructBlockValidationError(block_errors=errors)
+        return cleaned
+
+    class Meta:
+        icon = "image"
+        label = _("Preview image")
+
+
 class EditionBlock(blocks.StructBlock):
     """A single product edition — a pricing tier with its own feature set.
 
@@ -538,6 +619,13 @@ class EditionBlock(blocks.StructBlock):
     price = blocks.CharBlock(max_length=20, label=_("Price"))
     period = blocks.CharBlock(max_length=40, required=False, label=_("Period"))
     features = blocks.ListBlock(blocks.CharBlock(max_length=200), label=_("Features"))
+    preview_images = blocks.ListBlock(
+        EditionPreviewImageBlock(),
+        required=False,
+        max_num=4,
+        label=_("Preview images"),
+        help_text=_("Optional screenshots shown on the edition preview page. Keep the list to the most useful product views."),
+    )
     offer_label = blocks.CharBlock(
         max_length=60,
         required=False,
@@ -629,6 +717,50 @@ class SnippetsSectionBlock(blocks.StructBlock):
         icon = "code"
         label = _("Snippets section")
         template = "content/blocks/snippets.html"
+
+
+class MediaGalleryBlock(blocks.StructBlock):
+    """A visual gallery — screenshots, GIF walkthroughs and videos in a grid.
+
+    Wraps multiple ``EditionPreviewImageBlock`` items into a single section
+    with a display mode: grid (default), carousel (horizontal scroll with
+    snap), or stack (full-bleed stack with lightbox). Used on product pages
+    and edition previews to showcase multiple captures at once.
+
+    The frontend GSAP layer animates gallery items on scroll in
+    (scale+fade rise). The Django template renders the same grid with
+    CSS-animated cards so the two render roads stay visually identical.
+    """
+
+    DISPLAY_CHOICES = [
+        ("grid", _("Grid — responsive 2-3 column masonry")),
+        ("carousel", _("Carousel — horizontal snap scroll")),
+        ("stack", _("Stack — full-bleed with lightbox")),
+    ]
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, label=_("Title"))
+    description = blocks.TextBlock(required=False, label=_("Description"))
+    display = blocks.ChoiceBlock(
+        choices=DISPLAY_CHOICES,
+        default="grid",
+        label=_("Display mode"),
+        help_text=_(
+            "Grid shows a responsive 2-3 column layout. Carousel scrolls "
+            "horizontally with snap points. Stack renders full-bleed images "
+            "with a click-to-expand lightbox."
+        ),
+    )
+    items = blocks.ListBlock(
+        EditionPreviewImageBlock(),
+        label=_("Gallery items"),
+        help_text=_("Screenshots, GIFs and videos to display in the gallery."),
+    )
+
+    class Meta:
+        icon = "image"
+        label = _("Media gallery")
+        template = "content/blocks/media_gallery.html"
 
 
 class ComparisonRowBlock(blocks.StructBlock):

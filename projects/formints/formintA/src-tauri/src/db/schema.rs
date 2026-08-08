@@ -94,6 +94,16 @@ diesel::table! {
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
+        address -> Nullable<Text>,
+        date_of_birth -> Nullable<Text>,
+        national_id -> Nullable<Text>,
+        emergency_contact -> Nullable<Text>,
+        pay_frequency -> Text,
+        hourly_rate -> Double,
+        bank_name -> Nullable<Text>,
+        bank_account -> Nullable<Text>,
+        tax_number -> Nullable<Text>,
+        notes -> Nullable<Text>,
     }
 }
 
@@ -480,6 +490,32 @@ diesel::joinable!(loyalty_transactions -> sales (sale_id));
 diesel::joinable!(employee_schedules -> employees (employee_id));
 diesel::joinable!(payrolls -> employees (employee_id));
 
+diesel::table! {
+    finance_transactions (id) {
+        id -> Integer,
+        date -> Text,
+        category_id -> Text,
+        direction -> Text,
+        amount -> Double,
+        description -> Nullable<Text>,
+        reference -> Nullable<Text>,
+        created_at -> Text,
+        updated_at -> Text,
+    }
+}
+
+diesel::table! {
+    budgets (id) {
+        id -> Integer,
+        category_id -> Nullable<Text>,
+        period_start -> Text,
+        period_end -> Text,
+        amount -> Double,
+        created_at -> Text,
+        updated_at -> Text,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
     users,
     roles,
@@ -514,4 +550,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     support_messages,
     coupons,
     user_actions,
+    finance_transactions,
+    budgets,
 );

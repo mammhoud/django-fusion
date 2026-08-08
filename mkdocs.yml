@@ -100,18 +100,26 @@ nav:
     - Clone Site: guides/06-clone-site.md
     - Best Practices: guides/07-best-practices.md
     - Fixture Loading: guides/fixture-loading.md
-  - Repo Overview: repo-overview.md
+  - Repo Overview: overview.md
   - Projects:
     - Overview: projects/README.md
-    - LMS: projects/lms/README.md
-    - LMS Fusion: projects/lms-fusion/README.md
+    - Landing Fusion:
+        - Overview: projects/landing-fusion/README.md
+        - Backend API: projects/landing-fusion/backend-api.md
+        - Frontend: projects/landing-fusion/frontend.md
+    - Precis LMS:
+        - Overview: projects/precis/README.md
+        - Courses: projects/precis/courses.md
+    - LMS (Legacy): projects/lms/README.md
     - Portfolio: projects/portfolio/README.md
-    - Cypercloud:
-        - Overview: projects/cypercloud/README.md
-        - Platform Plan: projects/cypercloud/platform-plan.md
+    - Syntara (Cypercloud): projects/cypercloud/README.md
+    - Formints POS:
+        - Overview: projects/pos/README.md
+        - Editions: projects/pos/editions.md
     - Shared: projects/shared/README.md
-    - POS: projects/pos/README.md
-    - Libs: libs/README.md
+    - Libraries:
+        - Overview: projects/libs/README.md
+        - django-fusion: projects/libs/django-fusion.md
   - Infrastructure:
     - Overview: infrastructure/README.md
     - Proxy: infrastructure/proxy.md
@@ -123,6 +131,7 @@ nav:
     - Overview: ai/README.md
     - Agents: ai/agents.md
     - Prompts: ai/prompts.md
+    - MCP Integration: ai/mcp-integration.md
   - Customization: customization/README.md
   - Databases: databases/README.md
   - Testing: tests/README.md
@@ -135,7 +144,6 @@ nav:
   - Features:
     - Overview: features/README.md
     - Feature Roadmap: features/feature-roadmap.md
-    - DataToken Sync Tagging: features/data-token-sync-tagging.md
   - Publishing:
     - Overview: publish/README.md
     - Docker Deploy: publish/docker-deploy.md

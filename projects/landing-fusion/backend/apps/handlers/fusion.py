@@ -58,6 +58,9 @@ class LandingPagesApplication(Application):
         menu_path("blog/", views.BlogPageView.as_view(), name="blog", icon="edit_note", title="Blog"),
         path("blog/<slug:slug>/", views.BlogPostPageView.as_view(), name="blog_post"),
         menu_path("products/", views.ProductsPageView.as_view(), name="products", icon="inventory_2", title="Products"),
+        # Formints was previously published as Forge POS. Keep old external
+        # links useful while the canonical slug remains formint-pos.
+        path("products/forge-pos/", RedirectView.as_view(url="/products/formint-pos/", permanent=True), name="forge_pos_redirect"),
         path("products/<slug:slug>/", views.ProductPageView.as_view(), name="product"),
         path("products/<slug:slug>/preview/<slug:edition>/", views.ProductPreviewView.as_view(), name="product_preview"),
         menu_path("brand/", views.BrandPageView.as_view(), name="brand", icon="palette", title="Brand"),

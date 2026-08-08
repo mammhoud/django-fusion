@@ -5,20 +5,18 @@ from functools import wraps
 
 from django.conf import settings
 from django.db import models, transaction
+from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Certificate, Course, Enrollment, Lesson, LessonProgress, Wishlist
+from .models import Certificate, Course, Enrollment, Lesson, LessonProgress, Module, Wishlist
 
 
 def _is_htmx(request) -> bool:
-    """Use django-htmx's parsed request flag with a header fallback.
-
-    The fallback keeps these endpoints useful in isolated tests and when a
-    caller mounts the app without the Fusion middleware stack.
-    """
-    return bool(getattr(request, "htmx", False) or request.headers.get("HX-Request"))
+    """Recognize HTMX requests without treating ``HX-Request: false`` as true."""
+    header = request.headers.get("HX-Request", "").strip().lower()
+    return bool(getattr(request, "htmx", False) or header in {"true", "1", "yes", "on"})
 
 
 def _hx_or_json(
@@ -68,7 +66,18 @@ def learning_login_required(view):
 
 @require_GET
 def catalog(request):
-    courses = Course.objects.filter(is_published=True).select_related("instructor")
+    courses = (
+        Course.objects.filter(is_published=True)
+        .select_related("instructor")
+        .annotate(
+            _module_count=Count("modules", distinct=True),
+            _lesson_count=Count(
+                "modules__lessons",
+                filter=Q(modules__lessons__is_active=True),
+                distinct=True,
+            ),
+        )
+    )
     query = request.GET.get("q", "").strip()
     difficulty = request.GET.get("difficulty", "").strip()
     if query:
@@ -84,7 +93,23 @@ def catalog(request):
 @require_GET
 def course_detail(request, slug):
     course = get_object_or_404(
-        Course.objects.filter(is_published=True).select_related("instructor"), slug=slug
+        Course.objects.filter(is_published=True)
+        .select_related("instructor")
+        .annotate(
+            _module_count=Count("modules", distinct=True),
+            _lesson_count=Count(
+                "modules__lessons",
+                filter=Q(modules__lessons__is_active=True),
+                distinct=True,
+            ),
+        )
+        .prefetch_related(
+            Prefetch(
+                "modules",
+                queryset=Module.objects.prefetch_related("lessons"),
+            )
+        ),
+        slug=slug,
     )
     enrollment = None
     completed_lesson_ids = set()
@@ -119,12 +144,20 @@ def dashboard(request):
 def enroll(request, slug):
     course = get_object_or_404(Course, slug=slug, is_published=True)
 
-    existing = Enrollment.objects.filter(
-        user=request.user,
-        course=course,
-        status__in=[Enrollment.Status.ACTIVE, Enrollment.Status.COMPLETED],
-    ).first()
-    if existing and existing.has_verified_payment:
+    existing = Enrollment.objects.filter(user=request.user, course=course).first()
+    if existing and existing.status in [Enrollment.Status.ACTIVE, Enrollment.Status.COMPLETED] and existing.has_verified_payment:
+        return _hx_or_json(
+            request,
+            "learning/fragments/enrollment_status.html",
+            {"course": course, "enrollment": existing, "created": False},
+            {"enrolled": True, "created": False, "course": course.slug, "progress": existing.progress},
+            redirect_to=course.get_absolute_url(),
+        )
+
+    # A cancelled free enrollment can be resumed without creating a second row.
+    if existing and course.is_free:
+        existing.status = Enrollment.Status.ACTIVE
+        existing.save(update_fields=["status"])
         return _hx_or_json(
             request,
             "learning/fragments/enrollment_status.html",

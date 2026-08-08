@@ -7,7 +7,8 @@ import { SkeletonList, SkeletonTable } from '../../components/ui/Skeleton';
 import { useTranslation } from 'react-i18next';
 import FormModal from '../../components/ui/FormModal';
 import { Badge } from '@/components/ui/badge';
-import EmployeeForm from '../../components/forms/EmployeeForm';
+import EmployeeWizard from '../../components/forms/EmployeeWizard';
+import EmployeeDetail from '../../components/forms/EmployeeDetail';
 import EmployeeTypeForm from '../../components/forms/EmployeeTypeForm';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import StatusToast from '../../components/ui/StatusToast';
@@ -37,6 +38,17 @@ const initialNewEmployee: NewEmployee = {
   email: null,
   employee_type_id: 0,
   salary: 0,
+  joined_at: null,
+  address: null,
+  date_of_birth: null,
+  national_id: null,
+  emergency_contact: null,
+  pay_frequency: 'monthly',
+  hourly_rate: 0,
+  bank_name: null,
+  bank_account: null,
+  tax_number: null,
+  notes: null,
 };
 
 export default function Employees() {
@@ -67,6 +79,7 @@ export default function Employees() {
   const [employeeModal, setEmployeeModal] = useState<EmployeeModalState>(null);
   const [employeeForm, setEmployeeForm] = useState<NewEmployee>({ ...initialNewEmployee });
   const [showDeleteEmployee, setShowDeleteEmployee] = useState<Employee | null>(null);
+  const [detailEmployee, setDetailEmployee] = useState<Employee | null>(null);
 
   type TypeModalState = { mode: 'add' } | { mode: 'edit'; type: EmployeeType } | null;
   const [typeModal, setTypeModal] = useState<TypeModalState>(null);
@@ -143,6 +156,17 @@ export default function Employees() {
       email: emp.email ?? null,
       employee_type_id: emp.employee_type_id,
       salary: emp.salary,
+      joined_at: emp.joined_at ?? null,
+      address: emp.address ?? null,
+      date_of_birth: emp.date_of_birth ?? null,
+      national_id: emp.national_id ?? null,
+      emergency_contact: emp.emergency_contact ?? null,
+      pay_frequency: emp.pay_frequency || 'monthly',
+      hourly_rate: emp.hourly_rate ?? 0,
+      bank_name: emp.bank_name ?? null,
+      bank_account: emp.bank_account ?? null,
+      tax_number: emp.tax_number ?? null,
+      notes: emp.notes ?? null,
     });
     setEmployeeModal({ mode: 'edit', employee: emp });
   };
@@ -150,29 +174,54 @@ export default function Employees() {
   const closeEmployeeModal = () => setEmployeeModal(null);
 
   const handleSaveEmployee = async () => {
-    if (!employeeForm.name.trim() || employeeForm.employee_type_id === 0) return;
+    if (!employeeForm.name.trim() || (employeeModal?.mode === 'add' && employeeForm.employee_type_id === 0)) return;
     const editing = employeeModal?.mode === 'edit' ? employeeModal.employee : null;
+    // Normalize optional fields — the wizard keeps them as `string | null`.
+    const payload = {
+      name: employeeForm.name.trim(),
+      phone: employeeForm.phone || null,
+      email: employeeForm.email || null,
+      employee_type_id: employeeForm.employee_type_id,
+      salary: employeeForm.salary,
+      joined_at: employeeForm.joined_at || null,
+      address: employeeForm.address || null,
+      date_of_birth: employeeForm.date_of_birth || null,
+      national_id: employeeForm.national_id || null,
+      emergency_contact: employeeForm.emergency_contact || null,
+      pay_frequency: employeeForm.pay_frequency || 'monthly',
+      hourly_rate: employeeForm.hourly_rate ?? 0,
+      bank_name: employeeForm.bank_name || null,
+      bank_account: employeeForm.bank_account || null,
+      tax_number: employeeForm.tax_number || null,
+      notes: employeeForm.notes || null,
+    };
     try {
       if (editing) {
         await invoke('update_employee', {
           id: editing.id,
-          update: {
-            name: employeeForm.name.trim(),
-            phone: employeeForm.phone || null,
-            email: employeeForm.email || null,
-            employee_type_id: employeeForm.employee_type_id,
-            salary: employeeForm.salary,
-          }
+          update: payload,
         });
         window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'update', id: editing.id } }));
-        showStatus('success', 'Employee updated!');
+        showStatus('success', t('employees.successUpdated') || 'Employee updated!');
       } else {
-        await invoke('add_employee', { employee: employeeForm });
+        await invoke('add_employee', { employee: payload });
         window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'add' } }));
-        showStatus('success', 'Employee added successfully!');
+        showStatus('success', t('employees.successAdded') || 'Employee added successfully!');
       }
       closeEmployeeModal();
       loadData({ quiet: true });
+    } catch (e) { showStatus('error', String(e)); }
+  };
+
+  const handleReactivateEmployee = async (emp: Employee) => {
+    try {
+      await invoke('update_employee', {
+        id: emp.id,
+        update: { is_active: true },
+      });
+      window.dispatchEvent(new CustomEvent('employee-updated', { detail: { action: 'reactivate', id: emp.id } }));
+      loadData({ quiet: true });
+      showStatus('success', t('employees.successReactivated') || 'Employee activated.');
     } catch (e) { showStatus('error', String(e)); }
   };
 
@@ -282,7 +331,7 @@ export default function Employees() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] shrink-0 ${
                 activeTab === tab.key
-                  ? 'bg-info text-white shadow-lg'
+                  ? 'bg-info text-info-content shadow-lg'
                   : 'bg-base-100/70 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
               }`}
             >
@@ -324,7 +373,7 @@ export default function Employees() {
                       onClick={() => setStatusFilter(s)}
                       className={`px-3 py-1.5 text-xs font-medium ${
                         statusFilter === s
-                          ? 'bg-info text-white'
+                          ? 'bg-info text-info-content'
                           : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                       }`}
                     >
@@ -339,7 +388,7 @@ export default function Employees() {
                     title={t('employees.gridView') || 'Grid view'}
                     className={`px-3 py-1.5 text-xs font-medium ${
                       viewMode === 'grid'
-                        ? 'bg-info text-white'
+                        ? 'bg-info text-info-content'
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
@@ -350,7 +399,7 @@ export default function Employees() {
                     title={t('employees.listView') || 'List view'}
                     className={`px-3 py-1.5 text-xs font-medium ${
                       viewMode === 'list'
-                        ? 'bg-info text-white'
+                        ? 'bg-info text-info-content'
                         : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                     }`}
                   >
@@ -360,7 +409,7 @@ export default function Employees() {
               </div>
               <button
                 onClick={openAddEmployee}
-                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-info-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
                 <span className="ri-add-line" /> {t('employees.addEmployee')}
               </button>
@@ -413,14 +462,23 @@ export default function Employees() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex justify-end gap-1">
+                            <button onClick={() => setDetailEmployee(emp)}
+                              className="text-secondary hover:text-secondary/70 p-1.5 rounded-lg hover:bg-secondary/10" title={t('employees.viewDetail') || 'View details'}>
+                              <span className="ri-profile-line ri-16px" />
+                            </button>
                             <button onClick={() => openEditEmployee(emp)}
                               className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
                               <span className="ri-pencil-line ri-16px" />
                             </button>
-                            {emp.is_active && (
+                            {emp.is_active ? (
                               <button onClick={() => setShowDeleteEmployee(emp)}
                                 className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
                                 <span className="ri-delete-bin-line ri-16px" />
+                              </button>
+                            ) : (
+                              <button onClick={() => handleReactivateEmployee(emp)}
+                                className="text-success hover:text-success/70 p-1.5 rounded-lg hover:bg-success/10" title={t('employees.activate') || 'Activate'}>
+                                <span className="ri-user-add-line ri-16px" />
                               </button>
                             )}
                           </div>
@@ -458,14 +516,23 @@ export default function Employees() {
                         </div>
                       </div>
                       <div className="flex gap-1">
+                        <button onClick={() => setDetailEmployee(emp)}
+                          className="text-secondary hover:text-secondary/70 p-1.5 rounded-lg hover:bg-secondary/10" title={t('employees.viewDetail') || 'View details'}>
+                          <span className="ri-profile-line ri-16px" />
+                        </button>
                         <button onClick={() => openEditEmployee(emp)}
                           className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title={t('common.edit')}>
                           <span className="ri-pencil-line ri-16px" />
                         </button>
-                        {emp.is_active && (
+                        {emp.is_active ? (
                           <button onClick={() => setShowDeleteEmployee(emp)}
                             className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
                             <span className="ri-delete-bin-line ri-16px" />
+                          </button>
+                        ) : (
+                          <button onClick={() => handleReactivateEmployee(emp)}
+                            className="text-success hover:text-success/70 p-1.5 rounded-lg hover:bg-success/10" title={t('employees.activate') || 'Activate'}>
+                            <span className="ri-user-add-line ri-16px" />
                           </button>
                         )}
                       </div>
@@ -475,6 +542,9 @@ export default function Employees() {
                       <div className="flex items-center gap-2 text-base-content/60">
                         <span className="ri-money-dollar-box-line text-success w-3.5 h-3.5" />
                         <span>{t('employees.salary')}: <strong className="text-base-content">{emp.salary.toLocaleString()}</strong></span>
+                        <span className="ml-auto px-2 py-0.5 rounded-full bg-base-300/50 text-[10px] font-semibold uppercase tracking-wide">
+                          {emp.pay_frequency === 'hourly' ? (t('employees.payFrequencyHourly') || 'Hourly') : (t('employees.payFrequencyMonthly') || 'Monthly')}
+                        </span>
                       </div>
                       {emp.phone && (
                         <div className="flex items-center gap-2 text-base-content/60">
@@ -492,6 +562,18 @@ export default function Employees() {
                         <div className="flex items-center gap-2 text-base-content/60">
                           <span className="ri-calendar-line text-info/80 w-3.5 h-3.5" />
                           <span>{t('employees.joined')} {emp.joined_at}</span>
+                        </div>
+                      )}
+                      {emp.address && (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <span className="ri-map-pin-line text-secondary/70 w-3.5 h-3.5" />
+                          <span className="truncate">{emp.address}</span>
+                        </div>
+                      )}
+                      {emp.bank_name && (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <span className="ri-landmark-line text-primary/70 w-3.5 h-3.5" />
+                          <span className="truncate">{emp.bank_name}{emp.bank_account ? ` · ${emp.bank_account}` : ''}</span>
                         </div>
                       )}
                     </div>
@@ -520,7 +602,7 @@ export default function Employees() {
               <h2 className="text-lg font-semibold text-base-content">{t('employees.employeeTypes')}</h2>
               <button
                 onClick={openAddType}
-                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-info-content rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
               >
                 <span className="ri-add-line" /> {t('employees.addType')}
               </button>
@@ -584,28 +666,27 @@ export default function Employees() {
           </div>
         )}
 
-      {/* Unified Add/Edit Employee modal — reusable FormModal + EmployeeForm */}
-      <FormModal
+      {/* Unified Add/Edit Employee wizard — 4-step form (personal → contact → role → salary & payroll) */}
+      <EmployeeWizard
         isOpen={!!employeeModal}
         onClose={closeEmployeeModal}
-        title={employeeModal?.mode === 'edit' ? t('employees.editEmployeeTitle') : t('employees.addEmployeeTitle')}
-        size="lg"
+        value={employeeForm}
+        onChange={setEmployeeForm}
+        employeeTypes={employeeTypes}
+        includeInactiveTypes={employeeModal?.mode === 'edit'}
+        isEditing={employeeModal?.mode === 'edit'}
         submitLabel={employeeModal?.mode === 'edit' ? t('common.update') : t('employees.addEmployee')}
         cancelLabel={t('common.cancel')}
-        // Type is only required when adding — an existing employee whose type
-        // was deleted (employee_type_id 0) must stay editable.
-        submitDisabled={!employeeForm.name.trim() || (employeeModal?.mode === 'add' && employeeForm.employee_type_id === 0)}
         onSubmit={handleSaveEmployee}
-        submitClassName="btn-info"
         contentTestId="employee-form-modal"
-      >
-        <EmployeeForm
-          value={employeeForm}
-          onChange={setEmployeeForm}
-          employeeTypes={employeeTypes}
-          includeInactiveTypes={employeeModal?.mode === 'edit'}
-        />
-      </FormModal>
+      />
+
+      {/* Employee detail — full profile, payroll history, audit trail */}
+      <EmployeeDetail
+        employee={detailEmployee}
+        employeeTypes={employeeTypes}
+        onClose={() => setDetailEmployee(null)}
+      />
 
       <ConfirmDialog
         isOpen={!!showDeleteEmployee}

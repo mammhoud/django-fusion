@@ -80,11 +80,21 @@ class LandingPagesTestCase(TestCase):
             b"Built by one engineer, for real teams",
             b"Designed around the people using it",
             b"Simple, transparent pricing",
+            b"Edition names, availability, and pricing are product-specific",
+            b"Precis LMS is offered as Solo and Business",
             b"Built in the open, shipped as HTML",
             b"Meet the team",
         ):
             self.assertIn(marker, response.content)
+        self.assertNotIn(b"Starter", response.content)
+        self.assertNotIn(b"Up to 3 courses", response.content)
+        self.assertNotIn(b"Community support", response.content)
         self.assertNotIn(b"Frequently asked questions", response.content)
+
+        pricing = self.client.get("/apis/pages/about/").json()["pricing"][0]
+        self.assertEqual([tier["name"] for tier in pricing["tiers"]], ["Open source", "Pro", "Business"])
+        self.assertIn("Precis LMS", pricing["description"])
+        self.assertIn("Solo and Business", pricing["description"])
 
     def test_team_subpage_renders(self):
         """About → Team (/about/team/) renders the member cards + social links."""
@@ -407,7 +417,10 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(arabic.status_code, 200)
         payload = arabic.json()
         self.assertEqual(payload["language"], "ar")
-        self.assertEqual(payload["available_languages"], ["en", "ar"])
+        self.assertEqual(
+            payload["available_languages"],
+            ["en", "ar", "sv", "fr", "de", "es", "pt"],
+        )
         self.assertEqual(payload["title"], "من نحن")
         self.assertEqual(payload["hero"]["title"], "شريكك في المنتج الرقمي")
         # Stats are not translated in the seed and therefore remain available.
@@ -490,6 +503,11 @@ class LandingPagesTestCase(TestCase):
         product_hrefs = [c["href"] for c in products["children"]]
         self.assertIn("/products/formint-pos/", product_hrefs)
         self.assertNotIn("/products/ceptor-ai/", product_hrefs)  # hidden product
+
+        # Learning is a direct, intentional destination but not a primary
+        # marketing-header item. Its catalog and authenticated dashboard remain
+        # available at /learning/*.
+        self.assertNotIn("/learning/", by_href)
 
         # Services → delivery phases.
         services = by_href["/services/"]
@@ -799,14 +817,63 @@ class LandingPagesTestCase(TestCase):
         nav = self.client.get("/apis/navigation/").json()
         self.assertNotIn("Company", [item["label"] for item in nav["nav_items"]])
 
-    def test_product_pages_render_with_editions_and_snippets(self):
-        """Each ProductPage renders hero + editions & pricing + reference snippets."""
+    def test_product_pages_render_with_editions_and_previews(self):
+        """Each ProductPage renders hero + editions + visual previews, not code blocks."""
         for slug, hero in (("formint-pos", b"Formints"), ("lms", b"Precis LMS"), ("cms", b"Loop")):
             with self.subTest(slug=slug):
                 response = self.client.get(f"/products/{slug}/")
                 self.assertEqual(response.status_code, 200, slug)
                 self.assertIn(hero, response.content)
                 self.assertIn(b"editions", response.content.lower())
+                # Formints has the seeded capture gallery; products without
+                # editor-authored media remain valid detail pages without a
+                # misleading empty preview section.
+                if slug == "formint-pos":
+                    self.assertIn(b"product preview", response.content.lower())
+                self.assertNotIn(b"id=\"snippets\"", response.content)
+                self.assertNotIn(b"Models &amp; snippets", response.content)
+
+    def test_precis_lms_has_solo_and_business_only(self):
+        """Precis LMS keeps organization features in the two paid tiers."""
+        from apps.pages.models import ProductPage
+
+        product = ProductPage.objects.get(slug="lms")
+        editions = product.get_editions()
+        self.assertEqual([edition["name"] for edition in editions], ["Solo", "Business"])
+
+        solo = editions[0]
+        business = editions[1]
+        self.assertIn("SSO & role management", solo["features"])
+        self.assertIn("Dedicated success manager", solo["features"])
+        self.assertIn("High-end learning experience design", solo["features"])
+        self.assertEqual(business["features"], ["Everything in Solo", "Custom branding", "API access"])
+
+        response = self.client.get("/products/lms/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"High-end learning experience design", response.content)
+        self.assertNotIn(b"For solo creators publishing their first course", response.content)
+        self.assertNotIn(b"Up to 3 courses", response.content)
+        self.assertIn(b"lg:grid-cols-2", response.content)
+
+        pricing_page = self.client.get("/pricing/")
+        self.assertEqual(pricing_page.status_code, 200)
+        self.assertIn(b"Precis LMS", pricing_page.content)
+        self.assertIn(b"Solo", pricing_page.content)
+        self.assertIn(b"Business", pricing_page.content)
+        self.assertNotIn(b"For solo creators publishing their first course", pricing_page.content)
+        self.assertIn(b"lg:grid-cols-2", pricing_page.content)
+
+        pricing = self.client.get("/apis/pricing/").json()
+        lms = next(product for product in pricing["products"] if product["slug"] == "lms")
+        self.assertEqual([edition["name"] for edition in lms["editions"]], ["Solo", "Business"])
+        self.assertEqual(ProductPage.objects.get(slug="cms").version, "v2.7")
+        self.assertIn("SSO & role management", lms["editions"][0]["features"])
+
+    def test_legacy_forge_pos_slug_redirects_to_formints(self):
+        """The old Forge POS slug remains a permanent compatibility redirect."""
+        response = self.client.get("/products/forge-pos/")
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "/products/formint-pos/")
 
     def test_unknown_product_slug_404s(self):
         """An unknown product slug is a 404 — never a silent fallback to another product."""
@@ -816,14 +883,144 @@ class LandingPagesTestCase(TestCase):
         # Known slugs still resolve (no regression from the 404 change).
         self.assertEqual(self.client.get("/products/formint-pos/").status_code, 200)
 
+    def test_preview_media_block_validates_kind_and_poster(self):
+        """Preview media rejects mismatched extensions and invalid posters."""
+        from django.core.exceptions import ValidationError
+        from apps.content.blocks import EditionPreviewImageBlock
+
+        block = EditionPreviewImageBlock()
+        valid_image = block.clean({"url": "/static/previews/formints/standard-front.jpg", "kind": "image", "poster": "", "label": "", "alt": ""})
+        self.assertEqual(valid_image["kind"], "image")
+        self.assertEqual(block.clean({"url": "/static/previews/formints/standard-walkthrough.gif", "kind": "gif", "poster": "", "label": "", "alt": ""})["kind"], "gif")
+        self.assertEqual(block.clean({"url": "/static/previews/demo.webm", "kind": "video", "poster": "/static/previews/poster.jpg", "label": "", "alt": ""})["kind"], "video")
+        with self.assertRaises(ValidationError):
+            block.clean({"url": "/static/previews/demo.jpg", "kind": "video", "poster": "", "label": "", "alt": ""})
+        with self.assertRaises(ValidationError):
+            block.clean({"url": "/static/previews/demo.jpg", "kind": "image", "poster": "/static/previews/poster.jpg", "label": "", "alt": ""})
+
+    def test_scoped_product_refresh_preserves_editor_content(self):
+        """Refreshing captures updates only media/version and publishes a live revision."""
+        import json
+        from apps.pages.management.commands.seed_pages import Command
+
+        product = ProductPage.objects.get(slug="formint-pos")
+        original_body = product.body
+        field = ProductPage._meta.get_field("editions")
+        raw = json.loads(field.value_to_string(product))
+        standard = next(
+            item for item in next(block for block in raw if block["type"] == "editions")["value"]["editions"]
+            if item["value"]["name"] == "Standard"
+        )
+        standard["value"]["tagline"] = "Editor-owned tagline"
+        product.editions = raw
+        product.body = "<p>Editor-owned overview.</p>"
+        product.save_revision().publish()
+
+        command = Command()
+        command._refresh_product("formint-pos")
+        # A second refresh is a no-op and must not create another content
+        # change or duplicate gallery entries.
+        command._refresh_product("formint-pos")
+        refreshed = ProductPage.objects.get(slug="formint-pos")
+        self.assertEqual(refreshed.body, "<p>Editor-owned overview.</p>")
+        self.assertEqual(refreshed.body != original_body, True)
+        self.assertEqual(refreshed.version, "beta 0.2")
+        refreshed_standard = next(e for e in refreshed.get_editions() if e["name"] == "Standard")
+        self.assertEqual(refreshed_standard["tagline"], "Editor-owned tagline")
+        self.assertEqual(len(refreshed_standard["preview_images"]), 4)
+        self.assertTrue(ProductPage.objects.get(pk=refreshed.pk).live)
+
+        from django.core.management.base import CommandError
+        with self.assertRaises(CommandError):
+            command._refresh_product("does-not-exist")
+
+    def test_static_preview_asset_is_registered_by_django(self):
+        """Django's staticfiles finder registers organized preview captures.
+
+        The production proxy serves ``STATIC_ROOT`` directly; the HTTP route is
+        smoke-tested against the running backend separately because Wagtail's
+        test client can cache the catch-all resolver after page tests.
+        """
+        from django.contrib.staticfiles import finders
+
+        path = finders.find("previews/formints/standard-sale-complete.png")
+        self.assertIsNotNone(path)
+        path = str(path)
+        self.assertTrue(path.endswith("/previews/formints/standard-sale-complete.png"))
+        self.assertGreater(__import__("os").path.getsize(path), 1000)
+
+    def test_all_product_apis_expose_visual_gallery_without_snippets(self):
+        """Every product API is safe for the visual detail-page contract."""
+        for slug in ("formint-pos", "lms", "cms", "cypercloud", "vresume"):
+            with self.subTest(slug=slug):
+                data = self.client.get(f"/apis/pages/{slug}/").json()
+                self.assertNotIn("snippets", data)
+                self.assertIn("preview_gallery", data)
+                editions = data.get("editions", [])
+                self.assertTrue(editions)
+                from django.utils.text import slugify
+
+                for edition in editions:
+                    expected_href = f"/products/{slug}/preview/{slugify(edition['name'])}/"
+                    self.assertEqual(edition["preview_href"], expected_href)
+                # Locale overlays must not restore the legacy code payload.
+                self.assertNotIn("snippets", self.client.get(f"/apis/pages/{slug}/?lang=ar").json())
+
     def test_formint_pos_renders_all_editions_with_pricing(self):
         """The POS reference page lists Community · Standard · Pro · Cloud with per-edition pricing."""
         response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
-        for marker in (b"Community", b"Standard", b"Pro", b"Cloud", b"$0", b"$119", b"$79", b"Custom", b"Models &amp; snippets you can reuse", b"SQLite", b"Rust"):
+        for marker in (b"Community", b"Standard", b"Pro", b"Cloud", b"$0", b"$119", b"$79", b"Custom", b"SQLite", b"Rust", b"See it in motion"):
             self.assertIn(marker, response.content)
-        # The Pro edition carries the seeded 50% launch offer: badge chip +
-        # struck-through original price next to the discounted price.
+        self.assertNotIn(b"No sidecar, no server needed", response.content)
+        api = self.client.get("/apis/pages/formint-pos/").json()
+        community = next(edition for edition in api["editions"] if edition["name"] == "Community")
+        self.assertNotIn("No sidecar, no server needed", community["features"])
+        standard = next(edition for edition in api["editions"] if edition["name"] == "Standard")
+        pro = next(edition for edition in api["editions"] if edition["name"] == "Pro")
+        self.assertEqual(
+            [image["url"] for image in standard["preview_images"]],
+            [
+                "/static/previews/formints/standard-front.jpg",
+                "/static/previews/formints/standard-back.jpg",
+                "/static/previews/formints/standard-walkthrough.gif",
+                "/static/previews/formints/standard-sale-complete.png",
+            ],
+        )
+        self.assertEqual(
+            [image["kind"] for image in standard["preview_images"]],
+            ["image", "image", "gif", "image"],
+        )
+        self.assertEqual(ProductPage.objects.get(slug="formint-pos").version, "beta 0.2")
+        self.assertEqual(
+            [image["url"] for image in pro["preview_images"]],
+            [
+                "/static/previews/formints/pro-admin-dashboard.jpg",
+                "/static/previews/formints/pro-admin-products.jpg",
+            ],
+        )
+        # The product detail page exposes the visual gallery, while the
+        # dedicated backend preview road renders the focused edition gallery.
+        product = self.client.get("/products/formint-pos/").content
+        self.assertIn(b"id=\"previews\"", product)
+        self.assertNotIn(b"id=\"snippets\"", product)
+        self.assertNotIn(b"Models &amp; snippets", product)
+        self.assertIn(b"/products/formint-pos/preview/standard/", product)
+        self.assertIn(b"/products/formint-pos/preview/pro/", product)
+        self.assertIn(b"alt=\"Animated walkthrough of the Formints Standard point-of-sale interface\"", product)
+        for edition in ("standard", "pro"):
+            preview = self.client.get(f"/products/formint-pos/preview/{edition}/").content
+            self.assertEqual(preview.count(b"aria-labelledby=\"preview-gallery-title\""), 1)
+            self.assertEqual(preview.count(b"class=\"preview-gallery__item card"), 2 if edition == "pro" else 4)
+            if edition == "standard":
+                self.assertIn(b"standard-sale-complete.png", preview)
+                self.assertIn(b"alt=\"Animated walkthrough of the Formints Standard point-of-sale interface\"", preview)
+                self.assertIn(b"<video", preview) if b"kind=\"video\"" in preview else None
+
+        # The Pro edition carries the seeded annual 50% launch offer: badge
+        # chip + struck-through original price next to the discounted price.
+        self.assertIn(b"/per year", response.content)
+        self.assertNotIn(b"$79</span>\n                    <span class=\"font-mono text-xs uppercase tracking-wider text-fu-muted\">/per month", response.content)
         self.assertIn(b"badge-offer", response.content)
         self.assertIn(b"50% off", response.content)
         self.assertIn(b"$158", response.content)
@@ -861,6 +1058,11 @@ class LandingPagesTestCase(TestCase):
 
         # The API exports the comparison block with columns + rows intact.
         data = self.client.get("/apis/pages/formint-pos/").json()
+        pro = next(
+            edition for edition in data.get("editions", [])
+            if edition.get("name") == "Pro"
+        )
+        self.assertEqual(pro["period"], "/per year")
         comparison = data.get("comparison", [])
         self.assertTrue(comparison, "products API should carry the comparison block")
         block = comparison[0]
@@ -876,8 +1078,8 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(by_feature["Data export (CSV/JSON)"], ["No", "Yes", "Yes", "Yes"])
         self.assertEqual(by_feature["Automatic cloud backups"], ["No", "No", "No", "Yes"])
 
-    def test_formint_pos_renders_roadmap_and_new_snippets(self):
-        """The POS reference page ships the product roadmap section + new reference snippets."""
+    def test_formint_pos_renders_roadmap_and_visual_previews(self):
+        """The POS reference page keeps the roadmap but uses visual previews, not code blocks."""
         response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
         for marker in (
@@ -885,17 +1087,16 @@ class LandingPagesTestCase(TestCase):
             b"Loyalty &amp; rewards engine",
             b"Multi-currency &amp; tax profiles",
             b"Automatic cloud backups",
-            b"Diesel migration (up.sql)",
-            b"Tauri command (invoice PDF)",
+            b"See it in motion",
         ):
             self.assertIn(marker, response.content)
         # The API carries the roadmap items under the flattened features list.
         data = self.client.get("/apis/pages/formint-pos/").json()
         features = data.get("features", [])
         self.assertTrue(any(f.get("title") == "Loyalty & rewards engine" for f in features))
-        snippets = data.get("snippets", [])
-        self.assertTrue(any(s.get("title") == "Diesel migration (up.sql)" for s in snippets))
-        self.assertTrue(any(s.get("title") == "Tauri command (invoice PDF)" for s in snippets))
+        self.assertNotIn("snippets", data)
+        self.assertTrue(data.get("preview_gallery"))
+        self.assertTrue(any(media.get("kind") == "gif" for media in data["preview_gallery"]))
 
     def test_products_lists_product_pages(self):
         """/products/ lists the product pages (cards) alongside the project grid."""

@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "uv run --project ../.. --with selenium python tests/learning-e2e.py"
   },
   "dependencies": {
     "@alpinejs/collapse": "^3.14.9",
