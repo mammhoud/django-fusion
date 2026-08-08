@@ -11,10 +11,22 @@
   <script>
     window.$docsify = {
       name: 'Structa Cloud',
-      repo: '',
-      loadSidebar: true,
-      subMaxLevel: 2,
-      search: { placeholder: 'Search docs' }
+      repo: 'https://github.com/mammhoud/structa.cloud',
+      loadSidebar: '_sidebar.md',
+      subMaxLevel: 3,
+      auto2top: true,
+      search: {
+        placeholder: 'Search docs...',
+        noData: 'No results',
+        depth: 4
+      },
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Error',
+        successText: 'Copied'
+      },
+      formatUpdated: '{MM}/{DD} {HH}:{mm}',
+      externalLinkTarget: '_blank'
     };
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
