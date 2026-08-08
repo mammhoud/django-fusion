@@ -9,6 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 _root_health = lambda r: JsonResponse({"status": "healthy", "service": "pos-cloud"})
 
+from apps.handlers.surface import stats as apps_handlers_surface_stats
+from apps.handlers.surface import urlpatterns as apps_handlers_surface_urlpatterns
+
 
 # ── BoltAPI Analytics Dashboard ─────────────────────────────────
 # Served at /apis/data/ as the root bolt dashboard page.
@@ -19,185 +22,513 @@ SYNC_MONITOR_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>POS Cloud — Sync Monitor</title>
+<title>SYNC MONITOR — POS CLOUD</title>
 <style>
+  /* ═══════════════════════════════════════════════════════════════
+     POS CLOUD // SYNC MONITOR
+     Tactical Telemetry — industrial brutalist / CRT terminal build.
+     Substrate: deactivated CRT. Phosphor: white. Hazard: red.
+     Zero border-radius. Rigid blueprint grid. ASCII framing.
+     ═══════════════════════════════════════════════════════════════ */
   :root {
-    --bg-dark: #0f172a;
-    --bg-card: #1e293b;
-    --accent: #10b981;
-    --accent-glow: rgba(16,185,129,0.15);
-    --red: #ef4444;
-    --orange: #f59e0b;
-    --blue: #3b82f6;
-    --purple: #8b5cf6;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: #334155;
+    --bg: #0A0A0A;
+    --bg-panel: #121212;
+    --bg-inset: #0D0D0D;
+    --ink: #EAEAEA;
+    --ink-dim: #8A8A8A;
+    --ink-faint: #555555;
+    --hazard: #E61919;
+    --phosphor: #4AF626;
+    --line: #2A2A2A;
+    --line-strong: #444444;
+    --mono: "JetBrains Mono", "IBM Plex Mono", "Space Mono", ui-monospace, "Courier New", monospace;
   }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg-dark);color:var(--text-main);font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
-  .topbar{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 2rem;background:var(--bg-card);border-bottom:1px solid var(--border)}
-  .topbar-brand{display:flex;align-items:center;gap:.75rem}
-  .topbar-brand h1{font-size:1.25rem;color:var(--accent);font-weight:700}
-  .topbar-brand span{color:var(--text-muted);font-size:.85rem}
-  .topbar-nav{display:flex;gap:.5rem}
-  .nav-link{color:var(--text-muted);text-decoration:none;padding:.4rem .8rem;border-radius:6px;font-size:.85rem;transition:all .15s}
-  .nav-link:hover{color:var(--text-main);background:var(--bg-dark)}
-  .nav-link.active{color:var(--accent);background:rgba(16,185,129,0.1)}
-  .main{padding:2rem;max-width:1400px;margin:0 auto}
-  h2{font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-  .refresh-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
-  .refresh-bar .status{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--text-muted)}
-  .refresh-bar .status .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-  .dot.green{background:var(--accent)}
-  .dot.yellow{background:var(--orange)}
-  .dot.red{background:var(--red)}
-  .dot.gray{background:#64748b}
-  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border-radius:8px;font-size:.8rem;font-weight:600;text-decoration:none;transition:all .15s;border:1px solid transparent;cursor:pointer}
-  .btn-primary{background:var(--accent);color:#fff}
-  .btn-primary:hover{background:#059669;box-shadow:0 0 12px var(--accent-glow)}
-  .btn-sm{padding:.35rem .7rem;font-size:.75rem}
-  .btn-ghost{color:var(--text-muted);border-color:var(--border)}
-  .btn-ghost:hover{color:var(--text-main);border-color:var(--text-muted)}
-  .btn-danger{color:#fff;background:var(--red)}
-  .btn-danger:hover{background:#dc2626}
-  .btn-warning{color:#fff;background:var(--orange)}
-  .btn-warning:hover{background:#d97706}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem}
-  .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
-  .card-title{font-size:.8rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
-  .stat{text-align:center;padding:1rem}
-  .stat-value{font-size:1.8rem;font-weight:700}
-  .stat-label{font-size:.75rem;color:var(--text-muted);margin-top:.25rem}
-  .stat-value.green{color:var(--accent)}
-  .stat-value.orange{color:var(--orange)}
-  .stat-value.blue{color:var(--blue)}
-  .stat-value.red{color:var(--red)}
-  .stat-value.purple{color:var(--purple)}
-  table{width:100%;border-collapse:collapse;font-size:.85rem}
-  th{text-align:left;padding:.6rem .75rem;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
-  td{padding:.6rem .75rem;border-bottom:1px solid rgba(51,65,85,0.4)}
-  tr:hover td{background:rgba(255,255,255,0.02)}
-  .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .55rem;border-radius:999px;font-size:.72rem;font-weight:600}
-  .badge-green{background:rgba(16,185,129,0.15);color:var(--accent)}
-  .badge-red{background:rgba(239,68,68,0.15);color:var(--red)}
-  .badge-yellow{background:rgba(245,158,11,0.15);color:var(--orange)}
-  .badge-gray{background:rgba(148,163,184,0.15);color:var(--text-muted)}
-  .badge-blue{background:rgba(59,130,246,0.15);color:var(--blue)}
-  .badge-purple{background:rgba(139,92,246,0.15);color:var(--purple)}
-  .empty{text-align:center;padding:2rem;color:var(--text-muted);font-size:.85rem}
-  .conflict-entry{border-left:3px solid var(--orange);padding:.75rem 1rem;margin-bottom:.5rem;background:rgba(245,158,11,0.05);border-radius:0 8px 8px 0}
-  .conflict-entry .fields{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
-  .conflict-entry .field-tag{background:rgba(245,158,11,0.1);padding:.2rem .5rem;border-radius:4px;font-size:.72rem;color:var(--orange)}
-  .conflict-actions{display:flex;gap:.4rem;margin-top:.5rem}
-  .toast{position:fixed;bottom:20px;right:20px;padding:.75rem 1.25rem;border-radius:8px;font-size:.85rem;z-index:9999;animation:slideIn .25s ease;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
-  .toast.success{background:rgba(16,185,129,0.9);color:#fff}
-  .toast.error{background:rgba(239,68,68,0.9);color:#fff}
-  @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  .tab-bar{display:flex;gap:.25rem;margin-bottom:1.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:.25rem}
-  .tab{flex:1;padding:.5rem 1rem;text-align:center;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text-muted);border:none;background:transparent}
-  .tab:hover{color:var(--text-main);background:rgba(255,255,255,0.05)}
-  .tab.active{background:rgba(16,185,129,0.15);color:var(--accent)}
-  .tab-content{display:none}
-  .tab-content.active{display:block}
-  .loading-spinner{display:flex;align-items:center;justify-content:center;padding:3rem;color:var(--text-muted)}
-  .loading-spinner::after{content:'';width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin-left:.5rem}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .conflict-resolve-form{display:flex;gap:.5rem;align-items:center;margin-top:.5rem}
-  .conflict-resolve-form select{background:var(--bg-dark);color:var(--text-main);border:1px solid var(--border);border-radius:6px;padding:.35rem .5rem;font-size:.78rem}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* CRT scanlines — hardware limitation, not decoration */
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0, 0, 0, 0.22) 2px, rgba(0, 0, 0, 0.22) 4px
+    );
+  }
+  /* Mechanical grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 61;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { color: var(--hazard); }
+  .mono { font-family: var(--mono); }
+
+  /* ── Blueprint frame ──────────────────────────────────────────── */
+  .frame {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+  }
+  .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-bottom: 2px solid var(--line-strong);
+    padding: 14px 0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--ink-dim);
+  }
+  .topbar-brand { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+  .topbar-brand .hazard { color: var(--hazard); }
+  .topbar-nav { display: flex; gap: 18px; justify-content: flex-end; }
+  .topbar-nav .active { color: var(--ink); }
+  .topbar-nav .active::before { content: ">> "; color: var(--hazard); }
+
+  /* ── Masthead — macro type ────────────────────────────────────── */
+  .masthead {
+    padding: 28px 0 20px;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+  }
+  .masthead h1 {
+    font-size: clamp(2.2rem, 6vw, 5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    margin: 0;
+  }
+  .masthead h1 .block { display: block; }
+  .masthead h1 .red { color: var(--hazard); }
+  .masthead h1 .thin { font-weight: 400; color: var(--ink-dim); }
+  .masthead-meta {
+    text-align: right;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    line-height: 1.9;
+    border: 1px solid var(--line-strong);
+    padding: 10px 14px;
+  }
+  .masthead-meta b { color: var(--ink); font-weight: 600; }
+
+  /* ── Status strip ─────────────────────────────────────────────── */
+  .status-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line-strong);
+    margin: 20px 0;
+  }
+  .status-cell {
+    background: var(--bg-panel);
+    padding: 12px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-cell .val {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0;
+    line-height: 1;
+  }
+  .status-cell .val.red { color: var(--hazard); }
+  .status-cell .val.green { color: var(--phosphor); }
+  .led { width: 8px; height: 8px; display: inline-block; background: var(--ink-faint); }
+  .led.on { background: var(--phosphor); }
+  .led.warn { background: var(--hazard); }
+
+  /* ── Tab rail ─────────────────────────────────────────────────── */
+  .tab-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line-strong);
+    margin-bottom: 20px;
+  }
+  .tab {
+    background: var(--bg-panel);
+    color: var(--ink-dim);
+    border: 0;
+    padding: 11px 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 120ms, color 120ms;
+  }
+  .tab:hover { color: var(--ink); background: var(--bg-inset); }
+  .tab.active { color: var(--ink); background: var(--bg-inset); box-shadow: inset 0 -2px 0 var(--hazard); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Telemetry grid ───────────────────────────────────────────── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin-bottom: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line-strong); margin-bottom: 20px; }
+  .panel { background: var(--bg-panel); padding: 16px; min-width: 0; }
+  .panel-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .panel-title::before { content: "[ "; color: var(--hazard); }
+  .panel-title::after { content: " ]"; color: var(--hazard); }
+
+  /* ── Tables ───────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left;
+    padding: 7px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--line-strong);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  tr:hover td { background: var(--bg-inset); }
+  td .code { color: var(--ink-dim); font-size: 11px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-dim);
+  }
+  .badge.green { border-color: var(--phosphor); color: var(--phosphor); }
+  .badge.red { border-color: var(--hazard); color: var(--hazard); }
+  .badge.yellow { border-color: #F5A623; color: #F5A623; }
+  .badge.blue { border-color: #3B82F6; color: #3B82F6; }
+
+  /* ── Conflict entries ─────────────────────────────────────────── */
+  .conflict-entry {
+    border-left: 3px solid var(--hazard);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: var(--bg-inset);
+  }
+  .conflict-entry .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .conflict-entry .fields { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .field-tag {
+    border: 1px solid var(--line-strong);
+    padding: 3px 7px;
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 0.04em;
+  }
+  .field-tag .local { color: var(--ink); }
+  .field-tag .remote { color: var(--hazard); }
+  .conflict-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  select {
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  select:focus { outline: 1px solid var(--hazard); }
+
+  /* ── Buttons — mechanical, no radius ──────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: background 120ms, color 120ms, border-color 120ms;
+  }
+  .btn:hover { border-color: var(--ink); }
+  .btn:active { transform: translateY(1px); background: var(--bg-inset); }
+  .btn.primary { border-color: var(--hazard); color: var(--hazard); }
+  .btn.primary:hover { background: var(--hazard); color: var(--bg); }
+  .btn.ghost { color: var(--ink-dim); }
+  .btn.ghost:hover { color: var(--ink); }
+
+  .empty {
+    text-align: center;
+    padding: 28px 12px;
+    color: var(--ink-faint);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    border: 1px dashed var(--line-strong);
+  }
+  .empty::before { content: "/// "; color: var(--hazard); }
+  .empty::after { content: " ///"; color: var(--hazard); }
+
+  .loading {
+    padding: 28px;
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+  .loading::after {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 8px;
+    background: var(--hazard);
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .refresh-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 20px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+  }
+  .refresh-bar .status { display: flex; align-items: center; gap: 10px; }
+
+  .footer-bar {
+    margin-top: 32px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+  }
+  .footer-bar .hazard { color: var(--hazard); }
+
+  .toast {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    padding: 10px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: var(--bg-panel);
+    border: 1px solid var(--hazard);
+    color: var(--ink);
+    z-index: 70;
+  }
+
+  /* ── Crosshair at grid intersections ──────────────────────────── */
+  .crosshair { color: var(--ink-faint); font-size: 9px; line-height: 1; user-select: none; }
+
+  @media (max-width: 900px) {
+    .topbar { grid-template-columns: 1fr; gap: 10px; }
+    .topbar-nav { justify-content: flex-start; }
+    .masthead { grid-template-columns: 1fr; }
+    .masthead-meta { text-align: left; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .status-strip { grid-template-columns: 1fr 1fr; }
+    .tab-bar { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .status-strip { grid-template-columns: 1fr; }
+    .tab-bar { grid-template-columns: 1fr 1fr 1fr; }
+    .frame { padding: 0 10px 32px; }
+  }
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="topbar-brand">
-    <div>
-      <h1>📡 Sync Monitor</h1>
-      <span>Branch health, queue status &amp; conflict resolution</span>
+<div class="frame">
+
+  <!-- ── Top bar ─────────────────────────────────────────────────── -->
+  <div class="topbar">
+    <div class="topbar-brand">POS CLOUD <span class="hazard">/</span> SYNC MONITOR</div>
+    <div class="crosshair">+ + +</div>
+    <div class="topbar-nav">
+      <a href="/apis/data/">ANALYTICS</a>
+      <a href="/apis/data/sync-monitor" class="active">SYNC MONITOR</a>
+      <a href="/admin/">ADMIN</a>
     </div>
   </div>
-  <div class="topbar-nav">
-    <a href="/apis/data/" class="nav-link">📊 Analytics</a>
-    <a href="/apis/data/sync-monitor" class="nav-link active">📡 Sync Monitor</a>
-    <a href="/admin/" class="nav-link">⚙ Admin</a>
-  </div>
-</div>
 
-<div class="main">
-  <!-- Tab bar -->
+  <!-- ── Masthead ────────────────────────────────────────────────── -->
+  <div class="masthead">
+    <div>
+      <h1>
+        <span class="block">SYNC <span class="red">MONITOR</span></span>
+        <span class="block thin">BRANCH // QUEUE // CONFLICT</span>
+      </h1>
+    </div>
+    <div class="masthead-meta">
+      UNIT / <b>POS-CLOUD-01</b><br>
+      REV / <b>2.6</b> &nbsp; MODE / <b>TELEMETRY</b><br>
+      <span id="last-refresh">T-0.000</span>
+    </div>
+  </div>
+
+  <!-- ── Status strip ────────────────────────────────────────────── -->
+  <div class="status-strip">
+    <div class="status-cell">
+      <span class="led" id="ws-led"></span>
+      <div>
+        <div>LINK / WS</div>
+        <div class="val" id="ws-status">STANDBY</div>
+      </div>
+    </div>
+    <div class="status-cell">
+      <div>
+        <div>BRANCHES ONLINE</div>
+        <div class="val" id="ov-branches-online">—</div>
+      </div>
+    </div>
+    <div class="status-cell">
+      <div>
+        <div>QUEUE PENDING</div>
+        <div class="val" id="ov-queue-pending">—</div>
+      </div>
+    </div>
+    <div class="status-cell">
+      <div>
+        <div>CONFLICTS</div>
+        <div class="val red" id="ov-conflicts">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab rail ────────────────────────────────────────────────── -->
   <div class="tab-bar">
-    <button class="tab active" data-tab="overview">📊 Overview</button>
-    <button class="tab" data-tab="branches">🏪 Branches</button>
-    <button class="tab" data-tab="queue">📋 Queue</button>
-    <button class="tab" data-tab="conflicts">⚡ Conflicts</button>
-    <button class="tab" data-tab="activity">📜 Activity</button>
+    <button class="tab active" data-tab="overview">OVERVIEW</button>
+    <button class="tab" data-tab="branches">BRANCHES</button>
+    <button class="tab" data-tab="queue">QUEUE</button>
+    <button class="tab" data-tab="conflicts">CONFLICTS</button>
+    <button class="tab" data-tab="activity">ACTIVITY</button>
   </div>
 
-  <!-- Refresh bar -->
   <div class="refresh-bar">
     <div class="status">
-      <span class="dot gray" id="ws-dot"></span>
-      <span id="ws-status">Connecting…</span>
-      <span style="margin-left:1rem;font-size:.78rem;color:var(--text-muted)" id="last-refresh">Just now</span>
+      <span class="crosshair">+</span>
+      <span>LAST POLL // <span id="last-poll">—</span></span>
+      <span>INTERVAL // 15s</span>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="refreshAll()">⟳ Refresh</button>
+    <button class="btn" onclick="refreshAll()">⟳ FORCE POLL</button>
   </div>
 
-  <!-- ═══ TAB: Overview ═══ -->
+  <!-- ═══ TAB: OVERVIEW ═══ -->
   <div class="tab-content active" id="tab-overview">
-    <div class="grid-4" id="overview-stats">
-      <div class="card"><div class="stat"><div class="stat-value green" id="ov-branches-online">—</div><div class="stat-label">Branches Online</div></div></div>
-      <div class="card"><div class="stat"><div class="stat-value orange" id="ov-queue-pending">—</div><div class="stat-label">Queue Pending</div></div></div>
-      <div class="card"><div class="stat"><div class="stat-value red" id="ov-queue-failed">—</div><div class="stat-label">Queue Failed</div></div></div>
-      <div class="card"><div class="stat"><div class="stat-value purple" id="ov-conflicts">—</div><div class="stat-label">Conflicts</div></div></div>
-    </div>
     <div class="grid-2">
-      <div class="card">
-        <div class="card-title">🏪 Branch Status</div>
-        <div id="branch-summary-table"><div class="empty">Loading…</div></div>
+      <div class="panel">
+        <div class="panel-title">BRANCH STATUS</div>
+        <div id="branch-summary-table"><div class="loading">POLLING</div></div>
       </div>
-      <div class="card">
-        <div class="card-title">⚡ Pending Conflicts</div>
-        <div id="conflicts-preview"><div class="empty">Loading…</div></div>
+      <div class="panel">
+        <div class="panel-title">PENDING CONFLICTS</div>
+        <div id="conflicts-preview"><div class="loading">POLLING</div></div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="panel">
+        <div class="panel-title">QUEUE PENDING</div>
+        <div class="val" style="font-size:clamp(2rem,5vw,3.4rem);font-weight:700" id="ov-queue-pending-lg">—</div>
+        <div style="margin-top:6px;font-size:11px;color:var(--ink-dim)">EST BACKLOG // <b style="color:var(--ink)" id="ov-backlog">—</b>s</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">QUEUE FAILED</div>
+        <div class="val" style="font-size:clamp(2rem,5vw,3.4rem);font-weight:700;color:var(--hazard)" id="ov-queue-failed">—</div>
+        <div style="margin-top:6px;font-size:11px;color:var(--ink-dim)">RETRY WINDOW // EXP-BACKOFF</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">CONFLICT MATRIX</div>
+        <div class="val" style="font-size:clamp(2rem,5vw,3.4rem);font-weight:700" id="ov-conflicts-lg">—</div>
+        <div style="margin-top:6px;font-size:11px;color:var(--ink-dim)">PENDING // <b style="color:var(--ink)" id="ov-conflict-pending">—</b></div>
       </div>
     </div>
   </div>
 
-  <!-- ═══ TAB: Branches ═══ -->
+  <!-- ═══ TAB: BRANCHES ═══ -->
   <div class="tab-content" id="tab-branches">
-    <div class="card">
-      <div class="card-title">All Branches — Health &amp; Sync Status</div>
-      <div id="branches-table"><div class="loading-spinner">Loading branches…</div></div>
+    <div class="panel">
+      <div class="panel-title">ALL BRANCHES — HEALTH &amp; SYNC STATUS</div>
+      <div id="branches-table"><div class="loading">POLLING</div></div>
     </div>
   </div>
 
-  <!-- ═══ TAB: Queue ═══ -->
+  <!-- ═══ TAB: QUEUE ═══ -->
   <div class="tab-content" id="tab-queue">
-    <div class="card">
-      <div class="card-title">Queue Items by Branch</div>
-      <div id="queue-table"><div class="loading-spinner">Loading queue…</div></div>
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-title">QUEUE ITEMS BY BRANCH</div>
+      <div id="queue-table"><div class="loading">POLLING</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">Pending Queue Items</div>
-      <div id="queue-pending-list"><div class="loading-spinner">Loading…</div></div>
+    <div class="panel">
+      <div class="panel-title">PENDING QUEUE ITEMS</div>
+      <div id="queue-pending-list"><div class="loading">POLLING</div></div>
     </div>
   </div>
 
-  <!-- ═══ TAB: Conflicts ═══ -->
+  <!-- ═══ TAB: CONFLICTS ═══ -->
   <div class="tab-content" id="tab-conflicts">
-    <div class="card">
-      <div class="card-title">Pending Conflicts Requiring Resolution</div>
-      <div id="conflicts-list"><div class="loading-spinner">Loading conflicts…</div></div>
+    <div class="panel">
+      <div class="panel-title">PENDING CONFLICTS — RESOLUTION REQUIRED</div>
+      <div id="conflicts-list"><div class="loading">POLLING</div></div>
     </div>
   </div>
 
-  <!-- ═══ TAB: Activity ═══ -->
+  <!-- ═══ TAB: ACTIVITY ═══ -->
   <div class="tab-content" id="tab-activity">
-    <div class="card">
-      <div class="card-title">Recent Sync Activity</div>
-      <div id="activity-list"><div class="loading-spinner">Loading activity…</div></div>
+    <div class="panel">
+      <div class="panel-title">RECENT SYNC ACTIVITY</div>
+      <div id="activity-list"><div class="loading">POLLING</div></div>
     </div>
+  </div>
+
+  <div class="footer-bar">
+    <div>POS CLOUD <span class="hazard">//</span> TELEMETRY CONSOLE</div>
+    <div>© 2026 STRUCTA CLOUD &nbsp;|&nbsp; REV 2.6 &nbsp;|&nbsp; <a href="/admin/">ADMIN</a></div>
   </div>
 </div>
 
@@ -213,7 +544,7 @@ document.querySelectorAll('.tab').forEach(function(tab) {
   });
 });
 
-// ── Data fetching ──
+// ── Fetch ──
 async function fetchJSON(url) {
   var res = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -226,30 +557,30 @@ function formatTime(iso) {
   if (isNaN(d.getTime())) return iso;
   var now = new Date();
   var diff = (now - d) / 1000;
-  if (diff < 60) return Math.round(diff) + 's ago';
-  if (diff < 3600) return Math.round(diff / 60) + 'm ago';
+  if (diff < 60) return Math.round(diff) + 's AGO';
+  if (diff < 3600) return Math.round(diff / 60) + 'm AGO';
   return d.toLocaleString();
 }
 
 function esc(str) {
   var d = document.createElement('div');
-  d.appendChild(document.createTextNode(str || ''));
+  d.appendChild(document.createTextNode(str == null ? '' : String(str)));
   return d.innerHTML;
 }
 
 function showToast(msg, type) {
   var t = document.createElement('div');
-  t.className = 'toast ' + type;
-  t.textContent = msg;
+  t.className = 'toast';
+  t.textContent = (type === 'ok' ? '[ OK ] ' : '[ ERR ] ') + msg;
   document.body.appendChild(t);
   setTimeout(function(){ t.remove(); }, 3000);
 }
 
-// ── Refresh all tabs ──
-var refreshInterval = null;
-
+// ── Poll ──
 async function refreshAll() {
-  document.getElementById('last-refresh').textContent = 'Refreshing…';
+  var now = new Date();
+  document.getElementById('last-poll').textContent = now.toLocaleTimeString();
+  document.getElementById('last-refresh').textContent = 'T+ ' + now.toLocaleTimeString();
   await Promise.all([
     refreshOverview(),
     refreshBranches(),
@@ -257,13 +588,10 @@ async function refreshAll() {
     refreshConflicts(),
     refreshActivity(),
   ]);
-  document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
 }
+setInterval(refreshAll, 15000);
 
-// Auto-refresh every 15 seconds
-refreshInterval = setInterval(refreshAll, 15000);
-
-// ── Overview Tab ──
+// ── Overview ──
 async function refreshOverview() {
   try {
     var [health, queue, byBranch, conflicts] = await Promise.all([
@@ -272,134 +600,131 @@ async function refreshOverview() {
       fetchJSON('/api/dashboard/queue/by-branch'),
       fetchJSON('/api/dashboard/conflicts'),
     ]);
-
     var online = health.branches.filter(function(b){ return b.online; }).length;
     document.getElementById('ov-branches-online').textContent = online + '/' + health.branches.length;
     document.getElementById('ov-queue-pending').textContent = queue.pending;
+    document.getElementById('ov-queue-pending-lg').textContent = queue.pending;
     document.getElementById('ov-queue-failed').textContent = queue.failed;
+    document.getElementById('ov-backlog').textContent = queue.estimated_backlog_seconds;
     document.getElementById('ov-conflicts').textContent = conflicts.count;
+    document.getElementById('ov-conflicts-lg').textContent = conflicts.count;
+    document.getElementById('ov-conflict-pending').textContent = conflicts.count;
 
-    // Branch summary table
-    var html = '<table><thead><tr><th>Branch</th><th>Status</th><th>Terminals</th><th>Pending</th><th>Failed</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th>BRANCH</th><th>STATUS</th><th>TERM</th><th>PEND</th><th>FAIL</th></tr></thead><tbody>';
     health.branches.forEach(function(b) {
       var bq = (byBranch.branches || []).find(function(x){ return x.code === b.code; }) || {};
-      var statusClass = b.online ? 'badge-green' : 'badge-gray';
-      var statusLabel = b.online ? '🟢 Online' : '⚫ Offline';
-      html += '<tr><td><strong>' + esc(b.name) + '</strong><br><span style="font-size:.75rem;color:var(--text-muted)">' + esc(b.code) + '</span></td>' +
-        '<td><span class="badge ' + statusClass + '">' + statusLabel + '</span></td>' +
-        '<td>' + b.connected_terminals + '</td>' +
-        '<td>' + (bq.pending || 0) + '</td>' +
-        '<td>' + (bq.failed || 0) + '</td></tr>';
+      var badge = b.online ? '<span class="badge green">ONLINE</span>' : '<span class="badge">OFFLINE</span>';
+      html += '<tr><td><strong>' + esc(b.name) + '</strong><br><span class="code">' + esc(b.code) + '</span></td>' +
+        '<td>' + badge + '</td><td>' + b.connected_terminals + '</td>' +
+        '<td>' + (bq.pending || 0) + '</td><td>' + (bq.failed || 0) + '</td></tr>';
     });
     html += '</tbody></table>';
     document.getElementById('branch-summary-table').innerHTML = html;
 
-    // Conflicts preview
     var c = conflicts.conflicts || [];
     if (c.length === 0) {
-      document.getElementById('conflicts-preview').innerHTML = '<div class="empty">✅ No pending conflicts</div>';
+      document.getElementById('conflicts-preview').innerHTML = '<div class="empty">NO PENDING CONFLICTS</div>';
     } else {
-      html = '<table><thead><tr><th>Entity</th><th>Reason</th><th>When</th></tr></thead><tbody>';
+      html = '<table><thead><tr><th>ENTITY</th><th>REASON</th><th>WHEN</th></tr></thead><tbody>';
       c.slice(0, 5).forEach(function(cf) {
         var fields = (cf.conflict_fields || []).map(function(f){ return f.field; }).join(', ');
         html += '<tr><td>' + esc(cf.entity_type) + ' #' + esc(cf.entity_id) + '</td>' +
-          '<td style="font-size:.78rem;color:var(--text-muted)">' + esc(cf.reason) + '<br><span style="color:var(--orange)">' + esc(fields) + '</span></td>' +
-          '<td style="font-size:.78rem;color:var(--text-muted)">' + formatTime(cf.created_at) + '</td></tr>';
+          '<td style="color:var(--ink-dim);font-size:11px">' + esc(cf.reason) +
+          '<br><span style="color:var(--hazard)">' + esc(fields) + '</span></td>' +
+          '<td style="color:var(--ink-dim);font-size:11px">' + formatTime(cf.created_at) + '</td></tr>';
       });
-      if (c.length > 5) html += '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);font-size:.78rem">+' + (c.length - 5) + ' more…</td></tr></tbody></table>';
+      if (c.length > 5) html += '<tr><td colspan="3" style="text-align:center;color:var(--ink-faint)">+' + (c.length - 5) + ' MORE</td></tr>';
       html += '</tbody></table>';
       document.getElementById('conflicts-preview').innerHTML = html;
     }
-  } catch(e) { console.error('Overview refresh failed:', e); }
+  } catch(e) { console.error('Overview poll failed:', e); }
 }
 
-// ── Branches Tab ──
+// ── Branches ──
 async function refreshBranches() {
   try {
     var health = await fetchJSON('/api/dashboard/branches/health');
-    var html = '<table><thead><tr><th>Branch</th><th>Code</th><th>Type</th><th>Status</th><th>Terminals</th><th>Node ID</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th>BRANCH</th><th>CODE</th><th>TYPE</th><th>STATUS</th><th>TERM</th><th>NODE</th></tr></thead><tbody>';
     health.branches.forEach(function(b) {
-      var st = b.online ? '<span class="badge badge-green">🟢 Online</span>' : '<span class="badge badge-gray">⚫ Offline</span>';
-      html += '<tr><td><strong>' + esc(b.name) + '</strong></td><td style="color:var(--text-muted)">' + esc(b.code) + '</td>' +
-        '<td><span class="badge badge-blue">' + esc(b.pos_type) + '</span></td>' +
-        '<td>' + st + '</td><td>' + b.connected_terminals + '</td>' +
-        '<td style="font-size:.78rem;color:var(--text-muted)">' + esc(b.node_id || '—') + '</td></tr>';
+      var st = b.online ? '<span class="badge green">ONLINE</span>' : '<span class="badge">OFFLINE</span>';
+      html += '<tr><td><strong>' + esc(b.name) + '</strong></td><td class="code">' + esc(b.code) + '</td>' +
+        '<td><span class="badge blue">' + esc(b.pos_type) + '</span></td><td>' + st + '</td>' +
+        '<td>' + b.connected_terminals + '</td><td class="code">' + esc(b.node_id || '—') + '</td></tr>';
     });
     html += '</tbody></table>';
     document.getElementById('branches-table').innerHTML = html;
-  } catch(e) { console.error('Branches refresh failed:', e); }
+  } catch(e) { console.error('Branches poll failed:', e); }
 }
 
-// ── Queue Tab ──
+// ── Queue ──
 async function refreshQueue() {
   try {
     var [byBranch, pending] = await Promise.all([
       fetchJSON('/api/dashboard/queue/by-branch'),
       fetchJSON('/api/dashboard/queue/list/pending'),
     ]);
-    var html = '<table><thead><tr><th>Branch</th><th>Code</th><th>Pending</th><th>Failed</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th>BRANCH</th><th>CODE</th><th>PENDING</th><th>FAILED</th></tr></thead><tbody>';
     (byBranch.branches || []).forEach(function(b) {
-      html += '<tr><td><strong>' + esc(b.branch) + '</strong></td><td style="color:var(--text-muted)">' + esc(b.code) + '</td>' +
-        '<td>' + (b.pending > 0 ? '<span class="badge badge-yellow">' + b.pending + '</span>' : '<span style="color:var(--text-muted)">0</span>') + '</td>' +
-        '<td>' + (b.failed > 0 ? '<span class="badge badge-red">' + b.failed + '</span>' : '<span style="color:var(--text-muted)">0</span>') + '</td></tr>';
+      html += '<tr><td><strong>' + esc(b.branch) + '</strong></td><td class="code">' + esc(b.code) + '</td>' +
+        '<td>' + (b.pending > 0 ? '<span class="badge yellow">' + b.pending + '</span>' : '0') + '</td>' +
+        '<td>' + (b.failed > 0 ? '<span class="badge red">' + b.failed + '</span>' : '0') + '</td></tr>';
     });
     html += '</tbody></table>';
     document.getElementById('queue-table').innerHTML = html;
 
-    // Pending items list
     var items = pending.items || [];
     if (items.length === 0) {
-      document.getElementById('queue-pending-list').innerHTML = '<div class="empty">✅ No pending queue items</div>';
+      document.getElementById('queue-pending-list').innerHTML = '<div class="empty">NO PENDING ITEMS</div>';
     } else {
-      html = '<table><thead><tr><th>ID</th><th>Branch</th><th>Operation</th><th>Entity</th><th>Attempts</th><th>Next Retry</th></tr></thead><tbody>';
+      html = '<table><thead><tr><th>ID</th><th>BRANCH</th><th>OP</th><th>ENTITY</th><th>ATT</th><th>NEXT</th></tr></thead><tbody>';
       items.forEach(function(item) {
         html += '<tr><td>' + item.id + '</td><td>' + esc(item.branch) + '</td>' +
-          '<td><span class="badge badge-blue">' + esc(item.operation) + '</span></td>' +
+          '<td><span class="badge blue">' + esc(item.operation) + '</span></td>' +
           '<td>' + esc(item.entity_type) + '</td>' +
           '<td>' + item.attempt_count + '/' + item.max_attempts + '</td>' +
-          '<td style="font-size:.78rem;color:var(--text-muted)">' + formatTime(item.next_retry_at) + '</td></tr>';
+          '<td class="code">' + formatTime(item.next_retry_at) + '</td></tr>';
       });
       html += '</tbody></table>';
       document.getElementById('queue-pending-list').innerHTML = html;
     }
-  } catch(e) { console.error('Queue refresh failed:', e); }
+  } catch(e) { console.error('Queue poll failed:', e); }
 }
 
-// ── Conflicts Tab ──
+// ── Conflicts ──
 async function refreshConflicts() {
   try {
     var data = await fetchJSON('/api/dashboard/conflicts');
     var list = data.conflicts || [];
     if (list.length === 0) {
-      document.getElementById('conflicts-list').innerHTML = '<div class="empty">✅ No pending conflicts. All sync data is in agreement.</div>';
+      document.getElementById('conflicts-list').innerHTML = '<div class="empty">NO PENDING CONFLICTS — DATA IN AGREEMENT</div>';
       return;
     }
     var html = '';
     list.forEach(function(c) {
       var fields = (c.conflict_fields || []).map(function(f) {
-        return '<span class="field-tag">' + esc(f.field) + ': local=' + esc(JSON.stringify(f.local_value)) + ' vs remote=' + esc(JSON.stringify(f.remote_value)) + '</span>';
+        return '<span class="field-tag">' + esc(f.field) + ' <span class="local">L=' + esc(JSON.stringify(f.local_value)) + '</span> / <span class="remote">R=' + esc(JSON.stringify(f.remote_value)) + '</span></span>';
       }).join('');
       html += '<div class="conflict-entry">' +
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
-          '<div><strong>' + esc(c.entity_type) + ' #' + esc(c.entity_id) + '</strong> <span class="badge badge-yellow">' + esc(c.resolver_used) + '</span></div>' +
-          '<span style="font-size:.75rem;color:var(--text-muted)">' + formatTime(c.created_at) + '</span>' +
+        '<div class="row">' +
+          '<div><strong>' + esc(c.entity_type) + ' #' + esc(c.entity_id) + '</strong> <span class="badge yellow">' + esc(c.resolver_used) + '</span></div>' +
+          '<span class="code">' + formatTime(c.created_at) + '</span>' +
         '</div>' +
-        '<div style="font-size:.78rem;color:var(--text-muted);margin-top:.25rem">' + esc(c.reason) + '</div>' +
-        '<div style="font-size:.78rem;color:var(--text-muted)">Branch: ' + esc(c.branch) + ' · Node: ' + esc(c.node_id) + '</div>' +
+        '<div style="color:var(--ink-dim);font-size:11px;margin-top:4px">' + esc(c.reason) + '</div>' +
+        '<div class="code">BRANCH ' + esc(c.branch) + ' // NODE ' + esc(c.node_id) + '</div>' +
         (fields ? '<div class="fields">' + fields + '</div>' : '') +
         '<div class="conflict-actions">' +
-          '<select class="conflict-resolve-select" id="resolve-select-' + c.id + '">' +
-            '<option value="use_local">Keep Local (cloud)</option>' +
-            '<option value="use_remote">Accept Remote (branch)</option>' +
-            '<option value="merge">Merge</option>' +
+          '<select id="resolve-select-' + c.id + '">' +
+            '<option value="use_local">KEEP LOCAL</option>' +
+            '<option value="use_remote">ACCEPT REMOTE</option>' +
+            '<option value="merge">MERGE</option>' +
           '</select>' +
-          '<button class="btn btn-primary btn-sm" onclick="resolveConflict(' + c.id + ')">✓ Resolve</button>' +
-          '<button class="btn btn-sm btn-ghost" onclick="dismissConflict(' + c.id + ')">✕ Dismiss</button>' +
+          '<button class="btn primary" onclick="resolveConflict(' + c.id + ')">RESOLVE</button>' +
+          '<button class="btn ghost" onclick="dismissConflict(' + c.id + ')">DISMISS</button>' +
         '</div>' +
       '</div>';
     });
     document.getElementById('conflicts-list').innerHTML = html;
-  } catch(e) { console.error('Conflicts refresh failed:', e); }
+  } catch(e) { console.error('Conflicts poll failed:', e); }
 }
 
 async function resolveConflict(id) {
@@ -410,17 +735,17 @@ async function resolveConflict(id) {
     var res = await fetch('/api/dashboard/conflicts/' + id + '/resolve', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ resolution: resolution, notes: 'Resolved via Sync Monitor dashboard' }),
+      body: JSON.stringify({ resolution: resolution, notes: 'Resolved via Sync Monitor console' }),
     });
     var data = await res.json();
     if (res.ok) {
-      showToast('Conflict #' + id + ' resolved as ' + resolution, 'success');
+      showToast('CONFLICT #' + id + ' RESOLVED // ' + resolution, 'ok');
       refreshConflicts();
     } else {
-      showToast('Failed: ' + (data.error || 'unknown'), 'error');
+      showToast('FAILED: ' + (data.error || 'UNKNOWN'), 'err');
     }
   } catch(e) {
-    showToast('Error resolving conflict: ' + e.message, 'error');
+    showToast('ERROR: ' + e.message, 'err');
   }
 }
 
@@ -428,43 +753,41 @@ async function dismissConflict(id) {
   try {
     var res = await fetch('/api/dashboard/conflicts/' + id + '/dismiss', { method: 'POST' });
     if (res.ok) {
-      showToast('Conflict #' + id + ' dismissed', 'success');
+      showToast('CONFLICT #' + id + ' DISMISSED', 'ok');
       refreshConflicts();
     } else {
-      showToast('Failed to dismiss', 'error');
+      showToast('DISMISS FAILED', 'err');
     }
   } catch(e) {
-    showToast('Error: ' + e.message, 'error');
+    showToast('ERROR: ' + e.message, 'err');
   }
 }
 
-// ── Activity Tab ──
+// ── Activity ──
 async function refreshActivity() {
   try {
     var data = await fetchJSON('/api/dashboard/activity?limit=50');
     var entries = data.entries || [];
     if (entries.length === 0) {
-      document.getElementById('activity-list').innerHTML = '<div class="empty">No sync activity yet</div>';
+      document.getElementById('activity-list').innerHTML = '<div class="empty">NO SYNC ACTIVITY LOGGED</div>';
       return;
     }
-    var html = '<table><thead><tr><th>Time</th><th>Branch</th><th>Type</th><th>Count</th><th>Status</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th>TIME</th><th>BRANCH</th><th>TYPE</th><th>COUNT</th><th>STATUS</th></tr></thead><tbody>';
     entries.forEach(function(e) {
-      var statusBadge = e.status === 'processed' || e.status === 'received' ? 'badge-green' :
-        e.status === 'failed' ? 'badge-red' : 'badge-gray';
-      var typeIcons = { products: '📦', sales: '🛒', inventory: '📋', heartbeat: '💓' };
-      var icon = typeIcons[e.entity_type] || '📌';
-      html += '<tr><td style="font-size:.78rem;color:var(--text-muted)">' + formatTime(e.received_at) + '</td>' +
+      var badge = (e.status === 'processed' || e.status === 'received') ? '<span class="badge green">' + esc(e.status) + '</span>' :
+        e.status === 'failed' ? '<span class="badge red">' + esc(e.status) + '</span>' : '<span class="badge">' + esc(e.status) + '</span>';
+      html += '<tr><td class="code">' + formatTime(e.received_at) + '</td>' +
         '<td>' + esc(e.branch) + '</td>' +
-        '<td>' + icon + ' ' + esc(e.entity_type) + '</td>' +
+        '<td>' + esc(e.entity_type) + '</td>' +
         '<td>' + e.entity_count + '</td>' +
-        '<td><span class="badge ' + statusBadge + '">' + esc(e.status) + '</span></td></tr>';
+        '<td>' + badge + '</td></tr>';
     });
     html += '</tbody></table>';
     document.getElementById('activity-list').innerHTML = html;
-  } catch(e) { console.error('Activity refresh failed:', e); }
+  } catch(e) { console.error('Activity poll failed:', e); }
 }
 
-// ── WebSocket status indicator ──
+// ── WebSocket link status ──
 (function() {
   var ws = null;
   function connect() {
@@ -472,23 +795,26 @@ async function refreshActivity() {
     var url = proto + '//' + location.host + '/ws/sync-events/';
     ws = new WebSocket(url);
     ws.onopen = function() {
-      document.getElementById('ws-dot').className = 'dot green';
-      document.getElementById('ws-status').textContent = '🟢 Connected';
+      document.getElementById('ws-led').className = 'led on';
+      document.getElementById('ws-status').textContent = 'LINKED';
+      document.getElementById('ws-status').className = 'val green';
     };
     ws.onclose = function() {
-      document.getElementById('ws-dot').className = 'dot yellow';
-      document.getElementById('ws-status').textContent = '🟡 Disconnected';
+      document.getElementById('ws-led').className = 'led warn';
+      document.getElementById('ws-status').textContent = 'LOST';
+      document.getElementById('ws-status').className = 'val red';
       setTimeout(connect, 3000);
     };
     ws.onerror = function() {
-      document.getElementById('ws-dot').className = 'dot red';
-      document.getElementById('ws-status').textContent = '🔴 Error';
+      document.getElementById('ws-led').className = 'led warn';
+      document.getElementById('ws-status').textContent = 'ERR';
+      document.getElementById('ws-status').className = 'val red';
     };
   }
   connect();
 })();
 
-// ── Initial load ──
+// ── Initial poll ──
 refreshAll();
 </script>
 </body>
@@ -747,6 +1073,10 @@ _bolt_catch_all = csrf_exempt(_bolt_dispatch)
 
 urlpatterns = [
     path("health", _root_health, name="root_health"),
+    # Sidecar surface: /stats + root CRUD paths the frontend proxies to :8767
+    path("stats", apps_handlers_surface_stats, name="stats"),
+    path("", include((apps_handlers_surface_urlpatterns, "surface"), namespace="surface")),
+
     # Unfold Admin
     path("admin/", admin.site.urls),
 
@@ -754,7 +1084,7 @@ urlpatterns = [
     # All /apis/data/* requests are forwarded to the BoltAPI instance in core/api.py
     re_path(r"^apis/data/(?P<route>.*)$", _bolt_catch_all, name="bolt_catch_all"),
 
-    # REST API (django-fusion viewsets + sync receivers)
+    # REST API (django-fusion viewsets + sync receivers + community bridges)
     path("api/", include("apps.core.urls")),
 
     # django-fusion API-first handlers (sidecar contract)

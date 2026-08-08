@@ -9,6 +9,9 @@ from apps.core.views import (
     DealViewSet,
     InventoryReportViewSet,
     BranchReportViewSet,
+    DeviceTokenViewSet,
+    SyncConflictViewSet,
+    SyncQueueItemViewSet,
 )
 from apps.handlers.sync_api import (
     BranchSyncLogViewSet,
@@ -21,6 +24,7 @@ from apps.handlers.sync_api import (
     sync_receive_heartbeat,
 )
 from apps.handlers import sync_dashboard
+from apps.handlers.surface import bridge_products, bridge_sales, bridge_settings
 
 
 def _inc(viewset):
@@ -36,6 +40,10 @@ def _health(request):
 
 urlpatterns = [
     path("health", _health, name="health"),
+    # Community-UI data bridges (sidecar /api/sales|products|settings contract)
+    path("sales", bridge_sales, name="bridge_sales"),
+    path("products", bridge_products, name="bridge_products"),
+    path("settings", bridge_settings, name="bridge_settings"),
     path("organizations/", _inc(OrganizationViewSet())),
     path("branches/", _inc(BranchViewSet())),
     path("leads/", _inc(LeadViewSet())),
@@ -43,6 +51,9 @@ urlpatterns = [
     path("deals/", _inc(DealViewSet())),
     path("inventory-reports/", _inc(InventoryReportViewSet())),
     path("branch-reports/", _inc(BranchReportViewSet())),
+    path("device-tokens/", _inc(DeviceTokenViewSet())),
+    path("conflicts/", _inc(SyncConflictViewSet())),
+    path("queue/", _inc(SyncQueueItemViewSet())),
     # Branch sync endpoints (query synced POS data)
     path("sync/logs/", _inc(BranchSyncLogViewSet())),
     path("sync/products/", _inc(BranchProductViewSet())),

@@ -227,7 +227,10 @@ def conflict_list(request):
             for c in conflicts
         ],
         "count": conflicts.count(),
-    })@csrf_exempt
+    })
+
+
+@csrf_exempt
 @require_POST
 def conflict_resolve(request, conflict_id: int):
     """POST /api/dashboard/conflicts/{conflict_id}/resolve

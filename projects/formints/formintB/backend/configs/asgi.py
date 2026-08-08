@@ -22,7 +22,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
 from channels.auth import AuthMiddlewareStack  # noqa: E402
 from django.urls import path  # noqa: E402
 
-from apps.core.consumers import SyncEventConsumer  # noqa: E402
+from apps.handlers.consumers import SyncEventConsumer  # noqa: E402
 
 application = ProtocolTypeRouter(
     {
