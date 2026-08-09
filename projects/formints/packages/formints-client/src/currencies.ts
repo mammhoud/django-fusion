@@ -1,4 +1,4 @@
-import type { FormintsClient } from './core';
+import type { FormintsClient } from './core.js';
 
 export interface Currency {
   id: number;
