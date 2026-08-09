@@ -962,7 +962,7 @@ git commit -m "test(formint-frontend): Standard e2e suite + Community feature-in
 
 ## Execution Handoff
 
-**Plan complete and saved to `projects/formints/docs/superpowers/plans/2026-08-09-editions/02-standard.md`.** Two execution options:
+**Plan complete and maintained at `docs/plans/editions/02-standard.md`.** Two execution options:
 
 **1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per task, review between tasks, fast iteration
 

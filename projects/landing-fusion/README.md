@@ -4,7 +4,7 @@
 > **Tags:** #landing #astro #django #wagtail #aha-stack
 > **Stack:** Astro 5 + Tailwind CSS 4 + HTMX + Alpine.js (frontend) · Django 5.2 + Wagtail 7.4 (backend)
 
-Landing-only implementation of the [ASTRO_MIGRATION_PLAN](../cms-fusion/plan/ASTRO_MIGRATION_PLAN.md) —
+Landing-only implementation of the [ASTRO migration plan](../../docs/plans/cms-fusion/migration-plan.md) —
 migrating the CMS-Fusion frontend to an **AHA stack** (Astro + HTMX + Alpine.js)
 and adding a **Django + Wagtail backend** whose editable fields drive the landing
 pages. Structured like `cms-fusion` but trimmed to the landing slice.
@@ -46,7 +46,7 @@ projects/landing-fusion/
 │       ├── content/                # StreamField block types + content/blocks/ templates
 │       ├── pages/                  # page models + pages/ templates + seed_pages + tests + migrations
 │       └── handlers/               # django-fusion PageHandler views (HTMX fragment rendering)
-├── plan/                # Plan docs + extracted shadcnblocks theme styles
+├── plan/                # Deprecated local plan path; canonical plans live in ../../docs/plans/landing-fusion/
 ├── Makefile             # Root dispatcher (frontend + backend targets)
 └── README.md
 ```
@@ -96,8 +96,8 @@ make test            # apps.pages tests
 - Self-contained `settings.py` (standalone, no shared-config dependency)
 
 ### Plan docs
-- [`plan/LANDING_FUSION_PLAN.md`](plan/LANDING_FUSION_PLAN.md) — build plan + backend↔frontend mapping
-- [`plan/SHADCNBLOCKS_THEME.md`](plan/SHADCNBLOCKS_THEME.md) — theme styles extracted from the cloned `mainline-astro-template` (oklch tokens, DM Sans, dark variant)
+- [`../../docs/plans/landing-fusion/README.md`](../../docs/plans/landing-fusion/README.md) — canonical Landing Fusion plan entry point
+- [`../../docs/plans/cms-fusion/migration-plan.md`](../../docs/plans/cms-fusion/migration-plan.md) — paired Fusion migration context
 
 ## Not yet ported (later phases)
 
@@ -108,7 +108,6 @@ make test            # apps.pages tests
 ## See also
 
 - [docs/CATALOG_AND_FUSION.md](docs/CATALOG_AND_FUSION.md) — product & edition comparison, the django-fusion dependency surface, and Django Fusion guide references
-- [plan/LANDING_FUSION_PLAN.md](plan/LANDING_FUSION_PLAN.md) — this project's plan
-- [plan/SHADCNBLOCKS_THEME.md](plan/SHADCNBLOCKS_THEME.md) — extracted theme styles
-- [ASTRO_MIGRATION_PLAN.md](../cms-fusion/plan/ASTRO_MIGRATION_PLAN.md) — source plan
+- [`../../docs/plans/landing-fusion/README.md`](../../docs/plans/landing-fusion/README.md) — this project's canonical plan
+- [`../../docs/plans/cms-fusion/migration-plan.md`](../../docs/plans/cms-fusion/migration-plan.md) — source migration context
 - [shadcnblocks/mainline-astro-template](https://github.com/shadcnblocks/mainline-astro-template) — theme reference

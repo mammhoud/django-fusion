@@ -622,7 +622,7 @@ git commit -m "test(pos-cloud-frontend): monitor e2e suite + sync-feature inheri
 
 ## Execution Handoff
 
-**Plan complete and saved to `projects/formints/docs/superpowers/plans/2026-08-09-editions/04-cloud.md`.** Two execution options:
+**Plan complete and maintained at `docs/plans/editions/04-cloud.md`.** Two execution options:
 
 **1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per task, review between tasks, fast iteration
 

@@ -206,7 +206,7 @@ git commit -m "test(formint): Pro parity sweep confirms Standard features inheri
 
 ## Execution Handoff
 
-**Plan complete and saved to `projects/formints/docs/superpowers/plans/2026-08-09-editions/03-pro.md`.** Two execution options:
+**Plan complete and maintained at `docs/plans/editions/03-pro.md`.** Two execution options:
 
 **1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per task, review between tasks, fast iteration
 

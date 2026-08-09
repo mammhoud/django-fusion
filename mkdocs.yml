@@ -40,8 +40,8 @@ plugins:
 
 not_in_nav: |
   archives/
-
-extra:
+  plans/legacy/
+	extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/mammhoud/structa.cloud
@@ -90,6 +90,7 @@ markdown_extensions:
   - pymdownx.tilde
 
 nav:
+  - Recommendations: recommendations.md
   - Guides:
     - Quickstart: guides/00-quickstart.md
     - Setup: guides/01-setup.md
@@ -136,11 +137,18 @@ nav:
   - Databases: databases/README.md
   - Testing: tests/README.md
   - Plans:
-    - Index: plans/README.md
+    - Canonical index: plans/README.md
     - Formint POS Professional Edition: plans/pos/formint-pos-professional-plan.md
-    - LMS Fusion: plans/lms-fusion/migration-plan.md
+    - Formint edition chain: plans/editions/README.md
+    - Community edition: plans/editions/01-community.md
+    - Standard edition: plans/editions/02-standard.md
+    - Pro edition: plans/editions/03-pro.md
+    - Cloud edition: plans/editions/04-cloud.md
+    - Landing Fusion: plans/landing-fusion/README.md
     - CMS Fusion: plans/cms-fusion/migration-plan.md
-    - Asset & template cleanup: plans/fusion-assets-templates-cleanup.md
+    - LMS Fusion: plans/lms-fusion/migration-plan.md
+    - Lifecycle policy: plans/document-lifecycle.md
+    - Deletion manifest: plans/deletion-manifest.md
   - Features:
     - Overview: features/README.md
     - Feature Roadmap: features/feature-roadmap.md

@@ -1,6 +1,20 @@
 # Structa Cloud — Documentation
 
+> ⭐ **Start here:** read [Recommendations first](recommendations.md), then open the relevant guide, project reference, or implementation plan.
+
 > ⚡ **New here?** Start with [Backend Environment](back-env/) — it covers env setup for all projects.
+
+## Documentation ownership
+
+| Need | Canonical location |
+|---|---|
+| Recommended priorities and sequencing | [`recommendations.md`](recommendations.md) |
+| Engineering plans and implementation tasks | [`plans/`](plans/README.md) |
+| Product decisions and knowledge-graph objects | `Anytype/` when present |
+| Current project, architecture, development, and deployment references | The topic/project sections below |
+| Historical plan evidence | [`plans/legacy/`](plans/legacy/) |
+
+All new plans must be added under `docs/plans/<scope>/` and linked from the canonical plan registry. The old `docs/dev/plans/`, `docs/plans/migrated/`, and project-local `docs/superpowers/plans/` locations are no longer active authoring paths.
 
 ## Project Tree (Language → Directory → Project)
 
@@ -19,73 +33,24 @@
 
 ```
 structa.cloud/
-├── projects/                         # Django monorepo
-│   ├── configs/                      # Shared Django settings
-│   │   ├── base/                     # Base configuration modules
-│   │   └── settings/                 # Environment/site settings (YAML)
-│   ├── assets/                       # Shared frontend assets
-│   │   ├── templates/                # Cross-site Django templates
-│   │   ├── static/                   # Shared static files (CSS, JS, images)
-│   │   └── locale/                   # Shared translation files
-│   ├── www/                          # Shared/core Django code (merged)
-│   │   ├── __main__.py               # CLI entry for www sentinel site
-│   │   ├── settings.py               # Django config for shared-task stack
-│   │   ├── ci/                       # CI/CD preflight utilities
-│   │   │   └── utils.py              # Deploy-preflight helpers
-│   │   └── worker/                   # Celery + Dramatiq tasks
-│   │       ├── celery.py             # Celery app bootstrap
-│   │       ├── tasks.py              # Heartbeat & shared tasks
-│   │       ├── email.py              # Dramatiq email actors
-│   │       ├── content.py            # Content management actors
-│   │       ├── decorators.py         # Task decorators
-│   │       ├── runtime.py            # Runtime helpers
-│   │       ├── modules.py            # Task module registry
-│   │       └── apps.py               # Django AppConfig
-│   ├── libs/                         # Local reusable libraries
-│   │   ├── django-fusion/            # Component system + routing framework
-│   │   └── ceptor-ai/                # AI assistant & MCP server
-│   ├── ctc-research/                 # CTC Research site (port 5070)
-│   ├── lms/                          # LMS Demo site (port 5071)
-│   ├── VResume/                      # VResume site (port 5072)
-│   ├── cypercloud/                   # AI Chat Customizer (port 5073)
-│   └── pos/                          # Desktop POS app (Tauri 2 + Rust)
-│       ├── src/                      # React/TypeScript frontend
-│       ├── src-tauri/                # Rust/Tauri backend
-│       ├── sidecar/                  # Python/Sanic sidecar server
-│       └── docs/                     # POS specific docs
-│
-├── applications/                     # Infrastructure & tooling
-│   ├── proxy/                        # Traefik reverse proxy + SSL
-│   ├── databases/                    # Database containers (Postgres, Redis)
-│   ├── compose/                      # Docker Compose orchestration
-│   │   ├── docker-compose.tasks.yml  # Shared-worker stack
-│   │   ├── docker-compose.docs.yml   # Documentation site
-│   │   └── docker-compose.applications.yml  # Site services
-│   └── scripts/                      # Shared build + automation scripts
-│
-├── tests/                            # Integration & E2E tests
-│   ├── unit/                         # Unit tests
-│   ├── integration/                  # Integration tests
-│   ├── selenium/                     # Selenium browser tests
-│   ├── http/                         # HTTP API tests
-│   └── fixtures/                     # Test fixtures (JSON)
-│
-├── docs/                             # ← You are here
-│   ├── README.md                     # This file
-│   ├── rust/                         # Rust/Diesel/Tauri backend docs
-│   ├── typescript/                   # TypeScript/React frontend docs
-│   ├── python/                       # Python/Django backend docs
-│   ├── infrastructure/               # Proxy, DB, deployment, workers
-│   ├── server/                       # Sidecar/Sanic server docs
-│   ├── core/                         # Core architecture docs
-│   ├── sites/                        # Per-site documentation
-│   └── getting-started/              # Quick-start guides
+├── projects/                         # Django monorepo and product projects
+├── applications/                     # Infrastructure and tooling
+├── tests/                            # Integration and E2E tests
+└── docs/                             # This documentation project
+    ├── recommendations.md            # Read first: priorities and decisions
+    ├── plans/                        # Single active plan registry
+    │   ├── editions/                 # Formint edition execution chain
+    │   └── legacy/                   # Read-only historical evidence
+    ├── projects/                     # Current per-project references
+    ├── infrastructure/               # Proxy, DB, deployment, workers
+    ├── ai/                           # Agents, prompts, MCP
+    └── guides/                       # Step-by-step workflows
 ```
 
 ## Platform Documentation
 
 | Platform | Directory | Covers |
-|----------|-----------|--------|
+|---|---|---|
 | 🦀 **Rust** | [`docs/rust/`](rust/) | POS auth, operations, database schema, email |
 | ⚛️ **TypeScript** | [`docs/typescript/`](typescript/) | POS API layer, components, contexts, hooks |
 | 🐍 **Python/Django** | [`docs/python/`](python/) | Django sites, libs, templates, fusion components |
@@ -95,7 +60,7 @@ structa.cloud/
 ## Sites & Projects at a Glance
 
 | Project | Directory | Port | Stack | Domain |
-|---------|-----------|------|-------|--------|
+|---|---|:---:|---|---|
 | **CTC Research** | `projects/ctc-research/` | 5070 | Django + Wagtail | ctc-research.com |
 | **LMS** | `projects/lms/` | 5071 | Django + Wagtail + LMS | structa.cloud |
 | **VResume** | `projects/portfolio/` | 5072 | Django + Wagtail | vresume.structa.cloud |
@@ -104,38 +69,13 @@ structa.cloud/
 | **WWW (Shared Core)** | `projects/www/` | 5080 | Celery + Dramatiq | sentinel site |
 | **Libs** | `libs/` | — | Python packages | submodules |
 
-Each project has a dedicated documentation page in [`docs/sites/`](sites/) with:
-- **Guide** — Development commands and workflows
-- **Code Map** — Key files with paths and customization tags
-- **Remarks** — Notable gotchas, tips, and warnings
-- **Customization Key** — What's 🟢/🔴/🟡/🔵/⚪ per project
-
-### Project Documentation Pages
-
-| Page | Covers |
-|------|--------|
-| [`CTC Research`](sites/ctc-research.md) | CMS, auth, blog, LMS, profile, components |
-| [`LMS`](sites/lms.md) | Learning, courses, certifications, payments |
-| [`VResume`](sites/portfolio.md) | Resume builder, portfolio, blog, PDF export |
-| [`Cypercloud`](sites/cypercloud.md) | AI chat, template discovery, code editor |
-| [`POS`](sites/pos.md) | Desktop POS, Tauri, Rust, React, sidecar |
-| [`WWW (Shared Core)`](sites/www.md) | Task workers, Celery, Dramatiq, CI utils |
-| [`Libs`](sites/libs.md) | django-fusion, ceptor-ai libraries |
-
-## Customization Key (used throughout docs)
-
-| Tag | Meaning |
-|-----|---------|
-| 🟢 `customizable` | Safe to modify, extend, or override |
-| 🔴 `not-customizable` | Core framework code — modify at your own risk |
-| 🟡 `delegate` | Can be extended through delegation/hooks |
-| 🔵 `template` | Template-level customization only |
-| ⚪ `config` | Configured via settings/env vars only |
+Each project has a dedicated documentation page in [`docs/projects/`](projects/) with development, configuration, and deployment references where available.
 
 ## Quick Links
 
+- [⭐ Recommendations first](recommendations.md)
 - [📚 Guides](guides/) — step-by-step tutorials
-- [🗺️ Plans](plans/) — consolidated implementation plans and status
+- [🗺️ Canonical plans](plans/README.md) — all active plans and historical evidence
 - [🚀 Getting Started](getting-started/)
 - [🔄 Recent Changes](recent-changes.md)
 - [🎯 Features Index](features/) — capabilities by project
@@ -147,30 +87,15 @@ Each project has a dedicated documentation page in [`docs/sites/`](sites/) with:
 - [🌐 Sidecar Server](server/)
 - [🗄️ Databases](databases/)
 - [🧪 Testing](tests/)
-- [🏢 Sites & Projects](sites/)
+- [🏢 Sites & Projects](projects/)
 - [🏛️ Core Architecture](core/)
 - [📦 Publishing](publish/) — marketplace & distribution
-- [🤖 Agents](agents/) — AI agent instructions
-- [💬 Prompts](prompts/) — prompt engineering
+- [🤖 Agents](ai/) — AI agent instructions
 - [📐 Best Practices](best-practices/) — Markdown conventions & usage
 
-## Code-Level READMEs
+## Related
 
-Simple READMEs at key code locations for quick on-the-spot guidance:
-
-| Location | Links to |
-|----------|----------|
-| `projects/shared/README.md` | → Shared core docs & [`docs/sites/www.md`](sites/www.md) |
-| `projects/shared/shared-methods.md` | → Worker task docs |
-| `projects/configs/README.md` | → `docs/back-env/` |
-| `projects/pos/src/api/README.md` | → `docs/typescript/api.md` |
-| `projects/pos/src/components/README.md` | → `docs/typescript/components.md` |
-| `projects/pos/sidecar/README.md` | → `docs/server/` |
-| `applications/proxy/README.md` | → `docs/infrastructure/proxy.md` |
-| `libs/django-fusion/README.md` | → django-fusion docs & [`docs/sites/libs.md`](sites/libs.md) |
-| `libs/ceptor-ai/README.md` | → ceptor-ai docs & [`docs/sites/libs.md`](sites/libs.md) |
-| `projects/cypercloud/README.md` | → AI Chat Customizer & [`docs/sites/cypercloud.md`](sites/cypercloud.md) |
-
----
-
-*Structa Cloud — https://structa.cloud*
+- [`../README.md`](../README.md) — repository overview and quick start
+- [`recommendations.md`](recommendations.md) — recommended priorities
+- [`plans/README.md`](plans/README.md) — canonical plan registry
+- [`plans/document-lifecycle.md`](plans/document-lifecycle.md) — archive/delete policy

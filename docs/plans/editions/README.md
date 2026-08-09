@@ -1,10 +1,10 @@
 # POS Editions — Plans Index
 
-> **For agentic workers:** Each plan in this directory is self-contained and follows the writing-plans format. Execute them in order: Community → Standard → Pro → Cloud → pos-client. Each plan produces working, testable software on its own.
+> **For agentic workers:** Each plan in this directory is self-contained and follows the writing-plans format. Execute them in order: Community → Standard → Pro → Cloud → pos-client. Each plan produces working, testable software on its own. This index is now the canonical home under `docs/plans/editions/`.
 
 **Goal:** A complete plan for every POS edition — design, architecture, and data modeling per edition, modeled as an **extension chain** where each tier adds capabilities and schema on top of the previous one.
 
-**Date:** 9 August 2026 · **Repo:** `projects/formints/`
+**Date:** 9 August 2026 · **Source project:** `projects/formints/`
 
 ## The extension chain
 

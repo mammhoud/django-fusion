@@ -303,14 +303,18 @@ DEFAULT_PAGE_TRANSLATIONS = {
         "pt": {"title": "Um orçamento de desempenho prático para o lançamento", "content": {"hero": {"title": "Um orçamento de desempenho prático para o lançamento", "subtitle": "Reserve espaço para o conteúdo que importa, mantenha pequeno o percurso crítico e meça a experiência em redes regionais reais."}}},
     },
     "advanced-content-architecture": {
-        "title": "عندما يصبح المحتوى سطحاً للمنتج",
-        "search_description": "كيف تربط بنية المحتوى المتقدمة النية والتوطين والأداء والتغيير الآمن.",
-        "content": {"hero": {"title": "عندما يصبح المحتوى سطحاً للمنتج", "subtitle": "بنية المحتوى المتقدمة ليست محرراً مرناً فقط، بل عقداً يربط المعنى والتجربة والنظام."}},
+        "ar": {
+            "title": "عندما يصبح المحتوى سطحاً للمنتج",
+            "search_description": "كيف تربط بنية المحتوى المتقدمة النية والتوطين والأداء والتغيير الآمن.",
+            "content": {"hero": {"title": "عندما يصبح المحتوى سطحاً للمنتج", "subtitle": "بنية المحتوى المتقدمة ليست محرراً مرناً فقط، بل عقداً يربط المعنى والتجربة والنظام."}},
+        },
     },
     "html-component-render-preview": {
-        "title": "مكوّن HTML قابل للعرض بأمان",
-        "search_description": "مثال عملي يحافظ على قابلية قراءة كود HTML ويعرض نتيجته داخل معاينة معزولة.",
-        "content": {"hero": {"title": "مكوّن HTML قابل للعرض بأمان", "subtitle": "اقرأ المستند كمصدر، ثم شاهده كنتيجة من دون تشغيل كود داخل الصفحة."}},
+        "ar": {
+            "title": "مكوّن HTML قابل للعرض بأمان",
+            "search_description": "مثال عملي يحافظ على قابلية قراءة كود HTML ويعرض نتيجته داخل معاينة معزولة.",
+            "content": {"hero": {"title": "مكوّن HTML قابل للعرض بأمان", "subtitle": "اقرأ المستند كمصدر، ثم شاهده كنتيجة من دون تشغيل كود داخل الصفحة."}},
+        },
     },
     "services": {
         "ar": {
@@ -518,6 +522,12 @@ DEFAULT_SERVICES_SECTIONS = {
 # count loosely; the grid is editor-driven so more posts can be added anytime).
 # Each post ALSO becomes a BlogPostPage child (see handle()) so grid cards link
 # to live /blog/<slug>/ detail pages — slugs here must match those pages.
+# Card fields rendered by BlogPostBlock on the Blog index. Post dicts may
+# also carry BlogPostPage-only model fields (seo_title, search_description,
+# hero_screenshot_url) that must not leak into the StreamField struct.
+BLOG_POST_BLOCK_FIELDS = {"title", "slug", "page", "category", "date", "read_time", "excerpt"}
+
+
 DEFAULT_BLOG_POSTS = [
     {
         "title": "A fast first visit is a product decision",
@@ -627,7 +637,15 @@ DEFAULT_BLOG_SECTION = {
                     "Practical notes on launching digital services, keeping first visits fast, "
                     "and giving content teams control after handover."
                 ),
-                "posts": DEFAULT_BLOG_POSTS,
+                # BlogPostBlock only defines card fields (title, slug, page,
+                # category, date, read_time, excerpt). The post dicts also
+                # carry BlogPostPage model fields (seo_title, search_description,
+                # hero_screenshot_url), so filter to the block's schema here —
+                # the model path below reads the full dicts directly.
+                "posts": [
+                    {k: v for k, v in post.items() if k in BLOG_POST_BLOCK_FIELDS}
+                    for post in DEFAULT_BLOG_POSTS
+                ],
             },
         )
     ],

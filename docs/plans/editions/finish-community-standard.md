@@ -1,6 +1,6 @@
 # Finish Community, Standard & Cloud Editions — Implementation Plan
 
-> **Note (9 Aug 2026):** this plan was split into per-edition plans with design, architecture, and data-model sections — see [`2026-08-09-editions/`](2026-08-09-editions/) (`01-community.md`, `02-standard.md`, `04-cloud.md`). **Part C (Cloud) was added here on request** and mirrors `04-cloud.md`. The task code below remains valid.
+> **Note (9 Aug 2026):** this plan was split into per-edition plans with design, architecture, and data-model sections — see [`docs/plans/editions/`](README.md) (`01-community.md`, `02-standard.md`, `04-cloud.md`). **Part C (Cloud) was added here on request** and mirrors `04-cloud.md`. The task code below remains valid.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -15,7 +15,7 @@ Parts A, B, and C never touch each other's files. Each part is independently tes
 
 **Tech Stack:** Rust (diesel 2.2, tauri 2), TypeScript (React 19, Vitest), Python (Django 5.2, ninja-extra, channels, pytest). No new third-party dependencies are required for any task (Cloud backups use stdlib `sqlite3`).
 
-**Saved to:** `projects/formints/docs/superpowers/plans/2026-08-09-finish-community-standard.md`
+**Canonical path:** `docs/plans/editions/finish-community-standard.md`
 
 ## Global Constraints
 
@@ -1128,7 +1128,7 @@ git commit -m "docs: mark Community and Standard capabilities shipped, update ch
 
 # PART C — Cloud (`formintB/backend/`, pos-cloud): backups & monitoring
 
-> Completes the last Cloud capability marker: "Automatic cloud backups + monitoring (Cloud capability, landing sync Aug 2026)". Mirrors [`2026-08-09-editions/04-cloud.md`](2026-08-09-editions/04-cloud.md).
+> Completes the last Cloud capability marker: "Automatic cloud backups + monitoring (Cloud capability, landing sync Aug 2026)". Mirrors [`docs/plans/editions/04-cloud.md`](docs/plans/editions/04-cloud.md).
 
 ## Task C1: `BackupRun` model + migration
 
@@ -1502,7 +1502,7 @@ git commit -m "docs: mark Cloud backups + monitoring shipped, update changelog"
 
 ## Execution Handoff
 
-**Plan complete and saved to `projects/formints/docs/superpowers/plans/2026-08-09-finish-community-standard.md`** — Parts A (Community), B (Standard), C (Cloud). Per-edition mirrors with design/architecture/data-model sections live in `2026-08-09-editions/`. Two execution options:
+**Plan complete and maintained at `docs/plans/editions/finish-community-standard.md`** — Parts A (Community), B (Standard), C (Cloud). Per-edition mirrors with design/architecture/data-model sections live in `docs/plans/editions/`. Two execution options:
 
 **1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per task, review between tasks, fast iteration
 
