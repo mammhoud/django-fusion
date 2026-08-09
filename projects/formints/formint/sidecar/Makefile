@@ -1,20 +1,23 @@
 # ============================================================================
-# Formint POS — Sidecar Makefile (merged Django + Robyn)
+# Formint POS — Sidecar Makefile (full Django: django-bolt + django-fusion)
 # ============================================================================
-# Merged from backend/Makefile (Django + Ninja + django-fusion + Unfold) and
-# the POS Full sidecar (Robyn server). Delegated from ../Makefile via
-# `make backend-<target>` and from the root POS Makefile via `make formint-*`.
+# The Robyn server was removed — the sidecar is a full Django app served
+# through two roads:
+#   * make dev     — runserver on 127.0.0.1:8767 (frontend proxies here)
+#   * make server  — django-bolt `runbolt` (Django + /bolt/* natively via
+#                    Rust, port 8766 — replaces the former Robyn server)
+#   * daphne asgi:application — Channels WebSocket (/ws/*) + full Django surface
 #
 # Quick start:
 #   make install           — create .venv + install editable package + migrate
 #   make migrate           — apply migrations
 #   make seed              — migrate + idempotent superuser (admin@formint.local)
 #   make dev               — runserver on 127.0.0.1:8767 (frontend proxies here)
-#   make server            — Robyn sidecar server (API + WebSocket, port 8766)
+#   make server            — django-bolt server (Django + /bolt/*, port 8766)
 #   make test              — Django formint suite + sidecar pytest suite
 #   make check             — Django system checks
 #
-# Env overrides: PORT (default 8767), ROBYN_PORT (8766), FUSION_RENDER_FIRST
+# Env overrides: PORT (default 8767), SERVER_PORT (8766), FUSION_RENDER_FIRST
 
 .PHONY: help install migrate dev server check test seed ensure-superuser shell static collectstatic clean sidecar-binary sidecar-install-bin
 
@@ -29,13 +32,13 @@ RED    := \033[0;31m
 NC     := \033[0m
 
 DEFAULT_PORT := 8767
-ROBYN_PORT   := 8766
+SERVER_PORT  := 8766
 PY := .venv/bin/python3
 MANAGE := $(PY) manage.py
 
 help: ## Show sidecar commands
-	@echo -e "$(CYAN)=== Formint POS Sidecar (Django + Robyn) ===$(NC)"
-	@echo -e "$(BLUE)Admin :$${PORT:-$(DEFAULT_PORT)}/admin/ · API :$${PORT:-$(DEFAULT_PORT)}/api/v1 · Robyn :$${ROBYN_PORT:-$(ROBYN_PORT)} $(NC)"
+	@echo -e "$(CYAN)=== Formint POS Sidecar (Django + django-bolt) ===$(NC)"
+	@echo -e "$(BLUE)Admin :$${PORT:-$(DEFAULT_PORT)}/admin/ · API :$${PORT:-$(DEFAULT_PORT)}/api/v1 · Bolt :$${SERVER_PORT:-$(SERVER_PORT)}/bolt $(NC)"
 	@awk 'BEGIN {FS = ":.*##"; printf ""} /^[a-zA-Z_-]+:.*?##/ { printf "  $(CYAN)%-18s$(NC) %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 install: ## Create .venv + install editable package + migrate
@@ -56,8 +59,8 @@ migrate: ## Make + apply migrations
 dev: ## Run Django dev server (127.0.0.1:PORT, default 8767)
 	$(MANAGE) runserver 127.0.0.1:$${PORT:-$(DEFAULT_PORT)}
 
-server: ## Run the Robyn sidecar server (API + WebSocket, port 8766)
-	$(PY) server.py --port $${ROBYN_PORT:-$(ROBYN_PORT)}
+server: ## Run the django-bolt server (Django + /bolt/* natively, port 8766)
+	$(PY) manage.py runbolt --host 0.0.0.0 --port $${SERVER_PORT:-$(SERVER_PORT)}
 
 check: ## Django system checks
 	$(MANAGE) check
@@ -87,21 +90,17 @@ static: collectstatic ## Alias for collectstatic
 collectstatic: ## Collect static files
 	$(MANAGE) collectstatic --noinput
 
-sidecar-binary: ## PyInstaller onefile formint-backend → ../src-tauri/binaries/<target-triple>
-	.venv/bin/pyinstaller formint-backend.spec --clean --noconfirm
-	cp dist/formint-backend ../src-tauri/binaries/formint-backend-$$(rustc -vV | sed -n 's/^host: //p')
-	@echo '✅ Sidecar binary ready in ../src-tauri/binaries/'
-
 clean: ## Remove database + staticfiles + __pycache__
 	rm -f restaurant.db formint-phase1.sqlite3
 	rm -rf staticfiles build dist
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	@echo -e "$(GREEN)✅ Sidecar artifacts cleaned$(NC)"
 
-sidecar-binary: ## Build the Robyn sidecar binary (PyInstaller) → dist/formint-backend
+sidecar-binary: ## PyInstaller onefile formint-backend (Django entry) → dist/formint-backend
 	@echo -e "$(BLUE)Building formint-backend sidecar binary…$(NC)"
 	.venv/bin/pip show pyinstaller >/dev/null 2>&1 || .venv/bin/pip install -q pyinstaller
-	.venv/bin/pyinstaller formint-server.spec --clean --noconfirm
+	.venv/bin/pyinstaller formint-backend.spec --clean --noconfirm
+	cp dist/formint-backend ../src-tauri/binaries/formint-backend-$$(rustc -vV | sed -n 's/^host: //p')
 	@echo -e "$(GREEN)✅ Built dist/formint-backend — run: make sidecar-install-bin$(NC)"
 
 sidecar-install-bin: ## Copy the built binary into ../src-tauri/binaries/ (Tauri externalBin)

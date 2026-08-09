@@ -79,7 +79,7 @@ def main():
                 UNFOLD=UNFOLD,
             )
         django.setup()
-        from middleware.apikey_scoped import ensure_default_api_key
+        from api_keys_views import ensure_default_api_key
         key = ensure_default_api_key()
         if key:
             print(f"Default API key: {key}")

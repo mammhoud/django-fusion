@@ -41,6 +41,7 @@ if not settings.configured:
         DEBUG, DATABASES, INSTALLED_APPS, MIDDLEWARE,
         TEMPLATES, ROOT_URLCONF, SECRET_KEY,
         DEFAULT_AUTO_FIELD, USE_TZ, STATIC_URL, STATIC_ROOT,
+        ASGI_APPLICATION, CHANNEL_LAYERS, ALLOWED_HOSTS, BOLT_API,
         UNFOLD, FUSION_RENDER_FIRST_DEFAULT,
         COMPONENTS_DIR_NAMES, COMPONENTS_ENABLE_BLOCK_ATTRS,
         COMPONENTS_INCLUDE_PATH_ROOTS,
@@ -57,6 +58,13 @@ if not settings.configured:
         USE_TZ=USE_TZ,
         STATIC_URL=STATIC_URL,
         STATIC_ROOT=STATIC_ROOT,
+        # Django Channels WebSocket + ASGI surface (replaces the Robyn server)
+        ASGI_APPLICATION=ASGI_APPLICATION,
+        CHANNEL_LAYERS=CHANNEL_LAYERS,
+        # Hosts accepted by runserver / runbolt
+        ALLOWED_HOSTS=ALLOWED_HOSTS,
+        # django-bolt autodiscovery — `manage.py runbolt` serves /bolt/* natively
+        BOLT_API=BOLT_API,
         # Unfold admin theme config (sidebar, dashboard callback, login, colors)
         UNFOLD=UNFOLD,
         # django-fusion dual-mode + component registry settings (§12)

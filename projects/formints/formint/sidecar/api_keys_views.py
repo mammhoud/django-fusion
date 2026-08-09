@@ -139,3 +139,33 @@ def rotate_api_key(request: HttpRequest, key_id: int) -> JsonResponse:
         "plaintext": plaintext,
         "warning": "Save this new key now — it will not be shown again.",
     })
+
+
+def ensure_default_api_key() -> str | None:
+    """Create a default full-access API key if none exist.
+
+    Returns the plaintext key or ``None`` if active keys already exist.
+    Called once at server startup for development convenience (the
+    Django-managed bootstrap flags -- ``manage_bolt.py --ensure-api-key``
+    and the ``seed`` Makefile target).
+    """
+    try:
+        if ApiKey.objects.filter(is_active=True).exists():
+            return None
+
+        key = ApiKey.create_key(
+            name="Default Admin Key",
+            scopes=["*:*"],
+            description="Auto-generated default key for development. Rotate in production.",
+            created_by="server-bootstrap",
+        )
+        key.save()
+        plaintext = getattr(key, "_plaintext", None)
+        logger.info(
+            "Created default API key: %s... (scopes: %s)",
+            key.prefix, key.scopes,
+        )
+        return plaintext
+    except Exception as exc:
+        logger.warning("Could not create default API key: %s", exc)
+        return None

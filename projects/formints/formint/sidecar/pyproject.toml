@@ -1,7 +1,7 @@
 [project]
 name = "formint-pos-sidecar"
 dynamic = ["version"]
-description = "Formint POS (merged) — Robyn + Django ORM Cloud Master sidecar"
+description = "Formint POS (merged) — Django + django-bolt + django-fusion Cloud Master sidecar"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "AGPL-3.0" }
@@ -10,22 +10,23 @@ authors = [
 ]
 
 dependencies = [
-    "robyn>=0.50,<1.0",
     "django>=4.2,<5.1",
     "django-bolt[pydantic]",
     "django-fusion",
     "django-unfold>=0.50,<0.60",
+    "channels>=4.0",        # Django Channels WebSocket (replaces Robyn WS)
+    "daphne>=4.0",          # ASGI server (replaces the Robyn server)
+    "websockets>=12.0",     # Cloud WebSocket sync client (ws_client.py)
     "asgiref>=3.8",
     "sqlparse>=0.4",        # Django management commands (migrate, makemigrations)
     "httpx>=0.27",
     "pydantic>=2.0",
-    "Jinja2>=3.1",          # Robyn template rendering
     "django-tables2>=2.7",   # Required by django_fusion.comp.generic.table
     "wagtail>=6.0,<7.0",    # Compatible with Django>=4.2,<5.1 (wagtail 7.x requires Django>=5.2)
-    # Merged from backend/ (formint app): Ninja API layer + HTMX + tables
+    # Merged from backend/ (formint app): Ninja API layer + fusion dual-mode
     "django-ninja>=1.0",
     "django-ninja-extra>=0.19",
-    "django-htmx>=1.19",
+    "ninja-schema",       # django_fusion.routes.schemas.model_schema (formint API schemas)
 ]
 
 [project.optional-dependencies]
@@ -35,7 +36,7 @@ dev = [
 ]
 
 [project.scripts]
-pos-full-server = "server:main"
+formint-backend = "sidecar:main"
 
 [project.urls]
 Homepage = "https://github.com/mammhoud/structa.cloud"
@@ -47,14 +48,14 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["models*", "routes*"]
+include = ["models*", "configs*", "formint*"]
 
 [tool.setuptools.dynamic]
 # Version from local about.py.
 version = { attr = "about.__version__" }
 
 [tool.setuptools]
-py-modules = ["server"]
+py-modules = ["sidecar", "manage_bolt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

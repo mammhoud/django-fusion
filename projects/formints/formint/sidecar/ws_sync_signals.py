@@ -9,16 +9,31 @@ from __future__ import annotations
 
 import logging
 
+from datetime import datetime
+from decimal import Decimal
+
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from handlers import _ser
 from ws_client import cloud_ws_client
 
 logger = logging.getLogger("pos.ws_sync_signals")
 
 # The app label shared by all POS sidecar models.
 POS_APP_LABEL = "pos_full"
+
+
+def _ser(obj) -> dict:
+    """Serialize a Django model instance to a plain dict (all fields)."""
+    data = {}
+    for field in obj._meta.fields:
+        val = getattr(obj, field.attname, None)
+        if isinstance(val, Decimal):
+            val = float(val)
+        elif isinstance(val, datetime):
+            val = val.isoformat() if val else None
+        data[field.attname] = val
+    return data
 
 SYNCED_ENTITIES = cloud_ws_client.SYNCED_ENTITIES
 

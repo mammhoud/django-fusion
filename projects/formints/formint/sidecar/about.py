@@ -3,7 +3,7 @@
 __version__ = "0.1.0"
 __title_full__ = "Formint POS Server"
 __service_name_full__ = "formint_server"
-__service_desc_full__ = "Formint POS Server (merged Robyn + Django sidecar)"
+__service_desc_full__ = "Formint POS Server (Django + django-bolt + django-fusion + Channels)"
 
 __all__ = [
     "__version__",

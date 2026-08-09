@@ -217,10 +217,15 @@ class FormintPageView(PageHandler):
         from formint.core import formint_site
         from formint.fusion_components import BranchSummaryFragment
 
-        nav_items = formint_site.get_navigation_context(request)
-        nav_items = [item for item in nav_items if item.get("show_in_nav", True)]
-        for item in nav_items:
-            item.pop("show_in_nav", None)
+        # ``get_navigation_context`` returns the nested site tree
+        # ``{brand, modules: [{id, label, icon, color, routes: [...]}, ...]}``
+        # consumed by /api/v1/navigation/ and the Astro Layout. The page
+        # template renders a flat link list, so flatten the module routes here.
+        nav_tree = formint_site.get_navigation_context(request)
+        nav_items: list[dict[str, Any]] = []
+        for module in nav_tree.get("modules", []):
+            for route in module.get("routes", []):
+                nav_items.append(route)
 
         summary = BranchSummaryFragment().get_branch_summary()
         context.update(
