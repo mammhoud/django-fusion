@@ -151,6 +151,13 @@ services:
   frontend:
     build:
       context: .
+      # The Astro build resolves @fusion/* imports against
+      # /libs/django-fusion/js/fusion-js/src (see frontend/astro.config.mjs), so
+      # that source dir must be available inside the builder stage. The frontend
+      # build context (projects/precis) cannot COPY above itself, so it arrives
+      # as an additional context (narrowed to the fusion-js source only).
+      additional_contexts:
+        fusionjs: ../../libs/django-fusion/js/fusion-js/src
       dockerfile: compose/Dockerfile.frontend
       args:
         PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-}

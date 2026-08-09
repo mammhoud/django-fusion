@@ -8,6 +8,12 @@ WORKDIR /app
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild esbuild sharp
 COPY frontend/. .
+# astro.config.mjs maps @fusion/* to ../../../libs/django-fusion/js/fusion-js/src
+# (i.e. /libs/django-fusion/js/fusion-js/src inside this image — consumed by
+# the startup npm run build). The repo fusion-js source is provided as the
+# `fusionjs` additional build context (see docker-compose.yml) and copied to
+# that exact path.
+COPY --from=fusionjs / /libs/django-fusion/js/fusion-js/src/
 
 ENV HOST=0.0.0.0 \
     PORT=3000

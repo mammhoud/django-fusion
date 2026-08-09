@@ -19,6 +19,11 @@ RUN npm ci --legacy-peer-deps
 
 COPY frontend/. .
 COPY assets/ ../assets/
+# astro.config.mjs maps @fusion/* to ../../../libs/django-fusion/js/fusion-js/src
+# (i.e. /libs/django-fusion/js/fusion-js/src inside this image). The repo
+# fusion-js source is provided as the `fusionjs` additional build context
+# (see docker-compose.yml) and copied to that exact path.
+COPY --from=fusionjs / /libs/django-fusion/js/fusion-js/src/
 RUN mkdir -p /app/frontend/public
 RUN npm run build
 
