@@ -15,6 +15,7 @@
 .PHONY: help
 .PHONY: dev build preview
 .PHONY: lint lint-fix format
+.PHONY: test
 .PHONY: install clean info
 
 # ── Default ────────────────────────────────────────────────────────────────
@@ -61,6 +62,12 @@ lint-fix:             ## Run oxlint with auto-fix
 
 format:               ## Format code with prettier
 	pnpm format
+
+test:                 ## Test pos-client (oxlint + vue-tsc typecheck — no unit suite yet)
+	@echo '── Lint (oxlint) ──'
+	pnpm lint
+	@echo '── Typecheck (vue-tsc) ──'
+	pnpm exec vue-tsc --noEmit
 
 # ── Maintenance ────────────────────────────────────────────────────────────
 

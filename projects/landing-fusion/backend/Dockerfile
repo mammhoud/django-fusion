@@ -20,6 +20,10 @@ RUN uv sync --project /app/projects --no-install-project
 COPY projects/assets /app/assets
 COPY projects/landing-fusion/backend /app/landing-fusion/backend
 COPY projects/landing-fusion/templates /app/landing-fusion/templates
+# Compiled design system + favicon (produced by `make css` into
+# assets/static/). STATICFILES_DIRS points at BASE_DIR/assets/static, so
+# collectstatic needs this tree present in the image.
+COPY projects/landing-fusion/assets /app/landing-fusion/assets
 
 WORKDIR /app/landing-fusion/backend
 RUN mkdir -p assets/static assets/staticfiles assets/media \

@@ -79,15 +79,7 @@
       x-data="{
         open: false,
         active: 'en',
-        languages: [
-          { code: 'en', native: 'English', flag: '🇬🇧', dir: 'ltr' },
-          { code: 'ar', native: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-          { code: 'sv', native: 'Svenska', flag: '🇸🇪', dir: 'ltr' },
-          { code: 'fr', native: 'Français', flag: '🇫🇷', dir: 'ltr' },
-          { code: 'de', native: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
-          { code: 'es', native: 'Español', flag: '🇪🇸', dir: 'ltr' },
-          { code: 'pt', native: 'Português', flag: '🇧🇷', dir: 'ltr' }
-        ],
+        languages: {{ fusion_languages_json }},
         init() {
           let stored = null;
           try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
@@ -203,8 +195,15 @@
       <div
         x-data="{
           open: false,
-          active: (function () { try { return localStorage.getItem('fusion-lang'); } catch (e) { return null; } })() || document.documentElement.lang || 'en',
-          languages: [{code:'en',native:'English',flag:'🇬🇧',dir:'ltr'},{code:'ar',native:'العربية',flag:'🇸🇦',dir:'rtl'},{code:'sv',native:'Svenska',flag:'🇸🇪',dir:'ltr'},{code:'fr',native:'Français',flag:'🇫🇷',dir:'ltr'},{code:'de',native:'Deutsch',flag:'🇩🇪',dir:'ltr'},{code:'es',native:'Español',flag:'🇪🇸',dir:'ltr'},{code:'pt',native:'Português',flag:'🇧🇷',dir:'ltr'}],
+          active: 'en',
+          languages: {{ fusion_languages_json }},
+          init() {
+            let stored = null;
+            try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
+            const browser = (navigator.language || '').split('-')[0];
+            const initial = [stored, browser, 'en'].find((code) => this.languages.some((language) => language.code === code));
+            if (initial) this.active = initial;
+          },
           apply(language) {
             document.documentElement.lang = language.code;
             document.documentElement.dir = language.dir;
@@ -215,6 +214,7 @@
           }
         }"
         @click.outside="open = false"
+        @fusion:lang-changed.window="active = $event.detail.code"
         style="position:relative;display:flex;align-items:center;gap:.5rem;padding:.25rem .75rem;"
       >
         <button type="button" class="btn btn-secondary" style="padding:.45rem .7rem;font-size:.8rem;" @click="open = !open" aria-haspopup="listbox" :aria-expanded="open.toString()" aria-label="Change language"><span x-text="active.toUpperCase()"></span>⌄</button>

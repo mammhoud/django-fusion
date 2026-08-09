@@ -47,127 +47,260 @@ from apps.content.models.translations import PageTranslation
 # use the canonical Wagtail content through the API fallback contract.
 DEFAULT_PAGE_TRANSLATIONS = {
     "home": {
-        "title": "الرئيسية",
-        "search_description": "منتجات رقمية هادئة وسريعة للفرق التي تخدم أسواق الخليج والمشرق وشمال أفريقيا.",
-        "content": {
-            "hero": {"title": "منتجات رقمية تنمو مع", "accent": "السوق", "subtitle": "نساعد الفرق على إطلاق تجارب عربية وإنجليزية واضحة، سريعة، وقابلة للتوسع."},
-            "cta": {"title": "ابدأ من احتياج حقيقي", "subtitle": "نحوّل الفكرة أو النظام الحالي إلى تجربة عملية يمكن لفريقك امتلاكها."},
+        "ar": {
+            "title": "الرئيسية",
+            "search_description": "منتجات رقمية هادئة وسريعة للفرق التي تخدم أسواق الخليج والمشرق وشمال أفريقيا.",
+            "content": {
+                "hero": {"badge": "structa.cloud · شريك المنتجات الرقمية", "title": "منتجات رقمية تنمو مع", "accent": "السوق", "subtitle": "نساعد الفرق على إطلاق تجارب عربية وإنجليزية واضحة، سريعة، وقابلة للتوسع.", "primary_cta": {"label": "استكشف المنتجات"}, "secondary_cta": {"label": "اعمل معنا"}, "trusted_by": "جاهز للعربية · جاهز للإنجليزية · مبني لفرق حقيقية"},
+                "cta": {"title": "ابدأ من احتياج حقيقي", "subtitle": "نحوّل الفكرة أو النظام الحالي إلى تجربة عملية يمكن لفريقك امتلاكها.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "اقرأ التوثيق"}},
+            },
         },
+        "sv": {"title": "Hem", "content": {"hero": {"badge": "structa.cloud · digital produktpartner", "title": "Digitala produkter, levererade som", "accent": "dokument", "subtitle": "Vi hjälper team som betjänar Gulfen, Levanten och Nordafrika att lansera tydliga, tvåspråkiga tjänster som känns snabba och är lätta att driva.", "primary_cta": {"label": "Utforska produkter"}, "secondary_cta": {"label": "Samarbeta med oss"}, "trusted_by": "Redo för arabiska · Redo för engelska · byggt för riktiga team"}, "cta": {"title": "En användbar första release slår en bullrig färdplan", "subtitle": "Vi börjar med kundresan, lanserar en fokuserad del och lämnar ditt team med innehåll och verktyg för att fortsätta förbättra.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Läs dokumentationen"}}}},
+        "fr": {"title": "Accueil", "content": {"hero": {"badge": "structa.cloud · partenaire produit numérique", "title": "Des produits numériques, livrés comme", "accent": "documents", "subtitle": "Nous aidons les équipes qui servent le Golfe, le Levant et l'Afrique du Nord à lancer des services bilingues clairs, rapides et faciles à exploiter.", "primary_cta": {"label": "Explorer les produits"}, "secondary_cta": {"label": "Travaillez avec nous"}, "trusted_by": "Prêt pour l'arabe · Prêt pour l'anglais · conçu pour de vraies équipes"}, "cta": {"title": "Une première version utile vaut mieux qu'une feuille de route bruyante", "subtitle": "Nous partons du parcours client, lançons une première version ciblée et laissons à votre équipe le contenu et les outils pour continuer à l'améliorer.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Lire la documentation"}}}},
+        "de": {"title": "Startseite", "content": {"hero": {"badge": "structa.cloud · digitaler Produktpartner", "title": "Digitale Produkte, geliefert als", "accent": "Dokumente", "subtitle": "Wir helfen Teams, die den Golf, die Levante und Nordafrika bedienen, klare zweisprachige Dienste zu starten, die sich schnell anfühlen und leicht zu betreiben sind.", "primary_cta": {"label": "Produkte entdecken"}, "secondary_cta": {"label": "Arbeiten Sie mit uns"}, "trusted_by": "Bereit für Arabisch · Bereit für Englisch · gebaut für echte Teams"}, "cta": {"title": "Ein nützlicher erster Release schlägt eine laute Roadmap", "subtitle": "Wir starten mit der Customer Journey, bringen einen fokussierten ersten Wurf heraus und überlassen Ihrem Team die Inhalte und Werkzeuge, um weiter zu verbessern.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Dokumentation lesen"}}}},
+        "es": {"title": "Inicio", "content": {"hero": {"badge": "structa.cloud · socio de productos digitales", "title": "Productos digitales, entregados como", "accent": "documentos", "subtitle": "Ayudamos a los equipos que atienden el Golfo, el Levante y el norte de África a lanzar servicios bilingües claros, rápidos y fáciles de operar.", "primary_cta": {"label": "Explorar productos"}, "secondary_cta": {"label": "Trabaja con nosotros"}, "trusted_by": "Listo para árabe · Listo para inglés · hecho para equipos reales"}, "cta": {"title": "Un primer lanzamiento útil gana a una hoja de ruta ruidosa", "subtitle": "Empezamos por el recorrido del cliente, lanzamos una primera versión enfocada y dejamos a tu equipo el contenido y las herramientas para seguir mejorando.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Leer la documentación"}}}},
+        "pt": {"title": "Início", "content": {"hero": {"badge": "structa.cloud · parceiro de produtos digitais", "title": "Produtos digitais, entregues como", "accent": "documentos", "subtitle": "Ajudamos equipas que servem o Golfo, o Levante e o norte de África a lançar serviços bilingues claros, rápidos e fáceis de operar.", "primary_cta": {"label": "Explorar produtos"}, "secondary_cta": {"label": "Trabalhe connosco"}, "trusted_by": "Pronto para árabe · Pronto para inglês · feito para equipas reais"}, "cta": {"title": "Um primeiro lançamento útil vence um roadmap ruidoso", "subtitle": "Começamos pela jornada do cliente, lançamos uma primeira versão focada e deixamos à sua equipa o conteúdo e as ferramentas para continuar a melhorar.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Ler a documentação"}}}},
     },
     "about": {
-        "title": "من نحن",
-        "search_description": "شريك منتج للفرق التي تبني خدمات رقمية في أسواق الخليج والمشرق وشمال أفريقيا.",
-        "body": "<p>Structa Cloud استوديو منتجات يساعد الفرق على تحويل الأفكار والأنظمة القديمة إلى خدمات رقمية واضحة وقابلة للاستخدام.</p><p>نصمم تجارب عربية وإنجليزية، ونبدأ من رحلة العميل قبل اختيار التقنية. النتيجة منصة سريعة يستطيع فريقك إدارتها بعد الإطلاق.</p>",
-        "content": {"hero": {"title": "شريكك في المنتج الرقمي", "subtitle": "نربط الاستراتيجية والتصميم والهندسة في مسار واحد من الفكرة إلى السوق."}, "cta": {"title": "لنصمم الخطوة التالية", "subtitle": "أخبرنا عن السوق والعميل والقيود، وسنقترح مساراً عملياً."}},
+        "ar": {
+            "title": "من نحن",
+            "search_description": "شريك منتج للفرق التي تبني خدمات رقمية في أسواق الخليج والمشرق وشمال أفريقيا.",
+            "body": "<p>Structa Cloud استوديو منتجات يساعد الفرق على تحويل الأفكار والأنظمة القديمة إلى خدمات رقمية واضحة وقابلة للاستخدام.</p><p>نصمم تجارب عربية وإنجليزية، ونبدأ من رحلة العميل قبل اختيار التقنية. النتيجة منصة سريعة يستطيع فريقك إدارتها بعد الإطلاق.</p>",
+            "content": {"hero": {"title": "شريكك في المنتج الرقمي", "subtitle": "نربط الاستراتيجية والتصميم والهندسة في مسار واحد من الفكرة إلى السوق.", "primary_cta": {"label": "شاهد كيف نعمل"}, "secondary_cta": {"label": "ابدأ محادثة"}}, "cta": {"title": "لنصمم الخطوة التالية", "subtitle": "أخبرنا عن السوق والعميل والقيود، وسنقترح مساراً عملياً.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "تواصل معنا"}}},
+        },
+        "sv": {"title": "Om oss", "content": {"hero": {"title": "En tydligare väg till marknaden", "subtitle": "Vi kopplar samman strategi, design och leverans för team som bygger tjänster på arabiska och engelska.", "primary_cta": {"label": "Se hur vi arbetar"}, "secondary_cta": {"label": "Inled en konversation"}}, "cta": {"title": "Byggt i öppenhet, levererat som HTML", "subtitle": "Vissa produkter och kärnbiblioteken är offentliga på GitHub. Utgåvor och licenser varierar mellan produkter; Precis LMS erbjuds som Solo och Business.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Ta kontakt"}}}},
+        "fr": {"title": "À propos", "content": {"hero": {"title": "Un chemin plus clair vers le marché", "subtitle": "Nous relions stratégie, design et livraison pour les équipes qui construisent des services en arabe et en anglais.", "primary_cta": {"label": "Découvrez comment nous travaillons"}, "secondary_cta": {"label": "Engagez la conversation"}}, "cta": {"title": "Construit en toute transparence, livré en HTML", "subtitle": "Certains produits et les bibliothèques de base sont publics sur GitHub. La disponibilité des éditions et les licences varient selon le produit ; Precis LMS est proposé en Solo et Business.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Contactez-nous"}}}},
+        "de": {"title": "Über uns", "content": {"hero": {"title": "Ein klarerer Weg zum Markt", "subtitle": "Wir verbinden Strategie, Design und Auslieferung für Teams, die Dienste auf Arabisch und Englisch aufbauen.", "primary_cta": {"label": "So arbeiten wir"}, "secondary_cta": {"label": "Gespräch starten"}}, "cta": {"title": "In Offenheit gebaut, als HTML ausgeliefert", "subtitle": "Einige Produkte und die Kernbibliotheken sind auf GitHub öffentlich. Editionen und Lizenzen variieren je nach Produkt; Precis LMS ist als Solo und Business erhältlich.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Kontakt aufnehmen"}}}},
+        "es": {"title": "Acerca de", "content": {"hero": {"title": "Un camino más claro hacia el mercado", "subtitle": "Conectamos estrategia, diseño y entrega para equipos que construyen servicios en árabe e inglés.", "primary_cta": {"label": "Mira cómo trabajamos"}, "secondary_cta": {"label": "Inicia una conversación"}}, "cta": {"title": "Construido en abierto, entregado como HTML", "subtitle": "Algunos productos y las bibliotecas principales son públicos en GitHub. La disponibilidad de ediciones y las licencias varían según el producto; Precis LMS se ofrece en Solo y Business.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Ponte en contacto"}}}},
+        "pt": {"title": "Sobre nós", "content": {"hero": {"title": "Um caminho mais claro para o mercado", "subtitle": "Ligamos estratégia, design e entrega para equipas que constroem serviços em árabe e inglês.", "primary_cta": {"label": "Veja como trabalhamos"}, "secondary_cta": {"label": "Inicie uma conversa"}}, "cta": {"title": "Construído em aberto, entregue como HTML", "subtitle": "Alguns produtos e as bibliotecas principais são públicos no GitHub. A disponibilidade de edições e as licenças variam por produto; o Precis LMS é oferecido em Solo e Business.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Entre em contacto"}}}},
     },
     # About subpages — these overlays use the same partial contract as the
     # top-level pages, so missing fields continue to fall back to Wagtail.
     "team": {
-        "title": "الفريق",
-        "search_description": "الأشخاص الذين يبنون منتجات Structa Cloud الرقمية.",
-        "body": "<p>فريق صغير يملك القرار من الفكرة إلى الإطلاق، ويحوّل الخبرة اليومية إلى أدوات يمكن للفرق استخدامها بثقة.</p>",
-        "content": {
-            "hero": {"title": "الأشخاص الذين يقفون خلف المنتجات", "subtitle": "خبرة عملية في التصميم والهندسة والمحتوى، من شخص واحد إلى فرق متعاونة."},
-            "cta": {"title": "لنبنِ شيئاً مفيداً", "subtitle": "أخبرنا عن فريقك والعميل والنتيجة التي تريد الوصول إليها."},
+        "ar": {
+            "title": "الفريق",
+            "search_description": "الأشخاص الذين يبنون منتجات Structa Cloud الرقمية.",
+            "body": "<p>فريق صغير يملك القرار من الفكرة إلى الإطلاق، ويحوّل الخبرة اليومية إلى أدوات يمكن للفرق استخدامها بثقة.</p>",
+            "content": {
+                "hero": {"title": "الأشخاص الذين يقفون خلف المنتجات", "subtitle": "خبرة عملية في التصميم والهندسة والمحتوى، من شخص واحد إلى فرق متعاونة."},
+                "cta": {"title": "لنبنِ شيئاً مفيداً", "subtitle": "أخبرنا عن فريقك والعميل والنتيجة التي تريد الوصول إليها."},
+            },
         },
+        "sv": {"title": "Team", "content": {"hero": {"title": "Personerna bakom structa.cloud", "subtitle": "En ingenjör, tre produktledare och de öppna källkodsbidragarna som får monorepot att leverera.", "primary_cta": {"label": "Träffa grundaren"}, "secondary_cta": {"label": "Ta kontakt"}}, "cta": {"title": "Byggt i öppenhet", "subtitle": "Varje rad av structa.cloud är offentlig på GitHub. Kom och bygg med oss.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Tillbaka till Om oss"}}}},
+        "fr": {"title": "Équipe", "content": {"hero": {"title": "Les personnes derrière structa.cloud", "subtitle": "Un ingénieur, trois responsables produit et les contributeurs open source qui font avancer le monorepo.", "primary_cta": {"label": "Rencontrer le fondateur"}, "secondary_cta": {"label": "Contactez-nous"}}, "cta": {"title": "Construit en toute transparence", "subtitle": "Chaque ligne de structa.cloud est publique sur GitHub. Venez construire avec nous.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Retour à À propos"}}}},
+        "de": {"title": "Team", "content": {"hero": {"title": "Die Menschen hinter structa.cloud", "subtitle": "Ein Engineer, drei Produktverantwortliche und die Open-Source-Beitragenden, die das Monorepo zum Laufen bringen.", "primary_cta": {"label": "Den Gründer kennenlernen"}, "secondary_cta": {"label": "Kontakt aufnehmen"}}, "cta": {"title": "In Offenheit gebaut", "subtitle": "Jede Zeile von structa.cloud ist öffentlich auf GitHub. Bauen Sie mit uns.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Zurück zu Über uns"}}}},
+        "es": {"title": "Equipo", "content": {"hero": {"title": "Las personas detrás de structa.cloud", "subtitle": "Un ingeniero, tres responsables de producto y los contribuidores de código abierto que hacen avanzar el monorepo.", "primary_cta": {"label": "Conoce al fundador"}, "secondary_cta": {"label": "Ponte en contacto"}}, "cta": {"title": "Construido en abierto", "subtitle": "Cada línea de structa.cloud es pública en GitHub. Ven a construir con nosotros.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Volver a Acerca de"}}}},
+        "pt": {"title": "Equipa", "content": {"hero": {"title": "As pessoas por detrás da structa.cloud", "subtitle": "Um engenheiro, três responsáveis de produto e os contribuidores de código aberto que fazem o monorepo avançar.", "primary_cta": {"label": "Conheça o fundador"}, "secondary_cta": {"label": "Entre em contacto"}}, "cta": {"title": "Construído em aberto", "subtitle": "Cada linha da structa.cloud é pública no GitHub. Venha construir connosco.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Voltar a Sobre"}}}},
     },
     "founder": {
-        "title": "المؤسس",
-        "search_description": "المهندس الذي يبني Structa Cloud ومنتجاتها ومكتباتها المفتوحة.",
-        "body": "<p>أبني المنتجات من طبقة البيانات إلى الواجهة، مع اهتمام خاص بسرعة الوصول ووضوح المحتوى وسهولة امتلاك الفريق للنظام بعد الإطلاق.</p>",
-        "content": {
-            "hero": {"title": "مهندس يبني من الفكرة إلى الإطلاق", "subtitle": "هندسة عملية تجمع Django وWagtail وRust وواجهات الويب في مسار واحد."},
-            "tech": {"title": "المكدس التقني"},
-            "cta": {"title": "هل لديك منتج يحتاج إلى مسار أوضح؟", "subtitle": "لنحوّل الفكرة إلى أول إصدار يمكن استخدامه وقياسه."},
+        "ar": {
+            "title": "المؤسس",
+            "search_description": "المهندس الذي يبني Structa Cloud ومنتجاتها ومكتباتها المفتوحة.",
+            "body": "<p>أبني المنتجات من طبقة البيانات إلى الواجهة، مع اهتمام خاص بسرعة الوصول ووضوح المحتوى وسهولة امتلاك الفريق للنظام بعد الإطلاق.</p>",
+            "content": {
+                "hero": {"title": "مهندس يبني من الفكرة إلى الإطلاق", "subtitle": "هندسة عملية تجمع Django وWagtail وRust وواجهات الويب في مسار واحد."},
+                "tech": {"title": "المكدس التقني"},
+                "cta": {"title": "هل لديك منتج يحتاج إلى مسار أوضح؟", "subtitle": "لنحوّل الفكرة إلى أول إصدار يمكن استخدامه وقياسه."},
+            },
         },
+        "sv": {"title": "Grundare", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Fullstackutvecklare, bidragsgivare till öppen källkod och ingenjören bakom structa.cloud. Django, Wagtail och AI-drivna system.", "primary_cta": {"label": "Träffa teamet"}, "secondary_cta": {"label": "Visa på GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Byggt i öppenhet", "subtitle": "Hela monorepot är offentligt på GitHub. Community-utgåvorna är gratis, Pro-utgåvorna är kommersiella.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Kontakt"}}}},
+        "fr": {"title": "Fondateur", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Développeur full-stack, contributeur open source et l'ingénieur derrière structa.cloud. Django, Wagtail et des systèmes pilotés par l'IA.", "primary_cta": {"label": "Rencontrer l'équipe"}, "secondary_cta": {"label": "Voir sur GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construit en toute transparence", "subtitle": "L'ensemble du monorepo est public sur GitHub. Les éditions Communauté sont gratuites, les éditions Pro sont commerciales.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Contact"}}}},
+        "de": {"title": "Gründer", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Full-Stack-Entwickler, Open-Source-Mitwirkender und der Engineer hinter structa.cloud. Django, Wagtail und KI-gestützte Systeme.", "primary_cta": {"label": "Das Team kennenlernen"}, "secondary_cta": {"label": "Auf GitHub ansehen"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "In Offenheit gebaut", "subtitle": "Das gesamte Monorepo ist öffentlich auf GitHub. Community-Editionen sind kostenlos, Pro-Editionen kommerziell.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Kontakt"}}}},
+        "es": {"title": "Fundador", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Desarrollador full-stack, contribuidor de código abierto y el ingeniero detrás de structa.cloud. Django, Wagtail y sistemas impulsados por IA.", "primary_cta": {"label": "Conoce al equipo"}, "secondary_cta": {"label": "Ver en GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construido en abierto", "subtitle": "Todo el monorepo es público en GitHub. Las ediciones Community son gratuitas, las Pro son comerciales.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Contacto"}}}},
+        "pt": {"title": "Fundador", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Programador full-stack, contribuidor de código aberto e o engenheiro por detrás da structa.cloud. Django, Wagtail e sistemas baseados em IA.", "primary_cta": {"label": "Conheça a equipa"}, "secondary_cta": {"label": "Ver no GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construído em aberto", "subtitle": "Todo o monorepo é público no GitHub. As edições Community são gratuitas, as Pro são comerciais.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Contacto"}}}},
     },
     "startup": {
-        "title": "قصة الشركة الناشئة",
-        "search_description": "كيف نمت Structa Cloud من مشاريع مستقلة إلى عائلة من المنتجات والمكتبات.",
-        "body": "<p>بدأت الرحلة من مشاريع صغيرة، ثم تحولت الأدوات المتكررة إلى مكتبات ومنتجات مستقلة تشترك في بنية واحدة.</p>",
-        "content": {
-            "hero": {"title": "من مشروع صغير إلى نظام منتجات", "subtitle": "قصة نمو تدريجي مبني على إعادة الاستخدام والإطلاق المستمر."},
-            "process": {"title": "المحطات الرئيسية"},
-            "stats": {"title": "القصة بالأرقام"},
-            "cta": {"title": "ابدأ من خطوتك الأولى", "subtitle": "الإصدار الأول المفيد أفضل من خارطة طريق لا تنتهي."},
+        "ar": {
+            "title": "قصة الشركة الناشئة",
+            "search_description": "كيف نمت Structa Cloud من مشاريع مستقلة إلى عائلة من المنتجات والمكتبات.",
+            "body": "<p>بدأت الرحلة من مشاريع صغيرة، ثم تحولت الأدوات المتكررة إلى مكتبات ومنتجات مستقلة تشترك في بنية واحدة.</p>",
+            "content": {
+                "hero": {"title": "من مشروع صغير إلى نظام منتجات", "subtitle": "قصة نمو تدريجي مبني على إعادة الاستخدام والإطلاق المستمر."},
+                "process": {"title": "المحطات الرئيسية"},
+                "stats": {"title": "القصة بالأرقام"},
+                "cta": {"title": "ابدأ من خطوتك الأولى", "subtitle": "الإصدار الأول المفيد أفضل من خارطة طريق لا تنتهي."},
+            },
         },
+        "sv": {"title": "Startup", "content": {"hero": {"title": "Startup", "subtitle": "Hur structa.cloud växte från frilans-Django-projekt till ett monorepo av öppen källkodsprodukter, AI-verktyg och en stationär POS-applikation.", "primary_cta": {"label": "Se produkterna"}, "secondary_cta": {"label": "Träffa grundaren"}, "trusted_by": "2019 · frilans → 2026 · fem produkter"}, "cta": {"title": "Byggt i öppenhet, levererat som HTML", "subtitle": "Community-utgåvorna och kärnbiblioteken är offentliga på GitHub. Betalda utgåvor är kommersiella.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Läs Om oss-sidan"}}}},
+        "fr": {"title": "Start-up", "content": {"hero": {"title": "La start-up", "subtitle": "Comment structa.cloud est passé de projets Django indépendants à un monorepo de produits open source, d'outils d'IA et d'une application de caisse de bureau.", "primary_cta": {"label": "Voir les produits"}, "secondary_cta": {"label": "Rencontrer le fondateur"}, "trusted_by": "2019 · freelance → 2026 · cinq produits"}, "cta": {"title": "Construit en toute transparence, livré en HTML", "subtitle": "Les éditions Communauté et les bibliothèques de base sont publiques sur GitHub. Les éditions payantes sont commerciales.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Lire la page À propos"}}}},
+        "de": {"title": "Startup", "content": {"hero": {"title": "Das Startup", "subtitle": "Wie structa.cloud von freiberuflichen Django-Projekten zu einem Monorepo aus Open-Source-Produkten, KI-Tools und einer Desktop-POS-Anwendung wurde.", "primary_cta": {"label": "Produkte ansehen"}, "secondary_cta": {"label": "Den Gründer kennenlernen"}, "trusted_by": "2019 · freiberuflich → 2026 · fünf Produkte"}, "cta": {"title": "In Offenheit gebaut, als HTML ausgeliefert", "subtitle": "Community-Editionen und die Kernbibliotheken sind öffentlich auf GitHub. Kostenpflichtige Editionen sind kommerziell.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Die Über-uns-Seite lesen"}}}},
+        "es": {"title": "Startup", "content": {"hero": {"title": "La startup", "subtitle": "Cómo structa.cloud pasó de proyectos Django freelance a un monorepo de productos de código abierto, herramientas de IA y una aplicación de punto de venta de escritorio.", "primary_cta": {"label": "Ver los productos"}, "secondary_cta": {"label": "Conoce al fundador"}, "trusted_by": "2019 · freelance → 2026 · cinco productos"}, "cta": {"title": "Construido en abierto, entregado como HTML", "subtitle": "Las ediciones Community y las bibliotecas principales son públicas en GitHub. Las ediciones de pago son comerciales.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Leer la página Acerca de"}}}},
+        "pt": {"title": "Startup", "content": {"hero": {"title": "A startup", "subtitle": "Como a structa.cloud cresceu de projetos Django freelance para um monorepo de produtos de código aberto, ferramentas de IA e uma aplicação POS de secretária.", "primary_cta": {"label": "Ver os produtos"}, "secondary_cta": {"label": "Conheça o fundador"}, "trusted_by": "2019 · freelance → 2026 · cinco produtos"}, "cta": {"title": "Construído em aberto, entregue como HTML", "subtitle": "As edições Community e as bibliotecas principais são públicas no GitHub. As edições pagas são comerciais.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Ler a página Sobre"}}}},
     },
     # Delivery phases and prompts are also Wagtail subpages. Their scalar
     # prompt fields are overridden through ``content`` by the page API.
     "discover": {
-        "title": "الاكتشاف",
-        "search_description": "تحويل الموجز إلى نموذج محتوى ومسار إصدار أول واضح.",
-        "body": "<p>نحوّل الموجز إلى نموذج مستند واضح واتجاه بصري وقرار قابل للقياس للإصدار الأول.</p>",
-        "content": {"phase_label": "الاكتشاف", "outcomes": ["موجز محدد", "خريطة محتوى ومسارات", "سجل قرارات الإصدار الأول"]},
+        "ar": {
+            "title": "الاكتشاف",
+            "search_description": "تحويل الموجز إلى نموذج محتوى ومسار إصدار أول واضح.",
+            "body": "<p>نحوّل الموجز إلى نموذج مستند واضح واتجاه بصري وقرار قابل للقياس للإصدار الأول.</p>",
+            "content": {"phase_label": "الاكتشاف", "outcomes": ["موجز محدد", "خريطة محتوى ومسارات", "سجل قرارات الإصدار الأول"]},
+        },
+        "sv": {"title": "Utforska", "content": {"phase_label": "utforskning", "outcomes": ["En avgränsad brief", "En karta över innehåll och vägar", "En beslutslogg för första releasen"]}},
+        "fr": {"title": "Découvrir", "content": {"phase_label": "découverte", "outcomes": ["Un brief délimité", "Une carte des contenus et des parcours", "Un journal de décisions pour la première version"]}},
+        "de": {"title": "Entdecken", "content": {"phase_label": "entdeckung", "outcomes": ["Ein abgegrenzter Brief", "Eine Karte aus Inhalten und Routen", "Ein Entscheidungsprotokoll für den ersten Release"]}},
+        "es": {"title": "Descubrir", "content": {"phase_label": "descubrimiento", "outcomes": ["Un brief acotado", "Un mapa de contenido y rutas", "Un registro de decisiones para el primer lanzamiento"]}},
+        "pt": {"title": "Descobrir", "content": {"phase_label": "descoberta", "outcomes": ["Um brief delimitado", "Um mapa de conteúdos e rotas", "Um registo de decisões para o primeiro lançamento"]}},
     },
     "build": {
-        "title": "البناء",
-        "search_description": "بناء أصغر مسار مكتمل يبدأ من نموذج المحتوى وينتهي بواجهة قابلة للاستخدام.",
-        "body": "<p>نبني المسار الكامل الأصغر كصفحة HTML من الخادم، ثم نضيف التحسين التدريجي حيث يخدم المستند.</p>",
-        "content": {"phase_label": "البناء", "outcomes": ["نموذج محتوى يعمل", "مسار مستجيب", "اختبارات للتحسين التدريجي"]},
+        "ar": {
+            "title": "البناء",
+            "search_description": "بناء أصغر مسار مكتمل يبدأ من نموذج المحتوى وينتهي بواجهة قابلة للاستخدام.",
+            "body": "<p>نبني المسار الكامل الأصغر كصفحة HTML من الخادم، ثم نضيف التحسين التدريجي حيث يخدم المستند.</p>",
+            "content": {"phase_label": "البناء", "outcomes": ["نموذج محتوى يعمل", "مسار مستجيب", "اختبارات للتحسين التدريجي"]},
+        },
+        "sv": {"title": "Bygg", "content": {"phase_label": "bygg", "outcomes": ["En fungerande innehållsmodell", "En responsiv dokumentrutt", "Kontroller av progressiv förbättring"]}},
+        "fr": {"title": "Construire", "content": {"phase_label": "construction", "outcomes": ["Un modèle de contenu fonctionnel", "Un parcours documentaire responsive", "Des contrôles d'amélioration progressive"]}},
+        "de": {"title": "Bauen", "content": {"phase_label": "bau", "outcomes": ["Ein funktionierendes Content-Modell", "Eine responsive Dokument-Route", "Checks für progressive Enhancement"]}},
+        "es": {"title": "Construir", "content": {"phase_label": "construcción", "outcomes": ["Un modelo de contenido funcional", "Una ruta documental responsive", "Controles de mejora progresiva"]}},
+        "pt": {"title": "Construir", "content": {"phase_label": "construção", "outcomes": ["Um modelo de conteúdo funcional", "Uma rota documental responsive", "Verificações de melhoramento progressivo"]}},
     },
     "launch": {
-        "title": "الإطلاق",
-        "search_description": "إطلاق يمكن الاعتماد عليه مع تكافؤ المحتوى وتسليم واضح للفريق.",
-        "body": "<p>نشحن إصداراً يمكن الاعتماد عليه مع تكافؤ المحتوى والمراقبة وتسليم يستطيع الفريق امتلاكه.</p>",
-        "content": {"phase_label": "الإطلاق", "outcomes": ["فحوص SEO وإتاحة", "دليل نشر وتشغيل", "تسليم للمحررين"]},
+        "ar": {
+            "title": "الإطلاق",
+            "search_description": "إطلاق يمكن الاعتماد عليه مع تكافؤ المحتوى وتسليم واضح للفريق.",
+            "body": "<p>نشحن إصداراً يمكن الاعتماد عليه مع تكافؤ المحتوى والمراقبة وتسليم يستطيع الفريق امتلاكه.</p>",
+            "content": {"phase_label": "الإطلاق", "outcomes": ["فحوص SEO وإتاحة", "دليل نشر وتشغيل", "تسليم للمحررين"]},
+        },
+        "sv": {"title": "Lansera", "content": {"phase_label": "lansering", "outcomes": ["SEO- och tillgänglighetskontroller", "Driftsättningsrunbook", "Överlämning till redaktörer"]}},
+        "fr": {"title": "Lancer", "content": {"phase_label": "lancement", "outcomes": ["Contrôles SEO et accessibilité", "Runbook de déploiement", "Remise aux éditeurs"]}},
+        "de": {"title": "Starten", "content": {"phase_label": "start", "outcomes": ["SEO- und Barrierefreiheits-Checks", "Deployment-Runbook", "Übergabe an Redakteure"]}},
+        "es": {"title": "Lanzar", "content": {"phase_label": "lanzamiento", "outcomes": ["Comprobaciones de SEO y accesibilidad", "Runbook de despliegue", "Entrega a editores"]}},
+        "pt": {"title": "Lançar", "content": {"phase_label": "lançamento", "outcomes": ["Verificações de SEO e acessibilidade", "Runbook de implementação", "Entrega a editores"]}},
     },
     "enhance": {
-        "title": "التحسين",
-        "search_description": "تحسين النظام الحي عبر قياس المحتوى والأداء والتفاعلات.",
-        "body": "<p>نحسّن النظام الحي عبر تغييرات مقاسة في المحتوى والأداء والتفاعل، من دون فقدان ملكية الفريق.</p>",
-        "content": {"phase_label": "التحسين", "outcomes": ["قائمة تحسينات مقاسة", "أنماط محتوى قابلة لإعادة الاستخدام", "دورة تكرار آمنة"]},
+        "ar": {
+            "title": "التحسين",
+            "search_description": "تحسين النظام الحي عبر قياس المحتوى والأداء والتفاعلات.",
+            "body": "<p>نحسّن النظام الحي عبر تغييرات مقاسة في المحتوى والأداء والتفاعل، من دون فقدان ملكية الفريق.</p>",
+            "content": {"phase_label": "التحسين", "outcomes": ["قائمة تحسينات مقاسة", "أنماط محتوى قابلة لإعادة الاستخدام", "دورة تكرار آمنة"]},
+        },
+        "sv": {"title": "Förbättra", "content": {"phase_label": "förbättring", "outcomes": ["En mätt förbättringsbacklog", "Återanvändbara innehållsmönster", "En trygg iterationsloop"]}},
+        "fr": {"title": "Améliorer", "content": {"phase_label": "amélioration", "outcomes": ["Un backlog d'amélioration mesuré", "Des motifs de contenu réutilisables", "Une boucle d'itération sûre"]}},
+        "de": {"title": "Verbessern", "content": {"phase_label": "verbesserung", "outcomes": ["Ein gemessener Verbesserungs-Backlog", "Wiederverwendbare Content-Muster", "Eine sichere Iterationsschleife"]}},
+        "es": {"title": "Mejorar", "content": {"phase_label": "mejora", "outcomes": ["Un backlog de mejoras medido", "Patrones de contenido reutilizables", "Un bucle de iteración seguro"]}},
+        "pt": {"title": "Melhorar", "content": {"phase_label": "melhoria", "outcomes": ["Um backlog de melhorias medido", "Padrões de conteúdo reutilizáveis", "Um ciclo de iteração seguro"]}},
     },
     "shape-the-brief": {
-        "title": "صياغة الموجز",
-        "search_description": "تحويل موجز المنتج إلى نطاق واضح للإصدار الأول.",
-        "content": {"prompt": "حوّل موجز هذا المنتج إلى إصدار أول مركز، مع تحديد المستخدم والمحتوى والمسارات وقيود النجاح.", "context": "استخدم هذا قبل بدء التصميم أو التنفيذ.", "output": "نطاق مختصر مع الافتراضات والمخاطر وقائمة قبول.", "tool": "Wagtail واكتشاف المنتج"},
+        "ar": {
+            "title": "صياغة الموجز",
+            "search_description": "تحويل موجز المنتج إلى نطاق واضح للإصدار الأول.",
+            "content": {"prompt": "حوّل موجز هذا المنتج إلى إصدار أول مركز، مع تحديد المستخدم والمحتوى والمسارات وقيود النجاح.", "context": "استخدم هذا قبل بدء التصميم أو التنفيذ.", "output": "نطاق مختصر مع الافتراضات والمخاطر وقائمة قبول.", "tool": "Wagtail واكتشاف المنتج"},
+        },
+        "sv": {"title": "Forma briefen", "content": {"prompt": "Förvandla denna produktbrief till en fokuserad första release med användar-, innehålls-, väg- och framgångskrav.", "context": "Använd detta innan design eller implementation börjar.", "output": "En kortfattad omfattning med antaganden, risker och en acceptanslista.", "tool": "Wagtail + produktutforskning"}},
+        "fr": {"title": "Façonner le brief", "content": {"prompt": "Transformez ce brief produit en une première version ciblée, avec des contraintes d'utilisateur, de contenu, de parcours et de réussite.", "context": "À utiliser avant le début de la conception ou de l'implémentation.", "output": "Un périmètre concis, avec hypothèses, risques et liste de critères d'acceptation.", "tool": "Wagtail + découverte produit"}},
+        "de": {"title": "Den Brief formen", "content": {"prompt": "Verwandeln Sie diesen Produktbrief in einen fokussierten ersten Release mit Nutzer-, Inhalts-, Routen- und Erfolgsanforderungen.", "context": "Verwenden Sie dies, bevor Design oder Implementierung beginnen.", "output": "Ein prägnanter Umfang mit Annahmen, Risiken und einer Abnahmeliste.", "tool": "Wagtail + Produkt-Discovery"}},
+        "es": {"title": "Dar forma al brief", "content": {"prompt": "Convierte este brief de producto en un primer lanzamiento enfocado, con restricciones de usuario, contenido, ruta y éxito.", "context": "Úsalo antes de que empiecen el diseño o la implementación.", "output": "Un alcance conciso con supuestos, riesgos y una lista de aceptación.", "tool": "Wagtail + descubrimiento de producto"}},
+        "pt": {"title": "Moldar o brief", "content": {"prompt": "Transforme este brief de produto num primeiro lançamento focado, com restrições de utilizador, conteúdo, rota e sucesso.", "context": "Use isto antes de começar o design ou a implementação.", "output": "Um âmbito conciso com pressupostos, riscos e uma lista de aceitação.", "tool": "Wagtail + descoberta de produto"}},
     },
     "build-the-first-vertical-slice": {
-        "title": "بناء المسار الرأسي الأول",
-        "search_description": "تنفيذ رحلة مستخدم كاملة من نموذج Wagtail إلى HTML قابل للوصول.",
-        "content": {"prompt": "نفّذ رحلة مستخدم كاملة من نموذج Wagtail إلى HTML قابل للوصول، مع تحسين تدريجي عند الحاجة فقط.", "context": "حافظ على قابلية استخدام المسار المولّد من الخادم من دون JavaScript.", "output": "مسار رأسي مختبر يضم النموذج وواجهة API والقالب وحالات المتصفح.", "tool": "Astro وHTMX وAlpine"},
+        "ar": {
+            "title": "بناء المسار الرأسي الأول",
+            "search_description": "تنفيذ رحلة مستخدم كاملة من نموذج Wagtail إلى HTML قابل للوصول.",
+            "content": {"prompt": "نفّذ رحلة مستخدم كاملة من نموذج Wagtail إلى HTML قابل للوصول، مع تحسين تدريجي عند الحاجة فقط.", "context": "حافظ على قابلية استخدام المسار المولّد من الخادم من دون JavaScript.", "output": "مسار رأسي مختبر يضم النموذج وواجهة API والقالب وحالات المتصفح.", "tool": "Astro وHTMX وAlpine"},
+        },
+        "sv": {"title": "Bygg den första vertikala skivan", "content": {"prompt": "Implementera en komplett användarresa från Wagtail-modell till tillgänglig HTML, med progressiv förbättring endast där det behövs.", "context": "Håll den serverrenderade vägen användbar utan JavaScript.", "output": "En testad vertikal skiva med modell, API, mall och webbläsartillstånd.", "tool": "Astro + HTMX + Alpine"}},
+        "fr": {"title": "Construire la première tranche verticale", "content": {"prompt": "Implémentez un parcours utilisateur complet, du modèle Wagtail au HTML accessible, avec une amélioration progressive uniquement là où c'est nécessaire.", "context": "Gardez le parcours rendu côté serveur utilisable sans JavaScript.", "output": "Une tranche verticale testée, avec modèle, API, gabarit et états navigateur.", "tool": "Astro + HTMX + Alpine"}},
+        "de": {"title": "Den ersten vertikalen Slice bauen", "content": {"prompt": "Setzen Sie eine vollständige User Journey vom Wagtail-Modell bis zu barrierefreiem HTML um, mit progressive Enhancement nur dort, wo es nötig ist.", "context": "Halten Sie den serverseitig gerenderten Pfad auch ohne JavaScript nutzbar.", "output": "Ein getesteter vertikaler Slice mit Modell, API, Template und Browser-Zuständen.", "tool": "Astro + HTMX + Alpine"}},
+        "es": {"title": "Construye la primera rebanada vertical", "content": {"prompt": "Implementa un recorrido de usuario completo, del modelo de Wagtail al HTML accesible, con mejora progresiva solo donde haga falta.", "context": "Mantén la ruta renderizada en servidor utilizable sin JavaScript.", "output": "Una rebanada vertical probada, con modelo, API, plantilla y estados de navegador.", "tool": "Astro + HTMX + Alpine"}},
+        "pt": {"title": "Construir a primeira fatia vertical", "content": {"prompt": "Implemente um percurso de utilizador completo, do modelo Wagtail ao HTML acessível, com melhoramento progressivo apenas onde for necessário.", "context": "Mantenha o percurso renderizado no servidor utilizável sem JavaScript.", "output": "Uma fatia vertical testada, com modelo, API, template e estados de navegador.", "tool": "Astro + HTMX + Alpine"}},
     },
     "prepare-the-release": {
-        "title": "تجهيز الإصدار",
-        "search_description": "مراجعة المسارات والمحتوى والإتاحة وتكافؤ الواجهات قبل النشر.",
-        "content": {"prompt": "راجع هذا الإصدار بحثاً عن المسارات المكسورة والمحتوى الناقص ومشكلات الإتاحة واختلافات الواجهة قبل النشر.", "context": "طبّق قائمة الفحص نفسها على مساري Astro وDjango.", "output": "تقرير إصدار مرتب حسب الأولوية مع الإصلاحات ومعايير موافقة واضحة.", "tool": "التحقق من Django وAstro"},
+        "ar": {
+            "title": "تجهيز الإصدار",
+            "search_description": "مراجعة المسارات والمحتوى والإتاحة وتكافؤ الواجهات قبل النشر.",
+            "content": {"prompt": "راجع هذا الإصدار بحثاً عن المسارات المكسورة والمحتوى الناقص ومشكلات الإتاحة واختلافات الواجهة قبل النشر.", "context": "طبّق قائمة الفحص نفسها على مساري Astro وDjango.", "output": "تقرير إصدار مرتب حسب الأولوية مع الإصلاحات ومعايير موافقة واضحة.", "tool": "التحقق من Django وAstro"},
+        },
+        "sv": {"title": "Förbered releasen", "content": {"prompt": "Granska denna release för trasiga rutter, saknat innehåll, tillgänglighetsregressioner och backend/frontend-paritet före driftsättning.", "context": "Kör samma checklista mot Astro- och Django-vägarna.", "output": "En prioriterad release-rapport med åtgärder och tydliga godkännandekriterier.", "tool": "Django + Astro-verifiering"}},
+        "fr": {"title": "Préparer la version", "content": {"prompt": "Auditez cette version avant déploiement : parcours cassés, contenu manquant, régressions d'accessibilité et parité backend/frontend.", "context": "Appliquez la même liste de contrôle aux parcours Astro et Django.", "output": "Un rapport de version priorisé avec correctifs et critères d'approbation explicites.", "tool": "Vérification Django + Astro"}},
+        "de": {"title": "Den Release vorbereiten", "content": {"prompt": "Prüfen Sie diesen Release vor dem Deployment auf kaputte Routen, fehlende Inhalte, Barrierefreiheits-Regressionen und Backend/Frontend-Parität.", "context": "Führen Sie dieselbe Checkliste gegen die Astro- und Django-Pfade aus.", "output": "Ein priorisierter Release-Bericht mit Fixes und expliziten Abnahmekriterien.", "tool": "Django + Astro-Verifikation"}},
+        "es": {"title": "Prepara el lanzamiento", "content": {"prompt": "Audita este lanzamiento antes del despliegue: rutas rotas, contenido faltante, regresiones de accesibilidad y paridad backend/frontend.", "context": "Ejecuta la misma lista de comprobaciones en las rutas de Astro y Django.", "output": "Un informe de lanzamiento priorizado con correcciones y criterios de aprobación explícitos.", "tool": "Verificación Django + Astro"}},
+        "pt": {"title": "Preparar o lançamento", "content": {"prompt": "Audite este lançamento antes da implementação: rotas quebradas, conteúdo em falta, regressões de acessibilidade e paridade backend/frontend.", "context": "Execute a mesma lista de verificação nos percursos Astro e Django.", "output": "Um relatório de lançamento priorizado com correções e critérios de aprovação explícitos.", "tool": "Verificação Django + Astro"}},
     },
     "enhance-without-drift": {
-        "title": "التحسين من دون انحراف",
-        "search_description": "تحسين الصفحة مع الحفاظ على ملكية المحتوى وتكافؤ العرض وإمكانية الوصول.",
-        "content": {"prompt": "حسّن هذه الصفحة مع الحفاظ على ملكية المحتوى وتكافؤ العرض وإمكانية الوصول ولغة التصميم الحالية.", "context": "فضّل المكونات القابلة لإعادة الاستخدام ومحتوى Wagtail على markup خاص بصفحة واحدة.", "output": "مجموعة تغييرات صغيرة مع فحوص تراجع وسبب موثق لكل تغيير.", "tool": "مكونات django-fusion"},
+        "ar": {
+            "title": "التحسين من دون انحراف",
+            "search_description": "تحسين الصفحة مع الحفاظ على ملكية المحتوى وتكافؤ العرض وإمكانية الوصول.",
+            "content": {"prompt": "حسّن هذه الصفحة مع الحفاظ على ملكية المحتوى وتكافؤ العرض وإمكانية الوصول ولغة التصميم الحالية.", "context": "فضّل المكونات القابلة لإعادة الاستخدام ومحتوى Wagtail على markup خاص بصفحة واحدة.", "output": "مجموعة تغييرات صغيرة مع فحوص تراجع وسبب موثق لكل تغيير.", "tool": "مكونات django-fusion"},
+        },
+        "sv": {"title": "Förbättra utan drift", "content": {"prompt": "Förbättra denna sida samtidigt som du bevarar innehållsägarskap, renderingsparitet, tillgänglighet och det befintliga designspråket.", "context": "Föredra återanvändbara komponenter och Wagtail-hanterat innehåll framför engångsmarkup.", "output": "En liten ändringsuppsättning med regressionskontroller och en dokumenterad anledning för varje ändring.", "tool": "django-fusion-komponenter"}},
+        "fr": {"title": "Améliorer sans dérive", "content": {"prompt": "Améliorez cette page en préservant la propriété du contenu, la parité de rendu, l'accessibilité et le langage de conception existant.", "context": "Privilégiez les composants réutilisables et les contenus gérés par Wagtail plutôt qu'un balisage de page ponctuel.", "output": "Un petit ensemble de modifications avec contrôles de régression et une raison documentée pour chaque changement.", "tool": "composants django-fusion"}},
+        "de": {"title": "Verbessern ohne Drift", "content": {"prompt": "Verbessern Sie diese Seite und bewahren Sie dabei Content-Ownership, Render-Parität, Barrierefreiheit und die bestehende Designsprache.", "context": "Bevorzugen Sie wiederverwendbare Komponenten und Wagtail-verwaltete Inhalte gegenüber einmaligem Seiten-Markup.", "output": "Ein kleiner Änderungssatz mit Regressions-Checks und einer dokumentierten Begründung für jede Änderung.", "tool": "django-fusion-Komponenten"}},
+        "es": {"title": "Mejorar sin desviación", "content": {"prompt": "Mejora esta página preservando la propiedad del contenido, la paridad de renderizado, la accesibilidad y el lenguaje de diseño existente.", "context": "Prefiere componentes reutilizables y contenido gestionado por Wagtail sobre el marcado de página puntual.", "output": "Un conjunto de cambios pequeño con comprobaciones de regresión y una razón documentada para cada cambio.", "tool": "componentes django-fusion"}},
+        "pt": {"title": "Melhorar sem deriva", "content": {"prompt": "Melhore esta página preservando a propriedade do conteúdo, a paridade de renderização, a acessibilidade e a linguagem de design existente.", "context": "Prefira componentes reutilizáveis e conteúdo gerido pelo Wagtail em vez de markup de página avulso.", "output": "Um conjunto de alterações pequeno com verificações de regressão e uma razão documentada para cada alteração.", "tool": "componentes django-fusion"}},
     },
     # Blog post children.
     "why-landing-pages-as-documents": {
-        "title": "الزيارة الأولى السريعة قرار منتج",
-        "search_description": "لماذا تعد سرعة الصفحة الأولى جزءاً من الثقة بالمنتج.",
-        "content": {"hero": {"title": "الزيارة الأولى السريعة قرار منتج", "subtitle": "الأداء جزء من الثقة، والصفحة الواضحة التي تصل بسرعة تمنح العميل يقيناً أكبر."}},
+        "ar": {
+            "title": "الزيارة الأولى السريعة قرار منتج",
+            "search_description": "لماذا تعد سرعة الصفحة الأولى جزءاً من الثقة بالمنتج.",
+            "content": {"hero": {"title": "الزيارة الأولى السريعة قرار منتج", "subtitle": "الأداء جزء من الثقة، والصفحة الواضحة التي تصل بسرعة تمنح العميل يقيناً أكبر."}},
+        },
+        "sv": {"title": "Ett snabbt första besök är ett produktbeslut", "content": {"hero": {"title": "Ett snabbt första besök är ett produktbeslut", "subtitle": "Prestanda är en del av förtroendet. En tydlig sida som levereras snabbt ger kunderna mer förtroende före det första samtalet."}}},
+        "fr": {"title": "Une première visite rapide est une décision produit", "content": {"hero": {"title": "Une première visite rapide est une décision produit", "subtitle": "La performance fait partie de la confiance. Une page claire qui arrive vite rassure les clients avant la première conversation."}}},
+        "de": {"title": "Ein schneller erster Besuch ist eine Produktentscheidung", "content": {"hero": {"title": "Ein schneller erster Besuch ist eine Produktentscheidung", "subtitle": "Performance ist Teil von Vertrauen. Eine klare Seite, die schnell ankommt, gibt Kunden mehr Zuversicht vor dem ersten Gespräch."}}},
+        "es": {"title": "Una primera visita rápida es una decisión de producto", "content": {"hero": {"title": "Una primera visita rápida es una decisión de producto", "subtitle": "El rendimiento forma parte de la confianza. Una página clara que llega rápido da a los clientes más seguridad antes de la primera conversación."}}},
+        "pt": {"title": "Uma primeira visita rápida é uma decisão de produto", "content": {"hero": {"title": "Uma primeira visita rápida é uma decisão de produto", "subtitle": "O desempenho faz parte da confiança. Uma página clara que chega depressa dá aos clientes mais confiança antes da primeira conversa."}}},
     },
     "htmx-fragments-vs-json-apis": {
-        "title": "تصميم مسارات ثنائية اللغة بلا تكرار",
-        "search_description": "طريقة عملية للحفاظ على اتساق المحتوى العربي والإنجليزي.",
-        "content": {"hero": {"title": "تصميم مسارات ثنائية اللغة بلا تكرار", "subtitle": "كيف يبقى المحتوى متسقاً مع السماح لكل لغة بأن تبدو طبيعية."}},
+        "ar": {
+            "title": "تصميم مسارات ثنائية اللغة بلا تكرار",
+            "search_description": "طريقة عملية للحفاظ على اتساق المحتوى العربي والإنجليزي.",
+            "content": {"hero": {"title": "تصميم مسارات ثنائية اللغة بلا تكرار", "subtitle": "كيف يبقى المحتوى متسقاً مع السماح لكل لغة بأن تبدو طبيعية."}},
+        },
+        "sv": {"title": "Designa tvåspråkiga resor utan dubbelarbete", "content": {"hero": {"title": "Designa tvåspråkiga resor utan dubbelarbete", "subtitle": "Ett praktiskt sätt att hålla arabiskt och engelskt innehåll i linje samtidigt som varje språk låter naturligt."}}},
+        "fr": {"title": "Concevoir des parcours bilingues sans duplication", "content": {"hero": {"title": "Concevoir des parcours bilingues sans duplication", "subtitle": "Une façon pratique de garder les contenus arabe et anglais alignés tout en laissant chaque langue sonner naturellement."}}},
+        "de": {"title": "Zweisprachige Journeys ohne Duplikate gestalten", "content": {"hero": {"title": "Zweisprachige Journeys ohne Duplikate gestalten", "subtitle": "Ein praktischer Weg, arabische und englische Inhalte in Einklang zu halten, während jede Sprache natürlich klingt."}}},
+        "es": {"title": "Diseñar recorridos bilingües sin duplicación", "content": {"hero": {"title": "Diseñar recorridos bilingües sin duplicación", "subtitle": "Una forma práctica de mantener alineados los contenidos en árabe e inglés y que cada idioma suene natural."}}},
+        "pt": {"title": "Conceber percursos bilingues sem duplicação", "content": {"hero": {"title": "Conceber percursos bilingues sem duplicação", "subtitle": "Uma forma prática de manter os conteúdos em árabe e inglês alinhados, deixando cada língua soar natural."}}},
     },
     "wagtail-streamfield-marketing": {
-        "title": "امنح فريق المحتوى غرفة تحكم مفيدة",
-        "search_description": "كيف تساعد بنية التحرير فرق التسويق على التحرك بسرعة بأمان.",
-        "content": {"hero": {"title": "امنح فريق المحتوى غرفة تحكم مفيدة", "subtitle": "بنية تحرير واضحة تمنح الفريق سرعة من دون تحويل كل صفحة إلى تفاوض تصميمي."}},
+        "ar": {
+            "title": "امنح فريق المحتوى غرفة تحكم مفيدة",
+            "search_description": "كيف تساعد بنية التحرير فرق التسويق على التحرك بسرعة بأمان.",
+            "content": {"hero": {"title": "امنح فريق المحتوى غرفة تحكم مفيدة", "subtitle": "بنية تحرير واضحة تمنح الفريق سرعة من دون تحويل كل صفحة إلى تفاوض تصميمي."}},
+        },
+        "sv": {"title": "Ge innehållsteamen ett användbart kontrollrum", "content": {"hero": {"title": "Ge innehållsteamen ett användbart kontrollrum", "subtitle": "Bra redaktionell struktur hjälper marknadsteam att röra sig snabbt utan att varje sida blir en designförhandling."}}},
+        "fr": {"title": "Offrez aux équipes de contenu une salle de contrôle utile", "content": {"hero": {"title": "Offrez aux équipes de contenu une salle de contrôle utile", "subtitle": "Une bonne structure éditoriale aide les équipes marketing à avancer vite sans transformer chaque page en négociation de design."}}},
+        "de": {"title": "Geben Sie Content-Teams einen nützlichen Kontrollraum", "content": {"hero": {"title": "Geben Sie Content-Teams einen nützlichen Kontrollraum", "subtitle": "Eine gute redaktionelle Struktur hilft Marketing-Teams, schnell voranzukommen, ohne jede Seite zu einer Design-Verhandlung zu machen."}}},
+        "es": {"title": "Da a los equipos de contenido una sala de control útil", "content": {"hero": {"title": "Da a los equipos de contenido una sala de control útil", "subtitle": "Una buena estructura editorial ayuda a los equipos de marketing a moverse rápido sin convertir cada página en una negociación de diseño."}}},
+        "pt": {"title": "Dê às equipas de conteúdo uma sala de controlo útil", "content": {"hero": {"title": "Dê às equipas de conteúdo uma sala de controlo útil", "subtitle": "Uma boa estrutura editorial ajuda as equipas de marketing a avançar depressa sem transformar cada página numa negociação de design."}}},
     },
     "alpine-reactivity-landing": {
-        "title": "تفاعلات صغيرة، تركيز أفضل",
-        "search_description": "استخدم التفاعل لتوضيح القرار، لا لإضافة ضجيج إلى الصفحة.",
-        "content": {"hero": {"title": "تفاعلات صغيرة، تركيز أفضل", "subtitle": "التفاعل الجيد يوضح الخطوة التالية ولا يشتت عن الهدف."}},
+        "ar": {
+            "title": "تفاعلات صغيرة، تركيز أفضل",
+            "search_description": "استخدم التفاعل لتوضيح القرار، لا لإضافة ضجيج إلى الصفحة.",
+            "content": {"hero": {"title": "تفاعلات صغيرة، تركيز أفضل", "subtitle": "التفاعل الجيد يوضح الخطوة التالية ولا يشتت عن الهدف."}},
+        },
+        "sv": {"title": "Små interaktioner, bättre fokus", "content": {"hero": {"title": "Små interaktioner, bättre fokus", "subtitle": "Använd interaktion där den förtydligar ett beslut, inte där den lägger till brus på en sida som bara ska hjälpa någon framåt."}}},
+        "fr": {"title": "De petites interactions, une meilleure concentration", "content": {"hero": {"title": "De petites interactions, une meilleure concentration", "subtitle": "Utilisez l'interaction là où elle clarifie une décision, pas là où elle ajoute du bruit à une page qui devrait simplement aider à avancer."}}},
+        "de": {"title": "Kleine Interaktionen, besserer Fokus", "content": {"hero": {"title": "Kleine Interaktionen, besserer Fokus", "subtitle": "Setzen Sie Interaktion dort ein, wo sie eine Entscheidung klärt, nicht wo sie einer Seite Rauschen hinzufügt, die einfach beim Vorankommen helfen soll."}}},
+        "es": {"title": "Interacciones pequeñas, mejor concentración", "content": {"hero": {"title": "Interacciones pequeñas, mejor concentración", "subtitle": "Usa la interacción donde aclara una decisión, no donde añade ruido a una página que simplemente debería ayudar a avanzar."}}},
+        "pt": {"title": "Interações pequenas, melhor foco", "content": {"hero": {"title": "Interações pequenas, melhor foco", "subtitle": "Use a interação onde clarifica uma decisão, não onde adiciona ruído a uma página que devia simplesmente ajudar a avançar."}}},
     },
     "monorepo-six-products": {
-        "title": "ابنِ نظاماً يستطيع فريقك وراثته",
-        "search_description": "دروس عملية لبناء منتجات متعددة من مستودع واحد يمكن للفريق توسيعه.",
-        "content": {"hero": {"title": "ابنِ نظاماً يستطيع فريقك وراثته", "subtitle": "أفضل تسليم ليس نصباً تقنياً، بل قرارات مفهومة يمكن توسيعها بأمان."}},
+        "ar": {
+            "title": "ابنِ نظاماً يستطيع فريقك وراثته",
+            "search_description": "دروس عملية لبناء منتجات متعددة من مستودع واحد يمكن للفريق توسيعه.",
+            "content": {"hero": {"title": "ابنِ نظاماً يستطيع فريقك وراثته", "subtitle": "أفضل تسليم ليس نصباً تقنياً، بل قرارات مفهومة يمكن توسيعها بأمان."}},
+        },
+        "sv": {"title": "Bygg ett system ditt team kan ärva", "content": {"hero": {"title": "Bygg ett system ditt team kan ärva", "subtitle": "Den bästa plattformsöverlämningen är inte ett tekniskt monument. Det är en uppsättning begripliga beslut som människor säkert kan utöka."}}},
+        "fr": {"title": "Construisez un système que votre équipe peut hériter", "content": {"hero": {"title": "Construisez un système que votre équipe peut hériter", "subtitle": "La meilleure remise de plateforme n'est pas un monument technique. C'est un ensemble de décisions compréhensibles que l'on peut étendre sans risque."}}},
+        "de": {"title": "Bauen Sie ein System, das Ihr Team erben kann", "content": {"hero": {"title": "Bauen Sie ein System, das Ihr Team erben kann", "subtitle": "Die beste Plattform-Übergabe ist kein technisches Denkmal. Sie ist ein Satz verständlicher Entscheidungen, die Menschen sicher erweitern können."}}},
+        "es": {"title": "Construye un sistema que tu equipo pueda heredar", "content": {"hero": {"title": "Construye un sistema que tu equipo pueda heredar", "subtitle": "La mejor entrega de plataforma no es un monumento técnico. Es un conjunto de decisiones comprensibles que la gente puede ampliar con seguridad."}}},
+        "pt": {"title": "Construa um sistema que a sua equipa possa herdar", "content": {"hero": {"title": "Construa um sistema que a sua equipa possa herdar", "subtitle": "A melhor entrega de plataforma não é um monumento técnico. É um conjunto de decisões compreensíveis que as pessoas podem expandir com segurança."}}},
     },
     "server-time-streamed-htmx": {
-        "title": "ميزانية أداء عملية للإطلاق",
-        "search_description": "حافظ على المسار الحرج صغيراً وقِس التجربة على الشبكات الحقيقية.",
-        "content": {"hero": {"title": "ميزانية أداء عملية للإطلاق", "subtitle": "اترك مساحة للمحتوى المهم، وقِس التجربة على الشبكات الإقليمية الفعلية."}},
+        "ar": {
+            "title": "ميزانية أداء عملية للإطلاق",
+            "search_description": "حافظ على المسار الحرج صغيراً وقِس التجربة على الشبكات الحقيقية.",
+            "content": {"hero": {"title": "ميزانية أداء عملية للإطلاق", "subtitle": "اترك مساحة للمحتوى المهم، وقِس التجربة على الشبكات الإقليمية الفعلية."}},
+        },
+        "sv": {"title": "En praktisk prestandabudget för lansering", "content": {"hero": {"title": "En praktisk prestandabudget för lansering", "subtitle": "Reservera plats för det innehåll som betyder något, håll den kritiska vägen liten och mät upplevelsen på riktiga regionala nätverk."}}},
+        "fr": {"title": "Un budget de performance pratique pour le lancement", "content": {"hero": {"title": "Un budget de performance pratique pour le lancement", "subtitle": "Réservez de la place pour le contenu qui compte, gardez le chemin critique petit et mesurez l'expérience sur de vrais réseaux régionaux."}}},
+        "de": {"title": "Ein praktisches Performance-Budget für den Launch", "content": {"hero": {"title": "Ein praktisches Performance-Budget für den Launch", "subtitle": "Reservieren Sie Platz für den Inhalt, der zählt, halten Sie den kritischen Pfad klein und messen Sie die Erfahrung in echten regionalen Netzwerken."}}},
+        "es": {"title": "Un presupuesto de rendimiento práctico para el lanzamiento", "content": {"hero": {"title": "Un presupuesto de rendimiento práctico para el lanzamiento", "subtitle": "Reserva espacio para el contenido que importa, mantén pequeño el camino crítico y mide la experiencia en redes regionales reales."}}},
+        "pt": {"title": "Um orçamento de desempenho prático para o lançamento", "content": {"hero": {"title": "Um orçamento de desempenho prático para o lançamento", "subtitle": "Reserve espaço para o conteúdo que importa, mantenha pequeno o percurso crítico e meça a experiência em redes regionais reais."}}},
     },
     "advanced-content-architecture": {
         "title": "عندما يصبح المحتوى سطحاً للمنتج",
@@ -180,26 +313,110 @@ DEFAULT_PAGE_TRANSLATIONS = {
         "content": {"hero": {"title": "مكوّن HTML قابل للعرض بأمان", "subtitle": "اقرأ المستند كمصدر، ثم شاهده كنتيجة من دون تشغيل كود داخل الصفحة."}},
     },
     "services": {
-        "title": "الخدمات",
-        "body": "<p>نبني مواقع ومنتجات تساعد فرق التسويق والعمليات على خدمة العملاء في المنطقة بثقة.</p>",
-        "content": {"hero": {"title": "من الفكرة إلى السوق", "subtitle": "نصمم ونبني ونحسن تجارب رقمية سريعة، ثنائية اللغة، ومهيأة للنمو."}},
+        "ar": {
+            "title": "الخدمات",
+            "body": "<p>نبني مواقع ومنتجات تساعد فرق التسويق والعمليات على خدمة العملاء في المنطقة بثقة.</p>",
+            "content": {
+                "hero": {"title": "من الفكرة إلى السوق", "subtitle": "نصمم ونبني ونحسن تجارب رقمية سريعة، ثنائية اللغة، ومهيأة للنمو.", "primary_cta": {"label": "استكشف المنتجات"}, "secondary_cta": {"label": "ابدأ محادثة"}, "trusted_by": "جاهز للعربية · جاهز للإنجليزية · مبني لفرق حقيقية"},
+                "cta": {"title": "الإصدار الأول المفيد أفضل من خارطة طريق لا تنتهي", "subtitle": "نبدأ من رحلة العميل، ونطلق شريحة مركزة، ونترك لفريقك المحتوى والأدوات لمواصلة التحسين.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "اقرأ التوثيق"}},
+            },
+        },
+        "sv": {"title": "Tjänster", "content": {"hero": {"title": "Från idé till marknad", "subtitle": "Fokuserade digitala tjänster för team som behöver en tydlig kundresa och en pålitlig lansering.", "primary_cta": {"label": "Utforska produkter"}, "secondary_cta": {"label": "Inled en konversation"}, "trusted_by": "Redo för arabiska · Redo för engelska · byggt för riktiga team"}, "cta": {"title": "En användbar första release slår en bullrig färdplan", "subtitle": "Vi börjar med kundresan, lanserar en fokuserad del och lämnar ditt team med innehåll och verktyg för att fortsätta förbättra.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Läs dokumentationen"}}}},
+        "fr": {"title": "Services", "content": {"hero": {"title": "De l'idée au marché", "subtitle": "Des services numériques ciblés pour les équipes qui ont besoin d'un parcours client clair et d'un lancement fiable.", "primary_cta": {"label": "Explorer les produits"}, "secondary_cta": {"label": "Engagez la conversation"}, "trusted_by": "Prêt pour l'arabe · Prêt pour l'anglais · conçu pour de vraies équipes"}, "cta": {"title": "Une première version utile vaut mieux qu'une feuille de route bruyante", "subtitle": "Nous partons du parcours client, lançons une première version ciblée et laissons à votre équipe le contenu et les outils pour continuer à l'améliorer.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Lire la documentation"}}}},
+        "de": {"title": "Leistungen", "content": {"hero": {"title": "Von der Idee zum Markt", "subtitle": "Fokussierte digitale Leistungen für Teams, die eine klare Customer Journey und einen zuverlässigen Launch brauchen.", "primary_cta": {"label": "Produkte entdecken"}, "secondary_cta": {"label": "Gespräch starten"}, "trusted_by": "Bereit für Arabisch · Bereit für Englisch · gebaut für echte Teams"}, "cta": {"title": "Ein nützlicher erster Release schlägt eine laute Roadmap", "subtitle": "Wir starten mit der Customer Journey, bringen einen fokussierten ersten Wurf heraus und überlassen Ihrem Team die Inhalte und Werkzeuge, um weiter zu verbessern.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Dokumentation lesen"}}}},
+        "es": {"title": "Servicios", "content": {"hero": {"title": "De la idea al mercado", "subtitle": "Servicios digitales enfocados para equipos que necesitan un recorrido del cliente claro y un lanzamiento fiable.", "primary_cta": {"label": "Explorar productos"}, "secondary_cta": {"label": "Inicia una conversación"}, "trusted_by": "Listo para árabe · Listo para inglés · hecho para equipos reales"}, "cta": {"title": "Un primer lanzamiento útil gana a una hoja de ruta ruidosa", "subtitle": "Empezamos por el recorrido del cliente, lanzamos una primera versión enfocada y dejamos a tu equipo el contenido y las herramientas para seguir mejorando.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Leer la documentación"}}}},
+        "pt": {"title": "Serviços", "content": {"hero": {"title": "Da ideia ao mercado", "subtitle": "Serviços digitais focados para equipas que precisam de uma jornada do cliente clara e de um lançamento fiável.", "primary_cta": {"label": "Explorar produtos"}, "secondary_cta": {"label": "Inicie uma conversa"}, "trusted_by": "Pronto para árabe · Pronto para inglês · feito para equipas reais"}, "cta": {"title": "Um primeiro lançamento útil vence um roadmap ruidoso", "subtitle": "Começamos pela jornada do cliente, lançamos uma primeira versão focada e deixamos à sua equipa o conteúdo e as ferramentas para continuar a melhorar.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Ler a documentação"}}}},
     },
     "products": {
-        "title": "المنتجات",
-        "body": "<p>منتجات عملية لنقاط البيع والتعلم والمحتوى والملفات المهنية، مصممة لتناسب إيقاع الفرق والأسواق المتنوعة.</p>",
-        "content": {"hero": {"title": "منتجات جاهزة للنمو", "subtitle": "أدوات ومنصات تساعد فريقك على البيع والتعلم والنشر وخدمة العملاء."}},
+        "ar": {
+            "title": "المنتجات",
+            "body": "<p>منتجات عملية لنقاط البيع والتعلم والمحتوى والملفات المهنية، مصممة لتناسب إيقاع الفرق والأسواق المتنوعة.</p>",
+            "content": {
+                "hero": {"title": "منتجات جاهزة للنمو", "subtitle": "أدوات ومنصات تساعد فريقك على البيع والتعلم والنشر وخدمة العملاء.", "primary_cta": {"label": "شاهد الإصدارات"}, "secondary_cta": {"label": "تصفح المستودع"}},
+                "cta": {"title": "مبني في العلن، يُسلَّم كصفحة HTML", "subtitle": "بعض المنتجات والمكتبات الأساسية متاحة علناً على GitHub. تختلف الإصدارات والتراخيص حسب المنتج؛ Precis LMS متاح بإصدار Solo وBusiness.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "تواصل معنا"}},
+            },
+        },
+        "sv": {"title": "Produkter", "content": {"hero": {"title": "Det mesta av det vi bygger, levererat som", "subtitle": "Hela katalogen: produkter med utgåvor och priser, plus projekten bakom dem, från ett enda monorepo.", "primary_cta": {"label": "Se utgåvorna"}, "secondary_cta": {"label": "Bläddra i arkivet"}}, "cta": {"title": "Byggt i öppenhet, levererat som HTML", "subtitle": "Vissa produkter och kärnbiblioteken är offentliga på GitHub. Utgåvor och licenser varierar mellan produkter; Precis LMS erbjuds som Solo och Business.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Ta kontakt"}}}},
+        "fr": {"title": "Produits", "content": {"hero": {"title": "L'essentiel de ce que nous construisons, livré comme", "subtitle": "Le catalogue complet : produits avec éditions et tarifs, plus les projets qui les sous-tendent, issus d'un seul monorepo.", "primary_cta": {"label": "Voir les éditions"}, "secondary_cta": {"label": "Parcourir le dépôt"}}, "cta": {"title": "Construit en toute transparence, livré en HTML", "subtitle": "Certains produits et les bibliothèques de base sont publics sur GitHub. La disponibilité des éditions et les licences varient selon le produit ; Precis LMS est proposé en Solo et Business.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Contactez-nous"}}}},
+        "de": {"title": "Produkte", "content": {"hero": {"title": "Das meiste, was wir bauen, geliefert als", "subtitle": "Der vollständige Katalog: Produkte mit Editionen und Preisen, plus die Projekte dahinter, aus einem einzigen Monorepo.", "primary_cta": {"label": "Editionen ansehen"}, "secondary_cta": {"label": "Repository durchstöbern"}}, "cta": {"title": "In Offenheit gebaut, als HTML ausgeliefert", "subtitle": "Einige Produkte und die Kernbibliotheken sind auf GitHub öffentlich. Editionen und Lizenzen variieren je nach Produkt; Precis LMS ist als Solo und Business erhältlich.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Kontakt aufnehmen"}}}},
+        "es": {"title": "Productos", "content": {"hero": {"title": "La mayor parte de lo que construimos, entregado como", "subtitle": "El catálogo completo: productos con ediciones y precios, más los proyectos que los respaldan, desde un único monorepo.", "primary_cta": {"label": "Ver las ediciones"}, "secondary_cta": {"label": "Explorar el repositorio"}}, "cta": {"title": "Construido en abierto, entregado como HTML", "subtitle": "Algunos productos y las bibliotecas principales son públicos en GitHub. La disponibilidad de ediciones y las licencias varían según el producto; Precis LMS se ofrece en Solo y Business.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Ponte en contacto"}}}},
+        "pt": {"title": "Produtos", "content": {"hero": {"title": "Grande parte do que construímos, entregue como", "subtitle": "O catálogo completo: produtos com edições e preços, mais os projetos por trás deles, a partir de um único monorepo.", "primary_cta": {"label": "Ver as edições"}, "secondary_cta": {"label": "Explorar o repositório"}}, "cta": {"title": "Construído em aberto, entregue como HTML", "subtitle": "Alguns produtos e as bibliotecas principais são públicos no GitHub. A disponibilidade de edições e as licenças variam por produto; o Precis LMS é oferecido em Solo e Business.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Entre em contacto"}}}},
     },
     "features": {
-        "title": "الميزات",
-        "body": "<p>نوازن بين سرعة التجربة ومرونة الإدارة: صفحات خفيفة، محتوى ثنائي اللغة، وتفاعلات صغيرة لا تعيق العميل.</p>",
-        "content": {"hero": {"title": "سريع من أول زيارة", "subtitle": "نظام محتوى وتجربة مصمم للأداء، والوضوح، والعمل عبر العربية والإنجليزية."}},
+        "ar": {
+            "title": "الميزات",
+            "body": "<p>نوازن بين سرعة التجربة ومرونة الإدارة: صفحات خفيفة، محتوى ثنائي اللغة، وتفاعلات صغيرة لا تعيق العميل.</p>",
+            "content": {
+                "hero": {"title": "سريع من أول زيارة", "subtitle": "نظام محتوى وتجربة مصمم للأداء، والوضوح، والعمل عبر العربية والإنجليزية.", "primary_cta": {"label": "منتجاتنا"}, "secondary_cta": {"label": "ابدأ الآن"}},
+                "cta": {"title": "مبني في العلن، يُسلَّم كصفحة HTML", "subtitle": "بعض المنتجات والمكتبات الأساسية متاحة علناً على GitHub. تختلف الإصدارات والتراخيص حسب المنتج؛ Precis LMS متاح بإصدار Solo وBusiness.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "تواصل معنا"}},
+            },
+        },
+        "sv": {"title": "Funktioner", "content": {"hero": {"title": "Byggt för att levereras som", "subtitle": "AHA-stacken, dokumenterad. Alla funktioner i Structa Cloud.", "primary_cta": {"label": "Våra produkter"}, "secondary_cta": {"label": "Kom igång"}}, "cta": {"title": "Byggt i öppenhet, levererat som HTML", "subtitle": "Vissa produkter och kärnbiblioteken är offentliga på GitHub. Utgåvor och licenser varierar mellan produkter; Precis LMS erbjuds som Solo och Business.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Ta kontakt"}}}},
+        "fr": {"title": "Fonctionnalités", "content": {"hero": {"title": "Conçu pour être livré comme", "subtitle": "La stack AHA, documentée. Toutes les capacités de Structa Cloud.", "primary_cta": {"label": "Nos produits"}, "secondary_cta": {"label": "Commencer"}}, "cta": {"title": "Construit en toute transparence, livré en HTML", "subtitle": "Certains produits et les bibliothèques de base sont publics sur GitHub. La disponibilité des éditions et les licences varient selon le produit ; Precis LMS est proposé en Solo et Business.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Contactez-nous"}}}},
+        "de": {"title": "Funktionen", "content": {"hero": {"title": "Gebaut, um ausgeliefert zu werden als", "subtitle": "Der AHA-Stack, dokumentiert. Jede Funktion von Structa Cloud.", "primary_cta": {"label": "Unsere Produkte"}, "secondary_cta": {"label": "Loslegen"}}, "cta": {"title": "In Offenheit gebaut, als HTML ausgeliefert", "subtitle": "Einige Produkte und die Kernbibliotheken sind auf GitHub öffentlich. Editionen und Lizenzen variieren je nach Produkt; Precis LMS ist als Solo und Business erhältlich.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Kontakt aufnehmen"}}}},
+        "es": {"title": "Funciones", "content": {"hero": {"title": "Construido para entregarse como", "subtitle": "El stack AHA, documentado. Cada capacidad de Structa Cloud.", "primary_cta": {"label": "Nuestros productos"}, "secondary_cta": {"label": "Empezar"}}, "cta": {"title": "Construido en abierto, entregado como HTML", "subtitle": "Algunos productos y las bibliotecas principales son públicos en GitHub. La disponibilidad de ediciones y las licencias varían según el producto; Precis LMS se ofrece en Solo y Business.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Ponte en contacto"}}}},
+        "pt": {"title": "Funcionalidades", "content": {"hero": {"title": "Construído para ser entregue como", "subtitle": "A stack AHA, documentada. Cada capacidade da Structa Cloud.", "primary_cta": {"label": "Os nossos produtos"}, "secondary_cta": {"label": "Começar"}}, "cta": {"title": "Construído em aberto, entregue como HTML", "subtitle": "Alguns produtos e as bibliotecas principais são públicos no GitHub. A disponibilidade de edições e as licenças variam por produto; o Precis LMS é oferecido em Solo e Business.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Entre em contacto"}}}},
     },
-    "blog": {"title": "المدونة", "content": {"hero": {"title": "أفكار من واقع الإطلاق", "subtitle": "ملاحظات عملية عن المنتجات الرقمية، الأداء، والمحتوى الذي يخدم أسواق المنطقة."}}},
-    "pricing": {"title": "الأسعار", "content": {"hero": {"title": "اختر المنتج، ثم الإصدار", "subtitle": "ابدأ مجاناً وتوسع عندما ينمو مشروعك."}}},
-    "contact": {"title": "تواصل معنا", "content": {"hero": {"title": "لنتحدث", "subtitle": "أرسل رسالتك وسنعود إليك قريباً."}}},
-    "faq": {"title": "الأسئلة الشائعة", "content": {"hero": {"title": "الأسئلة الشائعة", "subtitle": "إجابات واضحة حول المكدس والمنتجات والإصدارات."}}},
-    "privacy": {"title": "الخصوصية", "content": {"hero": {"title": "سياسة الخصوصية", "subtitle": "نحافظ على جمع البيانات بالحد الأدنى."}}},
-    "brand": {"title": "الهوية", "content": {"hero": {"title": "عائلة واحدة، علامات متعددة", "subtitle": "نظام الهوية البصري لمنتجات Structa Cloud."}}},
+    "blog": {
+        "ar": {
+            "title": "المدونة",
+            "content": {
+                "hero": {"title": "أفكار من واقع الإطلاق", "subtitle": "ملاحظات عملية عن المنتجات الرقمية، الأداء، والمحتوى الذي يخدم أسواق المنطقة.", "primary_cta": {"label": "استكشف المنتجات"}, "secondary_cta": {"label": "ابدأ محادثة"}},
+                "cta": {"title": "الإصدار الأول المفيد أفضل من خارطة طريق لا تنتهي", "subtitle": "نبدأ من رحلة العميل، ونطلق شريحة مركزة، ونترك لفريقك المحتوى والأدوات لمواصلة التحسين.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "اقرأ التوثيق"}},
+            },
+        },
+        "sv": {"title": "Blogg", "content": {"hero": {"title": "Idéer från verkliga lanseringar", "subtitle": "Praktiska anteckningar om digitala tjänster, prestanda och innehåll för team som betjänar regionen.", "primary_cta": {"label": "Utforska produkter"}, "secondary_cta": {"label": "Inled en konversation"}}, "cta": {"title": "En användbar första release slår en oändlig färdplan", "subtitle": "Vi börjar med kundresan, lanserar en fokuserad del och lämnar ditt team med innehåll och verktyg för att fortsätta förbättra.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Läs dokumentationen"}}}},
+        "fr": {"title": "Blog", "content": {"hero": {"title": "Des idées issues de lancements réels", "subtitle": "Des notes pratiques sur les services numériques, la performance et le contenu, pour les équipes qui servent la région.", "primary_cta": {"label": "Explorer les produits"}, "secondary_cta": {"label": "Engagez la conversation"}}, "cta": {"title": "Une première version utile vaut mieux qu'une feuille de route sans fin", "subtitle": "Nous partons du parcours client, lançons une première version ciblée et laissons à votre équipe le contenu et les outils pour continuer à l'améliorer.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Lire la documentation"}}}},
+        "de": {"title": "Blog", "content": {"hero": {"title": "Ideen aus echten Launches", "subtitle": "Praktische Notizen zu digitalen Diensten, Performance und Inhalten für Teams, die die Region bedienen.", "primary_cta": {"label": "Produkte entdecken"}, "secondary_cta": {"label": "Gespräch starten"}}, "cta": {"title": "Ein nützlicher erster Release schlägt eine endlose Roadmap", "subtitle": "Wir starten mit der Customer Journey, bringen einen fokussierten ersten Wurf heraus und überlassen Ihrem Team die Inhalte und Werkzeuge, um weiter zu verbessern.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Dokumentation lesen"}}}},
+        "es": {"title": "Blog", "content": {"hero": {"title": "Ideas de lanzamientos reales", "subtitle": "Notas prácticas sobre servicios digitales, rendimiento y contenido para equipos que atienden la región.", "primary_cta": {"label": "Explorar productos"}, "secondary_cta": {"label": "Inicia una conversación"}}, "cta": {"title": "Un primer lanzamiento útil gana a una hoja de ruta interminable", "subtitle": "Empezamos por el recorrido del cliente, lanzamos una primera versión enfocada y dejamos a tu equipo el contenido y las herramientas para seguir mejorando.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Leer la documentación"}}}},
+        "pt": {"title": "Blog", "content": {"hero": {"title": "Ideias de lançamentos reais", "subtitle": "Notas práticas sobre serviços digitais, desempenho e conteúdo para equipas que servem a região.", "primary_cta": {"label": "Explorar produtos"}, "secondary_cta": {"label": "Inicie uma conversa"}}, "cta": {"title": "Um primeiro lançamento útil vence um roadmap interminável", "subtitle": "Começamos pela jornada do cliente, lançamos uma primeira versão focada e deixamos à sua equipa o conteúdo e as ferramentas para continuar a melhorar.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Ler a documentação"}}}},
+    },
+    "pricing": {
+        "ar": {
+            "title": "الأسعار",
+            "content": {
+                "hero": {"title": "اختر المنتج، ثم الإصدار", "subtitle": "ابدأ مجاناً وتوسع عندما ينمو مشروعك.", "primary_cta": {"label": "ابدأ مجاناً"}, "secondary_cta": {"label": "تواصل مع المبيعات"}},
+                "cta": {"title": "الإصدار الأول المفيد أفضل من خارطة طريق لا تنتهي", "subtitle": "نبدأ من رحلة العميل، ونطلق شريحة مركزة، ونترك لفريقك المحتوى والأدوات لمواصلة التحسين.", "primary_cta": {"label": "عرض على GitHub"}, "secondary_cta": {"label": "اقرأ التوثيق"}},
+            },
+        },
+        "sv": {"title": "Priser", "content": {"hero": {"title": "Priser", "subtitle": "Enkel och transparent prissättning. Börja gratis och skala när du växer.", "primary_cta": {"label": "Börja gratis"}, "secondary_cta": {"label": "Kontakta sälj"}}, "cta": {"title": "En användbar första release slår en oändlig färdplan", "subtitle": "Vi börjar med kundresan, lanserar en fokuserad del och lämnar ditt team med innehåll och verktyg för att fortsätta förbättra.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Läs dokumentationen"}}}},
+        "fr": {"title": "Tarifs", "content": {"hero": {"title": "Tarifs", "subtitle": "Des tarifs simples et transparents. Commencez gratuitement et évoluez à votre rythme.", "primary_cta": {"label": "Commencer gratuitement"}, "secondary_cta": {"label": "Contacter les ventes"}}, "cta": {"title": "Une première version utile vaut mieux qu'une feuille de route sans fin", "subtitle": "Nous partons du parcours client, lançons une première version ciblée et laissons à votre équipe le contenu et les outils pour continuer à l'améliorer.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Lire la documentation"}}}},
+        "de": {"title": "Preise", "content": {"hero": {"title": "Preise", "subtitle": "Einfache, transparente Preise. Kostenlos starten und mitwachsen.", "primary_cta": {"label": "Kostenlos starten"}, "secondary_cta": {"label": "Vertrieb kontaktieren"}}, "cta": {"title": "Ein nützlicher erster Release schlägt eine endlose Roadmap", "subtitle": "Wir starten mit der Customer Journey, bringen einen fokussierten ersten Wurf heraus und überlassen Ihrem Team die Inhalte und Werkzeuge, um weiter zu verbessern.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Dokumentation lesen"}}}},
+        "es": {"title": "Precios", "content": {"hero": {"title": "Precios", "subtitle": "Precios sencillos y transparentes. Empieza gratis y escala a medida que creces.", "primary_cta": {"label": "Empezar gratis"}, "secondary_cta": {"label": "Contactar con ventas"}}, "cta": {"title": "Un primer lanzamiento útil gana a una hoja de ruta interminable", "subtitle": "Empezamos por el recorrido del cliente, lanzamos una primera versión enfocada y dejamos a tu equipo el contenido y las herramientas para seguir mejorando.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Leer la documentación"}}}},
+        "pt": {"title": "Preços", "content": {"hero": {"title": "Preços", "subtitle": "Preços simples e transparentes. Comece grátis e escale à medida que cresce.", "primary_cta": {"label": "Começar grátis"}, "secondary_cta": {"label": "Contactar vendas"}}, "cta": {"title": "Um primeiro lançamento útil vence um roadmap interminável", "subtitle": "Começamos pela jornada do cliente, lançamos uma primeira versão focada e deixamos à sua equipa o conteúdo e as ferramentas para continuar a melhorar.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Ler a documentação"}}}},
+    },
+    "contact": {
+        "ar": {"title": "تواصل معنا", "content": {"hero": {"title": "لنتحدث", "subtitle": "أرسل رسالتك وسنعود إليك قريباً."}}},
+        "sv": {"title": "Kontakt", "content": {"hero": {"title": "Hör av dig", "subtitle": "Vi vill gärna höra från dig. Kontakta oss när som helst."}}},
+        "fr": {"title": "Contact", "content": {"hero": {"title": "Prenez contact", "subtitle": "Nous serions ravis de vous entendre. Contactez-nous à tout moment."}}},
+        "de": {"title": "Kontakt", "content": {"hero": {"title": "Kommen Sie in Kontakt", "subtitle": "Wir freuen uns auf Ihre Nachricht. Melden Sie sich jederzeit."}}},
+        "es": {"title": "Contacto", "content": {"hero": {"title": "Ponte en contacto", "subtitle": "Nos encantará saber de ti. Escríbenos cuando quieras."}}},
+        "pt": {"title": "Contacto", "content": {"hero": {"title": "Entre em contacto", "subtitle": "Gostaríamos muito de ouvir de si. Contacte-nos a qualquer momento."}}},
+    },
+    "faq": {
+        "ar": {"title": "الأسئلة الشائعة", "content": {"hero": {"title": "الأسئلة الشائعة", "subtitle": "إجابات واضحة حول المكدس والمنتجات والإصدارات."}}},
+        "sv": {"title": "Vanliga frågor", "content": {"hero": {"title": "Vanliga frågor", "subtitle": "De ärliga svaren på frågorna tekniska köpare ställer."}}},
+        "fr": {"title": "Questions fréquentes", "content": {"hero": {"title": "Questions fréquentes", "subtitle": "Les réponses honnêtes aux questions que se posent les acheteurs techniques."}}},
+        "de": {"title": "Häufige Fragen", "content": {"hero": {"title": "Häufige Fragen", "subtitle": "Die ehrlichen Antworten auf die Fragen, die technische Käufer stellen."}}},
+        "es": {"title": "Preguntas frecuentes", "content": {"hero": {"title": "Preguntas frecuentes", "subtitle": "Las respuestas honestas a las preguntas que hacen los compradores técnicos."}}},
+        "pt": {"title": "Perguntas frequentes", "content": {"hero": {"title": "Perguntas frequentes", "subtitle": "As respostas honestas às perguntas que os compradores técnicos fazem."}}},
+    },
+    "privacy": {
+        "ar": {"title": "الخصوصية", "content": {"hero": {"title": "سياسة الخصوصية", "subtitle": "نحافظ على جمع البيانات بالحد الأدنى."}}},
+        "sv": {"title": "Integritetspolicy", "content": {"hero": {"title": "Integritetspolicy", "subtitle": "Vi håller datainsamlingen till ett minimum."}}},
+        "fr": {"title": "Politique de confidentialité", "content": {"hero": {"title": "Politique de confidentialité", "subtitle": "Nous limitons la collecte de données au minimum."}}},
+        "de": {"title": "Datenschutzerklärung", "content": {"hero": {"title": "Datenschutzerklärung", "subtitle": "Wir halten die Datenerfassung so gering wie möglich."}}},
+        "es": {"title": "Política de privacidad", "content": {"hero": {"title": "Política de privacidad", "subtitle": "Mantenemos la recopilación de datos al mínimo."}}},
+        "pt": {"title": "Política de privacidade", "content": {"hero": {"title": "Política de privacidade", "subtitle": "Mantemos a recolha de dados ao mínimo."}}},
+    },
+    "brand": {
+        "ar": {"title": "الهوية", "content": {"hero": {"title": "عائلة واحدة، علامات متعددة", "subtitle": "نظام الهوية البصري لمنتجات Structa Cloud."}}},
+        "sv": {"title": "Varumärke", "content": {"hero": {"title": "En familj, fem märken", "subtitle": "Varje produkt bär sin egen konstruerade symbol — byggd utifrån vad den gör, inte en generisk ikon. Samma system, fem distinkta identiteter."}}},
+        "fr": {"title": "Marque", "content": {"hero": {"title": "Une famille, cinq marques", "subtitle": "Chaque produit porte sa propre marque construite — un symbole bâti sur ce qu'il fait, pas un glyphe générique. Un même système, cinq identités distinctes."}}},
+        "de": {"title": "Marke", "content": {"hero": {"title": "Eine Familie, fünf Marken", "subtitle": "Jedes Produkt trägt sein eigenes konstruiertes Zeichen — ein Symbol, das aus dem gebaut ist, was es tut, kein generisches Piktogramm. Gleiches System, fünf eigenständige Identitäten."}}},
+        "es": {"title": "Marca", "content": {"hero": {"title": "Una familia, cinco marcas", "subtitle": "Cada producto lleva su propia marca construida — un símbolo creado a partir de lo que hace, no un glifo genérico. Mismo sistema, cinco identidades distintas."}}},
+        "pt": {"title": "Marca", "content": {"hero": {"title": "Uma família, cinco marcas", "subtitle": "Cada produto tem a sua própria marca construída — um símbolo criado a partir do que faz, não um glifo genérico. Mesmo sistema, cinco identidades distintas."}}},
+    },
 }
 
 # Seeded language catalog — mirrors the Astro ``LANG_META`` table in
@@ -804,7 +1021,7 @@ DEFAULT_PRODUCT_PAGES = {
                     "title": "Formints",
                     "subtitle": "A desktop point-of-sale application with a Tauri 2 + Rust core, React/Vite shell, and SQLite storage.",
                     "primary_cta": {"label": "See the editions", "href": "/products/formint-pos/#editions", "style": "secondary"},
-                    "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/formint-pos", "style": "white"},
+                    "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/formint-community", "style": "white"},
                     "trusted_by": "Community · Standard · Pro · Cloud",
                 },
             )
@@ -836,7 +1053,7 @@ DEFAULT_PRODUCT_PAGES = {
                             "period": "/open source",
                             "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage", "Sales, receipting + inventory", "Payment types: cash, card, split", "Offline-first mode", "Refunds & returns", "i18n: en, fr, ar"],
                             "cta_label": "Download",
-                            "cta_href": "https://github.com/mammhoud/formint-pos",
+                            "cta_href": "https://github.com/mammhoud/formint-community",
                             "featured": False,
                             "tier": "outline",
                         },
@@ -1003,7 +1220,7 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "Run a terminal in minutes",
                     "subtitle": "Clone the repo, run the Community edition, and upgrade editions as you grow.",
-                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/formint-pos", "style": "white"},
+                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/formint-community", "style": "white"},
                     "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
                 },
             )
@@ -1696,7 +1913,7 @@ DEFAULT_TEAM_SECTIONS = {
                         "role": "Product lead · point-of-sale",
                         "bio": "The Tauri 2 + Rust desktop POS: SQLite, four editions, one codebase. Community is open source on GitHub.",
                         "initials": "FP",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/formint-pos"}],
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/formint-community"}],
                     },
                     {
                         "name": "Precis LMS",
@@ -2683,7 +2900,12 @@ class Command(BaseCommand):
             raise CommandError("Unable to seed site languages") from exc
 
     def _seed_page_translations(self):
-        """Create/update the seeded English/Arabic editorial overlays."""
+        """Create/update the seeded editorial overlays for every language.
+
+        The map is keyed by page slug then language code; each payload is a
+        partial overlay, so untranslated fields keep falling back to the
+        canonical Wagtail content through the page-API merge.
+        """
         for slug, values in DEFAULT_PAGE_TRANSLATIONS.items():
             landing_root = HomePage.objects.first()
             page = (
@@ -2693,16 +2915,15 @@ class Command(BaseCommand):
             )
             if page is None:
                 continue
-            for language in ("en", "ar"):
-                # English records are useful as an explicit editorial source;
-                # they remain empty until an editor adds an override.
-                payload = values if language == "ar" else {}
+            for language, payload in values.items():
+                if not payload:
+                    continue
                 translation, created = PageTranslation.objects.get_or_create(
                     page=page,
                     language=language,
                     defaults=payload,
                 )
-                if not created and payload:
+                if not created:
                     changed = False
                     for field in ("title", "search_description", "body", "content"):
                         seeded = payload.get(field, {} if field == "content" else "")

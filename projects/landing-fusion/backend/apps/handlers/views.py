@@ -198,9 +198,13 @@ class LandingPageView(PageHandler):
             bound = []
             for index, child in enumerate(stream):
                 if isinstance(field_override, dict) and index == 0:
-                    base_value = _stream_to_plain(child.value)
+                    # Merge onto a plain tree that keeps Page instances, then
+                    # re-hydrate through to_python so nested StructBlocks (e.g.
+                    # a CTA block's ButtonBlocks) render as real bound values
+                    # instead of raw dict reprs.
+                    base_value = _stream_to_plain(child.value, keep_pages=True)
                     merged_value = _deep_merge(base_value, field_override)
-                    bound.append(child.block.bind(merged_value))
+                    bound.append(child.block.bind(child.block.to_python(merged_value)))
                 else:
                     bound.append(child)
             localized[field_name] = bound

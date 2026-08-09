@@ -59,7 +59,7 @@
     "lint:contrast": "node scripts/lint-contrast.mjs",
     "lint:contrast:fix": "node scripts/lint-contrast.mjs --fix",
     "prebuild": "PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
-    "predev": "node ../scripts/dev/kill-port.cjs && PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
+    "predev": "node ../scripts/dev/kill-port.cjs 1420 && PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
     "build:desktop": "pnpm build && pnpm tauri build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",
     "build:android": "pnpm tauri android build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",
     "build:ios": "pnpm tauri ios build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",

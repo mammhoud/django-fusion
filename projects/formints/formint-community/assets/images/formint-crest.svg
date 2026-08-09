@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%" style="max-width:400px; display:block; margin:auto;">
+  <defs>
+    <style>
+      .formint-ring, .formint-shield {
+        stroke-dasharray: 1200;
+        stroke-dashoffset: 1200;
+        animation: drawFormintCrest 2.5s ease forwards;
+      }
+      @keyframes drawFormintCrest {
+        to { stroke-dashoffset: 0; }
+      }
+      #formint-crest-inner-ring {
+        opacity: 0;
+        animation: formintFadeInGlow 2s ease forwards 0.5s;
+      }
+      @keyframes formintFadeInGlow {
+        to { opacity: 0.4; }
+      }
+      #formint-crest-outer-ring {
+        transform-origin: center;
+        animation: formintRingRotate 20s linear infinite 2.5s;
+      }
+      @keyframes formintRingRotate {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      #formint-crest-center-spark {
+        animation: formintPulseSpark 1.8s ease-in-out infinite 2.5s;
+        transform-origin: center;
+      }
+      @keyframes formintPulseSpark {
+        0%,100% { transform: scale(1); fill: #F59E0B; }
+        50%     { transform: scale(1.2); fill: #F97316; }
+      }
+    </style>
+    <linearGradient id="formint-crestCopper" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#9A3412"/>
+    </linearGradient>
+    <linearGradient id="formint-crestOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+    <filter id="formint-crestGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#EA580C" flood-opacity="0.3"/>
+    </filter>
+    <filter id="formint-sparkGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#F59E0B" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <g id="formint-crest-container" filter="url(#formint-crestGlow)">
+    <circle id="formint-crest-outer-ring" class="formint-ring" cx="250" cy="250" r="150" fill="none" stroke="url(#formint-crestCopper)" stroke-width="14"/>
+    <circle id="formint-crest-inner-ring" cx="250" cy="250" r="110" fill="none" stroke="url(#formint-crestOrange)" stroke-width="6" opacity="0"/>
+    <path class="formint-shield" fill="none" stroke="url(#formint-crestCopper)" stroke-width="12" stroke-linejoin="round"
+          d="M 250 120 L 310 180 L 290 260 L 250 380 L 210 260 L 190 180 Z"/>
+    <path fill="url(#formint-crestOrange)" opacity="0.15"
+          d="M 250 120 L 310 180 L 290 260 L 250 380 L 210 260 L 190 180 Z" style="animation: formintFadeInGlow 1.5s ease forwards 1.5s;"/>
+    <polygon id="formint-crest-center-spark" points="250,230 270,250 250,270 230,250" fill="url(#formint-crestCopper)" filter="url(#formint-sparkGlow)"/>
+  </g>
+</svg>

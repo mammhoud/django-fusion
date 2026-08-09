@@ -38,6 +38,10 @@
 | **Cloud** | [`formintB/`](../../formintB/) | `pos-cloud` | **0.1.0** | — | — |
 | **pos-client** | [`formintC/`](../../formintC/) | `pos-client` | **1.0.0** (package) / **0.1.0** (Cargo + Tauri) | POS Client | `com.pos-client.app` |
 
+> **Standalone community version:** published as `github.com/mammhoud/formint-community` —
+> package `formint-community`, product **Formints Community**, identifier
+> `com.mammhoud.formint-community`. Refreshed from `formintA/` via `make community-bundle`.
+
 ### Edition → directory mapping (canonical names)
 
 | Canonical edition | Product tier | Directory / package | Legacy names |
@@ -75,6 +79,7 @@
 #### Features
 
 - Offline-first mode + refunds & returns (Community capability, landing sync Aug 2026)
+- **API surface:** Tauri `invoke` commands (Rust/Diesel) — the `@formints/client` TS bundle applies to the Django-backed editions (Standard/Cloud), not this edition
 - 30+ Tauri `#[command]` functions (Diesel ORM) — products, customers, sales, employees, settings
 - ESC/POS thermal printer support (direct, only edition with hardware printing)
 - Invoice PDF generation (jspdf + Tauri file dialog) + advanced receipt templates

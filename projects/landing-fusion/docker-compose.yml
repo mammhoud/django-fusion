@@ -21,15 +21,18 @@ services:
       FUSION_RENDER_FIRST: "0"
     volumes:
       - landing-fusion-db:/data
-      - landing-fusion-media:/app/assets/media
-      - landing-fusion-static:/app/assets/staticfiles
+      # Aligned with MEDIA_ROOT / STATIC_ROOT in backend/settings.py
+      # (backend/assets/media + backend/assets/staticfiles) so the startup
+      # collectstatic populates the named volumes and whitenoise serves them.
+      - landing-fusion-media:/app/landing-fusion/backend/assets/media
+      - landing-fusion-static:/app/landing-fusion/backend/assets/staticfiles
     networks:
       - common
       - traefik-net
     command: >-
       sh -c "python manage.py migrate --noinput
       && python manage.py collectstatic --noinput
-      && python manage.py seed_pages
+      && python manage.py seed_pages --force
       && python manage.py seed_learning
       && exec gunicorn wsgi:application --bind 0.0.0.0:8074 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
     healthcheck:
@@ -41,15 +44,11 @@ services:
 
   frontend:
     build:
-      context: .
-      # The Astro build resolves @fusion/* imports against
-      # /libs/django-fusion/js/fusion-js/src (see frontend/astro.config.mjs), so
-      # that source dir must be available inside the image. The frontend build
-      # context (projects/landing-fusion) cannot COPY above itself, so it
-      # arrives as an additional context (narrowed to the fusion-js source only).
-      additional_contexts:
-        fusionjs: ../../libs/django-fusion/js/fusion-js/src
-      dockerfile: frontend/Dockerfile
+      # Repository-root context, matching the backend service — the Astro
+      # build resolves the @fusion alias to libs/django-fusion/js/fusion-js
+      # (copied into the image by frontend/Dockerfile).
+      context: ../..
+      dockerfile: projects/landing-fusion/frontend/Dockerfile
     image: landing-fusion-frontend:latest
     container_name: landing-fusion-frontend
     restart: unless-stopped

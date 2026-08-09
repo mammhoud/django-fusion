@@ -1,4 +1,4 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags i18n %}
 <article class="doc-sheet bg-fu-paper py-16 md:py-24">
   <div class="container-fusion">
     {% include "pages/partials/breadcrumbs.html" %}
@@ -9,7 +9,7 @@
     </header>
     {% if phase_outcomes %}
     <section class="mx-auto mt-12 max-w-3xl rounded-xl border border-fu-line bg-fu-card p-6">
-      <h2 class="font-display text-2xl font-bold text-fu-ink">{% if content_language == "ar" %}ما الذي تقدمه هذه المرحلة{% else %}What this phase delivers{% endif %}</h2>
+      <h2 class="font-display text-2xl font-bold text-fu-ink">{% translate "What this phase delivers" %}</h2>
       <ul class="mt-5 grid gap-3 sm:grid-cols-2">
         {% for outcome in phase_outcomes %}<li class="flex gap-2 text-fu-muted"><span class="text-fu-link">↗</span>{{ outcome }}</li>{% endfor %}
       </ul>
@@ -22,7 +22,7 @@
         {% for prompt in phase_prompts %}
         <a href="{{ prompt.href }}" class="rounded-xl border border-fu-line bg-fu-card p-5 transition hover:-translate-y-0.5 hover:border-fu-link">
           <h2 class="font-display text-xl font-bold text-fu-ink">{{ prompt.title }}</h2>
-          <span class="mt-4 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link">Open prompt →</span>
+          <span class="mt-4 inline-block font-mono text-xs uppercase tracking-[0.14em] text-fu-link">{% translate "Open prompt →" %}</span>
         </a>
         {% endfor %}
       </div>

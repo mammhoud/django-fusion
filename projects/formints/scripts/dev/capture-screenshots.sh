@@ -13,7 +13,7 @@
 #
 # Usage:
 #   bash scripts/dev/capture-screenshots.sh
-#   bash scripts/dev/capture-screenshots.sh --keep    # keeps temporary captures for debugging
+#   bash scripts/dev/capture-screenshots.sh --keep    # leaves docs/screenshots/_captures/ in place
 #
 # Exit codes:
 #   0   – success
@@ -26,9 +26,7 @@ set -Eeuo pipefail
 # ── Paths ────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-RELATED_DIR="${ROOT}/../landing-fusion/backend/assets/static/related/formints"
-MIRROR_DIR="${ROOT}/../landing-fusion/frontend/public/static/related/formints"
-CAPTURES_DIR="${ROOT}/.tmp-screenshot-captures"
+CAPTURES_DIR="${ROOT}/docs/screenshots/_captures"
 LOG="/tmp/vite-shots.log"
 
 # ── Args ─────────────────────────────────────────────────────────────────
@@ -68,6 +66,16 @@ shots=(
   "04_inventory|http://127.0.0.1:1420/inventory|1440,1100"
   "05_reports|http://127.0.0.1:1420/reports|1440,1100"
   "06_settings|http://127.0.0.1:1420/settings|1440,1100"
+)
+
+# Maps internal NAME → canonical OUT filename referenced by PUBLISH.md.
+declare -A OUT=(
+  [01_home_overview]="01_pos_overview"
+  [02_home_dashboard]="02_dashboard"
+  [03_sale]="03_point_of_sale"
+  [04_inventory]="04_inventory"
+  [05_reports]="05_reports"
+  [06_settings]="06_settings"
 )
 
 # ── 3. Cleanup trap so a failed run doesn't leave _captures/ behind ─────
@@ -116,23 +124,10 @@ done
 echo "▸ Converting PNG → JPG (q=88, white background)…"
 for NAME in 01_home_overview 02_home_dashboard 03_sale 04_inventory 05_reports 06_settings; do
   SRC="${CAPTURES_DIR}/${NAME}.png"
-  case "${NAME}" in
-    01_home_overview) DEST_NAME="standard-home-overview" ;;
-    02_home_dashboard) DEST_NAME="standard-home-dashboard" ;;
-    03_sale) DEST_NAME="standard-sale" ;;
-    04_inventory) DEST_NAME="standard-inventory" ;;
-    05_reports) DEST_NAME="standard-reports" ;;
-    06_settings) DEST_NAME="standard-settings" ;;
-  esac
-  mkdir -p "${RELATED_DIR}" "${MIRROR_DIR}"
-  DEST="${RELATED_DIR}/${DEST_NAME}.jpg"
+  DEST="${ROOT}/docs/screenshots/${OUT[$NAME]}.jpg"
   convert "${SRC}" -quality 88 -background white -alpha remove "${DEST}"
-  cp "${DEST}" "${MIRROR_DIR}/${DEST_NAME}.jpg"
-  printf '   %-22s → related/formints/%s.jpg\n' "${NAME}.png" "${DEST_NAME}"
+  printf '   %-22s → %s.jpg\n' "${NAME}.png" "${OUT[$NAME]}"
 done
 
 # ── 7. Done ─────────────────────────────────────────────────────────────
-if [ "${KEEP_CAPTURES}" -eq 0 ]; then
-  rm -rf "${CAPTURES_DIR}"
-fi
-echo "── ✓ Done — 6 screenshots written to Landing-Fusion related/formints/ ──"
+echo "── ✓ Done — 6 screenshots written to docs/screenshots/ ──"

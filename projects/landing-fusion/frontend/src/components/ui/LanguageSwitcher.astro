@@ -25,6 +25,15 @@ const langs = LANG_CODES.map((code) => ({
 const defaultLang = 'en';
 const langsJson = JSON.stringify(langs);
 const apiBase = API_BASE;
+
+// Dropdown anchor: 'end' (default — the header bar, where the button sits at
+// the right of its row) or 'start' (the mobile menu, where the button sits at
+// the left). Logical insets so the panel always opens inward toward the
+// content and stays on-screen in both LTR and RTL.
+interface Props {
+  align?: 'start' | 'end';
+}
+const { align = 'end' } = Astro.props;
 ---
 
 <script is:inline define:vars={{ langsJson, defaultLang, apiBase }}>
@@ -119,7 +128,7 @@ const apiBase = API_BASE;
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     @click.self="open = false"
-    class="absolute right-0 mt-2 w-48 rounded-xl border border-fu-line bg-fu-paper p-1.5 shadow-xl"
+    class={`absolute ${align === 'start' ? 'start-0' : 'end-0'} mt-2 w-48 rounded-xl border border-fu-line bg-fu-paper p-1.5 shadow-xl`}
     role="listbox"
     aria-label="Select language"
   >
