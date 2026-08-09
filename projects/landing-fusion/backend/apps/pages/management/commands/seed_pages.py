@@ -923,7 +923,7 @@ DEFAULT_PRODUCT_PAGES = {
                     "title": "Formints",
                     "subtitle": "A desktop point-of-sale application with a Tauri 2 + Rust core, React/Vite shell, and SQLite storage.",
                     "primary_cta": {"label": "See the editions", "href": "/products/formint-pos/#editions", "style": "secondary"},
-                    "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/formint-pos", "style": "white"},
+                    "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/formint-community", "style": "white"},
                     "trusted_by": "Community · Standard · Pro · Cloud",
                 },
             )
@@ -955,7 +955,7 @@ DEFAULT_PRODUCT_PAGES = {
                             "period": "/open source",
                             "features": ["Tauri 2 + Rust core (Diesel ORM)", "SQLite storage", "Sales, receipting + inventory", "Payment types: cash, card, split", "Offline-first mode", "Refunds & returns", "i18n: en, fr, ar"],
                             "cta_label": "Download",
-                            "cta_href": "https://github.com/mammhoud/formint-pos",
+                            "cta_href": "https://github.com/mammhoud/formint-community",
                             "featured": False,
                             "tier": "outline",
                         },
@@ -1153,7 +1153,7 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "Run a terminal in minutes",
                     "subtitle": "Clone the repo, run the Community edition, and upgrade editions as you grow.",
-                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/formint-pos", "style": "white"},
+                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/formint-community", "style": "white"},
                     "secondary_cta": {"label": "Get in Touch", "href": "/contact/", "style": "outline"},
                 },
             )
@@ -1888,7 +1888,7 @@ DEFAULT_TEAM_SECTIONS = {
                         "role": "Product lead · point-of-sale",
                         "bio": "The Tauri 2 + Rust desktop POS: SQLite, four editions, one codebase. Community is open source on GitHub.",
                         "initials": "FP",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/formint-pos"}],
+                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/formint-community"}],
                     },
                     {
                         "name": "Precis LMS",

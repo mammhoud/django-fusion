@@ -1,232 +1,327 @@
 # ============================================================================
-# POS — Root Makefile (v3.0)
+# POS — Root Makefile (v4.0)
 # ============================================================================
-# Orchestrates POS editions + Cloud CRM server + Django Portals:
-#   - forge-pos    : Forge POS — lightweight Tauri + Rust/Diesel edition
-#   - formint-pos  : Formint POS — merged package (pos-full + pos-solo)
-#                    Astro frontend + Django Ninja backend + Robyn sidecar
-#                    + Unfold admin + legacy React UI archive
-#   - pos-client   : Vue 3 + Tauri desktop app (separate client)
-#   - cloud        : Django-based cloud CRM server (pos-cloud/)
+# Uniform dispatcher over the POS editions in projects/formints/:
 #
-# Design: Delegates to per-edition Makefiles via $(MAKE) -C.
-# This ensures each edition owns its own targets and the root Makefile
-# stays a thin dispatcher with aggregated convenience targets.
+#   - formintA/    Community    — free, offline-first Tauri + React 19 +
+#                                 Rust/Diesel desktop POS (no sidecar)
+#   - formint/     Standard/Pro — merged package: Django Ninja backend +
+#                                 Robyn sidecar + Astro frontend + Tauri
+#   - formintB/    Cloud        — Django pos-cloud SaaS master (Unfold admin)
+#                                 + formintA Community UI frontend
+#   - formintC/    pos-client   — Vue 3 + Tauri desktop client
+#   - packages/formints-client  — @formints/client TS SDK (editions consume it)
+#   - formint-community/        — generated standalone public repo bundle
+#                                 (github.com/mammhoud/formint-community)
+#
+# Every edition exposes the same uniform verbs through <edition>-<verb>:
+#   install | check | test | run (dev/env) | stop | clean
+# e.g. make community-test · make cloud-check · make sdk-test
 #
 # Quick start:
-#   make setup-mini              — install mini edition dependencies
-#   make formint-install         — install merged package (backend + frontend)
-#   make formint-env             — run full formint env (backend + frontend)
-#   make dev-mini                — start Vite dev server for mini edition
+#   make community-dev        — Vite dev server for the Community edition (:1420)
+#   make community-desktop    — full Tauri desktop app (Community)
+#   make standard-env         — merged backend :8767 + frontend :4321 (tmux)
+#   make cloud-dev-backend    — Cloud Django admin/API on :8082
+#   make test-all             — run every edition's test suite
+#   make community-bundle     — refresh formint-community/ from formintA
+#
+# Direct edition access is always possible: make -C formintA <target>
 
-.PHONY: help
-.PHONY: clean
-.PHONY: setup-mini setup-client
-.PHONY: dev-mini dev-all
-.PHONY: dev-desktop-mini
-.PHONY: build-mini build-client
-.PHONY: check-mini
-.PHONY: server-install server-run server-dev server-check server-test server-clean
-.PHONY: cloud-install cloud-run cloud-dev cloud-check cloud-test cloud-clean
-.PHONY: formint-install formint-run formint-env formint-stop formint-test formint-check formint-clean formint-sidecar-test
-.PHONY: screenshots publish
+.PHONY: help clean
+.PHONY: install-all check-all test-all clean-all stop-all
+# ── Community (formintA) ──
+.PHONY: community-install community-dev community-desktop community-build \
+        community-check community-test community-test-all community-cargo-test \
+        community-seed community-clean
+# ── Standard / Pro (formint) ──
+.PHONY: standard-install standard-check standard-test standard-env standard-run \
+        standard-stop standard-clean pro-install pro-check pro-test pro-env \
+        pro-stop pro-clean
+# ── Cloud (formintB) ──
+.PHONY: cloud-install cloud-check cloud-test cloud-dev-backend cloud-dev-api \
+        cloud-dev-frontend cloud-stop cloud-clean
+# ── pos-client (formintC) ──
+.PHONY: client-install client-dev client-build client-lint client-test client-clean
+# ── SDK (packages/formints-client) ──
+.PHONY: sdk-install sdk-build sdk-typecheck sdk-test
+# ── Legacy aliases ──
+.PHONY: mini-install mini-dev mini-build mini-check \
+        formint-install formint-env formint-run formint-stop formint-test \
+        formint-check formint-clean server-install server-run server-dev \
+        server-check server-test server-clean cloud-run cloud-dev cloud-clean \
+        screenshots publish community-bundle
 
-# ── Edition directories ────────────────────────────────────────────────────
-# Used for delegation targets below.
-FORGE_POS  := forge-pos
-FORMINT_POS := formint-pos
-POS_CLIENT := pos-client
-POS_CLOUD  := pos-cloud
+# ── Edition directories (canonical) ─────────────────────────────────────────
+COMMUNITY  := formintA
+MERGED     := formint        # Standard + Pro share this codebase
+CLOUD      := formintB
+CLIENT     := formintC
+SDK        := packages/formints-client
+COMMUNITY_VERSION := formint-community
 
 # ── Default ────────────────────────────────────────────────────────────────
 
 help:                 ## Show this help menu
 	@echo ''
 	@echo '╔══════════════════════════════════════════════════════════╗'
-	@echo '║  POS v3.0 — Mini + Formint (merged) + Client Editions ║'
+	@echo '║  POS v4.0 — Community · Standard · Pro · Cloud · Client ║'
 	@echo '╚══════════════════════════════════════════════════════════╝'
 	@echo ''
-	@echo '── Editions ────────────────────────────────────────────────'
-	@echo '  make clean             Delete build artifacts'
+	@echo '── Editions (uniform verbs: install | check | test | run | stop | clean) ──'
+	@echo '  Community (formintA)   — make community-{install,check,test,dev,clean}'
+	@echo '  Standard (formint)     — make standard-{install,check,test,env,stop,clean}'
+	@echo '  Pro (formint)          — make pro-{install,check,test,env,stop,clean}'
+	@echo '  Cloud (formintB)       — make cloud-{install,check,test,dev-backend,stop,clean}'
+	@echo '  pos-client (formintC)  — make client-{install,dev,build,lint,test,clean}'
+	@echo '  SDK (@formints/client) — make sdk-{install,build,typecheck,test}'
 	@echo ''
-	@echo '── POS Mini (Minimal Tauri + Rust/Diesel) ──────────────────'
-	@echo '  make setup-mini        Install dependencies (pnpm + cargo)'
-	@echo '  make dev-mini          Start Vite dev server (port 1420)'
-	@echo '  make dev-desktop-mini  Start full Tauri desktop app (hot-reload, with Rust backend)'
-	@echo '  make build-mini        Build desktop app (production)'
-	@echo '  make check-mini        TypeScript + Rust compilation check'
+	@echo '── Aggregates ──────────────────────────────────────────────'
+	@echo '  make install-all       Install every edition'
+	@echo '  make check-all         Run checks for every edition'
+	@echo '  make test-all          Run every edition test suite'
+	@echo '  make stop-all          Stop all running dev processes'
+	@echo '  make clean-all         Clean every edition'
 	@echo ''
-	@echo '── Formint POS (merged pos-full + pos-solo) ────────────────'
-	@echo '  make formint-install   Install backend .venv + frontend npm + migrate'
-	@echo '  make formint-run       Run backend (API + admin on :8767)'
-	@echo '  make formint-env       Run full env (backend :8767 + frontend :4321 in tmux)'
-	@echo '  make formint-stop      Stop the formint tmux env'
-	@echo '  make formint-test      Run backend + JS contract tests'
-	@echo '  make formint-check     Django check + astro check'
-	@echo '  make formint-sidecar-test   Run merged Robyn sidecar suite'
-	@echo '  make formint-clean     Remove db + staticfiles + node_modules'
+	@echo '── Community quick start ───────────────────────────────────'
+	@echo '  make community-dev        Vite dev server (:1420, browser only)'
+	@echo '  make community-desktop    Full Tauri desktop app (hot-reload)'
+	@echo '  make community-cargo-test Rust cargo test'
+	@echo '  make community-test       Vitest unit tests'
+	@echo '  make community-test-all   Vitest + Playwright e2e'
+	@echo '  make community-seed       Reset + seed restaurant.db'
 	@echo ''
-	@echo '── POS Client (Vue 3 + Tauri desktop) ───────────────────────'
-	@echo '  make setup-client      Install dependencies (pnpm + cargo)'
-	@echo '  make dev-client        Start Vite dev server'
-	@echo '  make build-client      Build frontend for production'
+	@echo '── Merged (Standard/Pro) quick start ──────────────────────'
+	@echo '  make standard-env         Backend :8767 + frontend :4321 (tmux)'
+	@echo '  make standard-test        Backend + frontend contract tests'
+	@echo '  make server-test          Merged Robyn sidecar pytest suite'
 	@echo ''
-	@echo '── All Editions ─────────────────────────────────────────────'
-	@echo '  make dev-all           Start all dev servers concurrently'
+	@echo '── Cloud quick start ───────────────────────────────────────'
+	@echo '  make cloud-dev-backend    Django :8082 (Unfold admin + bolt)'
+	@echo '  make cloud-dev-api        Django :8767 (sidecar-compatible API)'
+	@echo '  make cloud-dev-frontend   Astro :4323 (Community UI)'
+	@echo '  make cloud-test           Backend Django test suite'
 	@echo ''
-	@echo '── POS Server (Merged Robyn sidecar — formint-pos/sidecar) ─'
-	@echo '  make server-install    Install sidecar dependencies'
-	@echo '  make server-run        Start sidecar (port 8765)'
-	@echo '  make server-dev        Dev mode with hot reload'
-	@echo '  make server-check      Validate imports'
-	@echo '  make server-test       Run merged sidecar test suite'
-	@echo '  make server-clean      Remove database'
-	@echo ''
-	@echo '── POS Cloud Server (Django ASGI + Unfold Admin + Bolt Dashboard) ──'
-	@echo '  make cloud-install     Install cloud server dependencies'
-	@echo '  make cloud-run         Start daphne ASGI server (port 8082)'
-	@echo '  make cloud-dev         Start with auto-reload'
-	@echo '  make cloud-check       Validate Django imports'
-	@echo '  make cloud-test        Run cloud test suite'
-	@echo '  make cloud-clean       Remove cloud database'
+	@echo '── Community version (standalone public repo) ─────────────'
+	@echo '  make community-bundle     Refresh formint-community/ from formintA'
+	@echo '  make community-version    Alias for community-bundle'
 	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
-	@echo '  make screenshots       Capture marketplace screenshots'
-	@echo '  make publish           Prepare publish bundle'
+	@echo '  make screenshots          Capture marketplace screenshots'
+	@echo '  make publish              Prepare publish bundle'
 	@echo ''
-	@echo '── Direct edition access ───────────────────────────────────'
-	@echo '  Delegated: make -C forge-pos <target>  (or formint-pos, pos-client)'
-	@echo '  See per-edition Makefile for full target list.'
+	@echo '── Legacy aliases (kept for back-compat) ──────────────────'
+	@echo '  make mini-*       → community-* · make formint-* → standard/pro (formint)'
+	@echo '  make cloud-*      → cloud (formintB) · make server-* → sidecar tests'
 	@echo ''
 
-clean:                ## Delete build artifacts
-	@echo '── Cleaning build artifacts ──'
-	rm -rf node_modules/ dist/ src-tauri/target/ src-tauri/gen/
-	@echo '✓ Clean. Editions are canonical in forge-pos/ and formint-pos/.'
+# ── Aggregates ─────────────────────────────────────────────────────────────
 
-# ── POS Mini Edition ───────────────────────────────────────────────────
-# Delegates to forge-pos/Makefile for all targets.
+install-all:          ## Install every edition
+	$(MAKE) community-install
+	$(MAKE) standard-install
+	$(MAKE) cloud-install
+	$(MAKE) client-install
+	$(MAKE) sdk-install
 
-setup-mini:           ## Install mini edition dependencies
-	$(MAKE) -C $(FORGE_POS) install
+check-all:            ## Run checks for every edition
+	$(MAKE) community-check
+	$(MAKE) standard-check
+	$(MAKE) cloud-check
+	$(MAKE) client-lint
+	$(MAKE) sdk-typecheck
 
-dev-mini:             ## Start mini Vite dev server (port 1420)
-	$(MAKE) -C $(FORGE_POS) dev
+test-all:             ## Run every edition test suite
+	$(MAKE) community-test
+	$(MAKE) standard-test
+	$(MAKE) cloud-test
+	$(MAKE) client-test
+	$(MAKE) sdk-test
 
-dev-desktop-mini:     ## Start mini Tauri desktop app (hot-reload)
-	$(MAKE) -C $(FORGE_POS) dev-desktop
+stop-all:             ## Stop all running dev processes
+	$(MAKE) -C $(MERGED) stop
+	$(MAKE) -C $(CLOUD) stop
 
-build-mini:           ## Build mini desktop app
-	$(MAKE) -C $(FORGE_POS) build
+clean-all:            ## Clean every edition
+	$(MAKE) -C $(COMMUNITY) clean
+	$(MAKE) -C $(MERGED) clean
+	$(MAKE) -C $(CLOUD) clean
+	$(MAKE) -C $(CLIENT) clean
+	rm -rf $(COMMUNITY_VERSION)
+	@echo '✓ All editions cleaned'
 
-check-mini:           ## Full check (mini)
-	$(MAKE) -C $(FORGE_POS) check
+clean: clean-all      ## Alias — clean every edition
 
-# ── POS Client Edition ──────────────────────────────────────────────────
-# Delegates to pos-client/Makefile.
+# ── Community — formintA ───────────────────────────────────────────────────
 
-setup-client:         ## Install pos-client dependencies
-	$(MAKE) -C $(POS_CLIENT) install
+community-install:    ## Install Community dependencies (pnpm + cargo)
+	$(MAKE) -C $(COMMUNITY) install
 
-dev-client:           ## Start pos-client dev server
-	$(MAKE) -C $(POS_CLIENT) dev
+community-dev:        ## Vite dev server (:1420, browser only)
+	$(MAKE) -C $(COMMUNITY) dev
 
-build-client:         ## Build pos-client desktop app
-	$(MAKE) -C $(POS_CLIENT) build
+community-desktop:    ## Full Tauri desktop app (hot-reload)
+	$(MAKE) -C $(COMMUNITY) dev-desktop
 
-# ── All Editions ───────────────────────────────────────────────────────────
+community-build:      ## Build Community desktop app
+	$(MAKE) -C $(COMMUNITY) build
 
-dev-all:              ## Start all services (development)
-	@echo '── Starting all services ──'
-	@echo '  Starting formint env (backend :8767 + frontend :4321)...'
-	$(MAKE) -C $(FORMINT_POS) env
-	@echo '  Start other editions individually: make dev-mini | dev-client'
+community-check:      ## TypeScript + Rust compilation check
+	$(MAKE) -C $(COMMUNITY) check
 
-# ── POS Server (Merged Robyn sidecar — formint-pos/sidecar) ──────────────
+community-test:       ## Vitest unit tests
+	$(MAKE) -C $(COMMUNITY) test
 
-server-install:               ## Install sidecar dependencies
-	cd $(FORMINT_POS)/sidecar && pip install -r requirements.txt
+community-test-all:   ## Vitest + Playwright e2e
+	$(MAKE) -C $(COMMUNITY) test-all
+
+community-cargo-test: ## Rust cargo test
+	$(MAKE) -C $(COMMUNITY) cargo-test
+
+community-seed:       ## Reset DB + apply preset (PRESET=all|base|gaming|coffee)
+	$(MAKE) -C $(COMMUNITY) seed
+
+community-clean:      ## Clean Community build artifacts
+	$(MAKE) -C $(COMMUNITY) clean
+
+# ── Standard / Pro — formint (merged package) ──────────────────────────────
+
+standard-install pro-install: ## Install merged package (backend + frontend + migrate)
+	$(MAKE) -C $(MERGED) install
+
+standard-check pro-check:     ## Django check + astro check
+	$(MAKE) -C $(MERGED) check
+
+standard-test pro-test:       ## Backend suite + frontend contract tests
+	$(MAKE) -C $(MERGED) test
+
+standard-env pro-env:         ## Backend :8767 + frontend :4321 (tmux)
+	$(MAKE) -C $(MERGED) env
+
+standard-run pro-run:         ## Backend runserver :8767 (foreground)
+	$(MAKE) -C $(MERGED) dev-backend
+
+standard-stop pro-stop:       ## Stop merged tmux env
+	$(MAKE) -C $(MERGED) stop
+
+standard-clean pro-clean:     ## Clean merged artifacts
+	$(MAKE) -C $(MERGED) clean
+
+# ── Cloud — formintB ───────────────────────────────────────────────────────
+
+cloud-install:        ## Install Cloud backend venv + frontend deps
+	$(MAKE) -C $(CLOUD) install
+
+cloud-check:          ## Django check + astro check
+	$(MAKE) -C $(CLOUD) check
+
+cloud-test:           ## Cloud backend Django test suite
+	$(MAKE) -C $(CLOUD) test
+
+cloud-dev-backend:    ## Django :8082 (Unfold admin + bolt)
+	$(MAKE) -C $(CLOUD) dev-backend
+
+cloud-dev-api:        ## Django :8767 (sidecar-compatible API)
+	$(MAKE) -C $(CLOUD) dev-api
+
+cloud-dev-frontend:   ## Astro :4323 (Community UI)
+	$(MAKE) -C $(CLOUD) dev-frontend
+
+cloud-stop:           ## Kill Cloud dev processes
+	$(MAKE) -C $(CLOUD) stop
+
+cloud-clean:          ## Remove Cloud db + bytecode cache
+	$(MAKE) -C $(CLOUD) clean
+
+# ── pos-client — formintC ──────────────────────────────────────────────────
+
+client-install:       ## Install pos-client dependencies
+	$(MAKE) -C $(CLIENT) install
+
+client-dev:           ## Start pos-client Vite dev server
+	$(MAKE) -C $(CLIENT) dev
+
+client-build:         ## Build pos-client for production
+	$(MAKE) -C $(CLIENT) build
+
+client-lint:          ## Lint pos-client (oxlint)
+	$(MAKE) -C $(CLIENT) lint
+
+client-test:          ## Test pos-client (lint + vue-tsc typecheck)
+	$(MAKE) -C $(CLIENT) test
+
+client-clean:         ## Clean pos-client artifacts
+	$(MAKE) -C $(CLIENT) clean
+
+# ── SDK — packages/formints-client ─────────────────────────────────────────
+
+sdk-install:          ## Install @formints/client deps
+	cd $(SDK) && pnpm install
+
+sdk-build:            ## Build the SDK (tsc)
+	cd $(SDK) && pnpm build
+
+sdk-typecheck:        ## Typecheck the SDK
+	cd $(SDK) && pnpm typecheck
+
+sdk-test:             ## Run SDK vitest suite
+	cd $(SDK) && pnpm test
+
+# ── Community version (standalone public repo) ─────────────────────────────
+
+community-bundle community-version: ## Refresh formint-community/ from formintA (with renames)
+	node scripts/publish/community-bundle.cjs
+
+# ── Sidecar server (merged formint/sidecar) ────────────────────────────────
+
+server-install:       ## Install merged sidecar dependencies
+	cd $(MERGED)/sidecar && pip install -r requirements.txt
 	@echo '✓ Sidecar dependencies installed'
 
-server-run:                   ## Start sidecar (port 8765)
-	cd $(FORMINT_POS)/sidecar && python3 server.py --port 8765
+server-run:           ## Start sidecar (port 8765)
+	cd $(MERGED)/sidecar && python3 server.py --port 8765
 
-server-dev:                   ## Start sidecar with hot reload
-	cd $(FORMINT_POS)/sidecar && python3 server.py --port 8765 --dev --verbose
+server-dev:           ## Start sidecar with hot reload
+	cd $(MERGED)/sidecar && python3 server.py --port 8765 --dev --verbose
 
-server-check:                 ## Validate sidecar imports
-	cd $(FORMINT_POS)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -c 'from server import app; print("✓ sidecar OK")'
+server-check:         ## Validate sidecar imports
+	cd $(MERGED)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -c 'from server import app; print("✓ sidecar OK")'
 
-server-test:                  ## Run merged sidecar test suite
-	cd $(FORMINT_POS)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
+server-test:          ## Run merged sidecar test suite
+	cd $(MERGED)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
 
-server-clean:                 ## Clean sidecar data
-	rm -f $(FORMINT_POS)/sidecar/restaurant.db
+server-clean:         ## Clean sidecar data
+	rm -f $(MERGED)/sidecar/restaurant.db
 	@echo '✓ Database cleaned'
 
-# ── POS Cloud Server (Django ASGI + Unfold Admin + Bolt Dashboard) ─────
+# ── Legacy aliases (back-compat) ───────────────────────────────────────────
 
-cloud-install:        ## Install cloud server dependencies
-	pip install channels daphne django-unfold django-bolt django-fusion django-filter djangorestframework msgspec
-	cd $(POS_CLOUD) && python3 manage.py migrate
-	@echo '✓ POS Cloud server dependencies installed'
+mini-install: community-install  ## Alias — Community install
+mini-dev: community-dev          ## Alias — Community Vite dev
+mini-build: community-build      ## Alias — Community build
+mini-check: community-check      ## Alias — Community check
 
-cloud-run:            ## Start daphne ASGI server (port 8082)
-	cd $(POS_CLOUD) && daphne configs.asgi:application --port 8082 --bind 0.0.0.0
+formint-install: standard-install ## Alias — merged install
+formint-env: standard-env         ## Alias — merged env
+formint-run: standard-run         ## Alias — merged backend run
+formint-stop: standard-stop       ## Alias — merged stop
+formint-test: standard-test       ## Alias — merged test
+formint-check: standard-check     ## Alias — merged check
+formint-clean: standard-clean     ## Alias — merged clean
 
-cloud-dev:            ## Start daphne with auto-reload
-	cd $(POS_CLOUD) && daphne configs.asgi:application --port 8082 --bind 0.0.0.0 --reload
+cloud-run: cloud-dev-backend      ## Alias — Cloud Django :8082
+cloud-dev: cloud-dev-backend      ## Alias — Cloud Django :8082
+cloud-clean: cloud-clean          ## Alias — Cloud clean
 
-cloud-check:          ## Validate Django imports
-	cd $(POS_CLOUD) && python3 -c 'import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE","configs"); import django; django.setup(); from core.models import Organization, Branch, BranchProduct; from core.sync_api import sync_receive_products, _broadcast_sync_event; from core.consumers import SyncEventConsumer; print("✓ POS Cloud imports OK")'
+screenshots:          ## Capture marketplace screenshots (Community)
+	$(MAKE) -C $(COMMUNITY) screenshots
 
-cloud-test:           ## Run cloud test suite
-	cd $(POS_CLOUD) && python3 -m pytest tests/ -v --tb=short || echo 'Tests not found or failed'
-
-cloud-clean:          ## Remove cloud database and bytecode cache
-	rm -f $(POS_CLOUD)/pos_cloud.db
-	find $(POS_CLOUD) -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find $(POS_CLOUD) -name '*.pyc' -delete 2>/dev/null || true
-	@echo '✓ Cloud database and cache cleaned'
-
-# ── Formint POS (merged package: pos-full + pos-solo) ────────────────────
-
-formint-install:      ## Install formint-pos (backend .venv + frontend npm + migrate)
-	$(MAKE) -C $(FORMINT_POS) install
-
-formint-run:          ## Run formint-pos backend (API + admin on :8767)
-	$(MAKE) -C $(FORMINT_POS) dev-backend
-
-formint-env:          ## Run full formint env (backend :8767 + frontend :4321 in tmux)
-	$(MAKE) -C $(FORMINT_POS) env
-
-formint-stop:         ## Stop the formint tmux env
-	$(MAKE) -C $(FORMINT_POS) stop
-
-formint-test:         ## Run formint-pos tests (backend + js contract)
-	$(MAKE) -C $(FORMINT_POS) test
-
-formint-check:        ## Validate formint-pos (django check + astro check)
-	$(MAKE) -C $(FORMINT_POS) check
-
-formint-sidecar-test: ## Run merged Robyn sidecar suite (formint-pos/sidecar)
-	cd $(FORMINT_POS)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
-
-formint-clean:        ## Clean formint-pos artifacts (db + staticfiles + node_modules)
-	$(MAKE) -C $(FORMINT_POS) clean
-
-
-# ── Publishing ────────────────────────────────────────────────────────────
-
-screenshots:          ## Capture 6 marketplace screenshots
-	$(MAKE) -C $(FORMINT_POS) screenshots
-
-publish:              ## Prepare publish bundle from formint-pos
+publish:              ## Prepare publish bundle from the merged edition
 	@echo '── Preparing publish bundle ──'
 	@mkdir -p publish-bundle
 	@rsync -a --exclude='node_modules' --exclude='.git' --exclude='src-tauri/target' \
 		--exclude='src-tauri/gen' --exclude='dist' --exclude='legacy-react' \
-		--exclude='sidecar/.venv' $(FORMINT_POS)/ publish-bundle/
-	@cp PUBLISH.md publish-bundle/
+		--exclude='sidecar/.venv' $(MERGED)/ publish-bundle/
+	@cp PUBLISH.md publish-bundle/ 2>/dev/null || true
 	@echo '✓ Bundle ready at publish-bundle/'
 	@du -sh publish-bundle/

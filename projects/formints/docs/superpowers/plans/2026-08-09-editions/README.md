@@ -44,6 +44,7 @@ Cloud (formintB/, pos-cloud)
 | Pro | Django `full_*` (same 48 as Standard) | CRM: `Company`, `Pipeline`, `Stage`, `Contact`, `Deal`, `Activity`, `CRMNote`; fusion render-mode; Unfold admin — no schema delta over Standard | [`03-pro.md`](03-pro.md) |
 | Cloud | Django `pos_cloud.db` | `Organization`, `Branch`, `Lead`, `Contact`, `Deal`, `InventoryReport`, `BranchReport`, `BranchSyncLog`, `BranchProduct`, `BranchSale`, `BranchInventory`, `DeviceToken`, `SyncConflict`, `SyncQueueItem`, **+ `BackupRun` (new)** | [`04-cloud.md`](04-cloud.md) |
 | pos-client | Rust/Diesel + Django shop | Vue client tables + `Category`, `Product`, `Cart`, `CartItem`, `Order`, `OrderItem`, `Employee` | [`05-pos-client.md`](05-pos-client.md) |
+| Community version | (generated from `formintA/`) | standalone `formint-community/` repo bundle — Formints Community rename + publish checklist | [`07-community-version.md`](07-community-version.md) |
 
 ## Execution order & dependencies
 
@@ -64,4 +65,4 @@ Four dimensions apply across the edition plans:
 3. **Complete Playwright e2e per edition.** One suite per edition, run separately: Community (01 A4, reuses `formintA/e2e/`), Standard (02 B8, new config in `formint/frontend/`), Cloud (04 C7, reuses `formintB/frontend/`), pos-client (05 D4, new config in `formintC/`).
 4. **Feature inheritance (the "lower all features" rule).** Every higher edition MUST include all features of every tier below it. Stated as a hard constraint in each plan; each edition's final task includes a parity sweep that verifies the inheritance and fixes gaps.
 
-New/changed files: [`06-js-sdk.md`](06-js-sdk.md) (new) · `01-community.md` (A4, A5) · `02-standard.md` (B6-B8) · `04-cloud.md` (C5-C7) · `05-pos-client.md` (D4-D5).
+New/changed files: [`06-js-sdk.md`](06-js-sdk.md) (new) · [`07-community-version.md`](07-community-version.md) (new — standalone community repo bundle + publish plan) · `01-community.md` (A4, A5) · `02-standard.md` (B6-B8) · `04-cloud.md` (C5-C7) · `05-pos-client.md` (D4-D5).

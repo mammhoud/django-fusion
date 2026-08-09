@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Bg with crest colors -->
+  <rect width="512" height="512" rx="64" fill="#0f172a"/>
+  <!-- Subtle ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#EA580C" stroke-width="3" opacity="0.2"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#FB923C" stroke-width="2" opacity="0.15"/>
+  <!-- Shield simplified -->
+  <path d="M 256 120 L 316 180 L 296 260 L 256 380 L 216 260 L 196 180 Z"
+        fill="none" stroke="#EA580C" stroke-width="8" stroke-linejoin="round" opacity="0.6"/>
+  <path d="M 256 120 L 316 180 L 296 260 L 256 380 L 216 260 L 196 180 Z"
+        fill="#FB923C" opacity="0.08"/>
+  <!-- Diamond -->
+  <polygon points="256,226 276,256 256,286 236,256" fill="#EA580C" opacity="0.7"/>
+  <!-- Text -->
+  <text x="256" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#f8fafc" letter-spacing="3">FORGE</text>
+  <text x="256" y="485" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8">Point of Sale</text>
+</svg>

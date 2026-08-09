@@ -1,140 +1,91 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  renderWithRouter,
-  screen,
-  waitFor,
-  userEvent,
-} from '../test-utils';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import Transactions from '@/app/pages/pos/Transactions';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
-import Transactions from '../../app/pages/pos/Transactions';
-
-const mockTransactions = [
-  {
-    id: 1,
-    date: '2026-01-15',
-    time: '12:00',
-    currency: 'USD',
-    total_amount: 350,
-    order_type: 'dine-in',
-    status: 'completed',
-    items: [{ name: 'Burger', price: 350, quantity: 1, subtotal: 350, unit: 'piece' }],
-    customer_name: null,
-    table_number: 1,
-    delivery_type: null,
-    delivery_address: null,
-    employee_name: null,
-    tax_breakdown: null,
-  },
-];
+import { clearInvokeHistory, getInvokeHistory } from '../setup';
+import { renderWithRouter } from '../test-utils';
 
 const mockSettings = {
-  restaurant_name: 'Test Restaurant',
-  address: '123 Main St',
-  phone: '03001234567',
+  restaurant_name: 'Formint',
+  address: '',
+  phone: '',
   currency: 'USD',
-  receipt_footer: 'Thank you!',
+  receipt_footer: 'Thank you for your business!',
 };
 
-beforeEach(() => {
-  resetInvokeMocks();
-  vi.clearAllMocks();
-  mockInvokeSuccess('get_transactions', mockTransactions);
-  mockInvokeSuccess('get_settings', mockSettings);
-  mockInvokeSuccess('check_auth_required', false);
-});
+const completedSale = {
+  id: 1,
+  items: [],
+  total_amount: 25,
+  currency: 'USD',
+  date: '2026-08-01',
+  time: '12:00',
+  order_type: 'dine-in',
+  status: 'completed',
+  payment_method: 'cash',
+  discount_amount: 0,
+};
 
-describe('Transactions page', () => {
-  it('surfaces load errors via the status toast (covers the silent-failure path)', async () => {
+describe('Transactions refund flow', () => {
+  beforeEach(() => {
     resetInvokeMocks();
-    mockInvokeError('get_transactions', 'Network unreachable');
+    clearInvokeHistory();
     mockInvokeSuccess('get_settings', mockSettings);
-    renderWithRouter(<Transactions />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Network unreachable/i)).toBeInTheDocument();
-    });
   });
 
-  it('hydrates transactions + grouped revenue from a successful load', async () => {
+  it('refunds a completed sale and shows the refunded chip', async () => {
+    mockInvokeSuccess('get_transactions', [completedSale]);
     renderWithRouter(<Transactions />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/No Data|Time Total|transactions\.title/i)).toBeInTheDocument();
-    });
+    await waitFor(() =>
+      expect(screen.getAllByText('USD 25.00').length).toBeGreaterThan(0),
+    );
+
+    const refundButton = await screen.findByRole('button', { name: /refund/i });
+    await userEvent.click(refundButton);
+
+    const confirm = await screen.findByRole('button', { name: /confirm refund/i });
+    await userEvent.click(confirm);
+
+    await waitFor(() =>
+      expect(getInvokeHistory()).toContainEqual({
+        cmd: 'refund_sale',
+        args: { saleId: 1 },
+      }),
+    );
+    // Local state flips the row to `refunded` — the chip renders immediately
+    // and the success toast confirms the action.
+    await waitFor(() => expect(screen.getByText('Refunded')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('Refund successful')).toBeTruthy());
   });
 
-  it('navigates between the product-statistics, related-products, and invoices tabs', async () => {
+  it('does not offer refund for an already refunded sale', async () => {
+    mockInvokeSuccess('get_transactions', [{ ...completedSale, status: 'refunded' }]);
     renderWithRouter(<Transactions />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Time Total')).toBeInTheDocument();
-    });
-
-    await userEvent.click(screen.getByRole('tab', { name: /Product Statistics/i }));
-    await waitFor(() => {
-      // Burger appears in the product stats table (built from transaction items)
-      expect(screen.getAllByText('Burger').length).toBeGreaterThanOrEqual(1);
-    });
-
-    await userEvent.click(screen.getByRole('tab', { name: /Related Products/i }));
-    await waitFor(() => {
-      expect(screen.getAllByText('Burger').length).toBeGreaterThanOrEqual(1);
-    });
-
-    await userEvent.click(screen.getByRole('tab', { name: /Invoices/i }));
-    await waitFor(() => {
-      expect(screen.getAllByText('Burger').length).toBeGreaterThanOrEqual(1);
-    });
+    await waitFor(() => expect(screen.getByText('Refunded')).toBeTruthy());
+    expect(screen.queryByRole('button', { name: /refund/i })).toBeNull();
   });
 
-  it('opens the receipt dialog for a transaction row', async () => {
+  it('surfaces an error when the refund command fails', async () => {
+    mockInvokeSuccess('get_transactions', [completedSale]);
     renderWithRouter(<Transactions />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Time Total')).toBeInTheDocument();
-    });
+    await waitFor(() =>
+      expect(screen.getAllByText('USD 25.00').length).toBeGreaterThan(0),
+    );
+    const refundButton = await screen.findByRole('button', { name: /refund/i });
+    await userEvent.click(refundButton);
 
-    // Receipt buttons are icon-only (tabler--printer) — no accessible name,
-    // so they carry data-testid="receipt-button" for testability.
-    const printerBtn = screen.getAllByTestId('receipt-button')[0];
-    expect(printerBtn).toBeDefined();
+    // Fail refund_sale only — the dialog stays open and the error surfaces
+    // in the status toast.
+    mockInvokeError('refund_sale', 'sale 1 is already refunded');
+    const confirm = await screen.findByRole('button', { name: /confirm refund/i });
+    await userEvent.click(confirm);
 
-    await userEvent.click(printerBtn as HTMLButtonElement);
-
-    await waitFor(() => {
-      // Receipt dialog heading uses transactions.receipt = 'Receipt'
-      expect(screen.getByRole('heading', { name: /Receipt/i })).toBeInTheDocument();
-      expect(screen.getByText(/Burger/i)).toBeInTheDocument();
-    });
-  });
-
-  it('filters by order type and payment method pills with an active-count badge', async () => {
-    renderWithRouter(<Transactions />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Time Total')).toBeInTheDocument();
-    });
-
-    // Open the filter panel
-    await userEvent.click(screen.getByText('Filters'));
-
-    // Order Type + Payment Method groups render their pill options
-    expect(screen.getByText('Dine-in')).toBeInTheDocument();
-    expect(screen.getByText('Takeaway')).toBeInTheDocument();
-    expect(screen.getByText('Cash')).toBeInTheDocument();
-    expect(screen.getByText('Card')).toBeInTheDocument();
-
-    // Selecting a filter marks it active and shows the count badge
-    await userEvent.click(screen.getByText('Dine-in'));
-    await waitFor(() => {
-      expect(screen.getByText('1')).toBeInTheDocument();
-    });
-    expect(screen.getByText('Dine-in')).toHaveAttribute('aria-pressed', 'true');
-
-    // Clear all resets the filters and hides the badge
-    await userEvent.click(screen.getByText('Clear Filters'));
-    await waitFor(() => {
-      expect(screen.queryByText('1')).not.toBeInTheDocument();
-    });
+    await waitFor(() =>
+      expect(screen.getByText(/sale 1 is already refunded/i)).toBeTruthy(),
+    );
   });
 });

@@ -1,0 +1,10 @@
+packages:
+  - '.'
+
+allowBuilds:
+  core-js: false
+  esbuild: false
+  sharp: set this to true or false
+
+onlyBuiltDependencies:
+  - esbuild

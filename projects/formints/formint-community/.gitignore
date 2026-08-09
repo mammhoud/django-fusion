@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+src-tauri/target/
+src-tauri/gen/
+.astro/
+
+# Local data
+restaurant.db
+restaurant.db-*
+.env
+
+# Tests
+test-results/
+playwright-report/
+e2e/screenshots/
+
+# Misc
+.DS_Store
+appmap.log

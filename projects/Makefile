@@ -167,6 +167,7 @@ help:
 		'  website-ctc    - Delegate to ctc-research/Makefile' \
 		'  website-structa- Delegate to lms/Makefile' \
 		'  website-vresume- Delegate to portfolio/Makefile' \
+		'  website-formints- Delegate to formints/Makefile (POS editions dispatcher)' \
 		'  projects       - Run a delegated target in every project Makefile' \
 		'' \
 		'Development and server:' \
@@ -208,6 +209,11 @@ website-structa:
 
 website-vresume:
 	$(MAKE) -C portfolio $(filter-out $@,$(MAKECMDGOALS))
+
+website-formints:
+	$(MAKE) -C formints $(filter-out $@,$(MAKECMDGOALS))
+
+website-pos: website-formints  ## Alias — POS editions dispatcher (projects/formints/Makefile)
 
 projects:
 	@for project in ctc-research lms portfolio; do \
