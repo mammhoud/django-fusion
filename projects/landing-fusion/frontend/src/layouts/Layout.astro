@@ -5,7 +5,7 @@ import CookieConsent from '@/components/ui/CookieConsent.astro';
 import LoginModal from '@/components/ui/LoginModal.astro';
 import BrandModal from '@/components/ui/BrandModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage } from '@/lib/site';
-import { T } from '@/lib/translations';
+import { LANG_META, T } from '@/lib/translations';
 import '../styles/globals.css';
 
 // Self-hosted fonts (no Google Fonts <link> in production). The family names
@@ -14,6 +14,12 @@ import '../styles/globals.css';
 import '@fontsource-variable/bricolage-grotesque';
 import '@fontsource-variable/public-sans';
 import '@fontsource-variable/jetbrains-mono';
+
+// Direction per language, derived from the single LANG_META catalog for the
+// FOUC-free pre-paint script (define:vars inlines it into the HTML).
+const langDirs = Object.fromEntries(
+  Object.entries(LANG_META).map(([code, meta]) => [code, meta.dir]),
+);
 
 interface Props {
   title?: string;
@@ -98,13 +104,15 @@ void THEME_STORAGE_KEY;
 
     <!-- FOUC-free language + direction. The LanguageSwitcher Alpine component
          reads the same ``fusion-lang`` localStorage key and updates the DOM,
-         but this inline script runs first so RTL languages never flash LTR. -->
-    <script is:inline>
+         but this inline script runs first so RTL languages never flash LTR.
+         The direction map derives from LANG_META (one catalog), so adding a
+         language or flipping its dir here needs no second edit. -->
+    <script is:inline define:vars={{ langDirs }}>
       (function () {
         var r = document.documentElement;
         var stored = null;
         try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
-        var dirs = { ar:'rtl' };
+        var dirs = langDirs;
         if (stored && dirs[stored]) r.dir = dirs[stored];
         else if (stored) r.dir = 'ltr';
         if (stored) r.lang = stored;

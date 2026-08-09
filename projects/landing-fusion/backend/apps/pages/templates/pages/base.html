@@ -43,7 +43,7 @@
   <script>
     (function () {
       var root = document.documentElement;
-      var supported = { en: 'ltr', ar: 'rtl', sv: 'ltr', fr: 'ltr', de: 'ltr', es: 'ltr', pt: 'ltr' };
+      var supported = {{ fusion_language_dirs_json|safe }};
       var stored = null;
       try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
       if (stored && supported[stored]) {

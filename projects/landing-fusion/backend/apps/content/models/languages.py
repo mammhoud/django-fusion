@@ -7,8 +7,9 @@ this snippet. The seed command populates it from ``DEFAULT_SITE_LANGUAGES``
 entries from the Wagtail admin, and ``GET /apis/content/languages/`` serves
 the active rows to the frontend switcher.
 
-Editorial content itself stays in the ``PageTranslation`` snippet (en/ar
-today), while this catalog governs which languages the switcher can offer.
+Editorial content itself stays in the ``PageTranslation`` snippet (seeded
+overlays for every catalog language, English canonical), while this catalog
+governs which languages the switcher can offer.
 """
 
 from django.db import models
@@ -18,8 +19,8 @@ from wagtail.snippets.models import register_snippet
 
 
 # Keep the learner catalog aligned with the site switcher. Editorial overlays
-# currently exist for English and Arabic, while the remaining languages use
-# the canonical content fallback until translated fields are added.
+# cover every catalog language (English canonical; untranslated fields fall
+# back through the PageTranslation merge contract).
 SUPPORTED_LANGUAGE_CHOICES = (
     ("en", _("English")),
     ("ar", _("Arabic")),

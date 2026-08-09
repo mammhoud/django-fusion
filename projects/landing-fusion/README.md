@@ -107,6 +107,7 @@ make test            # apps.pages tests
 
 ## See also
 
+- [docs/CATALOG_AND_FUSION.md](docs/CATALOG_AND_FUSION.md) — product & edition comparison, the django-fusion dependency surface, and Django Fusion guide references
 - [plan/LANDING_FUSION_PLAN.md](plan/LANDING_FUSION_PLAN.md) — this project's plan
 - [plan/SHADCNBLOCKS_THEME.md](plan/SHADCNBLOCKS_THEME.md) — extracted theme styles
 - [ASTRO_MIGRATION_PLAN.md](../cms-fusion/plan/ASTRO_MIGRATION_PLAN.md) — source plan

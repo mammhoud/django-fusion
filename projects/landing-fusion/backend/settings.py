@@ -121,6 +121,10 @@ TEMPLATES = [
                 # Exposes LANGUAGE_CODE / LANGUAGE_BIDI so base.html can render
                 # <html lang> + dir from the active (cookie-selected) language.
                 "django.template.context_processors.i18n",
+                # Exposes fusion_languages / fusion_languages_json /
+                # fusion_language_dirs_json — the seeded SiteLanguage catalog,
+                # so templates never hardcode codes, flags, or directions.
+                "apps.content.context_processors.fusion_languages",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "wagtail.contrib.settings.context_processors.settings",

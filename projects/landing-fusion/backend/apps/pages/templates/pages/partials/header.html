@@ -79,15 +79,7 @@
       x-data="{
         open: false,
         active: 'en',
-        languages: [
-          { code: 'en', native: 'English', flag: '🇬🇧', dir: 'ltr' },
-          { code: 'ar', native: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-          { code: 'sv', native: 'Svenska', flag: '🇸🇪', dir: 'ltr' },
-          { code: 'fr', native: 'Français', flag: '🇫🇷', dir: 'ltr' },
-          { code: 'de', native: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
-          { code: 'es', native: 'Español', flag: '🇪🇸', dir: 'ltr' },
-          { code: 'pt', native: 'Português', flag: '🇧🇷', dir: 'ltr' }
-        ],
+        languages: {{ fusion_languages_json }},
         init() {
           let stored = null;
           try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
@@ -203,14 +195,15 @@
       <div
         x-data="{
           open: false,
-          active: (function () {
+          active: 'en',
+          languages: {{ fusion_languages_json }},
+          init() {
             let stored = null;
             try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
             const browser = (navigator.language || '').split('-')[0];
-            const codes = ['en', 'ar', 'sv', 'fr', 'de', 'es', 'pt'];
-            return [stored, browser, 'en'].find((code) => codes.includes(code)) || 'en';
-          })(),
-          languages: [{code:'en',native:'English',flag:'🇬🇧',dir:'ltr'},{code:'ar',native:'العربية',flag:'🇸🇦',dir:'rtl'},{code:'sv',native:'Svenska',flag:'🇸🇪',dir:'ltr'},{code:'fr',native:'Français',flag:'🇫🇷',dir:'ltr'},{code:'de',native:'Deutsch',flag:'🇩🇪',dir:'ltr'},{code:'es',native:'Español',flag:'🇪🇸',dir:'ltr'},{code:'pt',native:'Português',flag:'🇧🇷',dir:'ltr'}],
+            const initial = [stored, browser, 'en'].find((code) => this.languages.some((language) => language.code === code));
+            if (initial) this.active = initial;
+          },
           apply(language) {
             document.documentElement.lang = language.code;
             document.documentElement.dir = language.dir;
