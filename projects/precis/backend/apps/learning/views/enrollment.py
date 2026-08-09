@@ -16,12 +16,12 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from apps.pages.lms.forms import (
+from apps.learning.forms import (
     CourseEnrollmentBulkForm,
     CourseEnrollmentForm,
     EnrollmentLeadFilterForm,
 )
-from apps.pages.lms.models import Course, CourseEnrollmentLead
+from apps.learning.models import Course, CourseEnrollmentLead
 
 logger = logging.getLogger(__name__)
 

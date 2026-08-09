@@ -18,12 +18,12 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.pages.lms.forms.enrollment import CourseEnrollmentForm
-from apps.pages.lms.management.services.payment_providers import (
+from apps.learning.forms.enrollment import CourseEnrollmentForm
+from apps.learning.management.services.payment_providers import (
     PaymentException,
     PaymentProviderRegistry,
 )
-from apps.pages.lms.models import CourseEnrollmentLead, PaymentTransaction
+from apps.learning.models import CourseEnrollmentLead, PaymentTransaction
 
 logger = logging.getLogger(__name__)
 
@@ -385,7 +385,7 @@ def webhook_paymo(request):
 
 def _log_webhook(provider, payload):
     """Log webhook event"""
-    from apps.pages.lms.models import PaymentWebhookLog
+    from apps.learning.models import PaymentWebhookLog
     
     event_type = payload.get('event_type') or payload.get('type', 'unknown')
     

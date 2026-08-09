@@ -9,7 +9,7 @@ register_converter(UnicodeSlugConverter, "unislug")
 from django_fusion.contrib.api import branding, health
 
 from apps.pages.blog import api as blog
-from apps.pages.lms.api import courses, events
+from apps.learning.api import courses, events
 from apps.pages.pages import api as pages
 from apps.pages.products import api as products
 

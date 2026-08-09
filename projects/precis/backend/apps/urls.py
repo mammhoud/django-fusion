@@ -23,6 +23,14 @@ except ImportError:
     assets_urls = None
 from django_fusion.core.health.views import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_fusion.core.utils import get_root_redirect_pattern
+
+# ── Fusion introspection (plugin map + component usage + render tracker) ──
+try:
+    from django_fusion.plugins.debug_tools.introspection import (
+        fusion_introspection_urls,
+    )
+except ImportError:  # pragma: no cover - older django-fusion
+    fusion_introspection_urls = None
 from apps.core.routes import site
 from apps.pages.pages import landing_api
 
@@ -110,6 +118,7 @@ urlpatterns = [
     path("apis/site/settings/", landing_api.site_settings_api, name="landing-site-settings"),
     path("apis/navigation/", landing_api.navigation_api, name="landing-navigation"),
     path("apis/contact/", landing_api.contact_api, name="landing-contact"),
+    path("apis/auth/status/", landing_api.auth_status_api, name="landing-auth-status"),
     path("apis/pages/", landing_api.page_list_api, name="landing-page-list"),
     path("apis/pages/<str:slug>/", landing_api.page_data_api, name="landing-page-data"),
     path("apis/assets/", landing_api.assets_api, name="landing-assets"),
@@ -119,6 +128,10 @@ urlpatterns = [
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
     path("accounts/", include("allauth.urls")),
+    # ── Auth — django-allauth headless API (/api/auth/browser/v1/auth/*)
+    # Consumed by the Alpine login modal (Astro frontend + Django templates).
+    # Social provider redirects: /accounts/<provider>/login/?next=…
+    path("api/auth/", include("allauth.headless.urls")),
 ]
 
 if assets_urls is not None:
@@ -232,6 +245,10 @@ if settings.DEBUG:
         urlpatterns = configure_dev_urls(urlpatterns, settings)
     except Exception:
         pass
+
+# ── Fusion introspection dashboard + API (plugin map, tracker) ──────────────
+if fusion_introspection_urls is not None:
+    urlpatterns += fusion_introspection_urls()
 
 # ── Static / media fallback ───────────────────────────────────────────────────
 urlpatterns += staticfiles_urlpatterns()

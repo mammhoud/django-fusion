@@ -114,7 +114,7 @@ LMS_FIXTURES = [
 ]
 LMS_FIXTURE_DIR = (
     Path(__file__).resolve().parent.parent
-    / "apps" / "pages" / "lms" / "fixtures"
+    / "apps" / "learning" / "fixtures"
 )
 
 # Expected LMS fixture content (spot checks — actual titles in courses.json)
@@ -501,7 +501,7 @@ class TestFixtureData(TestCase):
 
     def test_medical_research_courses_have_complete_learning_metadata(self):
         """Medical courses are published and contain usable research metadata."""
-        from apps.pages.lms.models import Course
+        from apps.learning.models import Course
 
         courses = Course.objects.filter(slug__in=EXPECTED_MEDICAL_COURSE_SLUGS)
         assert courses.count() == len(EXPECTED_MEDICAL_COURSE_SLUGS)

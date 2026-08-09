@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_fusion.routes.pages.handler import PageHandler
-from apps.pages.lms.models.courses.info import Course
+from apps.learning.models.courses.info import Course
 from apps.pages.products.services.cart_service import CartService
 
 class CartView(PageHandler):

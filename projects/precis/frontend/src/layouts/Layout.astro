@@ -2,6 +2,7 @@
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import CookieConsent from '@/components/ui/CookieConsent.astro';
+import LoginModal from '@/components/ui/LoginModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage, siteUrl } from '@/lib/site';
 import '../styles/globals.css';
 import faviconPath from '@assets/static/images/favicon.png';
@@ -68,7 +69,7 @@ void THEME_STORAGE_KEY;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
 
-    <meta name="theme-color" content="#FCFCFA" />
+    <meta name="theme-color" content="#F5F2EB" />
 
     <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
@@ -80,14 +81,14 @@ void THEME_STORAGE_KEY;
         root.classList.remove('light', 'dark');
         root.classList.add(dark ? 'dark' : 'light');
         var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', dark ? '#131312' : '#fcfcfa');
+        if (meta) meta.setAttribute('content', dark ? '#0C1210' : '#F5F2EB');
       })();
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
 
@@ -152,11 +153,13 @@ void THEME_STORAGE_KEY;
 
     <div class="flex min-h-screen flex-col">
       <Header siteName={siteName} navItems={navItems} />
-      <main class="flex-1">
+      <main class="flex-1 pt-24 md:pt-28">
         <slot />
       </main>
       <Footer siteSettings={siteSettings} siteName={siteName} />
     </div>
+
+    <LoginModal />
 
     <CookieConsent />
 
@@ -267,7 +270,7 @@ void THEME_STORAGE_KEY;
         root.classList.toggle('dark', isDark);
         root.classList.toggle('light', !isDark);
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', isDark ? '#131312' : '#fcfcfa');
+        if (meta) meta.setAttribute('content', isDark ? '#0C1210' : '#F5F2EB');
       });
 
       // ── Hydration skeleton removal ────────────────────────────────────
@@ -279,6 +282,12 @@ void THEME_STORAGE_KEY;
         document.body.classList.remove('is-hydrating');
         reduxStore.dispatch(setLoaded());
       }, 3000);
+    </script>
+
+    <!-- Fusion modular bundle — scroll reveal, smooth anchors, fragment
+         hydration + typed module re-exports (see src/fusion/). -->
+    <script>
+      import '../fusion';
     </script>
 
     <!-- HTMX bootstrap is now loaded per-page via <HtmxBootstrap /> —

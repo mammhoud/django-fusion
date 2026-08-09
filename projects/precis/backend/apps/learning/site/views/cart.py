@@ -23,7 +23,7 @@ def _get_payment_mixin():
         return type('PaymentProcessingMixin', (), {})
 
 
-from apps.pages.lms.models import Course, Enrollment
+from apps.learning.models import Course, Enrollment
 
 
 # Base class that will be dynamically updated
@@ -37,7 +37,28 @@ class EnrollView(PageHandler, View):
     layout_path = "profile/skeleton.html"
 
     def dispatch(self, request, *args, **kwargs):
-        """Apply PaymentProcessingMixin bases lazily at request time."""
+        """Apply PaymentProcessingMixin bases lazily at request time.
+
+        ``self.__class__`` is swapped for a dynamic subclass that also inherits
+        PaymentMixin, so ``super().dispatch`` (which resolves against the
+        original class) would raise TypeError. Call ``View.dispatch`` directly
+        — it looks up ``self.get``/``self.post`` on the instance, which the
+        dynamic class still carries.
+        """
+        # Enrollment requires an authenticated user; redirect guests to login.
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+
+            login_url = redirect_to_login(request.get_full_path()).url
+            if request.headers.get("HX-Request"):
+                response = JsonResponse({
+                    "status": "error",
+                    "message": "Please sign in to enroll in this course.",
+                })
+                response["HX-Redirect"] = login_url
+                return response
+            return redirect(login_url)
+
         PaymentMixin = _get_payment_mixin()
         if PaymentMixin and not isinstance(self, PaymentMixin):
             self.__class__ = type(
@@ -45,7 +66,7 @@ class EnrollView(PageHandler, View):
                 (PageHandler, PaymentMixin, View),
                 dict(self.__class__.__dict__),
             )
-        return super().dispatch(request, *args, **kwargs)
+        return View.dispatch(self, request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
         # Get the course from slug

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django_fusion.models.base import BaseModel as DefaultBase
 
-from apps.pages.lms.management.managers.enrollments import EnrollmentManager
+from apps.learning.management.managers.enrollments import EnrollmentManager
 
 
 class Enrollment(

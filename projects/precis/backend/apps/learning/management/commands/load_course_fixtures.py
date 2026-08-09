@@ -137,7 +137,7 @@ class Command(BaseCommand):
 
     def _show_summary(self):
         """Show a summary of loaded data."""
-        from apps.pages.lms.models import Course, CourseTag, Specialization
+        from apps.learning.models import Course, CourseTag, Specialization
         
         courses_count = Course.objects.count()
         tags_count = CourseTag.objects.count()

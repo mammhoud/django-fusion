@@ -285,6 +285,59 @@ def newsletter_subscribe_api(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"success": valid, "message": "Subscribed!" if valid else "Please enter a valid email address."}, status=200 if valid else 400)
 
 
+def auth_status_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/auth/status/ — auth state plus learner entitlements.
+
+    Mirrors landing-fusion's endpoint so the shared Astro header can render
+    the same session-aware dropdown (user avatar, profile, learning summary)
+    on both sites. The account stays owned by allauth; learning contributes
+    a compact summary of the user's active/completed enrollments.
+    """
+    user = request.user if request.user.is_authenticated else None
+    learning = {"active": 0, "completed": 0, "next": None}
+    if user:
+        try:
+            from apps.learning.models.enrollment import Enrollment
+
+            rows = Enrollment.objects.filter(student=user)
+            # Status field is the lifecycle contract (active/completed/dropped)
+            # — consistent with landing-fusion's auth-status semantics.
+            active = rows.filter(status="active")
+            next_enrollment = (
+                active.select_related("course").order_by("-last_accessed_at", "-created_at").first()
+            )
+            learning = {
+                "active": active.count(),
+                "completed": rows.filter(status="completed").count(),
+                "next": (
+                    {
+                        "title": next_enrollment.course.title,
+                        # Precis detail route: /learning/course/<slug>/
+                        "href": f"/learning/course/{next_enrollment.course.slug}/",
+                        "progress": next_enrollment.progress,
+                    }
+                    if next_enrollment
+                    else None
+                ),
+            }
+        except Exception:
+            logger.exception("auth_status learning summary failed")
+    return JsonResponse(
+        {
+            "authenticated": user is not None,
+            "user": (
+                {
+                    "email": user.email,
+                    "display": user.email.split("@")[0] if user else None,
+                }
+                if user
+                else None
+            ),
+            "learning": learning,
+        }
+    )
+
+
 def htmx_ping_api(request: HttpRequest) -> HttpResponse:
     return HttpResponse(
         f'<div class="text-center"><p class="font-mono text-2xl font-bold text-fu-link">{datetime.now():%Y-%m-%d %H:%M:%S}</p>'

@@ -7,7 +7,7 @@ These provide partial HTML responses for dynamic page updates.
 
 Usage::
 
-    from apps.pages.lms.components import CourseListFragment
+    from apps.learning.components import CourseListFragment
     # Register in apps/projects/routes.py → LMSApp.viewsets
 """
 
@@ -45,8 +45,8 @@ class DashboardComponent(RoutableComponent):
         return context
 
     def _get_stats(self):
-        from apps.pages.lms.models.courses import Course
-        from apps.pages.lms.models.enrollment import Enrollment
+        from apps.learning.models.courses import Course
+        from apps.learning.models.enrollment import Enrollment
         return {
             "total_courses": Course.objects.count(),
             "total_enrollments": Enrollment.objects.count(),
@@ -54,7 +54,7 @@ class DashboardComponent(RoutableComponent):
         }
 
     def _get_recent_enrollments(self):
-        from apps.pages.lms.models.enrollment import Enrollment
+        from apps.learning.models.enrollment import Enrollment
         return Enrollment.objects.select_related("student", "course").order_by("-enrolled_at")[:10]
 
 
@@ -143,7 +143,7 @@ class CourseListFragment(FragmentComponent):
         return user.is_authenticated
 
     def get_queryset(self):
-        from apps.pages.lms.models.courses import Course
+        from apps.learning.models.courses import Course
         qs = Course.objects.filter(published=True).select_related("instructor")
 
         q = self.request.GET.get("q", "").strip()
@@ -161,7 +161,7 @@ class CourseListFragment(FragmentComponent):
     def get_fragment_context(self, **kwargs):
         context = super().get_fragment_context(**kwargs)
         # Add filter options
-        from apps.pages.lms.models.courses import Course
+        from apps.learning.models.courses import Course
         context["search_query"] = self.request.GET.get("q", "")
         context["selected_category"] = self.request.GET.get("category", "")
         return context

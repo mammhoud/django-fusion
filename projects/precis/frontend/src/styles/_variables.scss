@@ -6,34 +6,43 @@
 //   or:  @use "variables" as v;  // then v.$fu-paper etc.
 
 // ── Brand / theme tokens (CSS custom properties are canonical at runtime) ──
-$fu-paper: hsl(46, 25%, 98%);
-$fu-ink: hsl(40, 6%, 10%);
-$fu-muted: hsl(45, 5%, 44%);
-$fu-line: hsl(45, 14%, 88%);
-$fu-card: hsl(48, 33%, 100%);
-$fu-link: hsl(217, 91%, 43%);
-$fu-link-dark: hsl(218, 91%, 34%);
-$fu-mark: hsl(48, 100%, 60%);
+// Precis LMS brand kit: clinical ink + warm paper, teal + amber.
+$fu-paper: hsl(162, 25%, 98%);   // warm paper #F5F2EB
+$fu-ink: hsl(163, 21%, 7%);      // clinical ink #0C1210
+$fu-muted: hsl(165, 7%, 40%);
+$fu-line: hsl(160, 12%, 86%);
+$fu-card: hsl(45, 33%, 99%);
+$fu-link: hsl(166, 63%, 33%);    // clinical teal #1F8A70
+$fu-link-dark: hsl(167, 66%, 27%);
+$fu-mark: hsl(38, 62%, 48%);     // evidence amber #C9962E
 $fu-live: hsl(144, 68%, 37%);
+$fu-teal: hsl(166, 63%, 33%);
+$fu-teal-bright: hsl(162, 63%, 44%);
+$fu-amber: hsl(38, 62%, 48%);
+$fu-fog: hsl(150, 5%, 52%);
 
 // Dark mode
-$fu-paper-dark: hsl(45, 6%, 8%);
-$fu-ink-dark: hsl(45, 20%, 93%);
-$fu-muted-dark: hsl(45, 5%, 66%);
-$fu-line-dark: hsl(45, 6%, 20%);
-$fu-card-dark: hsl(45, 6%, 11%);
-$fu-link-dark-mode: hsl(219, 100%, 77%);
+$fu-paper-dark: hsl(163, 21%, 7%);   // clinical ink canvas
+$fu-ink-dark: hsl(45, 27%, 94%);     // warm paper text
+$fu-muted-dark: hsl(152, 5%, 62%);
+$fu-line-dark: hsl(160, 10%, 16%);
+$fu-card-dark: hsl(163, 18%, 10%);
+$fu-link-dark-mode: hsl(162, 63%, 44%);
 
 // ── Typography ─────────────────────────────────────────────────────
-$font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-$font-display: "Bricolage Grotesque", "Public Sans", ui-sans-serif, system-ui, sans-serif;
-$font-mono: "JetBrains Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+$font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-display: "Fraunces", Georgia, "Times New Roman", serif;
+$font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+// ── Premium motion ─────────────────────────────────────────────────
+$ease-premium: cubic-bezier(0.32, 0.72, 0, 1);
+$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
 // ── Spacing & layout ───────────────────────────────────────────────
 $container-max: 80rem;
-$section-padding-y: 4rem;
-$section-padding-y-md: 5rem;
-$section-padding-y-lg: 6rem;
+$section-padding-y: 5rem;
+$section-padding-y-md: 6rem;
+$section-padding-y-lg: 8rem;
 
 // ── Breakpoints (Tailwind-compatible) ──────────────────────────────
 $break-sm: 640px;
@@ -42,9 +51,9 @@ $break-lg: 1024px;
 $break-xl: 1280px;
 
 // ── Transitions ────────────────────────────────────────────────────
-$transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-$transition-fast: 0.2s ease;
-$transition-slow: 0.55s ease-out;
+$transition-base: 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+$transition-fast: 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+$transition-slow: 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 
 // ── Z-index scale ──────────────────────────────────────────────────
 $z-header: 50;

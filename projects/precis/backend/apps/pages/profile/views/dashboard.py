@@ -9,8 +9,8 @@ from django_fusion.models.tags import (
     PersonTag,
 )
 
-from apps.pages.lms.models import Course, Enrollment
-from apps.pages.lms.models.courses.progress import LessonProgress
+from apps.learning.models import Course, Enrollment
+from apps.learning.models.courses.progress import LessonProgress
 
 logger = logging.getLogger(__name__)
 

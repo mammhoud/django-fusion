@@ -1,112 +1,113 @@
 /* ============================================================
- * CTC-RESEARCH.COM — Site Palette
- * Theme 1 (Blue/Teal) light + dark
+ * PRECIS LMS — Site Palette (brand kit)
+ * Clinical ink + warm paper, clinical teal + evidence amber.
+ * Light + dark.
  *
  * Defines only --theme-* tokens. All semantic/component tokens
  * are inherited from the shared file via _master.scss import.
  * ============================================================ */
 
-/* ── Theme 1 – Blue/Teal (Light) ────────────────────────────  */
+/* ── Theme 1 – Clinical Teal (Light) ─────────────────────────  */
 [data-theme="theme1"] {
-  --theme-primary:         #00a1b3;
-  --theme-primary-dark:    #007a88;
-  --theme-primary-light:   #1a7fd4;
-  --theme-primary-lighter: #cce0ff;
-  --theme-primary-darker:  #002a59;
+  --theme-primary:         #1F8A70;
+  --theme-primary-dark:    #176b57;
+  --theme-primary-light:   #2FB392;
+  --theme-primary-lighter: #d9f0ea;
+  --theme-primary-darker:  #0c3a2e;
 
-  --theme-secondary:         #008080;
-  --theme-secondary-dark:    #006D6D;
-  --theme-secondary-light:   #4DB3B3;
-  --theme-secondary-lighter: #E6F7F7;
+  --theme-secondary:         #2FB392;
+  --theme-secondary-dark:    #1F8A70;
+  --theme-secondary-light:   #5cc8ad;
+  --theme-secondary-lighter: #e0f5ef;
 
-  --theme-accent:       #6C63FF;
-  --theme-accent-dark:  #5A52D4;
-  --theme-accent-light: #8B84FF;
-  --theme-accent-alt:   #FF6B8B;
+  --theme-accent:       #C9962E;
+  --theme-accent-dark:  #a87a1f;
+  --theme-accent-light: #d9ab4d;
+  --theme-accent-alt:   #7E8A82;
 
-  --theme-bg-primary:   #FFFFFF;
-  --theme-bg-secondary: #F5F7FA;
-  --theme-bg-tertiary:  #EBEFF5;
-  --theme-bg-inverse:   #1A1D23;
-  --theme-bg-overlay:   rgba(255, 255, 255, 0.96);
+  --theme-bg-primary:   #F5F2EB;
+  --theme-bg-secondary: #FCFAF6;
+  --theme-bg-tertiary:  #ece8de;
+  --theme-bg-inverse:   #0C1210;
+  --theme-bg-overlay:   rgba(245, 242, 235, 0.96);
 
-  --theme-surface:         #FFFFFF;
+  --theme-surface:         #FCFAF6;
   --theme-surface-elevated:#FFFFFF;
-  --theme-surface-overlay: rgba(255, 255, 255, 0.95);
+  --theme-surface-overlay: rgba(252, 250, 246, 0.95);
 
-  --theme-text-primary:  #1a1a1a;
-  --theme-text-secondary:#3d3d3d;
-  --theme-text-tertiary: #5c5c5c;
-  --theme-text-inverse:  #FFFFFF;
-  --theme-text-accent:   #0056b3;
-  --theme-text-muted:    #767676;
-  --theme-text-disabled: #a0a0a0;
+  --theme-text-primary:  #0C1210;
+  --theme-text-secondary:#2a332e;
+  --theme-text-tertiary: #47524c;
+  --theme-text-inverse:  #F5F2EB;
+  --theme-text-accent:   #1F8A70;
+  --theme-text-muted:    #6b746e;
+  --theme-text-disabled: #9aa29d;
 
-  --theme-border-primary:  #d0d7de;
-  --theme-border-secondary:#b0bac5;
-  --theme-border-tertiary: #8a96a3;
-  --theme-border-accent:   #0056b3;
-  --theme-border-inverse:  #1a1a1a;
+  --theme-border-primary:  #ddd9cd;
+  --theme-border-secondary:#c9c4b6;
+  --theme-border-tertiary: #b3ac9c;
+  --theme-border-accent:   #1F8A70;
+  --theme-border-inverse:  #0C1210;
 
-  --theme-shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.05);
-  --theme-shadow:       0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --theme-shadow-md:    0 6px 12px -2px rgba(0, 0, 0, 0.1), 0 3px 6px -1px rgba(0, 0, 0, 0.08);
-  --theme-shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --theme-shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --theme-shadow-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --theme-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --theme-shadow-sm:    0 1px 2px rgba(12, 18, 16, 0.06);
+  --theme-shadow:       0 4px 6px -1px rgba(12, 18, 16, 0.08), 0 2px 4px -1px rgba(12, 18, 16, 0.05);
+  --theme-shadow-md:    0 6px 12px -2px rgba(12, 18, 16, 0.08), 0 3px 6px -1px rgba(12, 18, 16, 0.06);
+  --theme-shadow-lg:    0 10px 15px -3px rgba(12, 18, 16, 0.1), 0 4px 6px -2px rgba(12, 18, 16, 0.05);
+  --theme-shadow-xl:    0 20px 25px -5px rgba(12, 18, 16, 0.1), 0 10px 10px -5px rgba(12, 18, 16, 0.04);
+  --theme-shadow-2xl:   0 25px 50px -12px rgba(12, 18, 16, 0.25);
+  --theme-shadow-inner: inset 0 2px 4px 0 rgba(12, 18, 16, 0.06);
 
-  --theme-primary-rgb:      0, 161, 179;
-  --theme-secondary-rgb:    0, 128, 128;
-  --theme-accent-rgb:       108, 99, 255;
-  --theme-bg-primary-rgb:   255, 255, 255;
-  --theme-bg-secondary-rgb: 245, 247, 250;
-  --theme-bg-tertiary-rgb:  235, 239, 245;
-  --theme-surface-rgb:      255, 255, 255;
+  --theme-primary-rgb:      31, 138, 112;
+  --theme-secondary-rgb:    47, 179, 146;
+  --theme-accent-rgb:       201, 150, 46;
+  --theme-bg-primary-rgb:   245, 242, 235;
+  --theme-bg-secondary-rgb: 252, 250, 246;
+  --theme-bg-tertiary-rgb:  236, 232, 222;
+  --theme-surface-rgb:      252, 250, 246;
 }
 
-/* ── Theme 1 – Blue/Teal (Dark) ─────────────────────────────  */
+/* ── Theme 1 – Clinical Ink (Dark) ───────────────────────────  */
 [data-theme="dark"],
 .dark-theme {
-  --theme-primary:         #5FA8D4;
-  --theme-primary-dark:    #3A7CA5;
-  --theme-primary-light:   #8BC8F0;
-  --theme-primary-lighter: #BAE6FF;
-  --theme-primary-darker:  #1A4D63;
+  --theme-primary:         #2FB392;
+  --theme-primary-dark:    #1F8A70;
+  --theme-primary-light:   #5cc8ad;
+  --theme-primary-lighter: #a9e2d2;
+  --theme-primary-darker:  #0c3a2e;
 
-  --theme-secondary:         #00A3A3;
-  --theme-secondary-dark:    #008080;
-  --theme-secondary-light:   #4DB3B3;
-  --theme-secondary-lighter: #E6F7F7;
+  --theme-secondary:         #1F8A70;
+  --theme-secondary-dark:    #176b57;
+  --theme-secondary-light:   #2FB392;
+  --theme-secondary-lighter: #17332b;
 
-  --theme-accent:       #8B8BFF;
-  --theme-accent-dark:  #6C63FF;
-  --theme-accent-light: #A8A4FF;
-  --theme-accent-alt:   #FF8BA7;
+  --theme-accent:       #D3A43C;
+  --theme-accent-dark:  #C9962E;
+  --theme-accent-light: #e0b963;
+  --theme-accent-alt:   #7E8A82;
 
-  --theme-bg-primary:   #0F172A;
-  --theme-bg-secondary: #1E293B;
-  --theme-bg-tertiary:  #2D3748;
-  --theme-bg-inverse:   #F8FAFC;
-  --theme-bg-overlay:   rgba(15, 23, 42, 0.96);
+  --theme-bg-primary:   #0C1210;
+  --theme-bg-secondary: #101815;
+  --theme-bg-tertiary:  #141d19;
+  --theme-bg-inverse:   #F5F2EB;
+  --theme-bg-overlay:   rgba(12, 18, 16, 0.96);
 
-  --theme-surface:         #1E293B;
-  --theme-surface-elevated:#2D3748;
-  --theme-surface-overlay: rgba(15, 23, 42, 0.95);
+  --theme-surface:         #101815;
+  --theme-surface-elevated:#141d19;
+  --theme-surface-overlay: rgba(16, 24, 21, 0.95);
 
-  --theme-text-primary:  #F1F5F9;
-  --theme-text-secondary:#E2E8F0;
-  --theme-text-tertiary: #A0AEC0;
-  --theme-text-inverse:  #0F172A;
-  --theme-text-accent:   #8BC8F0;
-  --theme-text-muted:    #94A3B8;
-  --theme-text-disabled: #64748B;
+  --theme-text-primary:  #F5F2EB;
+  --theme-text-secondary:#e3dfd3;
+  --theme-text-tertiary: #b8b3a5;
+  --theme-text-inverse:  #0C1210;
+  --theme-text-accent:   #5cc8ad;
+  --theme-text-muted:    #9aa39d;
+  --theme-text-disabled: #6b746e;
 
-  --theme-border-primary:  #374151;
-  --theme-border-secondary:#4B5563;
-  --theme-border-tertiary: #6B7280;
-  --theme-border-accent:   #5FA8D4;
-  --theme-border-inverse:  #F1F5F9;
+  --theme-border-primary:  #24312a;
+  --theme-border-secondary:#1a241f;
+  --theme-border-tertiary: #314036;
+  --theme-border-accent:   #2FB392;
+  --theme-border-inverse:  #F5F2EB;
 
   --theme-shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.3);
   --theme-shadow:       0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
@@ -116,11 +117,11 @@
   --theme-shadow-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.5);
   --theme-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
 
-  --theme-primary-rgb:      95, 168, 212;
-  --theme-secondary-rgb:    0, 163, 163;
-  --theme-accent-rgb:       139, 139, 255;
-  --theme-bg-primary-rgb:   15, 23, 42;
-  --theme-bg-secondary-rgb: 30, 41, 59;
-  --theme-bg-tertiary-rgb:  45, 55, 72;
-  --theme-surface-rgb:      30, 41, 59;
+  --theme-primary-rgb:      47, 179, 146;
+  --theme-secondary-rgb:    31, 138, 112;
+  --theme-accent-rgb:       211, 164, 60;
+  --theme-bg-primary-rgb:   12, 18, 16;
+  --theme-bg-secondary-rgb: 16, 24, 21;
+  --theme-bg-tertiary-rgb:  20, 29, 25;
+  --theme-surface-rgb:      16, 24, 21;
 }

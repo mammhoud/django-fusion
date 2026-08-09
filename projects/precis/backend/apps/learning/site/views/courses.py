@@ -1,4 +1,5 @@
 import logging
+import math
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -12,14 +13,14 @@ from django_fusion.routes.views.mixins import FilterMixin, SearchMixin
 from django_fusion.models import CachingStorage
 from django_fusion.routes.pages.handler import PageHandler
 
-from apps.pages.lms.models import Course, CourseEnrollmentLead, CourseTag, Wishlist
+from apps.learning.models import Course, CourseEnrollmentLead, CourseTag, Wishlist
 
 logger = logging.getLogger(__name__)
 
 
 class FrontCourseDetailView(PageHandler, TemplateView):
     page_title = "Course"
-    template_name = "course.html"
+    template_name = "learning/course.html"
     template = "base_page.html"
     layout_path = "learning/skeleton.html"
 
@@ -361,7 +362,7 @@ class CourseSearchView(SearchMixin, FilterMixin, ListView):
         )
 
         # Get specializations with course counts
-        from apps.pages.lms.models import Specialization  # Import if needed
+        from apps.learning.models import Specialization  # Import if needed
 
         specializations = (
             Specialization.objects.annotate(
@@ -454,15 +455,16 @@ class CourseSearchAPIView(ListView):
             query=query, filters=filters, page=page, per_page=self.paginate_by
         )
 
-        # Prepare response data
+        # Prepare response data (get_cached_search_results returns a plain
+        # dict — no page_obj — so page/pages are derived from total_count).
         response_data = {
             "success": True,
             "query": query,
             "filters": filters,
             "cache_hit": results.get("from_cache", False),
             "total": results["total_count"],
-            "page": results["page_obj"].number,
-            "pages": results["page_obj"].paginator.num_pages,
+            "page": int(page),
+            "pages": max(1, math.ceil(results["total_count"] / self.paginate_by)),
             "courses": [
                 {
                     "id": course.id,

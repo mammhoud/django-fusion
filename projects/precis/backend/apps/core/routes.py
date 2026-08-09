@@ -45,13 +45,13 @@ class LMSApp(Application):
     @viewprop
     def viewsets(self):
         # Lazy import to avoid circular dependencies during module load
-        from apps.pages.lms.components import (
+        from apps.learning.components import (
             CourseListFragment,
             DashboardComponent,
             PrivacyPageFragment,
             StaticPageFragment,
         )
-        from apps.pages.lms.viewsets import CourseViewset, EnrollmentViewset
+        from apps.learning.viewsets import CourseViewset, EnrollmentViewset
         return [
             DashboardComponent(),
             CourseViewset(),

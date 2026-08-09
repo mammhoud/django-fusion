@@ -25,7 +25,7 @@ class ProgressManager(BaseManager):
 
     def __init__(self):
         """Initialize with references to all progress models."""
-        from apps.pages.lms.models import Enrollment, LessonProgress, ModuleProgress
+        from apps.learning.models import Enrollment, LessonProgress, ModuleProgress
 
         self.lesson_progress_model = LessonProgress
         self.module_progress_model = ModuleProgress
@@ -46,7 +46,7 @@ class ProgressManager(BaseManager):
             Tuple of (success, result_data)
         """
         try:
-            from apps.pages.lms.models import Lesson
+            from apps.learning.models import Lesson
 
             lesson = Lesson.objects.select_related("module", "module__course").get(id=lesson_id)
 
@@ -123,7 +123,7 @@ class ProgressManager(BaseManager):
             Tuple of (success, result_data)
         """
         try:
-            from apps.pages.lms.models.courses import Module
+            from apps.learning.models.courses import Module
 
             module = Module.objects.select_related("course").get(id=module_id)
 
@@ -274,7 +274,7 @@ class ProgressManager(BaseManager):
     ) -> models.Model:
         """Update module progress based on lesson completion."""
         # Calculate module progress from all lessons
-        from apps.pages.lms.models import Lesson
+        from apps.learning.models import Lesson
 
         lessons = Lesson.objects.filter(module=module, is_active=True)
         total_lessons = lessons.count()
@@ -298,7 +298,7 @@ class ProgressManager(BaseManager):
 
     def _mark_lessons_completed(self, enrollment, module):
         """Mark all lessons in module as completed."""
-        from apps.pages.lms.models import Lesson
+        from apps.learning.models import Lesson
 
         lessons = Lesson.objects.filter(module=module, is_active=True)
 
@@ -325,7 +325,7 @@ class ProgressManager(BaseManager):
 
     def _update_course_progress_from_lesson(self, enrollment) -> float:
         """Update course progress based on lesson completion."""
-        from apps.pages.lms.models import Lesson
+        from apps.learning.models import Lesson
 
         course = enrollment.course
 
@@ -354,7 +354,7 @@ class ProgressManager(BaseManager):
 
     def _update_course_progress_from_module(self, enrollment) -> float:
         """Update course progress based on module completion."""
-        from apps.pages.lms.models.courses import Module
+        from apps.learning.models.courses import Module
 
         course = enrollment.course
 
@@ -416,7 +416,7 @@ class ProgressManager(BaseManager):
     def _get_next_lesson(self, current_lesson, enrollment) -> Optional[Dict[str, Any]]:
         """Get next lesson after the current one."""
         try:
-            from apps.pages.lms.models import Lesson
+            from apps.learning.models import Lesson
 
             # Get next lesson in same module
             next_lesson = (

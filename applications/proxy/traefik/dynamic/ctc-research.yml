@@ -22,7 +22,7 @@ http:
       tls:
         certResolver: letsencrypt-http
     ctc-api:
-      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`))'
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-backend-service

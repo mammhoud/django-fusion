@@ -14,7 +14,7 @@ from django.utils import timezone
 from django_fusion.management.managers.base import CachedManager
 
 if TYPE_CHECKING:
-    from apps.pages.lms.models import Course, Enrollment, Lesson, Module
+    from apps.learning.models import Course, Enrollment, Lesson, Module
 
 try:
     from apps.domain.models.users.users import Person as Profile
@@ -184,8 +184,8 @@ class EnrollmentManager(CachedManager):
 
     def _get_next_lesson_for_enrollment(self, enrollment: Enrollment) -> Optional[Dict[str, Any]]:
         """Get next lesson for an enrollment."""
-        from apps.pages.lms.models import Lesson
-        from apps.pages.lms.models.courses.progress import LessonProgress
+        from apps.learning.models import Lesson
+        from apps.learning.models.courses.progress import LessonProgress
 
         try:
             # Get the last completed lesson
@@ -233,8 +233,8 @@ class EnrollmentManager(CachedManager):
 
     def _get_module_progress(self, enrollment: Enrollment) -> List[Dict[str, Any]]:
         """Get progress for each module in course."""
-        from apps.pages.lms.models import Module
-        from apps.pages.lms.models.courses.progress import ModuleProgress
+        from apps.learning.models import Module
+        from apps.learning.models.courses.progress import ModuleProgress
 
         module_progress = []
 
@@ -519,7 +519,7 @@ class EnrollmentManager(CachedManager):
 
     def _get_recent_activity(self, course_id: int, limit: int = 10) -> List[Dict[str, Any]]:
         """Get recent enrollment activity."""
-        from apps.pages.lms.models.courses.progress import LessonProgress
+        from apps.learning.models.courses.progress import LessonProgress
 
         recent_completions = (
             LessonProgress.objects.filter(
@@ -616,7 +616,7 @@ class EnrollmentManager(CachedManager):
 
         # Update course enrollment count
         try:
-            from apps.pages.lms.models import Course
+            from apps.learning.models import Course
 
             course = Course.objects.get(id=course_id)
             course.enrolled_count = F("enrolled_count") + len(results["successful"])

@@ -12,7 +12,9 @@
     "check": "astro check",
     "build:scss": "sass src/styles/fusion.scss dist/css/fusion.css --style=compressed --no-source-map",
     "test": "node --test tests/frontend-smoke.test.mjs",
-    "test:e2e": "node --test tests/e2e.test.mjs"
+    "test:e2e": "node --test tests/e2e.test.mjs",
+    "test:e2e:playwright": "npx playwright test",
+    "test:e2e:playwright:ui": "npx playwright test --ui"
   },
   "dependencies": {
     "@alpinejs/collapse": "^3.14.9",
@@ -36,6 +38,7 @@
     "sass": "^1.102.0",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
-    "vite": "^6.4.1"
+    "vite": "^6.4.1",
+    "@playwright/test": "^1.62.0"
   }
 }

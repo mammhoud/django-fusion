@@ -10,6 +10,7 @@
       <p class="learning-kicker">{{ course.get_difficulty_display|upper }} / {{ course.language|upper }}</p>
       <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
       <p class="learning-course-card__description">{{ course.short_description|default:"A structured course with practical lessons and measurable progress." }}</p>
+      {% if course.reviews_count %}<p class="learning-course-card__rating learning-rating"><span class="learning-rating__stars" aria-label="{{ course.average_rating|floatformat:1 }} out of 5 stars">{{ course.rating_stars }}</span><span class="learning-rating__value" aria-hidden="true">{{ course.average_rating|floatformat:1 }}</span><span class="learning-rating__count" aria-hidden="true">/ {{ course.reviews_count }} REVIEWS</span></p>{% endif %}
       {% if course.is_featured %}<p class="learning-alert">[ FEATURED PATH ]</p>{% endif %}
     </div>
     <footer class="learning-course-card__foot">

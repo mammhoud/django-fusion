@@ -81,7 +81,7 @@ def list_courses(request):
     """GET /api/courses — Course catalog with search, filters, pagination."""
     try:
         from django.db import models
-        from apps.pages.lms.models import Course
+        from apps.learning.models import Course
 
         qs = Course.objects.filter(is_published=True, is_active=True).order_by(
             "-is_featured", "-created_at"
@@ -144,7 +144,7 @@ def list_courses(request):
 def course_detail(request, slug):
     """GET /api/courses/<slug> — Single course detail with modules."""
     try:
-        from apps.pages.lms.models import Course
+        from apps.learning.models import Course
 
         course = Course.objects.filter(slug=slug, is_published=True, is_active=True).first()
         if course is None:
@@ -206,7 +206,7 @@ def course_detail(request, slug):
 def course_filters(request):
     """GET /api/courses/filters — Available filter options for the course catalog."""
     try:
-        from apps.pages.lms.models import Course
+        from apps.learning.models import Course
 
         languages = list(
             Course.objects.filter(is_published=True, is_active=True)

@@ -1,5 +1,7 @@
 {% extends "pages/base.html" %}
+{% load static %}
 {% block title %}Learning · Structa Cloud{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/learning.css' %}" />{% endblock %}
 {% block content %}
 <main class="learning-surface">
   <section class="learning-hero learning-hero--catalog reg-marks">

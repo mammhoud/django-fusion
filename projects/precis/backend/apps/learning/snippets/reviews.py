@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from apps.domain.contrib.snippets.base import BaseSnippetViewSet
 
-from apps.pages.lms.models import Review
+from apps.learning.models import Review
 
 
 class ReviewViewSet(BaseSnippetViewSet):

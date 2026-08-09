@@ -1164,8 +1164,9 @@ def contact_submit_api(request):
     Accepts form-encoded (Django template form) or JSON (Astro ContactForm)
     bodies with ``name``/``email``/``subject``/``message``. Returns an HTML
     fragment for HTMX swaps into ``#contact-form-result`` (the Django form)
-    and JSON for plain API consumers. In production this would queue an
-    email/CRM notification.
+    and JSON for plain API consumers. Every valid submission is persisted as
+    a ``ContactSubmission`` snippet (the archived ctc-research / Precis
+    enhancement) so inquiries are reviewable in the Wagtail admin.
     """
     import json
     import re
@@ -1211,6 +1212,30 @@ def contact_submit_api(request):
         "contact_submit: %s <%s> topic=%s %s",
         name, email, topic or "(none)", subject or "(no subject)",
     )
+
+    # Persist the submission — the audit trail every contact form needs. The
+    # model mirrors the archived ctc-research / Precis ContactSubmission.
+    try:
+        from apps.content.models.contact import ContactSubmission
+
+        ContactSubmission.objects.create(
+            form_id="landing-contact",
+            page_id=0,
+            page_title="Contact page",
+            page_url=request.build_absolute_uri(),
+            submitted_data={
+                "name": name,
+                "email": email,
+                "subject": subject,
+                "topic": topic,
+                "message": message,
+            },
+            ip_address=request.META.get("REMOTE_ADDR"),
+            user_agent=request.META.get("HTTP_USER_AGENT", ""),
+            referrer=request.META.get("HTTP_REFERER", ""),
+        )
+    except Exception:
+        logger.exception("contact_submit persistence error")
 
     from django.utils.html import escape
 

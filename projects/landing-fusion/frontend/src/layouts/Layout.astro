@@ -339,6 +339,12 @@ void THEME_STORAGE_KEY;
       })();
     </script>
 
+    <!-- Fusion modular bundle — scroll reveal, smooth anchors, fragment
+         hydration + typed module re-exports (see src/fusion/). -->
+    <script>
+      import '../fusion';
+    </script>
+
     <!-- HTMX bootstrap is now loaded per-page via <HtmxBootstrap /> —
          only pages that use LiveFragment or NewsletterSubscribe pay the ~61 KB cost. -->
   </body>

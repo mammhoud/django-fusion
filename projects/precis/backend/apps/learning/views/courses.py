@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class FrontCourseDetailView(PageHandler, TemplateView):
     page_title = "Course"
-    template_name = "course.html"
+    template_name = "learning/course.html"
     template = "base_page.html"
     layout_path = "learning/skeleton.html"
 

@@ -13,7 +13,7 @@ from django.utils import timezone
 from django_fusion.management.managers.base import CachedManager
 
 if TYPE_CHECKING:
-    from apps.pages.lms.models import Enrollment
+    from apps.learning.models import Enrollment
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ class EnrollmentManager(CachedManager):
 
     @staticmethod
     def _lesson_progress_model():
-        from apps.pages.lms.models.courses.progress import LessonProgress
+        from apps.learning.models.courses.progress import LessonProgress
 
         return LessonProgress
 

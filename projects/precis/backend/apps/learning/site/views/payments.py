@@ -17,9 +17,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 
-from apps.pages.lms.models import CourseEnrollmentLead, PaymentTransaction
-from apps.pages.lms.management.services.payment_providers import PaymentProviderRegistry, PaymentException
-from apps.pages.lms.forms.enrollment import CourseEnrollmentForm
+from apps.learning.models import CourseEnrollmentLead, PaymentTransaction
+from apps.learning.management.services.payment_providers import PaymentProviderRegistry, PaymentException
+from apps.learning.forms.enrollment import CourseEnrollmentForm
 
 logger = logging.getLogger(__name__)
 
@@ -381,7 +381,7 @@ def webhook_paymo(request):
 
 def _log_webhook(provider, payload):
     """Log webhook event"""
-    from apps.pages.lms.models import PaymentWebhookLog
+    from apps.learning.models import PaymentWebhookLog
     
     event_type = payload.get('event_type') or payload.get('type', 'unknown')
     

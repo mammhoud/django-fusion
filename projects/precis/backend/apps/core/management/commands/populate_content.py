@@ -11,7 +11,7 @@ class Command(FusionCommand):
         "AboutPage": "apps.content.models.pages.about.AboutPage",
         "ContactPage": "apps.content.models.pages.contact.ContactPage",
         "TeamPage": "apps.content.models.pages.team.TeamPage",
-        "CoursesPage": "apps.pages.lms.models.courses.index.CoursesPage",
+        "CoursesPage": "apps.learning.models.courses.index.CoursesPage",
         "EventPage": "apps.content.models.pages.events.EventPage",
         "ServicesPage": "apps.content.models.pages.services.ServicesPage",
     }

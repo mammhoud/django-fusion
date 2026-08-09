@@ -796,7 +796,7 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "eyebrow": "Inside Standard",
                     "title": "A real checkout, in two views",
-                    "description": "See the counter experience, completed receipt, and full flow before you choose an edition.",
+                    "description": "See the counter experience and the full checkout flow before you choose an edition.",
                     "display": "grid",
                     "items": [
                         {
@@ -804,12 +804,6 @@ DEFAULT_PRODUCT_PAGES = {
                             "kind": "image",
                             "label": "Checkout screenshot",
                             "alt": "Formints Standard point-of-sale checkout screenshot",
-                        },
-                        {
-                            "url": "/static/related/formints/standard-sale-complete.png",
-                            "kind": "image",
-                            "label": "Sale complete",
-                            "alt": "Formints Standard completed sale receipt with PDF, print, and new sale actions",
                         },
                         {
                             "url": "/static/related/formints/standard-walkthrough.gif",

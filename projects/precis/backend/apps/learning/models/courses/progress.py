@@ -7,8 +7,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models.base import BaseModel as DefaultBase
 
-from apps.pages.lms.models.courses.specification import Lesson
-from apps.pages.lms.models.enrollment import Enrollment
+from apps.learning.models.courses.specification import Lesson
+from apps.learning.models.enrollment import Enrollment
 
 logger = logging.getLogger(__name__)
 

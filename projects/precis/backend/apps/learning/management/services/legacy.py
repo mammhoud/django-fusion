@@ -19,10 +19,10 @@ from django_fusion.services.token import TokenService
 
 logger = logging.getLogger(__name__)
 
-from apps.pages.lms.management.managers.enrollments import EnrollmentManager
-from apps.pages.lms.models import Course, Enrollment
-from apps.pages.lms.models.courses.progress import LessonProgress, ModuleProgress
-from apps.pages.lms.models.courses.specification import Lesson
+from apps.learning.management.managers.enrollments import EnrollmentManager
+from apps.learning.models import Course, Enrollment
+from apps.learning.models.courses.progress import LessonProgress, ModuleProgress
+from apps.learning.models.courses.specification import Lesson
 
 User = get_user_model()
 
@@ -46,6 +46,23 @@ class EnhancedEnrollmentService(BaseService):
         "completed_at",
         "certificate_issued",
     ]
+
+    def execute(self, operation: str, **kwargs) -> Any:
+        """Execute enrollment operation."""
+        if operation == "get_user_learning_dashboard":
+            return self.get_user_learning_dashboard(**kwargs)
+        elif operation == "update_course_progress":
+            return self.update_course_progress(**kwargs)
+        elif operation == "enroll_user_in_multiple_courses":
+            return self.enroll_user_in_multiple_courses(**kwargs)
+        elif operation == "sync_enrollment_progress_from_external":
+            return self.sync_enrollment_progress_from_external(**kwargs)
+        elif operation == "get_enrollment_certificate_info":
+            return self.get_enrollment_certificate_info(**kwargs)
+        elif operation == "validate_enrollment_for_access":
+            return self.validate_enrollment_for_access(**kwargs)
+        else:
+            return super().execute(operation, **kwargs)
 
     # -------------------------------------------------------------------------
     # User Dashboard Methods

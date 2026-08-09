@@ -8,7 +8,7 @@ only assembles the ``Site`` from app-level Application classes.
 
 Usage (in core/routes.py)::
 
-    from apps.pages.lms.application import LMSApp
+    from apps.learning.application import LMSApp
 
     site = Site(title="LMS Fusion", viewsets=[LMSApp(), BlogApp()])
 """
@@ -37,7 +37,7 @@ class LMSApp(Application):
     @viewprop
     def viewsets(self):
         # Lazy import to avoid circular dependencies during module load
-        from apps.pages.lms.components import (
+        from apps.learning.components import (
             CourseFiltersFragment,
             CourseGridFragment,
             CourseListFragment,
@@ -46,7 +46,7 @@ class LMSApp(Application):
             PrivacyPageFragment,
             StaticPageFragment,
         )
-        from apps.pages.lms.viewsets import CourseViewset, EnrollmentViewset
+        from apps.learning.viewsets import CourseViewset, EnrollmentViewset
         return [
             DashboardComponent(),
             CourseViewset(),

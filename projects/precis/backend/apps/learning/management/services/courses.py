@@ -15,9 +15,9 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 from django_fusion.services.base import BaseService
 
-from apps.pages.lms.models.courses import Course, Lesson, Module
+from apps.learning.models.courses import Course, Lesson, Module
 
-from apps.pages.lms.models.enrollment import Enrollment
+from apps.learning.models.enrollment import Enrollment
 
 User = get_user_model()
 
@@ -383,7 +383,7 @@ class CourseService(BaseService):
             queryset = queryset.filter(
                 Q(title__icontains=search) |
                 Q(description__icontains=search) |
-                Q(category__name__icontains=search)
+                Q(categories__title__icontains=search)
             )
 
         if 'difficulty' in filters:
@@ -392,10 +392,10 @@ class CourseService(BaseService):
                 queryset = queryset.filter(difficulty__in=difficulty)
 
         if 'duration_min' in filters:
-            queryset = queryset.filter(duration_weeks__gte=filters.pop('duration_min'))
+            queryset = queryset.filter(duration__gte=filters.pop('duration_min'))
 
         if 'duration_max' in filters:
-            queryset = queryset.filter(duration_weeks__lte=filters.pop('duration_max'))
+            queryset = queryset.filter(duration__lte=filters.pop('duration_max'))
 
         # Apply remaining filters
         if filters:
@@ -457,13 +457,14 @@ class CourseService(BaseService):
         if based_on_interests and user_interests:
             # This could filter by category, tags, or similar courses
             queryset = queryset.filter(
-                Q(category__in=user_interests.get('categories', [])) |
+                Q(categories__in=user_interests.get('categories', [])) |
                 Q(tags__in=user_interests.get('tags', []))
             ).distinct()
 
-        # Order by popularity and rating
+        # Order by popularity (enrolled count) — student_count/average_rating
+        # are not DB fields on Course; average_rating is a Python property.
         recommended = list(
-            queryset.order_by('-student_count', '-average_rating')[:limit]
+            queryset.order_by('-enrolled_count')[:limit]
         )
 
         cache.set(cache_key, recommended, timeout=self.SEARCH_CACHE_TIMEOUT)
@@ -504,14 +505,15 @@ class CourseService(BaseService):
             is_active=True
         )
 
-        # Include related objects if requested
+        # Include related objects if requested (categories is an M2M, so it is
+        # prefetched — not select_related).
         if include_related:
             queryset = queryset.select_related(
                 'instructor',
-                'category'
             ).prefetch_related(
+                'categories',
                 'specializations',
-                'tags'
+                'tags',
             )
 
         # Apply filters
@@ -574,7 +576,6 @@ class CourseService(BaseService):
             if include_related:
                 course = self.manager.select_related(
                     'instructor',
-                    'category'
                 ).prefetch_related(
                     Prefetch(
                         'modules',
@@ -585,6 +586,7 @@ class CourseService(BaseService):
                             )
                         )
                     ),
+                    'categories',
                     'specializations',
                     'tags',
                 ).get(
@@ -601,7 +603,7 @@ class CourseService(BaseService):
 
             # Add user enrollment status if user_id provided
             if user_id:
-                from apps.pages.lms.management.managers.enrollments import EnrollmentManager
+                from apps.learning.management.managers.enrollments import EnrollmentManager
 
                 enrollment = EnrollmentManager().get_user_enrollment_for_course(
                     user_id=user_id,
@@ -711,7 +713,7 @@ class CourseService(BaseService):
         )
 
         if strongest_area:
-            queryset = queryset.filter(category__name=strongest_area)
+            queryset = queryset.filter(categories__name=strongest_area)
 
         if 'next_difficulty' in locals():
             queryset = queryset.filter(difficulty_level=next_difficulty)

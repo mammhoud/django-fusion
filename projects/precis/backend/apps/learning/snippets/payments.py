@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.admin.panels import FieldPanel
 
-from apps.pages.lms.models import PaymentTransaction, PaymentRefund, PaymentWebhookLog
+from apps.learning.models import PaymentTransaction, PaymentRefund, PaymentWebhookLog
 
 
 class PaymentTransactionViewSet(SnippetViewSet):

@@ -342,10 +342,11 @@ class LandingPagesTestCase(TestCase):
         response = self.client.get("/pricing/")
         self.assertEqual(response.status_code, 200)
         # One preview link per edition card across the tabbed products —
-        # assert the count is at least the seeded total (4 + 3 + 2 + 2 + 2
-        # = 13) plus the per-edition URLs actually resolve by slug, so the
-        # test stays honest when editors add editions/products.
-        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 13)
+        # assert the count is at least the seeded total (Formints 4 + LMS 2
+        # + Loop 2 + Cypercloud 2 + vResume 2 = 12) plus the per-edition
+        # URLs actually resolve by slug, so the test stays honest when
+        # editors add editions/products.
+        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 12)
         for url in (
             b"/products/formint-pos/preview/community/",
             b"/products/formint-pos/preview/standard/",
@@ -731,6 +732,8 @@ class LandingPagesTestCase(TestCase):
 
     def test_contact_submit_endpoint(self):
         """POST /fragment/contact/ accepts JSON + HTMX and form-encoded bodies."""
+        from apps.content.models.contact import ContactSubmission
+
         # JSON + HTMX (Astro ContactForm) → HTML fragment swapped into the form.
         response = self.client.post(
             "/fragment/contact/",
@@ -740,6 +743,12 @@ class LandingPagesTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Thanks, Test", response.content)
+        # The submission is persisted as a ContactSubmission snippet.
+        submission = ContactSubmission.objects.get(form_id="landing-contact")
+        self.assertEqual(submission.get_name(), "Test")
+        self.assertEqual(submission.get_email(), "t@example.com")
+        self.assertEqual(submission.submitted_data["message"], "A sufficiently long message.")
+        self.assertEqual(submission.status, "Pending")
 
         # Form-encoded (Django template form) → JSON.
         response = self.client.post(
@@ -748,14 +757,17 @@ class LandingPagesTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"success": True, "message": "Thanks, Test! We'll be in touch."})
+        self.assertEqual(ContactSubmission.objects.filter(form_id="landing-contact").count(), 2)
 
-        # Invalid input → 400.
+        # Invalid input → 400 and nothing persisted.
+        before = ContactSubmission.objects.count()
         response = self.client.post(
             "/fragment/contact/",
             data='{"name": "", "email": "bad"}',
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(ContactSubmission.objects.count(), before)
 
     def test_seeded_buttons_navigate_to_real_pages(self):
         """Every seeded button/link href points at a real page — no dead /#cta
@@ -1194,11 +1206,10 @@ class LandingPagesTestCase(TestCase):
             [item["url"] for item in gallery_items],
             [
                 "/static/related/formints/standard-checkout.jpg",
-                "/static/related/formints/standard-sale-complete.png",
                 "/static/related/formints/standard-walkthrough.gif",
             ],
         )
-        self.assertEqual([item["kind"] for item in gallery_items], ["image", "image", "gif"])
+        self.assertEqual([item["kind"] for item in gallery_items], ["image", "gif"])
 
         data = self.client.get("/apis/pages/formint-pos/").json()
         self.assertEqual(len(data["gallery"]), 1)
@@ -1209,6 +1220,10 @@ class LandingPagesTestCase(TestCase):
                 "/static/related/formints/standard-walkthrough.gif",
             ],
         )
+        # The rendered page shows the gallery's two views; the "Sale complete"
+        # capture (not part of the gallery) still renders below via the edition
+        # previews section (get_preview_gallery), so its label + URL stay
+        # present on the page.
         page = self.client.get("/products/formint-pos/")
         self.assertEqual(page.status_code, 200)
         self.assertIn(b"A real checkout, in two views", page.content)
@@ -1776,28 +1791,43 @@ class LandingPagesTestCase(TestCase):
         self.assertNotIn(b"hx-post=\"/apis/blog/", response.content)
 
     def test_product_snippets_link_to_deep_dive_posts(self):
-        """Product snippet cards link out to the deep-dive posts (the code
-        moved into the blog) instead of inlining the code."""
-        for slug, post_title in (
-            ("formint-pos", b"The Formints data model"),
-            ("lms", b"The Precis LMS content model"),
-            ("cms", b"The Loop block library"),
-        ):
+        """The seed wires each product's snippet records to its deep-dive post.
+
+        The code moved off the product pages onto the deep-dive blog posts:
+        the product page stays on the visual road (editions, previews,
+        gallery) while its SnippetBlock records keep ``related_post`` pointing
+        at the blog post that hosts the full code sections.
+        """
+        import json
+
+        from apps.pages.models import BlogPostPage, ProductPage
+
+        deep_dives = {
+            "formint-pos": "formint-pos-data-model",
+            "lms": "precis-lms-content-model",
+            "cms": "loop-block-library",
+        }
+        for slug, post_slug in deep_dives.items():
             with self.subTest(slug=slug):
+                product = ProductPage.objects.get(slug=slug)
+                field = ProductPage._meta.get_field("snippets")
+                raw = json.loads(field.value_to_string(product))
+                section = next((b for b in raw if b["type"] == "snippets"), None)
+                self.assertIsNotNone(section, slug)
+                snippet_items = section["value"]["snippets"]
+                self.assertTrue(snippet_items, slug)
+                post = BlogPostPage.objects.get(slug=post_slug)
+                self.assertTrue(
+                    any(s["value"]["related_post"] == post.pk for s in snippet_items),
+                    slug,
+                )
+                # Product pages stay on the visual road — no snippet cards.
                 response = self.client.get(f"/products/{slug}/")
                 self.assertEqual(response.status_code, 200, slug)
-                self.assertIn(b"Read the deep dive:", response.content)
-                self.assertIn(post_title, response.content)
-                data = self.client.get(f"/apis/pages/{slug}/")
-                snippets = data.json().get("snippets", [])
-                self.assertTrue(snippets, slug)
-                self.assertTrue(
-                    all(s.get("related_post_href") for s in snippets),
-                    f"{slug} snippets should carry related_post_href",
-                )
-                self.assertTrue(
-                    all(s.get("related_post_title") for s in snippets),
-                    f"{slug} snippets should carry related_post_title",
+                self.assertNotIn(b"Models &amp; snippets", response.content)
+                self.assertNotIn(b'id="snippets"', response.content)
+                self.assertNotIn(
+                    "snippets", self.client.get(f"/apis/pages/{slug}/")
                 )
 
     def test_blog_comments_api_requires_login_and_serves_approved(self):

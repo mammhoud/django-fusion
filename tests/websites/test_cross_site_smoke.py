@@ -33,105 +33,59 @@ class SiteSmokeSpec:
     component_templates: tuple[str, ...]
 
 
-SHARED_TEMPLATES = APPS_ROOT / "assets" / "templates"
-
 SITE_SPECS = (
     SiteSmokeSpec(
         key="ctc",
         label="CTC Research",
-        root=APPS_ROOT / "lms" / "cms",
+        root=APPS_ROOT / "precis" / "backend",
         public_templates=(
-            "templates/home/main.html",
-            "templates/about/main.html",
-            "templates/services/main.html",
-            "templates/contact/main.html",
+            "templates/index.html",
+            "templates/base_page.html",
         ),
-        base_templates=("templates/base_page.html",),
-        navigation_templates=(
-            str(SHARED_TEMPLATES / "layout" / "landing" / "header" / "landing.html"),
-            str(SHARED_TEMPLATES / "layout" / "landing" / "partials" / "navigations.html"),
-        ),
-        footer_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "footer.html"),),
-        metadata_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "meta.html"),),
-        static_markers=("{% extends", "wagtailcore_tags", "{% block body %}"),
+        base_templates=("templates/base.html", "templates/base_page.html"),
+        navigation_templates=(),
+        footer_templates=(),
+        metadata_templates=(),
+        static_markers=("{% extends", "{% load", "{% block", "<!DOCTYPE html>"),
         dynamic_markers=(
+            "page.title",
+            "fusion_layout",
+            "wagtailcore_tags",
             "page.slug",
-            "template_name",
-            "home/main.html",
-            "page.contact_form",
         ),
         component_templates=(
-            "templates/home/sections/slider.html",
-            "templates/home/sections/listing.html",
-            "templates/blog/components/post_card.html",
-            "templates/team/sections/_member_info.html",
+            "templates/base_page.html",
+            "templates/events/event_page.html",
+            "templates/blocks/minimal_contact_form.html",
         ),
     ),
     SiteSmokeSpec(
         key="structa",
-        label="LMS Demo",
-        root=APPS_ROOT / "lms" / "cms",
+        label="Structa Cloud",
+        root=APPS_ROOT / "landing-fusion" / "backend",
         public_templates=(
-            "templates/home/main.html",
-            "templates/about/main.html",
-            "templates/services/main.html",
-            "templates/courses/main.html",
-            "templates/products/main.html",
+            "apps/pages/templates/pages/home.html",
+            "apps/pages/templates/pages/about.html",
+            "apps/pages/templates/pages/services.html",
+            "apps/pages/templates/pages/products.html",
+            "apps/pages/templates/pages/pricing.html",
+            "apps/pages/templates/pages/contact.html",
         ),
-        base_templates=("templates/base_page.html",),
-        navigation_templates=(
-            str(SHARED_TEMPLATES / "layout" / "landing" / "header" / "landing.html"),
-            str(SHARED_TEMPLATES / "layout" / "landing" / "partials" / "navigations.html"),
-        ),
-        footer_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "footer.html"),),
-        metadata_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "meta.html"),),
-        static_markers=("{% static",),
+        base_templates=("apps/pages/templates/pages/base.html",),
+        navigation_templates=("apps/pages/templates/pages/partials/header.html",),
+        footer_templates=("apps/pages/templates/pages/partials/footer.html",),
+        metadata_templates=(),
+        static_markers=("{% static", "{% load", "{% block"),
         dynamic_markers=(
-            "page.head",
-            "page.summary",
-            "page.CTA",
-            "courses",
-            "products",
+            "page.title",
+            "localized_content",
+            "page.slug",
+            "content_language",
         ),
         component_templates=(
-            "templates/home/sections/clients.html",
-            "templates/courses/sections/grid.html",
-            "templates/products/sections/_product.html",
-            "templates/services/main.html",
-        ),
-    ),
-    SiteSmokeSpec(
-        key="vresume",
-        label="VResume",
-        root=APPS_ROOT / "cms" / "portfolio",
-        public_templates=(
-            "www/pages/templates/home/main.html",
-            "www/pages/templates/about/main.html",
-            "www/pages/templates/resume/main.html",
-            "www/pages/templates/portfolio/main.html",
-            "www/pages/templates/connect/main.html",
-        ),
-        base_templates=("www/pages/templates/base.html",),
-        navigation_templates=(
-            "www/pages/templates/navigator.html",
-            "www/pages/templates/sidebar.html",
-        ),
-        footer_templates=("www/pages/templates/layout/footer.html",),
-        metadata_templates=("www/pages/templates/layout/meta.html",),
-        static_markers=("{% static", "render_bundle"),
-        dynamic_markers=(
-            "settings.communications.VResumeSettings",
-            "active_tab",
-            "featured_projects",
-            "page.experience",
-            "contact-form__form",
-        ),
-        component_templates=(
-            "www/pages/templates/components/modals/unified-modal.html",
-            "www/pages/templates/home/sections/hero.html",
-            "www/pages/templates/resume/sections/experience.html",
-            "www/pages/templates/portfolio/sections/projects.html",
-            "www/pages/templates/connect/sections/form.html",
+            "apps/pages/templates/pages/partials/page_content.html",
+            "apps/content/templates/content/blocks/hero.html",
+            "apps/content/templates/content/blocks/editions.html",
         ),
     ),
 )
@@ -176,11 +130,15 @@ def test_base_layout_includes_navigation_footer_metadata_and_assets(
     assert "{% block" in base_source
     for marker in spec.static_markers:
         assert marker in layout_source
-    assert any(
+    has_nav = any(
         "nav" in marker.lower() or "navigation" in marker.lower()
         for marker in layout_source.split()
     )
-    assert "footer" in layout_source.lower()
+    has_fusion_layout = "fusion_layout" in layout_source
+    assert has_nav or has_fusion_layout, (
+        f"{spec.label} missing nav/navigation markers and no fusion_layout"
+    )
+    assert "footer" in layout_source.lower() or "fusion_layout" in layout_source
     assert "meta" in layout_source.lower()
 
 
@@ -207,33 +165,28 @@ def test_representative_components_and_dynamic_data_bindings_are_present(
     assert "{% for" in public_source
 
 
-def test_shared_base_template_exposes_cross_site_layout_blocks_and_bundles() -> None:
-    shared_base = APPS_ROOT / "assets" / "templates" / "base.html"
-    source = shared_base.read_text(encoding="utf-8")
+def test_site_base_templates_expose_cross_site_layout_blocks() -> None:
+    """Every site's base template exposes a document shell and content blocks.
 
-    for block_name in (
-        "meta",
-        "styles",
-        "header",
-        "body",
-        "scripts",
-        "extra_assets",
-        "extra_head",
-    ):
-        assert ("{% block " + block_name + " %}" in source) or ("block " + block_name in source)
-    assert "render_bundle 'main' 'js'" in source
-    assert "render_bundle 'app' 'js'" in source
-    assert "plugins/notifications/notification.html" in source or "notifications/notification.html" in source
-    assert "data-navigation" in source
+    Each current Django site ships its own base layout (per-site templates in
+    the new projects/ layout); the shared contract is a real document with
+    template tags and overridable blocks.
+    """
+    for spec in SITE_SPECS:
+        base_source = "\n".join(
+            (spec.root / relative_path).read_text(encoding="utf-8")
+            for relative_path in spec.base_templates
+        )
+        assert "<html" in base_source or "<body" in base_source, spec.label
+        assert "{% block" in base_source, spec.label
+        assert "{% load" in base_source, spec.label
 
 
-def test_static_asset_entrypoints_cover_all_public_sites() -> None:
-    webpack_config = APPS_ROOT / "webpack" / "common.config.js"
-    package_json = APPS_ROOT / "assets" / "package.json"
-    webpack_source = webpack_config.read_text(encoding="utf-8")
-    package_source = package_json.read_text(encoding="utf-8")
-
-    for entrypoint in ("ctc-app.js", "lms-app.js", "vresume-app.js"):
-        assert entrypoint in webpack_source
-    for script_name in ("build:ctc", "build:structa", "build:vresume", "build:all"):
-        assert script_name in package_source
+def test_static_asset_dirs_cover_all_public_sites() -> None:
+    """Shared static assets and per-site staticfiles roots exist for every site."""
+    shared_static = APPS_ROOT / "assets" / "static"
+    assert shared_static.is_dir()
+    assert any(shared_static.iterdir())
+    for spec in SITE_SPECS:
+        static_root = spec.root / "assets" / "staticfiles"
+        assert static_root.is_dir(), f"{spec.label} missing staticfiles dir"

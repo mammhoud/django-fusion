@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 from django_fusion.services.base import BaseService
 from django_fusion.services.token import TokenService
 
-from apps.pages.lms.models import Lesson
+from apps.learning.models import Lesson, Module
 
 
 class LessonsService(BaseService):
@@ -25,7 +25,19 @@ class LessonsService(BaseService):
     cache_timeout = 1800
     cache_key_prefix = "lesson_service"
 
-  
+    def execute(self, operation: str, **kwargs) -> Any:
+        """Execute lesson operation."""
+        if operation == "get_course_modules":
+            return self.get_course_modules(**kwargs)
+        elif operation == "get_lesson_by_id":
+            return self.get_lesson_by_id(**kwargs)
+        elif operation == "get_lesson_by_slug":
+            return self.get_lesson_by_slug(**kwargs)
+        elif operation == "get_course_lessons":
+            return self.get_course_lessons(**kwargs)
+        else:
+            return super().execute(operation, **kwargs)
+
     def get_course_modules(self, course, include_lessons=True):
         """
         Get modules for a course.
@@ -37,7 +49,7 @@ class LessonsService(BaseService):
         Returns:
             QuerySet of modules
         """
-        queryset = self.filter(course=course, is_active=True)
+        queryset = Module.objects.filter(course=course)
         
         if include_lessons:
             queryset = queryset.prefetch_related(
@@ -197,7 +209,7 @@ class LessonsService(BaseService):
             return False
 
         # Check if user is enrolled in the course
-        from apps.pages.lms.management.managers.enrollments import EnrollmentManager
+        from apps.learning.management.managers.enrollments import EnrollmentManager
 
         course_id = lesson.module.course_id if lesson.module else None
         if not course_id:
@@ -274,7 +286,7 @@ class LessonsService(BaseService):
         """
         Check if all lessons in a course are completed and mark enrollment as completed.
         """
-        from apps.pages.lms.management.managers.enrollments import EnrollmentManager
+        from apps.learning.management.managers.enrollments import EnrollmentManager
 
         # Get total lessons
         lessons = Lesson.objects.get_course_lessons(course_id)

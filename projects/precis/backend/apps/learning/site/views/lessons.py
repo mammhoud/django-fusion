@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django_fusion.routes.pages.handler import PageHandler
 
-from apps.pages.lms.management.services.courses import CourseService
-from apps.pages.lms.models import Course, Lesson, LessonProgress
+from apps.learning.management.services.courses import CourseService
+from apps.learning.models import Course, Lesson, LessonProgress
 
 logger = logging.getLogger(__name__)
 

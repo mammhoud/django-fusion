@@ -8,7 +8,7 @@ new routable-components routing system.
 
 Usage::
 
-    from apps.pages.lms.viewsets import CourseViewset, EnrollmentViewset
+    from apps.learning.viewsets import CourseViewset, EnrollmentViewset
     # Register in apps/projects/routes.py → LMSApp.viewsets
 """
 
@@ -20,13 +20,13 @@ from django_fusion.routes.models.crud import ReadonlyModelViewset
 
 def _get_course_model():
     """Lazy import to avoid circular deps during module load."""
-    from apps.pages.lms.models.courses import Course
+    from apps.learning.models.courses import Course
     return Course
 
 
 def _get_enrollment_model():
     """Lazy import to avoid circular deps during module load."""
-    from apps.pages.lms.models.enrollment import Enrollment
+    from apps.learning.models.enrollment import Enrollment
     return Enrollment
 
 
@@ -51,7 +51,7 @@ class CourseViewset(ModelViewset):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if self.__class__.model is None:
-            from apps.pages.lms.models.courses import Course
+            from apps.learning.models.courses import Course
             self.__class__.model = Course
 
     icon = "school"
@@ -76,7 +76,7 @@ class EnrollmentViewset(ModelViewset):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if self.__class__.model is None:
-            from apps.pages.lms.models.enrollment import Enrollment
+            from apps.learning.models.enrollment import Enrollment
             self.__class__.model = Enrollment
 
     icon = "people"

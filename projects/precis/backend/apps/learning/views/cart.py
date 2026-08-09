@@ -38,6 +38,20 @@ class EnrollView(PageHandler, View):
 
     def dispatch(self, request, *args, **kwargs):
         """Apply PaymentProcessingMixin bases lazily at request time."""
+        # Enrollment requires an authenticated user; redirect guests to login.
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+
+            login_url = redirect_to_login(request.get_full_path()).url
+            if request.headers.get("HX-Request"):
+                response = JsonResponse({
+                    "status": "error",
+                    "message": "Please sign in to enroll in this course.",
+                })
+                response["HX-Redirect"] = login_url
+                return response
+            return redirect(login_url)
+
         PaymentMixin = _get_payment_mixin()
         if PaymentMixin and not isinstance(self, PaymentMixin):
             self.__class__ = type(

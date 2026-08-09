@@ -9,8 +9,8 @@ from django_fusion.routes.http.notifications import NotificationMixin
 from django_fusion.routes.pages.handler import PageHandler
 
 from apps.pages.accounts.management.services import CertificateService, MessageService
-from apps.pages.lms.management.services.courses import CourseService
-from apps.pages.lms.management.services.notes import NoteService
+from apps.learning.management.services.courses import CourseService
+from apps.learning.management.services.notes import NoteService
 
 logger = logging.getLogger(__name__)
 
@@ -248,7 +248,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
             )
 
         # Recent course progress
-        from apps.pages.lms.models import Enrollment
+        from apps.learning.models import Enrollment
 
         recent_enrollments = Enrollment.objects.filter(content_object=user).order_by(
             "-last_accessed_at"

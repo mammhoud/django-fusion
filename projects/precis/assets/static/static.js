@@ -15,7 +15,7 @@ import 'slick-carousel/slick/slick.css';
 // ===============================================
 // SHARED JS
 // ===============================================
-import './js/main.js';
+import './js/app.js';
 
 // ===============================================
 // SITE-SPECIFIC CSS

@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from apps.pages.lms.models import CourseEnrollmentLead
+from apps.learning.models import CourseEnrollmentLead
 
 
 class CourseEnrollmentForm(forms.ModelForm):
@@ -177,6 +177,6 @@ class EnrollmentLeadFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Populate course choices dynamically
-        from apps.pages.lms.models import Course
+        from apps.learning.models import Course
         courses = Course.objects.filter(is_active=True).values_list('id', 'title').order_by('title')
         self.fields['course'].widget.choices = self.COURSE_CHOICES + list(courses)

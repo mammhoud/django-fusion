@@ -13,8 +13,8 @@
 import { THEME_STORAGE_KEY } from '@/lib/site';
 
 const label = 'Toggle light / dark mode';
-const darkBg = '#131312'; // hsl(45 6% 8%) — dark --fu-paper
-const lightBg = '#fcfcfa'; // hsl(46 25% 98%) — light --fu-paper
+const darkBg = '#0C1210'; // clinical ink — dark --fu-paper
+const lightBg = '#F5F2EB'; // warm paper — light --fu-paper
 
 // @click handler — flip theme, persist via Redux + localStorage.
 const toggleExpr = [
@@ -51,7 +51,8 @@ const storageExpr = [
   :aria-label="dark ? 'Switch to light mode' : 'Switch to dark mode'"
   aria-label={label}
   title={label}
-  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-fu-text transition-colors duration-200 hover:bg-fu-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fu-primary"
+  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-fu-text transition-all duration-500 hover:bg-fu-muted/20 hover:text-fu-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fu-teal active:scale-95"
+  style="transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1)"
 >
   <!-- Sun — shown in dark mode (click to go light) -->
   <svg x-show="dark" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

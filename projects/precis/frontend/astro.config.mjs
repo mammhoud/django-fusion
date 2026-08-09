@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
+import { fileURLToPath } from 'node:url';
 
 import alpinejs from '@astrojs/alpinejs';
 
@@ -32,6 +33,11 @@ export default defineConfig({
         // and Header components via `import … from '@assets/static/…'`.
         '@assets/styles': new URL('../assets/styles', import.meta.url).pathname,
         '@assets/static': new URL('../assets/static', import.meta.url).pathname,
+        // Shared fusion-js modular TS bundles (htmx wrapper, SSE, fragments,
+        // scroll reveal, theme) — consumed via src/fusion/* project bindings.
+        '@fusion': fileURLToPath(
+          new URL('../../../libs/django-fusion/js/fusion-js/src', import.meta.url),
+        ),
       },
     },
     plugins: [

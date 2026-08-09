@@ -1,4 +1,4 @@
-"""LMS app for lms-fusion.com."""
+"""Learning/LMS app for lms-fusion.com."""
 
 # Ensure models are imported after Django is initialized
 # This prevents "Model class doesn't declare an explicit app_label" errors
@@ -9,4 +9,4 @@ def ready():
     # Models will be imported when first accessed
     pass
 
-default_app_config = "apps.pages.lms.apps.LmsConfig"
+default_app_config = "apps.learning.apps.LearningConfig"
