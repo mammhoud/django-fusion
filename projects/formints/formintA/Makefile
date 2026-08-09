@@ -13,7 +13,7 @@
 #   make build        — build full desktop app (release)
 
 .PHONY: help
-.PHONY: dev dev-desktop tauri-dev preview
+.PHONY: dev dev-desktop tauri-dev preview dev-desktop-daemon dev-desktop-daemon-stop dev-desktop-daemon-status
 .PHONY: build build-frontend build-desktop build-android build-ios build-all clean-build
 .PHONY: screenshots
 .PHONY: check typecheck cargo-check cargo-test cargo-clippy
@@ -79,6 +79,15 @@ dev-desktop: port-kill  ## Start full Tauri desktop app (hot-reload, includes Ru
 
 tauri-dev:            ## Alias for dev-desktop (start Tauri desktop app with hot-reload)
 	pnpm dev:desktop
+
+dev-desktop-daemon:       ## Run `make dev-desktop` as a launchd agent (survives restarts)
+	@bash scripts/dev/dev-desktop-daemon.sh
+
+dev-desktop-daemon-stop:  ## Stop the launchd dev-desktop agent
+	@bash scripts/dev/dev-desktop-daemon.sh stop
+
+dev-desktop-daemon-status: ## Show the launchd dev-desktop agent state
+	@bash scripts/dev/dev-desktop-daemon.sh status
 
 preview:              ## Preview the production frontend build
 	pnpm preview
@@ -192,7 +201,7 @@ i18n-fix-check:       ## `make i18n-fix` + `make i18n-check` (full pipeline; exi
 # ── Maintenance ────────────────────────────────────────────────────────────
 
 port-kill:            ## Kill any process on port 1420 (prevent port conflict)
-	@node ../scripts/dev/kill-port.cjs
+	@node ../scripts/dev/kill-port.cjs 1420
 
 install:              ## Install all dependencies (pnpm + cargo)
 	@echo '── Installing frontend dependencies ──'

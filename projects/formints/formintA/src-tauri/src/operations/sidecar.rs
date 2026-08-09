@@ -1,4 +1,4 @@
-//! Sidecar lifecycle management for the POS Python/Sanic backend.
+//! Sidecar lifecycle management for the POS Django backend.
 //!
 //! The sidecar is a PyInstaller-bundled executable located at
 //!   `<app resources>/binaries/pos-sidecar-<target-triple>`
@@ -12,8 +12,10 @@
 //! over `http://127.0.0.1:8765` (HTTP REST + WebSocket). The Rust
 //! side only manages the process lifecycle.
 //!
-//! In development the bundled binary may not exist; we fall back to
-//! spawning `python3 sidecar/server.py` from the project root.
+//! In development the bundled binary is a placeholder (see
+//! `binaries/pos-sidecar-*`) that satisfies `externalBin` validation and
+//! exits immediately, so the desktop app runs without a backend until the
+//! real sidecar is built via `pnpm build:sidecar`.
 
 use once_cell::sync::OnceCell;
 use std::sync::Mutex;
@@ -27,18 +29,6 @@ static SIDECAR_PROCESS: OnceCell<Mutex<Option<CommandChild>>> = OnceCell::new();
 
 fn process_cell() -> &'static Mutex<Option<CommandChild>> {
     SIDECAR_PROCESS.get_or_init(|| Mutex::new(None))
-}
-
-// ---- Helpers ---------------------------------------------------------------
-
-/// Resolve the path to the SQLite DB file that the sidecar should read.
-fn db_path_str(app: &AppHandle) -> String {
-    // Mirror `get_db_path` from lib.rs: prefer APP_DATA_DIR / restaurant.db
-    app.path()
-        .app_data_dir()
-        .map(|d| d.join("restaurant.db"))
-        .map(|p| p.to_string_lossy().into_owned())
-        .unwrap_or_else(|_| "restaurant.db".to_string())
 }
 
 // ---- Public commands -------------------------------------------------------
@@ -55,8 +45,8 @@ pub fn start_sidecar(app: AppHandle) -> Result<String, String> {
         return Ok("already running".to_string());
     }
 
-    let db = db_path_str(&app);
-    let args = vec!["--db", &db, "--port", "8765", "--host", "127.0.0.1"];
+    // Django development server road (replaces the removed Robyn `server.py`).
+    let args = vec!["runserver", "127.0.0.1:8765", "--noreload"];
 
     // Try the bundled sidecar first; fall back to python in development.
     let (mut rx, child) = if let Ok(cmd) = app.shell().sidecar("pos-sidecar") {
@@ -67,7 +57,7 @@ pub fn start_sidecar(app: AppHandle) -> Result<String, String> {
         let project_dir = std::env::current_dir()
             .map_err(|e| format!("current dir: {e}"))?;
         // Prefer the virtual environment Python so that dependencies
-        // (robyn, django, etc.) installed in .venv are available.
+        // (django, django-bolt, channels, etc.) installed in .venv are available.
         let python_cmd = if cfg!(windows) {
             let venv_python = project_dir.join(".venv").join("Scripts").join("python.exe");
             if venv_python.exists() { venv_python.to_string_lossy().into_owned() } else { "python".to_string() }
@@ -78,7 +68,7 @@ pub fn start_sidecar(app: AppHandle) -> Result<String, String> {
         app.shell()
             .command(&python_cmd)
             .current_dir(project_dir)
-            .args([&["sidecar/server.py"], &args[..]].concat())
+            .args([&["sidecar/sidecar.py"], &args[..]].concat())
             .spawn()
             .map_err(|e| format!("{python_cmd} sidecar spawn error: {e}"))?
     };
