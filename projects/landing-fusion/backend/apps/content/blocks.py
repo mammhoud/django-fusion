@@ -722,28 +722,33 @@ class EditionsSectionBlock(blocks.StructBlock):
 
 
 class SnippetBlock(blocks.StructBlock):
-    """A reference code/model snippet — the 'use as a reference' building block.
+    """A reference code/model snippet owned by a BlogPostPage deep dive.
 
-    Pairs a title with a code block (e.g. a Rust struct, a SQLite schema, a
-    Wagtail model) so a product page doubles as a reference for other projects
-    (e.g. LMS reusing Formints patterns).
-
-    ``related_post`` links the snippet to a blog deep dive that hosts the
-    full walkthrough. When set, the card renders as a link out to the post
-    instead of inlining the code — so code sections can move into blog posts
-    while the product page keeps a reference card pointing at them.
+    Pairs a title with a code block (for example a Rust struct, SQLite schema,
+    or Wagtail model) so engineering posts can explain an implementation with
+    its surrounding context. ``related_post`` may connect one post to another,
+    but code sections are never authored on product or catalog pages.
     """
 
     title = blocks.CharBlock(max_length=200, label=_("Title"))
     language = blocks.CharBlock(max_length=40, required=False, label=_("Language"))
     code = blocks.TextBlock(label=_("Code"), help_text=_("The snippet body — kept verbatim."))
+    render_preview = blocks.BooleanBlock(
+        required=False,
+        default=False,
+        label=_("Render HTML preview"),
+        help_text=_(
+            "For a safe HTML sample, show a sandboxed live preview beside the code. "
+            "Only enable this for self-contained HTML without scripts."
+        ),
+    )
     related_post = blocks.PageChooserBlock(
         page_type="pages.BlogPostPage",
         required=False,
         label=_("Deep-dive post"),
         help_text=_(
-            "Pick the blog post that hosts this code. When set, the card links "
-            "to the post instead of rendering the code inline."
+            "Pick a BlogPostPage that hosts this code. This keeps code sections "
+            "inside engineering posts rather than product or catalog pages."
         ),
     )
 
@@ -803,7 +808,7 @@ class PostVariantBlock(blocks.StructBlock):
 
 
 class SnippetsSectionBlock(blocks.StructBlock):
-    """Reference snippets section — code + models other projects can copy from."""
+    """Reference snippets section — code published only on blog deep dives."""
 
     eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
     title = blocks.CharBlock(max_length=200, label=_("Title"))

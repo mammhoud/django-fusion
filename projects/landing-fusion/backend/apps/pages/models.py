@@ -6,6 +6,7 @@ sections (hero, stats, features, testimonials, pricing, faq, cta, contact).
 Mirrors the structure of ``cms-fusion/backend/apps/content/models/pages/`` but
 trimmed to the landing slice — see plan §5.1 / §5.3.
 """
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
@@ -709,8 +710,8 @@ class BlogPostPage(ShowInNavMixin, LandingPage):
         blank=True,
         verbose_name=_("Code sections"),
         help_text=_(
-            "The code for this post's deep dive — product pages link their "
-            "snippet cards here via SnippetBlock.related_post."
+            "Code for this post's engineering deep dive. Keep implementation "
+            "sections on BlogPostPage records, not product or catalog pages."
         ),
     )
 
@@ -794,9 +795,9 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
 
     Carries everything another project needs to reuse it (e.g. LMS reusing
     Formints patterns): an overview, its tech stack, its editions with
-    per-edition pricing, preview captures, features, FAQ and CTA. Legacy
-    reference snippets remain stored for editorial compatibility but are no
-    longer rendered on public product detail pages.
+    per-edition pricing, preview captures, features, FAQ and CTA.    A legacy ``snippets`` column remains on the model for migration
+    compatibility, but code is owned by BlogPostPage deep dives and is not
+    editable or rendered on product pages.
     These pages live as children of ``ProductsPage`` and are listed there.
     Carries ``display_mode`` (DisplayModeMixin) for future surfacing.
     """
@@ -883,11 +884,15 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         blank=True,
         verbose_name=_("Editions & pricing"),
     )
+    # Retained as a compatibility column for old revisions. New code belongs
+    # exclusively to BlogPostPage.snippets and this field is intentionally not
+    # exposed in ProductPage.content_panels.
     snippets = StreamField(
         [("snippets", SnippetsSectionBlock())],
         use_json_field=True,
         blank=True,
-        verbose_name=_("Reference snippets"),
+        verbose_name=_("Legacy reference snippets"),
+        help_text=_("Legacy data only; author code on a BlogPostPage deep dive."),
     )
     comparison = StreamField(
         [("comparison", FeatureComparisonSectionBlock())],
@@ -953,7 +958,10 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         FieldPanel("editions"),
         FieldPanel("comparison"),
         FieldPanel("applications"),
-        FieldPanel("snippets"),
+        # Reference snippets are legacy data retained for compatibility. Code
+        # is authored and rendered only on BlogPostPage deep dives; keeping
+        # this field out of the product editor prevents new product code
+        # sections from being created accidentally.
         FieldPanel("features"),
         FieldPanel("gallery"),
         FieldPanel("faq"),
@@ -966,6 +974,14 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
     class Meta:
         verbose_name = _("Product page")
         verbose_name_plural = _("Product pages")
+
+    def clean(self):
+        """Keep the legacy field empty: code belongs to blog deep dives only."""
+        super().clean()
+        if self.snippets:
+            raise ValidationError(
+                {"snippets": _("Code sections are authored only on blog posts.")}
+            )
 
     def _resolve_edition_cta(self, edition) -> dict:
         """Flatten one edition card for JSON/API consumers (CTA resolved).

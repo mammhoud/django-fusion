@@ -516,9 +516,10 @@ def _page_to_dict(page) -> dict:
     applied by ``page_data_api`` after serialization so every caller retains a
     predictable fallback payload.
     """
-    from apps.pages.models import AboutPage, ProductsPage, FeaturesPage
+    from apps.pages.models import AboutPage, BlogPostPage, ProductPage, ProductsPage, FeaturesPage
     from apps.content.blocks import SECTION_STACK_FIELDS
 
+    is_blog_post = isinstance(page, BlogPostPage)
     data = {
         "id": page.pk,
         "slug": page.slug if hasattr(page, "slug") and page.slug else "home",
@@ -625,8 +626,14 @@ def _page_to_dict(page) -> dict:
     if getattr(page, "hero_screenshot_url", ""):
         data["hero_screenshot_url"] = page.hero_screenshot_url
 
-    # Section stack fields (stats, features, testimonials, pricing, faq, projects)
-    for field_name in SECTION_STACK_FIELDS:
+    # Section stack fields (stats, features, testimonials, pricing, faq, projects).
+    # Code sections are a BlogPostPage-only contract: legacy ProductPage data
+    # remains stored for compatibility, but never enters a public non-post
+    # payload or render path.
+    section_fields = SECTION_STACK_FIELDS
+    if not is_blog_post:
+        section_fields = [field for field in section_fields if field != "snippets"]
+    for field_name in section_fields:
         if hasattr(page, field_name):
             field_val = getattr(page, field_name)
             if field_val:
@@ -653,10 +660,10 @@ def _page_to_dict(page) -> dict:
                     data[field_name] = items
 
     # Product detail pages use edition captures as their public visual
-    # preview gallery. Keep the legacy editor field stored in Wagtail for
+    # preview gallery. Keep the legacy field stored in Wagtail for
     # migrations/history, but remove it from the public product payload so
     # clients cannot accidentally render code blocks again.
-    if page.__class__.__name__ == "ProductPage":
+    if isinstance(page, ProductPage):
         data.pop("snippets", None)
         data["editions"] = page.get_editions()
         data["preview_gallery"] = page.get_preview_gallery()
@@ -820,6 +827,7 @@ def _requested_content_language(request) -> str:
 def _apply_page_translation(page, data: dict, language: str) -> dict:
     """Apply an optional PageTranslation overlay and expose locale metadata."""
     from apps.content.models.translations import PageTranslation
+    from apps.pages.models import BlogPostPage
 
     requested_translation = PageTranslation.for_page(page, language)
     translation = requested_translation
@@ -831,10 +839,12 @@ def _apply_page_translation(page, data: dict, language: str) -> dict:
         if overrides.get("body"):
             overrides["body"] = strip_tags(overrides["body"])
         data = _deep_merge(data, overrides)
-    # Product detail pages never expose legacy code snippets, including when
-    # a translated override was authored before the visual gallery migration.
-    if page.__class__.__name__ == "ProductPage":
+    # Only blog posts may expose code snippets. Product detail pages never
+    # expose legacy code snippets, including when a translated override was
+    # authored before the visual gallery migration.
+    if not isinstance(page, BlogPostPage):
         data.pop("snippets", None)
+    if page.__class__.__name__ == "ProductPage":
         # Preserve translated edition fields while filling the stable routing
         # and media contract from the canonical edition records.
         canonical_editions = {

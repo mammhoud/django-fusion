@@ -169,6 +169,16 @@ DEFAULT_PAGE_TRANSLATIONS = {
         "search_description": "حافظ على المسار الحرج صغيراً وقِس التجربة على الشبكات الحقيقية.",
         "content": {"hero": {"title": "ميزانية أداء عملية للإطلاق", "subtitle": "اترك مساحة للمحتوى المهم، وقِس التجربة على الشبكات الإقليمية الفعلية."}},
     },
+    "advanced-content-architecture": {
+        "title": "عندما يصبح المحتوى سطحاً للمنتج",
+        "search_description": "كيف تربط بنية المحتوى المتقدمة النية والتوطين والأداء والتغيير الآمن.",
+        "content": {"hero": {"title": "عندما يصبح المحتوى سطحاً للمنتج", "subtitle": "بنية المحتوى المتقدمة ليست محرراً مرناً فقط، بل عقداً يربط المعنى والتجربة والنظام."}},
+    },
+    "html-component-render-preview": {
+        "title": "مكوّن HTML قابل للعرض بأمان",
+        "search_description": "مثال عملي يحافظ على قابلية قراءة كود HTML ويعرض نتيجته داخل معاينة معزولة.",
+        "content": {"hero": {"title": "مكوّن HTML قابل للعرض بأمان", "subtitle": "اقرأ المستند كمصدر، ثم شاهده كنتيجة من دون تشغيل كود داخل الصفحة."}},
+    },
     "services": {
         "title": "الخدمات",
         "body": "<p>نبني مواقع ومنتجات تساعد فرق التسويق والعمليات على خدمة العملاء في المنطقة بثقة.</p>",
@@ -340,9 +350,29 @@ DEFAULT_BLOG_POSTS = [
         "read_time": "3 min read",
         "excerpt": "Reserve space for the content that matters, keep the critical path small, and measure the experience on real regional networks.",
     },
-    # Deep dives — the code sections moved off the product pages. Each post
-    # hosts one product's reference code (DEFAULT_BLOG_POST_SNIPPETS) and the
-    # product page links its snippet cards here via SnippetBlock.related_post.
+    {
+        "title": "When content becomes a product surface",
+        "slug": "advanced-content-architecture",
+        "category": "Architecture",
+        "date": "2026-08-09",
+        "read_time": "10 min read",
+        "seo_title": "Advanced content architecture | Structa Cloud",
+        "search_description": "Learn how structured content connects editorial intent, localization, performance, and safe change across product pages.",
+        "excerpt": "Advanced content architecture is more than a flexible editor: it is the system that connects intent, localization, rendering, performance, and safe change.",
+    },
+    {
+        "title": "A self-contained HTML component, rendered safely",
+        "slug": "html-component-render-preview",
+        "category": "Engineering",
+        "date": "2026-08-09",
+        "read_time": "8 min read",
+        "seo_title": "Safe HTML render previews | Structa Cloud",
+        "search_description": "See how a self-contained HTML component can stay copyable as source while rendering safely in a sandboxed blog preview.",
+        "excerpt": "A practical sample showing how an editor-authored HTML component can stay readable as code and become a safe, clickable preview on the blog.",
+    },
+    # Engineering deep dives — implementation code is intentionally hosted
+    # only by BlogPostPage records. Product pages stay focused on outcomes,
+    # editions, and visual previews.
     {
         "title": "The Formints data model",
         "slug": "formint-pos-data-model",
@@ -508,6 +538,16 @@ DEFAULT_BLOG_POST_BODIES = {
         "the same rails. The demo is trivial; the architecture it proves is "
         "not.</p>"
     ),
+    "html-component-render-preview": (
+        "<p>A good HTML sample should do two jobs at once: teach the structure and let a reader see the result. The blog now keeps those jobs together. The code remains copyable, while the Render preview control opens the same document in a sandboxed frame.</p>"
+        "<h2>One document, two readings</h2>"
+        "<p>The example below is intentionally self-contained. It has no external stylesheet, no JavaScript, and no dependency on the landing page runtime. That makes it useful as a reference and predictable when it is opened as a preview.</p>"
+        "<p>On the product pages we keep the surface calm and link to deep dives like this one. On the blog, advanced readers get the full implementation context without forcing every first visit through a code wall.</p>"
+        "<h2>Why the preview is sandboxed</h2>"
+        "<p>Previewing editor-authored markup is an enhancement, not permission to execute arbitrary page code. The preview frame uses a sandbox without script permissions, so the sample can demonstrate semantic HTML and inline CSS while scripts remain inert.</p>"
+        "<p>That small boundary is the useful pattern: code is visible, the result is tangible, and the host document keeps control of its own runtime.</p>"
+        "<p>Next, read the <a href=\"/blog/advanced-content-architecture/\">content architecture guide</a> for the editorial boundary, or <a href=\"/products/formint-pos/\">inspect a visual product surface</a> without leaving the post journey.</p>"
+    ),
     "formint-pos-data-model": (
         "<p>Formints keeps its point-of-sale core deliberately small: one "
         "SQLite database, a handful of Rust models, and Tauri commands that "
@@ -552,14 +592,50 @@ DEFAULT_BLOG_POST_BODIES = {
         "paragraph. It is what HTMX swaps when a fragment request comes in — "
         "the same road as the full page, so the two can never drift.</p>"
     ),
+    "advanced-content-architecture": (
+        "<p>Advanced content architecture starts with a change in perspective: a landing page is not a pile of marketing sections. It is a product surface with a contract connecting what the team wants to say, what the customer needs to understand, and what the system can safely deliver across languages, devices, and render paths.</p>"
+        "<h2>Model intent before appearance</h2>"
+        "<p>A durable content model names the job of a section before it names its visual treatment. A hero establishes context and a next action. A comparison makes a trade-off legible. Proof reduces doubt. A related post gives a curious reader a deeper route. When these responsibilities are explicit, editors can compose pages without turning every revision into a design or engineering request.</p>"
+        "<p>This is why structured blocks are more useful than a generic rich-text field for a product surface. Each block becomes a small editorial API: it has a purpose, required information, validation rules, and a known rendering contract.</p>"
+        "<h2>Separate the document from the deep dive</h2>"
+        "<p>A product page should answer the buyer's immediate questions: what the product does, who it is for, what each edition includes, and what the next step costs. Long implementation detail belongs in a related engineering article. This separation keeps the product page calm and fast while giving advanced readers proper narrative, context, and a comment thread.</p>"
+        "<p>A reference card can point to a deep dive without reproducing its implementation. The catalog remains readable, and the engineering story stays searchable and linkable on its own terms.</p>"
+        "<p>For a practical starting point, compare the <a href=\"/blog/wagtail-streamfield-marketing/\">StreamField editorial model</a> with the <a href=\"/blog/htmx-fragments-vs-json-apis/\">server-rendered API contract</a>. The two patterns make the boundary between content ownership and interface delivery concrete.</p>"
+        "<h2>Make localization a content concern</h2>"
+        "<p>Localization should not be a late translation layer placed on top of finished markup. The content contract needs to tolerate different sentence lengths, reading directions, and examples from the beginning. Keep headings independent from accents, allow partial Arabic overlays without blanking canonical content, and test the same section sequence in every supported language.</p>"
+        "<p>The goal is not identical words. It is equivalent intent: a natural Arabic headline may have a different rhythm from its English partner, but it should still lead to the same decision and carry the same meaning.</p>"
+        "<h2>Use one content contract across render roads</h2>"
+        "<p>When a system has a Django render path and an Astro data path, drift is the hidden tax. One road gains a field, another forgets a link, and the editor sees two versions of the same page. Make the page model the source of truth, expose predictable serialized shapes, and let both roads consume the same sections.</p>"
+        "<p>For dynamic moments, server-rendered fragments keep the contract close to the content owner. A form response, filtered list, or comment card arrives as a finished accessible fragment. The client enhances the document instead of rebuilding it from a second model.</p>"
+        "<h2>Design for safe change</h2>"
+        "<p>Advanced architecture is ultimately a change-management practice. Every field should have an owner, every page type should have a publishing boundary, and every compatibility decision should be visible in tests. Keep old stored data readable while removing its public presentation. Add a migration when the data contract truly changes, a redirect when a URL changes, and a focused test when a section moves.</p>"
+        "<p>The result is a system that can become more ambitious without becoming more fragile: a quiet product page for the first visit, a detailed blog for the second read, and a content model that lets the team own both.</p>"
+        "<p>Ready to apply the pattern? <a href=\"/features/\">Review the shared stack</a>, then <a href=\"/contact/\">start a conversation</a> about the smallest useful surface for your team.</p>"
+    ),
 }
 
 
-# Code sections moved off the product pages into their deep-dive posts. The
-# product page keeps a reference card per snippet (SnippetBlock.related_post)
-# that links here; the code itself lives with its story and its comment
-# thread. Keys match the deep-dive slugs in DEFAULT_BLOG_POSTS.
+# Code sections are authored only on BlogPostPage deep dives. Product pages
+# do not seed or link code blocks; their public contract is visual previews and
+# edition information. Keys match the deep-dive slugs in DEFAULT_BLOG_POSTS.
 DEFAULT_BLOG_POST_SNIPPETS = {
+    "html-component-render-preview": [
+        (
+            "snippets",
+            {
+                "title": "A complete HTML component",
+                "description": "This sample is intentionally dependency-free. Use Render preview to see the exact document the code describes.",
+                "snippets": [
+                    {
+                        "title": "component.html",
+                        "language": "html",
+                        "render_preview": True,
+                        "code": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <style>\n    :root { color-scheme: light; font-family: system-ui, sans-serif; }\n    body { margin: 0; padding: 2rem; background: #f5f2ea; color: #1d1b18; }\n    .surface { max-width: 28rem; margin: auto; padding: 1.5rem; border: 1px solid #d9d2c5; border-radius: 1rem; background: #fffdf8; box-shadow: 0 1rem 3rem #1d1b181c; }\n    .eyebrow { margin: 0 0 .5rem; color: #0b57d0; font: 600 .68rem/1.2 ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; }\n    h1 { margin: 0; font-size: 1.7rem; line-height: 1.05; }\n    p { color: #6c685f; line-height: 1.6; }\n    a { display: inline-flex; padding: .65rem .9rem; border-radius: .5rem; background: #0b57d0; color: white; text-decoration: none; font-weight: 600; }\n  </style>\n</head>\n<body>\n  <main class=\"surface\">\n    <p class=\"eyebrow\">component / html</p>\n    <h1>A page can be a document again.</h1>\n    <p>This small surface is readable as source and useful when rendered.</p>\n    <a href=\"/blog/\">Read the field notes →</a>\n  </main>\n</body>\n</html>",
+                    },
+                ],
+            },
+        )
+    ],
     "formint-pos-data-model": [
         (
             "snippets",
@@ -640,6 +716,28 @@ DEFAULT_BLOG_POST_SNIPPETS = {
 # (empty here so the stylized screen frame renders), a caption and a
 # hyperlink per variant. Editors can drop real screenshot URLs in the admin.
 DEFAULT_BLOG_POST_VARIANTS = {
+    "html-component-render-preview": [
+        (
+            "variant",
+            {
+                "name": "Rendered component",
+                "screenshot_url": "/static/related/formints/standard-checkout.jpg",
+                "caption": "A real product surface from the same preview collection — the visual counterpart to the HTML sample.",
+                "link_label": "Open the product preview",
+                "link_href": "/products/formint-pos/preview/standard/",
+            },
+        ),
+        (
+            "variant",
+            {
+                "name": "Operational surface",
+                "screenshot_url": "/static/related/formints/pro-admin-dashboard.jpg",
+                "caption": "A second collected capture shows how a component grows into an operational product surface.",
+                "link_label": "See Formints Pro",
+                "link_href": "/products/formint-pos/",
+            },
+        ),
+    ],
     "formint-pos-data-model": [
         (
             "variant",
@@ -689,8 +787,8 @@ DEFAULT_BLOG_POST_VARIANTS = {
 # One ProductPage per product, created as children of the Products page so
 # /products/ lists them (get_product_cards) and each gets /products/<slug>/.
 # Each page is a reference document: overview + tech stack + editions with
-# per-edition pricing + reference snippets/models other projects can copy
-# (e.g. LMS reusing Formints patterns).
+# per-edition pricing + visual previews. Implementation references live in
+# the linked engineering posts, never on product pages.
 
 DEFAULT_PRODUCT_PAGES = {
     "formint-pos": {
@@ -861,37 +959,6 @@ DEFAULT_PRODUCT_PAGES = {
                 },
             )
         ],
-        "snippets": [
-            (
-                "snippets",
-                {
-                    "title": "Models & snippets you can reuse",
-                    "description": "The core schema and entrypoint. The same patterns LMS and other projects borrow.",
-                    "snippets": [
-                        {
-                            "title": "SQLite schema (Diesel up.sql)",
-                            "language": "sql",
-                            "code": "CREATE TABLE sales (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  terminal_id TEXT NOT NULL,\n  total_cents INTEGER NOT NULL,\n  payment_method TEXT NOT NULL,\n  created_at TEXT NOT NULL DEFAULT (datetime('now'))\n);\n\nCREATE TABLE sale_items (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  sale_id INTEGER NOT NULL REFERENCES sales(id),\n  product_id TEXT NOT NULL,\n  quantity INTEGER NOT NULL,\n  unit_cents INTEGER NOT NULL\n);",
-                        },
-                        {
-                            "title": "Rust model (src-tauri/src/db/models.rs)",
-                            "language": "rust",
-                            "code": "#[derive(Queryable, Insertable, Serialize)]\n#[diesel(table_name = crate::db::schema::sales)]\npub struct Sale {\n    pub id: i32,\n    pub terminal_id: String,\n    pub total_cents: i32,\n    pub payment_method: String,\n    pub created_at: String,\n}",
-                        },
-                        {
-                            "title": "Diesel migration (up.sql)",
-                            "language": "sql",
-                            "code": "-- Loyalty + refunds land on top of the core schema.\nALTER TABLE sales ADD COLUMN loyalty_points INTEGER NOT NULL DEFAULT 0;\n\nCREATE TABLE refunds (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  sale_id INTEGER NOT NULL REFERENCES sales(id),\n  amount_cents INTEGER NOT NULL,\n  reason TEXT NOT NULL,\n  created_at TEXT NOT NULL DEFAULT (datetime('now'))\n);",
-                        },
-                        {
-                            "title": "Tauri command (invoice PDF)",
-                            "language": "rust",
-                            "code": "#[tauri::command]\npub fn generate_invoice(sale_id: i32, state: State<AppState>) -> Result<String, String> {\n    let conn = &mut state.pool.get().map_err(|e| e.to_string())?;\n    let sale: Sale = sales::table\n        .find(sale_id)\n        .first(conn)\n        .map_err(|e| e.to_string())?;\n    let items: Vec<SaleItem> = sale_items::table\n        .filter(sale_items::sale_id.eq(sale_id))\n        .load(conn)\n        .map_err(|e| e.to_string())?;\n    render_invoice_pdf(&sale, &items)\n}",
-                        },
-                    ],
-                },
-            )
-        ],
         "features": [
             (
                 "features",
@@ -997,27 +1064,6 @@ DEFAULT_PRODUCT_PAGES = {
                             "cta_href": "/contact/",
                             "featured": False,
                             "tier": "default",
-                        },
-                    ],
-                },
-            )
-        ],
-        "snippets": [
-            (
-                "snippets",
-                {
-                    "title": "Content-driven models & snippets",
-                    "description": "How the LMS models content. The pattern the CMS site builder generalizes.",
-                    "snippets": [
-                        {
-                            "title": "Wagtail course page",
-                            "language": "python",
-                            "code": "class CoursePage(Page):\n    title = models.CharField(max_length=255)\n    description = RichTextField(blank=True)\n    price_cents = models.IntegerField(default=0)\n    curriculum = StreamField([\n        ('lesson', LessonBlock()),\n        ('quiz', QuizBlock()),\n    ], use_json_field=True)\n\n    content_panels = Page.content_panels + [\n        FieldPanel('description'),\n        FieldPanel('price_cents'),\n        FieldPanel('curriculum'),\n    ]",
-                        },
-                        {
-                            "title": "Enrollment (django-fusion)",
-                            "language": "python",
-                            "code": "from django_fusion.routes import ModelViewset\n\nclass EnrollmentViewset(ModelViewset):\n    model = Enrollment\n    fields = ['id', 'course', 'user', 'progress', 'completed_at']",
                         },
                     ],
                 },
@@ -1149,27 +1195,6 @@ DEFAULT_PRODUCT_PAGES = {
                             "cta_href": "/contact/",
                             "featured": True,
                             "tier": "featured",
-                        },
-                    ],
-                },
-            )
-        ],
-        "snippets": [
-            (
-                "snippets",
-                {
-                    "title": "Blocks & snippets you can reuse",
-                    "description": "The building blocks that make a site content-driven. Copy them into any Fusion project.",
-                    "snippets": [
-                        {
-                            "title": "A StreamField section block",
-                            "language": "python",
-                            "code": "class HeroBlock(blocks.StructBlock):\n    badge = blocks.CharBlock(max_length=80, required=False)\n    title = blocks.CharBlock(max_length=200)\n    subtitle = blocks.TextBlock(required=False)\n    primary_cta = ButtonBlock(required=False)\n\n    class Meta:\n        template = 'content/blocks/hero.html'\n        label = 'Hero'\n",
-                        },
-                        {
-                            "title": "Server-rendered fragment",
-                            "language": "html",
-                            "code": "<section class=\"container-fusion py-20 text-center\">\n  <h1 class=\"text-4xl font-bold sm:text-6xl\">{{ value.title }}</h1>\n  {% if value.subtitle %}<p class=\"mx-auto mt-6 max-w-2xl text-lg text-fu-muted\">{{ value.subtitle }}</p>{% endif %}\n</section>",
                         },
                     ],
                 },
@@ -1576,7 +1601,7 @@ DEFAULT_FAQ_SECTIONS = {
                     },
                     {
                         "question": "How do I get started?",
-                        "answer": "Clone the monorepo from github.com/mammhoud, run 'make dev' in projects/landing-fusion, and explore the Wagtail admin at /admin/. Each product page ships reference snippets and models you can copy.",
+                        "answer": "Clone the monorepo from github.com/mammhoud, run 'make dev' in projects/landing-fusion, and explore the Wagtail admin at /admin/. Product pages show outcomes and visual previews; implementation references live in the engineering blog posts.",
                     },
                     {
                         "question": "How do I deploy a Fusion site?",
@@ -2232,7 +2257,6 @@ class Command(BaseCommand):
                 comparison=product.get("comparison", []),
                 applications=product.get("applications", []),
                 gallery=product.get("gallery", []),
-                snippets=product.get("snippets", []),
                 features=product.get("features", []),
                 faq=product.get("faq", []),
                 cta=product.get("cta", []),
@@ -2333,9 +2357,11 @@ class Command(BaseCommand):
                 title=post.get("title", ""),
                 category=post.get("category", ""),
                 post_date=post.get("date") or None,
-                read_time=post.get("read_time", ""),
-                excerpt=post.get("excerpt", ""),
-                hero_screenshot_url=post.get("hero_screenshot_url", ""),
+                read_time=post.get("read_time", ""),                 excerpt=post.get("excerpt", ""),
+                 seo_title=post.get("seo_title", ""),
+                 search_description=post.get("search_description", ""),
+                 hero_screenshot_url=post.get("hero_screenshot_url", ""),
+
                 body=DEFAULT_BLOG_POST_BODIES.get(slug, ""),
                 variants=DEFAULT_BLOG_POST_VARIANTS.get(slug, []),
                 snippets=DEFAULT_BLOG_POST_SNIPPETS.get(slug, []),
@@ -2353,24 +2379,6 @@ class Command(BaseCommand):
                 cta=DEFAULT_HOME_CONTENT["cta"],
             )
             self._created(post_created, f"blog-post:{slug}")
-
-        # ── Wire product snippet cards to their deep-dive posts ─────────
-        # The code for each product's reference snippets now lives in a blog
-        # deep dive; the product page keeps a reference card that links out
-        # (SnippetBlock.related_post). Runs AFTER the posts are created so
-        # the PageChooser resolves on both fresh and re-seeded databases, and
-        # touches existing pages too (idempotent — only sets missing links).
-        DEEP_DIVE_POST_SLUGS = {
-            "formint-pos": "formint-pos-data-model",
-            "lms": "precis-lms-content-model",
-            "cms": "loop-block-library",
-        }
-        for product_slug, post_slug in DEEP_DIVE_POST_SLUGS.items():
-            product_page = ProductPage.objects.filter(slug=product_slug).first()
-            deep_dive = BlogPostPage.objects.filter(slug=post_slug).first()
-            if product_page is None or deep_dive is None:
-                continue
-            self._wire_snippet_deep_dives(product_page, deep_dive)
 
         # ── Pricing (dedicated page with its own tiers + faq) ─────────────
         pricing, created = self._get_or_create_child(
@@ -2853,37 +2861,6 @@ class Command(BaseCommand):
         if changed:
             existing.save()
         return changed
-
-    def _wire_snippet_deep_dives(self, product_page, deep_dive):
-        """Set SnippetBlock.related_post on every snippet of a product page.
-
-        The code for each product's reference snippets lives in a blog deep
-        dive; the product page keeps a reference card that links out to it.
-        Runs after the posts are created so the PageChooser resolves on fresh
-        databases, and is idempotent — existing pages are only touched when a
-        snippet is missing its deep-dive link (editor content is preserved).
-        """
-        if not product_page.snippets:
-            return
-        blocks = []
-        changed = False
-        for block in product_page.snippets:
-            if block.block_type != "snippets":
-                blocks.append(block)
-                continue
-            value = dict(block.value)
-            snippets = []
-            for snip in value.get("snippets", []):
-                snip_dict = dict(snip)
-                if not snip_dict.get("related_post"):
-                    snip_dict["related_post"] = deep_dive
-                    changed = True
-                snippets.append(snip_dict)
-            value["snippets"] = snippets
-            blocks.append(("snippets", value))
-        if changed:
-            product_page.snippets = blocks
-            product_page.save()
 
     def _created(self, created, label):
         if created:

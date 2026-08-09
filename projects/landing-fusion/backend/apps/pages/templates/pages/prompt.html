@@ -12,7 +12,7 @@
     </header>
     <section class="mx-auto mt-12 max-w-3xl rounded-xl border border-fu-line bg-fu-card p-6 md:p-8">
       <p class="font-mono text-xs uppercase tracking-[0.14em] text-fu-muted">{% if content_language == "ar" %}الموجّه{% else %}Prompt{% endif %}</p>
-      <pre class="mt-4 whitespace-pre-wrap font-mono text-sm leading-7 text-fu-ink">{{ localized_content.prompt|default:page.prompt }}</pre>
+      <div class="prompt-copy mt-4 whitespace-pre-wrap font-mono text-sm leading-7 text-fu-ink">{{ localized_content.prompt|default:page.prompt }}</div>
     </section>
     <div class="mx-auto mt-8 grid max-w-3xl gap-6 md:grid-cols-2">
       {% if localized_content.context|default:page.context %}<section class="rounded-xl border border-fu-line bg-fu-card p-6"><p class="tag-marker">{% if content_language == "ar" %}السياق{% else %}Context{% endif %}</p><div class="prose-fusion mt-4 text-fu-muted">{{ localized_content.context|default:page.context|richtext }}</div></section>{% endif %}

@@ -463,8 +463,8 @@
 {% endwith %}
 
 {% comment %} Blog post reference code (BlogPostPage.snippets) — the deep-dive
-   code sections (SnippetsSectionBlock) that product pages link out to via
-   SnippetBlock.related_post. Rendered only on the posts that host them. {% endcomment %}
+   code sections (SnippetsSectionBlock) owned by BlogPostPage deep dives.
+   Rendered only on the posts that host them. {% endcomment %}
 {% if page.is_blog_post and page.snippets %}
 <section id="snippets" class="container-fusion" style="padding-block:4rem 5rem;">
   {% include_block page.snippets %}

@@ -634,6 +634,29 @@
   }
   .post-variant__line--short { width: 4.5rem; }
 
+  /* ── Blog code samples + sandboxed HTML preview ────────────────── */
+  .snippet__card {
+    min-width: 0;
+  }
+  .snippet__code {
+    min-height: 13rem;
+    tab-size: 2;
+  }
+  .snippet__preview {
+    min-height: 13rem;
+  }
+  .snippet__preview-frame {
+    display: block;
+    width: 100%;
+    min-height: 20rem;
+    border: 1px solid hsl(var(--fu-line));
+    border-radius: 0.625rem;
+    background: hsl(var(--fu-paper));
+  }
+  .snippet__preview-toggle {
+    white-space: nowrap;
+  }
+
   /* ── Catalog cards (the merged “Projects in this repo” grid) ────── */
   .product-logo {
     display: inline-flex;
@@ -1164,16 +1187,16 @@
   @media (min-width: 640px) { .hero__inner { padding: 3.5rem 1.75rem 5rem; } }
   @media (min-width: 1024px) {
     .hero__inner {
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 4rem;
       padding: 6rem 2.5rem 6.5rem; /* top padding capped at pt-24 */
       align-items: start;
     }
   }
   .hero__content {
-    max-width: 40rem;
+    max-width: 52rem;
     text-align: left;
-    min-width: 0; /* grid child: allow the source panel to shrink, not blow out */
+    min-width: 0;
   }
   .hero__eyebrow {
     margin-bottom: 1.25rem;

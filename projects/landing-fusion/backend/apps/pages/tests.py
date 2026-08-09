@@ -578,6 +578,8 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(prompt_html.status_code, 200)
         self.assertIn("صياغة الموجز".encode(), prompt_html.content)
         self.assertIn("حوّل موجز هذا المنتج".encode(), prompt_html.content)
+        self.assertNotIn(b"<pre", prompt_html.content)
+        self.assertNotIn(b"<code", prompt_html.content)
 
         post_html = self.client.get(
             "/blog/why-landing-pages-as-documents/?lang=ar"
@@ -986,6 +988,8 @@ class LandingPagesTestCase(TestCase):
                     self.assertIn(b"product preview", response.content.lower())
                 self.assertNotIn(b"id=\"snippets\"", response.content)
                 self.assertNotIn(b"Models &amp; snippets", response.content)
+                self.assertNotIn(b"source-panel", response.content)
+                self.assertNotIn(b"view-source:", response.content)
 
     def test_precis_lms_has_solo_and_business_only(self):
         """Precis LMS keeps organization features in the two paid tiers."""
@@ -1108,6 +1112,47 @@ class LandingPagesTestCase(TestCase):
         path = str(path)
         self.assertTrue(path.endswith("/related/formints/standard-sale-complete.png"))
         self.assertGreater(__import__("os").path.getsize(path), 1000)
+
+    def test_advanced_architecture_blog_post_is_seeded_without_code_blocks(self):
+        """The advanced article is descriptive and keeps implementation detail off catalog pages."""
+        post = BlogPostPage.objects.get(slug="advanced-content-architecture")
+        self.assertEqual(post.category, "Architecture")
+        self.assertEqual(post.read_time, "10 min read")
+        self.assertIn("Model intent before appearance", str(post.body))
+        self.assertIn("Design for safe change", str(post.body))
+        self.assertFalse(post.snippets)
+
+        response = self.client.get("/blog/advanced-content-architecture/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"When content becomes a product surface", response.content)
+        self.assertIn(b"Model intent before appearance", response.content)
+        self.assertIn(b"Design for safe change", response.content)
+        self.assertNotIn(b"code sections", response.content.lower())
+
+    def test_html_component_blog_sample_renders_code_preview_and_variants(self):
+        """The seeded HTML sample keeps source visible and offers a sandboxed preview."""
+        post = BlogPostPage.objects.get(slug="html-component-render-preview")
+        self.assertIn("One document, two readings", str(post.body))
+        self.assertEqual(len(post.variants), 2)
+        self.assertEqual(post.variants[0].value["name"], "Rendered component")
+        self.assertIn("/static/related/formints/standard-checkout.jpg", post.variants[0].value["screenshot_url"])
+
+        snippet_section = post.snippets[0].value
+        sample = snippet_section["snippets"][0]
+        self.assertEqual(sample["language"], "html")
+        self.assertTrue(sample["render_preview"])
+
+        response = self.client.get("/blog/html-component-render-preview/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"A self-contained HTML component, rendered safely", response.content)
+        self.assertIn(b"Render preview", response.content)
+        self.assertIn(b'sandbox=""', response.content)
+        self.assertIn(b"sandboxed HTML", response.content)
+        self.assertIn(b"standard-checkout.jpg", response.content)
+
+        data = self.client.get("/apis/pages/html-component-render-preview/").json()
+        self.assertEqual(data["variants"][0]["name"], "Rendered component")
+        self.assertEqual(data["snippets"][0]["snippets"][0]["render_preview"], True)
 
     def test_all_product_apis_expose_visual_gallery_without_snippets(self):
         """Every product API is safe for the visual detail-page contract."""
@@ -1790,45 +1835,39 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"Sign in to join the conversation", response.content)
         self.assertNotIn(b"hx-post=\"/apis/blog/", response.content)
 
-    def test_product_snippets_link_to_deep_dive_posts(self):
-        """The seed wires each product's snippet records to its deep-dive post.
+    def test_code_sections_are_owned_only_by_blog_posts(self):
+        """Product pages have no seeded or public code sections.
 
-        The code moved off the product pages onto the deep-dive blog posts:
-        the product page stays on the visual road (editions, previews,
-        gallery) while its SnippetBlock records keep ``related_post`` pointing
-        at the blog post that hosts the full code sections.
+        Engineering deep dives remain the single destination for source code;
+        product pages retain the visual-preview contract even if old revisions
+        once contained legacy snippets.
         """
-        import json
-
+        from django.core.exceptions import ValidationError
         from apps.pages.models import BlogPostPage, ProductPage
 
-        deep_dives = {
-            "formint-pos": "formint-pos-data-model",
-            "lms": "precis-lms-content-model",
-            "cms": "loop-block-library",
-        }
-        for slug, post_slug in deep_dives.items():
+        for slug in ("formint-pos", "lms", "cms"):
             with self.subTest(slug=slug):
                 product = ProductPage.objects.get(slug=slug)
-                field = ProductPage._meta.get_field("snippets")
-                raw = json.loads(field.value_to_string(product))
-                section = next((b for b in raw if b["type"] == "snippets"), None)
-                self.assertIsNotNone(section, slug)
-                snippet_items = section["value"]["snippets"]
-                self.assertTrue(snippet_items, slug)
-                post = BlogPostPage.objects.get(slug=post_slug)
-                self.assertTrue(
-                    any(s["value"]["related_post"] == post.pk for s in snippet_items),
-                    slug,
-                )
-                # Product pages stay on the visual road — no snippet cards.
+                self.assertFalse(product.snippets)
+                with self.assertRaises(ValidationError):
+                    product.snippets = [("snippets", {"title": "Legacy", "snippets": []})]
+                    product.full_clean()
+                product.snippets = []
                 response = self.client.get(f"/products/{slug}/")
                 self.assertEqual(response.status_code, 200, slug)
                 self.assertNotIn(b"Models &amp; snippets", response.content)
                 self.assertNotIn(b'id="snippets"', response.content)
-                self.assertNotIn(
-                    "snippets", self.client.get(f"/apis/pages/{slug}/")
-                )
+                self.assertNotIn("snippets", self.client.get(f"/apis/pages/{slug}/").json())
+
+        for slug in (
+            "formint-pos-data-model",
+            "precis-lms-content-model",
+            "loop-block-library",
+        ):
+            with self.subTest(slug=slug):
+                post = BlogPostPage.objects.get(slug=slug)
+                self.assertTrue(post.snippets)
+                self.assertIn(b"code sections", self.client.get(f"/blog/{slug}/").content.lower())
 
     def test_blog_comments_api_requires_login_and_serves_approved(self):
         """Comments: public GET of approved only, POST gated on auth, and the

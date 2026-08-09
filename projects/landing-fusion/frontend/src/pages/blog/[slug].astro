@@ -143,12 +143,23 @@ const snippets = (pageData?.snippets as any[] | undefined) ?? [];
             </div>
             <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
               {snippets.map((snip: any) => (
-                <figure class='card overflow-hidden'>
-                  <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
+                <figure class='card overflow-hidden' data-snippet-preview={snip.render_preview && String(snip.language || '').toLowerCase() === 'html' ? 'true' : undefined}>
+                  <figcaption class='flex flex-wrap items-center justify-between gap-3 border-b border-fu-line bg-fu-card px-4 py-2.5'>
                     <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{String(snip.title || '')}</span>
-                    {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{String(snip.language)}</span>}
+                    <div class='flex items-center gap-3'>
+                      {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{String(snip.language)}</span>}
+                      {snip.render_preview && String(snip.language || '').toLowerCase() === 'html' && (
+                        <button type='button' class='snippet__preview-toggle btn-secondary !px-3 !py-1.5 !text-[0.65rem]' data-preview-toggle aria-expanded='false'>Render preview</button>
+                      )}
+                    </div>
                   </figcaption>
-                  <pre class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{String(snip.code || '')}</code></pre>
+                  <pre data-preview-code class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{String(snip.code || '')}</code></pre>
+                  {snip.render_preview && String(snip.language || '').toLowerCase() === 'html' && (
+                    <div data-preview-pane hidden class='snippet__preview bg-fu-paper p-3'>
+                      <iframe title={`Rendered preview of ${String(snip.title || 'HTML sample')}`} class='snippet__preview-frame' sandbox='' referrerpolicy='no-referrer' loading='lazy' srcdoc={String(snip.code || '')}></iframe>
+                      <p class='mt-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted'>sandboxed HTML · scripts disabled</p>
+                    </div>
+                  )}
                 </figure>
               ))}
             </div>
@@ -289,4 +300,20 @@ const snippets = (pageData?.snippets as any[] | undefined) ?? [];
   />
   <Toast />
   <HtmxBootstrap />
+
+  <script is:inline>
+    document.querySelectorAll('[data-preview-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const card = button.closest('[data-snippet-preview]');
+        const code = card?.querySelector('[data-preview-code]');
+        const pane = card?.querySelector('[data-preview-pane]');
+        if (!card || !code || !pane) return;
+        const showingPreview = !pane.hidden;
+        pane.hidden = showingPreview;
+        code.hidden = !showingPreview;
+        button.setAttribute('aria-expanded', String(!showingPreview));
+        button.textContent = showingPreview ? 'Render preview' : 'Show code';
+      });
+    });
+  </script>
 </Layout>
