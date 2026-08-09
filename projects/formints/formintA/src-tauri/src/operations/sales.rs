@@ -93,6 +93,28 @@ pub fn delete_sale(db_path: &PathBuf, sale_id: i32) -> Result<(), String> {
     Ok(())
 }
 
+/// Mark a sale as refunded. The `status` column already exists on `sales`
+/// and accepts "refunded" — no schema change is required. A sale can only
+/// be refunded once.
+pub fn refund_sale(db_path: &PathBuf, sale_id: i32) -> Result<Sale, String> {
+    let mut conn = open_conn(db_path)?;
+    use crate::db::schema::sales::dsl::*;
+
+    let sale: Sale = sales
+        .filter(id.eq(sale_id))
+        .first(&mut conn)
+        .map_err(|e| format!("sale {sale_id} not found: {e}"))?;
+    if sale.status == "refunded" {
+        return Err(format!("sale {sale_id} is already refunded"));
+    }
+
+    diesel::update(sales.filter(id.eq(sale_id)))
+        .set(status.eq("refunded"))
+        .returning(Sale::as_returning())
+        .get_result(&mut conn)
+        .map_err(|e| format!("failed to refund sale {sale_id}: {e}"))
+}
+
 /// Fetch sale items for a given sale_id (used by Kitchen Display for detail modals)
 pub fn get_sale_items_by_sale_id(db_path: &PathBuf, target_sale_id: i32) -> Result<Vec<SaleItem>, String> {
     let mut conn = open_conn(db_path)?;
@@ -120,4 +142,70 @@ pub fn mark_sale_uploaded(db_path: &PathBuf, sale_id: i32) -> Result<(), String>
         .execute(&mut conn)
         .map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn temp_db_path(tag: &str) -> std::path::PathBuf {
+        let mut path = std::env::temp_dir();
+        path.push(format!("formint-pos-refund-test-{}-{}.db", std::process::id(), tag));
+        let _ = std::fs::remove_file(&path);
+        crate::db::run_migrations(&path).expect("migrations should succeed");
+        path
+    }
+
+    fn seed_sale(db_path: &PathBuf) -> Sale {
+        add_sale(
+            db_path,
+            NewSale {
+                total_amount: 25.0,
+                currency: "USD".to_string(),
+                date: None,
+                time: None,
+                order_type: "dine_in".to_string(),
+                status: "completed".to_string(),
+                table_number: Some(1),
+                delivery_type_id: None,
+                delivery_zone_id: None,
+                delivery_address: None,
+                employee_id: None,
+                customer_id: None,
+                discount_code: None,
+                discount_amount: 0.0,
+                payment_method: "cash".to_string(),
+            },
+            vec![],
+        )
+        .expect("add_sale should succeed")
+        .0
+    }
+
+    #[test]
+    fn refund_sale_marks_sale_refunded() {
+        let db_path = temp_db_path("ok");
+        let sale = seed_sale(&db_path);
+        let refunded = refund_sale(&db_path, sale.id).expect("refund should succeed");
+        assert_eq!(refunded.status, "refunded");
+        let _ = std::fs::remove_file(&db_path);
+    }
+
+    #[test]
+    fn refund_sale_rejects_double_refund() {
+        let db_path = temp_db_path("double");
+        let sale = seed_sale(&db_path);
+        refund_sale(&db_path, sale.id).expect("first refund should succeed");
+        let err = refund_sale(&db_path, sale.id).expect_err("second refund must fail");
+        assert!(err.contains("already refunded"), "unexpected error: {err}");
+        let _ = std::fs::remove_file(&db_path);
+    }
+
+    #[test]
+    fn refund_sale_rejects_missing_sale() {
+        let db_path = temp_db_path("missing");
+        let err = refund_sale(&db_path, 999_999).expect_err("missing sale must fail");
+        assert!(err.contains("not found"), "unexpected error: {err}");
+        let _ = std::fs::remove_file(&db_path);
+    }
 }

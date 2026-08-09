@@ -132,6 +132,12 @@ fn delete_sale(app: AppHandle, id: i32) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn refund_sale(app: AppHandle, sale_id: i32) -> Result<db::models::Sale, String> {
+    let db_path = get_db_path(&app)?;
+    sales::refund_sale(&db_path, sale_id)
+}
+
+#[tauri::command]
 fn get_sale_items_by_sale_id(app: AppHandle, sale_id: i32) -> Result<Vec<db::models::SaleItem>, String> {
     let db_path = get_db_path(&app)?;
     sales::get_sale_items_by_sale_id(&db_path, sale_id)
@@ -1558,6 +1564,7 @@ pub fn run() {
             get_sales,
             update_sale,
             delete_sale,
+            refund_sale,
             mark_sale_uploaded,
             get_sale_items_by_sale_id,
             get_sale_by_id,
