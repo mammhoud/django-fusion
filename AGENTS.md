@@ -1,635 +1,252 @@
-# Structa Cloud – AI Agent Instructions
+# Structa Cloud — AI Agent Instructions
 
-## Project Overview
+This is the repository-wide guide for the Structa Cloud monorepo. Read it first,
+then read the nearest scoped `AGENTS.md` before changing code. The current
+checkout contains `libs/django-fusion/`; references to other internal libraries
+are optional/legacy unless their directories are present locally. This document
+describes the current filesystem layout; older project names are listed only as
+compatibility aliases.
 
-Structa Cloud is a Django monorepo with multiple site projects, shared configuration, shared frontend assets, and local reusable Django libraries. It also includes a **desktop POS application** (Tauri 2 + Rust + React) and an **AI platform** (Cypercloud + CeptorAI).
+## 1. Repository map
 
----
-
-## Repository Layout
-
-### Directory Structure
-
-```
+```text
 structa.cloud/
-├── projects/              # All Django + desktop projects
-│   ├── Makefile           # Canonical dispatcher (WEBSITE= selection)
-│   ├── configs/           # Shared Django configuration
-│   ├── assets/            # Shared frontend assets, templates, static, locale
-│   ├── www/               # Shared/core Django code + workers
-│   ├── lms/               # LMS Demo site (structa.cloud)
-│   ├── portfolio/         # Portfolio/VResume site (vresume.structa.cloud)
-│   ├── cypercloud/        # AI Chat Customizer platform
-│   ├── ctc-research/      # CTC Research site (ctc-research.com)
-│   └── pos/               # Desktop POS app (Tauri 2 + Rust + React)
-├── libs/                  # Reusable Python packages (git submodules)
-│   ├── django-fusion/     # Component system + routing framework
-│   └── ceptor-ai/         # AI chat client + MCP server
-├── applications/          # Infrastructure + tooling
-│   ├── proxy/             # Traefik reverse proxy + SSL
-│   ├── databases/         # Postgres + Redis compose
-│   ├── compose/           # Docker Compose orchestration
-│   └── scripts/           # Build + automation scripts
-├── docs/                  # Documentation (mkdocs)
-├── tests/                 # Workspace-level test suite
-├── .venv/                 # Unified Python venv (git-ignored)
-├── Makefile               # Root dispatcher
-└── pyproject.toml         # Workspace config
+├── projects/                 # Product code, shared Django config, and assets
+│   ├── precis/               # Current LMS / learning platform
+│   ├── landing-fusion/       # Astro marketing site + Django/Wagtail CMS
+│   ├── syntara/              # Cypercloud AI chat/customizer runtime
+│   ├── formints/             # POS editions, cloud backend, and shared tests
+│   ├── configs/              # Shared Django settings and workers
+│   ├── assets/               # Monorepo-level shared assets
+│   ├── lms-fusion/           # Retired compatibility project; merged elsewhere
+│   ├── scripts/              # Project-local automation
+│   ├── webpack/              # Shared/legacy asset configuration
+│   ├── Makefile              # Canonical project dispatcher
+│   └── pyproject.toml        # Python workspace dependencies and pytest config
+├── libs/                     # Reusable libraries (currently django-fusion)
+├── applications/             # Databases, proxy, Compose, scripts, Kilo/MCP
+├── tests/                    # Workspace integration, HTTP, browser, fixtures
+├── docs/                     # MkDocs/docs site, plans, and project references
+├── .github/                  # CI workflows and composite actions
+├── Makefile                 # Root deployment and delegation entry point
+└── pyproject.toml            # Root Python/tooling configuration
 ```
 
-## Canonical Site Paths
+### Current product boundaries
 
-Use these canonical paths when working on site-specific code:
+| Product | Canonical path | Main responsibility | Local guidance |
+|---|---|---|---|
+| Precis LMS | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/backend/AGENTS.md` |
+| Landing-Fusion | `projects/landing-fusion/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/landing-fusion/AGENTS.md` |
+| Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
+| Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
+| django-fusion | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables, and assets | `libs/django-fusion/AGENTS.md` |
+| Infrastructure | `applications/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | `applications/AGENTS.md` |
+| Workspace tests | `tests/` | Cross-project validation, fixtures, browser tests, and deployment checks | `tests/AGENTS.md` |
 
-| Site | Path | Domain | Port |
-|------|------|--------|:----:|
-| CTC Research | `projects/ctc-research/` | ctc-research.com | 5070 |
-| LMS Demo | `projects/lms/` | structa.cloud | 5071 |
-| Portfolio | `projects/portfolio/` | vresume.structa.cloud | 5072 |
-| Cypercloud | `projects/cypercloud/` | localhost | 5073 |
+### Name and migration rules
 
-Each site can contain its own `assets/`, `plugins/`, `templates/`, `tests/`, `www/`, and site-level `Makefile` as applicable.
+- `precis` is the current filesystem location for the LMS product. The
+  dispatcher still accepts `WEBSITE=lms-fusion`; that alias maps to
+  `projects/precis/`.
+- `lms-fusion/` is a retired compatibility/documentation boundary. Do not add
+  new product code there; update Precis or Landing-Fusion instead.
+- `syntara` is the current filesystem location for the product historically
+  called Cypercloud. Use `projects/syntara/` in new paths. Preserve the
+  `cypercloud` name only where a runtime alias or external contract requires it.
+- `formints/formintA`, `formintB`, `formintC`, and `formint` are distinct POS
+  packages. Do not infer that `formintA` and `formintB` share the same backend.
+- Older documentation may mention `projects/lms`, `projects/portfolio`,
+  `projects/cypercloud`, or `projects/pos`. Treat those as legacy references;
+  verify the current path in `projects/Makefile` and the relevant README before
+  editing.
+- Do not create compatibility symlinks or duplicate source trees merely to
+  satisfy stale documentation.
 
-### POS Editions
+## 2. Scoped guidance hierarchy
 
-The POS app has three editions:
+Instruction files are cumulative: the nearest file wins for local details, but
+root safety and repository rules remain in force.
 
-| Edition | Directory | Description |
-|---------|-----------|-------------|
-| **Minimal** | `projects/pos/pos-mini/` | Bare-bones Tauri + Rust + SQLite |
-| **Solo** | `projects/pos/pos-solo/` | Standalone with embedded Python sidecar |
-| **Full** | `projects/pos/pos-full/` | Multi-terminal with external sidecar + Cloud CRM |
+```text
+/AGENTS.md
+├── projects/AGENTS.md
+│   ├── projects/precis/backend/AGENTS.md
+│   ├── projects/landing-fusion/AGENTS.md
+│   ├── projects/syntara/AGENTS.md
+│   └── projects/formints/AGENTS.md
+├── libs/django-fusion/AGENTS.md
+├── applications/AGENTS.md
+│   └── applications/kilo/AGENTS.md
+├── tests/AGENTS.md
+├── .github/AGENTS.md
+└── deeper template/frontend/test AGENTS.md files
+```
 
----
+Before editing:
 
-## Shared Settings
+1. Locate all `AGENTS.md` files from the repository root to the target file.
+2. Read the nearest project/backend/frontend/template guidance.
+3. Search for existing implementations and callers with `rg`.
+4. Confirm the project dispatcher/README before choosing a command.
+5. Keep changes inside the owning product boundary unless the change is truly
+   shared framework or infrastructure behavior.
 
-Shared settings live under `projects/configs/`:
-- `projects/configs/base/` for base configuration modules
-- `projects/configs/settings/` for environment/site settings
-- `tests/projects/configs/` for test settings and test configuration helpers
+## 3. Shared architecture
 
-Prefer adding common settings in `projects/configs/` rather than duplicating them inside individual sites. Keep site-specific overrides in the relevant site path.
+### Django and Wagtail
 
----
+Most web products use Django, Wagtail, django-allauth, HTMX, and the local
+`django-fusion` package. A normal request is:
 
-## Shared Frontend Assets
+```text
+Traefik/local server
+  → project urls.py
+  → middleware (sessions, auth, CSRF, locale, HTMX, site middleware)
+  → PageHandler/Viewset/Wagtail page/API endpoint
+  → model/service/query layer
+  → template, fragment, JSON, or stream response
+```
 
-Shared frontend assets live under `projects/assets/`:
-- `projects/assets/templates/` — templates shared across sites
-- `projects/assets/static/` — shared static files
-- `projects/assets/scripts/` — shared frontend/build scripts
-- `projects/assets/locale/` — shared localization assets
+Use Wagtail page models and StreamFields for editor-managed content. Keep
+business logic in services, managers, domain modules, or application classes;
+do not grow large view functions or templates into service layers.
 
-When adding shared styles, scripts, images, or templates, place them in `projects/assets/` unless they are truly site-specific.
+### Dual rendering
 
----
+Landing-Fusion and Formint use a render-first/data-API contract. A request may
+receive complete server-rendered HTML, an HTMX fragment, or JSON for an Astro
+client. Preserve explicit endpoint contracts and headers when changing either
+road. Do not replace a server-rendered fragment with a client-only mock.
 
-## Local Libraries & Submodules
+### Background work
 
-Local reusable libraries live under `libs/` as git submodules. Treat these as first-class local packages. Make reusable framework-level changes in the appropriate library instead of copying logic into site projects.
+PostgreSQL is the primary shared relational database in deployed environments.
+Redis backs queues/cache and is used by Celery/Dramatiq-related workers. Do not
+run migrations, destructive fixture loads, volume pruning, or production
+commands against a shared environment without explicit user direction.
 
-| Library | Submodule | Description | Key Docs |
-|---------|-----------|-------------|----------|
-| `libs/django-fusion/` | [`django-fusion`](https://github.com/mammhoud/django-fusion) | Component system, routing, forms/tables, auth, Wagtail blocks | [`django-fusion/AGENTS.md`](libs/django-fusion/AGENTS.md) |
-| `libs/ceptor-ai/` | [`ceptor-ai`](https://github.com/mammhoud/ceptor-ai) | AI chat client, MCP server, BEM converter, agent generation | [`ceptor-ai/AGENTS.md`](libs/ceptor-ai/AGENTS.md) |
-| `libs/django-bolt/` | [`django-bolt`](https://github.com/dj-bolt/django-bolt) | High-performance Rust-backed API framework (BoltAPI) | [`django-bolt/README.md`](libs/django-bolt/README.md) |
+## 4. Ownership and placement rules
 
-### Key submodule facts for agents
+### Python/Django
 
-- **Branch mapping** is in `.gitmodules` — `django-fusion` and `ceptor-ai` track `generic`; `django-bolt` tracks `main`.
-- **Recursive checkout** is required; CI uses `actions/checkout@v4` which fetches submodules by default.
-- **Make framework changes in the submodule**, run its own tests, then run tests in affected sites.
-- **Never commit submodule code from the parent repo** without also pushing the submodule repository; use `make push-lib LIB=<name>`.
-- **Canonical import paths matter** — each submodule has canonical paths; never introduce re-export shims.
+- Product code belongs in the product under `projects/<product>/`.
+- Shared Django settings belong in `projects/configs/` only when multiple
+  products genuinely consume the same behavior.
+- Shared framework behavior belongs in `libs/django-fusion/`.
+- Prefer existing app boundaries (`models`, `services`, `handlers`, `api`,
+  `components`, `management`) over new catch-all modules.
+- Use canonical `django_fusion.*` imports. Do not add re-export shims or alias
+  modules.
 
----
+### Templates and components
 
-## Makefile Delegation
+- Check the product's template `AGENTS.md` and Django `TEMPLATES['DIRS']`
+  before adding a file.
+- Use `{% comp "name" /%}` for registered django-fusion components.
+- Use `{% include %}` only for genuinely dynamic template names or local
+  includes that are not registered components.
+- Use `fragment_name` for fragment identifiers and context keys.
+- Preserve Wagtail context, translation tags, permissions, and HTMX attributes.
+- Use BEM-style classes for reusable UI; do not use IDs for styling.
 
-- The root `Makefile` is a thin entrypoint that delegates application and site work to `projects/Makefile`.
-- `projects/Makefile` is the canonical dispatcher for Django checks, tests, migrations, asset builds, Docker/site commands, and `WEBSITE=...` selection.
-- Site Makefiles live in each `projects/<site>/` directory.
-- Prefer invoking site work through `projects/Makefile` unless a site Makefile target is explicitly needed.
-- Preserve existing website aliases in `projects/Makefile`; do not invent new canonical site names without updating the dispatcher.
+### Assets
 
-### Common Makefile Targets
+Keep source assets, generated bundles, collected static files, and runtime
+media separate. Product-specific SCSS, CSS, JavaScript, images, and locale
+files belong under that product. Put assets in `projects/assets/` only when
+multiple active products consume them and the owning project is not a better
+home. Never edit generated output instead of its source.
+
+### POS
+
+- UI code belongs in the relevant `formints/*/frontend` or `src` tree.
+- Native desktop behavior belongs in that edition's `src-tauri/`.
+- Professional product APIs, models, fragments, and sync services belong in
+  `projects/formints/formint/`.
+- Cloud-master behavior belongs in `projects/formints/formintB/`.
+- Shared POS E2E tests belong in `projects/formints/tests/pos-e2e/`.
+- Do not introduce a Python sidecar into `formintA`; it is the direct Rust/
+  SQLite edition. Do not assume the cloud master still has a Robyn sidecar;
+  current formintB serves its API from Django.
+
+## 5. Commands and validation
+
+The root Makefile handles infrastructure/deployment. `projects/Makefile` is
+the canonical dispatcher for project checks and site commands.
 
 ```bash
-# Development
-cd projects && make dev WEBSITE=lms
-cd projects && make check WEBSITE=lms
-cd projects && make test WEBSITE=lms
+# Environment and dependencies
+uv sync
+uv run pytest
 
-# Deployment
-make deploy              # Full stack
-make deploy-databases    # Postgres + Redis
-make deploy-app          # Django sites
-make deploy-proxy        # Traefik
+# Project dispatcher examples
+cd projects
+make check WEBSITE=lms-fusion       # maps to Precis
+make test WEBSITE=lms-fusion
+make run-dev WEBSITE=landing-fusion
+make check WEBSITE=landing-fusion
+make test WEBSITE=landing-fusion   # workspace pytest target; use the project backend test below for focused coverage
+make run-dev WEBSITE=ctc-research   # legacy site alias if present in checkout
 
-# POS
-make pos                 # POS dev targets
-make pos-build           # Build POS editions
+# Landing-Fusion direct workflows
+cd projects/landing-fusion
+make install
+make check
+make build
+make backend-migrate
+make backend-check
+make backend-test
 
-# Git
-make push                # Push repo + lib submodules
-make push-lib LIB=django-fusion  # Push single lib
+# Precis backend
+cd projects/precis/backend
+make check
+make test
+make migrate
+
+# Formint professional product
+cd projects/formints/formint
+make check
+make test
+
+# Library tests
+cd libs/django-fusion
+uv run pytest
 ```
 
----
-
-## Template Conventions
-
-### Template Location Hierarchy
-
-Template locations are intentionally layered. Check all relevant paths before adding or moving templates:
-
-1. Shared templates: `projects/assets/templates/`
-2. Site root templates: `projects/<site>/templates/`
-3. Site asset templates: `projects/<site>/assets/templates/`
-4. Site Django app templates: `projects/<site>/www/**/templates/`
-5. Plugin templates: `projects/<site>/plugins/**/templates/`
-
-### Component Template Naming
-
-Component template categories should not repeat the same folder name twice. For example, use `components/blocks/contact/contact_profile.html` instead of `components/blocks/contact/contact/contact_profile.html`.
-
-Use `{% include %}` for reusable components and pass only the required context. Prefer shared templates for cross-site UI and site templates for site-specific presentation.
-
-### Template Tags
-
-| Tag | Usage |
-|-----|-------|
-| `{% comp "name" /%}` | Rendered components from `django_fusion.comp` |
-| `{% comp_include "path" %}` | Drop-in replacement for `{% include %}` that registers paths for tracking |
-| `{% include "path" %}` | Only for truly dynamic template names (e.g., `{% include template_name %}`) |
-
----
-
-## Fragment Naming Convention
-
-Use `fragment_name` only for fragment identifiers and context keys. Do not introduce alternate names such as `fragment`, `name`, `fragment_slug`, or `fragment_key` for the same concept unless maintaining backwards compatibility with existing code.
-
----
-
-## Code Style & Standards
-
-- **Python**: Follow PEP 8. Use type hints for new or modified functions where practical. Keep formatting compatible with Black's 88-character default.
-- **Django**: Prefer class-based views where appropriate. Keep business logic out of views and in services/modules that match the existing local structure.
-- **Wagtail/Django templates**: Follow the existing panel, model, and template patterns in the relevant site or library.
-- **SCSS/CSS**: Follow existing project conventions and use BEM-style names for reusable component classes. Do not use IDs for styling.
-- **Imports**: Never wrap imports in `try`/`except` blocks.
-- **TypeScript/React**: Use strict TypeScript, functional components with hooks, React 19 patterns.
-
----
-
-## Testing & Validation
-
-- Use `rg` instead of recursive `grep` for code searches.
-- Run the narrowest relevant checks first, then broader tests when practical.
-- For Django site work, prefer commands delegated through `projects/Makefile` with the appropriate `WEBSITE=...` value.
-- For shared library work, run tests or checks that cover both the library and affected sites when practical.
-
-### Test Commands
-
-```bash
-uv run pytest                          # All workspace tests
-cd projects && make test WEBSITE=lms  # Django site tests
-cd projects/pos && cargo test         # Rust tests
-cd projects/pos && npx vitest run     # React/Vite tests
-```
-
----
-
-## Infrastructure & Proxy
-
-### Traefik Proxy
-
-- Traefik proxy (`default-proxy`) serves SSL on port 443.
-- Certs are obtained via Let's Encrypt DNS-01 (Cloudflare) using Traefik's native `certificatesResolvers` block in `applications/proxy/traefik/dynamic.yml`.
-- Nginx media server (`shared-media`) serves static/media files for all sites.
-- ACME store lives at `applications/proxy/acme/acme.json` (mode 0600), bind-mounted into the proxy at `/etc/traefik/acme/`.
-
-### Let's Encrypt Rollout (Staged)
-
-1. **Stage 1** — Enable LE for `vresume.structa.cloud` on Let's Encrypt **staging** CA
-2. **Stage 2** — Flip to production CA; enable LE for ctc-research, structa-cloud, media, dashboard
-3. **Stage 3** — Delete `applications/proxy/traefik/dynamic/certs.yml` (self-signed fallback)
-
-### Media Subdomains
-
-- `media.structa.cloud`
-- `media.ctc-research.com`
-- `media.lms.com`
-- `media.vresume.structa.cloud`
-
----
-
-## Authentication & Authorization
-
-- All sites use `django-allauth` for authentication with `django-fusion` auth mixins.
-- Auth views extend `PageHandler` from `django_fusion.site.interface.page_handler`.
-- HTMX is used for modal-based login/register flows.
-- Social auth adapters live in site `plugins/accounts/adapters.py`.
-- MFA support: custom TOTP-based 2FA in profile settings (via `two_factor_enabled` / `two_factor_secret` on profile model).
-- `allauth.mfa` is available as optional dependency for WebAuthn/passkey support.
-- Auth email templates are managed as Wagtail snippets via `AuthEmailTemplate`.
-- Account adapter: `plugins.accounts.adapters.RegistrationAdapter` (HTMX-aware, fragment rendering).
-- Supported auth flows: login, signup, password reset, password change, email management, social signup, social connections.
-
----
-
-## Component System (django-fusion)
-
-- Use `{% comp "name" %}` for rendered components from `django_fusion.comp`.
-- Use `{% comp_include "path" %}` as a drop-in replacement for `{% include %}` that registers paths for tracking.
-- Use `{% include "path" %}` only for truly dynamic template names (e.g., `{% include template_name %}`).
-- Bridge legacy includes to `comp` via `register_include_path()`.
-- The `IncludePathComponent` class maps include paths to component names verbatim.
-- Register include paths in `AppConfig.ready()` or via `COMPONENTS_INCLUDE_PATH_ROOTS` setting.
-- Component template directories: `components/blocks/`, `components/partials/`, `tags/`.
-- Component namespaces use dot notation: `{% comp "contact.sections.form" block=block / %}`.
-
----
-
-## django-fusion Canonical Import Paths
-
-All re-export shims have been removed. Use these canonical paths directly.
-
-### Routing (`comp.routes`)
-
-```python
-from django_fusion.routes import (
-    # Base routing
-    Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path, IndexViewMixin,
-    # Descriptor
-    viewprop,
-    # Model viewsets
-    BaseModelViewset, ModelViewset, ReadonlyModelViewset,
-    ListBulkActionsMixin, CreateViewMixin, UpdateViewMixin, DeleteViewMixin, DetailViewMixin,
-    # Site/Application
-    Application, AppMenuMixin, Site,
-    # Routable components
-    RoutableComponent, FragmentComponent,
-    # Fragment detection
-    FragmentDetector, FragmentDetectionMixin,
-)
-```
-
-### Generic CBVs (`comp.generic`)
-
-```python
-from django_fusion.comp.generic import (
-    Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
-    DetailModelView, ListModelView, UpdateModelView,
-    BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
-)
-```
-
-### Other Canonical Paths
-
-| Module | Canonical Path |
-|--------|---------------|
-| Handlers | `django_fusion.management.handlers` |
-| Managers | `django_fusion.management.managers` |
-| Models | `django_fusion.models` |
-| Services | `django_fusion.services` |
-| Views (FilterMixin, SearchMixin) | `django_fusion.web.views` |
-| Loaders | `django_fusion.comp.loaders` |
-| Middlewares | `django_fusion.core.middlewares` |
-| Cache | `django_fusion.comp.cache` |
-
----
-
-## Media & Static Files
-
-- Shared static files: `projects/assets/static/`
-- Site-specific staticfiles: `projects/<site>/assets/staticfiles/`
-- Site-specific media: `projects/<site>/assets/media/`
-- Nginx mounts each site's staticfiles under `/var/www/sites/<site>/static/`
-- Traefik routes `PathPrefix(/static/)` and `PathPrefix(/media/)` to `shared-media:80`
-
----
-
-## AnyType Documentation System
-
-The `docs/Anytype/` directory contains the project's planning and documentation knowledge graph, organized for AnyType import.
-
-### Directory Structure
-
-```
-docs/Anytype/
-├── README.md                 # Master index with navigation map
-├── _prompts.md               # AI agent prompts for docs work
-├── objects/                  # AnyType object type & entity definitions
-│   ├── _object-types.md      # All custom type definitions
-│   ├── _relations.md         # Relation/linking guide
-│   ├── _tags.md              # Multi-select tag definitions
-│   └── [type].md             # Individual type definitions
-├── architecture/             # System architecture docs
-├── features/                 # Product feature descriptions
-├── guides/                   # Step-by-step guides
-│   └── install/              # Platform-specific install guides
-├── references/               # API & config references
-├── plans/                    # Business & project plans
-├── changelogs/               # Version history
-├── tasks/                    # Implementation tasks
-├── schemas/                  # JSON schema definitions
-└── files/                    # Images & assets
-```
-
-### Key Conventions
-
-- **Object types**: Architecture 🏗️, Feature ✨, Guide 📘, Reference 📚, Changelog 📋, Task ✅, Blog/Post 📝, Goal 🎯, Edition 📦, Configuration ⚙️
-- **Frontmatter**: Always include `Object type`, `Tags`, `Status` in YAML frontmatter
-- **Cross-references**: Use `→` arrows with relative paths at the end of each doc
-- **Linking**: Every doc should end with a `## Related` section linking back to the master index and related objects
-- **Style**: Minimal code, compact tables, ASCII diagrams, consistent emoji usage
-- **Install guides**: Platform-specific guides at `guides/install/[platform].md` with troubleshooting tables
-
-### When Working with AnyType Docs
-
-1. Read `docs/Anytype/README.md` for navigation
-2. Read `docs/Anytype/objects/_object-types.md` for type definitions
-3. Follow `docs/Anytype/_prompts.md` for structured prompts
-4. Keep documents organized by subdirectory — not flat at root
-5. Delete duplicate content with suffixed names (`_c`, `_h`, `_r`, etc.)
-
----
-
-## Development Commands Reference
-
-### Quick Start (All Sites)
-
-```bash
-cd projects && make dev WEBSITE=lms          # Run LMS dev server (port 5071)
-cd projects && make dev WEBSITE=portfolio    # Run Portfolio dev server (port 5072)
-cd projects && make dev WEBSITE=cypercloud   # Run Cypercloud dev server (port 5073)
-cd projects && make dev WEBSITE=ctc-research # Run CTC Research dev server (port 5070)
-```
-
-### Validation & Testing
-
-```bash
-# Django System Checks
-cd projects && make check WEBSITE=lms
-cd projects && make check WEBSITE=portfolio
-
-# Run Tests
-cd projects && make test WEBSITE=lms           # Site-specific tests
-uv run pytest tests/                            # Workspace-level tests
-uv run pytest tests/test_sites.py -s -vv        # Site integration tests
-
-# Import canonical paths check
-cd projects && make check-imports
-
-# Run all quality checks
-make check-all          # lint + test + typecheck
-```
-
-### Database & Migrations
-
-```bash
-cd projects && make migrate WEBSITE=lms        # Run migrations for site
-cd projects && make migrations WEBSITE=lms     # Create new migrations
-cd projects && make showmigrations WEBSITE=lms # Show migration status
-```
-
-### Asset Building
-
-```bash
-cd projects && make assets WEBSITE=lms         # Build static assets
-cd projects && make assets-watch WEBSITE=lms   # Watch & rebuild on changes
-```
-
-### Deployment
-
-```bash
-make deploy              # Full stack deployment
-make deploy-databases    # Deploy Postgres + Redis
-make deploy-app          # Deploy Django application
-make deploy-proxy        # Deploy Traefik proxy
-```
-
-### POS Development
-
-```bash
-make pos                 # POS dev targets
-make pos-build           # Build POS editions
-cd projects/pos && cargo test         # Rust tests
-cd projects/pos && npx vitest run     # React/Vite tests
-```
-
-### Repository Management
-
-```bash
-make push                # Push repo + lib submodules
-make push-lib LIB=django-fusion  # Push single library submodule
-make update-libs         # Update all submodules to latest
-```
-
----
-
-## Architecture & Request Flow
-
-### High-Level Architecture
-
-```
-                      ┌─────────────────────────┐
-                      │    Traefik Proxy (:443)  │
-                      │  (SSL termination, routing) │
-                      └──────────┬──────────────┘
-                                 │
-              ┌──────────────────┼──────────────────┐
-              ▼                  ▼                  ▼
-      ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-      │  Django App   │  │  Django App   │  │  Django App   │
-      │  (Site 5070)  │  │  (Site 5071)  │  │  (Site 5072)  │
-      │  ctc-research │  │  lms          │  │  portfolio    │
-      └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-             │                  │                  │
-             └──────────────────┼──────────────────┘
-                                ▼
-                    ┌──────────────────────┐
-                    │    Nginx Media        │
-                    │    (Static/Media)     │
-                    │    shared-media:80    │
-                    └──────────────────────┘
-```
-
-### Request Flow
-
-```
-Browser → Traefik Proxy (SSL, SNI routing)
-    ↓  (Route to appropriate site container)
-Django → URL Router → Wagtail Page / View
-    ↓
-Middleware Stack (django-fusion, allauth, session, CSRF)
-    ↓
-View Handler (Viewset, PageHandler, or CBV)
-    ↓  (Template rendering or JSON/HTMX response)
-django-fusion Component System ({% comp %} tags)
-    ↓
-Response → Nginx (static/media) or direct HTTP response
-```
-
-### Key Architectural Decisions
-
-- **Shared settings** via `projects/configs/` — DRY configuration
-- **Component system** via django-fusion — reusable template components with `{% comp %}`
-- **HTMX** for dynamic interactions (modals, pagination, search)
-- **Wagtail CMS** for page content management
-- **django-allauth** for authentication across all sites
-- **TOTP-based 2FA** for enhanced security
-
----
-
-## Testing Strategy
-
-### Test Categories
-
-| Category | Command | Scope |
-|----------|---------|-------|
-| **Site Tests** | `make test WEBSITE=<site>` | Site-specific Django tests |
-| **Workspace Tests** | `uv run pytest` | Cross-site and integration tests |
-| **Library Tests** | `uv run pytest tests/` | django-fusion, ceptor-ai tests |
-| **Rust Tests** | `cd projects/pos && cargo test` | POS Rust code |
-| **JS/React Tests** | `cd projects/pos && npx vitest run` | POS React/Vite code |
-| **Lint Checks** | `ruff check .` | Python code quality |
-| **Type Checks** | `mypy .` | Type annotation validation |
-
-### Testing Principles
-
-1. **Test the narrowest scope first** — site tests before workspace tests
-2. **Always use `-s -vv`** for detailed test output when debugging
-3. **Test through the real stack** — prefer TestClient over mocks for Django views
-4. **Test from the user's perspective** — assert on HTTP responses, not internal state
-5. **Write tests before fixing bugs** — reproduce the bug with a test, then fix
-
----
-
-## Common Development Tasks
-
-### Creating a New Site
-
-1. Add site directory under `projects/<site>/`
-2. Create site-specific `Makefile` following existing patterns
-3. Register site in `projects/Makefile` with WEBSITE alias
-4. Add shared settings in `projects/configs/`
-5. Add templates following the template hierarchy
-6. Register site in Traefik config for deployment
-
-### Adding a New Django App
-
-1. Create app under `projects/<site>/www/<app>/`
-2. Add app to `INSTALLED_APPS` in the site's settings
-3. Create models, views, and templates following existing patterns
-4. Register any Wagtail models or admin interfaces
-5. Add tests in `projects/<site>/tests/`
-6. Run `make check WEBSITE=<site>` and `make test WEBSITE=<site>`
-
-### Adding New Static Assets
-
-1. **Shared assets** go in `projects/assets/static/`
-2. **Site-specific assets** go in `projects/<site>/assets/staticfiles/`
-3. **Media files** go in `projects/<site>/assets/media/`
-4. Run `make assets WEBSITE=<site>` to build
-
-### Adding or Modifying Templates
-
-1. Check the template resolution order (see above)
-2. Use shared templates from `projects/assets/templates/` for cross-site UI
-3. Use site templates only for brand-specific overrides
-4. Use `{% comp "path" /%}` rather than `{% include %}` when possible
-5. Always check the AGENTS.md in the target template directory
-
-### Working with django-fusion Component System
-
-1. Use `{% comp "path" /%}` for ALL component rendering
-2. Use `fragment_name` for HTMX fragment identifiers
-3. Register new components in the appropriate `comp/` module
-4. Follow BEM naming: `block__element--modifier`
-
----
-
-## Troubleshooting
-
-### Dev server won't start
-
-| Issue | Likely Cause | Solution |
-|-------|-------------|----------|
-| Port already in use | Another process on same port | `lsof -i :<port>` → kill process |
-| Module not found | Missing deps or wrong venv | `uv sync` in project root |
-| Migration errors | Outdated migrations | `make migrate WEBSITE=<site>` |
-| Template not found | Wrong path or missing file | Check template resolution order |
-
-### Common Error Patterns
-
-- **`TemplateDoesNotExist`** — Check template path, resolution order, and agnostic naming
-- **`ImportError: cannot import name`** — Use canonical import paths from this document
-- **`django.core.exceptions.ImproperlyConfigured`** — Check settings, INSTALLED_APPS, and MIDDLEWARE
-- **`relation "..." does not exist`** — Run migrations: `make migrate WEBSITE=<site>`
-- **`403 Forbidden`** — Check CSRF tokens for HTMX requests, or allauth configuration
-
-### Performance Issues
-
-1. Check database queries — use Django Debug Toolbar or `connection.queries`
-2. Check template rendering — minimize nested `{% comp %}` calls
-3. Check static file serving — ensure Nginx is serving static/media, not Django
-4. Check Redis cache — ensure cache is configured and running
-
----
-
-## CI & GitHub Actions
-
-- CI workflows live in `.github/workflows/`. See [`.github/AGENTS.md`](.github/AGENTS.md) for workflow-specific agent instructions.
-- The monorepo uses `pytest-core.yml` (Python), `js-test.yml` (Vitest/Playwright), `check-extras.yml`, `deploy-ci.yml`, `fusion-ci.yml`, and `lint-quality.yml`.
-- Reusable composite action: `.github/actions/deploy-preflight/action.yml` runs `make deploy-ci`.
-- When adding a workflow or composite action, document it in `.github/README.md` and add `workflow_dispatch:` and `timeout-minutes:`.
-- Validate YAML after editing:
-  ```bash
-  python3 -c "import yaml; yaml.safe_load(open('.github/workflows/<name>.yml'))"
-  ```
-
-### Typo & Dead-Code Linter (`lint-quality`)
-
-- **Script**: `applications/scripts/dev/check_typos_and_deadcode.py`
-- **Pre-commit hook**: `.githooks/pre-commit` (already configured via `git config core.hooksPath .githooks`) — runs in `--staged` mode for fast feedback
-- **CI workflow**: `.github/workflows/lint-quality.yml` — runs on PR + push, scans the full repo in 5 min
-- **Patterns**: 18 common typos (`fuson` → `fusion`, `recieved` → `received`, `seperate` → `separate`, etc.) + 3 dead-code markers (`TODO: remove`, `FIXME: delete`, `XXX: remove`)
-- **Inline allowlist**: any line containing `lint-disable-line` is skipped (works across Python/JS/HTML/SCSS comment styles)
-- **Bypass**: `SKIP_LINT=1 git commit ...` (also `SKIP_TESTS=1` for pre-push compat)
-- **Run locally**:
-  ```bash
-  python3 applications/scripts/dev/check_typos_and_deadcode.py            # full repo
-  python3 applications/scripts/dev/check_typos_and_deadcode.py --staged   # staged files only
-  ```
-
----
-
-## AI Agent Workflow
-
-When an AI agent starts working on this monorepo:
-
-1. **Read this file** — Get monorepo-wide conventions
-2. **Read site AGENTS.md** — Get site-specific instructions
-3. **Read lib AGENTS.md** — Get library conventions (if applicable)
-4. **Read `.github/AGENTS.md`** — Get CI/GitHub-specific instructions (if touching workflows)
-5. **Search codebase** — Find existing patterns before generating new code
-6. **Follow import paths** — Use canonical paths listed above
-7. **Use Makefile delegation** — Prefer `projects/Makefile` for site commands
-8. **Run the narrowest tests first** — Site tests before workspace tests
-9. **Verify tests pass** — Run tests after making changes
-
-### Recommended Workflow for AI Agents
-
-```
-1. Read this AGENTS.md ──────────→ Get project overview & conventions
-2. Read site/library AGENTS.md ──→ Get component-specific instructions
-3. Search codebase (rg) ────────→ Find existing patterns
-4. Make changes ─────────────────→ Write or modify code
-5. Run narrowest tests ─────────→ make check/test WEBSITE=<site>
-6. Run broader tests ───────────→ uv run pytest (if needed)
-7. Fix any failures ────────────→ Iterate until green
-8. Report changes ──────────────→ Summarize what was done
-```
+Use the narrowest relevant check first, then expand only when practical:
+
+- Python/Django: `ruff check`, `python manage.py check`, targeted pytest.
+- Astro/TypeScript: the package's `check`, `test`, and `build` scripts.
+- Rust/Tauri: `cargo check` and targeted `cargo test`.
+- Playwright: the scoped project command, with browsers already installed.
+- Compose/YAML: `docker compose -f <file> config -q` and YAML parsing where
+  applicable. Do not bring up the stack merely to validate documentation.
+
+## 6. Safety rules
+
+- Do not commit, push, reset, restore, delete, prune, migrate production data,
+  or install global packages unless explicitly requested.
+- Treat `docker compose down --volumes`, `docker system prune`, fixture reloads,
+  database restores, certificate operations, and deployment targets as
+  effectful operations requiring confirmation.
+- Never print secrets, tokens, passwords, private keys, or full environment
+  files. Use `.env.example` names without values.
+- Preserve pre-existing user changes. Inspect `git status` before editing and
+  do not revert unrelated changes.
+- If an exported symbol or route changes, search and update all references.
+- Keep documentation paths synchronized with the actual tree and Makefile
+  aliases. If a project is renamed or migrated, document both the canonical
+  path and the compatibility alias.
+
+## 7. Change checklist
+
+Before finishing a change:
+
+- [ ] Read the applicable scoped `AGENTS.md` files.
+- [ ] Confirm the owning product and current path.
+- [ ] Search for existing helpers, components, routes, and tests.
+- [ ] Keep generated files and unrelated worktree changes untouched.
+- [ ] Add or update focused tests when behavior changes.
+- [ ] Run the narrowest check and report any unavailable broader checks.
+- [ ] Review the diff for stale paths, accidental secrets, and scope leakage.

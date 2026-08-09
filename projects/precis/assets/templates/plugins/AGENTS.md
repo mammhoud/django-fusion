@@ -1,40 +1,32 @@
-# Plugin Templates Guide — Shared Plugins
+# Precis Legacy Plugin Template Scope — AI Agent Instructions
 
-**Path:** `projects/assets/templates/plugins/` — Shared plugin-level templates
+**Scope:** `projects/precis/assets/templates/plugins/`
 
-## Scope
-Shared plugin templates used across all Structa Cloud sites. These include email templates, error pages, newsletter forms, privacy policies, MFA flows, and pagination components.
+Read `projects/precis/backend/AGENTS.md` and the root `AGENTS.md` first. This
+folder is a legacy/template compatibility scope inside Precis assets. It is not
+the canonical location for new Django app templates.
 
-## Resolution Context
-```
-1. Site-specific plugin templates (projects/<site>/plugins/**/templates/) ← highest
-2. Shared plugin templates (this directory)                                  ← you are here
-3. Shared components (projects/assets/templates/components/)
-4. Shared base templates (projects/assets/templates/)                        ← fallback
-```
+## Canonical ownership for new work
 
-## Available Templates
+- Auth/account templates: `projects/precis/backend/apps/auth/` or the owning
+  account feature under `backend/apps/pages/`.
+- Learning templates: `projects/precis/backend/apps/learning/`.
+- Blog/profile/product/page templates: the corresponding
+  `backend/apps/pages/<feature>/templates/` directory.
+- Site-root overrides: `projects/precis/backend/templates/`.
+- Generic framework components: `libs/django-fusion/`.
 
-| Template | Purpose |
-|----------|---------|
-| `plugins/allauth.md` | Allauth template override guidance |
-| `plugins/emails/` | Auth and notification email templates |
-| `plugins/errors/` | Error pages (404, 500) |
-| `plugins/newsletter/` | Newsletter signup components |
-| `plugins/privacy/` | Privacy policy and consent components |
-| `plugins/tables/` | Data table components |
-| `plugins/pagination/` | Pagination components |
+Only modify this directory when an existing Precis loader or compatibility
+contract demonstrably still consumes it. Do not create new `plugins/<app>/`
+trees merely to follow old documentation.
 
-## Conventions
-- Use `fragment_name` for HTMX fragment identifiers and context keys
-- Use `{% include %}` for reusable components; pass only required context
-- Use BEM classes: `block__element--modifier`
-- No IDs for styling
-- Preserve Django/Wagtail context variables and block tags
-- Prefer `{% comp "path" /%}` over `{% include %}` when a django-fusion component exists
+## Template rules
 
-## Customization Tips
-1. Search nearby templates first, then shared templates, before adding a new partial
-2. When replacing a component, preserve context variable names and bindings
-3. Site-specific overrides belong in `projects/<site>/templates/`, not here
-4. Use targeted searches for include paths, block names, context variables, and CSS classes
+- Preserve existing context, inheritance, translations, permissions, Wagtail
+  fields, email variables, and HTMX contracts.
+- Use `{% comp %}` when a registered component exists and `fragment_name` for
+  fragment identifiers/context keys.
+- Keep generated/transactional email content escaped and data-driven.
+- Use BEM classes and no IDs for styling.
+- Search all callers and the active `TEMPLATES` configuration before moving or
+  deleting a template.

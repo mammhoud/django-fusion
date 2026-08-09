@@ -1,309 +1,134 @@
-# lms-fusion — AI Agent Instructions
+# Precis LMS Backend — AI Agent Instructions
 
-Path: `projects/lms-fusion/backend/`
+**Path:** `projects/precis/backend/`
+**Product:** Precis LMS / learning platform
+**Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + allauth + HTMX/Alpine integration
 
-## Overview
+Read `/AGENTS.md` and `/projects/AGENTS.md` first. This file applies to the
+Precis backend only; it does not describe the retired `projects/lms-fusion/`
+boundary or the separate Landing-Fusion backend.
 
-lms-fusion is a self-contained Fusion project. Templates, static assets,
-fixtures, and locale files should live inside this project unless they are
-genuinely shared across sites or part of the `django-fusion` framework.
+## Directory structure
 
-## Directory Structure
-
-```
-lms-fusion/backend/
-├── apps/                          # All Django application code
-│   ├── core/                      # Shared core: handlers, content, services, models, api, schemas
-│   │   ├── handlers/              # Shared handlers (views, forms, models, signals, filters)
-│   │   ├── content/               # Content models, search, tasks, Wagtail hooks
-│   │   ├── api/                   # Shared REST API endpoints
-│   │   ├── schemas/               # Shared schema definitions
-│   │   ├── urls.py                # Cart and checkout endpoints
-│   │   └── routes.py              # Routable component site configuration
-│   ├── learning/                  # Learning/LMS app (courses, enrollment, learning)
-│   └── pages/                     # Domain-specific apps (one per feature module)
-│       ├── blog/                  # Blog app (models, views, API, components)
-│       ├── profile/               # User profile app (settings, dashboard, notes)
-│       ├── products/              # Products & cart app
-│       ├── accounts/              # Authentication & registration app
-│       ├── branding/              # Branding & customization app
-│       ├── pages/                 # Wagtail page types (home, about, contact, team, services)
-│       ├── components/            # Shared component templates
-│       ├── templatetags/          # Shared template tags
-│       └── urls.py                # Root URL aggregator for all apps
-├── templates/                     # Site-root entry templates + project-wide overrides
-├── www/                           # Project entry point (urls.py + __init__.py only)
-├── settings.py                    # Site-local Django settings
-├── server.py                      # ASGI/WSGI application
-└── manage.py                      # Django management CLI
+```text
+backend/
+├── apps/
+│   ├── content/             # Wagtail/content hooks, tasks, content behavior
+│   ├── learning/            # Courses, catalog, enrollment, progress, certificates
+│   ├── pages/               # Page/domain feature package and URL aggregation
+│   ├── handlers/            # Request handlers, renderers, signals, email helpers
+│   ├── auth/                # Allauth adapters and authentication integration
+│   ├── core/                # Shared routes, renderers, signals, services, URLs
+│   ├── domain/              # Site/domain configuration
+│   └── components/          # Backend-owned reusable component templates
+├── templates/               # Backend/site-root templates and overrides
+├── assets/                  # Backend runtime fixtures/static support
+├── migrations/              # Backend-owned migrations where applicable
+├── settings.py              # Backend settings and app registration
+├── urls.py                  # Root URL configuration
+├── manage.py                # Django CLI
+├── server.py                # Server entry point
+├── __main__.py              # Project command entry point
+└── tests/                   # Backend-focused test suite and fixtures
 ```
 
-## Template Resolution Order
+The repository has migrated away from the old `plugins.*`/`www.*` layout in
+active code. Use the actual `apps.*` packages and inspect `settings.py` before
+assuming an app exists.
 
-Django resolves templates in this order (highest priority first):
+## App ownership
 
-1. `lms-fusion/backend/templates/` — site-root entry templates and project-wide overrides
-2. `lms-fusion/backend/apps/pages/<app>/templates/` — app-owned templates
-3. `lms-fusion/backend/apps/core/**/templates/` — core app templates
-4. `lms-fusion/assets/templates/` — project asset templates
-5. `libs/django-fusion/src/django_fusion/templates/` — django-fusion framework templates
+- `apps/learning/` owns learning domain models, applications, viewsets,
+  signals, Wagtail hooks, and learning URLs.
+- `apps/pages/` owns page-oriented product features such as blog, profile,
+  accounts, products, and page models when present in the checkout.
+- `apps/content/` owns shared content behavior, Wagtail hooks, and content
+  tasks; it should not become a generic domain dump.
+- `apps/handlers/` owns request/fragment rendering integration and handler
+  middleware. Keep URL-facing orchestration thin.
+- `apps/core/` owns genuinely cross-feature backend primitives. Avoid placing
+  product-specific learning logic here.
+- `apps/auth/` owns Precis-specific allauth adapters and auth integration.
 
-## Asset / Static Resolution Order
+Before adding an app or moving a model, check `INSTALLED_APPS`, migrations,
+URL includes, Wagtail hooks, and existing imports with `rg`.
 
-Django static and media files resolve in this order (highest priority first):
+## URL and rendering flow
 
-1. `lms-fusion/assets/static/` — project-specific compiled static files
-2. `lms-fusion/assets/media/` — project-specific uploaded media
-3. `libs/django-fusion/src/django_fusion/static/` — django-fusion framework static
-4. `projects/assets/static/` — legacy monorepo shared static (for non-fusion sites only)
+The root URL configuration is the source of truth. In general, routes include:
 
-Source design assets (SCSS, logos, fonts, images) live in the project root
-`lms-fusion/assets/` and are compiled/copied into the locations above for
-both Next.js and Django consumption.
-
-## URL Structure
-
-```
-/                              → apps.pages.urls (namespace: "plugins")
-/accounts/                     → apps.pages.accounts.urls (namespace: "accounts")
-/profile/                      → apps.pages.profile.urls (namespace: "profile")
-/learning/                     → apps.learning.urls (namespace: "lms")
-/cart/                         → apps.core.urls (namespace: "cart")
-/legal/                        → apps.core.handlers.urls (namespace: "legal")
-/api/                          → apps.core.api.urls (namespace: "api")
-/admin/                        → Wagtail admin
-/django-admin/                 → Django admin
-/osoul/                        → Routable component site
+```text
+admin / django-admin / documents
+accounts and auth
+learning application
+page/content feature URLs
+API and HTMX fragment endpoints
+Wagtail page catch-all
 ```
 
-## Import Conventions
+Use django-fusion's `Application`, `PageHandler`, `RoutableComponent`, and
+fragment helpers when the surrounding app already uses them. Keep
+`fragment_name` stable. A request can be a full document, an HTMX fragment, or
+an API response; preserve the existing detection and response contracts.
 
-Use canonical import paths from the new structure:
+## Templates and assets
 
-| Old Path | New Path |
-|----------|----------|
-| `plugins.blog.*` | `apps.pages.blog.*` |
-| `plugins.lms.*` | `apps.learning.*` |
-| `plugins.profile.*` | `apps.pages.profile.*` |
-| `plugins.products.*` | `apps.pages.products.*` |
-| `plugins.accounts.*` | `apps.pages.accounts.*` |
-| `plugins.branding.*` | `apps.pages.branding.*` |
-| `plugins.pages.*` | `apps.pages.pages.*` |
-| `www.core.*` | `apps.core.*` |
-| `www.apps.*` | `apps.core.*` |
-| `www.api.*` | `apps.core.api.*` |
-| `www.schemas.*` | `apps.core.schemas.*` |
-| `www.worker.*` | `tools.worker.*` |
+There are several template roots. Confirm `settings.py` and the nearest
+`AGENTS.md` before adding or overriding a file:
 
-## Fragment Components
+1. `backend/templates/` — site-root shells, errors, events, admin overrides,
+   and deliberate project-wide overrides.
+2. `backend/apps/**/templates/` — app-owned templates close to their views.
+3. `precis/assets/templates/` — project asset/template source where configured.
+4. `libs/django-fusion/src/django_fusion/templates/` — framework fallback.
 
-django-fusion `FragmentComponent` / `RoutableComponent` subclasses live in
-each app's `components.py`:
+Do not put app-specific templates in the backend root merely because they are
+convenient. Do not duplicate django-fusion components. Use `{% comp %}` for
+registered components, `{% include_block %}` for Wagtail blocks, and `{% include
+%}` for dynamic/local includes. Preserve translation tags, permissions,
+context names, inheritance, and HTMX attributes.
 
-- `apps/learning/components.py` — `StaticPageFragment`, `CourseListFragment`
-- `apps/pages/blog/components.py` — `BlogPostListFragment`, `BlogPostCreateFragment`
-- `apps/pages/profile/views/` — Profile fragments (dashboard, settings, courses, etc.)
+Keep SCSS/source assets separate from compiled CSS and collected static files.
+Precis-specific branding and styles belong under `projects/precis/assets/` or
+the owning frontend, not in the framework library.
 
-API endpoints that need fragment pointers use the framework response helpers directly:
-```python
-from django_fusion.routes import fusion_response
+## Commands
+
+```bash
+cd projects/precis/backend
+make check
+make test
+make migrate
+make collectstatic
+
+# Workspace dispatcher; lms-fusion is the compatibility alias for Precis
+cd projects
+make show-config WEBSITE=lms-fusion
+make check WEBSITE=lms-fusion
+make test WEBSITE=lms-fusion
 ```
 
-## Current Template Tree
+Read the backend Makefile before running migration, fixture, seed, or server
+targets. Use a test/SQLite database for local tests where supported. Do not
+load fixtures or migrate a shared/production database without explicit intent.
 
-```
-lms-fusion/backend/templates/
-├── base.html               # Project base layout (extends django-fusion base)
-├── base_page.html          # Page layout wrapper
-├── index.html              # Home / entry point template
-├── errors/                 # Site-wide error pages
-├── events/                 # Event page templates (site-root)
-├── wagtailadmin/           # Wagtail admin overrides (site-root)
-└── AGENTS.md               # This file
-```
+## Testing
 
-> **App-specific templates** belong in `apps/pages/<app>/templates/`.
-> Only site-root entry templates, error pages, event pages, Wagtail admin
-> overrides, and project-wide overrides belong in `backend/templates/`.
+Backend tests cover settings, API smoke behavior, fixture contracts, learning
+search/detail/progress, page rendering, and domain invariants. A model, page,
+URL, or template contract change should update the smallest relevant test and
+then run `make check` plus the focused test module.
 
-## Template Organization
+For cross-product behavior, use `tests/` rather than importing Precis internals
+into unrelated products. For framework behavior, use `libs/django-fusion/tests/`
+and a consuming-product regression test.
 
-```
-lms-fusion/backend/
-├── templates/                             # Site-root entry + project-wide overrides
-│   ├── base.html
-│   ├── base_page.html
-│   ├── index.html
-│   ├── errors/
-│   ├── events/
-│   └── wagtailadmin/
-├── apps/learning/templates/             # Learning app templates
-│   ├── learning/
-│   ├── courses/
-│   ├── certification/
-│   └── lms/
-├── apps/pages/<app>/templates/            # App-owned templates
-│   ├── accounts/auth/
-│   ├── accounts/account/
-│   ├── accounts/registration/
-│   ├── blog/
-│   ├── pages/about/
-│   ├── pages/contact/
-│   ├── pages/home/
-│   ├── pages/services/
-│   ├── pages/team/
-│   └── products/
-└── apps/core/**/templates/                # Core app templates
-```
+## Do not
 
-## Asset Tree
-
-```
-lms-fusion/
-└── assets/                       # Unified project assets (design source + runtime output)
-    ├── styles/                   # SCSS source files, design tokens, theme
-    ├── static/                   # Compiled CSS, JS, images for Django collectstatic
-    ├── templates/                # Project-specific template includes
-    ├── media/                    # Uploaded media (runtime)
-    ├── fixtures/                 # Project fixtures
-    ├── locale/                   # Project .po/.mo files
-    ├── emails/                   # Email templates
-    ├── branding/                 # Logos, favicons, brand assets
-    ├── fonts/                    # Project-specific web fonts
-    └── Makefile
-```
-
-## Shared Design Source (SCSS, Logos, Branding)
-
-Keep a single source of truth for the visual design system under
-`lms-fusion/assets/`:
-
-- `assets/styles/fusion-theme.scss` — theme tokens and CSS custom properties.
-- `assets/branding/logo.svg` — project logo used by both Django and Next.js.
-- `assets/branding/favicon.ico` — favicon.
-
-Build/compile steps:
-- Next.js imports the SCSS in `frontend/src/app/globals.css` or `_app.tsx`
-  (add `sass` dependency if needed).
-- Django consumes the compiled CSS from `assets/static/css/fusion.css`
-  or references CSS custom properties in templates.
-- Logos are copied/symlinked to `frontend/public/branding/` and
-  `assets/static/branding/` during the build.
-
-## Site-Wide CSS Variables
-
-Use CSS custom properties so Django templates and Next.js components share the
-same color/type scale without recompiling per app.
-The color values are driven by `FUSION_PRIMARY_COLOR` and
-`FUSION_SECONDARY_COLOR` in `settings.py`:
-
-```python
-# settings.py
-FUSION_PRIMARY_COLOR = "#00a1b3"
-FUSION_SECONDARY_COLOR = "#008080"
-```
-
-`assets/styles/fusion-theme.scss` should output these as CSS custom properties:
-
-```css
-:root {
-  --fu-primary: var(--fu-primary, #00a1b3);
-  --fu-secondary: var(--fu-secondary, #008080);
-  --fu-bg: #fafafa;
-  --fu-text: #18181b;
-}
-```
-
-The compiled CSS is emitted to `assets/static/css/fusion.css` and
-referenced by the Django base template. Next.js imports the same SCSS source in
-its root layout, so both apps share the same tokens.
-
-## Customization Hooks
-
-Use these hooks instead of editing `django-fusion` or `projects/assets/`:
-
-### Layouts
-
-```python
-# settings.py
-FUSION_LAYOUTS = {
-    "default": "fusion/layouts/default.html",
-    "full_width": "fusion/layouts/full_width.html",
-    "sidebar": "fusion/layouts/sidebar.html",
-    "blank": "fusion/layouts/blank.html",
-}
-FUSION_DEFAULT_LAYOUT = "default"
-```
-
-Override a layout by placing a template at the same path under
-`lms-fusion/backend/templates/`.
-
-### Features
-
-```python
-FUSION_FEATURES = {
-    "blog": True,
-    "courses": True,
-    "products": True,
-    "pages": True,
-    "auth": True,
-    "profile": True,
-    "branding": True,
-    "search": True,
-}
-```
-
-### Component registry
-
-Register or override components in `AppConfig.ready()`:
-
-```python
-from django_fusion.comp.registry import component_registry
-
-class MyAppConfig(AppConfig):
-    name = "apps.pages.my_app"
-
-    def ready(self):
-        component_registry.register("my_app.hero", "path/to/hero.html")
-```
-
-### Fragment rendering
-
-Set `fragment_name` on `RoutableComponent` / `FragmentComponent` subclasses:
-
-```python
-from django_fusion.routes import RoutableComponent
-
-class MyPage(RoutableComponent):
-    fragment_name = "pages.my_page"
-    fusion_render_first = True
-```
-
-## Rules for Agents
-
-1. **Keep it local** — new templates and static files go in this project,
-   not in `projects/assets/`.
-2. **App first** — app-specific templates belong in `apps/pages/<app>/templates/`,
-   not `backend/templates/`.
-3. **Site root is for overrides** — only entry templates and project-wide
-   overrides live in `backend/templates/`.
-4. **Source assets at project root** — all project assets (design source, compiled
-   static, templates, fixtures, locale, media) live in the unified `lms-fusion/assets/`
-   directory (sibling of `backend/` and `frontend/`).
-5. **Single source of truth for branding** — logos, colors, and fonts are
-   defined once in `assets/` and shared between Next.js and Django.
-6. **Shared layer is controlled** — use `libs/django-fusion` for framework
-   templates and components. Project-specific styles, logos, and branding
-   never go into `libs/django-fusion`; they stay in the project-level
-   `assets/` directory. Use `projects/assets/` only for cross-site design
-   assets used by non-fusion sites.
-7. **Use canonical paths** — import from `apps.pages.*` for app code,
-   `apps.core.*` for shared core, `django_fusion.*` for framework APIs.
-   See the import convention table above and `libs/django-fusion/AGENTS.md`.
-
-## Related
-
-- [`docs/plans/README.md`](../../../docs/plans/README.md) — consolidated plan index
-- [`lms-fusion migration plan`](../../../docs/plans/lms-fusion/migration-plan.md)
-- [`lms-fusion asset cleanup plan`](../../../docs/plans/migrated/projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md)
-- [`libs/django-fusion/AGENTS.md`](../../../libs/django-fusion/AGENTS.md) — django-fusion conventions
+- Do not use old `plugins.*`, `www.*`, or `projects/lms-fusion/` paths in new
+  imports or files.
+- Do not move Landing-Fusion-only APIs or templates into Precis.
+- Do not hand-edit generated static bundles.
+- Do not modify migrations to hide a schema mismatch; reproduce it and create a
+  real migration.
+- Do not add compatibility re-exports when a canonical import already exists.

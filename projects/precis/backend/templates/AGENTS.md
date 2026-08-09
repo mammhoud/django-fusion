@@ -1,43 +1,41 @@
-# Site Template Root
+# Precis Backend Site-Root Templates — AI Agent Instructions
 
-Scope: site-root entry templates, error pages, and project-wide overrides.
+**Scope:** `projects/precis/backend/templates/`
 
-## Lookup Strategy
-
-Templates in this directory resolve before app templates loaded via Django's
-`APP_DIRS`. Keep files here only when they are intentional site-specific entry
-points, branded shells, or templates that must shadow app/django-fusion
-behavior.
+Read `projects/precis/backend/AGENTS.md` and the root `AGENTS.md` first. This
+folder is for deliberate Precis site-root templates and overrides, not a
+replacement for every app template.
 
 ## What belongs here
 
-- `base.html`, `base_page.html`, `index.html`
-- `errors/` — site-wide error pages
-- `events/` — site-root event templates (no dedicated plugin)
-- `wagtailadmin/` — Wagtail admin overrides
-- Project-wide overrides for app templates (use sparingly)
+- `base.html`, `base_page.html`, and the site document shell
+- `index.html` and root entry templates
+- `errors/` site-wide error pages
+- `events/` event templates that are intentionally owned by the backend root
+- `wagtailadmin/` Wagtail admin overrides
+- A narrow project-wide override that must shadow an app/framework template
 
-## What does NOT belong here
+## What does not belong here
 
-- App-specific templates — those live in `plugins/<app>/templates/<app>/`.
-- Reusable UI components — those live in `libs/django-fusion/src/django_fusion/templates/`.
+- Learning-specific templates — keep them under the learning app.
+- Blog/profile/account/product templates — keep them under the owning
+  `backend/apps/pages/<feature>/templates/` tree.
+- Reusable framework components — use `libs/django-fusion` or registered local
+  components.
+- Templates for Landing-Fusion or another product.
 
-## Override Rules
+## Override process
 
-- Prefer deleting exact duplicates and allowing Django to load the app or
-  django-fusion equivalent.
-- Keep thin overrides for branded variations; move reusable repeated markup into
-  shared includes under `libs/django-fusion/src/django_fusion/templates/components/`.
-- Preserve existing template names, include names, block names, and context variables to avoid breaking Wagtail/Django rendering.
-- Use `fragment_name` for fragment identifiers and context keys; do not introduce alternate fragment naming.
-- When adding or changing a site override, compare the same relative path in
-  `libs/django-fusion/src/django_fusion/templates/` and the relevant
-  `plugins/<app>/templates/` first.
+Before adding an override:
 
-## Notes
+1. Confirm the template is actually resolved from this directory using
+   `settings.py` and a targeted search.
+2. Compare the same relative path in the owning app and django-fusion.
+3. Preserve block names, context variables, translation tags, permissions,
+   Wagtail fields, and HTMX attributes.
+4. Keep the override thin; move reusable markup to a registered component.
+5. Test both full-page and fragment requests when the template is used by both.
 
-App-specific template directories previously located here (`blog/`, `lms/`,
-`pages/`, `products/`, `auth/`, `account/`, `registration/`, `learning/`,
-`certification/`, `courses/`, `about/`, `home/`, `team/`, `contact/`,
-`services/`) have been moved to the appropriate `plugins/<app>/templates/`
-locations. See the project-level `backend/AGENTS.md` for the full layout.
+Use `{% comp "path" /%}` for registered components, `{% include_block %}` for
+StreamField blocks, and `fragment_name` for fragment identifiers. Use BEM
+classes and never add IDs solely for styling.

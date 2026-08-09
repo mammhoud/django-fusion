@@ -1,122 +1,79 @@
-# Formint — AI Agent Instructions
+# FormintB Cloud Frontend — AI Agent Instructions
 
-> **Project:** `projects/formints/formintA/` (site slug `formint-pos`)  
-> **Type:** Tauri desktop app (no sidecar)  
-> **Stack:** React 19 + TypeScript + Vite + Tailwind CSS + Rust (Tauri 2) + Diesel ORM + SQLite (direct)
+**Path:** `projects/formints/formintB/frontend/`
+**Product:** POS Cloud (`formintB`) frontend
+**Stack:** Astro + React 19 + TypeScript + Tailwind/Alpine utilities
 
----
+Read `projects/formints/AGENTS.md` and `projects/formints/formintB/README.md`
+first. This is not the FormintA Community desktop project; do not copy its
+Tauri/Rust guidance into this folder.
 
-## Project Overview
+## Structure
 
-Formint is the lightweight edition (formerly pos-mini / forge-pos), marketed as
-**Formints** on the landing site (`/products/formint-pos/`). It uses Tauri with a React frontend and
-a Rust backend that talks directly to SQLite via Diesel ORM — **no Python
-sidecar**. This makes it the simplest and fastest to deploy.
-
----
-
-## Key Differences
-
-| Feature | POS Full | POS Solo | Formint |
-|---------|:--------:|:--------:|:---------:|
-| Python sidecar | ✅ | ✅ | ❌ |
-| Django ORM | ✅ | ✅ | ❌ (Diesel direct) |
-| Multi-store sync | ✅ | ❌ | ❌ |
-| Employee management | ✅ | ❌ | ❌ |
-| Fusion fragments | ✅ | ✅ | ❌ |
-| Point of sale | ✅ | ✅ | ✅ |
-| Product management | ✅ | ✅ | ✅ |
-| Customer management | ✅ | ✅ | ✅ |
-
----
-
-## Directory Structure
-
-```
-formintA/  (site slug formint-pos)
-├── src/                          # React 19 frontend
-│   ├── components/               # 16 reusable UI components
-│   ├── pages/                    # 22 route-level pages
-│   ├── hooks/                    # Custom React hooks
-│   ├── contexts/                 # React contexts (Theme, Auth, Language)
-│   ├── api/                      # Tauri invoke wrappers
-│   ├── utils/                    # Utilities (invoice PDF, export)
-│   ├── i18n/                     # Internationalization (en, fr, ar)
-│   ├── test/                     # Vitest tests
-│   └── types.ts                  # Shared TypeScript types
-├── src-tauri/                    # Rust/Tauri backend
-│   ├── src/
-│   │   ├── lib.rs               # 80+ Tauri command registrations
-│   │   ├── operations/           # 27 CRUD operation modules
-│   │   ├── db/                   # Diesel models + schema + connection
-│   │   ├── email.rs              # SMTP email
-│   │   └── bin/seed.rs           # Seed binary (4 presets)
-│   └── migrations/               # Diesel SQLite migrations
-├── docs/                         # Comprehensive documentation
-│   ├── commands.md               # CLI commands reference
-│   ├── project-tree.md           # Full directory structure
-│   ├── rust-code.md              # Rust backend architecture
-│   ├── customization.md          # Customization guide
-│   ├── calculations.md           # All formulas & calculations
-│   └── roles-permissions.md      # Role-based access control
-├── scripts/                      # Build & dev scripts
-└── Makefile                      # Build, dev, test commands
+```text
+frontend/
+├── src/
+│   ├── pages/                # Cloud operations/admin-facing routes
+│   ├── layouts/              # Astro document/application shells
+│   ├── components/           # App shell and reusable UI
+│   ├── hooks/                # API, status, navigation, search, sync hooks
+│   ├── contexts/             # Auth, theme, language, currency state
+│   ├── api/                  # Django API, dashboard, data, sync-event clients
+│   ├── utils/                # exports, transitions, preload, domain helpers
+│   ├── i18n/                 # en/fr/de/es/ar translations
+│   ├── lib/                  # icons, router shims, shared utilities
+│   ├── test/                 # Vitest setup and tests
+│   └── types.ts              # Frontend API/domain contracts
+├── scripts/                  # dev/build/i18n utilities
+├── docs/                     # frontend and architecture documentation
+├── astro.config.mjs          # API/admin proxy configuration
+├── package.json
+├── pnpm-workspace.yaml
+└── vitest.config.ts
 ```
 
----
+## Backend contract
 
-## Code Style & Standards
+The frontend talks to the Django cloud master in `../backend/`. Current
+formintB serves the former sidecar-compatible API directly from Django; the
+`SIDECAR_BASE`/`VITE_SIDECAR_URL` naming is compatibility vocabulary, not proof
+that a Robyn process exists.
 
-### TypeScript / React
-Same as the merged package — see `../formint-pos/README.md` and the archived React UI at `../formint-pos/legacy-react/` (formerly pos-full/pos-solo).
+Keep these contracts synchronized with backend tests and README documentation:
 
-### Rust / Tauri
-- Direct SQLite access via Diesel ORM (no Python intermediary)
-- Tauri `invoke` calls go directly to Rust command handlers
-- Migrations are plain SQL files (not Diesel migrations) in `src-tauri/migrations/`
+- CRUD/data API paths
+- `/fusion/*` render-mode, navigation, session, and asset endpoints
+- dashboard and sync APIs
+- `/ws/sync-events/` WebSocket frames and reconnect behavior
+- auth/session and error response shapes
 
----
+When changing a client type or API helper, search the corresponding backend
+route and parity test before editing only the frontend.
 
-## No Python Sidecar
+## Frontend conventions
 
-Formint does **not** include a Python sidecar. All data operations go through
-Tauri invoke → Rust → Diesel → SQLite. This means:
+- Keep pages thin; put reusable behavior in hooks, API modules, contexts, or
+  components according to the existing boundaries.
+- Preserve loading, empty, error, and disconnected-WebSocket states.
+- Keep translations complete for all supported locales when adding visible
+  strings.
+- Use existing theme tokens and component patterns; do not introduce a second
+  design system in one page.
+- Do not hard-code the backend port in multiple modules; use the existing
+  Astro/env proxy configuration.
 
-- **No `sidecar/` directory**
-- **No Django ORM models**
-- **No Fusion fragments**
-- **No `fusion-decoder.ts` or `fusion-store.ts`**
-- **Simpler deployment** — single binary, no Python runtime needed
-
----
-
-## Testing
+## Commands
 
 ```bash
-# Frontend unit tests (Vitest)
-npm run test
-
-# E2E tests (Playwright — from pos-e2e project)
-cd ../pos-e2e && npx playwright test --project=pos-mini
-
-# TypeScript typecheck
-npx tsc --noEmit
-
-# Build
-npm run build
+cd projects/formints/formintB/frontend
+pnpm install
+pnpm dev
+pnpm check
+pnpm build
+pnpm test
+pnpm exec vitest run
 ```
 
----
-
-## Documentation References
-
-| Topic | File |
-|-------|------|
-| POS architecture | `../../docs/POS_ARCHITECTURE.md` |
-| Role system | `../../docs/ROLE_SYSTEM.md` |
-| Commands | `docs/commands.md` |
-| Project structure | `docs/project-tree.md` |
-| Rust backend | `docs/rust-code.md` |
-| Calculations | `docs/calculations.md` |
-| Roles & Permissions | `docs/roles-permissions.md` |
-| Customization | `docs/customization.md` |
+Use the parent `formintB/Makefile` for coordinated backend/frontend startup
+and stack verification. Browser tests may require the Django backend and
+WebSocket endpoint to be running first.

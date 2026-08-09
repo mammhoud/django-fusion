@@ -1,21 +1,24 @@
-# Template Root Instructions: Plugin-specific templates
+# Precis Blog Asset Templates — AI Agent Instructions
 
-## Scope
-This directory is a plugin-specific template root for this fusion project. Follow the django-fusion conventions in `libs/django-fusion/AGENTS.md` first, then apply these local notes.
+**Scope:** `projects/precis/assets/templates/blog/`
 
-## Expected Template Structure
-Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
+Read `projects/precis/backend/AGENTS.md` and the root `AGENTS.md` first. This
+folder contains Precis blog presentation assets or compatibility templates.
 
-## Local Override Notes
-- Keep templates here focused on plugin behavior, plugin UI, and plugin-local overrides.
-- Prefer the django-fusion framework templates in `libs/django-fusion/src/django_fusion/templates/` for framework-level components and shared behavior.
-- Prefer this template root for presentation or overrides that are specific to this scope.
-- Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
-- Use `fragment_name` for fragment identifiers and context keys.
-- Use `{% include %}` for reusable components. Do not replace dynamic content with static demo text.
-- Use BEM-style CSS classes and do not use IDs for styling.
+## Ownership and placement
 
-## Customization Tips
-- Search nearby templates first, then shared templates, before adding a new partial.
-- When replacing a component, copy the equivalent data bindings from the old markup to the new include or partial.
-- Check related app, plugin, site, and shared templates with targeted `rg` searches for include paths, block names, context variables, and CSS classes.
+New blog behavior belongs in the active blog application under
+`projects/precis/backend/apps/pages/blog/` when that app is enabled. Keep this
+folder for templates explicitly loaded from the Precis asset tree; do not
+invent `plugins/blog/` paths or move blog logic into templates.
+
+## Rules
+
+- Preserve post/category/tag/comment context, Wagtail fields, pagination, and
+  permissions.
+- Preserve normal-page and HTMX search/result rendering when both are used.
+- Use `{% comp %}` for registered components and `fragment_name` for fragments.
+- Use BEM classes, no styling IDs, and pass only required context to includes.
+- Check the owning app templates and django-fusion components before adding a
+  duplicate.
+- Test blog index/detail/search/comment paths affected by a template change.
