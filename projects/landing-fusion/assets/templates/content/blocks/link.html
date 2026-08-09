@@ -1,9 +1,0 @@
-{% load wagtailcore_tags %}
-{% comment %} Inline link — chosen page URL (wins) or the manual URL. {% endcomment %}
-{% if value.label or value.page %}
-  {% if value.page %}
-  <a href="{{ value.page.url }}" class="text-sm font-medium text-fu-primary transition-colors duration-200 hover:text-fu-primary-dark">{{ value.label|default:value.page.title }}</a>
-  {% else %}
-  <a href="{{ value.href }}" class="text-sm font-medium text-fu-primary transition-colors duration-200 hover:text-fu-primary-dark">{{ value.label }}</a>
-  {% endif %}
-{% endif %}
