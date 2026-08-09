@@ -1,9 +1,0 @@
-{% extends "pages/base.html" %}
-{% load components %}
-
-{% block title %}{{ page.title }} · StructAI Softwares{% endblock %}
-
-{% block content %}
-  {% comment %} Privacy renders only its body section (no hero/cta fields are seeded). {% endcomment %}
-  {% comp "pages/partials/page_content.html" /%}
-{% endblock %}

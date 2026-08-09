@@ -65,3 +65,13 @@ certificatesResolvers:
       caServer: https://acme-v02.api.letsencrypt.org/directory
       httpChallenge:
         entryPoint: web
+  letsencrypt-dns:
+    acme:
+      email: structa.cloud@gmail.com
+      storage: /etc/traefik/acme/acme-dns.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"

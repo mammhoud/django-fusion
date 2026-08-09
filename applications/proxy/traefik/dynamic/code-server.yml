@@ -1,0 +1,20 @@
+http:
+  routers:
+    code-server-http:
+      rule: 'Host(`code.localhost`) || Host(`code.structa.cloud`) || Host(`ws.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: code-server-service
+      priority: 150
+    code-server-https:
+      rule: 'Host(`code.localhost`) || Host(`code.structa.cloud`) || Host(`ws.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: code-server-service
+      priority: 150
+  services:
+    code-server-service:
+      loadBalancer:
+        servers:
+          - url: 'http://coder-dev-code-server:8086'
+        passHostHeader: true

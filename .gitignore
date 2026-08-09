@@ -29,6 +29,8 @@ safe_loaddata.py
 !projects/landing-fusion/backend/assets/static/related/formints/*.png
 !projects/landing-fusion/frontend/public/static/related/formints/*.png
 appmap.log
+applications/proxy/acme/acme-dns.json
+applications/databases/dockge-data/
 # ── Docs artifacts & archives ────────────────────────────────────────
 .archives/
 archives/

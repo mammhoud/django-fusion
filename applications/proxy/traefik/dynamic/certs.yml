@@ -20,6 +20,8 @@ tls:
   certificates:
     - certFile: /etc/traefik/certs/localhost.crt
       keyFile: /etc/traefik/certs/localhost.key
+    - certFile: /etc/traefik/certs/code-server-fullchain.crt
+      keyFile: /etc/traefik/certs/code-server.key
 
   # Default certificate served when no SNI matches or when a request is made
   # without a known hostname. This prevents the browser from receiving the
