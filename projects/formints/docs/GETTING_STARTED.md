@@ -1,7 +1,7 @@
 # POS System — Developer's Guide
 
 > **Quick start guides for all POS editions**  
-> **Last Updated:** 24 July 2026
+> **Last Updated:** 9 August 2026
 
 ---
 
@@ -10,8 +10,8 @@
 | If you want... | Use... | Backend | Database |
 |---------------|--------|---------|----------|
 | A standalone POS for one device | **pos-mini** | Rust/Diesel | SQLite |
-| A branch POS that syncs to a master | **pos-solo** | Python/Robyn + Django ORM | SQLite |
-| A multi-branch enterprise POS with cloud sync | **pos-full** | Python/Robyn + Django ORM | SQLite |
+| A branch POS that syncs to a master | **pos-solo** | Django + Channels + django-bolt | SQLite |
+| A multi-branch enterprise POS with cloud sync | **pos-full** | Django + Channels + django-bolt | SQLite |
 | A cloud SaaS dashboard for all branches | **pos-cloud** | Django + PostgreSQL | PostgreSQL |
 
 ---
@@ -90,7 +90,7 @@ projects/pos/
 │   └── src-tauri/     # Rust backend (Diesel ORM)
 ├── pos-solo/          # Branch POS (Python + React + Tauri)
 │   ├── src/           # React frontend
-│   └── sidecar/       # Python API server (Robyn + Django ORM)
+│   └── sidecar/       # Django API server (Django + Channels + django-bolt)
 ├── pos-full/          # Enterprise POS (Python + React + Tauri)
 │   ├── src/           # React frontend
 │   └── sidecar/       # Python API server + Django admin

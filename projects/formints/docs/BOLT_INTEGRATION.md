@@ -1,6 +1,6 @@
 # Bolt API Integration Plan — POS Full Edition
 
-> **Version:** 1.0.0 | **Last Updated:** 20 July 2026 | **Status:** ✅ Complete — bolt_api.py removed, all features ported to routes/
+> **Version:** 1.0.0 | **Last Updated:** 9 August 2026 | **Status:** ✅ Complete — Robyn server removed; `bolt_api.py` (django-bolt) is canonical and served natively via `manage.py runbolt`
 
 ---
 

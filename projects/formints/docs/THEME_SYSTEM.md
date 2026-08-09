@@ -1,7 +1,7 @@
 # POS Theme System
 
 > **Version:** 1.0.0  
-> **Last Updated:** 24 July 2026  
+> **Last Updated:** 9 August 2026  
 > **Applies to:** pos-mini, pos-solo, pos-full  
 > **Files:** `src/styles/themes.css`, `src/styles/theme-overrides.css`, `src/contexts/ThemeContext.tsx`
 

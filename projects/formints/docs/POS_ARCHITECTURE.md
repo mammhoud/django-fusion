@@ -11,7 +11,7 @@
 > deleted paths (`pos-solo/`, `pos-full/`) refer to the pre-merge state.
 >
 > **Version:** 2.0.0 (historical)  
-> **Last Updated:** 20 July 2026  
+> **Last Updated:** 9 August 2026  
 > **Editions:** Solo (standalone) → Full (cloud master) → Cloud Server (enterprise)  
 > **Related:** [Bolt API Integration Plan](BOLT_INTEGRATION.md) — django-bolt integration strategy
 
@@ -21,7 +21,7 @@
 
 1. [System Overview](#1-system-overview)
 2. [Edition Architecture](#2-edition-architecture)
-3. [Server Layer: Robyn + Django ORM](#3-server-layer-robyn--django-orm)
+3. [Server Layer: Django + Channels + django-bolt](#3-server-layer-django--channels--django-bolt)
 4. [API Organization](#4-api-organization)
 5. [Model Maps](#5-model-maps)
 6. [Data Flow & Streaming](#6-data-flow--streaming)
@@ -50,7 +50,7 @@
 │         │  + WebSocket      │  + WebSocket           │  + WebSocket     │
 │         ▼                   ▼                        ▼                  │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │               Robyn Server (Python, async)                       │  │
+│  │               Django Server (Python, async ASGI)                  │  │
 │  │                                                                  │  │
 │  │  ┌─────────────┐ ┌──────────────┐ ┌──────────┐ ┌─────────────┐ │  │
 │  │  │  POS API    │ │  Node API    │ │ Config   │ │  Sync API   │ │  │
@@ -90,7 +90,7 @@
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| **Server** | Robyn (Rust-powered Python async) | HTTP REST + WebSocket API server |
+| **Server** | Django + Channels + django-bolt (Python async ASGI) | HTTP REST + WebSocket API server |
 | **ORM** | Django ORM (via Django) | Database access, migrations, signals |
 | **Database** | SQLite (file-based) | Local data storage |
 | **Validation** | Pydantic v2 | Request/response validation |
@@ -101,7 +101,7 @@
 
 ### What is a Sidecar?
 
-A **sidecar** is a companion process that runs alongside the Tauri desktop application to provide HTTP REST + WebSocket APIs. It uses Robyn as the async server and Django ORM for database access.
+A **sidecar** is a companion process that runs alongside the Tauri desktop application to provide HTTP REST + WebSocket APIs. It uses Django (with Channels for WebSockets and django-bolt for the high-performance `/bolt/*` API) with Django ORM for database access.
 
 ```
 ┌──────────────────────────────────────┐
@@ -115,7 +115,7 @@ A **sidecar** is a companion process that runs alongside the Tauri desktop appli
 │         │  (invoke)        │ :8765/66 │
 │         ▼                  ▼          │
 │  ┌──────────────────────────────────┐ │
-│  │     Sidecar Process (Robyn)      │ │
+│  │     Sidecar Process (Django)     │ │
 │  │  ┌────────────────────────────┐ │ │
 │  │  │  Django ORM (SQLite)       │ │ │
 │  │  │  models/ + shared/         │ │ │

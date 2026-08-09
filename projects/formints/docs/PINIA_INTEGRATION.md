@@ -1,6 +1,6 @@
 # Pinia ↔ Sidecar API Integration Guide
 
-> **Version:** 1.0.0 — **Last Updated:** 20 July 2026
+> **Version:** 1.0.0 — **Last Updated:** 9 August 2026
 > **Applies to:** pos-solo (port 8765), pos-full (port 8766)
 
 Complete guide for wiring Vue/Pinia stores to the Robyn sidecar REST + WebSocket APIs.

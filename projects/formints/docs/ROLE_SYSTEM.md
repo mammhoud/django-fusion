@@ -1,7 +1,7 @@
 # POS Role System
 
 > **Version:** 1.0.0  
-> **Last Updated:** 24 July 2026  
+> **Last Updated:** 9 August 2026  
 > **Applies to:** pos-mini (Rust), pos-solo (Django), pos-full (Django)  
 > **Related:** [Sync Architecture](SYNC_ARCHITECTURE.md), [Architecture Overview](POS_ARCHITECTURE.md)
 

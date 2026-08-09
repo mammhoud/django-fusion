@@ -1,5 +1,7 @@
 # Formint POS — Architecture
 
+> **Last Updated:** 9 August 2026  
+>
 > **Formint POS Professional** is the merged package that consolidates
 > `pos-full` (cloud master manager) and `pos-solo` (standalone device) into a
 > single product boundary with the same Tauri shell architecture.
@@ -39,7 +41,7 @@ formint-pos/
 ├── sidecar/                     # merged Django boundary — no Wagtail
 │   ├── configs/                 # settings (Unfold + fusion render-mode), URLs
 │   ├── manage.py                # CLI + --ensure-superuser bootstrap
-│   ├── server.py                # Robyn sidecar server (API + WebSocket, :8766)
+│   ├── asgi.py                  # Django ASGI (HTTP + Channels WebSocket)
 │   ├── bolt_api.py              # django-bolt REST API
 │   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
@@ -287,7 +289,7 @@ toggle without touching HTTP or cookies:
 editions: Rust supervises the sidecar process and exposes native
 capabilities; Django owns domain rules, persistence, permissions, audit, and
 fusion fragment rendering. The Django entry point is `sidecar/manage.py`
-(`DJANGO_SETTINGS_MODULE=configs`); `server.py` runs the Robyn sidecar
+(`DJANGO_SETTINGS_MODULE=configs`); `asgi.py`/`manage.py runbolt` run the Django sidecar
 (API + WebSocket on `:8766`) and `bolt_api.py` the django-bolt API layer.
 
 ---
@@ -376,7 +378,7 @@ landing-fusion's root + backend split):
 | `make tauri` / `make tauri-dev` / `make tauri-build` | Tauri CLI / dev / build |
 
 **`formint-pos/sidecar/Makefile`** — `install`, `migrate`, `dev` (:8767),
-`server` (Robyn, :8766), `check`, `test`, `seed`, `ensure-superuser`,
+`server` (django-bolt runbolt, :8766), `check`, `test`, `seed`, `ensure-superuser`,
 `shell`, `collectstatic`, `clean`.
 
 **`formint-pos/frontend/Makefile`** — `install`, `dev` (:4321), `build`,

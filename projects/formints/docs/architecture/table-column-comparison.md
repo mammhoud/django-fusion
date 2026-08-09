@@ -1,5 +1,7 @@
 # Table & Column Name Comparison Across POS Editions
 
+> **Last Updated:** 9 August 2026  
+>
 > **Purpose:** Identify which table names and column names are **identical** across editions vs. those that differ, so migration scripts and shared frontend code can target the common subset.
 
 ## Edition Key

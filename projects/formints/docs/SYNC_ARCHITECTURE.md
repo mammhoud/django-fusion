@@ -1,7 +1,7 @@
 # POS Sync Architecture
 
 > **Version:** 1.0.0  
-> **Last Updated:** 24 July 2026  
+> **Last Updated:** 9 August 2026  
 > **Editions:** pos-mini (none), pos-solo (LAN), pos-full (Cloud), pos-cloud (SaaS)  
 > **Related:** [Role System](ROLE_SYSTEM.md), [Architecture Overview](POS_ARCHITECTURE.md)
 

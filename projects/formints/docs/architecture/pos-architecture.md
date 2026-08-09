@@ -1,5 +1,7 @@
 # POS Architecture
 
+> **Last Updated:** 9 August 2026  
+
 ## High-Level Overview
 
 ```
