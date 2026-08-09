@@ -1152,7 +1152,10 @@ class LandingPagesTestCase(TestCase):
 
         data = self.client.get("/apis/pages/html-component-render-preview/").json()
         self.assertEqual(data["variants"][0]["name"], "Rendered component")
-        self.assertEqual(data["snippets"][0]["snippets"][0]["render_preview"], True)
+        # The API flattens each SnippetsSectionBlock to its item list (the
+        # same flat contract the Astro road consumes), so the sample snippet
+        # is data["snippets"][0] itself — not a nested section.
+        self.assertEqual(data["snippets"][0]["render_preview"], True)
 
     def test_all_product_apis_expose_visual_gallery_without_snippets(self):
         """Every product API is safe for the visual detail-page contract."""
@@ -1812,6 +1815,8 @@ class LandingPagesTestCase(TestCase):
                 "alpine-reactivity-landing",
                 "monorepo-six-products",
                 "server-time-streamed-htmx",
+                "advanced-content-architecture",
+                "html-component-render-preview",
                 "formint-pos-data-model",
                 "precis-lms-content-model",
                 "loop-block-library",
