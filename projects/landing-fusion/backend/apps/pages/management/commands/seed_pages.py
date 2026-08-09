@@ -2933,6 +2933,12 @@ class Command(BaseCommand):
             )
             if page is None:
                 continue
+            # English records are useful as an explicit editorial source; they
+            # stay empty until an editor adds an override. Creating them here
+            # also keeps the API's ``translation_source == "model"`` contract
+            # for lang=en (the base seed always created en + the overlay
+            # languages; the multi-language refactor must keep the en rows).
+            PageTranslation.objects.get_or_create(page=page, language="en")
             for language, payload in values.items():
                 if not payload:
                     continue

@@ -332,6 +332,13 @@ MIDDLEWARE.insert(
     MIDDLEWARE.index("django.contrib.sessions.middleware.SessionMiddleware") + 1,
     "django.middleware.locale.LocaleMiddleware",
 )
+# After LocaleMiddleware: activate the locale from the landing ?lang= / cookie
+# resolver so {% translate %} tags on server-rendered pages and fragments
+# follow the same language the content-overlay API uses.
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.locale.LocaleMiddleware") + 1,
+    "apps.handlers.middleware.LandingLocaleMiddleware",
+)
 
 # i18n URL pattern — when True, Django prefixes URLs with the language code
 # (e.g. /en/about/, /ar/about/). The landing site uses cookie-based switching

@@ -1,4 +1,4 @@
-"""CORS headers for public landing and fragment endpoints."""
+"""CORS headers + request-language locale activation for landing endpoints."""
 from __future__ import annotations
 
 import os
@@ -6,6 +6,41 @@ import os
 from django.http import HttpRequest, HttpResponse
 
 DEFAULT_ALLOWED = "http://localhost:4321,http://localhost:3000"
+
+
+class LandingLocaleMiddleware:
+    """Activate the Django locale from the landing ``?lang=`` contract.
+
+    ``django.middleware.locale.LocaleMiddleware`` only honours the
+    ``django_language`` cookie or the Accept-Language header; the landing
+    site also switches server-rendered pages via ``?lang=`` (the same
+    resolver the content-overlay API uses), and the bilingual-parity
+    refactor moved templates to ``{% translate %}`` tags. This middleware
+    keeps the active locale aligned with the requested content language so
+    both full documents and HTMX fragments render translated labels.
+
+    Overriding only happens when ``?lang=`` is explicitly present: cookie
+    and header signals are already handled by LocaleMiddleware (which runs
+    just before this middleware), and forcing an override there could
+    clobber its negotiation (e.g. Accept-Language q-value weighting).
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        if "lang" not in request.GET:
+            return self.get_response(request)
+
+        from django.utils import translation
+
+        # Imported lazily: api.py imports this view module inside its
+        # fragment handler, so a module-level import would be circular.
+        from apps.pages.api import _requested_content_language
+
+        language = _requested_content_language(request)
+        with translation.override(language):
+            return self.get_response(request)
 
 
 class LandingCorsMiddleware:
