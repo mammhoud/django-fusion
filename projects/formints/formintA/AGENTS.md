@@ -1,122 +1,80 @@
-# Formint — AI Agent Instructions
+# FormintA Community/Mini POS — AI Agent Instructions
 
-> **Project:** `projects/formints/formintA/` (site slug `formint-pos`)  
-> **Type:** Tauri desktop app (no sidecar)  
-> **Stack:** React 19 + TypeScript + Vite + Tailwind CSS + Rust (Tauri 2) + Diesel ORM + SQLite (direct)
+**Path:** `projects/formints/formintA/`
+**Product identity:** Formint Community / `formint-pos`
+**Stack:** Tauri 2 + React 19 + TypeScript + Vite + Rust + SQLite/Diesel
 
----
+Read `projects/formints/AGENTS.md` and the repository root first. This edition
+is the lightweight offline desktop product.
 
-## Project Overview
+## Structure
 
-Formint is the lightweight edition (formerly pos-mini / forge-pos), marketed as
-**Formints** on the landing site (`/products/formint-pos/`). It uses Tauri with a React frontend and
-a Rust backend that talks directly to SQLite via Diesel ORM — **no Python
-sidecar**. This makes it the simplest and fastest to deploy.
-
----
-
-## Key Differences
-
-| Feature | POS Full | POS Solo | Formint |
-|---------|:--------:|:--------:|:---------:|
-| Python sidecar | ✅ | ✅ | ❌ |
-| Django ORM | ✅ | ✅ | ❌ (Diesel direct) |
-| Multi-store sync | ✅ | ❌ | ❌ |
-| Employee management | ✅ | ❌ | ❌ |
-| Fusion fragments | ✅ | ✅ | ❌ |
-| Point of sale | ✅ | ✅ | ✅ |
-| Product management | ✅ | ✅ | ✅ |
-| Customer management | ✅ | ✅ | ✅ |
-
----
-
-## Directory Structure
-
-```
-formintA/  (site slug formint-pos)
-├── src/                          # React 19 frontend
-│   ├── components/               # 16 reusable UI components
-│   ├── pages/                    # 22 route-level pages
-│   ├── hooks/                    # Custom React hooks
-│   ├── contexts/                 # React contexts (Theme, Auth, Language)
-│   ├── api/                      # Tauri invoke wrappers
-│   ├── utils/                    # Utilities (invoice PDF, export)
-│   ├── i18n/                     # Internationalization (en, fr, ar)
-│   ├── test/                     # Vitest tests
-│   └── types.ts                  # Shared TypeScript types
-├── src-tauri/                    # Rust/Tauri backend
-│   ├── src/
-│   │   ├── lib.rs               # 80+ Tauri command registrations
-│   │   ├── operations/           # 27 CRUD operation modules
-│   │   ├── db/                   # Diesel models + schema + connection
-│   │   ├── email.rs              # SMTP email
-│   │   └── bin/seed.rs           # Seed binary (4 presets)
-│   └── migrations/               # Diesel SQLite migrations
-├── docs/                         # Comprehensive documentation
-│   ├── commands.md               # CLI commands reference
-│   ├── project-tree.md           # Full directory structure
-│   ├── rust-code.md              # Rust backend architecture
-│   ├── customization.md          # Customization guide
-│   ├── calculations.md           # All formulas & calculations
-│   └── roles-permissions.md      # Role-based access control
-├── scripts/                      # Build & dev scripts
-└── Makefile                      # Build, dev, test commands
+```text
+formintA/
+├── src/                      # React frontend
+│   ├── pages/                # Product route pages
+│   ├── components/           # Shared application shell/components
+│   ├── layouts/              # Layout wrappers
+│   ├── hooks/                # Data/UI hooks
+│   ├── contexts/             # Auth, theme, currency, language contexts
+│   ├── api/                  # Tauri/API wrappers and data clients
+│   ├── utils/                # Export, invoice, navigation, UI helpers
+│   ├── i18n/                 # JSON/TypeScript translations
+│   ├── lib/                  # Icons and shared helpers
+│   ├── test/                 # Vitest setup and tests
+│   └── types.ts              # Frontend contracts
+├── src-tauri/                # Rust/Tauri native layer
+│   ├── src/                  # Commands, native integration, app entry
+│   ├── capabilities/         # Tauri permissions
+│   ├── icons/                # Desktop icons
+│   ├── Cargo.toml            # Rust dependencies
+│   └── tauri.conf.json       # Desktop packaging/configuration
+├── assets/                   # CSS and product assets
+├── e2e/                      # Playwright auth/visual flows
+├── docs/                     # Product architecture and customization docs
+├── scripts/                  # Local/release helpers
+├── package.json
+├── Makefile
+└── vite/astro configuration files
 ```
 
----
+The exact page/component inventory can evolve. Treat `src/types.ts`, the API
+wrappers, and Rust command signatures as the integration boundary.
 
-## Code Style & Standards
+## Architecture constraints
 
-### TypeScript / React
-Same as the merged package — see `../formint-pos/README.md` and the archived React UI at `../formint-pos/legacy-react/` (formerly pos-full/pos-solo).
+- There is **no Python sidecar**, Django ORM, or server-rendered Fusion route in
+  this edition.
+- Data flow is `React → Tauri invoke → Rust → SQLite`.
+- Keep TypeScript invoke wrappers, Rust command arguments/results, and database
+  migrations synchronized.
+- Native filesystem, dialog, store, and platform behavior belongs in Rust or a
+  narrow `src/api` wrapper, not scattered through pages.
+- Keep translations and theme behavior in the existing contexts/i18n modules.
+- Do not copy Formint Professional or Cloud server code into this edition.
 
-### Rust / Tauri
-- Direct SQLite access via Diesel ORM (no Python intermediary)
-- Tauri `invoke` calls go directly to Rust command handlers
-- Migrations are plain SQL files (not Diesel migrations) in `src-tauri/migrations/`
+## Commands
 
----
+```bash
+cd projects/formints/formintA
+pnpm install
+pnpm dev
+pnpm tauri dev
+pnpm test
+npx tsc --noEmit
+cargo check --manifest-path src-tauri/Cargo.toml
+pnpm build
+```
 
-## No Python Sidecar
-
-Formint does **not** include a Python sidecar. All data operations go through
-Tauri invoke → Rust → Diesel → SQLite. This means:
-
-- **No `sidecar/` directory**
-- **No Django ORM models**
-- **No Fusion fragments**
-- **No `fusion-decoder.ts` or `fusion-store.ts`**
-- **Simpler deployment** — single binary, no Python runtime needed
-
----
+Use the repository's actual package manager lockfile and scripts; do not add a
+second package manager or regenerate lockfiles unnecessarily.
 
 ## Testing
 
-```bash
-# Frontend unit tests (Vitest)
-npm run test
+- Add Vitest coverage for utility/hooks/data transformations.
+- Add Playwright coverage for visible flows and authentication behavior.
+- Add Rust tests for native/database behavior where the command is non-trivial.
+- Run the smallest affected suite before an edition-level build.
 
-# E2E tests (Playwright — from pos-e2e project)
-cd ../pos-e2e && npx playwright test --project=pos-mini
-
-# TypeScript typecheck
-npx tsc --noEmit
-
-# Build
-npm run build
-```
-
----
-
-## Documentation References
-
-| Topic | File |
-|-------|------|
-| POS architecture | `../../docs/POS_ARCHITECTURE.md` |
-| Role system | `../../docs/ROLE_SYSTEM.md` |
-| Commands | `docs/commands.md` |
-| Project structure | `docs/project-tree.md` |
-| Rust backend | `docs/rust-code.md` |
-| Calculations | `docs/calculations.md` |
-| Roles & Permissions | `docs/roles-permissions.md` |
-| Customization | `docs/customization.md` |
+Never commit local SQLite databases, generated installers, secrets, or signing
+keys. Read the product-level POS guidance before changing shared contracts.

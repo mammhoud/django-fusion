@@ -1,116 +1,62 @@
-# POS E2E — AI Agent Instructions
+# Formints POS E2E — AI Agent Instructions
 
-> **Project:** `projects/pos/pos-e2e/`  
-> **Type:** Playwright E2E test suite (standalone)  
-> **Stack:** TypeScript + Playwright + Node.js
+**Path:** `projects/formints/tests/pos-e2e/`
+**Stack:** Playwright + TypeScript + Node.js
 
----
+Read `projects/formints/AGENTS.md` first. This suite is shared POS validation,
+not a product frontend and not a replacement for edition-local tests.
 
-## Project Overview
+## Current structure
 
-POS E2E is the shared Playwright end-to-end test suite for all POS editions.
-It has its own `package.json` and `playwright.config.ts` and is designed to
-run independently of any single POS project. Tests use the **bolt pattern**
-(API-only tests via Playwright `request` fixture, no browser needed for
-sidecar/Robyn endpoints).
-
----
-
-## Directory Structure
-
-```
+```text
 pos-e2e/
-├── playwright.config.ts          # 3 Playwright projects (pos-full, pos-solo, pos-mini)
-├── package.json                  # Standalone deps (@playwright/test only)
+├── pages/                    # Page Object Models for POS flows
+├── helpers/                  # API and browser utilities
+├── fixtures/                 # Auth and shared Playwright fixtures
 ├── tests/
-│   ├── api/                      # API tests (bolt pattern — no browser)
-│   │   ├── pos-api.spec.ts       # POS core API endpoints
-│   │   └── sidecar-health.spec.ts # Sidecar health checks
-│   ├── flows/                    # Full flow tests (require browser)
-│   │   ├── sale-flow.spec.ts
-│   │   ├── inventory-flow.spec.ts
-│   │   └── auth-flow.spec.ts
-│   └── visual/                   # Visual regression tests
-│       └── theme-regression.spec.ts
-├── fixtures/
-│   └── auth.ts                   # Shared auth fixtures (Fusion sidecar + API)
-├── helpers/
-│   └── api.ts                    # API helper utilities
-├── pages/                        # Page Object Models
-│   ├── pos-page.ts
-│   ├── inventory-page.ts
-│   └── auth-page.ts
-├── docs/                         # Documentation
-│   ├── typescript/               # TypeScript/Playwright docs
-│   └── testing/                  # Test strategy docs
-└── plan/                         # Implementation plans
+│   ├── e2e/                  # Browser user-flow specs
+│   └── api/                  # API/contract specs
+├── playwright.config.ts
+├── package.json
+├── README.md
+├── PROMPTS.md
+└── docs/                     # Local test notes where present
 ```
 
----
+Confirm the exact spec names in the tree before using an example command; the
+suite is actively consolidated and old `flows/`/`visual/` paths may be stale.
 
-## Playwright Configuration
+## Test boundaries
 
-The `playwright.config.ts` defines 3 projects:
+- Use browser tests for visible workflows: auth, home/navigation, inventory,
+  sale, responsiveness, and critical operational flows.
+- Use Playwright's `request` fixture for API contract tests where no browser is
+  needed.
+- Keep page selectors and workflow knowledge in `pages/`; keep transport/setup
+  logic in `helpers/` and `fixtures/`.
+- Do not assert internal implementation details when a user-visible or API
+  contract assertion is available.
+- Keep edition-specific base URLs/configuration in `playwright.config.ts` or
+  environment variables, not duplicated in each spec.
 
-| Project | Target | WebServer | Browser |
-|---------|--------|:---------:|:-------:|
-| `pos-full` | POS Full sidecar on `localhost:8765` | ❌ (no webServer) | Chromium |
-| `pos-solo` | POS Solo sidecar on `localhost:8766` | ❌ (no webServer) | Chromium |
-| `pos-mini` | POS Mini (no sidecar) | ❌ | Chromium |
-
----
-
-## Bolt Pattern (API-Only Tests)
-
-API tests use Playwright's `request` fixture — no browser needed:
-
-```typescript
-import { test, expect } from '@playwright/test';
-
-test('GET /api/products returns product list', async ({ request }) => {
-  const response = await request.get('http://localhost:8765/api/products/');
-  expect(response.status()).toBe(200);
-  const data = await response.json();
-  expect(data.products).toBeInstanceOf(Array);
-});
-```
-
----
-
-## Testing Commands
+## Commands
 
 ```bash
-# Install deps
-npm install
-
-# Run all E2E tests
+cd projects/formints/tests/pos-e2e
+pnpm install                 # or the package's documented npm command
 npx playwright test
-
-# Run specific edition
-npx playwright test --project=pos-full
-npx playwright test --project=pos-solo
-npx playwright test --project=pos-mini
-
-# API tests only (no browser needed)
 npx playwright test tests/api/
-
-# Flow tests (require browser + dev server)
-npx playwright test tests/flows/
-
-# Show report
+npx playwright test tests/e2e/
 npx playwright show-report
-
-# Interactive UI mode
-npx playwright test --ui
 ```
 
----
+Run only the relevant project/spec first. Browser installation and running
+backend services may be prerequisites; report those as environment requirements
+rather than changing application code to bypass them.
 
-## Documentation References
+## Safety and fixtures
 
-| Topic | File |
-|-------|------|
-| POS architecture | `../docs/POS_ARCHITECTURE.md` |
-| Getting started | `../docs/GETTING_STARTED.md` |
-| Implementation plan | `./plan/` |
-| Prompt variations | `./PROMPTS.md` |
+Use isolated test data and ephemeral/local services. Never point E2E tests at a
+production POS, real customer data, or a shared destructive database. Keep
+credentials in Playwright environment/fixture configuration and never commit
+real tokens or screenshots containing sensitive information.

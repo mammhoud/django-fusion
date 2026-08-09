@@ -1,84 +1,43 @@
-# Cypercloud — AI Agent Instructions
+# Syntara / Cypercloud Templates — AI Agent Instructions
 
-Path: `projects/cypercloud/` (Makefile alias: `cypercloud`, deployed on port 5073)
+**Scope:** `projects/syntara/templates/`
+**Product path:** `projects/syntara/` (historical runtime name: Cypercloud)
 
-## Scope
+Read `projects/syntara/AGENTS.md` and the root `AGENTS.md` first.
 
-Cypercloud is an AI-powered platform for building, customizing, and deploying business systems. It features a chat interface with streaming AI responses, a Monaco code editor, prompt library management, and system template deployment.
+## Template tree
 
----
-
-## Key Features
-
-| Feature | Description | Location |
-|---------|-------------|----------|
-| **AI Chat** | Streaming chat with Ollama/OpenAI/Anthropic backends | `cypercloud/chat/` |
-| **Prompt Library** | Reusable prompt templates with variables | `cypercloud/prompts/` |
-| **Code Editor** | Monaco-based syntax-aware code editor | `cypercloud/editor/` |
-| **Template System** | 1-click deploy: POS, CRM, LMS, Blog | `cypercloud/templates/` |
-| **Agent Configs** | Pre-built AI agent configurations | `cypercloud/agents/` |
-
----
-
-## Template Conventions
-
-This directory (`cypercloud/templates/`) contains Cypercloud-specific templates:
-
-- Build templates as **customization surfaces** for Structa Cloud sites, not as site-specific replacements
-- Show available apps first, then template sections/components discovered from each selected site
-- Prefer `{% comp %}` tags where a django-fusion component exists; otherwise use narrow `{% include %}` calls with only required context
-- Preserve `fragment_name` for fragment identifiers and context keys
-- Keep static demo text isolated from CMS or model-provided content
-
----
-
-## AI Chat Integration
-
-```python
-# cypercloud/chat/ceptor.py — stub-backed (ceptor_stubs replaces the removed ceptor-ai lib)
-from ceptor_stubs import ChatBubble
-
-bubble = ChatBubble(server_url=settings.AI_SERVER_URL)
-
-async def chat_stream(request):
-    """SSE-based streaming chat endpoint."""
-    prompt = request.POST.get("prompt")
-    model = request.POST.get("model", "gemma3:4b")
-    reply = bubble.send(prompt)
-    yield f"data: {json.dumps({'content': reply.text})}\n\n"
+```text
+templates/
+├── base.html                 # Site shell and asset loading
+├── homepage.html             # Chat/customizer landing page
+├── chat.html                 # Conversation UI
+├── pages.html                # Discovered page/template view
+├── websites.html             # Configured site list
+├── sections.html             # Discovered section view
+├── apps.html                 # App/catalog view
+├── components/               # Message bubbles, editor, cards, nav, alerts
+└── fragments/                # HTMX swaps and send-result fragments
 ```
 
----
+Templates here present AI conversations and discovered project structure. They
+are not the source of truth for the sites being inspected.
 
-## Key Files
+## Rules
 
-| File | Purpose |
-|------|---------|
-| `cypercloud/chat/views.py` | Chat streaming views |
-| `cypercloud/chat/consumers.py` | WebSocket consumers |
-| `cypercloud/prompts/models.py` | Prompt template models |
-| `cypercloud/editor/views.py` | Monaco editor views |
-| `cypercloud/templates/` | Site templates (this directory) |
-| `cypercloud/configs/settings.yml` | AI backend configuration |
+- Preserve model-provided conversation, provider, page, section, and template
+  data. Do not replace it with static demo text.
+- Escape generated code and markdown according to the existing rendering
+  boundary; never mark arbitrary AI output safe.
+- Preserve SSE/HTMX targets, triggers, out-of-band swaps, loading indicators,
+  and error fragments.
+- Use `{% comp %}` when a registered django-fusion component exists; otherwise
+  use a narrow `{% include %}` with explicit context.
+- Use `fragment_name` for fragment identifiers and context keys.
+- Use BEM-style classes and do not use IDs for styling.
+- Keep provider/model controls accessible and retain form labels and error
+  feedback.
 
----
-
-## Development Commands
-
-```bash
-cd projects
-make dev WEBSITE=cypercloud     # Run dev server
-make check WEBSITE=cypercloud   # Django system checks
-make test WEBSITE=cypercloud    # Run tests
-```
-
----
-
-## Related Docs
-
-| Resource | Path |
-|----------|------|
-| Project docs | `docs/projects/cypercloud/` |
-| AI overview | `docs/ai/` |
-| Ceptor-AI library | `libs/ceptor-ai/` |
-| Platform plan | `docs/projects/cypercloud/platform-plan.md` |
+Before changing a template, inspect its view in `chat/views.py` or
+`chat/views_stream.py`, the URL in `chat/urls.py`, and neighboring fragments.
+Test both a normal page request and the HTMX/SSE path when applicable.

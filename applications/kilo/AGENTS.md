@@ -1,119 +1,77 @@
 # Kilo MCP Server — AI Agent Instructions
 
-Path: `applications/kilo/`
+**Path:** `applications/kilo/`
 
-## Purpose
+Read `/AGENTS.md` and `applications/AGENTS.md` first. Kilo is a lightweight
+FastAPI MCP/introspection service for this repository. It exposes read-oriented
+project, framework, infrastructure, and agent metadata without eagerly loading
+Django or AI models.
 
-FastAPI-based MCP (Model Context Protocol) server for the Structa Cloud monorepo. Provides project-local introspection and status endpoints for AI agents and tooling without triggering heavy initialization (Django config, AI model loading) at import time.
+## Layout
 
----
-
-## Running
-
-```bash
-# From project root, run the MCP server:
-uvicorn --app-dir applications/kilo mcp_server:app --host 0.0.0.0 --port 8100
-
-# Or use the Makefile target:
-make kilo-server
+```text
+applications/kilo/
+├── mcp_server.py             # FastAPI MCP endpoints
+├── config.json / kilo.jsonc  # Kilo configuration
+├── agent/                    # Agent role definitions
+├── commands/                 # Agent-facing command instructions
+└── skills/                   # Scoped reusable operational skills
 ```
 
----
+## Runtime behavior
 
-## Endpoints
+- Keep module import side-effect free: do not configure Django, open databases,
+  load AI models, or call external services at import time.
+- Optional dependencies must fail with clear endpoint-level diagnostics rather
+  than breaking lightweight health/readiness endpoints.
+- Resolve repository paths from the current checkout (`Path(__file__)` or an
+  explicit environment variable), never from a hard-coded machine-specific
+  absolute path.
+- Treat status/introspection endpoints as read-only. Do not add deployment or
+  file-mutating behavior without explicit authorization and a separate safety
+  review.
 
-### Health & Status
+## Endpoint groups
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /health` | GET | Overall service health: Django status, optional depedencies, Traefik, Docker, auth, websites |
-| `GET /readyz` | GET | Readiness probe (lightweight, no dependency checks) |
-| `GET /livez` | GET | Liveness probe (always returns 200 if server is running) |
+| Group | Examples | Purpose |
+|---|---|---|
+| Health | `/health`, `/readyz`, `/livez` | Service/dependency status |
+| Framework | `/django-fusion/info`, `/viewsets` | django-fusion inventory |
+| AI | `/ceptor-ai/info`, `/ceptor-ai/agents` | Ceptor-AI metadata |
+| Infrastructure | `/traefik/status`, `/docker/status` | Config/container status |
+| Sites | `/websites/endpoints` | Product host/port/service mapping |
+| Auth/config | `/auth/features`, `/migrations/status` | Availability/configuration checks |
 
-### django-fusion
+Confirm current routes in `mcp_server.py` before adding or documenting an
+endpoint. Keep response schemas stable and redact credentials/secret values.
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /viewsets` | GET | Available `django-fusion` viewsets |
-| `GET /django-fusion/info` | GET | `django-fusion` package metadata and module inventory |
-| `GET /django-fusion/viewsets` | GET | `django-fusion` viewsets availability |
+## Skills and commands
 
-### Ceptor-AI
+- `skills/mcp-deploy-verifier/SKILL.md` — deployment readiness checks
+- `skills/wagtail-field-customizer/SKILL.md` — Wagtail field workflows
+- `skills/scss-bem-converter/SKILL.md` — BEM conversion workflow
+- `commands/find-component.md` — locate component sources
+- `commands/apply-design.md` — design system changes
+- `commands/add-field.md` — model/Wagtail field changes
+- `commands/deploy.md` — deployment procedures
+- `commands/ceptor-ai.md` — AI integration procedures
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /ceptor-ai/info` | GET | `ceptor_ai` package metadata |
-| `GET /ceptor-ai/agents` | GET | Known `ceptor_ai` agents listing |
+Read the product-specific `AGENTS.md` before using a command against a product.
 
-### Migrations
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /migrations/status` | GET | Django `showmigrations` output (503 if Django not configured) |
-
-### Infrastructure
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /traefik/status` | GET | Traefik dynamic config, certs, and site router existence |
-| `GET /docker/status` | GET | Docker container status for the project |
-| `GET /auth/features` | GET | Auth feature availability (allauth, MFA, social auth, OAuth2) |
-| `GET /websites/endpoints` | GET | Configured website host/port/service mappings |
-| `GET /openrouter/status` | GET | OpenRouter readiness (API key + openai package check) |
-
----
-
-## Skills
-
-| Skill | Path | Purpose |
-|-------|------|---------|
-| MCP Deploy Verifier | `skills/mcp-deploy-verifier/SKILL.md` | Verifies deployment readiness of MCP endpoints |
-| Wagtail Field Customizer | `skills/wagtail-field-customizer/SKILL.md` | Customizes Wagtail page fields via AI |
-| SCSS BEM Converter | `skills/scss-bem-converter/SKILL.md` | Converts CSS classes to strict BEM naming |
-
----
-
-## Commands
-
-| Command | Path | Purpose |
-|---------|------|---------|
-| `apply-design` | `commands/apply-design.md` | Apply design system changes |
-| `find-component` | `commands/find-component.md` | Locate component source files |
-| `add-field` | `commands/add-field.md` | Add fields to Django models |
-| `deploy` | `commands/deploy.md` | Deploy commands |
-| `ceptor-ai` | `commands/ceptor-ai.md` | Ceptor-AI integration commands |
-
----
-
-## Design Notes
-
-- **Import-safe**: Does not configure Django or call external AI APIs at module level
-- **Optional dependencies**: Gracefully handles missing `fastapi`, `django`, `ceptor_ai`, `openai`
-- **Lightweight**: Returns JSON responses for all endpoints
-- **Modular**: Each endpoint is self-contained, easy to add new helpers
-- **Project path**: Uses `/home/structa.cloud/applications/proxy/traefik` for config detection
-
----
-
-## Development
+## Local development
 
 ```bash
-# Run with hot reload
+uvicorn --app-dir applications/kilo mcp_server:app --host 127.0.0.1 --port 8100
 uvicorn --app-dir applications/kilo mcp_server:app --host 127.0.0.1 --port 8100 --reload
-
-# Test all endpoints
+curl http://127.0.0.1:8100/readyz
 curl http://127.0.0.1:8100/health
-curl http://127.0.0.1:8100/django-fusion/info
-curl http://127.0.0.1:8100/traefik/status
 ```
 
----
+Use a local/isolated Docker context for Docker status probes. Never expose
+private environment values in responses or logs.
 
-## Related Docs
+## Related
 
-| Resource | Path |
-|----------|------|
-| MCP Integration | `docs/ai/mcp-integration.md` |
-| AI Agents | `docs/ai/agents.md` |
-| Ceptor-AI | `libs/ceptor-ai/AGENTS.md` |
-| django-fusion | `libs/django-fusion/AGENTS.md` |
+- [`../../AGENTS.md`](../../AGENTS.md) — repository-wide rules
+- [`../AGENTS.md`](../AGENTS.md) — infrastructure boundaries and safety
+- [`../../libs/django-fusion/AGENTS.md`](../../libs/django-fusion/AGENTS.md)
