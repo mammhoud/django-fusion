@@ -1,0 +1,23 @@
+# =============================================================================
+# Blinko — AI-powered personal note-taking  (port 1111)
+# =============================================================================
+http:
+  routers:
+    blinko-http:
+      rule: 'Host(`blinko.localhost`) || Host(`blinko.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: blinko-service
+      priority: 150
+    blinko-https:
+      rule: 'Host(`blinko.localhost`) || Host(`blinko.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: blinko-service
+      priority: 150
+  services:
+    blinko-service:
+      loadBalancer:
+        servers:
+          - url: 'http://coder-dev-blinko:1111'
+        passHostHeader: true
