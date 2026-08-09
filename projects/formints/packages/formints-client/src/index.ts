@@ -1,2 +1,10 @@
 export { createClient, ApiError } from './core';
 export type { FormintsClient } from './core';
+export { listCurrencies, createCurrency } from './currencies';
+export type { Currency, CurrencyInput } from './currencies';
+export { listTaxProfiles } from './taxProfiles';
+export type { TaxProfile } from './taxProfiles';
+export { exportUrl } from './exports';
+export type { ExportResource, ExportFormat } from './exports';
+export { getMonitorStatus } from './monitor';
+export type { MonitorStatus } from './monitor';
