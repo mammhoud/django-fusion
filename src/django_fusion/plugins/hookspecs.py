@@ -8,6 +8,7 @@ from pluggy import HookspecMarker
 
 if TYPE_CHECKING:
     from ..staticfiles import Asset, AssetType
+    from .catalog import PluginSpec
 
 hookspec = HookspecMarker("django_fusion.comp")
 
@@ -70,4 +71,26 @@ def register_asset_types(register_type: Callable[[AssetType], None]) -> None:
     and JS types. Each asset type defines how static assets should be rendered in HTML,
     what file extension it uses, and what django-block asset templatetag it should be
     rendered with.
+    """
+
+
+@hookspec
+def register_plugin_specs(register: Callable[["PluginSpec"], None]) -> None:
+    """Declare a plugin package's capabilities to the fusion plugin registry.
+
+    Implementations receive a ``register`` callable and should invoke it once
+    per ``PluginSpec`` they provide (name, capabilities, signals). The specs
+    feed the plugin catalog consumed by :mod:`django_fusion.plugins.registry`
+    (recommendations, request detection and the introspection dashboard).
+
+    Example::
+
+        from django_fusion.plugins.catalog import PluginSpec
+        from pluggy import HookimplMarker
+
+        hookimpl = HookimplMarker("django_fusion.comp")
+
+        @hookimpl
+        def register_plugin_specs(register):
+            register(PluginSpec(name=__name__, capabilities={"my-feature"}))
     """

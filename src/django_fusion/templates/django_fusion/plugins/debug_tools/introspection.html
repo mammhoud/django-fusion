@@ -1,0 +1,168 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fusion Introspection</title>
+<style>
+  :root {
+    --fu-paper: #fcfcfa; --fu-ink: #1c1b18; --fu-muted: #6f6b61;
+    --fu-line: #e6e2d8; --fu-primary: #b2562a; --fu-ok: #2e7d4f;
+    --fu-warn: #a16207; --fu-chip: #f1ede3; --fu-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fu-paper); color: var(--fu-ink);
+    font: 14px/1.5 ui-sans-serif, system-ui, "Public Sans", sans-serif; }
+  header { padding: 28px 32px 20px; border-bottom: 1px solid var(--fu-line); }
+  header h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--fu-muted); }
+  main { padding: 24px 32px 48px; max-width: 1100px; }
+  section { margin: 0 0 32px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--fu-muted); margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card { border: 1px solid var(--fu-line); border-radius: 10px; padding: 14px 16px; background: #fff; }
+  .card h3 { margin: 0 0 6px; font-size: 14px; }
+  .card p { margin: 0; color: var(--fu-muted); font-size: 13px; }
+  .mono { font-family: var(--fu-mono); font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { background: var(--fu-chip); border: 1px solid var(--fu-line); border-radius: 999px;
+    padding: 2px 10px; font-size: 11px; font-family: var(--fu-mono); }
+  .chip.ok { background: #e7f3ec; border-color: #b9dfc9; color: var(--fu-ok); }
+  .chip.warn { background: #fdf3e0; border-color: #ecd9a8; color: var(--fu-warn); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--fu-line); vertical-align: top; }
+  th { color: var(--fu-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat { display: inline-block; margin-right: 18px; }
+  .stat b { font-size: 20px; display: block; }
+  .stat span { color: var(--fu-muted); font-size: 12px; }
+  pre { background: #141310; color: #e8e4da; padding: 14px 16px; border-radius: 10px;
+    overflow: auto; font-size: 11.5px; line-height: 1.55; }
+  .empty { color: var(--fu-muted); font-style: italic; }
+  .signal { display: inline-block; margin-right: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Fusion Introspection</h1>
+  <p>Plugin map · component usage · render tracker · cache stats — served by django-fusion</p>
+</header>
+<main>
+
+  <section>
+    <h2>Overview</h2>
+    <div>
+      <span class="stat"><b>{{ snapshot.plugins.total }}</b><span>plugins catalogued</span></span>
+      <span class="stat"><b>{{ snapshot.plugins.registered }}</b><span>registered with pluggy</span></span>
+      <span class="stat"><b>{{ snapshot.plugins.available }}</b><span>importable</span></span>
+      <span class="stat"><b>{{ snapshot.components.registered }}</b><span>components registered</span></span>
+      <span class="stat"><b>{{ snapshot.components.usage.component_count }}</b><span>components tracked</span></span>
+      <span class="stat"><b>{{ snapshot.render_count }}</b><span>renders in history</span></span>
+    </div>
+    {% if snapshot.detected.signals %}
+    <p style="margin-top:14px">
+      <b>Detected on this request:</b>
+      {% for sig in snapshot.detected.signals %}<span class="signal mono">{{ sig }}</span>{% endfor %}
+    </p>
+    <p style="margin:6px 0 0">
+      <b>Recommended plugins:</b>
+      {% for name in snapshot.detected.recommended %}<span class="mono">{{ name }}</span>{% endfor %}
+    </p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Plugin catalog</h2>
+    <table>
+      <thead><tr><th>Plugin</th><th>Capabilities</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for plugin in snapshot.plugins.plugins %}
+        <tr>
+          <td class="mono">{{ plugin.name }}</td>
+          <td>
+            {% for cap in plugin.capabilities %}<span class="chip">{{ cap }}</span>{% endfor %}
+          </td>
+          <td>
+            {% if plugin.registered %}<span class="chip ok">registered</span>
+            {% elif plugin.available %}<span class="chip warn">available</span>
+            {% else %}<span class="chip">not installed</span>{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" class="empty">No plugins catalogued.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Component usage</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Component → templates</h3>
+        {% if snapshot.components.usage.components %}
+          <table>
+            <thead><tr><th>Component</th><th>Used in</th></tr></thead>
+            <tbody>
+            {% for name, paths in snapshot.components.usage.components.items %}
+              <tr><td class="mono">{{ name }}</td><td class="mono">{{ paths|join:", " }}</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="empty">No usage tracked yet — render a {% templatetag openblock %} comp {% templatetag closeblock %} first.</p>
+        {% endif %}
+      </div>
+      <div class="card">
+        <h3>Template → components</h3>
+        {% if snapshot.components.usage.templates %}
+          <table>
+            <thead><tr><th>Template</th><th>Components</th></tr></thead>
+            <tbody>
+            {% for path, names in snapshot.components.usage.templates.items %}
+              <tr><td class="mono">{{ path }}</td><td class="mono">{{ names|join:", " }}</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="empty">No template scans yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Render history (latest {{ snapshot.render_history|length }})</h2>
+    {% if snapshot.render_history %}
+      <table>
+        <thead><tr><th>Component</th><th>Page</th></tr></thead>
+        <tbody>
+        {% for event in snapshot.render_history %}
+          <tr><td class="mono">{{ event.name }}</td><td class="mono">{{ event.page_path|default:"—" }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">No render events recorded (Redis render history requires the Redis cache backend).</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Cache</h2>
+    <div class="grid">
+      {% for key, value in snapshot.cache.items %}
+        <div class="card"><h3 class="mono">{{ key }}</h3><p class="mono">{{ value }}</p></div>
+      {% empty %}
+        <div class="card"><p class="empty">No cache stats available.</p></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Raw snapshot</h2>
+    <pre>{{ json_snapshot }}</pre>
+  </section>
+
+</main>
+</body>
+</html>
