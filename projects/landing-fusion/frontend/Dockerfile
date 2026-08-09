@@ -5,9 +5,18 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY frontend/package.json frontend/pnpm-lock.yaml ./
+# Build context is the repository root (docker-compose.yml, context: ../..) so
+# the local-library sources below are in scope — same pattern as the backend
+# image, which COPYs libs /app/libs for django_fusion.
+COPY projects/landing-fusion/frontend/package.json projects/landing-fusion/frontend/pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild esbuild sharp
-COPY frontend/. .
+
+# fusion-js (the shared TS modules behind the `@fusion` alias in
+# astro.config.mjs) lives in the django-fusion submodule at the repo base.
+# The alias resolves to /libs/django-fusion/js/fusion-js/src relative to the
+# Astro config, so place the package exactly there.
+COPY libs/django-fusion/js/fusion-js /libs/django-fusion/js/fusion-js
+COPY projects/landing-fusion/frontend/. .
 
 ENV HOST=0.0.0.0 \
     PORT=3000

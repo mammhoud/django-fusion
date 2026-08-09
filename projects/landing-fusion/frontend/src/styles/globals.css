@@ -566,6 +566,14 @@
     padding: 0.22rem 2.6rem;
     pointer-events: none;
   }
+  /* Keep the corner ribbon inside the viewport on narrow phones — the full
+     desktop overhang would poke past the right edge of a 390px screen. */
+  @media (max-width: 639px) {
+    .managed-ribbon {
+      right: -1rem;
+      padding: 0.22rem 2rem;
+    }
+  }
   .managed-ribbon::before { content: "☁ "; }
 
   /* Edition preview link — the quiet “Preview this edition →” line under
@@ -1246,24 +1254,44 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: hsl(var(--fu-muted));
+    min-width: 0; /* long status lines shrink instead of blowing past the panel */
   }
   .hero__source-path {
     color: hsl(var(--fu-link));
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    min-width: 0;
   }
   .hero__source-status {
     display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 0.75rem;
-    flex-shrink: 0;
+    min-width: 0;
+    flex: 1 1 auto;
+    /* The long status text ("200 OK · text/html · …") ellipsizes when the
+       column is tight; if it still cannot fit on one line it wraps instead
+       of clipping past the panel edge (the hero is overflow:hidden). */
+    flex-wrap: wrap;
+  }
+  .hero__source-status .status-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
   .hero__source-kb {
+    flex-shrink: 0;
     padding: 0.125rem 0.4rem;
     border: 1px solid hsl(var(--fu-line));
     border-radius: 0.25rem;
     color: hsl(var(--fu-muted));
+  }
+  /* On narrow phones the KB chip is the first thing to drop — the status
+     line keeps the readable real estate. */
+  @media (max-width: 639px) {
+    .hero__source-kb { display: none; }
   }
   .hero__source-actions {
     margin-top: 0.75rem;

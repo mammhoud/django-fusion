@@ -73,6 +73,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serve /static/ from STATIC_ROOT in production (traefik routes /static
+    # to Django; staticfiles_urlpatterns() is debug-only). whitenoise is a
+    # declared dependency — wire it here so backend-rendered pages get their
+    # compiled fusion.css after `make css` + collectstatic.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -113,6 +118,9 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
+                # Exposes LANGUAGE_CODE / LANGUAGE_BIDI so base.html can render
+                # <html lang> + dir from the active (cookie-selected) language.
+                "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "wagtail.contrib.settings.context_processors.settings",
@@ -307,9 +315,10 @@ WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
 WAGTAIL_I18N_LOCALE_MODEL = "wagtailcore.Locale"
 
 # Locale paths — Django scans these for .po translation files.
-# The first entry is the project-level locale directory.
+# The catalogs live beside settings.py in backend/locale (BASE_DIR is the
+# landing-fusion project root, so the backend subdir is explicit).
 LOCALE_PATHS = [
-    BASE_DIR / "locale",
+    BASE_DIR / "backend" / "locale",
 ]
 
 # Locale middleware — detects the user's language preference from the

@@ -1,5 +1,8 @@
 {% load static %}<!doctype html>
-<html lang="en">
+{# lang/dir follow the cookie-selected language (LocaleMiddleware + the
+   django_language cookie set by the switcher), so server-rendered pages
+   carry the right direction before any client script runs. #}
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %}>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />

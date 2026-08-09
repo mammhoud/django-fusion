@@ -41,8 +41,8 @@
    same in-page navigation. Empty for top-level pages. {% endcomment %}
 {% include "pages/partials/breadcrumbs.html" %}
 
-{% if content_language == "ar" and localized_content.hero %}
-<section class="hero-block container-fusion" dir="rtl">
+{% if content_language != "en" and localized_content.hero %}
+<section class="hero-block container-fusion"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %}>
   {% if localized_content.hero.badge %}<p class="tag-marker">{{ localized_content.hero.badge }}</p>{% endif %}
   <h1>{{ localized_content.hero.title|default:localized_content.title|default:page.title }}{% if localized_content.hero.accent %} <em>{{ localized_content.hero.accent }}</em>{% endif %}</h1>
   {% if localized_content.hero.subtitle %}<p>{{ localized_content.hero.subtitle }}</p>{% endif %}
@@ -148,7 +148,7 @@
 
 {% comment %} Body / story — the "about this page" prose section. {% endcomment %}
 {% if localized_body or page.body %}
-<section class="container-fusion" style="padding-block:4rem 5rem;"{% if content_language == "ar" %} dir="rtl"{% endif %}>
+<section class="container-fusion" style="padding-block:4rem 5rem;"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %}>
   <div style="max-width:42rem;">
     <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{% if localized_content.title %}{{ localized_content.title }}{% else %}{{ page.body_heading|default:page.title }}{% endif %}</h2>
     {% if localized_body %}<div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ localized_body|linebreaksbr }}</div>{% else %}<div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>{% endif %}

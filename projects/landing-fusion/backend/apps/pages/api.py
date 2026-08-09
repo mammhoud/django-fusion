@@ -221,7 +221,7 @@ def navigation_api(request):
         nav_items = _navigation_from_wagtail_tree(request)
 
     language = _requested_content_language(request)
-    if language == "ar":
+    if language != "en":
         try:
             from apps.content.models.translations import PageTranslation
             from apps.pages.models import HomePage
@@ -235,14 +235,14 @@ def navigation_api(request):
             for item in nav_items:
                 slug = str(item.get("href", "")).strip("/").split("/")[-1] or "home"
                 page = landing_pages.filter(slug=slug).first()
-                translation = PageTranslation.for_page(page, "ar") if page else None
+                translation = PageTranslation.for_page(page, language) if page else None
                 if translation and translation.title:
                     item["label"] = translation.title
-                # Translate dropdown children whose pages carry an Arabic title.
+                # Translate dropdown children whose pages carry a localized title.
                 for child in item.get("children", []):
                     child_slug = str(child.get("href", "")).strip("/").split("/")[-1]
                     child_page = landing_pages.filter(slug=child_slug).first()
-                    child_translation = PageTranslation.for_page(child_page, "ar") if child_page else None
+                    child_translation = PageTranslation.for_page(child_page, language) if child_page else None
                     if child_translation and child_translation.title:
                         child["label"] = child_translation.title
         except Exception:
@@ -394,22 +394,29 @@ def contact_api(request):
 import wagtail.blocks
 
 
-def _stream_to_plain(value):
+def _stream_to_plain(value, keep_pages=False):
     """Recursively convert Wagtail StreamField values to plain JSON-serializable
     Python dicts/lists. Handles StructValue/ListValue from wagtail.blocks and
-    resolves PageChooserBlock values to ``{id, title, url}`` dicts."""
+    resolves PageChooserBlock values to ``{id, title, url}`` dicts.
+
+    With ``keep_pages=True`` PageChooserBlock values reduce to their primary
+    key so a merged overlay can be re-hydrated through ``Block.to_python``
+    (which resolves pks back to Page instances) instead of the JSON dict
+    shape."""
     if isinstance(value, Page):
         # PageChooserBlock value — expose id/title/url so JSON keeps working.
+        if keep_pages:
+            return value.pk
         try:
             return {"id": value.pk, "title": value.title, "url": value.url}
         except Exception:
             return {"id": value.pk, "title": value.title, "url": ""}
     if hasattr(value, 'items') and hasattr(value, 'get'):
         # StructValue or dict-like
-        return {k: _stream_to_plain(v) for k, v in value.items()}
+        return {k: _stream_to_plain(v, keep_pages) for k, v in value.items()}
     if hasattr(value, '__iter__') and not isinstance(value, (str, bytes)):
         # ListValue or list-like
-        return [_stream_to_plain(v) for v in value]
+        return [_stream_to_plain(v, keep_pages) for v in value]
     return value
 
 
@@ -798,9 +805,9 @@ def _supported_language_codes() -> list[str]:
 def _requested_content_language(request) -> str:
     """Return a supported request language, with English as the safe fallback.
 
-    Editorial overlays currently cover English and Arabic; other supported
-    languages therefore resolve to canonical English content rather than
-    failing or silently advertising an unsupported code.
+    Editorial overlays cover every supported language; untranslated fields
+    resolve to canonical English content rather than failing or silently
+    advertising an unsupported code.
     """
     supported = set(_supported_language_codes())
     requested = (request.GET.get("lang") or "").lower().split("-")[0]

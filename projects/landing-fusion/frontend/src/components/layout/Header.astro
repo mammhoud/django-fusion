@@ -100,8 +100,10 @@ const displayNav = navItems && navItems.length > 0
         <span>{siteName}</span>
       </a>
 
-      <!-- Desktop Navigation -->
-      <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
+      <!-- Desktop Navigation — lg and up. Below lg the 7-item nav plus the
+           brand and controls cannot fit a 1024px row, so tablets keep the
+           hamburger menu (the row fits comfortably from lg = 1024px). -->
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="Main">
         {displayNav.map((link) => {
           const active = isActive(link.href);
           const hasChildren = !!(link.children && link.children.length > 0);
@@ -182,16 +184,19 @@ const displayNav = navItems && navItems.length > 0
         <span class="status-line mr-1 hidden lg:inline-flex"><span class="dot" aria-hidden="true"></span><span data-i18n="status_online">online</span></span>
         <LanguageSwitcher />
         <ThemeToggle />
-        <!-- Logged out: Log In + Get Started -->
+        <!-- Logged out: Log In + Get Started — xl and up. The auth buttons
+             are the widest control pair; showing them below xl pushes the
+             lg row past 1024px. Tablets reach them via the mobile menu. -->
         <template x-if="!authLoading && !authed">
-          <div class="flex items-center gap-3">
+          <div class="hidden items-center gap-3 xl:flex">
             <button type="button" class="btn-secondary !h-9 !px-4 !py-0 text-[0.85rem]" @click="$dispatch('fusion:open-login')">            <span data-i18n="nav_login">Log In</span></button>
             <a href="/contact/" class="btn-primary !h-9 !px-4 !py-0 text-[0.85rem]" data-i18n="nav_get_started">Get Started</a>
           </div>
         </template>
-        <!-- Logged in: user dropdown -->
+        <!-- Logged in: user dropdown — xl and up (same fit constraint as
+             the logged-out buttons; the mobile menu covers auth below xl). -->
         <template x-if="!authLoading && authed">
-          <div class="relative" x-data="{ userMenu: false }" @keydown.escape.window="userMenu = false">
+          <div class="relative hidden items-center xl:flex" x-data="{ userMenu: false }" @keydown.escape.window="userMenu = false">
             <button type="button"
               class="flex items-center gap-2 rounded-full border border-fu-line bg-fu-card px-3 py-1.5 text-sm font-medium text-fu-ink transition-all hover:border-fu-link/50 hover:shadow-sm"
               @click="userMenu = !userMenu"
@@ -252,8 +257,9 @@ const displayNav = navItems && navItems.length > 0
         </template>
       </div>
 
-      <!-- Mobile controls: theme toggle + menu button -->
-      <div class="flex items-center gap-2 md:hidden">
+      <!-- Mobile controls: theme toggle + menu button — below lg (tablets
+           included; the full nav only renders from lg up). -->
+      <div class="flex items-center gap-2 lg:hidden">
         <ThemeToggle />
         <button
           type="button"
@@ -281,7 +287,7 @@ const displayNav = navItems && navItems.length > 0
        x-transition:leave="transition ease-in duration-150"
        x-transition:leave-start="opacity-100 translate-y-0"
        x-transition:leave-end="opacity-0 -translate-y-2"
-       class="border-t border-fu-line bg-fu-paper md:hidden">
+       class="border-t border-fu-line bg-fu-paper lg:hidden">
     <nav class="container-fusion space-y-1 py-4" aria-label="Mobile">
       {displayNav.map((link) => {
         const active = isActive(link.href);
@@ -324,7 +330,16 @@ const displayNav = navItems && navItems.length > 0
           </div>
         );
       })}
-      <hr class="my-2 border-fu-line" />
+      <!-- Language switcher — the desktop controls row only renders from md
+           up, so phones never had a way to switch languages. It lives here in
+           the menu, reachable on every screen below lg (tablets get it both
+           in the header bar and here, which is harmless). -->
+      <div class="flex items-center px-3 pt-3">
+        <!-- start-aligned: the button sits at the row's left in LTR (right in
+             RTL), so the panel must open inward from the inline-start edge. -->
+        <LanguageSwitcher align="start" />
+      </div>
+      <hr class="my-3 border-fu-line" />
       <template x-if="!authed">
         <div>
           <button type="button" @click="open = false; $dispatch('fusion:open-login')" class="btn-secondary mt-2 w-full"><span data-i18n="nav_login">Log In</span></button>
