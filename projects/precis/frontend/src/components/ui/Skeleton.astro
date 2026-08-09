@@ -8,7 +8,6 @@ interface Props {
     | 'testimonials-carousel' | 'pricing-grid' | 'pricing-folded' | 'faq-list'
     | 'cta-banner' | 'contact-form' | 'section-header'
     | 'timeline' | 'team-grid' | 'blog-grid'
-    | 'nav-bar' | 'page-loader'
     | 'card' | 'line' | 'hero';
   count?: number;
   class?: string;
@@ -200,39 +199,6 @@ const { variant = 'line', count, class: className = '' } = Astro.props;
           ))}
         </div>
       </div>
-    </div>
-  )
-}
-{
-  variant === 'nav-bar' && (
-    <div class={`fusion-skeleton fusion-skeleton--nav ${className}`.trim()} aria-hidden="true" data-skeleton>
-      <div class="fusion-skeleton--nav__inner">
-        <span class="fusion-skeleton__line fusion-skeleton--nav__brand" />
-        <div class="fusion-skeleton--nav__links">
-          {Array.from({ length: count || 5 }).map(() => <span class="fusion-skeleton__line fusion-skeleton--nav__link" />)}
-        </div>
-        <span class="fusion-skeleton__line--btn fusion-skeleton--nav__cta" />
-      </div>
-    </div>
-  )
-}
-{
-  variant === 'page-loader' && (
-    <div id="page-loader" class={`fusion-skeleton fusion-skeleton--page-loader ${className}`.trim()} aria-label="Loading" role="status" data-skeleton>
-      <div class="fusion-skeleton--page-loader__logo">
-        <svg class="h-12 w-12" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <rect width="32" height="32" rx="6" fill="#1A1917"/>
-          <path d="M12 8L6 14l6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M20 8l6 6-6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M18 6l-4 20" stroke="#FFE14D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="fusion-skeleton--page-loader__dots">
-        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
-        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
-        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
-      </div>
-      <p class="fusion-skeleton--page-loader__label">{'Loading...'}</p>
     </div>
   )
 }

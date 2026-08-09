@@ -1018,8 +1018,8 @@
 
   /* Reduced motion — visitors who ask for it get content, not choreography.
      Reveals land instantly (no blur/translate), smooth scroll turns off,
-     and every animation — status pulse, page-loader bounce, skeleton
-     shimmer — collapses to a static state. */
+     and every animation — status pulse, skeleton shimmer — collapses to
+     a static state. */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .site-header,
