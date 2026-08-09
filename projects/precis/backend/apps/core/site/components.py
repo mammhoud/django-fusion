@@ -4,7 +4,7 @@ App-specific fragments (course grid, blog list, dashboard KPIs) now live
 in their related apps:
 
   - CourseGridFragment, CourseFiltersFragment, DashboardKPIsFragment
-    → apps.pages.lms.components
+    → apps.learning.components
   - BlogPostListFragment
     → apps.pages.blog.components
 
@@ -102,7 +102,7 @@ class CheckoutFragment(FusionDualModeMixin, FragmentComponent):
                 })
 
             # TODO: Actual Stripe payment intent creation
-            # from apps.pages.lms.views import StripeInitView
+            # from apps.learning.views import StripeInitView
 
             response = render(request, "htmx/checkout_result.html", {
                 "status": "success",

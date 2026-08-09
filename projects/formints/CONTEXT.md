@@ -1,8 +1,7 @@
 # Forge POS
 
-A desktop point-of-sale application built on Tauri 2 + Rust with Astro/React
-frontends (Astro 5 + React 19 for Community, Astro + Alpine + HTMX for Pro, Vue
-3 for pos-client) and SQLite storage, sold in five editions that share one codebase.
+A desktop point-of-sale application built on Tauri 2 + Rust with a React/Vite
+frontend and SQLite storage, sold in four editions that share one codebase.
 
 ## Deployments
 
@@ -31,7 +30,7 @@ _Avoid_: Minimal, Solo, Full (legacy names)
 ## Architecture
 
 **Sidecar**:
-The embedded Python (Django) API server that extends a terminal with a REST API, inventory, analytics, sync, WebSocket streams, and django-bolt endpoints in Standard and above. The former Robyn server was removed in Aug 2026.
+The embedded Python (Robyn) API server that extends a terminal with a REST API, inventory, analytics, and sync in Standard and above.
 _Avoid_: backend, API server
 
 **Cloud master**:

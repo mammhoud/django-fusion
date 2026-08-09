@@ -127,7 +127,7 @@ async def test_receiver_handles_entity_event():
     }
     await fake.incoming.put(json.dumps(payload))
 
-    with patch.object(ws_client.CloudSyncClient, "_broadcast_local", new=AsyncMock()) as mock_broadcast:
+    with patch.object(ws_client, "_broadcast_entity_event", new=AsyncMock()) as mock_broadcast:
         task = asyncio.create_task(client._receiver(fake))
         await asyncio.sleep(0.1)
         task.cancel()
@@ -154,7 +154,7 @@ async def test_receiver_handles_sync_event():
         "data": {"entity_type": "sales", "synced": 3, "branch": "BR001"},
     }))
 
-    with patch.object(ws_client.CloudSyncClient, "_broadcast_local", new=AsyncMock()) as mock_broadcast:
+    with patch.object(ws_client, "_broadcast_entity_event", new=AsyncMock()) as mock_broadcast:
         task = asyncio.create_task(client._receiver(fake))
         await asyncio.sleep(0.1)
         task.cancel()
@@ -238,7 +238,7 @@ async def test_receiver_skips_own_echo():
         },
     }))
 
-    with patch.object(ws_client.CloudSyncClient, "_broadcast_local", new=AsyncMock()) as mock_broadcast:
+    with patch.object(ws_client, "_broadcast_entity_event", new=AsyncMock()) as mock_broadcast:
         task = asyncio.create_task(client._receiver(fake))
         await asyncio.sleep(0.1)
         task.cancel()
@@ -270,7 +270,7 @@ async def test_receiver_falls_back_when_data_missing():
         },
     }))
 
-    with patch.object(ws_client.CloudSyncClient, "_broadcast_local", new=AsyncMock()) as mock_broadcast:
+    with patch.object(ws_client, "_broadcast_entity_event", new=AsyncMock()) as mock_broadcast:
         task = asyncio.create_task(client._receiver(fake))
         await asyncio.sleep(0.1)
         task.cancel()

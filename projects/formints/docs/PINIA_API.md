@@ -1,7 +1,7 @@
 # Pinia / Frontend API Integration
 
 > **Purpose:** Document how to connect Vue.js (Pinia) or React frontend to the Robyn sidecar API  
-> **Last Updated:** 9 August 2026
+> **Last Updated:** 20 July 2026
 
 ---
 

@@ -2,21 +2,7 @@
 Pytest configuration for pos-solo tests.
 
 Provides shared fixtures, factory fixtures for Django models, mock
-request/response helpers for handler testing, and custom markers.
-
-The Django bootstrap is unified here (NOT per test file):
-
-  * One ``settings.configure()`` at conftest import time — before any test
-    module is imported — so the per-file ``settings.configure`` blocks in
-    test_*.py all become no-ops (they guard on ``if not settings.configured``).
-  * A single **file-backed** SQLite database (session temp file) instead of
-    ``:memory:``. ``django.test.TestCase.tearDownClass()`` closes every
-    initialized connection at the end of each test class (Django
-    testcases.py); for ``:memory:`` that destroys the shared database and
-    breaks every later test file in the same process. A file-backed DB
-    survives connection closes, so the combined suite runs green in one pass.
-  * A module-scoped autouse fixture wipes all tables before each test module,
-    preserving the old per-file ``:memory:`` isolation semantics.
+request/response helpers for Robyn handler testing, and custom markers.
 
 Usage:
     def test_node_creation(node_factory):
@@ -32,9 +18,7 @@ from __future__ import annotations
 
 import json as _json
 import os
-import shutil
 import sys
-import tempfile
 from collections.abc import Callable
 from typing import Any
 
@@ -51,163 +35,117 @@ pytest_plugins = ["tests.fixtures"]
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# Unified Django bootstrap — runs ONCE at conftest import, before pytest
-# imports any test module. All per-file settings.configure() blocks in the
-# test_*.py modules are guarded by `if not settings.configured` and become
-# no-ops once this has run.
-# ══════════════════════════════════════════════════════════════════════════
-
-_TEST_DB_DIR: str | None = None
-
-
-def _create_all_tables() -> None:
-    """Create tables for every registered pos_full model.
-
-    Only pos_full models are created — matching the original conftest/
-    django_setup behaviour. contenttypes/auth tables are left alone: they
-    carry auto-created M2M through tables whose inline unique indexes
-    conflict when created manually (``index ... already exists``), and no
-    test in this suite queries them.
-
-    Idempotent: tables that already exist are skipped.
-    """
-    import logging
-
-    from django.apps import apps
-    from django.db import connection
-
-    logger = logging.getLogger(__name__)
-    models_to_create = list(apps.all_models.get("pos_full", {}).values())
-
-    existing = set()
-    try:
-        existing = set(connection.introspection.table_names())
-    except Exception:
-        pass
-
-    with connection.schema_editor() as schema_editor:
-        for model in models_to_create:
-            if model._meta.db_table in existing:
-                continue
-            try:
-                schema_editor.create_model(model)
-            except Exception as exc:  # noqa: BLE001 - bootstrap guard
-                logger.warning(
-                    "Could not create table %r: %s", model._meta.db_table, exc
-                )
-
-
-def _bootstrap_django() -> None:
-    """Configure Django once with a shared file-backed test database."""
-    global _TEST_DB_DIR
-
-    os.environ.pop("DJANGO_SETTINGS_MODULE", None)
-
-    from django.conf import settings
-
-    if settings.configured:
-        return  # another module already bootstrapped — nothing to do
-
-    _TEST_DB_DIR = tempfile.mkdtemp(prefix="pos-sidecar-pytest-")
-    _test_db_path = os.path.join(_TEST_DB_DIR, "test.db")
-
-    settings.configure(
-        DEBUG=True,
-        DATABASES={
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": _test_db_path,
-            }
-        },
-        INSTALLED_APPS=[
-            "django.contrib.contenttypes",
-            "django.contrib.auth",
-            # POS Full app — required so pos_full models participate in
-            # apps.get_models()/relation graph (reverse FKs, cascading
-            # deletes, related_objects).
-            "models.PosFullConfig",
-            # django-bolt tests (test_bolt_api.py) require the app installed.
-            "django_bolt",
-        ],
-        TEMPLATES=[
-            {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "DIRS": [],
-                "APP_DIRS": True,
-                "OPTIONS": {
-                    "context_processors": [
-                        "django.template.context_processors.request",
-                        "django.contrib.auth.context_processors.auth",
-                    ],
-                },
-            },
-        ],
-        DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
-        USE_TZ=True,
-        SECRET_KEY="test-key-conftest",
-    )
-
-    import django
-
-    django.setup()
-
-    # Register ALL pos_full models (string FK resolution + table creation).
-    import models.models  # noqa: F401
-
-    _create_all_tables()
-
-
-_bootstrap_django()
-
-
-def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
-    """Remove the shared temp test database at session end."""
-    global _TEST_DB_DIR
-    if _TEST_DB_DIR:
-        shutil.rmtree(_TEST_DB_DIR, ignore_errors=True)
-        _TEST_DB_DIR = None
-
-
-# ══════════════════════════════════════════════════════════════════════════
-# Django session fixture — dependency marker for factory fixtures
+# Django bootstrap (session-scoped)
 # ══════════════════════════════════════════════════════════════════════════
 
 @pytest.fixture(scope="session")
-def django_bootstrap() -> None:
-    """Session-scoped Django bootstrap.
+def django_bootstrap(request: pytest.FixtureRequest) -> None:
+    """Configure Django and create tables once per test session.
 
-    Configuration and table creation already happened at conftest import
-    time; this fixture exists so factory fixtures can request it to
-    guarantee ordering. Tables are wiped per-module by the autouse
-    ``_isolate_db_per_module`` fixture.
+    Required by all factory fixtures and model-dependent tests.
     """
-    return None
+    from django.conf import settings
+    if not settings.configured:
+        settings.configure(
+            DEBUG=True,
+            DATABASES={
+                "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}
+            },
+            INSTALLED_APPS=[
+                "django.contrib.contenttypes",
+                "django.contrib.auth",
+                # POS Full app — required so pos_full models participate in
+                # apps.get_models()/relation graph (reverse FKs, cascading
+                # deletes, related_objects). Without it, string FKs resolve
+                # but reverse relations are never registered and deletes fail
+                # with FOREIGN KEY constraint errors.
+                "models.PosFullConfig",
+            ],
+            TEMPLATES=[
+                {
+                    "BACKEND": "django.template.backends.django.DjangoTemplates",
+                    "DIRS": [],
+                    "APP_DIRS": True,
+                    "OPTIONS": {
+                        "context_processors": [
+                            "django.template.context_processors.request",
+                            "django.contrib.auth.context_processors.auth",
+                        ],
+                    },
+                },
+            ],
+            DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
+            USE_TZ=True,
+            SECRET_KEY="test-key-conftest",
+        )
+        import django
+        django.setup()
 
+    # Register ALL pos_full models (string FK resolution + table creation).
+    # models.models imports every model sub-module and is the canonical
+    # discovery module Django loads during phase 2 of apps.populate().
+    import models.models  # noqa: F401, E402
 
-@pytest.fixture(scope="module", autouse=True)
-def _isolate_db_per_module(django_bootstrap) -> None:
-    """Wipe all tables before each test module.
-
-    Replicates the old per-file ``:memory:`` isolation: every test module
-    (file) starts with a clean database, while the shared file-backed DB
-    survives connection closes between modules.
-    """
+    # Create tables for ALL registered pos_full models (FK targets included,
+    # e.g. ClientCategory referenced by Customer.client_category).
     from django.db import connection
+    from django.apps import apps
+    models_to_create = []
+    try:
+        from models.node import Node
+        models_to_create.append(Node)
+    except Exception:
+        pass
+    try:
+        from models.pos import Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee
+        models_to_create.extend([Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee])
+    except Exception:
+        pass
+    try:
+        from models.extra import Ingredient, Role, Recipe, ReceiptTemplate, InventoryAdjustment
+        models_to_create.extend([Ingredient, Role, Recipe, ReceiptTemplate, InventoryAdjustment])
+    except Exception:
+        pass
+    try:
+        from models.sync import SyncLog
+        models_to_create.append(SyncLog)
+    except Exception:
+        pass
 
-    with connection.cursor() as cursor:
-        cursor.execute("PRAGMA foreign_keys = OFF")
-        tables = connection.introspection.table_names()
-        for table in tables:
-            try:
-                cursor.execute(f'DELETE FROM "{table}"')
-            except Exception:
-                pass  # table may not exist in this bootstrap
+    # Append any remaining registered pos_full models (loyalty, ops, hr,
+    # inventory, menu, config, approval, token, audit, crm) so every FK
+    # target table exists. The test bootstrap does NOT install the
+    # models.PosFullConfig app, so iterate apps.all_models (which registers
+    # every imported model) instead of get_app_config().
+    seen = {m._meta.db_table for m in models_to_create}
+    for model in apps.all_models.get("pos_full", {}).values():
+        if model._meta.db_table not in seen:
+            models_to_create.append(model)
+            seen.add(model._meta.db_table)
+
+    try:
+        with connection.schema_editor() as schema_editor:
+            for model in models_to_create:
+                try:
+                    schema_editor.create_model(model)
+                except Exception:
+                    pass  # table may already exist
+    except Exception:
+        pass  # DB may already be set up
+
+    # Destroy tables at end of session
+    def _cleanup() -> None:
         try:
-            cursor.execute("DELETE FROM sqlite_sequence")
+            with connection.schema_editor() as schema_editor:
+                for model in reversed(models_to_create):
+                    try:
+                        schema_editor.delete_model(model)
+                    except Exception:
+                        pass
         except Exception:
-            pass  # no AUTOINCREMENT tables / not supported
-        cursor.execute("PRAGMA foreign_keys = ON")
-    yield
+            pass
+
+    request.addfinalizer(_cleanup)
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -238,7 +176,7 @@ def async_to_sync():
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# Mock request / response helpers
+# Mock Robyn request / response
 # ══════════════════════════════════════════════════════════════════════════
 
 class MockResponse:
@@ -291,7 +229,7 @@ def mock_response():
 
 
 class MockRequest:
-    """Simulates a Request for testing handlers in isolation."""
+    """Simulates a Robyn Request for testing handlers in isolation."""
 
     def __init__(
         self,

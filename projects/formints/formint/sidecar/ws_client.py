@@ -33,6 +33,8 @@ from typing import Any
 
 from asgiref.sync import sync_to_async
 
+from streams import _broadcast_entity_event
+
 logger = logging.getLogger("pos.ws_client")
 
 # websockets is an optional runtime dependency; if missing the client is disabled.
@@ -371,31 +373,9 @@ class CloudSyncClient:
             await self._broadcast_local("broker", subtype, data)
 
     async def _broadcast_local(self, entity: str, action: str, data: dict) -> None:
-        """Broadcast to local entity WebSocket clients (Redux/RTK cache refresh).
-
-        Sends directly through the Channels layer as an async ``group_send``.
-        This runs inside the websockets client's own event loop, so we must
-        NOT use ``consumers.broadcast_entities`` (it wraps ``async_to_sync``,
-        which raises inside a running loop); awaiting the channel layer here
-        is the loop-safe path. The frame fans out to every ``/ws/entities``
-        client via the ``EntityConsumer``.
-        """
-        from channels.layers import get_channel_layer
-        from consumers import GROUP_ENTITIES
+        """Broadcast to local entity WebSocket clients (Redux/RTK cache refresh)."""
         try:
-            layer = get_channel_layer()
-            if layer is None:
-                return
-            await layer.group_send(GROUP_ENTITIES, {
-                "type": "entity_event",
-                "data": {
-                    "type": "entity_event",
-                    "entity": entity,
-                    "action": action,
-                    "data": data,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                },
-            })
+            await _broadcast_entity_event(entity, action, data)
         except Exception as exc:
             logger.warning("Failed to broadcast local entity event: %s", exc)
 

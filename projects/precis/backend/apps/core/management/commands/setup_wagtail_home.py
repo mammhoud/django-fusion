@@ -10,12 +10,15 @@ Run after loaddata to:
 Usage:
     python manage.py setup_wagtail_home
 """
+import logging
 import os
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 from django_fusion.management.commands.base import BaseCommand
 from django.db import transaction
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -25,18 +28,20 @@ class Command(BaseCommand):
         try:
             self._run()
         except Exception as exc:
-            self.stderr.write(self.style.WARNING(f"⚠️  setup_wagtail_home skipped: {exc}"))
+            logger.exception("setup_wagtail_home failed")
+            raise CommandError("Unable to configure the Wagtail home site") from exc
 
     def _run(self):
-        from wagtail.models import Locale, Page, Site
+        from wagtail.models import Page, Site
 
         with transaction.atomic():
-            # ── 1. Ensure English locale ──────────────────────────────────────
-            locale_en, created = Locale.objects.get_or_create(language_code="en")
-            if created:
-                self.stdout.write(self.style.SUCCESS("✅ Created English locale"))
+            # ── 1. Ensure every configured content locale exists ─────────────
+            # The archived CTC fixture contract includes six locales. Keeping
+            # this repair step here makes a partially restored database safe to
+            # boot without changing any fixture primary keys.
+            locale_en = self._ensure_locales()
 
-            # ── 2. Find the home page (first live child of root, depth=2) ─────
+            # ── 2. Find the English home page (direct child of root) ─────────
             home = self._find_home_page()
             if not home:
                 self.stdout.write(self.style.WARNING(
@@ -91,6 +96,24 @@ class Command(BaseCommand):
                 home.save(update_fields=["locale"])
                 self.stdout.write(self.style.SUCCESS("✅ Set home page locale to English"))
 
+    def _ensure_locales(self):
+        """Create all configured Wagtail locales and return the English one."""
+        from wagtail.models import Locale
+
+        configured_codes = tuple(
+            dict.fromkeys(code for code, _label in settings.LANGUAGES)
+        )
+        locales = {}
+        for code in configured_codes:
+            locale, created = Locale.objects.get_or_create(language_code=code)
+            locales[code] = locale
+            if created:
+                self.stdout.write(
+                    self.style.SUCCESS(f"✅ Created {code} locale")
+                )
+
+        return locales.get("en") or locales[configured_codes[0]]
+
     def _find_home_page(self):
         """
         Find the real home page — the first live depth=2 page that is NOT
@@ -104,7 +127,19 @@ class Command(BaseCommand):
 
         WAGTAIL_DEFAULT_TITLE = "Welcome to your new Wagtail site!"
 
-        # Try project-specific HomePage model first
+        # Try the English project-specific HomePage first. This prevents a
+        # translated home page from becoming the default site's root merely
+        # because it happens to sort first in the tree.
+        home = HomePage.objects.filter(
+            live=True,
+            depth=2,
+            locale__language_code="en",
+        ).first()
+        if home:
+            return home
+
+        # Keep compatibility with older databases that have not attached a
+        # locale to their custom home page yet.
         home = HomePage.objects.filter(live=True, depth=2).first()
         if home:
             return home

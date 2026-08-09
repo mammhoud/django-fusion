@@ -16,7 +16,9 @@ import logging
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 from wagtail.models import Page
 
 logger = logging.getLogger(__name__)
@@ -283,13 +285,17 @@ def content_languages_api(request):
             {"code": "pt", "name": "Portuguese", "native": "Português", "dir": "ltr", "flag": "🇧🇷"},
         ]
 
-    # Coverage stays en/ar — the only languages with model-level editorial
-    # overlays today (PageTranslation). Other offered languages fall back to
-    # English UI chrome + canonical content.
+    # Coverage is reported for every advertised language. Only seeded Arabic
+    # and explicit English overlays have editorial records today; other
+    # languages intentionally fall back to canonical Wagtail content until an
+    # editor adds translations.
     pages = Page.objects.live().filter(depth__gt=1)
     coverage = {
-        language: PageTranslation.objects.filter(page__in=pages, language=language).count()
-        for language in ("en", "ar")
+        language["code"]: PageTranslation.objects.filter(
+            page__in=pages,
+            language=language["code"],
+        ).count()
+        for language in languages
     }
     return JsonResponse({
         "languages": languages,
@@ -683,7 +689,9 @@ def _page_to_dict(page) -> dict:
 
         products_page = ProductsPage.objects.first()
         if products_page:
-            product_cards = products_page.get_product_cards()
+            # Home preview grid is curated — subproducts (vResume) stay
+            # catalog-only and never appear on the homepage cards.
+            product_cards = products_page.get_product_cards(for_home=True)
             if product_cards:
                 data["products"] = product_cards
 
@@ -715,19 +723,55 @@ def page_fragment_api(request, slug="home"):
         return JsonResponse({"error": "Page not found"}, status=404)
     specific = page.specific
     language = _requested_content_language(request)
-    return render(
-        request,
-        "pages/fragments/page.html",
-        {
-            "page": specific,
-            "content": specific,
-            "localized_content": _apply_page_translation(specific, _page_to_dict(specific), language),
-            "content_language": language,
-            "site_name": "Structa Cloud",
-            "fusion_render_first": get_effective_render_first(request),
-            "fusion_render_mode": "fusion-render",
-        },
-    )
+    localized_content = _apply_page_translation(specific, _page_to_dict(specific), language)
+    # Reuse the handler's bound-block/body/breadcrumb helpers so HTMX fragments
+    # follow the exact same localization road as full-page requests.
+    from apps.handlers.views import LandingPageView
+
+    localization_view = LandingPageView()
+    localization_view.request = request
+    fragment_context = {
+        "page": specific,
+        "content": specific,
+        "localized_content": localized_content,
+        "localized_blocks": localization_view._get_localized_blocks(specific, language),
+        "localized_body": localization_view._get_localized_body(specific, language),
+        "breadcrumb_current": localization_view._get_localized_title(specific, language),
+        "breadcrumbs": localization_view._get_breadcrumbs(specific),
+        "content_language": language,
+        "courses": get_home_courses() if specific.slug == "home" else [],
+        "site_name": "Structa Cloud",
+        "fusion_render_first": get_effective_render_first(request),
+        "fusion_render_mode": "fusion-render",
+    }
+    if specific.__class__.__name__ == "PhasePage":
+        from apps.pages.models import PromptPage
+
+        outcomes = localized_content.get("outcomes")
+        fragment_context["phase_outcomes"] = (
+            outcomes
+            if isinstance(outcomes, list)
+            else [line.strip() for line in specific.outcomes.splitlines() if line.strip()]
+        )
+        fragment_context["phase_prompts"] = [
+            {
+                "title": _apply_page_translation(
+                    prompt, _page_to_dict(prompt), language
+                ).get("title", prompt.title),
+                "slug": prompt.slug,
+                "href": f"/services/phases/{specific.slug}/prompts/{prompt.slug}/",
+            }
+            for prompt in PromptPage.objects.live().child_of(specific).order_by("title")
+        ]
+    elif specific.__class__.__name__ == "PromptPage":
+        from apps.pages.models import PromptPage
+
+        phase = specific.get_parent().specific
+        fragment_context["phase"] = phase
+        fragment_context["localized_phase"] = _apply_page_translation(
+            phase, _page_to_dict(phase), language
+        )
+    return render(request, "pages/fragments/page.html", fragment_context)
 
 
 def _deep_merge(base: dict, overlay: dict) -> dict:
@@ -777,13 +821,16 @@ def _apply_page_translation(page, data: dict, language: str) -> dict:
     """Apply an optional PageTranslation overlay and expose locale metadata."""
     from apps.content.models.translations import PageTranslation
 
-    translation = PageTranslation.for_page(page, language)
-    requested_translation = translation = PageTranslation.for_page(page, language)
+    requested_translation = PageTranslation.for_page(page, language)
+    translation = requested_translation
     if translation is None and language != "en":
         # Arabic may be partial; English is the explicit final fallback.
         translation = PageTranslation.for_page(page, "en")
     if translation is not None:
-        data = _deep_merge(data, translation.as_overrides())
+        overrides = translation.as_overrides()
+        if overrides.get("body"):
+            overrides["body"] = strip_tags(overrides["body"])
+        data = _deep_merge(data, overrides)
     # Product detail pages never expose legacy code snippets, including when
     # a translated override was authored before the visual gallery migration.
     if page.__class__.__name__ == "ProductPage":
@@ -889,6 +936,58 @@ def assets_api(request):
         "preconnect": fusion_assets.get("preconnect", []),
     }
     return JsonResponse(data)
+
+
+def get_home_courses():
+    """Return the bounded, annotated course queryset shared by both roads."""
+    from django.db.models import Count, Q
+    from apps.learning.models import Course
+
+    return (
+        Course.objects.filter(is_published=True)
+        .select_related("instructor")
+        .annotate(
+            _module_count=Count("modules", distinct=True),
+            _lesson_count=Count(
+                "modules__lessons",
+                filter=Q(modules__lessons__is_active=True),
+                distinct=True,
+            ),
+        )
+        .order_by("-is_featured", "title")[:6]
+    )
+
+
+@require_GET
+def courses_api(request):
+    """GET /apis/courses/ — the public, published learning catalog.
+
+    The homepage uses this compact contract for its course cards while
+    ``/learning/`` remains the full HTMX catalog. Counts are annotated here so
+    rendering several cards never creates one count query per course.
+    """
+    courses = get_home_courses()
+    return JsonResponse({
+        "courses": [
+            {
+                "slug": course.slug,
+                "title": course.title,
+                "short_description": course.short_description,
+                "difficulty": str(course.get_difficulty_display()),
+                "language": course.language,
+                "duration_hours": str(course.duration_hours),
+                "price": str(course.price),
+                "is_free": course.is_free,
+                "is_featured": course.is_featured,
+                "has_certificate": course.has_certificate,
+                "module_count": course.module_count,
+                "lesson_count": course.lesson_count,
+                "instructor": course.instructor.get_full_name() or course.instructor.get_username(),
+                "href": course.get_absolute_url(),
+            }
+            for course in courses
+        ],
+    })
 
 
 def pricing_api(request):
@@ -1065,8 +1164,9 @@ def contact_submit_api(request):
     Accepts form-encoded (Django template form) or JSON (Astro ContactForm)
     bodies with ``name``/``email``/``subject``/``message``. Returns an HTML
     fragment for HTMX swaps into ``#contact-form-result`` (the Django form)
-    and JSON for plain API consumers. In production this would queue an
-    email/CRM notification.
+    and JSON for plain API consumers. Every valid submission is persisted as
+    a ``ContactSubmission`` snippet (the archived ctc-research / Precis
+    enhancement) so inquiries are reviewable in the Wagtail admin.
     """
     import json
     import re
@@ -1112,6 +1212,30 @@ def contact_submit_api(request):
         "contact_submit: %s <%s> topic=%s %s",
         name, email, topic or "(none)", subject or "(no subject)",
     )
+
+    # Persist the submission — the audit trail every contact form needs. The
+    # model mirrors the archived ctc-research / Precis ContactSubmission.
+    try:
+        from apps.content.models.contact import ContactSubmission
+
+        ContactSubmission.objects.create(
+            form_id="landing-contact",
+            page_id=0,
+            page_title="Contact page",
+            page_url=request.build_absolute_uri(),
+            submitted_data={
+                "name": name,
+                "email": email,
+                "subject": subject,
+                "topic": topic,
+                "message": message,
+            },
+            ip_address=request.META.get("REMOTE_ADDR"),
+            user_agent=request.META.get("HTTP_USER_AGENT", ""),
+            referrer=request.META.get("HTTP_REFERER", ""),
+        )
+    except Exception:
+        logger.exception("contact_submit persistence error")
 
     from django.utils.html import escape
 

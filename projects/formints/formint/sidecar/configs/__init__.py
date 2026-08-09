@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     # Ninja + ninja-extra API layer (django-fusion encoder/decoder)
     "ninja",
     "ninja_extra",
+    "django_htmx",
     "django_tables2",
 ]
 
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     # Seeds the session fusion render-mode from the operator's UserSettings
@@ -247,13 +249,6 @@ UNFOLD = {
 # ── Server Config ──
 HOST = os.environ.get("POS_FULL_HOST", "0.0.0.0")
 PORT = int(os.environ.get("POS_FULL_PORT", "8766"))
-
-# ── django-bolt autodiscovery (replaces the removed Robyn server) ──
-# ``manage.py runbolt`` merges every BoltAPI listed here and serves the
-# /bolt/* high-performance surface natively through django-bolt's Rust
-# router (auth, path params, msgspec bodies). The rest of the sidecar is
-# still served by Django (daphne / runserver).
-BOLT_API = ["bolt_api:bolt"]
 API_KEY = os.environ.get("POS_FULL_API_KEY", None)
 CLOUD_CRM_URL = os.environ.get("CLOUD_CRM_URL", "")
 CLOUD_API_KEY = os.environ.get("CLOUD_API_KEY", None)

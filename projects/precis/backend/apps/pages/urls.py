@@ -115,7 +115,7 @@ urlpatterns = [
     path("accounts/", include("apps.pages.accounts.urls", namespace="accounts")),
     path("profile/", include("apps.pages.profile.urls", namespace="profile")),
     # LMS (courses, learning, enrollments)
-    path("learning/", include("apps.pages.lms.urls", namespace="lms")),
+    path("learning/", include("apps.learning.urls", namespace="lms")),
     # Auth URL aliases
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),

@@ -31,14 +31,33 @@ def _live_page(slug: str):
 
 
 def _plain(value):
-    """Convert common Wagtail Struct/List values to JSON-safe values."""
+    """Convert Wagtail values and related model objects to JSON-safe values."""
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
     if hasattr(value, "items"):
-        return {key: _plain(item) for key, item in value.items()}
+        return {str(key): _plain(item) for key, item in value.items()}
     if isinstance(value, (list, tuple)):
         return [_plain(item) for item in value]
     if hasattr(value, "isoformat"):
         return value.isoformat()
-    return value
+
+    # StreamField values frequently contain RichText and Wagtail image
+    # instances.  Passing those objects directly to JsonResponse raises a
+    # TypeError and turns otherwise healthy page API requests into HTTP 500s.
+    # Preserve useful image metadata while reducing other Wagtail values to a
+    # stable string representation.
+    if hasattr(value, "pk"):
+        result = {"id": value.pk, "title": str(value)}
+        try:
+            result["url"] = value.file.url
+        except (AttributeError, ValueError, OSError):
+            pass
+        return result
+    if hasattr(value, "__str__"):
+        return str(value)
+    return str(value)
 
 
 def _stream_items(page, field_name: str) -> list[dict]:
@@ -264,6 +283,59 @@ def newsletter_subscribe_api(request: HttpRequest) -> JsonResponse:
     email = request.POST.get("email", "").strip()
     valid = bool(re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email))
     return JsonResponse({"success": valid, "message": "Subscribed!" if valid else "Please enter a valid email address."}, status=200 if valid else 400)
+
+
+def auth_status_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/auth/status/ — auth state plus learner entitlements.
+
+    Mirrors landing-fusion's endpoint so the shared Astro header can render
+    the same session-aware dropdown (user avatar, profile, learning summary)
+    on both sites. The account stays owned by allauth; learning contributes
+    a compact summary of the user's active/completed enrollments.
+    """
+    user = request.user if request.user.is_authenticated else None
+    learning = {"active": 0, "completed": 0, "next": None}
+    if user:
+        try:
+            from apps.learning.models.enrollment import Enrollment
+
+            rows = Enrollment.objects.filter(student=user)
+            # Status field is the lifecycle contract (active/completed/dropped)
+            # — consistent with landing-fusion's auth-status semantics.
+            active = rows.filter(status="active")
+            next_enrollment = (
+                active.select_related("course").order_by("-last_accessed_at", "-created_at").first()
+            )
+            learning = {
+                "active": active.count(),
+                "completed": rows.filter(status="completed").count(),
+                "next": (
+                    {
+                        "title": next_enrollment.course.title,
+                        # Precis detail route: /learning/course/<slug>/
+                        "href": f"/learning/course/{next_enrollment.course.slug}/",
+                        "progress": next_enrollment.progress,
+                    }
+                    if next_enrollment
+                    else None
+                ),
+            }
+        except Exception:
+            logger.exception("auth_status learning summary failed")
+    return JsonResponse(
+        {
+            "authenticated": user is not None,
+            "user": (
+                {
+                    "email": user.email,
+                    "display": user.email.split("@")[0] if user else None,
+                }
+                if user
+                else None
+            ),
+            "learning": learning,
+        }
+    )
 
 
 def htmx_ping_api(request: HttpRequest) -> HttpResponse:

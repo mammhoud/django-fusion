@@ -2,7 +2,7 @@
 > **Topics:** [Dev Workflows](#development) · [Building](#building) · [Testing](#testing--checking) · [Server](#pos-server) · [Publishing](#publishing)  
 
   
-> **Last updated:** August 9, 2026
+> **Last updated:** July 22, 2026
 
 ---
 
@@ -153,7 +153,7 @@ make cargo-check        # Rust compilation check
 | `make format` | Format Rust code (`cargo fmt`) |
 | `make clean` | Remove `dist/`, `src-tauri/target/`, `node_modules/`, `src-tauri/gen/` |
 | `make clean-build` | Clean everything, reinstall, rebuild from scratch |
-| `make screenshots` | Capture 6 polished screenshots into `docs/screenshots/` |
+| `make screenshots` | Capture 6 polished screenshots into Landing-Fusion `related/formints/` |
 | `make info` | Show installed tool versions (pnpm, node, rustc, cargo, tauri, sqlite) |
 | `make port-kill` | Kill any process on port 1420 (prevents port conflict) |
 
@@ -162,8 +162,8 @@ make cargo-check        # Rust compilation check
 ## Formint POS (merged package)
 
 **Directory:** `projects/pos/formint-pos/`  
-**Stack:** Astro + Alpine.js + HTMX frontend, Django 5 + Ninja + django-fusion backend, django-bolt sidecar API, Unfold admin  
-**Backend port:** `:8767` · **Frontend port:** `:4321` · **django-bolt port:** `:8766`  
+**Stack:** Astro + Alpine.js + HTMX frontend, Django 5 + Ninja + django-fusion backend, Robyn sidecar, Unfold admin  
+**Backend port:** `:8767` · **Frontend port:** `:4321` · **Sidecar port:** `:8765`  
 **Admin panel:** `http://127.0.0.1:8767/admin/`  
 **API docs:** `http://127.0.0.1:8767/api/v1/docs`
 
@@ -196,7 +196,7 @@ make cargo-check        # Rust compilation check
 | Command | Description |
 |---------|-------------|
 | `make backend-seed` | Create/update superuser from env (idempotent) |
-| `make screenshots` | Capture Unfold admin dashboard screenshots → `docs/screenshots/admin/` |
+| `make screenshots` | Capture Unfold admin dashboard screenshots → Landing-Fusion `related/formints/` |
 
 ### Build & Maintenance
 
@@ -243,21 +243,19 @@ make cargo-check        # Rust compilation check
 
 ## POS Server
 
-The POS sidecar is a **full Django setup** located in `formint-pos/sidecar/` —
-Django + Channels WebSockets + django-fusion on `:8767` (daphne/runserver) and
-django-bolt `/bolt/*` on `:8766` (`runbolt`). The former Robyn server was removed.
+The POS server is a consolidated **Robyn + Django ORM** server located in `formint-pos/sidecar/`.
 
 Commands are available from the POS root Makefile (`projects/pos/Makefile`).
 
-### Merged Sidecar (django-bolt, port 8766)
+### Merged Sidecar (port 8765)
 
 | Command | Description |
 |---------|-------------|
-| `make server-install` | Install sidecar dependencies (`pip install -r requirements.txt`) |
-| `make server-run` | Start django-bolt server (`manage.py runbolt`) on port 8766 |
-| `make server-dev` | Start django-bolt with auto-reload |
-| `make server-check` | Validate Django imports (views, consumers, api keys) |
-| `make server-test` | Run merged Django sidecar test suite |
+| `make server-install` | Install server dependencies (`pip install -r requirements.txt`) |
+| `make server-run` | Start server on port 8765 |
+| `make server-dev` | Start server with hot reload and verbose output (`--dev --verbose`) |
+| `make server-check` | Validate server imports |
+| `make server-test` | Run merged sidecar test suite (171 passing + legacy known issues) |
 | `make server-clean` | Remove `restaurant.db` |
 
 ---
@@ -276,7 +274,7 @@ Unit tests and integration tests for the POS sidecar servers live in:
 
 | Test Suite | Location | Count | Run Command |
 |-----------|----------|:-----:|-------------|
-| Merged sidecar | `formint-pos/sidecar/tests/` | all files green individually (run per-file; the combined run has known cross-file DB interference) | `make server-test` |
+| Merged sidecar | `formint-pos/sidecar/tests/` | 171 passing (+85 legacy failures, 21 errors) | `make server-test` |
 | Formint backend | `formint-pos/backend/` | 35 | `make formint-test` |
 | Rust unit tests | `forge-pos/src-tauri/src/` | inline | `make check-mini` |
 | Vitest (Frontend) | `formint-pos/frontend/src/` + `tests/js/` | inline | `make formint-test` |

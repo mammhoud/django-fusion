@@ -24,6 +24,7 @@ from django_fusion.routes.core.base import menu_path
 from django_fusion.routes.core.sites import Application
 
 from apps.learning import views
+from apps.learning.api import courses as courses_api
 
 
 class LearningApplication(Application):
@@ -36,11 +37,20 @@ class LearningApplication(Application):
     urlpatterns = [
         menu_path("", views.catalog, name="catalog", icon="storefront", title="Course catalog"),
         menu_path("course/<slug:slug>/", views.course_detail, name="course", icon="menu_book", title="Course"),
+        path("course/<slug:slug>/watch/", views.course_watch, name="course_watch"),
+        path("course/<slug:slug>/lesson/<int:lesson_id>/", views.course_watch, name="course_watch_lesson"),
+        path("course/<slug:slug>/continue/", views.course_continue, name="course_continue"),
         menu_path("dashboard/", views.dashboard, name="dashboard", icon="dashboard", title="My dashboard"),
         menu_path("profile/", views.profile_dashboard, name="profile", icon="person", title="Profile"),
         path("course/<slug:slug>/enroll/", views.enroll, name="enroll"),
         path("course/<slug:slug>/wishlist/", views.toggle_wishlist, name="wishlist"),
         path("lesson/<int:lesson_id>/complete/", views.complete_lesson, name="complete_lesson"),
+        path("lesson/<int:lesson_id>/navigate/", views.lesson_navigate, name="lesson_navigate"),
+        path("enrollment/list/", views.enrollment_list, name="enrollment_list"),
+        path("enrollment/<int:enrollment_id>/status/", views.enrollment_status_update, name="enrollment_status_update"),
+        path("enrollment/form/<int:course_id>/", views.course_enrollment_form, name="course_enrollment_form"),
+        path("api/courses/search/", courses_api.course_search_api, name="course_search_api"),
+        path("api/courses/<slug:slug>/", courses_api.course_detail_api, name="course_detail_api"),
     ]
 
     def application_context(self, request: Any) -> dict[str, Any]:

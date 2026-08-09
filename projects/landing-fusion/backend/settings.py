@@ -297,6 +297,14 @@ LANGUAGES = [
     ("es", _("Spanish")),
     ("pt", _("Portuguese")),
 ]
+LANGUAGES_BIDI = ["ar"]
+
+# Wagtail's native locale model is enabled alongside the landing overlay
+# contract. The page tree remains English-canonical, while editors can add
+# native Wagtail translations and the Astro road can use PageTranslation.
+WAGTAIL_I18N_ENABLED = True
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
+WAGTAIL_I18N_LOCALE_MODEL = "wagtailcore.Locale"
 
 # Locale paths — Django scans these for .po translation files.
 # The first entry is the project-level locale directory.

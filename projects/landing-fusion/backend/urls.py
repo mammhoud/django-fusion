@@ -14,6 +14,14 @@ from apps.handlers.fusion import landing_pages_application
 from apps.learning.fusion import learning_application
 from apps.pages import api as pages_api
 
+# ── Fusion introspection (plugin map + component usage + render tracker) ──
+try:
+    from django_fusion.plugins.debug_tools.introspection import (
+        fusion_introspection_urls,
+    )
+except ImportError:  # pragma: no cover - older django-fusion
+    fusion_introspection_urls = None
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     # Newsletter broadcast — staff-only, registered BEFORE the wagtail admin
@@ -61,6 +69,7 @@ urlpatterns = [
     path("apis/content/languages/", pages_api.content_languages_api, name="content_languages_api"),
     path("apis/contact/", pages_api.contact_api, name="contact_api"),
     path("apis/pricing/", pages_api.pricing_api, name="pricing_api"),
+    path("apis/courses/", pages_api.courses_api, name="courses_api"),
     path("apis/brand/", pages_api.brand_api, name="brand_api"),
     path("apis/pages/", pages_api.page_list_api, name="page_list_api"),
     path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
@@ -99,6 +108,10 @@ urlpatterns = [
 urlpatterns += staticfiles_urlpatterns()
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ── Fusion introspection dashboard + API (plugin map, tracker) ──────────
+if fusion_introspection_urls is not None:
+    urlpatterns += fusion_introspection_urls()
 
 # Wagtail is deliberately last because it owns the remaining document paths.
 urlpatterns += [path("", include(wagtail_urls))]

@@ -18,7 +18,9 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.contenttypes.management import create_contenttypes
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
+from django.db import transaction
+from django_fusion.management.commands.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -62,16 +64,14 @@ class Command(BaseCommand):
         # ── Step 1: Sync content types ──────────────────────────
         self.stdout.write(self.style.HTTP_INFO("⏳ Content types … "), ending="")
         if not dry_run:
-            from django.db import transaction
-
-            for app_config in apps.get_app_configs():
-                try:
-                    with transaction.atomic():
+            try:
+                with transaction.atomic():
+                    for app_config in apps.get_app_configs():
                         create_contenttypes(
                             app_config, interactive=False, verbosity=0
                         )
-                except Exception:
-                    pass
+            except Exception as exc:
+                raise CommandError("Failed to sync Django content types") from exc
             self.stdout.write(self.style.SUCCESS("✅"))
         else:
             self.stdout.write(self.style.WARNING("🔍 (skipped)"))
@@ -170,33 +170,17 @@ class Command(BaseCommand):
             raise CommandError(f"Failed to load fixture: {exc}") from exc
 
         # ── Step 5b: LMS app fixtures (courses, events, …) ─────
+        # Keep course fixture ownership in the dedicated command so direct
+        # reloads and full-data reloads cannot drift apart.
         self.stdout.write(
             self.style.HTTP_INFO("⏳ LMS app fixtures … "), ending=""
         )
         if not dry_run:
-            app_fixtures = [
-                backend_dir / "apps" / "pages" / "lms" / "fixtures" / name
-                for name in (
-                    "specializations.json",
-                    "course_tags.json",
-                    "courses.json",
-                    "events.json",
-                )
-            ]
-            loaded = 0
-            for path in app_fixtures:
-                if not path.exists():
-                    continue
-                try:
-                    call_command("loaddata", str(path), verbosity=0)
-                    loaded += 1
-                except Exception as exc:
-                    self.stdout.write(
-                        self.style.WARNING(f"⚠️ {path.name}: {exc}; ")
-                    )
-            self.stdout.write(
-                self.style.SUCCESS(f"✅ ({loaded} fixture files)\n")
-            )
+            try:
+                call_command("load_course_fixtures", verbosity=0)
+            except Exception as exc:
+                raise CommandError("Failed to load LMS application fixtures") from exc
+            self.stdout.write(self.style.SUCCESS("✅\n"))
         else:
             self.stdout.write(self.style.WARNING("🔍 (skipped)"))
 
@@ -206,17 +190,25 @@ class Command(BaseCommand):
             from wagtail.models import Page, Site
 
             home = Page.objects.filter(depth=2).order_by("path").first()
-            port = getattr(settings, "SITE_PORT", 5071)
+            hostname = os.environ.get("SITE_DOMAIN", "localhost").split(",", 1)[0].strip()
+            port = int(os.environ.get("SITE_PORT", getattr(settings, "SITE_PORT", 5071)))
             if home and not Site.objects.filter(
                 is_default_site=True
             ).exists():
                 Site.objects.create(
-                    hostname="localhost",
+                    hostname=hostname,
                     port=port,
                     root_page=home,
                     is_default_site=True,
-                    site_name="Fusion LMS",
+                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "Fusion LMS"),
                 )
+            elif home:
+                site = Site.objects.filter(is_default_site=True).first()
+                if site and (site.hostname != hostname or site.port != port):
+                    site.hostname = hostname
+                    site.port = port
+                    site.root_page = home
+                    site.save(update_fields=["hostname", "port", "root_page"])
             self.stdout.write(self.style.SUCCESS("✅"))
         else:
             self.stdout.write(self.style.WARNING("🔍 (skipped)"))
@@ -228,6 +220,8 @@ class Command(BaseCommand):
         self.stdout.write(
             f"  • Existing data: {'replaced' if replace_existing else 'preserved'}\n"
         )
-        self.stdout.write("  • Fixture: loaded (dump-data + LMS app fixtures)\n")
+        self.stdout.write(
+            "  • Fixture: loaded (dump-data + LMS + medical research catalog fixtures)\n"
+        )
         self.stdout.write("  • Wagtail Site: configured\n")
         self.stdout.write(self.style.SUCCESS("🎉 Done!\n"))

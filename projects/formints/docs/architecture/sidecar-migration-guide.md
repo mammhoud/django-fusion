@@ -1,7 +1,5 @@
 # Sidecar Migration Guide
 
-> **Last Updated:** 9 August 2026  
->
 > **Diesel → Django ORM:** Moving from Minimal's Rust/Diesel backend to Solo/Full's Python sidecar with Django ORM.
 
 ## Overview

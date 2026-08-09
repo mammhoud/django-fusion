@@ -45,7 +45,12 @@ SITE_DIR_NAME="${PROJECT_PATH:-$SITE_NAME}"
 if [ ! -d "${APP_HOME}/${SITE_DIR_NAME}" ] && [ "$SITE_NAME" = "vresume" ]; then
     SITE_DIR_NAME="VResume"
 fi
-export PYTHONPATH="${APP_HOME}/libs/django-fusion/src:${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+SITE_BACKEND_DIR="${APP_HOME}/${SITE_DIR_NAME}/backend"
+if [ -d "$SITE_BACKEND_DIR" ]; then
+    export PYTHONPATH="${APP_HOME}/libs/django-fusion/src:${SITE_BACKEND_DIR}:${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+else
+    export PYTHONPATH="${APP_HOME}/libs/django-fusion/src:${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+fi
 
 if [ "${RUN_UV_SYNC:-false}" = "true" ]; then
     echo "[SETUP] Syncing Python dependencies with uv..."
@@ -104,7 +109,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     if [ "$SHOULD_BUILD_ASSETS" = "true" ]; then
         echo "[SETUP] Collecting/building static files..."
         if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
-            if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
+            if ! run_logged collectstatic python manage.py collectstatic --noinput; then
                 echo "[WARN] static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
             fi
         fi
@@ -116,7 +121,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     DB_READY_DELAY="${DB_READY_DELAY:-2}"
     db_ready=false
     for ((attempt=1; attempt<=DB_READY_ATTEMPTS; attempt++)); do
-        if python manage.py --site "$SITE_NAME" shell -c \
+        if python manage.py shell -c \
             'from django.db import connection; connection.ensure_connection()' \
             >/dev/null 2>&1; then
             db_ready=true
@@ -132,12 +137,12 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
     echo "[SETUP] Making migrations..."
-    if ! run_logged makemigrations python manage.py --site "$SITE_NAME" makemigrations --noinput; then
+    if ! run_logged makemigrations python manage.py makemigrations --noinput; then
         echo "[WARN] makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
     fi
 
     echo "[SETUP] Applying migrations..."
-    if ! run_logged migrate python manage.py --site "$SITE_NAME" migrate --noinput; then
+    if ! run_logged migrate python manage.py migrate --noinput; then
         echo "[ERROR] migrate failed; see ${LOG_DIR}/migrate.log"
         exit 1
     fi
@@ -155,19 +160,19 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
         # Use the site's `load_data` command when available. The command is
         # non-destructive by default and accepts --replace only when the
         # operator has also explicitly set FORCE_LOAD_DUMPS=true.
-        if python manage.py --site "$SITE_NAME" help load_data >/dev/null 2>&1; then
+        if python manage.py help load_data >/dev/null 2>&1; then
             LOAD_DATA_ARGS=()
             if [ "${FORCE_LOAD_DUMPS:-false}" = "true" ]; then
                 LOAD_DATA_ARGS+=("--replace")
             fi
-            if ! run_logged load_data python manage.py --site "$SITE_NAME" load_data "${LOAD_DATA_ARGS[@]}"; then
+            if ! run_logged load_data python manage.py load_data "${LOAD_DATA_ARGS[@]}"; then
                 echo "[WARN] load_data failed (non-fatal); see ${LOG_DIR}/load_data.log"
             fi
         else
             LOAD_DUMP_ARGS=("$SITE_NAME")
             [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
             [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
-            if ! run_logged load_dumped_data python tests/scripts/utilities/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
+            if ! run_logged load_dumped_data python tests/scripts/dev/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
                 echo "[WARN] dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
             fi
         fi
@@ -176,8 +181,8 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
     echo "[SETUP] Setting up Wagtail home page and language..."
-    if python manage.py --site "$SITE_NAME" help setup_wagtail_home >/dev/null 2>&1; then
-        if ! run_logged setup_wagtail_home python manage.py --site "$SITE_NAME" setup_wagtail_home; then
+    if python manage.py help setup_wagtail_home >/dev/null 2>&1; then
+        if ! run_logged setup_wagtail_home python manage.py setup_wagtail_home; then
             echo "[WARN] setup_wagtail_home failed (non-fatal); see ${LOG_DIR}/setup_wagtail_home.log"
         fi
     else
@@ -185,16 +190,16 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
     echo "[SETUP] Compiling translation messages..."
-    if ! run_logged compilemessages python manage.py --site "$SITE_NAME" compilemessages; then
+    if ! run_logged compilemessages python manage.py compilemessages; then
         echo "[WARN] compilemessages failed (non-fatal); see ${LOG_DIR}/compilemessages.log"
     fi
 
     echo "[SETUP] Verifying Wagtail pages and collected assets..."
-    VERIFY_ARGS=("--site" "$SITE_NAME")
+    VERIFY_ARGS=()
     [ "${STRICT_ASSETS:-false}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
     [ "${STRICT_PAGE_CONTENT:-false}" = "true" ] && VERIFY_ARGS+=("--strict-pages")
     [ "${STRICT_PAGE_CONTENT:-false}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
-    if ! run_logged verify_runtime python tests/scripts/validation/verify_runtime.py "${VERIFY_ARGS[@]}"; then
+    if ! run_logged verify_runtime python tests/scripts/staging/verify_runtime.py "${VERIFY_ARGS[@]}"; then
         echo "[WARN] runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
     fi
 

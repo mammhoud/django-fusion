@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from django_fusion.routes.http.notifications import NotificationMixin
 from django_fusion.routes.pages.handler import PageHandler
 
-from apps.pages.lms.management.services.courses import CourseService
+from apps.learning.management.services.courses import CourseService
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class CoursesView(PageHandler, NotificationMixin):
                 dashboard = CourseService.get_user_course_dashboard(request.user)
 
                 # Get active courses
-                from apps.pages.lms.models import Course
+                from apps.learning.models import Course
 
                 active_courses = Course.objects.get_active_courses(request.user)
 

@@ -52,7 +52,7 @@ LOCAL_APPS = [
     "apps.pages.pages.apps.PagesConfig",
     "apps.handlers.apps.AccountsConfig",
     "apps.pages.accounts.apps.AccountsConfig",
-    "apps.pages.lms.apps.LmsConfig",
+    "apps.learning.apps.LearningConfig",
     "apps.pages.blog.apps.BlogConfig",
     "apps.pages.products.apps.ProductsConfig",
     "apps.pages.profile.apps.ProfileConfig",

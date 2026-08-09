@@ -26,13 +26,19 @@ SITE_DIR_NAME="${PROJECT_PATH:-$SITE_NAME}"
 if [ ! -d "${APP_HOME}/${SITE_DIR_NAME}" ] && [ "$SITE_NAME" = "vresume" ]; then
     SITE_DIR_NAME="VResume"
 fi
+SITE_BACKEND_DIR="${APP_HOME}/${SITE_DIR_NAME}/backend"
 
-
-   
 # Import the site-local server.py via PYTHONPATH instead of using the site
 # directory as a dotted package (hyphenated names are not importable).
-export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+if [ -d "$SITE_BACKEND_DIR" ]; then
+    export PYTHONPATH="${SITE_BACKEND_DIR}:${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+else
+    export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+fi
 APP_MODULE="${APP_MODULE:-server:application}"
+if [ "$APP_MODULE" = "server:application" ] && [ -f "$SITE_BACKEND_DIR/server.py" ]; then
+    APP_MODULE="backend.server:application"
+fi
 case "$APP_MODULE" in
     "${SITE_NAME}.server:application"|\
     "${SITE_DIR_NAME}.server:application"|\
@@ -95,7 +101,11 @@ fi
 if [ "$SERVER_TYPE" = "gunicorn" ]; then
     # Set PYTHONPATH for workers - use --env to pass it explicitly
     # Note: Gunicorn's --env flag passes the environment variable to workers
-    export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}"
+    if [ -d "$SITE_BACKEND_DIR" ]; then
+        export PYTHONPATH="${SITE_BACKEND_DIR}:${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}"
+    else
+        export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}"
+    fi
     # Remove duplicate entries and trailing colons
     PYTHONPATH=$(echo "$PYTHONPATH" | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')
     ARGS=(

@@ -1,6 +1,6 @@
 # POS Page Data Map — Edition Comparison & Recommendations
 
-> **Last Updated:** 9 August 2026  
+> **Last Updated:** 22 July 2026  
 > **Editions:** pos-mini, pos-solo, pos-full (historical)  
 > **Purpose:** Map each page's data dependencies, actions, form submissions, and identify naming conflicts and enhancement opportunities.
 

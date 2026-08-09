@@ -15,7 +15,7 @@
  *
  * Because the frontend is API-driven (src/lib/api.ts), the build bakes the
  * backend's seeded content in at build time. The Django backend must be
- * reachable on :8074 (`cd backend && make dev`) so the build fetches real
+ * reachable on :5074 (the current Precis Compose backend port) so the build fetches real
  * seeded data — otherwise this suite fails with a clear message.
  *
  * Run:  npm test
@@ -33,7 +33,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 // assertions run against seeded data, not silent fallbacks.
 function backendReachable() {
   try {
-    const res = execSync('curl -sf -o /dev/null http://localhost:8074/apis/pages/home/', { stdio: 'pipe' });
+    const res = execSync('curl -sf -o /dev/null http://localhost:5074/apis/pages/home/', { stdio: 'pipe' });
     return res !== null;
   } catch {
     return false;
@@ -41,8 +41,8 @@ function backendReachable() {
 }
 if (!backendReachable()) {
   throw new Error(
-    'The Django backend is not reachable on http://localhost:8074. ' +
-    'Start it first (cd projects/landing-fusion/backend && make dev) so the build bakes seeded content.',
+    'The Django backend is not reachable on http://localhost:5074. ' +
+    'Start it first (docker compose -f projects/precis/docker-compose.yml up -d backend) so the build bakes seeded content.',
   );
 }
 

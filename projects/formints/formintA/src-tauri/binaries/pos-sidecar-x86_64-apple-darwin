@@ -4,5 +4,4 @@
 # so that the `seed` binary and `vite` dev server can run without
 # a full PyInstaller build of the Python/Sanic sidecar.
 # Replace with the real binary via: pnpm build:sidecar
-echo "[pos-sidecar] placeholder binary — dev only, no backend API. Run 'pnpm build:sidecar' to build the real Robyn sidecar." >&2
 exit 0

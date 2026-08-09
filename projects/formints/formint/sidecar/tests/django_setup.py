@@ -157,7 +157,7 @@ try:
         # exists — e.g. full_client_categories referenced by full_customers).
         from django.apps import apps as django_apps
         pos_full_models = list(django_apps.all_models.get("pos_full", {}).values())
-        seen = set()
+        seen = {m._meta.db_table for m in _REGISTRY_MODELS}
         for model in _REGISTRY_MODELS + pos_full_models:
             if model._meta.db_table in existing_tables or model._meta.db_table in seen:
                 continue

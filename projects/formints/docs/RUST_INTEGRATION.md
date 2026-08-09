@@ -1,7 +1,7 @@
 # POS Rust Integration Guide — Sidecar Linking
 
 > **Status:** Planning Phase  
-> **Last Updated:** 9 August 2026  
+> **Last Updated:** 20 July 2026  
 > **Purpose:** Document how Rust Tauri backend links with Robyn sidecar
 
 ---

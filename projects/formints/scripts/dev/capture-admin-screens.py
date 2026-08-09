@@ -2,7 +2,7 @@
 """Capture Formint POS admin screenshots via Selenium (authenticated).
 
 Logs into the Unfold admin at http://127.0.0.1:8767/admin/ as the superuser
-and saves PNG screenshots to docs/screenshots/_captures/.
+and saves PNG screenshots to a temporary capture directory consumed by the related-media workflow.
 """
 import os
 import sys
@@ -17,7 +17,7 @@ USERNAME = os.environ.get("FORMINT_ADMIN_USERNAME", "admin")
 PASSWORD = os.environ.get("FORMINT_ADMIN_PASSWORD", "admin123")
 OUT_DIR = os.environ.get(
     "FORMINT_CAPTURE_DIR",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../docs/screenshots/_captures"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../.tmp-screenshot-captures"),
 )
 OUT_DIR = os.path.abspath(OUT_DIR)
 os.makedirs(OUT_DIR, exist_ok=True)

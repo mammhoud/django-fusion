@@ -1,0 +1,142 @@
+{% extends "admin/base.html" %}
+{% block title %}Loyalty & Client Settings{% endblock %}
+{% block content %}
+
+<div class="grid-3">
+  <div class="card stat-card">
+    <div class="stat-value">{{ categories|length }}</div>
+    <div class="stat-label">Client Categories</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ transactions|length }}</div>
+    <div class="stat-label">Recent Points Ledger Entries</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ user_settings|length }}</div>
+    <div class="stat-label">User Settings Profiles</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="flex-between">
+    <h3>🎖️ Client Categories (People as Client Tiers)</h3>
+  </div>
+  <form method="POST" action="/admin/loyalty/category/save">
+    <input type="hidden" name="id" value="{{ new_category.id if new_category else '' }}">
+    <div class="grid-3" style="margin-bottom:0.5rem;">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" name="name" value="{{ new_category.name if new_category else '' }}" placeholder="e.g. Gold Member" required>
+      </div>
+      <div class="form-group">
+        <label>Min Points</label>
+        <input type="number" name="min_points" value="{{ new_category.min_points if new_category else 0 }}" min="0">
+      </div>
+      <div class="form-group">
+        <label>Discount Rate (%)</label>
+        <input type="number" name="discount_rate" value="{{ new_category.discount_rate if new_category else 0 }}" min="0" max="100" step="0.1">
+      </div>
+      <div class="form-group">
+        <label>Points per {{ '1' }} currency</label>
+        <input type="number" name="points_per_currency" value="{{ new_category.points_per_currency if new_category else 1 }}" min="1">
+      </div>
+      <div class="form-group">
+        <label>Points → 1 currency redemption</label>
+        <input type="number" name="points_to_currency" value="{{ new_category.points_to_currency if new_category else 100 }}" min="1">
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="is_active" value="1" {% if not new_category or new_category.is_active %}checked{% endif %}>
+          Active
+        </label>
+      </div>
+      <div class="form-group" style="grid-column: span 2;">
+        <label>Perks (comma separated)</label>
+        <input type="text" name="perks" value="{{ new_category.perks|join(', ') if new_category and new_category.perks else '' }}" placeholder="Free dessert, Priority seating, Birthday bonus">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" value="{{ new_category.description if new_category else '' }}">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">💾 Save Category</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>📋 Existing Client Categories</h3>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Min Points</th><th>Discount</th><th>Perks</th><th>Customers</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for c in categories %}
+      <tr>
+        <td>{{ c.name }}</td>
+        <td>{{ c.min_points }}</td>
+        <td>{{ c.discount_rate }}%</td>
+        <td>{{ c.perks|join(', ') if c.perks else '—' }}</td>
+        <td>{{ c.customers }}</td>
+        <td>
+          {% if c.is_active %}<span class="badge badge-success">Active</span>
+          {% else %}<span class="badge badge-danger">Inactive</span>{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" style="color:#64748b;text-align:center;padding:1.5rem;">No client categories yet — add one above.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>🪙 Recent Loyalty Transactions</h3>
+    <table>
+      <thead>
+        <tr><th>Customer</th><th>Type</th><th>Change</th><th>Balance</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td>{{ t.customer }}</td>
+          <td>{{ t.type }}</td>
+          <td style="color:{% if t.change >= 0 %}#6ee7b7{% else %}#fca5a5{% endif %};font-weight:600;">
+            {{ '+' if t.change >= 0 }}{{ t.change }}
+          </td>
+          <td>{{ t.balance }}</td>
+          <td>{{ t.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" style="color:#64748b;text-align:center;padding:1.5rem;">No loyalty transactions yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>👤 User Settings (per user — same data as POS front settings)</h3>
+    <table>
+      <thead>
+        <tr><th>User</th><th>Restaurant</th><th>Currency</th><th>Tax</th><th>Theme</th><th>Language</th></tr>
+      </thead>
+      <tbody>
+        {% for us in user_settings %}
+        <tr>
+          <td>{{ us.user }}</td>
+          <td>{{ us.restaurant_name }}</td>
+          <td>{{ us.currency }}</td>
+          <td>{{ us.tax_rate if us.tax_rate is not none else '—' }}</td>
+          <td>{{ us.theme }}</td>
+          <td>{{ us.language }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="color:#64748b;text-align:center;padding:1.5rem;">
+          No user settings yet. Manage them in the Django Unfold admin → Settings → User Settings.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

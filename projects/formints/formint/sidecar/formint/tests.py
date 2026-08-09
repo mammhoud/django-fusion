@@ -303,35 +303,18 @@ class FormintFusionRenderModeTests(TestCase):
     def test_api_navigation_returns_formint_site_items(self):
         response = self.client.get('/api/v1/navigation')
         self.assertEqual(response.status_code, 200)
-        body = response.json()
-        self.assertIn('status', body)
-        self.assertIn('data', body)
-        data = body['data']
-        # Nested site tree — brand + modules (Astro Layout contract)
-        self.assertEqual(data['brand']['label'], 'Formint POS')
-        modules = data['modules']
-        self.assertTrue(modules)
-        labels = [m['label'] for m in modules]
-        self.assertIn('Point of Sale', labels)
-        self.assertIn('Data & Analytics', labels)
-        # Each module carries ordered routes; show_in_nav is filtered out
-        for module in modules:
-            self.assertIn('id', module)
-            self.assertIn('routes', module)
-            for route in module['routes']:
-                self.assertNotIn('show_in_nav', route)
-                self.assertIn('href', route)
-                self.assertIn('label', route)
+        items = response.json()['data']['nav_items']
+        labels = [item['label'] for item in items]
+        self.assertIn('Home', labels)
+        self.assertIn('Data', labels)
+        # show_in_nav is filtered out of the payload
+        self.assertTrue(all('show_in_nav' not in item for item in items))
 
     def test_fusion_navigation_fragment_path(self):
         response = self.client.get('/fusion/navigation/')
         self.assertEqual(response.status_code, 200)
-        body = response.json()
-        # Same nested tree without the API envelope
-        self.assertEqual(body['brand']['label'], 'Formint POS')
-        module_ids = [m['id'] for m in body['modules']]
-        self.assertEqual(module_ids[:3], ['pos', 'kitchen', 'hr'])
-        self.assertEqual(module_ids[-1], 'admin')
+        items = response.json()['nav_items']
+        self.assertEqual([item['label'] for item in items], ['Home', 'Data', 'Admin'])
 
     def test_assets_manifest_reports_bundle_parity(self):
         response = self.client.get('/fusion/assets/')

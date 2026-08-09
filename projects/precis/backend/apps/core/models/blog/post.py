@@ -116,7 +116,7 @@ class BlogPage(Page, DraftStateMixin):
 
     # Enhanced tagging
     tags = ClusterTaggableManager(
-        through='blog.BlogPageTag',
+        through='apps_core.BlogPageTag',
         blank=True,
         verbose_name=_("Tags"),
         help_text=_("Categorize this blog post with relevant tags")

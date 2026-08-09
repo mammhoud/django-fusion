@@ -48,22 +48,22 @@ make -C formint-pos screenshots
 ```
 
 ### 1. Unfold Admin — Dashboard
-![POS — Dashboard](docs/screenshots/admin/03_admin_dashboard.jpg)
+![POS — Dashboard](../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg)
 
 ### 2. Unfold Admin — Products
-![POS — Products](docs/screenshots/admin/04_admin_products.jpg)
+![POS — Products](../landing-fusion/backend/assets/static/related/formints/pro-admin-products.jpg)
 
 ### 3. Unfold Admin — Customers
-![POS — Customers](docs/screenshots/admin/05_admin_customers.jpg)
+![POS — Customers](../landing-fusion/backend/assets/static/related/formints/pro-admin-customers.jpg)
 
 ### 4. Unfold Admin — Sales
-![POS — Sales](docs/screenshots/admin/06_admin_sales.jpg)
+![POS — Sales](../landing-fusion/backend/assets/static/related/formints/pro-admin-sales.jpg)
 
 ### 5. Unfold Admin — Loyalty (client categories)
-![POS — Loyalty](docs/screenshots/admin/07_admin_loyalty.jpg)
+![POS — Loyalty](../landing-fusion/backend/assets/static/related/formints/pro-admin-loyalty.jpg)
 
 ### 6. Unfold Admin — Settings
-![POS — Settings](docs/screenshots/admin/08_admin_settings.jpg)
+![POS — Settings](../landing-fusion/backend/assets/static/related/formints/pro-admin-settings.jpg)
 
 ---
 

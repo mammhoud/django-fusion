@@ -3,6 +3,7 @@ from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 
 from .models import Certificate, CourseSnippetViewSet, Enrollment, Review, Wishlist
+from .snippets import CourseTagSnippetViewSet, SpecializationSnippetViewSet
 
 
 class EnrollmentSnippetViewSet(SnippetViewSet):
@@ -26,9 +27,39 @@ class ReviewSnippetViewSet(SnippetViewSet):
     model = Review
     menu_label = _("Reviews")
     icon = "comment"
-    list_display = ["course", "user", "rating", "is_published", "created_at"]
-    list_filter = ["is_published", "rating"]
+    list_display = [
+        "course",
+        "user",
+        "rating_display",
+        "body_display",
+        "is_published_display",
+        "created_at",
+    ]
+    list_filter = ["is_published", "rating", "course"]
     search_fields = ["course__title", "user__email", "body"]
+    list_export = ["course", "user", "rating", "body", "is_published", "created_at"]
+    csv_filename = "reviews.csv"
+
+    @staticmethod
+    def rating_display(obj):
+        """Show rating visually as stars."""
+        return f"{obj.stars} ({obj.rating}/5)"
+
+    rating_display.short_description = _("Rating")
+
+    @staticmethod
+    def body_display(obj):
+        """Shortened comment preview."""
+        return obj.short_body
+
+    body_display.short_description = _("Comment")
+
+    @staticmethod
+    def is_published_display(obj):
+        """Visibility status badge."""
+        return "🟢" if obj.is_published else "🔴"
+
+    is_published_display.short_description = _("Published")
 
 
 class WishlistSnippetViewSet(SnippetViewSet):
@@ -45,6 +76,8 @@ class LearningAdminGroup(SnippetViewSetGroup):
     menu_order = 120
     items = (
         CourseSnippetViewSet,
+        SpecializationSnippetViewSet,
+        CourseTagSnippetViewSet,
         EnrollmentSnippetViewSet,
         CertificateSnippetViewSet,
         ReviewSnippetViewSet,

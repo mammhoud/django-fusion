@@ -14,11 +14,36 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils.html import format_html
 
-from apps.learning.models import Course, Lesson, Module
+from apps.learning.models import Course, CourseTag, Lesson, LessonResource, Module, Review, Specialization
 
 
 YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@mammhoud"
 COURSE_SLUG = "ship-django-products"
+SPECIALIZATION_SLUG = "practical-web-development"
+
+
+OBJECTIVES = "\n".join(
+    [
+        "Design content and routes around real customer decisions",
+        "Build search, forms, menus, and progress with progressive enhancement",
+        "Protect the critical path with backend, static, and browser checks",
+        "Ship a maintainable handoff instead of a fragile demo",
+    ]
+)
+REQUIREMENTS = "\n".join(
+    [
+        "Comfortable with Python and basic Django",
+        "HTML/CSS basics",
+        "A terminal and a code editor",
+    ]
+)
+TARGET_AUDIENCE = "\n".join(
+    [
+        "Founders and product teams shipping content-driven products",
+        "Django developers adding HTMX and Alpine to their stack",
+        "Developers who want fast pages that remain editable and testable",
+    ]
+)
 
 
 MODULES = [
@@ -134,6 +159,33 @@ class Command(BaseCommand):
         if changed:
             course.save(update_fields=[*changed, "updated_at"])
 
+        # ── Learning metadata (Precis-aligned fields, backfilled when empty) ──
+        metadata_changed = []
+        if not course.objectives:
+            course.objectives = OBJECTIVES
+            metadata_changed.append("objectives")
+        if not course.requirements:
+            course.requirements = REQUIREMENTS
+            metadata_changed.append("requirements")
+        if not course.target_audience:
+            course.target_audience = TARGET_AUDIENCE
+            metadata_changed.append("target_audience")
+        if metadata_changed:
+            course.save(update_fields=[*metadata_changed, "updated_at"])
+
+        specialization, _ = Specialization.objects.get_or_create(
+            slug=SPECIALIZATION_SLUG,
+            defaults={
+                "title": "Practical Web Development",
+                "description": "Document-first, server-rendered product building with the AHA stack.",
+                "order": 1,
+            },
+        )
+        course.specializations.add(specialization)
+        for tag_name in ("Django", "HTMX", "Alpine.js"):
+            tag, _ = CourseTag.objects.get_or_create(name=tag_name)
+            course.tags.add(tag)
+
         for module_data in MODULES:
             module, _ = Module.objects.get_or_create(
                 course=course,
@@ -144,7 +196,7 @@ class Command(BaseCommand):
                 },
             )
             for lesson_order, lesson_data in enumerate(module_data["lessons"], start=1):
-                Lesson.objects.get_or_create(
+                lesson, _ = Lesson.objects.get_or_create(
                     module=module,
                     order=lesson_order,
                     defaults={
@@ -155,6 +207,33 @@ class Command(BaseCommand):
                         "is_active": True,
                     },
                 )
+                if lesson_order == 1:
+                    # Idempotent sample resources on the first lesson of each
+                    # module so the curriculum detail exposes downloads.
+                    LessonResource.objects.get_or_create(
+                        lesson=lesson,
+                        title=f"{module_data['title']} — slides",
+                        defaults={
+                            "description": "Lesson slides for offline review.",
+                            "resource_type": "slides",
+                            "is_free": lesson.is_preview,
+                        },
+                    )
+
+        # ── Published review (reviews publishing workflow, Precis parity) ──
+        Review.objects.get_or_create(
+            course=course,
+            user=instructor,
+            defaults={
+                "rating": 5,
+                "body": (
+                    "The document-first approach made the whole path practical — "
+                    "finished HTML, real HTMX interactions, and a handoff the team "
+                    "could actually own."
+                ),
+                "is_published": True,
+            },
+        )
 
         self.stdout.write(
             self.style.SUCCESS(

@@ -1,0 +1,89 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import { cachedSiteSettings, cachedNavigation, fetchCourseList } from '@/lib/api';
+import type { CourseCard, CourseListData, NavigationData, SiteSettings } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let catalog: CourseListData | undefined;
+try {
+  [siteSettings, navData, catalog] = await Promise.all([
+    cachedSiteSettings(),
+    cachedNavigation(),
+    fetchCourseList(),
+  ]);
+} catch {
+  // Keep the route buildable when the backend is temporarily unavailable.
+}
+
+const courses = catalog?.data ?? [];
+const totalCourses = catalog?.pagination.total ?? courses.length;
+const formatDifficulty = (value: string) => value.replace(/\b\w/g, (char) => char.toUpperCase());
+---
+
+<Layout
+  title="Medical Research Courses"
+  description="CTC Research courses in clinical research, medical AI, evidence synthesis, scientific writing, and research integrity."
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageSlug="courses"
+>
+  <Hero
+    eyebrow="ctc research · medical learning"
+    heading="Build evidence that"
+    accent="moves medicine forward"
+    intro="Practical courses for clinicians, researchers, medical writers, and data teams working at the intersection of rigorous science and responsible technology."
+    primaryCta={{ label: 'Browse the catalog', href: '#catalog' }}
+    secondaryCta={{ label: 'Explore research services', href: '/services/' }}
+    status={`${totalCourses} published courses · clinical research · medical AI · evidence synthesis`}
+  />
+
+  <section id="catalog" class="doc-sheet bg-fu-surface py-20 md:py-24">
+    <div class="container-fusion">
+      <div class="mx-auto mb-12 max-w-2xl text-center">
+        <p class="tag-marker mb-4">the catalog</p>
+        <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">Research, from protocol to publication</h2>
+        <p class="text-fu-muted">Each course combines methodological clarity with practical workflows you can apply to your next study, review, dataset, or manuscript.</p>
+      </div>
+
+      {courses.length ? (
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {courses.map((course: CourseCard, index: number) => (
+            <a
+              href={`/courses/${course.slug}/`}
+              class="card reveal group flex h-full flex-col p-6 transition-transform duration-300 hover:-translate-y-1"
+              x-data
+              x-intersect="$el.classList.add('reveal-visible')"
+              style={`transition-delay: ${index * 70}ms`}
+            >
+              <div class="mb-5 flex items-start justify-between gap-3">
+                <span class="badge-primary">{formatDifficulty(course.difficulty)}</span>
+                {course.is_featured && <span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-link">featured</span>}
+              </div>
+              <h3 class="mb-3 font-display text-xl font-semibold leading-tight text-fu-ink transition-colors group-hover:text-fu-link">{course.title}</h3>
+              <p class="mb-6 text-sm leading-relaxed text-fu-muted">{course.short_description}</p>
+              <div class="mt-auto flex items-center justify-between border-t border-fu-line pt-4 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-fu-muted">
+                <span>{course.duration} hours</span>
+                <span class="text-fu-link">View course →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <ContentError label="Course catalog temporarily unavailable" />
+      )}
+    </div>
+  </section>
+
+  <CTA
+    heading="Turn your next study into trusted evidence"
+    intro="Bring your research question, protocol, dataset, or manuscript. CTC Research helps teams move from complexity to clarity."
+    ctaLabel="Talk to the research team"
+    ctaHref="/contact/"
+  />
+  <HtmxBootstrap />
+</Layout>

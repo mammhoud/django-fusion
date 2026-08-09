@@ -14,23 +14,31 @@
 @source "../../../assets/templates/";
 
 /* ────────────────────────────────────────────────────────────────────────
-   Fusion CMS — "the page as its own document"
-   paper + ink, hairline rules, hypermedia-blue links, mono labels.
-   Light = printed sheet · Dark = the same sheet, inverted on the press.
+   Precis LMS — brand-kit design system (high-end-visual-design §3A)
+   Clinical ink + warm paper, clinical teal + evidence amber.
+   Light = the clinical record · Dark = the same record, on the dark table.
+   Editorial Luxury vibe — Fraunces serif display, Inter UI, mono protocol
+   labels, subtle film grain, double-bezel cards, spring cubic-bezier motion.
    ──────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Paper & ink */
-  --fu-paper: 46 25% 98%;        /* #FCFCFA — warm technical paper   */
-  --fu-ink: 40 6% 10%;           /* #1A1917 — ink                    */
-  --fu-muted: 45 5% 44%;         /* #6F6D66 — secondary text         */
-  --fu-line: 45 14% 88%;         /* #E6E3DA — hairline rules         */
-  --fu-card: 48 33% 100%;        /* #FFFFFF — card / overlay sheet    */
+  /* Clinical ink & warm paper (brand kit §palette) */
+  --fu-paper: 162 25% 98%;       /* #F5F2EB — warm paper sheet       */
+  --fu-ink: 163 21% 7%;          /* #0C1210 — clinical ink           */
+  --fu-muted: 165 7% 40%;        /* muted protocol grey              */
+  --fu-line: 160 12% 86%;        /* hairline rules (warm)            */
+  --fu-card: 45 33% 99%;         /* #FCFAF6 — card / overlay sheet   */
 
-  /* Hypermedia accent — the colour of a link. The product is hypermedia. */
-  --fu-link: 217 91% 43%;        /* #0B57D0 — browser-link blue      */
-  --fu-link-dark: 218 91% 34%;   /* hover state                      */
-  --fu-mark: 48 100% 60%;        /* #FFE14D — marker (one job only)  */
-  --fu-live: 144 68% 37%;        /* #1E9E50 — server "OK" green      */
+  /* Brand accents — teal = learning, amber = certification/conclusion */
+  --fu-link: 166 63% 33%;        /* #1F8A70 — clinical teal          */
+  --fu-link-dark: 167 66% 27%;   /* hover state                      */
+  --fu-mark: 38 62% 48%;         /* #C9962E — evidence amber         */
+  --fu-live: 144 68% 37%;        /* server "OK" green                */
+
+  /* Brand-kit extras */
+  --fu-teal: 166 63% 33%;        /* #1F8A70                          */
+  --fu-teal-bright: 162 63% 44%; /* #2FB392                          */
+  --fu-amber: 38 62% 48%;        /* #C9962E                          */
+  --fu-fog: 150 5% 52%;          /* #7E8A82 — neutral                */
 
   /* Legacy aliases (kept so existing fu-* utilities keep working) */
   --fu-bg: var(--fu-paper);
@@ -42,16 +50,21 @@
 }
 
 .dark {
-  --fu-paper: 45 6% 8%;          /* #131312 — press field            */
-  --fu-ink: 45 20% 93%;          /* #F0EEE8 — paper text             */
-  --fu-muted: 45 5% 66%;         /* secondary text                   */
-  --fu-line: 45 6% 20%;          /* hairline rules                   */
-  --fu-card: 45 6% 11%;          /* card / overlay sheet             */
+  --fu-paper: 163 21% 7%;       /* #0C1210 — clinical ink canvas    */
+  --fu-ink: 45 27% 94%;         /* #F5F2EB — warm paper text         */
+  --fu-muted: 152 5% 62%;       /* secondary text                    */
+  --fu-line: 160 10% 16%;       /* hairline rules (dark)             */
+  --fu-card: 163 18% 10%;       /* #101815 — raised panel            */
 
-  --fu-link: 219 100% 77%;       /* #8AB4FF — glowing link           */
-  --fu-link-dark: 218 91% 65%;
-  --fu-mark: 48 100% 62%;
+  --fu-link: 162 63% 44%;       /* #2FB392 — glowing teal            */
+  --fu-link-dark: 166 63% 50%;
+  --fu-mark: 38 64% 55%;        /* #D3A43C — glowing amber           */
   --fu-live: 145 64% 52%;
+
+  --fu-teal: 162 63% 44%;
+  --fu-teal-bright: 160 70% 52%;
+  --fu-amber: 38 64% 55%;
+  --fu-fog: 150 6% 55%;
 
   --fu-bg: var(--fu-paper);
   --fu-text: var(--fu-ink);
@@ -71,6 +84,10 @@
   --color-fu-link-dark: hsl(var(--fu-link-dark));
   --color-fu-mark: hsl(var(--fu-mark));
   --color-fu-live: hsl(var(--fu-live));
+  --color-fu-teal: hsl(var(--fu-teal));
+  --color-fu-teal-bright: hsl(var(--fu-teal-bright));
+  --color-fu-amber: hsl(var(--fu-amber));
+  --color-fu-fog: hsl(var(--fu-fog));
 
   /* Legacy aliases */
   --color-fu-bg: hsl(var(--fu-bg));
@@ -80,13 +97,17 @@
   --color-fu-primary-dark: hsl(var(--fu-primary-dark));
   --color-fu-accent: hsl(var(--fu-accent));
 
-  /* Typography — the document voice */
-  --font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Bricolage Grotesque", "Public Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  /* Typography — the brand voice (brand kit §04) */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 
-  --animate-fusion-fade-in: fusion-fade-in 0.45s ease-out;
-  --animate-fusion-pulse: fusion-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  /* Premium motion — spring-like, no linear, no ease-in-out */
+  --ease-premium: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-fusion-fade-in: fusion-fade-in 0.7s var(--ease-premium);
+  --animate-fusion-pulse: fusion-pulse 2.2s var(--ease-premium) infinite;
   --animate-fusion-blink: fusion-blink 1.1s step-end infinite;
 
   @keyframes fusion-fade-in {
@@ -123,15 +144,29 @@
     @apply bg-fu-paper text-fu-ink antialiased;
     font-feature-settings: "cv11", "ss01";
     /* Smooth theme switch (§5.1). Applied pre-paint, so no flash on load. */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.45s var(--ease-premium), color 0.45s var(--ease-premium);
   }
   ::selection {
-    @apply bg-fu-link text-white;
+    @apply bg-fu-teal text-fu-paper;
   }
   :focus-visible {
-    outline: 2px solid hsl(var(--fu-link));
+    outline: 2px solid hsl(var(--fu-teal));
     outline-offset: 2px;
   }
+
+  /* ── Editorial Luxury film grain (§3A) — fixed, pointer-events-none ── */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Body scroll-margin so sticky pill-header never covers section anchors */
+  section[id], h2[id] { scroll-margin-top: 6rem; }
 }
 
 @layer components {
@@ -201,32 +236,105 @@
   .source-panel .tok-str  { color: #b0aba0; }
   .source-panel .tok-com  { color: #b0aba0; font-style: italic; }
 
-  /* ── Buttons — links you can press ──────────────────────────────── */
+  /* ── Buttons — pill architecture, button-in-button icon (§4B) ───── */
+  .btn {
+    border-radius: 9999px;
+    transition: transform 0.5s var(--ease-spring), background-color 0.35s var(--ease-premium),
+      border-color 0.35s var(--ease-premium), color 0.35s var(--ease-premium),
+      box-shadow 0.35s var(--ease-premium);
+  }
+  .btn:active { transform: scale(0.98); }
   .btn-primary {
     @apply btn bg-fu-link text-white
-           hover:bg-fu-link-dark active:translate-y-px
-           shadow-sm hover:shadow-md;
+           hover:bg-fu-link-dark;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px -12px hsl(var(--fu-teal) / 0.55);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 14px 34px -14px hsl(var(--fu-teal) / 0.7);
   }
   .btn-secondary {
     @apply btn bg-transparent text-fu-ink border border-fu-line
-           hover:border-fu-link hover:text-fu-link active:translate-y-px;
+           hover:border-fu-link hover:text-fu-link;
   }
   .btn-outline {
     @apply btn border border-fu-link text-fu-link
-           hover:bg-fu-link/5 active:translate-y-px;
+           hover:bg-fu-link/5;
   }
   .btn-white {
     @apply btn bg-fu-paper text-fu-link border border-fu-line
-           hover:border-fu-link active:translate-y-px shadow-sm;
+           hover:border-fu-link;
   }
 
-  /* ── Cards — clipped sheets, not glassy tiles ───────────────────── */
+  /* ── Cards — double-bezel nested architecture (§4A) ─────────────── */
   .card {
-    @apply bg-fu-card rounded-md border border-fu-line
-           transition-all duration-300 hover:border-fu-muted hover:shadow-md;
+    @apply bg-fu-card rounded-2xl border border-fu-line
+           transition-all duration-500;
+    transition-timing-function: var(--ease-premium);
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.08);
+  }
+  .card:hover {
+    border-color: hsl(var(--fu-teal) / 0.45);
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.1),
+      0 18px 44px -18px rgb(0 0 0 / 0.25);
   }
   .card-gradient {
-    @apply bg-fu-ink text-fu-paper rounded-md border border-fu-line;
+    @apply bg-fu-ink text-fu-paper rounded-2xl border border-fu-line;
+  }
+
+  /* ── Double-bezel shell — outer bezel + inner core (Doppelrand) ─── */
+  .bezel {
+    border-radius: 2.25rem;
+    padding: 0.625rem;
+    background: hsl(var(--fu-line) / 0.5);
+    border: 1px solid hsl(var(--fu-line));
+  }
+  .bezel__core {
+    border-radius: calc(2.25rem - 0.625rem);
+    background: hsl(var(--fu-card));
+    border: 1px solid hsl(var(--fu-line));
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.1);
+    overflow: hidden;
+  }
+
+  /* ── Eyebrow badge (§4C) — microscopic pill before headings ─────── */
+  .eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.3rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 500;
+    color: hsl(var(--fu-teal));
+    border: 1px solid hsl(var(--fu-teal) / 0.3);
+    background: hsl(var(--fu-teal) / 0.06);
+  }
+  .eyebrow-pill::before {
+    content: "";
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: hsl(var(--fu-teal));
+    box-shadow: 0 0 0 3px hsl(var(--fu-teal) / 0.18);
+  }
+
+  /* ── Spring scroll reveal (replaces flat 14px ease-out) ─────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium),
+      filter 0.8s var(--ease-premium);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal.reveal-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 
   /* ── Hero — the top sheet of the document ───────────────────────── */
@@ -332,134 +440,146 @@
     @apply text-fu-muted;
   }
 
-  /* ── Hero BEM block ─────────────────────────────────────────────── */
+  /* ── Hero BEM block — asymmetric editorial split (§3B) ──────────── */
   .hero {
     position: relative;
     background: hsl(var(--fu-paper));
     color: hsl(var(--fu-ink));
     overflow: hidden;
   }
-  .hero::before,
-  .hero::after {
-    content: "";
+  .hero__ghost {
     position: absolute;
-    width: 14px;
-    height: 14px;
+    top: 1.5rem;
+    right: -3rem;
+    width: 16rem;
+    height: 16rem;
+    color: hsl(var(--fu-ink) / 0.05);
     pointer-events: none;
-    border-color: hsl(var(--fu-line));
+    transform: rotate(8deg);
+    z-index: 0;
   }
-  .hero::before {
-    top: 0; left: 0;
-    border-top: 1px solid;
-    border-left: 1px solid;
-  }
-  .hero::after {
-    bottom: 0; right: 0;
-    border-bottom: 1px solid;
-    border-right: 1px solid;
-  }
+  /* Mobile: dial the watermark way down so it never crowds the H1 */
+  @media (max-width: 767px) { .hero__ghost { opacity: 0.35; right: -5rem; } }
+  @media (min-width: 1024px) { .hero__ghost { width: 22rem; height: 22rem; right: -2rem; } }
   .hero__inner {
     max-width: 80rem;
     margin-inline: auto;
     width: 100%;
-    padding: 4rem 1.25rem;
+    padding: 3.5rem 1.25rem 5rem;
   }
-  @media (min-width: 640px) { .hero__inner { padding: 5rem 1.75rem; } }
-  @media (min-width: 768px) { .hero__inner { padding: 7rem 2.5rem; } }
+  @media (min-width: 640px) { .hero__inner { padding: 4.5rem 1.75rem 6rem; } }
+  @media (min-width: 1024px) {
+    .hero__inner {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 6rem 2.5rem 7.5rem;
+    }
+  }
   .hero__content {
-    max-width: 48rem;
-    margin-inline: auto;
-    text-align: center;
+    max-width: 42rem;
+    position: relative;
+    z-index: 1;
   }
+  @media (min-width: 1024px) { .hero__content { text-align: left; } }
   .hero__eyebrow {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-bottom: 1.25rem;
+    transform: translateY(24px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    margin-bottom: 1.5rem;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: hsl(var(--fu-muted));
+    letter-spacing: 0.22em;
+    color: hsl(var(--fu-teal));
   }
   .hero__eyebrow::before { content: "‹"; opacity: 0.55; }
   .hero__eyebrow::after  { content: "›"; opacity: 0.55; }
-  .hero__eyebrow.reveal-visible { opacity: 1; transform: translateY(0); }
+  .hero__eyebrow.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
   .hero__heading {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-bottom: 1.25rem;
+    transform: translateY(24px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    margin-bottom: 1.5rem;
     font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -0.025em;
+    font-weight: 300;
+    font-size: 2.4rem;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
   }
-  .hero__heading.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__heading { font-size: 2.4rem; } }
-  @media (min-width: 768px) { .hero__heading { font-size: 3.75rem; } }
+  .hero__heading.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  @media (min-width: 640px) { .hero__heading { font-size: 3.2rem; } }
+  @media (min-width: 1024px) { .hero__heading { font-size: 4rem; } }
   .hero__accent {
     position: relative;
     display: inline-block;
     white-space: nowrap;
+    font-style: italic;
   }
   .hero__accent-mark {
     position: absolute;
     inset-inline: -0.08em;
-    bottom: 0.06em;
+    bottom: 0.08em;
     z-index: 0;
-    height: 0.34em;
+    height: 0.3em;
     border-radius: 0.125rem;
-    background: hsl(var(--fu-mark) / 0.7);
+    background: hsl(var(--fu-amber) / 0.3);
+    transform: skewX(-8deg);
     pointer-events: none;
   }
   .hero__intro {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-inline: auto;
-    margin-bottom: 2rem;
-    max-width: 36rem;
-    font-size: 0.95rem;
-    line-height: 1.625;
+    transform: translateY(24px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    margin-bottom: 2.25rem;
+    max-width: 34rem;
+    font-size: 1rem;
+    line-height: 1.7;
     color: hsl(var(--fu-muted));
   }
-  .hero__intro.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__intro { font-size: 1.05rem; } }
-  @media (min-width: 768px) { .hero__intro { font-size: 1.125rem; } }
+  .hero__intro.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  @media (min-width: 640px) { .hero__intro { font-size: 1.1rem; } }
+  @media (min-width: 1024px) { .hero__intro { margin-inline: 0; } }
   .hero__actions {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    transform: translateY(24px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
+    align-items: stretch;
+    gap: 0.85rem;
   }
-  .hero__actions.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__actions { flex-direction: row; } }
+  .hero__actions.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  @media (min-width: 640px) { .hero__actions { flex-direction: row; align-items: center; } }
+  @media (min-width: 1024px) { .hero__actions { justify-content: flex-start; } }
   .hero__status {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-top: 2rem;
+    transform: translateY(24px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    margin-top: 2.25rem;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
-  .hero__status.reveal-visible { opacity: 1; transform: translateY(0); }
+  @media (min-width: 1024px) { .hero__status { justify-content: flex-start; } }
+  .hero__status.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
   .hero__source-toggle {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-    margin-inline: auto;
+    transform: translateY(28px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
     margin-top: 3rem;
-    max-width: 42rem;
+    max-width: 30rem;
+    position: relative;
+    z-index: 1;
   }
-  .hero__source-toggle.reveal-visible { opacity: 1; transform: translateY(0); }
-  @media (min-width: 640px) { .hero__source-toggle { margin-top: 3.5rem; } }
+  .hero__source-toggle.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  @media (min-width: 1024px) { .hero__source-toggle { margin-top: 0; } }
   .hero__source-bar {
     margin-bottom: 0.75rem;
     display: flex;
@@ -534,26 +654,13 @@
   }
 
   /* ── CTA BEM block ──────────────────────────────────────────────── */
+  /* CTA — clinical-ink double-bezel panel */
   .cta {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
-    overflow: hidden;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-    background: #1a1917;
-    color: #f0eee8;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    background: hsl(var(--fu-paper));
   }
-  .cta::before,
-  .cta::after {
-    content: "";
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    pointer-events: none;
-  }
-  .cta::before { top: 0; left: 0; border-top: 1px solid hsl(var(--fu-line)); border-left: 1px solid hsl(var(--fu-line)); }
-  .cta::after { bottom: 0; right: 0; border-bottom: 1px solid hsl(var(--fu-line)); border-right: 1px solid hsl(var(--fu-line)); }
-  @media (min-width: 640px) { .cta { padding-top: 5rem; padding-bottom: 5rem; } }
   @media (min-width: 768px) { .cta { padding-top: 6rem; padding-bottom: 6rem; } }
   .cta__inner {
     max-width: 80rem;
@@ -563,22 +670,31 @@
   }
   @media (min-width: 640px) { .cta__inner { padding-inline: 1.75rem; } }
   @media (min-width: 1024px) { .cta__inner { padding-inline: 2.5rem; } }
+  .bezel--ink { background: hsl(var(--fu-ink)); border-color: hsl(var(--fu-ink) / 0.6); }
+  .bezel__core--ink {
+    background: #0c1210;
+    border-color: rgb(245 242 235 / 0.14);
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.06);
+  }
   .cta__content {
     @apply mx-auto max-w-3xl text-center;
+    padding: 3.5rem 1.5rem;
   }
+  @media (min-width: 768px) { .cta__content { padding: 5rem 3rem; } }
   .cta__eyebrow {
     margin-bottom: 1rem;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: #b0aba0;
+    color: hsl(var(--fu-teal-bright));
   }
   .cta__eyebrow::before { content: "‹"; opacity: 0.55; }
   .cta__eyebrow::after  { content: "›"; opacity: 0.55; }
   @media (min-width: 640px) { .cta__eyebrow { margin-bottom: 1.25rem; } }
   .cta__heading {
-    @apply mb-3 sm:mb-4 font-display text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl;
+    @apply mb-3 sm:mb-4 font-display text-3xl font-light tracking-tight sm:text-4xl md:text-5xl;
+    color: #f5f2eb;
   }
   .cta__intro {
     @apply mx-auto mb-7 sm:mb-9 max-w-xl text-base leading-relaxed sm:text-lg;

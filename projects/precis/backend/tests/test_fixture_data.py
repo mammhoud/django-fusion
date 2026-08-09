@@ -53,6 +53,33 @@ HOME_SLUGS = {
     "pt-br": "home-pt-br",
 }
 
+# Every translated page family represented in dump-data.json.  The Arabic
+# slugs are intentionally explicit because they are part of the public URL
+# contract and cannot be inferred from the English slug.
+TRANSLATED_PAGE_SLUGS = {
+    "home": HOME_SLUGS,
+    "about": {
+        "en": "about",
+        "fr": "about",
+        "de": "about",
+        "es": "about",
+        "ar": "عن-سي-تي-سي-للبحث-العلمي",
+        "pt-br": "about",
+    },
+    "contact": {code: "contact" for code in EXPECTED_LOCALES},
+    "team": {
+        "en": "team",
+        "fr": "team",
+        "de": "team",
+        "es": "team",
+        "ar": "فريقنا",
+        "pt-br": "team",
+    },
+    "all-courses": {code: "all-courses" for code in EXPECTED_LOCALES},
+    "events": {code: "events" for code in EXPECTED_LOCALES},
+    "services": {code: "services" for code in EXPECTED_LOCALES},
+}
+
 # English child pages under /home/
 EN_CHILD_SLUGS = ["about", "contact", "team", "all-courses", "events", "services"]
 
@@ -82,15 +109,33 @@ LMS_FIXTURES = [
     "specializations.json",
     "course_tags.json",
     "courses.json",
+    "medical_research_catalog.json",
     "events.json",
 ]
 LMS_FIXTURE_DIR = (
     Path(__file__).resolve().parent.parent
-    / "apps" / "pages" / "lms" / "fixtures"
+    / "apps" / "learning" / "fixtures"
 )
 
 # Expected LMS fixture content (spot checks — actual titles in courses.json)
-EXPECTED_COURSES = {"Python Basics", "Data Science with Python"}
+EXPECTED_COURSES = {
+    "Python Basics",
+    "Data Science with Python",
+    "Clinical Trial Design & Protocol Development",
+    "Biostatistics for Clinical Research",
+    "Systematic Reviews & Evidence Synthesis",
+    "Medical AI & Clinical Data Analytics",
+    "Scientific & Medical Manuscript Writing",
+    "Research Ethics, GCP & Publication Integrity",
+}
+EXPECTED_MEDICAL_COURSE_SLUGS = {
+    "clinical-trial-design-protocol-development",
+    "biostatistics-clinical-research",
+    "systematic-reviews-evidence-synthesis",
+    "medical-ai-clinical-data-analytics",
+    "scientific-medical-manuscript-writing",
+    "research-ethics-gcp-publication-integrity",
+}
 EXPECTED_EVENTS = {"AI in Medical Writing Workshop"}
 
 # StreamField block keys present on the fixture HomePage records
@@ -120,6 +165,18 @@ class TestFixtureData(TestCase):
 
         # ── 3. Wagtail collection tree (image FK targets) ────────────
         cls._ensure_collections()
+
+        # ── 3.5 Purge auto-created initial site/pages ────────────────
+        # Wagtail's post-migrate hook creates a "Welcome to your new
+        # Wagtail site!" page at url_path "/home/" (path 00010001), which
+        # collides with the fixture's own home page during natural-key
+        # resolution of the site record ("get() returned more than one
+        # Page"). Delete the auto-created site + non-root pages so the
+        # fixture tree installs cleanly. (Same pattern as
+        # test_setup_wagtail_home_creates_home_when_missing.)
+        Site.objects.all().delete()
+        for page in Page.objects.exclude(depth=1):
+            page.delete()
 
         # ── 4. Load the fixture ──────────────────────────────────────
         call_command("loaddata", str(FIXTURE_PATH), verbosity=0)
@@ -154,8 +211,8 @@ class TestFixtureData(TestCase):
             assert code in codes, f"missing locale {code}"
 
     def test_fixture_pages_loaded(self):
-        # Root + 6 locale home pages + 36 child pages from the fixture
-        assert Page.objects.count() >= 43, Page.objects.count()
+        # Root + 6 locale home pages + 36 translated child pages.
+        assert Page.objects.filter(live=True).count() >= 43
 
     def test_expected_page_slugs_present(self):
         slugs = set(Page.objects.filter(live=True).values_list("slug", flat=True))
@@ -181,6 +238,41 @@ class TestFixtureData(TestCase):
             assert home is not None, (
                 f"missing {locale_code} home page slug={slug}"
             )
+
+    def test_every_page_family_is_seeded_for_every_locale(self):
+        """Every archived page family has a live page in all six locales."""
+        translation_keys = set()
+
+        for family, slugs_by_locale in TRANSLATED_PAGE_SLUGS.items():
+            family_keys = set()
+            for locale_code in EXPECTED_LOCALES:
+                slug = slugs_by_locale[locale_code]
+                pages = Page.objects.filter(
+                    live=True,
+                    slug=slug,
+                    locale__language_code=locale_code,
+                )
+                assert pages.count() == 1, (
+                    f"expected one {family} page for {locale_code}: {slug}; "
+                    f"found {pages.count()}"
+                )
+                page = pages.get()
+
+                expected_depth = 2 if family == "home" else 3
+                assert page.depth == expected_depth
+                if family != "home":
+                    parent = page.get_parent()
+                    assert parent.slug == HOME_SLUGS[locale_code]
+                    assert parent.locale.language_code == locale_code
+
+                family_keys.add(page.translation_key)
+
+            assert len(family_keys) == 1, (
+                f"{family} pages are not linked by one translation key: {family_keys}"
+            )
+            translation_keys.update(family_keys)
+
+        assert len(translation_keys) == len(TRANSLATED_PAGE_SLUGS)
 
     def test_all_locale_home_titles_match_fixture(self):
         """Every locale's home page title matches dump-data.json exactly."""
@@ -394,15 +486,47 @@ class TestFixtureData(TestCase):
         assert "data" in data
 
     def test_courses_api_returns_fixture_courses(self):
-        """Courses endpoint surfaces the courses.json fixture records."""
-        response = self.client.get("/api/courses/")
+        """Courses endpoint surfaces generic and medical research fixtures."""
+        response = self.client.get("/api/courses/?per_page=50")
         assert response.status_code == 200
         data = json.loads(response.content)
         titles = {c.get("title") for c in data.get("data", [])}
+        slugs = {c.get("slug") for c in data.get("data", [])}
         for expected in EXPECTED_COURSES:
             assert expected in titles, (
                 f"courses API missing fixture course {expected!r}; got {titles}"
             )
+        assert EXPECTED_MEDICAL_COURSE_SLUGS.issubset(slugs)
+        assert data["pagination"]["total"] >= len(EXPECTED_COURSES)
+
+    def test_medical_research_courses_have_complete_learning_metadata(self):
+        """Medical courses are published and contain usable research metadata."""
+        from apps.learning.models import Course
+
+        courses = Course.objects.filter(slug__in=EXPECTED_MEDICAL_COURSE_SLUGS)
+        assert courses.count() == len(EXPECTED_MEDICAL_COURSE_SLUGS)
+        for course in courses:
+            assert course.is_published and course.is_active
+            assert course.short_description
+            assert course.objectives
+            assert course.requirements
+            assert course.target_audience
+            assert course.duration > 0
+
+    def test_medical_course_detail_api_returns_all_learning_content(self):
+        """Course detail API exposes all seeded medical learning fields."""
+        response = self.client.get(
+            "/api/courses/medical-ai-clinical-data-analytics/"
+        )
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        assert data["slug"] == "medical-ai-clinical-data-analytics"
+        assert data["objectives"]
+        assert data["target_audience"]
+        assert data["requirements"]
+        assert "Medical AI & Digital Health" in data["specializations"]
+        assert "Clinical Data" in data["tags"]
+        assert isinstance(data["overview"], (str, list))
 
     def test_courses_filters_api(self):
         response = self.client.get("/api/courses/filters/")

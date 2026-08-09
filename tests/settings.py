@@ -361,6 +361,15 @@ def _installed(app: str) -> bool:
     except ModuleNotFoundError:
         return False
 
+def _root_installed(app: str) -> bool:
+    """True if the app's top-level package is importable.
+
+    Legacy ``plugins.*`` / ``www.*`` entries (from the old site layout) have
+    no installable root in the current monorepo; dropping them lets the
+    test settings initialize without them.
+    """
+    return _installed(app.split(".")[0])
+
 _OPTIONAL_TEST_APPS = {
     "wagtail", "wagtail.images", "wagtail.documents", "wagtail.snippets",
     "wagtail.search", "wagtail.admin", "wagtail.contrib.settings",
@@ -369,7 +378,7 @@ _OPTIONAL_TEST_APPS = {
 }
 INSTALLED_APPS = [
     app for app in INSTALLED_APPS
-    if app not in _OPTIONAL_TEST_APPS or _installed(app)
+    if _root_installed(app) and (app not in _OPTIONAL_TEST_APPS or _installed(app))
 ]
 if not _installed("wagtail"):
     INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "apps.blog"]

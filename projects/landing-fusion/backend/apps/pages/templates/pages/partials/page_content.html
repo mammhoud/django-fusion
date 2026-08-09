@@ -21,7 +21,7 @@
 
    Each section is guarded by a page-field check so a page renders exactly
    its own stack:
-   - Home             → hero + cta
+   - Home             → hero + learning preview + cta
    - About/Products/Features → full document (hero, body, stats,
      features+pricing, testimonials, faq, cta)
    - Company/Services → hero + body + cta
@@ -41,7 +41,36 @@
    same in-page navigation. Empty for top-level pages. {% endcomment %}
 {% include "pages/partials/breadcrumbs.html" %}
 
-{% if page.hero %}{% include_block page.hero %}{% endif %}
+{% if content_language == "ar" and localized_content.hero %}
+<section class="hero-block container-fusion" dir="rtl">
+  {% if localized_content.hero.badge %}<p class="tag-marker">{{ localized_content.hero.badge }}</p>{% endif %}
+  <h1>{{ localized_content.hero.title|default:localized_content.title|default:page.title }}{% if localized_content.hero.accent %} <em>{{ localized_content.hero.accent }}</em>{% endif %}</h1>
+  {% if localized_content.hero.subtitle %}<p>{{ localized_content.hero.subtitle }}</p>{% endif %}
+  {% if localized_content.hero.primary_cta.href and localized_content.hero.primary_cta.label %}<a href="{{ localized_content.hero.primary_cta.href }}" class="btn-primary">{{ localized_content.hero.primary_cta.label }}</a>{% endif %}
+  {% if localized_content.hero.secondary_cta.href and localized_content.hero.secondary_cta.label %}<a href="{{ localized_content.hero.secondary_cta.href }}" class="btn-secondary">{{ localized_content.hero.secondary_cta.label }}</a>{% endif %}
+</section>
+{% elif page.hero %}{% include_block page.hero %}{% endif %}
+
+{% comment %} Homepage learning catalog — the backend road mirrors the Astro
+   course cards and links into the full HTMX learning surface. {% endcomment %}
+{% if page.slug == "home" %}
+<section id="courses" class="learning-sheet" style="padding-block:4rem 5rem;">
+  <div class="container-fusion">
+    <div class="learning-section-head">
+      <div>
+        <p class="learning-kicker">[ LEARNING / PUBLIC CATALOG ]</p>
+        <h2 class="learning-section-title">Learn by shipping.</h2>
+      </div>
+      <a class="learning-button learning-button--primary" href="/learning/">BROWSE COURSES <span aria-hidden="true">&gt;&gt;</span></a>
+    </div>
+    {% if courses %}
+      {% include "learning/fragments/course_list.html" %}
+    {% else %}
+      <div class="learning-empty"><p class="learning-empty__title">Courses are being prepared.</p><p>Visit the learning catalog for the latest paths.</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
 
 {% comment %} About-section subpage nav (AboutPage + team/startup/founder) —
    the shared about_subnav partial right after the hero, so visitors can move
@@ -57,7 +86,7 @@
 <section class="container-fusion" style="padding-block:1.75rem 0;">
   <div class="product-lockup" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
     {% include "content/blocks/product_logo.html" with logo_style=page.logo_style %}
-    <div>        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ page.title }}</h2>
+    <div>        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ localized_content.title|default:page.title }}</h2>
       {% if page.version %}<p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">{{ page.version }}</p>{% endif %}
       {% if page.tagline %}<p style="margin:.15rem 0 0;color:hsl(var(--fu-text) / .7);font-size:.875rem;">{{ page.tagline }}</p>{% endif %}
     </div>
@@ -118,11 +147,11 @@
 {% endif %}
 
 {% comment %} Body / story — the "about this page" prose section. {% endcomment %}
-{% if page.body %}
-<section class="container-fusion" style="padding-block:4rem 5rem;">
+{% if localized_body or page.body %}
+<section class="container-fusion" style="padding-block:4rem 5rem;"{% if content_language == "ar" %} dir="rtl"{% endif %}>
   <div style="max-width:42rem;">
-    <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{{ page.body_heading|default:page.title }}</h2>
-    <div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>
+    <h2 style="font-size:1.5rem;margin:0 0 1rem;font-family:'Bricolage Grotesque',sans-serif;">{% if localized_content.title %}{{ localized_content.title }}{% else %}{{ page.body_heading|default:page.title }}{% endif %}</h2>
+    {% if localized_body %}<div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ localized_body|linebreaksbr }}</div>{% else %}<div style="color:hsl(var(--fu-text) / .7);line-height:1.7;">{{ page.body|richtext }}</div>{% endif %}
   </div>
 </section>
 {% endif %}
@@ -311,7 +340,7 @@
           {% endif %}
           <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:.5rem;">
             <a href="/products/{{ product.slug }}/#editions" class="w-full {% if edition.tier == 'featured' %}btn-primary{% else %}btn-secondary{% endif %}">See {{ product.title }} →</a>
-            <a href="{{ edition.preview_href }}" class="w-full text-center" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">View edition preview →</a>
+            <a href="{{ edition.preview_href }}" class="w-full text-center" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">Preview this edition →</a>
           </div>
         </article>
         {% endfor %}
@@ -327,16 +356,29 @@
 {% endwith %}
 
 {% comment %} Services grid (ServicesPage) — offering cards rendered by content/blocks/services.html. {% endcomment %}
-{% if page.services %}
+{% with service_blocks=localized_blocks.services %}
+{% if service_blocks %}
 <section id="services" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.services %}
+  {% for block in service_blocks %}{% include_block block %}{% endfor %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Tech stack (ProductPage) — technology tags rendered by content/blocks/tech_stack.html. {% endcomment %}
-{% if page.tech %}
+{% with tech_blocks=localized_blocks.tech %}
+{% if tech_blocks %}
 <section id="tech" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.tech %}
+  {% for block in tech_blocks %}{% include_block block %}{% endfor %}
+</section>
+{% endif %}
+{% endwith %}
+
+{% comment %} Applications built with a product (ProductPage.applications) —
+   the “Built with …” grid (vResume, structa.cloud, Precis LMS) rendered by
+   content/blocks/applications.html. {% endcomment %}
+{% if page.applications %}
+<section id="applications" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.applications %}
 </section>
 {% endif %}
 
@@ -351,6 +393,14 @@
 {% if page.comparison %}
 <section id="comparison" class="container-fusion" style="padding-block:4rem 5rem;">
   {% include_block page.comparison %}
+</section>
+{% endif %}
+
+{% comment %} Product media gallery — editor-curated screenshot/screencast blocks.
+   Edition captures remain below as the compatibility/detail-page gallery. {% endcomment %}
+{% if page.gallery %}
+<section id="gallery" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.gallery %}
 </section>
 {% endif %}
 
@@ -386,39 +436,58 @@
 {% endwith %}
 
 {% comment %} Team grid (TeamPage, /about/team/) — member cards rendered by content/blocks/team.html. {% endcomment %}
-{% if page.team %}
+{% with team_blocks=localized_blocks.team %}
+{% if team_blocks %}
 <section id="team" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.team %}
+  {% for block in team_blocks %}{% include_block block %}{% endfor %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} “Build as you go” process (ServicesPage) — numbered steps rendered by content/blocks/process.html. {% endcomment %}
-{% if page.process %}
+{% with process_blocks=localized_blocks.process %}
+{% if process_blocks %}
 <section id="process" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.process %}
+  {% for block in process_blocks %}{% include_block block %}{% endfor %}
 </section>
 {% endif %}
+{% endwith %}
 
 {% comment %} Blog grid (BlogPage) — post cards rendered by content/blocks/blog.html. {% endcomment %}
-{% if page.blog %}
+{% with blog_blocks=localized_blocks.blog %}
+{% if blog_blocks %}
 <section id="blog" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% include_block page.blog %}
+  {% for block in blog_blocks %}{% include_block block %}{% endfor %}
+</section>
+{% endif %}
+{% endwith %}
+
+{% comment %} Blog post reference code (BlogPostPage.snippets) — the deep-dive
+   code sections (SnippetsSectionBlock) that product pages link out to via
+   SnippetBlock.related_post. Rendered only on the posts that host them. {% endcomment %}
+{% if page.is_blog_post and page.snippets %}
+<section id="snippets" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.snippets %}
 </section>
 {% endif %}
 
 {% comment %} Stats band. {% endcomment %}
-{% if page.stats %}{% include_block page.stats %}{% endif %}
+{% with stats_blocks=localized_blocks.stats %}{% if stats_blocks %}{% for block in stats_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}
 
 {% comment %} Features with pricing folded into the same section (mirrors the Astro side). {% endcomment %}
-{% if page.features or page.pricing %}
+{% with feature_blocks=localized_blocks.features %}
+{% with pricing_blocks=localized_blocks.pricing %}
+{% if feature_blocks or pricing_blocks %}
 <section id="features" class="container-fusion" style="padding-block:4rem 5rem;">
-  {% if page.features %}{% include_block page.features %}{% endif %}
-  {% if page.pricing %}{% include_block page.pricing %}{% endif %}
+  {% if feature_blocks %}{% for block in feature_blocks %}{% include_block block %}{% endfor %}{% endif %}
+  {% if pricing_blocks %}{% for block in pricing_blocks %}{% include_block block %}{% endfor %}{% endif %}
 </section>
 {% endif %}
+{% endwith %}
+{% endwith %}
 
 {% comment %} Proof / answers / contact / close. {% endcomment %}
-{% if page.testimonials %}{% include_block page.testimonials %}{% endif %}
-{% if page.faq %}{% include_block page.faq %}{% endif %}
-{% if page.contact %}{% include_block page.contact %}{% endif %}
-{% if page.cta %}{% include_block page.cta %}{% endif %}
+{% with testimonial_blocks=localized_blocks.testimonials %}{% if testimonial_blocks %}{% for block in testimonial_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}
+{% with faq_blocks=localized_blocks.faq %}{% if faq_blocks %}{% for block in faq_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}
+{% with contact_blocks=localized_blocks.contact %}{% if contact_blocks %}{% for block in contact_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}
+{% with cta_blocks=localized_blocks.cta %}{% if cta_blocks %}{% for block in cta_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}

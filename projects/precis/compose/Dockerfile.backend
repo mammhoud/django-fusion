@@ -6,6 +6,7 @@
 FROM python:3.11-slim
 
 ARG PROJECT_PATH=lms-fusion
+ARG SOURCE_PATH=precis
 ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED=1 \
@@ -67,21 +68,28 @@ RUN uv pip install --python /opt/venv/bin/python setuptools wheel \
     && cd ${APP_HOME}/libs/django-fusion \
     && uv pip install -e . --no-build-isolation
 
-# ── Project-specific code ───────────────────────────────────────────────────
-COPY projects/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
+# ── Project-specific backend code ────────────────────────────────────────────
+# The runtime site root is the backend root. This matches the bind mount in
+# Compose and keeps settings.py, manage.py, assets, and module imports on one
+# canonical path in both image-only and development-container runs.
+COPY projects/${SOURCE_PATH}/backend ${APP_HOME}/${PROJECT_PATH}
+COPY projects/${SOURCE_PATH}/Env ${APP_HOME}/${PROJECT_PATH}/Env
+# Runtime setup and optional fixture verification use the shared workspace
+# utilities; keep them available in image-only deployments as well.
+COPY tests ${APP_HOME}/tests
 
-# Install as editable if pyproject.toml exists
+# Install the backend package from the migrated project layout.
 RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
       uv pip install --editable /app/${PROJECT_PATH}; \
     fi
 
 # ── Entrypoint and helper scripts ───────────────────────────────────────────
-COPY projects/lms-fusion/compose/entrypoint     /entrypoint
-COPY projects/lms-fusion/compose/start          /start
-COPY projects/lms-fusion/compose/rqworker-start /rqworker-start
-COPY projects/lms-fusion/compose/flower         /flower
+COPY projects/precis/compose/entrypoint     /entrypoint
+COPY projects/precis/compose/start          /start
+COPY projects/precis/compose/rqworker-start /rqworker-start
+COPY projects/precis/compose/flower         /flower
 
-RUN mkdir -p ${APP_HOME}/logs \
+RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/media ${APP_HOME}/${PROJECT_PATH}/assets/staticfiles \
     && sed -i 's/\r$//g' /entrypoint /start /rqworker-start /flower \
     && chmod +x /entrypoint /start /rqworker-start /flower
 

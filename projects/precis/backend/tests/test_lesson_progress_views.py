@@ -3,8 +3,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from apps.pages.lms.models import Course, Lesson, LessonProgress, Module
-from apps.pages.lms.site.views.lessons import (
+from apps.learning.models import Course, Lesson, LessonProgress, Module
+from apps.learning.site.views.lessons import (
     CourseContinueView,
     CourseWatchView,
     LessonNavigationView,

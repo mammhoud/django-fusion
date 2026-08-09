@@ -38,31 +38,12 @@ for pkg in (
     "django_fusion",
     "unfold",
     "wagtail",
+    "django_htmx",
     "ninja",
     "ninja_extra",
     "django_tasks",  # dynamic backend lookup (django_tasks.backends.*)
-    # Django-native sidecar surface (replaces the removed Robyn server/routes)
-    "fragments",
-    "services",
 ):
     hiddenimports += collect_submodules(pkg)
-
-# Top-level sidecar modules — signal receivers are registered for their
-# @receiver side effects and the Django views replace the Robyn routes.
-hiddenimports += [
-    "views_django",
-    "htmx_views",
-    "api_keys_views",
-    "fusion_views",
-    "bolt_api",
-    "consumers",
-    "ws_client",
-    "ws_sync_signals",
-    "sync_signals",
-    "signal_handlers",
-    "signals",
-    "about",
-]
 
 # Django app-label modules that must resolve at registry build time.
 hiddenimports += [

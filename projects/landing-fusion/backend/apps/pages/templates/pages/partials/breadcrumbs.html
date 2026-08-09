@@ -35,7 +35,7 @@
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" aria-current="page"
           style="display:flex;align-items:center;gap:.4rem;font-weight:500;color:hsl(var(--fu-ink));">
         <meta itemprop="position" content="{{ breadcrumbs|length|add:1 }}">
-        <span itemprop="name">{{ breadcrumb_current|default:page.title }}</span>
+        <span itemprop="name">{{ breadcrumb_current|default:localized_content.title|default:page.title }}</span>
       </li>
     </ol>
   </div>

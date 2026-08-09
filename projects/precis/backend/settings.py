@@ -4,6 +4,7 @@ Imports shared Fusion defaults from configs.default, then applies
 LMS-specific branding, CORS origins, and feature flags.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -40,6 +41,45 @@ from configs.default import *  # noqa: E402,F401,F403
 
 
 # ═══════════════════════════════════════════════════════════════════
+# ALLOWED_HOSTS — the Django test client connects as ``testserver``
+# ═══════════════════════════════════════════════════════════════════
+if "testserver" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS = [*ALLOWED_HOSTS, "testserver"]
+
+# ── APPEND_SLASH — kept at the Django default (True).
+#
+#    Note: the allauth headless URL patterns (e.g. /api/auth/browser/v1/auth/login)
+#    are registered WITHOUT trailing slashes, and CommonMiddleware only appends
+#    a slash when the slash-less URL does not match. Exact headless requests
+#    therefore resolve directly with no redirect (verified in tests); disabling
+#    APPEND_SLASH here would turn the public /api/* 301 redirects into 404s.
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Auth — django-allauth headless API (landing-fusion parity)
+# ═══════════════════════════════════════════════════════════════════
+# The Alpine login modal (frontend + Django templates) consumes the
+# headless API at /api/auth/browser/v1/auth/* — the same contract as
+# landing-fusion. Server-rendered /accounts/* pages remain as fallback.
+if "allauth.headless" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("allauth.headless")
+if "apps.auth.apps.PrecisAuthConfig" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("apps.auth.apps.PrecisAuthConfig")
+
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = cfg("ACCOUNT_EMAIL_VERIFICATION", "optional")
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_ADAPTER = "apps.auth.adapters.PrecisAuthAdapter"
+SOCIALACCOUNT_ADAPTER = "apps.auth.adapters.PrecisSocialAccountAdapter"
+MFA_PASSKEY_LOGIN_ENABLED = cfg("MFA_PASSKEY_LOGIN_ENABLED", True)
+MFA_SUPPORTED_TYPES = ["recovery_codes", "totp", "webauthn"]
+ACCOUNT_LOGIN_URL = "/accounts/login/"
+ACCOUNT_SIGNUP_URL = "/accounts/signup/"
+ACCOUNT_EMAIL_URL = "/accounts/email/"
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Site Identity
 # ═══════════════════════════════════════════════════════════════════
 WEBSITE_NAME = "lms-fusion"
@@ -64,6 +104,23 @@ FUSION_SECONDARY_COLOR = cfg("FUSION_SECONDARY_COLOR", "#008080")
 # Requests may still override this with X-Fusion-Render-First for compatibility.
 FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", True)
 
+# Keep the Wagtail locale contract aligned with dump-data.json. In particular,
+# pt-br is an existing public fixture locale and must not be normalized to pt.
+# The shared CD settings provide the Wagtail switches; these explicit values
+# make this site's supported content languages unambiguous.
+LANGUAGES = [
+    ("en", "English"),
+    ("fr", "French"),
+    ("de", "German"),
+    ("es", "Spanish"),
+    ("ar", "Arabic"),
+    ("pt-br", "Portuguese (Brazil)"),
+]
+LANGUAGES_BIDI = ["ar"]
+WAGTAIL_I18N_ENABLED = True
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
+WAGTAIL_I18N_LOCALE_MODEL = "wagtailcore.Locale"
+
 
 # ═══════════════════════════════════════════════════════════════════
 # Branding Context Processor — resolved from _site.yml
@@ -84,8 +141,11 @@ CORS_ALLOWED_ORIGINS = cfg("CORS_ORIGINS", [
     "http://127.0.0.1:3002",
     "http://localhost:3458",
     "http://127.0.0.1:3458",
-    "http://localhost:3002",
-    "http://127.0.0.1:3002",
+    "https://ctc-research.com",
+    "https://www.ctc-research.com",
+    "https://arch.ctc-research.com",
+    "https://lms-fusion.com",
+    "https://www.lms-fusion.com",
 ])
 
 # Allow custom fusion headers for render-first negotiation.
@@ -109,6 +169,11 @@ FUSION_BOLT = {
         "http://localhost:3002",
         "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
+        "https://ctc-research.com",
+        "https://www.ctc-research.com",
+        "https://arch.ctc-research.com",
+        "https://lms-fusion.com",
+        "https://www.lms-fusion.com",
     ],
     "component_auto_register": True,
 }
@@ -134,14 +199,21 @@ for _sub in ("blog", "lms", "profile", "products", "pages", "accounts",
         TEMPLATES[0]["DIRS"].append(str(_sub_path))
 
 # Media: override the shared default (backend/assets/media) → workspace assets/media.
-MEDIA_ROOT = str(_WORKSPACE_DIR / "assets" / "media")
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(_WORKSPACE_DIR / "assets" / "media"))
 
 # Static: ensure workspace-level assets/static is in STATICFILES_DIRS.
 _ASSETS_STATIC = _WORKSPACE_DIR / "assets" / "static"
 if _ASSETS_STATIC.exists() and "STATICFILES_DIRS" in dir():
-    _entry = ("workspace-assets", str(_ASSETS_STATIC))
-    if _entry not in STATICFILES_DIRS:
-        STATICFILES_DIRS.append(_entry)
+    # Mount the site-local assets at the root namespace (/static/...) so the
+    # fusion bundles (css/fusion.css, js/app.js) resolve from this site's own
+    # assets/static/ — same convention as landing-fusion. Keep the namespaced
+    # alias for any legacy references.
+    _root_entry = str(_ASSETS_STATIC)
+    if _root_entry not in STATICFILES_DIRS:
+        STATICFILES_DIRS.insert(0, _root_entry)
+    _alias_entry = ("workspace-assets", str(_ASSETS_STATIC))
+    if _alias_entry not in STATICFILES_DIRS:
+        STATICFILES_DIRS.append(_alias_entry)
 
 # FUSION_ASSET_PIPELINE: point component manifest at the workspace static root.
 if "FUSION_ASSET_PIPELINE" in dir() and "components" in FUSION_ASSET_PIPELINE:

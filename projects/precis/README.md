@@ -26,7 +26,8 @@ projects/precis/
 ├── backend/                   # Django 5.2 + Wagtail
 │   ├── apps/
 │   │   ├── content/           # StreamField blocks + content templates
-│   │   ├── pages/             # Page models, LMS views, profile, accounts
+│   │   ├── learning/          # Learning/LMS app (courses, enrollments, progress)
+│   │   ├── pages/             # Page models, profile, accounts
 │   │   ├── domain/            # Domain models (contacts, locations, users, newsletter)
 │   │   └── handlers/          # django-fusion PageHandler views
 │   ├── assets/                # Static, media, templates, fixtures
@@ -81,7 +82,7 @@ npm run dev
 
 | Path | Purpose |
 |------|---------|
-| `backend/apps/pages/lms/` | LMS views, course catalog, enrollments |
+| `backend/apps/learning/` | LMS views, course catalog, enrollments |
 | `backend/apps/pages/profile/` | User profile, learning record |
 | `backend/apps/pages/accounts/` | Auth adapters, registration flow |
 | `backend/apps/domain/models/` | Core domain models (users, contacts, locations) |

@@ -88,13 +88,12 @@ help: ## Show all commands
 	@echo '  make bundle           Alias for make desktop-build'
 	@echo '  make tauri-build      Raw Tauri production bundle (assumes frontend built)'
 	@echo '  make sidecar-build    PyInstaller sidecar binary → dist/formint-backend'
-	@echo '  make sidecar-install-bin  Copy sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
-	@echo '  make sidecar-binary   PyInstaller formint-backend → src-tauri/binaries'
+	@echo '  make sidecar-install-bin  Copy the sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
+	@echo '  make sidecar-binary   Build PyInstaller formint-backend → sidecar/dist'
 	@echo '  make release          check + test + web build + desktop bundle'
-
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
-	@echo '  make screenshots      Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/'
+	@echo '  make screenshots      Capture frontend + admin screenshots → Landing-Fusion related/formints/'
 	@echo ''
 
 
@@ -177,12 +176,10 @@ clean: ## Remove build artifacts + db + node_modules
 	$(MAKE) -C $(FRONTEND_DIR) clean
 	@echo '✅ Formint POS cleaned'
 
-screenshots: ## Capture frontend + admin screenshots → docs/screenshots/{frontend,admin}/
-	@mkdir -p docs/screenshots/frontend docs/screenshots/admin
+screenshots: ## Capture frontend + admin screenshots → Landing-Fusion related/formints/
 	@echo 'ℹ️  Re-capturing screenshots (requires: make env + make seed, chromium, selenium, imagemagick)'
 	bash ../scripts/dev/capture-formint-screenshots.sh
-	@rm -rf docs/screenshots/_captures
-	@echo '✅ Screenshots updated in docs/screenshots/{frontend,admin}/'
+	@echo '✅ Screenshots updated in Landing-Fusion related/formints/'
 
 # ── Backend delegation ────────────────────────────────────────────────────
 

@@ -1,0 +1,175 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import { fetchCourseDetail, fetchCourseList, cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { CourseDetail, NavigationData, SiteSettings } from '@/lib/api';
+
+export async function getStaticPaths() {
+  const catalog = await fetchCourseList();
+  if (!catalog.data.length) {
+    throw new Error('Course catalog returned no published courses during static generation.');
+  }
+  return catalog.data.map((course) => ({ params: { slug: course.slug } }));
+}
+
+const { slug } = Astro.params;
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try {
+  [siteSettings, navData] = await Promise.all([
+    cachedSiteSettings(),
+    cachedNavigation(),
+  ]);
+} catch {
+  // Site chrome may be unavailable during a preview build; course content may not.
+}
+const course: CourseDetail = await fetchCourseDetail(slug!);
+
+const formatDifficulty = (value: string) => value.replace(/\b\w/g, (char) => char.toUpperCase());
+const overviewBlocks = Array.isArray(course?.overview) ? course.overview : [];
+const objectives = Array.isArray(course?.objectives) ? course.objectives : [];
+const targetAudience = Array.isArray(course?.target_audience) ? course.target_audience : [];
+const requirements = Array.isArray(course?.requirements) ? course.requirements : [];
+const specializations = Array.isArray(course?.specializations) ? course.specializations : [];
+const tags = Array.isArray(course?.tags) ? course.tags : [];
+const modules = Array.isArray(course?.modules) ? course.modules : [];
+const previewVideo = Array.isArray(course?.preview_video_url) ? course.preview_video_url : (course?.preview_video_url ? [String(course.preview_video_url)] : []);
+---
+
+<Layout
+  title={course?.title || 'Course Preview'}
+  description={course?.short_description || 'CTC Research medical research course preview.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageSlug={`course:${slug}`}
+>
+  {course ? (
+    <>
+      <Hero
+        eyebrow={`medical research · ${formatDifficulty(course.difficulty)}`}
+        heading={course.title}
+        accent=""
+        intro={course.short_description}
+        primaryCta={{ label: 'Request enrollment', href: '/contact/' }}
+        secondaryCta={{ label: 'Back to all courses', href: '/courses/' }}
+        status={`${course.duration} hours · ${course.language.toUpperCase()} · certificate available`}
+      />
+
+      <section class="doc-sheet bg-fu-surface py-20 md:py-24">
+        <div class="container-fusion grid grid-cols-1 gap-8 lg:grid-cols-[1fr_22rem]">
+          <article class="card p-7 md:p-9">
+            <p class="tag-marker mb-4">course overview</p>
+            <h2 class="mb-5 font-display text-2xl font-bold text-fu-ink">Why this course matters</h2>
+            <p class="text-sm leading-relaxed text-fu-muted">{course.description}</p>
+            {course.image_url && <img src={course.image_url} alt={course.title} loading="lazy" class="mt-7 aspect-[16/7] w-full rounded-md object-cover" />}
+
+            {overviewBlocks.length ? (
+              <div class="mt-8 space-y-5 border-t border-fu-line pt-7">
+                {overviewBlocks.map((block: any) => (
+                  <div>
+                    {block.value?.heading && <h3 class="mb-2 font-display text-lg font-semibold text-fu-ink">{block.value.heading}</h3>}
+                    {block.value?.body && <p class="text-sm leading-relaxed text-fu-muted">{String(block.value.body)}</p>}
+                    {Array.isArray(block.value?.list_items) && <ul class="mt-3 space-y-2 text-sm text-fu-muted">{block.value.list_items.map((item: string) => <li class="flex gap-3"><span class="text-fu-link">✓</span><span>{item}</span></li>)}</ul>}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {objectives.length ? (
+              <div class="mt-8 border-t border-fu-line pt-7">
+                <h3 class="mb-4 font-display text-lg font-semibold text-fu-ink">Learning objectives</h3>
+                <ul class="space-y-3 text-sm text-fu-muted">
+                  {objectives.map((item) => <li class="flex gap-3"><span class="text-fu-link">✓</span><span>{item}</span></li>)}
+                </ul>
+              </div>
+            ) : null}
+
+            {targetAudience.length ? (
+              <div class="mt-8 border-t border-fu-line pt-7">
+                <h3 class="mb-4 font-display text-lg font-semibold text-fu-ink">Who it is for</h3>
+                <ul class="space-y-3 text-sm text-fu-muted">
+                  {targetAudience.map((item) => <li class="flex gap-3"><span class="text-fu-link">→</span><span>{item}</span></li>)}
+                </ul>
+              </div>
+            ) : null}
+
+            {requirements.length ? (
+              <div class="mt-8 border-t border-fu-line pt-7">
+                <h3 class="mb-4 font-display text-lg font-semibold text-fu-ink">Requirements</h3>
+                <ul class="space-y-3 text-sm text-fu-muted">
+                  {requirements.map((item) => <li class="flex gap-3"><span class="text-fu-link">•</span><span>{item}</span></li>)}
+                </ul>
+              </div>
+            ) : null}
+
+            {specializations.length || tags.length ? (
+              <div class="mt-8 flex flex-wrap gap-2 border-t border-fu-line pt-7">
+                {[...specializations, ...tags].map((label) => <span class="badge-primary">{label}</span>)}
+              </div>
+            ) : null}
+
+            {previewVideo.length ? (
+              <div class="mt-8 border-t border-fu-line pt-7">
+                <h3 class="mb-4 font-display text-lg font-semibold text-fu-ink">Course preview</h3>
+                <div class="space-y-3">
+                  {previewVideo.map((url) => (
+                    <a href={url} target="_blank" rel="noreferrer" class="btn-secondary inline-flex">Watch preview →</a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </article>
+
+          <aside class="card h-fit p-6 lg:sticky lg:top-24">
+            <p class="tag-marker mb-4">course facts</p>
+            <dl class="space-y-4 text-sm">
+              <div class="flex justify-between gap-4"><dt class="text-fu-muted">Duration</dt><dd class="font-medium text-fu-ink">{course.duration} hours</dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-fu-muted">Level</dt><dd class="font-medium text-fu-ink">{formatDifficulty(course.difficulty)}</dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-fu-muted">Language</dt><dd class="font-medium uppercase text-fu-ink">{course.language}</dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-fu-muted">Certificate</dt><dd class="font-medium text-fu-ink">{course.has_certificate ? 'Included' : '—'}</dd></div>
+            </dl>
+            <a href="/contact/" class="btn-primary mt-7 w-full justify-center">Request enrollment</a>
+          </aside>
+        </div>
+      </section>
+
+      {modules.length ? (
+        <section class="doc-sheet bg-fu-paper py-20 md:py-24">
+          <div class="container-fusion">
+            <div class="mx-auto mb-12 max-w-2xl text-center">
+              <p class="tag-marker mb-4">learning path</p>
+              <h2 class="mb-4 font-display text-3xl font-bold text-fu-ink">Course modules</h2>
+            </div>
+            <div class="mx-auto max-w-3xl space-y-4">
+              {modules.map((module, index) => (
+                <div class="card p-6">
+                  <div class="flex gap-4">
+                    <span class="font-mono text-sm text-fu-link">{String(index + 1).padStart(2, '0')}</span>
+                    <div>
+                      <h3 class="font-display text-lg font-semibold text-fu-ink">{module.title}</h3>
+                      {module.description && <p class="mt-2 text-sm text-fu-muted">{module.description}</p>}
+                      {module.lessons.length ? <p class="mt-3 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-fu-muted">{module.lessons.length} lessons · {module.lessons.filter((lesson) => lesson.is_preview).length} preview</p> : null}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <CTA
+        heading="Ready to strengthen your research practice?"
+        intro="Start with one focused course, then build a complete path from study design through trusted publication."
+        ctaLabel="Return to catalog"
+        ctaHref="/courses/"
+      />
+    </>
+  ) : (
+    <section class="doc-sheet py-32"><div class="container-fusion"><ContentError label="Course preview unavailable" showHomeLink={true} /></div></section>
+  )}
+  <HtmxBootstrap />
+</Layout>

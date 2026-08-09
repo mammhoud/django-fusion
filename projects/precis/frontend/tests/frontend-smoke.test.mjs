@@ -14,6 +14,7 @@ test('Astro frontend exposes the consolidated LMS contract', async () => {
   const api = await text('src/lib/api.ts');
   assert.match(api, /PUBLIC_FUSION_API_URL/);
   assert.match(api, /\/apis\/pages\//);
+  assert.match(api, /\/api\/courses\//);
 
   const layout = await text('src/layouts/Layout.astro');
   assert.match(layout, /htmx-indicator-skeleton/);
@@ -22,4 +23,12 @@ test('Astro frontend exposes the consolidated LMS contract', async () => {
   const skeleton = await text('src/components/ui/Skeleton.astro');
   assert.match(skeleton, /hero-section/);
   assert.match(skeleton, /faq-list/);
+
+  const catalog = await text('src/pages/courses/index.astro');
+  assert.match(catalog, /fetchCourseList/);
+  assert.match(catalog, /medical research/i);
+
+  const detail = await text('src/pages/courses/[slug].astro');
+  assert.match(detail, /fetchCourseDetail/);
+  assert.match(detail, /course overview/);
 });

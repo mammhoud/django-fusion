@@ -14,30 +14,40 @@ const {
 } = Astro.props;
 ---
 
+<!-- CTA — clinical-ink panel with double-bezel frame (brand kit §05) -->
 <section id="cta" class="cta">
   <div class="cta__inner">
-    <div class="cta__content">
-      <p class="cta__eyebrow">cta</p>
-      <h2 class="cta__heading">{heading}</h2>
-      <p class="cta__intro">{intro}</p>
-      <div class="cta__actions">
-        <a
-          href={ctaHref}
-          class="btn-primary !px-8 !py-3.5 text-base"
-          @click.prevent="$store.toast.show('Account created. Check your inbox.')"
-        >
-          {ctaLabel}
-        </a>
-        <a
-          href="/contact"
-          class="btn !px-8 !py-3.5 text-base text-[#f0eee8] ring-1 ring-inset ring-[#f0eee8]/40 hover:bg-[#f0eee8]/5"
-        >
-          Talk to sales
-        </a>
+    <div class="bezel bezel--ink">
+      <div class="bezel__core bezel__core--ink">
+        <div class="cta__content">
+          <p class="cta__eyebrow">cta</p>
+          <h2 class="cta__heading">{heading}</h2>
+          <p class="cta__intro">{intro}</p>
+          <div class="cta__actions">
+            <a
+              href={ctaHref}
+              class="btn-primary group !px-8 !py-3.5 text-base"
+              @click.prevent="$store.toast.show('Account created. Check your inbox.')"
+            >
+              {ctaLabel}
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-[1px]" style="transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/>
+                </svg>
+              </span>
+            </a>
+            <a
+              href="/contact"
+              class="btn !px-8 !py-3.5 text-base text-[#f0eee8] ring-1 ring-inset ring-[#f0eee8]/40 hover:bg-[#f0eee8]/5"
+            >
+              Talk to sales
+            </a>
+          </div>
+          <p class="cta__status">
+            <span class="status-line !text-[#b0aba0]"><span class="dot" aria-hidden="true"></span>ready when you are · text/html</span>
+          </p>
+        </div>
       </div>
-      <p class="cta__status">
-        <span class="status-line !text-[#b0aba0]"><span class="dot" aria-hidden="true"></span>ready when you are · text/html</span>
-      </p>
     </div>
   </div>
 </section>

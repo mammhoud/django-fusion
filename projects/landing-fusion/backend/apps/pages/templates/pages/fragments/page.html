@@ -18,9 +18,15 @@
    (defined in pages/base.html + pages/partials/skeleton.html) while this
    fragment is in flight.
    ────────────────────────────────────────────────────────────────────── {% endcomment %}
-{% load components %}
+{% load components fusion_extras %}
 
 {% comment %} id="page-content" — the swap target used by hx-target in the shell {% endcomment %}
 <div id="page-content" data-fragment="page">
-  {% comp "pages/partials/page_content.html" /%}
+  {% if page|class_name == "PhasePage" %}
+    {% include "pages/partials/phase_fragment.html" %}
+  {% elif page|class_name == "PromptPage" %}
+    {% include "pages/partials/prompt_fragment.html" %}
+  {% else %}
+    {% comp "pages/partials/page_content.html" /%}
+  {% endif %}
 </div>

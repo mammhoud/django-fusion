@@ -12,15 +12,19 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 0.375rem;
-  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 600;
   transition: all $transition-fast;
   cursor: pointer;
 
+  &:active {
+    transform: scale(0.98);
+  }
+
   &:focus-visible {
-    outline: 2px solid var(--fu-link);
+    outline: 2px solid var(--fu-teal);
     outline-offset: 2px;
   }
 
@@ -34,15 +38,11 @@
   @include btn-base;
   background: var(--fu-link);
   color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px -12px hsl(var(--fu-teal) / 0.55);
 
   &:hover {
     background: var(--fu-link-dark);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
-  &:active {
-    transform: translateY(1px);
+    box-shadow: 0 14px 34px -14px hsl(var(--fu-teal) / 0.7);
   }
 }
 
@@ -56,10 +56,6 @@
     border-color: var(--fu-link);
     color: var(--fu-link);
   }
-
-  &:active {
-    transform: translateY(1px);
-  }
 }
 
 .btn-outline {
@@ -70,10 +66,6 @@
   &:hover {
     background: hsl(var(--fu-link) / 0.05);
   }
-
-  &:active {
-    transform: translateY(1px);
-  }
 }
 
 .btn-white {
@@ -81,14 +73,9 @@
   background: var(--fu-paper);
   color: var(--fu-link);
   border: 1px solid var(--fu-line);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
   &:hover {
     border-color: var(--fu-link);
-  }
-
-  &:active {
-    transform: translateY(1px);
   }
 }
 

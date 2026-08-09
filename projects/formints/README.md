@@ -1,6 +1,6 @@
 # POS — Restaurant Point of Sale Desktop App
 
-> **v1.1** — Multi-edition system | Tauri 2 + Astro/React/Vue + Rust + Django
+> **v1.1** — 3 Edition System | Tauri 2 + React 19 + Rust + SQLite
 
 <p align="center">
   <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.0-blue" alt="Version"/></a>
@@ -10,12 +10,12 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/admin/03_admin_dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
+  <img src="../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
 </p>
 
-POS is a modern, offline-first point-of-sale system for restaurants, cafes,
-and food-service businesses. Built with Tauri, Astro + React, Rust, Django,
-and SQLite — works on Windows, macOS, Linux, Android, and iOS.
+POS is a modern, offline-first desktop point-of-sale application for
+restaurants, cafes, and food-service businesses. Built with Tauri, React,
+Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 
 ---
 
@@ -23,45 +23,34 @@ and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 
 | Edition | Contents | Target |
 |---------|----------|--------|
-| **Community** (`formintA/`) | Offline-first desktop POS — Astro 5 + React 19 + Tauri + Rust/Diesel, no sidecar | Offline-only deployments |
-| **Standard** (merged into `formint/`) | Standalone tier — Django sidecar + cloud sync client (gated by config) | Branch POS with sync |
-| **Pro** (`formint/`) | **Merged package** — Astro + Alpine + HTMX frontend, full Django sidecar (48 models) + django-bolt + Channels WebSockets + Unfold admin + Tauri shell | Enterprise multi-device |
-| **Cloud** (`formintB/`) | Hosted multi-terminal SaaS master — full Django setup (viewsets + fusion + bolt) + Astro/React frontend | Cloud CRM master |
-| **pos-client** (`formintC/`) | Vue 3 + Tauri desktop client + Django purchase-app backend + Astro (django-fusion) storefront | Separate client app |
+| **Mini** (`forge-pos/`) | Core POS (Tauri + Rust + SQLite) | Offline-only deployments |
+| **Formint** (`formint-pos/`) | **Merged package** — Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin (consolidates the former Full + Solo editions) | Enterprise multi-device |
+| **Client** (`pos-client/`) | Vue 3 + Tauri desktop | Separate client app |
+| **Cloud** (`pos-cloud/`) | Django ASGI + Unfold + Bolt dashboard | Cloud CRM master |
 
-> **`formint/`** merges the former `pos-full` + `pos-solo` editions into one
-> product boundary; the Robyn sidecar was replaced by a full Django setup. The
-> repo layout is `formintA` / `formint` / `formintB` / `formintC` — the old
-> `forge-pos`, `formint-pos`, `pos-client` and `pos-cloud` directory names are
-> gone. See [`docs/architecture/editions.md`](docs/architecture/editions.md)
-> for the complete per-edition analysis.
+> **`formint-pos/`** merges the former `pos-full` + `pos-solo` editions into one
+> product boundary. The legacy React UIs are archived under `formint-pos/legacy-react/`.
 
 ---
 
 ## 🚀 Quick Start
 
-### Community Edition (no sidecar)
+### Mini Edition (no sidecar)
 ```bash
-cd formintA
+cd forge-pos
 pnpm install
-make dev          # Astro dev server (port 1420)
-make dev:desktop  # Full Tauri desktop app
+cd src-tauri && cargo fetch && cd ..
+pnpm dev          # Vite dev server at localhost:1420
+pnpm dev:desktop  # Full Tauri desktop app
 ```
 
-### Pro (merged package — recommended)
+### Formint POS (merged package — recommended)
 ```bash
-cd formint
+cd formint-pos
 make install      # backend .venv + deps + migrate + frontend npm install
-make env          # sidecar :8767 + frontend :4321 (tmux)
+make env          # backend :8767 + frontend :4321 (tmux)
 make test         # backend + frontend contract tests
 make check        # django check + astro check
-```
-
-### pos-client (Vue 3 + Django shop)
-```bash
-cd formintC
-pnpm install      # Vue 3 desktop client
-make dev          # dev server
 ```
 
 ### Using Root Makefile
@@ -75,26 +64,26 @@ make clean             # Delete build artifacts
 
 ### Formint POS Professional (merged package)
 
-> **`formint/`** is the merged package that consolidates `pos-full` + `pos-solo`
-> into one product boundary with the same Tauri architecture. The backend is a
-> **full Django setup** — Django Ninja + ninja-extra REST API (django-fusion
-> encoder/decoder on every response), django-fusion data components (tables +
-> forms) over HTMX, django-bolt `/bolt/*`, and Channels WebSockets.
+> **`formint-pos/`** is the merged package that consolidates `pos-full` + `pos-solo`
+> into one product boundary with the same Tauri architecture. The backend uses
+> **Django Ninja + ninja-extra** for the REST API (django-fusion encoder/decoder
+> on every response) and **django-fusion data components** (tables + forms) for
+> HTMX fragments.
 
 ```bash
-cd formint/sidecar && python3 -m venv .venv && . .venv/bin/activate
+cd formint-pos/backend && python3 -m venv .venv && . .venv/bin/activate
 pip install -e . && python manage.py migrate
-python manage.py runserver 127.0.0.1:8767   # API at /api/v1/, HTMX at /htmx/, admin at /admin/
+python manage.py runserver 127.0.0.1:8000   # API at /api/v1/, HTMX at /htmx/
 
 cd ../frontend && pnpm install && pnpm dev  # Astro shell (proxies /api and /htmx)
 ```
 
 API surface: `/api/v1/health`, `/api/v1/stats`, `/api/v1/openapi.json`, `/api/v1/docs`,
 plus paginated CRUD for 45 resources (products, sales, inventory, suppliers,
-purchase orders, loyalty, CRM, HR, …) and django-bolt `/bolt/*` via `manage.py runbolt` (port 8766).
+purchase orders, loyalty, CRM, HR, …).
 
-See [`formint/README.md`](formint/README.md) and
-[`formint/migration/compatibility-manifest.json`](formint/migration/compatibility-manifest.json).
+See [`formint-pos/README.md`](formint-pos/README.md) and
+[`formint-pos/migration/compatibility-manifest.json`](formint-pos/migration/compatibility-manifest.json).
 
 ---
 
@@ -102,9 +91,9 @@ See [`formint/README.md`](formint/README.md) and
 
 | | | |
 |:---:|:---:|:---:|
-| ![Dashboard](docs/screenshots/admin/03_admin_dashboard.jpg) | ![Products](docs/screenshots/admin/04_admin_products.jpg) | ![Customers](docs/screenshots/admin/05_admin_customers.jpg) |
+| ![Dashboard](../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg) | ![Products](../landing-fusion/backend/assets/static/related/formints/pro-admin-products.jpg) | ![Customers](../landing-fusion/backend/assets/static/related/formints/pro-admin-customers.jpg) |
 | **Unfold Admin — Dashboard** | **Unfold Admin — Products** | **Unfold Admin — Customers** |
-| ![Sales](docs/screenshots/admin/06_admin_sales.jpg) | ![Loyalty](docs/screenshots/admin/07_admin_loyalty.jpg) | ![Settings](docs/screenshots/admin/08_admin_settings.jpg) |
+| ![Sales](../landing-fusion/backend/assets/static/related/formints/pro-admin-sales.jpg) | ![Loyalty](../landing-fusion/backend/assets/static/related/formints/pro-admin-loyalty.jpg) | ![Settings](../landing-fusion/backend/assets/static/related/formints/pro-admin-settings.jpg) |
 | **Unfold Admin — Sales** | **Unfold Admin — Loyalty** | **Unfold Admin — Settings** |
 
 ---
@@ -112,35 +101,27 @@ See [`formint/README.md`](formint/README.md) and
 ## 🏗️ Architecture
 
 ```
-formintA/                    # Community — offline-first desktop POS
-├── src/                     # Astro 5 pages (25) + React 19 components
-├── src-tauri/               # Tauri 2 + Rust/Diesel (30+ #[command]s), SQLite
-├── e2e/ + tests/            # Playwright e2e + Vitest
-└── Makefile                 # dev/build/check targets
-
-formint/                     # Pro — merged package (formerly pos-full + pos-solo)
-├── frontend/                # Astro + Alpine.js + HTMX shell (32 pages)
-├── sidecar/                 # Full Django sidecar (48 models)
-│   ├── configs/ + asgi.py   # Django settings, URLconf, ASGI (HTTP + WS)
-│   ├── bolt_api.py          # django-bolt REST endpoints (runbolt, :8766)
-│   ├── consumers.py         # Channels WebSocket consumers (ws/nodes|entities|config)
-│   ├── views_django.py      # Django-native REST surface (replaces Robyn routes)
-│   ├── services/            # sync engine (ProductSyncEngine)
+formint-pos/                 # Merged package (formerly pos-full + pos-solo)
+├── frontend/                # Astro + Alpine.js + HTMX shell
+│   └── src/                 # Pages, components, contract tests
+├── backend/                 # Django + Ninja + django-fusion + Unfold admin
+│   ├── formint/             # Models (45), views, api, fusion, handlers
+│   ├── configs/             # Settings + URL routing
+│   └── Makefile             # dev/check/migrate/test/seed targets
+├── sidecar/                 # Merged Robyn sidecar (streams, ws_client, sync)
+│   ├── server.py            # Robyn REST + WebSocket (60-70+ endpoints)
+│   ├── routes/              # CRUD + state + webhooks + reports
+│   ├── services/            # sync, scheduler, webhook services
 │   ├── models/              # Django ORM models (organized packages)
-│   └── tests/               # Pytest suites (all files green individually)
+│   └── tests/               # Pytest suites (171 passing)
 ├── src-tauri/               # Tauri 2 desktop shell (Django is data authority)
-├── migration/               # compatibility-manifest.json
+├── legacy-react/            # Archived React UIs (pos-full + pos-solo)
+├── docs/                    # Screenshots + architecture docs
 └── Makefile                 # install/env/test/check/build orchestration
 
-formintB/                    # Cloud (pos-cloud) — hosted SaaS master
-├── backend/                 # Django apps: core (models+viewsets), domain (sync), handlers (API+WS)
-├── frontend/                # Astro 5 + React 19 (Community UI + telemetry, 26 pages)
-└── Makefile                 # cloud install/run/test targets
-
-formintC/                    # pos-client
-├── src/ + src-tauri/        # Vue 3 + Pinia desktop client (4 views)
-├── backend/                 # Django purchase-app (shop + employee, 6 models)
-└── frontend/                # Astro storefront on django-fusion
+forge-pos/                   # Mini edition — Tauri + Rust/Diesel
+pos-client/                  # Vue 3 + Tauri desktop client
+pos-cloud/                   # Django ASGI + Unfold + Bolt cloud CRM master
 ```
 
 ---
@@ -149,12 +130,12 @@ formintC/                    # pos-client
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Astro 5 + React 19 (Community/Cloud) · Astro + Alpine + HTMX (Pro) · Vue 3 + Pinia (pos-client) |
-| Backend | Django 5 + Ninja + django-fusion + django-tables2 · django-bolt |
-| Sidecar | Python 3, Django + Channels WebSocket + django-bolt + django-fusion |
+| Frontend | Astro, Alpine.js, HTMX (merged) · React 19 (archived legacy) |
+| Backend | Django 5 + Ninja + django-fusion + django-tables2 |
+| Sidecar | Python 3, Robyn, Django ORM (mirror), WebSocket streams |
 | Admin | django-unfold (dashboard, KPI cards, charts) |
-| Desktop | Rust (Tauri 2, Diesel) |
-| Testing | pytest (sidecar + backend), Vitest (frontend contract), Playwright (e2e) |
+| Desktop | Rust (Tauri 2) |
+| Testing | pytest (sidecar + backend), Vitest (frontend contract) |
 | Build | make, pnpm/npm, pip/.venv |
 
 ---
@@ -165,7 +146,7 @@ formintC/                    # pos-client
 - **Merged Formint package** — one boundary for frontend + backend + sidecar
 - **Django Ninja REST API** — 45 paginated resources with django-fusion encoder/decoder
 - **Unfold admin panel** — KPI dashboard, charts, loyalty & settings management
-- **Django sidecar** — Django + Channels WebSocket streams + django-bolt `/bolt/*` API + django-fusion fragments
+- **Robyn sidecar** — WebSocket streams, data sync, webhooks, scheduler
 - **Role-based auth** — Superuser with 2FA support
 - **Inventory tracking** — Low-stock alerts, purchase orders, supplier management
 - **Kitchen display system** — Ticket flow: pending → preparing → ready → delivered
@@ -182,16 +163,19 @@ formintC/                    # pos-client
 
 | Document | Description |
 |----------|-------------|
-| [`docs/architecture/editions.md`](docs/architecture/editions.md) | **Editions analysis** — mini vs large scope, versions, per-edition breakdown |
-| [`docs/FORMINT_ARCHITECTURE.md`](docs/FORMINT_ARCHITECTURE.md) | Formint POS architecture (merged package) |
-| [`docs/SIDECAR_V2.md`](docs/SIDECAR_V2.md) | **Sidecar v2 reference** — Django + Channels + django-bolt, WS streams, signals, approval, sync |
-| [`docs/COMMANDS.md`](docs/COMMANDS.md) | All CLI commands reference |
-| [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | Getting started guide |
-| [`docs/POS_ARCHITECTURE.md`](docs/POS_ARCHITECTURE.md) | POS architecture (all editions) |
-| [`docs/BOLT_INTEGRATION.md`](docs/BOLT_INTEGRATION.md) | django-bolt integration |
-| [`docs/RUST_INTEGRATION.md`](docs/RUST_INTEGRATION.md) | Rust/Tauri integration |
+| [`SIDECAR_V2.md`](docs/SIDECAR_V2.md) | **Sidecar v2 reference** — Robyn + Django ORM, 70+ APIs, WS streams, signals, approval, sync, cloud plan |
 | [`CHANGELOG.md`](CHANGELOG.md) | Full version history |
 | [`PUBLISH.md`](PUBLISH.md) | Marketplace publish kit (ThemeForest, CodeCanyon, Gumroad) |
+| [`docs/README.md`](docs/README.md) | Editions overview & architecture |
+| [`docs/START_HERE.md`](docs/START_HERE.md) | Getting started guide |
+| [`docs/commands.md`](docs/commands.md) | All CLI commands reference |
+| [`docs/project-tree.md`](docs/project-tree.md) | Full project tree |
+| [`docs/rust-code.md`](docs/rust-code.md) | Rust backend documentation |
+| [`docs/customization-react.md`](docs/customization-react.md) | React customization guide |
+| [`docs/customization-tauri.md`](docs/customization-tauri.md) | Tauri customization guide |
+| [`docs/i18n-conventions.md`](docs/i18n-conventions.md) | Translation conventions |
+| [`docs/server/README.md`](docs/server/README.md) | Sidecar API reference [Solo/Full] |
+| [`docs/back-env/README.md`](docs/back-env/README.md) | Backend environment setup [Full] |
 
 ---
 
@@ -205,7 +189,7 @@ SUPERUSER_PASSWORD=changeme
 SUPERUSER_NAME=Admin
 DATABASE_URL=restaurant.db
 SIDECAR_HOST=127.0.0.1
-SIDECAR_PORT=8767   # Django sidecar (django-bolt API on 8766)
+SIDECAR_PORT=8765
 ```
 
 ---

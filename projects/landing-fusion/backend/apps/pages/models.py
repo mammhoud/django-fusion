@@ -856,6 +856,16 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
             "(e.g. internal libraries like ceptor-ai)."
         ),
     )
+    show_on_home = models.BooleanField(
+        default=True,
+        verbose_name=_("Show on home"),
+        help_text=_(
+            "Show this product in the home preview grid. Turn off for "
+            "subproducts (e.g. vResume) that stay catalog-only: they still "
+            "appear on /products/ and the pricing tabs, just not on the "
+            "homepage cards."
+        ),
+    )
     body = RichTextField(
         blank=True,
         verbose_name=_("Overview"),
@@ -929,6 +939,7 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
                 FieldPanel("logo_style"),
                 FieldPanel("status"),
                 FieldPanel("hidden"),
+                FieldPanel("show_on_home"),
             ],
             heading=_("Listing card"),
             classname=SECTION_PANEL_CLASS,
@@ -1170,14 +1181,22 @@ class ProductsPage(SectionStackMixin, LandingPage):
         verbose_name = _("Products page")
         verbose_name_plural = _("Products pages")
 
-    def get_product_cards(self) -> list[dict]:
-        """Product cards — one per live, non-hidden ProductPage child."""
+    def get_product_cards(self, for_home: bool = False) -> list[dict]:
+        """Product cards — one per live, non-hidden ProductPage child.
+
+        ``for_home=True`` filters to products flagged ``show_on_home`` so the
+        homepage preview grid stays curated (subproducts like vResume remain
+        catalog-only). The full catalog (``/products/``, pricing tabs) always
+        lists every live, non-hidden product.
+        """
         from apps.pages.models import ProductPage as _ProductPage
 
         return [
             child.specific.get_product_card()
             for child in self.get_children().live()
-            if isinstance(child.specific, _ProductPage) and not child.specific.hidden
+            if isinstance(child.specific, _ProductPage)
+            and not child.specific.hidden
+            and (not for_home or child.specific.show_on_home)
         ]
 
 

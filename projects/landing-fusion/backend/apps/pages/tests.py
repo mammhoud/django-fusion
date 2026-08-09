@@ -53,8 +53,50 @@ class LandingPagesTestCase(TestCase):
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(hero, response.content)
 
-    def test_home_is_slim_entry(self):
-        """Home renders hero + CTA only — the section stack moved to About."""
+    def test_courses_api_serves_published_home_catalog(self):
+        """The homepage course cards come from the published learning catalog."""
+        from django.contrib.auth import get_user_model
+        from apps.learning.models import Course, Module, Lesson
+
+        instructor = get_user_model().objects.create_user(
+            username="course-instructor",
+            email="course-instructor@example.com",
+        )
+        published = Course.objects.create(
+            title="Build a calm product",
+            short_description="A practical path from idea to release.",
+            instructor=instructor,
+            is_published=True,
+            is_featured=True,
+            duration_hours="2.5",
+        )
+        module = Module.objects.create(course=published, title="Start", order=1)
+        Lesson.objects.create(module=module, title="Ship", order=1, is_active=True)
+        Course.objects.create(
+            title="Draft course",
+            short_description="Not public yet.",
+            instructor=instructor,
+            is_published=False,
+        )
+
+        response = self.client.get("/apis/courses/")
+        self.assertEqual(response.status_code, 200)
+        courses = response.json()["courses"]
+        self.assertEqual([course["slug"] for course in courses], [published.slug])
+        self.assertEqual(courses[0]["lesson_count"], 1)
+        self.assertEqual(courses[0]["href"], published.get_absolute_url())
+        self.assertTrue(courses[0]["is_featured"])
+
+        home = self.client.get("/")
+        self.assertEqual(home.status_code, 200)
+        self.assertContains(home, "Learn by shipping.")
+        self.assertContains(home, "Build a calm product")
+        self.assertContains(home, "/learning/")
+        self.assertNotContains(home, "This page is the framework")
+        self.assertNotContains(home, "No React, no Vue, no Svelte")
+
+    def test_home_is_focused_entry(self):
+        """Home renders hero + course preview + CTA; the section stack stays on About."""
         response = self.client.get("/")
         self.assertIn(b"Digital products, shipped as", response.content)
         self.assertIn(b"A useful first release beats a noisy roadmap", response.content)
@@ -121,7 +163,7 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for marker in (
             b"Mahmoud Ezzat Moustafa",
-            b"The engineer",
+            b"the engineer",
             b"Full-stack developer",
             b"Built on",
             b"django-fusion",
@@ -199,6 +241,28 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"Formints", response.content)
         self.assertNotIn(b"<html", response.content)
         self.assertNotIn(b"site-header", response.content)
+
+    def test_home_fragment_includes_course_preview(self):
+        """The direct HTMX home fragment carries the same course preview."""
+        from django.contrib.auth import get_user_model
+        from apps.learning.models import Course
+
+        instructor = get_user_model().objects.create_user(
+            username="fragment-course-instructor",
+            email="fragment-course-instructor@example.com",
+        )
+        Course.objects.create(
+            title="Build a calm product",
+            short_description="A practical path from idea to release.",
+            instructor=instructor,
+            is_published=True,
+            is_featured=True,
+        )
+        response = self.client.get("/fragment/pages/home/", HTTP_HX_REQUEST="true")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Learn by shipping.")
+        self.assertContains(response, "Build a calm product")
+        self.assertNotContains(response, "This page is the framework")
 
     def test_direct_page_fragment_api_is_content_only(self):
         """The Astro LiveFragment endpoint returns Django content, never a document shell."""
@@ -278,10 +342,11 @@ class LandingPagesTestCase(TestCase):
         response = self.client.get("/pricing/")
         self.assertEqual(response.status_code, 200)
         # One preview link per edition card across the tabbed products —
-        # assert the count is at least the seeded total (4 + 3 + 2 + 2 + 2
-        # = 13) plus the per-edition URLs actually resolve by slug, so the
-        # test stays honest when editors add editions/products.
-        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 13)
+        # assert the count is at least the seeded total (Formints 4 + LMS 2
+        # + Loop 2 + Cypercloud 2 + vResume 2 = 12) plus the per-edition
+        # URLs actually resolve by slug, so the test stays honest when
+        # editors add editions/products.
+        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 12)
         for url in (
             b"/products/formint-pos/preview/community/",
             b"/products/formint-pos/preview/standard/",
@@ -442,6 +507,84 @@ class LandingPagesTestCase(TestCase):
         )
         self.assertEqual(languages["coverage"]["ar"], PageTranslation.objects.filter(language="ar").count())
 
+    def test_arabic_subpages_are_seeded_and_exposed(self):
+        """Nested About, service, prompt, and blog pages receive Arabic overlays."""
+        expected = {
+            "team": "الفريق",
+            "founder": "المؤسس",
+            "startup": "قصة الشركة الناشئة",
+            "discover": "الاكتشاف",
+            "shape-the-brief": "صياغة الموجز",
+            "why-landing-pages-as-documents": "الزيارة الأولى السريعة قرار منتج",
+        }
+        for slug, title in expected.items():
+            with self.subTest(slug=slug):
+                response = self.client.get(f"/apis/pages/{slug}/?lang=ar")
+                self.assertEqual(response.status_code, 200)
+                payload = response.json()
+                self.assertEqual(payload["title"], title)
+                self.assertEqual(payload["language"], "ar")
+                self.assertEqual(payload["translation_source"], "model")
+                self.assertEqual(payload["translation_language"], "ar")
+
+        discover = self.client.get("/apis/pages/discover/?lang=ar").json()
+        self.assertEqual(discover["phase_label"], "الاكتشاف")
+        self.assertEqual(discover["outcomes"][0], "موجز محدد")
+
+        prompt = self.client.get("/apis/pages/shape-the-brief/?lang=ar").json()
+        self.assertIn("حوّل موجز هذا المنتج", prompt["prompt"])
+        self.assertEqual(prompt["tool"], "Wagtail واكتشاف المنتج")
+
+        navigation = self.client.get("/apis/navigation/?lang=ar").json()
+        about = next(item for item in navigation["nav_items"] if item["href"] == "/about/")
+        about_children = {child["href"]: child["label"] for child in about["children"]}
+        self.assertEqual(about_children["/about/team/"], "الفريق")
+        self.assertEqual(about_children["/about/founder/"], "المؤسس")
+        self.assertEqual(about_children["/about/startup/"], "قصة الشركة الناشئة")
+
+        # The Django render road consumes the same overlay for nested pages.
+        team_html = self.client.get("/about/team/?lang=ar")
+        self.assertEqual(team_html.status_code, 200)
+        self.assertIn("الأشخاص الذين يقفون خلف المنتجات".encode(), team_html.content)
+        self.assertIn("الفريق".encode(), team_html.content)
+        self.assertIn("الأشخاص الذين يقفون خلف المنتجات".encode(), team_html.content)
+        self.assertIn("لنبنِ شيئاً مفيداً".encode(), team_html.content)
+        self.assertIn('<span itemprop="name">الفريق</span>'.encode(), team_html.content)
+
+        founder_html = self.client.get("/about/founder/?lang=ar")
+        self.assertEqual(founder_html.status_code, 200)
+        self.assertIn("المكدس التقني".encode(), founder_html.content)
+        self.assertIn("هل لديك منتج يحتاج إلى مسار أوضح؟".encode(), founder_html.content)
+        self.assertIn('<span itemprop="name">المؤسس</span>'.encode(), founder_html.content)
+
+        startup_html = self.client.get("/about/startup/?lang=ar")
+        self.assertEqual(startup_html.status_code, 200)
+        self.assertIn("المحطات الرئيسية".encode(), startup_html.content)
+        self.assertIn("القصة بالأرقام".encode(), startup_html.content)
+
+        team_fragment = self.client.get("/fragment/pages/team/?lang=ar")
+        self.assertEqual(team_fragment.status_code, 200)
+        self.assertIn("الأشخاص الذين يقفون خلف المنتجات".encode(), team_fragment.content)
+        self.assertIn("لنبنِ شيئاً مفيداً".encode(), team_fragment.content)
+
+        phase_html = self.client.get("/services/phases/discover/?lang=ar")
+        self.assertEqual(phase_html.status_code, 200)
+        self.assertIn("الاكتشاف".encode(), phase_html.content)
+        self.assertIn("ما الذي تقدمه هذه المرحلة".encode(), phase_html.content)
+
+        prompt_html = self.client.get(
+            "/services/phases/discover/prompts/shape-the-brief/?lang=ar"
+        )
+        self.assertEqual(prompt_html.status_code, 200)
+        self.assertIn("صياغة الموجز".encode(), prompt_html.content)
+        self.assertIn("حوّل موجز هذا المنتج".encode(), prompt_html.content)
+
+        post_html = self.client.get(
+            "/blog/why-landing-pages-as-documents/?lang=ar"
+        )
+        self.assertEqual(post_html.status_code, 200)
+        self.assertIn("الزيارة الأولى السريعة قرار منتج".encode(), post_html.content)
+
     def test_site_languages_are_seeded_and_served(self):
         """The SiteLanguage catalog is seeded idempotently and drives the API."""
         from apps.content.models.languages import SiteLanguage
@@ -589,6 +732,8 @@ class LandingPagesTestCase(TestCase):
 
     def test_contact_submit_endpoint(self):
         """POST /fragment/contact/ accepts JSON + HTMX and form-encoded bodies."""
+        from apps.content.models.contact import ContactSubmission
+
         # JSON + HTMX (Astro ContactForm) → HTML fragment swapped into the form.
         response = self.client.post(
             "/fragment/contact/",
@@ -598,6 +743,12 @@ class LandingPagesTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Thanks, Test", response.content)
+        # The submission is persisted as a ContactSubmission snippet.
+        submission = ContactSubmission.objects.get(form_id="landing-contact")
+        self.assertEqual(submission.get_name(), "Test")
+        self.assertEqual(submission.get_email(), "t@example.com")
+        self.assertEqual(submission.submitted_data["message"], "A sufficiently long message.")
+        self.assertEqual(submission.status, "Pending")
 
         # Form-encoded (Django template form) → JSON.
         response = self.client.post(
@@ -606,14 +757,17 @@ class LandingPagesTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"success": True, "message": "Thanks, Test! We'll be in touch."})
+        self.assertEqual(ContactSubmission.objects.filter(form_id="landing-contact").count(), 2)
 
-        # Invalid input → 400.
+        # Invalid input → 400 and nothing persisted.
+        before = ContactSubmission.objects.count()
         response = self.client.post(
             "/fragment/contact/",
             data='{"name": "", "email": "bad"}',
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(ContactSubmission.objects.count(), before)
 
     def test_seeded_buttons_navigate_to_real_pages(self):
         """Every seeded button/link href points at a real page — no dead /#cta
@@ -889,14 +1043,14 @@ class LandingPagesTestCase(TestCase):
         from apps.content.blocks import EditionPreviewImageBlock
 
         block = EditionPreviewImageBlock()
-        valid_image = block.clean({"url": "/static/previews/formints/standard-front.jpg", "kind": "image", "poster": "", "label": "", "alt": ""})
+        valid_image = block.clean({"url": "/static/related/formints/standard-checkout.jpg", "kind": "image", "poster": "", "label": "", "alt": ""})
         self.assertEqual(valid_image["kind"], "image")
-        self.assertEqual(block.clean({"url": "/static/previews/formints/standard-walkthrough.gif", "kind": "gif", "poster": "", "label": "", "alt": ""})["kind"], "gif")
-        self.assertEqual(block.clean({"url": "/static/previews/demo.webm", "kind": "video", "poster": "/static/previews/poster.jpg", "label": "", "alt": ""})["kind"], "video")
+        self.assertEqual(block.clean({"url": "/static/related/formints/standard-walkthrough.gif", "kind": "gif", "poster": "", "label": "", "alt": ""})["kind"], "gif")
+        self.assertEqual(block.clean({"url": "/static/related/demo.webm", "kind": "video", "poster": "/static/related/poster.jpg", "label": "", "alt": ""})["kind"], "video")
         with self.assertRaises(ValidationError):
-            block.clean({"url": "/static/previews/demo.jpg", "kind": "video", "poster": "", "label": "", "alt": ""})
+            block.clean({"url": "/static/related/demo.jpg", "kind": "video", "poster": "", "label": "", "alt": ""})
         with self.assertRaises(ValidationError):
-            block.clean({"url": "/static/previews/demo.jpg", "kind": "image", "poster": "/static/previews/poster.jpg", "label": "", "alt": ""})
+            block.clean({"url": "/static/related/demo.jpg", "kind": "image", "poster": "/static/related/poster.jpg", "label": "", "alt": ""})
 
     def test_scoped_product_refresh_preserves_editor_content(self):
         """Refreshing captures updates only media/version and publishes a live revision."""
@@ -918,16 +1072,22 @@ class LandingPagesTestCase(TestCase):
 
         command = Command()
         command._refresh_product("formint-pos")
+        revisions_after_first_refresh = ProductPage.objects.get(pk=product.pk).revisions.count()
         # A second refresh is a no-op and must not create another content
         # change or duplicate gallery entries.
         command._refresh_product("formint-pos")
         refreshed = ProductPage.objects.get(slug="formint-pos")
+        self.assertEqual(refreshed.revisions.count(), revisions_after_first_refresh)
         self.assertEqual(refreshed.body, "<p>Editor-owned overview.</p>")
         self.assertEqual(refreshed.body != original_body, True)
         self.assertEqual(refreshed.version, "beta 0.2")
         refreshed_standard = next(e for e in refreshed.get_editions() if e["name"] == "Standard")
         self.assertEqual(refreshed_standard["tagline"], "Editor-owned tagline")
         self.assertEqual(len(refreshed_standard["preview_images"]), 4)
+        refreshed_gallery = json.loads(ProductPage._meta.get_field("gallery").value_to_string(refreshed))
+        self.assertEqual(len(refreshed_gallery), 1)
+        gallery_items = refreshed_gallery[0]["value"]["items"]
+        self.assertEqual(gallery_items[1]["value"]["kind"], "gif")
         self.assertTrue(ProductPage.objects.get(pk=refreshed.pk).live)
 
         from django.core.management.base import CommandError
@@ -943,10 +1103,10 @@ class LandingPagesTestCase(TestCase):
         """
         from django.contrib.staticfiles import finders
 
-        path = finders.find("previews/formints/standard-sale-complete.png")
+        path = finders.find("related/formints/standard-sale-complete.png")
         self.assertIsNotNone(path)
         path = str(path)
-        self.assertTrue(path.endswith("/previews/formints/standard-sale-complete.png"))
+        self.assertTrue(path.endswith("/related/formints/standard-sale-complete.png"))
         self.assertGreater(__import__("os").path.getsize(path), 1000)
 
     def test_all_product_apis_expose_visual_gallery_without_snippets(self):
@@ -981,10 +1141,10 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(
             [image["url"] for image in standard["preview_images"]],
             [
-                "/static/previews/formints/standard-front.jpg",
-                "/static/previews/formints/standard-back.jpg",
-                "/static/previews/formints/standard-walkthrough.gif",
-                "/static/previews/formints/standard-sale-complete.png",
+                "/static/related/formints/standard-checkout.jpg",
+                "/static/related/formints/standard-operations.jpg",
+                "/static/related/formints/standard-walkthrough.gif",
+                "/static/related/formints/standard-sale-complete.png",
             ],
         )
         self.assertEqual(
@@ -995,8 +1155,8 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(
             [image["url"] for image in pro["preview_images"]],
             [
-                "/static/previews/formints/pro-admin-dashboard.jpg",
-                "/static/previews/formints/pro-admin-products.jpg",
+                "/static/related/formints/pro-admin-dashboard.jpg",
+                "/static/related/formints/pro-admin-products.jpg",
             ],
         )
         # The product detail page exposes the visual gallery, while the
@@ -1030,6 +1190,49 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"edition__card--featured", response.content)
         self.assertIn(b"most shipped", response.content)
         self.assertIn(b"managed-ribbon", response.content)
+
+    def test_formint_pos_gallery_is_seeded_and_rendered(self):
+        """ProductPage.gallery carries one screenshot and one screencast on both roads."""
+        import json
+
+        product = ProductPage.objects.get(slug="formint-pos")
+        field = ProductPage._meta.get_field("gallery")
+        raw_gallery = json.loads(field.value_to_string(product))
+        self.assertEqual(len(raw_gallery), 1)
+        section = raw_gallery[0]["value"]
+        self.assertEqual(section["title"], "A real checkout, in two views")
+        gallery_items = [item["value"] for item in section["items"]]
+        self.assertEqual(
+            [item["url"] for item in gallery_items],
+            [
+                "/static/related/formints/standard-checkout.jpg",
+                "/static/related/formints/standard-walkthrough.gif",
+            ],
+        )
+        self.assertEqual([item["kind"] for item in gallery_items], ["image", "gif"])
+
+        data = self.client.get("/apis/pages/formint-pos/").json()
+        self.assertEqual(len(data["gallery"]), 1)
+        self.assertEqual(
+            [item["url"] for item in data["gallery"][0]["items"]],
+            [
+                "/static/related/formints/standard-checkout.jpg",
+                "/static/related/formints/standard-walkthrough.gif",
+            ],
+        )
+        # The rendered page shows the gallery's two views; the "Sale complete"
+        # capture (not part of the gallery) still renders below via the edition
+        # previews section (get_preview_gallery), so its label + URL stay
+        # present on the page.
+        page = self.client.get("/products/formint-pos/")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn(b"A real checkout, in two views", page.content)
+        self.assertIn(b"Checkout screenshot", page.content)
+        self.assertIn(b"Sale complete", page.content)
+        self.assertIn(b"Standard screencast", page.content)
+        self.assertIn(b"/static/related/formints/standard-checkout.jpg", page.content)
+        self.assertIn(b"/static/related/formints/standard-sale-complete.png", page.content)
+        self.assertIn(b"/static/related/formints/standard-walkthrough.gif", page.content)
 
     def test_formint_pos_renders_feature_comparison_table(self):
         """The POS reference page ships the full edition-vs-edition comparison table (~33 rows)."""
@@ -1108,6 +1311,72 @@ class LandingPagesTestCase(TestCase):
 
         data = self.client.get("/apis/pages/products/").json()
         self.assertTrue(any(p["slug"] == "formint-pos" for p in data["products"]), data.get("products"))
+
+    def test_catalog_only_products_stay_out_of_home_and_product_dropdown(self):
+        """Catalog-only and hidden subproducts keep their distinct visibility contracts.
+
+        vResume is a public subproduct: it remains on the full catalog and
+        pricing tabs, but is absent from the curated homepage and Products
+        dropdown. ceptor-ai is an internal library: it is explicitly marked
+        catalog-ineligible and hidden from every listing while its detail route
+        remains directly addressable.
+        """
+        from apps.pages.models import ProductPage
+
+        products_data = self.client.get("/apis/pages/products/").json()
+        catalog_slugs = [p["slug"] for p in products_data.get("products", [])]
+        pricing_slugs = [p["slug"] for p in self.client.get("/apis/pricing/").json()["products"]]
+        home_slugs = [p["slug"] for p in self.client.get("/apis/pages/home/").json().get("products", [])]
+        nav = self.client.get("/apis/navigation/").json()["nav_items"]
+        product_children = next(item["children"] for item in nav if item["href"] == "/products/")
+        dropdown_slugs = [child["href"].strip("/").split("/")[-1] for child in product_children]
+
+        # Public catalog-only subproduct: catalog + pricing yes; home + nav no.
+        self.assertIn("vresume", catalog_slugs)
+        self.assertIn("vresume", pricing_slugs)
+        self.assertNotIn("vresume", home_slugs)
+        self.assertNotIn("vresume", dropdown_slugs)
+        self.assertFalse(ProductPage.objects.get(slug="vresume").show_on_home)
+        self.assertFalse(ProductPage.objects.get(slug="vresume").hidden)
+
+        # Internal library: explicit home exclusion plus hidden listing exclusion.
+        self.assertNotIn("ceptor-ai", catalog_slugs)
+        self.assertNotIn("ceptor-ai", pricing_slugs)
+        self.assertNotIn("ceptor-ai", home_slugs)
+        self.assertNotIn("ceptor-ai", dropdown_slugs)
+        ceptor = ProductPage.objects.get(slug="ceptor-ai")
+        self.assertFalse(ceptor.show_on_home)
+        self.assertTrue(ceptor.hidden)
+
+        # Flagships remain visible on the homepage and in the product dropdown.
+        for slug in ("formint-pos", "lms", "cms", "cypercloud"):
+            self.assertIn(slug, home_slugs)
+            self.assertIn(slug, dropdown_slugs)
+            self.assertTrue(ProductPage.objects.get(slug=slug).show_on_home)
+
+        # Listing visibility does not remove direct detail routes.
+        self.assertEqual(self.client.get("/products/vresume/").status_code, 200)
+        self.assertEqual(self.client.get("/products/ceptor-ai/").status_code, 200)
+
+    def test_seed_repairs_stale_catalog_flags_idempotently(self):
+        """A seed rerun repairs stale listing flags only in this catalog tree."""
+        vresume = ProductPage.objects.get(slug="vresume")
+        ceptor = ProductPage.objects.get(slug="ceptor-ai")
+        vresume.show_on_home = True
+        vresume.hidden = True
+        vresume.save(update_fields=["show_on_home", "hidden"])
+        ceptor.show_on_home = True
+        ceptor.hidden = False
+        ceptor.save(update_fields=["show_on_home", "hidden"])
+
+        SeedCommand().handle()
+
+        vresume.refresh_from_db()
+        ceptor.refresh_from_db()
+        self.assertFalse(vresume.show_on_home)
+        self.assertFalse(vresume.hidden)
+        self.assertFalse(ceptor.show_on_home)
+        self.assertTrue(ceptor.hidden)
 
     def test_services_carries_offering_and_process(self):
         """Services renders the three service lines + the 'build as you go' process."""
@@ -1522,28 +1791,43 @@ class LandingPagesTestCase(TestCase):
         self.assertNotIn(b"hx-post=\"/apis/blog/", response.content)
 
     def test_product_snippets_link_to_deep_dive_posts(self):
-        """Product snippet cards link out to the deep-dive posts (the code
-        moved into the blog) instead of inlining the code."""
-        for slug, post_title in (
-            ("formint-pos", b"The Formints data model"),
-            ("lms", b"The Precis LMS content model"),
-            ("cms", b"The Loop block library"),
-        ):
+        """The seed wires each product's snippet records to its deep-dive post.
+
+        The code moved off the product pages onto the deep-dive blog posts:
+        the product page stays on the visual road (editions, previews,
+        gallery) while its SnippetBlock records keep ``related_post`` pointing
+        at the blog post that hosts the full code sections.
+        """
+        import json
+
+        from apps.pages.models import BlogPostPage, ProductPage
+
+        deep_dives = {
+            "formint-pos": "formint-pos-data-model",
+            "lms": "precis-lms-content-model",
+            "cms": "loop-block-library",
+        }
+        for slug, post_slug in deep_dives.items():
             with self.subTest(slug=slug):
+                product = ProductPage.objects.get(slug=slug)
+                field = ProductPage._meta.get_field("snippets")
+                raw = json.loads(field.value_to_string(product))
+                section = next((b for b in raw if b["type"] == "snippets"), None)
+                self.assertIsNotNone(section, slug)
+                snippet_items = section["value"]["snippets"]
+                self.assertTrue(snippet_items, slug)
+                post = BlogPostPage.objects.get(slug=post_slug)
+                self.assertTrue(
+                    any(s["value"]["related_post"] == post.pk for s in snippet_items),
+                    slug,
+                )
+                # Product pages stay on the visual road — no snippet cards.
                 response = self.client.get(f"/products/{slug}/")
                 self.assertEqual(response.status_code, 200, slug)
-                self.assertIn(b"Read the deep dive:", response.content)
-                self.assertIn(post_title, response.content)
-                data = self.client.get(f"/apis/pages/{slug}/")
-                snippets = data.json().get("snippets", [])
-                self.assertTrue(snippets, slug)
-                self.assertTrue(
-                    all(s.get("related_post_href") for s in snippets),
-                    f"{slug} snippets should carry related_post_href",
-                )
-                self.assertTrue(
-                    all(s.get("related_post_title") for s in snippets),
-                    f"{slug} snippets should carry related_post_title",
+                self.assertNotIn(b"Models &amp; snippets", response.content)
+                self.assertNotIn(b'id="snippets"', response.content)
+                self.assertNotIn(
+                    "snippets", self.client.get(f"/apis/pages/{slug}/")
                 )
 
     def test_blog_comments_api_requires_login_and_serves_approved(self):

@@ -20,9 +20,9 @@ lms-fusion/backend/
 │   │   ├── schemas/               # Shared schema definitions
 │   │   ├── urls.py                # Cart and checkout endpoints
 │   │   └── routes.py              # Routable component site configuration
+│   ├── learning/                  # Learning/LMS app (courses, enrollment, learning)
 │   └── pages/                     # Domain-specific apps (one per feature module)
 │       ├── blog/                  # Blog app (models, views, API, components)
-│       ├── lms/                   # LMS app (courses, enrollment, learning)
 │       ├── profile/               # User profile app (settings, dashboard, notes)
 │       ├── products/              # Products & cart app
 │       ├── accounts/              # Authentication & registration app
@@ -67,7 +67,7 @@ both Next.js and Django consumption.
 /                              → apps.pages.urls (namespace: "plugins")
 /accounts/                     → apps.pages.accounts.urls (namespace: "accounts")
 /profile/                      → apps.pages.profile.urls (namespace: "profile")
-/learning/                     → apps.pages.lms.urls (namespace: "lms")
+/learning/                     → apps.learning.urls (namespace: "lms")
 /cart/                         → apps.core.urls (namespace: "cart")
 /legal/                        → apps.core.handlers.urls (namespace: "legal")
 /api/                          → apps.core.api.urls (namespace: "api")
@@ -83,7 +83,7 @@ Use canonical import paths from the new structure:
 | Old Path | New Path |
 |----------|----------|
 | `plugins.blog.*` | `apps.pages.blog.*` |
-| `plugins.lms.*` | `apps.pages.lms.*` |
+| `plugins.lms.*` | `apps.learning.*` |
 | `plugins.profile.*` | `apps.pages.profile.*` |
 | `plugins.products.*` | `apps.pages.products.*` |
 | `plugins.accounts.*` | `apps.pages.accounts.*` |
@@ -100,7 +100,7 @@ Use canonical import paths from the new structure:
 django-fusion `FragmentComponent` / `RoutableComponent` subclasses live in
 each app's `components.py`:
 
-- `apps/pages/lms/components.py` — `StaticPageFragment`, `CourseListFragment`
+- `apps/learning/components.py` — `StaticPageFragment`, `CourseListFragment`
 - `apps/pages/blog/components.py` — `BlogPostListFragment`, `BlogPostCreateFragment`
 - `apps/pages/profile/views/` — Profile fragments (dashboard, settings, courses, etc.)
 
@@ -137,14 +137,16 @@ lms-fusion/backend/
 │   ├── errors/
 │   ├── events/
 │   └── wagtailadmin/
+├── apps/learning/templates/             # Learning app templates
+│   ├── learning/
+│   ├── courses/
+│   ├── certification/
+│   └── lms/
 ├── apps/pages/<app>/templates/            # App-owned templates
 │   ├── accounts/auth/
 │   ├── accounts/account/
 │   ├── accounts/registration/
 │   ├── blog/
-│   ├── lms/learning/
-│   ├── lms/courses/
-│   ├── lms/certification/
 │   ├── pages/about/
 │   ├── pages/contact/
 │   ├── pages/home/
