@@ -36,7 +36,7 @@ structa.cloud/
 
 | Product | Canonical path | Main responsibility | Local guidance |
 |---|---|---|---|
-| Precis LMS | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/backend/AGENTS.md` |
+| Precis LMS | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/AGENTS.md` |
 | Landing-Fusion | `projects/landing-fusion/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/landing-fusion/AGENTS.md` |
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
@@ -54,8 +54,10 @@ structa.cloud/
 - `syntara` is the current filesystem location for the product historically
   called Cypercloud. Use `projects/syntara/` in new paths. Preserve the
   `cypercloud` name only where a runtime alias or external contract requires it.
-- `formints/formintA`, `formint-cloud`, `formintC`, and `formint` are distinct POS
-  packages. Do not infer that `formintA` and `formint-cloud` share the same backend.
+- `formints/formint-community`, `formint-pro`, `formint-cloud`,
+  `formint-standard`, and `formint-client` are distinct POS packages
+  (historically `formintA`, `formint`, `formintC`). Do not infer that
+  `formint-community` and `formint-cloud` share the same backend.
 - Older documentation may mention `projects/lms`, `projects/portfolio`,
   `projects/cypercloud`, or `projects/pos`. Treat those as legacy references;
   verify the current path in `projects/Makefile` and the relevant README before
@@ -71,13 +73,20 @@ root safety and repository rules remain in force.
 ```text
 /AGENTS.md
 ├── projects/AGENTS.md
-│   ├── projects/precis/backend/AGENTS.md
+│   ├── projects/precis/AGENTS.md
+│   │   └── projects/precis/backend/AGENTS.md
 │   ├── projects/landing-fusion/AGENTS.md
 │   ├── projects/syntara/AGENTS.md
 │   └── projects/formints/AGENTS.md
+│       ├── projects/formints/formint-pro/AGENTS.md
+│       ├── projects/formints/formint-community/AGENTS.md
+│       ├── projects/formints/formint-standard/AGENTS.md
+│       ├── projects/formints/formint-cloud/frontend/AGENTS.md
+│       ├── projects/formints/formint-client/AGENTS.md
+│       └── projects/formints/tests/pos-e2e/AGENTS.md
 ├── libs/django-fusion/AGENTS.md
 ├── applications/AGENTS.md
-│   └── applications/kilo/AGENTS.md
+│   └── applications/agents/AGENTS.md
 ├── tests/AGENTS.md
 ├── .github/AGENTS.md
 └── deeper template/frontend/test AGENTS.md files
@@ -163,11 +172,11 @@ home. Never edit generated output instead of its source.
 - UI code belongs in the relevant `formints/*/frontend` or `src` tree.
 - Native desktop behavior belongs in that edition's `src-tauri/`.
 - Professional product APIs, models, fragments, and sync services belong in
-  `projects/formints/formint/`.
+  `projects/formints/formint-pro/`.
 - Cloud-master behavior belongs in `projects/formints/formint-cloud/`.
 - Shared POS E2E tests belong in `projects/formints/tests/pos-e2e/`.
-- Do not introduce a Python sidecar into `formintA`; it is the direct Rust/
-  SQLite edition. Do not assume the cloud master still has a Robyn sidecar;
+- Do not introduce a Python sidecar into `formint-community`; it is the direct
+  Rust/SQLite edition. Do not assume the cloud master still has a Robyn sidecar;
   current formint-cloud serves its API from Django.
 
 ## 5. Commands and validation
@@ -205,7 +214,7 @@ make test
 make migrate
 
 # Formint professional product
-cd projects/formints/formint
+cd projects/formints/formint-pro
 make check
 make test
 

@@ -117,6 +117,10 @@ def main() -> int:
     configure(args.site)
 
     import django
+
+_PRECIS_BACKEND = Path(__file__).resolve().parents[3] / "projects" / "precis" / "backend"
+if str(_PRECIS_BACKEND) not in sys.path:
+    sys.path.insert(0, str(_PRECIS_BACKEND))
     from django.core.management import call_command
 
     django.setup()

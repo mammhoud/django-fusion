@@ -4,12 +4,17 @@
 NODE_BIN := $(shell ls -d $(HOME)/.nvm/versions/node/v22.* 2>/dev/null | sort -V | tail -1)/bin
 export PATH := $(NODE_BIN):$(PATH)
 
-.PHONY: help install dev build preview check css clean e2e \
+.PHONY: help install dev build build-prod preview check css clean e2e \
+        install-assets build-assets build-assets-dev skeleton-manifest \
         backend-help backend-dev backend-check backend-migrate backend-seed backend-test
 
 help:
 	@echo "landing-fusion — frontend (Astro) + backend (Django/Wagtail)"
-	@echo "  Frontend: make install | dev | build | preview | check | css | clean"
+	@echo "  Build:    make build (full) | build-prod | css"
+	@echo "  Assets:   make install-assets | build-assets | build-assets-dev"
+	@echo "  Skeleton: make skeleton-manifest"
+	@echo "  Dev:      make dev | preview | check"
+	@echo "  Clean:    make clean"
 	@echo "  Backend:  make backend-help | backend-dev | backend-check | backend-migrate | backend-seed | backend-test"
 
 # ── Frontend (Astro) ───────────────────────────────────────────────
@@ -19,8 +24,11 @@ install:
 dev:
 	cd frontend && npm run dev
 
-build: css
+build: install-assets build-assets css
 	cd frontend && npm run build
+
+# Full production build — same as `build` but explicit for CI pipelines
+build-prod: build
 
 # Compile the shared design system (frontend/src/styles/globals.css) into
 # the backend-served assets/static/css/fusion.css. globals.css declares
@@ -42,6 +50,25 @@ e2e:
 
 clean:
 	cd frontend && rm -rf dist .astro node_modules
+	rm -rf backend/assets/static/bundles node_modules
+
+# ── Webpack Asset Build (Django-side SCSS/JS) ──────────────────────
+# Extends projects/webpack/base.config.js — see webpack/landing-fusion.config.js
+install-assets:
+	npm install
+
+build-assets: skeleton-manifest
+	npx webpack --config webpack/landing-fusion.config.js --mode=production
+
+build-assets-dev:
+	npx webpack --config webpack/landing-fusion.config.js --mode=development
+
+# ── Skeleton Manifest ──────────────────────────────────────────────
+# Runs the Django management command to produce a static JSON manifest
+# consumed by the Astro frontend (SkeletonBridge.astro). Depends on
+# webpack having been run first so the manifest can resolve CSS/JS deps.
+skeleton-manifest:
+	$(MAKE) -C backend skeleton-manifest
 
 # ── Backend (Django + Wagtail) ─────────────────────────────────────
 backend-help backend-dev backend-check backend-migrate backend-seed backend-test:

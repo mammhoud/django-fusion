@@ -209,6 +209,6 @@ The codebase has been through several renames. See this guide for mapping old na
 | Clone a site | [`guides/06-clone-site.md`](guides/06-clone-site.md) |
 | Deployment guide | [`guides/04-deploy.md`](guides/04-deploy.md) |
 | Infrastructure | [`dev/infrastructure/`](dev/infrastructure/) |
-| django-fusion reference | [`projects/libs/django-fusion.md`](projects/libs/django-fusion.md) |
+| django-fusion reference | [`libs/django-fusion.md`](libs/django-fusion.md) |
 | AI agents & prompts | [`ai/agents.md`](ai/agents.md) |
 | Formint editions | [`pos/editions.md`](pos/editions.md) |

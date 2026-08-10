@@ -18,6 +18,7 @@ from .models import (
     DeviceToken,
     SyncConflict,
     SyncQueueItem,
+    BackupRun,
 )
 
 
@@ -130,6 +131,20 @@ class SyncQueueItemAdmin(ModelAdmin):
         ("Queue Item", {"fields": ("branch", "node_id", "entity_type", "operation")}),
         ("Payload", {"fields": ("payload", "idempotency_key")}),
         ("Delivery", {"fields": ("status", "attempt_count", "max_attempts", "last_error", "next_retry_at", "delivered_at")}),
+    )
+
+
+@admin.register(BackupRun)
+class BackupRunAdmin(ModelAdmin):
+    """Admin for database backup attempts (Cloud capability)."""
+
+    list_display = ["filename", "status", "size_bytes", "started_at", "finished_at"]
+    list_filter = ["status"]
+    search_fields = ["filename", "error_message"]
+    readonly_fields = ["started_at", "finished_at"]
+    fieldsets = (
+        ("Backup", {"fields": ("filename", "status", "size_bytes", "error_message")}),
+        ("Timing", {"fields": ("started_at", "finished_at")}),
     )
 
 

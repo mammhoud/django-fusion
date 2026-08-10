@@ -43,10 +43,11 @@ structa.cloud/
 │   │   └── assets/                   # Project assets
 │   ├── syntara/                      # Cypercloud AI chat/customizer runtime
 │   ├── formints/                     # Multi-edition POS platform
-│   │   ├── formintA/                 # Community (Tauri + React + Rust)
-│   │   ├── formint/                  # Professional (Astro + Django + Tauri)
+│   │   ├── formint-community/        # Community (Tauri + React + Rust)
+│   │   ├── formint-pro/              # Professional (Astro + Django + Tauri)
 │   │   ├── formint-cloud/            # Cloud master (Django + Channels)
-│   │   ├── formintC/                 # POS Client (Tauri + Vue 3)
+│   │   ├── formint-standard/         # Standard edition (Astro + Tauri)
+│   │   ├── formint-client/           # POS Client (Tauri + Vue 3)
 │   │   ├── tests/                    # Shared POS tests
 │   │   └── docs/                     # POS architecture docs
 │   ├── configs/                      # Shared Django settings and workers
@@ -100,11 +101,11 @@ structa.cloud/
 
 | Product | Directory | Key Docs |
 |---|---|---|
-| **Precis LMS** | [`projects/precis/`](projects/precis/) | Configuration, Courses, Deployment |
-| **Landing-Fusion** | [`projects/landing-fusion/`](projects/landing-fusion/) | Frontend, Backend API, Deployment |
-| **Syntara/Cypercloud** | [`projects/cypercloud/`](cypercloud/) | Infrastructure, Configuration, Features |
-| **Formint POS** | [`projects/pos/`](pos/) | Editions, Backend (Rust), Sidecar (Django), Cloud |
-| **django-fusion** | [`projects/libs/`](projects/libs/) | Component guide, Viewsets, Templates |
+| **Precis LMS** | [`precis/`](precis/) | Configuration, Courses, Deployment |
+| **Landing-Fusion** | [`landing-fusion/`](landing-fusion/) | Frontend, Backend API, Deployment |
+| **Syntara/Cypercloud** | [`cypercloud/`](cypercloud/) | Infrastructure, Configuration, Features |
+| **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar (Django), Cloud |
+| **django-fusion** | [`libs/`](libs/) | Component guide, Viewsets, Templates |
 | **Shared Config** | [`dev/back-env/`](dev/back-env/) | Settings reference, Environment variables |
 
 ## Related

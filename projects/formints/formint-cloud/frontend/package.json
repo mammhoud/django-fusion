@@ -78,6 +78,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
+    "@formints/client": "file:../../packages/formints-client",
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@tauri-apps/api": "^2",

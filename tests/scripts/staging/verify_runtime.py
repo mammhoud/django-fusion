@@ -139,6 +139,10 @@ def main() -> int:
 
     import django
 
+_PRECIS_BACKEND = Path(__file__).resolve().parents[3] / "projects" / "precis" / "backend"
+if str(_PRECIS_BACKEND) not in sys.path:
+    sys.path.insert(0, str(_PRECIS_BACKEND))
+
     django.setup()
     failures = 0
     failures += check_assets(args.strict_assets)

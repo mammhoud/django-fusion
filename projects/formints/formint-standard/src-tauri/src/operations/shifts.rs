@@ -2,6 +2,35 @@ use diesel::prelude::*;
 use crate::db::{models::*, open_conn};
 use std::path::PathBuf;
 
+fn validate_money(value: f64, field: &str) -> Result<(), String> {
+    if !value.is_finite() || value < 0.0 {
+        return Err(format!("{field} must be a finite, non-negative amount."));
+    }
+    Ok(())
+}
+
+fn expected_cash(opening_cash: f64, cash_sales: f64) -> f64 {
+    opening_cash + cash_sales
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn includes_opening_float_in_expected_cash() {
+        assert_eq!(expected_cash(100.0, 37.5), 137.5);
+    }
+
+    #[test]
+    fn rejects_negative_or_non_finite_money() {
+        assert!(validate_money(-0.01, "cash").is_err());
+        assert!(validate_money(f64::NAN, "cash").is_err());
+        assert!(validate_money(f64::INFINITY, "cash").is_err());
+        assert!(validate_money(0.0, "cash").is_ok());
+    }
+}
+
 pub fn get_shifts(db_path: &PathBuf, status: Option<String>) -> Result<Vec<Shift>, String> {
     let mut conn = open_conn(db_path)?;
     use crate::db::schema::shifts::dsl::*;
@@ -26,6 +55,7 @@ pub fn get_active_shift(db_path: &PathBuf) -> Result<Option<Shift>, String> {
 }
 
 pub fn open_shift(db_path: &PathBuf, new: NewShift) -> Result<Shift, String> {
+    validate_money(new.opening_cash, "Opening cash")?;
     let mut conn = open_conn(db_path)?;
     // Ensure no other shift is open
     use crate::db::schema::shifts::dsl::*;
@@ -53,10 +83,12 @@ pub fn close_shift(
     notes: Option<String>,
 ) -> Result<Shift, String> {
     let mut conn = open_conn(db_path)?;
-    use crate::db::schema::shifts::dsl::*;
+    use crate::db::schema::shifts::dsl as shift_table;
 
-    // Calculate expected cash from sales during this shift
-    let shift = shifts
+    validate_money(closing_cash, "Closing cash")?;
+
+    // Calculate expected cash from cash sales during this shift.
+    let shift = shift_table::shifts
         .find(shift_id)
         .first::<Shift>(&mut conn)
         .map_err(|e| e.to_string())?;
@@ -72,22 +104,24 @@ pub fn close_shift(
             .filter(s::created_at.ge(&opened))
             .filter(s::created_at.le(&now))
             .filter(s::status.ne("cancelled"))
+            .filter(s::payment_method.eq("cash"))
             .select(diesel::dsl::sum(s::total_amount))
             .first::<Option<f64>>(&mut conn)
             .map_err(|e| e.to_string())?
             .unwrap_or(0.0)
     };
+    let expected = expected_cash(shift.opening_cash, expected);
 
     let cash_diff = closing_cash - expected;
 
-    diesel::update(shifts.find(shift_id))
+    diesel::update(shift_table::shifts.find(shift_id))
         .set((
-            shift_status.eq("closed"),
-            closed_at.eq(chrono::Utc::now().naive_utc()),
-            closing_cash.eq(closing_cash),
-            expected_cash.eq(expected),
-            cash_difference.eq(cash_diff),
-            shift_notes.eq(notes.unwrap_or_default()),
+            shift_table::shift_status.eq("closed"),
+            shift_table::closed_at.eq(chrono::Utc::now().naive_utc()),
+            shift_table::closing_cash.eq(closing_cash),
+            shift_table::expected_cash.eq(expected),
+            shift_table::cash_difference.eq(cash_diff),
+            shift_table::shift_notes.eq(notes),
         ))
         .returning(Shift::as_returning())
         .get_result(&mut conn)

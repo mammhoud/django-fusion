@@ -1,10 +1,11 @@
 # ============================================================
 # Shared Background Task Server
 # ============================================================
-# Runs a single Dramatiq worker for all workspace websites.
-# All tasks are routed through this shared container; site-specific
-# context should be passed as task arguments rather than relying on
-# per-site worker containers.
+# Runs the Precis/LMS background task worker and scheduler.
+# This Compose file is intentionally project-owned: it mounts only the Precis
+# backend and uses the Precis database/configuration boundary. CTC Research and
+# VResume must use their own project worker deployments; do not add their
+# queues here unless a separate project-owned worker image/database is wired.
 #
 # Usage:
 #   docker compose -f applications/compose/docker-compose.tasks.yml up -d shared-worker
@@ -18,9 +19,10 @@ networks:
 x-shared-tasks-base: &shared-tasks-base
   build:
     context: ../..
-    dockerfile: projects/compose/Dockerfile
+    dockerfile: projects/precis/compose/Dockerfile.backend
     args:
-      PROJECT_PATH: ${TASKS_PROJECT_PATH:-ctc-research}
+        SOURCE_PATH: precis
+        PROJECT_PATH: ${TASKS_PROJECT_PATH:-lms-fusion}
   restart: unless-stopped
   working_dir: /app
   env_file:
@@ -31,20 +33,17 @@ x-shared-tasks-base: &shared-tasks-base
     SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
     SERVER_ENV: ${SERVER_ENV:-production}
     DEBUG: ${DEBUG:-False}
-    # Default to ctc-research.settings (the baked tenant) so Django loads the
-    # full settings module directly via sys.path. Ad-hoc `python manage.py ...
-    # --site <other>` invocations still get the per-site override via SITE_ALIASES
-    # / DJANGO_SITE.
-    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-ctc-research.settings}
-    # Sentinels of the site-agnostic `shared` site (resolved via aliases
-    # in projects/configs/settings/ENV/sites.yml + projects/cli.py:SITES).
-    # The site config's `path: www` (merged from projects/shared/ →
-    # projects/www/) points to the shared worker code. Tasks still route
-    # site-correctly via the queue= decorator on each @shared_task in
-    # www.worker.tasks.
-    DJANGO_SITE: ${DJANGO_SITE:-shared}
-    DJANGO_WEBSITE: ${DJANGO_WEBSITE:-shared}
-    WEBSITE: ${WEBSITE:-shared}
+    # Precis loads its local settings module directly via the backend path.
+    # The worker identity is explicit so task execution cannot silently fall
+    # back to an unrelated project configuration.
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+    DJANGO_WEBSITE_DIR: /app/lms-fusion
+    WEBSITE_DIR: /app/lms-fusion
+    # This worker image is Precis-owned. Keep its site identity explicit so an
+    # unknown cross-project slug cannot silently fall back to the LMS database.
+    DJANGO_SITE: ${DJANGO_SITE:-lms-fusion}
+    DJANGO_WEBSITE: ${DJANGO_WEBSITE:-lms-fusion}
+    WEBSITE: ${WEBSITE:-lms-fusion}
     DB_TYPE: ${DB_TYPE:-postgres}
     DB_HOST: ${DB_HOST:-postgres}
     DB_PORT: ${DB_PORT:-5432}
@@ -66,6 +65,7 @@ x-shared-tasks-base: &shared-tasks-base
     CELERY_RESULT_BACKEND: redis://default-redis:6379/2
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
     LOG_DIR: /app/logs
+    PYTHONPATH: /app/lms-fusion:/app
   # NOTE: We intentionally do NOT declare `volumes:` on this anchor.
   # Compose's `<<: *anchor` merge strategy REPLACES list keys entirely
   # rather than concatenating them, so any anchor-level volumes would be
@@ -73,8 +73,10 @@ x-shared-tasks-base: &shared-tasks-base
   # service must declare its own complete volumes list.
   #
   # BIND-MOUNT SAFETY NET (cli.py + manage.py + __main__.py):
-  # projects/compose/Dockerfile COPY-groups 5 files in one layer:
-  #   projects/Makefile, projects/manage.py, projects/__about__.py, projects/__main__.py, projects/cli.py
+  # projects/precis/compose/Dockerfile.backend copies the workspace entry
+  # points together with the Precis backend. The task services bind-mount
+  # the frequently edited entry points below so host edits do not require an
+  # image rebuild.
   # Docker cache layers occasionally fail to invalidate on minor content
   # changes inside that group (e.g. prior turn's "Unknown site 'shared'"
   # lockup despite host cli.py being edited). Each task service therefore
@@ -103,19 +105,18 @@ services:
       - ../../projects/cli.py:/app/cli.py:z
       - ../../projects/manage.py:/app/manage.py:z
       - ../../projects/__main__.py:/app/__main__.py:z
-      - ../../projects/configs:/app/configs:z
       - ../../projects/assets:/app/assets:z
       - ../../libs:/app/libs:z
       - ../../projects/logs:/app/logs:z
-      - ../../projects/www:/app/www:z
-      - ../../projects/ctc-research:/app/ctc-research:z
-      - ../../projects/lms:/app/lms:z
-      - ../../projects/portfolio:/app/portfolio:z
+      - ../../projects/precis/backend:/app/lms-fusion:z
     command: >
-      python manage.py rundramatiq
+      python lms-fusion/manage.py rundramatiq
       --processes ${DRAMATIQ_PROCESSES:-2}
       --threads ${DRAMATIQ_THREADS:-4}
-      --queues ${DRAMATIQ_QUEUES:-default,shared,email,ctc-research,lms,vresume}
+      # Precis/LMS queues only. This is intentionally literal: do not expose
+      # a generic queue override that could re-add CTC Research or
+      # VResume queues to this Precis-owned, single-database worker.
+      --queues default,shared,email,lms,lms-fusion
 
   shared-scheduler:
     <<: *shared-tasks-base
@@ -124,16 +125,12 @@ services:
       - ../../projects/cli.py:/app/cli.py:z
       - ../../projects/manage.py:/app/manage.py:z
       - ../../projects/__main__.py:/app/__main__.py:z
-      - ../../projects/configs:/app/configs:z
       - ../../projects/assets:/app/assets:z
       - ../../libs:/app/libs:z
       - ../../projects/logs:/app/logs:z
-      - ../../projects/www:/app/www:z
-      - ../../projects/ctc-research:/app/ctc-research:z
-      - ../../projects/lms:/app/lms:z
-      - ../../projects/portfolio:/app/portfolio:z
+      - ../../projects/precis/backend:/app/lms-fusion:z
     command: >
-      celery -A www.worker.celery:app beat
+      celery -A configs.tools.worker.celery:app beat
       --loglevel=${CELERY_LOG_LEVEL:-info}
       --scheduler django_celery_beat.schedulers:DatabaseScheduler
       --pidfile=/tmp/celerybeat.pid

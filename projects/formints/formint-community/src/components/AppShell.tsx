@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigationPredictor } from '../hooks/useNavigationPredictor';
 import { useOfflineMode } from '../hooks/useOfflineMode';
+import { useHealthCheck } from '../hooks/useHealthCheck';
 import { ROLE_ROUTES } from './layout/SideNav';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
@@ -92,6 +93,11 @@ export default function AppShell({ route }: { route: string }) {
   // Community is offline-first — surface the state as a calm fixed banner
   // whenever the OS reports the device offline (informational, non-blocking).
   const offline = useOfflineMode();
+
+  // On-mount health probe using @formints/client.  Community has no backend
+  // by default (baseUrl is empty), so the probe stays idle.  When pointed
+  // at a Standard/Cloud instance the hook reports server reachability.
+  const health = useHealthCheck('');
 
   // Dedicated KDS popout window (loaded with ?kds=1) — renders the Kitchen
   // Display full-bleed with no app chrome, no auth gate and no floating widgets.

@@ -15,6 +15,12 @@
 - **Sidecar test fixes** — `bolt_api` collection crash fixed (removed stale `namespace` kwarg); `test_bolt_api` gracefully skips when `AsyncTestClient` is unavailable
 - **Screenshots** — Unfold admin screenshots consolidated into Landing-Fusion `related/formints/`
 
+### Added (formint-cloud — cloud backups + monitoring)
+- **Automatic backups** — `BackupRun` model + `manage.py backup_db` management command (online SQLite backup with `sqlite3.Connection.backup()`, timestamped filenames, per-run status tracking)
+- **Scheduled backup task** — `@task(schedule="0 2 * * *")` wrapping `backup_db` via django-fusion's APScheduler integration (runs nightly at 02:00 UTC)
+- **Monitoring endpoint** — `GET /monitor/status` JSON endpoint reporting database reachability, latest backup details, and sync queue depth
+- **Backup + monitor tests** — `apps/test_backup.py` (7 tests: model + command), `apps/test_monitor.py` (3 tests: endpoint contract)
+
 ### Removed (repository)
 - **`pos-solo/` and `pos-full/` editions deleted** — fully merged into `formint-pos/` (content preserved in `legacy-react/` archive and git history)
 - **`make editions`** — edition generation target removed; each edition is now canonical in its own directory

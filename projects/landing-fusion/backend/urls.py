@@ -13,6 +13,7 @@ from apps.content.views import BroadcastEmailView
 from apps.handlers.fusion import landing_pages_application
 from apps.learning.fusion import learning_application
 from apps.pages import api as pages_api
+from django_fusion.designer import urls as fusion_designer_urls
 
 # ── Fusion introspection (plugin map + component usage + render tracker) ──
 try:
@@ -24,6 +25,7 @@ except ImportError:  # pragma: no cover - older django-fusion
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
+    path("fusion/mcp/designer/", include(fusion_designer_urls)),
     # Newsletter broadcast — staff-only, registered BEFORE the wagtail admin
     # include so the fixed path wins. Linked from the NewsletterSubscriber
     # snippet index header button ("Email subscribers").

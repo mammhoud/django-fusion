@@ -46,6 +46,7 @@ const Coupons = lazy(() => import('../app/pages/admin/Coupons'));
 const Roles = lazy(() => import('../app/pages/admin/Roles'));
 const SupportChat = lazy(() => import('../app/pages/admin/SupportChat'));
 const StaffPage = lazy(() => import('../app/pages/admin/StaffPage'));
+const CashRegister = lazy(() => import('../app/pages/admin/CashRegister'));
 const ProductsPage = lazy(() => import('../app/pages/pos/ProductsPage'));
 
 // ── Route → page mapping (Astro file-based routing supplies the pathname) ──
@@ -71,6 +72,7 @@ const ROUTE_PAGES: Record<string, LazyExoticComponent<ComponentType>> = {
   '/roles': Roles,
   '/support-chat': SupportChat,
   '/staff': StaffPage,
+  '/register': CashRegister,
   '/products': ProductsPage,
 };
 

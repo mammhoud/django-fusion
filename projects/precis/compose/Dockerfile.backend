@@ -55,8 +55,8 @@ COPY projects/Makefile \
      projects/cli.py \
      ${APP_HOME}/
 
-# Canonical shared settings package used by every workspace site.
-COPY projects/configs ${APP_HOME}/configs
+# Precis owns its settings package. It is copied with the backend below so
+# the image has no dependency on a repository-level configs directory.
 COPY libs    ${APP_HOME}/libs
 
 # Symlink so uv resolves "../libs/django-fusion" from pyproject.toml

@@ -6,13 +6,15 @@ import os
 import sys
 from pathlib import Path
 
-# Ensure projects/ is importable.
-_PROJECTS_DIR = Path(__file__).resolve().parents[2] / "projects"
-sys.path.insert(0, str(_PROJECTS_DIR))
+# Ensure the Precis backend's local config package is importable.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_PROJECTS_DIR = _REPO_ROOT / "projects"
+_PRECIS_BACKEND = _PROJECTS_DIR / "precis" / "backend"
+sys.path.insert(0, str(_PRECIS_BACKEND))
 
 os.environ.setdefault("SERVER_ENV", "development")
 os.environ.setdefault("WEBSITE_NAME", "lms-fusion")
-os.environ.setdefault("WEBSITE_DIR", str(_PROJECTS_DIR / "lms-fusion"))
+os.environ.setdefault("WEBSITE_DIR", str(_PRECIS_BACKEND.parent))
 
 from configs.settings.conf import MainSettings
 
@@ -30,7 +32,7 @@ print("\n=== Dynaconf Smoke Test ===\n")
 # ── Shared _core.yml ──
 print("Shared _core.yml:")
 s = MainSettings(SERVER_ENV="development", WEBSITE_NAME="lms-fusion",
-                 WEBSITE_DIR=str(_PROJECTS_DIR / "lms-fusion"))
+                 WEBSITE_DIR=str(_PRECIS_BACKEND.parent))
 check(s.get("STATIC_URL") == "/static/",
       "STATIC_URL = '/static/' from _core.yml [default]")
 check(s.get("MEDIA_URL") == "/media/",
@@ -48,24 +50,24 @@ check(s.get("DEBUG") is True,
 # ── Environment switching ──
 print("\nEnvironment switching:")
 s_test = MainSettings(SERVER_ENV="testing", WEBSITE_NAME="lms-fusion",
-                      WEBSITE_DIR=str(_PROJECTS_DIR / "lms-fusion"))
+                      WEBSITE_DIR=str(_PRECIS_BACKEND.parent))
 check(s_test.get("EMAIL_STRATEGY") == "console",
       "testing env: EMAIL_STRATEGY = 'console' from _testing.yml")
 
 s_demo = MainSettings(SERVER_ENV="demo", WEBSITE_NAME="lms-fusion",
-                      WEBSITE_DIR=str(_PROJECTS_DIR / "lms-fusion"))
+                      WEBSITE_DIR=str(_PRECIS_BACKEND.parent))
 check(s_demo.get("EMAIL_STRATEGY") == "mailtrap",
       "demo env: EMAIL_STRATEGY = 'mailtrap' from _demo.yml")
 
 s_staging = MainSettings(SERVER_ENV="staging", WEBSITE_NAME="lms-fusion",
-                         WEBSITE_DIR=str(_PROJECTS_DIR / "lms-fusion"))
+                         WEBSITE_DIR=str(_PRECIS_BACKEND.parent))
 check(s_staging.get("DEBUG") is False,
       "staging env: DEBUG = False from _staging.yml")
 
 # ── Per-project _site.yml (LMS) ──
 print("\nPer-project _site.yml (lms-fusion):")
 s_lms = MainSettings(SERVER_ENV="development", WEBSITE_NAME="lms-fusion",
-                     WEBSITE_DIR=str(_PROJECTS_DIR / "lms-fusion"))
+                     WEBSITE_DIR=str(_PRECIS_BACKEND.parent))
 check(s_lms.get("FUSION_SITE_NAME") == "Fusion LMS",
       "FUSION_SITE_NAME = 'Fusion LMS'")
 check(s_lms.get("FUSION_PRIMARY_COLOR") == "#00a1b3",
@@ -97,7 +99,7 @@ check(lms_color != cms_color,
 # ── Edge cases ──
 print("\nEdge cases:")
 s_unknown = MainSettings(SERVER_ENV="nonexistent", WEBSITE_NAME="lms-fusion",
-                         WEBSITE_DIR=str(_PROJECTS_DIR / "lms-fusion"))
+                         WEBSITE_DIR=str(_PRECIS_BACKEND.parent))
 check(s_unknown.get("STATIC_URL") == "/static/",
       "Unknown SERVER_ENV falls back to _core.yml [default]")
 

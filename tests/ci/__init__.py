@@ -8,13 +8,13 @@ Package structure:
     email/      — live SMTP delivery
 
 Run all tests:
-    pytest projects/CI/tests/ --ds=configs.settings
+    pytest projects/CI/tests/ --ds=settings
 
 Run by module:
-    pytest projects/CI/tests/auth/ --ds=configs.settings
-    pytest projects/CI/tests/admin/ --ds=configs.settings
-    pytest projects/CI/tests/assets/ --ds=configs.settings
+    pytest projects/CI/tests/auth/ --ds=settings
+    pytest projects/CI/tests/admin/ --ds=settings
+    pytest projects/CI/tests/assets/ --ds=settings
 
 Run live SMTP tests (sends real emails):
-    pytest projects/CI/tests/email/ -m smtp --ds=configs.settings
+    pytest projects/CI/tests/email/ -m smtp --ds=settings
 """

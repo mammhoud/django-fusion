@@ -487,7 +487,7 @@ deploy-tasks: deploy-databases _wait-redis
 	@echo "  ✓ parse OK"
 	@echo ""
 	@echo "  [2/3] bring down (idempotent)..."
-	@docker compose --project-name $(TASKS_PROJECT_NAME) \
+	@DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
 		-f $(TASKS_COMPOSE_FILE) down --remove-orphans 2>&1 | tail -3
 	@echo ""
 	@echo "  [3/3] bring up (no build; uses cached images)..."
@@ -877,7 +877,11 @@ deploy-preflight: validate-deploy-order create-networks
 			echo "  ⏭️  $$f (missing — skipping)"; \
 			continue; \
 		fi; \
-		if docker compose -f $$f config -q 2>/dev/null; then \
+		compose_env=""; \
+		if [ "$$f" = "$(TASKS_COMPOSE_FILE)" ]; then \
+			compose_env="DB_NAME=$(TASKS_DB_NAME)"; \
+		fi; \
+		if env $$compose_env docker compose -f $$f config -q 2>/dev/null; then \
 			echo "  ✅ $$f"; \
 		else \
 			echo "  ❌ $$f"; \
@@ -1288,7 +1292,7 @@ venv-info:           ## Show venv status and paths
 	@echo "🐍 Python Venv Info"
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "   Python version: $$(cat .python-version 2>/dev/null || echo 'not set')"
-	@echo "   Docker Python:  python:3.11-slim (see projects/compose/Dockerfile)"
+	@echo "   Docker Python:  python:3.11-slim (see projects/precis/compose/Dockerfile.backend)"
 	@echo "   Venv location:  $(WORKSPACE_ROOT)/.venv"
 	@if [ -d "$(WORKSPACE_ROOT)/.venv" ]; then \
 		echo "   Venv exists:    ✅"; \

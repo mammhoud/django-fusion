@@ -40,6 +40,7 @@ const preloadRegistry: Record<string, () => Promise<unknown>> = {
   '/roles': () => import('../app/pages/admin/Roles'),
   '/support-chat': () => import('../app/pages/admin/SupportChat'),
   '/staff': () => import('../app/pages/admin/StaffPage'),
+  '/register': () => import('../app/pages/admin/CashRegister'),
   '/products': () => import('../app/pages/pos/ProductsPage'),
 };
 

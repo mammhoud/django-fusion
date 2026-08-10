@@ -64,6 +64,8 @@ if "allauth.headless" not in INSTALLED_APPS:
     INSTALLED_APPS.append("allauth.headless")
 if "apps.auth.apps.PrecisAuthConfig" not in INSTALLED_APPS:
     INSTALLED_APPS.append("apps.auth.apps.PrecisAuthConfig")
+if "apps.tasks" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("apps.tasks")
 
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]

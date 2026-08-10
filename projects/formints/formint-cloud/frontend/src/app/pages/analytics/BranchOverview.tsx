@@ -18,6 +18,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PageLayout from '../../../components/layout/PageLayout';
+import CloudMonitorTile from './CloudMonitorTile';
 import { dashboard, createSyncEventsWs, type SyncEventsConnection } from '../../../api';
 import type { BranchHealth, QueueSummary, ConflictStats } from '../../../api';
 import { useTranslation } from 'react-i18next';
@@ -436,6 +437,9 @@ export default function BranchOverview() {
               </ul>
             )}
           </div>
+
+          {/* ── Cloud backup monitor tile (consumes @formints/client monitor) ── */}
+          <CloudMonitorTile />
 
           {/* ── Footer — registration marks + meta ── */}
           <footer className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-[#EAEAEA]/15 px-4 py-2.5">

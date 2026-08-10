@@ -10,10 +10,11 @@ several related products; choose the edition deliberately before editing.
 
 | Path | Identity | Architecture | Use for |
 |---|---|---|---|
-| `formintA/` | Community/Mini (`formint-pos`) | Tauri 2 + React 19 + Rust + Diesel/SQLite; no Python sidecar | Offline-first desktop POS |
-| `formint/` | Professional/Formint POS | Astro + HTMX/Alpine frontend, Django boundary, typed APIs, Fusion fragments, Unfold, Tauri shell | Merged professional product |
+| `formint-community/` | Community (`formint-pos`) | Tauri 2 + React 19 + Rust + Diesel/SQLite; no Python sidecar | Offline-first desktop POS |
+| `formint-pro/` | Professional | Astro + HTMX/Alpine frontend, Django boundary, typed APIs, Fusion fragments, Unfold, Tauri shell | Merged professional product |
 | `formint-cloud/` | Cloud master (`formint-cloud`) | Django full setup, frontend, django-fusion, Unfold, Channels/WebSocket sync; no Robyn sidecar | Hosted multi-terminal SaaS |
-| `formintC/` | POS Client template | Tauri 2 + Vue 3 + TypeScript + Pinia | Separate desktop client |
+| `formint-standard/` | Standard edition | Astro 5 + React 19 + Tauri 2 + Rust/Diesel | Standard desktop POS |
+| `formint-client/` | POS Client | Tauri 2 + Vue 3 + TypeScript + Pinia | Separate desktop client |
 | `tests/` | Shared POS validation | pytest, Vitest, API tests, Selenium, Playwright | Cross-edition contracts and flows |
 | `scripts/` | Build/release/dev tooling | Node/Python/shell | Packaging, screenshots, i18n, checks |
 
@@ -24,8 +25,8 @@ new source paths unless the compatibility contract specifically requires it.
 ## Professional package layout
 
 ```text
-formint/
-├── sidecar/                 # Django/Robyn boundary, models, APIs, fragments
+formint-pro/
+├── sidecar/                 # Django boundary, models, APIs, fragments
 │   ├── formint/             # domain models, schemas, controllers, views
 │   ├── models/              # POS/CRM/HR/inventory/sync model modules
 │   ├── routes/              # API and fragment routes
@@ -54,7 +55,7 @@ ports or server topology.
 
 ## Community edition rules
 
-`formintA` has no Python runtime, Django ORM, or Fusion fragment server. Data
+`formint-community` has no Python runtime, Django ORM, or Fusion fragment server. Data
 flows through Tauri `invoke` commands to Rust/Diesel/SQLite. Keep native
 commands, migrations, TypeScript wrappers, and UI types aligned. Do not copy
 professional/cloud backend code into this edition.
@@ -77,7 +78,7 @@ professional/cloud backend code into this edition.
 
 ```bash
 # Professional package
-cd projects/formints/formint
+cd projects/formints/formint-pro
 make install
 make migrate
 make check
@@ -95,7 +96,7 @@ make dev-api
 make dev-frontend
 
 # Community desktop
-cd projects/formints/formintA
+cd projects/formints/formint-community
 pnpm install
 pnpm dev
 pnpm tauri dev
@@ -103,8 +104,15 @@ pnpm test
 npx tsc --noEmit
 cargo check --manifest-path src-tauri/Cargo.toml
 
+# Standard edition
+cd projects/formints/formint-standard
+pnpm install
+pnpm dev
+pnpm tauri dev
+pnpm test
+
 # Vue client
-cd projects/formints/formintC
+cd projects/formints/formint-client
 pnpm install
 pnpm dev
 pnpm lint
@@ -116,8 +124,8 @@ or start services.
 
 ## Testing matrix
 
-- `formint/sidecar/tests/`: backend models, APIs, fragments, sync, WebSockets.
-- `formint/frontend/src/**/test*`: frontend contract/unit tests.
+- `formint-pro/sidecar/tests/`: backend models, APIs, fragments, sync, WebSockets.
+- `formint-pro/frontend/src/**/test*`: frontend contract/unit tests.
 - `formint-cloud/backend/apps/test_*.py`: cloud surface and WebSocket parity tests.
 - `tests/pos-e2e/`: shared Playwright flows and API tests.
 - `tests/js/`, `tests/api/`, and `tests/selenium/`: broader POS validation.

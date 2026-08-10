@@ -82,6 +82,8 @@ export interface Settings {
   smtp_recipient?: string;
   smtp_from_name?: string;
   smtp_from_email?: string;
+  printer_port?: string | null;
+  printer_enabled?: boolean;
 }
 
 export interface DeliveryZone {
@@ -605,10 +607,22 @@ export interface EmployeeSchedule {
   employee_id: number;
   shift_start: string;
   shift_end: string;
-  status: string;
+  status: 'scheduled' | 'completed' | 'cancelled' | 'no_show' | string;
   notes?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Shift {
+  id: number;
+  opened_at: string;
+  closed_at?: string | null;
+  opening_cash: number;
+  closing_cash?: number | null;
+  expected_cash?: number | null;
+  cash_difference?: number | null;
+  shift_status: 'open' | 'closed' | string;
+  shift_notes?: string | null;
 }
 
 export interface Payroll {

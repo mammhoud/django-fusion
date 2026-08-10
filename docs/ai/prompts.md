@@ -75,11 +75,11 @@ Load skill "design-taste-frontend" to get full design instructions
 Load skill "shadcn" when working with shadcn/ui components
 ```
 
-See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions.
+See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions. The stable machine-readable prompt packs are in [`applications/agents/prompts/catalog.json`](../../applications/agents/prompts/catalog.json), with usage and validation documented in [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md).
 
 ---
 
-## Chat Prompts (Syntara, POS)
+## Chat Prompts (Syntara, Formint)
 
 ### System Prompt
 
@@ -119,6 +119,33 @@ Create a Wagtail page model for [feature] with:
 - Panels configuration for Wagtail admin
 - Place in projects/<product>/backend/apps/pages/
 ```
+
+---
+
+## Stable Skills-as-Prompts Catalog
+
+Use the catalog when an agent needs a reusable task prompt rather than only a
+role description:
+
+| Catalog group | IDs | Includes |
+|---|---|---|
+| Skill packs | `skill.*` | Task prompt, primary/supporting agents, installed skills, inputs, output contract, safety |
+| Project packs | `project.*` | Stack, paths, boundaries, agent sequence, project prompt, checks |
+| Workflows | `workflow.*` | Multi-agent orchestration sequence and handoff stages |
+
+Recommended selection:
+
+1. Load the nearest `AGENTS.md` files.
+2. Select one `project.*` pack.
+3. Select one primary `skill.*` pack and only the supporting skills needed.
+4. Delegate independent architecture, UI/security, and test review to the listed agents.
+5. Implement only after the plan is understood; validate with project-owned commands.
+
+The catalog is served read-only by the local Kilo helper at `/prompts` and
+`/prompts/{id}`. It never executes prompts or grants mutation permissions.
+
+See [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md) for the complete descriptions,
+project boundaries, safety contract, and examples.
 
 ---
 

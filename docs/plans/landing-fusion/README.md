@@ -28,6 +28,16 @@ cd ../frontend && npm run check
 
 Use the project README for the current quickstart and code map. This plan intentionally records the current boundary without duplicating implementation details from the source tree.
 
+## Planned background and AI work
+
+Landing-Fusion project-owned email, editorial, cache, and AI-draft tasks must
+follow the shared django-fusion task and AI plans. AI output remains an
+unpublished editorial draft until an authorized user approves it; provider SDKs
+and secrets stay in the backend/worker boundary, never in Astro browser code.
+
+- [`../django-fusion/django-fusion-tasks-mcp-plan.md`](../django-fusion/django-fusion-tasks-mcp-plan.md) — unified tasks and task MCP
+- [`../django-fusion/django-fusion-llm-mcp-enhancement-plan.md`](../django-fusion/django-fusion-llm-mcp-enhancement-plan.md) — provider-neutral LLM routing, caching, streaming, and AI governance
+
 ## Related
 
 - [`../../recommendations.md`](../../recommendations.md) — recommended priority order

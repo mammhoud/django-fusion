@@ -4,7 +4,14 @@
 
 **Goal:** Finish the Cloud edition (`formintB/`, `pos-cloud`) by shipping the last missing capability — automatic backups + monitoring — with design, architecture, and data model documented as the top of the extension chain.
 
-**Architecture:** Hosted multi-terminal SaaS master. Full Django setup: `apps/core` (models + viewsets + BoltAPI analytics), `apps/domain` (sync broker/queue/conflict resolution), `apps/handlers` (sync API, dashboard, fusion contract, surface CRUD), Channels ASGI on daphne. This plan adds a `BackupRun` model (apps/core), a `backup_db` management command (SQLite online backup), and a `/monitor/status` endpoint (DB health + last backup + sync queue depth).
+**Architecture:** Hosted multi-terminal SaaS master.
+
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| **Frontend** | Astro 5 + Alpine.js | Telemetry dashboard, sync status |
+| **Backend** | Django (`apps/core` + `apps/domain` + `apps/handlers`) | Channels ASGI on daphne, django-fusion, django-bolt, multi-tenant `pos_cloud` schema |
+
+This plan adds a `BackupRun` model (apps/core), a `backup_db` management command (SQLite online backup), and a `/monitor/status` endpoint (DB health + last backup + sync queue depth).
 
 **Tech Stack:** Python (Django 5.2, channels, django-fusion, django-bolt), pytest. New code uses only the Python stdlib (`sqlite3`, `os`, `datetime`) — no new dependencies.
 
@@ -161,6 +168,8 @@ git commit -m "feat(pos-cloud): BackupRun model records database backup attempts
 ---
 
 ## Task C2: `backup_db` management command
+
+> **Scheduling note:** Once the django-fusion task scheduler (APScheduler) is deployed (see the [Tasks & MCP plan](../django-fusion/django-fusion-tasks-mcp-plan.md)), register `backup_db` as a scheduled task via `@task(schedule="0 */6 * * *")` instead of requiring an external cron/systemd timer. The management command remains the unit of work; the scheduler replaces the cron trigger.
 
 **Files:**
 - Create: `formintB/backend/apps/core/management/commands/backup_db.py`
@@ -450,9 +459,7 @@ git commit -m "docs: mark Cloud backups + monitoring shipped, update changelog"
 - Consumes: `BackupRun`, `SyncQueueItem` (Task C1), the fusion fragment conventions in `apps/handlers/fragments/`.
 - Produces: a `/fusion/monitor` fragment tile (last backup + queue depth) and `BackupRun` in the Unfold admin.
 
-- [ ] **Step 1: Write the failing test**
-
-Append to `formintB/backend/apps/test_monitor.py`:
+- [x] **Step 1: Write the failing test** — implemented `MonitorFragmentTest` in `apps/test_monitor.py` (renders filename, queue depth, empty state)
 
 ```python
 def test_monitor_fragment_renders(self):
@@ -463,32 +470,18 @@ def test_monitor_fragment_renders(self):
     assert "pos_cloud-20260809-120000.db" in resp.content.decode()
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails** — confirmed `404` before wiring, then green after implementation
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_monitor.py -q`
-Expected: FAIL — `404` for `/fusion/monitor`
+- [x] **Step 3: Write the fragment + view + admin** — implemented in `projects/formints/formint-cloud/backend/`:
+  - `apps/handlers/fragments/monitor.py` — `MonitorTileView(FragmentComponent)` with `fragment_name = "core.monitor.tile"`
+  - `backend/templates/core/monitor/tile.html` — fragment template (latest backup + queue depth + empty state)
+  - `apps/handlers/surface.py` — `fusion_monitor(request)` renders the fragment via `render_fragment_response()`
+  - `apps/handlers/urls.py` — `path("monitor", fusion_monitor, name="fusion_monitor")` → `/fusion/monitor`
+  - `apps/core/admin.py` — `BackupRunAdmin` (Unfold `ModelAdmin`)
 
-- [ ] **Step 3: Write the fragment + view + admin**
+- [x] **Step 4: Run tests to verify they pass** — `apps/test_monitor.py` → 6/6 pass; related suite (`test_backup`, `test_dashboard_contract`) → 30 passed, 1 skipped; `manage.py check` → 0 issues
 
-In `formintB/backend/apps/handlers/fragments/`, create `monitor.py` mirroring the structure of an existing fragment module in that directory (e.g., `reports.py` — same component base, same template convention):
-
-```python
-from apps.core.models import BackupRun, SyncQueueItem
-
-# Follow the existing fragment module's component class + template wiring.
-# Content: latest BackupRun (filename, status, size_bytes) and SyncQueueItem count.
-```
-
-In `formintB/backend/apps/handlers/surface.py`, add `fusion_monitor(request)` that renders the monitor fragment (mirror how the existing `/fusion/*` handlers render fragments). Wire `path("fusion/monitor", fusion_monitor, name="fusion-monitor")` in the app's url config next to the other `/fusion/*` routes.
-
-In `formintB/backend/apps/core/admin.py`, register `BackupRun` using the same admin registration pattern the file already uses for other core models.
-
-- [ ] **Step 4: Run tests to verify they pass**
-
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_monitor.py -q && make test`
-Expected: PASS — monitor + fragment tests green, full suite green
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit** — pending (user action)
 
 ```bash
 git add formintB/backend/apps/handlers/fragments/monitor.py formintB/backend/apps/handlers/surface.py formintB/backend/apps/core/admin.py formintB/backend/apps/test_monitor.py
@@ -506,9 +499,9 @@ git commit -m "feat(pos-cloud): django-fusion monitor tile + BackupRun admin"
 - Consumes: `createClient`, `getMonitorStatus` from `@formints/client` (06-js-sdk.md).
 - Produces: `monitorApi(baseUrl)` used by the `telemetry` page to render db status + last backup + queue depth.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
-Create `formintB/frontend/src/lib/monitor.test.ts`:
+Create `formintB/frontend/src/lib/monitor.test.ts` (implemented in `projects/formints/formint-cloud/frontend/`):
 
 ```ts
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -530,30 +523,11 @@ describe('monitorApi', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails** — module missing → red, then implemented
 
-Run: `cd projects/formints/formintB/frontend && pnpm vitest run src/lib/monitor.test.ts`
-Expected: FAIL — cannot find module `./monitor`
+- [x] **Step 3: Write the wrapper** — implemented `src/lib/monitor.ts` (typed `monitorApi` with `MONITOR_BASE` default, trailing-slash handling) + `@formints/client` file: dep. Rendered on the telemetry page via the new `CloudMonitorTile` component wired into `BranchOverview` (the `/telemetry` page).
 
-- [ ] **Step 3: Write the wrapper**
-
-Create `formintB/frontend/src/lib/monitor.ts`:
-
-```ts
-import { createClient, getMonitorStatus } from '@formints/client';
-
-export function monitorApi(baseUrl: string) {
-  const client = createClient(baseUrl);
-  return { status: () => getMonitorStatus(client) };
-}
-```
-
-Add `"@formints/client": "workspace:*"` (or file: reference per `06-js-sdk.md`) to `formintB/frontend/package.json` dependencies. Render the status on the `telemetry` page using `monitorApi`.
-
-- [ ] **Step 4: Run tests to verify they pass**
-
-Run: `cd projects/formints/formintB/frontend && pnpm vitest run src/lib/monitor.test.ts && pnpm check`
-Expected: PASS — test green, Astro check green
+- [x] **Step 4: Run tests to verify they pass** — `vitest run src/lib/monitor.test.ts src/test/pages/CloudMonitorTile.test.tsx` → 10 passed; `astro check` → 0 errors; `BranchOverview.test.tsx` → 13 passed.
 
 - [ ] **Step 5: Commit**
 

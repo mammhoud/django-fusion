@@ -1,4 +1,4 @@
-{% load static %}<!doctype html>
+{% load static webpack_loader %}<!doctype html>
 {# lang/dir follow the cookie-selected language (LocaleMiddleware + the
    django_language cookie set by the switcher), so server-rendered pages
    carry the right direction before any client script runs. #}
@@ -59,6 +59,12 @@
        link). @source directives in globals.css scan the backend templates so
        the Tailwind utilities they use are included. -->
   <link rel="stylesheet" href="{% static 'css/fusion.css' %}" />
+
+  <!-- Webpack bundle (Django-side page SCSS/JS) — produced by
+       webpack/landing-fusion.config.js via `make build-assets`.
+       The landing entry bundles project-specific styles and scripts;
+       fusion.css above remains the shared design system. -->
+  {% render_bundle 'landing' 'css' %}
 
   <!-- Critical inline (subset of fusion.css) — theme vars + base + FOUC guard,
        so the theme-init script above has vars before the stylesheet parses. -->
@@ -411,6 +417,12 @@
        registers on `alpine:init`, which Alpine emits at startup. Loading the collapse
        plugin after alpine causes "You can't use [x-collapse] without first installing
        the Collapse plugin" warnings and breaks the FAQ accordion. -->
+  <!-- Webpack JS bundle (Django-side scripts) — versioned, cache-busted.
+       Falls back to CDN scripts below if the webpack bundle isn't built yet. -->
+  {% render_bundle 'landing' 'js' %}
+
+  <!-- AHA runtime: HTMX + Alpine (CDN fallback — used when webpack bundle
+       doesn't include them). Alpine plugins load BEFORE alpine itself. -->
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
   <script src="https://unpkg.com/@alpinejs/intersect@3.14.8/dist/cdn.min.js" defer></script>
   <script src="https://unpkg.com/@alpinejs/collapse@3.14.8/dist/cdn.min.js" defer></script>

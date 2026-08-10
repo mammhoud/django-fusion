@@ -61,6 +61,20 @@ check: ## Django system checks
 seed: ## Create the Wagtail page tree + default landing content
 	@$(MANAGE) seed_pages
 
+skeleton-manifest: ## Generate skeleton manifest for Astro build (runs after webpack)
+	@echo -e "$(BLUE)Generating skeleton manifest...$(NC)"
+	@$(MANAGE) generate_skeleton_manifest \
+		--output assets/static/skeleton-manifest.json \
+		--page pages/home.html \
+		--page pages/pricing.html \
+		--page pages/about.html \
+		--page pages/contact.html \
+		--page pages/features.html \
+		--page pages/services.html \
+		--page pages/products.html \
+		--page pages/blog.html
+	@echo -e "$(GREEN)✅ Skeleton manifest generated → assets/static/skeleton-manifest.json$(NC)"
+
 test: ## Run Django tests
 	@$(MANAGE) test apps.pages --verbosity=2
 

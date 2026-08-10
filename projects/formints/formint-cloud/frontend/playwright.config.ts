@@ -18,14 +18,19 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report' }],
   ],
   use: {
-    baseURL: 'http://localhost:1420',
+    // The cloud Astro dev server binds :4323 (see astro.config.mjs) — not
+    // the :1420 Tauri port the sibling editions use.
+    baseURL: 'http://localhost:4323',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:1420',
+    // Run the astro binary directly instead of `pnpm dev`: the cloud
+    // edition's predev hooks (kill-port/ensure-db → cargo seed) fail
+    // because there is no src-tauri/ in this checkout.
+    command: './node_modules/.bin/astro dev',
+    url: 'http://localhost:4323',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

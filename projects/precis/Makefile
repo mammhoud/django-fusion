@@ -9,9 +9,36 @@ GREEN := \033[0;32m
 NC := \033[0m
 
 .PHONY: build up down logs restart front-logs back-logs worker-logs status \
-        clean-docker rebuild-backend rebuild-frontend
+        clean-docker rebuild-backend rebuild-frontend clean \
+        install-assets build-assets build-assets-dev skeleton-manifest
 
-build:
+help:
+	@echo "precis — Docker (backend+frontend+worker) + webpack asset build"
+	@echo "  Docker:  make build | up | down | logs | restart | status"
+	@echo "  Assets:  make install-assets | build-assets | build-assets-dev"
+	@echo "  Skeleton: make skeleton-manifest"
+	@echo "  Clean:   make clean | clean-docker"
+
+# ── Webpack Asset Build (Django-side SCSS/JS) ──────────────────────
+# Extends projects/webpack/base.config.js — see webpack/precis.config.js
+install-assets:
+	npm install
+
+build-assets: skeleton-manifest
+	npx webpack --config webpack/precis.config.js --mode=production
+
+build-assets-dev:
+	npx webpack --config webpack/precis.config.js --mode=development
+
+# ── Skeleton Manifest ──────────────────────────────────────────────
+# Runs the Django management command to produce a static JSON manifest
+# consumed by the Astro frontend (SkeletonBridge.astro). Depends on
+# webpack having been run first so the manifest can resolve CSS/JS deps.
+skeleton-manifest:
+	$(MAKE) -C backend skeleton-manifest
+
+# ── Docker targets ──────────────────────────────────────────────────
+build: install-assets build-assets
 	docker compose build
 
 up:
@@ -46,6 +73,9 @@ rebuild-frontend:
 	docker compose build --no-cache frontend
 
 # ── Clean Docker resources ──────────────────────────────────────────────────
+clean:
+	rm -rf assets/bundles node_modules
+
 clean-docker:
 	@echo "$(CYAN)🧹 Cleaning Docker resources for $(PROJECT)...$(NC)"
 	-docker compose down -v --remove-orphans 2>/dev/null || true

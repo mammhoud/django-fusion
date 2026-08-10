@@ -4,7 +4,14 @@
 
 **Goal:** Finish the Community edition (`formintA/`) by shipping refunds & returns and the offline-first mode indicator, with design, architecture, and data model documented as the base of the extension chain.
 
-**Architecture:** Offline-first desktop POS. Astro 5 (25 pages) + React 19 components call Tauri commands (`invoke`) that hit Rust/Diesel functions backed by embedded SQLite (`restaurant.db`). No Django, no sidecar, no cloud. Refunds mutate the existing `sales.status` column ("refunded") via a new `refund_sale` command; offline-first is a UI state surfaced by a `useOfflineMode` hook.
+**Architecture:** Offline-first desktop POS.
+
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| **Frontend** | Astro 5 (25 pages) + React 19 components + Tauri 2 shell | Pages call `invoke()` for Tauri commands |
+| **Backend** | Rust/Diesel + embedded SQLite (`restaurant.db`) | All business logic in Rust; no Django, no sidecar, no cloud |
+
+Refunds mutate the existing `sales.status` column ("refunded") via a new `refund_sale` command; offline-first is a UI state surfaced by a `useOfflineMode` hook.
 
 **Tech Stack:** Rust (diesel 2.2, diesel_migrations 2.2, tauri 2) · TypeScript (React 19, Astro 5, Vitest, @testing-library/react). No new dependencies.
 

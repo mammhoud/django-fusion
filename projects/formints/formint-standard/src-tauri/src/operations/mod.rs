@@ -36,3 +36,5 @@ pub mod shifts;
 pub mod sync_queue;
 pub mod dispatcher;
 pub mod sidecar_reconnect;
+pub mod permissions;
+pub mod exports;

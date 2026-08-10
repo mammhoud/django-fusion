@@ -17,6 +17,9 @@ from unittest.mock import MagicMock
 _tests_dir = Path(__file__).parent
 _websites_dir = _tests_dir.parent
 _workspace_root = _websites_dir.parent
+_precis_backend = _websites_dir / "projects" / "precis" / "backend"
+if _precis_backend.exists() and str(_precis_backend) not in sys.path:
+    sys.path.insert(0, str(_precis_backend))
 
 _lms_path = _websites_dir / "projects" / "lms" / "cms"
 _portfolio_path = _websites_dir / "projects" / "cms" / "portfolio"

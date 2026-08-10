@@ -20,7 +20,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | CMS Fusion | [`cms-fusion/`](cms-fusion/) | CMS migration, frontend, dashboard, and component work (now merged into Precis/Landing-Fusion) |
 | LMS Fusion | [`lms-fusion/`](lms-fusion/) | LMS migration and cleanup work (now Precis) |
 | Landing-Fusion | [`landing-fusion/`](landing-fusion/) | Landing site architecture, content, and frontend work |
-| django-fusion | [`django-fusion/`](django-fusion/) | Shared framework and asset/component work; submodule-owned plan |
+| django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Formint Cloud | [`pos/cloud-plan.md`](pos/cloud-plan.md) | Cloud master: Channels, WebSocket sync, Bolt dashboard, Unfold admin |
 | Lifecycle | [`document-lifecycle.md`](document-lifecycle.md) | Status, ownership, archive, deletion, and rollback policy |
 | Claims | [`marketing-claims.md`](marketing-claims.md) | Evidence-backed product and marketing claims |
@@ -48,6 +48,10 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | LMS Fusion migration (now Precis) | Core complete; cleanup tracked | [`lms-fusion/migration-plan.md`](lms-fusion/migration-plan.md) |
 | Landing-Fusion | Active | [`landing-fusion/`](landing-fusion/) |
 | Repository migration cleanup | Partial / gate-based | [`repository/migration-cleanup-master.md`](repository/migration-cleanup-master.md) |
+| django-fusion Tasks & MCP | Planned | [`django-fusion/django-fusion-tasks-mcp-plan.md`](django-fusion/django-fusion-tasks-mcp-plan.md) |
+| django-fusion LLM & AI MCP Enhancement | Planned / companion | [`django-fusion/django-fusion-llm-mcp-enhancement-plan.md`](django-fusion/django-fusion-llm-mcp-enhancement-plan.md) |
+| django-fusion Webpack Enhancement | Active | [`django-fusion/django-fusion-webpack-enhancement-plan.md`](django-fusion/django-fusion-webpack-enhancement-plan.md) |
+| django-fusion Analyzer + Skeleton + Asset APIs | Planned | [`django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) |
 | Legacy evidence | Archived | [`legacy/`](legacy/) |
 
 ## Recent renames & updates
@@ -58,6 +62,11 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | `pos-cloud` → `formint-cloud` | 2026-08-09 | Package name in editions.md, AGENTS.md, docs |
 | `lms-fusion` alias → Precis | Active | Compatibility alias preserved; canonical is `projects/precis/` |
 | `cypercloud` → `syntara` | Active | Runtime alias preserved for external contracts |
+| Tasks & MCP plan created | 2026-08-10 | Celery replacement, unified task API, MCP tools for bg tasks |
+| LLM & AI MCP enhancement plan created | 2026-08-10 | Provider-neutral routing, model levels, caching, streaming, secure AI component workflows |
+| Webpack enhancement + env configs | 2026-08-10 | Project-customizable webpack, landing-fusion/precis .env.example, project workspace configs |
+
+| Analyzer + Skeleton + Asset APIs plan created | 2026-08-10 | Dynamic skeleton loading, per-page ordered components, component-level asset APIs, Astro minimal JS bridge |
 
 ## Lifecycle rules
 

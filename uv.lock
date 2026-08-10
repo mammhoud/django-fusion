@@ -3817,7 +3817,7 @@ wheels = [
 [[package]]
 name = "websites-workspace"
 version = "1.0.3"
-source = { editable = "projects" }
+source = { virtual = "projects" }
 dependencies = [
     { name = "bumpver" },
     { name = "celery", extra = ["redis"] },

@@ -43,6 +43,12 @@
       "skillPath": "data/skills/explore-data/SKILL.md",
       "computedHash": "eeb0f7d4b8a834f773253a3038ca41b38b5ce2c1706dd0a4f3f7b4a38ce819e3"
     },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
+    },
     "use-case-triage": {
       "source": "anthropics/claude-for-legal",
       "sourceType": "github",

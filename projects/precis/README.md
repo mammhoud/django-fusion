@@ -2,11 +2,11 @@
 
 > **Status:** 🟢 Production — learning platform powering structa.cloud
 > **Tags:** #lms #django #wagtail #fusion #courses #learning
-> **Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + Next.js + Stripe
+> **Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + Astro 5 + Stripe
 
 Precis LMS is a content-driven learning management system. Courses, enrollments,
 payments, progress tracking, and certificates — all built on django-fusion's
-component pipeline with a Next.js frontend.
+component pipeline with an Astro frontend (hybrid rendering: SSG + SSR via the django-fusion bridge).
 
 ---
 
@@ -33,10 +33,10 @@ projects/precis/
 │   ├── assets/                # Static, media, templates, fixtures
 │   ├── settings.py            # Site configuration (Dynaconf)
 │   └── manage.py
-├── frontend/                  # Next.js (React)
+├── frontend/                  # Astro 5 (hybrid SSG + SSR)
 │   ├── src/
 │   │   ├── pages/             # Course catalog, detail, dashboard, profile
-│   │   └── components/        # Reusable UI components
+│   │   └── components/        # Reusable Astro + React components
 │   └── package.json
 ├── compose/                   # Dockerfiles + entrypoint scripts
 ├── Env/                       # Environment YAML configs

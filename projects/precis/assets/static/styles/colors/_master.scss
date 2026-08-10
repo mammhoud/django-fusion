@@ -11,5 +11,5 @@
 /* 1 ── Site palette (blue/teal, light + dark) */
 @import 'palette';
 
-/* 2 ── Shared semantic & component tokens */
-@import '~shared/styles/colors/shared';
+/* 2 ── Shared semantic & component tokens (colocated _shared.scss) */
+@import 'shared';

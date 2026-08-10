@@ -5,7 +5,7 @@ import django
 
 # Setup Django
 sys.path.insert(0, '/app')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'configs.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 django.setup()
 
 from django.contrib.auth import get_user_model

@@ -10,5 +10,7 @@
     "bash": "deny"
   },
   "website": "VResume",
-  "template_root": "projects/portfolio/www/pages/templates"
+  "canonical_project": "projects/vresume/ (when present; compatibility site)",
+  "template_root": "projects/portfolio/www/pages/templates",
+  "template_root_status": "legacy compatibility path; verify the checkout before use"
 }

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.core.apps.CoreConfig",
     "apps.domain.apps.DomainConfig",
     "apps.handlers.apps.HandlersConfig",
+    "apps.tasks",
 ]
 
 MIDDLEWARE = [

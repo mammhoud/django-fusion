@@ -141,6 +141,8 @@ mod tests {
             smtp_recipient: None,
             smtp_from_name: None,
             smtp_from_email: None,
+            printer_port: None,
+            printer_enabled: None,
         };
 
         let result = save_settings(&db_path, update).expect("save_settings should succeed");

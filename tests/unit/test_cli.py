@@ -55,7 +55,7 @@ class TestResolve:
 class TestWebsiteEnv:
     def test_ctc_research_env(self):
         env = cli._website_env("ctc-research")
-        assert env["DJANGO_SETTINGS_MODULE"] == "configs.settings"
+        assert env["DJANGO_SETTINGS_MODULE"] == "settings"
         assert env["RUNNING_ENV"] == "docker"
         assert env["SERVER_ENV"] == "production"
         assert env["DB_NAME"] == "db_ctc"

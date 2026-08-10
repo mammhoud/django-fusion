@@ -210,4 +210,4 @@ The POS app uses Tailwind's `dark:` variant:
 | JS component design | `docs/dev/technical/components/design/js_structure.md` |
 | Customization methods | `docs/customization/customization-methods.md` |
 | django-fusion components | `libs/django-fusion/src/django_fusion/comp/templates/components/` |
-| POS frontend docs | `docs/projects/pos/frontend/` |
+| POS frontend docs | `docs/pos/frontend/` |

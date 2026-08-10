@@ -2,9 +2,16 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Complete the Pro edition (`formint/`) as the reference tier: document its design, architecture, and data model (the schema Standard extends into), fix the remaining stale documentation (Robyn references), and land a green verification gate.
+**Goal:** Complete the Pro edition (`formint/`) as the reference tier: document its design, architecture, and data model, fix the remaining stale documentation (Robyn references), and land a green verification gate.
 
-**Architecture:** Pro shares the `formint/` codebase with the Standard tier (gated by configuration) — Astro + Alpine + HTMX frontend (32 pages), full Django sidecar (`formint/sidecar/`, 48 models, Django Ninja + django-bolt + Channels WebSockets + django-fusion + Unfold admin), Tauri 2 shell. It is the most complete edition; the work here is reference documentation + hardening, not new features.
+**Architecture:** Pro is the first edition with a **required Django sidecar** — it shares the `formint/` codebase with Standard but gates up to the full surface.
+
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| **Frontend** | Astro 5 + Alpine.js + HTMX (32 pages) | Tauri 2 shell |
+| **Backend** | Django sidecar (`formint/sidecar/`, 48 models) | Django Ninja + django-bolt + django-fusion + Unfold admin + Channels WebSockets |
+
+The work here is reference documentation + hardening, not new features.
 
 **Tech Stack:** Python (Django 5.2, ninja-extra, django-bolt, django-fusion, django-unfold), Astro 5, Rust (Tauri 2), pytest, Vitest.
 

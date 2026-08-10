@@ -469,6 +469,17 @@
     "title": "Branch Overview",
     "emptyHint": "register a branch to begin syncing"
   },
+  "cloudMonitor": {
+    "title": "CLOUD BACKUP MONITOR",
+    "db": "DB",
+    "linkError": "LINK ERROR",
+    "awaiting": "AWAITING…",
+    "database": "DATABASE",
+    "lastBackup": "LAST BACKUP",
+    "noSignal": "NO SIGNAL",
+    "noneRecorded": "NONE / NOT RECORDED",
+    "queueDepth": "QUEUE DEPTH"
+  },
   "nav": {
     "about": "About",
     "aboutDesc": "App information",

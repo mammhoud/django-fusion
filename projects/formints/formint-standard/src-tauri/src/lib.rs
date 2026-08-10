@@ -188,8 +188,14 @@ fn create_currency(
     symbol: String,
     exchange_rate: f64,
     is_default: bool,
+    user_id: Option<i32>,
 ) -> Result<db::models::Currency, String> {
     let db_path = get_db_path(&app)?;
+    if let Some(uid) = user_id {
+        if !permissions::has_permission(&db_path, uid, "manage:settings")? {
+            return Err("Permission denied: manage:settings required".into());
+        }
+    }
     currency::create_currency(&db_path, &code, &name, &symbol, exchange_rate, is_default)
 }
 
@@ -203,8 +209,14 @@ fn update_currency(
     exchange_rate: Option<f64>,
     is_default: Option<bool>,
     is_active: Option<bool>,
+    user_id: Option<i32>,
 ) -> Result<db::models::Currency, String> {
     let db_path = get_db_path(&app)?;
+    if let Some(uid) = user_id {
+        if !permissions::has_permission(&db_path, uid, "manage:settings")? {
+            return Err("Permission denied: manage:settings required".into());
+        }
+    }
     currency::update_currency(
         &db_path,
         id,
@@ -240,8 +252,14 @@ fn create_tax_profile(
     name: String,
     rate: f64,
     is_default: bool,
+    user_id: Option<i32>,
 ) -> Result<db::models::TaxProfile, String> {
     let db_path = get_db_path(&app)?;
+    if let Some(uid) = user_id {
+        if !permissions::has_permission(&db_path, uid, "manage:settings")? {
+            return Err("Permission denied: manage:settings required".into());
+        }
+    }
     tax_profile::create_tax_profile(&db_path, &name, rate, is_default)
 }
 
@@ -253,8 +271,14 @@ fn update_tax_profile(
     rate: Option<f64>,
     is_default: Option<bool>,
     is_active: Option<bool>,
+    user_id: Option<i32>,
 ) -> Result<db::models::TaxProfile, String> {
     let db_path = get_db_path(&app)?;
+    if let Some(uid) = user_id {
+        if !permissions::has_permission(&db_path, uid, "manage:settings")? {
+            return Err("Permission denied: manage:settings required".into());
+        }
+    }
     tax_profile::update_tax_profile(
         &db_path,
         id,
@@ -681,6 +705,33 @@ fn assign_role(app: AppHandle, user_id: i32, role_id: i32) -> Result<(), String>
 fn remove_role(app: AppHandle, user_id: i32, role_id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     roles::remove_role(&db_path, user_id, role_id)
+}
+
+// ---- Permissions commands ----
+#[tauri::command]
+fn resolve_permissions_cmd(app: AppHandle, user_id: i32) -> Result<Vec<String>, String> {
+    let db_path = get_db_path(&app)?;
+    let keys = permissions::resolve_permissions(&db_path, user_id)?;
+    let mut sorted: Vec<String> = keys.into_iter().collect();
+    sorted.sort();
+    Ok(sorted)
+}
+
+#[tauri::command]
+fn has_permission_cmd(app: AppHandle, user_id: i32, key: String) -> Result<bool, String> {
+    let db_path = get_db_path(&app)?;
+    permissions::has_permission(&db_path, user_id, &key)
+}
+
+// ---- Export commands ----
+#[tauri::command]
+fn export_resource(
+    app: AppHandle,
+    resource: String,
+    format: String,
+) -> Result<db::models::ReportMetadata, String> {
+    let db_path = get_db_path(&app)?;
+    exports::export_resource(&db_path, &resource, &format)
 }
 
 // ---- Suppliers commands ----
@@ -1892,6 +1943,9 @@ pub fn run() {
             sync_tray_badge,
             // KDS popout window
             open_kds_window,
+            // Permissions enforcement
+            resolve_permissions_cmd,
+            has_permission_cmd,
             // Tax profiles + compute_tax
             list_tax_profiles,
             create_tax_profile,
@@ -1902,6 +1956,8 @@ pub fn run() {
             flush_pending_sync,
             check_sidecar_health_cmd,
             pending_sync_count,
+            // CSV/JSON data export
+            export_resource,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

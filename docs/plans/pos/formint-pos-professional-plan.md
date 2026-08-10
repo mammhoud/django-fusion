@@ -395,7 +395,7 @@ Asset acceptance criteria: one canonical file per image/font/icon, hashed produc
 | Web UI | Astro + Alpine.js + HTMX + Tailwind CSS | Static shell, local state, progressive enhancement, responsive styling |
 | Application | Django + Django ORM + django-fusion | Domain rules, migrations, permissions, SSR, fragments, forms, tables |
 | API | Versioned Django endpoints; evaluate Django Ninja after schema review | Public JSON contract, OpenAPI, webhooks, integrations |
-| Async jobs | Celery + Redis, or the existing project worker conventions | Sync retries, reports, notifications, scheduled maintenance |
+| Async jobs | `django_fusion.tasks` (Dramatiq via the [Tasks & MCP plan](../django-fusion/django-fusion-tasks-mcp-plan.md)) | Sync retries, reports, notifications, scheduled maintenance — Celery replaced by Dramatiq |
 | Storage | PostgreSQL + S3-compatible object storage in hosted environments | Durable cloud data, backups, exports, media |
 | Local data | SQLite with durable queue/WAL strategy | Offline checkout and branch operation |
 | Infrastructure | Docker + Traefik | Repeatable deployment, routing, TLS, service boundaries |
@@ -704,7 +704,7 @@ Market expansion requires translated onboarding, local invoice/tax review, payme
 
 ## Related implementation documents
 
-- [`../../../projects/pos/README.md`](../../../projects/pos/README.md) — current POS editions and architecture
+- [`../../../projects/formints/README.md`](../../../projects/formints/README.md) — current Formint POS editions and architecture
 - [`../../../docs/features/feature-roadmap.md`](../../../docs/features/feature-roadmap.md) — Formint Professional feature priorities
 - [`cloud-plan.md`](cloud-plan.md) — cloud/multi-branch integration details and the isolated cloud transport boundary
 - [`tauri-plugins-enhancement-plan.md`](tauri-plugins-enhancement-plan.md) — Formint desktop plugin candidates and rollout
@@ -713,6 +713,9 @@ Market expansion requires translated onboarding, local invoice/tax review, payme
 - *(The `django-fusion-enhancements.md` and `pos-solo-enhancement.md` plans were merged into this document; their remaining implementation references are now tracked as gates in §4 and §6.)*
 - [`../../features/feature-roadmap.md`](../../features/feature-roadmap.md) — cross-project feature roadmap
 - [`../../publish/pos-release.md`](../../publish/pos-release.md) — release and publishing guidance
+- [`../django-fusion/django-fusion-tasks-mcp-plan.md`](../django-fusion/django-fusion-tasks-mcp-plan.md) — unified background tasks, Celery→Dramatiq, MCP task tools
+- [`../django-fusion/django-fusion-llm-mcp-enhancement-plan.md`](../django-fusion/django-fusion-llm-mcp-enhancement-plan.md) — provider-neutral LLM routing, AI advisory reporting, caching, streaming, and approval/security gates
+- [`../django-fusion/django-fusion-enhancements.md`](../django-fusion/django-fusion-enhancements.md) — django-fusion POS sync, viewsets, Robyn adapter
 - *(This document is the canonical Anytype knowledge-graph object for Formint POS Professional.)*
 
 ## Decision record

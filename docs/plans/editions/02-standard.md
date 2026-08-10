@@ -2,963 +2,800 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Finish the Standard tier (gated inside `formint/sidecar/`) by shipping multi-currency, tax profiles, custom roles & permissions enforcement, and CSV/JSON data export, with design, architecture, and data model documented as an extension of Community.
+**Goal:** Finish the Standard tier as a **standalone Rust/Diesel edition** — it works without a Django sidecar. Multi-currency, tax profiles, custom roles, and CSV/JSON export all run in Rust/Diesel + SQLite. An **optional Django sidecar** can be connected for sync/cloud features but is not required for core operation.
 
-**Architecture:** Standard shares the Pro codebase (`formint/`) and is gated by configuration. It is a full Django setup (Ninja + ninja-extra controllers, django-fusion, Unfold admin) over the 48-model `pos_full` schema. This plan adds two models (`Currency`, `TaxProfile`), a permission helper, and export views — all following the existing model-discovery, controller-registration, and URL-wiring conventions.
+**Architecture:** Offline-first desktop POS — same foundation as Community. Frontend: Astro 5 + React 19 + Alpine.js + Tauri 2 shell. Backend: Rust/Diesel + SQLite (`restaurant.db` extended with new tables). Optional: Django sidecar (`formint/sidecar/`) for multi-branch sync and cloud connectivity when available. The Standard edition works end-to-end with zero network dependencies when the sidecar is absent.
 
-**Tech Stack:** Python (Django 5.2, ninja-extra, django-fusion), pytest. No new third-party dependencies (stdlib `csv` only).
+**Tech Stack:** Rust (diesel 2.2, diesel_migrations 2.2, tauri 2) · TypeScript (React 19, Astro 5, Alpine.js, Vitest) · Optional: Python (Django 5.2, django-fusion) for the sidecar.
 
 ## Global Constraints
 
-- All changes live under `projects/formints/formint/sidecar/` only.
-- **No new third-party dependencies.** Django stdlib (`csv`, `json`) and existing packages only.
-- Model conventions (copy verbatim): `app_label = "pos_full"`, `db_table = "full_<name>"`, sync fields `is_synced` / `synced_at` / `sync_status` (choices `pending|synced|failed`), audit fields `created_at` / `updated_at`.
-- New models are discovered via `models/models.py` imports and exposed via the `ALL_CONTROLLERS` list in `formint/controllers.py`.
-- Migrations: `python manage.py makemigrations pos_full` then `make migrate` (from `formint/sidecar/`).
-- Test command: `cd projects/formints/formint/sidecar && make test` (runs `pytest tests/ -q -k "not rust_db"`).
-- Ports unchanged: backend 8767, bolt 8766, frontend 4321. No Robyn.
-- **Feature inheritance (hard):** Standard MUST include every Community feature (`01-community.md`) PLUS its own additions. The parity sweep in Task B8 verifies inheritance and fixes any gap.
+- All Rust changes live under `projects/formints/formint/src-tauri/`.
+- All frontend changes live under `projects/formints/formint/frontend/`.
+- The optional sidecar lives under `projects/formints/formint/sidecar/`.
+- **No new third-party dependencies** in Rust (diesel + diesel_migrations only). No new dependencies in the frontend (existing stack).
+- **The Standard edition MUST work without the sidecar.** Every feature in Tasks B1–B4 runs in Rust/Diesel with no Django process required.
+- Tauri port: 1420 (dev). Sidecar ports when enabled: backend 8767, bolt 8766.
+- **Feature inheritance (hard):** Standard MUST include every Community feature (`01-community.md`) PLUS its own. Parity sweep in Task B8. Standard's features are inherited by Pro and Cloud.
+- Test commands: Rust `cd projects/formints/formint/src-tauri && cargo test` · frontend `cd projects/formints/formint/frontend && pnpm test` · sidecar (when enabled) `cd projects/formints/formint/sidecar && make test`.
+
+---
+
+## Frontend
+
+**Stack:** Astro 5 pages (28 pages — Community's 25 + 3 new: Currencies, Tax Profiles, Export) + React 19 components + Alpine.js for local state.
+
+**Pages added by Standard:**
+
+| Page | Route | Purpose |
+|------|-------|---------|
+| Currencies | `/settings/currencies` | Manage ISO-4217 currency list, set default, toggle active |
+| Tax Profiles | `/settings/tax-profiles` | Named tax rates (Standard, Reduced, Zero-rated) |
+| Export | `/reports/export` | CSV/JSON export selection: products, sales, customers, inventory |
+
+**Key components:**
+
+- `CurrencyPicker.tsx` — select active currency for sale screens
+- `TaxProfileBadge.tsx` — display tax profile on product cards and sale lines
+- `ExportPanel.tsx` — format selection, download trigger, progress indicator
+- `RoleGate.tsx` — wraps actions behind permission checks (consumes `usePermissions` hook)
+
+**Loading states:** Each new page follows the existing Community skeleton pattern (`Skeleton.astro`), `aria-live` regions, and empty/error states.
+
+---
+
+## Backend (Rust/Diesel — primary)
+
+**Schema extension over Community** (`restaurant.db`):
+
+| New table | Key columns | Purpose |
+|-----------|-------------|---------|
+| `currencies` | `code` (unique), `name`, `symbol`, `exchange_rate`, `is_default`, `is_active` | Multi-currency pricing |
+| `tax_profiles` | `name` (unique), `rate` (fraction), `is_default`, `is_active` | Named tax rates |
+| `export_jobs` | `format` (csv/json), `resource` (products/sales/customers/inventory), `status`, `file_path`, `created_at` | Track export runs |
+
+**Column additions to existing tables:**
+
+| Table | New column | Type | Purpose |
+|-------|-----------|------|---------|
+| `products` | `tax_profile_id` | FK → `tax_profiles` (nullable) | Product-level tax linkage |
+| `sales` | `currency_id` | FK → `currencies` (nullable) | Sale currency |
+| `sales` | `tax_profile_id` | FK → `tax_profiles` (nullable) | Sale-level tax override |
+
+**Rust module structure** (under `src-tauri/src/`):
+
+```
+src/
+├── db/
+│   ├── schema.rs              # + currencies, tax_profiles, export_jobs tables
+│   └── migrations/
+│       └── 002_standard/       # new migration
+├── operations/
+│   ├── sales.rs               # refund_sale (existing) + tax/currency on sale
+│   ├── currency.rs            # NEW — list, create, update, set_default, toggle
+│   ├── tax_profile.rs         # NEW — list, create, update, set_default, toggle
+│   ├── export.rs              # NEW — export_csv, export_json for 4 resources
+│   └── permissions.rs         # NEW — resolve_permissions, has_permission
+└── lib.rs                     # register new commands in invoke_handler
+```
+
+**Tauri commands (Rust → frontend via `invoke`):**
+
+| Command | Purpose |
+|---------|---------|
+| `list_currencies` | Return all currencies (active first, default flagged) |
+| `create_currency` | Add a currency; enforces single default |
+| `update_currency` | Edit code/name/symbol/rate/active; single-default enforcement |
+| `delete_currency` | Soft-delete (set inactive); reject if only remaining default |
+| `list_tax_profiles` | Return all tax profiles |
+| `create_tax_profile` | Add a named rate; single-default enforcement |
+| `update_tax_profile` | Edit name/rate/active |
+| `delete_tax_profile` | Soft-delete; reject if only remaining default |
+| `export_resource` | Generate CSV or JSON for a resource, write to disk, return `ExportJob` |
+| `compute_tax` | `(subtotal: f64, rate: f64) -> f64` — rounds to cents via `round_half_up` |
+| `resolve_permissions` | Return effective permission set for current user/role |
+
+**Migrations:** `diesel migration generate 002_standard` then `diesel migration run`.
+
+---
+
+## Optional Sidecar (Django)
+
+When connected, the Django sidecar (`formint/sidecar/`) provides sync and cloud features. It is **not required** for core Standard operation. If the sidecar is unreachable, Standard degrades gracefully — all local features continue working.
+
+**Sidecar capabilities when enabled:**
+
+| Feature | Rust/Diesel (always available) | Django sidecar (when connected) |
+|---------|:---:|:---:|
+| Multi-currency | ✅ Local | ➕ Sync to cloud |
+| Tax profiles | ✅ Local | ➕ Sync to cloud |
+| Custom roles | ✅ Local (JSON permissions on `roles` table) | ➕ Admin-managed via Unfold |
+| CSV/JSON export | ✅ Local (streams from SQLite) | ➕ Large-dataset async export via `@task` |
+| Branch sync | ❌ | ✅ `Node`, `SyncApproval`, `SyncLog` |
+| Cloud connectivity | ❌ | ✅ `CloudLink`, `DeviceToken` |
+| django-fusion fragments | ❌ | ✅ `TABLE_COMPONENTS` for currencies/tax profiles |
+| Background tasks | ❌ | ✅ `django_fusion.tasks.@task` for scheduled sync |
+
+**Sidecar activation:** Set `STANDARD_SIDECAR_ENABLED=true` in the Tauri app config or environment. When disabled, the Django models, routes, and fragment tests are skipped. Pro is Standard with the sidecar permanently enabled.
+
+---
+
+## DataToken Shell & Sidecar Fallback System
+
+Standard edition uses a **tiered data pipeline** that falls back gracefully:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Standard Data Pipeline                    │
+│                                                             │
+│  Frontend (React/Astro)                                     │
+│    │ invoke("create_currency", ...)                         │
+│    ▼                                                        │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │              Data Dispatcher (Rust)                   │  │
+│  │                                                      │  │
+│  │  1. Try Sidecar API (if connected)                   │  │
+│  │     POST http://127.0.0.1:8767/api/v1/currencies     │  │
+│  │     → Success: return, DataToken auto-tagged ✓       │  │
+│  │     → Failure: fall through...                       │  │
+│  │                                                      │  │
+│  │  2. Write to Rust/Diesel (always)                    │  │
+│  │     INSERT INTO currencies ...                       │  │
+│  │     → Success: emit on_data_changed signal           │  │
+│  │                                                      │  │
+│  │  3. Tag with DataToken Shell (local marker)          │  │
+│  │     INSERT INTO sync_queue ...                       │  │
+│  │     → Marks row as "pending sync" in local SQLite    │  │
+│  │                                                      │  │
+│  │  4. On sidecar reconnect: flush sync_queue           │  │
+│  │     → Push pending tokens to Django sidecar          │  │
+│  │     → Sidecar creates real DataToken rows            │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                             │
+│  ┌──────────────────────┐    ┌──────────────────────────┐  │
+│  │ DataToken Shell      │    │ Django DataToken         │  │
+│  │ (SQLite, always on)  │◄──►│ (PostgreSQL, when online)│  │
+│  │                      │    │                          │  │
+│  │ sync_queue table     │    │ ci_datatoken table       │  │
+│  │ local markers        │    │ GenericFK tagging        │  │
+│  │ flush on reconnect   │    │ parent/child trees       │  │
+│  └──────────────────────┘    └──────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### DataToken Shell — Local Sync Markers (Rust/SQLite)
+
+The **DataToken Shell** is a lightweight Rust-level equivalent of django-fusion's `DataToken`. It lives entirely in SQLite and requires no Django process. Its sole purpose is to **mark which rows need syncing** so that when the sidecar becomes available, pending changes can be flushed.
+
+```sql
+-- migration: 003_datatoken_shell/up.sql
+CREATE TABLE sync_queue (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    -- What changed
+    entity_type TEXT NOT NULL,        -- e.g. "currency", "sale", "product"
+    entity_id TEXT NOT NULL,          -- PK of the changed row (string for flexibility)
+    change_type TEXT NOT NULL,        -- "create" | "update" | "delete"
+    -- Ordering
+    sync_order INTEGER NOT NULL DEFAULT 0,
+    -- Status
+    status TEXT NOT NULL DEFAULT 'pending',  -- pending | flushing | flushed | failed
+    retry_count INTEGER NOT NULL DEFAULT 0,
+    error_message TEXT DEFAULT '',
+    -- Payload (snapshot of the row at change time)
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    -- Timestamps
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    flushed_at TEXT
+);
+
+CREATE INDEX idx_sync_queue_status_order
+    ON sync_queue(status, sync_order, created_at);
+CREATE INDEX idx_sync_queue_entity
+    ON sync_queue(entity_type, entity_id);
+```
+
+**Rust operations** (`src-tauri/src/operations/sync_queue.rs`):
+
+| Function | Purpose |
+|----------|---------|
+| `tag_for_sync(db, entity_type, entity_id, change_type, payload)` | Insert a sync_queue row |
+| `get_pending_batch(db, limit) -> Vec<SyncQueueItem>` | Return next batch ordered |
+| `mark_flushed(db, ids)` | Bulk-update status to `flushed` |
+| `mark_failed(db, id, error)` | Record failure + increment retry |
+| `flush_to_sidecar(db, sidecar_url)` | Push pending batch to Django API |
+| `purge_flushed(db, older_than_days)` | Cleanup old flushed rows |
+
+### Sidecar Fallback Chain (Rust Dispatcher)
+
+Every data mutation command follows the same dispatch pattern:
+
+```rust
+// src-tauri/src/operations/dispatcher.rs
+
+/// Dispatch a data mutation with sidecar fallback.
+///
+/// Order:
+///   1. Try sidecar API (if connected and STANDARD_SIDECAR_ENABLED)
+///   2. Always write to local Diesel/SQLite (primary store)
+///   3. Tag with DataToken Shell for later sync
+pub fn dispatch_mutation(
+    db_path: &PathBuf,
+    mutation: Mutation,
+) -> Result<MutationResult, String> {
+    let sidecar_available = check_sidecar_health().unwrap_or(false);
+
+    // ── Step 1: Try sidecar (best-effort) ──
+    if sidecar_available {
+        match post_to_sidecar(&mutation) {
+            Ok(result) => {
+                // Sidecar accepted the write and auto-tagged with DataToken.
+                // Still write locally for offline resilience.
+                let local = write_to_diesel(db_path, &mutation)?;
+                return Ok(MutationResult { sidecar: Some(result), local });
+            }
+            Err(e) => {
+                log::warn!("Sidecar write failed: {e} — falling back to local");
+                // Fall through to local write
+            }
+        }
+    }
+
+    // ── Step 2: Write to local Diesel (always) ──
+    let local = write_to_diesel(db_path, &mutation)?;
+
+    // ── Step 3: Tag with DataToken Shell ──
+    tag_for_sync(
+        db_path,
+        &mutation.entity_type,
+        &mutation.entity_id,
+        &mutation.change_type,
+        &mutation.payload_json,
+    )?;
+
+    // ── Step 4: Emit change signal (for sidecar reconnection) ──
+    emit_data_changed(&mutation);
+
+    Ok(MutationResult { sidecar: None, local })
+}
+```
+
+### Sidecar Reconnect Hook — Flush Pending Sync Queue
+
+When the sidecar comes back online (detected via periodic health check or a Tauri `online` event), the Rust side flushes the pending `sync_queue`:
+
+```rust
+// src-tauri/src/operations/sidecar_reconnect.rs
+
+/// Called when the sidecar becomes healthy after being offline.
+/// Pushes all pending sync_queue rows to the Django sidecar API
+/// so that real DataToken rows are created.
+#[tauri::command]
+pub fn flush_pending_sync(app: AppHandle) -> Result<FlushResult, String> {
+    let db = db_path_str(&app);
+    let sidecar_url = "http://127.0.0.1:8767";
+
+    let batch = get_pending_batch(&PathBuf::from(&db), 100)?;
+    if batch.is_empty() {
+        return Ok(FlushResult { pushed: 0, failed: 0 });
+    }
+
+    let mut pushed = 0;
+    let mut failed = 0;
+    let mut flushed_ids = Vec::new();
+
+    for item in &batch {
+        match post_sync_item_to_sidecar(sidecar_url, item) {
+            Ok(_) => {
+                flushed_ids.push(item.id);
+                pushed += 1;
+            }
+            Err(e) => {
+                mark_failed(&PathBuf::from(&db), item.id, &e)?;
+                failed += 1;
+            }
+        }
+    }
+
+    mark_flushed(&PathBuf::from(&db), &flushed_ids)?;
+    Ok(FlushResult { pushed, failed })
+}
+```
+
+### on_data_changed Signal (Event Bus)
+
+Every data mutation emits a Tauri event so the frontend can react without polling:
+
+```rust
+// After every successful Diesel write:
+app.emit("data-changed", serde_json::json!({
+    "entity_type": "currency",
+    "entity_id": "42",
+    "change_type": "create",
+    "timestamp": chrono::Utc::now().to_rfc3339(),
+}))?;
+```
+
+```typescript
+// frontend/src/hooks/useDataChanged.ts
+import { listen } from '@tauri-apps/api/event';
+import { useEffect } from 'react';
+
+export function useDataChanged(
+  entityType: string,
+  onChanged: () => void,
+) {
+  useEffect(() => {
+    const unlisten = listen<DataChangeEvent>('data-changed', (event) => {
+      if (event.payload.entity_type === entityType) {
+        onChanged();
+      }
+    });
+    return () => { unlisten.then(fn => fn()); };
+  }, [entityType, onChanged]);
+}
+```
+
+### Sidecar Health Monitor (Frontend)
+
+The frontend periodically checks sidecar health and triggers a flush when it comes online:
+
+```typescript
+// frontend/src/hooks/useSidecarMonitor.ts
+import { useEffect, useRef } from 'react';
+import sidecar from '../api/sidecar';
+import { invoke } from '@tauri-apps/api/core';
+
+const CHECK_INTERVAL_MS = 15_000; // 15 seconds
+
+export function useSidecarMonitor() {
+  const wasOnline = useRef(false);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const healthy = await sidecar.healthCheck();
+
+      // Sidecar just came online — flush pending sync
+      if (healthy && !wasOnline.current) {
+        console.log('[sidecar] Reconnected — flushing sync queue');
+        invoke('flush_pending_sync').catch(console.error);
+      }
+
+      // Sidecar just went offline — mark pending data for later
+      if (!healthy && wasOnline.current) {
+        console.log('[sidecar] Disconnected — data will sync on reconnect');
+      }
+
+      wasOnline.current = healthy;
+    }, CHECK_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, []);
+}
+```
+
+### Sidecar API Contract for DataToken Tagging
+
+When the sidecar receives a mutation from the Rust dispatcher, it:
+
+1. Writes the row to Django ORM
+2. Auto-tags with a real `DataToken` via `DataToken.objects.tag_row()`
+3. Returns the token ID to the Rust caller
+
+```python
+# formint/sidecar/routes/sync_proxy.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django_fusion.models.datatoken import DataToken, AbstractDataToken
+
+@csrf_exempt
+def sync_proxy_create(request, entity_type):
+    """
+    Proxy endpoint: accept a mutation from the Rust dispatcher,
+    write to Django ORM, and auto-tag with DataToken.
+
+    POST /sync-proxy/<entity_type>/
+    Body: { "entity_id": "42", "payload": {...}, "node_id": "standard-001" }
+    """
+    body = json.loads(request.body)
+    model_class = _get_model(entity_type)
+
+    # Create the Django row
+    instance = model_class.objects.create(**body["payload"])
+
+    # Auto-tag with DataToken for cloud sync
+    token = DataToken.objects.tag_row(
+        model_instance=instance,
+        token=f"{entity_type}_{instance.pk}_{body['node_id']}",
+        node_id=body["node_id"],
+        sync_order=0,
+        app_type=AbstractDataToken.AppType.POS_SOLO,
+        metadata=body.get("metadata", {}),
+    )
+
+    return JsonResponse({
+        "ok": True,
+        "id": str(instance.pk),
+        "data_token": token.token,
+    })
+```
+
+### Data Read Fallback Chain
+
+Reads follow the reverse direction: try sidecar first (fresh data), fall back to local Diesel:
+
+```rust
+pub fn dispatch_read<T>(
+    db_path: &PathBuf,
+    entity_type: &str,
+    query: ReadQuery,
+) -> Result<Vec<T>, String> {
+    // ── Step 1: Try sidecar (if connected) ──
+    if check_sidecar_health().unwrap_or(false) {
+        match get_from_sidecar(entity_type, &query) {
+            Ok(data) => return Ok(data),
+            Err(e) => log::warn!("Sidecar read failed: {e} — falling back to local"),
+        }
+    }
+
+    // ── Step 2: Read from local Diesel (always works) ──
+    read_from_diesel(db_path, entity_type, &query)
+}
+```
+
+### How DataToken Shell Becomes a "Shell of Django Itself"
+
+The `sync_queue` table + dispatcher pattern means Standard can:
+
+1. **Tag data changes** without Django — the `sync_queue` is the local marker
+2. **Push to sidecar** when available — the sidecar creates real `DataToken` rows
+3. **Operate identically to Pro** when sidecar is connected — same DataToken tagging, same sync pipeline
+4. **Degrade gracefully** when sidecar is off — data still works, sync markers accumulate
+
+This is the "shell" — a lightweight Rust mechanism that mirrors django-fusion's `DataToken` behavior without requiring a single Python process.
+
+---
+
+## Task B_shell: DataToken Shell & Sidecar Dispatcher
+
+**Files:**
+- Create: `formint/src-tauri/src/db/migrations/003_datatoken_shell/up.sql`
+- Create: `formint/src-tauri/src/operations/sync_queue.rs`
+- Create: `formint/src-tauri/src/operations/dispatcher.rs`
+- Create: `formint/src-tauri/src/operations/sidecar_reconnect.rs`
+- Create: `formint/frontend/src/hooks/useSidecarMonitor.ts`
+- Create: `formint/frontend/src/hooks/useDataChanged.ts`
+- Create: `formint/sidecar/routes/sync_proxy.py` (optional sidecar endpoint)
+- Modify: `formint/src-tauri/src/lib.rs` (register new commands)
+- Modify: `formint/src-tauri/tauri.conf.json` (allow sidecar URL in CSP)
+
+**Interfaces:**
+- Produces: `sync_queue` table, `tag_for_sync`, `flush_pending_sync`, `dispatch_mutation`, `dispatch_read`.
+- Consumed by: all write operations (B1-B4), the frontend sidecar monitor.
+
+- [ ] **Step 1: Write the failing test for sync_queue**
+- [ ] **Step 2: Create the migration for sync_queue table**
+- [ ] **Step 3: Implement sync_queue operations (tag, batch, flush, purge)**
+- [ ] **Step 4: Implement dispatcher with sidecar fallback chain**
+- [ ] **Step 5: Implement sidecar_reconnect flush logic**
+- [ ] **Step 6: Create sidecar health monitor hook (frontend)**
+- [ ] **Step 7: Create data-changed event emitter + listener**
+- [ ] **Step 8: Create sync_proxy endpoint on Django sidecar**
+- [ ] **Step 9: Wire dispatcher into all B1-B4 write commands**
+- [ ] **Step 10: Run full Rust + frontend + sidecar test suites**
+- [ ] **Step 11: Test offline→online flush cycle**
+- [ ] **Step 12: Commit**
 
 ---
 
 ## Design
 
-**Audience:** a branch with several terminals that must price, tax, and role-govern sales differently from the base Community tier.
+**Audience:** a growing single-branch operator who needs money, tax, and role management but isn't ready for multi-branch sync or cloud. Everything works offline on one device.
 
-**Multi-currency.** A `Currency` catalogue (ISO-4217 code, name, symbol, cross-rate to the default currency). Exactly one currency is `is_default` at any time. Sales can record their currency; the sale screen picks from active currencies.
+**Multi-currency.** A `currencies` catalogue (ISO-4217 code, name, symbol, cross-rate). Exactly one currency is `is_default`. The sale screen picks from active currencies. A `currency_id` FK on `sales` records the currency used.
 
-**Tax profiles.** Named tax rates (`Standard` 15%, `Reduced` 7%, `Zero-rated` 0%). Products and sales may carry a `tax_profile`; the `compute_tax(subtotal, rate)` helper rounds to cents with `ROUND_HALF_UP`. This replaces the fixed `tax_rate` charfield semantics with a first-class, admin-manageable profile.
+**Tax profiles.** Named tax rates managed in `tax_profiles` (Standard 15%, Reduced 7%, Zero-rated 0%). Products and sales may carry a `tax_profile_id` FK. `compute_tax(subtotal, rate)` replaces the fixed `tax_rate` string with a dynamic profile. Default enforcement: setting a profile as default clears the previous default.
 
-**Custom roles & permissions.** The `Role` model already exists with a JSON `permissions` dict; the gap is **enforcement**. This plan adds `resolve_permissions(user, role)` (superusers get all keys; otherwise truthy JSON flags) and a `require_permission("key")` decorator, applied to the new `CurrencyController` writes as the reference enforcement point. Admin already manages roles.
+**Custom roles & permissions.** The existing `roles` table already has a JSON `permissions` column. Standard adds `resolve_permissions(user, role)` (superusers get all keys; otherwise truthy JSON flags) and applies it to currency/tax write operations. A `RoleGate` React component gates UI actions.
 
-**Data export.** Four GET endpoints (`/export/products.csv`, `/export/sales.csv`, `/export/customers.csv`, `/export/inventory.csv`) return streaming CSV; `?format=json` returns `{count, items}`. Exports are read-only, ordered, and stable.
+**Data export.** Four Tauri commands (`export_resource` with `resource` = products/sales/customers/inventory, `format` = csv/json) stream from SQLite, write to the OS temp directory, and return an `ExportJob` row. The `ExportPanel` frontend component triggers the command and offers a download button.
 
-**Copy register:** admin-facing labels stay concrete ("Standard", "Reduced"); endpoints are plain resource names.
-
-## Architecture
-
-```
-Django (formint/sidecar, pos_full app)
-├── models/money.py          # Currency, TaxProfile (new)
-├── models/pos.py            # Product.tax_profile, Sale.tax_profile FK (new)
-├── models/models.py         # discovery imports (new)
-├── formint/controllers.py   # CurrencyController, TaxProfileController + ALL_CONTROLLERS
-├── formint/tax.py           # compute_tax helper (new)
-├── formint/permissions.py   # resolve_permissions + require_permission (new)
-├── formint/export.py        # export_* views (new)
-├── configs/urls.py          # /export/* routes (new)
-└── admin.py                 # Currency, TaxProfile registration
-```
-
-Data flow: React/Astro frontend → `/api/v1/currencies` (Ninja controller, permission-gated writes) · sale totals via `compute_tax` · export via plain Django views streaming CSV.
-
-## Data model (extension of Community)
-
-Community contributes the domain concepts (sales, products, customers) in Diesel. Standard re-expresses them as Django `full_*` tables and **extends** with sync + money + tax:
-
-| New entity | Table | Extends concept | Key columns |
-|-----------|-------|-----------------|-------------|
-| `Currency` | `full_currencies` | multi-currency pricing | `code` (unique), `name`, `symbol`, `exchange_rate`, `is_default`, `is_active` |
-| `TaxProfile` | `full_tax_profiles` | product tax semantics | `name` (unique), `rate` (fraction), `is_default`, `is_active` |
-| `Product.tax_profile` | FK on `full_products` | product tax linkage | `tax_profile_id` → `TaxProfile` |
-| `Sale.tax_profile` | FK on `full_sales` | sale-level tax linkage | `tax_profile_id` → `TaxProfile` |
-
-Existing entities this tier relies on: `Role` (`full_roles`, JSON `permissions`), `Sale` (`full_sales`, `tax_amount`), `Product` (`full_products`).
-
-**Extension delta over Community:** +2 tables, +2 FKs, no changes to existing tables' columns (nullable FKs only).
+**Copy register:** admin-facing labels stay concrete ("Standard", "Reduced"); buttons use plain verbs ("Set default", "Export CSV").
 
 ---
 
-## Task B1: Multi-currency support
+## Task B1: Multi-currency support (Rust/Diesel)
 
 **Files:**
-- Create: `formint/sidecar/models/money.py`
-- Modify: `formint/sidecar/models/models.py`, `formint/sidecar/formint/controllers.py`, `formint/sidecar/admin.py`
-- Modify: `formint/sidecar/models/management/commands/seed_demo.py`
-- Test: `formint/sidecar/tests/test_currency.py`
+- Create: `formint/src-tauri/src/db/migrations/002_standard/up.sql` (currencies table)
+- Create: `formint/src-tauri/src/operations/currency.rs`
+- Modify: `formint/src-tauri/src/lib.rs` (register commands)
+- Test: `formint/src-tauri/src/operations/currency.rs` (inline `#[cfg(test)]` module)
 
 **Interfaces:**
-- Produces: `Currency` model + `CurrencyController` at `/api/v1/currencies`. Consumed by Task B2 (tax per currency) and the frontend currency picker.
+- Produces: `currencies` table + `list_currencies`, `create_currency`, `update_currency`, `delete_currency` commands. Consumed by the Currencies settings page (Task B5).
 
 - [ ] **Step 1: Write the failing test**
 
-Create `formint/sidecar/tests/test_currency.py`:
-
-```python
-from django.test import TestCase
-
-from models.money import Currency
-
-
-class CurrencyModelTest(TestCase):
-    def test_create_currency(self):
-        c = Currency.objects.create(
-            code="EUR", name="Euro", symbol="€", exchange_rate="0.92",
-        )
-        assert str(c) == "EUR (€)"
-        assert c.is_active is True
-
-    def test_only_one_default_currency(self):
-        Currency.objects.create(code="USD", name="US Dollar", is_default=True)
-        c2 = Currency.objects.create(code="EUR", name="Euro")
-        c2.is_default = True
-        c2.save()
-        assert Currency.objects.filter(is_default=True).count() == 1
-        assert Currency.objects.get(code="USD").is_default is False
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_currency.py -q`
-Expected: FAIL — `ModuleNotFoundError: No module named 'models.money'`
-
-- [ ] **Step 3: Write the model**
-
-Create `formint/sidecar/models/money.py`:
-
-```python
-"""Money models — multi-currency support (Standard tier)."""
-
-from django.db import models
-
-
-class Currency(models.Model):
-    """ISO-4217 currency with an optional cross-rate to the default currency."""
-
-    code = models.CharField(max_length=3, unique=True)
-    name = models.CharField(max_length=64)
-    symbol = models.CharField(max_length=8, blank=True, default="")
-    exchange_rate = models.DecimalField(
-        max_digits=12, decimal_places=6, default=1,
-        help_text="Rate relative to the default currency (1.0 = base).",
-    )
-    is_default = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    # Sync tracking (copy existing convention)
-    is_synced = models.BooleanField(default=False, db_index=True)
-    synced_at = models.DateTimeField(null=True, blank=True)
-    sync_status = models.CharField(
-        max_length=20, default="pending",
-        choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")],
-    )
-
-    class Meta:
-        app_label = "pos_full"
-        db_table = "full_currencies"
-        ordering = ["code"]
-
-    def __str__(self) -> str:
-        return f"{self.code} ({self.symbol})"
-
-    def save(self, *args, **kwargs):
-        # Enforce a single default currency.
-        if self.is_default:
-            Currency.objects.filter(is_default=True).exclude(pk=self.pk).update(is_default=False)
-        super().save(*args, **kwargs)
-```
-
-- [ ] **Step 4: Register the model**
-
-In `formint/sidecar/models/models.py`, add after the `crm` import:
-
-```python
-from models.money import Currency  # noqa: F401 — discovered by Django
-```
-
-In `formint/sidecar/formint/controllers.py`: add `Currency` to the `from formint.models import (...)` list; after the `ALL_CONTROLLERS = [` opening (≈line 314) append (mirroring an existing simple controller such as `CategoryController`):
-
-```python
-@api_controller("/currencies", tags=["currencies"])
-class CurrencyController(ModelControllerBase):
-    model_config = ModelConfig(
-        model=Currency,
-        allowed_routes=["list", "create", "retrieve", "update", "partial_update", "delete"],
-    )
-```
-
-Then add `CurrencyController,` to `ALL_CONTROLLERS`.
-
-In `formint/sidecar/admin.py`, register `Currency` the same way other models are registered (if explicit; skip if auto-discovered — verify with `make check`).
-
-- [ ] **Step 5: Generate and apply the migration**
-
-Run:
-```bash
-cd projects/formints/formint/sidecar
-python manage.py makemigrations pos_full
-make migrate
-```
-Expected: `models/migrations/0002_currency.py` created and applied.
-
-- [ ] **Step 6: Seed defaults**
-
-In `formint/sidecar/models/management/commands/seed_demo.py`:
-
-```python
-from models.money import Currency
-
-if not Currency.objects.exists():
-    Currency.objects.create(code="USD", name="US Dollar", symbol="$", is_default=True)
-    Currency.objects.create(code="EUR", name="Euro", symbol="€", exchange_rate="0.92")
-    Currency.objects.create(code="GBP", name="British Pound", symbol="£", exchange_rate="0.79")
-    Currency.objects.create(code="MAD", name="Moroccan Dirham", symbol="DH", exchange_rate="9.90")
-```
-
-- [ ] **Step 7: Run tests to verify they pass**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_currency.py -q && make test`
-Expected: PASS — new tests green, full suite green
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add projects/formints/formint/sidecar/models/money.py projects/formints/formint/sidecar/models/models.py projects/formints/formint/sidecar/formint/controllers.py projects/formints/formint/sidecar/admin.py projects/formints/formint/sidecar/models/migrations/ projects/formints/formint/sidecar/models/management/commands/seed_demo.py projects/formints/formint/sidecar/tests/test_currency.py
-git commit -m "feat(sidecar): multi-currency support with single-default enforcement"
-```
-
----
-
-## Task B2: Tax profiles
-
-**Files:**
-- Modify: `formint/sidecar/models/money.py`, `formint/sidecar/models/pos.py`, `formint/sidecar/models/models.py`, `formint/sidecar/formint/controllers.py`, `formint/sidecar/admin.py`
-- Create: `formint/sidecar/formint/tax.py`
-- Test: `formint/sidecar/tests/test_tax_profile.py`
-
-**Interfaces:**
-- Produces: `TaxProfile` model + `compute_tax(subtotal: Decimal, rate: Decimal) -> Decimal` in `formint/tax.py`. Consumed by Task B4 (export of tax rates) and the sale flow.
-
-- [ ] **Step 1: Write the failing test**
-
-Create `formint/sidecar/tests/test_tax_profile.py`:
-
-```python
-from decimal import Decimal
-
-from django.test import TestCase
-
-from models.money import TaxProfile
-from models.pos import Product
-from formint.tax import compute_tax
-
-
-class TaxProfileTest(TestCase):
-    def test_compute_tax(self):
-        assert compute_tax(Decimal("100.00"), Decimal("0.15")) == Decimal("15.00")
-        assert compute_tax(Decimal("99.99"), Decimal("0.00")) == Decimal("0.00")
-
-    def test_default_profile(self):
-        TaxProfile.objects.create(name="Standard", rate="0.15", is_default=True)
-        TaxProfile.objects.create(name="Reduced", rate="0.07")
-        reduced = TaxProfile.objects.get(name="Reduced")
-        reduced.is_default = True
-        reduced.save()
-        assert TaxProfile.objects.filter(is_default=True).count() == 1
-
-    def test_product_can_carry_tax_profile(self):
-        profile = TaxProfile.objects.create(name="Standard", rate="0.15", is_default=True)
-        product = Product.objects.create(name="Latte", price="4.50", tax_profile=profile)
-        assert product.tax_profile.rate == Decimal("0.15")
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_tax_profile.py -q`
-Expected: FAIL — import errors for `TaxProfile`, `formint.tax`
-
-- [ ] **Step 3: Write the model + helper**
-
-Append to `formint/sidecar/models/money.py`:
-
-```python
-class TaxProfile(models.Model):
-    """Named tax rate applied to sales (Standard tier). Rate is a fraction."""
-
-    name = models.CharField(max_length=100, unique=True)
-    rate = models.DecimalField(
-        max_digits=5, decimal_places=4, default=0,
-        help_text="Tax rate as a fraction, e.g. 0.15 = 15%",
-    )
-    is_default = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_synced = models.BooleanField(default=False, db_index=True)
-    synced_at = models.DateTimeField(null=True, blank=True)
-    sync_status = models.CharField(
-        max_length=20, default="pending",
-        choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")],
-    )
-
-    class Meta:
-        app_label = "pos_full"
-        db_table = "full_tax_profiles"
-        ordering = ["name"]
-
-    def __str__(self) -> str:
-        return f"{self.name} ({float(self.rate) * 100:.2f}%)"
-
-    def save(self, *args, **kwargs):
-        if self.is_default:
-            TaxProfile.objects.filter(is_default=True).exclude(pk=self.pk).update(is_default=False)
-        super().save(*args, **kwargs)
-```
-
-Create `formint/sidecar/formint/tax.py`:
-
-```python
-"""Tax helpers (Standard tier)."""
-
-from decimal import Decimal, ROUND_HALF_UP
-
-
-def compute_tax(subtotal: Decimal, rate: Decimal) -> Decimal:
-    """Return the tax amount for a subtotal at the given fractional rate."""
-    if rate <= 0:
-        return Decimal("0.00")
-    return (subtotal * rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-```
-
-- [ ] **Step 4: Wire the FK + registrations**
-
-In `formint/sidecar/models/pos.py`:
-- `Product` (≈line 38): `tax_profile = models.ForeignKey("pos_full.TaxProfile", on_delete=models.SET_NULL, null=True, blank=True, related_name="products")`
-- `Sale` (after `tax_amount`): `tax_profile = models.ForeignKey("pos_full.TaxProfile", on_delete=models.SET_NULL, null=True, blank=True, related_name="sales")`
-
-In `models/models.py`: `from models.money import Currency, TaxProfile  # noqa: F401`
-
-In `formint/controllers.py`: import `TaxProfile`; add `TaxProfileController` mirroring `CurrencyController` (route `/tax-profiles`); append to `ALL_CONTROLLERS`.
-
-In `admin.py`: register `TaxProfile` like `Currency` (Task B1 Step 4).
-
-- [ ] **Step 5: Migrate**
-
-Run:
-```bash
-cd projects/formints/formint/sidecar
-python manage.py makemigrations pos_full
-make migrate
-```
-
-- [ ] **Step 6: Seed defaults**
-
-In `seed_demo.py`, next to the currency seed:
-
-```python
-from models.money import TaxProfile
-
-if not TaxProfile.objects.exists():
-    TaxProfile.objects.create(name="Standard", rate="0.15", is_default=True)
-    TaxProfile.objects.create(name="Reduced", rate="0.07")
-    TaxProfile.objects.create(name="Zero-rated", rate="0")
-```
-
-- [ ] **Step 7: Run tests to verify they pass**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_tax_profile.py tests/test_currency.py -q && make test`
-Expected: PASS — new tests green, full suite green
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add projects/formints/formint/sidecar/models/money.py projects/formints/formint/sidecar/models/pos.py projects/formints/formint/sidecar/models/models.py projects/formints/formint/sidecar/formint/tax.py projects/formints/formint/sidecar/formint/controllers.py projects/formints/formint/sidecar/admin.py projects/formints/formint/sidecar/models/migrations/ projects/formints/formint/sidecar/models/management/commands/seed_demo.py projects/formints/formint/sidecar/tests/test_tax_profile.py
-git commit -m "feat(sidecar): tax profiles with product/sale linkage and compute_tax helper"
-```
-
----
-
-## Task B3: Custom roles & permissions enforcement
-
-**Files:**
-- Create: `formint/sidecar/formint/permissions.py`
-- Modify: `formint/sidecar/formint/controllers.py`
-- Test: `formint/sidecar/tests/test_permissions.py`
-
-**Interfaces:**
-- Consumes: `models.extra.Role` (exists, JSON `permissions`).
-- Produces: `resolve_permissions(user, role=None) -> set[str]` and `require_permission(perm: str)` decorator. Consumed by `CurrencyController` writes (Task B1).
-
-- [ ] **Step 1: Write the failing test**
-
-Create `formint/sidecar/tests/test_permissions.py`:
-
-```python
-from django.contrib.auth.models import User
-from django.test import TestCase
-
-from models.extra import Role
-from formint.permissions import resolve_permissions
-
-
-class PermissionHelperTest(TestCase):
-    def test_superuser_has_all_permissions(self):
-        user = User.objects.create_superuser("boss", "boss@example.com", "pw")
-        assert "can_manage_products" in resolve_permissions(user)
-
-    def test_role_permissions_are_resolved(self):
-        role = Role.objects.create(
-            name="Cashier",
-            permissions={"can_manage_products": False, "can_issue_refunds": True},
-        )
-        user = User.objects.create_user("cashier", "cashier@example.com", "pw")
-        perms = resolve_permissions(user, role=role)
-        assert "can_issue_refunds" in perms
-        assert "can_manage_products" not in perms
-
-    def test_plain_user_gets_empty_permissions(self):
-        user = User.objects.create_user("guest", "guest@example.com", "pw")
-        assert resolve_permissions(user) == set()
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_permissions.py -q`
-Expected: FAIL — `ModuleNotFoundError: No module named 'formint.permissions'`
-
-- [ ] **Step 3: Write the helper**
-
-Create `formint/sidecar/formint/permissions.py`:
-
-```python
-"""Permission resolution for the Standard tier (custom roles & permissions)."""
-
-from __future__ import annotations
-
-from functools import wraps
-from typing import Optional
-
-from ninja_extra import HttpError
-
-from models.extra import Role
-
-# Canonical permission keys (keep in sync with Role.permissions JSON usage).
-ALL_PERMISSIONS = {"can_manage_products", "can_issue_refunds", "can_manage_inventory"}
-
-
-def resolve_permissions(user, role: Optional[Role] = None) -> set[str]:
-    """Return the effective permission keys for a user.
-
-    Superusers bypass role checks. A role's JSON ``permissions`` dict lists
-    flags; keys whose value is truthy are granted.
-    """
-    if user.is_superuser:
-        return set(ALL_PERMISSIONS)
-    if role is None:
-        return set()
-    return {key for key, granted in (role.permissions or {}).items() if granted}
-
-
-def require_permission(permission: str):
-    """Controller decorator that 403s when the request user lacks a permission."""
-
-    def decorator(func):
-        @wraps(func)
-        def wrapper(self, request, *args, **kwargs):
-            perms = resolve_permissions(request.user, role=getattr(request, "role", None))
-            if permission not in perms:
-                raise HttpError(403, f"Missing permission: {permission}")
-            return func(self, request, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
-```
-
-- [ ] **Step 4: Gate a write route**
-
-In `formint/sidecar/formint/controllers.py`:
-
-```python
-from formint.permissions import require_permission
-
-@api_controller("/currencies", tags=["currencies"])
-class CurrencyController(ModelControllerBase):
-    model_config = ModelConfig(
-        model=Currency,
-        allowed_routes=["list", "create", "retrieve", "update", "partial_update", "delete"],
-    )
-
-    @require_permission("can_manage_inventory")
-    def create(self, request, payload):
-        return super().create(request, payload)
-
-    @require_permission("can_manage_inventory")
-    def update(self, request, id, payload):
-        return super().update(request, id, payload)
-```
-
-> Confirm the exact create/update signatures of `ModelControllerBase` (ninja-extra) in this codebase by checking an existing overridden controller method — if the base signatures differ, adapt the wrapper (the decorator contract stays the same).
-
-- [ ] **Step 5: Run tests to verify they pass**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_permissions.py -q && make test`
-Expected: PASS — helper tests green, full suite green
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add projects/formints/formint/sidecar/formint/permissions.py projects/formints/formint/sidecar/formint/controllers.py projects/formints/formint/sidecar/tests/test_permissions.py
-git commit -m "feat(sidecar): permission helper and enforcement on currency writes"
-```
-
----
-
-## Task B4: CSV/JSON data export
-
-**Files:**
-- Create: `formint/sidecar/formint/export.py`
-- Modify: `formint/sidecar/configs/urls.py`
-- Test: `formint/sidecar/tests/test_export.py`
-
-**Interfaces:**
-- Consumes: `models.pos.{Product, Sale, Customer}`, `models.inventory.InventoryTransaction`.
-- Produces: views `export_products`, `export_sales`, `export_customers`, `export_inventory` at `/export/<name>.csv` (+ `?format=json`).
-
-- [ ] **Step 1: Write the failing test**
-
-Create `formint/sidecar/tests/test_export.py`:
-
-```python
-import json
-
-from django.test import TestCase
-from django.urls import reverse
-
-from models.pos import Product
-
-
-class ExportTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        Product.objects.create(name="Latte", price="4.50", tax_rate="standard")
-
-    def test_products_csv(self):
-        resp = self.client.get(reverse("export-products"))
-        assert resp.status_code == 200
-        assert resp["Content-Type"].startswith("text/csv")
-        body = resp.content.decode()
-        assert "id,name,price" in body
-        assert "Latte" in body
-
-    def test_products_json(self):
-        resp = self.client.get(reverse("export-products") + "?format=json")
-        assert resp.status_code == 200
-        payload = json.loads(resp.content)
-        assert payload["count"] == 1
-        assert payload["items"][0]["name"] == "Latte"
-
-    def test_sales_csv(self):
-        resp = self.client.get(reverse("export-sales"))
-        assert resp.status_code == 200
-        assert resp["Content-Type"].startswith("text/csv")
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_export.py -q`
-Expected: FAIL — `django.urls.exceptions.NoReverseMatch` (routes not wired)
-
-- [ ] **Step 3: Write the export views**
-
-Create `formint/sidecar/formint/export.py`:
-
-```python
-"""CSV/JSON data export endpoints (Standard capability)."""
-
-from __future__ import annotations
-
-import csv
-
-from django.http import HttpResponse, JsonResponse
-
-from models.pos import Customer, Product, Sale
-from models.inventory import InventoryTransaction
-
-
-def _csv_response(filename: str, header: list[str], rows: list[list]) -> HttpResponse:
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    writer = csv.writer(response)
-    writer.writerow(header)
-    writer.writerows(rows)
-    return response
-
-
-def _json_response(items: list[dict]) -> JsonResponse:
-    return JsonResponse({"count": len(items), "items": items})
-
-
-def export_products(request):
-    rows = [
-        [p.id, p.name, str(p.price), p.tax_rate]
-        for p in Product.objects.all().order_by("id")
-    ]
-    if request.GET.get("format") == "json":
-        return _json_response(
-            [{"id": r[0], "name": r[1], "price": r[2], "tax_rate": r[3]} for r in rows]
-        )
-    return _csv_response("products.csv", ["id", "name", "price", "tax_rate"], rows)
-
-
-def export_sales(request):
-    rows = [
-        [s.id, s.sale_date.isoformat(), str(s.subtotal), str(s.tax_amount), str(s.total), s.status]
-        for s in Sale.objects.all().order_by("-sale_date")
-    ]
-    if request.GET.get("format") == "json":
-        return _json_response(
-            [{"id": r[0], "sale_date": r[1], "subtotal": r[2], "tax_amount": r[3], "total": r[4], "status": r[5]} for r in rows]
-        )
-    return _csv_response("sales.csv", ["id", "sale_date", "subtotal", "tax_amount", "total", "status"], rows)
-
-
-def export_customers(request):
-    rows = [
-        [c.id, c.name, c.phone or "", c.email or ""]
-        for c in Customer.objects.all().order_by("id")
-    ]
-    if request.GET.get("format") == "json":
-        return _json_response(
-            [{"id": r[0], "name": r[1], "phone": r[2], "email": r[3]} for r in rows]
-        )
-    return _csv_response("customers.csv", ["id", "name", "phone", "email"], rows)
-
-
-def export_inventory(request):
-    rows = [
-        [t.id, t.product_id, str(t.quantity), t.transaction_type, t.created_at.isoformat()]
-        for t in InventoryTransaction.objects.all().order_by("-created_at")
-    ]
-    if request.GET.get("format") == "json":
-        return _json_response(
-            [{"id": r[0], "product_id": r[1], "quantity": r[2], "transaction_type": r[3], "created_at": r[4]} for r in rows]
-        )
-    return _csv_response("inventory.csv", ["id", "product_id", "quantity", "transaction_type", "created_at"], rows)
-```
-
-> Verify the actual field names of `Customer` (`phone`, `email`) and `InventoryTransaction` (`quantity`, `transaction_type`) in `models/pos.py` / `models/inventory.py` and adjust the tuples if they differ — the endpoint contract (route names, formats) stays the same.
-
-- [ ] **Step 4: Wire the routes**
-
-In `formint/sidecar/configs/urls.py`, add to the `urlpatterns` block that already contains the `htmx/*` paths (and import at the top):
-
-```python
-from formint.export import (
-    export_customers,
-    export_inventory,
-    export_products,
-    export_sales,
-)
-
-urlpatterns += [
-    path("export/products.csv", export_products, name="export-products"),
-    path("export/sales.csv", export_sales, name="export-sales"),
-    path("export/customers.csv", export_customers, name="export-customers"),
-    path("export/inventory.csv", export_inventory, name="export-inventory"),
-]
-```
-
-- [ ] **Step 5: Run tests to verify they pass**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_export.py -q && make test`
-Expected: PASS — export tests green, full suite green
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add projects/formints/formint/sidecar/formint/export.py projects/formints/formint/sidecar/configs/urls.py projects/formints/formint/sidecar/tests/test_export.py
-git commit -m "feat(sidecar): CSV/JSON export endpoints for products, sales, customers, inventory"
-```
-
----
-
-# Cross-cutting enhancements (Standard)
-
-## Task B6: django-fusion fragments for Currency + TaxProfile
-
-**Files:**
-- Modify: `formint/sidecar/formint/components.py` (add components + register in `TABLE_COMPONENTS` / `FORM_COMPONENTS`)
-- Modify: `formint/sidecar/htmx_views.py` (add `htmx_currencies`, `htmx_tax_profiles` views mirroring `htmx_products`)
-- Modify: `formint/sidecar/configs/urls.py` (add `/htmx/currencies/`, `/htmx/tax-profiles/` routes next to `/htmx/products/`)
-- Test: `formint/sidecar/tests/test_fusion_fragments.py`
-
-**Interfaces:**
-- Consumes: `Currency`/`TaxProfile` models (Task B1/B2), `BaseTableComponent` + `TABLE_COMPONENTS` + `FusionFormComponent` + `FORM_COMPONENTS` from `formint/components.py`.
-- Produces: table components `CurrenciesTableComponent` / `TaxProfilesTableComponent` and form component `CurrencyFormComponent`, rendered at `/htmx/currencies/` and `/htmx/tax-profiles/`.
-
-- [ ] **Step 1: Write the failing test**
-
-Create `formint/sidecar/tests/test_fusion_fragments.py`:
-
-```python
-from django.test import TestCase
-from django.urls import reverse
-
-from models.money import Currency, TaxProfile
-
-
-class FusionFragmentTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        Currency.objects.create(code="USD", name="US Dollar", symbol="$", is_default=True)
-        TaxProfile.objects.create(name="Standard", rate="0.15", is_default=True)
-
-    def test_currencies_fragment_renders_rows(self):
-        resp = self.client.get(reverse("htmx-currencies"))
-        assert resp.status_code == 200
-        assert "USD" in resp.content.decode()
-
-    def test_tax_profiles_fragment_renders_rows(self):
-        resp = self.client.get(reverse("htmx-tax-profiles"))
-        assert resp.status_code == 200
-        assert "Standard" in resp.content.decode()
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_fusion_fragments.py -q`
-Expected: FAIL — `NoReverseMatch` for `htmx-currencies` / `htmx-tax-profiles`
-
-- [ ] **Step 3: Add the table components**
-
-In `formint/sidecar/formint/components.py`, after the existing `BaseTableComponent` and beside the other resource components (mirror `SalesTableComponent`'s declaration style), add:
-
-```python
-class CurrenciesTableComponent(BaseTableComponent):
-    """Currency table fragment (Standard tier)."""
-
-    model = Currency
-    queryset_ordering = ("code",)
-    header_labels = {
-        "code": "Code",
-        "name": "Name",
-        "symbol": "Symbol",
-        "exchange_rate": "Rate",
-        "is_default": "Default",
-        "is_active": "Active",
+In `formint/src-tauri/src/operations/currency.rs`:
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::db::run_migrations;
+    use std::path::PathBuf;
+
+    fn temp_db(tag: &str) -> PathBuf {
+        let mut path = std::env::temp_dir();
+        path.push(format!("formint-standard-currency-{}-{}.db", std::process::id(), tag));
+        let _ = std::fs::remove_file(&path);
+        run_migrations(&path).expect("migrations ok");
+        path
     }
 
-
-class TaxProfilesTableComponent(BaseTableComponent):
-    """Tax profile table fragment (Standard tier)."""
-
-    model = TaxProfile
-    queryset_ordering = ("name",)
-    header_labels = {
-        "name": "Name",
-        "rate": "Rate",
-        "is_default": "Default",
-        "is_active": "Active",
+    #[test]
+    fn list_currencies_returns_empty_initially() {
+        let db = temp_db("list");
+        let result = list_currencies(&db, true, None).expect("list ok");
+        assert!(result.is_empty());
+        let _ = std::fs::remove_file(&db);
     }
-```
 
-Register them in `TABLE_COMPONENTS`:
+    #[test]
+    fn create_and_set_default() {
+        let db = temp_db("default");
+        let usd = create_currency(&db, "USD", "US Dollar", "$", 1.0, true).expect("create");
+        assert!(usd.is_default);
+        let eur = create_currency(&db, "EUR", "Euro", "€", 0.92, true).expect("create");
+        // Single-default enforcement: USD should no longer be default
+        let refreshed = get_currency(&db, usd.id).expect("get");
+        assert!(!refreshed.is_default);
+        assert!(eur.is_default);
+        let _ = std::fs::remove_file(&db);
+    }
 
-```python
-TABLE_COMPONENTS: dict[str, type[TableMixin]] = {
-    # ... existing entries ...
-    "currencies": CurrenciesTableComponent,
-    "tax-profiles": TaxProfilesTableComponent,
+    #[test]
+    fn delete_rejects_last_default() {
+        let db = temp_db("delete_def");
+        let usd = create_currency(&db, "USD", "US Dollar", "$", 1.0, true).expect("create");
+        let err = delete_currency(&db, usd.id).expect_err("should reject");
+        assert!(err.contains("cannot delete the only default currency"));
+        let _ = std::fs::remove_file(&db);
+    }
 }
 ```
 
-Add a form component for currency creation next to the existing form components:
-
-```python
-class CurrencyFormComponent(FusionFormComponent):
-    """Currency create form fragment (Standard tier)."""
-
-    form_name = "formint/forms/currency"
-    model = Currency
-```
-
-and register it in `FORM_COMPONENTS` as `"currency": CurrencyFormComponent`.
-
-- [ ] **Step 4: Add the htmx views + routes**
-
-In `formint/sidecar/htmx_views.py`, add two views mirroring the existing `htmx_products` view (same rendering call, component name swapped):
-
-```python
-def htmx_currencies(request):
-    # Mirror htmx_products: resolve TABLE_COMPONENTS["currencies"] and render it.
-    ...
-
-
-def htmx_tax_profiles(request):
-    # Mirror htmx_products: resolve TABLE_COMPONENTS["tax-profiles"] and render it.
-    ...
-```
-
-In `formint/sidecar/configs/urls.py`, next to the existing `/htmx/products/` path, add:
-
-```python
-path("htmx/currencies/", htmx_currencies, name="htmx-currencies"),
-path("htmx/tax-profiles/", htmx_tax_profiles, name="htmx-tax-profiles"),
-```
-
-- [ ] **Step 5: Run tests to verify they pass**
-
-Run: `cd projects/formints/formint/sidecar && unset DJANGO_SETTINGS_MODULE; python -m pytest tests/test_fusion_fragments.py -q && make test`
-Expected: PASS — fragments green, full suite green
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add projects/formints/formint/sidecar/formint/components.py projects/formints/formint/sidecar/htmx_views.py projects/formints/formint/sidecar/configs/urls.py projects/formints/formint/sidecar/tests/test_fusion_fragments.py
-git commit -m "feat(sidecar): django-fusion table/form fragments for currencies and tax profiles"
-```
-
-## Task B7: Consume the modular TS client in the Astro frontend
-
-**Files:**
-- Modify: `formint/frontend/package.json` (add `@formints/client` workspace dep)
-- Modify: `formint/frontend/src/lib/currencies.ts` (create — typed wrapper over the SDK)
-- Test: `formint/frontend/src/lib/currencies.test.ts`
-
-**Interfaces:**
-- Consumes: `createClient`, `listCurrencies`, `createCurrency`, `listTaxProfiles` from `@formints/client` (06-js-sdk.md, Task S2).
-- Produces: `currenciesApi(baseUrl)` returning `{ list, create, listTaxProfiles }` used by the currency admin page.
-
-- [ ] **Step 1: Write the failing test**
-
-Create `formint/frontend/src/lib/currencies.test.ts` (Vitest, mirror the contract tests in `formint/frontend/tests/`):
-
-```ts
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { currenciesApi } from './currencies';
-
-const fetchMock = vi.fn();
-vi.stubGlobal('fetch', fetchMock);
-
-const api = currenciesApi('http://127.0.0.1:8767');
-
-afterEach(() => vi.restoreAllMocks());
-
-describe('currenciesApi', () => {
-  it('lists currencies', async () => {
-    fetchMock.mockResolvedValue(new Response(JSON.stringify({ count: 1, items: [{ code: 'USD' }] }), { status: 200 }));
-    const { items } = await api.list();
-    expect(items[0]?.code).toBe('USD');
-    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8767/api/v1/currencies', expect.any(Object));
-  });
-
-  it('creates a currency', async () => {
-    fetchMock.mockResolvedValue(new Response(JSON.stringify({ code: 'EUR' }), { status: 201 }));
-    const created = await api.create({ code: 'EUR', name: 'Euro', symbol: '€' });
-    expect(created.code).toBe('EUR');
-  });
-});
-```
-
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd projects/formints/formint/frontend && pnpm vitest run src/lib/currencies.test.ts`
-Expected: FAIL — cannot find module `./currencies`
+Run: `cd projects/formints/formint/src-tauri && cargo test currency`
+Expected: FAIL — `error[E0425]: cannot find function 'list_currencies'`
 
-- [ ] **Step 3: Write the wrapper**
+- [ ] **Step 3: Write the migration**
 
-Create `formint/frontend/src/lib/currencies.ts`:
+Create `formint/src-tauri/src/db/migrations/002_standard/up.sql`:
 
-```ts
-import { createClient, listCurrencies, createCurrency, listTaxProfiles } from '@formints/client';
+```sql
+CREATE TABLE currencies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code VARCHAR(3) NOT NULL UNIQUE,
+    name VARCHAR(64) NOT NULL,
+    symbol VARCHAR(8) NOT NULL DEFAULT '',
+    exchange_rate REAL NOT NULL DEFAULT 1.0,
+    is_default BOOLEAN NOT NULL DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
 
-export function currenciesApi(baseUrl: string) {
-  const client = createClient(baseUrl);
-  return {
-    list: () => listCurrencies(client),
-    create: (input: Parameters<typeof createCurrency>[1]) => createCurrency(client, input),
-    listTaxProfiles: () => listTaxProfiles(client),
-  };
+Also create `down.sql` to drop the table. Register the migration in `schema.rs`.
+
+- [ ] **Step 4: Write the Rust operations**
+
+In `formint/src-tauri/src/operations/currency.rs`:
+
+```rust
+use diesel::prelude::*;
+use crate::db::models::{Currency, NewCurrency};
+use crate::db::schema::currencies::dsl::*;
+use std::path::PathBuf;
+
+pub fn list_currencies(db_path: &PathBuf, active_only: bool, search: Option<&str>) -> Result<Vec<Currency>, String> {
+    let mut conn = crate::db::open_conn(db_path)?;
+    let mut query = currencies.into_boxed();
+    if active_only { query = query.filter(is_active.eq(true)); }
+    if let Some(q) = search { query = query.filter(name.like(format!("%{}%", q))); }
+    query.order(code.asc()).load(&mut conn).map_err(|e| format!("list currencies: {e}"))
 }
+
+pub fn create_currency(db_path: &PathBuf, c_code: &str, c_name: &str, c_symbol: &str, rate: f64, default: bool) -> Result<Currency, String> {
+    let mut conn = crate::db::open_conn(db_path)?;
+    if default {
+        diesel::update(currencies.filter(is_default.eq(true)))
+            .set(is_default.eq(false))
+            .execute(&mut conn).map_err(|e| format!("clear default: {e}"))?;
+    }
+    let row = NewCurrency { code: c_code.to_string(), name: c_name.to_string(), symbol: c_symbol.to_string(), exchange_rate: rate, is_default: default, is_active: true };
+    diesel::insert_into(currencies).values(&row).get_result(&mut conn).map_err(|e| format!("create currency: {e}"))
+}
+// ... update_currency, delete_currency, get_currency similar pattern
 ```
 
-Wire `@formints/client` as a workspace dependency in `formint/frontend/package.json` (add to `dependencies`: `"@formints/client": "workspace:*"` — or a file: reference if the repo does not use pnpm workspaces for this package; see `06-js-sdk.md` for the package path).
+- [ ] **Step 5: Register commands in lib.rs**
 
-- [ ] **Step 4: Run tests to verify they pass**
+In `formint/src-tauri/src/lib.rs`, add `list_currencies, create_currency, update_currency, delete_currency,` to `tauri::generate_handler![...]`.
 
-Run: `cd projects/formints/formint/frontend && pnpm vitest run src/lib/currencies.test.ts && pnpm check`
-Expected: PASS — tests green, Astro check green
+- [ ] **Step 6: Run tests to verify they pass**
 
-- [ ] **Step 5: Commit**
+Run: `cd projects/formints/formint/src-tauri && cargo test currency`
+Expected: PASS — all 3 tests green.
 
-```bash
-git add projects/formints/formint/frontend/package.json projects/formints/formint/frontend/src/lib/currencies.ts projects/formints/formint/frontend/src/lib/currencies.test.ts
-git commit -m "feat(formint-frontend): consume @formints/client for currencies and tax profiles"
-```
+- [ ] **Step 7: Run full Rust suite**
 
-## Task B8: Playwright e2e for the Standard surface + inheritance parity sweep
+Run: `cd projects/formints/formint/src-tauri && cargo test`
+Expected: all pass (existing + new).
+
+- [ ] **Step 8: Commit**
+
+---
+
+## Task B2: Tax profiles + compute_tax (Rust/Diesel)
 
 **Files:**
-- Create: `formint/frontend/playwright.config.ts`
-- Create: `formint/frontend/e2e/currencies.spec.ts`
-- Modify: `projects/formints/docs/architecture/editions.md` (parity note)
+- Modify: `formint/src-tauri/src/db/migrations/002_standard/up.sql` (tax_profiles table)
+- Create: `formint/src-tauri/src/operations/tax_profile.rs`
+- Create: `formint/src-tauri/src/operations/tax.rs` (compute_tax helper)
+- Modify: `formint/src-tauri/src/lib.rs`
+- Modify: `formint/src-tauri/src/db/schema.rs`
 
 **Interfaces:**
-- Consumes: the seeded backend (`make seed` in `formint/sidecar/`) and the Astro frontend (`:4321`).
-- Produces: a standalone Standard e2e suite + the feature-inheritance parity check.
+- Produces: `tax_profiles` table + `list_tax_profiles`, `create_tax_profile`, `update_tax_profile`, `delete_tax_profile` + `compute_tax(subtotal: f64, rate: f64) -> f64`. FK columns on `products.tax_profile_id` and `sales.tax_profile_id`.
 
-- [ ] **Step 1: Write the config + spec**
+- [ ] **Step 1: Write the failing test**
+- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 3: Extend the migration with tax_profiles table**
+- [ ] **Step 4: Add FK columns to products and sales (ALTER TABLE in migration)**
+- [ ] **Step 5: Write the Rust operations + compute_tax helper**
+- [ ] **Step 6: Register commands in lib.rs**
+- [ ] **Step 7: Run tests to verify they pass**
+- [ ] **Step 8: Run full Rust suite**
+- [ ] **Step 9: Commit**
 
-Create `formint/frontend/playwright.config.ts` (mirror `formintA/playwright.config.ts`, baseURL `http://127.0.0.1:4321`):
+---
 
-```ts
-import { defineConfig } from '@playwright/test';
+## Task B3: Custom roles & permissions enforcement (Rust)
 
-export default defineConfig({
-  testDir: './e2e',
-  use: { baseURL: 'http://127.0.0.1:4321' },
-  webServer: undefined, // started manually via `make env` (backend :8767 + frontend :4321)
-});
-```
+**Files:**
+- Create: `formint/src-tauri/src/operations/permissions.rs`
+- Modify: `formint/src-tauri/src/operations/currency.rs` (gate write commands)
+- Modify: `formint/src-tauri/src/lib.rs`
+- Test: inline in `permissions.rs`
 
-Create `formint/frontend/e2e/currencies.spec.ts`:
+**Interfaces:**
+- Consumes: the existing `roles` table (JSON `permissions` column).
+- Produces: `resolve_permissions(user, role) -> HashSet<String>`, applied as a gate on `create_currency`, `update_currency`, `create_tax_profile`, `update_tax_profile`.
 
-```ts
-import { test, expect } from '@playwright/test';
+**Canonical permission keys:** `can_manage_products`, `can_issue_refunds`, `can_manage_inventory`, `can_manage_settings`.
 
-test('currency admin table lists the seeded currencies', async ({ page }) => {
-  await page.goto('/admin/currencies');
-  await expect(page.getByText('USD')).toBeVisible();
-  await expect(page.getByText('MAD')).toBeVisible();
-});
+- [ ] **Step 1: Write the failing test**
+- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 3: Write resolve_permissions (superusers get all keys; role JSON flags)**
+- [ ] **Step 4: Gate currency write commands**
+- [ ] **Step 5: Run tests to verify they pass**
+- [ ] **Step 6: Run full Rust suite**
+- [ ] **Step 7: Commit**
 
-test('tax profiles admin table lists the seeded profiles', async ({ page }) => {
-  await page.goto('/admin/tax-profiles');
-  await expect(page.getByText('Standard')).toBeVisible();
-});
-```
+---
 
-> If the frontend does not yet have `/admin/currencies` / `/admin/tax-profiles` routes, add thin Astro pages that render the B6 fragments (or the B7 `currenciesApi`), then point the spec at those routes. The assertions (seeded USD/MAD/Standard visible) are the contract.
+## Task B4: CSV/JSON data export (Rust/Diesel)
 
-- [ ] **Step 2: Run the e2e suite**
+**Files:**
+- Modify: `formint/src-tauri/src/db/migrations/002_standard/up.sql` (export_jobs table)
+- Create: `formint/src-tauri/src/operations/export.rs`
+- Modify: `formint/src-tauri/src/lib.rs`
 
-Run (backend + frontend up via `make env`):
-```bash
-cd projects/formints/formint/sidecar && make seed
-cd projects/formints/formint/frontend && pnpm exec playwright test
-```
-Expected: PASS — both specs green.
+**Interfaces:**
+- Produces: `export_resource(db_path, resource: &str, format: &str) -> Result<ExportJob, String>`. Resource: `products` | `sales` | `customers` | `inventory`. Format: `csv` | `json`. Writes to OS temp dir, returns job row.
 
-- [ ] **Step 3: Feature-inheritance parity sweep**
+> **Sidecar note:** When the Django sidecar is enabled, replace the synchronous Rust export with `django_fusion.tasks.@task(queue="reports")` for large-dataset async exports. The Rust export remains available for offline/sidecar-disabled mode.
 
-Verify every Community capability (see `01-community.md`: sale, products, customers, inventory, KDS, i18n, RBAC, theme system, refunds/returns, offline mode) is reachable in the Standard surface. For each: open the page and confirm it renders. Fix any missing page by wiring the existing controller/fragment, and add a row to the spec asserting it.
+- [ ] **Step 1: Write the failing test**
+- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 3: Extend migration with export_jobs table**
+- [ ] **Step 4: Write the export engine (CSV via std::io::Write, JSON via serde_json)**
+- [ ] **Step 5: Register command in lib.rs**
+- [ ] **Step 6: Run tests to verify they pass**
+- [ ] **Step 7: Run full Rust suite**
+- [ ] **Step 8: Commit**
 
+---
+
+# Frontend Tasks
+
+## Task B5: Currencies, Tax Profiles & Export settings pages
+
+**Files:**
+- Create: `formint/frontend/src/pages/settings/Currencies.astro`
+- Create: `formint/frontend/src/pages/settings/TaxProfiles.astro`
+- Create: `formint/frontend/src/pages/reports/Export.astro`
+- Create: `formint/frontend/src/components/CurrencyPicker.tsx`
+- Create: `formint/frontend/src/components/TaxProfileBadge.tsx`
+- Create: `formint/frontend/src/components/ExportPanel.tsx`
+- Create: `formint/frontend/src/hooks/usePermissions.ts`
+- Modify: `formint/frontend/src/components/AppShell.tsx` (add nav links)
+- Test: new `.test.tsx` files for each component
+
+**Interfaces:**
+- Consumes: Tauri `invoke` commands from Tasks B1–B4.
+- Produces: 3 Astro pages + 3 React components + 1 permissions hook.
+
+- [ ] **Step 1: Write failing tests for each component**
+- [ ] **Step 2: Run tests to verify they fail**
+- [ ] **Step 3: Implement the pages and components**
+- [ ] **Step 4: Wire nav links in AppShell**
+- [ ] **Step 5: Run frontend tests to verify they pass**
+- [ ] **Step 6: Run full frontend suite (`pnpm test`)**
+- [ ] **Step 7: Commit**
+
+## Task B6: RoleGate component (permission-gated UI)
+
+**Files:**
+- Create: `formint/frontend/src/components/RoleGate.tsx`
+- Test: `formint/frontend/src/test/components/RoleGate.test.tsx`
+
+**Interfaces:**
+- Consumes: `usePermissions()` hook, `resolve_permissions` from Tauri.
+- Produces: `<RoleGate permission="can_manage_settings">` wrapper.
+
+- [ ] **Step 1: Write the failing test**
+- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 3: Implement RoleGate and usePermissions hook**
+- [ ] **Step 4: Apply RoleGate to currency/tax write buttons**
+- [ ] **Step 5: Run tests to verify they pass**
+- [ ] **Step 6: Commit**
+
+---
+
+# Optional Sidecar Tasks
+
+> These tasks are **only executed when the sidecar is enabled** (`STANDARD_SIDECAR_ENABLED=true`). They are additive — core Standard operates without them.
+
+## Task B7: Django sidecar models + fragments (optional)
+
+**Files:**
+- Modify: `formint/sidecar/models/money.py` (Currency, TaxProfile — Django mirrors of Rust models)
+- Modify: `formint/sidecar/formint/components.py` (django-fusion TABLE_COMPONENTS)
+- Modify: `formint/sidecar/htmx_views.py` (fragment views)
+- Modify: `formint/sidecar/configs/urls.py` (fragment routes)
+- Test: `formint/sidecar/tests/test_standard_sidecar.py`
+
+**Interfaces:**
+- Consumes: Django ORM (mirrors Rust schema), `django_fusion.tasks.@task`.
+- Produces: HTMX fragments at `/htmx/currencies/` and `/htmx/tax-profiles/`, plus async export via `@task(queue="reports")`.
+
+- [ ] **Step 1: Write the failing test**
+- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 3: Implement Django models, fragments, and views**
+- [ ] **Step 4: Run sidecar tests to verify they pass**
+- [ ] **Step 5: Run full sidecar suite (`make test`)**
+- [ ] **Step 6: Commit**
+
+## Task B8: Inheritance parity sweep
+
+Verify that every Community feature (refunds, offline-first) works in Standard, and that every Standard feature (currency, tax, roles, export) is inherited by Pro. Run the Community e2e suite against Standard, and the Standard + Pro suites against Pro.
+
+- [ ] **Step 1: Run Community e2e suite against Standard**
+- [ ] **Step 2: Verify Standard features appear in Pro**
+- [ ] **Step 3: Record parity in editions.md**
 - [ ] **Step 4: Commit**
-
-```bash
-git add formint/frontend/playwright.config.ts formint/frontend/e2e/ projects/formints/docs/architecture/editions.md
-git commit -m "test(formint-frontend): Standard e2e suite + Community feature-inheritance sweep"
-```
 
 ---
 
 ## Self-Review
 
-1. **Spec coverage:** all four Standard capability markers (multi-currency, tax profiles, custom roles & permissions, data export) map to tasks B1-B4.
-2. **Placeholder scan:** two conditional instructions, both actionable with named files (B3: confirm ninja-extra signatures; B4: verify `Customer`/`InventoryTransaction` field names). No TBDs.
-3. **Type consistency:** `Currency`/`TaxProfile` defined in B1/B2 referenced identically in `models/models.py`, `controllers.py`, tests. `compute_tax(Decimal, Decimal) -> Decimal` matches its test. `require_permission` produced in B3 is applied in B3 itself (same task, self-consistent). Export view names match the `reverse()` names in tests.
+1. **Spec coverage:** Standard capability markers (multi-currency, tax profiles, custom roles, CSV/JSON export) all map to tasks (B1, B2, B3, B4). Rust/Diesel primary, sidecar optional.
+2. **Type consistency:** All Tauri command signatures are `snake_case` and match the frontend `invoke` calls. `compute_tax(f64, f64) -> f64` rounds to cents.
+3. **Offline-first:** Every feature works with zero network — currency/tax/roles/export all run in Rust/Diesel. The sidecar is additive only.
 
 ## Execution Handoff
 

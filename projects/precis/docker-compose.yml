@@ -72,7 +72,6 @@ services:
       # The backend is mounted at the runtime site root because the shared
       # entrypoint and SiteCLI expect manage.py/settings.py there.
       - ./backend:/app/lms-fusion:rw
-      - ../configs:/app/configs:ro
       - ../assets:/app/assets:ro
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
@@ -133,7 +132,6 @@ services:
       # The backend is mounted at the runtime site root because the shared
       # entrypoint and SiteCLI expect manage.py/settings.py there.
       - ./backend:/app/lms-fusion:rw
-      - ../configs:/app/configs:ro
       - ../assets:/app/assets:ro
       # Live libs mirror: the worker must see the same django-fusion source the
       # backend does, otherwise it imports the image-baked (potentially stale)

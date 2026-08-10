@@ -11,7 +11,8 @@ AGENTS.md files act as **behavioral instructions** for AI coding assistants (Cla
 ```
 Root /AGENTS.md — Monorepo-wide conventions, safety rules, ownership
   ├── projects/AGENTS.md — Project-level conventions
-  │   ├── projects/precis/backend/AGENTS.md — Precis LMS backend
+  │   ├── projects/precis/AGENTS.md — Precis LMS project
+  │   └── projects/precis/backend/AGENTS.md — Precis LMS backend
   │   │   ├── projects/precis/backend/apps/pages/blog/templates/AGENTS.md
   │   │   ├── projects/precis/backend/apps/pages/profile/templates/AGENTS.md
   │   │   ├── projects/precis/backend/apps/pages/accounts/templates/AGENTS.md
@@ -29,9 +30,11 @@ Root /AGENTS.md — Monorepo-wide conventions, safety rules, ownership
   │   ├── projects/syntara/AGENTS.md
   │   │   └── projects/syntara/templates/AGENTS.md
   │   └── projects/formints/AGENTS.md
-  │       ├── projects/formints/formintA/AGENTS.md
+  │       ├── projects/formints/formint-pro/AGENTS.md
+  │       ├── projects/formints/formint-community/AGENTS.md
   │       ├── projects/formints/formint-cloud/frontend/AGENTS.md
   │       ├── projects/formints/formint-standard/AGENTS.md
+  │       ├── projects/formints/formint-client/AGENTS.md
   │       └── projects/formints/tests/pos-e2e/AGENTS.md
   ├── libs/django-fusion/AGENTS.md
   ├── applications/AGENTS.md
@@ -56,10 +59,12 @@ When an AI agent works on a file, it loads all AGENTS.md files from the root dow
 | File | Scope | Key Rules |
 |------|-------|-----------|
 | `projects/AGENTS.md` | Project-level dispatcher conventions | Makefile delegation, WEBSITE= selection |
-| `projects/precis/backend/AGENTS.md` | Precis LMS backend | App ownership, URLflow, template resolution order |
+| `projects/precis/AGENTS.md` | Precis LMS project | Full product surface — backend, frontend, assets, templates, deployment |
+| `projects/precis/backend/AGENTS.md` | Precis LMS backend | App ownership, URL flow, template resolution order |
 | `projects/landing-fusion/AGENTS.md` | Landing-Fusion project | Astro/Django dual rendering, content contracts, testing |
 | `projects/syntara/AGENTS.md` | Syntara / Cypercloud | AI streaming, template catalog, provider boundaries |
 | `projects/formints/AGENTS.md` | Formint multi-edition POS | Edition map, cloud rules, community rules, cross-cutting |
+| `projects/formints/formint-pro/AGENTS.md` | Formint Professional | Django + Ninja + Astro + Tauri; fusion render-mode |
 
 ### Template & Asset Level
 
@@ -103,9 +108,10 @@ When an AI agent works on a file, it loads all AGENTS.md files from the root dow
 
 | File | Scope | Key Rules |
 |------|-------|-----------|
-| `projects/formints/formintA/AGENTS.md` | Community (Tauri + React) | Offline-first, no Python, Rust/Diesel patterns |
+| `projects/formints/formint-community/AGENTS.md` | Community (Tauri + React) | Offline-first, no Python, Rust/Diesel patterns |
 | `projects/formints/formint-cloud/frontend/AGENTS.md` | Cloud frontend | Django templates, Unfold admin, Channels |
 | `projects/formints/formint-standard/AGENTS.md` | Standard edition | Astro + Tauri conventions |
+| `projects/formints/formint-client/AGENTS.md` | POS Client | Vue 3 + Tauri + Django backend |
 | `projects/formints/tests/pos-e2e/AGENTS.md` | POS E2E tests | Playwright flows, API contracts |
 
 ---

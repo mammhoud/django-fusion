@@ -33,15 +33,15 @@ from typing import Any, Callable
 from uuid import UUID
 
 from django.db import models
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from apps.core.models import (
-    Branch, BranchInventory, BranchProduct, BranchReport, BranchSale,
-    BranchSyncLog, Contact, Deal, DeviceToken, InventoryReport, Lead,
-    Organization, SyncConflict, SyncQueueItem,
+    BackupRun, Branch, BranchInventory, BranchProduct, BranchReport,
+    BranchSale, BranchSyncLog, Contact, Deal, DeviceToken,
+    InventoryReport, Lead, Organization, SyncConflict, SyncQueueItem,
 )
 
 # Fields never serialized or writable through the generic surface.
@@ -292,6 +292,60 @@ def stats(request: HttpRequest) -> JsonResponse:
         "counts": counts,
         "models": [m.__name__ for m in models_],
     })
+
+
+def monitor_status(request: HttpRequest) -> JsonResponse:
+    """GET /monitor/status — health summary for the cloud master.
+
+    Returns database reachability, most recent backup status, and
+    pending sync-queue depth so operators get one glanceable answer
+    to "is the master alive and backed up?".
+    """
+    # ── Database reachability ──────────────────────────────────
+    database = "ok"
+    try:
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+    except Exception:  # noqa: BLE001 — surface the error text
+        database = "error"
+
+    # ── Last backup ────────────────────────────────────────────
+    latest = BackupRun.objects.order_by("-started_at").first()
+    last_backup = None
+    if latest is not None:
+        last_backup = {
+            "filename": latest.filename,
+            "status": latest.status,
+            "size_bytes": latest.size_bytes,
+            "started_at": latest.started_at.isoformat(),
+        }
+
+    # ── Sync queue depth ───────────────────────────────────────
+    sync_queue_depth = SyncQueueItem.objects.count()
+
+    return JsonResponse({
+        "database": database,
+        "last_backup": last_backup,
+        "sync_queue_depth": sync_queue_depth,
+    })
+
+
+def fusion_monitor(request: HttpRequest) -> HttpResponse:
+    """GET /fusion/monitor — render the django-fusion monitor tile fragment.
+
+    Renders the ``core.monitor.tile`` fragment component (latest backup +
+    sync queue depth) so the Astro frontend can embed it via the fusion
+    render-mode contract.  Mirrors the ``/fusion/*`` sidecar surface:
+    returns rendered fragment HTML, not JSON.
+    """
+    from apps.handlers.fragments.monitor import MonitorTileView
+
+    view = MonitorTileView()
+    view.setup(request)
+    context = view.get_fragment_context()
+    return view.render_fragment_response(context)
 
 
 # ── Routes ─────────────────────────────────────────────────────────────────

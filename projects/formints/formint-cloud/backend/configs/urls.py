@@ -7,9 +7,12 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import path, include, re_path
 from django.views.decorators.csrf import csrf_exempt
 
+from django_fusion.designer import urls as fusion_designer_urls
+
 _root_health = lambda r: JsonResponse({"status": "healthy", "service": "formint-cloud"})
 
 from apps.handlers.surface import stats as apps_handlers_surface_stats
+from apps.handlers.surface import monitor_status as apps_handlers_surface_monitor_status
 from apps.handlers.surface import urlpatterns as apps_handlers_surface_urlpatterns
 
 
@@ -1238,10 +1241,15 @@ urlpatterns = [
     path("health", _root_health, name="root_health"),
     # Sidecar surface: /stats + root CRUD paths the frontend proxies to :8767
     path("stats", apps_handlers_surface_stats, name="stats"),
+    path("monitor/status", apps_handlers_surface_monitor_status, name="monitor-status"),
     path("", include((apps_handlers_surface_urlpatterns, "surface"), namespace="surface")),
 
     # Unfold Admin
     path("admin/", admin.site.urls),
+
+    # Protected, read-only MCP designer tools for website/webapp audits and
+    # component scaffolds. Access is enforced by the django-fusion view.
+    path("fusion/mcp/designer/", include(fusion_designer_urls)),
 
     # BoltAPI analytics dashboard — catch-all bridge to internal routing
     # All /apis/data/* requests are forwarded to the BoltAPI instance in core/api.py

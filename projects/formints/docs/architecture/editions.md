@@ -165,7 +165,7 @@
 > `formint_cloud.db`. The Robyn sidecar that previously served the REST surface
 > has been **removed**; a second Django dev server on `:8767` now answers the
 > sidecar-compatible paths the frontend expects. Cloud master that terminals
-> push their data to; automatic backups + monitoring (Cloud capability, landing sync Aug 2026).
+> push their data to; automatic backups + monitoring (Cloud capability).
 
 #### Added components — backend (`backend/`)
 
@@ -197,7 +197,7 @@
 - Device token auth (`DeviceToken` → BaseDeviceToken) for terminal registration
 - django-bolt + django-fusion dashboard on ASGI (channels/daphne), PostgreSQL via psycopg2
 - **Full Django API surface** — all CRUD, fusion contract, and Community-UI bridges served by Django (`:8767` API / `:8082` admin) with the Robyn sidecar removed
-- Automatic cloud backups + monitoring (Cloud capability, landing sync Aug 2026)
+- Automatic cloud backups + monitoring (Cloud capability)
 
 ---
 

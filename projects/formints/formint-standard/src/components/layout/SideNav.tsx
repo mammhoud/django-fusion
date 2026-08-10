@@ -23,7 +23,7 @@ export const ROLE_ROUTES: Record<string, Set<string>> = {
   manager: new Set([
     '/dashboard', '/sale', '/kitchen', '/transactions',
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
-    '/employees', '/schedule', '/payroll', '/customers', '/roles',
+    '/employees', '/schedule', '/payroll', '/customers', '/roles', '/register',
     '/analytics', '/reports', '/reports?tab=taxReports',
     '/settings', '/notes', '/coupons', '/support-chat', '/about',
   ]),
@@ -96,6 +96,7 @@ const navCategories: NavCategory[] = [
       { label: 'nav.payroll', desc: 'nav.payrollDesc', route: '/payroll', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
       { label: 'nav.customers', desc: 'nav.customersDesc', route: '/customers', icon: Ic('hi:user-group'), colorClass: 'bg-secondary' },
       { label: 'nav.roles', desc: 'nav.rolesDesc', route: '/roles', icon: Ic('hi:shield-check'), colorClass: 'bg-secondary' },
+      { label: 'nav.register', desc: 'nav.registerDesc', route: '/register', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
     ],
   },
   {

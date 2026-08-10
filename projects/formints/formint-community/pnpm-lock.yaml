@@ -17,6 +17,9 @@ importers:
       '@fontsource-variable/geist':
         specifier: ^5.3.0
         version: 5.3.0
+      '@formints/client':
+        specifier: file:../packages/formints-client
+        version: file:../packages/formints-client
       '@tauri-apps/api':
         specifier: ^2
         version: 2.9.0
@@ -833,6 +836,9 @@ packages:
 
   '@fontsource-variable/geist@5.3.0':
     resolution: {integrity: sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA==}
+
+  '@formints/client@file:../packages/formints-client':
+    resolution: {directory: ../packages/formints-client, type: directory}
 
   '@hono/node-server@2.1.0':
     resolution: {integrity: sha512-XovyyCCnBzW+zKu+z/zq8hwNs4KOR5rEMAOxo2f40Q5xoOI37IMm6MIg2COOUtUApo0i6850MTBKH2u4QLGIqg==}
@@ -5239,6 +5245,8 @@ snapshots:
   '@floating-ui/utils@0.2.12': {}
 
   '@fontsource-variable/geist@5.3.0': {}
+
+  '@formints/client@file:../packages/formints-client': {}
 
   '@hono/node-server@2.1.0(hono@4.13.0)':
     dependencies:

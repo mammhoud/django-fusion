@@ -1,5 +1,15 @@
 /**
- * Webpack Main Configuration
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  DEPRECATED — Use per-project webpack configs instead.             ║
+ * ║                                                                    ║
+ * ║  landing-fusion → webpack/landing-fusion.config.js                 ║
+ * ║  precis         → webpack/precis.config.js                         ║
+ * ║                                                                    ║
+ * ║  These extend projects/webpack/base.config.js which provides       ║
+ * ║  the same multi-project foundation without env-var switching.      ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ *
+ * Webpack Main Configuration (LEGACY — DO NOT EXTEND)
  * Unified entry point for all 3 workspace sites.
  *
  * Site entry files are all named app.js:

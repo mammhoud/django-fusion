@@ -300,6 +300,17 @@ clean-python: ## Clean Python cache artifacts (SAFE — never deletes source .py
 clean: clean-python clean-test-reports frontend-clean ## Django + frontend clean
 	@echo -e "$(GREEN)✅ Django cleaned$(NC)"
 
+skeleton-manifest: ## Generate skeleton manifest for Astro build (runs after webpack)
+	@echo -e "$(BLUE)Generating skeleton manifest...$(NC)"
+	@$(MANAGE) generate_skeleton_manifest \
+		--output assets/static/skeleton-manifest.json \
+		--page blog/blog_index.html \
+		--page blog/blog_detail.html \
+		--page blog/blog_list.html \
+		--page courses/catalog.html \
+		--page courses/detail.html
+	@echo -e "$(GREEN)✅ Skeleton manifest generated → assets/static/skeleton-manifest.json$(NC)"
+
 # Delegated subtargets are consumed by nested Makefiles.
 .PHONY: list health containers production production-simple domains vresume-pages
 list health containers production production-simple domains vresume-pages:
