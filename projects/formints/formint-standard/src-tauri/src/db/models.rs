@@ -22,6 +22,43 @@ pub struct NewUser {
     pub name: String,
 }
 
+// ---- Currency ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::currencies)]
+pub struct Currency {
+    pub id: i32,
+    pub code: String,
+    pub name: String,
+    pub symbol: String,
+    pub exchange_rate: f64,
+    pub is_default: bool,
+    pub is_active: bool,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::currencies)]
+pub struct NewCurrency {
+    pub code: String,
+    pub name: String,
+    pub symbol: String,
+    pub exchange_rate: f64,
+    pub is_default: bool,
+    pub is_active: bool,
+}
+
+#[derive(Debug, AsChangeset, Deserialize)]
+#[diesel(table_name = crate::db::schema::currencies)]
+pub struct UpdateCurrency {
+    pub code: Option<String>,
+    pub name: Option<String>,
+    pub symbol: Option<String>,
+    pub exchange_rate: Option<f64>,
+    pub is_default: Option<bool>,
+    pub is_active: Option<bool>,
+}
+
 // ---- Settings ----
 #[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = crate::db::schema::settings)]
@@ -49,6 +86,8 @@ pub struct Settings {
     pub smtp_recipient: Option<String>,
     pub smtp_from_name: Option<String>,
     pub smtp_from_email: Option<String>,
+    pub printer_port: Option<String>,
+    pub printer_enabled: bool,
 }
 
 #[derive(Debug, Insertable, AsChangeset, Deserialize, Default)]
@@ -81,6 +120,8 @@ pub struct UpdateSettings {
     pub smtp_recipient: Option<String>,
     pub smtp_from_name: Option<String>,
     pub smtp_from_email: Option<String>,
+    pub printer_port: Option<String>,
+    pub printer_enabled: Option<bool>,
 }
 
 // ---- Category ----
@@ -1131,6 +1172,29 @@ pub struct UpdateEmployeeSchedule {
     pub notes: Option<Option<String>>,
 }
 
+// ---- Shift / Cash Drawer ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::shifts)]
+pub struct Shift {
+    pub id: i32,
+    pub opened_at: NaiveDateTime,
+    pub closed_at: Option<NaiveDateTime>,
+    pub opening_cash: f64,
+    pub closing_cash: Option<f64>,
+    pub expected_cash: Option<f64>,
+    pub cash_difference: Option<f64>,
+    pub shift_status: String,
+    pub shift_notes: Option<String>,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::shifts)]
+pub struct NewShift {
+    pub opening_cash: f64,
+    #[serde(default)]
+    pub shift_notes: Option<String>,
+}
+
 // ---- Payroll ----
 #[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = crate::db::schema::payrolls)]
@@ -1268,4 +1332,64 @@ pub struct FinanceSummary {
     pub income_by_category: Vec<FinanceCategorySummary>,
     pub expense_by_category: Vec<FinanceCategorySummary>,
     pub budgets: Vec<BudgetTracking>,
+}
+
+// ── TaxProfile ──────────────────────────────────────────────────
+
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::tax_profiles)]
+pub struct TaxProfile {
+    pub id: i32,
+    pub name: String,
+    pub rate: f64,
+    pub is_default: bool,
+    pub is_active: bool,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::tax_profiles)]
+pub struct NewTaxProfile {
+    pub name: String,
+    pub rate: f64,
+    pub is_default: bool,
+    pub is_active: bool,
+}
+
+#[derive(Debug, AsChangeset, Deserialize)]
+#[diesel(table_name = crate::db::schema::tax_profiles)]
+pub struct UpdateTaxProfile {
+    pub name: Option<String>,
+    pub rate: Option<f64>,
+    pub is_default: Option<bool>,
+    pub is_active: Option<bool>,
+}
+
+// ── DataToken Shell — sync_queue ─────────────────────────────────
+
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::sync_queue)]
+pub struct SyncQueueItem {
+    pub id: i32,
+    pub entity_type: String,
+    pub entity_id: String,
+    pub change_type: String,
+    pub sync_order: i32,
+    pub status: String,
+    pub retry_count: i32,
+    pub error_message: String,
+    pub payload_json: String,
+    pub created_at: String,
+    pub flushed_at: Option<String>,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::sync_queue)]
+pub struct NewSyncQueueItem {
+    pub entity_type: String,
+    pub entity_id: String,
+    pub change_type: String,
+    pub sync_order: i32,
+    pub payload_json: String,
 }

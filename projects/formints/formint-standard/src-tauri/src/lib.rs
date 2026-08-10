@@ -168,6 +168,113 @@ fn delete_transaction(app: AppHandle, id: i32) -> Result<(), String> {
     transactions::delete_transaction(&db_path, id)
 }
 
+// ---- Currency commands ----
+#[tauri::command]
+fn list_currencies(
+    app: AppHandle,
+    active_only: bool,
+    search: Option<String>,
+) -> Result<Vec<db::models::Currency>, String> {
+    let db_path = get_db_path(&app)?;
+    currency::list_currencies(&db_path, active_only, search.as_deref())
+}
+
+#[tauri::command]
+fn create_currency(
+    app: AppHandle,
+    code: String,
+    name: String,
+    symbol: String,
+    exchange_rate: f64,
+    is_default: bool,
+) -> Result<db::models::Currency, String> {
+    let db_path = get_db_path(&app)?;
+    currency::create_currency(&db_path, &code, &name, &symbol, exchange_rate, is_default)
+}
+
+#[tauri::command]
+fn update_currency(
+    app: AppHandle,
+    id: i32,
+    code: Option<String>,
+    name: Option<String>,
+    symbol: Option<String>,
+    exchange_rate: Option<f64>,
+    is_default: Option<bool>,
+    is_active: Option<bool>,
+) -> Result<db::models::Currency, String> {
+    let db_path = get_db_path(&app)?;
+    currency::update_currency(
+        &db_path,
+        id,
+        code.as_deref(),
+        name.as_deref(),
+        symbol.as_deref(),
+        exchange_rate,
+        is_default,
+        is_active,
+    )
+}
+
+#[tauri::command]
+fn delete_currency(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    currency::delete_currency(&db_path, id)
+}
+
+// ---- Tax Profile commands ----
+#[tauri::command]
+fn list_tax_profiles(
+    app: AppHandle,
+    active_only: bool,
+    search: Option<String>,
+) -> Result<Vec<db::models::TaxProfile>, String> {
+    let db_path = get_db_path(&app)?;
+    tax_profile::list_tax_profiles(&db_path, active_only, search.as_deref())
+}
+
+#[tauri::command]
+fn create_tax_profile(
+    app: AppHandle,
+    name: String,
+    rate: f64,
+    is_default: bool,
+) -> Result<db::models::TaxProfile, String> {
+    let db_path = get_db_path(&app)?;
+    tax_profile::create_tax_profile(&db_path, &name, rate, is_default)
+}
+
+#[tauri::command]
+fn update_tax_profile(
+    app: AppHandle,
+    id: i32,
+    name: Option<String>,
+    rate: Option<f64>,
+    is_default: Option<bool>,
+    is_active: Option<bool>,
+) -> Result<db::models::TaxProfile, String> {
+    let db_path = get_db_path(&app)?;
+    tax_profile::update_tax_profile(
+        &db_path,
+        id,
+        name.as_deref(),
+        rate,
+        is_default,
+        is_active,
+    )
+}
+
+#[tauri::command]
+fn delete_tax_profile(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    tax_profile::delete_tax_profile(&db_path, id)
+}
+
+#[tauri::command]
+fn compute_tax(subtotal: f64, rate: f64) -> f64 {
+    tax::compute_tax(subtotal, rate)
+}
+
 // ---- Settings commands ----
 #[tauri::command]
 fn get_settings(app: AppHandle) -> Result<db::models::Settings, String> {
@@ -856,6 +963,45 @@ fn add_tax_report(app: AppHandle, report: db::models::NewTaxReport) -> Result<db
 fn delete_tax_report(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     tax_reports::delete_tax_report(&db_path, id)
+}
+
+// ---- Shift / Cash Drawer commands ----
+#[tauri::command]
+fn get_shifts(app: AppHandle, status: Option<String>) -> Result<Vec<db::models::Shift>, String> {
+    let db_path = get_db_path(&app)?;
+    shifts::get_shifts(&db_path, status)
+}
+
+#[tauri::command]
+fn get_active_shift(app: AppHandle) -> Result<Option<db::models::Shift>, String> {
+    let db_path = get_db_path(&app)?;
+    shifts::get_active_shift(&db_path)
+}
+
+#[tauri::command]
+fn open_shift(app: AppHandle, shift: db::models::NewShift) -> Result<db::models::Shift, String> {
+    let db_path = get_db_path(&app)?;
+    shifts::open_shift(&db_path, shift)
+}
+
+#[tauri::command]
+fn close_shift(app: AppHandle, id: i32, closing_cash: f64, notes: Option<String>) -> Result<db::models::Shift, String> {
+    let db_path = get_db_path(&app)?;
+    shifts::close_shift(&db_path, id, closing_cash, notes)
+}
+
+#[tauri::command]
+fn trigger_cash_drawer(app: AppHandle) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    let result = hardware::trigger_cash_drawer(&db_path)?;
+    log_user_action(&db_path, "open_cash_drawer", "cash_drawer", 0, serde_json::json!({}));
+    Ok(result)
+}
+
+#[tauri::command]
+fn check_printer_status(app: AppHandle) -> Result<String, String> {
+    let db_path = get_db_path(&app)?;
+    hardware::check_printer_status(&db_path)
 }
 
 // ---- Employee Schedules commands ----
@@ -1571,6 +1717,11 @@ pub fn run() {
             // Transactions
             get_transactions,
             delete_transaction,
+            // Currency
+            list_currencies,
+            create_currency,
+            update_currency,
+            delete_currency,
             // Settings
             get_settings,
             save_settings,
@@ -1695,6 +1846,13 @@ pub fn run() {
             get_tax_reports,
             add_tax_report,
             delete_tax_report,
+            // Shift / Cash Drawer
+            get_shifts,
+            get_active_shift,
+            open_shift,
+            close_shift,
+            trigger_cash_drawer,
+            check_printer_status,
             // Employee Schedules
             get_employee_schedules,
             add_employee_schedule,
@@ -1733,6 +1891,16 @@ pub fn run() {
             sync_tray_badge,
             // KDS popout window
             open_kds_window,
+            // Tax profiles + compute_tax
+            list_tax_profiles,
+            create_tax_profile,
+            update_tax_profile,
+            delete_tax_profile,
+            compute_tax,
+            // DataToken Shell — sync queue + sidecar reconnect
+            flush_pending_sync,
+            check_sidecar_health_cmd,
+            pending_sync_count,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

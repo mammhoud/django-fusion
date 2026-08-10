@@ -2,6 +2,20 @@
 // Hand-edited to match the initial migration schema.
 
 diesel::table! {
+    currencies (id) {
+        id -> Integer,
+        code -> Text,
+        name -> Text,
+        symbol -> Text,
+        exchange_rate -> Double,
+        is_default -> Bool,
+        is_active -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
     settings (id) {
         id -> Integer,
         restaurant_name -> Nullable<Text>,
@@ -26,6 +40,8 @@ diesel::table! {
         smtp_recipient -> Nullable<Text>,
         smtp_from_name -> Nullable<Text>,
         smtp_from_email -> Nullable<Text>,
+        printer_port -> Nullable<Text>,
+        printer_enabled -> Bool,
     }
 }
 
@@ -55,6 +71,7 @@ diesel::table! {
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
+        tax_profile_id -> Nullable<Integer>,
     }
 }
 
@@ -128,6 +145,7 @@ diesel::table! {
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
+        tax_profile_id -> Nullable<Integer>,
     }
 }
 
@@ -450,6 +468,20 @@ diesel::table! {
 }
 
 diesel::table! {
+    shifts (id) {
+        id -> Integer,
+        opened_at -> Timestamp,
+        closed_at -> Nullable<Timestamp>,
+        opening_cash -> Double,
+        closing_cash -> Nullable<Double>,
+        expected_cash -> Nullable<Double>,
+        cash_difference -> Nullable<Double>,
+        shift_status -> Text,
+        shift_notes -> Nullable<Text>,
+    }
+}
+
+diesel::table! {
     payrolls (id) {
         id -> Integer,
         employee_id -> Integer,
@@ -516,10 +548,39 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    tax_profiles (id) {
+        id -> Integer,
+        name -> Text,
+        rate -> Double,
+        is_default -> Bool,
+        is_active -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
+    sync_queue (id) {
+        id -> Integer,
+        entity_type -> Text,
+        entity_id -> Text,
+        change_type -> Text,
+        sync_order -> Integer,
+        status -> Text,
+        retry_count -> Integer,
+        error_message -> Text,
+        payload_json -> Text,
+        created_at -> Text,
+        flushed_at -> Nullable<Text>,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
     users,
     roles,
     user_roles,
+    currencies,
     settings,
     categories,
     products,
@@ -545,6 +606,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     receipt_templates,
     tax_reports,
     employee_schedules,
+    shifts,
     payrolls,
     delivery_zones,
     support_messages,
@@ -552,4 +614,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     user_actions,
     finance_transactions,
     budgets,
+    sync_queue,
+    tax_profiles,
 );
