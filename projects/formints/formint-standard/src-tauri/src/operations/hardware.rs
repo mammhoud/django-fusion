@@ -11,6 +11,10 @@
 use std::path::PathBuf;
 use std::io::Write;
 
+fn write_bytes(file: &mut std::fs::File, bytes: &[u8]) -> Result<(), String> {
+    file.write_all(bytes).map_err(|e| e.to_string())
+}
+
 // ── ESC/POS Command constants ──────────────────────────────────────────────
 
 /// Initialize printer (reset to default)
@@ -49,13 +53,13 @@ fn get_printer_port(db_path: &PathBuf) -> Result<Option<String>, String> {
     use crate::db::schema::settings::dsl::*;
 
     let mut conn = open_conn(db_path)?;
-    let row: Option<(Option<String>,)> = settings
-        .select((printer_port,))
+    let port: Option<String> = settings
+        .select(printer_port)
         .first(&mut conn)
         .map_err(|e| e.to_string())?;
 
-    match row {
-        Some((Some(port),)) if !port.is_empty() => Ok(Some(port)),
+    match port {
+        Some(p) if !p.is_empty() => Ok(Some(p)),
         _ => Ok(None),
     }
 }
@@ -83,13 +87,18 @@ fn open_serial_port(_port_path: &str) -> Result<std::fs::File, String> {
 /// Sends a drawer-kick pulse sequence over the configured serial port.
 /// The drawer is typically connected to the printer via an RJ12 cable.
 pub fn trigger_cash_drawer(db_path: &PathBuf) -> Result<(), String> {
+    let active_shift = crate::operations::shifts::get_active_shift(db_path)?;
+    if active_shift.is_none() {
+        return Err("Open a cash shift before opening the drawer.".to_string());
+    }
+
     let port = get_printer_port(db_path)?
         .ok_or_else(|| "Printer port not configured. Set it in Settings → Database → Printer Port.".to_string())?;
 
     let mut file = open_serial_port(&port)?;
-    file.write_all(ESC_INIT)?;
+    write_bytes(&mut file, ESC_INIT)?;
     std::thread::sleep(std::time::Duration::from_millis(100));
-    file.write_all(ESC_DRAWER_KICK)?;
+    write_bytes(&mut file, ESC_DRAWER_KICK)?;
     file.flush().map_err(|e| e.to_string())?;
 
     Ok(())
@@ -112,44 +121,44 @@ pub fn print_thermal_receipt(
     let mut file = open_serial_port(&port)?;
 
     // Initialize
-    file.write_all(ESC_INIT)?;
+    write_bytes(&mut file, ESC_INIT)?;
     std::thread::sleep(std::time::Duration::from_millis(50));
 
     // Header — center aligned, bold, double-width
-    file.write_all(ESC_ALIGN_CENTER)?;
-    file.write_all(ESC_DOUBLE_ON)?;
-    file.write_all(ESC_BOLD_ON)?;
-    file.write_all(header.as_bytes())?;
-    file.write_all(ESC_LF)?;
-    file.write_all(ESC_BOLD_OFF)?;
-    file.write_all(ESC_DOUBLE_OFF)?;
-    file.write_all(ESC_LF)?;
+    write_bytes(&mut file, ESC_ALIGN_CENTER)?;
+    write_bytes(&mut file, ESC_DOUBLE_ON)?;
+    write_bytes(&mut file, ESC_BOLD_ON)?;
+    write_bytes(&mut file, header.as_bytes())?;
+    write_bytes(&mut file, ESC_LF)?;
+    write_bytes(&mut file, ESC_BOLD_OFF)?;
+    write_bytes(&mut file, ESC_DOUBLE_OFF)?;
+    write_bytes(&mut file, ESC_LF)?;
 
     // Separator
-    file.write_all(ESC_ALIGN_CENTER)?;
-    file.write_all(SEPARATOR.as_bytes())?;
-    file.write_all(ESC_LF)?;
+    write_bytes(&mut file, ESC_ALIGN_CENTER)?;
+    write_bytes(&mut file, SEPARATOR.as_bytes())?;
+    write_bytes(&mut file, ESC_LF)?;
 
     // Body — left aligned
-    file.write_all(ESC_ALIGN_LEFT)?;
+    write_bytes(&mut file, ESC_ALIGN_LEFT)?;
     for line in lines {
-        file.write_all(line.as_bytes())?;
-        file.write_all(ESC_LF)?;
+        write_bytes(&mut file, line.as_bytes())?;
+        write_bytes(&mut file, ESC_LF)?;
     }
 
     // Separator
-    file.write_all(ESC_ALIGN_CENTER)?;
-    file.write_all(SEPARATOR.as_bytes())?;
-    file.write_all(ESC_LF)?;
+    write_bytes(&mut file, ESC_ALIGN_CENTER)?;
+    write_bytes(&mut file, SEPARATOR.as_bytes())?;
+    write_bytes(&mut file, ESC_LF)?;
 
     // Footer — center aligned
-    file.write_all(ESC_ALIGN_CENTER)?;
-    file.write_all(footer.as_bytes())?;
-    file.write_all(ESC_LF)?;
-    file.write_all(ESC_LF)?;
+    write_bytes(&mut file, ESC_ALIGN_CENTER)?;
+    write_bytes(&mut file, footer.as_bytes())?;
+    write_bytes(&mut file, ESC_LF)?;
+    write_bytes(&mut file, ESC_LF)?;
 
     // Cut paper
-    file.write_all(ESC_CUT_PAPER)?;
+    write_bytes(&mut file, ESC_CUT_PAPER)?;
     file.flush().map_err(|e| e.to_string())?;
 
     Ok(())

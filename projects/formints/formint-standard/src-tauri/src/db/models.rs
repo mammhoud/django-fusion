@@ -168,6 +168,7 @@ pub struct Product {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
+    pub tax_profile_id: Option<i32>,
 }
 
 #[derive(Debug, Insertable, Deserialize)]
@@ -233,6 +234,7 @@ pub struct Sale {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
+    pub tax_profile_id: Option<i32>,
 }
 
 #[derive(Debug, Insertable, Deserialize)]
@@ -1368,8 +1370,7 @@ pub struct UpdateTaxProfile {
 
 // ── DataToken Shell — sync_queue ─────────────────────────────────
 
-#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
-#[diesel(table_name = crate::db::schema::sync_queue)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SyncQueueItem {
     pub id: i32,
     pub entity_type: String,

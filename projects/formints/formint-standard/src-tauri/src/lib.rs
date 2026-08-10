@@ -7,6 +7,7 @@ use db::{get_db_path, run_migrations};
 use operations::*;
 use operations::delivery_zones;
 use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
+use operations::sidecar_reconnect::{flush_pending_sync, check_sidecar_health_cmd, pending_sync_count};
 use tauri::{AppHandle, Emitter, Manager};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
