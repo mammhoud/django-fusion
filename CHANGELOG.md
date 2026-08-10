@@ -9,11 +9,96 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Added
 
+- **`django_fusion.mcp` package** — reusable FastAPI routers for django-fusion
+  MCP servers:
+  - `FusionMCPRouter` — `/health`, `/django-fusion/info`,
+    `/django-fusion/viewsets`, `/auth/features` endpoints with lazy
+    import-safe Django probes.
+  - `django_fusion.mcp.prompts` — generalized prompt catalog loader with
+    configurable `FUSION_MCP_PROMPT_CATALOG_PATH` Django setting, schema
+    validation, and agent/skill cross-referencing. Falls back gracefully
+    when django-fusion is unavailable so prompt tests remain import-safe.
+- **`DesignerMCPRouter`** (`plugins/designer/mcp_router.py`) — FastAPI router
+  with 6 GET endpoints and 1 POST JSON-RPC endpoint for the interactive
+  designer:
+  - `GET /designer/tools` — list all 8 designer tools with MCP metadata.
+  - `GET /designer/component-catalog`, `/wagtail-field`, `/form-scaffold`,
+    `/table-scaffold`, `/preview` — simplified query-param endpoints.
+  - `POST /designer/tools/call` — full JSON-RPC `tools/call` endpoint for
+    all 8 tools including complex `website_audit`, `webapp_enhancement_plan`,
+    `validate`, and field-rich form/table scaffolds.
+- **API-key authentication** on `DesignerMCPRouter` — two-tier auth policy
+  mirroring `designer/views.py._is_allowed`:
+  - API-key mode: when `FUSION_MCP_DESIGNER_API_KEY` is set (env, Django
+    settings, or constructor), requires matching `X-API-Key` header.
+  - Localhost fallback: when no key is configured, allows only `127.0.0.1`,
+    `::1`, `localhost` callers; remote callers receive 403.
+- **Analyzer schema extensions** (Phase 1.1) — `Component` gains `skeleton`
+  and `skeleton_config` fields; `Page` gains `dependencies` and
+  `load_priority`; `PageComponentUsage` gains `skeleton_order`. All
+  backward-compatible with sensible defaults.
+- **Per-project webpack support** — `projects/webpack/base.config.js` with
+  django-fusion alias resolution, `@<project>` aliases per site, and
+  `django-webpack-loader` integration for `{% render_bundle %}`.
+
+### Changed
+
+- **Designer moved to plugins.** `django_fusion.designer` is now a backward-
+  compatible shim; canonical imports live at `django_fusion.plugins.designer`.
+  All handlers, tools, views, and URLs were copied to the new location with
+  forward-import shims left in the old package. No public API breakage.
+- **Designer is project-generic.** Hardcoded project enums
+  (`["landing-fusion", "precis", "formint"]`) were removed from `tools.py` and
+  `website.py`. The `project` field is now `{"type": "string", "minLength": 1}`
+  — the designer works with any project. Projects customize audit guidance
+  via `FUSION_AUDIT_GUIDANCE` in their Django settings.
+- **`comp.templatetags` → `comp.tags`.** Template tag modules were moved from
+  `comp/templatetags/` to `comp/tags/` with backward-compatible shims in the
+  old location. All 59 references across source and tests were updated.
+  Template tags continue to load via Django's `templatetags` auto-discovery.
+- **Prompt catalog delegated to django-fusion.** The Kilo prompt catalog
+  (`applications/agents/prompt_catalog.py`) now delegates to
+  `django_fusion.mcp.prompts` when django-fusion is available, falling back
+  to local implementation for standalone use.
+- **Kilo MCP server simplified.** `applications/agents/mcp_server.py`
+  reduced by ~250 lines. Now imports `FusionMCPRouter` and
+  `DesignerMCPRouter` from django-fusion, keeping only Structa-Cloud-specific
+  infrastructure endpoints (Docker, Traefik, OpenRouter, ceptor-ai).
+
+## [0.5.0] — 2026-08-10
+
+### Added
+
 - **Unified asset pipeline options** via `AssetPipelineOptions` and
   `FUSION_ASSET_PIPELINE`, merging explicit `FUSION_ASSETS`, component
   manifests, and webpack `bundles.json` links for API and template-tag use.
 - **Canonical asset-link deduplication** for top CSS and bottom JS entries,
   preserving source/generated filesystem boundaries.
+
+### Changed
+
+- **Breaking: slot content now renders exactly once.** `{% slot %}` content
+  supplied by the caller is stored as a raw `NodeList` by
+  `BoundComponent.fill_slots` and rendered a single time by `SlotNode`.
+  Previously the caller's nodelist was eagerly rendered to a string and then
+  re-parsed as a brand-new template, double-rendering every `{{ }}` / `{% %}`
+  sequence in the slot body. Empty caller nodelists now fall back to the
+  component's own fallback body; legacy pre-rendered string slots are emitted
+  verbatim. Components that intentionally echoed template syntax through a
+  slot will render differently and must pass already-rendered markup instead.
+- **Breaking: props are exposed as bare context variables.** Resolved props
+  are pushed both as the `{{ props.name }}` mapping (unchanged) and as bare
+  context variables (`{{ name }}`, django-cotton style), so component
+  templates written either way resolve the same values. A declared-but-unpassed
+  prop now resolves to `None` and *shadows* any outer-context variable of the
+  same name; previously the name fell through to the parent context. Components
+  that relied on implicit outer-context leakage of a prop name must now pass
+  the value explicitly (e.g. `{% comp "x" name=name /%}`).
+- **`{% prop name default=X %}` (kwarg-style) now resolves its default.** The
+  `default=` bit was previously parsed and silently dropped, so the prop
+  always resolved to `None`; the default is now applied. Both documented forms
+  (`{% prop name="default" %}` and `{% prop name default="v" %}`) are
+  supported.
 
 ### Removed
 
@@ -32,6 +117,13 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- **`{% slot %}` content no longer double-renders.** `fill_slots` stored an
+  eagerly rendered string that `SlotNode` then re-parsed as a new template,
+  evaluating the caller's `{{ }}` / `{% %}` twice (and, for stored `SlotNode`
+  objects, recursing infinitely via the `context["slots"]` lookup). Slots now
+  hold raw nodelists rendered exactly once; a nested component's default slot
+  passed through `{{ slot }}` is rendered a single time with the component
+  context.
 - `generate_asset_manifest` now imports the canonical implementation from
   `django_fusion.config.manifest` without a duplicate `comp.manifest` path.
 - **Model-scoped cache invalidation** — `CachingStorage.clear_model_cache()`
@@ -214,3 +306,4 @@ into the standalone `django-fusion` package.
 
 [0.1.0]: https://github.com/mammhoud/django-fusion/releases/tag/v0.1.0
 [0.2.0]: https://github.com/mammhoud/django-fusion/releases/tag/v0.2.0
+[0.5.0]: https://github.com/mammhoud/django-fusion/releases/tag/v0.5.0

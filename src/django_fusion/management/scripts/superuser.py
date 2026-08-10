@@ -7,7 +7,7 @@ import django
 def create_superuser():
     # Set up Django environment if not already set
     if not os.environ.get('DJANGO_SETTINGS_MODULE'):
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'configs.settings')
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 
     # Add current directory to path so it can find settings
     sys.path.insert(0, os.getcwd())

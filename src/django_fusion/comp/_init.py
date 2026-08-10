@@ -28,8 +28,8 @@ from django_fusion.comp.loader.templates import (
     get_component_directories,
     get_template_names,
 )
-from django_fusion.comp.templatetags.tags.block import BlockNode, validate_fragment_name
-from django_fusion.comp.templatetags.tags.slot import DEFAULT_SLOT, SlotNode
+from django_fusion.comp.tags.tags.block import BlockNode, validate_fragment_name
+from django_fusion.comp.tags.tags.slot import DEFAULT_SLOT, SlotNode
 
 
 @dataclass(frozen=True, slots=True)
@@ -198,35 +198,69 @@ class BoundComponent:
 
         with context.push(
             **{
+                # Resolved props are exposed BOTH as a ``props`` mapping
+                # (documented contract: ``{{ props.title }}``) and as bare
+                # context variables (django-cotton-style ``{{ title }}``),
+                # so component templates written either way resolve the
+                # same values. ``props`` is set last so it always wins for
+                # the reserved names.
+                **props,
                 "attrs": attrs,
                 "props": props,
-                "slot": slots.get(DEFAULT_SLOT),
                 "slots": slots,
                 "vars": {},
                 "component": render_metadata,
                 "component_context": render_metadata,
             }
         ):
+            # ``{{ slot }}`` (the documented default-slot accessor) needs a
+            # rendered string. Render the raw default nodelist exactly once
+            # with the component context so it never double-evaluates
+            # template syntax in the caller's content. Named slots are
+            # rendered by their ``SlotNode`` on demand.
+            default_slot = slots.get(DEFAULT_SLOT)
+            context["slot"] = default_slot.render(context) if default_slot else ""
             return self.component.template.template.render(context)
 
     def fill_slots(self, context: Context):
+        """Collect slot content as raw (unrendered) nodelists.
+
+        Returns ``{slot_name: Node | NodeList}`` for the caller's ``{% slot
+        name %}...{% endslot %}`` blocks plus the default slot (all non-slot
+        nodes). Raw nodes are returned so each ``SlotNode`` inside the
+        component template renders the content exactly once; eager rendering
+        here would produce a string that ``SlotNode`` then re-parses as a
+        brand-new template — double-rendering any ``{{ }}`` / ``{% %}``
+        sequences in the caller's content.
+        """
         if self.nodelist is None:
             return {
                 DEFAULT_SLOT: None,
             }
 
-        slot_nodes = {node.name: node for node in self.nodelist if isinstance(node, SlotNode)}
+        # Store each named slot's raw *nodelist* (not the SlotNode itself):
+        # rendering a stored SlotNode would re-enter ``SlotNode.render`` and
+        # re-look-up ``context["slots"]`` → itself → infinite recursion.
+        # An empty caller nodelist means the caller did not supply content,
+        # so the component's own fallback body should render instead.
+        slot_nodes = {
+            node.name: node.nodelist if node.nodelist else None
+            for node in self.nodelist
+            if isinstance(node, SlotNode)
+        }
         default_nodes = NodeList([node for node in self.nodelist if not isinstance(node, SlotNode)])
 
-        slots: dict[str, Node | NodeList] = {
+        slots: dict[str, Node | NodeList | None] = {
             DEFAULT_SLOT: default_nodes,
             **slot_nodes,
         }
 
         if not slots[DEFAULT_SLOT] and "slot" in context:
+            # Nested component: an outer component passed its rendered
+            # default slot string via ``context["slot"]``.
             slots[DEFAULT_SLOT] = TextNode(context["slot"])
 
-        return {name: node.render(context) for name, node in slots.items() if node}
+        return {name: node for name, node in slots.items() if node is not None}
 
     @property
     def id(self):
@@ -300,6 +334,14 @@ class ComponentRegistry:
         self._components[key] = component
         self._component_usage.setdefault(key, set())
         return component
+
+    def registered_components(self) -> dict[str, Component]:
+        """Return a snapshot of registered component names and instances.
+
+        Callers that need catalog/introspection data should use this public
+        snapshot instead of depending on the registry's internal mapping.
+        """
+        return dict(self._components)
 
     def get_assets(self, asset_type: AssetType | None = None) -> frozenset[Asset]:
         return frozenset(

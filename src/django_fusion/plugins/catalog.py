@@ -128,6 +128,22 @@ PLUGIN_CATALOG: dict[str, PluginSpec] = {
             "metrics, error views and the fusion introspection dashboard."
         ),
     ),
+    "django_fusion.plugins.designer": PluginSpec(
+        name="django_fusion.plugins.designer",
+        core=True,
+        description="Interactive designer: component catalog, Wagtail field suggestions, "
+        "form/table scaffolds, website audits, and safe component previews.",
+        capabilities={"designer", "component-catalog", "wagtail-field", "form-scaffold", "table-scaffold"},
+        signals=frozenset({"designer_tools_call"}),
+    ),
+    "django_fusion.tasks": PluginSpec(
+        name="django_fusion.tasks",
+        core=True,
+        description="Unified background-task API with broker-agnostic registration, "
+        "Dramatiq/RQ/in-process backends, task logging, idempotency, and MCP-safe enqueue.",
+        capabilities={"tasks", "background-jobs", "dramatiq", "async-email"},
+        signals=frozenset({"task_enqueued", "task_completed", "task_failed"}),
+    ),
     "django_fusion.plugins.robyn": PluginSpec(
         name="django_fusion.plugins.robyn",
         capabilities=frozenset({"robyn", "async-server", "health"}),

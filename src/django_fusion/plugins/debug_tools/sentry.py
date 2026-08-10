@@ -2,7 +2,7 @@
 Sentry configuration for django_fusion.
 
 This module provides Sentry error tracking configuration including
-Django, Celery, and Redis integrations.
+Django and Redis integrations.
 
 Classes:
     SentrySetup: Sentry error tracking configuration.
@@ -58,20 +58,26 @@ class SentrySetup:
 
         try:
             import sentry_sdk
-            from sentry_sdk.integrations.celery import CeleryIntegration
             from sentry_sdk.integrations.django import DjangoIntegration
             from sentry_sdk.integrations.redis import RedisIntegration
         except ImportError:
             logger.warning("sentry-sdk not installed. Install with: pip install sentry-sdk")
             return {}
 
+        integrations = [DjangoIntegration(), RedisIntegration()]
+
+        # CeleryIntegration was removed in the Dramatiq migration.
+        # Keep the import as a safe no-op for environments that still
+        # have sentry-sdk with the celery integration available.
+        try:
+            from sentry_sdk.integrations.celery import CeleryIntegration  # noqa: F811
+            integrations.append(CeleryIntegration())
+        except ImportError:
+            pass
+
         default_config = {
             'dsn': dsn,
-            'integrations': [
-                DjangoIntegration(),
-                CeleryIntegration(),
-                RedisIntegration(),
-            ],
+            'integrations': integrations,
             'traces_sample_rate': kwargs.get('traces_sample_rate', 0.5),
             'profiles_sample_rate': kwargs.get('profiles_sample_rate', 0.0),
             'send_default_pii': kwargs.get('send_default_pii', True),

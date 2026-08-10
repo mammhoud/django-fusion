@@ -79,7 +79,7 @@ def _configure_django(test_templates_dir: Path) -> None:
                 # Mirror production: ``comp`` is available WITHOUT an
                 # explicit ``{% load components %}`` (see
                 # applications/configs/base/templates.py).
-                "django_fusion.comp.templatetags.components",
+                "django_fusion.comp.tags.components",
             ],
         },
     }
@@ -116,11 +116,11 @@ def _configure_django(test_templates_dir: Path) -> None:
             # may already include the same dotted path.
             builtins = options.setdefault("builtins", [])
             if (
-                "django_fusion.comp.templatetags.components"
+                "django_fusion.comp.tags.components"
                 not in builtins
             ):
                 builtins.append(
-                    "django_fusion.comp.templatetags.components"
+                    "django_fusion.comp.tags.components"
                 )
         else:
             # ``settings.TEMPLATES`` is empty (e.g. conftest.py

@@ -15,7 +15,7 @@ comp.payloads       Component payload service (JSON data for HTMX responses).
 comp.plugins       Pluggy-based hook system for extending component behavior.
 comp.static         Static file discovery and manifest helpers.
 comp.templates      Template discovery, URL registration, and rendering engine.
-comp.templatetags   Django template tags: comp, slot, prop, var, css, js,
+comp.tags   Django template tags: comp, slot, prop, var, css, js,
                     plus UI tags: card, field, menu, modal, table, notification.
 
 Usage::

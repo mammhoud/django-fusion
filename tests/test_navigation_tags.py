@@ -77,14 +77,14 @@ def _inject_template_dirs_and_libraries():
     options = templates[target_idx].setdefault("OPTIONS", {})
     libs: dict = options.setdefault("libraries", {})
     libs["navigation"] = (
-        "django_fusion.comp.templatetags.navigation"
+        "django_fusion.comp.tags.navigation"
     )
     libs["components"] = (
-        "django_fusion.comp.templatetags.components"
+        "django_fusion.comp.tags.components"
     )
     builtins: list = options.setdefault("builtins", [])
-    if "django_fusion.comp.templatetags.components" not in builtins:
-        builtins.append("django_fusion.comp.templatetags.components")
+    if "django_fusion.comp.tags.components" not in builtins:
+        builtins.append("django_fusion.comp.tags.components")
 
     templates[target_idx].setdefault("NAME", "django")
     settings.TEMPLATES = templates
@@ -133,7 +133,7 @@ class TestNavLinkPython:
     """Test the ``nav_link()`` function directly (not via template rendering)."""
 
     def test_returns_expected_context_keys(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert "url" in ctx
@@ -145,14 +145,14 @@ class TestNavLinkPython:
         assert "unpoly_enabled" in ctx
 
     def test_default_unpoly_enabled_is_true(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert ctx["unpoly_enabled"] is True
 
     def test_unpoly_attrs_when_enabled(self):
         """When UNPOLY_ENABLED=True, attrs should include up-follow / up-target."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
             request = _make_request("/")
             ctx = nav_link({}, url="/blog/", label="Blog", request=request)
@@ -164,7 +164,7 @@ class TestNavLinkPython:
 
     def test_htmx_attrs_when_unpoly_disabled(self):
         """When UNPOLY_ENABLED=False, attrs should include hx-get / hx-target."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         with patch.object(settings, "UNPOLY_ENABLED", False, create=True):
             request = _make_request("/")
             ctx = nav_link({}, url="/blog/", label="Blog", request=request)
@@ -176,7 +176,7 @@ class TestNavLinkPython:
 
     def test_href_always_present(self):
         """href should be present in both Unpoly and HTMX modes."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
 
         with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
@@ -188,7 +188,7 @@ class TestNavLinkPython:
             assert 'href="/blog/"' in ctx["attrs"]
 
     def test_custom_target(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link(
             {}, url="/blog/", label="Blog", target="#main-content", request=request
@@ -196,7 +196,7 @@ class TestNavLinkPython:
         assert 'up-target="#main-content"' in ctx["attrs"]
 
     def test_layer_produces_up_layer_in_unpoly(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
             request = _make_request("/")
             ctx = nav_link(
@@ -205,7 +205,7 @@ class TestNavLinkPython:
             assert 'up-layer="modal"' in ctx["attrs"]
 
     def test_layer_not_present_in_htmx_mode(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         with patch.object(settings, "UNPOLY_ENABLED", False, create=True):
             request = _make_request("/")
             ctx = nav_link(
@@ -214,45 +214,45 @@ class TestNavLinkPython:
             assert "up-layer" not in ctx["attrs"]
 
     def test_active_when_path_matches(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/blog/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert ctx["is_active"] is True
 
     def test_not_active_when_path_differs(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/other/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert ctx["is_active"] is False
 
     def test_active_when_subpath_match(self):
         """URL /blog/posts/ should match root /blog/ via startswith."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/blog/posts/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert ctx["is_active"] is True
 
     def test_root_url_not_active_for_all_paths(self):
         """The root URL '/' should only match when current path IS '/'."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/blog/")
         ctx = nav_link({}, url="/", label="Home", request=request)
         assert ctx["is_active"] is False
 
     def test_root_url_active_for_root_path(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/", label="Home", request=request)
         assert ctx["is_active"] is True
 
     def test_icon_passed_through(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/blog/", label="Blog", icon="bi-book", request=request)
         assert ctx["icon"] == "bi-book"
 
     def test_empty_icon_is_empty_string(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert ctx["icon"] == ""
@@ -264,7 +264,7 @@ class TestNavLinkPython:
         reverse() will raise NoReverseMatch.  The tag falls back to
         returning the raw URL name — it should never crash.
         """
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link(
             {}, url="admin:index", label="Admin", request=request
@@ -274,7 +274,7 @@ class TestNavLinkPython:
         assert ctx["label"] == "Admin"
 
     def test_literal_url_passed_through(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link(
             {}, url="https://example.com", label="External", request=request
@@ -282,14 +282,14 @@ class TestNavLinkPython:
         assert ctx["url"] == "https://example.com"
 
     def test_absolute_path_passed_through(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/custom-path/", label="Custom", request=request)
         assert ctx["url"] == "/custom-path/"
 
     def test_falls_back_on_unresolvable_named_url(self):
         """When reverse() fails, the raw name is returned as the URL."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link(
             {}, url="nonexistent:url:that:does:not:exist", label="Bad", request=request
@@ -297,7 +297,7 @@ class TestNavLinkPython:
         assert ctx["url"] == "nonexistent:url:that:does:not:exist"
 
     def test_css_class_in_attrs(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link(
             {}, url="/blog/", label="Blog", css_class="d-block mb-2", request=request
@@ -306,13 +306,13 @@ class TestNavLinkPython:
 
     def test_uses_context_request_when_no_explicit_request(self):
         """When request is not passed explicitly, context['request'] is used."""
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/blog/")
         ctx = nav_link({"request": request}, url="/blog/", label="Blog")
         assert ctx["is_active"] is True
 
     def test_attrs_is_safe_string(self):
-        from django_fusion.comp.templatetags.navigation import nav_link
+        from django_fusion.comp.tags.navigation import nav_link
         from django.utils.safestring import SafeString
         request = _make_request("/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
@@ -328,7 +328,7 @@ class TestNavPanelPython:
     """Test the ``nav_panel()`` function directly."""
 
     def test_returns_expected_context_keys(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel(
             {},
             links=[
@@ -342,7 +342,7 @@ class TestNavPanelPython:
         assert "unpoly_enabled" in ctx
 
     def test_links_have_required_keys(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel(
             {},
             links=[{"url": "/blog/", "label": "Blog"}],
@@ -352,7 +352,7 @@ class TestNavPanelPython:
             assert key in link, f"Missing key {key!r} in link dict"
 
     def test_unpoly_attrs_on_links(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
             ctx = nav_panel(
                 {},
@@ -363,7 +363,7 @@ class TestNavPanelPython:
             assert 'up-target="#panel-content"' in attrs
 
     def test_htmx_attrs_on_links_when_disabled(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         with patch.object(settings, "UNPOLY_ENABLED", False, create=True):
             ctx = nav_panel(
                 {},
@@ -376,7 +376,7 @@ class TestNavPanelPython:
             assert "up-follow" not in attrs
 
     def test_per_link_target_override(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel(
             {},
             target="#shared-target",
@@ -389,7 +389,7 @@ class TestNavPanelPython:
         assert ctx["links"][1]["target"] == "#specific-target"
 
     def test_per_link_layer(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
             ctx = nav_panel(
                 {},
@@ -398,36 +398,36 @@ class TestNavPanelPython:
             assert 'up-layer="modal"' in ctx["links"][0]["attrs"]
 
     def test_empty_links_list_empty_string(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel({}, links=[])
         assert ctx["links"] == []
 
     def test_default_title_is_empty(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel({}, links=[{"url": "/", "label": "Home"}])
         assert ctx["title"] == ""
 
     def test_title_passed_through(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel(
             {}, links=[{"url": "/", "label": "Home"}], title="Navigation"
         )
         assert ctx["title"] == "Navigation"
 
     def test_default_css_class_is_card(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel({}, links=[{"url": "/", "label": "Home"}])
         assert ctx["css_class"] == "card"
 
     def test_custom_css_class(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel(
             {}, links=[{"url": "/", "label": "Home"}], css_class="sidebar-card"
         )
         assert ctx["css_class"] == "sidebar-card"
 
     def test_active_detection_per_link(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         request = _make_request("/blog/")
         ctx = nav_panel(
             {"request": request},
@@ -440,7 +440,7 @@ class TestNavPanelPython:
         assert ctx["links"][1]["is_active"] is False
 
     def test_icon_passed_through_per_link(self):
-        from django_fusion.comp.templatetags.navigation import nav_panel
+        from django_fusion.comp.tags.navigation import nav_panel
         ctx = nav_panel(
             {},
             links=[{"url": "/blog/", "label": "Blog", "icon": "bi-book"}],
@@ -794,24 +794,24 @@ def test_nav_panel_template_exists():
 
 
 def test_nav_link_importable():
-    from django_fusion.comp.templatetags.navigation import nav_link
+    from django_fusion.comp.tags.navigation import nav_link
     assert callable(nav_link)
 
 
 def test_nav_panel_importable():
-    from django_fusion.comp.templatetags.navigation import nav_panel
+    from django_fusion.comp.tags.navigation import nav_panel
     assert callable(nav_panel)
 
 
 def test_navigation_library_has_register():
-    from django_fusion.comp.templatetags import navigation
+    from django_fusion.comp.tags import navigation
     from django.template import Library
     assert hasattr(navigation, "register")
     assert isinstance(navigation.register, Library)
 
 
 def test_helper_unpoly_enabled_default():
-    from django_fusion.comp.templatetags.navigation import _unpoly_enabled
+    from django_fusion.comp.tags.navigation import _unpoly_enabled
     with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
         assert _unpoly_enabled() is True
     with patch.object(settings, "UNPOLY_ENABLED", False, create=True):
@@ -821,7 +821,7 @@ def test_helper_unpoly_enabled_default():
 
 
 def test_helper_resolve_url_literal():
-    from django_fusion.comp.templatetags.navigation import _resolve_url
+    from django_fusion.comp.tags.navigation import _resolve_url
     assert _resolve_url("/blog/") == "/blog/"
     assert _resolve_url("https://example.com") == "https://example.com"
     assert _resolve_url("http://example.com/path") == "http://example.com/path"
@@ -829,20 +829,20 @@ def test_helper_resolve_url_literal():
 
 def test_helper_resolve_url_named():
     """_resolve_url handles unresolvable named URLs gracefully."""
-    from django_fusion.comp.templatetags.navigation import _resolve_url
+    from django_fusion.comp.tags.navigation import _resolve_url
     result = _resolve_url("admin:index")
     # admin:index won't resolve in the test URL config
     assert result == "admin:index"  # returns raw name, doesn't crash
 
 
 def test_helper_resolve_url_unresolvable():
-    from django_fusion.comp.templatetags.navigation import _resolve_url
+    from django_fusion.comp.tags.navigation import _resolve_url
     result = _resolve_url("nonexistent:url:path")
     assert result == "nonexistent:url:path"
 
 
 def test_helper_build_attrs_unpoly():
-    from django_fusion.comp.templatetags.navigation import _build_attrs
+    from django_fusion.comp.tags.navigation import _build_attrs
     with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
         attrs = _build_attrs("/blog/")
         assert "up-follow" in attrs
@@ -852,7 +852,7 @@ def test_helper_build_attrs_unpoly():
 
 
 def test_helper_build_attrs_htmx():
-    from django_fusion.comp.templatetags.navigation import _build_attrs
+    from django_fusion.comp.tags.navigation import _build_attrs
     with patch.object(settings, "UNPOLY_ENABLED", False, create=True):
         attrs = _build_attrs("/blog/")
         assert "up-follow" not in attrs
@@ -862,20 +862,20 @@ def test_helper_build_attrs_htmx():
 
 
 def test_helper_build_attrs_custom_target():
-    from django_fusion.comp.templatetags.navigation import _build_attrs
+    from django_fusion.comp.tags.navigation import _build_attrs
     attrs = _build_attrs("/blog/", target="#sidebar")
     assert attrs["up-target"] == "#sidebar"
 
 
 def test_helper_build_attrs_layer():
-    from django_fusion.comp.templatetags.navigation import _build_attrs
+    from django_fusion.comp.tags.navigation import _build_attrs
     with patch.object(settings, "UNPOLY_ENABLED", True, create=True):
         attrs = _build_attrs("/blog/", layer="modal")
         assert attrs["up-layer"] == "modal"
 
 
 def test_helper_render_attrs_empty_value():
-    from django_fusion.comp.templatetags.navigation import _render_attrs
+    from django_fusion.comp.tags.navigation import _render_attrs
     result = _render_attrs({"up-follow": "", "href": "/blog/"})
     # up-follow has empty value → rendered as bare attribute
     assert 'href="/blog/"' in result
@@ -884,7 +884,7 @@ def test_helper_render_attrs_empty_value():
 
 
 def test_helper_render_attrs_value():
-    from django_fusion.comp.templatetags.navigation import _render_attrs
+    from django_fusion.comp.tags.navigation import _render_attrs
     result = _render_attrs({"href": "/blog/", "class": "nav-link"})
     assert 'href="/blog/"' in result
     assert 'class="nav-link"' in result

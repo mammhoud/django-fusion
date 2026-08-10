@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
 from .parser import CompUsage, parse_template
+from .post_process import enrich_pages
 from .scanner import MAX_DEPTH, scan
 from .schemas import (
     AnalyzeRequest,
@@ -20,6 +22,8 @@ from .schemas import (
     website_header,
 )
 import re as _re
+
+logger = logging.getLogger(__name__)
 
 
 def _slug(text: str) -> str:
@@ -116,6 +120,20 @@ class AnalyzeView(View):
         return JsonResponse({}, status=204)
 
     def post(self, request: HttpRequest, *args, **kwargs):
+        # ── FUSION_ANALYZER master gate ──────────────────────────────
+        analyzer_cfg = self._get_analyzer_cfg()
+        if not analyzer_cfg.get("ENABLED", True):
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": (
+                        "Analyzer is disabled. "
+                        "Set FUSION_ANALYZER['ENABLED'] = True in Django settings."
+                    ),
+                },
+                status=503,
+            )
+
         # Reject empty body explicitly -- otherwise `b""` would be silently
         # coerced to `{}` and the request would 200 with an empty analysis
         # (the contract the spec promises is 400 + a clear error).
@@ -137,13 +155,27 @@ class AnalyzeView(View):
                 status=400,
             )
 
+        # Merge request payload with settings overrides.
+        # Settings-supplied ANALYZE_DEPTH and ANALYZE_FILTERS act as
+        # defaults — the request payload can override them.
+        request_depth = payload.get("depth")
+        request_filters = payload.get("filters")
+
         spec = AnalyzeRequest(
             website_slug=payload.get("website_slug") if isinstance(payload.get("website_slug"), str) else None,
             url=payload.get("url") if isinstance(payload.get("url"), str) else None,
             include_components=_coerce_bool(payload.get("include_components"), True),
             include_templates=_coerce_bool(payload.get("include_templates"), True),
-            depth=_coerce_depth(payload.get("depth")),
-            filters=_coerce_filters(payload.get("filters")),
+            depth=(
+                _coerce_depth(request_depth)
+                if request_depth is not None
+                else analyzer_cfg.get("ANALYZE_DEPTH", 3)
+            ),
+            filters=(
+                _coerce_filters(request_filters)
+                if request_filters is not None
+                else analyzer_cfg.get("ANALYZE_FILTERS", {})
+            ),
         )
 
         scanned = scan(depth=spec.depth, filters=spec.filters)
@@ -196,6 +228,8 @@ class AnalyzeView(View):
                         path=key,
                         category=_category_for(key),
                         description=f"Component referenced from {sf.relative_path}",
+                        skeleton=usage.skeleton,
+                        skeleton_config=usage.skeleton_config,
                     )
 
                     # attach usage to last page if available
@@ -206,6 +240,14 @@ class AnalyzeView(View):
                                 props=usage.kwargs,
                             )
                         )
+
+        # Phase 2 — enrich pages with webpack dependency metadata
+        try:
+            from django.conf import settings
+            project_root = getattr(settings, "BASE_DIR", None)
+        except Exception:
+            project_root = None
+        pages = enrich_pages(pages, project_root=project_root)
 
         resp = {
             "status": "success",
@@ -220,3 +262,41 @@ class AnalyzeView(View):
             },
         }
         return JsonResponse(resp)
+
+    @staticmethod
+    def _get_analyzer_cfg() -> dict:
+        """Return the current ``FUSION_ANALYZER`` settings dict with defaults.
+
+        Defaults to enabled (``ENABLED: True``) for backward compatibility —
+        the analyzer POST endpoint worked before the settings existed.
+        When ``FUSION_ANALYZER`` IS explicitly configured, the user's
+        ``ENABLED`` value is respected.
+        """
+        defaults: dict = {
+            "ENABLED": True,
+            "SKELETON_AUTO_DETECT": True,
+            "SKELETON_DEFAULT_VARIANT": "line",
+            "EMIT_SKELETON_MANIFEST": True,
+            "CACHE_DURATION": 3600,
+            "ANALYZE_DEPTH": 3,
+            "ANALYZE_FILTERS": {},
+        }
+        try:
+            from django.conf import settings
+            from django_fusion.config.analyzer import AnalyzerOptions  # noqa: PLC0415
+
+            user_configured = hasattr(settings, "FUSION_ANALYZER")
+            opts = AnalyzerOptions.from_django_settings()
+            return {
+                # Backward compat: if FUSION_ANALYZER is not explicitly
+                # configured, the POST endpoint stays enabled.
+                "ENABLED": opts.enabled if user_configured else True,
+                "SKELETON_AUTO_DETECT": opts.skeleton_auto_detect,
+                "SKELETON_DEFAULT_VARIANT": opts.skeleton_default_variant,
+                "EMIT_SKELETON_MANIFEST": opts.emit_skeleton_manifest,
+                "CACHE_DURATION": opts.cache_duration,
+                "ANALYZE_DEPTH": opts.analyze_depth,
+                "ANALYZE_FILTERS": opts.analyze_filters,
+            }
+        except Exception:
+            return defaults

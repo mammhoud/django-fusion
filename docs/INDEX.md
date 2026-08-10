@@ -26,6 +26,7 @@
 | DF-015 | [`docs/15-viewflow-mapping.md`](./15-viewflow-mapping.md) | django-material → django-fusion mapping (renamed from VIEWFLOW_MAPPING.md) | ✅ Exists |
 | DF-016 | [`docs/16-assets.md`](./16-assets.md) | Assets pipeline — API endpoints, template tags, Next.js integration | ✅ Exists |
 | DF-017 | [`docs/17-integration-modes.md`](./17-integration-modes.md) | Webpack/template/API modes, health/media boundaries, project organization, enhancement plan | ✅ Exists |
+| DF-018 | [`docs/18-render-contract.md`](./18-render-contract.md) | Slot & prop render contract (0.5.0 breaking changes): single-render slots, bare-context-var props, kwarg-style defaults, migration examples | ✅ Exists |
 
 ## Auxiliary files (unchanged or supporting)
 

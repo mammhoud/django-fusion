@@ -24,7 +24,7 @@ except ImportError:
     import logging
     logger = logging.getLogger(__name__)
 
-from configs.settings import settings
+from django.conf import settings
 
 from .base import is_debug_mode
 from .development import DevelopmentEnvironment
@@ -82,7 +82,10 @@ class DevelopmentOrchestrator:
                     positions=kwargs.get("positions"),
                     include_prometheus=kwargs.get("include_prometheus", True),
                     sentry_dsn=sentry_dsn,
-                    sentry_environment=kwargs.get("sentry_environment", settings.SERVER_ENV.value)
+                    sentry_environment=kwargs.get(
+                        "sentry_environment",
+                        getattr(settings, "SERVER_ENV", "development"),
+                    )
                 )
 
                 # Update results

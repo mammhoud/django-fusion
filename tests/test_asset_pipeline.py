@@ -229,7 +229,7 @@ def test_asset_api_and_template_tags_share_merged_links(tmp_path):
     )
 
     with override_settings(**_pipeline_settings(stats_file)):
-        from django_fusion.comp.templatetags.fusion_assets import (
+        from django_fusion.comp.tags.fusion_assets import (
             fusion_bottom_assets,
             fusion_top_assets,
         )

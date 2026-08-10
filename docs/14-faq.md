@@ -49,6 +49,16 @@ A: **No.** They're rejected with `TemplateSyntaxError` to enforce the
 single reserved kwarg. See
 `tests/test_routable_components.py:TestFragmentNameConvention`.
 
+### Q: Do I have to use `{{ props.name }}`, or can I write `{{ name }}`?
+
+A: Both work since 0.5.0. A declared `{% prop name %}` is exposed
+**both** as `{{ props.name }}` (the documented mapping) and as a bare
+context variable `{{ name }}` — see
+[DF-018 §2](./18-render-contract.md). The one gotcha: a
+**declared-but-unpassed** prop resolves to `None` and shadows any
+outer-context variable of the same name, so pass values explicitly at
+call sites: `{% comp "…" name=name / %}`.
+
 ## Models / Database
 
 ### Q: How do migrations work with `CachedManager`?

@@ -124,6 +124,43 @@ the literal string appears in the output.
 template, and verify the template has
 `{% load components %}` once at the top.
 
+## Component renders twice / slot content duplicated
+
+**Symptom:** A component appears twice on the page, or content passed
+inside `{% slot %}…{% endslot %}` is visibly duplicated (e.g. HTMX
+fragments rendering their own copy of a component, expensive tags like
+`{% image %}` running twice).
+
+**Cause:** Pre-0.5.0, `BoundComponent.fill_slots` eagerly rendered the
+caller's slot nodelist to a string, and `SlotNode.render` fed that
+string back into a fresh `template.Template(...)` compile. Every
+`{{ }}` / `{% %}` in the slot body was therefore evaluated **twice** —
+once at fill time, once at render time. See
+[DF-018 Slot & Prop Render Contract](./18-render-contract.md) §1 for the
+root cause and the code-level fix.
+
+**Fix:**
+
+1. Upgrade to **django-fusion 0.5.0+**, which stores slot content as a
+   raw `NodeList` and renders it exactly once.
+2. Audit callers that were **relying on double-rendering** — i.e. they
+   passed raw template syntax inside a slot expecting it to be compiled
+   by the slot. Render first, then pass the result:
+
+   ```django
+   {# ✅ 0.5.0: slot body renders exactly once, at slot render time #}
+   {% comp "components/panels/header.html" title=page.title %}
+     {% slot subtitle %}{% include "partials/subtitle.html" %}{% endslot %}
+   {% endcomp %}
+   ```
+
+3. If content still appears twice, look for a slot body that contains
+   template syntax as *data* (`{{ some_markup_string }}`) — see the
+   migration examples in DF-018 §1.
+
+> Regression coverage: `tests/test_slot_prop_fixes.py` (slot content with
+> `{{ var }}` and nested `{% %}` renders exactly once).
+
 ## All pages suddenly 500 after a Wagtail upgrade
 
 **Symptom:** `wagtail.contrib.forms` import errors during deploy.
@@ -150,3 +187,5 @@ on `/health/db/`.
 - [DF-014 FAQ](./14-faq.md) — quick fixes for the most common setup questions
 - [DF-007 Configuration](./07-configuration.md) — settings reference
 - [DF-009 Health](./09-health.md) — JSON shape and error meanings
+- [DF-018 Slot & Prop Render Contract](./18-render-contract.md) — root cause
+  for double-rendered slots and the 0.5.0 fix

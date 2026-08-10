@@ -7,7 +7,7 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.test import override_settings
 
 from django_fusion.comp._init import components
-from django_fusion.comp.templatetags.tags.prop import PropNode
+from django_fusion.comp.tags.tags.prop import PropNode
 from django_fusion.config.params import Param, Params, Value
 
 _test_templates_dir = Path(__file__).resolve().parent / "test_templates"
@@ -19,7 +19,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [],
-            "libraries": {"components": "django_fusion.comp.templatetags.components"},
+            "libraries": {"components": "django_fusion.comp.tags.components"},
         },
     }
 ]

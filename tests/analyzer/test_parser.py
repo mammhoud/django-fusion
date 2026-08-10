@@ -377,9 +377,13 @@ class TestCustomizerFragment:
 # CompUsage dataclass shape
 # ────────────────────────────────────────────────────────────────────
 class TestCompUsageModel:
-    def test_fields_are_exactly_path_kind_kwargs(self):
+    def test_fields_are_exactly_path_kind_kwargs_skeleton_fields(self):
         fields = list(CompUsage.model_fields.keys())
-        assert fields == ["path", "kind", "kwargs"]
+        # Phase 1.2 added skeleton / skeleton_config for comment-based
+        # skeleton-variant detection (see skeleton_view.py).
+        assert sorted(fields) == sorted(
+            ["path", "kind", "kwargs", "skeleton", "skeleton_config"]
+        )
 
     def test_three_known_kind_values(self):
         for kind in ("self_closing", "block", "standalone"):
@@ -387,6 +391,11 @@ class TestCompUsageModel:
 
     def test_kwargs_default_to_empty_dict(self):
         assert CompUsage(path="x", kind="self_closing").kwargs == {}
+
+    def test_skeleton_fields_default_to_empty(self):
+        c = CompUsage(path="x", kind="self_closing")
+        assert c.skeleton == ""
+        assert c.skeleton_config == {}
 
 
 # ────────────────────────────────────────────────────────────────────

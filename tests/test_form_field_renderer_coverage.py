@@ -15,7 +15,7 @@ through the two calling paths the runtime exposes:
   (``field``, plus ``show_icons`` / ``show_labels`` / ``show_placeholders``
   / ``icon_style`` boolean flags) is fed through the ``as_form_block``
   simple-tag in
-  ``django_fusion.comp.templatetags.fusion_form_field_adapter``,
+  ``django_fusion.comp.tags.fusion_form_field_adapter``,
   which builds the same Wagtail-block shape SimpleNamespace from the
   flat dict / object. The canonical then renders identically to Path 1.
 
@@ -95,12 +95,12 @@ TEMPLATES = [
             "libraries": {
                 # The ``{% load components %}`` library used by the
                 # canonical and a small set of tests for ``{% comp %}``.
-                "components": "django_fusion.comp.templatetags.components",
+                "components": "django_fusion.comp.tags.components",
                 # The ``{% load fusion_form_field_adapter %}``
                 # library that exposes the ``{% as_form_block %}``
                 # simple-tag bridging Path 2.
                 "fusion_form_field_adapter": (
-                    "django_fusion.comp.templatetags.fusion_form_field_adapter"
+                    "django_fusion.comp.tags.fusion_form_field_adapter"
                 ),
             },
         },

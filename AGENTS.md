@@ -52,7 +52,7 @@ Current active consumers include:
 
 - `projects/precis/` — LMS/backend and Fusion application patterns
 - `projects/landing-fusion/` — standalone Django/Wagtail landing backend
-- `projects/formints/formint/` and `formintB/` — APIs, fragments, render-mode,
+- `projects/formints/formint/` and `formint-cloud/` — APIs, fragments, render-mode,
   viewsets, and data components
 - `projects/syntara/` — may use shared component conventions and integrations
 

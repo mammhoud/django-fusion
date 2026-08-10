@@ -85,7 +85,7 @@ Cache:             from django_fusion.comp.cache import ...
 Dynaconf Config:   from django_fusion.config.loader import DynaconfSettings
 """
 
-__version__ = "0.1.0"
+__version__ = "0.5.0"
 
 # Default app config for Django < 3.2 compatibility and for projects that
 # include "django_fusion" as a plain string in INSTALLED_APPS.

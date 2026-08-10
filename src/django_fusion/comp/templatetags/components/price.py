@@ -1,10 +1,2 @@
-from django_fusion.comp.templatetags.components import register
-
-
-@register.filter
-def discount_price(price, discount_percentage):
-    try:
-        discount = (price * discount_percentage) / 100
-        return price - discount
-    except (TypeError, ValueError):
-        return price
+"""Backward-compat shim."""
+from django_fusion.comp.tags.components.price import *  # noqa: F401,F403

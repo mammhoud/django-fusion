@@ -170,6 +170,12 @@ See DF-014 for the most common questions. The most common gotchas:
 3. **`{% comp "path" %}` and `{% include "path" %}`** aren't
    interchangeable. `{% comp %}` initialises props / slots / vars
    scopes; `{% include %}` doesn't.
+4. **Props are exposed twice.** Since 0.5.0 a declared `{% prop name %}`
+   is available in the component template both as `{{ props.name }}`
+   (the documented mapping) **and** as a bare context variable
+   `{{ name }}` (see [DF-018](./18-render-contract.md) §2). Use either
+   form — but remember a declared-but-unpassed prop resolves to `None`
+   and shadows any outer-context variable of the same name.
 
 ## Cross-references
 

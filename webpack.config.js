@@ -1,5 +1,5 @@
 // ============================================================================
-// django-fusion — Webpack 5 Config with Workspace Support
+// django-fusion — Webpack 5 Config with Workspace + Project Support
 // ============================================================================
 // Builds component SCSS/JS assets into versioned bundles consumed by
 // django-webpack-loader via {% render_bundle 'fusion' %} tag.
@@ -8,6 +8,15 @@
 //   Set FUSION_WEBPACK_WORKSPACE env var to switch workspace configs.
 //   Default workspace: webpack/workspaces/default.js
 //
+// Project-level customization (env vars, set by manage.py webpack_build or Makefile):
+//   FUSION_WEBPACK_WORKSPACE_PATH  — Absolute path to custom workspace .js file
+//   FUSION_WEBPACK_ENTRIES         — JSON: { "entry_name": ["path/to/file.scss", ...] }
+//   FUSION_WEBPACK_OUTPUT_PATH     — Override output directory
+//   FUSION_WEBPACK_OUTPUT_PUBLIC   — Override publicPath (default: /static/bundles/)
+//   FUSION_WEBPACK_STATS_FILE      — Override webpack-stats.json location
+//   FUSION_WEBPACK_SCSS_INCLUDES   — JSON: ["path/to/scss/dir", ...]
+//   FUSION_WEBPACK_ALIASES         — JSON: { "@alias": "path/to/dir" }
+//
 // Output:
 //   static/bundles/fusion.<contenthash>.js
 //   static/bundles/fusion.<contenthash>.css
@@ -15,28 +24,62 @@
 // ============================================================================
 
 const path = require("path");
+const fs = require("fs");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const BundleTracker = require("webpack-bundle-tracker");
 const { workspace } = require("./webpack/workspace.config");
 
 const SRC_DIR = path.resolve(__dirname, "src");
 const STATIC_DIR = path.resolve(__dirname, "static");
+const PROJECT_ROOT = process.env.FUSION_PROJECT_ROOT
+  ? path.resolve(process.env.FUSION_PROJECT_ROOT)
+  : path.resolve(__dirname, "..", ".."); // fallback: monorepo root
+
+// ── Project-level overrides (from env vars) ─────────────────────
+const projectEntries = (() => {
+  try { return JSON.parse(process.env.FUSION_WEBPACK_ENTRIES || "{}"); }
+  catch { console.warn("[fusion-webpack] Invalid FUSION_WEBPACK_ENTRIES JSON — ignoring"); return {}; }
+})();
+const projectOutputPath = process.env.FUSION_WEBPACK_OUTPUT_PATH || null;
+const projectOutputPublic = process.env.FUSION_WEBPACK_OUTPUT_PUBLIC || "/static/bundles/";
+const projectStatsFile = process.env.FUSION_WEBPACK_STATS_FILE || null;
+const projectScssIncludes = (() => {
+  try { return JSON.parse(process.env.FUSION_WEBPACK_SCSS_INCLUDES || "[]"); }
+  catch { console.warn("[fusion-webpack] Invalid FUSION_WEBPACK_SCSS_INCLUDES JSON"); return []; }
+})();
+const projectAliases = (() => {
+  try { return JSON.parse(process.env.FUSION_WEBPACK_ALIASES || "{}"); }
+  catch { console.warn("[fusion-webpack] Invalid FUSION_WEBPACK_ALIASES JSON"); return {}; }
+})();
+
+console.log(`[fusion-webpack] Project root: ${PROJECT_ROOT}`);
+if (Object.keys(projectEntries).length) console.log(`[fusion-webpack] Project entries: ${Object.keys(projectEntries).join(", ")}`);
+if (projectOutputPath) console.log(`[fusion-webpack] Output path: ${projectOutputPath}`);
 
 module.exports = (env, argv) => {
   const isDev = argv.mode === "development";
 
-  // Merge base entries with workspace entries
+  // Merge base entries → workspace entries → project entries
   const baseEntries = {
     fusion: [
       path.resolve(SRC_DIR, "django_fusion/assets/entry.js"),
     ],
   };
+  const projectResolvedEntries = {};
+  for (const [name, files] of Object.entries(projectEntries)) {
+    projectResolvedEntries[name] = files.map(f => {
+      const abs = path.isAbsolute(f) ? f : path.resolve(PROJECT_ROOT, f);
+      if (!fs.existsSync(abs)) console.warn(`[fusion-webpack] Entry file not found: ${abs}`);
+      return abs;
+    });
+  }
   const mergedEntries = {
     ...baseEntries,
     ...(workspace.entries || {}),
+    ...projectResolvedEntries,
   };
 
-  // Merge base output with workspace output overrides
+  // Merge base output → workspace overrides → project overrides
   const baseOutput = {
     path: path.resolve(STATIC_DIR, "bundles"),
     filename: isDev ? "[name].js" : "[name].[contenthash:8].js",
@@ -47,6 +90,8 @@ module.exports = (env, argv) => {
   const mergedOutput = {
     ...baseOutput,
     ...(workspace.output || {}),
+    ...(projectOutputPath ? { path: path.resolve(projectOutputPath) } : {}),
+    publicPath: projectOutputPublic,
   };
 
   return {
@@ -74,6 +119,13 @@ module.exports = (env, argv) => {
                 sassOptions: {
                   // Modern Dart Sass API
                   silenceDeprecations: ["import"],
+                  // Base include paths + project SCSS directories
+                  includePaths: [
+                    path.resolve(SRC_DIR, "django_fusion/assets"),
+                    ...projectScssIncludes.map(p =>
+                      path.isAbsolute(p) ? p : path.resolve(PROJECT_ROOT, p)
+                    ),
+                  ],
                 },
               },
             },
@@ -120,10 +172,15 @@ module.exports = (env, argv) => {
             }),
           ]),
 
-      // Generate webpack-stats.json consumed by django-webpack-loader
+      // Generate webpack-stats.json consumed by django-webpack-loader.
+      // Uses project override path when FUSION_WEBPACK_STATS_FILE is set.
       new BundleTracker({
-        path: __dirname,
-        filename: "webpack-stats.json",
+        path: projectStatsFile
+          ? path.dirname(path.resolve(projectStatsFile))
+          : __dirname,
+        filename: projectStatsFile
+          ? path.basename(projectStatsFile)
+          : "webpack-stats.json",
       }),
 
       // Workspace-specific plugins
@@ -132,10 +189,14 @@ module.exports = (env, argv) => {
 
     resolve: {
       extensions: [".js", ".jsx", ".scss", ".css"],
-      // Alias so component SCSS can import shared vars easily
+      // Base aliases + workspace aliases + project aliases
       alias: {
         "@fusion": path.resolve(SRC_DIR, "django_fusion/assets"),
         "@fusion-components": path.resolve(SRC_DIR, "django_fusion/comp"),
+        ...(workspace.aliases || {}),
+        ...Object.fromEntries(
+          Object.entries(projectAliases).map(([k, v]) => [k, path.resolve(PROJECT_ROOT, v)])
+        ),
       },
     },
 

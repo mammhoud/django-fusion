@@ -26,7 +26,7 @@ except ImportError:
     import logging
     logger = logging.getLogger(__name__)
 
-from configs.settings import settings
+from django.conf import settings
 
 from .prometheus import PrometheusSetup
 from .sentry import SentrySetup
@@ -67,14 +67,24 @@ class MonitoringSetup:
         # Configure Sentry
         if enable_sentry:
             sentry_dsn_to_use = sentry_dsn
-            if not sentry_dsn_to_use and hasattr(settings, "SENTRY") and settings.SENTRY.ENABLED:
-                sentry_dsn_to_use = getattr(settings.SENTRY, "DSN", None)
+            sentry_section = getattr(settings, "SENTRY", {})
+            sentry_enabled = (
+                sentry_section.get("ENABLED", False)
+                if isinstance(sentry_section, dict)
+                else getattr(sentry_section, "ENABLED", False)
+            )
+            if not sentry_dsn_to_use and sentry_enabled:
+                sentry_dsn_to_use = (
+                    sentry_section.get("DSN")
+                    if isinstance(sentry_section, dict)
+                    else getattr(sentry_section, "DSN", None)
+                )
 
             if sentry_dsn_to_use:
                 sentry_config = SentrySetup.configure(
                     dsn=sentry_dsn_to_use,
-                    environment=settings.SERVER_ENV.value,
-                    debug=settings.is_debug
+                    environment=getattr(settings, "SERVER_ENV", "development"),
+                    debug=getattr(settings, "DEBUG", False)
                 )
                 if sentry_config:
                     result["sentry_enabled"] = True

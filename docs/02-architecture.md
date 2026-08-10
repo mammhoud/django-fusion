@@ -124,6 +124,6 @@ See DF-008 for the full per-module docstring reference.
 
 ## Versioning & stability
 
-`__version__ = "0.2.0"`. Below `1.0`, minor versions may reorganise
+`__version__ = "0.5.0"`. Below `1.0`, minor versions may reorganise
 the public surface. After `1.0`, the canonical import paths above are
 considered stable.

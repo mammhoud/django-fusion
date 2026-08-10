@@ -20,7 +20,7 @@ from django_fusion.config.conf import _settings
 from django_fusion.core.utils import get_files_from_dirs, unique_ordered
 
 hookimpl = _HookimplMarker("django_fusion.comp")
-from django_fusion.comp.templatetags.tags.block import BlockNode  # noqa: E402
+from django_fusion.comp.tags.tags.block import BlockNode  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

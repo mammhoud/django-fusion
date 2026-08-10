@@ -27,9 +27,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import HttpRequest, HttpResponse
 from django.test import RequestFactory, override_settings
 
-# Apply ``django_db`` to every test in this module by default so individual
-# test functions/classes don't need to repeat the marker.
-pytestmark = pytest.mark.django_db
+# Tests use the database (User.objects.create_user, etc.).  Tables are
+# created by ``_django_settings.configure()`` at conftest time via
+# ``migrate --run-syncdb``, so the ``django_db`` marker is not needed.
+pytestmark = [pytest.mark.django_db(transaction=False)]
 
 from django_fusion.core.middlewares.access import (
     RoleBasedAccessMiddleware,

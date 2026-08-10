@@ -6,7 +6,7 @@ Extracts:
 - `{% comp "PATH" /%}` (self-closing), `{% comp "PATH" ... %}` (standalone),
   and `{% comp "PATH" ... %}...{% endcomp %}` (block-open) -> component uses
 
-Drift-prone vs hooking into `django_fusion.comp.templatetags.tags.block` because
+Drift-prone vs hooking into `django_fusion.comp.tags.tags.block` because
 Django's template parser requires a live context. The regex approach here is
 deliberately scoped to the canonical `{% comp %}` syntax documented in
 `django_fusion/comp/README.md`.
@@ -81,6 +81,15 @@ SECTION_HTML_RE = re.compile(
 
 _KWARG_RE = re.compile(r"""([A-Za-z_]\w*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s]+))""")
 
+# Skeleton comment marker: {# @skeleton: <variant> #} — analyzer-only.
+# Optionally followed by key=value config pairs:
+#   {# @skeleton: card min_height=400 animate=true #}
+# The variant name is captured as "variant"; trailing k=v pairs are
+# extracted and passed through as skeleton_config.
+SKELETON_COMMENT_RE = re.compile(
+    r"""{#\s*@skeleton:\s*(?P<variant>[^#}\n]+?)\s*#}""",
+)
+
 
 def _lineno(content: str, pos: int) -> int:
     """Return the 1-based line number for ``pos`` in ``content``.
@@ -116,6 +125,11 @@ class CompUsage(BaseModel):
     path: str
     kind: str  # one of: self_closing | block | standalone
     kwargs: dict[str, Any] = Field(default_factory=dict)
+    # Phase 1.2 — skeleton variant extracted from {# @skeleton: <name> #}
+    # comments inside the component body (block form) or preceding the
+    # component tag (self-closing / standalone forms).
+    skeleton: str = ""
+    skeleton_config: dict[str, Any] = Field(default_factory=dict)
 
 
 class SectionMarker(BaseModel):
@@ -279,6 +293,48 @@ def parse_template(content: str) -> ParsedTemplate:
     # regardless of which regex iterator found each match.
     ordered.sort(key=lambda x: x[0])
     comps = [usage for _, _, usage in ordered]
+
+    # ---- Skeleton variant detection (Phase 1.2) -------------------------
+    # Scan for {# @skeleton: <variant> key=val ... #} comments and associate
+    # each skeleton with the nearest *preceding* component by source position.
+    #
+    # Association rule: a skeleton comment that appears *before* the first
+    # comp or *between* two comps belongs to the *following* comp.
+    # The comment's position must be >= the previous comp's end and < the
+    # next comp's start.
+    skeleton_hits: list[tuple[int, str, dict[str, Any]]] = []  # (pos, variant, config)
+    for m in SKELETON_COMMENT_RE.finditer(content):
+        variant_raw = m.group("variant").strip()
+        if not variant_raw:
+            continue
+        # Split variant name from optional k=v config pairs
+        parts = variant_raw.split()
+        variant = parts[0]
+        config: dict[str, Any] = {}
+        for part in parts[1:]:
+            kv = _KWARG_RE.match(part)
+            if kv:
+                key = kv.group(1)
+                val = kv.group(2) or kv.group(3) or kv.group(4)
+                config[key] = val
+        skeleton_hits.append((m.start(), variant, config))
+
+    if skeleton_hits and ordered:
+        # Build position boundaries for each comp:
+        # comps are at source positions already in ordered.
+        # For each skeleton, find the comp whose start position is the
+        # smallest that is > skeleton position.
+        for sk_pos, variant, config in skeleton_hits:
+            matched: tuple[int, str, CompUsage] | None = None
+            for pos, kind, usage in ordered:
+                if pos > sk_pos:
+                    matched = (pos, kind, usage)
+                    break
+            if matched is not None:
+                _, _, usage = matched
+                usage.skeleton = variant
+                if config:
+                    usage.skeleton_config = config
 
     return ParsedTemplate(
         extends=extends,

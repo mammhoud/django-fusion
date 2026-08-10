@@ -55,7 +55,7 @@ def _boot_django(test_templates_dir: Path) -> None:
                 # available WITHOUT an explicit {% load components %}
                 # in the test sources. See
                 # applications/configs/base/templates.py:59.
-                "django_fusion.comp.templatetags.components",
+                "django_fusion.comp.tags.components",
             ],
         },
     }
@@ -98,8 +98,8 @@ def _boot_django(test_templates_dir: Path) -> None:
             # cached so duplicates are functionally safe, but they grow
             # the list every fixture pass.
             _builtins = options.setdefault("builtins", [])
-            if "django_fusion.comp.templatetags.components" not in _builtins:
-                _builtins.append("django_fusion.comp.templatetags.components")
+            if "django_fusion.comp.tags.components" not in _builtins:
+                _builtins.append("django_fusion.comp.tags.components")
         else:
             templates.append(templates_conf)
         settings.TEMPLATES = templates

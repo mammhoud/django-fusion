@@ -13,7 +13,7 @@ All three systems implement a props + slots component model for Django templates
 
 | Feature | django-bird | django-cotton | django-fusion `{% comp %}` |
 |---------|-------------|---------------|---------------------------|
-| **Props declaration** | `{{ props.title }}` in template | `<c-vars title />` | `{% prop title %}` / `{% prop summary="" %}` |
+| **Props declaration** | `{{ props.title }}` in template | `<c-vars title />` | `{% prop title %}` / `{% prop summary="" %}` (resolved as `{{ props.title }}` **and** bare `{{ title }}` since 0.5.0 — see DF-018) |
 | **Default slot** | Content between tags → `{{ slot }}` | Content between `<c-card>` tags → `{{ slot }}` | Content between `{% comp %}...{% endcomp %}` → `{% slot %}{{ slot }}{% endslot %}` |
 | **Named slots** | `{% bird:slot header %}` | `<c-slot name="header" />` | `{% slot header %}...{% endslot %}` |
 | **Attrs passthrough** | `{{ attrs }}` | `{{ attrs }}` | `{{ attrs }}` |
@@ -404,6 +404,15 @@ class PostPreviewFragment(FragmentComponent):
 | Shared Components Inventory | `applications/assets/templates/components/AGENTS.md` |
 | django-bird (reference) | https://github.com/josemachado/django-bird |
 | django-cotton (reference) | https://django-cotton.com/docs/components |
+
+---
+
+> **0.5.0 breaking changes:** slots now render **exactly once**, props are
+> exposed as **bare context variables** (`{{ name }}` in addition to
+> `{{ props.name }}`), and `{% prop name default=X %}` now applies its
+> default. If you're upgrading from ≤ 0.4.x, read
+> [DF-018 Slot & Prop Render Contract](./18-render-contract.md) first —
+> including the shadowing migration examples.
 
 ---
 

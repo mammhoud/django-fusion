@@ -1,4 +1,4 @@
-"""Single source of truth for django-fusion test Django settings.
+r"""Single source of truth for django-fusion test Django settings.
 
 This module owns the Django settings dict (`TEST_SETTINGS`) used by
 `tests/conftest.py` to configure Django via `settings.configure(...)`.
@@ -60,6 +60,16 @@ def configure(*, only_if_unconfigured: bool = True) -> None:
     settings.configure(**TEST_SETTINGS)
     django.setup()
 
+    # Create database tables for every model registered by the
+    # installed apps.  ``--run-syncdb`` is safe for SQLite :memory:
+    # databases (no real migration files needed).  This lets tests
+    # like ``test_role_based_access_middleware`` use ``User.objects.create_user()``
+    # without requiring ``@pytest.mark.django_db`` (which requires
+    # ``DJANGO_SETTINGS_MODULE`` to be set, incompatible with our
+    # ``settings.configure()`` approach).
+    from django.core.management import call_command
+    call_command("migrate", "--run-syncdb", verbosity=0, interactive=False)
+
 
 # `tests/conftest.py` adds tests/ to `sys.path` (so `stubs.X` libraries
 # resolve). Imports here resolve via pyproject.toml's `pythonpath = ["src"]`.
@@ -113,7 +123,7 @@ TEST_SETTINGS: dict = {
                 "libraries": {
                     # Real django-fusion component tag library
                     # ({% prop %}, {% slot %}, {% var %}, etc.).
-                    "components": "django_fusion.comp.templatetags.components",
+                    "components": "django_fusion.comp.tags.components",
                     # Stub libraries at tests/stubs/*.py — see those
                     # files for what each provides.
                     "wagtailcore_tags": "stubs.wagtailcore_tags",
@@ -122,7 +132,7 @@ TEST_SETTINGS: dict = {
                 },
                 "builtins": [
                     "django.templatetags.static",
-                    "django_fusion.comp.templatetags.components",
+                    "django_fusion.comp.tags.components",
                 ],
             },
         },

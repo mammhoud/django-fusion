@@ -72,3 +72,34 @@ class AssetPipelineOptions:
 def get_asset_pipeline_options() -> AssetPipelineOptions:
     """Return the current settings-derived pipeline options."""
     return AssetPipelineOptions.from_django_settings()
+
+
+def get_component_asset_options() -> dict[str, Any]:
+    """Return the ``FUSION_COMPONENT_ASSETS`` settings with defaults.
+
+    Controls per-component JS/CSS lazy-loading.  All features are disabled
+    by default.
+
+    Example (production)::
+
+        FUSION_COMPONENT_ASSETS = {
+            "ENABLED": True,
+            "PRELOAD_CRITICAL": True,
+            "LAZY_LOAD_BELOW_FOLD": True,
+            "CHUNK_SIZE_WARNING": 102400,  # 100 KB
+        }
+    """
+    defaults: dict[str, Any] = {
+        "ENABLED": False,
+        "BUNDLES_JSON_PATH": None,
+        "COMPONENT_MANIFEST_PATH": None,
+        "PRELOAD_CRITICAL": True,
+        "LAZY_LOAD_BELOW_FOLD": True,
+        "CHUNK_SIZE_WARNING": 100 * 1024,
+    }
+    try:
+        from django.conf import settings
+        user = getattr(settings, "FUSION_COMPONENT_ASSETS", None) or {}
+    except Exception:
+        user = {}
+    return {**defaults, **{k: v for k, v in user.items() if k in defaults}}

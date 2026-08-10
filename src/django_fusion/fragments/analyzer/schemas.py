@@ -37,6 +37,18 @@ class Component(BaseModel):
     description: str = ""
     props: list[Prop] = Field(default_factory=list)
     slots: list[Slot] = Field(default_factory=list)
+    # Phase 1.1 — skeleton / load-time metadata
+    skeleton: str = Field(
+        default="",
+        description="Skeleton variant name (e.g. 'card', 'text-block', 'avatar'). "
+        "Empty string means no skeleton override — use component default.",
+    )
+    skeleton_config: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Per-component skeleton overrides: min_height, animate, "
+        "delay_ms, repeat_count, etc. Keys are forward-compatible; unknown keys "
+        "are ignored by the skeleton renderer.",
+    )
 
     def to_dict(self) -> dict[str, Any]:
         data = self.model_dump()
@@ -95,6 +107,12 @@ class Template(BaseModel):
 class PageComponentUsage(BaseModel):
     component_id: str
     props: dict[str, Any] = Field(default_factory=dict)
+    # Phase 1.1 — DOM-order position for skeleton placeholder rendering.
+    # The analyzer emits components in scan-order (file position).
+    # skeleton_order is assigned by a post-processor that walks the
+    # template's rendered DOM tree so the frontend can render skeleton
+    # placeholders in the same visual order the user sees.
+    skeleton_order: int = Field(default=0, ge=0)
 
     def to_dict(self) -> dict[str, Any]:
         return self.model_dump()
@@ -105,6 +123,19 @@ class Page(BaseModel):
     path: str
     template: str | None = None
     components: list[PageComponentUsage] = Field(default_factory=list)
+    # Phase 1.1 — asset dependency & load-priority metadata.
+    # Populated by the webpack-manifest post-processor after the initial
+    # scan so the frontend can preload / lazy-load the right bundles.
+    dependencies: list[str] = Field(
+        default_factory=list,
+        description="Webpack chunk names (CSS/JS) required by this page. "
+        "Resolved from bundles.json by the post-processor.",
+    )
+    load_priority: str = Field(
+        default="auto",
+        description="Loading strategy: 'critical' (preload), 'eager' (sync load), "
+        "'lazy' (defer), 'auto' (heuristic based on viewport position).",
+    )
 
     def to_dict(self) -> dict[str, Any]:
         data = self.model_dump()

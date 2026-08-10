@@ -3,7 +3,7 @@ AssetTag
 ========
 Enum of known asset tags used by the block component system.
 
-Extracted from ``django_fusion.comp.templatetags.tags.asset`` to break a
+Extracted from ``django_fusion.comp.tags.tags.asset`` to break a
 circular import chain:
 
     staticfiles.py → asset.py → staticfiles.py  ✗  (was circular)

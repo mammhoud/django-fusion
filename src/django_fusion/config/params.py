@@ -7,8 +7,8 @@ from django import template
 from django.template.context import Context
 from django.utils.safestring import SafeString, mark_safe
 
-from django_fusion.comp.templatetags.tags.block import METADATA_ARGUMENTS, BlockNode
-from django_fusion.comp.templatetags.tags.prop import PropNode
+from django_fusion.comp.tags.tags.block import METADATA_ARGUMENTS, BlockNode
+from django_fusion.comp.tags.tags.prop import PropNode
 
 if TYPE_CHECKING:
     from django_fusion.comp._init import Component

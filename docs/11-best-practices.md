@@ -18,6 +18,19 @@
   with `TemplateSyntaxError` (enforced by
   `tests/test_routable_components.py:TestFragmentNameConvention`).
 
+### Prop access conventions
+
+- **Prefer bare-context-var access** — since 0.5.0 a declared `{% prop name %}`
+  is exposed both as `{{ props.name }}` and as `{{ name }}` (see
+  [DF-018 §2](./18-render-contract.md)). Pick one form per component and
+  stick to it; mixing `{{ props.x }}` and `{{ x }}` in the same template is
+  legal but harder to read.
+- **Pass shadowed names explicitly** — a declared-but-unpassed prop
+  resolves to `None` and shadows any outer-context variable of the same
+  name (`block`, `page`, `course`, `post`, `request`, …). When a component
+  declares such a prop, pass it at every call site:
+  `{% comp "…" block=block / %}`.
+
 ## 2. When to use `FragmentComponent` vs `RoutableComponent`
 
 Use `RoutableComponent` when:
@@ -111,6 +124,7 @@ should target Django 5.2 LTS features; 4.2 LTS remains supported.
 | Symptom | Doc |
 |---------|-----|
 | Component not rendering | DF-013 Troubleshooting |
+| Component renders twice / slot content duplicated | DF-013 Troubleshooting + DF-018 Render Contract |
 | URL collision | DF-013 Troubleshooting |
 | Settings not picked up | DF-007 Configuration + DF-013 |
 | HTMX not working | DF-009 Health + DF-014 FAQ |
