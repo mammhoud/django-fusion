@@ -18,6 +18,7 @@ Run with::
 
 from __future__ import annotations
 
+import itertools
 from typing import Any
 
 import pytest
@@ -27,10 +28,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import HttpRequest, HttpResponse
 from django.test import RequestFactory, override_settings
 
-# Tests use the database (User.objects.create_user, etc.).  Tables are
-# created by ``_django_settings.configure()`` at conftest time via
-# ``migrate --run-syncdb``, so the ``django_db`` marker is not needed.
-pytestmark = [pytest.mark.django_db(transaction=False)]
+# Tables are created by ``_django_settings.configure()`` at conftest time
+# via ``migrate --run-syncdb``.  We use the ``django_db`` marker so
+# pytest-django wraps each test in a transaction and rolls back —
+# preventing the ``:memory:`` SQLite UNIQUE constraint collisions that
+# happen when fixtures with hardcoded usernames run in the same process.
+pytestmark = pytest.mark.django_db(transaction=True)
+
+# Unique suffix so fixture-generated usernames never collide across tests.
+_counter = itertools.count()
+def _uid(name: str) -> str:
+    return f"{name}_{next(_counter)}"
 
 from django_fusion.core.middlewares.access import (
     RoleBasedAccessMiddleware,
@@ -114,7 +122,7 @@ def change_permission(test_content_type: ContentType) -> Permission:
 @pytest.fixture
 def admin_user(admin_group: Group) -> User:
     user = User.objects.create_user(
-        username="admin_user",
+        username=_uid("admin_user"),
         email="admin@example.com",
         password="secret",
     )
@@ -125,7 +133,7 @@ def admin_user(admin_group: Group) -> User:
 @pytest.fixture
 def superuser_user() -> User:
     return User.objects.create_superuser(
-        username="superuser",
+        username=_uid("superuser"),
         email="super@example.com",
         password="secret",
     )
@@ -134,7 +142,7 @@ def superuser_user() -> User:
 @pytest.fixture
 def staff_user() -> User:
     return User.objects.create_user(
-        username="staff_user",
+        username=_uid("staff_user"),
         email="staff@example.com",
         password="secret",
         is_staff=True,
@@ -144,7 +152,7 @@ def staff_user() -> User:
 @pytest.fixture
 def regular_user() -> User:
     return User.objects.create_user(
-        username="regular",
+        username=_uid("regular"),
         email="regular@example.com",
         password="secret",
     )
@@ -640,7 +648,7 @@ def test_htmx_denied_response(middleware: RoleBasedAccessMiddleware, rf: Request
     request = rf.get("/admin/", HTTP_HX_REQUEST="true")
     request.user = AnonymousUser()
     # Simulate an authenticated user who lacks groups
-    regular = User.objects.create_user(username="test", password="x")
+    regular = User.objects.create_user(username=_uid("test"), password="x")
     request.user = regular
 
     def dummy_view(request: Any) -> HttpResponse:
@@ -658,7 +666,7 @@ def test_denied_response_non_htmx(
 ) -> None:
     """Non-HTMX requests get a 403 with the 403 template rendered."""
     request = rf.get("/admin/")
-    regular = User.objects.create_user(username="test2", password="x")
+    regular = User.objects.create_user(username=_uid("test2"), password="x")
     request.user = regular
 
     def dummy_view(request: Any) -> HttpResponse:

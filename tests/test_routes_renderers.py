@@ -1,11 +1,14 @@
 """Tests for django_fusion.routes.rendering.renderers and configurable fusion_render_first."""
 
 import json
+from typing import Any
 from unittest import mock
 
 import pytest
 
 import base64
+
+from django.test import RequestFactory
 
 from django_fusion.routes.rendering.renderers import FusionFragmentPointer
 from django_fusion.routes.rendering.renderers import FusionFragmentSchema
@@ -14,6 +17,17 @@ from django_fusion.routes.rendering.renderers import FusionJSONRenderer
 from django_fusion.routes.rendering.renderers import fusion_json_response
 from django_fusion.routes.rendering.renderers import RESPONSE_CODE_GROUPS, _status_to_message
 from django_fusion.routes.rendering.session import FusionCodec, FusionSessionChecker
+
+
+# ── Fixtures ─────────────────────────────────────────────────────
+
+
+@pytest.fixture
+def rf() -> RequestFactory:
+    """Django RequestFactory — provided here because pytest-django's
+    ``rf`` fixture is unavailable when Django is configured via
+    ``settings.configure()`` rather than ``DJANGO_SETTINGS_MODULE``."""
+    return RequestFactory()
 
 
 class TestResponseCodeGroups:
@@ -397,14 +411,14 @@ class TestFusionRenderFirstSetting:
 
         assert TrueComponent.get_fusion_render_first() is True
 
-    def test_setting_fallback(self, settings):
+    def test_setting_fallback(self, monkeypatch: Any) -> None:
         from django_fusion.routes.components.routable import RoutableComponent
         from django_fusion.config.conf import get_settings
 
         class FallbackComponent(RoutableComponent):
             fusion_render_first = None
 
-        with mock.patch.object(
+        monkeypatch.setattr(
             get_settings(), "FUSION_RENDER_FIRST_DEFAULT", True
-        ):
-            assert FallbackComponent.get_fusion_render_first() is True
+        )
+        assert FallbackComponent.get_fusion_render_first() is True

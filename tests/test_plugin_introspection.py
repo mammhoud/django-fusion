@@ -3,12 +3,20 @@
 from __future__ import annotations
 
 import pytest
+from django.test import Client
 
 from django_fusion.plugins import PluginRegistry, plugins
 from django_fusion.plugins.catalog import CORE_PLUGINS, PLUGIN_CATALOG
 
 
-@pytest.mark.django_db
+@pytest.fixture
+def client() -> Client:
+    """Django test Client — provided here because pytest-django's
+    ``client`` fixture is unavailable when Django is configured via
+    ``settings.configure()`` rather than ``DJANGO_SETTINGS_MODULE``."""
+    return Client()
+
+
 class TestPluginCatalog:
     def test_core_plugins_are_catalogued_and_registered(self):
         for name in CORE_PLUGINS:
