@@ -3,15 +3,15 @@
 
 {% block content %}
 
-    {% comp "courses/details/header.html" /%}
+    {% comp "courses/details/header.html" course=course /%}
     
-    {% comp "courses/details/overview.html" /%}
+    {% comp "courses/details/overview.html" course=course /%}
 
-    {% comp "courses/details/curriculum.html" /%}
+    {% comp "courses/details/curriculum.html" course=course /%}
 
-    {% comp "courses/details/instructor.html" /%}
+    {% comp "courses/details/instructor.html" course=course /%}
 
-    {% comp "courses/details/preview.html" /%}
+    {% comp "courses/details/preview.html" course=course /%}
 
     {% comp "courses/details/related.html" /%}
 

@@ -3,7 +3,6 @@ Blog URL Configuration
 """
 from django.urls import path
 
-from .api import related_tags, search_tags, tag_autocomplete, tag_cloud
 from .feeds import BlogCategoryFeed, BlogTagFeed, LatestBlogPostsAtomFeed, LatestBlogPostsFeed
 from .views import (
     AddCommentView,
@@ -38,12 +37,6 @@ urlpatterns = [
     path("tags/cleanup/", TagCleanupView.as_view(), name="tag_cleanup"),
     path("tags/<slug:slug>/edit/", TagUpdateView.as_view(), name="tag_edit"),
     path("tags/<slug:slug>/delete/", TagDeleteView.as_view(), name="tag_delete"),
-
-    # API endpoints
-    path("api/tags/search/", search_tags, name="api_search_tags"),
-    path("api/tags/autocomplete/", tag_autocomplete, name="api_tag_autocomplete"),
-    path("api/tags/cloud/", tag_cloud, name="api_tag_cloud"),
-    path("api/tags/<slug:tag_slug>/related/", related_tags, name="api_related_tags"),
 
     # RSS/Atom feeds
     path("feed/", LatestBlogPostsAtomFeed(), name="feed_atom"),

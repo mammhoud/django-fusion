@@ -52,17 +52,17 @@
 
 ---
 
-## Cloud Edition — `formintB/` (pos-cloud)
+## Cloud Edition — `formint-cloud/` (formint-cloud)
 
 > Hosted multi-terminal SaaS master. Not a Tauri app — a single Django package
-> (`pos-cloud`, `backend/`) serving the full surface on `:8767` (API + fusion
+> (`formint-cloud`, `backend/`) serving the full surface on `:8767` (API + fusion
 > contract + Community-UI bridges) and the bolt/unfold admin on `:8082`, over
-> `pos_cloud.db`. The Robyn sidecar that previously served this surface has
+> `formint_cloud.db`. The Robyn sidecar that previously served this surface has
 > been removed — Django answers the same paths.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│            Django backend (backend/, pos-cloud) :8767        │
+│            Django backend (backend/, formint-cloud) :8767        │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │ apps/core     models, Ninja API, viewsets, admin       │  │
 │  │ apps/domain   sync_broker, sync_queue, conflict_resolver│  │
@@ -77,5 +77,5 @@
 ### Data Flow (Cloud)
 
 1. **Branches** → `sync_push` / `heartbeat` WebSockets → Django channels consumers (`apps/handlers/consumers.py`) → broker → `SyncQueueItem` → conflict resolution → broadcast back
-2. **Read-heavy clients** → Django (`:8767`) → Django ORM → `pos_cloud.db` (the `/fusion/*` contract, root CRUD, and `/api/*` bridges are served directly by Django)
+2. **Read-heavy clients** → Django (`:8767`) → Django ORM → `formint_cloud.db` (the `/fusion/*` contract, root CRUD, and `/api/*` bridges are served directly by Django)
 3. **Fusion contract** — `apps/handlers/fusion.py` mirrors the endpoint contract the sidecar previously exposed so consumers can target the same paths unchanged

@@ -1,5 +1,5 @@
 {% extends layout_path %}
-{% load i18n wagtailcore_tags static humanize %}
+{% load i18n wagtailcore_tags wagtailimages_tags static humanize %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
@@ -13,7 +13,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{% trans "Total Spent" %}</h3>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">${{ total_spent|floatform:2|intcomma }}</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">${{ total_spent|floatformat:2|intcomma }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{% trans "Active Courses" %}</h3>
@@ -90,7 +90,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900 dark:text-white">
                                 {% if enrollment.amount_paid > 0 %}
-                                    ${{ enrollment.amount_paid|floatform:2 }}
+                                    ${{ enrollment.amount_paid|floatformat:2 }}
                                 {% else %}
                                     <span class="text-green-600">{% trans "Free" %}</span>
                                 {% endif %}

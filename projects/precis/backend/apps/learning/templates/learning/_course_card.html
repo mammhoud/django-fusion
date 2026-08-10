@@ -1,10 +1,14 @@
 {% load wagtailimages_tags %}
 {% comment %}
-Course Card Template
-====================
+Course Card Component
+=====================
 Reusable course card component for both grid and list views.
 Displays: image, title, instructor, price, rating, enrollment button.
+
+Usage:
+    {% comp "learning/_course_card.html" course=course / %}
 {% endcomment %}
+{% prop course %}
 
 <article class="course-card">
   {# Course Image #}
@@ -12,7 +16,6 @@ Displays: image, title, instructor, price, rating, enrollment button.
     <div class="course-card__image">
       {% image course.image width-300 as img %}
         <img src="{{ img.url }}" alt="{{ course.title }}" loading="lazy">
-      {% endimage %}
       
       {# Discount Badge #}
       {% if course.is_discounted %}

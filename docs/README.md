@@ -2,7 +2,19 @@
 
 > ⭐ **Start here:** read [Recommendations first](recommendations.md), then open the relevant guide, project reference, or implementation plan.
 
-> ⚡ **New here?** Start with [Backend Environment](back-env/) — it covers env setup for all projects.
+> ⚡ **New here?** Start with [Guides](guides/) — numbered walkthroughs for setup, auth, dev, deployment, and customization.
+
+## Current Products
+
+| Product | Canonical Path | Main Responsibility | Domain |
+|---|---|---|---|
+| **Precis LMS** | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
+| **Landing-Fusion** | `projects/landing-fusion/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
+| **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
+| **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |
+| **django-fusion** | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables | submodule |
+| **Infrastructure** | `applications/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | structa.cloud |
+| **Workspace tests** | `tests/` | Cross-project validation, fixtures, browser tests, deployment checks | — |
 
 ## Documentation ownership
 
@@ -16,86 +28,88 @@
 
 All new plans must be added under `docs/plans/<scope>/` and linked from the canonical plan registry. The old `docs/dev/plans/`, `docs/plans/migrated/`, and project-local `docs/superpowers/plans/` locations are no longer active authoring paths.
 
-## Project Tree (Language → Directory → Project)
-
-| Language | Directory | Projects |
-|----------|-----------|----------|
-| 🦀 **Rust** | `docs/rust/` | POS backend (Tauri + Diesel + SQLite) |
-| ⚛️ **TypeScript** | `docs/typescript/` | POS frontend (React 19 + Vite + i18next) |
-| 🐍 **Python/Django** | `docs/python/` | Django core, sites, libs, fusion components |
-| 🐍 **Python/Sanic** | `docs/server/` | POS sidecar (REST + WebSocket API) |
-| 🏗️ **Docker/YAML** | `docs/infrastructure/` | Proxy, databases, Compose, deployment |
-| ⚙️ **Config/Env** | `docs/back-env/` | Backend env vars, settings, site registry |
-| 🗄️ **SQL** | `docs/databases/` | SQLite schema, PostgreSQL, migrations |
-| 🧪 **All** | `docs/tests/` | Testing: Vitest, Rust, pytest, Selenium, E2E |
-
-## Project Tree
+## Repository Structure
 
 ```
 structa.cloud/
-├── projects/                         # Django monorepo and product projects
-├── applications/                     # Infrastructure and tooling
-├── tests/                            # Integration and E2E tests
-└── docs/                             # This documentation project
-    ├── recommendations.md            # Read first: priorities and decisions
-    ├── plans/                        # Single active plan registry
-    │   ├── editions/                 # Formint edition execution chain
-    │   └── legacy/                   # Read-only historical evidence
-    ├── projects/                     # Current per-project references
-    ├── infrastructure/               # Proxy, DB, deployment, workers
-    ├── ai/                           # Agents, prompts, MCP
-    └── guides/                       # Step-by-step workflows
+├── projects/                         # Product code, shared Django config, and assets
+│   ├── precis/                       # Precis LMS — learning platform
+│   │   ├── backend/                  # Django + Wagtail backend
+│   │   ├── assets/                   # Templates, static, SCSS, media
+│   │   └── frontend/                 # Astro frontend shell
+│   ├── landing-fusion/               # Astro marketing site + Django/Wagtail CMS
+│   │   ├── backend/                  # Django + Wagtail backend
+│   │   ├── frontend/                 # Astro frontend
+│   │   └── assets/                   # Project assets
+│   ├── syntara/                      # Cypercloud AI chat/customizer runtime
+│   ├── formints/                     # Multi-edition POS platform
+│   │   ├── formintA/                 # Community (Tauri + React + Rust)
+│   │   ├── formint/                  # Professional (Astro + Django + Tauri)
+│   │   ├── formint-cloud/            # Cloud master (Django + Channels)
+│   │   ├── formintC/                 # POS Client (Tauri + Vue 3)
+│   │   ├── tests/                    # Shared POS tests
+│   │   └── docs/                     # POS architecture docs
+│   ├── configs/                      # Shared Django settings and workers
+│   ├── assets/                       # Monorepo-level shared assets
+│   ├── scripts/                      # Project-local automation
+│   ├── Makefile                      # Canonical project dispatcher
+│   └── pyproject.toml                # Python workspace dependencies
+├── libs/                             # Reusable libraries
+│   └── django-fusion/                # Shared Django/Wagtail components (submodule)
+├── applications/                     # Databases, proxy, Compose, scripts, Kilo/MCP
+│   ├── proxy/                        # Traefik reverse proxy configs
+│   ├── databases/                    # PostgreSQL + Redis compose
+│   ├── agents/                       # Kilo MCP server
+│   ├── templates/                    # Coder/Terraform templates
+│   └── scripts/                      # Automation scripts
+├── tests/                            # Workspace integration, HTTP, browser, fixtures
+├── docs/                             # This documentation project
+│   ├── assets/                       # Screenshots, previews, diagrams
+│   │   ├── screenshots/formints/     # Formint admin + frontend screenshots
+│   │   └── previews/formints/        # Formint product preview images
+│   ├── guides/                       # Step-by-step numbered walkthroughs
+│   ├── plans/                        # Single active plan registry
+│   ├── projects/                     # Current per-project references
+│   ├── ai/                           # Agents, prompts, MCP
+│   └── design/                       # Design system and branding
+├── .agents/                          # AI agent skills and configuration
+│   ├── skills/                       # Reusable skill definitions (21 skills)
+│   └── kiro/settings/                # MCP server configuration
+├── .github/                          # CI workflows and composite actions
+├── Makefile                          # Root deployment and delegation entry point
+└── pyproject.toml                    # Root Python/tooling configuration
 ```
-
-## Platform Documentation
-
-| Platform | Directory | Covers |
-|---|---|---|
-| 🦀 **Rust** | [`docs/rust/`](rust/) | POS auth, operations, database schema, email |
-| ⚛️ **TypeScript** | [`docs/typescript/`](typescript/) | POS API layer, components, contexts, hooks |
-| 🐍 **Python/Django** | [`docs/python/`](python/) | Django sites, libs, templates, fusion components |
-| 🏗️ **Infrastructure** | [`docs/infrastructure/`](infrastructure/) | Proxy, databases, workers, Docker Compose, deployment |
-| 🌐 **Server** | [`docs/server/`](server/) | Sanic sidecar, REST endpoints, WebSocket |
-
-## Sites & Projects at a Glance
-
-| Project | Directory | Port | Stack | Domain |
-|---|---|:---:|---|---|
-| **CTC Research** | `projects/ctc-research/` | 5070 | Django + Wagtail | ctc-research.com |
-| **LMS** | `projects/lms/` | 5071 | Django + Wagtail + LMS | structa.cloud |
-| **VResume** | `projects/portfolio/` | 5072 | Django + Wagtail | vresume.structa.cloud |
-| **Cypercloud** | `projects/cypercloud/` | 5073 | Django + AI Chat | localhost |
-| **POS** | `projects/pos/` | — | Tauri 2 + React + Rust | Desktop app |
-| **WWW (Shared Core)** | `projects/www/` | 5080 | Celery + Dramatiq | sentinel site |
-| **Libs** | `libs/` | — | Python packages | submodules |
-
-Each project has a dedicated documentation page in [`docs/projects/`](projects/) with development, configuration, and deployment references where available.
 
 ## Quick Links
 
 - [⭐ Recommendations first](recommendations.md)
 - [📚 Guides](guides/) — step-by-step tutorials
 - [🗺️ Canonical plans](plans/README.md) — all active plans and historical evidence
-- [🚀 Getting Started](getting-started/)
 - [🔄 Recent Changes](recent-changes.md)
 - [🎯 Features Index](features/) — capabilities by project
-- [🔧 Backend Environment](back-env/)
-- [🦀 Rust Backend (POS)](rust/)
-- [⚛️ TypeScript Frontend (POS)](typescript/)
-- [🐍 Python/Django Core](python/)
-- [🏗️ Infrastructure & Deployment](infrastructure/)
-- [🌐 Sidecar Server](server/)
-- [🗄️ Databases](databases/)
+- [🏗️ Infrastructure & Deployment](dev/infrastructure/)
+- [🗄️ Databases](dev/databases/)
 - [🧪 Testing](tests/)
-- [🏢 Sites & Projects](projects/)
-- [🏛️ Core Architecture](core/)
+- [🤖 AI & Agents](ai/) — agent instructions and prompts
+- [🏛️ Project Architecture](dev/technical/architecture/)
+- [📐 Customization](dev/customization/)
 - [📦 Publishing](publish/) — marketplace & distribution
-- [🤖 Agents](ai/) — AI agent instructions
-- [📐 Best Practices](best-practices/) — Markdown conventions & usage
+- [🎨 Design](design/)
+
+## Project Documentation
+
+| Product | Directory | Key Docs |
+|---|---|---|
+| **Precis LMS** | [`projects/precis/`](projects/precis/) | Configuration, Courses, Deployment |
+| **Landing-Fusion** | [`projects/landing-fusion/`](projects/landing-fusion/) | Frontend, Backend API, Deployment |
+| **Syntara/Cypercloud** | [`projects/cypercloud/`](cypercloud/) | Infrastructure, Configuration, Features |
+| **Formint POS** | [`projects/pos/`](pos/) | Editions, Backend (Rust), Sidecar (Django), Cloud |
+| **django-fusion** | [`projects/libs/`](projects/libs/) | Component guide, Viewsets, Templates |
+| **Shared Config** | [`dev/back-env/`](dev/back-env/) | Settings reference, Environment variables |
 
 ## Related
 
-- [`../README.md`](../README.md) — repository overview and quick start
+- [`../AGENTS.md`](../AGENTS.md) — repository-wide AI agent instructions
 - [`recommendations.md`](recommendations.md) — recommended priorities
 - [`plans/README.md`](plans/README.md) — canonical plan registry
 - [`plans/document-lifecycle.md`](plans/document-lifecycle.md) — archive/delete policy

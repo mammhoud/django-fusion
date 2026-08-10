@@ -1,10 +1,10 @@
-# Recommendations first
+# ⭐ Recommendations First
 
 > **Purpose:** the shortest path from the current repository state to the next safe, valuable work.
 >
-> **Updated:** 2026-08-09
+> **Updated:** 2026-08-10
 
-This page is the decision layer for Structa Cloud documentation. Read it before opening detailed plans. The plan files below are implementation contracts; this page keeps priorities, ownership, and sequencing visible.
+This page is the decision layer for Structa Cloud documentation. Read it before opening detailed plans.
 
 ## Recommended order
 
@@ -14,57 +14,60 @@ All engineering plans now belong under [`docs/plans/`](plans/README.md), organiz
 
 - `plans/repository/` — cross-repository architecture, cleanup, and delivery work;
 - `plans/pos/` — Formint/POS product and edition plans;
-- `plans/cms-fusion/`, `plans/lms-fusion/`, and `plans/landing-fusion/` — site-specific work;
+- `plans/editions/` — Formint edition execution chain;
+- `plans/landing-fusion/` — Landing site architecture and content work;
 - `plans/django-fusion/` — shared framework work;
 - `plans/legacy/` — read-only historical evidence only.
 
-Do not create new plans under `docs/dev/plans/`, `projects/*/docs/superpowers/plans/`, or `docs/plans/migrated/`.
+Do not create new plans under `docs/dev/plans/`, `projects/*/docs/`, or `docs/plans/migrated/`.
 
 ### 2. Finish the current product vertical slices before starting broad cleanup
 
-Prioritize work that produces a tested user-visible path:
-
-1. **Formint POS Professional Edition** — continue from the canonical [Professional plan](plans/pos/formint-pos-professional-plan.md), starting with branch → order → KDS → sync → reporting.
-2. **Landing Fusion** — keep the content and blog rendering contract covered by focused backend/frontend tests before adding new page blocks.
-3. **CMS/LMS Fusion** — close the remaining frontend and deployment tasks only when the relevant plan has an owner and a verification command.
+1. **Formint POS Professional Edition** — continue from the canonical [Professional plan](plans/pos/formint-pos-professional-plan.md).
+2. **Formint Cloud (formint-cloud)** — continue Channels/WebSocket sync + Bolt dashboard work.
+3. **Landing-Fusion** — keep the content rendering contract covered by focused tests before adding new blocks.
+4. **Precis LMS** — close remaining frontend and deployment tasks with owned verification commands.
 
 ### 3. Treat migration and legacy material as evidence, not scope
 
-Completed phase reports, Forge parity notes, deployment records, and migration audits can be useful for rollback and investigation. They are now archived under `plans/legacy/` and must not be presented as active work. Delete an archived file only after the lifecycle and deletion-manifest gates pass.
+Completed phase reports are archived under `plans/legacy/` and must not be presented as active work. See [`document-lifecycle.md`](plans/document-lifecycle.md) for policy.
 
-### 4. Use evidence-based status labels
+### 4. Keep product knowledge separate from engineering execution
 
-A plan is **Complete** only when implementation, tests, documentation, and release evidence exist. Use **Active**, **Planned**, **Superseded**, or **Archived** when any part is missing. Avoid copying status claims from historical snapshots into current indexes.
-
-### 5. Keep product knowledge separate from engineering execution
-
-- Engineering plans, migrations, tests, and deployment procedures: [`docs/plans/`](plans/README.md)
-- Product decisions, market hypotheses, and edition boundaries: `docs/Anytype/` (separate knowledge graph when present)
-- Current architecture and operational guides: the relevant topic/project section in [`docs/README.md`](README.md)
-
-Link between these sources; do not maintain competing copies of the same implementation plan.
+- Engineering plans: [`docs/plans/`](plans/README.md)
+- Product decisions: `docs/Anytype/` (separate knowledge graph)
+- Current architecture: topic/project section in [`docs/README.md`](README.md)
 
 ## Current next actions
 
 | Priority | Action | Source of truth | Verification |
 |:--:|---|---|---|
-| P0 | Maintain the Formint edition extension chain and select the next executable task | [`plans/editions/README.md`](plans/editions/README.md) | Edition-specific Rust/Python/frontend tests |
-| P0 | Keep active Landing Fusion content work aligned with its post-only rendering contract | [`plans/landing-fusion/`](plans/landing-fusion/) | Backend tests + frontend `npm run check` |
-| P1 | Close the remaining CMS/LMS Fusion frontend and deployment gates | [`plans/cms-fusion/`](plans/cms-fusion/), [`plans/lms-fusion/`](plans/lms-fusion/) | Site checks, tests, and frontend builds |
-| P1 | Consolidate repository cleanup decisions without deleting compatibility sources prematurely | [`plans/repository/migration-cleanup-master.md`](plans/repository/migration-cleanup-master.md) | Reference scan + focused project checks |
-| P2 | Improve docs navigation and link validation as part of every documentation change | [`plans/document-lifecycle.md`](plans/document-lifecycle.md) | `python3 applications/scripts/check_markdown_links.py` |
+| P0 | Formint edition extension chain — next executable task | [`plans/editions/README.md`](plans/editions/README.md) | Edition-specific tests |
+| P0 | Landing-Fusion content work — preserve rendering contract | [`plans/landing-fusion/`](plans/landing-fusion/) | Backend tests + `npm run check` |
+| P1 | Precis LMS — close frontend/deployment gates | `projects/precis/backend/` | Site checks, tests, builds |
+| P1 | Repository cleanup — don't delete compatibility sources prematurely | [`plans/repository/migration-cleanup-master.md`](plans/repository/migration-cleanup-master.md) | Reference scan |
+| P2 | Docs maintenance — link validation, stale ref removal | [`plans/document-lifecycle.md`](plans/document-lifecycle.md) | Link checker |
 
 ## Rules for adding a plan
 
-1. Start with a status, owner, date, scope, dependencies, and verification commands.
-2. Put the file in the appropriate `docs/plans/<scope>/` directory.
-3. Add it to [`docs/plans/README.md`](plans/README.md) and the relevant project subsection.
-4. Link to source code and existing plans instead of duplicating them.
-5. Mark superseded plans and move historical evidence to `plans/legacy/`.
+1. Start with: status, owner, date, scope, dependencies, verification commands.
+2. Put in `docs/plans/<scope>/`.
+3. Add to [`docs/plans/README.md`](plans/README.md).
+4. Link to source code — don't duplicate.
+5. Mark superseded plans; move evidence to `plans/legacy/`.
+
+## Recent name migrations
+
+| Old → New | When |
+|---|---|
+| `formintB` / `pos-cloud` → `formint-cloud` | 2026-08-09 |
+| `lms-fusion` → Precis LMS (`projects/precis/`) | Active |
+| `cypercloud` → Syntara (`projects/syntara/`) | Active |
+| `core/` → `projects/` | 2026 |
 
 ## Related
 
-- [`docs/README.md`](README.md) — main documentation hub
+- [`docs/README.md`](README.md) — documentation hub
 - [`docs/plans/README.md`](plans/README.md) — canonical plan registry
-- [`docs/plans/document-lifecycle.md`](plans/document-lifecycle.md) — archive and deletion policy
-- [`docs/plans/deletion-manifest.md`](plans/deletion-manifest.md) — deletion approval register
+- [`docs/overview.md`](overview.md) — repo overview + name migration reference
+- [`docs/project-structure.md`](project-structure.md) — full project tree

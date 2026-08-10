@@ -1,5 +1,5 @@
 {% load i18n %}
-{# ui/forms/form.html — unified Django form (standard POST + HTMX)
+{% comment %} ui/forms/form.html — unified Django form (standard POST + HTMX)
    ──────────────────────────────────────────────────────────────────────
    Handles all common widget types, field/non-field errors, file uploads,
    cancel button, inline HTMX spinner, and optional per-field success msg.
@@ -70,7 +70,29 @@
          field_success="username"
          success_message="Username available!"
      %}
-#}
+{% endcomment %}
+{% prop form %}
+{% prop hx_post default='' %}
+{% prop hx_url default='' %}
+{% prop hx_target default='' %}
+{% prop hx_swap default='outerHTML' %}
+{% prop hx_indicator default='' %}
+{% prop is_multipart default=False %}
+{% prop form_class default='' %}
+{% prop form_id default='' %}
+{% prop form_action default='' %}
+{% prop form_method default='post' %}
+{% prop form_extra_attrs default='' %}
+{% prop submit_label default='Submit' %}
+{% prop submit_attrs default='' %}
+{% prop show_cancel default=False %}
+{% prop cancel_label default='Cancel' %}
+{% prop cancel_onclick default='' %}
+{% prop cancel_hx_get default='' %}
+{% prop cancel_hx_target default='' %}
+{% prop cancel_hx_swap default='outerHTML' %}
+{% prop field_success default='' %}
+{% prop success_message default='' %}
 {% load i18n %}
 
 {% block form_tag %}

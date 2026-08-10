@@ -12,7 +12,7 @@ several related products; choose the edition deliberately before editing.
 |---|---|---|---|
 | `formintA/` | Community/Mini (`formint-pos`) | Tauri 2 + React 19 + Rust + Diesel/SQLite; no Python sidecar | Offline-first desktop POS |
 | `formint/` | Professional/Formint POS | Astro + HTMX/Alpine frontend, Django boundary, typed APIs, Fusion fragments, Unfold, Tauri shell | Merged professional product |
-| `formintB/` | Cloud master (`pos-cloud`) | Django full setup, frontend, django-fusion, Unfold, Channels/WebSocket sync; no Robyn sidecar | Hosted multi-terminal SaaS |
+| `formint-cloud/` | Cloud master (`formint-cloud`) | Django full setup, frontend, django-fusion, Unfold, Channels/WebSocket sync; no Robyn sidecar | Hosted multi-terminal SaaS |
 | `formintC/` | POS Client template | Tauri 2 + Vue 3 + TypeScript + Pinia | Separate desktop client |
 | `tests/` | Shared POS validation | pytest, Vitest, API tests, Selenium, Playwright | Cross-edition contracts and flows |
 | `scripts/` | Build/release/dev tooling | Node/Python/shell | Packaging, screenshots, i18n, checks |
@@ -45,7 +45,7 @@ changes synchronized with frontend types and contract tests.
 
 ## Cloud master rules
 
-`formintB` now serves the API surface directly from Django on the configured
+`formint-cloud` now serves the API surface directly from Django on the configured
 cloud/API port and uses Channels for WebSocket sync. Do not reintroduce a
 Robyn sidecar merely because a variable is still named `SIDECAR_BASE`; that
 name is retained for frontend compatibility. Verify the current `README.md`,
@@ -85,7 +85,7 @@ make test
 make env                 # effectful: starts backend/frontend sessions
 
 # Cloud master
-cd projects/formints/formintB
+cd projects/formints/formint-cloud
 make install
 make migrate
 make check
@@ -118,7 +118,7 @@ or start services.
 
 - `formint/sidecar/tests/`: backend models, APIs, fragments, sync, WebSockets.
 - `formint/frontend/src/**/test*`: frontend contract/unit tests.
-- `formintB/backend/apps/test_*.py`: cloud surface and WebSocket parity tests.
+- `formint-cloud/backend/apps/test_*.py`: cloud surface and WebSocket parity tests.
 - `tests/pos-e2e/`: shared Playwright flows and API tests.
 - `tests/js/`, `tests/api/`, and `tests/selenium/`: broader POS validation.
 

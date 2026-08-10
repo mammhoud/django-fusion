@@ -20,7 +20,6 @@ from typing import Any
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
-
 from django_fusion.plugins.htmx.core import is_htmx_request, trigger_client_event
 from django_fusion.routes.rendering.renderers import fusion_json_response
 
@@ -46,6 +45,7 @@ class FusionLandingView(View):
     """
 
     template_name: str = "pages/fusion_landing.html"
+    fragment_template_name: str | None = None
     page_slug: str = "home"
     fragment_name: str = "pages.home"
     layout: str = "full_width"
@@ -55,11 +55,20 @@ class FusionLandingView(View):
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         context = self.get_context_data(request)
 
-        # HTMX fragment request → return only the content block
+        # HTMX fragment request → return only the content block. The page
+        # template (e.g. ``pages/home/main.html``) extends the site skeleton,
+        # so rendering it for an HX request would embed the full document
+        # (header/footer) inside a LiveFragment region — the same page
+        # rendering twice, nested. Fragment requests render the matching
+        # ``fragment.html`` (content-only) when one is configured, otherwise
+        # the content template with the layout stripped.
         if is_htmx_request(request):
+            fragment = self.fragment_template_name
+            if fragment:
+                return render(request, fragment, context)
             return render(request, self.template_name, context)
 
-        # Full page render → server-side HTML for Next.js FusionProxy
+        # Full page render → server-side HTML for the FusionProxy
         return render(request, self.template_name, context)
 
     def get_context_data(self, request: HttpRequest) -> dict[str, Any]:
@@ -139,7 +148,8 @@ class FusionLandingView(View):
 
 class HomePageView(FusionLandingView):
     """Home page — hero, stats, featured sections, CTA."""
-    template_name = "pages/home/main.html"
+    template_name = "home/main.html"
+    fragment_template_name = "home/fragment.html"
     page_slug = "home"
     fragment_name = "pages.home"
     title = "LMS Fusion — Modern Content Platform"
@@ -147,7 +157,8 @@ class HomePageView(FusionLandingView):
 
 class AboutPageView(FusionLandingView):
     """About us page."""
-    template_name = "pages/about/main.html"
+    template_name = "about/main.html"
+    fragment_template_name = "about/fragment.html"
     page_slug = "about-us"
     fragment_name = "pages.about"
     title = "About Us"
@@ -155,7 +166,8 @@ class AboutPageView(FusionLandingView):
 
 class ServicesPageView(FusionLandingView):
     """Services page."""
-    template_name = "pages/services/main.html"
+    template_name = "services/main.html"
+    fragment_template_name = "services/fragment.html"
     page_slug = "services"
     fragment_name = "pages.services"
     title = "Our Services"
@@ -163,7 +175,8 @@ class ServicesPageView(FusionLandingView):
 
 class ContactPageView(FusionLandingView):
     """Contact page."""
-    template_name = "pages/contact/main.html"
+    template_name = "contact/main.html"
+    fragment_template_name = "contact/fragment.html"
     page_slug = "contact"
     fragment_name = "pages.contact"
     title = "Contact Us"
@@ -171,7 +184,8 @@ class ContactPageView(FusionLandingView):
 
 class TeamPageView(FusionLandingView):
     """Team page."""
-    template_name = "pages/team/main.html"
+    template_name = "team/main.html"
+    fragment_template_name = "team/fragment.html"
     page_slug = "team"
     fragment_name = "pages.team"
     title = "Our Team"
@@ -179,7 +193,7 @@ class TeamPageView(FusionLandingView):
 
 class PricingPageView(FusionLandingView):
     """Pricing page."""
-    template_name = "pages/pricing/main.html"
+    template_name = "pages/fusion_content.html"
     page_slug = "pricing"
     fragment_name = "pages.pricing"
     title = "Pricing Plans"
@@ -187,7 +201,7 @@ class PricingPageView(FusionLandingView):
 
 class FaqPageView(FusionLandingView):
     """FAQ page."""
-    template_name = "pages/faq/main.html"
+    template_name = "pages/fusion_content.html"
     page_slug = "faq"
     fragment_name = "pages.faq"
     title = "Frequently Asked Questions"
@@ -195,7 +209,7 @@ class FaqPageView(FusionLandingView):
 
 class TestimonialsPageView(FusionLandingView):
     """Testimonials page."""
-    template_name = "pages/testimonials/main.html"
+    template_name = "pages/fusion_content.html"
     page_slug = "testimonials"
     fragment_name = "pages.testimonials"
     title = "What Our Clients Say"

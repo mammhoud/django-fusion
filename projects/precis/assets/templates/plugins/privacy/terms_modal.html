@@ -44,9 +44,10 @@
         </form>
 
         {% else %}
+        {% url 'account_login' as login_url %}
         <p class="legal-modal__login-note">
             {% blocktrans %}
-                <a href="{% url 'account_login' %}">Sign in</a> to accept these terms.
+                <a href="{{ login_url }}">Sign in</a> to accept these terms.
             {% endblocktrans %}
         </p>
         <button type="button" class="btn btn--secondary" up-dismiss>

@@ -3,9 +3,9 @@
 
 {% for block in page.head %}
 {% if block.block_type == 'page_title' %}
-{% comp "content.page_title" / %}
+{% comp "content.page_title" block=block / %}
 
 {% endif %}
 {% endfor %}
 
-{% comp "courses/sections/courses.html" /%}
+{% comp "courses/sections/courses.html" courses=courses specializations=specializations /%}

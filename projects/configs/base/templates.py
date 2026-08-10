@@ -112,6 +112,17 @@ TEMPLATES = [
                 "components": "django_fusion.comp.templatetags.components",
                 # Register fusion_layout for {% load fusion_layout %} compatibility.
                 "fusion_layout": "django_fusion.comp.templatetags.fusion_layout",
+                # Register routable-component URL/menu tags for {% load routable_components %}.
+                "routable_components": "django_fusion.comp.templatetags.routable_components",
+                # Register bakerydemo-style menu tags (get_site_root, top_menu) for
+                # {% load menu_tags %} in the shared header partials.
+                "menu_tags": "apps.pages.templatetags.menu_tags",
+                # Register bakerydemo-style field helpers for Wagtail block templates
+                # (render_unhandled_fields, get_table_config, get_table_classes).
+                "components_field": "apps.components.templatetags.components_field",
+                # Register embed filters (youtube_embed_url, vimeo_embed_url) for
+                # {% load embed_blocks %} in block media templates.
+                "embed_blocks": "django_fusion.comp.templatetags.embed_blocks",
             },
             "builtins": _TEMPLATE_BUILTINS,
         },

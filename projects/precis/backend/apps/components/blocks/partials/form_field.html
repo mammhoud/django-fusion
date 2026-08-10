@@ -1,5 +1,9 @@
-{% load i18n %}
+{% load i18n components %}
 {# Form Field Partial Template - Renders individual form fields #}
+{% prop field %}
+{% prop show_icons default=False %}
+{% prop icon_style default='inside' %}
+{% prop show_labels default=True %}
 
 <div class="contact-form__field contact-form__field--{{ field.field_width|default:'full' }}"
      {% if field.conditional_field %}

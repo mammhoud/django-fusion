@@ -26,7 +26,7 @@ Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 | **Mini** (`forge-pos/`) | Core POS (Tauri + Rust + SQLite) | Offline-only deployments |
 | **Formint** (`formint-pos/`) | **Merged package** — Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin (consolidates the former Full + Solo editions) | Enterprise multi-device |
 | **Client** (`pos-client/`) | Vue 3 + Tauri desktop | Separate client app |
-| **Cloud** (`pos-cloud/`) | Django ASGI + Unfold + Bolt dashboard | Cloud CRM master |
+| **Cloud** (`formint-cloud/`) | Django ASGI + Unfold + Bolt dashboard | Cloud CRM master |
 
 > **`formint-pos/`** merges the former `pos-full` + `pos-solo` editions into one
 > product boundary. The legacy React UIs are archived under `formint-pos/legacy-react/`.
@@ -121,7 +121,7 @@ formint-pos/                 # Merged package (formerly pos-full + pos-solo)
 
 forge-pos/                   # Mini edition — Tauri + Rust/Diesel
 pos-client/                  # Vue 3 + Tauri desktop client
-pos-cloud/                   # Django ASGI + Unfold + Bolt cloud CRM master
+formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 ```
 
 ---

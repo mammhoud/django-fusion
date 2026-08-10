@@ -1,13 +1,13 @@
-# 💬 Prompts — Per-Use-Case Templates & Patterns
+# 💬 Prompts — Templates, Skills & Patterns
 
-> Ready-to-use prompt templates for AI interactions across the monorepo — from code generation to security audits.
+> Ready-to-use prompt templates, .agents/skills inventory, and AI interaction patterns across the monorepo.
 
 ---
 
 ## Quick Reference
 
-| Prompt | Use Case | Temperature |
-|--------|----------|:-----------:|
+| Prompt Type | Use Case | Temperature |
+|-------------|----------|:-----------:|
 | Code generation | New models, views, templates | 0.0–0.3 |
 | Code review | Security, performance, style audits | 0.0–0.2 |
 | Translation | i18n bulk translation | 0.3–0.5 |
@@ -16,16 +16,81 @@
 
 ---
 
-## Chat Prompts (Cypercloud, POS Sidecar)
+## .agents/skills Inventory (21 skills)
+
+Skills are reusable, self-contained instructions loaded into Freebuff/Codex sessions. Each skill provides domain-specific expertise for a particular task.
+
+### Design & UI Skills
+
+| Skill | Purpose | Use When |
+|-------|---------|----------|
+| `design-taste-frontend` | Anti-slop frontend design for landing pages, portfolios | Building new UI, redesigning |
+| `gpt-taste` | Elite UX/UI with GSAP motion, true randomization, AIDA structure | Premium landing pages, bento grids |
+| `high-end-visual-design` | Premium UI standards: fonts, spacing, shadows, cards | Avoiding generic/cheap designs |
+| `minimalist-ui` | Clean editorial-style interfaces | Warm monochrome, typographic contrast |
+| `industrial-brutalist-ui` | Raw mechanical interfaces, Swiss typographic + military terminal | Data-heavy dashboards, portfolios |
+| `shadcn` | shadcn/ui component management | Adding/fixing/styling shadcn components |
+| `redesign-existing-projects` | Upgrade existing websites to premium quality | Auditing + applying premium standards |
+| `stitch-design-taste` | Semantic design system (DESIGN.md generation) | Google Stitch projects |
+
+### Image Generation Skills
+
+| Skill | Purpose | Use When |
+|-------|---------|----------|
+| `imagegen-frontend-web` | Premium web design image generation | Landing pages, marketing sites, product comps |
+| `imagegen-frontend-mobile` | Premium mobile app image generation | iOS, Android, cross-platform screens |
+| `image-to-code` | Design-to-code conversion pipeline | Turning designs into matching implementations |
+| `brandkit` | Brand system generation | Logo systems, identity decks, brand guidelines |
+
+### Content Skills
+
+| Skill | Purpose | Use When |
+|-------|---------|----------|
+| `content-strategy` | Content planning, topic clusters, calendars | "What should I write about?", content planning |
+| `content-production` | Full content pipeline: blank page → published-ready | Writing blog posts, articles, guides |
+| `content-creator` | Legacy routing to content-strategy or content-production | Deprecated; routes to correct specialist |
+
+### Documentation & Data Skills
+
+| Skill | Purpose | Use When |
+|-------|---------|----------|
+| `documentation` | Technical documentation writing | READMEs, runbooks, API docs, architecture docs |
+| `deployment-documentation` | Deployment process documentation | CI/CD, infrastructure, deployment guides |
+| `explore-data` | Dataset profiling and exploration | New tables/files, data quality checks |
+
+### Specialized Skills
+
+| Skill | Purpose | Use When |
+|-------|---------|----------|
+| `use-case-triage` | Privacy PIA/DPIA decision triage | "Does this need a PIA?", privacy checks |
+| `full-output-enforcement` | Complete code generation, no placeholders | Exhaustive, unabridged output |
+| `design-taste-frontend-v1` | Legacy v1 taste skill | Backward compatibility only |
+
+### Loading Skills
+
+Skills are loaded by the AI assistant at runtime:
+
+```
+Load skill "design-taste-frontend" to get full design instructions
+Load skill "shadcn" when working with shadcn/ui components
+```
+
+See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions.
+
+---
+
+## Chat Prompts (Syntara, POS)
 
 ### System Prompt
 
 ```markdown
 You are an AI assistant for the Structa Cloud monorepo.
 You have access to:
-- Django sites: ctc-research, lms, portfolio, cypercloud
-- Desktop app: POS (Tauri + React + Rust)
-- Libraries: django-fusion, ceptor-ai
+- Precis LMS (Django + Wagtail learning platform)
+- Landing-Fusion (Astro + Django marketing site)
+- Syntara/Cypercloud (AI chat + code customization)
+- Formint POS (multi-edition restaurant POS)
+- django-fusion (shared Django/Wagtail components)
 
 Answer questions about code, suggest improvements,
 and generate code following project conventions.
@@ -36,10 +101,11 @@ and generate code following project conventions.
 ```markdown
 Generate a Django model for [feature] following these conventions:
 - Use django-fusion Viewset for CRUD
-- Place in projects/<site>/www/apps/
-- Add template in projects/<site>/templates/components/
+- Place in projects/<product>/backend/apps/<app>/
+- Add template in the appropriate templates directory
 - Follow BEM-style CSS naming
 - Use fragment_name for HTMX fragment identifiers
+- Check the nearest AGENTS.md for product-specific rules
 ```
 
 ### Wagtail Page Generation
@@ -51,11 +117,12 @@ Create a Wagtail page model for [feature] with:
 - HTMX fragment rendering for dynamic sections
 - SEO fields (search_image, keywords)
 - Panels configuration for Wagtail admin
+- Place in projects/<product>/backend/apps/pages/
 ```
 
 ---
 
-## Agent Prompts (ceptor-ai MCP)
+## Agent Prompts (Kilo MCP)
 
 ### Tool-Calling System Prompt
 
@@ -71,19 +138,6 @@ Always return structured JSON responses.
 Confirm before making any file modifications.
 ```
 
-### Codebase Exploration
-
-```markdown
-Explore the [feature] implementation across the monorepo:
-1. Search for relevant model definitions
-2. Find template files that render this feature
-3. Locate URL configurations
-4. Identify test coverage
-5. Summarize the full data flow
-
-Report file paths, key classes, and any gaps or issues found.
-```
-
 ---
 
 ## Task-Based Development Prompts
@@ -91,25 +145,26 @@ Report file paths, key classes, and any gaps or issues found.
 ### New Feature Implementation
 
 ```markdown
-Implement [feature] across the full stack:
+Implement [feature] across the full stack for [product]:
 
 **Backend:**
-- Django model in projects/<site>/www/models.py
+- Django model in the appropriate backend/apps/ directory
 - django-fusion ModelViewset with list/detail CRUD
 - Wagtail page model if CMS-managed content
-- URL configuration at /<path>/
+- URL configuration
 
 **Frontend:**
-- Template in projects/<site>/templates/components/
+- Template in the product's template directory
 - HTMX fragments for dynamic interactions
 - BEM-style CSS classes
 
 **Testing:**
 - pytest tests for model + view logic
-- Template rendering equivalence test
+- Template rendering test
 
 **Documentation:**
 - Update relevant docs/ files
+- Follow AGENTS.md hierarchy conventions
 ```
 
 ### Security Audit Prompt
@@ -145,7 +200,7 @@ Report with estimated impact and fix suggestions.
 
 ---
 
-## Translation Prompts (POS i18n)
+## Translation Prompts (Formint i18n)
 
 ### Bulk Translation
 
@@ -160,20 +215,7 @@ Rules:
 - Arabic: Use Modern Standard Arabic, not dialectal
 - Preserve HTML tags if present
 
-JSON:
-{...}
-```
-
-### Translation Audit
-
-```markdown
-Audit these translation files for:
-1. Missing keys (present in en.json but not in [locale].json)
-2. Missing interpolation variables
-3. Stale translations (no longer used in templates)
-4. Inconsistent terminology
-
-Generate a report with counts and file paths.
+JSON: {...}
 ```
 
 ---
@@ -191,9 +233,10 @@ Review this Django code for:
 5. Database query efficiency (N+1, indexes)
 6. Error handling (try/except blocks, logging)
 7. Test coverage (unit tests for new code)
+8. AGENTS.md compliance (check nearest AGENTS.md)
 ```
 
-### POS Rust Review
+### Rust Review (Formint)
 
 ```markdown
 Review this Rust code for:
@@ -205,15 +248,15 @@ Review this Rust code for:
 6. Performance (allocation patterns, cloning avoidance)
 ```
 
-### React/TypeScript Review
+### Astro/TypeScript Review
 
 ```markdown
-Review this React/TypeScript code for:
+Review this Astro/TypeScript code for:
 1. TypeScript strict mode compliance
-2. React 19 patterns (hooks, suspense, concurrent features)
-3. State management (RTK Query, Pinia patterns)
+2. Astro 5 patterns (islands, View Transitions, content collections)
+3. State management (Alpine.js stores, Nanostores)
 4. Component composition (reusable, testable)
-5. Performance (memoization, lazy loading, code splitting)
+5. Performance (partial hydration, lazy loading)
 6. Accessibility (aria attributes, keyboard navigation)
 7. i18n (translation key usage, RTL support)
 ```
@@ -235,18 +278,20 @@ Requirements:
 - Accessible (WCAG AA)
 - Responsive (mobile-first)
 - Documented with context variables and usage examples
+- Follow the nearest templates/AGENTS.md conventions
 ```
 
 ### Theme Customization
 
 ```markdown
-Customize the [project] theme:
+Customize the [product] theme:
 1. Update color palette (primary, secondary, accent)
 2. Modify typography (font families, sizes, weights)
 3. Adjust spacing (margin, padding scale)
 4. Add dark mode variant
 5. Apply consistent BEM naming
 6. Update CSS variables in :root block
+7. Build with the product's asset pipeline
 ```
 
 ---
@@ -259,5 +304,5 @@ Customize the [project] theme:
 | Agents guide | [`agents.md`](agents.md) |
 | MCP integration | [`mcp-integration.md`](mcp-integration.md) |
 | Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |
-| Ceptor-AI prompts | [`../../libs/ceptor-ai/PROMPTS.md`](../../libs/ceptor-ai/PROMPTS.md) |
-| django-fusion prompts | [`../../libs/django-fusion/PROMPTS.md`](../../libs/django-fusion/PROMPTS.md) |
+| .agents/skills | [`.agents/skills/`](../../.agents/skills/) |
+| Project structure | [`../project-structure.md`](../project-structure.md) |

@@ -1,0 +1,19 @@
+{% load i18n wagtailcore_tags %}
+{# Rendered by {% top_menu parent=site_root calling_page=self %} (menu_tags). #}
+{# Emits <li> items; the caller owns the wrapping <ul class="nav">. #}
+{% for menuitem in menuitems %}
+{% with children=menuitem.get_children.live.in_menu %}
+<li class="nav-item{% if menuitem.pk == calling_page.pk %} active{% endif %}">
+    <a class="nav-link" href="{% pageurl menuitem %}">{{ menuitem.title }}</a>
+    {% if children %}
+    <ul class="dropdown-menu">
+        {% for child in children %}
+        <li>
+            <a class="dropdown-item" href="{% pageurl child %}">{{ child.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>
+{% endwith %}
+{% endfor %}

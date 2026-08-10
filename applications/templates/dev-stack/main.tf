@@ -4,6 +4,12 @@
 # Multi-service development workspace with:
 #   • code-server  (IDE)          → port 8086
 #   • Blinko       (AI notes)     → port 1111
+#
+# ⚠️  WORKSPACE NAME CONSTRAINT:
+# The Traefik dynamic configs (applications/proxy/traefik/dynamic/) hardcode
+# container names "coder-dev-code-server" and "coder-dev-blinko". This template
+# MUST be used with a Coder workspace named exactly "dev", otherwise external
+# routing via code.structa.cloud and blinko.structa.cloud will break.
 # =============================================================================
 # Docker images used:
 #   codercom/code-server:4.131.0    — Web-based VS Code IDE
@@ -55,6 +61,22 @@ variable "docker_network" {
   type        = string
   default     = "common"
   description = "Docker network name"
+}
+variable "postgres_host" {
+  type        = string
+  default     = "postgres"
+  description = "PostgreSQL host for Blinko database"
+}
+variable "postgres_port" {
+  type        = number
+  default     = 5432
+  description = "PostgreSQL port"
+}
+variable "postgres_password" {
+  type        = string
+  default     = "CTCreSearch0x@"
+  sensitive   = true
+  description = "PostgreSQL password for Blinko database"
 }
 variable "coder_host_ip" {
   type        = string
@@ -124,6 +146,8 @@ resource "docker_image" "blinko_image" {
 # ============================================================
 resource "docker_container" "code_server" {
   image    = docker_image.code_server.name
+  # Container name MUST resolve to "coder-dev-code-server" for Traefik routing.
+  # See workspace name constraint in the header block above.
   name     = "coder-${lower(data.coder_workspace.me.name)}-code-server"
   hostname = lower(data.coder_workspace.me.name)
 
@@ -169,13 +193,39 @@ resource "docker_container" "code_server" {
   command = [
     "/bin/sh", "-c",
     <<-EOT
-    apt-get update -qq && apt-get install -y -qq docker.io 2>/dev/null
+    set -e
+    apt-get update -qq && apt-get install -y -qq docker.io curl 2>/dev/null
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+    apt-get install -y -qq nodejs 2>/dev/null
+    npm install -g npm@latest 2>/dev/null
     curl -fsSL http://${var.coder_host_ip}:7080/bin/coder-linux-amd64 -o /tmp/coder-agent
     chmod +x /tmp/coder-agent
     /tmp/coder-agent agent &
     exec /usr/bin/entrypoint.sh --bind-addr 0.0.0.0:${var.code_server_port} --auth password .
     EOT
   ]
+
+  healthcheck {
+    test     = ["CMD-SHELL", "wget -q --spider http://localhost:${var.code_server_port}/ || exit 1"]
+    interval = "15s"
+    timeout  = "5s"
+    retries  = 3
+    start_period = "60s"
+  }
+
+  lifecycle {
+    precondition {
+      condition     = lower(data.coder_workspace.me.name) == "dev"
+      error_message = <<-EOT
+        This template requires the Coder workspace to be named "dev".
+        Traefik dynamic configs hardcode container names coder-dev-code-server
+        and coder-dev-blinko. A workspace named "${data.coder_workspace.me.name}"
+        would produce containers that Traefik cannot route to.
+
+        Action: delete this workspace and recreate it with the name "dev".
+      EOT
+    }
+  }
 
   must_run              = true
   destroy_grace_seconds = 10
@@ -186,13 +236,22 @@ resource "docker_container" "code_server" {
 # ============================================================
 resource "docker_container" "blinko" {
   image = docker_image.blinko_image.name
+  # Container name MUST resolve to "coder-dev-blinko" for Traefik routing.
+  # See workspace name constraint in the header block above.
   name  = "coder-${lower(data.coder_workspace.me.name)}-blinko"
 
   env = [
+    "NODE_ENV=production",
     "NEXTAUTH_SECRET=CTCreSearch0x@",
     "NEXTAUTH_URL=https://blinko.structa.cloud",
-    "DATABASE_URL=postgresql://structa:CTCreSearch0x@@postgres:5432/structa",
+    "NEXT_PUBLIC_BASE_URL=https://blinko.structa.cloud",
+    "DATABASE_URL=postgresql://structa:${replace(var.postgres_password, "@", "%40")}@${var.postgres_host}:${var.postgres_port}/blinko",
   ]
+
+  volumes {
+    host_path      = "${var.workspace_mount}/.blinko-data-${lower(data.coder_workspace.me.name)}"
+    container_path = "/app/.blinko"
+  }
 
   ports {
     internal = var.blinko_port
@@ -201,6 +260,14 @@ resource "docker_container" "blinko" {
 
   networks_advanced {
     name = var.docker_network
+  }
+
+  healthcheck {
+    test     = ["CMD-SHELL", "wget -q --spider http://localhost:${var.blinko_port}/ || exit 1"]
+    interval = "15s"
+    timeout  = "5s"
+    retries  = 3
+    start_period = "30s"
   }
 
   must_run              = true

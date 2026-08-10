@@ -7,7 +7,7 @@
 #                                 Rust/Diesel desktop POS (no sidecar)
 #   - formint/     Standard/Pro — merged package: Django Ninja backend +
 #                                 Robyn sidecar + Astro frontend + Tauri
-#   - formintB/    Cloud        — Django pos-cloud SaaS master (Unfold admin)
+#   - formint-cloud/ Cloud   — Django Formint Cloud SaaS master (Unfold admin)
 #                                 + formintA Community UI frontend
 #   - formintC/    pos-client   — Vue 3 + Tauri desktop client
 #   - packages/formints-client  — @formints/client TS SDK (editions consume it)
@@ -38,7 +38,7 @@
 .PHONY: standard-install standard-check standard-test standard-env standard-run \
         standard-stop standard-clean pro-install pro-check pro-test pro-env \
         pro-stop pro-clean
-# ── Cloud (formintB) ──
+# ── Cloud (formint-cloud) ──
 .PHONY: cloud-install cloud-check cloud-test cloud-dev-backend cloud-dev-api \
         cloud-dev-frontend cloud-stop cloud-clean
 # ── pos-client (formintC) ──
@@ -55,7 +55,7 @@
 # ── Edition directories (canonical) ─────────────────────────────────────────
 COMMUNITY  := formintA
 MERGED     := formint        # Standard + Pro share this codebase
-CLOUD      := formintB
+CLOUD      := formint-cloud
 CLIENT     := formintC
 SDK        := packages/formints-client
 COMMUNITY_VERSION := formint-community
@@ -72,7 +72,7 @@ help:                 ## Show this help menu
 	@echo '  Community (formintA)   — make community-{install,check,test,dev,clean}'
 	@echo '  Standard (formint)     — make standard-{install,check,test,env,stop,clean}'
 	@echo '  Pro (formint)          — make pro-{install,check,test,env,stop,clean}'
-	@echo '  Cloud (formintB)       — make cloud-{install,check,test,dev-backend,stop,clean}'
+	@echo '  @echo 'Cloud (formint-cloud) — make cloud-{install,check,test,dev-backend,stop,clean}''
 	@echo '  pos-client (formintC)  — make client-{install,dev,build,lint,test,clean}'
 	@echo '  SDK (@formints/client) — make sdk-{install,build,typecheck,test}'
 	@echo ''
@@ -112,7 +112,7 @@ help:                 ## Show this help menu
 	@echo ''
 	@echo '── Legacy aliases (kept for back-compat) ──────────────────'
 	@echo '  make mini-*       → community-* · make formint-* → standard/pro (formint)'
-	@echo '  make cloud-*      → cloud (formintB) · make server-* → sidecar tests'
+	@echo '@echo '  make cloud-*      → cloud (formint-cloud) · make server-* → sidecar tests''
 	@echo ''
 
 # ── Aggregates ─────────────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ standard-stop pro-stop:       ## Stop merged tmux env
 standard-clean pro-clean:     ## Clean merged artifacts
 	$(MAKE) -C $(MERGED) clean
 
-# ── Cloud — formintB ───────────────────────────────────────────────────────
+# ── Cloud — formint-cloud ───────────────────────────────────────────────────────
 
 cloud-install:        ## Install Cloud backend venv + frontend deps
 	$(MAKE) -C $(CLOUD) install

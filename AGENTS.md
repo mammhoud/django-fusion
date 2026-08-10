@@ -54,8 +54,8 @@ structa.cloud/
 - `syntara` is the current filesystem location for the product historically
   called Cypercloud. Use `projects/syntara/` in new paths. Preserve the
   `cypercloud` name only where a runtime alias or external contract requires it.
-- `formints/formintA`, `formintB`, `formintC`, and `formint` are distinct POS
-  packages. Do not infer that `formintA` and `formintB` share the same backend.
+- `formints/formintA`, `formint-cloud`, `formintC`, and `formint` are distinct POS
+  packages. Do not infer that `formintA` and `formint-cloud` share the same backend.
 - Older documentation may mention `projects/lms`, `projects/portfolio`,
   `projects/cypercloud`, or `projects/pos`. Treat those as legacy references;
   verify the current path in `projects/Makefile` and the relevant README before
@@ -164,11 +164,11 @@ home. Never edit generated output instead of its source.
 - Native desktop behavior belongs in that edition's `src-tauri/`.
 - Professional product APIs, models, fragments, and sync services belong in
   `projects/formints/formint/`.
-- Cloud-master behavior belongs in `projects/formints/formintB/`.
+- Cloud-master behavior belongs in `projects/formints/formint-cloud/`.
 - Shared POS E2E tests belong in `projects/formints/tests/pos-e2e/`.
 - Do not introduce a Python sidecar into `formintA`; it is the direct Rust/
   SQLite edition. Do not assume the cloud master still has a Robyn sidecar;
-  current formintB serves its API from Django.
+  current formint-cloud serves its API from Django.
 
 ## 5. Commands and validation
 
