@@ -34,12 +34,12 @@ NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
 # Override on the command line if your cache lives elsewhere, e.g.:
 #   make deploy-tasks TASKS_PROJECT_NAME=apps-tasks
 # -----------------------------------------------------------------
-TASKS_COMPOSE_FILE := applications/compose/docker-compose.tasks.yml
+TASKS_COMPOSE_FILE := applications/docker-compose.tasks.yml
 TASKS_PROJECT_NAME := compose
-# Default DB for the shared task stack. The shared worker is site-agnostic
-# (it routes tasks to per-site queues), but Django still needs a database.
-# Default to the ctc-research DB; override with make deploy-tasks TASKS_DB_NAME=db_structa
-TASKS_DB_NAME ?= db_ctc
+# Default DB for the shared task stack. The worker image is Precis-owned
+# (SOURCE_PATH=precis, DJANGO_SITE=lms-fusion), so default to the LMS database.
+# Override with make deploy-tasks TASKS_DB_NAME=db_ctc if a run targets another site.
+TASKS_DB_NAME ?= db_structa
 
 # -----------------------------------------------------------------
 # Deploy-order selector — CI/release scripts should set this explicitly:
@@ -73,8 +73,7 @@ DEPLOY_ORDER_PATTERNS := $(subst $(space),|,$(VALID_DEPLOY_ORDERS))
 PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
-	applications/compose/docker-compose.applications.yml \
-	applications/compose/docker-compose.tasks.yml
+	applications/docker-compose.tasks.yml
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.

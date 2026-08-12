@@ -55,7 +55,7 @@ default:
       cors_allowed_origins: [http://crm.structa.cloud, https://crm.structa.cloud, http://www.crm.structa.cloud, https://www.crm.structa.cloud]
 
     # Merged `www` sentinel site (from merge of projects/shared/ and
-    # projects/www/) — referenced by `applications/compose/docker-compose.tasks.yml`
+    # projects/www/) — referenced by `applications/docker-compose.tasks.yml`
     # so shared-worker + shared-scheduler can boot site-agnostically. The
     # tasks compose previously defaulted WEBSITE / DJANGO_SITE to `ctc-research`
     # as the only registered site that would survive the runtime site-tracker

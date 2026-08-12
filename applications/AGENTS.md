@@ -16,9 +16,7 @@ applications/
 │   ├── traefik/              # static/dynamic routers and middleware
 │   ├── nginx/                # shared static/media server
 │   └── scripts/              # certificate validation/backup/restore
-├── compose/                  # combined application/tasks Compose files
-│   ├── docker-compose.applications.yml
-│   └── docker-compose.tasks.yml
+├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose
 ├── scripts/                  # dev, staging, testing, production automation
 ├── agents/                   # FastAPI MCP/introspection server and agent skills
 ├── templates/                # infrastructure templates (e.g. Terraform)
@@ -50,8 +48,8 @@ probe, documentation, and CI path filters as applicable.
 - Database image/init/backup behavior belongs in `applications/databases/`.
 - Host routing, TLS, certificates, static/media serving, and proxy middleware
   belong in `applications/proxy/`.
-- Cross-service dependency order belongs in `applications/compose/` or the root
-  deployment Makefile, not in a product's application code.
+- Cross-service dependency order belongs in the root deployment Makefile, not
+  in a product's application code.
 - Product-specific environment defaults belong in the product Compose file or
   product `.env.example`; shared infrastructure names may be documented here.
 - Validation and maintenance scripts must be explicit about target paths and
@@ -82,7 +80,7 @@ Prefer no-mutation checks first:
 ```bash
 docker compose -f applications/databases/docker-compose.yml config -q
 docker compose -f applications/proxy/docker-compose.yml config -q
-docker compose -f applications/compose/docker-compose.applications.yml config -q
+docker compose -f applications/docker-compose.tasks.yml config -q
 python3 applications/proxy/scripts/validate-traefik-config.py
 make deploy-ci                 # preflight only; inspect recipe first
 ```

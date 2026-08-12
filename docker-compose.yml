@@ -1,80 +1,17 @@
 # ============================================================
-# Root Docker Compose – includes all sub‑compose files
-# All networks and volumes are defined here to avoid conflicts.
+# Root Docker Compose – thin aggregator over the sub-compose files
 # ============================================================
+# Networks and volumes are owned by the included files (databases, proxy),
+# where the shared networks are declared `external: true`. `make
+# create-networks` (invoked via `make deploy`'s preflight chain) creates
+# them before any service comes up, so this file must not re-declare them
+# with `driver: bridge` (that conflicts with the included declarations).
+#
+# The former `applications/compose/docker-compose.applications.yml` is gone:
+# per-site Django containers moved to project-level compose files
+# (projects/precis/docker-compose.yml, projects/landing-fusion/docker-compose.yml),
+# and Coder now lives in applications/databases/docker-compose.yml.
 
 include:
   - applications/databases/docker-compose.yml
   - applications/proxy/docker-compose.yml
-  - applications/compose/docker-compose.applications.yml
-  # - services/utilities/docker-compose.yml
-  # - services/ollama/docker-compose.yml
-  # - services/mailpit/docker-compose.yml
-
-
-# Global networks – all services will use these
-networks:
-  common:
-    name: common
-    driver: bridge
-  traefik-net:
-    name: traefik-net
-    driver: bridge
-  internal:
-    name: internal
-    driver: bridge
-    internal: true
-  utilities-net:
-    name: utilities-net
-    driver: bridge
-  warehouse-net:
-    name: warehouse-net
-    driver: bridge
-  ollama-net:
-    name: ollama-net
-    driver: bridge
-
-# Global volumes – shared across services
-volumes:
-  postgres_data:
-    name: postgres_data
-  redis_data:
-    name: redis_data
-  ctc-research-static:
-    name: ctc-research-static
-  ctc-research-media:
-    name: ctc-research-media
-  lms-static:
-    name: lms-static
-  lms-media:
-    name: lms-media
-  vresume-static:
-    name: vresume-static
-  vresume-media:
-    name: vresume-media
-  crm-static:
-    name: crm-static
-  crm-media:
-    name: crm-media
-  prometheus_data:
-    name: prometheus_data
-  loki_data:
-    name: loki_data
-  grafana_data:
-    name: grafana_data
-  mailpit-data:
-    name: mailpit-data
-  ollama:
-    name: ollama
-  open-webui:
-    name: open-webui
-  caddy_data:
-    name: caddy_data
-  caddy_config:
-    name: caddy_config
-  cypercloud-static:
-    name: cypercloud-static
-  cypercloud-media:
-    name: cypercloud-media
-  cypercloud-data:
-    name: cypercloud-data

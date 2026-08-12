@@ -8,7 +8,7 @@
 # queues here unless a separate project-owned worker image/database is wired.
 #
 # Usage:
-#   docker compose -f applications/compose/docker-compose.tasks.yml up -d shared-worker
+#   docker compose -f applications/docker-compose.tasks.yml up -d shared-worker
 # ============================================================
 
 networks:
