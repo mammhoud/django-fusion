@@ -30,7 +30,7 @@ await exportToPDF(sales, 'Sales Report', columns);
 await exportToExcel(sales, 'Sales Report', columns);
 ```
 
-Used by pages: `Reports.tsx`, `Analytics.tsx`, `Transactions.tsx`, `Payroll.tsx`, `TaxReports.tsx`.
+Used by pages: `Reports.tsx`, `Analytics.tsx`, `Transactions.tsx`, and `TaxReports.tsx`.
 
 ## invoicePdf.ts
 

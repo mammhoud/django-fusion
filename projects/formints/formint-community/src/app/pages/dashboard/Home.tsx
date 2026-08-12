@@ -2,7 +2,7 @@
 import { Ic } from '../../../lib/icons';
 import { useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { Settings, Sale, Ingredient, Employee, KitchenTicket } from '../../../types';
+import { Settings, Sale, Ingredient, Employee } from '../../../types';
 import PageLayout from '../../../components/layout/PageLayout';
 import StatCard from '../../../components/ui/StatCard';
 import { useCurrency } from '../../../contexts/CurrencyContext';
@@ -43,7 +43,6 @@ const CogIcon = Ic('hi:cog-6-tooth');
 const BanknotesIcon = Ic('hi:banknotes');
 const TableCellsIcon = Ic('hi:table-cells');
 const ExclamationTriangleIcon = Ic('hi:exclamation-triangle');
-const FireIcon = Ic('hi:fire');
 
 const MENU_CATEGORIES: MenuCategory[] = [
   { id: 'sales', label: 'nav.categorySales', icon: <ShoppingCartIcon className="w-6 h-6" />, color: 'text-success', chip: 'bg-success/10', gradient: 'from-success' },
@@ -58,7 +57,6 @@ const MENU_CATEGORIES: MenuCategory[] = [
 const MENU_ITEMS: Record<string, MenuItem[]> = {
   sales: [
     { label: 'nav.newSale', route: '/sale', icon: Ic('hi:shopping-cart'), colorClass: 'bg-success text-success-content' },
-    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('hi:fire'), colorClass: 'bg-success text-success-content' },
     { label: 'nav.transactions', route: '/transactions', icon: Ic('hi:clock'), colorClass: 'bg-success text-success-content' },
   ],
   products: [
@@ -71,7 +69,6 @@ const MENU_ITEMS: Record<string, MenuItem[]> = {
   staff: [
     { label: 'nav.employees', route: '/employees', icon: Ic('hi:users'), colorClass: 'bg-secondary text-secondary-content' },
     { label: 'nav.schedule', route: '/schedule', icon: Ic('hi:calendar-days'), colorClass: 'bg-secondary text-secondary-content' },
-    { label: 'nav.payroll', route: '/payroll', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary text-secondary-content' },
     { label: 'nav.customers', route: '/customers', icon: Ic('hi:user-group'), colorClass: 'bg-secondary text-secondary-content' },
     { label: 'nav.roles', route: '/roles', icon: Ic('hi:shield-check'), colorClass: 'bg-secondary text-secondary-content' },
   ],
@@ -116,14 +113,13 @@ export default function Home() {
 
   // ── Data fetching via shared useApiQueries hook ──
   const {
-    data: [settingsRes, salesRes, ingredientsRes, employeesRes, kitchenTicketsRes],
+    data: [settingsRes, salesRes, ingredientsRes, employeesRes],
     isLoading: kpisLoading,
   } = useApiQueries([
     { command: 'get_settings' },
     { command: 'get_sales' },
     { command: 'get_ingredients', params: { includeInactive: false } },
     { command: 'get_employees', params: { includeInactive: true } },
-    { command: 'get_kitchen_tickets', params: { status: null } },
   ]);
 
   const settings = (settingsRes as Settings | undefined) ?? null;
@@ -135,19 +131,17 @@ export default function Home() {
 
   // ── Derived KPIs from fetched data (useMemo for stability) ──
   const kpis = useMemo(() => {
-    if (!salesRes || !ingredientsRes || !employeesRes || !kitchenTicketsRes) return null;
+    if (!salesRes || !ingredientsRes || !employeesRes) return null;
     const s = salesRes as Sale[];
     const i = ingredientsRes as Ingredient[];
     const e = employeesRes as Employee[];
-    const k = kitchenTicketsRes as KitchenTicket[];
     const pendingStatuses = ['pending', 'active', 'in-progress'];
     return {
       openTables: s.filter(sale => sale.order_type === 'dine-in' && pendingStatuses.includes(sale.status)).length,
       lowStockCount: i.filter(ing => ing.current_quantity <= ing.reorder_level).length,
       activeEmployees: e.filter(emp => emp.is_active).length,
-      activeKitchenTickets: k.filter(t => pendingStatuses.includes(t.status)).length,
     };
-  }, [salesRes, ingredientsRes, employeesRes, kitchenTicketsRes]);
+  }, [salesRes, ingredientsRes, employeesRes]);
 
   // ── Sparkline data for StatCard charts ──
   const sparklines = useMemo(() => {
@@ -295,8 +289,8 @@ export default function Home() {
                 title={t('home.staff', 'Active Staff')}
                 value={kpis?.activeEmployees ?? 0}
                 desc={kpis?.activeEmployees === 1
-                  ? `1 ${t('home.employee', 'employee')} ${t('home.onPayroll', 'on payroll')}`
-                  : `${kpis?.activeEmployees ?? 0} ${t('home.employees', 'employees')} ${t('home.onPayroll', 'on payroll')}`}
+                  ? `1 ${t('home.employee', 'employee')}`
+                  : `${kpis?.activeEmployees ?? 0} ${t('home.employees', 'employees')}`}
                 icon={<UsersIcon className="w-6 h-6" />}
                 color="secondary"
                 compact
@@ -312,17 +306,6 @@ export default function Home() {
                 color={kpis?.lowStockCount && kpis.lowStockCount > 0 ? 'error' : 'success'}
                 compact
                 onClick={() => handleNavigation('/inventory')}
-              />
-              <StatCard
-                title={t('home.kitchenTickets', 'Kitchen Tickets')}
-                value={kpis?.activeKitchenTickets ?? 0}
-                desc={kpis?.activeKitchenTickets === 0
-                  ? t('home.noActiveOrders', 'No active orders')
-                  : `${kpis?.activeKitchenTickets} ${kpis?.activeKitchenTickets === 1 ? t('home.ticket', 'ticket') : t('home.tickets', 'tickets')} ${t('home.inProgress', 'in progress')}`}
-                icon={<FireIcon className="w-6 h-6" />}
-                color={kpis?.activeKitchenTickets && kpis.activeKitchenTickets > 0 ? 'warning' : 'success'}
-                compact
-                onClick={() => handleNavigation('/kitchen')}
               />
             </>
           )}

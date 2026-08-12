@@ -31,9 +31,11 @@ try:
     )
 except ImportError:  # pragma: no cover - older django-fusion
     fusion_introspection_urls = None
-from apps.core.routes import site
-from apps.pages.pages import landing_api
 from django_fusion.designer import urls as fusion_designer_urls
+
+from apps.core.routes import site
+from apps.pages.blog import api as blog_api
+from apps.pages.pages import landing_api
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
@@ -113,14 +115,21 @@ except Exception:
 # ── Health & admin ───────────────────────────────────────────────────────────
 urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
+    # Stable Fusion health contract used by deployment smoke checks. Keep the
+    # existing /api/health/ endpoint for API clients and expose this explicit
+    # alias so proxy-level checks do not depend on the API namespace layout.
+    path("api/fusion/health", HealthCheckView.as_view(), name="fusion-health-no-slash"),
+    path("api/fusion/health/", HealthCheckView.as_view(), name="fusion-health"),
     path("fusion/mcp/designer/", include(fusion_designer_urls)),
     # Astro/AHA landing contract. The existing LMS `/api/` contract remains
     # untouched; these `/apis/` and `/fragment/` routes are additive.
     path("apis/render-mode/", landing_api.render_mode_api, name="landing-render-mode"),
     path("apis/site/settings/", landing_api.site_settings_api, name="landing-site-settings"),
     path("apis/navigation/", landing_api.navigation_api, name="landing-navigation"),
+    path("apis/content/languages/", landing_api.content_languages_api, name="landing-content-languages"),
     path("apis/contact/", landing_api.contact_api, name="landing-contact"),
     path("apis/auth/status/", landing_api.auth_status_api, name="landing-auth-status"),
+    path("apis/blog/<slug:slug>/comments/", blog_api.blog_comments_api, name="landing-blog-comments"),
     path("apis/pages/", landing_api.page_list_api, name="landing-page-list"),
     path("apis/pages/<str:slug>/", landing_api.page_data_api, name="landing-page-data"),
     path("apis/assets/", landing_api.assets_api, name="landing-assets"),

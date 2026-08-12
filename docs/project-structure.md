@@ -299,7 +299,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   │   ├── commands/                      #     Agent commands
 │   │   └── skills/                        #     Operational skills
 │   ├── templates/                         #   Coder/Terraform templates
-│   │   ├── dev-stack/main.tf              #     Code-server + Blinko workspace
+│   │   ├── dev-stack/main.tf              #     Code-server + FileGator workspace
 │   │   └── website/main.tf                #     Website workspace
 │   └── scripts/                           #   Automation scripts
 │

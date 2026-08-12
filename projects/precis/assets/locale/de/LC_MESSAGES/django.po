@@ -15273,3 +15273,16 @@ msgstr "Alle Rechte vorbehalten"
 #: theme/partials/auth_buttons.html:72
 msgid "Register"
 msgstr "Registrieren"
+
+#: apps/templates/home/main.html
+msgid "Courses with visible progress"
+msgstr "Kurse mit sichtbarem Fortschritt"
+
+#: apps/templates/home/main.html
+msgid "Follow serious learning paths with clear content, progress, and a next useful action."
+msgstr "Folgen Sie ernsthaften Lernpfaden mit klarem Inhalt, sichtbarem Fortschritt und einem nächsten nützlichen Schritt."
+
+#: apps/templates/home/main.html
+msgid "Open the catalog"
+msgstr "Katalog öffnen"
+

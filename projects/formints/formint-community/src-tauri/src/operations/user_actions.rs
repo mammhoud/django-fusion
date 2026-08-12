@@ -86,7 +86,6 @@ mod tests {
         insert_action(&db_path, "add_employee", "employee", 1);
         insert_action(&db_path, "update_employee", "employee", 1);
         insert_action(&db_path, "deactivate_employee", "employee", 2);
-        insert_action(&db_path, "generate_payrolls", "payroll", 0);
 
         let emp1 = get_user_actions_for_entity(&db_path, "employee", 1, None).expect("query should succeed");
         assert_eq!(emp1.len(), 2, "employee 1 has exactly two actions");
@@ -95,9 +94,6 @@ mod tests {
         let emp2 = get_user_actions_for_entity(&db_path, "employee", 2, None).expect("query should succeed");
         assert_eq!(emp2.len(), 1);
         assert_eq!(emp2[0].action, "deactivate_employee");
-
-        let payroll = get_user_actions_for_entity(&db_path, "payroll", 0, None).expect("query should succeed");
-        assert_eq!(payroll.len(), 1);
 
         // Newest first ordering.
         assert_eq!(emp1[0].action, "update_employee");

@@ -2,10 +2,26 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
 
 import alpinejs from '@astrojs/alpinejs';
 
-const siteUrl = process.env.PUBLIC_SITE_URL || 'https://ctc-research.com';
+// ── Dependency-free .env loader ─────────────────────────────────────────────
+// Shell env wins, then .env.local, then .env (see .env.example).
+const __env = {};
+for (const __f of ['.env.local', '.env']) {
+  if (!existsSync(__f)) continue;
+  for (const __line of readFileSync(__f, 'utf8').split('\n')) {
+    const __m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(__line);
+    if (__m && !(__m[1] in __env)) __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, '');
+  }
+}
+const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
+
+/** Dev server port (default 3002). */
+const PORT = Number(envVal('PORT', 3002));
+/** Canonical site URL (SEO/sitemap). */
+const siteUrl = envVal('PUBLIC_SITE_URL', 'https://ctc-research.com');
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,6 +29,9 @@ export default defineConfig({
   // Switch to `output: 'server'` + @astrojs/node when porting
   // CMS-backed dynamic pages (see ASTRO_MIGRATION_PLAN §7).
   output: 'static',
+  // Emit directory-style routes so links such as /products/ resolve directly
+  // through static hosts and Django's APPEND_SLASH contract.
+  trailingSlash: 'always',
   site: siteUrl,
   integrations: [
     mdx(),
@@ -45,5 +64,6 @@ export default defineConfig({
       tailwindcss(),
     ],
   },
-  server: { port: 3002 },
+  server: { port: PORT, host: true },
+  preview: { port: PORT },
 });

@@ -160,7 +160,7 @@ class OperationsApplication(Application):
             NavRoute("Delivery Types", "/ops/delivery-types/", "delivery_dining", show_in_nav=True),
             NavRoute("Delivery Zones", "/ops/delivery-zones/", "map", show_in_nav=True),
             NavRoute("Shifts", "/ops/shifts/", "schedule", show_in_nav=True),
-            NavRoute("Sync", "/ops/sync/", "sync", show_in_nav=False),
+            NavRoute("Sync Center", "/ops/sync/", "sync", show_in_nav=True, badge="NEW"),
             NavRoute("Nodes", "/ops/nodes/", "hub", show_in_nav=False),
         ]
 

@@ -2,6 +2,7 @@
 from django.test import TestCase
 from wagtail.models import Page, Site
 
+from apps.pages.management.commands.seed_pages import Command as SeedCommand
 from apps.pages.models import (
     AboutPage,
     BlogPage,
@@ -20,7 +21,6 @@ from apps.pages.models import (
     StartupPage,
     TeamPage,
 )
-from apps.pages.management.commands.seed_pages import Command as SeedCommand
 
 
 class LandingPagesTestCase(TestCase):
@@ -56,7 +56,8 @@ class LandingPagesTestCase(TestCase):
     def test_courses_api_serves_published_home_catalog(self):
         """The homepage course cards come from the published learning catalog."""
         from django.contrib.auth import get_user_model
-        from apps.learning.models import Course, Module, Lesson
+
+        from apps.learning.models import Course, Lesson, Module
 
         instructor = get_user_model().objects.create_user(
             username="course-instructor",
@@ -87,19 +88,36 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(courses[0]["href"], published.get_absolute_url())
         self.assertTrue(courses[0]["is_featured"])
 
+        # The home entry no longer carries a course preview — the dedicated
+        # /learning/ catalog page is the single course destination (a preview
+        # here would duplicate the same section on the live home page).
         home = self.client.get("/")
         self.assertEqual(home.status_code, 200)
-        self.assertContains(home, "Learn by shipping.")
-        self.assertContains(home, "Build a calm product")
-        self.assertContains(home, "/learning/")
+        self.assertNotContains(home, "Learn by shipping.")
+        self.assertNotContains(home, "LEARNING / PUBLIC CATALOG")
+        self.assertNotContains(home, "Build a calm product")
         self.assertNotContains(home, "This page is the framework")
         self.assertNotContains(home, "No React, no Vue, no Svelte")
 
     def test_home_is_focused_entry(self):
-        """Home renders hero + course preview + CTA; the section stack stays on About."""
+        """Home renders hero + CTA + ONE learning teaser; the full course
+        preview and section stack stay off the entry.
+
+        The full course preview was removed (2026-08-12): the /learning/
+        catalog page is the single course destination. The home carries a
+        single ``[ LEARNING / PREVIEW ]`` link card instead — distinct
+        kicker, no course grid — so the learning section can never appear
+        twice on the page (static Astro road + Django fragment road).
+        """
         response = self.client.get("/")
         self.assertIn(b"Digital products, shipped as", response.content)
         self.assertIn(b"A useful first release beats a noisy roadmap", response.content)
+        # Exactly one teaser card, pointing at the dedicated catalog.
+        self.assertEqual(response.content.count(b"[ LEARNING / PREVIEW ]"), 1)
+        self.assertIn(b'class="card learning-teaser reveal"', response.content)
+        self.assertIn(b'href="/learning/"', response.content)
+        self.assertNotIn(b"Learn by shipping.", response.content)
+        self.assertNotIn(b"LEARNING / PUBLIC CATALOG", response.content)
         for moved in (
             b"Built for steady growth",
             b"The details that make a service usable",
@@ -108,6 +126,12 @@ class LandingPagesTestCase(TestCase):
             b"Frequently asked questions",
         ):
             self.assertNotIn(moved, response.content)
+
+        # The data-API road carries the same single teaser so the client
+        # renderer (alpine.js renderDataRoad) draws exactly one card.
+        home_data = self.client.get("/apis/pages/home/").json()
+        self.assertEqual(home_data["learning_teaser"]["kicker"], "[ LEARNING / PREVIEW ]")
+        self.assertEqual(home_data["learning_teaser"]["href"], "/learning/")
 
     def test_about_carries_full_document(self):
         """About renders the whole stack: mission, stats, founder features, pricing, testimonials, cta.
@@ -242,9 +266,12 @@ class LandingPagesTestCase(TestCase):
         self.assertNotIn(b"<html", response.content)
         self.assertNotIn(b"site-header", response.content)
 
-    def test_home_fragment_includes_course_preview(self):
-        """The direct HTMX home fragment carries the same course preview."""
+    def test_home_fragment_has_no_course_preview(self):
+        """The direct HTMX home fragment carries the ONE learning teaser card
+        (same partial as the full page, so plain loads and HTMX swaps can
+        never drift) and no duplicate course-preview grid."""
         from django.contrib.auth import get_user_model
+
         from apps.learning.models import Course
 
         instructor = get_user_model().objects.create_user(
@@ -260,8 +287,11 @@ class LandingPagesTestCase(TestCase):
         )
         response = self.client.get("/fragment/pages/home/", HTTP_HX_REQUEST="true")
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Learn by shipping.")
-        self.assertContains(response, "Build a calm product")
+        self.assertEqual(response.content.count(b"[ LEARNING / PREVIEW ]"), 1)
+        self.assertIn(b'href="/learning/"', response.content)
+        self.assertNotContains(response, "Learn by shipping.")
+        self.assertNotContains(response, "LEARNING / PUBLIC CATALOG")
+        self.assertNotContains(response, "Build a calm product")
         self.assertNotContains(response, "This page is the framework")
 
     def test_direct_page_fragment_api_is_content_only(self):
@@ -417,7 +447,6 @@ class LandingPagesTestCase(TestCase):
     def test_allauth_login_flow(self):
         """A real login round-trip: create a user, POST credentials, get a session."""
         from allauth.account.models import EmailAddress
-
         from django.contrib.auth import get_user_model
 
         User = get_user_model()
@@ -615,9 +644,11 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(SiteLanguage.objects.count(), 7)
 
         # Re-running with --force refreshes metadata without adding rows.
-        command = SeedCommand()
-        command.force = True
-        command.handle()
+        # (``handle()`` resets ``self.force`` from the CLI options, so the
+        # real --force path is exercised via call_command.)
+        from django.core.management import call_command
+
+        call_command("seed_pages", force=True)
         self.assertEqual(SiteLanguage.objects.count(), 7)
         self.assertEqual(SiteLanguage.objects.get(code="de").flag, "🇩🇪")
 
@@ -680,6 +711,7 @@ class LandingPagesTestCase(TestCase):
     def test_translation_model_is_unique_per_page_and_language(self):
         """Wagtail editors cannot accidentally create duplicate locale records."""
         from django.db import IntegrityError
+
         from apps.content.models.translations import PageTranslation
 
         page = AboutPage.objects.first()
@@ -693,7 +725,7 @@ class LandingPagesTestCase(TestCase):
         from django.conf import settings as django_settings
 
         # Option A — “data APIs” (default): the client renders from /apis/* JSON.
-        self.assertFalse(django_settings.FUSION_RENDER_FIRST_DEFAULT)
+        self.assertFalse(django_settings.FUSION_RENDER_FIRST)
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Digital products, shipped as", response.content)
@@ -721,7 +753,7 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.json()["mode"], "fusion-render")
 
         # The django-fusion setting drives the mode, and the header overrides it.
-        with self.settings(FUSION_RENDER_FIRST_DEFAULT=True):
+        with self.settings(FUSION_RENDER_FIRST=True):
             response = self.client.get("/apis/render-mode/")
             self.assertEqual(response.json()["mode"], "fusion-render")
             response = self.client.get(
@@ -1044,6 +1076,7 @@ class LandingPagesTestCase(TestCase):
     def test_preview_media_block_validates_kind_and_poster(self):
         """Preview media rejects mismatched extensions and invalid posters."""
         from django.core.exceptions import ValidationError
+
         from apps.content.blocks import EditionPreviewImageBlock
 
         block = EditionPreviewImageBlock()
@@ -1059,6 +1092,7 @@ class LandingPagesTestCase(TestCase):
     def test_scoped_product_refresh_preserves_editor_content(self):
         """Refreshing captures updates only media/version and publishes a live revision."""
         import json
+
         from apps.pages.management.commands.seed_pages import Command
 
         product = ProductPage.objects.get(slug="formint-pos")
@@ -1097,6 +1131,97 @@ class LandingPagesTestCase(TestCase):
         from django.core.management.base import CommandError
         with self.assertRaises(CommandError):
             command._refresh_product("does-not-exist")
+
+    def test_seed_clears_legacy_product_snippets_and_refreshes_catalog_faq(self):
+        """Stale product rows re-seed cleanly and the catalog FAQ stays current.
+
+        ProductPage.clean() forbids non-empty ``snippets`` (code sections are
+        authored only on blog posts) and the page API strips them from product
+        payloads, but older seed revisions persisted snippet blocks into
+        product rows. Re-running the seed must clear that dead data instead of
+        raising ValidationError inside save() → full_clean().
+        """
+        from django.core.exceptions import ValidationError
+
+        from apps.pages.management.commands.seed_pages import Command
+
+        # Simulate a stale row from an older seed revision.
+        product = ProductPage.objects.get(slug="formint-pos")
+        product.snippets = [("snippets", {"title": "Legacy", "snippets": []})]
+        product.save(clean=False)
+        self.assertTrue(product.snippets)
+        # A plain save now fails the model contract — this was the exact
+        # crash every ``seed_pages --force`` hit on upgraded databases.
+        with self.assertRaises(ValidationError):
+            product.save()
+
+        # The seed's backfill path clears the dead field and saves cleanly.
+        command = Command()
+        command.force = False
+        changed = command._backfill_empty_fields(
+            ProductPage.objects.get(slug="formint-pos"),
+            {"title": product.title, "category": "application"},
+        )
+        self.assertTrue(changed)
+        self.assertFalse(ProductPage.objects.get(slug="formint-pos").snippets)
+
+        # A full re-seed also survives the same stale state on another page.
+        product = ProductPage.objects.get(slug="lms")
+        product.snippets = [("snippets", {"title": "Legacy", "snippets": []})]
+        product.save(clean=False)
+        SeedCommand().handle()
+        self.assertFalse(ProductPage.objects.get(slug="lms").snippets)
+
+        # The catalog FAQ refreshes with the current library list — removed
+        # product names (django-bolt) never leak into the data road payload
+        # (the rendered page intentionally hides the FAQ section, so the API
+        # is the authoritative surface the Astro build consumes).
+        catalog = self.client.get("/apis/pages/products/")
+        self.assertEqual(catalog.status_code, 200)
+        self.assertNotIn(b"django-bolt", catalog.content)
+        self.assertIn(b"Formints POS core", catalog.content)
+
+        # Directly exercise the stale-FAQ upgrade path: an upgraded DB holds
+        # the old answer naming the removed django-bolt; a --force re-seed
+        # must refresh it from DEFAULT_FAQ_SECTIONS. Use the same plain tuple
+        # form the seed assigns, so the field round-trips exactly like seeded
+        # data (the FAQ is served on the data road /apis/* JSON — the
+        # rendered HTML page deliberately hides the FAQ section).
+        products = ProductsPage.objects.first()
+        products.faq = [
+            (
+                "faq",
+                {
+                    "eyebrow": "FAQ",
+                    "title": "Frequently asked questions",
+                    "items": [
+                        {
+                            "question": "Are the libraries free to use?",
+                            "answer": (
+                                "Yes. django-fusion, ceptor-ai, and django-bolt "
+                                "are all open-source on GitHub under permissive "
+                                "licenses."
+                            ),
+                        }
+                    ],
+                },
+            )
+        ]
+        products.save(clean=False)
+        self.assertIn(
+            b"django-bolt",
+            self.client.get("/apis/pages/products/").content,
+        )
+
+        # ``handle()`` resets ``self.force`` from the CLI options, so the
+        # real --force path is exercised via call_command.
+        from django.core.management import call_command
+
+        call_command("seed_pages", force=True)
+        refreshed = self.client.get("/apis/pages/products/")
+        self.assertEqual(refreshed.status_code, 200)
+        self.assertNotIn(b"django-bolt", refreshed.content)
+        self.assertIn(b"Formints POS core", refreshed.content)
 
     def test_static_preview_asset_is_registered_by_django(self):
         """Django's staticfiles finder registers organized preview captures.
@@ -1550,7 +1675,6 @@ class LandingPagesTestCase(TestCase):
         from types import SimpleNamespace
 
         from allauth.account.models import EmailAddress
-
         from django.contrib.auth import get_user_model
         from django.core import mail
         from django.template.loader import render_to_string
@@ -1848,6 +1972,7 @@ class LandingPagesTestCase(TestCase):
         once contained legacy snippets.
         """
         from django.core.exceptions import ValidationError
+
         from apps.pages.models import BlogPostPage, ProductPage
 
         for slug in ("formint-pos", "lms", "cms"):
@@ -1878,6 +2003,7 @@ class LandingPagesTestCase(TestCase):
         """Comments: public GET of approved only, POST gated on auth, and the
         moderation flag hides comments from every road."""
         from django.contrib.auth import get_user_model
+
         from apps.content.models.comments import PostComment
 
         post = BlogPostPage.objects.get(slug="why-landing-pages-as-documents")
@@ -2100,11 +2226,10 @@ class NewsletterEmailAndSyncTestCase(TestCase):
     def test_snippet_admin_lists_subscribers_with_broadcast_button(self):
         """The snippet index renders the subscriber list + the broadcast header button."""
         from django.contrib.auth import get_user_model
+        from django.contrib.auth.models import Permission
         from django.urls import reverse
 
         from apps.content.models.newsletter import NewsletterSubscriber
-
-        from django.contrib.auth.models import Permission
 
         NewsletterSubscriber.objects.create(email="listed@structa.cloud")
         staff = get_user_model().objects.create_user(
@@ -2186,7 +2311,6 @@ class MfaAuthTestCase(TestCase):
     def _create_user(self, email, verified=True):
         """Create a user with an optional verified primary email address."""
         from allauth.account.models import EmailAddress
-
         from django.contrib.auth import get_user_model
 
         user = get_user_model().objects.create_user(email, email, "pass-1234")

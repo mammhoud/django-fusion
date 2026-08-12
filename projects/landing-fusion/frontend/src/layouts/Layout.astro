@@ -6,6 +6,9 @@ import LoginModal from '@/components/ui/LoginModal.astro';
 import BrandModal from '@/components/ui/BrandModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage } from '@/lib/site';
 import { LANG_META, T } from '@/lib/translations';
+import { cachedAssets } from '@/lib/api';
+import AssetPreload from '@/components/ui/AssetPreload.astro';
+import SkeletonBridge from '@/components/ui/SkeletonBridge.astro';
 import '../styles/globals.css';
 
 // Self-hosted fonts (no Google Fonts <link> in production). The family names
@@ -53,11 +56,47 @@ const {
   pageSlug = '',
 } = Astro.props;
 
+let assetManifest: Awaited<ReturnType<typeof cachedAssets>> | null = null;
+try {
+  assetManifest = await cachedAssets();
+} catch {
+  // The document remains renderable when the backend asset API is unavailable.
+}
+
 const siteName = siteSettings?.site_name || fallbackSiteName;
 const pageTitle = title && title !== siteName ? `${title} \u00b7 ${siteName}` : siteName;
 const canonical = new URL(Astro.url.pathname, 'https://structa.cloud').href;
 
+// Single source of truth for the two content-delivery roads: the effective
+// render mode (server-rendered components vs data APIs) comes from the assets
+// manifest (fusion_render_first) served by GET /apis/assets/, and the merged
+// manifest itself carries the CSS/fonts/scripts AssetPreload preloads. Both
+// are bridged into Redux so the whole app reads one config source. The
+// content pointers describe the current page on each road.
+const contentSlug = pageSlug || 'home';
+const renderMode = assetManifest
+  ? {
+      fusion_render_first: assetManifest.fusion_render_first,
+      mode: (assetManifest.fusion_render_first ? 'fusion-render' : 'data-api') as 'fusion-render' | 'data-api',
+      content: { html: '/', data: `/apis/pages/${contentSlug}/` },
+    }
+  : null;
+
 const translationsJson = JSON.stringify(T);
+
+// The SSR bridge payload. Serialized here (frontmatter) and injected with
+// set:html below: Astro never evaluates template expressions inside inline
+// or module script tags, so the JSON must be pre-built and escaped so that
+// embedded closing-tag sequences in page content cannot break the script.
+const bridgeJson = JSON.stringify({
+  siteSettings: siteSettings ?? null,
+  navItems: navItems ?? [],
+  pageData: pageData ?? null,
+  pageSlug: pageSlug ?? '',
+  renderMode: renderMode ?? null,
+  assets: assetManifest ?? null,
+}).replace(/</g, '\\u003c');
+
 void THEME_STORAGE_KEY;
 ---
 
@@ -101,6 +140,7 @@ void THEME_STORAGE_KEY;
     </script>
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <AssetPreload manifest={assetManifest} />
 
     <!-- FOUC-free language + direction. The LanguageSwitcher Alpine component
          reads the same ``fusion-lang`` localStorage key and updates the DOM,
@@ -208,143 +248,19 @@ void THEME_STORAGE_KEY;
     <LoginModal />
     <BrandModal />
 
-    <!-- SSR data bridge → Redux initial state (site + page) -->
-    <script type="application/json" id="fusion-site-data">
-      {JSON.stringify({ siteSettings: siteSettings ?? null, navItems: navItems ?? [], pageData: pageData ?? null, pageSlug: pageSlug ?? '' })}
-    </script>
+    <!-- SSR data bridge → Redux initial state (site + page + config).
+         Injected via set:html so Astro emits the pre-serialized JSON verbatim
+         (template expressions are never evaluated inside <script> tags). -->
+    <Fragment set:html={`<script type="application/json" id="fusion-site-data">${bridgeJson}</script>`} />
 
-    <!-- Redux store + toast + hydration guard — replaces Alpine toast store.
+    <!-- Skeleton → hydration pipeline: renders backend-driven skeletons,
+         lazy-loads per-component JS/CSS, and swaps on htmx:afterSettle.
+         Degrades gracefully when the Django road's globals are absent. -->
+    <SkeletonBridge />
 
-         NOTE: The slice definitions below are the canonical runtime source.
-         The files in lib/store/ (pageSlice.ts, siteSlice.ts, toastSlice.ts)
-         serve as type-safe reference copies for TypeScript imports.
-         Keep both in sync when changing reducer logic. -->
+    <!-- Typed Redux runtime — the single client store for SSR site/page data. -->
     <script>
-      import { configureStore, createSlice } from '@reduxjs/toolkit';
-
-      // ── Read SSR data from JSON bridge ─────────────────────────────────
-      let ssrSiteSettings = null;
-      let ssrNavItems = [];
-      let ssrPageData = null;
-      let ssrPageSlug = '';
-      try {
-        const el = document.getElementById('fusion-site-data');
-        if (el) {
-          const data = JSON.parse(el.textContent || '{}');
-          ssrSiteSettings = data.siteSettings;
-          ssrNavItems = data.navItems;
-          ssrPageData = data.pageData;
-          ssrPageSlug = data.pageSlug;
-        }
-      } catch { /* use defaults */ }
-
-      // ── Inline Redux store with toast + site slices ────────────────────
-      const toastSlice = createSlice({
-        name: 'toast',
-        initialState: { visible: false, message: '', variant: 'success' as string },
-        reducers: {
-          showToast(state, action) {
-            state.message = action.payload.message;
-            state.variant = action.payload.variant || 'success';
-            state.visible = true;
-          },
-          hideToast(state) { state.visible = false; },
-        },
-      });
-
-      const siteSlice = createSlice({
-        name: 'site',
-        initialState: {
-          theme: 'light' as string,
-          loaded: !!ssrSiteSettings,
-          settings: ssrSiteSettings,
-          navigation: ssrNavItems,
-          error: null as string | null,
-        },
-        reducers: {
-          setTheme(state, action) {
-            state.theme = action.payload;
-            try { localStorage.setItem('fusion-theme', action.payload); } catch { /* noop */ }
-          },
-          setLoaded(state) { state.loaded = true; },
-          setSettings(state, action) { state.settings = action.payload; },
-          setNavigation(state, action) { state.navigation = action.payload; },
-          setError(state, action) { state.error = action.payload; },
-        },
-      });
-
-      const pageSlice = createSlice({
-        name: 'page',
-        initialState: {
-          current: ssrPageData,
-          cache: (ssrPageData && ssrPageSlug) ? { [ssrPageSlug]: ssrPageData } : {},
-          loading: false,
-          error: null as string | null,
-        },
-        reducers: {
-          setPageData(state, action) {
-            const { slug, data } = action.payload;
-            state.current = data;
-            state.cache[slug] = data;
-            state.loading = false; state.error = null;
-          },
-          setPageLoading(state) { state.loading = true; },
-          setPageError(state, action) { state.error = action.payload; state.loading = false; },
-        },
-      });
-
-      const { showToast, hideToast } = toastSlice.actions;
-      const { setTheme, setLoaded, setSettings, setNavigation, setError } = siteSlice.actions;
-
-      const reduxStore = configureStore({
-        reducer: { toast: toastSlice.reducer, site: siteSlice.reducer, page: pageSlice.reducer },
-      });
-
-      // Expose globally for components (Toast.astro, ThemeToggle, HTMX error handler)
-      (window as any).__reduxStore = reduxStore;
-      (window as any).__showToast = (message: string, variant = 'success') => {
-        reduxStore.dispatch(showToast({ message, variant }));
-        setTimeout(() => reduxStore.dispatch(hideToast()), 3500);
-      };
-
-      // ── Theme sync: Redux → DOM ───────────────────────────────────────
-      reduxStore.subscribe(() => {
-        const { site: siteState } = reduxStore.getState();
-        const root = document.documentElement;
-        const isDark = siteState.theme === 'dark';
-        root.classList.toggle('dark', isDark);
-        root.classList.toggle('light', !isDark);
-        const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', isDark ? '#131312' : '#fcfcfa');
-      });
-
-      // ── Hydration skeleton removal ────────────────────────────────────
-      document.addEventListener('alpine:initialized', () => {
-        document.body.classList.remove('is-hydrating');
-        reduxStore.dispatch(setLoaded());
-      });
-      setTimeout(() => {
-        document.body.classList.remove('is-hydrating');
-        reduxStore.dispatch(setLoaded());
-      }, 3000);
-    </script>
-
-    <script is:inline define:vars={{ translationsJson }}>
-      (function () {
-        var dict = JSON.parse(translationsJson);
-
-        function updateLanguage(code) {
-          var values = Object.fromEntries(Object.entries(dict).map(function (entry) { return [entry[0], entry[1][code] || entry[1].en || entry[0]]; }));
-          document.querySelectorAll('[data-i18n]').forEach(function (node) {
-            var key = node.getAttribute('data-i18n');
-            if (key && values[key]) node.textContent = values[key];
-          });
-        }
-        var stored = null;
-        try { stored = localStorage.getItem('fusion-lang'); } catch (e) {}
-        updateLanguage(stored || 'en');
-        window.addEventListener('fusion:lang-changed', function (event) { updateLanguage(event.detail.code); });
-      })();
+      import '../lib/store/init';
     </script>
 
     <!-- Fusion modular bundle — scroll reveal, smooth anchors, fragment

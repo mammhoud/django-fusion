@@ -708,6 +708,30 @@
   }
   .edition-chip strong { color: hsl(var(--fu-link)); font-weight: 600; }
 
+  /* Catalog language filter chips (product grid filter bar). */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-card));
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: hsl(var(--fu-muted));
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .chip:hover { border-color: hsl(var(--fu-link) / 0.5); color: hsl(var(--fu-ink)); }
+  .chip-active {
+    border-color: hsl(var(--fu-link));
+    background: hsl(var(--fu-link) / 0.1);
+    color: hsl(var(--fu-link));
+  }
+
   /* Product status badge — amber caution for development products. */
   .badge-dev {
     display: inline-flex;

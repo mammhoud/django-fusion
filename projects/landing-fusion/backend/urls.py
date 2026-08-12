@@ -71,6 +71,7 @@ urlpatterns = [
     path("apis/content/languages/", pages_api.content_languages_api, name="content_languages_api"),
     path("apis/contact/", pages_api.contact_api, name="contact_api"),
     path("apis/pricing/", pages_api.pricing_api, name="pricing_api"),
+    path("apis/products/", pages_api.products_api, name="products_api"),
     path("apis/courses/", pages_api.courses_api, name="courses_api"),
     path("apis/brand/", pages_api.brand_api, name="brand_api"),
     path("apis/pages/", pages_api.page_list_api, name="page_list_api"),

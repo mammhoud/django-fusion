@@ -1,6 +1,26 @@
-# LMS Fusion — Changelog
+# Precis LMS changelog
 
-## 2026-07-30 — ceptor-ai cleanup + enhanced test coverage
+## 2026-08-11 - Active deployment and plan closeout
+
+### Changed
+
+- Confirmed `projects/precis/` as the canonical LMS runtime after the former
+  LMS-Fusion/CMS-Fusion consolidation.
+- Added the project-owned `/api/fusion/health` and slash-terminated alias used
+  by direct and Traefik deployment smoke checks.
+- Made fixture loading explicit for the shipped canonical dump. The default
+  command no longer silently loads historical fixture data.
+- Rebuilt the backend/frontend images and verified API and rendered page routes
+  through the Traefik host.
+
+### Verification
+
+- Focused API and fixture tests: 77 passed.
+- Direct and proxy API/page curl checks returned HTTP 200.
+- Backend, frontend, worker, PostgreSQL, Redis, and Traefik containers were
+  running with no service restarts at closeout.
+
+## 2026-07-30 - ceptor-ai cleanup + enhanced test coverage
 
 ### ceptor-ai dependency fully removed
 - 0 ceptor_ai imports remaining in any fusion project

@@ -64,7 +64,7 @@ class FormintNinjaApiTests(TestCase):
     """Phase 2: Django Ninja + ninja-extra API with the fusion encoder."""
 
     def test_api_health_returns_fusion_envelope(self):
-        response = self.client.get('/api/v1/health')
+        response = self.client.get('/api/v1/health/')
 
         self.assertEqual(response.status_code, 200)
         body = response.json()
@@ -78,7 +78,7 @@ class FormintNinjaApiTests(TestCase):
         self.assertIn('pos-solo', body['data']['editions'])
 
     def test_api_stats(self):
-        response = self.client.get('/api/v1/stats')
+        response = self.client.get('/api/v1/stats/')
 
         self.assertEqual(response.status_code, 200)
         data = response.json()['data']
@@ -153,8 +153,8 @@ class FormintNinjaApiTests(TestCase):
         self.assertIn('/api/v1/products/', paths)
         self.assertIn('/api/v1/categories/', paths)
         self.assertIn('/api/v1/sales/', paths)
-        self.assertIn('/api/v1/health', paths)
-        self.assertIn('/api/v1/stats', paths)
+        self.assertIn('/api/v1/health/', paths)
+        self.assertIn('/api/v1/stats/', paths)
 
     def test_crm_namespaced_controllers_registered(self):
         response = self.client.get('/api/v1/openapi.json')
@@ -292,7 +292,7 @@ class FormintFusionRenderModeTests(TestCase):
         self.assertEqual(body['mode'], 'fusion-render')
 
     def test_api_render_mode_envelope(self):
-        response = self.client.get('/api/v1/render-mode')
+        response = self.client.get('/api/v1/render-mode/')
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertIn('status', body)
@@ -301,20 +301,31 @@ class FormintFusionRenderModeTests(TestCase):
         self.assertEqual(body['data']['mode'], 'fusion-render')
 
     def test_api_navigation_returns_formint_site_items(self):
-        response = self.client.get('/api/v1/navigation')
+        response = self.client.get('/api/v1/navigation/')
         self.assertEqual(response.status_code, 200)
-        items = response.json()['data']['nav_items']
-        labels = [item['label'] for item in items]
-        self.assertIn('Home', labels)
-        self.assertIn('Data', labels)
-        # show_in_nav is filtered out of the payload
-        self.assertTrue(all('show_in_nav' not in item for item in items))
+        data = response.json()['data']
+        # FormintSite returns the nested {brand, modules} contract.
+        self.assertIn('brand', data)
+        self.assertIn('modules', data)
+        module_labels = [m['label'] for m in data['modules']]
+        self.assertIn('Point of Sale', module_labels)
+        self.assertIn('Data & Analytics', module_labels)
+        # every module carries ordered routes; no show_in_nav leak
+        for mod in data['modules']:
+            self.assertNotIn('show_in_nav', mod)
+            for route in mod['routes']:
+                self.assertIn('label', route)
+                self.assertIn('href', route)
 
     def test_fusion_navigation_fragment_path(self):
         response = self.client.get('/fusion/navigation/')
         self.assertEqual(response.status_code, 200)
-        items = response.json()['nav_items']
-        self.assertEqual([item['label'] for item in items], ['Home', 'Data', 'Admin'])
+        body = response.json()
+        self.assertIn('modules', body)
+        labels = [m['label'] for m in body['modules']]
+        self.assertIn('Point of Sale', labels)
+        self.assertIn('Data & Analytics', labels)
+        self.assertIn('Administration', labels)
 
     def test_assets_manifest_reports_bundle_parity(self):
         response = self.client.get('/fusion/assets/')
@@ -1107,3 +1118,192 @@ class FormintVerticalSliceTests(TestCase):
         for path in all_endpoints:
             with self.subTest(path=path):
                 self._assert_406(self.client.get(path))
+
+
+class FormintSyncApiTests(TestCase):
+    """Cloud sidecar sync API — push/receive/approve ledger endpoints."""
+
+    def test_sync_status_reports_engine(self):
+        response = self.client.get('/api/v1/sync/status/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['engine'], 'ProductSyncEngine')
+        self.assertIn('nodes', data)
+        self.assertIn('cloud_links', data)
+        self.assertIn('pending_approvals', data)
+
+    def test_sync_stats_ledger(self):
+        response = self.client.get('/api/v1/sync/stats/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        for key in ('pending', 'approved', 'rejected', 'applied', 'total', 'by_type'):
+            self.assertIn(key, data)
+
+    def test_push_products_creates_approval(self):
+        from models.approval import SyncApproval
+
+        response = self.client.post(
+            '/api/v1/sync/push-products/',
+            data=json.dumps({
+                'master_node_id': 'master-1',
+                'target_node_id': 'branch-1',
+                'products': [{'id': 1, 'name': 'Coffee', 'price': '3.50'}],
+                'create_approval': True,
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['approvals_created'], 1)
+        self.assertTrue(SyncApproval.objects.filter(status='pending').exists())
+
+    def test_receive_sales_creates_approval(self):
+        from models.approval import SyncApproval
+
+        response = self.client.post(
+            '/api/v1/sync/receive-sales/',
+            data=json.dumps({
+                'node_id': 'branch-2',
+                'sales': [{'id': 99, 'total': '12.00'}],
+                'require_approval': True,
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['approvals_created'], 1)
+        self.assertEqual(
+            SyncApproval.objects.get(entity_type='sale').entity_type, 'sale'
+        )
+
+    def test_receive_sales_direct_without_approval(self):
+        response = self.client.post(
+            '/api/v1/sync/receive-sales/',
+            data=json.dumps({
+                'node_id': 'branch-3',
+                'sales': [{'id': 1, 'total': '5.00'}],
+                'require_approval': False,
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['synced'], 1)
+        self.assertEqual(data['approvals_created'], 0)
+
+    def test_approvals_list_and_stats_reflect_pending(self):
+        from models.approval import SyncApproval
+
+        SyncApproval.objects.create(
+            node_id='branch-1', entity_type='product',
+            change_data={'products': []}, change_summary='2 products',
+            direction='push', status='pending',
+        )
+
+        response = self.client.get('/api/v1/sync/approvals/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['count'], 1)
+        self.assertEqual(data['items'][0]['entity_type'], 'product')
+
+        stats = self.client.get('/api/v1/sync/stats/').json()['data']
+        self.assertEqual(stats['pending'], 1)
+
+    def test_approve_and_reject_flows(self):
+        from models.approval import SyncApproval
+
+        approval = SyncApproval.objects.create(
+            node_id='branch-1', entity_type='report',
+            change_data={}, change_summary='Report',
+            direction='push', status='pending',
+        )
+
+        ok = self.client.post(f'/api/v1/sync/approvals/{approval.id}/approve/')
+        self.assertEqual(ok.status_code, 200)
+        approval.refresh_from_db()
+        self.assertEqual(approval.status, 'approved')
+
+        rejected = SyncApproval.objects.create(
+            node_id='branch-2', entity_type='inventory',
+            change_data={}, change_summary='Inv',
+            direction='push', status='pending',
+        )
+        rej = self.client.post(f'/api/v1/sync/approvals/{rejected.id}/reject/')
+        self.assertEqual(rej.status_code, 200)
+        rejected.refresh_from_db()
+        self.assertEqual(rejected.status, 'rejected')
+
+    def test_openapi_includes_sync_and_components(self):
+        response = self.client.get('/api/v1/openapi.json')
+        paths = response.json()['paths']
+        self.assertIn('/api/v1/sync/status/', paths)
+        self.assertIn('/api/v1/sync/push-products/', paths)
+        self.assertIn('/api/v1/components/', paths)
+        self.assertIn('/api/v1/components/tables/{resource}/', paths)
+        self.assertIn('/api/v1/components/forms/{resource}/', paths)
+
+
+class FormintComponentsApiTests(TestCase):
+    """django-fusion components served as data over the sidecar API."""
+
+    def _seed(self):
+        cat = Category.objects.create(name='Food', slug='food')
+        Product.objects.create(name='Bread', price='1.00', category=cat)
+        Product.objects.create(name='Milk', price='2.00', category=cat)
+
+    def test_catalog_lists_resources(self):
+        response = self.client.get('/api/v1/components/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertIn('tables', data)
+        self.assertIn('forms', data)
+        self.assertIn('fragments', data)
+        self.assertIn('products', data['tables'])
+        self.assertIn('supplier', data['forms'])
+        self.assertIn('branch-summary', data['fragments'])
+
+    def test_table_endpoint_returns_rows_and_headers(self):
+        self._seed()
+        response = self.client.get('/api/v1/components/tables/products/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['resource'], 'products')
+        self.assertEqual(data['count'], 2)
+        names = {row['name'] for row in data['rows']}
+        self.assertEqual(names, {'Bread', 'Milk'})
+        keys = {h['key'] for h in data['headers']}
+        self.assertIn('name', keys)
+        self.assertIn('price', keys)
+
+    def test_table_endpoint_404_for_unknown(self):
+        response = self.client.get('/api/v1/components/tables/nope/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_form_endpoint_returns_field_schema(self):
+        response = self.client.get('/api/v1/components/forms/product/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['resource'], 'product')
+        names = {f['name'] for f in data['fields']}
+        self.assertIn('name', names)
+        self.assertIn('price', names)
+        # layout references declared fields
+        flat = [n for row in data['layout'] for n in row]
+        self.assertIn('name', flat)
+
+    def test_form_endpoint_404_for_unknown(self):
+        response = self.client.get('/api/v1/components/forms/nope/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_fragment_branch_summary(self):
+        response = self.client.get('/api/v1/components/fragments/branch-summary/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()['data']
+        self.assertEqual(data['name'], 'branch-summary')
+        self.assertIn('branches', data['data'])
+        self.assertIn('orders_today', data['data'])
+        self.assertIn('sync_status', data['data'])
+
+    def test_fragment_404_for_unknown(self):
+        response = self.client.get('/api/v1/components/fragments/unknown/')
+        self.assertEqual(response.status_code, 404)

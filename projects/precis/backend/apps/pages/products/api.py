@@ -1,6 +1,10 @@
-"""Django REST views for Fusion LMS products API.
+"""Django REST views for the Wagtail-backed product catalog.
 
-Mount: /api/products
+Mount: /api/products. Product records are the editor-managed ``Product``
+snippet (apps/content/models/products.py) — the catalog-of-record for
+language filtering and unified-currency pricing, mirroring the Course
+snippet contract. Wagtail product child pages remain the rich product
+documents linked from each snippet's ``href``.
 """
 
 from __future__ import annotations
@@ -12,6 +16,11 @@ from django.http import JsonResponse
 logger = logging.getLogger(__name__)
 
 
+def _qp(request, key: str, default: str = "") -> str:
+    """Get a query parameter safely."""
+    return request.GET.get(key, default)
+
+
 def _qp_int(request, key: str, default: int = 1) -> int:
     try:
         return int(request.GET.get(key, str(default)))
@@ -20,51 +29,41 @@ def _qp_int(request, key: str, default: int = 1) -> int:
 
 
 def list_products(request):
-    """GET /api/products — Product listing from models or STATIC_PAGES fallback."""
+    """GET /api/products — published Product snippets with filters + currency.
+
+    Supports ``?language=`` and ``?category=`` filters plus pagination. An
+    empty catalog is a valid response while fixtures have not been loaded;
+    returning an empty result is safer than fabricating static products or
+    masking DB errors.
+    """
     try:
-        from apps.pages.products.models.cart import Product
-        qs = Product.objects.filter(is_active=True).order_by("title")
-        page = _qp_int(request, "page", 1)
-        per_page = _qp_int(request, "per_page", 12)
-        total = qs.count()
-        products = qs[(page - 1) * per_page : page * per_page]
-        return JsonResponse({
-            "data": [
-                {
-                    "id": p.pk, "title": p.title, "slug": getattr(p, "slug", ""),
-                    "description": getattr(p, "description", ""),
-                    "price": str(getattr(p, "price", 0)),
-                    "image_url": p.image.url if getattr(p, "image", None) else None,
-                }
-                for p in products
-            ],
-            "pagination": {
-                "page": page, "per_page": per_page, "total": total,
-                "total_pages": max(1, (total + per_page - 1) // per_page),
-            },
-        })
-    except Exception:
-        # Fall back to STATIC_PAGES products section
-        try:
-            from apps.pages.pages.content import STATIC_PAGES
-            products_page = STATIC_PAGES.get("products", {})
-            blocks = products_page.get("blocks", [])
-            items = []
-            for block in blocks:
-                if block.get("type") == "rich_section":
-                    for item in block.get("items", []):
-                        items.append({
-                            "id": hash(item.get("heading", "")),
-                            "title": item.get("heading", ""),
-                            "description": item.get("text", ""),
-                            "slug": item.get("heading", "").lower().replace(" ", "-"),
-                        })
-            return JsonResponse({
-                "data": items,
-                "pagination": {"page": 1, "per_page": 24, "total": len(items), "total_pages": 1},
-            })
-        except Exception:
-            return JsonResponse({
-                "data": [],
-                "pagination": {"page": 1, "per_page": 12, "total": 0, "total_pages": 0},
-            })
+        from apps.content.models.products import Product
+    except ImportError:
+        return JsonResponse({"data": [], "pagination": {"page": 1, "per_page": 12, "total": 0, "total_pages": 1}})
+
+    qs = Product.objects.filter(is_published=True)
+
+    language = _qp(request, "language")
+    if language:
+        qs = qs.filter(language=language)
+    category = _qp(request, "category")
+    if category:
+        qs = qs.filter(category=category)
+    q = _qp(request, "q")
+    if q:
+        qs = qs.filter(title__icontains=q)
+
+    page_number = max(1, _qp_int(request, "page", 1))
+    per_page = max(1, min(100, _qp_int(request, "per_page", 12)))
+    total = qs.count()
+    products = list(qs.order_by("-is_featured", "title")[(page_number - 1) * per_page : page_number * per_page])
+
+    return JsonResponse({
+        "data": [product.as_dict() for product in products],
+        "pagination": {
+            "page": page_number,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": max(1, (total + per_page - 1) // per_page),
+        },
+    })

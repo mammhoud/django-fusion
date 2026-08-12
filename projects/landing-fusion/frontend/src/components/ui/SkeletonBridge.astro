@@ -16,8 +16,8 @@
 ---
 
 <script>
-  import { FusionSkeletonBridge } from 'fusion-js/skeleton';
-  import { FusionComponentLoader } from 'fusion-js/component-loader';
+  import { FusionSkeletonBridge } from '@fusion/skeleton';
+  import { FusionComponentLoader } from '@fusion/component-loader';
 
   // ── Skeleton rendering ─────────────────────────────────────────
   const manifest = window.__FUSION_SKELETON_MANIFEST__ ?? { skeletons: [] };
@@ -34,7 +34,7 @@
 
     // Preload critical (above-the-fold) components
     const entries = skeletonBridge.getEntries();
-    const critical = entries.filter((_, i) => i < 3); // first 3 components
+    const critical = entries.filter((_entry: { component: string }, index: number) => index < 3); // first 3 components
     loader.preloadCritical(critical);
     loader.observeComponents();
   }

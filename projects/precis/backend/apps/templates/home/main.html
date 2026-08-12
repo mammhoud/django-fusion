@@ -16,6 +16,11 @@
     {% for block in page.summary %}
         {% if block.block_type == 'about' %}
             {% comp "home/sections/about.html" block=block /%}
+        {% elif block.block_type == 'listing_section' %}
+            {# Listing (featured courses) renders only from its own block —
+               never unconditionally, which would duplicate the section on
+               every home load (mirrors home/fragment.html). #}
+            {% comp "home/sections/listing.html" block=block /%}
         {% endif %}
 
         {% comment %} {% if block.block_type == 'team_section' %}
@@ -25,7 +30,31 @@
         {% endif %} {% endcomment %}
     {% endfor %}
 
-    {# ----------------------------- LISTING COURSES ----------------------------- #}            {% comp "home/sections/listing.html" block=block /%}
+    {# --------------------- LEARNING TEASER (once) --------------------- #}
+    {% comment %} Single distinct learning entry on the home — renders exactly once
+       per document from this template. It lives ONLY in main.html (never
+       in home/fragment.html), so an HTMX fragment swap can never double
+       it. Mirrors the landing-fusion learning-preview teaser contract;
+       the catalog's PUBLIC CATALOG marker belongs to the catalog page
+       only. {% endcomment %}
+    <section class="learning-teaser section py-5" data-learning-teaser>
+      <div class="container text-center">
+        <p class="tag-marker mb-4">[ LEARNING / PREVIEW ]</p>
+        <h2 class="learning-teaser__title display-6 fw-bold mb-3">
+          {% blocktranslate %}Courses with visible progress{% endblocktranslate %}
+        </h2>
+        <p class="learning-teaser__intro lead text-muted mx-auto mb-4" style="max-width: 34rem;">
+          {% blocktranslate %}Follow serious learning paths with clear content, progress, and a next useful action.{% endblocktranslate %}
+        </p>
+        {# The Wagtail catalog page is seeded with slug `all-courses`, so on the
+           Django road the canonical URL is /all-courses/ (the Astro road serves
+           its own /courses/ page from src/pages/courses/). Keep this href in
+           sync with the page seed — a 404 here breaks the home CTA. #}
+        <a class="learning-teaser__cta btn btn-primary btn-lg px-5" href="/all-courses/">
+          {% blocktranslate %}Open the catalog{% endblocktranslate %} <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </section>
 
     {# ----------------------------- CTA BLOCKS ----------------------------- #}
 

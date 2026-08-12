@@ -11,11 +11,14 @@
 
 // ---- Constants -------------------------------------------------------------
 
-/** Base URL of the Sanic sidecar (always runs locally) */
-export const SIDECAR_BASE = 'http://127.0.0.1:8765';
+/** Base URL of the Sanic sidecar (always runs locally). Override with VITE_SIDECAR_URL (.env). */
+export const SIDECAR_BASE =
+  (import.meta.env?.VITE_SIDECAR_URL as string | undefined) || 'http://127.0.0.1:8765';
 
-/** WebSocket base URL */
-export const SIDECAR_WS_BASE = 'ws://127.0.0.1:8765';
+/** WebSocket base URL. Override with VITE_SIDECAR_WS_URL (.env). */
+export const SIDECAR_WS_BASE =
+  (import.meta.env?.VITE_SIDECAR_WS_URL as string | undefined) ||
+  SIDECAR_BASE.replace(/^http/, 'ws');
 
 /** Default request timeout in ms */
 const DEFAULT_TIMEOUT_MS = 10_000;

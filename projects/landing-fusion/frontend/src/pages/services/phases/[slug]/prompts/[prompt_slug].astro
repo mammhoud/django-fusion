@@ -6,7 +6,15 @@ import { cachedNavigation, cachedPageData, cachedSiteSettings, fetchPageList } f
 import type { NavigationData, PageData, SiteSettings } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const list = await fetchPageList();
+  let list;
+  try {
+    list = await fetchPageList();
+  } catch {
+    // Prompt pages are content-addressed by Wagtail and are intentionally
+    // omitted when the backend is unavailable; the services index remains
+    // buildable and links appear on the next content-backed build.
+    return [];
+  }
   const promptPages = list.pages.filter((page) => page.type === 'PromptPage');
   const paths: { params: { slug: string; prompt_slug: string } }[] = [];
   for (const prompt of promptPages) {

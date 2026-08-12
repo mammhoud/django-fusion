@@ -506,6 +506,9 @@ pub struct NewEmployee {
     pub phone: Option<String>,
     pub email: Option<String>,
     pub employee_type_id: i32,
+    // Community does not expose payroll, but keep the legacy column writable
+    // with a safe default for existing SQLite databases.
+    #[serde(default)]
     pub salary: f64,
     #[serde(default)]
     pub joined_at: Option<String>,
@@ -817,7 +820,8 @@ pub struct UpdatePurchaseOrderItem {
     pub received_quantity: Option<f64>,
 }
 
-// ---- KitchenTicket ----
+// Legacy kitchen-ticket records remain mapped for SQLite compatibility only;
+// Community has no kitchen-display commands or UI.
 #[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = crate::db::schema::kitchen_tickets)]
 pub struct KitchenTicket {
@@ -1131,7 +1135,8 @@ pub struct UpdateEmployeeSchedule {
     pub notes: Option<Option<String>>,
 }
 
-// ---- Payroll ----
+// Legacy payroll records remain mapped for SQLite compatibility only;
+// Community has no payroll commands or UI.
 #[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = crate::db::schema::payrolls)]
 pub struct Payroll {

@@ -4,7 +4,7 @@ import Hero from '@/components/blocks/Hero.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import LiveFragment from '@/components/ui/LiveFragment.astro';
+import RenderModeSwitch from '@/components/ui/RenderModeSwitch.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -58,7 +58,7 @@ const capabilities = pageFeatures?.map((f: any) => ({
   ) : <ContentError label="Capabilities data unavailable" />}
 
   {pageTestimonials?.length ? <Testimonials testimonials={pageTestimonials.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} /> : null}
-  <LiveFragment route='/features/' />
+  <RenderModeSwitch route='/features/' />
   <CTA heading={pageCta?.title || 'Ship the document, not the app'} intro={pageCta?.subtitle || 'One HTTP response, finished HTML.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />
   <HtmxBootstrap />

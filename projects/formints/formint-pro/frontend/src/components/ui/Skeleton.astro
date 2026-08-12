@@ -16,7 +16,7 @@
  */
 interface Props {
   variant?: 'kpi-grid' | 'data-table' | 'form' | 'branch-summary'
-    | 'nav-bar' | 'page-loader' | 'card' | 'line';
+    | 'nav-bar' | 'page-loader' | 'wizard-step' | 'card' | 'line';
   count?: number;
   class?: string;
 }
@@ -115,6 +115,30 @@ const { variant = 'line', count, class: className = '' } = Astro.props;
         <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
       </div>
       <p class="fusion-skeleton--page-loader__label">{'Loading…'}</p>
+    </div>
+  )
+}
+{
+  variant === 'wizard-step' && (
+    <div class={`fusion-skeleton fusion-skeleton--wizard ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--wizard__rail">
+        {Array.from({ length: count || 3 }).map(() => (
+          <span class="fusion-skeleton--wizard__step">
+            <span class="fusion-skeleton__line--btn" style="width:2rem;height:2rem;border-radius:50%" />
+            <span class="fusion-skeleton__line" style="width:70%;height:0.8rem" />
+          </span>
+        ))}
+      </div>
+      <span class="fusion-skeleton__line" style="width:100%;height:0.25rem;border-radius:999px;margin:0.5rem 0 1.25rem" />
+      <div class="fusion-skeleton--form__grid">
+        {Array.from({ length: count || 4 }).map(() => (
+          <span class="fusion-skeleton__field">
+            <span class="fusion-skeleton__line" style="width:40%;height:0.8rem" />
+            <span class="fusion-skeleton__line" style="height:2.4rem" />
+          </span>
+        ))}
+      </div>
+      <span class="fusion-skeleton__line--btn" style="width:8rem;height:2.5rem;margin-top:1.25rem" />
     </div>
   )
 }

@@ -17,7 +17,7 @@ import logging
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.html import strip_tags
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_GET
 from wagtail.models import Page
 
@@ -31,8 +31,8 @@ def get_effective_render_first(request=None) -> bool:
 
     Mirrors django-fusion's ``FusionDualModeMixin.get_effective_render_first()``
     for the landing project: the ``X-Fusion-Render-First: true|false`` header
-    overrides per request; otherwise the ``FUSION_RENDER_FIRST_DEFAULT``
-    setting (read fresh from Django settings, which is what django-fusion's
+    overrides per request; otherwise the ``FUSION_RENDER_FIRST`` setting
+    (read fresh from Django settings, which is what django-fusion's
     ``DjangoComponentsSettings`` resolves at init) decides the mode.
 
     ``True``  → “fusion render first” — Django renders finished HTML.
@@ -44,7 +44,13 @@ def get_effective_render_first(request=None) -> bool:
             return header == "true"
     from django.conf import settings as django_settings
 
-    return bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", False))
+    return bool(
+        getattr(
+            django_settings,
+            "FUSION_RENDER_FIRST",
+            getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", False),
+        )
+    )
 
 
 def brand_api(request):
@@ -180,7 +186,7 @@ def site_settings_api(request):
         "footer_address": settings.footer_address if settings else "",
         "footer_phone": settings.footer_phone if settings else "",
         "footer_email": settings.footer_email if settings else "",
-        "footer_copyright": settings.footer_copyright if settings else f"\u00a9 2026 structa.cloud",
+        "footer_copyright": settings.footer_copyright if settings else "\u00a9 2026 structa.cloud",
         "newsletter_prompt": getattr(settings, "newsletter_prompt", "") if settings else "",
         # ── App store ──
         "google_play_url": getattr(settings, "google_play_url", "") if settings else "",
@@ -523,8 +529,8 @@ def _page_to_dict(page) -> dict:
     applied by ``page_data_api`` after serialization so every caller retains a
     predictable fallback payload.
     """
-    from apps.pages.models import AboutPage, BlogPostPage, ProductPage, ProductsPage, FeaturesPage
     from apps.content.blocks import SECTION_STACK_FIELDS
+    from apps.pages.models import AboutPage, BlogPostPage, FeaturesPage, ProductPage, ProductsPage
 
     is_blog_post = isinstance(page, BlogPostPage)
     data = {
@@ -708,6 +714,16 @@ def _page_to_dict(page) -> dict:
             product_cards = products_page.get_product_cards(for_home=True)
             if product_cards:
                 data["products"] = product_cards
+        # Single learning teaser for the data-API road — one quiet link card
+        # into /learning/. Mirrors the Django road partial (page_content.html)
+        # so both roads carry the same once-only teaser; the static Astro
+        # home never renders a second copy.
+        data["learning_teaser"] = {
+            "kicker": "[ LEARNING / PREVIEW ]",
+            "title": "Courses, enrollments, and progress \u2014 the live catalog",
+            "href": "/learning/",
+            "cta": "Open the catalog",
+        }
 
     # Contact section
     if hasattr(page, "contact") and page.contact:
@@ -753,7 +769,6 @@ def page_fragment_api(request, slug="home"):
         "breadcrumb_current": localization_view._get_localized_title(specific, language),
         "breadcrumbs": localization_view._get_breadcrumbs(specific),
         "content_language": language,
-        "courses": get_home_courses() if specific.slug == "home" else [],
         "site_name": "Structa Cloud",
         "fusion_render_first": get_effective_render_first(request),
         "fusion_render_mode": "fusion-render",
@@ -921,36 +936,46 @@ def _get_rendition_url(settings_obj, field_name: str, filter_spec: str) -> str |
 def assets_api(request):
     """GET /apis/assets/ — unified asset manifest for frontend bundler integration.
 
-    Returns the FUSION_ASSETS config that both the Django template tags
-    (fusion_top_assets / fusion_bottom_assets) and the Astro frontend can
-    consume to keep CSS/JS bundles in sync across server and client.
+    Single source of truth for both render roads: configured FUSION_ASSETS
+    (CSS/fonts/preconnect) are merged with generated webpack bundle links
+    (from bundles.json) by django-fusion's ``load_merged_asset_manifest()``,
+    so the Django template tags (fusion_top_assets / fusion_bottom_assets)
+    and the Astro frontend emit the same bundle URLs. ``fusion_render_first``
+    reports the effective render mode for the frontend road switch.
     """
     from django.conf import settings as django_settings
     from django_fusion.config.assets import get_asset_pipeline_options
+    from django_fusion.config.manifest import load_merged_asset_manifest
 
     try:
         opts = get_asset_pipeline_options()
     except Exception:
         opts = None
 
-    # Merge Django STATIC_URL info with any configured assets
-    static_url = getattr(django_settings, "STATIC_URL", "/static/")
-    fusion_assets = getattr(django_settings, "FUSION_ASSETS", {}) or {}
-
-    # Build a version hash from the asset config for cache busting
-    version = hex(hash(str(fusion_assets)) & 0xFFFFFFFF)[2:]
+    merged = load_merged_asset_manifest()
+    top = merged.get("top") or {}
+    bottom = merged.get("bottom") or {}
+    webpack = merged.get("webpack") or {}
 
     data = {
-        "version": version,
-        "static_url": static_url,
+        "version": str(merged.get("version", 1)),
+        "static_url": getattr(django_settings, "STATIC_URL", "/static/"),
         "fusion_render_first": get_effective_render_first(request),
         "enabled": opts.enabled if opts else True,
-        "webpack_enabled": opts.webpack_enabled if opts else False,
-        "webpack_bundle_dir": opts.webpack_bundle_dir if opts else "",
-        "top": fusion_assets.get("top", {}),
-        "bottom": fusion_assets.get("bottom", {}),
-        "fonts": fusion_assets.get("fonts", []),
-        "preconnect": fusion_assets.get("preconnect", []),
+        "webpack_enabled": bool(webpack.get("enabled", opts.webpack_enabled if opts else False)),
+        "webpack_bundle_dir": str(webpack.get("bundle_dir", "") or (opts.webpack_bundle_dir if opts else "")),
+        "top": {
+            "preconnect": top.get("preconnect") or [],
+            "fonts": top.get("fonts") or [],
+            "css": top.get("css") or [],
+            "inline_css": top.get("inline_css") or [],
+        },
+        "bottom": {
+            "js": bottom.get("js") or [],
+            "inline_js": bottom.get("inline_js") or [],
+        },
+        "fonts": top.get("fonts") or [],
+        "preconnect": top.get("preconnect") or [],
     }
     return JsonResponse(data)
 
@@ -958,6 +983,7 @@ def assets_api(request):
 def get_home_courses():
     """Return the bounded, annotated course queryset shared by both roads."""
     from django.db.models import Count, Q
+
     from apps.learning.models import Course
 
     return (
@@ -979,11 +1005,19 @@ def get_home_courses():
 def courses_api(request):
     """GET /apis/courses/ — the public, published learning catalog.
 
-    The homepage uses this compact contract for its course cards while
-    ``/learning/`` remains the full HTMX catalog. Counts are annotated here so
-    rendering several cards never creates one count query per course.
+    The dedicated ``/learning/`` catalog page and the data-API road consume
+    this compact contract (the home entry page is hero + CTA only). Counts
+    are annotated here so rendering several cards never creates one count
+    query per course. ``?language=`` filters the catalog; every course
+    carries the unified currency from ``FUSION_DEFAULT_CURRENCY``.
     """
+    from django.conf import settings as django_settings
+
     courses = get_home_courses()
+    language = (request.GET.get("language") or "").lower()
+    if language:
+        courses = [course for course in courses if (course.language or "") == language]
+    currency = str(getattr(django_settings, "FUSION_DEFAULT_CURRENCY", "USD") or "USD")
     return JsonResponse({
         "courses": [
             {
@@ -992,6 +1026,7 @@ def courses_api(request):
                 "short_description": course.short_description,
                 "difficulty": str(course.get_difficulty_display()),
                 "language": course.language,
+                "currency": currency,
                 "duration_hours": str(course.duration_hours),
                 "price": str(course.price),
                 "is_free": course.is_free,
@@ -1004,6 +1039,8 @@ def courses_api(request):
             }
             for course in courses
         ],
+        "language": language or None,
+        "languages": _supported_language_codes(),
     })
 
 
@@ -1024,6 +1061,53 @@ def pricing_api(request):
     except Exception:
         logger.exception("pricing_api error")
         return JsonResponse({"products": []})
+
+
+@require_GET
+def products_api(request):
+    """GET /apis/products/ — the Product snippet catalog with language filter.
+
+    Editor-managed catalog-of-record (apps/content/models/products.py): each
+    item carries title, slug, category, language, price and the unified
+    currency from ``FUSION_DEFAULT_CURRENCY``. Supports ``?language=``,
+    ``?category=`` and ``?q=`` filters so the frontend can filter the grid by
+    language without a second content source. The rich ProductPage documents
+    remain linked through each snippet's ``href``.
+    """
+    try:
+        from apps.content.models.products import Product
+        from apps.pages.models import ProductPage
+    except Exception:
+        logger.exception("products_api Product import failed")
+        return JsonResponse({"products": []})
+
+    qs = Product.objects.filter(is_published=True)
+    # Hidden ProductPage documents stay catalog-only (direct link still
+    # works), so their snippets never appear in the public catalog either.
+    try:
+        hidden_slugs = set(
+            ProductPage.objects.filter(hidden=True).values_list("slug", flat=True)
+        )
+        if hidden_slugs:
+            qs = qs.exclude(detail_slug__in=hidden_slugs).exclude(
+                detail_slug="", slug__in=hidden_slugs
+            )
+    except Exception:
+        logger.exception("products_api hidden-product filter failed")
+    language = (request.GET.get("language") or "").lower()
+    if language:
+        qs = qs.filter(language=language)
+    category = (request.GET.get("category") or "").lower()
+    if category:
+        qs = qs.filter(category=category)
+    q = (request.GET.get("q") or "").strip()
+    if q:
+        qs = qs.filter(title__icontains=q)
+    return JsonResponse({
+        "products": [product.as_dict() for product in qs.order_by("-is_featured", "title")],
+        "language": language or None,
+        "languages": _supported_language_codes(),
+    })
 
 
 def page_list_api(request):
@@ -1050,6 +1134,7 @@ def page_list_api(request):
 
 # ── Newsletter Subscribe ────────────────────────────────────────────────────
 
+@ensure_csrf_cookie
 def auth_status_api(request):
     """GET /apis/auth/status/ — auth state plus learner entitlements.
 
@@ -1097,7 +1182,6 @@ def _comment_to_dict(comment) -> dict:
     }
 
 
-@csrf_exempt
 def blog_comments_api(request, slug):
     """GET/POST /apis/blog/<slug>/comments/ — the post comment thread.
 
@@ -1107,8 +1191,8 @@ def blog_comments_api(request, slug):
     get a rendered comment-card fragment back for an instant swap; everyone
     else gets JSON (201 / 400 / 401 / 404).
     """
-    from apps.pages.models import BlogPostPage
     from apps.content.models.comments import PostComment
+    from apps.pages.models import BlogPostPage
 
     post = BlogPostPage.objects.filter(slug=slug).first()
     if post is None:
@@ -1162,6 +1246,7 @@ def htxm_ping_api(request):
     Used by the homepage HTMX demo to show live fragment swapping.
     """
     from datetime import datetime
+
     from django.http import HttpResponse
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

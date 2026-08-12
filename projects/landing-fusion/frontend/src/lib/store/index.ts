@@ -14,12 +14,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import siteReducer from './siteSlice';
 import toastReducer from './toastSlice';
 import pageReducer from './pageSlice';
+import configReducer from './configSlice';
+import productsReducer from './productsSlice';
 
 export const store = configureStore({
   reducer: {
     site: siteReducer,
     toast: toastReducer,
     page: pageReducer,
+    config: configReducer,
+    products: productsReducer,
   },
   devTools: import.meta.env.DEV,
 });
@@ -30,3 +34,5 @@ export type AppDispatch = typeof store.dispatch;
 export * from './siteSlice';
 export * from './toastSlice';
 export * from './pageSlice';
+export * from './configSlice';
+export * from './productsSlice';

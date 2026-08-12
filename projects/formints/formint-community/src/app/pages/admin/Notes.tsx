@@ -652,7 +652,7 @@ export default function Notes() {
                       {t('notes.useAsReceiptTemplate') || 'Use as receipt template'}
                     </span>
                   </label>
-                  {/* Selectable toggle — quick-pick on KDS/Sale */}
+                  {/* Selectable toggle — quick-pick on Sale */}
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
@@ -662,7 +662,7 @@ export default function Notes() {
                     />
                     <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
                       <span className="ri-cursor-line ri-14px" />
-                      {t('notes.selectable') || 'Quick-select on KDS & Sale'}
+                      {t('notes.selectable') || 'Quick-select on Sale'}
                     </span>
                   </label>
                 </div>

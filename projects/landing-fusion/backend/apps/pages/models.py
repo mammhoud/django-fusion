@@ -26,9 +26,9 @@ from apps.content.blocks import (
     FeaturesSectionBlock,
     HeroBlock,
     MediaGalleryBlock,
+    PostVariantBlock,
     PricingSectionBlock,
     ProcessSectionBlock,
-    PostVariantBlock,
     ProjectBlock,
     ServicesSectionBlock,
     SnippetsSectionBlock,
@@ -1125,6 +1125,9 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         Carries enough detail for the catalog listing to render rich cards
         without a second round-trip: category, logo, status, edition names +
         prices + tiers, tech tags, and a plain-text excerpt of the overview.
+        When a matching ``Product`` snippet exists (by slug), its language +
+        unified currency + base price enrich the card so the catalog carries
+        the same language/currency contract as courses.
         """
         editions: list[dict] = self.get_editions()
         tech: list[str] = []
@@ -1133,7 +1136,13 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
                 if block.block_type == "tech":
                     tech = [str(i) for i in block.value.get("items", [])]
                     break
-        return {
+        try:
+            from apps.content.models.products import Product, default_currency
+
+            snippet = Product.objects.filter(slug=self.slug, is_published=True).first()
+        except Exception:
+            snippet = None
+        card = {
             "title": self.title,
             "slug": self.slug,
             "tagline": self.tagline,
@@ -1146,7 +1155,11 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
             "editions": editions,
             "tech": tech,
             "excerpt": self._overview_excerpt(),
+            "language": snippet.language if snippet else "en",
+            "currency": (snippet.currency or default_currency()) if snippet else default_currency(),
+            "price": str(snippet.price) if snippet else (editions[0].get("price", "0") if editions else "0"),
         }
+        return card
 
     def _overview_excerpt(self, limit: int = 150) -> str:
         """First ~150 plain-text characters of the overview body (for cards)."""

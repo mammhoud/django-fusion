@@ -68,7 +68,13 @@ class SettingsView(PageHandler, NotificationMixin, View):
     }
 
     def dispatch(self, request, *args, **kwargs):
-        """Resolve ProfileContextMixin and ProfileOperationsMixin bases lazily at request time."""
+        """Resolve profile bases lazily, redirecting anonymous users first."""
+        # PageHandler's dispatch can build authenticated context before the
+        # concrete HTTP method runs. Guard here so anonymous requests never
+        # enter that path and always use the normal allauth login road.
+        if not request.user.is_authenticated:
+            return redirect(f"/accounts/login/?next={request.path}")
+
         ProfileContextMixin, ProfileOperationsMixin = _settings_bases()
         if ProfileContextMixin and ProfileOperationsMixin:
             if not isinstance(self, ProfileContextMixin):
@@ -81,6 +87,12 @@ class SettingsView(PageHandler, NotificationMixin, View):
 
     def get(self, request: HttpRequest, *args, **kwargs):
         """Handle GET requests for settings page."""
+        # Anonymous visitors should take the normal allauth road instead of
+        # reaching the authenticated settings context/template, which needs a
+        # Person record and section forms.
+        if not request.user.is_authenticated:
+            return redirect(f"/accounts/login/?next={request.path}")
+
         # Only handle the main settings page
         if request.path != '/profile/settings/':
             # Redirect any other GET requests to the main settings page
@@ -102,6 +114,9 @@ class SettingsView(PageHandler, NotificationMixin, View):
 
     def post(self, request: HttpRequest, *args, **kwargs):
         """Handle POST requests for settings page."""
+        if not request.user.is_authenticated:
+            return redirect(f"/accounts/login/?next={request.path}")
+
         # Determine action based on URL
         action_url = request.path
 

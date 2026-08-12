@@ -8,8 +8,10 @@ import { useAuth, AuthUser } from '../../contexts/AuthContext';
 import AnimatePresence from '../ui/AnimatePresence';
 import { dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
 // Built-in Formint crest logo — always shown in the app chrome.
-// Business logos from settings only appear on invoices/receipts.
-import defaultLogo from '../../../assets/images/formint-crest.svg';
+// Use the public asset URL here: this component is rendered inside a
+// client-only Astro island, and Vite's imported asset object can serialize as
+// `[object Object]` in a browser `src` attribute during dev/E2E.
+const DEFAULT_LOGO_URL = '/Logo.svg';
 
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
@@ -154,7 +156,7 @@ export default function PageLayout({
   };
 
   const renderLogo = (size: string) => (      <img
-      src={defaultLogo as unknown as string}
+      src={DEFAULT_LOGO_URL}
       alt="Formint"
       className={`${iconSpring} ${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.5'; }}

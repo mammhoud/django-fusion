@@ -20,6 +20,19 @@ test('pages API returns the collection shape', async ({ request }) => {
   expect(typeof body.total).toBe('number');
 });
 
+test('auth status endpoint returns the public session shape', async ({ request }) => {
+  const response = await request.get(`${BACKEND_URL}/apis/auth/status/`);
+  expect(response.status()).toBe(200);
+  const body = await response.json();
+  expect(typeof body.authenticated).toBe('boolean');
+  expect(body).toHaveProperty('learning');
+});
+
+test('blog comments endpoint is public-read and auth-gated-write', async ({ request }) => {
+  const response = await request.get(`${BACKEND_URL}/apis/blog/does-not-exist/comments/`);
+  expect(response.status()).toBe(404);
+});
+
 test('fragment ping remains available for HTMX', async ({ request }) => {
   const response = await request.get(`${BACKEND_URL}/fragment/ping/`);
   expect(response.status()).toBe(200);

@@ -30,7 +30,8 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.management import create_contenttypes
 from django.core.management import call_command
-from django.test import Client, TestCase, override_settings
+from django.shortcuts import render
+from django.test import Client, RequestFactory, TestCase, override_settings
 from wagtail.models import Collection, Locale, Page, Site
 
 User = get_user_model()
@@ -329,6 +330,7 @@ class TestFixtureData(TestCase):
     def test_setup_wagtail_home_creates_home_when_missing(self):
         """setup_wagtail_home creates a HomePage under root when none exists."""
         from django.core.management import call_command
+
         from apps.content.models.pages.home import HomePage
 
         # Delete the default site FIRST — Wagtail PROTECTs pages that are a
@@ -476,6 +478,85 @@ class TestFixtureData(TestCase):
         assert data["page_slug"] == "home"
         assert "fragment_url" in data
         assert isinstance(data["fusion_render_first"], bool)
+
+    # ── Home learning section — single distinct teaser (once-only) ──
+
+    def test_home_renders_single_distinct_learning_teaser(self):
+        """The home page renders exactly ONE [ LEARNING / PREVIEW ] teaser.
+
+        Never the catalog's [ LEARNING / PUBLIC CATALOG ] marker, never the
+        old duplicated section markers, and never more than once per
+        document (main.html is the only template that carries it).
+        """
+        from apps.content.models.pages.home import HomePage
+
+        home = HomePage.objects.get(depth=2, live=True, slug="home")
+        request = RequestFactory().get("/")
+        html = render(request, "home/main.html", {"page": home}).content.decode()
+
+        preview_count = html.count("[ LEARNING / PREVIEW ]")
+        assert preview_count == 1, (
+            "home must render exactly one distinct learning teaser; "
+            f"found {preview_count}"
+        )
+        assert "PUBLIC CATALOG" not in html, (
+            "the catalog marker must never appear on the home page"
+        )
+        # The teaser CTA must point at the seeded Wagtail catalog page
+        # (slug `all-courses`). A bare /courses/ href 404s on the Django
+        # road, silently killing the home's primary learning CTA.
+        assert 'href="/all-courses/"' in html, (
+            "teaser CTA must link to the seeded /all-courses/ catalog page"
+        )
+        assert "Learn by shipping." not in html, (
+            "the old duplicated learning section marker must stay absent"
+        )
+
+    def test_home_fragment_never_contains_learning_teaser(self):
+        """The HTMX home fragment omits the teaser so a swap can never
+        render the learning section twice on the home page."""
+        from apps.content.models.pages.home import HomePage
+
+        home = HomePage.objects.get(depth=2, live=True, slug="home")
+        request = RequestFactory().get("/")
+        html = render(request, "home/fragment.html", {"page": home}).content.decode()
+
+        assert "[ LEARNING / PREVIEW ]" not in html, (
+            "fragment must not carry the teaser; snippet: "
+            f"{html[max(0, html.find('LEARNING') - 60): html.find('LEARNING') + 120] if 'LEARNING' in html else 'none'}"
+        )
+
+    def test_learning_teaser_localized_per_locale(self):
+        """The teaser copy follows the seeded-language gettext catalogs.
+
+        Every seeded locale (ar, sv, fr, de, es, pt-br) must resolve its own
+        title/intro/CTA from assets/locale catalogs, keeping the Django road
+        in parity with the Astro road's teaser-translations map.
+        """
+        from django.utils import translation
+
+        from apps.content.models.pages.home import HomePage
+
+        home = HomePage.objects.get(depth=2, live=True, slug="home")
+        request = RequestFactory().get("/")
+        expectations = {
+            "ar": "دورات تقدّم واضح",
+            "sv": "Kurser med synliga framsteg",
+            "fr": "Des cours avec une progression visible",
+            "de": "Kurse mit sichtbarem Fortschritt",
+            "es": "Cursos con progreso visible",
+            "pt-br": "Cursos com progresso visível",
+        }
+        for lang, expected in expectations.items():
+            with translation.override(lang):
+                html = render(request, "home/main.html", {"page": home}).content.decode()
+            assert expected in html, (
+                f"{lang} teaser title missing from rendered home page"
+            )
+            # The English source copy must not leak into a localized render.
+            assert "Courses with visible progress" not in html, (
+                f"English teaser leaked into {lang} render"
+            )
 
     # ── API — courses (LMS fixtures) ───────────────────────────────
 

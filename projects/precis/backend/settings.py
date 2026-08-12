@@ -103,7 +103,10 @@ FUSION_SECONDARY_COLOR = cfg("FUSION_SECONDARY_COLOR", "#008080")
 # ═══════════════════════════════════════════════════════════════════
 # Astro is the active document renderer after the cms-fusion consolidation.
 # Requests may still override this with X-Fusion-Render-First for compatibility.
-FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", True)
+# The same flag drives asset loading: with ``render_first_gates_assets`` on in
+# FUSION_PIPELINE, webpack/skeleton links are only served while render-first
+# is active (see django-fusion ``AssetPipelineOptions``).
+FUSION_RENDER_FIRST = cfg("FUSION_RENDER_FIRST", True)
 
 # Keep the Wagtail locale contract aligned with dump-data.json. In particular,
 # pt-br is an existing public fixture locale and must not be normalized to pt.
@@ -111,12 +114,17 @@ FUSION_RENDER_FIRST_DEFAULT = cfg("FUSION_RENDER_FIRST_DEFAULT", True)
 # make this site's supported content languages unambiguous.
 LANGUAGES = [
     ("en", "English"),
+    ("sv", "Swedish"),
     ("fr", "French"),
     ("de", "German"),
     ("es", "Spanish"),
     ("ar", "Arabic"),
     ("pt-br", "Portuguese (Brazil)"),
 ]
+# Unified catalog currency — one setting drives products + courses + editions
+# pricing across both websites (landing-fusion parity). Products and courses
+# fall back to it when no per-record currency is set.
+FUSION_DEFAULT_CURRENCY = cfg("FUSION_DEFAULT_CURRENCY", "USD")
 LANGUAGES_BIDI = ["ar"]
 WAGTAIL_I18N_ENABLED = True
 WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
@@ -216,9 +224,9 @@ if _ASSETS_STATIC.exists() and "STATICFILES_DIRS" in dir():
     if _alias_entry not in STATICFILES_DIRS:
         STATICFILES_DIRS.append(_alias_entry)
 
-# FUSION_ASSET_PIPELINE: point component manifest at the workspace static root.
-if "FUSION_ASSET_PIPELINE" in dir() and "components" in FUSION_ASSET_PIPELINE:
-    FUSION_ASSET_PIPELINE["components"]["manifest_path"] = str(
+# FUSION_PIPELINE: point component manifest at the workspace static root.
+if "FUSION_PIPELINE" in dir() and "components" in FUSION_PIPELINE:
+    FUSION_PIPELINE["components"]["manifest_path"] = str(
         _ASSETS_STATIC / "components" / "manifest.json"
     )
 

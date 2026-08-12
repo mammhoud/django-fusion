@@ -156,18 +156,45 @@ document.addEventListener('htmx:afterRequest', () => {
   hideIndicator();
 });
 
-document.addEventListener('htmx:responseError', () => {
+document.addEventListener('htmx:responseError', (event) => {
   hideIndicator();
+  renderFragmentFallback(event);
+});
+
+document.addEventListener('htmx:sendError', (event) => {
+  hideIndicator();
+  renderFragmentFallback(event);
+});
+
+document.addEventListener('htmx:timeout', (event) => {
+  hideIndicator();
+  renderFragmentFallback(event);
 });
 
 // ── LiveFragment error fallback ───────────────────────────────────────────
 
-document.addEventListener('htmx:responseError', (event) => {
-  const target = (event as CustomEvent).detail?.elt as HTMLElement | null;
-  if (!target || !target.matches('[data-live-fragment] .live-fragment__target')) return;
+function renderFragmentFallback(event: Event): void {
+  const detail = (event as CustomEvent).detail || {};
+  const candidates = [detail.target, detail.elt]
+    .filter((node): node is Element => node instanceof Element);
+  const target = candidates
+    .map((node) => node.matches('.live-fragment__target') ? node : node.closest('.live-fragment__target'))
+    .find((node): node is HTMLElement => Boolean(node?.matches('[data-live-fragment] .live-fragment__target')));
+  if (!target) return;
   const fallback = target.querySelector<HTMLTemplateElement>('[data-fragment-fallback]');
   if (fallback) target.innerHTML = fallback.innerHTML;
+}
+
+// Alpine is normally initialized by Astro, but HTMX-inserted interactive
+// fragments need an explicit tree init after the swap has settled.
+document.addEventListener('htmx:afterSwap', (event) => {
+  const detail = (event as CustomEvent).detail || {};
+  const target = detail.target || detail.elt;
+  const alpine = (window as Window & { Alpine?: { initTree?: (node: Element) => void } }).Alpine;
+  if (target instanceof Element && alpine?.initTree) alpine.initTree(target);
 });
+
+// ── LiveFragment error fallback ───────────────────────────────────────────
 
 // ── Toast on HTMX errors (Redux-powered) ─────────────────────────────────
 

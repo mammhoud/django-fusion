@@ -31,3 +31,14 @@ related/<product-slug>/<edition>-<label>.<ext>
 The same files are mirrored in the Astro public tree at
 `frontend/public/static/related/formints/` so Django and Astro resolve the
 same `/static/related/formints/...` URLs.
+
+## Animated media must stay browser-safe
+
+Browsers fail to decode full-length screencasts stored as GIF (too many
+frames / decoded pixels) and the gallery falls back to
+"Preview unavailable. Open this capture.". Keep `gif` previews **≤ ~150
+frames** (a ~12–15 s loop at ~10 fps), **≤ ~5 MB**, width **≤ 720 px**, and
+re-encode with an adaptive palette + `disposal=2`. See
+`../previews/README.md` for the full guideline (Aug 2026: the two Standard
+GIFs were 229/458 frames at 10.4/54 MB and failed to decode; resampled to
+115 frames at 5.2/7.3 MB).

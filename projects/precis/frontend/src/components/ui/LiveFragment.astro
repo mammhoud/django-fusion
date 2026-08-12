@@ -58,8 +58,9 @@ const {
   skeletonVariant,
 } = Astro.props;
 
-// Ensure the URL joins cleanly and stays relative when fusionApiUrl is ''.
-const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}${route}`;
+// Ensure the URL joins cleanly for both absolute backend URLs and relative
+// same-origin paths. A route such as `home` must never become `backendhome`.
+const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}/${route.replace(/^\/+/, '')}`;
 
 // Recursion guard — see header comment. Only fire HTMX when a backend is
 // configured; otherwise show the quiet fallback note.

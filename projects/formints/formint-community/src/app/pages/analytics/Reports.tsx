@@ -1136,10 +1136,6 @@ export default function Reports() {
                   value={products.length}
                   desc={t('reports.haveRecipes', { count: products.filter(p => recipes.some(r => r.product_id === p.id && r.is_active)).length })}
                   color="success" border animated={false} compact />
-                <StatCard title={t('reports.monthlySalary')}
-                  value={`${formatPrice(employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0))}`}
-                  desc={t('reports.activeEmployeesCount', { count: employees.filter(e => e.is_active).length })}
-                  color="warning" border animated={false} compact />
               </div>
             </div>
           )}
@@ -2573,7 +2569,6 @@ export default function Reports() {
                       <thead>
                         <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableName')}</th>
-                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableSalary')}</th>
                           <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableStatus')}</th>
                           <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableJoined')}</th>
                         </tr>
@@ -2582,7 +2577,6 @@ export default function Reports() {
                         {employees.map(emp => (
                           <tr key={emp.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(emp.salary)}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 emp.is_active

@@ -25,7 +25,7 @@ interface SearchInputProps {
  * Reusable search input built on the BEM `.searchbar` component.
  *
  * Replaces the verbose `.input.field--sm > .field__wrapper > .input`
- * markup that was duplicated across ProductManager, KitchenDisplay, Notes,
+ * markup that was duplicated across ProductManager, Notes,
  * Roles and the Reports › Tax Reports tab. Provides the search icon, debounced-loading spinner
  * and clear button out of the box.
  *
@@ -33,9 +33,9 @@ interface SearchInputProps {
  *   <SearchInput
  *     value={search}
  *     onChange={setSearch}
- *     placeholder={t('kitchen.searchPlaceholder') || 'Search...'}
- *     ariaLabel={t('kitchen.searchPlaceholder') || 'Search kitchen tickets'}
- *     testId="kds-search-input"
+ *     placeholder={t('common.search') || 'Search...'}
+ *     ariaLabel={t('common.search') || 'Search'}
+ *     testId="search-input"
  *     loading={isFiltering}
  *     className="flex-1 sm:w-48"
  *   />

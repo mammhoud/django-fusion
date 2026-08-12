@@ -1,9 +1,28 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
+import { readFileSync, existsSync } from "node:fs";
+
+// ── Dependency-free .env loader ─────────────────────────────────────────────
+// Shell env wins, then .env.local, then .env (see .env.example).
+const __env: Record<string, string> = {};
+for (const __f of [".env.local", ".env"]) {
+    if (!existsSync(__f)) continue;
+    for (const __line of readFileSync(__f, "utf8").split("\n")) {
+        const __m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(__line);
+        if (__m && !(__m[1] in __env)) __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, "");
+    }
+}
+// @ts-expect-error process is a nodejs global
+const envVal = (key: string, fallback: string) => process.env[key] ?? __env[key] ?? fallback;
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
+
+/** Dev server port — keep 1420 for Tauri (tauri.conf.json devUrl is fixed). */
+const PORT = Number(envVal("PORT", "1420"));
+/** HMR WebSocket port (Tauri uses 1421 when exposed on a network host). */
+const HMR_PORT = Number(envVal("HMR_PORT", "1421"));
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -15,14 +34,14 @@ export default defineConfig(async () => ({
     clearScreen: false,
     // 2. tauri expects a fixed port, fail if that port is not available
     server: {
-        port: 1420,
+        port: PORT,
         strictPort: true,
         host: host || false,
         hmr: host
             ? {
                   protocol: "ws",
                   host,
-                  port: 1421,
+                  port: HMR_PORT,
               }
             : undefined,
         watch: {

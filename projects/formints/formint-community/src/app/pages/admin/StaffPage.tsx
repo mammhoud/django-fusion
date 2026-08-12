@@ -3,18 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { iconClass } from '../../../lib/icons';
 import Employees from './Employees';
 import EmployeeSchedule from './EmployeeSchedule';
-import Payroll from './Payroll';
 
-type StaffTab = 'employees' | 'schedule' | 'payroll';
+type StaffTab = 'employees' | 'schedule';
 
 const staffTabs: { key: StaffTab; labelKey: string; icon: string }[] = [
   { key: 'employees', labelKey: 'nav.employees', icon: 'users' },
   { key: 'schedule', labelKey: 'nav.schedule', icon: 'calendar-clock' },
-  { key: 'payroll', labelKey: 'nav.payroll', icon: 'moneybag' },
 ];
 
 /**
- * Merged Staff page with tab navigation between Employees, Schedule, and Payroll.
+ * Merged Staff page with tab navigation between Employees and Schedule.
  * Each sub-page manages its own PageLayout, so this wrapper only provides the
  * tab bar — no outer PageLayout to avoid double-nesting.
  */
@@ -55,11 +53,6 @@ export default function StaffPage() {
       {activeTab === 'schedule' && (
         <div id="staff-panel-schedule" role="tabpanel" aria-labelledby="staff-tab-schedule">
           <EmployeeSchedule />
-        </div>
-      )}
-      {activeTab === 'payroll' && (
-        <div id="staff-panel-payroll" role="tabpanel" aria-labelledby="staff-tab-payroll">
-          <Payroll />
         </div>
       )}
     </>

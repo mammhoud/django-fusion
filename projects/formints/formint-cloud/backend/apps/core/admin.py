@@ -4,22 +4,33 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin
 
 from .models import (
-    Organization,
+    BackupRun,
     Branch,
-    Lead,
+    BranchInventory,
+    BranchProduct,
+    BranchReport,
+    BranchSale,
+    BranchSettings,
+    BranchSyncLog,
     Contact,
     Deal,
-    InventoryReport,
-    BranchReport,
-    BranchSyncLog,
-    BranchProduct,
-    BranchSale,
-    BranchInventory,
     DeviceToken,
+    Domain,
+    InventoryReport,
+    Lead,
+    Organization,
     SyncConflict,
     SyncQueueItem,
-    BackupRun,
+    Tenant,
 )
+
+# TenantAdminMixin adds the domain inline management used by django-tenants;
+# falls back to the plain Unfold ModelAdmin when unavailable.
+try:
+    from django_tenants.admin import TenantAdminMixin
+    _TenantAdminBase = (TenantAdminMixin, ModelAdmin)
+except ImportError:  # pragma: no cover — django-tenants is a declared dep
+    _TenantAdminBase = (ModelAdmin,)
 
 
 @admin.register(Organization)
@@ -34,12 +45,28 @@ class OrganizationAdmin(ModelAdmin):
     )
 
 
+class BranchSettingsInline(admin.StackedInline):
+    """Complete per-branch configuration inline on BranchAdmin."""
+
+    model = BranchSettings
+    extra = 0
+    can_delete = False
+    fieldsets = (
+        ("Financial", {"fields": ("currency_code", "tax_profile_id", "tax_rate", "price_decimal_places", "round_after_tax")}),
+        ("Time / Locale", {"fields": ("timezone", "locale", "week_starts_on")}),
+        ("Receipt", {"fields": ("receipt_footer", "receipt_logo_url", "receipt_paper_width_mm", "auto_print_receipt")}),
+        ("Sync / Ops", {"fields": ("sync_interval_seconds", "offline_grace_minutes", "low_stock_threshold")}),
+        ("Flags", {"fields": ("features", "settings")}),
+    )
+
+
 @admin.register(Branch)
 class BranchAdmin(ModelAdmin):
     list_display = ["name", "code", "organization", "pos_type", "is_active", "created_at"]
     list_filter = ["organization", "pos_type", "is_active"]
     search_fields = ["name", "code", "city"]
     list_select_related = ["organization"]
+    inlines = [BranchSettingsInline]
 
 
 @admin.register(Lead)
@@ -146,6 +173,33 @@ class BackupRunAdmin(ModelAdmin):
         ("Backup", {"fields": ("filename", "status", "size_bytes", "error_message")}),
         ("Timing", {"fields": ("started_at", "finished_at")}),
     )
+
+
+@admin.register(BranchSettings)
+class BranchSettingsAdmin(ModelAdmin):
+    list_display = ["branch", "currency_code", "tax_rate", "timezone", "updated_at"]
+    list_filter = ["currency_code", "timezone"]
+    search_fields = ["branch__name", "branch__code"]
+    readonly_fields = ["created_at", "updated_at"]
+
+
+@admin.register(Tenant)
+class TenantAdmin(*_TenantAdminBase):
+    """Tenant registry — one PostgreSQL schema per Organization (public schema)."""
+
+    list_display = ["schema_name", "organization", "auto_create_schema"]
+    search_fields = ["schema_name", "organization__name"]
+    list_select_related = ["organization"]
+    fieldsets = (
+        ("Tenant", {"fields": ("schema_name", "organization", "auto_create_schema")}),
+    )
+
+
+@admin.register(Domain)
+class DomainAdmin(ModelAdmin):
+    list_display = ["domain", "tenant", "is_primary"]
+    list_filter = ["is_primary"]
+    search_fields = ["domain", "tenant__schema_name"]
 
 
 @admin.register(DeviceToken)

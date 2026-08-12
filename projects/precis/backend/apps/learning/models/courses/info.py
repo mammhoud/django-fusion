@@ -12,7 +12,6 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models import ModelCacheMixin
 from django_fusion.models.base import BaseModel as DefaultBase
-from apps.domain.blocks.content.overview import OverviewBlock
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import (
     FieldPanel,
@@ -22,6 +21,9 @@ from wagtail.admin.panels import (
 from wagtail.embeds.blocks import EmbedBlock as SimpleVideoBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.search import index
+
+from apps.content.models.languages import SUPPORTED_LANGUAGE_CHOICES
+from apps.domain.blocks.content.overview import OverviewBlock
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +156,12 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
         verbose_name=_("Original Price"),
         help_text=_("Price before discount for showing strikethrough")
     )
+    currency = models.CharField(
+        max_length=3,
+        default="USD",
+        verbose_name=_("Currency"),
+        help_text=_("ISO 4217 code — unified catalog currency (FUSION_DEFAULT_CURRENCY)."),
+    )
     discount_percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -209,15 +217,10 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
     )
 
     language = models.CharField(
-        max_length=100,
+        max_length=10,
         default="en",
         verbose_name=_("Course Language"),
-        choices=[
-            ("en", _("English")),
-            ("ar", _("Arabic")),
-            ("es", _("Spanish")),
-            ("fr", _("French")),
-        ],
+        choices=SUPPORTED_LANGUAGE_CHOICES,
     )
     class DifficultyChoices(models.TextChoices):
         BEGINNER = "beginner", _("Beginner")

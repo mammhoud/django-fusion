@@ -13,7 +13,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigationPredictor } from '../hooks/useNavigationPredictor';
 import { useOfflineMode } from '../hooks/useOfflineMode';
-import { useHealthCheck } from '../hooks/useHealthCheck';
 import { ROLE_ROUTES } from './layout/SideNav';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
@@ -39,9 +38,7 @@ const Settings = lazy(() => import('../app/pages/admin/Settings'));
 const About = lazy(() => import('../app/pages/admin/About'));
 const Customers = lazy(() => import('../app/pages/customers/Customers'));
 const Suppliers = lazy(() => import('../app/pages/customers/Suppliers'));
-const KitchenDisplay = lazy(() => import('../app/pages/kitchen/KitchenDisplay'));
 const EmployeeSchedule = lazy(() => import('../app/pages/admin/EmployeeSchedule'));
-const Payroll = lazy(() => import('../app/pages/admin/Payroll'));
 const Notes = lazy(() => import('../app/pages/admin/Notes'));
 const Coupons = lazy(() => import('../app/pages/admin/Coupons'));
 const Roles = lazy(() => import('../app/pages/admin/Roles'));
@@ -64,9 +61,7 @@ const ROUTE_PAGES: Record<string, LazyExoticComponent<ComponentType>> = {
   '/about': About,
   '/customers': Customers,
   '/suppliers': Suppliers,
-  '/kitchen': KitchenDisplay,
   '/schedule': EmployeeSchedule,
-  '/payroll': Payroll,
   '/notes': Notes,
   '/coupons': Coupons,
   '/roles': Roles,
@@ -93,17 +88,6 @@ export default function AppShell({ route }: { route: string }) {
   // Community is offline-first — surface the state as a calm fixed banner
   // whenever the OS reports the device offline (informational, non-blocking).
   const offline = useOfflineMode();
-
-  // On-mount health probe using @formints/client.  Community has no backend
-  // by default (baseUrl is empty), so the probe stays idle.  When pointed
-  // at a Standard/Cloud instance the hook reports server reachability.
-  const health = useHealthCheck('');
-
-  // Dedicated KDS popout window (loaded with ?kds=1) — renders the Kitchen
-  // Display full-bleed with no app chrome, no auth gate and no floating widgets.
-  const isKdsPopout =
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('kds') === '1';
 
   const redirectRoot = isAuthenticated && route === '/';
   const employeeBlocked =
@@ -171,17 +155,6 @@ export default function AppShell({ route }: { route: string }) {
   useEffect(() => {
     if (employeeBlocked) window.location.replace('/dashboard');
   }, [employeeBlocked]);
-
-  // KDS popout — dedicated kitchen display window, no chrome, no auth gate.
-  if (isKdsPopout) {
-    return (
-      <div className="relative min-h-[100dvh] bg-base-100">
-        <Suspense fallback={<BrandLoader variant="dark" />}>
-          <KitchenDisplay standalone />
-        </Suspense>
-      </div>
-    );
-  }
 
   // If auth is still being checked, show the branded loading screen.
   if (isAuthRequired === null) {

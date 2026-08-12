@@ -2,18 +2,20 @@
 /**
  * Community bundle generator.
  *
- * Refreshes the standalone `formint-community/` package (the public repo
+ * Refreshes the standalone community publish bundle (the public repo
  * github.com/mammhoud/formint-community) from the in-repo Community edition
- * `formintA/`, applying the Formints Community rename contract:
+ * `formint-community/`, applying the Formints Community rename contract:
  *
  *   package name     formint-pos      → formint-community
  *   Tauri product    Formint          → Formints Community
  *   Tauri identifier com.mammhoud.pos → com.mammhoud.formint-community
  *   window title     Formint          → Formints Community
  *
- * Generated artifacts are excluded (node_modules, dist, src-tauri/target,
- * databases, screenshots, reports), and a standalone README.md + .gitignore
- * are written so the folder can be git-initialized and pushed as its own repo.
+ * The bundle is written to `publish/community-bundle/` (git-ignored staging
+ * dir) so the tracked in-repo edition is never touched. Generated artifacts
+ * are excluded (node_modules, dist, src-tauri/target, databases, screenshots,
+ * reports), and a standalone README.md + .gitignore are written so the folder
+ * can be git-initialized and pushed as its own repo.
  *
  * Usage:
  *   node scripts/publish/community-bundle.cjs        (from projects/formints/)
@@ -24,8 +26,8 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..', '..'); // projects/formints/
-const SRC = path.join(ROOT, 'formintA');
-const DEST = path.join(ROOT, 'formint-community');
+const SRC = path.join(ROOT, 'formint-community');
+const DEST = path.join(ROOT, 'publish', 'community-bundle');
 
 const PRODUCT_NAME = 'Formints Community';
 const IDENTIFIER = 'com.mammhoud.formint-community';
@@ -243,28 +245,29 @@ appmap.log
   // ── Source marker ──
   fs.writeFileSync(
     path.join(DEST, 'COMMUNITY.md'),
-    `# Generated package — do not edit directly
+    `# Generated bundle — do not edit directly
 
-\`formint-community/\` is generated from the Community edition
-\`projects/formints/formintA/\` by \`make community-bundle\`
+\`publish/community-bundle/\` is generated from the Community edition
+\`projects/formints/formint-community/\` by \`make community-bundle\`
 (\`scripts/publish/community-bundle.cjs\`), which applies the rename contract:
 
 | Field | In-repo | Community version |
 |-------|---------|-------------------|
-| package name | \`formint-pos\` | \`formint-community\` |
-| Tauri product | Formint | ${PRODUCT_NAME} |
-| Tauri identifier | \`com.mammhoud.pos\` | \`${IDENTIFIER}\` |
-| window title | Formint | ${PRODUCT_NAME} |
+| package name | \`formint-community\` | \`formint-community\` |
+| Tauri product | Formints Community | ${PRODUCT_NAME} |
+| Tauri identifier | \`com.mammhoud.formint-community\` | \`${IDENTIFIER}\` |
+| window title | Formints Community | ${PRODUCT_NAME} |
 
-Make feature changes in \`formintA/\`, then run \`make community-bundle\` to
+Make feature changes in \`formint-community/\`, then run \`make community-bundle\` to
 refresh this folder. To publish: \`git init\`, commit, and push to ${REPO_URL}.
 `,
   );
 
-  console.log(`✓ formint-community refreshed from formintA`);
+  console.log(`✓ community bundle refreshed from formint-community`);
   console.log(`  product:    ${PRODUCT_NAME}`);
   console.log(`  identifier: ${IDENTIFIER}`);
   console.log(`  destination: ${DEST}`);
+  console.log(`  (staging dir — git-init and push to ${REPO_URL} to publish)`);
 }
 
 main();

@@ -37,6 +37,13 @@ projects/*/assets/media/avatar_images/
 projects/*/assets/media/documents/
 projects/*/backend/media/
 projects/lms/assets/media/
+# Shared media tree (FileGator uploads served at media.structa.cloud/media/)
+# Runtime uploads are ignored, but the directory skeleton (incl. the
+# FileGator repo dir) ships tracked so a fresh clone keeps the bind-mount
+# target with www-data ownership instead of Docker root:root.
+assets/media/*
+!assets/media/filegator/
+!assets/media/filegator/.gitkeep
 
 # ── Django generated artifacts ───────────────────────────────────────
 **/staticfiles/

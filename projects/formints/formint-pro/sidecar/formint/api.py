@@ -27,7 +27,9 @@ from django.http import HttpRequest
 from django_fusion.core.encoder.encoder import JSONRenderer
 from ninja_extra import NinjaExtraAPI, api_controller, http_get
 
+from formint.components_api import ComponentsController
 from formint.controllers import ALL_CONTROLLERS
+from formint.sync_api import SyncController
 
 api = NinjaExtraAPI(
     title="Formint POS API",
@@ -77,7 +79,7 @@ except Exception:
 class SystemController:
     """Health, schema and stats endpoints for the sidecar API."""
 
-    @http_get("/health")
+    @http_get("/health/")
     def health(self, request: HttpRequest):
         from django.apps import apps
 
@@ -91,7 +93,7 @@ class SystemController:
             "models": len(list(cfg.get_models())),
         }
 
-    @http_get("/stats")
+    @http_get("/stats/")
     def stats(self, request: HttpRequest):
         """Quick KPI counts across the merged POS domain."""
         from django.db import connection
@@ -115,7 +117,7 @@ class SystemController:
         result["sale_total_count"] = total["total"]
         return result
 
-    @http_get("/render-mode")
+    @http_get("/render-mode/")
     def render_mode(self, request: HttpRequest):
         """Report the active fusion render mode (mirrors landing-fusion /apis/render-mode/).
 
@@ -126,14 +128,14 @@ class SystemController:
 
         return render_mode_payload(request)
 
-    @http_get("/navigation")
+    @http_get("/navigation/")
     def navigation(self, request: HttpRequest):
         """Nav items from FormintSite (single source of truth for POS nav)."""
         from formint.fusion import navigation_payload
 
         return navigation_payload(request)
 
-    @http_get("/assets")
+    @http_get("/assets/")
     def assets(self, request: HttpRequest):
         """FUSION_ASSETS manifest for frontend bundle parity."""
         from formint.fusion import assets_payload
@@ -141,5 +143,5 @@ class SystemController:
         return assets_payload(request)
 
 
-# Register every merged model controller (CRUD surface) + the system controller.
-api.register_controllers(*ALL_CONTROLLERS, SystemController)
+# Register every merged model controller (CRUD surface) + system + sync + components.
+api.register_controllers(*ALL_CONTROLLERS, SystemController, SyncController, ComponentsController)

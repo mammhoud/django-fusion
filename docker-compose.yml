@@ -10,7 +10,6 @@ include:
   # - services/utilities/docker-compose.yml
   # - services/ollama/docker-compose.yml
   # - services/mailpit/docker-compose.yml
-  # - compose/docker-compose.docs.yml
 
 
 # Global networks – all services will use these

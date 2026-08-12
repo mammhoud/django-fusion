@@ -3,19 +3,33 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
+
+// ── Dependency-free .env loader ─────────────────────────────────────────────
+// Shell env wins, then .env.local, then .env (see frontend/.env.example).
+const __env = {};
+for (const __f of ['.env.local', '.env']) {
+  if (!existsSync(__f)) continue;
+  for (const __line of readFileSync(__f, 'utf8').split('\n')) {
+    const __m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(__line);
+    if (__m && !(__m[1] in __env)) __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, '');
+  }
+}
+const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
 
 // Formint Cloud frontend (Community UI + Cloud Django data layer).
 // Django (:8767) owns the REST/API surface (sidecar-compatible
 // contract after the Robyn sidecar was removed) and the admin/fusion road
 // (:8082). Both are proxied in dev so cookies/session stay on one host.
-const SIDECAR = process.env.SIDECAR_URL || 'http://127.0.0.1:8767';
-const BACKEND = process.env.BACKEND_URL || 'http://127.0.0.1:8082';
+const SIDECAR = envVal('SIDECAR_URL', 'http://127.0.0.1:8767');
+const BACKEND = envVal('BACKEND_URL', 'http://127.0.0.1:8082');
+const PORT = Number(envVal('PORT', 4323));
 
 export default defineConfig({
   output: 'static',
 
   server: {
-    port: 4323,
+    port: PORT,
     host: true,
   },
 
@@ -50,6 +64,7 @@ export default defineConfig({
         '/device-tokens': { target: SIDECAR, changeOrigin: true },
         '/conflicts': { target: SIDECAR, changeOrigin: true },
         '/queue': { target: SIDECAR, changeOrigin: true },
+        '/monitor': { target: SIDECAR, changeOrigin: true },
         '/fusion': { target: SIDECAR, changeOrigin: true },
         // Django backend (admin + fusion-render road)
         '/admin': { target: BACKEND, changeOrigin: true },

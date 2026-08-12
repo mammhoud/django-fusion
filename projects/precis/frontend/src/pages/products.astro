@@ -6,8 +6,8 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import LiveFragment from '@/components/ui/LiveFragment.astro';
 import ContentError from '@/components/ui/ContentError.astro';
+import ProductGrid from '@/components/ui/ProductGrid.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -56,15 +56,9 @@ const productLines: ProductLine[] = [
         <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Every product, one page each</h2>
         <p class='text-fu-muted'>Each product gets a reference page — editions &amp; pricing, tech stack, and snippets/models you can reuse.</p>
       </div>
-      <div class='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-        {productCards.map((card, i) => (
-          <a href={card.href} class='card reveal group flex flex-col gap-2 p-6 hover:-translate-y-0.5' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
-            <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink transition-colors group-hover:text-fu-link'>{card.title}</h3>
-            {card.tagline && <p class='text-sm leading-relaxed text-fu-muted'>{card.tagline}</p>}
-            <span class='mt-auto pt-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>View product →</span>
-          </a>
-        ))}
-      </div>
+      <!-- The catalog grid — server-rendered at build time, then kept in sync
+           with the Redux products slice by the client ProductGrid. -->
+      <ProductGrid products={productCards} />
     </div>
   </section>
   ) : null}
@@ -109,7 +103,8 @@ const productLines: ProductLine[] = [
 
   <Testimonials testimonials={pageTestimonials?.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} />
   <FAQ items={pageFaq?.map((f: any) => ({ question: String(f.question || ''), answer: String(f.answer || '') }))} />
-  <LiveFragment route='/products/' />
+  <!-- Product content is already rendered from page data; avoid requesting
+       the full Astro document into an inner HTMX target. -->
   <CTA heading={pageCta?.title || 'Everything is open source'} intro={pageCta?.subtitle || 'All structa.cloud libraries are public on GitHub. Explore the code, open issues, or contribute.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />
   <HtmxBootstrap />

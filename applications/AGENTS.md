@@ -16,10 +16,9 @@ applications/
 │   ├── traefik/              # static/dynamic routers and middleware
 │   ├── nginx/                # shared static/media server
 │   └── scripts/              # certificate validation/backup/restore
-├── compose/                  # combined application/tasks/docs Compose files
+├── compose/                  # combined application/tasks Compose files
 │   ├── docker-compose.applications.yml
-│   ├── docker-compose.tasks.yml
-│   └── docker-compose.docs.yml
+│   └── docker-compose.tasks.yml
 ├── scripts/                  # dev, staging, testing, production automation
 ├── agents/                   # FastAPI MCP/introspection server and agent skills
 ├── templates/                # infrastructure templates (e.g. Terraform)

@@ -5,20 +5,25 @@ import Stats from '@/components/blocks/Stats.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import LiveFragment from '@/components/ui/LiveFragment.astro';
+import RenderModeSwitch from '@/components/ui/RenderModeSwitch.astro';
+import ProductGrid from '@/components/ui/ProductGrid.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import ProductLogo from '@/components/ui/ProductLogo.astro';
 import StackLinks from '@/components/ui/StackLinks.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
-import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedProducts } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData, CatalogProduct } from '@/lib/api';
 
 let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
 let pageData: PageData | undefined;
+let snippetCatalog: CatalogProduct[] = [];
 try {
-  [siteSettings, navData, pageData] = await Promise.all([
-    cachedSiteSettings(), cachedNavigation(), cachedPageData('products'),
+  [siteSettings, navData, pageData, snippetCatalog] = await Promise.all([
+    cachedSiteSettings(),
+    cachedNavigation(),
+    cachedPageData('products'),
+    cachedProducts().then((d) => d.products ?? []),
   ]);
 } catch { /* use fallbacks */ }
 
@@ -42,7 +47,47 @@ const productCards = (pageData?.products as ProductCard[] | undefined) ?? [];
 // with four editions) when present, otherwise the first card in the tree.
 const featuredProduct =
   productCards.find((c) => c.slug === 'formint-pos') ?? productCards[0];
-const restProducts = productCards.filter((c) => c !== featuredProduct);
+
+// ── Multilingual catalog (single source of truth) ────────────────────────────
+// The grid is driven by the editor-managed Product snippet catalog
+// (/apis/products/), which carries language + unified-currency rows (en + ar
+// variants seeded). Rich ProductPage data (editions, tech, logo, excerpt) is
+// merged onto each English row by slug, so cards stay rich AND language-
+// filterable. The store is seeded with this full catalog (default filter 'en')
+// so the client grid matches the SSR output and the chips can switch languages.
+const richBySlug = new Map(productCards.map((c) => [String(c.slug || ''), c]));
+const mergedCatalog: ProductCard[] = snippetCatalog.map((snippet) => {
+  const rich = richBySlug.get(snippet.detail_slug || snippet.slug) ?? richBySlug.get(snippet.slug);
+  return rich
+    ? {
+        ...rich,
+        language: snippet.language,
+        currency: snippet.currency,
+        price: snippet.price,
+        title: snippet.title,
+        href: snippet.href,
+      }
+    : {
+        title: snippet.title,
+        slug: snippet.slug,
+        tagline: snippet.short_description,
+        href: snippet.href,
+        category: snippet.category,
+        status: snippet.status,
+        version: snippet.version || undefined,
+        language: snippet.language,
+        currency: snippet.currency,
+        price: snippet.price,
+        excerpt: snippet.short_description,
+      };
+});
+const catalogLanguages = [...new Set(mergedCatalog.map((c) => String(c.language || 'en')))];
+const DEFAULT_FILTER = 'en';
+// SSR renders the canonical English view; the store (seeded with the full
+// catalog + the same filter) reproduces it exactly on the client.
+const ssrGridProducts = mergedCatalog.filter(
+  (c) => String(c.language || 'en') === DEFAULT_FILTER && String(c.slug) !== String(featuredProduct?.slug || ''),
+);
 ---
 
 
@@ -119,55 +164,53 @@ const restProducts = productCards.filter((c) => c !== featuredProduct);
       </a>
       )}
 
-      <div class='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-        {restProducts.map((card, i) => (
-          <a href={card.href} class='card reveal group flex flex-col gap-3 p-6 hover:-translate-y-0.5' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
-            <div class='flex items-start justify-between gap-3'>
-              <ProductLogo style={card.logo_style} />
-              <div class='flex flex-col items-end gap-1.5'>
-                <div class='flex items-center gap-1.5'>
-                  {card.status === 'development' && <span class='badge-dev'>under development</span>}
-                  <button
-                    type='button'
-                    data-open-brand={card.slug}
-                    aria-label={`${card.title} brand kit`}
-                    title='Brand kit — the story behind the mark'
-                    class='inline-flex h-7 w-7 items-center justify-center rounded-full border border-fu-line bg-fu-card text-fu-muted transition-colors hover:border-fu-link/50 hover:text-fu-link'
-                  >
-                    <svg class='h-3.5 w-3.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'><circle cx='12' cy='12' r='9'/><path stroke-linecap='round' d='M12 11v5M12 8h.01'/></svg>
-                  </button>
-                </div>
-                <span class='badge badge-primary'>{card.category || 'product'}</span>
-              </div>
-            </div>
-            <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink transition-colors group-hover:text-fu-link'>{card.title}</h3>
-            {card.version && <p class='font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted'>{card.version}</p>}
-            {card.tagline && <p class='text-sm leading-relaxed text-fu-muted'>{card.tagline}</p>}
-            {card.editions?.length ? (
-              <div class='flex flex-wrap gap-1.5'>
-                {card.editions.slice(0, 3).map((ed) => (
-                  <span class='edition-chip'>{ed.name} <strong>{ed.price}</strong></span>
-                ))}
-                {card.editions.length > 3 && <span class='inline-flex items-center px-1 font-mono text-[0.62rem] text-fu-muted'>+{card.editions.length - 3}</span>}
-              </div>
-            ) : null}
-            <div class='mt-auto flex flex-wrap items-center gap-2 pt-2'>
-              <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>View product →</span>
-              {card.tech?.length ? (
-                <span class='inline-flex items-center gap-1 rounded-full border border-fu-line bg-fu-card px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.12em] text-fu-muted'>
-                  {card.tech[0]}{card.tech.length > 1 ? ` +${card.tech.length - 1}` : ''}
-                </span>
-              ) : null}
-            </div>
-          </a>
-        ))}
-      </div>
+      <!-- Language filter — one source of truth: distinct languages come from
+           the merged snippet catalog (en + ar rows seeded from /apis/products/),
+           and selecting a chip dispatches setLanguageFilter which the grid's
+           own selectProducts selector applies. The default filter matches the
+           SSR render ('en'), so the static catalog stays canonical until the
+           visitor switches languages. -->
+      {catalogLanguages.length > 1 ? (
+        <div
+          class='mb-8 flex flex-wrap items-center gap-2'
+          x-data={`productLanguageFilter(${JSON.stringify({ languages: catalogLanguages, active: DEFAULT_FILTER })})`}
+          aria-label='Filter products by language'
+        >
+          <span class='mr-1 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>catalog language</span>
+          <button
+            type='button'
+            @click='select("")'
+            :class='active === "" ? "chip chip-active" : "chip"'
+          >All <span class='opacity-60' x-text='`(${counts[""] ?? 0})`'></span></button>
+          {catalogLanguages.map((code) => (
+            <button
+              type='button'
+              @click={`select('${code}')`}
+              :class={`active === '${code}' ? 'chip chip-active' : 'chip'`}
+            >
+              {code.toUpperCase()} <span class='opacity-60' x-text={`counts['${code}'] ?? 0`}></span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      <!-- The rest of the catalog — server-rendered at build time from the
+           English snippet rows (rich cards merged by slug), then kept in sync
+           with the Redux products slice by the client ProductGrid, which is
+           seeded with the full multilingual catalog (config.catalog) so the
+           language filter can switch to Arabic rows without a reload. -->
+      <ProductGrid
+        products={ssrGridProducts}
+        excludeSlug={featuredProduct?.slug}
+        catalog={mergedCatalog}
+        filter={DEFAULT_FILTER}
+      />
     </div>
   </section>
   ) : <ContentError label="Product data unavailable" />}
 
   <Testimonials testimonials={pageTestimonials?.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} />
-  <LiveFragment route='/products/' />
+  <RenderModeSwitch route='/products/' />
   <CTA heading={pageCta?.title || 'Most of our builds are open source'} intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />
   <HtmxBootstrap />

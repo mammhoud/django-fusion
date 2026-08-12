@@ -4,11 +4,19 @@ inventory synced from pos-full nodes)."""
 
 from __future__ import annotations
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from django_fusion.models import BaseDeviceToken
+
+# Schema-per-tenant registry models (django-tenants). Import-safe under
+# SQLite: the package is installed unconditionally; the Postgres-specific
+# schema hooks only fire when TENANCY_ENABLED (see configs/__init__.py).
+try:
+    from django_tenants.models import DomainMixin, TenantMixin
+except ImportError:  # pragma: no cover — django-tenants is a declared dep
+    TenantMixin = object
+    DomainMixin = object
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -99,6 +107,12 @@ class Branch(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.organization.name})"
+
+    @property
+    def branch_settings(self) -> "BranchSettings":
+        """Lazily-created per-branch settings row (tenant-relative)."""
+        settings, _ = BranchSettings.objects.get_or_create(branch=self)
+        return settings
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -744,3 +758,112 @@ class BackupRun(models.Model):
 
     def __str__(self):
         return f"BackupRun {self.filename} ({self.status})"
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Tenant Schema — schema-per-tenant multi-tenancy (django-tenants)
+# ══════════════════════════════════════════════════════════════════════
+# These models are the registry in the shared `public` schema. Under SQLite
+# (TENANCY_ENABLED=False) they import and store fine but are inert — the
+# schema creation/save hooks are Postgres-only and only fire when the
+# django_tenants backend is active (see configs/__init__.py).
+
+
+class Tenant(TenantMixin):
+    """One PostgreSQL schema per Cloud organization (1:1 with Organization).
+
+    ``schema_name`` (unique, indexed) is provided by TenantMixin and becomes
+    the PostgreSQL schema name when tenancy is active. Setting
+    ``auto_create_schema = True`` makes django-tenants create the schema
+    automatically on save against a Postgres backend.
+    """
+
+    organization = models.OneToOneField(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="tenant",
+        verbose_name=_("organization"),
+    )
+    # Gate schema auto-creation on tenancy being active: under SQLite
+    # (dev default) saving a Tenant must NOT emit CREATE SCHEMA SQL — it
+    # would raise OperationalError. When tenancy is flipped on, the
+    # django-tenants backend auto-creates each tenant's schema on save.
+    auto_create_schema = getattr(settings, "TENANCY_ENABLED", False)
+
+    class Meta:
+        verbose_name = _("tenant")
+        verbose_name_plural = _("tenants")
+        ordering = ["schema_name"]
+
+    def __str__(self):
+        return f"Tenant[{self.schema_name}] {self.organization.name}"
+
+
+class Domain(DomainMixin):
+    """Host → tenant mapping (e.g. acme.pos-cloud.app)."""
+
+    class Meta:
+        verbose_name = _("domain")
+        verbose_name_plural = _("domains")
+        ordering = ["domain"]
+
+    def __str__(self):
+        return f"{self.domain} → {self.tenant}"
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Branch Settings — complete per-branch configuration
+# ══════════════════════════════════════════════════════════════════════
+
+
+class BranchSettings(models.Model):
+    """Complete per-branch configuration (tenant-relative).
+
+    One rich settings row per branch covering financial, time/locale,
+    receipt/printing, sync/operations and feature-flag configuration.
+    The row is lazily created via ``branch.branch_settings``.
+    """
+
+    branch = models.OneToOneField(
+        Branch,
+        on_delete=models.CASCADE,
+        related_name="settings_row",
+        verbose_name=_("branch"),
+    )
+
+    # Financial
+    currency_code = models.CharField(_("currency code"), max_length=3, default="USD")
+    tax_profile_id = models.CharField(_("tax profile"), max_length=50, blank=True, default="")
+    tax_rate = models.DecimalField(_("tax rate"), max_digits=6, decimal_places=4, default=0)
+    price_decimal_places = models.PositiveSmallIntegerField(_("price decimals"), default=2)
+    round_after_tax = models.BooleanField(_("round after tax"), default=False)
+
+    # Time / locale
+    timezone = models.CharField(_("timezone"), max_length=64, default="UTC")
+    locale = models.CharField(_("locale"), max_length=10, default="en")
+    week_starts_on = models.PositiveSmallIntegerField(_("week starts on"), default=1)  # 0=Sun .. 6=Sat
+
+    # Receipt / printing
+    receipt_footer = models.TextField(_("receipt footer"), blank=True, default="")
+    receipt_logo_url = models.URLField(_("receipt logo URL"), blank=True, default="")
+    receipt_paper_width_mm = models.PositiveSmallIntegerField(_("paper width (mm)"), default=80)
+    auto_print_receipt = models.BooleanField(_("auto-print receipt"), default=True)
+
+    # Sync / operations
+    sync_interval_seconds = models.PositiveIntegerField(_("sync interval (s)"), default=300)
+    offline_grace_minutes = models.PositiveIntegerField(_("offline grace (min)"), default=30)
+    low_stock_threshold = models.DecimalField(_("low stock threshold"), max_digits=12, decimal_places=2, default=10)
+
+    # Feature flags / free-form extras
+    features = models.JSONField(_("features"), default=dict, blank=True)
+    settings = models.JSONField(_("settings"), default=dict, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("branch settings")
+        verbose_name_plural = _("branch settings")
+
+    def __str__(self):
+        return f"Settings[{self.branch.code}] {self.currency_code}"

@@ -10,14 +10,16 @@
  * import { hydrateFragments } from '../fusion/fragments';
  * ```
  */
-import { initFusionScroll } from './scroll';
+import { initFusionScroll, refreshFusionScroll } from './scroll';
 import { initFusionFragments } from './fragments';
+import { initFusionMotion } from './motion';
 
 export * from './theme';
 export * from './scroll';
 export * from './fragments';
 export * from './sse';
 export * from './htmx';
+export * from './motion';
 
 let initialized = false;
 
@@ -27,6 +29,8 @@ export function initFusion(): void {
   initialized = true;
   initFusionScroll();
   initFusionFragments();
+  // Lazy GSAP — only loads when [data-gsap] hooks exist on the page.
+  void initFusionMotion();
 }
 
 // Script runs at the end of <body> — DOM is ready.
@@ -39,3 +43,9 @@ declare global {
   }
 }
 window.__FUSION__ = true;
+
+// HTMX swaps can add revealable content after the initial observer scan.
+// Re-bind the shared scroll behavior once the new HTML has settled.
+document.addEventListener('htmx:afterSettle', () => {
+  refreshFusionScroll();
+});

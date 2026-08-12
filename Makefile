@@ -271,7 +271,7 @@ help:
 	@echo "  make deploy-tasks      - Deploy shared-worker (Dramatiq) + shared-scheduler (celery-beat) (starts Redis/Postgres if needed)"
 	@echo "  make status-tasks      - Show status of shared-worker + shared-scheduler"
 	@echo "  make logs-tasks        - Tail logs from shared-worker + shared-scheduler"
-	@echo "  make probe-health      - Probe each per-site container's /health/ via 'common' network (handles asymmetric ports/expose)"
+	@echo "  make probe-health      - Probe each site's health endpoint (docs, shared-media, filegator incl.) via 'common' network (handles asymmetric ports/expose)"
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
@@ -521,10 +521,9 @@ logs-tasks:
 	@docker logs --tail 30 shared-scheduler 2>&1 || echo "  (container not found)"
 
 # -----------------------------------------------------------------
-# probe-health — issue an HTTP probe against each site's /health/
-#        endpoint via 'docker exec' from shared-worker (which sits
-#        on the 'common' network) with `Host: 127.0.0.1` so Django
-#        ALLOWED_HOSTS accepts the request.
+# probe-health — issue an HTTP probe against each site's health
+#        endpoint (default /health/; non-Django services set their
+#        own path via the `:<path>` suffix — see PROBE_HEALTH_SITES)
 #
 # Why not a simple `curl http://<container>:<port>/health/`?
 #   1. lms-web + vresume-web only `expose:` their internal ports
@@ -541,24 +540,35 @@ logs-tasks:
 #      'unreachable' rather than lie with a misleading 000.
 #
 # Add a new site to PROBE_HEALTH_SITES when wiring its compose,
-# keeping the `<container>:<internal-port>` shape.
+# keeping the `<container>:<internal-port>[:<path>]` shape. The
+# optional `:<path>` (leading slash included) overrides the default
+# `/health/` for services without a Django /health/ endpoint:
+#   - docs:80:/README.md       — docsify/nginx; probes a real markdown
+#     page (its own compose healthcheck only checks the SPA shell /)
+#   - shared-media:80:/health/ — nginx `/health/` returns 200
+#   - filegator:8080:/         — FileGator web UI login page (200;
+#     only verifies the web UI is up, not the repository mount)
 # -----------------------------------------------------------------
-PROBE_HEALTH_SITES := ctc-research-website:5070 lms-web:5071 vresume-web:5072
+PROBE_HEALTH_SITES := ctc-research-website:5070 lms-web:5071 vresume-web:5072 docs:80:/README.md shared-media:80:/health/ filegator:8080:/
 
 probe-health:
-	@echo "📡 Probing each site's /health/ endpoint from inside the 'common' network..."
+	@echo "📡 Probing each site's health endpoint from inside the 'common' network..."
 	@if ! docker exec shared-worker true </dev/null 2>&1; then \
 		echo "  ⚠️  shared-worker is not running — bring it up first with 'make deploy-tasks'."; \
 		echo "     (the per-site loop will run but probe results will be misleading)"; \
 	fi
 	@for endpoint in $(PROBE_HEALTH_SITES); do \
-		container=$${endpoint%:*}; \
-		port=$${endpoint#*:}; \
-		printf "  %-22s " "$$endpoint"; \
+		container=$${endpoint%%:*}; \
+		rest=$${endpoint#*:}; \
+		case "$$rest" in \
+			*:*) port=$${rest%%:*}; path=$${rest#*:} ;; \
+			*)   port=$$rest; path=/health/ ;; \
+		esac; \
+		printf "  %-24s " "$$endpoint"; \
 		code=$$(docker exec shared-worker curl -s -o /dev/null -w '%{http_code}' \
 			-H 'Host: 127.0.0.1' \
 			--max-time 6 \
-			"http://$$container:$$port/health/" 2>&1); \
+			"http://$$container:$$port$$path" 2>&1); \
 		if echo "$$code" | grep -Eq '^[0-9]+$$'; then \
 			if [ "$$code" -ge 200 ] && [ "$$code" -lt 400 ]; then \
 				echo "✅ HTTP $$code (healthy)"; \
@@ -577,7 +587,7 @@ deploy-media:
 	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
 
 deploy-docs:
-	@docker compose -f applications/compose/docker-compose.docs.yml up -d
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d docs
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -1050,7 +1060,7 @@ build-media:
 	@cd $(SERVICES_DIR) && docker compose -f docker-compose.media.yml build
 
 build-docs:
-	@docker compose -f applications/compose/docker-compose.docs.yml build
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build docs
 
 # -----------------------------------------------------------------
 # Validation

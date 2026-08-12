@@ -37,8 +37,9 @@ SELECT 'CREATE DATABASE db_structa'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_structa')\gexec
 SELECT 'CREATE DATABASE db_lms_fusion'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_lms_fusion')\gexec
-SELECT 'CREATE DATABASE blinko'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'blinko')\gexec
+
+-- NOTE: the `blinko` database was removed (2026-08) when the dev-stack
+-- workspace replaced Blinko with FileGator (no database required).
 
 -- -----------------------------------------------------------------------------
 -- 3. Grant privileges and set ownership for each database
@@ -52,7 +53,7 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'blinko')\gexec
 -- -----------------------------------------------------------------------------
 DO $$
 DECLARE
-   db_names text[] := ARRAY['ctc_research', 'lms_demo', 'vresume', 'db_ctc', 'db_structa', 'db_lms_fusion', 'blinko'];
+   db_names text[] := ARRAY['ctc_research', 'lms_demo', 'vresume', 'db_ctc', 'db_structa', 'db_lms_fusion'];
    db_name text;
 BEGIN
    FOREACH db_name IN ARRAY db_names LOOP
@@ -113,13 +114,6 @@ ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
-\c blinko
-GRANT ALL PRIVILEGES ON SCHEMA public TO django;
-ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
-ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "hstore";
 
 -- -----------------------------------------------------------------------------
 -- 4. Done

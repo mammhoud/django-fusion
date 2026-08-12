@@ -3,7 +3,7 @@
 > **Related Names:** `operations`, `business logic`, `CRUD`, `Rust`, `Diesel`, `tauri commands`
 > **Tags:** #rust #operations #business-logic #crud
 
-25 business-logic modules, each following a uniform CRUD pattern. Every module connects to SQLite via `open_conn(&db_path)` and returns `Result<T, String>`.
+23 business-logic modules, each following a uniform CRUD pattern. Every module connects to SQLite via `open_conn(&db_path)` and returns `Result<T, String>`.
 
 ```
 operations/
@@ -21,12 +21,10 @@ operations/
 ├── employee_types.rs        # 🟢 Employee type CRUD (soft-delete)
 ├── employees.rs             # 🟢 Employee CRUD (soft-delete)
 ├── employee_schedules.rs    # 🟢 Shift scheduling
-├── payrolls.rs              # 🟢 Payslip generation
 ├── roles.rs                 # 🟢 RBAC management
 ├── suppliers.rs             # 🟢 Supplier CRUD (soft-delete)
 ├── purchase_orders.rs       # 🟢 Procurement workflow
 ├── customers.rs             # 🟢 Customer + loyalty CRUD
-├── kitchen_tickets.rs       # 🟢 Kitchen display workflow
 ├── receipt_templates.rs     # 🟢 Receipt template CRUD
 ├── tax_reports.rs           # 🟢 Tax report CRUD
 ├── reports.rs               # 🟢 Report metadata

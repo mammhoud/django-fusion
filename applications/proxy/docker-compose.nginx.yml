@@ -22,11 +22,23 @@ x-media-base: &media-base
   networks:
     - traefik-net
     - common
+  # Resolver smoke test: (1) nginx -t syntax check, (2) the variable-upstream
+  # resolver directive is ACTIVE in the effective config, (3) a real request
+  # through a variable upstream (+ /__resolver_probe__ location) returns 200.
+  # All three must pass or the container is unhealthy — catching the "no
+  # resolver defined" regression at deploy time (variable upstreams 502 even
+  # when the workspace containers are up). NOTE: nginx -T echoes comment
+  # lines, so the grep is anchored to the directive start to avoid matching
+  # a commented-out resolver.
   healthcheck:
-    test: ["CMD", "nginx", "-t"]
+    test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && nginx -T 2>/dev/null | grep -qE '^[[:space:]]*resolver 127[.]0[.]0[.]11' && curl -fsS -o /dev/null http://127.0.0.1/__resolver_probe__ || exit 1"]
     interval: 30s
     timeout: 10s
     retries: 3
+    # Probe targets the docs container, which builds/rebuilds at deploy
+    # time — give first-start grace so a slow docs build cannot flap
+    # shared-media unhealthy (mirrors the dev-stack 120s start_period).
+    start_period: 30s
 
 services:
   shared-media:

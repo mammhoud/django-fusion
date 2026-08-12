@@ -39,6 +39,12 @@ const methods: ContactMethod[] = propMethods && propMethods.length > 0
 
 const contactEndpoint = browserEndpoint('/fragment/contact/');
 
+// The assessment CTA uses a stable machine value so the prefilled path works
+// even when editors use human-readable topic labels for the other choices.
+const assessmentTopic = 'infrastructure-and-ai-assessment';
+const topicOptions = Array.from(new Set([assessmentTopic, ...topics]));
+const topicOptionsJson = JSON.stringify(topicOptions);
+
 const methodIcons: Record<string, string> = {
   email: 'M3 8l7.5 5L18 8M4 19h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z',
   phone: 'M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012 4.2 2 2 0 014 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z',
@@ -80,14 +86,34 @@ const methodIcons: Record<string, string> = {
       <div class="contact-form__form">
         <form
           class="card p-8"
+          data-topic-options={topicOptionsJson}
+          data-contact-endpoint={contactEndpoint}
           x-data="{
-            form: { name: '', email: '', subject: '', topic: '', message: '' },
+            form: {
+              name: '',
+              email: '',
+              subject: '',
+              topic: '',
+              message: '',
+            },
             errors: {},
             submitting: false,
+            init() {
+              try {
+                const allowed = JSON.parse(this.$el.dataset.topicOptions || '[]');
+                const requested = new URLSearchParams(window.location.search).get('topic') || '';
+                if (allowed.includes(requested)) this.form.topic = requested;
+              } catch {
+                this.form.topic = '';
+              }
+              if (this.form.topic === 'infrastructure-and-ai-assessment') {
+                this.form.subject = 'Free infrastructure, AI, and automation assessment';
+              }
+            },
             validate() {
               this.errors = {};
               if (!this.form.name.trim()) this.errors.name = 'Please enter your name.';
-              if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.form.email)) this.errors.email = 'Please enter a valid email.';
+              if (!this.form.email.includes('@') || !this.form.email.includes('.')) this.errors.email = 'Please enter a valid email.';
               if (!this.form.subject.trim()) this.errors.subject = 'Please add a subject.';
               if (!this.form.topic.trim()) this.errors.topic = 'Please choose a topic.';
               if (this.form.message.trim().length < 10) this.errors.message = 'Message must be at least 10 characters.';
@@ -96,7 +122,7 @@ const methodIcons: Record<string, string> = {
             submit() {
               if (!this.validate()) return;
               this.submitting = true;
-              fetch('${contactEndpoint}', {
+              fetch(this.$el.dataset.contactEndpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'HX-Request': 'true' },
                 body: JSON.stringify(this.form),
@@ -117,6 +143,10 @@ const methodIcons: Record<string, string> = {
           @submit.prevent="submit()"
           novalidate
         >
+          <div class="mb-7 border-b border-fu-line pb-5">
+            <h3 class="font-display text-2xl font-semibold tracking-tight text-fu-ink">{formTitle}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-fu-muted">{formDescription}</p>
+          </div>
           <div class="contact-form__fields">
             <div>
               <label for="cf-name" class="form-label">Name</label>
@@ -137,7 +167,9 @@ const methodIcons: Record<string, string> = {
             <select id="cf-topic" class="input-field" x-model="form.topic"
                     :class="errors.topic && 'border-red-400 focus:border-red-400 focus:ring-red-400/20'">
               <option value="">Choose a topic…</option>
-              {topics.map((topic) => <option value={topic}>{topic}</option>)}
+              {topicOptions.map((topic) => (
+                <option value={topic}>{topic === assessmentTopic ? 'Free infrastructure, AI, and automation assessment' : topic}</option>
+              ))}
             </select>
             <p class="mt-1 text-xs text-red-500" x-show="errors.topic" x-text="errors.topic"></p>
           </div>

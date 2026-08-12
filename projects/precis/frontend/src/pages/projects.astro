@@ -7,7 +7,6 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import LiveFragment from '@/components/ui/LiveFragment.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -79,7 +78,8 @@ const repoProjects = pageProjects?.map((p: any) => ({
   <Features heading='Everything is a document' intro='No hidden layers between your content and the browser. The AHA stack renders the web the way it was meant to ship.' pricing={{ heading: 'Pricing, printed clearly', intro: 'No hidden fees, no per-seat math. Pick a sheet, ship a site.' }} />
   <Testimonials />
   <FAQ />
-  <LiveFragment route='/projects/' />
+  <!-- Project content is already rendered from page data; avoid requesting
+       the full Astro document into an inner HTMX target. -->
   <CTA heading={pageCta?.title || 'Ship the document, not the app'} intro={pageCta?.subtitle || 'One HTTP response, finished HTML. Start building on Fusion CMS today.'} ctaLabel={pageCta?.primary_cta?.label || 'Get started'} ctaHref={pageCta?.primary_cta?.href || '/products'} />
   <Toast />
   <HtmxBootstrap />

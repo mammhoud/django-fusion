@@ -95,7 +95,7 @@ function ProfileDropdown({
 interface PageLayoutProps {
   children: React.ReactNode;
   showNav?: boolean;
-  /** Full-bleed presentation for dedicated windows (e.g. the KDS popout) —
+  /** Full-bleed presentation for dedicated windows —
    *  hides SideNav, the top bar and inactivity toast so the page owns the
    *  whole viewport. */
   standalone?: boolean;

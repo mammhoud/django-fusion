@@ -51,24 +51,51 @@
 </section>
 {% elif page.hero %}{% include_block page.hero %}{% endif %}
 
-{% comment %} Homepage learning catalog — the backend road mirrors the Astro
-   course cards and links into the full HTMX learning surface. {% endcomment %}
-{% if page.slug == "home" %}
-<section id="courses" class="learning-sheet" style="padding-block:4rem 5rem;">
-  <div class="container-fusion">
-    <div class="learning-section-head">
-      <div>
-        <p class="learning-kicker">[ LEARNING / PUBLIC CATALOG ]</p>
-        <h2 class="learning-section-title">Learn by shipping.</h2>
-      </div>
-      <a class="learning-button learning-button--primary" href="/learning/">BROWSE COURSES <span aria-hidden="true">&gt;&gt;</span></a>
-    </div>
-    {% if courses %}
-      {% include "learning/fragments/course_list.html" %}
-    {% else %}
-      <div class="learning-empty"><p class="learning-empty__title">Courses are being prepared.</p><p>Visit the learning catalog for the latest paths.</p></div>
-    {% endif %}
-  </div>
+{% comment %} Homepage learning teaser — ONE quiet link card into /learning/.
+   Distinct from the old full-preview section (removed 2026-08-12): this is a
+   single card, not a course grid, so the /learning/ catalog page stays the
+   single course destination and the teaser can never duplicate it.
+
+   Once-per-road contract:
+   - Django road (this partial) — rendered once here; the full page template
+     and the HTMX fragment share this partial, so a plain load and an HTMX
+     swap each carry exactly one teaser.
+   - Astro data road — the home JSON carries ``learning_teaser`` (api.py)
+     and the client renderer (alpine.js renderDataRoad) draws the same card.
+   - The static Astro home (index.astro) deliberately does NOT render it: the
+     live fragment region fetches this partial, so a static copy would show
+     the teaser twice on the render-first road.
+
+   Placement note: on the Django road this card sits right after the hero;
+   on the Astro roads it renders inside the live region (below the static
+   sections). That positional drift is intentional — do not hoist a copy
+   into index.astro, or the live region will double it. {% endcomment %}
+{% if page.content_type.model == "homepage" %}
+<section class="container-fusion" style="padding-block:2.5rem 0;">
+  <a
+    href="/learning/"
+    class="card learning-teaser reveal"
+    x-data
+    x-intersect="$el.classList.add('reveal-visible')"
+    aria-label="Open the learning catalog"
+    style="display:flex;align-items:center;justify-content:space-between;gap:1.25rem;padding:1.25rem 1.5rem;text-decoration:none;transition:border-color .2s,transform .2s;"
+  >
+    <span style="display:flex;align-items:center;gap:1rem;min-width:0;">
+      <span
+        class="product-logo"
+        data-brand="precis"
+        aria-hidden="true"
+        style="width:2.5rem;height:2.5rem;flex:none;"
+      >
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h20v20H4z" stroke-linejoin="round"/><path d="M9 13l3.5 3.5L9 20" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 20h6" stroke-linecap="round"/></svg>
+      </span>
+      <span style="min-width:0;">
+        <span class="learning-kicker" style="display:block;font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">[ LEARNING / PREVIEW ]</span>
+        <strong style="display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;color:hsl(var(--fu-ink));margin-top:.25rem;">Courses, enrollments, and progress &mdash; the live catalog</strong>
+      </span>
+    </span>
+    <span class="font-mono" style="flex:none;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));">Open the catalog &rarr;</span>
+  </a>
 </section>
 {% endif %}
 

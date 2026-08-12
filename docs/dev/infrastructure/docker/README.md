@@ -57,7 +57,7 @@
 | `applications/databases/docker-compose.yml` | Postgres + Redis + Coder |
 | `applications/proxy/docker-compose.yml` | Traefik proxy |
 | `applications/proxy/docker-compose.nginx.yml` | Nginx media server |
-| `applications/compose/docker-compose.docs.yml` | Documentation site |
+| `applications/proxy/docker-compose.nginx.yml` (`docs` service) | Documentation site |
 
 ---
 

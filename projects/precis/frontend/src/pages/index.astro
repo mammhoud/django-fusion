@@ -2,12 +2,12 @@
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
+import OutcomeFramework from '@/components/blocks/OutcomeFramework.astro';
 import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
-import LiveFragment from '@/components/ui/LiveFragment.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, CONTENT_LANGUAGE } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+import { teaserCopy } from '@/lib/teaser-translations';
 import { fusionApiUrl } from '@/lib/site';
 
 // The HTMX demo fetches the backend ping fragment — always point at the
@@ -32,6 +32,7 @@ try {
 
 const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
+const hasEditorialHero = Boolean(pageHero?.title && pageHero?.subtitle && pageHero?.primary_cta?.href);
 const pageStats = (pageData?.stats as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 
@@ -48,37 +49,14 @@ const stackItems = pageFeatures?.map((f: any) => ({
   description: String(f.description || ''),
 }));
 
-const productCards = [
-  {
-    name: 'django-fusion',
-    tag: 'component system · routing · fragment rendering',
-    description: 'The backbone of every structa.cloud site. Component registry, HtmxDetails, PageHandler views, and {% comp %} templates — shared across all Django projects.',
-    href: '/products#django-fusion',
-    icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
-  },
-  {
-    name: 'ceptor-ai',
-    tag: 'AI chat · MCP server · agent tooling',
-    description: 'AI chat client and Model Context Protocol server. Powers Cypercloud, agent generation, and structured prompt-to-design conversion.',
-    href: '/products#ceptor-ai',
-    icon: 'M9.8 15.5A6.7 6.7 0 0112 15a6.7 6.7 0 012.2.5M12 3a9 9 0 100 18 9 9 0 000-18zm-1 9a1 1 0 112 0 1 1 0 01-2 0z',
-  },
-  {
-    name: 'vResume',
-    tag: 'cloud resume platform · SaaS · CI/CD',
-    description: 'Create, update, and publish professional resumes with modern templates. Cloud-hosted at vresume.structa.cloud with scalable deployment.',
-    href: 'https://vresume.structa.cloud',
-    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z',
-    external: true,
-  },
-  {
-    name: 'Forge POS',
-    tag: 'desktop app · Tauri 2 · Rust · React',
-    description: 'Desktop point-of-sale in three editions: Minimal (SQLite), Solo (embedded Python), Full (multi-terminal + cloud CRM). Built on Tauri 2 + Rust.',
-    href: '/projects#forge-pos',
-    icon: 'M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3',
-  },
-];
+const productCards = (pageData?.products || []).map((product: any) => ({
+  name: String(product.title || ''),
+  tag: String(product.category || 'product'),
+  description: String(product.excerpt || product.tagline || ''),
+  href: String(product.href || `/products/${product.slug}/`),
+  icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
+  external: String(product.href || '').startsWith('http'),
+}));
 ---
 
 <Layout
@@ -90,14 +68,18 @@ const productCards = [
   pageSlug="home"
 >
   <Hero
-    eyebrow={pageHero?.badge || 'structa.cloud · full-stack engineering'}
-    heading={pageHero?.title || 'Platforms that ship as'}
-    accent='documents'
-    intro={pageHero?.subtitle || 'Structa Cloud builds server-rendered web platforms, AI tools, and open-source libraries — Django + Wagtail on the backend, Astro + HTMX + Alpine on the frontend. Every page is finished HTML in one response. No heavy SPA, no framework overhead, just the web as it should be.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore the stack', href: '/products' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'About the engineer', href: '/about' }}
+    eyebrow={pageHero?.badge || 'Precis · medical research learning'}
+    heading={hasEditorialHero ? pageHero?.title : 'Turn research intent into'}
+    accent={hasEditorialHero && pageHero?.accent ? pageHero.accent : 'visible progress'}
+    intro={hasEditorialHero && pageHero?.subtitle ? pageHero.subtitle : 'Follow serious learning paths with clear content, visible progress, and a next useful action — without a noisy platform getting in the way.'}
+    primaryCta={hasEditorialHero && pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start your learning path', href: '/courses/' }}
+    secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
     status='200 OK · text/html · 0 KB client framework'
   />
+
+  <!-- Outcome-led learning layer: visible progress, learner friction, the
+       learning path, product response, architecture proof, and FAQs. -->
+  <OutcomeFramework />
 
   <!-- Tech Stats — renders only when the backend provides stats (HomePage is a slim page by design) -->
   {techStats?.length ? <Stats stats={techStats} /> : null}
@@ -162,7 +144,7 @@ const productCards = [
             Open-source libraries, cloud platforms, and desktop apps — all from one codebase.
           </p>
         </div>
-        <a href='/products' class='btn-secondary group !px-6 !py-2.5 text-sm shrink-0'>
+        <a href='/products/' class='btn-secondary group !px-6 !py-2.5 text-sm shrink-0'>
           All products
           <span class='flex h-6 w-6 items-center justify-center rounded-full bg-fu-teal/10 text-fu-teal transition-transform duration-500 group-hover:translate-x-0.5' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
             <svg class='h-3 w-3' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.4' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M9 5l7 7-7 7'/></svg>
@@ -270,8 +252,31 @@ const productCards = [
     </div>
   </section>
 
-  <!-- HTMX → backend: server-rendered fragment replaces this region -->
-  {pageData ? <LiveFragment route='/' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
+  <!-- The homepage content is already rendered from the build-time page data
+       above. Do not issue a second HTMX request for the whole page: the
+       backend page-fragment API returns a JSON Fusion pointer, not HTML, and
+       swapping it here would replace valid content with a document/API error. -->
+
+  <!-- Single distinct learning entry (once-only contract — mirrors the
+       Django road teaser in home/main.html; the backend HTMX fragment does
+       NOT include it, so a swap can never double it). Copy follows the build
+       language (PUBLIC_CONTENT_LANGUAGE → CONTENT_LANGUAGE) like the Django
+       road's gettext catalogs. -->
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24' data-learning-teaser>
+    <div class='container-fusion max-w-3xl text-center'>
+      <p class='tag-marker mb-4'>{teaserCopy(CONTENT_LANGUAGE).marker}</p>
+      <h2 class='mb-3 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{teaserCopy(CONTENT_LANGUAGE).title}</h2>
+      <p class='mx-auto mb-6 max-w-xl text-fu-muted'>
+        {teaserCopy(CONTENT_LANGUAGE).intro}
+      </p>
+      <a href='/courses/' class='btn-primary group !px-7 !py-3 text-sm'>
+        {teaserCopy(CONTENT_LANGUAGE).cta}
+        <span class='flex h-6 w-6 items-center justify-center rounded-full bg-fu-teal/10 text-fu-teal transition-transform duration-500 group-hover:translate-x-0.5' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
+          <svg class='h-3 w-3' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.4' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M9 5l7 7-7 7'/></svg>
+        </span>
+      </a>
+    </div>
+  </section>
 
   <CTA
     heading={pageCta?.title || 'Built open-source, shipped as HTML'}
@@ -283,3 +288,7 @@ const productCards = [
   <Toast />
   <HtmxBootstrap />
 </Layout>
+
+<script>
+  import '../lib/home-motion';
+</script>

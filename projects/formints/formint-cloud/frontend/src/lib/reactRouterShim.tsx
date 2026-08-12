@@ -15,7 +15,17 @@
  * Tests still resolve the REAL `react-router-dom` (vitest.config.ts has no
  * alias) and mock `useNavigate` explicitly in test-utils.
  */
-import { useCallback } from 'react';
+import { useCallback, type ReactNode } from 'react';
+
+/**
+ * Test-only compatibility wrapper. The production app uses Astro's MPA
+ * routing, but a few existing component tests still wrap trees in
+ * `MemoryRouter`. Keeping the wrapper intentionally transparent preserves
+ * those tests without reintroducing a client-side router into the app.
+ */
+export function MemoryRouter({ children }: { children?: ReactNode }) {
+  return children ?? null;
+}
 
 function currentSearchParams(): URLSearchParams {
   return typeof window === 'undefined'

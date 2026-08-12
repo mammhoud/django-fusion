@@ -1,8 +1,8 @@
-"""Django REST views for Fusion LMS blog API.
+"""Django REST views for the Precis blog API.
 
-Mirrors the bolt API blog endpoints for regular Django runserver operation.
-
-Mount: /api/blog, /api/blog/<slug>, /api/blog/categories, /api/blog/tags
+The legacy ``/api/blog/`` routes serve the catalog/detail contract. The
+Astro detail shell additionally consumes ``/apis/blog/<slug>/comments/``;
+that thread is implemented here against Precis's moderated BlogComment model.
 """
 
 from __future__ import annotations
@@ -10,7 +10,6 @@ from __future__ import annotations
 import logging
 
 from django.http import JsonResponse
-
 logger = logging.getLogger(__name__)
 
 
@@ -124,6 +123,71 @@ def blog_post_detail(request, slug):
     except Exception:
         logger.exception("Error loading blog post")
         return JsonResponse({"status": "error", "message": "Internal server error"}, status=500)
+
+
+def _comment_to_dict(comment):
+    """Return the stable JSON shape consumed by both Astro blog shells."""
+    author = comment.author
+    display = author.get_full_name() or author.get_username()
+    return {
+        "id": comment.pk,
+        "author": display,
+        "display": display,
+        "body": comment.content,
+        "created_at": comment.created_at.isoformat() if comment.created_at else "",
+    }
+
+
+def blog_comments_api(request, slug):
+    """GET/POST ``/apis/blog/<slug>/comments/`` for Precis blog posts.
+
+    Approved comments are public. New comments require an authenticated
+    session and remain pending moderation, matching ``AddCommentView`` and the
+    admin ``BlogComment`` workflow. JSON and form-encoded bodies both accept
+    the ``body`` field.
+    """
+    import json
+
+    from apps.pages.blog.models import BlogComment, BlogPost
+
+    post = BlogPost.objects.filter(slug=slug, status="published").first()
+    if post is None:
+        return JsonResponse({"error": "Post not found"}, status=404)
+
+    if request.method == "GET":
+        comments = post.comments.filter(is_approved=True).select_related("author")
+        payload = [_comment_to_dict(comment) for comment in comments]
+        return JsonResponse({"comments": payload, "total": len(payload)})
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required — sign in to comment."}, status=401)
+
+    if request.content_type == "application/json":
+        try:
+            body = json.loads(request.body.decode("utf-8")).get("body", "")
+        except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
+            body = ""
+    else:
+        body = request.POST.get("body", "")
+    body = str(body).strip()
+    if not body or len(body) > 2000:
+        return JsonResponse({"error": "Comments must be between 1 and 2000 characters."}, status=400)
+
+    comment = BlogComment.objects.create(
+        post=post,
+        author=request.user,
+        content=body,
+        is_approved=False,
+    )
+    logger.info("blog_comment_pending: user=%s post=%s comment=%s", request.user.pk, post.slug, comment.pk)
+    return JsonResponse({
+        **_comment_to_dict(comment),
+        "pending": True,
+        "message": "Your comment was submitted for moderation.",
+    }, status=202)
 
 
 def blog_categories(request):

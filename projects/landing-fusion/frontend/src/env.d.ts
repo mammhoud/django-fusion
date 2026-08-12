@@ -14,8 +14,8 @@ declare namespace astroHTML.JSX {
 interface ToastStore {
   visible: boolean;
   message: string;
-  variant: 'success' | 'error' | 'info';
-  show(message: string, variant?: 'success' | 'error' | 'info', duration?: number): void;
+  variant: 'success' | 'error' | 'info' | 'warning';
+  show?: (message: string, variant?: 'success' | 'error' | 'info' | 'warning', duration?: number) => void;
 }
 
 declare global {

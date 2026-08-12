@@ -8,21 +8,26 @@
 
 import { useSettingsStore } from '../utils/settings';
 
+// Env-driven defaults (Vite reads .env into import.meta.env). The settings
+// store still wins when the user has configured custom URLs in the UI.
+const ENV_SIDECAR_URL = (import.meta.env?.VITE_SIDECAR_URL as string | undefined) || 'http://localhost:8765';
+const ENV_PORTAL_URL = (import.meta.env?.VITE_PORTAL_URL as string | undefined) || 'http://localhost:8080';
+
 function getSidecarUrl(): string {
   try {
     const store = useSettingsStore();
-    return store.sidecarUrl || 'http://localhost:8765';
+    return store.sidecarUrl || ENV_SIDECAR_URL;
   } catch {
-    return 'http://localhost:8765';
+    return ENV_SIDECAR_URL;
   }
 }
 
 function getPortalUrl(): string {
   try {
     const store = useSettingsStore();
-    return store.portalUrl || 'http://localhost:8080';
+    return store.portalUrl || ENV_PORTAL_URL;
   } catch {
-    return 'http://localhost:8080';
+    return ENV_PORTAL_URL;
   }
 }
 

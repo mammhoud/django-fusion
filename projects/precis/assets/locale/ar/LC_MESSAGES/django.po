@@ -15143,3 +15143,16 @@ msgstr "جميع الحقوق محفوظة"
 #: theme/partials/auth_buttons.html:72
 msgid "Register"
 msgstr "تسجيل"
+
+#: apps/templates/home/main.html
+msgid "Courses with visible progress"
+msgstr "دورات تقدّم واضح"
+
+#: apps/templates/home/main.html
+msgid "Follow serious learning paths with clear content, progress, and a next useful action."
+msgstr "اتبع مسارات تعلّم جادّة بمحتوى واضح وتقدّم ملموس وخطوة تالية مفيدة."
+
+#: apps/templates/home/main.html
+msgid "Open the catalog"
+msgstr "افتح الكتالوج"
+

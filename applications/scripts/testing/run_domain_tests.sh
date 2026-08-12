@@ -175,7 +175,9 @@ test_database_health() {
   fi
   log_success "PostgreSQL is responding"
 
-  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "blinko" "coder")
+  # `blinko` DB removed 2026-08 — the dev-stack workspace replaced Blinko
+  # with FileGator, which needs no database.
+  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "coder")
   if [ "$CRM_DEPLOYED" = true ]; then
     databases=("${databases[@]}" "db_crm")
   fi

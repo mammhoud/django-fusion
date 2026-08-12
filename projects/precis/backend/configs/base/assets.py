@@ -82,9 +82,13 @@ _bundles_json = SITE_BUNDLES_DIR / "bundles.json"
 # ── Unified django-fusion asset pipeline ─────────────────────────────────────
 # Webpack and component manifests are merged at link-generation time. The
 # generated bundle/static roots stay separate from source assets and media.
-FUSION_ASSET_PIPELINE = {
+# ``render_first_gates_assets`` ties asset loading to the render-first flag:
+# when FUSION_RENDER_FIRST is off (data-api mode) the webpack/skeleton links
+# are trimmed from the /apis/assets/ manifest.
+FUSION_PIPELINE = {
     "enabled": True,
     "static_url": STATIC_URL,
+    "render_first_gates_assets": True,
     "webpack": {
         "enabled": True,
         "stats_file": str(_bundles_json),

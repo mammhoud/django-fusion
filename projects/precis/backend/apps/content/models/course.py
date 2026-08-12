@@ -4,6 +4,9 @@ Fusion CMS — Course model (Wagtail snippet).
 Serves: GET /apis/courses
 """
 
+from decimal import Decimal
+
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +14,13 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import RichTextField
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+
+from apps.content.models.languages import SUPPORTED_LANGUAGE_CHOICES
+
+
+def default_currency() -> str:
+    """The unified catalog currency from settings (USD unless overridden)."""
+    return str(getattr(settings, "FUSION_DEFAULT_CURRENCY", "USD") or "USD")
 
 
 class DifficultyChoices(models.TextChoices):
@@ -28,8 +38,9 @@ class Course(index.Indexed, models.Model):
     short_description = models.CharField(max_length=255, blank=True, default="")
     category = models.ForeignKey("CourseCategory", on_delete=models.SET_NULL, null=True, blank=True, related_name="courses")
     skill_level = models.CharField(max_length=20, choices=DifficultyChoices.choices, default=DifficultyChoices.BEGINNER)
-    language = models.CharField(max_length=50, default="English")
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    language = models.CharField(max_length=10, choices=SUPPORTED_LANGUAGE_CHOICES, default="en")
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
+    currency = models.CharField(max_length=3, default=default_currency)
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=0)
     instructor = models.CharField(max_length=200, blank=True, default="")
     duration = models.CharField(max_length=50, blank=True, default="")
@@ -40,7 +51,7 @@ class Course(index.Indexed, models.Model):
     panels = [
         MultiFieldPanel([FieldPanel("title"), FieldPanel("slug"), FieldPanel("short_description"), FieldPanel("category"), FieldPanel("skill_level"), FieldPanel("language")], heading="Details"),
         FieldPanel("description"),
-        MultiFieldPanel([FieldPanel("price"), FieldPanel("instructor"), FieldPanel("duration")], heading="Pricing"),
+        MultiFieldPanel([FieldPanel("price"), FieldPanel("currency"), FieldPanel("instructor"), FieldPanel("duration")], heading="Pricing"),
         MultiFieldPanel([FieldPanel("rating"), FieldPanel("enrolled_count")], heading="Stats"),
         MultiFieldPanel([FieldPanel("is_published"), FieldPanel("created_at")], heading="Publishing"),
     ]

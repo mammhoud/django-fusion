@@ -100,17 +100,7 @@ fn add_sale(
     items: Vec<db::models::NewSaleItem>,
 ) -> Result<db::models::Sale, String> {
     let db_path = get_db_path(&app)?;
-    let (sale, ticket) = sales::add_sale(&db_path, sale, items)?;
-    // Emit a real-time event so all open KDS windows update instantly
-    if let Err(e) = app.emit("kitchen-ticket-update", serde_json::json!({
-        "type": "new",
-        "ticket": ticket,
-    })) {
-        eprintln!("[events] failed to emit kitchen-ticket-update: {e}");
-    }
-    // Update tray badge with latest pending count
-    update_tray_badge(&app, &db_path);
-    Ok(sale)
+    sales::add_sale(&db_path, sale, items)
 }
 
 #[tauri::command]
@@ -135,18 +125,6 @@ fn delete_sale(app: AppHandle, id: i32) -> Result<(), String> {
 fn refund_sale(app: AppHandle, sale_id: i32) -> Result<db::models::Sale, String> {
     let db_path = get_db_path(&app)?;
     sales::refund_sale(&db_path, sale_id)
-}
-
-#[tauri::command]
-fn get_sale_items_by_sale_id(app: AppHandle, sale_id: i32) -> Result<Vec<db::models::SaleItem>, String> {
-    let db_path = get_db_path(&app)?;
-    sales::get_sale_items_by_sale_id(&db_path, sale_id)
-}
-
-#[tauri::command]
-fn get_sale_by_id(app: AppHandle, id: i32) -> Result<db::models::Sale, String> {
-    let db_path = get_db_path(&app)?;
-    sales::get_sale_by_id(&db_path, id)
 }
 
 #[tauri::command]
@@ -340,8 +318,6 @@ fn add_employee(app: AppHandle, employee: db::models::NewEmployee) -> Result<db:
         serde_json::json!({
             "name": result.name,
             "employee_type_id": result.employee_type_id,
-            "salary": result.salary,
-            "pay_frequency": result.pay_frequency,
         }),
     );
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "added"})) {
@@ -363,7 +339,6 @@ fn update_employee(app: AppHandle, id: i32, update: db::models::UpdateEmployee) 
             "name": result.name,
             "is_active": result.is_active,
             "employee_type_id": result.employee_type_id,
-            "salary": result.salary,
         }),
     );
     if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "updated"})) {
@@ -635,50 +610,6 @@ fn delete_purchase_order(app: AppHandle, id: i32) -> Result<(), String> {
     purchase_orders::delete_purchase_order(&db_path, id)
 }
 
-// ---- Kitchen Tickets commands ----
-#[tauri::command]
-fn get_kitchen_tickets(app: AppHandle, status: Option<String>) -> Result<Vec<db::models::KitchenTicket>, String> {
-    let db_path = get_db_path(&app)?;
-    kitchen_tickets::get_kitchen_tickets(&db_path, status)
-}
-
-#[tauri::command]
-fn get_kitchen_ticket_categories(app: AppHandle, status: Option<String>) -> Result<Vec<db::models::KitchenTicketCategory>, String> {
-    let db_path = get_db_path(&app)?;
-    kitchen_tickets::get_kitchen_ticket_categories(&db_path, status)
-}
-
-#[tauri::command]
-fn add_kitchen_ticket(app: AppHandle, ticket: db::models::NewKitchenTicket) -> Result<db::models::KitchenTicket, String> {
-    let db_path = get_db_path(&app)?;
-    kitchen_tickets::add_kitchen_ticket(&db_path, ticket)
-}
-
-#[tauri::command]
-fn update_kitchen_ticket(app: AppHandle, id: i32, update: db::models::UpdateKitchenTicket) -> Result<db::models::KitchenTicket, String> {
-    let db_path = get_db_path(&app)?;
-    let ticket = kitchen_tickets::update_kitchen_ticket(&db_path, id, update)?;
-    // Emit a real-time event so other KDS windows update instantly
-    if let Err(e) = app.emit("kitchen-ticket-update", serde_json::json!({
-        "type": "updated",
-        "ticket": ticket,
-    })) {
-        eprintln!("[events] failed to emit kitchen-ticket-update: {e}");
-    }
-    // Update tray badge with latest pending count
-    update_tray_badge(&app, &db_path);
-    Ok(ticket)
-}
-
-#[tauri::command]
-fn delete_kitchen_ticket(app: AppHandle, id: i32) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    kitchen_tickets::delete_kitchen_ticket(&db_path, id)?;
-    // Update tray badge — a deleted ticket may reduce the pending count
-    update_tray_badge(&app, &db_path);
-    Ok(())
-}
-
 // ---- Customers commands ----
 #[tauri::command]
 fn get_customers(app: AppHandle) -> Result<Vec<db::models::Customer>, String> {
@@ -883,35 +814,6 @@ fn delete_employee_schedule(app: AppHandle, id: i32) -> Result<(), String> {
     employee_schedules::delete_employee_schedule(&db_path, id)
 }
 
-// ---- Payrolls commands ----
-#[tauri::command]
-fn get_payrolls(app: AppHandle, employee_id: Option<i32>) -> Result<Vec<db::models::Payroll>, String> {
-    let db_path = get_db_path(&app)?;
-    payrolls::get_payrolls(&db_path, employee_id)
-}
-
-#[tauri::command]
-fn add_payroll(app: AppHandle, payroll: db::models::NewPayroll) -> Result<db::models::Payroll, String> {
-    let db_path = get_db_path(&app)?;
-    payrolls::add_payroll(&db_path, payroll)
-}
-
-#[tauri::command]
-fn update_payroll(app: AppHandle, id: i32, update: db::models::UpdatePayroll) -> Result<db::models::Payroll, String> {
-    let db_path = get_db_path(&app)?;
-    payrolls::update_payroll(&db_path, id, update)
-}
-
-/// Generates a `pending` payroll record per active employee for the given
-/// period, sourced from each employee's salary/payroll settings.
-#[tauri::command]
-fn generate_payrolls(app: AppHandle, period_start: String, period_end: String) -> Result<Vec<db::models::Payroll>, String> {
-    let db_path = get_db_path(&app)?;
-    let created = payrolls::generate_payrolls(&db_path, period_start, period_end)?;
-    log_user_action(&db_path, "generate_payrolls", "payroll", 0, serde_json::json!({ "created": created.len() }));
-    Ok(created)
-}
-
 // ---- Finance & Budget commands ----
 #[tauri::command]
 fn get_finance_transactions(app: AppHandle) -> Result<Vec<db::models::FinanceTransaction>, String> {
@@ -973,12 +875,6 @@ fn delete_budget(app: AppHandle, id: i32) -> Result<(), String> {
 fn get_finance_summary(app: AppHandle) -> Result<db::models::FinanceSummary, String> {
     let db_path = get_db_path(&app)?;
     finance::get_finance_summary(&db_path)
-}
-
-#[tauri::command]
-fn delete_payroll(app: AppHandle, id: i32) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    payrolls::delete_payroll(&db_path, id)
 }
 
 // ---- Report Metadata commands ----
@@ -1175,12 +1071,10 @@ const IMPORT_APPEND_TABLES: &[&str] = &[
     "suppliers",
     "purchase_orders",
     "purchase_order_items",
-    "kitchen_tickets",
     "loyalty_transactions",
     "receipt_templates",
     "tax_reports",
     "employee_schedules",
-    "payrolls",
     "support_messages",
     "report_metadata",
 ];
@@ -1280,113 +1174,6 @@ fn import_database_cmd(app: AppHandle, data: String, mode: Option<String>) -> Re
     Ok(())
 }
 
-/// Update the system tray tooltip to show the current pending ticket count.
-/// Safe to call even if the tray doesn't exist (e.g. on mobile).
-fn update_tray_badge(app: &AppHandle, db_path: &std::path::PathBuf) {
-    #[cfg(not(any(target_os = "android", target_os = "ios")))]
-    {
-        if let Some(tray) = app.tray_by_id("main") {
-            match kitchen_tickets::count_pending_tickets(db_path) {
-                Ok(count) => {
-                    let tip = if count > 0 {
-                        format!("Formint — {} pending", count)
-                    } else {
-                        "Formint".to_string()
-                    };
-                    let _ = tray.set_tooltip(Some(&tip));
-                }
-                Err(e) => eprintln!("[tray] failed to count pending tickets: {e}"),
-            }
-        }
-    }
-}
-
-/// Tauri command — opens the Kitchen Display in a dedicated always-on-top
-/// window (label "kds"). If the window already exists it is focused instead.
-/// The window is closed automatically when the main window closes (see setup).
-#[tauri::command]
-fn open_kds_window(app: AppHandle) -> Result<(), String> {
-    if let Some(win) = app.get_webview_window("kds") {
-        let _ = win.show();
-        let _ = win.set_focus();
-        return Ok(());
-    }
-    let mut builder = tauri::WebviewWindowBuilder::new(&app, "kds", tauri::WebviewUrl::App("index.html?kds=1".into()))
-        .title("Kitchen Display — Formint")
-        .inner_size(1280.0, 820.0)
-        .min_inner_size(960.0, 640.0)
-        .resizable(true)
-        .always_on_top(true)
-        .skip_taskbar(false);
-    // Restore the last known position/size so the popout reopens where the user left it.
-    if let Ok(Some(bounds)) = load_kds_bounds(&app) {
-        builder = builder
-            .position(bounds.0 as f64, bounds.1 as f64)
-            .inner_size(bounds.2, bounds.3);
-    } else {
-        builder = builder.center();
-    }
-    let win = builder.build().map_err(|e| e.to_string())?;
-    // Persist bounds whenever the window moves or is resized.
-    let app_handle = app.clone();
-    win.on_window_event(move |event| {
-        match event {
-            tauri::WindowEvent::Moved(_) | tauri::WindowEvent::Resized(_) => {
-                if let Some(kds) = app_handle.get_webview_window("kds") {
-                    if let (Ok(pos), Ok(size)) = (kds.outer_position(), kds.inner_size()) {
-                        let _ = save_kds_bounds(&app_handle, pos.x, pos.y, size.width as f64, size.height as f64);
-                    }
-                }
-            }
-            _ => {}
-        }
-    });
-    Ok(())
-}
-
-/// Loads the persisted KDS window bounds: (x, y, width, height).
-fn load_kds_bounds(app: &AppHandle) -> Result<Option<(i32, i32, f64, f64)>, String> {
-    let path = get_window_state_path(app)?;
-    if !path.exists() {
-        return Ok(None);
-    }
-    let content = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
-    let state: serde_json::Value = serde_json::from_str(&content).map_err(|e| e.to_string())?;
-    let k = state.get("kds");
-    let bounds = k.and_then(|v| {
-        Some((
-            v.get("x")?.as_i64()? as i32,
-            v.get("y")?.as_i64()? as i32,
-            v.get("width")?.as_f64()?,
-            v.get("height")?.as_f64()?,
-        ))
-    });
-    Ok(bounds)
-}
-
-/// Saves the KDS window bounds alongside the main window's maximize state.
-fn save_kds_bounds(app: &AppHandle, x: i32, y: i32, width: f64, height: f64) -> Result<(), String> {
-    let path = get_window_state_path(app)?;
-    let mut state = serde_json::json!({});
-    if path.exists() {
-        if let Ok(content) = std::fs::read_to_string(&path) {
-            if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&content) {
-                state = parsed;
-            }
-        }
-    }
-    state["kds"] = serde_json::json!({ "x": x, "y": y, "width": width, "height": height });
-    std::fs::write(path, serde_json::to_string_pretty(&state).unwrap()).map_err(|e| e.to_string())
-}
-
-/// Tauri command — lets the frontend trigger a tray badge refresh on page load
-#[tauri::command]
-fn sync_tray_badge(app: AppHandle) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    update_tray_badge(&app, &db_path);
-    Ok(())
-}
-
 // Helper function to get window state file path (desktop only)
 fn get_window_state_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
 
@@ -1428,18 +1215,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
-            // ── When the main window closes, close the dedicated KDS popout too ──
-            if let Some(main_win) = app.get_webview_window("main") {
-                let handle = app.handle().clone();
-                main_win.on_window_event(move |event| {
-                    if let tauri::WindowEvent::CloseRequested { .. } = event {
-                        if let Some(kds) = handle.get_webview_window("kds") {
-                            let _ = kds.close();
-                        }
-                    }
-                });
-            }
-
             let db_path = get_db_path(&app.handle())?;
             run_migrations(&db_path)?;
 
@@ -1511,15 +1286,6 @@ pub fn run() {
                     })
                     .build(app)?;
 
-                // Compute initial pending count and update the tray tooltip
-                if let Ok(count) = kitchen_tickets::count_pending_tickets(&db_path) {
-                    let tip = if count > 0 {
-                        format!("Formint — {} pending", count)
-                    } else {
-                        "Formint".to_string()
-                    };
-                    let _ = tray.set_tooltip(Some(&tip));
-                }
             }
 
             // Setup window state management (desktop only)
@@ -1566,8 +1332,6 @@ pub fn run() {
             delete_sale,
             refund_sale,
             mark_sale_uploaded,
-            get_sale_items_by_sale_id,
-            get_sale_by_id,
             // Transactions
             get_transactions,
             delete_transaction,
@@ -1658,12 +1422,6 @@ pub fn run() {
             add_purchase_order,
             update_purchase_order,
             delete_purchase_order,
-            // Kitchen Tickets
-            get_kitchen_tickets,
-            get_kitchen_ticket_categories,
-            add_kitchen_ticket,
-            update_kitchen_ticket,
-            delete_kitchen_ticket,
             // Customers
             get_customers,
             add_customer,
@@ -1700,11 +1458,6 @@ pub fn run() {
             add_employee_schedule,
             update_employee_schedule,
             delete_employee_schedule,
-            // Payrolls
-            get_payrolls,
-            add_payroll,
-            update_payroll,
-            delete_payroll,
             // Finance & Budget
             get_finance_transactions,
             add_finance_transaction,
@@ -1715,7 +1468,6 @@ pub fn run() {
             update_budget,
             delete_budget,
             get_finance_summary,
-            generate_payrolls,
             // Report Metadata
             get_report_metadata,
             add_report_metadata,
@@ -1729,10 +1481,6 @@ pub fn run() {
             start_sidecar,
             stop_sidecar,
             sidecar_status,
-            // Tray badge
-            sync_tray_badge,
-            // KDS popout window
-            open_kds_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
