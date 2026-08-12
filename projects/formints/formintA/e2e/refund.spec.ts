@@ -23,6 +23,11 @@ const COMPLETED_SALE = {
 test.describe('Transactions — Refund flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript({ path: TAURI_MOCK });
+    // Force English so the tokenized i18n keys / labels resolve deterministically.
+    await page.addInitScript(`
+      localStorage.setItem('language', 'en');
+      localStorage.setItem('theme-mode', 'light');
+    `);
     // Bypass the auth gate and load one completed sale.
     await page.addInitScript(`
       window.__TAURI_MOCK_SET__('check_auth_required', false);

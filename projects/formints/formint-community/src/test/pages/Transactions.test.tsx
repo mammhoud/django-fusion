@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Transactions from '@/app/pages/pos/Transactions';
 import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
 import { clearInvokeHistory, getInvokeHistory } from '../setup';
+import { renderWithRouter } from '../test-utils';
 
 const mockSettings = {
   restaurant_name: 'Formint',
@@ -35,9 +36,11 @@ describe('Transactions refund flow', () => {
 
   it('refunds a completed sale and shows the refunded chip', async () => {
     mockInvokeSuccess('get_transactions', [completedSale]);
-    render(<Transactions />);
+    renderWithRouter(<Transactions />);
 
-    await waitFor(() => expect(screen.getByText('USD 25.00')).toBeTruthy());
+    await waitFor(() =>
+      expect(screen.getAllByText('USD 25.00').length).toBeGreaterThan(0),
+    );
 
     const refundButton = await screen.findByRole('button', { name: /refund/i });
     await userEvent.click(refundButton);
@@ -59,7 +62,7 @@ describe('Transactions refund flow', () => {
 
   it('does not offer refund for an already refunded sale', async () => {
     mockInvokeSuccess('get_transactions', [{ ...completedSale, status: 'refunded' }]);
-    render(<Transactions />);
+    renderWithRouter(<Transactions />);
 
     await waitFor(() => expect(screen.getByText('Refunded')).toBeTruthy());
     expect(screen.queryByRole('button', { name: /refund/i })).toBeNull();
@@ -67,14 +70,16 @@ describe('Transactions refund flow', () => {
 
   it('surfaces an error when the refund command fails', async () => {
     mockInvokeSuccess('get_transactions', [completedSale]);
-    render(<Transactions />);
+    renderWithRouter(<Transactions />);
 
-    await waitFor(() => expect(screen.getByText('USD 25.00')).toBeTruthy());
+    await waitFor(() =>
+      expect(screen.getAllByText('USD 25.00').length).toBeGreaterThan(0),
+    );
     const refundButton = await screen.findByRole('button', { name: /refund/i });
     await userEvent.click(refundButton);
 
-    // Fail refund_sale only — the dialog stays open and the error surfaces
-    // in the status toast.
+    // Register the error AFTER the open-click so the dialog's confirm step
+    // can be reached; failing refund_sale surfaces the error in the toast.
     mockInvokeError('refund_sale', 'sale 1 is already refunded');
     const confirm = await screen.findByRole('button', { name: /confirm refund/i });
     await userEvent.click(confirm);

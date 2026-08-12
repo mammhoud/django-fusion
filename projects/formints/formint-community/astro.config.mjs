@@ -25,6 +25,19 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      // Astro's default scan glob (`src/**/*.{jsx,tsx,…}`) pulls `src/test/**`
+      // files into the app's dependency optimizer. Test files import
+      // `MemoryRouter` from react-router-dom, which this app aliases to the
+      // MPA shim (no MemoryRouter export) — that crashes the esbuild scan and
+      // kills `pnpm dev` / `pnpm tauri dev` on a fresh `.vite` cache. Restrict
+      // the scan to real app sources.
+      entries: [
+        './src/**/*.{jsx,tsx,vue,svelte,html,astro}',
+        '!**/test/**',
+        '!**/*.test.{ts,tsx}',
+      ],
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -36,7 +36,7 @@ API_PORT      := 8767
 FRONTEND_PORT := 4323
 
 .PHONY: help install migrate seed check test verify-stack dev-backend dev-api \
-        dev-frontend stop styles backend-help backend-check backend-migrate \
+        dev-frontend stop clean styles backend-help backend-check backend-migrate \
         backend-test frontend-install frontend-dev frontend-build frontend-check
 
 help: ## Show all commands
@@ -93,6 +93,12 @@ stop: ## Kill dev processes
 	@lsof -ti :$(API_PORT) | xargs kill -9 2>/dev/null || true
 	@lsof -ti :$(FRONTEND_PORT) | xargs kill -9 2>/dev/null || true
 	@echo 'stopped'
+
+clean: ## Remove Cloud database and bytecode cache
+	rm -f $(BACKEND_DIR)/pos_cloud.db
+	find $(BACKEND_DIR) -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	rm -rf $(FRONTEND_DIR)/dist 2>/dev/null || true
+	@echo '✓ Cloud cleaned'
 
 # ── Backend delegation ────────────────────────────────────────────────────
 backend-help:

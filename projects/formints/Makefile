@@ -45,6 +45,7 @@
 .PHONY: client-install client-dev client-build client-lint client-test client-clean
 # ── SDK (packages/formints-client) ──
 .PHONY: sdk-install sdk-build sdk-typecheck sdk-test
+.PHONY: test check
 # ── Legacy aliases ──
 .PHONY: mini-install mini-dev mini-build mini-check \
         formint-install formint-env formint-run formint-stop formint-test \
@@ -77,11 +78,11 @@ help:                 ## Show this help menu
 	@echo '  SDK (@formints/client) — make sdk-{install,build,typecheck,test}'
 	@echo ''
 	@echo '── Aggregates ──────────────────────────────────────────────'
-	@echo '  make install-all       Install every edition'
+	@echo '  make install-all       Install every edition (run first on a fresh clone)'
 	@echo '  make check-all         Run checks for every edition'
-	@echo '  make test-all          Run every edition test suite'
+	@echo '  make test-all          Run every edition test suite (needs install-all first)'
 	@echo '  make stop-all          Stop all running dev processes'
-	@echo '  make clean-all         Clean every edition'
+	@echo '  make clean-all         Clean every edition (also removes formint-community/ — run make community-bundle to regenerate)'
 	@echo ''
 	@echo '── Community quick start ───────────────────────────────────'
 	@echo '  make community-dev        Vite dev server (:1420, browser only)'
@@ -149,6 +150,10 @@ clean-all:            ## Clean every edition
 	$(MAKE) -C $(CLIENT) clean
 	rm -rf $(COMMUNITY_VERSION)
 	@echo '✓ All editions cleaned'
+
+test: test-all         ## Alias — run every edition test suite
+
+check: check-all       ## Alias — run checks for every edition
 
 clean: clean-all      ## Alias — clean every edition
 
@@ -311,7 +316,6 @@ formint-clean: standard-clean     ## Alias — merged clean
 
 cloud-run: cloud-dev-backend      ## Alias — Cloud Django :8082
 cloud-dev: cloud-dev-backend      ## Alias — Cloud Django :8082
-cloud-clean: cloud-clean          ## Alias — Cloud clean
 
 screenshots:          ## Capture marketplace screenshots (Community)
 	$(MAKE) -C $(COMMUNITY) screenshots

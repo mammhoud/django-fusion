@@ -139,7 +139,7 @@ make build-all         # All platforms sequentially
 
 See `src-tauri/tauri.conf.json` for:
 - App window dimensions (default: 1200×800)
-- Bundle identifier: `com.mammhoud.pos`
+- Bundle identifier: `com.mammhoud.formint-community`
 - Icon paths (icns, ico, png)
 - External binaries (sidecar)
 - Updater endpoints
@@ -389,9 +389,9 @@ SMTP_FROM_EMAIL=no-reply@example.com
 ### Data Directory
 
 The database and config files are stored in the app's data directory:
-- **macOS:** `~/Library/Application Support/com.mammhoud.pos/`
-- **Windows:** `%APPDATA%/com.mammhoud.pos/`
-- **Linux:** `~/.local/share/com.mammhoud.pos/`
+- **macOS:** `~/Library/Application Support/com.mammhoud.formint-community/`
+- **Windows:** `%APPDATA%/com.mammhoud.formint-community/`
+- **Linux:** `~/.local/share/com.mammhoud.formint-community/`
 
 ### Auto-Update
 

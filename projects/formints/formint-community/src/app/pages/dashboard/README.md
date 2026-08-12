@@ -1,7 +1,7 @@
 # 📁 POS-KO Pages (`src/pages/`)
 
 > **Related Names:** `pages`, `routes`, `views`, `screens`, `POS terminal`, `dashboard`, `inventory`, `employees`, `customers`, `reports`
-> **Tags:** #pages #react #routes #pos-ko
+> **Tags:** #pages #react #routes #formint-community
 
 22 route-level page components. Each maps to a route in `src/App.tsx`.
 

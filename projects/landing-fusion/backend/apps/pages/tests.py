@@ -1136,6 +1136,16 @@ class LandingPagesTestCase(TestCase):
         api = self.client.get("/apis/pages/formint-pos/").json()
         community = next(edition for edition in api["editions"] if edition["name"] == "Community")
         self.assertNotIn("No sidecar, no server needed", community["features"])
+        # The Community card carries the offline-first badge (renders badge-offer).
+        self.assertEqual(community.get("offer_label"), "Offline-first · open source")
+        self.assertIn(b"Offline-first \xc2\xb7 open source", response.content)
+        # The capability list ("What Formints POS ships") surfaces the offline
+        # banner and the refund flow, not just the comparison rows.
+        for title in ("Offline-first mode", "Refunds & returns"):
+            self.assertTrue(
+                any(f.get("title") == title for f in api.get("features", [])),
+                f"missing POS capability: {title}",
+            )
         standard = next(edition for edition in api["editions"] if edition["name"] == "Standard")
         pro = next(edition for edition in api["editions"] if edition["name"] == "Pro")
         self.assertEqual(

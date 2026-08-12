@@ -78,8 +78,8 @@ describe('Transactions refund flow', () => {
     const refundButton = await screen.findByRole('button', { name: /refund/i });
     await userEvent.click(refundButton);
 
-    // Fail refund_sale only — the dialog stays open and the error surfaces
-    // in the status toast.
+    // Register the error AFTER the open-click so the dialog's confirm step
+    // can be reached; failing refund_sale surfaces the error in the toast.
     mockInvokeError('refund_sale', 'sale 1 is already refunded');
     const confirm = await screen.findByRole('button', { name: /confirm refund/i });
     await userEvent.click(confirm);

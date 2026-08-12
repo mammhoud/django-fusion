@@ -78,7 +78,16 @@
 
 #### Features
 
-- Offline-first mode + refunds & returns (Community capability, landing sync Aug 2026)
+- **Offline-first mode + offline-first badge** — no server, no sidecar, local
+  SQLite only. The **"Offline-first · open source" badge** (`offer_label`)
+  marks the Community edition on the landing edition + home product cards, and
+  in-app a calm banner ("Offline mode — data stays on this device") shows
+  whenever the OS reports the device offline (`useOfflineMode` hook).
+  (Community capability, landing sync Aug 2026)
+- **Refunds & returns** — Transactions → Refund on a completed sale → confirm
+  dialog → `invoke('refund_sale', { saleId })` → Rust `sales::refund_sale`
+  flips `sales.status` to `"refunded"`. Only `completed` sales, once only;
+  the transaction trail is preserved (no data deleted).
 - **API surface:** Tauri `invoke` commands (Rust/Diesel) — the `@formints/client` TS bundle applies to the Django-backed editions (Standard/Cloud), not this edition
 - 30+ Tauri `#[command]` functions (Diesel ORM) — products, customers, sales, employees, settings
 - ESC/POS thermal printer support (direct, only edition with hardware printing)
