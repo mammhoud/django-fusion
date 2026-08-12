@@ -1,0 +1,28 @@
+# =============================================================================
+# FileGator — per-workspace file manager (port 8080)
+# =============================================================================
+# Routes filegator.localhost / filegator.structa.cloud to the shared-media
+# nginx, which proxies to the workspace container coder-dev-filegator:8080
+# (see applications/proxy/nginx/default.conf). This replaces the old Blinko
+# route (blinko.structa.cloud).
+# =============================================================================
+http:
+  routers:
+    filegator-http:
+      rule: 'Host(`filegator.localhost`) || Host(`filegator.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: filegator-service
+      priority: 150
+    filegator-https:
+      rule: 'Host(`filegator.localhost`) || Host(`filegator.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: filegator-service
+      priority: 150
+  services:
+    filegator-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-media:80'
+        passHostHeader: true

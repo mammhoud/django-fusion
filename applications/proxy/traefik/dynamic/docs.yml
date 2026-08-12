@@ -1,0 +1,53 @@
+# =============================================================================
+# Docs — Structa Cloud documentation (docs.structa.cloud)
+# =============================================================================
+# Docsify SPA hosted by the docs container (nginx — docs/Dockerfile). The SPA
+# index.html sets basePath '/docs/' (shared with the media.structa.cloud/docs/
+# mount), so the https router strips that prefix before proxying:
+#   docs.structa.cloud/docs/README.md -> docs:/README.md
+# The bare host (docs.structa.cloud/) serves the SPA shell directly, and its
+# relative assets (theme.css, …) resolve from the container root.
+# Requires the docs container (applications/proxy/docker-compose.nginx.yml)
+# and an A record for docs.structa.cloud pointing at this server.
+# =============================================================================
+
+http:
+  middlewares:
+    strip-docs-prefix:
+      stripPrefixRegex:
+        regex:
+          # Segment-aware: strips /docs/... -> /..., /docs -> /, but leaves
+          # look-alike paths (e.g. /documentation) untouched (plain
+          # StripPrefix would wrongly turn those into /umentation).
+          - "^/docs(/|$)"
+
+  routers:
+    docs-http:
+      rule: Host(`docs.structa.cloud`)
+      entryPoints:
+        - web
+      middlewares:
+        - redirect-to-https
+      service: docs-service
+
+    docs-https:
+      rule: Host(`docs.structa.cloud`)
+      entryPoints:
+        - web-secure
+      middlewares:
+        - compress
+        - security-headers
+        - strip-docs-prefix
+      service: docs-service
+      tls:
+        certResolver: letsencrypt-http
+
+  services:
+    docs-service:
+      loadBalancer:
+        servers:
+          - url: http://docs:80
+        healthCheck:
+          path: /
+          interval: 60s
+          timeout: 5s

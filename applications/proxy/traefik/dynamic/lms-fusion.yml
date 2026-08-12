@@ -27,7 +27,7 @@ http:
       priority: 10
 
     lms-fusion-api:
-      rule: '(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`))'
+      rule: '(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: lms-fusion-backend-service
