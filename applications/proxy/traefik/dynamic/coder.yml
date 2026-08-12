@@ -1,3 +1,13 @@
+# =============================================================================
+# Coder — self-hosted cloud development environments (coder.com)
+# =============================================================================
+# Routes coder.localhost / coder.structa.cloud to the coder container (7080).
+#
+# Public host uses Let's Encrypt; the .localhost host stays on the mkcert
+# default cert. They are split because a single certResolver router bundling
+# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
+# would block issuance for the public domain too.
+# =============================================================================
 http:
   routers:
     coder-http:
@@ -6,12 +16,23 @@ http:
       middlewares: [redirect-to-https]
       service: coder-service
       priority: 10
+
     coder-https:
-      rule: 'Host(`coder.localhost`) || Host(`coder.structa.cloud`)'
+      rule: 'Host(`coder.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: coder-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 10
+
+    coder-localhost-https:
+      rule: 'Host(`coder.localhost`)'
       entryPoints: [web-secure]
       middlewares: [compress]
       service: coder-service
       priority: 10
+
   services:
     coder-service:
       loadBalancer:

@@ -5,6 +5,11 @@
 # shared-media nginx, which proxies to the workspace container
 # coder-dev-code-server:8086 with WebSocket upgrade support (see
 # applications/proxy/nginx/default.conf).
+#
+# Public hosts use Let's Encrypt; the .localhost host stays on the mkcert
+# default cert. They are split because a single certResolver router bundling
+# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
+# would block issuance for the public domains too.
 # =============================================================================
 http:
   routers:
@@ -14,12 +19,23 @@ http:
       middlewares: [redirect-to-https]
       service: code-server-service
       priority: 150
+
     code-server-https:
-      rule: 'Host(`code.localhost`) || Host(`code.structa.cloud`) || Host(`ws.structa.cloud`)'
+      rule: 'Host(`code.structa.cloud`) || Host(`ws.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: code-server-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 150
+
+    code-server-localhost-https:
+      rule: 'Host(`code.localhost`)'
       entryPoints: [web-secure]
       middlewares: [compress]
       service: code-server-service
       priority: 150
+
   services:
     code-server-service:
       loadBalancer:

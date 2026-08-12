@@ -6,6 +6,11 @@
 # → no backend available.
 # Local development host: lms-fusion.localhost
 # To activate: deploy the LMS-Fusion compose stack.
+#
+# Public hosts use Let's Encrypt; the .localhost host stays on the mkcert
+# default cert. They are split because a single certResolver router bundling
+# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
+# would block issuance for the public domains too.
 # =============================================================================
 
 http:
@@ -18,7 +23,7 @@ http:
       priority: 10
 
     lms-fusion-site-https:
-      rule: 'Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)'
+      rule: 'Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: lms-fusion-frontend-service
@@ -26,13 +31,27 @@ http:
         certResolver: letsencrypt-http
       priority: 10
 
+    lms-fusion-site-localhost-https:
+      rule: 'Host(`lms-fusion.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: lms-fusion-frontend-service
+      priority: 10
+
     lms-fusion-api:
-      rule: '(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
+      rule: '(Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: lms-fusion-backend-service
       tls:
         certResolver: letsencrypt-http
+      priority: 100
+
+    lms-fusion-api-localhost:
+      rule: '(Host(`lms-fusion.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: lms-fusion-backend-service
       priority: 100
 
     lms-fusion-media:
