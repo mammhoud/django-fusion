@@ -1,8 +1,8 @@
-# Tauri Vue3 App Template
+# Formint Client
 
 [中文文档](README_CN.md) | **English**
 
-A modern cross-platform desktop application template built with Tauri v2 and Vue 3, featuring internationalization, theme switching, and a multi-page clean responsive UI.
+A point-of-sale desktop client for restaurants and coffee shops, built with Tauri v2 and Vue 3, featuring internationalization, theme switching, and a clean responsive POS UI backed by the Formint Django backend.
 
 ## Features
 
@@ -29,8 +29,8 @@ A modern cross-platform desktop application template built with Tauri v2 and Vue
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/KitsuneX07/tauri-vue-app.git
-    cd tauri-vue-app
+    git clone <repo-url> formint-client
+    cd formint-client
     ```
 
 2. **Install dependencies**
@@ -80,7 +80,7 @@ vue-tsc --noEmit  # TypeScript type checking
 ## Project Structure
 
 ```
-tauri-vue-app/
+formint-client/
 ├── src/                    # Vue frontend source code
 │   ├── components/         # Reusable Vue components
 │   │   └── TitleBar.vue   # Custom title bar component

@@ -9,6 +9,8 @@ app_name = "shop"
 urlpatterns = [
     # Catalog JSON for the Astro frontend
     path("api/catalog/", views.catalog_api, name="catalog_api"),
+    path("api/orders/", views.orders_api, name="orders_api"),
+    path("api/orders/<int:pk>/", views.order_detail_api, name="order_detail_api"),
     path("apis/auth/status/", views.auth_status_api, name="auth_status"),
     # HTMX fragments (django-fusion dual-mode handlers)
     path("shop/fragments/products/", views.products_fragment, name="products_fragment"),

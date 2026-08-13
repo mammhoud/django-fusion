@@ -1,28 +1,37 @@
 import { watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useSettingsStore } from "./settings";
+import { useSettingsStore, type AppLocale } from "./settings";
+
+export const SUPPORTED_LOCALES: AppLocale[] = ["en-US", "zh-CN", "ar-SA", "fr-FR"];
+export const RTL_LOCALES: AppLocale[] = ["ar-SA"];
 
 export function useLanguage() {
     const settingsStore = useSettingsStore();
     const { locale, t } = useI18n();
 
-    // Watch for settings changes and update locale
+    const applyLocale = (lang: AppLocale) => {
+        locale.value = lang;
+        document.documentElement.dir = RTL_LOCALES.includes(lang) ? "rtl" : "ltr";
+        document.documentElement.lang = lang;
+    };
+
+    // Watch for settings changes and update locale (and document direction).
     watch(
         () => settingsStore.language,
-        (newLanguage) => {
-            locale.value = newLanguage as "zh-CN" | "en-US";
-        },
+        (newLanguage) => applyLocale(newLanguage),
     );
 
-    // Switch language and save to settings
-    const switchLanguage = async (newLanguage: "zh-CN" | "en-US") => {
+    // Switch language, apply direction, and persist to settings.
+    const switchLanguage = async (newLanguage: AppLocale) => {
+        applyLocale(newLanguage);
         await settingsStore.updateAndSaveSettings({ language: newLanguage });
     };
 
-    // Toggle between supported languages
+    // Cycle through the supported locales.
     const toggleLanguage = async () => {
-        const newLanguage = settingsStore.language === "zh-CN" ? "en-US" : "zh-CN";
-        await switchLanguage(newLanguage);
+        const current = settingsStore.language;
+        const next = SUPPORTED_LOCALES[(SUPPORTED_LOCALES.indexOf(current) + 1) % SUPPORTED_LOCALES.length];
+        await switchLanguage(next);
     };
 
     return {

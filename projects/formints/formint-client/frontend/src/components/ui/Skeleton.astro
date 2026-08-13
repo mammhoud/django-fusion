@@ -1,0 +1,17 @@
+---
+/**
+ * Skeleton — shimmer placeholder (matches the storefront skeleton-shimmer).
+ */
+import { cn } from '@/lib/utils';
+
+interface Props {
+  class?: string;
+  [key: string]: any;
+}
+
+const { class: className = '', ...forwarded } = Astro.props;
+---
+
+<div class={cn('animate-pulse rounded-xl bg-fu-line/50', className)} {...forwarded}>
+  <slot />
+</div>

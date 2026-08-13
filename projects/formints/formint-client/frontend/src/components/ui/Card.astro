@@ -1,0 +1,27 @@
+---
+/**
+ * Card — shadcn-style surface on the fu-* tokens. Hover lift is optional
+ * via the `hover` prop.
+ */
+import { cn } from '@/lib/utils';
+
+interface Props {
+  class?: string;
+  hover?: boolean;
+  [key: string]: any;
+}
+
+const { class: className = '', hover = false, ...forwarded } = Astro.props;
+---
+
+<div
+  class={cn(
+    'rounded-[1.25rem] border border-fu-line/60 bg-fu-card shadow-diffusion',
+    hover &&
+      'transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_24px_48px_-24px_hsl(var(--fu-shadow)/0.25)]',
+    className,
+  )}
+  {...forwarded}
+>
+  <slot />
+</div>

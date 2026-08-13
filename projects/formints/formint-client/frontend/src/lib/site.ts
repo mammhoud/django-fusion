@@ -14,8 +14,11 @@ export function browserEndpoint(path: string): string {
   return `${base}${path}`;
 }
 
-export const SHOP_NAME = 'The Daily Grind';
+export const SHOP_NAME = 'Formint Café';
 export const SHOP_TAGLINE = 'Roasted to order. Brewed to the table.';
 export const SHOP_OPEN_HOURS = 'Mon–Sun · 7:00 → 19:00';
+
+/** Storefront client version — mirrors frontend/package.json. */
+export const SHOP_VERSION = '0.1.0';
 
 export const THEME_STORAGE_KEY = 'formintc-theme';

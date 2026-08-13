@@ -1,14 +1,19 @@
 import { defineStore } from "pinia";
 import { Store } from "@tauri-apps/plugin-store";
 
+export type AppLocale = "en-US" | "zh-CN" | "ar-SA" | "fr-FR";
+
 export interface UserSettings {
     theme: "cupcake" | "sunset";
-    language: "en-US" | "zh-CN";
+    language: AppLocale;
+    /** Django portal base URL (:8075 in this repo — see backend/Makefile). */
+    portalUrl: string;
 }
 
 const defaultSettings: UserSettings = {
     theme: "cupcake",
     language: "zh-CN",
+    portalUrl: "http://localhost:8075",
 };
 
 let diskStore: Store | null = null;

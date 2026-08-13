@@ -9,7 +9,7 @@
 @source "../../backend/**/templates/";
 
 /* ────────────────────────────────────────────────────────────────────────
-   The Daily Grind — paper + ink, hairline rules, verdigris accent.
+   Formint Café — paper + ink, hairline rules, verdigris accent.
    A coffee-shop purchase app in the same visual system as the structa.cloud
    landing (fu-* tokens): warm paper, ink type, a single muted accent.
    ──────────────────────────────────────────────────────────────────────── */
@@ -32,7 +32,19 @@
   --fu-border: var(--fu-line);
   --fu-primary: var(--fu-link);
 
+  /* Fill (button/CTA surface) — stays deep enough for white text even
+     when --fu-link lightens for dark surfaces. */
+  --fu-fill: 158 42% 32%;
+  --fu-fill-hover: 158 44% 26%;
+  /* Ambient shadow base — pure black in both modes (never inverts to a
+     glow when --fu-ink flips light in dark mode). */
+  --fu-shadow: 0 0% 0%;
+
+  /* Motion — spring physics (no linear / ease-in-out). */
   --fu-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --fu-ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --fu-ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  --fu-dur: 700ms;
 }
 
 .dark {
@@ -51,6 +63,11 @@
   --fu-text: var(--fu-ink);
   --fu-border: var(--fu-line);
   --fu-primary: var(--fu-link);
+
+  /* Fill deepens slightly in sunset so the CTA still holds white text. */
+  --fu-fill: 158 46% 36%;
+  --fu-fill-hover: 158 48% 42%;
+  --fu-shadow: 0 0% 0%;
 }
 
 @theme inline {
@@ -61,6 +78,8 @@
   --color-fu-card: hsl(var(--fu-card));
   --color-fu-link: hsl(var(--fu-link));
   --color-fu-link-dark: hsl(var(--fu-link-dark));
+  --color-fu-fill: hsl(var(--fu-fill));
+  --color-fu-fill-hover: hsl(var(--fu-fill-hover));
   --color-fu-mark: hsl(var(--fu-mark));
   --color-fu-live: hsl(var(--fu-live));
   --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
@@ -79,10 +98,20 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* The showcase track's negative margins poke past the container on
+       mobile; clip them at the viewport so phones never get a page-level
+       horizontal scrollbar (fixed elements are unaffected). */
+    overflow-x: clip;
   }
   ::selection {
     background: hsl(var(--fu-mark) / 0.4);
   }
+}
+
+/* ── Alpine — hide x-cloak elements until hydrated (prevents flash of the
+   drawer / modal / mobile menu before Alpine takes control). ───────────── */
+[x-cloak] {
+  display: none !important;
 }
 
 /* ── Components ─────────────────────────────────────────────────────────── */
@@ -93,21 +122,71 @@
   .tag-marker {
     @apply font-mono text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-fu-muted;
   }
+
+  /* Pill eyebrow badge — precedes H1/H2s. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-fu-line bg-fu-card px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-fu-muted;
+  }
+
+  /* ── Primary CTA — the "button-in-button" island pattern ────────────── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-fu-link px-6 py-3 text-sm font-semibold text-white transition-[transform,background-color] duration-200 active:scale-[0.98] motion-reduce:transition-none;
+    @apply inline-flex items-center justify-center gap-3 rounded-full bg-fu-fill pl-6 pr-1.5 py-1.5 text-sm font-semibold text-white transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] motion-reduce:transition-none;
+  }
+  .btn-primary > .btn-island {
+    @apply ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5;
   }
   .btn-primary:hover {
-    @apply bg-fu-link-dark;
+    @apply bg-fu-fill-hover;
   }
+  .btn-primary:hover > .btn-island {
+    @apply translate-x-0.5 scale-105;
+  }
+
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-fu-line bg-transparent px-6 py-3 text-sm font-semibold text-fu-ink transition-colors duration-200 hover:bg-fu-line/40 active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-3 rounded-full border border-fu-line bg-transparent pl-6 pr-1.5 py-1.5 text-sm font-semibold text-fu-ink transition-[transform,border-color,background-color] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-fu-ink/30 hover:bg-fu-line/40 active:scale-[0.97] motion-reduce:transition-none;
   }
+  .btn-ghost > .btn-island {
+    @apply ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-fu-ink/5 text-fu-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)];
+  }
+  .btn-ghost:hover > .btn-island {
+    @apply translate-x-0.5 scale-105;
+  }
+
   .input-field {
     @apply w-full rounded-xl border border-fu-line bg-fu-card px-4 py-2.5 text-sm text-fu-ink placeholder:text-fu-muted/70 focus:outline-none focus:ring-2 focus:ring-fu-link/30;
   }
-  .card-sheet {
-    @apply rounded-3xl border border-fu-line bg-fu-card p-6;
+
+  /* ── Double-bezel (Doppelrand) — nested machined enclosure ───────────── */
+  .bezel {
+    @apply rounded-[2rem] border border-fu-line/60 bg-fu-line/25 p-1.5;
+    box-shadow: inset 0 1px 0 hsl(var(--fu-card) / 0.7);
   }
+  .dark .bezel {
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.05);
+  }
+  .bezel-core {
+    @apply rounded-[calc(2rem-0.375rem)] bg-fu-card;
+    box-shadow:
+      inset 0 1px 1px hsl(0 0% 100% / 0.6),
+      0 24px 48px -24px hsl(var(--fu-shadow) / 0.08);
+  }
+  .dark .bezel-core {
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.06),
+      0 24px 48px -24px hsl(0 0% 0% / 0.5);
+  }
+  /* Floating overlay shell — same bezel as .bezel plus a deep ambient drop. */
+  .drawer-shell {
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.7),
+      0 32px 64px -32px hsl(var(--fu-shadow) / 0.4);
+  }
+  .dark .drawer-shell {
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.08),
+      0 32px 64px -32px hsl(0 0% 0% / 0.7);
+  }
+
   .hairline {
     @apply border-fu-line;
   }
@@ -116,11 +195,78 @@
 /* ── Utilities ──────────────────────────────────────────────────────────── */
 @layer utilities {
   .shadow-diffusion {
-    box-shadow: 0 20px 40px -15px hsl(var(--fu-ink) / 0.05);
+    box-shadow: 0 20px 40px -15px hsl(var(--fu-shadow) / 0.05);
+  }
+  .dark .shadow-diffusion {
+    box-shadow: 0 20px 40px -15px hsl(0 0% 0% / 0.5);
   }
   .text-balance {
     text-wrap: balance;
   }
+  /* Massive editorial display scale. */
+  .text-hero {
+    font-size: clamp(2.75rem, 6vw, 4.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+}
+
+/* ── Showcase carousel — horizontal snap pills with edge fade ─────────── */
+.showcase-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Edge fade falls on the padded gutter, never on card content. */
+  padding-inline: 28px;
+  margin-inline: -28px;
+  mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+}
+/* Mobile — the track's negative margin must match the container's px-5
+   (20px) gutter so it sits flush with the viewport; a -28px margin here
+   would push 8px past the screen edge and be silently cropped. */
+@media (max-width: 639px) {
+  .showcase-track {
+    padding-inline: 20px;
+    margin-inline: -20px;
+    mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+  }
+}
+.showcase-track:focus-visible {
+  outline: 2px solid hsl(var(--fu-link) / 0.5);
+  outline-offset: 4px;
+  border-radius: 1rem;
+}
+.showcase-track::-webkit-scrollbar {
+  display: none;
+}
+.showcase-pill {
+  flex: 0 0 auto;
+  width: 15rem;
+  scroll-snap-align: start;
+}
+
+/* ── Film grain — fixed, pointer-events-none overlay ───────────────────── */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  /* Grayscale turbulence — pure luminance grain. multiply sinks dark
+     specks into paper; screen lifts light specks off the dark field. */
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* Sunset — the same grain, screened so it reads as light flecks. */
+.dark .grain::before {
+  opacity: 0.07;
+  mix-blend-mode: screen;
 }
 
 /* ── Skeleton shimmer (matches landing-fusion) ─────────────────────────── */
@@ -190,13 +336,46 @@
   opacity: 1;
 }
 
-/* Reveal-on-intersect helper (paired with x-intersect) */
-.reveal {
+/* Reveal-on-intersect helper (paired with x-intersect) — heavy blur-fade.
+   Gated behind `.js` so content is always visible without JS. */
+.js .reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s var(--fu-ease-out), transform 0.6s var(--fu-ease-out);
+  transform: translateY(24px) scale(0.985);
+  filter: blur(6px);
+  transition:
+    opacity var(--fu-dur) var(--fu-ease-spring),
+    transform var(--fu-dur) var(--fu-ease-spring),
+    filter var(--fu-dur) var(--fu-ease-spring);
 }
-.reveal.is-visible {
+.js .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+  will-change: auto;
+}
+/* Stagger delays for sibling reveals (paired with the `.reveal` above). */
+.reveal-stagger-1 { transition-delay: 90ms; }
+.reveal-stagger-2 { transition-delay: 180ms; }
+.reveal-stagger-3 { transition-delay: 270ms; }
+.reveal-stagger-4 { transition-delay: 360ms; }
+
+/* Reduced motion — collapse all decorative motion. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .float-slow,
+  .marquee-track,
+  .live-dot {
+    animation: none !important;
+  }
+  /* Alpine overlay transitions (drawer, modal, toasts). */
+  [x-transition],
+  [x-show] {
+    transition: none !important;
+    animation: none !important;
+  }
 }

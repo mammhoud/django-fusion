@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "corsheaders",
     # django-fusion — unified fragment/layout rendering pipeline (replaces
     # django_htmx): HTMX request detection, FragmentComponent / PageHandler
     # views, dual-mode render contract, and the fusion asset pipeline.
@@ -51,6 +52,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # CORS — the Vue POS client (:1420) and Astro storefront (:4322) fetch
+    # the Django portal cross-origin; must sit above CommonMiddleware.
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -130,7 +134,7 @@ LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
 
 DEFAULT_FROM_EMAIL = os.environ.get(
-    "DEFAULT_FROM_EMAIL", "The Daily Grind <orders@thedailygrind.example>"
+    "DEFAULT_FROM_EMAIL", "Formint Café <orders@formintcafe.example>"
 )
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
@@ -165,8 +169,24 @@ ALLAUTH_CORS_ORIGIN_WHITELIST = [
     if o.strip()
 ]
 
+# ── CORS (django-cors-headers) ───────────────────────────────────────
+# The Vue POS client (:1420) and the storefront/dev previews (:4322/:4173)
+# call the portal cross-origin; credentials are needed for the fusion
+# session-mode POST/DELETE. Extend via CORS_ALLOWED_ORIGINS env (comma list).
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:1420",
+    "http://127.0.0.1:1420",
+    "http://localhost:4322",
+    "http://127.0.0.1:4322",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+    "http://localhost:8075",
+    *[o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if o.strip()],
+]
+
 # ── Shop / storefront branding ────────────────────────────────────────
-SHOP_NAME = os.environ.get("SHOP_NAME", "The Daily Grind")
+SHOP_NAME = os.environ.get("SHOP_NAME", "Formint Café")
 SHOP_TAGLINE = os.environ.get(
     "SHOP_TAGLINE", "Roasted to order. Brewed to the table."
 )

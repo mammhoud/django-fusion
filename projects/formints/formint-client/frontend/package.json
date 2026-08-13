@@ -10,7 +10,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test --test-force-exit tests/*.test.mjs"
   },
   "dependencies": {
     "@alpinejs/collapse": "^3.14.9",
@@ -34,12 +34,5 @@
     "sass": "^1.102.0",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "esbuild",
-      "sharp"
-    ]
   }
 }

@@ -1,0 +1,29 @@
+---
+/**
+ * Badge — shadcn-style pill mapped onto fu-* tokens.
+ */
+import { cn } from '@/lib/utils';
+
+interface Props {
+  variant?: 'default' | 'secondary' | 'outline' | 'mark' | 'success';
+  class?: string;
+  [key: string]: any;
+}
+
+const { variant = 'default', class: className = '', ...forwarded } = Astro.props;
+
+const base =
+  'inline-flex items-center rounded-full border px-2.5 py-0.5 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.14em]';
+
+const variants: Record<string, string> = {
+  default: 'border-transparent bg-fu-fill text-white',
+  secondary: 'border-transparent bg-fu-line/60 text-fu-ink',
+  outline: 'border-fu-line bg-transparent text-fu-muted',
+  mark: 'border-transparent bg-fu-mark text-fu-ink',
+  success: 'border-transparent bg-fu-live/15 text-fu-live',
+};
+---
+
+<span class={cn(base, variants[variant], className)} {...forwarded}>
+  <slot />
+</span>
