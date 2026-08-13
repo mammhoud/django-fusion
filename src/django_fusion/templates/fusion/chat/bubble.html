@@ -1,4 +1,4 @@
-{% load static %}{# ============================================================
+{% load static %}{% comment %}============================================================
    django-fusion components/chat/bubble.html — ceptor/nawaai chat widget
    ──────────────────────────────────────────────────────────────────
    Floating chat bubble paired with a slide-up panel. Sends via fetch
@@ -10,7 +10,7 @@
      chat_placeholder : input placeholder (default: 'Type a message…')
      chat_greeting    : first bot message (default: 'Hi! How can I help you today?')
      chat_endpoint    : override POST endpoint URL (otherwise read from data-config)
-   ============================================================ #}
+   ============================================================{% endcomment %}
 
 {% with config=chat_config|default:"{}" %}
 <div id="ceptor-chat-widget"

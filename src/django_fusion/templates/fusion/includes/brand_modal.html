@@ -1,0 +1,222 @@
+<!--
+fusion/includes/brand_modal.html — the brandkit story modal, ONE source of
+truth for both render roads so they can never drift.
+
+  * Django road — included from a project base template
+    (landing-fusion pages/base.html); the template engine emits it verbatim.
+  * Astro road  — imported as raw HTML (Vite ?raw, @fusion-templates alias)
+    by components/ui/BrandModal.astro and injected with set:html. Because
+    the content is never compiled by Astro, the backslash-quote escapes in
+    the marks script survive untouched (the exact problem that originally
+    forced marks OUT of an x-data attribute and into window.__FUSION_MARKS).
+
+IMPORTANT: this file is rendered by BOTH engines. Do not add Django template
+tags here — Django would execute them (even inside this comment) and Astro
+would emit them literally. Keep the file pure HTML + JS.
+
+Trigger contract (works on BOTH roads, no Alpine scope needed):
+  - any element with data-open-brand="<slug>" opens the modal (delegated
+    click handler in the script below), and
+  - the fusion:open-brand window event with detail.slug also opens it.
+
+Board data comes from GET /apis/brand/ (derived from the catalog + BRAND_SPEC
+on the backend), so page + modal + /brand/ can never drift. The fetch honours
+window.__FUSION_BRAND_URL (set by the Astro road from its env-aware
+browserEndpoint(); the Django road is same-origin and falls back to
+'/apis/brand/'). BrandPage.display_mode (page / modal / both) decides whether
+the "Full brand page" link is offered.
+
+Markup note: inline hsl(var(--fu-*)) styles are used deliberately — the
+Astro road cannot rely on Tailwind scanning a partial that lives in
+libs/django-fusion, and the --fu-* design tokens are identical on both roads.
+-->
+<div
+  x-data="{
+    open: false,
+    loading: false,
+    boards: [],
+    board: null,
+    marks: window.__FUSION_MARKS || {},
+    async openBoard(slug) {
+      if (!slug) return;
+      this.open = true;
+      this.loading = true;
+      this.board = null;
+      try {
+        if (!this.boards.length) {
+          const res = await fetch(window.__FUSION_BRAND_URL || '/apis/brand/');
+          const data = await res.json();
+          this.boards = data.boards || [];
+        }
+        this.board = this.boards.find(function (b) { return b.slug === slug; }) || null;
+      } catch (e) {
+        this.board = null;
+      } finally {
+        this.loading = false;
+      }
+    },
+    close() { this.open = false; },
+    rgbToHex(rgb) {
+      var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(rgb || '');
+      if (!m) return null;
+      return '#' + m.slice(1, 4).map(function (n) { return parseInt(n, 10).toString(16).padStart(2, '0'); }).join('').toUpperCase();
+    },
+    // Resolve every palette chip's live background colour to a hex and write
+    // it under the token label — designers can grab real colour codes. Runs
+    // via x-effect keyed on the board; the data-resolved guard keeps it a
+    // one-shot per chip (theme toggles re-resolve when the colour changes).
+    resolveHexes(board) {
+      if (!board) return;
+      var self = this;
+      this.$nextTick(function () {
+        self.$root.querySelectorAll('[data-swatch-hex]').forEach(function (label) {
+          var wrapper = label.parentElement;
+          var chip = wrapper ? wrapper.querySelector('[data-swatch-chip]') : null;
+          if (!chip) return;
+          var hex = self.rgbToHex(getComputedStyle(chip).backgroundColor);
+          if (!hex) return;
+          if (label.dataset.resolved === '1' && label.textContent === hex) return;
+          label.textContent = hex;
+          label.dataset.resolved = '1';
+          label.title = 'Copy ' + hex;
+        });
+      });
+    },
+    // Click-to-copy on the resolved hex — flashes 'copied', restores after a beat.
+    async copyHex(e) {
+      var label = e.currentTarget;
+      var hex = (label.textContent || '').trim();
+      if (!/^#[0-9A-F]{6}$/i.test(hex)) return;
+      try {
+        await navigator.clipboard.writeText(hex);
+      } catch (err) {
+        // Non-secure context fallback — a hidden textarea + execCommand.
+        var ta = document.createElement('textarea');
+        ta.value = hex;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e2) { /* no-op */ }
+        ta.remove();
+      }
+      label.textContent = 'copied';
+      label.dataset.resolved = '1';
+      setTimeout(function () { label.textContent = hex; }, 900);
+    },
+  }"
+  @keydown.escape.window="open = false"
+  @fusion:open-brand.window="openBoard($event.detail.slug)"
+>
+  <div
+    x-show="open"
+    x-cloak
+    style="display:none;position:fixed;inset:0;z-index:85;background:rgba(0,0,0,.5);padding:1rem;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);"
+    x-transition.opacity
+    class="flex items-center justify-center"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Brand"
+    @click.self="open = false"
+  >
+    <div style="width:100%;max-width:34rem;max-height:85dvh;overflow-y:auto;border:1px solid hsl(var(--fu-border));border-radius:1rem;background:hsl(var(--fu-card));box-shadow:0 25px 60px rgba(0,0,0,.25);">
+      <div x-show="loading" x-cloak style="padding:3rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">loading brand…</div>
+
+      <template x-if="!loading && board">
+        <div>
+          <!-- Lockup -->
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.5rem;border-bottom:1px solid hsl(var(--fu-border));">
+            <div style="display:flex;align-items:center;gap:.9rem;">
+              <span class="product-logo" :data-brand="(board.brand || 'formints').toLowerCase()" style="width:2.75rem;height:2.75rem;">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" x-html="marks[board.mark] || marks['orbit']"></svg>
+              </span>
+              <div>
+                <p class="tag-marker" style="margin:0 0 .2rem;">brand · identity</p>
+                <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;font-weight:700;color:hsl(var(--fu-ink));" x-text="board.name"></h2>
+                <p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));" x-text="board.role"></p>
+              </div>
+            </div>
+            <button type="button" @click="close()" aria-label="Close" style="background:none;border:none;cursor:pointer;color:hsl(var(--fu-muted));padding:.35rem;">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Construction geometry on the blueprint grid -->
+          <div style="position:relative;display:grid;place-items:center;min-height:10rem;background-image:linear-gradient(hsl(var(--fu-border) / .55) 1px,transparent 1px),linear-gradient(90deg,hsl(var(--fu-border) / .55) 1px,transparent 1px);background-size:1rem 1rem;">
+            <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:hsl(var(--fu-border));"></div>
+            <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:hsl(var(--fu-border));"></div>
+            <div style="position:relative;z-index:1;box-shadow:0 0 0 6px hsl(var(--fu-card));border-radius:1rem;">
+              <span class="product-logo" :data-brand="(board.brand || 'formints').toLowerCase()" style="width:3.5rem;height:3.5rem;">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" x-html="marks[board.mark] || marks['orbit']"></svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- The brand story -->
+          <div style="padding:1.5rem;">
+            <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;line-height:1.35;margin:0 0 1.25rem;color:hsl(var(--fu-ink));" x-text="board.essence"></p>
+            <div style="display:grid;gap:.75rem;font-size:.8rem;">
+              <div style="display:flex;gap:.75rem;align-items:baseline;">
+                <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">metaphor</span>
+                <span style="color:hsl(var(--fu-ink) / .85);" x-text="board.metaphor"></span>
+              </div>
+              <div style="display:flex;gap:.75rem;align-items:baseline;">
+                <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">construction</span>
+                <span style="color:hsl(var(--fu-ink) / .85);" x-text="board.construction"></span>
+              </div>
+              <div style="display:flex;gap:.75rem;align-items:baseline;">
+                <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">voice</span>
+                <span style="color:hsl(var(--fu-ink) / .85);" x-text="board.voice"></span>
+              </div>
+              <div style="display:flex;gap:.75rem;align-items:center;">
+                <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">palette</span>
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;width:100%;" x-effect="resolveHexes(board)">
+                  <template x-for="(swatch, i) in (board.swatches || [])" :key="i">
+                    <div style="display:flex;flex-direction:column;gap:.2rem;min-width:0;" :title="swatch.token">
+                      <div data-swatch-chip style="aspect-ratio:1;border-radius:.375rem;border:1px solid hsl(var(--fu-border));" :style="swatch.style"></div>
+                      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--fu-muted));" x-text="swatch.token"></span>
+                      <span data-swatch-hex x-cloak x-show="!/^#[0-9a-fA-F]{6}$/.test(swatch.token || '')" @click="copyHex($event)" role="button" tabindex="0" title="Copy colour" style="cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:hsl(var(--fu-link) / .8);transition:color .2s;"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.25rem;border-top:1px solid hsl(var(--fu-border));padding-top:1rem;">
+              <a :href="board.href || '/products/'" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">See the product →</a>
+              <a href="/brand/" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));text-decoration:none;">Full brand page →</a>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div x-show="!loading && !board" x-cloak style="padding:3rem;text-align:center;font-size:.8rem;color:hsl(var(--fu-muted));">No brand data for this product yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Brand glyphs per mark style — plain JS so backslash escapes survive on
+  // both roads (the partial is never compiled by Astro). Mirrors
+  // content/blocks/product_logo.html / ProductLogo.astro.
+  window.__FUSION_MARKS = {
+    crest: '<path d=\'M16 2.5l11.5 4v9.5c0 6.8-4.9 11.6-11.5 13.5C9.4 27.6 4.5 22.8 4.5 16.5V6.5L16 2.5z\' stroke-linejoin=\'round\'/><path d=\'M9.5 19.5h13\' stroke-linecap=\'round\'/><path d=\'M11.8 14.8l2.9 2.9 5.8-6.3\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
+    ribbon: '<path d=\'M4 8.5h24v7.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5z\' stroke-linejoin=\'round\'/><path d=\'M10.5 19.5l2.4 4.5M16 19.5v4.5M21.5 19.5l-2.4 4.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M12.5 12.5l2.6 2.6 5-5.4M15.1 15.1V9\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/>',
+    isometric: '<path d=\'M16 3l11 6v14L16 29 5 23V9l11-6z\' stroke-linejoin=\'round\'/><path d=\'M5 9l11 6 11-6M16 15v14\' stroke-linejoin=\'round\'/><path d=\'M16 10.5l5.8 3.2v6.6L16 23.5l-5.8-3.2v-6.6l5.8-3.2z\' stroke-linejoin=\'round\'/><path d=\'M10.2 13.7l5.8 3.2 5.8-3.2M16 16.9v6.6\' stroke-linejoin=\'round\'/>',
+    orbit: '<circle cx=\'16\' cy=\'16\' r=\'2.6\' fill=\'currentColor\' stroke=\'none\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(-24 16 16)\' stroke-linejoin=\'round\'/><ellipse cx=\'16\' cy=\'16\' rx=\'10.5\' ry=\'4.2\' transform=\'rotate(24 16 16)\' stroke-linejoin=\'round\'/><circle cx=\'25.2\' cy=\'12.4\' r=\'1.4\' fill=\'currentColor\' stroke=\'none\'/>',
+    ascent: '<path d=\'M4 26h7v-7h7v-7h7\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M24.8 12.2l2.4 2.4 4-4.4\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/><path d=\'M4 6v20\' stroke-linecap=\'round\'/>',
+  };
+  // Delegated trigger — any [data-open-brand="<slug>"] element (product
+  // lockups, cards, tooltips) opens the brand modal without needing an Alpine
+  // scope. Mirrors the shared contract on both roads; preventDefault stops
+  // card anchors from navigating. One listener per document — the partial is
+  // included once per page on each road.
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('[data-open-brand]') : null;
+    if (t) {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('fusion:open-brand', {
+        detail: { slug: t.getAttribute('data-open-brand') },
+      }));
+    }
+  });
+</script>

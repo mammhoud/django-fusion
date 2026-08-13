@@ -17,18 +17,19 @@ with this priority:
    (e.g. ``{"products/export/": False}``).
 3. ``fusion_render_first`` — the Application's default option (``None`` →
    fall through to settings).
-4. ``settings.FUSION_RENDER_FIRST_DEFAULT`` — global default.
+4. ``settings.FUSION_RENDER_FIRST`` — global default (legacy
+   ``FUSION_RENDER_FIRST_DEFAULT`` / ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``
+   names still accepted).
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from django.conf import settings as django_settings
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 
-from django_fusion.plugins.htmx.core import is_htmx_request
+from django_fusion.config.conf import resolve_render_first_setting
 from django_fusion.routes.rendering.renderers import fusion_json_response
 from django_fusion.routes.rendering.session import FusionCodec
 
@@ -36,7 +37,7 @@ __all__ = ["APISViewMixin", "APIApplication"]
 
 
 def _settings_default() -> bool:
-    return bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", True))
+    return resolve_render_first_setting(default=True)
 
 
 class APISViewMixin:
@@ -51,7 +52,7 @@ class APISViewMixin:
     """
 
     #: Default render mode option. ``None`` falls through to the global
-    #: ``FUSION_RENDER_FIRST_DEFAULT`` setting.
+    #: ``FUSION_RENDER_FIRST`` setting.
     fusion_render_first: bool | None = None
 
     #: Per-view-name overrides: ``{"<view_name>": bool}``. A ``True`` entry

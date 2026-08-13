@@ -15,6 +15,9 @@ from __future__ import annotations
 from typing import Any
 
 from django import template
+from django.urls import NoReverseMatch
+
+from django_fusion.comp.tags.navigation import _resolve_url
 
 register = template.Library()
 
@@ -83,6 +86,16 @@ def app_menu(context: dict[str, Any], app: Any, user: Any) -> dict[str, Any]:
     for item in app.menu_items():
         if hasattr(item, "has_view_permission") and not item.has_view_permission(user):
             continue
+        if isinstance(item, dict) and item.get("is_url_pattern"):
+            # ``menu_path`` stores the route metadata on the URLPattern. Resolve
+            # the named route through the owning Application so menu links are
+            # real links instead of the old ``href="#"`` placeholder.
+            item = dict(item)
+            name = item.get("name")
+            try:
+                item["url"] = app.reverse(name) if name else "#"
+            except (NoReverseMatch, AttributeError, ValueError):
+                item["url"] = _resolve_url(name or "#")
         items.append(item)
 
     return {

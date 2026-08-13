@@ -36,13 +36,48 @@ longer part of the supported runtime.
 - **Dynaconf multi-environment YAML config** + privacy/cache/middleware
   helpers in `contrib/`. ([DF-007](./docs/07-configuration.md))
 
-## API boundary
+## Bolt API plugin (optional)
 
-`django-fusion` does not bundle or expose an API-framework integration. The
-removed `django_fusion.plugins.bolt` package is not available in current
-releases. Projects that use an API framework should register their own routes,
-authentication, serializers, and asset endpoints while using django-fusion's
-routing, component, fragment, and `FusionCodec` primitives.
+The `django_fusion.plugins.apis` package provides an optional django-bolt
+bridge without making Bolt a hard dependency of the framework:
+
+```bash
+pip install 'django-fusion[bolt]'
+```
+
+```python
+from django_fusion.plugins.apis import BoltTokenConfig, build_bolt_api
+from django_fusion.plugins.apis.bolt import (
+    mount_model_crud,
+    mount_refresh_endpoint,
+    mount_token_endpoint,
+)
+
+api = build_bolt_api(prefix="/bolt", title="Workspace API")
+if api is not None:
+    # Prefer user-bound issuance for browser/API sessions.
+    mount_token_endpoint(api, user_required=True)
+    mount_refresh_endpoint(api)
+    mount_model_crud(api, Product, prefix="/products")
+```
+
+The plugin generates `msgspec.Struct` response schemas from Django models,
+mounts async CRUD routes, and keeps django-fusion's render-first/data response
+contract available to application viewsets. `BoltTokenConfig` issues and
+verifies signed JWT bearer tokens, and the plugin exposes rotating
+`/auth/refresh` support alongside `/auth/token`. `build_bolt_auth()` creates
+the JWT/API-key backends accepted by django-bolt. Secrets are read from
+`FUSION_BOLT_JWT_SECRET` and `FUSION_BOLT_API_KEY` (with Django `SECRET_KEY`
+as the local JWT fallback); they are never serialized or logged. Use
+`user_token_payload()` and `verify_request_user()` when a token must resolve to
+an active Django user; signature-only checks are not sufficient for protected
+workspace data. Install `django-fusion[tables]` for the django-tables2 adapter
+and `django-fusion[auth]` for optional allauth integration.
+
+The plugin is conditional: when the real django-bolt runtime is absent,
+`build_bolt_api()` returns `None` and consuming projects can keep their Django
+compatibility routes. This is intentional for installations that use
+server-rendered Fusion pages without the optional Rust-backed API runtime.
 
 ## Quick start (standalone project)
 

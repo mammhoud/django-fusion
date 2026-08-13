@@ -15,6 +15,16 @@ from typing import Any
 
 from django.conf import settings
 
+from django_fusion.config.conf import resolve_render_first_setting
+
+
+def _pipeline_settings() -> dict[str, Any]:
+    """Return the ``FUSION_PIPELINE`` dict (old ``FUSION_ASSET_PIPELINE`` name accepted)."""
+    configured = getattr(settings, "FUSION_PIPELINE", None)
+    if configured is None:
+        configured = getattr(settings, "FUSION_ASSET_PIPELINE", {})
+    return deepcopy(configured or {})
+
 
 @dataclass(frozen=True, slots=True)
 class AssetPipelineOptions:
@@ -28,11 +38,24 @@ class AssetPipelineOptions:
     static_url: str = "/static/"
     component_manifest_path: Path | None = None
     configured_assets: dict[str, Any] | None = None
+    #: Effective render-first mode (``FUSION_RENDER_FIRST``, legacy names
+    #: accepted). Lets asset serving branch on the same variable the render
+    #: roads use — one source of truth for mode + assets.
+    fusion_render_first: bool = True
+    #: Optional gate: when True, webpack/skeleton links are only merged into
+    #: the manifest while render-first is active (data-api mode trims the
+    #: Django-road bundles). Opt-in via ``FUSION_PIPELINE["render_first_gates_assets"]``.
+    render_first_gates_assets: bool = False
+
+    @property
+    def render_first(self) -> bool:
+        """Short alias for ``fusion_render_first`` (easier call sites)."""
+        return self.fusion_render_first
 
     @classmethod
     def from_django_settings(cls) -> AssetPipelineOptions:
         """Resolve package options from Django settings without importing site code."""
-        pipeline = deepcopy(getattr(settings, "FUSION_ASSET_PIPELINE", {}) or {})
+        pipeline = _pipeline_settings()
         webpack = pipeline.get("webpack", {}) or {}
         components = pipeline.get("components", {}) or {}
         loader = (getattr(settings, "WEBPACK_LOADER", {}) or {}).get("DEFAULT", {})
@@ -59,6 +82,8 @@ class AssetPipelineOptions:
             ),
             component_manifest_path=(Path(manifest_path) if manifest_path else None),
             configured_assets=deepcopy(getattr(settings, "FUSION_ASSETS", {}) or {}),
+            fusion_render_first=resolve_render_first_setting(default=True),
+            render_first_gates_assets=bool(pipeline.get("render_first_gates_assets", False)),
         )
 
     def public_url(self, path: str) -> str:
@@ -99,7 +124,11 @@ def get_component_asset_options() -> dict[str, Any]:
     }
     try:
         from django.conf import settings
-        user = getattr(settings, "FUSION_COMPONENT_ASSETS", None) or {}
+        user = (
+            getattr(settings, "FUSION_COMPONENTS", None)
+            or getattr(settings, "FUSION_COMPONENT_ASSETS", None)
+            or {}
+        )
     except Exception:
         user = {}
     return {**defaults, **{k: v for k, v in user.items() if k in defaults}}

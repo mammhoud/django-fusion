@@ -15,6 +15,36 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_COMPONENT_DIRS = ("components", "partials", "tags")
 
+# Canonical setting names (easy, flat) with legacy fallbacks so projects
+# still configuring the old verbose names keep working unchanged.
+_RENDER_FIRST_SETTING_NAMES = (
+    "FUSION_RENDER_FIRST",
+    "FUSION_RENDER_FIRST_DEFAULT",
+    "COMPONENTS_FUSION_RENDER_FIRST_DEFAULT",
+)
+
+
+def resolve_render_first_setting(default: bool = False) -> bool:
+    """Resolve the effective render-first default from Django settings.
+
+    Reads the canonical ``FUSION_RENDER_FIRST`` setting first, then the
+    legacy ``FUSION_RENDER_FIRST_DEFAULT`` / ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``
+    names, falling back to *default* when nothing is configured.
+    """
+    try:
+        from django.conf import settings as django_settings
+
+        for name in _RENDER_FIRST_SETTING_NAMES:
+            try:
+                value = getattr(django_settings, name, None)
+            except Exception:  # noqa: BLE001
+                value = None
+            if value is not None:
+                return bool(value)
+    except Exception:  # noqa: BLE001
+        pass
+    return default
+
 
 class DjangoComponentsSettings:
     """Minimal settings façade consumed by the component system."""
@@ -23,7 +53,7 @@ class DjangoComponentsSettings:
         self._component_dir_names: tuple[str, ...] | None = None
         self._enable_block_attrs: bool | None = None
         self._add_asset_prefix: bool | None = None
-        self.FUSION_RENDER_FIRST_DEFAULT = self._resolve_render_first_default()
+        self.render_first_default = self._resolve_render_first_default()
 
     def get_component_directory_names(self) -> tuple[str, ...]:
         if self._component_dir_names is None:
@@ -42,18 +72,17 @@ class DjangoComponentsSettings:
         return _DEFAULT_COMPONENT_DIRS
 
     def _resolve_render_first_default(self) -> bool:
-        try:
-            from django.conf import settings as django_settings
+        return resolve_render_first_setting(default=False)
 
-            return bool(
-                getattr(
-                    django_settings,
-                    "FUSION_RENDER_FIRST_DEFAULT",
-                    getattr(django_settings, "COMPONENTS_FUSION_RENDER_FIRST_DEFAULT", False),
-                )
-            )
-        except Exception:  # noqa: BLE001
-            return False
+    # Backwards-compatible alias for the renamed attribute (writable, so
+    # existing call sites that assign it keep working).
+    @property
+    def FUSION_RENDER_FIRST_DEFAULT(self) -> bool:  # noqa: N802
+        return self.render_first_default
+
+    @FUSION_RENDER_FIRST_DEFAULT.setter
+    def FUSION_RENDER_FIRST_DEFAULT(self, value: bool) -> None:
+        self.render_first_default = bool(value)
 
     def should_add_asset_prefix(self) -> bool:
         if self._add_asset_prefix is None:
@@ -91,7 +120,7 @@ class DjangoComponentsSettings:
         self._component_dir_names = None
         self._enable_block_attrs = None
         self._add_asset_prefix = None
-        self.FUSION_RENDER_FIRST_DEFAULT = self._resolve_render_first_default()
+        self.render_first_default = self._resolve_render_first_default()
 
 
 _settings = DjangoComponentsSettings()

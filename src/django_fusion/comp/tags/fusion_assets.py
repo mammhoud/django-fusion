@@ -113,14 +113,19 @@ def fusion_component_assets_json() -> str:
     The frontend reads ``window.__FUSION_COMPONENT_ASSETS__`` to lazy-load
     only the JS/CSS chunks for the components visible on the current page.
 
-    Requires ``FUSION_COMPONENT_ASSETS['ENABLED']`` to be ``True`` and a
-    valid webpack ``bundles.json`` to be reachable.
+    Requires ``FUSION_COMPONENTS['ENABLED']`` to be ``True`` (legacy name
+    ``FUSION_COMPONENT_ASSETS`` still accepted) and a valid webpack
+    ``bundles.json`` to be reachable.
     """
     import json
 
     try:
         from django.conf import settings
-        comp_cfg = getattr(settings, "FUSION_COMPONENT_ASSETS", None) or {}
+        comp_cfg = (
+            getattr(settings, "FUSION_COMPONENTS", None)
+            or getattr(settings, "FUSION_COMPONENT_ASSETS", None)
+            or {}
+        )
     except Exception:
         comp_cfg = {}
 

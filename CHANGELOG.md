@@ -9,6 +9,24 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Added
 
+- **Render-first aware asset loading** — `AssetPipelineOptions` now carries
+  `fusion_render_first` (resolved from `FUSION_RENDER_FIRST`, legacy
+  `FUSION_RENDER_FIRST_DEFAULT` / `COMPONENTS_FUSION_RENDER_FIRST_DEFAULT`
+  still accepted) and the merged manifest exposes it as
+  `fusion_render_first`. New `FUSION_PIPELINE["render_first_gates_assets"]`
+  toggle trims webpack/skeleton links from the manifest in data-api mode.
+
+### Changed
+
+- **Simplified setting names** — `FUSION_ASSET_PIPELINE` → `FUSION_PIPELINE`,
+  `FUSION_RENDER_FIRST_DEFAULT` → `FUSION_RENDER_FIRST`, and
+  `FUSION_COMPONENT_ASSETS` → `FUSION_COMPONENTS`. The old names remain
+  supported as fallbacks so existing projects keep working unmodified.
+  The settings singleton exposes the shorter `render_first_default`
+  attribute (legacy `FUSION_RENDER_FIRST_DEFAULT` property kept).
+
+### Added
+
 - **`django_fusion.mcp` package** — reusable FastAPI routers for django-fusion
   MCP servers:
   - `FusionMCPRouter` — `/health`, `/django-fusion/info`,
@@ -70,7 +88,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Added
 
 - **Unified asset pipeline options** via `AssetPipelineOptions` and
-  `FUSION_ASSET_PIPELINE`, merging explicit `FUSION_ASSETS`, component
+  `FUSION_PIPELINE`, merging explicit `FUSION_ASSETS`, component
   manifests, and webpack `bundles.json` links for API and template-tag use.
 - **Canonical asset-link deduplication** for top CSS and bottom JS entries,
   preserving source/generated filesystem boundaries.

@@ -100,10 +100,7 @@ def generate_schema(
     Returns:
         A new ``ModelSchema`` subclass bound to *model*.
     """
-    if fields is None:
-        field_names = _default_field_names(model)
-    else:
-        field_names = list(fields)
+    field_names = _default_field_names(model) if fields is None else list(fields)
 
     if exclude:
         field_names = [f for f in field_names if f not in exclude]

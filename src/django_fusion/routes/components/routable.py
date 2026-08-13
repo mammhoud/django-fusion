@@ -114,8 +114,8 @@ class RoutableComponent(ComponentViews, BaseViewset):
     # component signals that the Fusion fragment should be rendered server
     # side first and the HTML injected into the Next.js page.
     #
-    # The default value is read from ``COMPONENTS.FUSION_RENDER_FIRST_DEFAULT``
-    # in Django settings; set the attribute on a subclass to override.
+    # The default value is read from ``FUSION_RENDER_FIRST`` in Django
+    # settings; set the attribute on a subclass to override.
     fusion_render_first: bool | None = None
 
     @classmethod
@@ -123,12 +123,12 @@ class RoutableComponent(ComponentViews, BaseViewset):
         """Return the effective ``fusion_render_first`` value.
 
         If the attribute is explicitly set on the class, that value wins.
-        Otherwise fall back to the global ``COMPONENTS.FUSION_RENDER_FIRST_DEFAULT``
-        setting (default ``False``).
+        Otherwise fall back to the global ``FUSION_RENDER_FIRST`` setting
+        (default ``False``).
         """
         if cls.fusion_render_first is not None:
             return bool(cls.fusion_render_first)
-        return bool(get_settings().FUSION_RENDER_FIRST_DEFAULT)
+        return bool(get_settings().render_first_default)
 
     # ------------------------------------------------------------------
     # Fragment name — default derived from route_name

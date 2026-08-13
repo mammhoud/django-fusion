@@ -1,36 +1,26 @@
-{# django-fusion components/breadcrumbs.html
-   ──────────────────────────────────────────────────────
-   Renders breadcrumb navigation trail for routable components.
-
-   Breadcrumb links use Unpoly (up-follow/up-target) when UNPOLY_ENABLED
-   is True (default), with structured data (Schema.org BreadcrumbList) for SEO.
-
-   Context:
-     breadcrumbs   — list of {title, url} dicts from get_breadcrumbs()
-     unpoly_enabled — bool from the nav_link context (when available)
-#}
+{# django-fusion components/breadcrumbs.html #}
 {% load i18n %}
 
 {% if breadcrumbs %}
-<nav aria-label="{% trans 'Breadcrumb' %}" class="breadcrumbs mb-3">
-  <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+<nav aria-label="{% trans 'Breadcrumb' %}" class="fu-breadcrumb" data-fusion-component="breadcrumb">
+  <ol class="fu-breadcrumb__list" itemscope itemtype="https://schema.org/BreadcrumbList">
     {% for crumb in breadcrumbs %}
-      <li class="breadcrumb-item{% if forloop.last %} active{% endif %}"
+      {% with crumb_label=crumb.title|default:crumb.label crumb_url=crumb.url|default:crumb.href %}
+      <li class="fu-breadcrumb__item{% if forloop.last %} fu-breadcrumb__item--active{% endif %}"
           itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        {% if forloop.last %}
-          <span class="breadcrumbs__current" itemprop="name" aria-current="page">
-            {{ crumb.title }}
-          </span>
-        {% else %}
-          <a href="{{ crumb.url }}" itemprop="item"
-             class="text-decoration-none"
-             up-follow up-target="#fusion-content"
-             hx-get="{{ crumb.url }}" hx-target="#fusion-content">
-            <span itemprop="name">{{ crumb.title }}</span>
-          </a>
-        {% endif %}
         <meta itemprop="position" content="{{ forloop.counter }}" />
+        {% if forloop.last %}
+          <span class="fu-breadcrumb__current" itemprop="name" aria-current="page">{{ crumb_label }}</span>
+        {% else %}
+          <a href="{{ crumb_url }}" itemprop="item" class="fu-breadcrumb__link"
+             up-follow up-target="#fusion-content"
+             hx-get="{{ crumb_url }}" hx-target="#fusion-content" hx-push-url="true">
+            <span itemprop="name">{{ crumb_label }}</span>
+          </a>
+          <span class="fu-breadcrumb__separator" aria-hidden="true">/</span>
+        {% endif %}
       </li>
+      {% endwith %}
     {% endfor %}
   </ol>
 </nav>

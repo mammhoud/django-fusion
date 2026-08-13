@@ -419,6 +419,12 @@ class TestFusionRenderFirstSetting:
             fusion_render_first = None
 
         monkeypatch.setattr(
-            get_settings(), "FUSION_RENDER_FIRST_DEFAULT", True
+            get_settings(), "render_first_default", True
         )
         assert FallbackComponent.get_fusion_render_first() is True
+
+    def test_legacy_attribute_alias(self) -> None:
+        """The old ``FUSION_RENDER_FIRST_DEFAULT`` attribute stays readable."""
+        from django_fusion.config.conf import get_settings
+
+        assert get_settings().FUSION_RENDER_FIRST_DEFAULT == get_settings().render_first_default

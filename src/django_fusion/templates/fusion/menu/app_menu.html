@@ -18,8 +18,11 @@
   {% for item in items %}
     {% if item.is_url_pattern %}
       {# menu_path() item — dict with title, icon, name #}
-      <li class="app-menu__item nav-item" role="menuitem">
-        <a class="app-menu__link nav-link" href="#">
+      <li class="app-menu__item nav-item{% if request.path == item.url %} is-active{% endif %}" role="menuitem">
+        <a class="app-menu__link nav-link" href="{{ item.url }}"{% if request.path == item.url %} aria-current="page"{% endif %}
+           up-follow up-target="#fusion-content"
+           hx-get="{{ item.url }}" hx-target="#fusion-content" hx-push-url="true">
+
           {% if item.icon %}
             <span class="app-menu__icon material-icons me-2" aria-hidden="true">{{ item.icon }}</span>
           {% endif %}

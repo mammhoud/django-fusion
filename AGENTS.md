@@ -95,7 +95,7 @@ Prefer, in order:
 
 1. A product-level template override or component registration.
 2. A product setting such as `FUSION_LAYOUTS`, `FUSION_FEATURES`, or
-   `FUSION_RENDER_FIRST_DEFAULT`.
+   `FUSION_RENDER_FIRST`.
 3. A project-owned service/handler extension.
 4. A framework change here only when behavior is generic and tested by multiple
    consumers.

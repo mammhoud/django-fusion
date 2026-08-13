@@ -63,6 +63,17 @@ dev = [
 webpack = [
     "django-webpack-loader>=3.2.3",
 ]
+bolt = [
+    "django-bolt>=0.4; python_version >= \"3.12\"",
+    "msgspec>=0.21",
+    "PyJWT>=2.8",
+]
+tables = [
+    "django-tables2>=2.7",
+]
+auth = [
+    "django-allauth>=65",
+]
 
 [project.urls]
 Homepage = "https://github.com/mammhoud/django-fusion"

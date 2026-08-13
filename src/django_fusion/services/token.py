@@ -9,7 +9,10 @@ Canonical imports::
 import logging
 from typing import Any
 
+from django.conf import settings
 from django.db import models
+
+from django_fusion.plugins.apis.auth import BoltTokenConfig, FusionTokenError
 
 from .base import BaseService
 
@@ -56,50 +59,30 @@ class TokenService(BaseService):
         user_id: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
-        """
-        Validate token for action.
-        """
-        # Implement token validation logic
-        # This should integrate with your authentication system
-
+        """Validate a signed token without insecure permissive fallbacks."""
+        config = BoltTokenConfig(
+            secret=getattr(settings, "FUSION_BOLT_JWT_SECRET", "") or getattr(settings, "SECRET_KEY", ""),
+            algorithm=getattr(settings, "FUSION_BOLT_JWT_ALGORITHM", "HS256"),
+            issuer=getattr(settings, "FUSION_BOLT_JWT_ISSUER", "django-fusion"),
+            audience=getattr(settings, "FUSION_BOLT_JWT_AUDIENCE", ""),
+        )
         try:
-            # Example: Validate JWT token
-            from jose import JWTError, jwt
-        except ImportError:
-            # Fallback if JWT not available
-            return {"valid": True, "user_id": user_id, "action": action}
+            payload = config.decode(token)
+        except FusionTokenError as exc:
+            return {"valid": False, "error": str(exc)}
 
-        try:
-            # Decode token
-            payload = jwt.decode(
-                token,
-                "your-secret-key",  # Should be from settings
-                algorithms=["HS256"],
-            )
-
-            # Check expiration
-            import time
-            if payload.get("exp", 0) < time.time():
-                return {"valid": False, "error": "Token expired"}
-
-            # Check action permission
-            token_action = payload.get("action", "read")
-            if action != "read" and token_action != action:
-                return {"valid": False, "error": "Insufficient permissions"}
-
-            # Check user match
-            if user_id and payload.get("user_id") != user_id:
-                return {"valid": False, "error": "User mismatch"}
-
-            return {
-                "valid": True,
-                "user_id": payload.get("user_id"),
-                "action": token_action,
-                "payload": payload,
-            }
-
-        except JWTError as e:
-            return {"valid": False, "error": str(e)}
+        token_action = payload.get("action", "read")
+        token_user_id = str(payload.get("user_id") or payload.get("sub") or "")
+        if action != "read" and token_action != action:
+            return {"valid": False, "error": "Insufficient permissions"}
+        if user_id is not None and token_user_id != str(user_id):
+            return {"valid": False, "error": "User mismatch"}
+        return {
+            "valid": True,
+            "user_id": token_user_id,
+            "action": token_action,
+            "payload": payload,
+        }
 
     def generate_token(
         self,
@@ -113,33 +96,22 @@ class TokenService(BaseService):
         Generate token for user and action.
         """
         try:
-            # Example: Generate JWT token
-            import time
-
-            from jose import jwt
-
-            payload = {
-                "user_id": user_id,
-                "action": action,
-                "exp": int(time.time()) + expires_in,
-                "iat": int(time.time()),
-                "metadata": metadata or {},
-            }
-
-            token = jwt.encode(
-                payload,
-                "your-secret-key",  # Should be from settings
-                algorithm="HS256",
+            config = BoltTokenConfig(
+                secret=getattr(settings, "FUSION_BOLT_JWT_SECRET", "") or getattr(settings, "SECRET_KEY", ""),
+                algorithm=getattr(settings, "FUSION_BOLT_JWT_ALGORITHM", "HS256"),
+                issuer=getattr(settings, "FUSION_BOLT_JWT_ISSUER", "django-fusion"),
+                audience=getattr(settings, "FUSION_BOLT_JWT_AUDIENCE", ""),
             )
-
-            return {
-                "success": True,
-                "token": token,
-                "expires_in": expires_in,
-                "payload": payload,
-            }
-
-        except Exception as e:
+            token = config.issue(
+                str(user_id),
+                ttl_seconds=expires_in,
+                token_type="access",
+                user_id=str(user_id),
+                action=action,
+                metadata=metadata or {},
+            )
+            return {"success": True, "token": token, "expires_in": expires_in}
+        except Exception as e:  # noqa: BLE001 - service returns a stable result contract
             return {"success": False, "error": str(e)}
 
     def revoke_token(self, token: str, **kwargs) -> dict[str, Any]:

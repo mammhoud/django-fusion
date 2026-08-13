@@ -238,10 +238,18 @@ def load_merged_asset_manifest() -> dict[str, object]:
     configured = options.configured_assets or {}
     top = dict(configured.get("top", {}) or {})
     bottom = dict(configured.get("bottom", {}) or {})
-    webpack = _webpack_asset_links(options)
 
-    top["css"] = _dedupe(list(top.get("css", []) or []) + webpack["css"])
-    bottom["js"] = _dedupe(list(bottom.get("js", []) or []) + webpack["js"])
+    # Render-first aware asset gating (optional): when enabled via
+    # ``FUSION_PIPELINE["render_first_gates_assets"]``, the Django-road
+    # webpack/skeleton bundles are only served while render-first is active.
+    # In data-api mode the client renders from /apis/* and loads its own
+    # Vite bundles, so the webpack links are trimmed from the manifest (and
+    # the stats file is not even read — no wasted I/O on /apis/assets/).
+    assets_gated = options.render_first_gates_assets and not options.fusion_render_first
+    if not assets_gated:
+        webpack = _webpack_asset_links(options)
+        top["css"] = _dedupe(list(top.get("css", []) or []) + webpack["css"])
+        bottom["js"] = _dedupe(list(bottom.get("js", []) or []) + webpack["js"])
     top.setdefault("fonts", [])
     top.setdefault("preconnect", [])
     top.setdefault("inline_css", [])
@@ -255,11 +263,15 @@ def load_merged_asset_manifest() -> dict[str, object]:
         "top": top,
         "bottom": bottom,
         "components": component_manifest or {},
+        "fusion_render_first": options.fusion_render_first,
         "webpack": {
-            "enabled": options.webpack_enabled,
+            "enabled": options.webpack_enabled and not assets_gated,
             "stats_file": str(options.webpack_stats_file) if options.webpack_stats_file else None,
             "bundle_dir": options.webpack_bundle_dir,
         },
+        # NOTE: fusion_render_first defaults to True here (matches the API
+        # default); conf.py's singleton resolves False when unset. Both
+        # preserve the pre-rename behavior of their respective callers.
     }
 
 

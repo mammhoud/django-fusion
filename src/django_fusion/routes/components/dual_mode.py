@@ -53,7 +53,7 @@ class FusionDualModeMixin:
     The decision is made from :meth:`get_effective_render_first`, which
     prefers the per-request session preference and falls back to the
     component's ``get_fusion_render_first()`` (which itself honours
-    ``COMPONENTS.FUSION_RENDER_FIRST_DEFAULT``).
+    ``FUSION_RENDER_FIRST``).
 
     Subclasses should implement:
 

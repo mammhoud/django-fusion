@@ -85,7 +85,7 @@ class Application(NotificationMixin, IndexViewMixin, Viewset):
     Every Application gains the ``apis`` plugin contract:
 
     * ``fusion_render_first`` — default render mode option (``None`` falls
-      through to ``settings.FUSION_RENDER_FIRST_DEFAULT``).
+      through to ``settings.FUSION_RENDER_FIRST``).
     * ``render_first_mapping`` — per-view-name overrides.
     * :meth:`get_effective_render_first` — resolve the mode for a request.
     * :meth:`respond` — return a rendered component (render-first) or a
@@ -151,7 +151,7 @@ class Application(NotificationMixin, IndexViewMixin, Viewset):
         """Resolve the effective render-first mode (apis plugin contract).
 
         Priority: ``X-Fusion-Render-First`` header → ``render_first_mapping``
-        → ``fusion_render_first`` default → ``FUSION_RENDER_FIRST_DEFAULT``.
+        → ``fusion_render_first`` default → ``FUSION_RENDER_FIRST``.
         """
         from django_fusion.plugins.apis.views import APISViewMixin
 
