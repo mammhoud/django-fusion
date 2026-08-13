@@ -1,13 +1,72 @@
-# POS — Changelog
+# Formints changelog
 
 > All notable changes to the POS restaurant point-of-sale desktop app.
+
+## 2026-08-11 — Formint Pro: sync + admin + components enhancement
+
+### Added (formint-pos)
+- **Sync API** — `SyncController` under `/api/v1/sync/` exposing the merged
+  `ProductSyncEngine` (push products/config/catalog, receive sales/reports/
+  inventory, approve/reject pending changes, approvals list, ledger stats,
+  connectivity status) so the desktop app drives cloud sidecar sync over HTTP
+- **Components API** — `ComponentsController` under `/api/v1/components/`
+  serving django-fusion tables, forms, and fragments (branch summary) as JSON
+  data the Astro shell renders directly
+- **Unified transport** — `frontend/src/lib/fusion-api.ts`: API-first with
+  Tauri-invoke fallback (auto-restart sidecar) and offline snapshot cache;
+  registered as `$store.api` in `Layout.astro`; nav fetch now goes through it
+- **Reusable UI components** — `FusionTable` (data-driven tables + skeleton +
+  pagination), `FusionForm` (schema-driven fields + validation), `WizardForm`
+  (multi-step wizard with progress rail/bar, per-step validation, keyboard
+  nav), new `wizard-step` skeleton variant
+- **Sync Center page** — `/ops/sync/` (transport status, sync stats, product
+  catalog via Components API, supplier onboarding wizard); enabled in nav as
+  "Sync Center" with NEW badge
+- **Admin palette alignment** — Unfold `UNFOLD["COLORS"]` switched from
+  emerald to the POS app's blue (#2563eb) scale so admin and app share one
+  identity
+- **Tests** — 15 new backend tests (sync API + components API) and 17 new
+  frontend contract tests; fixed stale navigation-contract tests and the
+  `PageHandler` nav flattening bug
+
+### Changed (formint-pos)
+- All `/api/v1/*` routes normalised to trailing-slash form (SystemController
+  included) for a single URL contract
+
+### Verification
+- Sidecar: `make check` + `manage.py test formint` (108 tests, OK)
+- Frontend: `npm run check` (0 errors) + `npm test` (80 tests, OK)
+
+
+> Follows [Semantic Versioning](https://semver.org/).
+
+---
+
+## 2026-08-11 - Active project closeout
+
+### Changed
+
+- Confirmed `projects/formints/` as the canonical POS product workspace.
+- Kept edition-specific implementation in the owning Formint/POS project and
+  preserved the active edition plans without marking unfinished cloud or tenant
+  work complete.
+- Added a root POS changelog at `projects/pos/CHANGELOG.md` and an edition
+  changelog at `projects/pos/forge-pos/CHANGELOG.md` for cross-boundary release
+  traceability.
+
+### Verification
+
+- Use each edition's documented frontend, sidecar, and native test commands.
+- Keep generated native targets, bundles, databases, and screenshots ignored.
+
+
 > Follows [Semantic Versioning](https://semver.org/).
 
 ---
 
 ## Unreleased — 3 August 2026
 
-> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [formint-pos](formint-pos/CHANGELOG.md)
+> **Per-edition changelogs:** [forge-pos](../pos/forge-pos/CHANGELOG.md)
 
 ### Added (formint-pos — merged package)
 - **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
@@ -29,7 +88,7 @@
 
 ## v1.3.0 — 30 July 2026
 
-> **Per-edition changelogs:** [forge-pos](forge-pos/CHANGELOG.md) · [formint-pos](formint-pos/CHANGELOG.md)
+> **Per-edition changelogs:** [forge-pos](../pos/forge-pos/CHANGELOG.md)
 
 ### Added (forge-pos)
 - **Settings → Theme tab** — New tab with Theme Studio link, "Preview Theme Components" modal, and active theme info

@@ -1,7 +1,7 @@
 # i18n Gaps Report
 
-Reference: `en.json` (1237 keys)
-Generated: 2026-08-05
+Reference: `en.json` (1336 keys)
+Generated: 2026-08-11
 
 | Locale | Missing keys | Orphan keys | Status |
 |--------|-------------|-------------|--------|
@@ -13,9 +13,9 @@ Generated: 2026-08-05
 employees.employeeCount_few
 employees.employeeCount_two
 ```
-| `de.json` Deutsch | 92 | 0 | ❌ Gaps found |
+| `de.json` Deutsch | 85 | 0 | ❌ Gaps found |
 
-### de.json — Missing keys (92)
+### de.json — Missing keys (85)
 
 ```
 auth.roleEmployee
@@ -39,7 +39,6 @@ home.item
 home.items
 home.noActiveOrders
 home.noRevenueYet
-home.onPayroll
 home.oneOrderToday
 home.ordersToday
 home.table
@@ -55,12 +54,6 @@ inventory.deleteAdjustmentDesc
 inventory.deleteAdjustmentTitle
 inventory.reorderQty
 inventory.successAdjustmentDeleted
-kitchen.addNote
-kitchen.allCategories
-kitchen.attachNotes
-kitchen.categoryFilter
-kitchen.prepSteps
-kitchen.quickNotes
 notes.addStep
 notes.noSteps
 notes.preparationHint
@@ -111,9 +104,9 @@ support.submit
 support.success
 support.successBody
 ```
-| `es.json` Español | 92 | 0 | ❌ Gaps found |
+| `es.json` Español | 85 | 0 | ❌ Gaps found |
 
-### es.json — Missing keys (92)
+### es.json — Missing keys (85)
 
 ```
 auth.roleEmployee
@@ -137,7 +130,6 @@ home.item
 home.items
 home.noActiveOrders
 home.noRevenueYet
-home.onPayroll
 home.oneOrderToday
 home.ordersToday
 home.table
@@ -153,12 +145,6 @@ inventory.deleteAdjustmentDesc
 inventory.deleteAdjustmentTitle
 inventory.reorderQty
 inventory.successAdjustmentDeleted
-kitchen.addNote
-kitchen.allCategories
-kitchen.attachNotes
-kitchen.categoryFilter
-kitchen.prepSteps
-kitchen.quickNotes
 notes.addStep
 notes.noSteps
 notes.preparationHint
@@ -209,9 +195,9 @@ support.submit
 support.success
 support.successBody
 ```
-| `fr.json` Français | 92 | 0 | ❌ Gaps found |
+| `fr.json` Français | 85 | 0 | ❌ Gaps found |
 
-### fr.json — Missing keys (92)
+### fr.json — Missing keys (85)
 
 ```
 auth.roleEmployee
@@ -235,7 +221,6 @@ home.item
 home.items
 home.noActiveOrders
 home.noRevenueYet
-home.onPayroll
 home.oneOrderToday
 home.ordersToday
 home.table
@@ -251,12 +236,6 @@ inventory.deleteAdjustmentDesc
 inventory.deleteAdjustmentTitle
 inventory.reorderQty
 inventory.successAdjustmentDeleted
-kitchen.addNote
-kitchen.allCategories
-kitchen.attachNotes
-kitchen.categoryFilter
-kitchen.prepSteps
-kitchen.quickNotes
 notes.addStep
 notes.noSteps
 notes.preparationHint
@@ -308,4 +287,4 @@ support.success
 support.successBody
 ```
 
-**❌ 276 missing key(s) found across all locales.**
+**❌ 255 missing key(s) found across all locales.**

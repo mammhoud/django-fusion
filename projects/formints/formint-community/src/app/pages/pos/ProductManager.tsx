@@ -56,7 +56,7 @@ export default function ProductManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
   // ── Add-wizard state: 3 steps (Basics → Recipe & Options → Review) ──
   const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -277,7 +277,7 @@ export default function ProductManager() {
     setShowAddModal(false);
     setEditingProduct(null);
     setErrors({});
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
     setProductImage(null);
     setOriginalImage(null);
     // Reset the add wizard to its first step + empty recipe rows.
@@ -288,7 +288,7 @@ export default function ProductManager() {
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', barcode: '', description: '', available_order_types: 'dine-in,takeaway,delivery,extra-order,dated-order' });
     setProductImage(null);
     setOriginalImage(null);
     setErrors({});
@@ -306,7 +306,6 @@ export default function ProductManager() {
       unit: product.unit,
       category_id: product.category_id ?? 0,
       product_type: product.product_type || 'product',
-      prepare_time_minutes: product.prepare_time_minutes || 0,
       barcode: product.barcode || '',
       description: product.description || '',
       available_order_types: product.available_order_types || 'dine-in,takeaway,delivery,extra-order,dated-order',
@@ -344,8 +343,7 @@ export default function ProductManager() {
           unit: trimmedUnit,
           category_id: nextCategoryId,
           product_type: newProduct.product_type || 'product',
-          prepare_time_minutes: newProduct.prepare_time_minutes,
-          barcode: newProduct.barcode || null,
+            barcode: newProduct.barcode || null,
           description: newProduct.description || null,
           available_order_types: newProduct.available_order_types || '',
         };
@@ -367,8 +365,7 @@ export default function ProductManager() {
           category_id: nextCategoryId,
           image: nextImage,
           product_type: newProduct.product_type || 'product',
-          prepare_time_minutes: newProduct.prepare_time_minutes,
-          barcode: newProduct.barcode || null,
+            barcode: newProduct.barcode || null,
           description: newProduct.description || null,
           available_order_types: newProduct.available_order_types || '',
         };
@@ -1430,26 +1427,6 @@ export default function ProductManager() {
                 </div>
               </div>
 
-              {/* Prepare time */}
-              <div>
-                <label className="block text-base-content mb-1.5 text-xs font-medium">
-                  <span className="ri-play-circle-line ri-14px inline-block mr-1 text-primary/70" />
-                  Prep Time (min)
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    value={newProduct.prepare_time_minutes}
-                    onChange={(e) => handleInputChange('prepare_time_minutes', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="input w-24 h-9 text-sm"
-                    placeholder="0"
-                    min="0"
-                    step="1"
-                    disabled={isSubmitting}
-                  />
-                  <span className="text-xs text-base-content/50">Default preparation time for KDS display</span>
-                </div>
-              </div>
 
               {/* Barcode + Description */}
               <div>

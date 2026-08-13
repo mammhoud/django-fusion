@@ -21,14 +21,14 @@ const RoleBadgeIcon = Ic('hi:check-badge');
 // 'employee' sees only operational pages — no settings, reports, or admin.
 export const ROLE_ROUTES: Record<string, Set<string>> = {
   manager: new Set([
-    '/dashboard', '/sale', '/kitchen', '/transactions',
+    '/dashboard', '/sale', '/transactions',
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
-    '/employees', '/schedule', '/payroll', '/customers', '/roles',
+    '/employees', '/schedule', '/customers', '/roles',
     '/analytics', '/reports', '/reports?tab=taxReports',
     '/settings', '/notes', '/coupons', '/support-chat', '/about',
   ]),
   employee: new Set([
-    '/dashboard', '/sale', '/kitchen', '/transactions', '/inventory',
+    '/dashboard', '/sale', '/transactions', '/inventory',
   ]),
 };
 
@@ -68,7 +68,6 @@ const navCategories: NavCategory[] = [
     color: 'text-success',
     items: [
       { label: 'nav.newSale', desc: 'nav.newSaleDesc', route: '/sale', icon: Ic('hi:shopping-cart'), colorClass: 'bg-success' },
-      { label: 'nav.kitchen', desc: 'nav.kitchenDesc', route: '/kitchen', icon: Ic('hi:fire'), colorClass: 'bg-success' },
       { label: 'nav.transactions', desc: 'nav.transactionsDesc', route: '/transactions', icon: Ic('hi:clock'), colorClass: 'bg-success' },
     ],
   },
@@ -93,7 +92,6 @@ const navCategories: NavCategory[] = [
     items: [
       { label: 'nav.employees', desc: 'nav.employeesDesc', route: '/employees', icon: Ic('hi:users'), colorClass: 'bg-secondary' },
       { label: 'nav.schedule', desc: 'nav.scheduleDesc', route: '/schedule', icon: Ic('hi:calendar-days'), colorClass: 'bg-secondary' },
-      { label: 'nav.payroll', desc: 'nav.payrollDesc', route: '/payroll', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
       { label: 'nav.customers', desc: 'nav.customersDesc', route: '/customers', icon: Ic('hi:user-group'), colorClass: 'bg-secondary' },
       { label: 'nav.roles', desc: 'nav.rolesDesc', route: '/roles', icon: Ic('hi:shield-check'), colorClass: 'bg-secondary' },
     ],

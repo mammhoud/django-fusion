@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use crate::db::{models::*, open_conn};
 use std::path::PathBuf;
 
-pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -> Result<(Sale, KitchenTicket), String> {
+pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -> Result<Sale, String> {
     let mut conn = open_conn(db_path)?;
     conn.transaction(|conn| {
         use crate::db::schema::sales::dsl::*;
@@ -17,40 +17,7 @@ pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -
                 .execute(conn)?;
         }
 
-        // Auto-create a kitchen ticket for this sale so the KDS has work to display.
-        // Dine-in and takeaway orders go to the kitchen; delivery orders are
-        // treated as lower priority but still tracked.
-        let priority = match sale.order_type.as_str() {
-            "dine-in" => 1,
-            "extra-order" => 1,
-            "takeaway" => 2,
-            "dated-order" => 2,
-            "delivery" => 3,
-            _ => 2,
-        };
-        // Default preparation time based on order priority
-        // Dine-in / extra-order: 15 min, takeaway / dated-order: 20 min, delivery: 25 min
-        use crate::db::schema::kitchen_tickets::dsl as kt;
-        let ticket = NewKitchenTicket {
-            sale_id: sale.id,
-            status: "pending".to_string(),
-            priority,
-            prepare_time_minutes: match priority {
-                1 => 15,
-                2 => 20,
-                _ => 25,
-            },
-            notes: None,
-        };
-        diesel::insert_into(crate::db::schema::kitchen_tickets::table)
-            .values(&ticket)
-            .execute(conn)?;
-
-        let created: KitchenTicket = kt::kitchen_tickets
-            .order(kt::id.desc())
-            .first(conn)?;
-
-        Ok((sale, created))
+        Ok(sale)
     }).map_err(|e: diesel::result::Error| e.to_string())
 }
 
@@ -150,25 +117,6 @@ pub fn refund_sale(db_path: &PathBuf, sale_id: i32) -> Result<Sale, String> {
     }
 }
 
-/// Fetch sale items for a given sale_id (used by Kitchen Display for detail modals)
-pub fn get_sale_items_by_sale_id(db_path: &PathBuf, target_sale_id: i32) -> Result<Vec<SaleItem>, String> {
-    let mut conn = open_conn(db_path)?;
-    use crate::db::schema::sale_items::dsl::*;
-    sale_items
-        .filter(sale_id.eq(target_sale_id))
-        .load::<SaleItem>(&mut conn)
-        .map_err(|e| e.to_string())
-}
-
-/// Fetch a single sale by its ID (used by KDS for detail modals)
-pub fn get_sale_by_id(db_path: &PathBuf, target_sale_id: i32) -> Result<Sale, String> {
-    let mut conn = open_conn(db_path)?;
-    use crate::db::schema::sales::dsl::*;
-    sales.find(target_sale_id)
-        .first::<Sale>(&mut conn)
-        .map_err(|e| e.to_string())
-}
-
 pub fn mark_sale_uploaded(db_path: &PathBuf, sale_id: i32) -> Result<(), String> {
     let mut conn = open_conn(db_path)?;
     use crate::db::schema::sales::dsl::*;
@@ -214,7 +162,6 @@ mod tests {
             vec![],
         )
         .expect("add_sale should succeed")
-        .0
     }
 
     #[test]
@@ -269,8 +216,7 @@ mod tests {
                 },
                 vec![],
             )
-            .expect("add_sale should succeed")
-            .0;
+            .expect("add_sale should succeed");
 
             let err = refund_sale(&db_path, sale.id)
                 .expect_err("only completed sales may be refunded");
@@ -278,7 +224,7 @@ mod tests {
                 err.contains(&format!("cannot be refunded from status {status}")),
                 "unexpected error: {err}"
             );
-            let unchanged = get_sale_by_id(&db_path, sale.id).expect("sale should remain readable");
+            let (unchanged, _) = get_sale_with_items(&db_path, sale.id).expect("sale should remain readable");
             assert_eq!(unchanged.status, status);
             let _ = std::fs::remove_file(&db_path);
         }

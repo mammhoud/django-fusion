@@ -1,0 +1,122 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { SiteSettings, NavigationData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try {
+  [siteSettings, navData] = await Promise.all([cachedSiteSettings(), cachedNavigation()]);
+} catch {
+  // The shell remains useful while Django is starting or temporarily offline.
+}
+---
+
+<Layout
+  title="Profile"
+  description="Manage your Precis account, learning progress, email, and security settings."
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageSlug="profile"
+>
+  <section class="section-hero reg-marks overflow-hidden py-16 md:py-20">
+    <div class="container-fusion">
+      <div class="mx-auto max-w-3xl">
+        <p class="tag-marker mb-4">account · precis</p>
+        <h1 class="mb-4 font-display text-4xl font-bold tracking-tight text-fu-ink md:text-5xl">Your learning profile</h1>
+        <p class="max-w-2xl text-lg leading-relaxed text-fu-muted">One quiet place for your account, progress, certificates, and security controls.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-14 md:py-20">
+    <div class="container-fusion">
+      <div
+        class="mx-auto max-w-4xl"
+        x-data="{
+          authed: false,
+          user: null,
+          learning: { active: 0, completed: 0, next: null },
+          loading: true,
+          async init() {
+            try {
+              const response = await fetch('/apis/auth/status/', { credentials: 'include', headers: { Accept: 'application/json' } });
+              if (response.ok) {
+                const data = await response.json();
+                this.authed = Boolean(data.authenticated);
+                this.user = data.user;
+                this.learning = data.learning || this.learning;
+              }
+            } catch (error) {
+              // Keep the signed-out state when the backend is unavailable.
+            } finally {
+              this.loading = false;
+            }
+          },
+          initials() {
+            return this.user?.display?.slice(0, 2)?.toUpperCase() || '?';
+          },
+          async logout() {
+            try {
+              await fetch(window.__FUSION_AUTH?.logout || '/api/auth/browser/v1/auth/session', {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: { Accept: 'application/json' },
+              });
+            } catch (error) {
+              // Redirect even when the backend is temporarily unavailable.
+            }
+            window.location.href = '/';
+          },
+        }"
+      >
+        <template x-if="loading">
+          <div class="space-y-5" aria-label="Loading profile">
+            <div class="card p-8 animate-fusion-pulse"><div class="flex items-center gap-4"><span class="h-14 w-14 rounded-full bg-fu-line/60"></span><div class="space-y-2"><span class="block h-5 w-40 rounded bg-fu-line/60"></span><span class="block h-4 w-56 rounded bg-fu-line/40"></span></div></div></div>
+            <div class="grid gap-5 md:grid-cols-3"><span class="card h-28 animate-fusion-pulse bg-fu-line/20"></span><span class="card h-28 animate-fusion-pulse bg-fu-line/20"></span><span class="card h-28 animate-fusion-pulse bg-fu-line/20"></span></div>
+          </div>
+        </template>
+
+        <template x-if="!loading && !authed">
+          <div class="card p-8 text-center md:p-12">
+            <div class="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full border border-fu-line bg-fu-card text-fu-link">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+            <p class="tag-marker mb-3">session required</p>
+            <h2 class="mb-3 font-display text-2xl font-semibold text-fu-ink">Sign in to see your progress</h2>
+            <p class="mx-auto mb-7 max-w-lg text-sm leading-relaxed text-fu-muted">Your profile keeps learning progress and account controls together. Sign in to continue, or create a free account in under a minute.</p>
+            <div class="flex flex-col justify-center gap-3 sm:flex-row"><button type="button" class="btn-primary" @click="$dispatch('fusion:open-login')">Sign in</button><a href="/accounts/signup/" class="btn-secondary">Create account</a></div>
+          </div>
+        </template>
+
+        <template x-if="!loading && authed">
+          <div class="space-y-6">
+            <div class="card p-6 md:p-8">
+              <div class="flex flex-wrap items-center gap-4">
+                <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-fu-link text-sm font-bold tracking-wide text-white" x-text="initials()"></span>
+                <div><p class="tag-marker mb-1">signed in</p><h2 class="font-display text-2xl font-semibold text-fu-ink" x-text="user?.display"></h2><p class="text-sm text-fu-muted" x-text="user?.email"></p></div>
+                <button type="button" class="btn-secondary ml-auto !px-4 !py-2 text-sm" @click="logout()">Sign out</button>
+              </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-3">
+              <div class="card p-6"><p class="tag-marker mb-3">in progress</p><p class="font-mono text-3xl font-semibold text-fu-ink" x-text="learning.active"></p><p class="mt-1 text-sm text-fu-muted">active courses</p></div>
+              <div class="card p-6"><p class="tag-marker mb-3">completed</p><p class="font-mono text-3xl font-semibold text-fu-ink" x-text="learning.completed"></p><p class="mt-1 text-sm text-fu-muted">courses finished</p></div>
+              <a href="/learning/dashboard/" class="card group p-6 transition-all hover:-translate-y-0.5"><p class="tag-marker mb-3">next action</p><p class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link" x-text="learning.next?.title || 'Open your dashboard'"></p><p class="mt-1 text-sm text-fu-muted" x-text="learning.next ? `${learning.next.progress}% complete · continue →` : 'Review courses and certificates →'"></p></a>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <a href="/learning/profile/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">↗</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Learning profile</h3><p class="mt-1 text-sm text-fu-muted">Courses, progress, notes, and certificates.</p></span></a>
+              <a href="/profile/settings/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">⚙</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Account settings</h3><p class="mt-1 text-sm text-fu-muted">Profile details, notifications, privacy, and MFA.</p></span></a>
+              <a href="/accounts/email/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">@</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Email addresses</h3><p class="mt-1 text-sm text-fu-muted">Manage your primary and verified addresses.</p></span></a>
+              <a href="/accounts/password/change/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">⌁</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Password &amp; security</h3><p class="mt-1 text-sm text-fu-muted">Change your password or configure MFA.</p></span></a>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <Toast />
+</Layout>

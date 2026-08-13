@@ -348,10 +348,11 @@ export default function Sale() {
         unit: item.unit,
       }));
 
-      const result = await invoke<unknown>('add_sale', { sale: saleData, items: itemsData });
-      // Backend returns [Sale, KitchenTicket]; tests may mock a plain Sale object.
-      if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null && 'id' in result[0]) {
-        savedSaleIdRef.current = (result[0] as Sale).id;
+      const result = await invoke<Sale>('add_sale', { sale: saleData, items: itemsData });
+      // Community returns the persisted sale directly; no secondary ticket
+      // record is created by this edition's command contract.
+      if (result && typeof result === 'object' && 'id' in result) {
+        savedSaleIdRef.current = result.id;
       }
 
       // Audit row — every completed order is recorded as a user action.

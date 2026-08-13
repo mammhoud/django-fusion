@@ -282,6 +282,10 @@ LOGIN_REDIRECT_URL = "/"
 LEARNING_PAYMENT_PROVIDER = os.environ.get("LEARNING_PAYMENT_PROVIDER", "")
 LEARNING_PAYMENT_ENABLED = bool(LEARNING_PAYMENT_PROVIDER)
 LEARNING_COURSE_CURRENCY = os.environ.get("LEARNING_COURSE_CURRENCY", "USD")
+# Unified catalog currency — one setting drives products + courses + editions
+# pricing across both websites. Products fall back to it when no per-record
+# currency is set (see apps/content/models/products.py).
+FUSION_DEFAULT_CURRENCY = os.environ.get("FUSION_DEFAULT_CURRENCY", "USD")
 # login_required redirects land on the server-rendered page (browser flow);
 # the headless API is still consumed directly by the Alpine modal.
 LOGIN_URL = "/accounts/login/"
@@ -303,6 +307,7 @@ USE_TZ = True
 # Supported languages — mirrors the Astro frontend translations module.
 # Swedish (sv) added per request; Arabic (ar) has full RTL support.
 from django.utils.translation import gettext_lazy as _
+
 LANGUAGES = [
     ("en", _("English")),
     ("ar", _("Arabic")),
@@ -404,9 +409,21 @@ FUSION_ASSETS = {
     },
 }
 
-FUSION_ASSET_PIPELINE = {
+FUSION_PIPELINE = {
     "enabled": True,
-    "webpack": {"enabled": False},
+    # Webpack bundles (webpack/landing-fusion.config.js →
+    # backend/assets/static/bundles/bundles.json) are merged into the
+    # unified asset manifest served at GET /apis/assets/ so the Astro road
+    # preloads the same Django-road bundles (single bundle source).
+    # ``render_first_gates_assets`` ties asset loading to the render-first
+    # flag: in data-api mode (FUSION_RENDER_FIRST=0) the webpack/skeleton
+    # links are trimmed from the manifest; render-first serves them.
+    "render_first_gates_assets": True,
+    "webpack": {
+        "enabled": True,
+        "stats_file": str(BASE_DIR / "backend" / "assets" / "static" / "bundles" / "bundles.json"),
+        "bundle_dir": "bundles/",
+    },
     "components": {
         "enabled": True,
         "manifest_path": str(_ASSETS_DIR / "static" / "components" / "manifest.json"),
@@ -417,12 +434,15 @@ FUSION_ASSET_PIPELINE = {
 # ── Fusion Render Mode (django-fusion settings config) ─────────────
 # The dual-mode contract used across django-fusion
 # (``RoutableComponent.get_fusion_render_first()`` / ``FusionDualModeMixin``
-# read ``FUSION_RENDER_FIRST_DEFAULT`` or ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``):
+# read ``FUSION_RENDER_FIRST``):
 #
 #   True  → "fusion render first" — Django serves finished server-rendered
 #           HTML as the source of truth (SEO friendly, no client render).
 #   False → "data APIs" — the client (Astro build) renders from /apis/* JSON.
 #
+# The same flag is surfaced on /apis/assets/ as ``fusion_render_first`` and
+# (with ``render_first_gates_assets``) decides whether webpack/skeleton
+# bundles are served — one variable checks both render mode and asset loading.
 # Override per request with the ``X-Fusion-Render-First: true|false`` header.
 # Env: FUSION_RENDER_FIRST=1|0
-FUSION_RENDER_FIRST_DEFAULT = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"
+FUSION_RENDER_FIRST = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"

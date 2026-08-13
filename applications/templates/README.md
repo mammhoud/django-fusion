@@ -8,14 +8,15 @@ access, and a Coder agent for IDE/port-forwarding.
 
 | Template | What it provisions | Traefik? | Workspace constraint |
 |---|---|---|---|
-| [**dev-stack**](./dev-stack/README.md) | code-server IDE + Blinko AI notes | Yes | Must be named `dev` |
+| [**dev-stack**](./dev-stack/README.md) | code-server IDE + FileGator file manager | Yes (via shared-media nginx) | Must be named `dev` |
 | [**website**](./website/README.md) | Django/Wagtail (landing-fusion backend) | No | None (any name works) |
 
 ### dev-stack
 
 Multi-service dev workspace. Spins up a code-server IDE with Node.js/npm and a
-Blinko note-taking instance, both routed through the shared Traefik reverse
-proxy at `code.structa.cloud` and `blinko.structa.cloud`.
+workspace-scoped FileGator file manager, both routed through the shared
+reverse-proxy stack (Traefik → shared-media nginx) at `code.structa.cloud`
+and `filegator.structa.cloud`.
 
 → [dev-stack README](./dev-stack/README.md) · [main.tf](./dev-stack/main.tf)
 
@@ -35,7 +36,7 @@ directory:
 | Component | Defined in |
 |---|---|
 | PostgreSQL + Redis + Coder | `applications/databases/docker-compose.yml` |
-| Traefik reverse proxy | `applications/proxy/docker-compose.yml` |
+| Traefik reverse proxy + shared-media nginx | `applications/proxy/docker-compose.yml` |
 | Traefik dynamic routes | `applications/proxy/traefik/dynamic/*.yml` |
 | Docker network (`common`) | Created externally |
 
@@ -63,7 +64,7 @@ coder templates push website    --directory applications/templates/website
 applications/templates/
 ├── README.md              ← you are here
 ├── dev-stack/
-│   ├── main.tf            ← code-server + Blinko
+│   ├── main.tf            ← code-server + FileGator
 │   └── README.md          ← full docs
 └── website/
     ├── main.tf            ← Django/Wagtail

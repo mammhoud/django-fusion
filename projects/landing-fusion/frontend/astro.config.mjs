@@ -2,8 +2,31 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
 
 import alpinejs from '@astrojs/alpinejs';
+
+// ── Dependency-free .env loader ─────────────────────────────────────────────
+// Astro/Vite do not reliably expose .env values to config files on every
+// install layout, so read them here explicitly (shell env wins, then
+// .env.local, then .env). Keeps port/URLs overridable via one frontend/.env
+// (see .env.example).
+const __env = {};
+for (const __f of ['.env.local', '.env']) {
+  if (!existsSync(__f)) continue;
+  for (const __line of readFileSync(__f, 'utf8').split('\n')) {
+    const __m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(__line);
+    if (__m && !(__m[1] in __env)) __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, '');
+  }
+}
+const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
+
+/** Dev server port (default 3000). */
+const PORT = Number(envVal('PORT', 3000));
+/** Django backend origin for the dev proxy (default :8074). */
+const BACKEND_URL = envVal('BACKEND_URL', 'http://127.0.0.1:8074');
+/** Canonical site URL (SEO/sitemap). */
+const SITE_URL = envVal('PUBLIC_SITE_URL', 'https://landing.structa.cloud');
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,7 +34,7 @@ export default defineConfig({
   // Switch to `output: 'server'` + @astrojs/node when porting
   // CMS-backed dynamic pages (see ASTRO_MIGRATION_PLAN §7).
   output: 'static',
-  site: 'https://landing.structa.cloud',
+  site: SITE_URL,
   integrations: [
     mdx(),
     // Alpine with the Intersect + Collapse plugins (see src/alpine.js) —
@@ -30,6 +53,15 @@ export default defineConfig({
         '@fusion': fileURLToPath(
           new URL('../../../libs/django-fusion/js/fusion-js/src', import.meta.url),
         ),
+        // Shared django-fusion TEMPLATES — the single source of truth for
+        // cross-road UI partials (brand_modal.html etc.). Imported raw
+        // (?raw) so the Astro road renders the exact same markup the Django
+        // road {% include %}s — they can never drift. NOTE: Django template
+        // tags ({%% %}) would be emitted literally here, so these partials
+        // must stay tag-free (HTML comments only).
+        '@fusion-templates': fileURLToPath(
+          new URL('../../../libs/django-fusion/src/django_fusion/templates', import.meta.url),
+        ),
       },
     },
     plugins: [
@@ -46,16 +78,16 @@ export default defineConfig({
     // nginx proxies these paths to the backend instead.
     server: {
       proxy: {
-        '/accounts': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/apis': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/fragment': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/api': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/admin': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/static': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/media': { target: 'http://127.0.0.1:8074', changeOrigin: true },
-        '/learning': { target: 'http://127.0.0.1:8074', changeOrigin: true },
+        '/accounts': { target: BACKEND_URL, changeOrigin: true },
+        '/apis': { target: BACKEND_URL, changeOrigin: true },
+        '/fragment': { target: BACKEND_URL, changeOrigin: true },
+        '/api': { target: BACKEND_URL, changeOrigin: true },
+        '/admin': { target: BACKEND_URL, changeOrigin: true },
+        '/static': { target: BACKEND_URL, changeOrigin: true },
+        '/media': { target: BACKEND_URL, changeOrigin: true },
+        '/learning': { target: BACKEND_URL, changeOrigin: true },
       },
     },
   },
-  server: { port: 3000, host: true },
+  server: { port: PORT, host: true },
 });

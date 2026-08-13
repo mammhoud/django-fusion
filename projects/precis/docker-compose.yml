@@ -72,7 +72,10 @@ services:
       # The backend is mounted at the runtime site root because the shared
       # entrypoint and SiteCLI expect manage.py/settings.py there.
       - ./backend:/app/lms-fusion:rw
-      - ../assets:/app/assets:ro
+      # Precis asset/template source lives beside the backend in ./assets.
+      # settings.py resolves the workspace asset root as /app/assets inside
+      # the image, so keep the mount on that canonical shared path.
+      - ./assets:/app/assets:ro
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
       # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
@@ -132,7 +135,10 @@ services:
       # The backend is mounted at the runtime site root because the shared
       # entrypoint and SiteCLI expect manage.py/settings.py there.
       - ./backend:/app/lms-fusion:rw
-      - ../assets:/app/assets:ro
+      # Precis asset/template source lives beside the backend in ./assets.
+      # settings.py resolves the workspace asset root as /app/assets inside
+      # the image, so keep the mount on that canonical shared path.
+      - ./assets:/app/assets:ro
       # Live libs mirror: the worker must see the same django-fusion source the
       # backend does, otherwise it imports the image-baked (potentially stale)
       # copy and crashes on new modules (e.g. django_fusion.models.certificate).
@@ -149,6 +155,12 @@ services:
   frontend:
     build:
       context: .
+      # The Astro static build calls the live backend API (PUBLIC_BUILD_API_URL)
+      # during `npm run build` (getStaticPaths for /courses/[slug] etc.). All
+      # build-time fetches are fail-soft (try/catch + seeded fallback slugs), so
+      # `docker compose up -d --build` works in one phase even when the backend
+      # is not yet healthy — the frontend then renders with fallback content.
+      # Rebuilding after the backend is up regenerates the catalog with live data.
       # The Astro build resolves @fusion/* imports against
       # /libs/django-fusion/js/fusion-js/src (see frontend/astro.config.mjs), so
       # that source dir must be available inside the builder stage. The frontend

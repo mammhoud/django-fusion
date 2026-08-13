@@ -17,9 +17,17 @@
 import { createClient, getMonitorStatus } from '@formints/client';
 import type { MonitorStatus } from '@formints/client';
 
-/** Default sidecar/monitor base URL — same default as the sidecar client. */
+/**
+ * Default monitor base URL.
+ *
+ * Same-origin relative ('' → `/monitor/status`) so the browser request goes
+ * through the Astro dev proxy (astro.config.mjs adds a `/monitor` entry) —
+ * matching the `dashboard.ts` convention of "same-origin relative paths ...
+ * without CORS or absolute URLs". Override with VITE_SIDECAR_URL when the
+ * frontend and API are served from different origins.
+ */
 export const MONITOR_BASE =
-  (import.meta.env?.VITE_SIDECAR_URL as string | undefined) || 'http://127.0.0.1:8767';
+  (import.meta.env?.VITE_SIDECAR_URL as string | undefined) || '';
 
 export interface MonitorApi {
   /** GET /monitor/status — db reachability, last backup, queue depth. */

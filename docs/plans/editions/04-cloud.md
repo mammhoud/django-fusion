@@ -13,6 +13,8 @@
 
 This plan adds a `BackupRun` model (apps/core), a `backup_db` management command (SQLite online backup), and a `/monitor/status` endpoint (DB health + last backup + sync queue depth).
 
+> **Related plan:** [`08-tenant-schemas.md`](08-tenant-schemas.md) — schema-per-tenant multi-tenancy via `django-tenants` (the maintained fork of the deprecated `django-tenant-schemas`). It adds the `Tenant`/`Domain` schema registry and the complete per-branch `BranchSettings` model to the Cloud edition, and documents the PostgreSQL flip-on path (`DB_ENGINE=django_tenants.postgresql_backend`) while keeping SQLite as the dev default.
+
 **Tech Stack:** Python (Django 5.2, channels, django-fusion, django-bolt), pytest. New code uses only the Python stdlib (`sqlite3`, `os`, `datetime`) — no new dependencies.
 
 ## Global Constraints
@@ -546,16 +548,14 @@ git commit -m "feat(pos-cloud-frontend): consume @formints/client monitor module
 - Consumes: the running cloud backend (`make cloud-run`, `:8767`) + frontend.
 - Produces: a standalone Cloud e2e suite + the sync-feature inheritance check.
 
-- [ ] **Step 1: Write the spec**
-
-Create `formintB/frontend/e2e/monitor.spec.ts`:
+- [x] **Step 1: Write the spec** — implemented `projects/formints/formint-cloud/frontend/e2e/monitor.spec.ts` with the two plan specs plus a `/fusion/monitor` fragment render check; `playwright.config.ts` `testDir` already `./e2e`, baseURL/webServer fixed to :4323 (cloud Astro port, not the :1420 Tauri port) and webServer command switched to `./node_modules/.bin/astro dev` (cloud `predev` hooks fail without `src-tauri/`).
 
 ```ts
 import { test, expect } from '@playwright/test';
 
 test('monitor status shows a healthy database', async ({ page }) => {
   await page.goto('/telemetry');
-  await expect(page.getByText('ok').first()).toBeVisible();
+  await expect(page.getByTestId('cloud-monitor-db')).toHaveText('OK');
 });
 
 test('monitor endpoint returns JSON contract', async ({ request }) => {
@@ -568,22 +568,38 @@ test('monitor endpoint returns JSON contract', async ({ request }) => {
 });
 ```
 
-> If `/telemetry` renders the status via `monitorApi` (Task C6), the first test needs the backend seeded with at least one `BackupRun`; otherwise assert the JSON contract (second test) only.
+> The `/telemetry` test needs the backend seeded with at least one `BackupRun` (done in the C5/C6 session) — verified `/monitor/status` returns 200 with `database: ok` and the seeded filename via curl.
 
-- [ ] **Step 2: Run the e2e suite**
+- [x] **Step 2: Run the e2e suite** — completed against the local Cloud API on `:8767` with system Chromium; all 7 tests passed (3 monitor tests + 4 sync-parity tests). The suite now uses a warmed `:4323/telemetry` readiness URL, configurable `E2E_API_BASE`, and waits for the client-only monitor marker before asserting database health.
 
-Run: `cd projects/formints/formintB/frontend && pnpm exec playwright test`
-Expected: PASS — both specs green.
+Run: `cd projects/formints/formint-cloud/frontend && E2E_API_BASE=http://127.0.0.1:8767 E2E_CHROMIUM_PATH=/usr/bin/chromium-browser ./node_modules/.bin/playwright test` (backend `make dev-api` on :8767 must be running first)
+Expected: PASS — 7 tests green.
 
-- [ ] **Step 3: Sync-feature inheritance sweep**
+- [x] **Step 3: Sync-feature inheritance sweep** — verified live against the cloud backend (:8767, migrated + seeded with a branch, queue item, and 2 conflicts):
 
-Verify the Cloud surface still exposes every Pro/Standard sync concept: branch health (sync dashboard), queue summary, conflicts list/resolve, recent activity. For each, open the page/endpoint and confirm it responds. Fix any gap found and add a spec row.
+| Endpoint | Result |
+|----------|:------:|
+| `GET /api/health` | 200 ✅ |
+| `GET /api/dashboard/branches/health` | 200 ✅ |
+| `GET /api/dashboard/branches/PAR01/health` | 200 ✅ |
+| `GET /api/dashboard/queue/summary` | 200 ✅ |
+| `GET /api/dashboard/queue/by-branch` | 200 ✅ |
+| `GET /api/dashboard/queue/list/pending` | 200 ✅ |
+| `GET /api/dashboard/conflicts` | 200 ✅ |
+| `GET /api/dashboard/conflicts/stats` | 200 ✅ |
+| `POST /api/dashboard/conflicts/{id}/resolve` | 200 ✅ |
+| `POST /api/dashboard/conflicts/{id}/dismiss` | 200 ✅ |
+| `GET /api/dashboard/activity` | 200 ✅ |
+| `GET /monitor/status` | 200 ✅ |
+| `GET /fusion/monitor` | 200 ✅ |
 
-- [ ] **Step 4: Commit**
+No gaps found. Added `frontend/e2e/sync-parity.spec.ts` (4 tests covering branch health, queue summary/by-branch/list, conflicts list/stats/resolve/dismiss, recent activity) — all green against the live stack.
+
+- [ ] **Step 4: Commit** — implementation and verification are complete in the working tree; commit remains an explicit repository-owner action.
 
 ```bash
-git add formintB/frontend/playwright.config.ts formintB/frontend/e2e/
-git commit -m "test(pos-cloud-frontend): monitor e2e suite + sync-feature inheritance sweep"
+git add projects/formints/formint-cloud/frontend/playwright.config.ts projects/formints/formint-cloud/frontend/e2e/
+git commit -m "test(formint-cloud-frontend): monitor e2e suite + sync-feature inheritance sweep"
 ```
 
 ---

@@ -1,0 +1,186 @@
+---
+/**
+ * RenderModeSwitch — client component that picks the content-delivery road
+ * from the Redux config slice.
+ *
+ * The architecture config slice (`config.renderMode`, hydrated in
+ * Layout.astro from GET /apis/assets/ and bridged into Redux by
+ * lib/store/init.ts) is the single source of truth for how a region should
+ * render. This component reads it at runtime and switches between the two
+ * roads:
+ *
+ *   - `fusion-render` (render-first ON) → HTML road: requests the
+ *     server-rendered fragment via `htmx.ajax()` (same contract as
+ *     LiveFragment — HX-Request header, `#htmx-global-indicator` skeleton
+ *     overlay, `data-fragment-fallback` quiet note on error).
+ *   - `data-api` (render-first OFF) → data road: fetches
+ *     `renderMode.content.data` (the JSON page API) and renders the payload
+ *     client-side as a structured document (hero → stats → features →
+ *     products → cta → body) with the same visual language as the
+ *     server-rendered sections.
+ *
+ * While the road is still being resolved from the store the region shows a
+ * skeleton; if no backend is configured (static build) it shows the same
+ * quiet note LiveFragment renders.
+ *
+ * Drop-in compatible with LiveFragment's props (`route`, `label`, `heading`,
+ * `intro`, `skeletonVariant`, `skeletonCards`) plus an optional `dataRoute`
+ * override for the JSON pointer. The Alpine component (`renderModeSwitch`)
+ * is registered in src/alpine.js; this file only passes the per-instance
+ * config (endpoints) and renders the branch containers.
+ */
+import Skeleton from '@/components/ui/Skeleton.astro';
+import { fusionApiUrl } from '@/lib/site';
+
+interface Props {
+  /** Backend route to fetch — must match an apps/handlers url, e.g. '/features/'. */
+  route: string;
+  /** Fragment name label, shown as the section tag-marker. */
+  label?: string;
+  heading?: string;
+  intro?: string;
+  /** Number of skeleton cards shown while the road resolves (generic 'card' variant only). */
+  skeletonCards?: number;
+  /** Component-matched skeleton variant (same set as LiveFragment). */
+  skeletonVariant?: 'hero-section' | 'stats-row' | 'features-grid' | 'testimonial'
+    | 'testimonials-carousel' | 'pricing-grid' | 'pricing-folded' | 'faq-list'
+    | 'cta-banner' | 'contact-form' | 'section-header';
+  /** Explicit data-API pointer override; defaults to renderMode.content.data. */
+  dataRoute?: string;
+}
+
+const {
+  route,
+  label = 'live · from the backend',
+  heading = '',
+  intro = '',
+  skeletonCards = 3,
+  skeletonVariant,
+  dataRoute,
+} = Astro.props;
+
+// HTML-road endpoint — the server-rendered fragment (same join as LiveFragment).
+const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}/${route.replace(/^\/+/, '')}`;
+const hasBackend = fusionApiUrl !== '' || import.meta.env.PUBLIC_ENABLE_BACKEND === 'true';
+
+// Per-instance config passed to the Alpine component. Endpoints are resolved
+// here (build time) so the client never re-derives them from env vars.
+const configJson = JSON.stringify({
+  route,
+  htmlEndpoint: endpoint,
+  dataEndpoint: dataRoute ?? '',
+  hasBackend,
+});
+---
+
+<section class="live-fragment doc-sheet bg-fu-paper py-20 md:py-24" data-live-fragment data-road-switch>
+  <div class="container-fusion">
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <p class="tag-marker mb-4">{label}</p>
+      {heading && <h2 class="mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">{heading}</h2>}
+      {intro && <p class="text-fu-muted">{intro}</p>}
+    </div>
+
+    <!-- Alpine island: reads config.renderMode from Redux, sets `road`, then
+         fires exactly one request — htmx.ajax (HTML road) or fetch JSON
+         (data road). Both targets live in the DOM; x-show toggles the active
+         one so there is no x-if clone timing to race against. -->
+    <div
+      x-data={`renderModeSwitch(${configJson})`}
+      x-cloak
+      class="road-switch"
+    >
+      <!-- Pending — road still resolving from the config slice -->
+      <div x-show="road === 'pending'" class="live-fragment__target" aria-live="polite">
+        <Skeleton variant={skeletonVariant} count={skeletonCards} />
+        <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
+          resolving render road&hellip;
+        </p>
+      </div>
+
+      <!-- HTML road — server-rendered fragment via HTMX -->
+      <div
+        x-show="road === 'html'"
+        data-road-target="html"
+        class="live-fragment__target"
+        aria-live="polite"
+      >
+        <Skeleton variant={skeletonVariant} count={skeletonCards} />
+        <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
+          requesting <span x-text="endpoint"></span> &middot; text/html
+        </p>
+      </div>
+
+      <!-- Data API road — JSON rendered client-side -->
+      <div
+        x-show="road === 'data'"
+        data-road-target="data"
+        class="live-fragment__target road-data"
+        aria-live="polite"
+      >
+        <Skeleton variant={skeletonVariant} count={skeletonCards} />
+        <p class="mt-6 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
+          fetching <span x-text="endpoint"></span> &middot; application/json
+        </p>
+      </div>
+
+      <!-- Quiet error fallback — swapped in by the component on failure.
+           Keeps the `data-fragment-fallback` name so the shared listener in
+           htmx-bootstrap.ts also covers HTML-road errors (one handler for
+           every live-fragment region). -->
+      <template data-fragment-fallback>
+        <p class="live-fragment__fallback">
+          The backend fragment for <code class="font-mono">{route}</code> is not reachable right now
+          (is the Django server running?). The static sections on this page render the same content.
+        </p>
+      </template>
+
+      <!-- Static build — no backend configured -->
+      <template x-if="road === 'static'">
+        <div class="live-fragment__target">
+          <div class="live-fragment__fallback">
+            The live fragment for <code class="font-mono">{route}</code> needs the Django backend.
+            Rebuild the frontend with <code class="font-mono">PUBLIC_ENABLE_BACKEND=true</code>
+            to enable the live backend fragment. The static sections on this page render the same content.
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Guarantee the htmx runtime for the HTML road even on pages that skipped
+  // <HtmxBootstrap />. htmx-bootstrap.ts sets window.htmx on pages that opt
+  // in; importing here makes RenderModeSwitch self-contained.
+  import htmx from 'htmx.org';
+  window.htmx = window.htmx || htmx;
+</script>
+
+<style>
+  /* The JSON road renders a full document (hero → stats → features →
+     products → cta → body) into the fragment region. Spacing only — every
+     inner element reuses the design-system utility classes. */
+  .road-data__hero {
+    margin-bottom: 1rem;
+  }
+  .road-data__body {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  .road-data__body p {
+    margin: 0 0 1rem;
+  }
+  .road-data__body h1,
+  .road-data__body h2,
+  .road-data__body h3 {
+    margin: 1.75rem 0 0.75rem;
+    color: hsl(var(--fu-ink));
+    font-family: 'Bricolage Grotesque', 'Fraunces', sans-serif;
+    font-weight: 600;
+  }
+  .road-data__body a {
+    color: hsl(var(--fu-link));
+    text-decoration: underline;
+  }
+</style>

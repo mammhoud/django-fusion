@@ -1,0 +1,106 @@
+---
+interface Metric { value: string; label: string; detail: string; }
+interface Outcome { title: string; problem: string; solution: string; outcome: string; }
+interface Props {
+  metrics?: Metric[];
+  problems?: string[];
+  outcomes?: Outcome[];
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  metrics = [
+    { value: '1', label: 'learning workspace', detail: 'Courses, progress, and certificates in one account.' },
+    { value: '0', label: 'heavy SPA required', detail: 'The public learning shell stays document-first.' },
+    { value: 'Editorial', label: 'language-aware content', detail: 'Localized learning can meet learners where they are.' },
+    { value: 'Anytime', label: 'self-paced access', detail: 'The next lesson is available when the learner is ready.' },
+  ],
+  problems = [
+    'Learners lose momentum when the next action is hard to find.',
+    'Teams need progress and certificates without stitching together tools.',
+    'Content teams want publishing control without a fragile frontend release.',
+    'Research and professional learning need structure, not another noisy dashboard.',
+  ],
+  outcomes = [
+    {
+      title: 'Clear learning paths',
+      problem: 'A large catalog can make the first step feel ambiguous.',
+      solution: 'Curate structured modules, preview lessons, and a visible next action.',
+      outcome: 'Learners move from intent to progress with less cognitive load.',
+    },
+    {
+      title: 'Progress that earns trust',
+      problem: 'Completion data is not useful when it is scattered or opaque.',
+      solution: 'Keep enrollment, progress, certificates, and account controls together.',
+      outcome: 'Learners and teams can see what has happened and what comes next.',
+    },
+    {
+      title: 'Editorial control',
+      problem: 'Learning content should not wait for a frontend deployment.',
+      solution: 'Use Django and Wagtail to publish structured content while Astro keeps the public shell fast.',
+      outcome: 'The platform can evolve without sacrificing clarity or performance.',
+    },
+  ],
+  ctaLabel = 'Start your learning path',
+  ctaHref = '/learning/',
+} = Astro.props;
+---
+
+<section id="outcomes" class="doc-sheet bg-fu-card py-20 md:py-28" aria-labelledby="precis-outcomes-heading">
+  <div class="container-fusion">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="tag-marker mb-4">learning outcomes · not feature noise</p>
+      <h2 id="precis-outcomes-heading" class="font-display text-3xl font-bold tracking-tight text-fu-ink md:text-5xl">Turn research intent into visible progress.</h2>
+      <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-fu-muted md:text-lg">Precis brings the learning path, the content, and the next useful action into one calm workspace — built for serious study and practical delivery.</p>
+    </div>
+
+    <div class="mt-12 grid gap-px overflow-hidden rounded-xl border border-fu-line bg-fu-line sm:grid-cols-2 lg:grid-cols-4" aria-label="Precis platform signals">
+      {metrics.map((metric, index) => (
+        <div class="bg-fu-card p-6" data-outcome-metric={index}>
+          <p class="font-mono text-3xl font-semibold tracking-tight text-fu-link md:text-4xl">{metric.value}</p>
+          <p class="mt-3 font-display text-base font-semibold text-fu-ink">{metric.label}</p>
+          <p class="mt-1 text-sm leading-relaxed text-fu-muted">{metric.detail}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-20 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+      <div class="lg:sticky lg:top-28">
+        <p class="tag-marker mb-4">the learner friction</p>
+        <h3 class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">The platform should make the next step obvious.</h3>
+        <p class="mt-4 text-sm leading-relaxed text-fu-muted">Good learning UX reduces the distance between understanding what matters and doing the work.</p>
+        <a href={ctaHref} class="btn-secondary mt-7 inline-flex">Find your next step <span aria-hidden="true">→</span></a>
+      </div>
+      <ul class="grid gap-3" aria-label="Learning platform constraints">
+        {problems.map((problem, index) => (
+          <li class="card flex items-start gap-4 p-5 md:p-6"><span class="font-mono text-xs text-fu-link">0{index + 1}</span><span class="text-sm leading-relaxed text-fu-ink md:text-base">{problem}</span></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="mt-24" aria-labelledby="precis-path-heading">
+      <div class="mb-8 max-w-2xl"><p class="tag-marker mb-4">the learning path</p><h3 id="precis-path-heading" class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Discover. Practice. Apply. Reflect. Repeat.</h3></div>
+      <ol class="grid gap-3 md:grid-cols-5">
+        {['Discover', 'Study', 'Practice', 'Apply', 'Reflect'].map((step, index) => (
+          <li class="relative border border-fu-line bg-fu-paper p-5 md:min-h-36"><span class="font-mono text-xs text-fu-link">0{index + 1}</span><h4 class="mt-8 font-display text-lg font-semibold text-fu-ink">{step}</h4>{index < 4 && <span class="absolute right-4 top-1/2 hidden -translate-y-1/2 text-fu-link md:block" aria-hidden="true">→</span>}</li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="mt-24" aria-labelledby="precis-services-heading">
+      <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div class="max-w-2xl"><p class="tag-marker mb-4">outcome-led learning</p><h3 id="precis-services-heading" class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Every feature should answer a learner question.</h3></div><a href="/courses/" class="font-mono text-xs uppercase tracking-[0.14em] text-fu-link hover:text-fu-link-dark">Browse courses →</a></div>
+      <div class="grid gap-5 lg:grid-cols-3">
+        {outcomes.map((item, index) => (
+          <article class="card flex flex-col p-6 md:p-7" data-outcome-service={index}><span class="font-mono text-xs text-fu-link">0{index + 1} · {item.title}</span><div class="mt-7 space-y-4 text-sm leading-relaxed"><p><strong class="text-fu-ink">Learner need.</strong> <span class="text-fu-muted">{item.problem}</span></p><p><strong class="text-fu-ink">Product response.</strong> <span class="text-fu-muted">{item.solution}</span></p><p class="border-t border-fu-line pt-4"><strong class="text-fu-link">Result.</strong> <span class="text-fu-ink">{item.outcome}</span></p></div></article>
+        ))}
+      </div>
+    </div>
+
+    <div class="mt-24 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center"><div><p class="tag-marker mb-4">a calm architecture</p><h3 class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Content, progress, and identity stay connected.</h3><p class="mt-4 max-w-xl text-sm leading-relaxed text-fu-muted">A learner request moves through a clear system: published content, authenticated progress, and a next action that is easy to resume.</p></div><div class="rounded-xl border border-fu-line bg-fu-ink p-5 text-fu-paper md:p-6" aria-label="Precis learning architecture"><div class="grid grid-cols-2 gap-2 text-center font-mono text-[0.65rem] uppercase tracking-[0.12em] sm:grid-cols-4">{['Learner', 'Content', 'Progress', 'Certificate'].map((node, index) => <div class="flex items-center gap-2"><span class="flex-1 rounded-md border border-fu-paper/20 px-2 py-3 text-fu-paper/90">{node}</span>{index < 3 && <span class="hidden text-fu-mark sm:block" aria-hidden="true">→</span>}</div>)}</div><p class="mt-5 border-t border-fu-paper/15 pt-4 text-center text-xs leading-relaxed text-fu-paper/65">Django · Wagtail · Astro · HTMX · authenticated learning state</p></div></div>
+
+    <div class="mt-24 grid gap-3 md:grid-cols-2" aria-label="Precis questions"><details class="group rounded-lg border border-fu-line bg-fu-card p-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-fu-ink">Can I learn at my own pace?<span class="text-fu-link transition-transform group-open:rotate-45" aria-hidden="true">+</span></summary><p class="mt-4 text-sm leading-relaxed text-fu-muted">Yes. The account and progress surfaces are designed to let you leave and return without losing the thread.</p></details><details class="group rounded-lg border border-fu-line bg-fu-card p-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-fu-ink">Are courses connected to certificates?<span class="text-fu-link transition-transform group-open:rotate-45" aria-hidden="true">+</span></summary><p class="mt-4 text-sm leading-relaxed text-fu-muted">Published course paths can expose completion and certificate information from the same learner account.</p></details><details class="group rounded-lg border border-fu-line bg-fu-card p-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-fu-ink">Can teams use the platform?</summary><p class="mt-4 text-sm leading-relaxed text-fu-muted">Start with the public learning path, then use the account and progress model as the foundation for team-oriented delivery.</p></details><details class="group rounded-lg border border-fu-line bg-fu-card p-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-fu-ink">Is the public site heavy?</summary><p class="mt-4 text-sm leading-relaxed text-fu-muted">The public shell is built to arrive as finished HTML, with small progressive enhancements for interactions.</p></details></div>
+
+    <div class="mt-16 flex flex-col items-start justify-between gap-5 rounded-xl border border-fu-link/30 bg-fu-link/5 p-6 md:flex-row md:items-center md:p-8"><div><p class="tag-marker mb-2">next step</p><h3 class="font-display text-xl font-semibold text-fu-ink">Ready to make meaningful progress?</h3><p class="mt-2 text-sm text-fu-muted">Choose a course and start with the next useful lesson.</p></div><a href={ctaHref} class="btn-primary shrink-0">{ctaLabel} <span aria-hidden="true">→</span></a></div>
+  </div>
+</section>

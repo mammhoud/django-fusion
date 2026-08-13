@@ -12,7 +12,7 @@
  * backend is unreachable the bundled table stays — the switcher never breaks.
  */
 import { LANG_META, LANG_CODES } from '@/lib/translations';
-import { API_BASE } from '@/lib/api';
+import { browserEndpoint } from '@/lib/site';
 
 // Bundled fallback — mirrors the seeded DEFAULT_SITE_LANGUAGES catalog.
 const langs = LANG_CODES.map((code) => ({
@@ -24,7 +24,7 @@ const langs = LANG_CODES.map((code) => ({
 
 const defaultLang = 'en';
 const langsJson = JSON.stringify(langs);
-const apiBase = API_BASE;
+const apiBase = browserEndpoint('/apis/content/languages/').replace(/\/apis\/content\/languages\/$/, '');
 
 // Dropdown anchor: 'end' (default — the header bar, where the button sits at
 // the right of its row) or 'start' (the mobile menu, where the button sits at

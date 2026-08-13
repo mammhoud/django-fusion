@@ -4,7 +4,6 @@ import ContactForm from '@/components/blocks/ContactForm.astro';
 import NewsletterSubscribe from '@/components/blocks/NewsletterSubscribe.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import { cachedSiteSettings, cachedNavigation, cachedContact } from '@/lib/api';
 import type { SiteSettings, NavigationData, ContactData } from '@/lib/api';
 
@@ -32,11 +31,7 @@ const methods = contactData?.methods;
   </section>
 
   <div class='py-14'>
-    {methods?.length ? (
-      <ContactForm methods={methods} formTitle={contactData?.form_title} formDescription={contactData?.form_description} />
-    ) : (
-      <ContentError label="Contact information unavailable" />
-    )}
+    <ContactForm methods={methods} formTitle={contactData?.form_title} formDescription={contactData?.form_description} />
   </div>
 
   <NewsletterSubscribe />

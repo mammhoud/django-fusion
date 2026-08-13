@@ -138,6 +138,44 @@ function editionCardClass(tier: string): string {
   </section>
   ) : <ContentError label="Pricing data unavailable" />}
 
+  <!-- Choosing guide — related products + edition guidance -->
+  <section class='doc-sheet bg-fu-card py-16 md:py-20'>
+    <div class='container-fusion'>
+      <div class='mb-10 max-w-2xl'>
+        <p class='tag-marker mb-4'>how to choose</p>
+        <h2 class='mb-3 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Start where the work starts</h2>
+        <p class='text-fu-muted'>Every product follows the same edition ladder — open source first, then commercial tiers that add production workflows. Pick the rung that matches your team today.</p>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
+        <div class='card p-6'>
+          <p class='tag-marker mb-1'>rung one</p>
+          <h3 class='mb-2 font-display text-lg font-semibold text-fu-ink'>Start open source</h3>
+          <p class='text-sm leading-relaxed text-fu-muted'>Community editions of every product are free and public. Try the real thing before you buy.</p>
+          <a href='/products/' class='mt-4 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Browse products →</a>
+        </div>
+        <div class='card p-6'>
+          <p class='tag-marker mb-1'>rung two</p>
+          <h3 class='mb-2 font-display text-lg font-semibold text-fu-ink'>Grow to a paid tier</h3>
+          <p class='text-sm leading-relaxed text-fu-muted'>Standard, Pro, and Solo editions add production workflows, support, and the features teams hit a wall on.</p>
+          <a href='/features/' class='mt-4 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>See the stack →</a>
+        </div>
+        <div class='card p-6'>
+          <p class='tag-marker mb-1'>rung three</p>
+          <h3 class='mb-2 font-display text-lg font-semibold text-fu-ink'>Go managed</h3>
+          <p class='text-sm leading-relaxed text-fu-muted'>Cloud editions are quoted per deployment or per month — hosted, monitored, and supported for you.</p>
+          <a href='/contact/' class='mt-4 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Contact sales →</a>
+        </div>
+      </div>
+      <div class='mt-10 flex flex-wrap items-center gap-3'>
+        <span class='font-mono text-[0.62rem] uppercase tracking-[0.16em] text-fu-muted'>related:</span>
+        <a href='/features/' class='rounded-full border border-fu-line bg-fu-paper px-3.5 py-1.5 text-sm text-fu-ink transition-colors hover:border-fu-link/50 hover:text-fu-link'>The stack</a>
+        <a href='/faq/' class='rounded-full border border-fu-line bg-fu-paper px-3.5 py-1.5 text-sm text-fu-ink transition-colors hover:border-fu-link/50 hover:text-fu-link'>The FAQ</a>
+        <a href='/products/' class='rounded-full border border-fu-line bg-fu-paper px-3.5 py-1.5 text-sm text-fu-ink transition-colors hover:border-fu-link/50 hover:text-fu-link'>All products</a>
+        <a href='/blog/' class='rounded-full border border-fu-line bg-fu-paper px-3.5 py-1.5 text-sm text-fu-ink transition-colors hover:border-fu-link/50 hover:text-fu-link'>From the blog</a>
+      </div>
+    </div>
+  </section>
+
   <section class='container-fusion py-10 text-center'>
     <p class='text-fu-muted'>Still deciding? <a href='/faq/' class='font-medium text-fu-link underline underline-offset-2 transition-colors hover:text-fu-ink'>Read the FAQ</a>, the honest answers to the questions buyers ask.</p>
   </section>

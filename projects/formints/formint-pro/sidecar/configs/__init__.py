@@ -173,19 +173,23 @@ UNFOLD = {
         "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
     },
     "THEME": "dark",  # dark | light
+    # Colors mirror the POS app palette (frontend/src/styles/tokens.css):
+    #   primary blue  #2563eb → oklch(54.61% 0.2152 262.88)
+    #   accent teal   oklch(70% 0.14 180)
+    # The admin and the app must share one identity — never diverge.
     "COLORS": {
         "primary": {
-            "50": "240 253 244",
-            "100": "209 250 229",
-            "200": "167 243 208",
-            "300": "110 231 183",
-            "400": "52 211 153",
-            "500": "16 185 129",
-            "600": "5 150 105",
-            "700": "4 120 87",
-            "800": "6 95 70",
-            "900": "6 78 59",
-            "950": "2 44 34",
+            "50": "239 246 255",
+            "100": "219 234 254",
+            "200": "191 219 254",
+            "300": "147 197 253",
+            "400": "96 165 250",
+            "500": "59 130 246",
+            "600": "37 99 235",   # #2563eb — tokens.css primary
+            "700": "29 78 216",
+            "800": "30 64 175",
+            "900": "30 58 138",
+            "950": "23 37 84",
         },
     },
     "SIDEBAR": {

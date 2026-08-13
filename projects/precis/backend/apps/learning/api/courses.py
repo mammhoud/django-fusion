@@ -81,6 +81,7 @@ def list_courses(request):
     """GET /api/courses — Course catalog with search, filters, pagination."""
     try:
         from django.db import models
+
         from apps.learning.models import Course
 
         qs = Course.objects.filter(is_published=True, is_active=True).order_by(
@@ -118,6 +119,7 @@ def list_courses(request):
                     "instructor": c.instructor.get_full_name() if getattr(c, "instructor", None) else "",
                     "price": float(getattr(c, "current_price", 0)),
                     "original_price": float(getattr(c, "original_price", 0)) if getattr(c, "original_price", 0) else None,
+                    "currency": getattr(c, "currency", "") or "USD",
                     "difficulty": getattr(c, "difficulty_level", ""),
                     "language": getattr(c, "language", ""),
                     "duration": getattr(c, "duration", 0),
@@ -169,12 +171,27 @@ def course_detail(request, slug):
         except Exception:
             pass
 
+        instructor = getattr(course, "instructor", None)
+        instructor_profile = getattr(instructor, "profile", None) if instructor else None
+
+        # Person (user.profile) — fields are nullable, so emit nulls when empty.
+        profile_data = None
+        if instructor_profile:
+            profile_data = {
+                "avatar": instructor_profile.profile_image.url if instructor_profile.profile_image else None,
+                "title": instructor_profile.job_title or "",
+                "bio": instructor_profile.bio or "",
+                "website": instructor_profile.website or None,
+                "linkedin": instructor_profile.linkedin_url or None,
+            }
+
         return JsonResponse({
             "id": course.pk, "title": course.title, "slug": course.slug,
             "description": _json_value(getattr(course, "description", "")),
             "short_description": getattr(course, "short_description", ""),
             "overview": _json_value(getattr(course, "overview", "")),
             "image_url": course.image.file.url if getattr(course, "image", None) else None,
+            "header_image": course.header_image.file.url if getattr(course, "header_image", None) else None,
             "preview_video_url": _media_urls(getattr(course, "preview_video", "")),
             "objectives": _lines(getattr(course, "objectives", "")),
             "requirements": _lines(getattr(course, "requirements", "")),
@@ -182,18 +199,28 @@ def course_detail(request, slug):
             "specializations": list(course.specializations.values_list("title", flat=True)),
             "tags": list(course.tags.values_list("name", flat=True)),
             "instructor": {
-                "name": course.instructor.get_full_name() if getattr(course, "instructor", None) else "",
-                "bio": _json_value(getattr(course.instructor, "bio", "")) if getattr(course, "instructor", None) else "",
+                "name": instructor.get_full_name() if instructor else "",
+                "username": getattr(instructor, "username", "") if instructor else "",
+                "bio": _json_value(getattr(instructor, "bio", "")) if instructor else "",
+                "profile": profile_data,
             },
             "price": float(getattr(course, "current_price", 0)),
+            "current_price": float(getattr(course, "current_price", 0)),
             "original_price": float(getattr(course, "original_price", 0)) if getattr(course, "original_price", 0) else None,
+            "currency": getattr(course, "currency", "") or "USD",
             "discount_percentage": float(getattr(course, "discount_percentage", 0)),
+            "discount_percentage_calculated": float(getattr(course, "discount_percentage_calculated", 0)),
+            "discount_until": str(course.discount_until) if getattr(course, "discount_until", None) else None,
+            "is_free": bool(getattr(course, "is_free", False)),
+            "is_discounted": bool(getattr(course, "is_discounted", False)),
             "difficulty": getattr(course, "difficulty_level", ""),
             "language": getattr(course, "language", ""),
             "duration": getattr(course, "duration", 0),
             "rating": float(getattr(course, "average_rating", 0)),
+            "average_rating": float(getattr(course, "average_rating", 0)),
             "reviews_count": getattr(course, "reviews_count", 0),
-            "enrollment_count": getattr(course, "enrollment_count", 0),
+            "enrollment_count": getattr(course, "enrolled_count", 0),
+            "enrolled_count": getattr(course, "enrolled_count", 0),
             "is_featured": getattr(course, "is_featured", False),
             "has_certificate": getattr(course, "has_certificate", False),
             "modules": modules_data,
@@ -218,8 +245,8 @@ def course_filters(request):
         )
 
         return JsonResponse({
-            "languages": [l for l in languages if l],
-            "difficulties": [d for d in difficulties if d],
+            "languages": [code for code in languages if code],
+            "difficulties": [level for level in difficulties if level],
         })
     except Exception:
         return JsonResponse({"languages": [], "difficulties": []})

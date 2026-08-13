@@ -389,9 +389,10 @@ class FusionBranding(models.Model):
                 pass
         return {
             "site_name": self.site_name,
-            "site_tagline": self.site_tagline,
+            "company_name": self.company_name,
+            "creator_name": self.creator_name,
             "logo_url": logo_url,
             "favicon_url": favicon_url,
             "primary_color": self.primary_color,
-            "accent_color": self.accent_color,
+            "secondary_color": self.secondary_color,
         }

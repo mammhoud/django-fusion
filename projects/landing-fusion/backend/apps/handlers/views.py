@@ -51,11 +51,9 @@ from __future__ import annotations
 
 from django.http import Http404, HttpRequest
 from django.utils.html import strip_tags
-
-from apps.content.models.translations import PageTranslation
-
 from django_fusion.routes.pages.handler import PageHandler
 
+from apps.content.models.translations import PageTranslation
 from apps.pages.api import (
     _apply_page_translation,
     _deep_merge,
@@ -63,9 +61,7 @@ from apps.pages.api import (
     _requested_content_language,
     _stream_to_plain,
     get_effective_render_first,
-    get_home_courses,
 )
-
 from apps.pages.models import (
     AboutPage,
     BlogPage,
@@ -76,12 +72,12 @@ from apps.pages.models import (
     FeaturesPage,
     FounderPage,
     HomePage,
+    PhasePage,
     PricingPage,
     PrivacyPage,
-    PhasePage,
     ProductPage,
-    PromptPage,
     ProductsPage,
+    PromptPage,
     ServicesPage,
     StartupPage,
     TeamPage,
@@ -146,7 +142,7 @@ class LandingPageView(PageHandler):
                 # get_product_cards twice on the catalog page.
                 "show_stack_strip": page.__class__.__name__ in ("ProductsPage", "ProductPage"),
                 # django-fusion settings config — which content-delivery option
-                # this request is served under (see settings.FUSION_RENDER_FIRST_DEFAULT
+                # this request is served under (see settings.FUSION_RENDER_FIRST
                 # and the X-Fusion-Render-First per-request override).
                 "fusion_render_first": get_effective_render_first(self.request),
                 "fusion_render_mode": "fusion-render"
@@ -154,8 +150,6 @@ class LandingPageView(PageHandler):
                 else "data-api",
             }
         )
-        if page.slug == "home":
-            context["courses"] = get_home_courses()
         return context
 
     def _get_localized_title(self, page, language: str) -> str:
@@ -267,9 +261,10 @@ class LandingPageView(PageHandler):
 
     def _get_nav_items(self) -> list[dict]:
         """Return the main navigation items with translated labels when available."""
+        from wagtail.models import Page
+
         from apps.content.models.translations import PageTranslation
         from apps.core.site import landing_site
-        from wagtail.models import Page
 
         language = _requested_content_language(self.request)
         landing_root = HomePage.objects.first()

@@ -46,10 +46,36 @@ except Exception:  # pragma: no cover
     Field = validator = BaseSettings = SettingsConfigDict = None  # type: ignore
 
 CONFIG_DIR = Path(__file__).resolve().parents[1] / "Env"
+
+
+def _resolve_workspace_dir() -> Path:
+    """Resolve the monorepo root from this settings package.
+
+    Host layout:      <repo>/projects/precis/backend/configs/settings/conf.py
+    Container layout: /app/lms-fusion/configs/settings/conf.py
+
+    ``parents[5]`` works on the host (6 levels down) but overruns inside the
+    container (4 levels down) and raises IndexError, which breaks Django boot
+    and the entrypoint's database-readiness check. Walk up to the directory
+    that owns ``libs/`` instead — the repo root on the host and ``/app`` in
+    the container both carry it. An explicit ``WORKSPACE_DIR`` env var wins
+    when set.
+    """
+    env_dir = os.environ.get("WORKSPACE_DIR")
+    if env_dir:
+        return Path(env_dir).expanduser().resolve()
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        if (parent / "libs").is_dir():
+            return parent
+    # Fall back to the historical host-layout resolution.
+    return current.parents[5]
+
+
 # This local config package is owned by Precis. Keep workspace-level dotenv
 # lookup at the repository root; the site registry itself lives under
 # ``projects/precis/backend/configs/Env``.
-WORKSPACE_DIR = Path(__file__).resolve().parents[5]
+WORKSPACE_DIR = _resolve_workspace_dir()
 SITE_DIR = active_site_dir()
 _MISSING = object()
 
@@ -717,7 +743,6 @@ class MainSettings(BaseSettings):
             "is_containerized": self.is_containerized,
             "website_name": self.WEBSITE_NAME,
             "website_dir": self.WEBSITE_DIR,
-            "site_domain": self.SITE_DOMAIN,
         }
 
     def print_summary(self) -> None:

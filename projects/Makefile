@@ -107,6 +107,14 @@ else ifeq ($(WEBSITE),landing-fusion)
   MANAGE := uv run python $(SITE)/backend/__main__.py
   PYTHON := uv run python
 
+else ifeq ($(WEBSITE),loop-crm)
+  # Loop-CRM — unified sales + marketing (Twenty + Postiz merge).
+  SITE := loop-crm
+  TEST_WEBSITE := loop-crm
+  COMPOSE_FILE ?= docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/manage.py
+  PYTHON := uv run python
+
 else
   SITE := $(WEBSITE)
   TEST_WEBSITE := all
@@ -161,7 +169,6 @@ help:
 		'  full-site-check- Build assets, collectstatic, migrate, load dumps, and verify runtime' \
 		'' \
 		'Delegation:' \
-		'  compose        - Delegate to applications/compose/Makefile' \
 		'  assets         - Delegate to assets/Makefile' \
 		'  scripts        - Delegate to tests/scripts/Makefile' \
 		'  website-ctc    - Delegate to ctc-research/Makefile' \
@@ -190,9 +197,6 @@ help:
 		'  docker-prune-data - Remove generated compose data (dangerous)' \
 		'  clean-site-logs - Remove logs for the selected website under $(LOG_DIR)/$(SITE)' \
 		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep'
-
-compose:
-	$(MAKE) -C ../applications/compose $(filter-out $@,$(MAKECMDGOALS))
 
 assets:
 	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))

@@ -112,6 +112,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
+    // Astro serves the Cloud UI in a normal browser as well as inside Tauri.
+    // There is no native invoke bridge in browser E2E/deployed web mode, so
+    // treat the web surface as an unauthenticated local preview instead of
+    // logging an IPC exception and leaving the app shell in a loading state.
+    const isE2EAuthBypass =
+      typeof window !== 'undefined' &&
+      window.localStorage.getItem('formint-e2e-auth-bypass') === 'true';
+    if (typeof window !== 'undefined' && !('__TAURI_INTERNALS__' in window) && isE2EAuthBypass) {
+      setIsAuthRequired(false);
+      setIsAuthenticated(true);
+      setUser(null);
+      return;
+    }
+
     try {
       const required = await invoke<boolean>('check_auth_required');
       let hasUsers = false;

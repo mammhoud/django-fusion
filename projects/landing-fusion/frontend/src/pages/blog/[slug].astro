@@ -7,14 +7,22 @@ import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
+import { SEEDED_FALLBACK_SLUGS } from '@/lib/seeded-routes';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const list = await fetchPageList();
-  const slugs = list.pages
-    .filter((p) => p.type === 'BlogPostPage')
-    .map((p) => p.slug);
-  return slugs.map((slug) => ({ params: { slug } }));
+  // Keep the public shell buildable while Django is starting. Live Wagtail
+  // pages remain authoritative whenever the API is available.
+  try {
+    const list = await fetchPageList();
+    const slugs = list.pages
+      .filter((p) => p.type === 'BlogPostPage')
+      .map((p) => p.slug);
+    if (slugs.length) return slugs.map((slug) => ({ params: { slug } }));
+  } catch {
+    // The backend may be starting after the Astro build.
+  }
+  return SEEDED_FALLBACK_SLUGS.blog.map((slug) => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
@@ -175,10 +183,10 @@ const snippets = (pageData?.snippets as any[] | undefined) ?? [];
           x-data="{
             slug: $root.dataset.slug || '',
             authed: false,
-            user: null as { email: string; display: string } | null,
+            user: null,
             loading: true,
             comment: '',
-            comments: [] as { name: string; text: string; date: string }[],
+            comments: [],
             busy: false,
             async init() {
               try {
@@ -193,7 +201,7 @@ const snippets = (pageData?.snippets as any[] | undefined) ?? [];
                 }
                 if (listRes.ok) {
                   const data = await listRes.json();
-                  this.comments = (data.comments || []).map((c: any) => ({
+                  this.comments = (data.comments || []).map((c) => ({
                     name: c.display || c.author || 'Reader',
                     text: c.body,
                     date: (c.created_at || '').split('T')[0],
@@ -209,10 +217,17 @@ const snippets = (pageData?.snippets as any[] | undefined) ?? [];
                 const res = await fetch(`/apis/blog/${this.slug}/comments/`, {
                   method: 'POST',
                   credentials: 'include',
-                  headers: { 'Content-Type': 'application/json' },
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRFToken': decodeURIComponent(document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || ''),
+                  },
                   body: JSON.stringify({ body: this.comment.trim() }),
                 });
-                if (res.ok) {
+                if (res.status === 202) {
+                  this.comment = '';
+                  window.__showToast?.('Comment submitted for moderation.', 'success');
+                } else if (res.ok) {
                   const created = await res.json();
                   this.comments.unshift({
                     name: created.display || created.author || 'Reader',

@@ -6,7 +6,8 @@ import Toast from '@/components/ui/Toast.astro';
 import Breadcrumb from '@/components/ui/Breadcrumb.astro';
 import PreviewMock from '@/components/ui/PreviewMock.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
+import { SEEDED_FALLBACK_SLUGS } from '@/lib/seeded-routes';
 import { contentSlug } from '@/lib/slug';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -14,8 +15,12 @@ export async function getStaticPaths() {
   // Product detail pages are generated from the page list in [slug].astro.
   // Preview subpages use the same product slugs — edition values come from
   // the product's editions list. We produce one preview page per edition.
-  const { fetchPageList } = await import('@/lib/api');
-  const list = await fetchPageList();
+  let list;
+  try {
+    list = await fetchPageList();
+  } catch {
+    return [];
+  }
   const productSlugs = list.pages.filter((p) => p.type === 'ProductPage').map((p) => p.slug);
 
   const paths: { params: { slug: string; edition: string } }[] = [];
@@ -29,9 +34,9 @@ export async function getStaticPaths() {
           paths.push({ params: { slug, edition: editionName } });
         }
       }
-    } catch (error) {
-    throw new Error(`Unable to load product preview paths for ${slug}: ${String(error)}`);
-  }
+    } catch {
+      // Skip an incomplete product; the parent product route remains usable.
+    }
   }
   return paths;
 }
@@ -45,8 +50,8 @@ try {
   [siteSettings, navData, pageData] = await Promise.all([
     cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
   ]);
-} catch (error) {
-  throw new Error(`Unable to load preview data for ${slug}: ${String(error)}`);
+} catch {
+  // Render the route shell with the edition name while the backend restarts.
 }
 
 const pageEditions = (pageData?.editions as any[] | undefined) || [];

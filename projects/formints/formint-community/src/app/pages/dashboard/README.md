@@ -20,9 +20,7 @@ pages/
 ├── Recipes.tsx            # 🟢 Recipe builder
 ├── Reports.tsx            # 🟢 PDF/Excel export
 ├── Settings.tsx           # 🟢 Restaurant configuration
-├── KitchenDisplay.tsx     # 🟢 Kitchen order display
 ├── EmployeeSchedule.tsx   # 🟢 Shift scheduling
-├── Payroll.tsx            # 🟢 Payslip management
 ├── ReceiptTemplates.tsx   # 🟢 Receipt designer
 ├── TaxReports.tsx         # 🟢 Tax summaries
 ├── Roles.tsx              # 🟢 Role-based access control

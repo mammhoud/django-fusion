@@ -70,7 +70,7 @@ const methodIcons: Record<string, string> = {
           validate() {
             this.errors = {};
             if (!this.form.name.trim()) this.errors.name = 'Please enter your name.';
-            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.form.email)) this.errors.email = 'Please enter a valid email.';
+            if (!this.form.email.includes('@') || !this.form.email.includes('.')) this.errors.email = 'Please enter a valid email.';
             if (!this.form.subject.trim()) this.errors.subject = 'Please add a subject.';
             if (this.form.message.trim().length < 10) this.errors.message = 'Message must be at least 10 characters.';
             return Object.keys(this.errors).length === 0;
@@ -93,6 +93,10 @@ const methodIcons: Record<string, string> = {
             });
           },
         }" @submit.prevent="submit()" novalidate>
+          <div class="mb-7 border-b border-fu-line pb-5">
+            <h3 class="font-display text-2xl font-semibold tracking-tight text-fu-ink">{formTitle}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-fu-muted">{formDescription}</p>
+          </div>
           <div class="contact-form__fields">
             <div>
               <label for="cf-name" class="form-label">Name</label>

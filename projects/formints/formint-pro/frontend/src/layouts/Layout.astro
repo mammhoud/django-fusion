@@ -215,11 +215,15 @@ const { title = 'Formint POS Professional' } = Astro.props;
     <script>
       import Alpine from 'alpinejs';
       import { cartStore, kdsStore, uiStore } from '../lib/alpine-stores';
+      import * as api from '../lib/fusion-api';
       import '../lib/htmx-bootstrap';
 
       Alpine.store('cart', cartStore);
       Alpine.store('kds', kdsStore);
       Alpine.store('ui', uiStore);
+      // Unified transport — pages call $store.api.fusionFetch(...) so the app
+      // degrades from live API → tauri-invoke restart → offline snapshot.
+      Alpine.store('api', api);
 
       // ── App shell: sidenav state + navigation fetch ──
       document.addEventListener('alpine:init', () => {
@@ -237,21 +241,23 @@ const { title = 'Formint POS Professional' } = Astro.props;
               if (stored === 'true') this.sidebarCollapsed = true;
             } catch {}
 
-            // Fetch navigation from sidecar
+            // Fetch navigation from sidecar (API → invoke → snapshot transport)
             await this.fetchNav();
           },
 
           async fetchNav() {
             try {
-              const res = await fetch('/api/v1/navigation/');
-              if (res.ok) {
-                const data = await res.json();
+              const res = await api.fusionNavigation();
+              const data = res.data;
+              if (res.ok && data) {
                 if (data.brand) this.brand = data.brand;
                 if (data.modules) {
                   this.modules = data.modules;
                   this.modules.forEach((m: any) => {
                     if (m.active) this.openModules[m.id] = true;
                   });
+                  // Surface the transport source for debugging/status UI
+                  document.documentElement.dataset.transport = res.source;
                   return;
                 }
               }
@@ -297,6 +303,7 @@ const { title = 'Formint POS Professional' } = Astro.props;
                 { label: 'Delivery Types', href: '/ops/delivery-types/', active: false },
                 { label: 'Delivery Zones', href: '/ops/delivery-zones/', active: false },
                 { label: 'Shifts', href: '/ops/shifts/', active: false },
+                { label: 'Sync Center', href: '/ops/sync/', active: false, badge: 'NEW' },
               ]},
               { id: 'admin', label: 'Administration', icon: 'admin_panel_settings', color: '#64748b', active: false, routes: [
                 { label: 'Settings', href: '/admin/settings/', active: false },

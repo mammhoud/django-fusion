@@ -11,8 +11,17 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "formint-cloud-secret-key-chang
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
-# ── Applications ──
-INSTALLED_APPS = [
+# ── Tenancy (django-tenants — schema-per-tenant) ─────────────────
+# Schema-based multi-tenancy is PostgreSQL-only. The full django-tenants
+# stack (SHARED/TENANT app split, tenant router, TenantMainMiddleware,
+# Postgres engine, public URLconf) activates ONLY when DB_ENGINE is set to
+# the django_tenants backend. Under SQLite (dev default) everything runs
+# exactly as before — the tenant middleware and router are simply absent.
+TENANCY_ENABLED = os.environ.get("DB_ENGINE", "").startswith("django_tenants")
+
+# Apps that live in the shared `public` schema (registry: Tenant, Domain,
+# Django auth/admin, and the third-party admin/designer stack).
+SHARED_APPS = [
     # Daphne ASGI server (must be first for runserver compatibility)
     "daphne",
 
@@ -48,6 +57,40 @@ INSTALLED_APPS = [
     "apps.tasks",
 ]
 
+# Apps replicated into EVERY tenant schema (tenant-scoped tables).
+# admin/wagtail/unfold stay public-only; Django auth is duplicated per
+# tenant so each tenant has its own user set.
+TENANT_APPS = [
+    "daphne",
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "channels",
+    "django_fusion",
+    "rest_framework",
+    "django_filters",
+    "django_bolt",
+    "apps.core.apps.CoreConfig",
+    "apps.domain.apps.DomainConfig",
+    "apps.handlers.apps.HandlersConfig",
+    "apps.tasks",
+]
+
+if TENANCY_ENABLED:
+    SHARED_APPS.insert(0, "django_tenants")
+
+# Under SQLite the effective app list is exactly the current (shared) set;
+# under PostgreSQL it is shared + tenant apps (deduped, order preserved).
+INSTALLED_APPS = list(SHARED_APPS) + [
+    a for a in TENANT_APPS if a not in SHARED_APPS
+]
+
+TENANT_MODEL = "core.Tenant"
+TENANT_DOMAIN_MODEL = "core.Domain"
+PUBLIC_SCHEMA_URLCONF = "configs.urls_public"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -61,6 +104,14 @@ MIDDLEWARE = [
     # JSON 401 (not a login redirect) for anonymous /api/* viewset calls
     "apps.handlers.middleware.ApiAuthMiddleware",
 ]
+if TENANCY_ENABLED:
+    # Resolves the tenant schema from the Host header (django-tenants).
+    MIDDLEWARE.insert(1, "django_tenants.middleware.main.TenantMainMiddleware")
+    # Hardening: reject Hosts outside ALLOWED_HOSTS before tenant lookup.
+    MIDDLEWARE.insert(2, "django_tenants.middleware.main.TenantHostnameValidationMiddleware")
+    # Serve the public URLconf for hosts with no matching tenant Domain
+    # (e.g. a bare `localhost` in dev) instead of returning 404.
+    SHOW_PUBLIC_IF_NO_TENANT_FOUND = True
 
 ROOT_URLCONF = "configs.urls"
 
@@ -90,9 +141,17 @@ CHANNEL_LAYERS = {
 }
 
 # ── Database ──
+# Under SQLite (dev default) the ENGINE stays sqlite3; when DB_ENGINE is
+# flipped to django_tenants.postgresql_backend, schema-per-tenant activates
+# and the tenant router routes shared vs tenant tables.
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
+        "ENGINE": os.environ.get(
+            "DB_ENGINE",
+            "django_tenants.postgresql_backend"
+            if TENANCY_ENABLED
+            else "django.db.backends.sqlite3",
+        ),
         "NAME": os.environ.get("DB_NAME", str(BASE_DIR / "formint_cloud.db")),
     }
 }
@@ -103,6 +162,8 @@ if os.environ.get("DB_HOST"):
         "USER": os.environ.get("DB_USER", "formint_cloud"),
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
     })
+if TENANCY_ENABLED:
+    DATABASE_ROUTERS = ["django_tenants.routers.TenantSyncRouter"]
 
 # ── Internationalization ──
 LANGUAGE_CODE = "en-us"

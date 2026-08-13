@@ -6,18 +6,32 @@
  * blocks; only elements carrying `data-fusion-reveal` are affected.
  */
 import { initScrollReveal, initSmoothAnchors } from '@fusion/modules/scroll';
+import type { ScrollHandle } from '@fusion/modules/scroll';
 
 let started = false;
+let stopReveal: ScrollHandle | null = null;
+let stopAnchors: (() => void) | null = null;
 
 export function initFusionScroll(): () => void {
   if (started) return () => undefined;
   started = true;
-  const stopReveal = initScrollReveal({ staggerMs: 80 });
-  const stopAnchors = initSmoothAnchors();
+  stopReveal = initScrollReveal({ staggerMs: 80 });
+  stopAnchors = initSmoothAnchors();
   return () => {
-    stopReveal.stop();
-    stopAnchors();
+    stopReveal?.stop();
+    stopAnchors?.();
+    stopReveal = null;
+    stopAnchors = null;
+    started = false;
   };
+}
+
+/** Re-bind reveal and anchor behavior after an HTMX DOM swap. */
+export function refreshFusionScroll(): void {
+  stopReveal?.stop();
+  stopAnchors?.();
+  stopReveal = initScrollReveal({ staggerMs: 80 });
+  stopAnchors = initSmoothAnchors();
 }
 
 export { initScrollReveal, initSmoothAnchors };

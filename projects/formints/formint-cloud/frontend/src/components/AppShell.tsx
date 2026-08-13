@@ -9,8 +9,11 @@ import Auth from '../app/pages/auth/Auth';
 import ChatSupport from './pos/ChatSupport';
 import ScrollToTopButton from './ui/ScrollToTopButton';
 import BrandLoader from './ui/BrandLoader';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { LanguageProvider } from '../contexts/LanguageContext';
+import { CurrencyProvider } from '../contexts/CurrencyContext';
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+import { ModalProvider } from './ui/ModalProvider';
 import { useNavigationPredictor } from '../hooks/useNavigationPredictor';
 import { ROLE_ROUTES } from './layout/SideNav';
 import '../i18n';
@@ -84,7 +87,7 @@ const EMPLOYEE_ROUTES = ROLE_ROUTES.employee;
  * pathname, provided by Astro) selects which page component renders. All
  * navigation is a full page load through Astro's file-based routing.
  */
-export default function AppShell({ route }: { route: string }) {
+function AppShellContent({ route }: { route: string }) {
   const { isAuthenticated, isAuthRequired, user } = useAuth();
   const { toggleMode } = useTheme();
 
@@ -203,5 +206,26 @@ export default function AppShell({ route }: { route: string }) {
       {/* Global scroll-to-top button — bottom-right corner (left of the chat FAB) */}
       <ScrollToTopButton />
     </div>
+  );
+}
+
+/**
+ * Astro mounts this component as the single client-only React island. Keep
+ * every app-wide provider inside that island so pages and shared chrome use
+ * the same auth, theme, language, currency, and modal state.
+ */
+export default function AppShell({ route }: { route: string }) {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <CurrencyProvider>
+          <AuthProvider>
+            <ModalProvider>
+              <AppShellContent route={route} />
+            </ModalProvider>
+          </AuthProvider>
+        </CurrencyProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

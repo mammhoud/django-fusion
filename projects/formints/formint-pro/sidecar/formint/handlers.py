@@ -217,10 +217,19 @@ class FormintPageView(PageHandler):
         from formint.core import formint_site
         from formint.fusion_components import BranchSummaryFragment
 
-        nav_items = formint_site.get_navigation_context(request)
-        nav_items = [item for item in nav_items if item.get("show_in_nav", True)]
-        for item in nav_items:
-            item.pop("show_in_nav", None)
+        nav = formint_site.get_navigation_context(request)
+        # FormintSite returns the nested {brand, modules} contract; flatten to
+        # the flat [ {label, href, active} ] list the page template iterates.
+        nav_items: list[dict] = []
+        for mod in nav.get("modules", []):
+            for route in mod.get("routes", []):
+                nav_items.append(
+                    {
+                        "label": route.get("label", ""),
+                        "href": route.get("href", "#"),
+                        "active": route.get("active", False),
+                    }
+                )
 
         summary = BranchSummaryFragment().get_branch_summary()
         context.update(

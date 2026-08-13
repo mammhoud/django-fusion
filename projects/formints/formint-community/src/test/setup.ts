@@ -134,7 +134,7 @@ export function clearInvokeHistory() { _invokeHistory.length = 0; }
 // Mock SVG/assets imports — Vite resolves these to URLs in dev, but jsdom has no Vite server
 vi.mock('../../assets/images/formint-crest.svg', () => ({ default: 'mock-logo-url' }));
 
-// Mock Tauri event API (listen/emit) — pages like Sale, KitchenDisplay, and
+// Mock Tauri event API (listen/emit) — pages like Sale and ChatSupport
 // ChatSupport call `listen(...)` on mount. Without a mock, the real module
 // throws `transformCallback is not defined` in jsdom (unhandled rejection)
 // which crashes the whole test file.

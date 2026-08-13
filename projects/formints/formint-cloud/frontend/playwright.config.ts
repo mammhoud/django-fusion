@@ -20,7 +20,13 @@ export default defineConfig({
   use: {
     // The cloud Astro dev server binds :4323 (see astro.config.mjs) — not
     // the :1420 Tauri port the sibling editions use.
-    baseURL: 'http://localhost:4323',
+    baseURL: process.env.E2E_BASE_URL || 'http://127.0.0.1:4323',
+    // Local CI/dev images may provide Chromium through the OS instead of a
+    // Playwright browser cache. Keep the default bundled-browser behavior,
+    // but allow an explicit executable path without hard-coding one here.
+    launchOptions: process.env.E2E_CHROMIUM_PATH
+      ? { executablePath: process.env.E2E_CHROMIUM_PATH }
+      : undefined,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -29,10 +35,18 @@ export default defineConfig({
     // Run the astro binary directly instead of `pnpm dev`: the cloud
     // edition's predev hooks (kill-port/ensure-db → cargo seed) fail
     // because there is no src-tauri/ in this checkout.
-    command: './node_modules/.bin/astro dev',
-    url: 'http://localhost:4323',
-    reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    // Run the Astro dev server directly so its configured API proxy remains
+    // available to the client-only telemetry island. The route readiness URL
+    // below warms the first island transform before the browser test starts.
+    command: './node_modules/.bin/astro dev --host 127.0.0.1',
+    // Warm the actual client-only route before tests begin. The root HTML
+    // shell can be ready while the first island transform is still compiling.
+    url: 'http://127.0.0.1:4323/telemetry',
+    // Never reuse an unrelated/stale dev server: E2E must exercise the
+    // current checkout and provider wiring, not whichever process happens to
+    // own :4323 from a previous local run.
+    reuseExistingServer: false,
+    timeout: 180_000,
   },
   outputDir: 'test-results/e2e',
 });

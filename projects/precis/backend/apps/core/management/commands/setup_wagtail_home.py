@@ -15,10 +15,21 @@ import os
 
 from django.conf import settings
 from django.core.management.base import CommandError
-from django_fusion.management.commands.base import BaseCommand
 from django.db import transaction
+from django_fusion.management.commands.base import BaseCommand
 
 logger = logging.getLogger(__name__)
+
+
+DEFAULT_SITE_LANGUAGES = (
+    ("en", "English", "English", "ltr", "🇬🇧"),
+    ("sv", "Swedish", "Svenska", "ltr", "🇸🇪"),
+    ("fr", "French", "Français", "ltr", "🇫🇷"),
+    ("de", "German", "Deutsch", "ltr", "🇩🇪"),
+    ("es", "Spanish", "Español", "ltr", "🇪🇸"),
+    ("ar", "Arabic", "العربية", "rtl", "🇸🇦"),
+    ("pt-br", "Portuguese (Brazil)", "Português (Brasil)", "ltr", "🇧🇷"),
+)
 
 
 class Command(BaseCommand):
@@ -90,11 +101,178 @@ class Command(BaseCommand):
                     f"✅ Created default site: {hostname} → '{home.title}'"
                 ))
 
-            # ── 6. Set page locale to English ─────────────────────────────────
+            # ── 6. Seed editor-managed catalog/settings defaults ─────────────
+            self._ensure_site_content(site)
+
+            # ── 7. Set page locale to English ─────────────────────────────────
             if hasattr(home, "locale") and home.locale != locale_en:
                 home.locale = locale_en
                 home.save(update_fields=["locale"])
                 self.stdout.write(self.style.SUCCESS("✅ Set home page locale to English"))
+
+    def _ensure_site_content(self, site):
+        """Create safe, idempotent language and branding defaults.
+
+        These are bootstrap records only: ``get_or_create`` never overwrites
+        values an editor has already changed in Wagtail. The API can therefore
+        use the database catalog immediately after a fixture restore without
+        introducing a second source of truth.
+        """
+        from apps.content.models.languages import SiteLanguage
+
+        for order, (code, name, native_name, direction, flag) in enumerate(
+            DEFAULT_SITE_LANGUAGES
+        ):
+            SiteLanguage.objects.get_or_create(
+                code=code,
+                defaults={
+                    "name": name,
+                    "native_name": native_name,
+                    "direction": direction,
+                    "flag": flag,
+                    "sort_order": order,
+                    "is_active": True,
+                },
+            )
+
+        try:
+            from apps.pages.branding.models import FusionBranding
+
+            FusionBranding.objects.get_or_create(
+                pk=1,
+                defaults={
+                    "site_name": getattr(settings, "FUSION_SITE_NAME", "Fusion LMS"),
+                    "company_name": getattr(settings, "FUSION_COMPANY_NAME", "Fusion Inc."),
+                    "creator_name": getattr(settings, "FUSION_CREATOR_NAME", "Fusion Team"),
+                    "primary_color": getattr(settings, "FUSION_PRIMARY_COLOR", "#00a1b3"),
+                    "secondary_color": getattr(settings, "FUSION_SECONDARY_COLOR", "#008080"),
+                },
+            )
+        except Exception:
+            # Branding is optional for older restored databases; language
+            # records and Wagtail site setup should still complete.
+            logger.exception("Unable to seed optional FusionBranding snippet")
+
+        try:
+            from apps.content.models.settings import SiteSettings
+
+            SiteSettings.objects.get_or_create(
+                site=site,
+                defaults={
+                    "site_name": getattr(settings, "FUSION_SITE_NAME", "Fusion LMS"),
+                    "site_tagline": "Learning that ships.",
+                    "footer_description": "A modern learning platform powered by django-fusion.",
+                    "footer_copyright": "© 2026 Fusion LMS",
+                    "privacy_policy_url": "/privacy/",
+                    "terms_of_use_url": "/legal/terms/",
+                },
+            )
+        except Exception:
+            # Keep bootstrapping compatible with databases created before the
+            # optional settings migration was installed.
+            logger.exception("Unable to seed optional SiteSettings")
+
+        self._seed_product_snippets()
+
+        self.stdout.write(self.style.SUCCESS("✅ Site language/settings defaults ready"))
+
+    def _seed_product_snippets(self):
+        """Create/update the editor-managed ``Product`` snippet catalog.
+
+        Mirrors landing-fusion's ``seed_pages._seed_product_snippets`` so both
+        websites share one catalog architecture (language + unified currency).
+        Idempotent: existing rows keep editor changes. Each product gets an
+        English row plus an Arabic variant row (title-only translation) whose
+        ``detail_slug`` points at the canonical product page.
+        """
+        from apps.content.models.products import Product
+
+        catalog = [
+            {
+                "slug": "django-fusion",
+                "title": "django-fusion",
+                "title_ar": "جانغو-فيوجن",
+                "category": "library",
+                "tagline": "Component system, routing and fragment rendering for every structa.cloud site.",
+                "price": "0.00",
+                "version": "",
+            },
+            {
+                "slug": "ceptor-ai",
+                "title": "ceptor-ai",
+                "title_ar": "سيبتور إيه آي",
+                "category": "platform",
+                "tagline": "AI chat client with a Model Context Protocol (MCP) server.",
+                "price": "0.00",
+                "version": "",
+            },
+            {
+                "slug": "django-bolt",
+                "title": "django-bolt",
+                "title_ar": "جانغو بولت",
+                "category": "library",
+                "tagline": "A high-performance Rust-backed API framework for Django.",
+                "price": "0.00",
+                "version": "",
+            },
+            {
+                "slug": "vresume",
+                "title": "vResume",
+                "title_ar": "فيريسوم",
+                "category": "platform",
+                "tagline": "Cloud-hosted resume builder with modern templates.",
+                "price": "29.00",
+                "version": "",
+            },
+            {
+                "slug": "forge-pos",
+                "title": "Forge POS",
+                "title_ar": "فورج بي أو إس",
+                "category": "application",
+                "tagline": "Desktop point-of-sale application built on Tauri 2 + Rust.",
+                "price": "119.00",
+                "version": "",
+            },
+            {
+                "slug": "cypercloud",
+                "title": "Cypercloud",
+                "title_ar": "سايبر كلاود",
+                "category": "platform",
+                "tagline": "AI chat customizer platform powered by ceptor-ai.",
+                "price": "0.00",
+                "version": "",
+            },
+        ]
+        try:
+            for entry in catalog:
+                defaults = {
+                    "title": entry["title"],
+                    "short_description": entry["tagline"],
+                    "category": entry["category"],
+                    "language": "en",
+                    "price": entry["price"],
+                    "version": entry["version"],
+                    "is_published": True,
+                }
+                item, created = Product.objects.get_or_create(slug=entry["slug"], defaults=defaults)
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"Seeded product snippet {entry['slug']} (en)."))
+                ar_defaults = {
+                    **defaults,
+                    "title": entry["title_ar"],
+                    "language": "ar",
+                    "slug": f"{entry['slug']}-ar",
+                    "detail_slug": entry["slug"],
+                }
+                ar_item, ar_created = Product.objects.get_or_create(
+                    slug=ar_defaults["slug"], defaults=ar_defaults
+                )
+                if ar_created:
+                    self.stdout.write(self.style.SUCCESS(f"Seeded product snippet {entry['slug']} (ar)."))
+        except Exception:
+            # Products are optional for older restored databases; the rest of
+            # the site bootstrap should still complete.
+            logger.exception("Unable to seed product snippets")
 
     def _ensure_locales(self):
         """Create all configured Wagtail locales and return the English one."""
@@ -123,6 +301,7 @@ class Command(BaseCommand):
         If no suitable HomePage exists, create one under the root page.
         """
         from wagtail.models import Page, Site
+
         from apps.content.models.pages.home import HomePage
 
         WAGTAIL_DEFAULT_TITLE = "Welcome to your new Wagtail site!"

@@ -18,7 +18,7 @@ pub type DbConnection = SqliteConnection;
 ///
 /// - `journal_mode=WAL` — write-ahead logging. Lets readers proceed while a
 ///   single writer commits, so the short-lived per-command connections that
-///   `open_conn` creates (Sale, KDS, Settings, …) no longer block each other.
+///   `open_conn` creates (Sale, Settings, …) no longer block each other.
 /// - `synchronous=NORMAL` — safe with WAL; avoids an fsync on every commit
 ///   while keeping durability on checkpoint.
 /// - `busy_timeout=5000` — wait up to 5 s for a locked database instead of

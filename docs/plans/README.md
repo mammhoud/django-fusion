@@ -17,8 +17,8 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Repository | [`repository/`](repository/) | Cross-project architecture, cleanup, migrations, and delivery |
 | Formint/POS | [`pos/README.md`](pos/README.md) | Canonical product, desktop, cloud, sync, and migration plans |
 | Formint editions | [`editions/README.md`](editions/README.md) | Community → Standard → Pro → Cloud → Client → SDK execution chain |
-| CMS Fusion | [`cms-fusion/`](cms-fusion/) | CMS migration, frontend, dashboard, and component work (now merged into Precis/Landing-Fusion) |
-| LMS Fusion | [`lms-fusion/`](lms-fusion/) | LMS migration and cleanup work (now Precis) |
+| CMS Fusion | [`cms-fusion/`](cms-fusion/) | Superseded migration evidence; active work is in Precis/Landing-Fusion |
+| LMS Fusion | [`lms-fusion/`](lms-fusion/) | Superseded migration evidence; active LMS work is in Precis |
 | Landing-Fusion | [`landing-fusion/`](landing-fusion/) | Landing site architecture, content, and frontend work |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Formint Cloud | [`pos/cloud-plan.md`](pos/cloud-plan.md) | Cloud master: Channels, WebSocket sync, Bolt dashboard, Unfold admin |
@@ -44,9 +44,10 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Formint edition chain | Active | [`editions/README.md`](editions/README.md) |
 | Formint Cloud architecture (formint-cloud) | Planned / gate-based | [`pos/cloud-plan.md`](pos/cloud-plan.md) |
 | Tauri plugin migration | Current migration | [`pos/tauri-plugins-enhancement-plan.md`](pos/tauri-plugins-enhancement-plan.md) |
-| CMS Fusion migration (merged → Precis/Landing-Fusion) | Core complete; merged | [`cms-fusion/`](cms-fusion/) |
-| LMS Fusion migration (now Precis) | Core complete; cleanup tracked | [`lms-fusion/migration-plan.md`](lms-fusion/migration-plan.md) |
+| CMS Fusion migration (merged → Precis/Landing-Fusion) | Superseded; evidence retained | [`cms-fusion/migration-plan.md`](cms-fusion/migration-plan.md) |
+| LMS Fusion migration (now Precis) | Superseded; evidence retained | [`lms-fusion/migration-plan.md`](lms-fusion/migration-plan.md) |
 | Landing-Fusion | Active | [`landing-fusion/`](landing-fusion/) |
+| Active project closeout | Audit complete | [`repository/active-project-closeout-2026-08-11.md`](repository/active-project-closeout-2026-08-11.md) |
 | Repository migration cleanup | Partial / gate-based | [`repository/migration-cleanup-master.md`](repository/migration-cleanup-master.md) |
 | django-fusion Tasks & MCP | Planned | [`django-fusion/django-fusion-tasks-mcp-plan.md`](django-fusion/django-fusion-tasks-mcp-plan.md) |
 | django-fusion LLM & AI MCP Enhancement | Planned / companion | [`django-fusion/django-fusion-llm-mcp-enhancement-plan.md`](django-fusion/django-fusion-llm-mcp-enhancement-plan.md) |

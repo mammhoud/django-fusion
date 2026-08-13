@@ -12,12 +12,14 @@
  */
 import { initFusionScroll } from './scroll';
 import { initFusionFragments } from './fragments';
+import { initFusionMotion } from './motion';
 
 export * from './theme';
 export * from './scroll';
 export * from './fragments';
 export * from './sse';
 export * from './htmx';
+export * from './motion';
 
 let initialized = false;
 
@@ -27,6 +29,8 @@ export function initFusion(): void {
   initialized = true;
   initFusionScroll();
   initFusionFragments();
+  // Lazy GSAP — only loads when [data-gsap] hooks exist on the page.
+  void initFusionMotion();
 }
 
 // Script runs at the end of <body> — DOM is ready.

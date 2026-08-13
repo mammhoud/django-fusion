@@ -208,6 +208,10 @@ export interface PageData {
     status?: string;
     display_mode?: string;
     excerpt?: string;
+    /** Catalog language + unified currency — snippet contract (en / ar / …). */
+    language?: string;
+    currency?: string;
+    price?: string;
     editions?: { name: string; price: string; period?: string; tier?: string; featured?: boolean; offer_label?: string; offer_old_price?: string }[];
     tech?: string[];
   }[];
@@ -324,9 +328,35 @@ export interface CoursesData {
   courses: CourseCard[];
 }
 
+/** One row of the editor-managed Product snippet catalog (/apis/products/). */
+export interface CatalogProduct {
+  id: number;
+  title: string;
+  slug: string;
+  detail_slug: string;
+  short_description: string;
+  description: string;
+  category: string;
+  language: string;
+  price: string;
+  currency: string;
+  is_free: boolean;
+  is_featured: boolean;
+  version: string;
+  status: string;
+  href: string;
+}
+
+export interface ProductsData {
+  products: CatalogProduct[];
+  language?: string | null;
+  languages?: string[];
+}
+
 export interface AssetManifest {
   version: string;
   static_url: string;
+  fusion_render_first: boolean;
   enabled: boolean;
   webpack_enabled: boolean;
   webpack_bundle_dir: string;
@@ -422,6 +452,93 @@ export function fetchPricing(): Promise<PricingData> {
   return fetchJSON<PricingData>('/apis/pricing/');
 }
 
+/**
+ * Keep the pricing route useful while Astro is building before Django is
+ * healthy. Wagtail remains authoritative at runtime; this is the same
+ * product/edition contract used by the seeded catalog, not a generic demo.
+ */
+export async function fetchPricingWithFallback(): Promise<PricingData> {
+  try {
+    const data = await fetchPricing();
+    if (data.products.length) return data;
+    throw new Error('Pricing API returned an empty product catalog.');
+  } catch {
+    return {
+      products: [
+        {
+          slug: 'formint-pos', title: 'Formints',
+          tagline: 'Desktop point-of-sale in four editions: Community, Standard, Pro, Cloud.',
+          version: 'beta 0.2', logo_style: 'crest', status: 'live', href: '/products/formint-pos/',
+          editions: [
+            { name: 'Community', price: '$0', period: 'open source', tagline: 'Offline-first POS for a single terminal.', tier: 'outline', featured: false },
+            { name: 'Standard', price: '$119', period: 'one-time license', tagline: 'A polished standalone terminal for growing businesses.', tier: 'default', featured: false },
+            { name: 'Pro', price: '$79', period: 'per year', tagline: 'Multi-terminal POS with a cloud master.', tier: 'featured', featured: true },
+            { name: 'Cloud', price: 'Custom', period: 'per month', tagline: 'Fully hosted multi-terminal operations.', tier: 'managed', featured: false },
+          ],
+        },
+        {
+          slug: 'lms', title: 'Precis LMS',
+          tagline: 'Courses, enrollments, payments, and a learning experience your team can own.',
+          version: 'v1', logo_style: 'ribbon', status: 'live', href: '/products/lms/',
+          editions: [
+            { name: 'Solo', price: '$29', period: 'per month', tagline: 'A polished learning experience for active creators.', tier: 'featured', featured: true },
+            { name: 'Business', price: '$99', period: 'per month', tagline: 'Cohorts, staff, and connected systems for organizations.', tier: 'default', featured: false },
+          ],
+        },
+        {
+          slug: 'cms', title: 'Loop',
+          tagline: 'Build content-driven websites from Wagtail blocks.',
+          version: 'v2.7', logo_style: 'isometric', status: 'live', href: '/products/cms/',
+          editions: [
+            { name: 'Community', price: '$0', period: 'open source', tagline: 'A landing page with the core section blocks.', tier: 'outline', featured: false },
+            { name: 'Business', price: 'Custom', period: 'per project', tagline: 'A managed multi-site with custom blocks and analytics.', tier: 'featured', featured: true },
+          ],
+        },
+        {
+          slug: 'cypercloud', title: 'Syntara',
+          tagline: 'AI chat customizer with an embeddable, branded experience.',
+          version: 'beta', logo_style: 'orbit', status: 'live', href: '/products/cypercloud/',
+          editions: [
+            { name: 'Community', price: '$0', period: 'open source', tagline: 'Self-hosted chat client with multi-model support.', tier: 'outline', featured: false },
+            { name: 'Business', price: '$39', period: 'per month', tagline: 'Managed chat with branding, rules, and analytics.', tier: 'featured', featured: true },
+          ],
+        },
+        {
+          slug: 'vresume', title: 'vResume',
+          tagline: 'A cloud resume platform with AI-assisted summaries.',
+          version: 'beta', logo_style: 'ascent', status: 'live', href: '/products/vresume/',
+          editions: [
+            { name: 'Community', price: '$0', period: 'forever', tagline: 'One resume with templates, preview, and PDF export.', tier: 'outline', featured: false },
+            { name: 'Business', price: '$9', period: 'per month', tagline: 'Custom domains, multiple resumes, and AI summaries.', tier: 'featured', featured: true },
+          ],
+        },
+      ],
+    };
+  }
+}
+
+/**
+ * Fetch the multilingual Product snippet catalog (/apis/products/).
+ *
+ * The catalog-of-record for language filtering + unified-currency pricing:
+ * each row carries ``language``/``price``/``currency`` and links to its
+ * canonical product page via ``href`` (``detail_slug``). The products page
+ * bridges this catalog into the Redux products slice so the grid's language
+ * filter has real per-language rows to switch between (ProductPage cards
+ * alone are all English).
+ */
+export function fetchProducts(): Promise<ProductsData> {
+  return fetchJSON<ProductsData>('/apis/products/');
+}
+
+export async function fetchProductsWithFallback(): Promise<ProductsData> {
+  try {
+    return await fetchProducts();
+  } catch {
+    return { products: [] };
+  }
+}
+
 /** Fetch the published course cards used by the homepage learning section. */
 export function fetchCourses(): Promise<CoursesData> {
   return fetchJSON<CoursesData>('/apis/courses/');
@@ -505,7 +622,8 @@ export const cachedAssets = () => fetchCached('assets', fetchAssets);
 export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettingsWithFallback);
 export const cachedNavigation = (language: LangCode = CONTENT_LANGUAGE) => fetchCached(`navigation:${language}`, () => fetchNavigationWithFallback(language));
 export const cachedContact = () => fetchCached('contact', fetchContact);
-export const cachedPricing = () => fetchCached('pricing', fetchPricing);
+export const cachedPricing = () => fetchCached('pricing', fetchPricingWithFallback);
+export const cachedProducts = () => fetchCached('products', fetchProductsWithFallback);
 export const cachedCourses = () => fetchCached('courses', fetchCoursesWithFallback);
 export const cachedPageData = (slug: string, language: LangCode = CONTENT_LANGUAGE) =>
   fetchCached(`page:${slug}:${language}`, () => fetchPageDataWithFallback(slug, language));

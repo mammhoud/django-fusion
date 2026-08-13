@@ -3,16 +3,15 @@
 # ============================================================================
 # Uniform dispatcher over the POS editions in projects/formints/:
 #
-#   - formintA/    Community    — free, offline-first Tauri + React 19 +
+#   - formint-community/ Community — free, offline-first Tauri + React 19 +
 #                                 Rust/Diesel desktop POS (no sidecar)
-#   - formint/     Standard/Pro — merged package: Django Ninja backend +
+#   - formint-pro/    Professional — merged package: Django Ninja backend +
 #                                 Robyn sidecar + Astro frontend + Tauri
 #   - formint-cloud/ Cloud   — Django Formint Cloud SaaS master (Unfold admin)
-#                                 + formintA Community UI frontend
-#   - formintC/    pos-client   — Vue 3 + Tauri desktop client
+#                                 + Community UI frontend
+#   - formint-standard/ Standard — Astro 5 + React 19 + Tauri 2 desktop POS
+#   - formint-client/  pos-client   — Vue 3 + Tauri desktop client
 #   - packages/formints-client  — @formints/client TS SDK (editions consume it)
-#   - formint-community/        — generated standalone public repo bundle
-#                                 (github.com/mammhoud/formint-community)
 #
 # Every edition exposes the same uniform verbs through <edition>-<verb>:
 #   install | check | test | run (dev/env) | stop | clean
@@ -21,27 +20,27 @@
 # Quick start:
 #   make community-dev        — Vite dev server for the Community edition (:1420)
 #   make community-desktop    — full Tauri desktop app (Community)
-#   make standard-env         — merged backend :8767 + frontend :4321 (tmux)
+#   make pro-env              — merged backend :8767 + frontend :4321 (tmux)
 #   make cloud-dev-backend    — Cloud Django admin/API on :8082
 #   make test-all             — run every edition's test suite
-#   make community-bundle     — refresh formint-community/ from formintA
+#   make community-bundle     — refresh the standalone community publish bundle
 #
-# Direct edition access is always possible: make -C formintA <target>
+# Direct edition access is always possible: make -C formint-community <target>
 
 .PHONY: help clean
 .PHONY: install-all check-all test-all clean-all stop-all
-# ── Community (formintA) ──
+# ── Community (formint-community) ──
 .PHONY: community-install community-dev community-desktop community-build \
         community-check community-test community-test-all community-cargo-test \
         community-seed community-clean
-# ── Standard / Pro (formint) ──
+# ── Standard (formint-standard) / Pro (formint-pro) ──
 .PHONY: standard-install standard-check standard-test standard-env standard-run \
         standard-stop standard-clean pro-install pro-check pro-test pro-env \
         pro-stop pro-clean
 # ── Cloud (formint-cloud) ──
 .PHONY: cloud-install cloud-check cloud-test cloud-dev-backend cloud-dev-api \
         cloud-dev-frontend cloud-stop cloud-clean
-# ── pos-client (formintC) ──
+# ── pos-client (formint-client) ──
 .PHONY: client-install client-dev client-build client-lint client-test client-clean
 # ── SDK (packages/formints-client) ──
 .PHONY: sdk-install sdk-build sdk-typecheck sdk-test
@@ -54,12 +53,12 @@
         screenshots publish community-bundle
 
 # ── Edition directories (canonical) ─────────────────────────────────────────
-COMMUNITY  := formintA
-MERGED     := formint        # Standard + Pro share this codebase
+COMMUNITY  := formint-community
+MERGED     := formint-pro    # Professional merged package (Standard tier shares it)
 CLOUD      := formint-cloud
-CLIENT     := formintC
+CLIENT     := formint-client
 SDK        := packages/formints-client
-COMMUNITY_VERSION := formint-community
+COMMUNITY_BUNDLE := publish/community-bundle  # generated standalone public repo copy
 
 # ── Default ────────────────────────────────────────────────────────────────
 
@@ -68,13 +67,12 @@ help:                 ## Show this help menu
 	@echo '╔══════════════════════════════════════════════════════════╗'
 	@echo '║  POS v4.0 — Community · Standard · Pro · Cloud · Client ║'
 	@echo '╚══════════════════════════════════════════════════════════╝'
-	@echo ''
 	@echo '── Editions (uniform verbs: install | check | test | run | stop | clean) ──'
-	@echo '  Community (formintA)   — make community-{install,check,test,dev,clean}'
-	@echo '  Standard (formint)     — make standard-{install,check,test,env,stop,clean}'
-	@echo '  Pro (formint)          — make pro-{install,check,test,env,stop,clean}'
-	@echo '  @echo 'Cloud (formint-cloud) — make cloud-{install,check,test,dev-backend,stop,clean}''
-	@echo '  pos-client (formintC)  — make client-{install,dev,build,lint,test,clean}'
+  @echo '  Community (formint-community) — make community-{install,check,test,dev,clean}'
+  @echo '  Standard (formint-standard)   — make standard-{install,check,test,env,stop,clean}'
+  @echo '  Pro (formint-pro)       — make pro-{install,check,test,env,stop,clean}'
+  @echo '  Cloud (formint-cloud)   — make cloud-{install,check,test,dev-backend,stop,clean}'
+  @echo '  pos-client (formint-client)  — make client-{install,dev,build,lint,test,clean}'
 	@echo '  SDK (@formints/client) — make sdk-{install,build,typecheck,test}'
 	@echo ''
 	@echo '── Aggregates ──────────────────────────────────────────────'
@@ -102,10 +100,9 @@ help:                 ## Show this help menu
 	@echo '  make cloud-dev-api        Django :8767 (sidecar-compatible API)'
 	@echo '  make cloud-dev-frontend   Astro :4323 (Community UI)'
 	@echo '  make cloud-test           Backend Django test suite'
-	@echo ''
-	@echo '── Community version (standalone public repo) ─────────────'
-	@echo '  make community-bundle     Refresh formint-community/ from formintA'
-	@echo '  make community-version    Alias for community-bundle'
+	@echo '── Community bundle (standalone public repo) ───────────────'
+  @echo '  make community-bundle     Refresh publish/community-bundle/ from formint-community'
+  @echo '  make community-version    Alias for community-bundle'
 	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
 	@echo '  make screenshots          Capture marketplace screenshots'
@@ -148,7 +145,7 @@ clean-all:            ## Clean every edition
 	$(MAKE) -C $(MERGED) clean
 	$(MAKE) -C $(CLOUD) clean
 	$(MAKE) -C $(CLIENT) clean
-	rm -rf $(COMMUNITY_VERSION)
+	rm -rf $(COMMUNITY_BUNDLE)
 	@echo '✓ All editions cleaned'
 
 test: test-all         ## Alias — run every edition test suite
@@ -157,7 +154,7 @@ check: check-all       ## Alias — run checks for every edition
 
 clean: clean-all      ## Alias — clean every edition
 
-# ── Community — formintA ───────────────────────────────────────────────────
+# ── Community — formint-community ───────────────────────────────────────────
 
 community-install:    ## Install Community dependencies (pnpm + cargo)
 	$(MAKE) -C $(COMMUNITY) install
@@ -189,27 +186,44 @@ community-seed:       ## Reset DB + apply preset (PRESET=all|base|gaming|coffee)
 community-clean:      ## Clean Community build artifacts
 	$(MAKE) -C $(COMMUNITY) clean
 
-# ── Standard / Pro — formint (merged package) ──────────────────────────────
+# ── Standard — formint-standard (standalone Tauri + React edition) ────────────
 
-standard-install pro-install: ## Install merged package (backend + frontend + migrate)
+standard-install: ## Install Standard edition (pnpm + cargo)
+	$(MAKE) -C formint-standard install
+
+standard-check:   ## TypeScript + Rust compilation check
+	$(MAKE) -C formint-standard check
+
+standard-test:    ## Vitest unit tests
+	$(MAKE) -C formint-standard test
+
+standard-dev:     ## Vite dev server (browser only)
+	$(MAKE) -C formint-standard dev
+
+standard-clean:   ## Clean Standard build artifacts
+	$(MAKE) -C formint-standard clean
+
+# ── Pro — formint-pro (merged package) ───────────────────────────────────────
+
+pro-install:      ## Install merged package (backend + frontend + migrate)
 	$(MAKE) -C $(MERGED) install
 
-standard-check pro-check:     ## Django check + astro check
+pro-check:        ## Django check + astro check
 	$(MAKE) -C $(MERGED) check
 
-standard-test pro-test:       ## Backend suite + frontend contract tests
+pro-test:         ## Backend suite + frontend contract tests
 	$(MAKE) -C $(MERGED) test
 
-standard-env pro-env:         ## Backend :8767 + frontend :4321 (tmux)
+pro-env:          ## Backend :8767 + frontend :4321 (tmux)
 	$(MAKE) -C $(MERGED) env
 
-standard-run pro-run:         ## Backend runserver :8767 (foreground)
+pro-run:          ## Backend runserver :8767 (foreground)
 	$(MAKE) -C $(MERGED) dev-backend
 
-standard-stop pro-stop:       ## Stop merged tmux env
+pro-stop:         ## Stop merged tmux env
 	$(MAKE) -C $(MERGED) stop
 
-standard-clean pro-clean:     ## Clean merged artifacts
+pro-clean:        ## Clean merged artifacts
 	$(MAKE) -C $(MERGED) clean
 
 # ── Cloud — formint-cloud ───────────────────────────────────────────────────────
@@ -238,7 +252,7 @@ cloud-stop:           ## Kill Cloud dev processes
 cloud-clean:          ## Remove Cloud db + bytecode cache
 	$(MAKE) -C $(CLOUD) clean
 
-# ── pos-client — formintC ──────────────────────────────────────────────────
+# ── pos-client — formint-client ────────────────────────────────────────────
 
 client-install:       ## Install pos-client dependencies
 	$(MAKE) -C $(CLIENT) install
@@ -274,7 +288,7 @@ sdk-test:             ## Run SDK vitest suite
 
 # ── Community version (standalone public repo) ─────────────────────────────
 
-community-bundle community-version: ## Refresh formint-community/ from formintA (with renames)
+community-bundle community-version: ## Refresh the standalone community bundle from formint-community
 	node scripts/publish/community-bundle.cjs
 
 # ── Sidecar server (merged formint/sidecar) ────────────────────────────────
@@ -306,13 +320,13 @@ mini-dev: community-dev          ## Alias — Community Vite dev
 mini-build: community-build      ## Alias — Community build
 mini-check: community-check      ## Alias — Community check
 
-formint-install: standard-install ## Alias — merged install
-formint-env: standard-env         ## Alias — merged env
-formint-run: standard-run         ## Alias — merged backend run
-formint-stop: standard-stop       ## Alias — merged stop
-formint-test: standard-test       ## Alias — merged test
-formint-check: standard-check     ## Alias — merged check
-formint-clean: standard-clean     ## Alias — merged clean
+formint-install: pro-install      ## Alias — merged install (formint-pro)
+formint-env: pro-env              ## Alias — merged env (formint-pro)
+formint-run: pro-run              ## Alias — merged backend run (formint-pro)
+formint-stop: pro-stop            ## Alias — merged stop (formint-pro)
+formint-test: pro-test            ## Alias — merged test (formint-pro)
+formint-check: pro-check          ## Alias — merged check (formint-pro)
+formint-clean: pro-clean          ## Alias — merged clean (formint-pro)
 
 cloud-run: cloud-dev-backend      ## Alias — Cloud Django :8082
 cloud-dev: cloud-dev-backend      ## Alias — Cloud Django :8082

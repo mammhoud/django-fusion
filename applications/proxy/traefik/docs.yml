@@ -1,3 +1,7 @@
+# ⚠️ NOT LOADED — Traefik reads dynamic configs from ./dynamic/*.yml only
+# (static config providers.file.directory: /etc/traefik/dynamic).
+# The live docs router lives in ./dynamic/docs.yml — edit that file instead.
+# =============================================================================
 http:
   routers:
     docs-http:

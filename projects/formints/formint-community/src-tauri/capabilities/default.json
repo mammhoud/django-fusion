@@ -1,8 +1,8 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capability for the main window and the KDS popout window",
-  "windows": ["main", "kds"],
+  "description": "Capability for the Formint Community main window",
+  "windows": ["main"],
   "permissions": [
     "core:default",
     "core:window:allow-is-maximized",

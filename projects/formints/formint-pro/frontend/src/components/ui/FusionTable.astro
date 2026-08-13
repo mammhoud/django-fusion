@@ -1,0 +1,233 @@
+---
+/**
+ * FusionTable — reusable data-table component (django-fusion tables as data).
+ *
+ * Consumes the sidecar Components API (`/api/v1/components/tables/<resource>/`)
+ * or any array of rows. Renders:
+ *   - a toolbar (search input + optional slot for actions)
+ *   - skeleton rows while loading
+ *   - the data table with sticky headers
+ *   - client-side pagination + count footer
+ *
+ * Usage:
+ *   <FusionTable resource="products" title="Products" searchable />
+ *   <FusionTable rows={[{id:1,name:'x'}]} columns={['id','name']} />
+ *
+ * The component exposes an Alpine store (`$store.fusionTable` set by
+ * Layout.astro) so the shell can refresh tables after HTMX form saves.
+ */
+interface Column {
+  key: string;
+  label?: string;
+}
+
+interface Props {
+  resource?: string;
+  rows?: any[];
+  columns?: string[] | Column[];
+  title?: string;
+  searchable?: boolean;
+  pageSize?: number;
+  class?: string;
+  emptyText?: string;
+  'data-skeleton-label'?: string;
+}
+
+const {
+  resource,
+  rows: staticRows,
+  columns,
+  title = '',
+  searchable = true,
+  pageSize = 10,
+  class: className = '',
+  emptyText = 'No records found.',
+  'data-skeleton-label': skeletonLabel,
+} = Astro.props;
+
+// Normalize columns: [{key, label}]
+const colDefs: Column[] = (columns || []).map((c) =>
+  typeof c === 'string' ? { key: c } : c
+);
+const labelFor = (key: string) => {
+  const def = colDefs.find((c) => c.key === key);
+  if (def?.label) return def.label;
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+};
+const dataResource = resource || null;
+const initialRows = JSON.stringify(staticRows || null);
+const initialCols = JSON.stringify(colDefs);
+---
+
+<div
+  class={`fusion-table ${className}`.trim()}
+  x-data="fusionTableComp({
+    resource: $el.dataset.resource || null,
+    initialRows: $el.dataset.rows || null,
+    initialCols: $el.dataset.cols || null,
+    pageSize: $el.dataset.pageSize || 10,
+  })"
+  x-init="init()"
+  data-resource={dataResource}
+  data-rows={initialRows !== 'null' ? initialRows : undefined}
+  data-cols={initialCols !== '[]' ? initialCols : undefined}
+  data-page-size={pageSize}
+  data-skeleton-label={skeletonLabel}
+  aria-busy="true"
+  x-cloak
+>
+  {title && (
+    <div class="fusion-table__header">
+      <h3 class="fusion-table__title" x-text="title"> {title}</h3>
+      <div class="fusion-table__toolbar">
+        {searchable && (
+          <input
+            type="search"
+            x-model="search"
+            @input="page = 1"
+            placeholder="Search…"
+            class="input input-sm"
+            aria-label="Search table"
+          />
+        )}
+        <slot name="actions" />
+      </div>
+    </div>
+  )}
+
+  <!-- Loading skeleton -->
+  <div x-show="loading" class="fusion-skeleton fusion-skeleton--table" aria-hidden="true" data-skeleton>
+    <span class="fusion-skeleton__table-row" />
+    <span class="fusion-skeleton__table-row" />
+    <span class="fusion-skeleton__table-row" />
+    <span class="fusion-skeleton__table-row" />
+    <span class="fusion-skeleton__table-row" style="width:94%" />
+  </div>
+
+  <!-- Empty state -->
+  <div x-show="!loading && filteredRows.length === 0" class="fusion-table__empty" x-text="emptyText">
+    {emptyText}
+  </div>
+
+  <!-- Data table -->
+  <div x-show="!loading && filteredRows.length > 0" class="fusion-table__wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <template x-for="col in cols" :key="col.key">
+            <th x-text="col.label"></th>
+          </template>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="row in pagedRows" :key="row.id ?? $index">
+          <tr class="hover:bg-[var(--color-surface-hover)]">
+            <template x-for="col in cols" :key="col.key">
+              <td class="px-3 py-2 text-xs">
+                <!-- Booleans get a controlled badge; everything else is
+                     plain text (x-text escapes — never inject raw HTML). -->
+                <template x-if="typeof row[col.key] === 'boolean'">
+                  <span class="badge" :class="row[col.key] ? 'badge-soft-success' : 'badge-soft-error'" x-text="row[col.key] ? 'Yes' : 'No'"></span>
+                </template>
+                <template x-if="typeof row[col.key] !== 'boolean'">
+                  <span x-text="cellText(row, col.key)"></span>
+                </template>
+              </td>
+            </template>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination footer -->
+  <div x-show="!loading && filteredRows.length > 0" class="fusion-table__footer">
+    <span class="text-xs opacity-60" x-text="`${filteredRows.length} row(s)`"></span>
+    <div class="flex gap-1">
+      <button @click="page = Math.max(1, page - 1)" :disabled="page <= 1" class="btn btn-ghost btn-xs">← Prev</button>
+      <span class="text-xs opacity-60 self-center px-1" x-text="`${page} / ${totalPages}`"></span>
+      <button @click="page = Math.min(totalPages, page + 1)" :disabled="page >= totalPages" class="btn btn-ghost btn-xs">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('fusionTableComp', (config: any) => ({
+      resource: config.resource,
+      initialRows: config.initialRows ? JSON.parse(config.initialRows) : null,
+      initialCols: config.initialCols ? JSON.parse(config.initialCols) : [],
+      pageSize: parseInt(config.pageSize, 10) || 10,
+      rows: [] as any[],
+      cols: [] as any[],
+      search: '',
+      page: 1,
+      loading: true,
+      emptyText: 'No records found.',
+
+      get filteredRows() {
+        const q = this.search.trim().toLowerCase();
+        if (!q) return this.rows;
+        return this.rows.filter((row: any) =>
+          Object.values(row).some((v: any) =>
+            String(v ?? '').toLowerCase().includes(q)
+          )
+        );
+      },
+
+      get totalPages() {
+        return Math.max(1, Math.ceil(this.filteredRows.length / this.pageSize));
+      },
+
+      get pagedRows() {
+        const start = (this.page - 1) * this.pageSize;
+        return this.filteredRows.slice(start, start + this.pageSize);
+      },
+
+      async init() {
+        if (this.initialRows) {
+          this.rows = this.initialRows;
+          this.cols = this.initialCols.length
+            ? this.initialCols
+            : Object.keys(this.initialRows[0] || {}).map((k) => ({ key: k, label: this.labelFor(k) }));
+          this.loading = false;
+          return;
+        }
+        if (this.resource) await this.load();
+      },
+
+      labelFor(key: string) {
+        return key.replace(/_/g, ' ').replace(/\b\w/g, (m: string) => m.toUpperCase());
+      },
+
+      async load() {
+        this.loading = true;
+        try {
+          const { fusionTable } = await import('../../lib/fusion-api');
+          const res = await fusionTable(this.resource as string);
+          this.rows = res.data?.rows || res.data || [];
+          this.cols = (res.data?.headers || []).map((h: any) => ({
+            key: h.key,
+            label: h.label || this.labelFor(h.key),
+          }));
+          if (!this.cols.length && this.rows.length) {
+            this.cols = Object.keys(this.rows[0]).map((k) => ({ key: k, label: this.labelFor(k) }));
+          }
+        } catch (e) {
+          console.error('FusionTable load error:', e);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      cellText(row: any, key: string) {
+        const value = row[key];
+        if (value === null || value === undefined || value === '') return '—';
+        if (typeof value === 'number') return String(value);
+        return String(value);
+      },
+    }));
+  });
+</script>

@@ -4,7 +4,7 @@ import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, fetchCourseList } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, fetchCourseListWithFallback } from '@/lib/api';
 import type { CourseCard, CourseListData, NavigationData, SiteSettings } from '@/lib/api';
 
 let siteSettings: SiteSettings | undefined;
@@ -14,7 +14,7 @@ try {
   [siteSettings, navData, catalog] = await Promise.all([
     cachedSiteSettings(),
     cachedNavigation(),
-    fetchCourseList(),
+    fetchCourseListWithFallback(),
   ]);
 } catch {
   // Keep the route buildable when the backend is temporarily unavailable.

@@ -22,16 +22,29 @@ x-media-base: &media-base
   networks:
     - traefik-net
     - common
+  # Resolver smoke test: (1) nginx -t syntax check, (2) the variable-upstream
+  # resolver directive is ACTIVE in the effective config, (3) a real request
+  # through a variable upstream (+ /__resolver_probe__ location) returns 200.
+  # All three must pass or the container is unhealthy — catching the "no
+  # resolver defined" regression at deploy time (variable upstreams 502 even
+  # when the workspace containers are up). NOTE: nginx -T echoes comment
+  # lines, so the grep is anchored to the directive start to avoid matching
+  # a commented-out resolver.
   healthcheck:
-    test: ["CMD", "nginx", "-t"]
+    test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && nginx -T 2>/dev/null | grep -qE '^[[:space:]]*resolver 127[.]0[.]0[.]11' && curl -fsS -o /dev/null http://127.0.0.1/__resolver_probe__ || exit 1"]
     interval: 30s
     timeout: 10s
     retries: 3
+    # Probe targets the docs container, which builds/rebuilds at deploy
+    # time — give first-start grace so a slow docs build cannot flap
+    # shared-media unhealthy (mirrors the dev-stack 120s start_period).
+    start_period: 30s
 
 services:
   shared-media:
     <<: *media-base
     container_name: shared-media
+
 
     labels:
       - "traefik.enable=true"
@@ -51,6 +64,10 @@ services:
       - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
       # Fusion media volumes are created by the site compose files.
       - lms-fusion-media:/var/www/media/lms-fusion:ro
+      # FileGator repository — same host dir FileGator writes uploads to, so
+      # files appear at media.structa.cloud/media/filegator/* via location
+      # /media/ (read-only view for serving).
+      - ../../projects/assets/media/filegator:/var/www/media/filegator:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
     networks:
       - traefik-net
@@ -65,7 +82,94 @@ services:
           cpus: '0.5'
           memory: 256M
 
+  # ----------------------------------------------------------
+  # FileGator — self-hosted file manager (media.structa.cloud/filegator/)
+  # ----------------------------------------------------------
+  # Served under the shared-media host via nginx `location /filegator/`
+  # (see ./nginx/default.conf). The image listens on 8080; assets are
+  # relative and the SPA builds its API base from window.location.pathname,
+  # so no asset rewriting is required. Docs: https://docs.filegator.io/
+  filegator:
+    image: filegator/filegator:latest
+    container_name: filegator
+    restart: unless-stopped
+    networks:
+      - traefik-net
+      - common
+    volumes:
+      # File repository — bind-mounted to the shared media tree so uploads
+      # become publicly servable at media.structa.cloud/media/filegator/*
+      # (shared-media mounts the same host dir under /var/www/media/filegator).
+      # Owned by www-data (uid 33) so the container can write through.
+      # NOTE: paths resolve from this compose file's dir (applications/proxy),
+      # so the repo media tree is two levels up: ../../projects/assets/media.
+      - ../../projects/assets/media/filegator:/var/www/filegator/repository
+      # Private data (logs, sessions)
+      - filegator-private:/var/www/filegator/private
+      # Hardened configuration (csrf key, secure cookies, upload limits)
+      - ./filegator/configuration.php:/var/www/filegator/configuration.php:ro
+      # Version-controlled admin credentials — bind-mounted read-write so
+      # UI user-management edits persist to the repo and survive volume
+      # recreation (a fresh volume would otherwise regenerate the baked
+      # admin/admin123 default from users.json.blank).
+      - ./filegator/users.json:/var/www/filegator/private/users.json
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # ----------------------------------------------------------
+  # Docs — Structa Cloud documentation (Docsify SPA)
+  # ----------------------------------------------------------
+  # Served under the shared-media host via nginx `location /docs/`
+  # (see ./nginx/default.conf). The docs/ dir is a Docsify SPA served by
+  # its own nginx (docs/Dockerfile) with history-mode routing: the SPA
+  # index.html sets basePath '/docs/', and nginx strips that prefix when
+  # proxying (proxy_pass http://docs:80/), so docsify's /docs/* fetches
+  # resolve to the container root where the .md files actually live.
+  # NOTE: .md gzip at the proxy requires the docs image to serve .md as
+  # text/markdown (baked into docs/Dockerfile via include mime.types + a
+  # same-level types block). A proxy-only redeploy with a stale docs image
+  # silently reverts .md to application/octet-stream (no gzip); rebuild this
+  # service with `docker compose -f docker-compose.nginx.yml build docs`.
+  docs:
+    build:
+      context: ../../docs
+      dockerfile: Dockerfile
+    image: structa-docs:latest
+    container_name: docs
+    restart: unless-stopped
+    networks:
+      - traefik-net
+      - common
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
 volumes:
+  filegator-private:
+    name: filegator-private
   # Shared media volumes are named explicitly so standalone proxy and app
   # Compose invocations resolve the same resources without a pre-create step.
   lms-fusion-static:

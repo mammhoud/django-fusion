@@ -4,10 +4,11 @@
 > **Tags:** #landing #astro #django #wagtail #aha-stack
 > **Stack:** Astro 5 + Tailwind CSS 4 + HTMX + Alpine.js (frontend) · Django 5.2 + Wagtail 7.4 (backend)
 
-Landing-only implementation of the [ASTRO migration plan](../../docs/plans/cms-fusion/migration-plan.md) —
-migrating the CMS-Fusion frontend to an **AHA stack** (Astro + HTMX + Alpine.js)
-and adding a **Django + Wagtail backend** whose editable fields drive the landing
-pages. Structured like `cms-fusion` but trimmed to the landing slice.
+Landing-only implementation of the [Landing-Fusion plan](../../docs/plans/landing-fusion/README.md),
+with an historical reference to the superseded [CMS-Fusion migration plan](../../docs/plans/cms-fusion/migration-plan.md).
+It uses an **AHA stack** (Astro + HTMX + Alpine.js) with a **Django + Wagtail backend**
+whose editable fields drive the landing pages. The project is the canonical
+landing slice after the CMS-Fusion migration.
 
 ## Why this project exists
 
@@ -103,7 +104,7 @@ make test            # apps.pages tests
 
 - Dynamic content (blog, courses, events, shop) → HTMX fragments
 - Auth + dashboards → HTMX forms + Alpine
-- E2E tests (Playwright), Docker/Traefik wiring
+- Full E2E tests (Playwright) and final Docker/Traefik production rollout gates
 
 ## See also
 

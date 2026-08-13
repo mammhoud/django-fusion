@@ -3,15 +3,27 @@ import Layout from '@/layouts/Layout.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { fetchCourseDetail, fetchCourseList, cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import { fetchCourseDetailWithFallback, fetchCourseListWithFallback, SEEDED_FALLBACK_SLUGS } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { CourseDetail, NavigationData, SiteSettings } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const catalog = await fetchCourseList();
-  if (!catalog.data.length) {
-    throw new Error('Course catalog returned no published courses during static generation.');
+  // Build-time content is optional: `docker compose up -d --build` builds ALL
+  // images before the backend container is healthy, so the course API may be
+  // unreachable (or return an empty catalog) during the Astro static build.
+  // Seeded slugs keep the known detail routes available in that mode; a live
+  // backend still supplies the authoritative list.
+  try {
+    const catalog = await fetchCourseListWithFallback();
+    const slugs = new Set([
+      ...SEEDED_FALLBACK_SLUGS.courses,
+      ...catalog.data.map((course) => course.slug),
+    ]);
+    return Array.from(slugs, (courseSlug) => ({ params: { slug: courseSlug } }));
+  } catch {
+    // Final route-only guard for an unavailable catalog.
+    return SEEDED_FALLBACK_SLUGS.courses.map((slug) => ({ params: { slug } }));
   }
-  return catalog.data.map((course) => ({ params: { slug: course.slug } }));
 }
 
 const { slug } = Astro.params;
@@ -25,7 +37,12 @@ try {
 } catch {
   // Site chrome may be unavailable during a preview build.
 }
-const course: CourseDetail = await fetchCourseDetail(slug!);
+let course: CourseDetail | undefined;
+try {
+    course = await fetchCourseDetailWithFallback(slug!);
+  } catch {
+    // Unknown slugs still render the normal ContentError fallback.
+  }
 
 const formatDifficulty = (value: string) => value.replace(/\b\w/g, (char) => char.toUpperCase());
 const overviewBlocks = Array.isArray(course?.overview) ? course.overview : [];
@@ -49,7 +66,7 @@ const heroImage = course?.image_url || course?.header_image;
   {course ? (
     <>
       <!-- ===== HERO — Cinematic Full-Bleed ===== -->
-      <section class="course-hero" style={heroImage ? `background-image: url(${heroImage})` : ''}>
+      <section class="course-hero" style={heroImage ? `--hero-image: url('${heroImage}')` : ''}>
         <div class="course-hero__overlay"></div>
         <div class="course-hero__inner">
           <div class="course-hero__content reveal-up">
@@ -349,13 +366,19 @@ const heroImage = course?.image_url || course?.header_image;
     });
   }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.reveal-up').forEach((el) => observer.observe(el));
+  const revealTargets = document.querySelectorAll('.reveal-up');
+  if (!('IntersectionObserver' in window)) {
+    revealTargets.forEach((el) => el.classList.add('reveal-up--visible'));
+  } else {
+    revealTargets.forEach((el) => observer.observe(el));
+  }
 
   // Accordion toggle (delegated — CSP-safe, no inline onclick)
   document.getElementById('syllabus')?.addEventListener('click', (e) => {
-    const trigger = e.target.closest('.syllabus-accordion__trigger');
+    const target = e.target as Element | null;
+    const trigger = target?.closest('.syllabus-accordion__trigger') as HTMLElement | null;
     if (!trigger) return;
-    const item = trigger.closest('.syllabus-accordion__item');
+    const item = trigger.closest('.syllabus-accordion__item') as HTMLElement | null;
     if (!item) return;
     const isOpen = item.classList.toggle('syllabus-accordion__item--open');
     trigger.setAttribute('aria-expanded', String(isOpen));
@@ -388,18 +411,31 @@ const heroImage = course?.image_url || course?.header_image;
 
   /* ---- Staggered reveal ---- */
   .reveal-up {
-    opacity: 0;
-    transform: translateY(2rem);
-    filter: blur(4px);
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
     transition: opacity 0.9s cubic-bezier(0.32, 0.72, 0, 1),
                 transform 0.9s cubic-bezier(0.32, 0.72, 0, 1),
                 filter 0.7s cubic-bezier(0.32, 0.72, 0, 1);
     transition-delay: var(--reveal-delay, 0s);
   }
+  .js .reveal-up {
+    opacity: 0;
+    transform: translateY(2rem);
+    filter: blur(4px);
+  }
   .reveal-up--visible {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-up {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
   }
 
   /* ---- Cinematic Hero ---- */
@@ -408,10 +444,23 @@ const heroImage = course?.image_url || course?.header_image;
     min-height: min(85dvh, 700px);
     display: flex;
     align-items: flex-end;
-    background-size: cover;
-    background-position: center 30%;
     background-color: #0f1117;
     overflow: hidden;
+  }
+  /* Blurred backdrop — the background image lives on its own layer so the
+     blur applies to the image itself. This works in every browser, unlike
+     `backdrop-filter` on the overlay, which Safari does not apply to the
+     parent element's background. The scale hides edge bleed from the blur. */
+  .course-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--hero-image, none);
+    background-size: cover;
+    background-position: center 30%;
+    filter: blur(14px) saturate(1.05);
+    transform: scale(1.12);
+    z-index: 0;
   }
   .course-hero__overlay {
     position: absolute;
@@ -454,9 +503,10 @@ const heroImage = course?.image_url || course?.header_image;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.85);
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(20, 24, 32, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 100px;
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
   .course-hero__title {
@@ -488,7 +538,8 @@ const heroImage = course?.image_url || course?.header_image;
     display: flex;
     gap: 2rem;
     padding: 1.25rem 1.75rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(20, 24, 32, 0.74);
+    -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--course-radius-lg);

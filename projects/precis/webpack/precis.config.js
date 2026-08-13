@@ -48,8 +48,13 @@ module.exports = createConfig({
   },
 
   // ── Output ───────────────────────────────────────────────────────────
-  outputPath: 'assets/bundles',
-  outputPublic: '/static/bundles/',
+  // The backend pipeline (configs/base/assets.py) computes SITE_NAME from
+  // BASE_DIR.name = 'precis' and expects bundles under
+  // assets/bundles/<site-name>/ so collectstatic serves them at
+  // /static/bundles/precis/* and WEBPACK_LOADER/FUSION_ASSET_PIPELINE find
+  // their stats file at assets/bundles/precis/bundles.json.
+  outputPath: 'assets/bundles/precis',
+  outputPublic: '/static/bundles/precis/',
 
   // ── Resolve aliases ──────────────────────────────────────────────────
   aliases: {

@@ -5,7 +5,6 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import LiveFragment from '@/components/ui/LiveFragment.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -61,7 +60,9 @@ const capabilities = pageFeatures?.map((f: any) => ({
 
   {pageTestimonials?.length ? <Testimonials testimonials={pageTestimonials.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} /> : null}
   {pageFaq?.length ? <FAQ items={pageFaq.map((f: any) => ({ question: String(f.question || ''), answer: String(f.answer || '') }))} /> : null}
-  <LiveFragment route='/features/' />
+  <!-- All feature content above is rendered from the same build-time page
+       data contract. Do not fetch the full `/features/` document into a
+       fragment target; that would nest the Astro shell. -->
   <CTA heading={pageCta?.title || 'Ship the document, not the app'} intro={pageCta?.subtitle || 'One HTTP response, finished HTML.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />
   <HtmxBootstrap />

@@ -24,7 +24,10 @@ const route = Astro.url.pathname;
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <link rel="icon" type="image/svg+xml" href="/Logo.svg" />
-    <link rel="alternate icon" type="image/png" href="/Logo.png" />
+    <!-- Keep the alternate icon on the same public asset contract. The
+         placeholder SVG is intentional until a raster brand export is
+         supplied; referencing a missing Logo.png creates a noisy 404. -->
+    <link rel="alternate icon" type="image/svg+xml" href="/Logo.png.placeholder.svg" />
     <meta name="description" content={description} />
     <title>{title} · Formint</title>
 

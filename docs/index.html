@@ -24,6 +24,11 @@
     window.$docsify = {
       name: 'Structa Cloud',
       repo: 'https://github.com/mammhoud/structa.cloud',
+      // Served under the shared media host at /docs/ (see
+      // applications/proxy/nginx/default.conf). History-mode routing
+      // requires the explicit basePath so markdown/sidebar fetches resolve
+      // under the subpath instead of the domain root.
+      basePath: '/docs/',
       loadSidebar: '_sidebar.md',
       subMaxLevel: 3,
       auto2top: true,

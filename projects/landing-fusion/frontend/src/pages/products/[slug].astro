@@ -11,15 +11,20 @@ import Toast from '@/components/ui/Toast.astro';
 import ProductLogo from '@/components/ui/ProductLogo.astro';
 import StackLinks from '@/components/ui/StackLinks.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
+import { SEEDED_FALLBACK_SLUGS } from '@/lib/seeded-routes';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const list = await fetchPageList();
-  // Only ProductPage children (formint-pos, lms, cms, …) get detail pages.
-  const slugs = list.pages
-    .filter((p) => p.type === 'ProductPage')
-    .map((p) => p.slug);
-  return slugs.map((slug) => ({ params: { slug } }));
+  try {
+    const list = await fetchPageList();
+    const slugs = list.pages
+      .filter((p) => p.type === 'ProductPage')
+      .map((p) => p.slug);
+    if (slugs.length) return slugs.map((slug) => ({ params: { slug } }));
+  } catch {
+    // The backend may be starting after the Astro build.
+  }
+  return SEEDED_FALLBACK_SLUGS.products.map((slug) => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
@@ -31,8 +36,23 @@ try {
   [siteSettings, navData, pageData] = await Promise.all([
     cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
   ]);
-} catch (error) {
-  throw new Error(`Unable to load product page ${slug}: ${String(error)}`);
+} catch {
+  // Keep the known route renderable during a backend-first restart. The live
+  // Wagtail payload remains authoritative whenever it is reachable.
+  pageData = {
+    id: 0,
+    slug: slug!,
+    title: slug!.replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+    type: 'ProductPage',
+    show_in_nav: false,
+    seo_title: slug!,
+    search_description: 'Product details are temporarily unavailable.',
+    hero: {
+      badge: 'product · preview',
+      title: 'Product preview',
+      subtitle: 'The content service is restarting. Please refresh shortly for the full product dossier.',
+    },
+  };
 }
 
 const pageHero = pageData?.hero;

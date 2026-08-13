@@ -37,17 +37,11 @@ const initialNewEmployee: NewEmployee = {
   phone: null,
   email: null,
   employee_type_id: 0,
-  salary: 0,
   joined_at: null,
   address: null,
   date_of_birth: null,
   national_id: null,
   emergency_contact: null,
-  pay_frequency: 'monthly',
-  hourly_rate: 0,
-  bank_name: null,
-  bank_account: null,
-  tax_number: null,
   notes: null,
 };
 
@@ -138,11 +132,6 @@ export default function Employees() {
     return true;
   });
 
-  // ── Salary summary ──
-  const monthlySalaryTotal = employees
-    .filter(e => e.is_active)
-    .reduce((sum, e) => sum + e.salary, 0);
-
   // ── Employee CRUD (unified add/edit modal) ──
   const openAddEmployee = () => {
     setEmployeeForm({ ...initialNewEmployee });
@@ -155,17 +144,11 @@ export default function Employees() {
       phone: emp.phone ?? null,
       email: emp.email ?? null,
       employee_type_id: emp.employee_type_id,
-      salary: emp.salary,
       joined_at: emp.joined_at ?? null,
       address: emp.address ?? null,
       date_of_birth: emp.date_of_birth ?? null,
       national_id: emp.national_id ?? null,
       emergency_contact: emp.emergency_contact ?? null,
-      pay_frequency: emp.pay_frequency || 'monthly',
-      hourly_rate: emp.hourly_rate ?? 0,
-      bank_name: emp.bank_name ?? null,
-      bank_account: emp.bank_account ?? null,
-      tax_number: emp.tax_number ?? null,
       notes: emp.notes ?? null,
     });
     setEmployeeModal({ mode: 'edit', employee: emp });
@@ -182,17 +165,11 @@ export default function Employees() {
       phone: employeeForm.phone || null,
       email: employeeForm.email || null,
       employee_type_id: employeeForm.employee_type_id,
-      salary: employeeForm.salary,
       joined_at: employeeForm.joined_at || null,
       address: employeeForm.address || null,
       date_of_birth: employeeForm.date_of_birth || null,
       national_id: employeeForm.national_id || null,
       emergency_contact: employeeForm.emergency_contact || null,
-      pay_frequency: employeeForm.pay_frequency || 'monthly',
-      hourly_rate: employeeForm.hourly_rate ?? 0,
-      bank_name: employeeForm.bank_name || null,
-      bank_account: employeeForm.bank_account || null,
-      tax_number: employeeForm.tax_number || null,
       notes: employeeForm.notes || null,
     };
     try {
@@ -298,9 +275,9 @@ export default function Employees() {
       title={<><span className="ri-group-line text-info" /> Employees</>}
       background="bg-linear-to-br from-base-200 via-info/10 to-base-200"
     >
-
+      <>
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 mb-6">
           <Card>
             <h2 className="text-base-content/80 text-sm">{t('employees.totalEmployees')}</h2>
             <p className="text-2xl font-bold text-base-content">{employees.filter(e => e.is_active).length}</p>
@@ -308,18 +285,6 @@ export default function Employees() {
           <Card>
             <h2 className="text-base-content/80 text-sm">{t('employees.employeeTypes')}</h2>
             <p className="text-2xl font-bold text-info">{employeeTypes.filter(t => t.is_active).length}</p>
-          </Card>
-          <Card>
-            <h2 className="text-base-content/80 text-sm">{t('employees.monthlySalary')}</h2>
-            <p className="text-2xl font-bold text-success">{monthlySalaryTotal.toLocaleString()}</p>
-          </Card>
-          <Card>
-            <h2 className="text-base-content/80 text-sm">{t('employees.avgSalary')}</h2>
-            <p className="text-2xl font-bold text-secondary">
-              {employees.filter(e => e.is_active).length > 0
-                ? Math.round(monthlySalaryTotal / employees.filter(e => e.is_active).length).toLocaleString()
-                : 0}
-            </p>
           </Card>
         </div>
 
@@ -425,7 +390,6 @@ export default function Employees() {
                       <th className="px-4 py-3 font-medium">{t('employees.type') || 'Type'}</th>
                       <th className="px-4 py-3 font-medium">{t('employees.phone')}</th>
                       <th className="px-4 py-3 font-medium">{t('employees.email')}</th>
-                      <th className="px-4 py-3 font-medium text-right">{t('employees.salary')}</th>
                       <th className="px-4 py-3 font-medium">{t('employees.status') || 'Status'}</th>
                       <th className="px-4 py-3 font-medium text-right">{t('common.actions') || 'Actions'}</th>
                     </tr>
@@ -448,7 +412,6 @@ export default function Employees() {
                         <td className="px-4 py-3 text-base-content/70">{getTypeName(emp.employee_type_id)}</td>
                         <td className="px-4 py-3 text-base-content/70">{emp.phone || '-'}</td>
                         <td className="px-4 py-3 text-base-content/70">{emp.email || '-'}</td>
-                        <td className="px-4 py-3 text-right tabular-nums text-base-content">{emp.salary.toLocaleString()}</td>
                         <td className="px-4 py-3">
                           {emp.is_active ? (
                             <Badge className="border-success/30 bg-success/15 text-success">
@@ -487,7 +450,7 @@ export default function Employees() {
                     ))}
                     {filteredEmployees.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="px-4 py-8 text-center text-base-content/60">
+                        <td colSpan={6} className="px-4 py-8 text-center text-base-content/60">
                           {t('employees.noEmployees')}
                         </td>
                       </tr>
@@ -539,13 +502,6 @@ export default function Employees() {
                     </div>
 
                     <div className="space-y-1.5 text-sm">
-                      <div className="flex items-center gap-2 text-base-content/60">
-                        <span className="ri-money-dollar-box-line text-success w-3.5 h-3.5" />
-                        <span>{t('employees.salary')}: <strong className="text-base-content">{emp.salary.toLocaleString()}</strong></span>
-                        <span className="ml-auto px-2 py-0.5 rounded-full bg-base-300/50 text-[10px] font-semibold uppercase tracking-wide">
-                          {emp.pay_frequency === 'hourly' ? (t('employees.payFrequencyHourly') || 'Hourly') : (t('employees.payFrequencyMonthly') || 'Monthly')}
-                        </span>
-                      </div>
                       {emp.phone && (
                         <div className="flex items-center gap-2 text-base-content/60">
                           <span className="ri-phone-line text-info/70 w-3.5 h-3.5" />
@@ -568,12 +524,6 @@ export default function Employees() {
                         <div className="flex items-center gap-2 text-base-content/60">
                           <span className="ri-map-pin-line text-secondary/70 w-3.5 h-3.5" />
                           <span className="truncate">{emp.address}</span>
-                        </div>
-                      )}
-                      {emp.bank_name && (
-                        <div className="flex items-center gap-2 text-base-content/60">
-                          <span className="ri-landmark-line text-primary/70 w-3.5 h-3.5" />
-                          <span className="truncate">{emp.bank_name}{emp.bank_account ? ` · ${emp.bank_account}` : ''}</span>
                         </div>
                       )}
                     </div>
@@ -665,8 +615,9 @@ export default function Employees() {
             </div>
           </div>
         )}
+      </>
 
-      {/* Unified Add/Edit Employee wizard — 4-step form (personal → contact → role → salary & payroll) */}
+      {/* Unified Add/Edit Employee wizard — personal → contact → role */
       <EmployeeWizard
         isOpen={!!employeeModal}
         onClose={closeEmployeeModal}
@@ -681,7 +632,7 @@ export default function Employees() {
         contentTestId="employee-form-modal"
       />
 
-      {/* Employee detail — full profile, payroll history, audit trail */}
+      {/* Employee detail — profile and audit trail */
       <EmployeeDetail
         employee={detailEmployee}
         employeeTypes={employeeTypes}

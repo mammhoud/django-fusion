@@ -7,44 +7,37 @@ are populated correctly.
 
 Usage::
 
-    # Load test fixtures (locales → users → pages → site)
-    python manage.py load_fusion_fixtures
+    # Load the canonical dump-data.json fixture (locales → users →
+    # content types → pages → site → homepage blocks)
+    python manage.py load_fusion_fixtures --category canonical
 
-    # Load everything including seed content
+    # Same as --category canonical (used by CI)
     python manage.py load_fusion_fixtures --full
-
-    # Load only a specific category
-    python manage.py load_fusion_fixtures --category test
-    python manage.py load_fusion_fixtures --category seed
-    python manage.py load_fusion_fixtures --category production
-    python manage.py load_fusion_fixtures --category by-model
-
-    # Preview without loading
-    python manage.py load_fusion_fixtures --dry-run
-    python manage.py load_fusion_fixtures --full --dry-run
+    python manage.py load_fusion_fixtures --category all
 
     # Load a single fixture file
-    python manage.py load_fusion_fixtures --fixture test/locales.json
+    python manage.py load_fusion_fixtures --fixture dump-data.json
 
-    # Skip missing fixture files
-    python manage.py load_fusion_fixtures --full --skip-missing
+    # Preview without loading
+    python manage.py load_fusion_fixtures --category canonical --dry-run
+    python manage.py load_fusion_fixtures --full --dry-run
 
-Fixture dependency order
-------------------------
+    # Skip missing fixture files (only relevant for legacy categories)
+    python manage.py load_fusion_fixtures --category legacy --skip-missing
 
-1. **locales** — Language records (en, ar, fr, de, es, pt-br)
-2. **users** — User accounts (needed for page ownership)
-3. **initial_choices** — Content type choices and Wagtail image records
-4. **pages** — Wagtail page tree (home, about, contact, team, courses)
-   *Note:* Page records reference ``locale`` FK, so locales must be loaded first.
-5. **site** — Wagtail site configuration (points ``root_page`` to the home page PK=3)
-   *Note:* The site record is loaded *after* pages so the ``root_page`` FK resolves.
-   In earlier revisions this record lived inside ``locales.json``, creating a circular
-   dependency (locales needed pages for the site FK, pages needed locales for the
-   locale FK). It is now in its own file loaded after all other dependencies.
-6. **seed content** — Homepage blocks (sliders, features, about, CTA)
-7. **by-model** — Individual model dumps (auth, wagtailcore, handlers, modules)
-8. **production** — Cleaned production dumps (locales + pages)
+Fixture categories
+------------------
+
+Only ``dump-data.json`` is shipped with the active Precis project. The
+``canonical`` category (and ``--full`` / ``--category all``) loads it.
+
+Legacy categories (``test``, ``legacy``, ``seed``, ``production``,
+``by-model``) reference historical CMS Fusion fixture paths that are not
+shipped here; they exist so a checked-out legacy archive can still be
+loaded explicitly with ``--skip-missing`` or ``--dir``. The default
+``--category test`` is intentionally a safe no-op rather than silently
+loading the historical dump — use ``--category canonical`` or
+``--fixture dump-data.json`` explicitly.
 """
 from __future__ import annotations
 
@@ -62,7 +55,16 @@ FIXTURE_DIR = Path(__file__).resolve().parents[4] / "assets" / "fixtures"
 # ── Fixture categories with dependency-ordered paths ─────────────────
 
 FIXTURE_CATEGORIES: dict[str, list[str]] = {
-    "test": [
+    # The active Precis project keeps one canonical export at the fixture root.
+    # Older categorized paths are intentionally not guessed here: they are not
+    # shipped with this project and the historical dump contains legacy model
+    # labels, so loading it must remain explicit via --fixture.
+    # No categorized test fixture bundle is shipped in this project. Keep the
+    # default command a safe no-op rather than silently loading the historical
+    # dump; use --category canonical or --fixture dump-data.json explicitly.
+    "test": [],
+    "canonical": ["dump-data.json"],
+    "legacy": [
         # Locales first — pages reference locale FK
         "test/locales.json",
         # Users needed for page ownership
@@ -72,7 +74,6 @@ FIXTURE_CATEGORIES: dict[str, list[str]] = {
         # Page tree — depends on locales existing
         "test/pages.json",
         # Site config — depends on page PK=3 existing (referenced as root_page)
-        # Split from locales.json to break the circular dependency.
         "test/site.json",
     ],
     "seed": [
@@ -102,9 +103,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "-c", "--category",
-            choices=["test", "seed", "production", "by-model", "all"],
+            choices=["test", "canonical", "legacy", "seed", "production", "by-model", "all"],
             default="test",
-            help="Fixture category to load (default: test). Use 'all' for everything.",
+            help="Fixture category to load (default: test, which is empty here). Use 'canonical' for dump-data.json.",
         )
         parser.add_argument(
             "--full",
@@ -160,9 +161,12 @@ class Command(BaseCommand):
                     "--full and --category are mutually exclusive. "
                     "Use --full alone or --category <name> alone."
                 )
-            categories = ["test", "seed"]
+            # In the active project the canonical dump is the only shipped
+            # fixture. Keep --full useful for CI without inventing absent
+            # historical seed directories.
+            categories = ["canonical"]
         elif options["category"] == "all":
-            categories = list(FIXTURE_CATEGORIES.keys())
+            categories = ["canonical"]
         else:
             categories = [options["category"]]
 

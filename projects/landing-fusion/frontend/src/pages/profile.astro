@@ -49,6 +49,16 @@ try {
             } catch (e) { /* offline */ }
             finally { this.loading = false; }
           },
+          async logout() {
+            try {
+              await fetch(window.__FUSION_AUTH?.logout || '/api/auth/browser/v1/auth/session', {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: { Accept: 'application/json' },
+              });
+            } catch (e) { /* best effort */ }
+            window.location.href = '/';
+          },
         }"
       >
         <!-- Loading state -->
@@ -102,7 +112,7 @@ try {
                   <h2 class="font-display text-xl font-semibold text-fu-ink" x-text="user?.display"></h2>
                   <p class="text-sm text-fu-muted" x-text="user?.email"></p>
                 </div>
-                <a href="/accounts/logout/" class="ml-auto btn-secondary !h-9 !px-4 !py-0 text-[0.85rem]">Sign out</a>
+                <button type="button" class="ml-auto btn-secondary !h-9 !px-4 !py-0 text-[0.85rem]" @click="logout()">Sign out</button>
               </div>
             </div>
 

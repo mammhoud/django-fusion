@@ -175,6 +175,17 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>(STATIC_EXCHANGE_RATES);
 
   useEffect(() => {
+    // Browser/deployed Cloud mode has no Tauri IPC bridge. Keep the static
+    // USD defaults and finish loading cleanly; the native desktop shell will
+    // still hydrate settings through invoke below.
+    const isE2EAuthBypass =
+      typeof window !== 'undefined' &&
+      window.localStorage.getItem('formint-e2e-auth-bypass') === 'true';
+    if (typeof window !== 'undefined' && !('__TAURI_INTERNALS__' in window) && isE2EAuthBypass) {
+      setIsLoading(false);
+      return;
+    }
+
     invoke<{ currency?: string; exchange_rates?: Record<string, number> }>('get_settings')
       .then((settings) => {
         if (settings?.currency) {

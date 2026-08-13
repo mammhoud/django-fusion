@@ -21,6 +21,7 @@ from wagtail.models import Locale, Page, Site
 
 logger = logging.getLogger(__name__)
 
+from apps.content.models.translations import PageTranslation
 from apps.pages.models import (
     AboutPage,
     BlogPage,
@@ -31,17 +32,16 @@ from apps.pages.models import (
     FeaturesPage,
     FounderPage,
     HomePage,
+    PhasePage,
     PricingPage,
     PrivacyPage,
     ProductPage,
     ProductsPage,
+    PromptPage,
     ServicesPage,
     StartupPage,
-    PhasePage,
-    PromptPage,
     TeamPage,
 )
-from apps.content.models.translations import PageTranslation
 
 # Bilingual overlays are deliberately partial: untranslated fields continue to
 # use the canonical Wagtail content through the API fallback contract.
@@ -2455,6 +2455,7 @@ class Command(BaseCommand):
                 "into one list — each product IS a project in this repo.</p>"
             ),
             projects=[],
+            faq=DEFAULT_FAQ_SECTIONS["faq"],
             **DEFAULT_ABOUT_SECTIONS,
         )
         self._created(created, "products")
@@ -2471,6 +2472,10 @@ class Command(BaseCommand):
                 self.stdout.write("Removed stale product page: forge-pos")
             else:
                 stale_forge.slug = "formint-pos"
+                # Legacy snippets are forbidden by ProductPage.clean(); clear
+                # them before the rename save runs full_clean().
+                if stale_forge.snippets:
+                    stale_forge.snippets = []
                 stale_forge.save()
                 self.stdout.write("Renamed product page: forge-pos → formint-pos")
 
@@ -2595,10 +2600,11 @@ class Command(BaseCommand):
                 title=post.get("title", ""),
                 category=post.get("category", ""),
                 post_date=post.get("date") or None,
-                read_time=post.get("read_time", ""),                 excerpt=post.get("excerpt", ""),
-                 seo_title=post.get("seo_title", ""),
-                 search_description=post.get("search_description", ""),
-                 hero_screenshot_url=post.get("hero_screenshot_url", ""),
+                read_time=post.get("read_time", ""),
+                excerpt=post.get("excerpt", ""),
+                seo_title=post.get("seo_title", ""),
+                search_description=post.get("search_description", ""),
+                hero_screenshot_url=post.get("hero_screenshot_url", ""),
 
                 body=DEFAULT_BLOG_POST_BODIES.get(slug, ""),
                 variants=DEFAULT_BLOG_POST_VARIANTS.get(slug, []),
@@ -2866,6 +2872,7 @@ class Command(BaseCommand):
         self._seed_wagtail_locales()
         self._seed_site_languages()
         self._seed_page_translations()
+        self._seed_product_snippets()
         self.stdout.write(self.style.SUCCESS("✅ Landing pages seeded."))
 
     def _seed_wagtail_locales(self):
@@ -2959,6 +2966,90 @@ class Command(BaseCommand):
                             changed = True
                     if changed:
                         translation.save(update_fields=["title", "search_description", "body", "content", "updated_at"])
+
+    def _seed_product_snippets(self):
+        """Create/update the editor-managed ``Product`` snippet catalog.
+
+        Each seeded ``ProductPage`` gets a matching catalog snippet (the
+        catalog-of-record for language filtering + unified-currency pricing).
+        The English record carries the full identity from the product page;
+        language variants (currently Arabic) reuse the page title so the
+        language filter has real, non-duplicated rows to show. Idempotent:
+        existing rows keep editor changes unless ``--force`` refreshes the
+        seeded fields.
+        """
+        from apps.content.models.products import Product
+
+        base_price_by_slug = {
+            "formint-pos": "119.00",
+            "lms": "79.00",
+            "cms": "79.00",
+            "cypercloud": "0.00",
+            "vresume": "29.00",
+            "ceptor-ai": "0.00",
+        }
+        try:
+            for slug, product in DEFAULT_PRODUCT_PAGES.items():
+                title = product.get("title", slug.replace("-", " ").title())
+                category = product.get("category", "application")
+                if category not in ("application", "platform", "library"):
+                    category = "application"
+                version = product.get("version", "")
+                defaults = {
+                    "title": title,
+                    "short_description": product.get("tagline", ""),
+                    "description": product.get("body", ""),
+                    "category": category,
+                    "language": "en",
+                    "price": base_price_by_slug.get(slug, "0.00"),
+                    "version": version,
+                    "status": "development" if "beta" in version.lower() else "live",
+                    "is_published": True,
+                    "is_featured": slug in ("formint-pos", "lms"),
+                }
+                item, created = Product.objects.get_or_create(slug=slug, defaults=defaults)
+                if not created and self.force:
+                    changed = False
+                    for field, value in defaults.items():
+                        if getattr(item, field) != value:
+                            setattr(item, field, value)
+                            changed = True
+                    if changed:
+                        item.save(update_fields=list(defaults.keys()) + ["updated_at"])
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"Seeded product snippet {slug} (en)."))
+                # Arabic variant — title is the only language-specific field;
+                # everything else falls back to the English record via the API.
+                ar_title = self._product_title_ar(slug, title)
+                if ar_title and ar_title != title:
+                    ar_defaults = {
+                        **defaults,
+                        "title": ar_title,
+                        "language": "ar",
+                        "slug": f"{slug}-ar",
+                        # Arabic rows link to the canonical English product page.
+                        "detail_slug": slug,
+                    }
+                    ar_item, ar_created = Product.objects.get_or_create(
+                        slug=ar_defaults["slug"], defaults=ar_defaults
+                    )
+                    if ar_created:
+                        self.stdout.write(self.style.SUCCESS(f"Seeded product snippet {slug} (ar)."))
+        except Exception as exc:
+            logger.exception("Product snippet seed failed")
+            raise CommandError("Unable to seed product snippets") from exc
+
+    @staticmethod
+    def _product_title_ar(slug: str, en_title: str) -> str:
+        """Arabic catalog title for a seeded product (fallback keeps English)."""
+        return {
+            "formint-pos": "فورمينتس",
+            "lms": "بريسيس إل إم إس",
+            "cms": "فيوجن سي إم إس",
+            "cypercloud": "سايبر كلاود",
+            "vresume": "فيريسوم",
+            "ceptor-ai": "سيبتور إيه آي",
+        }.get(slug, en_title)
 
     # ── Helpers ─────────────────────────────────────────────────────
     def _get_or_create_child(self, parent, model, **fields):
@@ -3075,6 +3166,12 @@ class Command(BaseCommand):
                     value["preview_images"] = preview_images
                     changed = True
 
+        # Legacy snippets are forbidden by ProductPage.clean(); clear any
+        # stale row before the refresh save runs full_clean().
+        if existing.snippets:
+            existing.snippets = []
+            changed = True
+
         if changed:
             existing.editions = raw_editions
             existing.gallery = raw_gallery
@@ -3106,6 +3203,15 @@ class Command(BaseCommand):
             if self.force or (not current and value):
                 setattr(existing, name, value)
                 changed = True
+        # ProductPage.clean() forbids non-empty ``snippets`` (code sections
+        # are authored only on blog posts) and the page API strips them from
+        # product payloads, but older seed revisions persisted snippet blocks
+        # into product rows. Clear that dead data whenever a product page is
+        # saved so stale rows stop raising ValidationError inside
+        # save() → full_clean() on every seed run.
+        if isinstance(existing, ProductPage) and existing.snippets:
+            existing.snippets = []
+            changed = True
         if changed:
             existing.save()
         return changed

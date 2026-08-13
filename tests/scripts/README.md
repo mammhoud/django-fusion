@@ -18,9 +18,6 @@ applications/scripts/
 tests/scripts/
 ├── README.md                    (this file)
 ├── Makefile                     (Test targets)
-├── deployment/                  (Production deployment)
-│   ├── deploy-production.sh
-│   └── verify-deployment.sh
 ├── validation/                  (System validation)
 │   ├── test_production.py
 │   ├── test_production_simple.py
@@ -41,10 +38,6 @@ tests/scripts/
 ```
 
 ## Categories
-
-### Deployment Scripts
-- `deploy-production.sh` - Deploy to production
-- `verify-deployment.sh` - Verify deployment success
 
 ### Validation Scripts
 - `test_production.py` - Production tests
@@ -82,7 +75,6 @@ make test
 ### Run Specific Script
 ```bash
 python tests/scripts/validation/test_production.py
-bash tests/scripts/deployment/deploy-production.sh
 bash applications/scripts/run_domain_tests.sh
 ```
 

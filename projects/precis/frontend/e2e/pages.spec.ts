@@ -15,6 +15,8 @@ const PAGES: Array<[string, RegExp | null]> = [
   ['/contact/', /touch|contact/i],
   ['/privacy/', /privacy/i],
   ['/projects/', null], // hero copy: "Everything we build, shipped as…"
+  ['/profile/', /profile|sign in|progress/i],
+  ['/blog/why-landing-pages-as-documents/', null],
 ];
 
 for (const [path, headingPattern] of PAGES) {

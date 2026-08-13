@@ -54,8 +54,7 @@ compose/
 ├── docker-compose.warehouse.yml   # PostgreSQL, Redis, Celery definitions
 ├── docker-compose.tasks.yml       # Shared task workers
 ├── docker-compose.traefik.yml     # Traefik edge proxy
-├── docker-compose.nginx.yml       # Optional Nginx static/media proxy
-├── docker-compose.docs.yml        # Docs service
+├── docker-compose.nginx.yml       # Optional Nginx static/media proxy (also hosts the docs service)
 ├── django/                        # Application image, entrypoint, start scripts
 ├── postgres/                      # PostgreSQL image and maintenance scripts
 ├── traefik/                       # Static and dynamic Traefik config

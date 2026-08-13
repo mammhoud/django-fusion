@@ -6,7 +6,6 @@ export interface Product {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
-  prepare_time_minutes?: number;
   barcode?: string | null;
   description?: string | null;
   /** Comma-separated order types this product is available for ('' = all). */
@@ -20,7 +19,6 @@ export interface NewProduct {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
-  prepare_time_minutes?: number;
   barcode?: string | null;
   description?: string | null;
   available_order_types?: string;
@@ -33,7 +31,6 @@ export interface UpdateProductPayload {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
-  prepare_time_minutes?: number;
   barcode?: string | null;
   description?: string | null;
   available_order_types?: string;
@@ -126,19 +123,13 @@ export interface Employee {
   phone?: string;
   email?: string;
   employee_type_id: number;
-  salary: number;
   is_active: boolean;
   joined_at?: string;
-  // ---- Employee detail & payroll fields (wizard) ----
+  // Optional profile details retained by the local employee record.
   address?: string | null;
   date_of_birth?: string | null;
   national_id?: string | null;
   emergency_contact?: string | null;
-  pay_frequency?: string;
-  hourly_rate?: number;
-  bank_name?: string | null;
-  bank_account?: string | null;
-  tax_number?: string | null;
   notes?: string | null;
 }
 
@@ -147,17 +138,11 @@ export interface NewEmployee {
   phone?: string | null;
   email?: string | null;
   employee_type_id: number;
-  salary: number;
   joined_at?: string | null;
   address?: string | null;
   date_of_birth?: string | null;
   national_id?: string | null;
   emergency_contact?: string | null;
-  pay_frequency?: string;
-  hourly_rate?: number;
-  bank_name?: string | null;
-  bank_account?: string | null;
-  tax_number?: string | null;
   notes?: string | null;
 }
 
@@ -440,17 +425,6 @@ export interface PurchaseOrderItem {
   received_quantity: number;
 }
 
-export interface KitchenTicket {
-  id: number;
-  sale_id: number;
-  status: string;
-  priority: number;
-  prepare_time_minutes: number;
-  notes?: string | null;
-  created_at: string;
-  completed_at?: string | null;
-}
-
 export interface Customer {
   id: number;
   name: string;
@@ -607,19 +581,6 @@ export interface EmployeeSchedule {
   shift_end: string;
   status: string;
   notes?: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Payroll {
-  id: number;
-  employee_id: number;
-  period_start: string;
-  period_end: string;
-  regular_hours: number;
-  overtime_hours: number;
-  total_pay: number;
-  status: string;
   created_at: string;
   updated_at: string;
 }

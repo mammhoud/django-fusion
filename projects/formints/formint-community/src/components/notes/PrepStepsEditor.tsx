@@ -11,7 +11,7 @@ interface PrepStepsEditorProps {
 /**
  * Structured editor for "preparation" notes — a dynamic list of steps where
  * each step has a title + optional details. Used by the Notes page form and by
- * the quick-add note forms on KDS / Sale.
+ * the quick-add note forms on Sale.
  */
 export default function PrepStepsEditor({ value, onChange, compact = false }: PrepStepsEditorProps) {
   const { t } = useTranslation();

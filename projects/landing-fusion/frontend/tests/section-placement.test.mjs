@@ -6,7 +6,8 @@
  * (apps/pages/management/commands/seed_pages.py) and that each page shows
  * exactly the sections its design intends:
  *
- *   - `/`        (Home)    — hero + CTA + backend-owned course preview; no framework demo
+ *   - `/`        (Home)    — hero + CTA only; no course preview (the /learning/
+ *     catalog page is the single course destination) and no framework demo
  *   - `/about`   (About)   — full document: stats, features, testimonials, faq, cta
  *   - `/features`          — capabilities + testimonials + faq
  *   - `/products`          — stats + the six product lines
@@ -86,7 +87,7 @@ const fullDocumentMarkers = [
   '>503<',                             // ContentError cards must never render
 ];
 
-test('home is a focused hero + course preview entry page with seeded hero/CTA', () => {
+test('home is a focused hero + CTA entry page with seeded hero/CTA', () => {
   // Seeded hero: title "Digital products, shipped as" + accent "documents".
   assert.match(home, /Digital products, shipped as/);
   assert.match(home, /documents/);
@@ -103,10 +104,15 @@ test('home is a focused hero + course preview entry page with seeded hero/CTA', 
   // The product dropdown is also curated from the same backend flag, so the
   // catalog-only and hidden records never leak into header navigation.
   assert.ok(!home.includes('/products/ceptor-ai/'), 'home should NOT link hidden ceptor-ai');
-  // The former framework demo is intentionally gone; learning now has a
-  // real backend-owned destination instead.
-  assert.match(home, /Learn by shipping\./);
-  assert.match(home, /Browse all courses/);
+  // The former framework demo is intentionally gone, and the full course
+  // preview was removed too (2026-08-12). The home now carries ONE quiet
+  // `[ LEARNING / PREVIEW ]` link card into /learning/ — but only on the
+  // live roads (Django fragment + data-API JSON), never statically, so it
+  // can never appear twice. The static build therefore has no learning
+  // markers at all (the live region is a skeleton until the client fetches).
+  assert.ok(!home.includes('Learn by shipping'), 'home should NOT carry a course preview section');
+  assert.ok(!home.includes('Browse all courses'), 'home should NOT carry the course preview CTA');
+  assert.ok(!home.includes('LEARNING / PUBLIC CATALOG'), 'home should NOT carry the catalog kicker');
   assert.ok(!home.includes('This page is the framework'), 'home should hide the framework demo heading');
   assert.ok(!home.includes('No React, no Vue, no Svelte'), 'home should hide implementation-pitch copy');
   assert.ok(!home.includes('/fragment/ping/'), 'home should not expose the old framework ping demo');

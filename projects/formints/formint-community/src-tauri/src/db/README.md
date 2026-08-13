@@ -43,9 +43,9 @@ PRAGMA synchronous=NORMAL;    -- safe with WAL, avoids fsync on every commit
 PRAGMA busy_timeout=5000;     -- wait up to 5 s instead of failing with SQLITE_BUSY
 ```
 
-Because operations open short-lived per-command connections (Sale, KDS,
-Settings, …), WAL prevents readers from blocking writers and keeps concurrent
-writes from deadlocking.
+Because operations open short-lived per-command connections (Sale, Settings,
+…), WAL prevents readers from blocking writers and keeps concurrent writes from
+deadlocking.
 
 ## Model Pattern
 
@@ -62,11 +62,10 @@ Each table has 3 structs:
 ```
 users, roles, user_roles, settings, categories, products,
 delivery_types, employee_types, employees, employee_schedules,
-payrolls, sales, sale_items, ingredients, recipe_types,
+sales, sale_items, ingredients, recipe_types,
 recipes, recipe_ingredients, inventory_transactions,
 inventory_adjustments, inventory_alerts, suppliers,
-purchase_orders, purchase_order_items, kitchen_tickets,
-customers, loyalty_transactions, receipt_templates,
+purchase_orders, purchase_order_items, customers, loyalty_transactions, receipt_templates,
 tax_reports, report_metadata
 ```
 

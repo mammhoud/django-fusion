@@ -6,10 +6,16 @@ import { cachedNavigation, cachedPageData, cachedSiteSettings, fetchPageList } f
 import type { NavigationData, PageData, SiteSettings } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const list = await fetchPageList();
-  return list.pages
-    .filter((page) => page.type === 'PhasePage')
-    .map((page) => ({ params: { slug: page.slug } }));
+  try {
+    const list = await fetchPageList();
+    const phases = list.pages
+      .filter((page) => page.type === 'PhasePage')
+      .map((page) => ({ params: { slug: page.slug } }));
+    if (phases.length) return phases;
+  } catch {
+    // The backend may be starting after the Astro build.
+  }
+  return [];
 }
 
 const { slug } = Astro.params;
