@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_shared_task_modules_import_without_celery_installed():
-    from www.worker.celery import app
+    from configs.tools.worker.celery import app
 
     assert app.main == "structa_shared_tasks"
 
@@ -22,7 +22,7 @@ def test_website_task_modules_reexport_shared_tasks():
         pytest.skip("dramatiq is not installed in this environment")
 
     task_file = (
-        ROOT / "projects" / "lms" / "cms" / "plugins" / "accounts" / "management" / "services" / "email" / "tasks.py"
+        ROOT / "projects" / "precis" / "backend" / "apps" / "pages" / "accounts" / "management" / "services" / "email" / "tasks.py"
     )
     assert task_file.exists(), f"Expected task file at {task_file}"
     spec = importlib.util.spec_from_file_location("ctc_email_tasks", task_file)
@@ -30,7 +30,7 @@ def test_website_task_modules_reexport_shared_tasks():
     assert spec.loader is not None
     spec.loader.exec_module(module)
 
-    from www.worker.email import send_email_task
+    from configs.tools.worker.email import send_email_task
 
     assert module.send_email_task is send_email_task
 
@@ -39,6 +39,6 @@ def test_shared_tasks_compose_file_documents_worker_and_beat():
     compose_file = ROOT / "applications" / "compose" / "docker-compose.tasks.yml"
     content = compose_file.read_text()
     assert "shared-worker" in content
-    assert "python manage.py rundramatiq" in content
+    assert "python lms-fusion/manage.py rundramatiq" in content
     assert "shared-scheduler" in content
-    assert "celery -A www.worker.celery:app beat" in content
+    assert "celery -A configs.tools.worker.celery:app beat" in content

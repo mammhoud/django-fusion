@@ -4,14 +4,14 @@
 {% block content %}
 <main>
     <!-- Page Title Section -->
-    {% comp "products/page_title.html" /%}
+    {% comp "products/page_title.html" page=page /%}
     
     <!-- Main Content Sections -->
     {% for block in page.body %}
         {% if block.block_type == 'products_section' %}
-            {% comp "products/products.html" /%}
+            {% comp "products/products.html" block=block /%}
         {% elif block.block_type == 'clients' %}
-            {% comp "products/clients.html" /%}
+            {% comp "products/clients.html" block=block /%}
         {% endif %}
     {% endfor %}
 </main>

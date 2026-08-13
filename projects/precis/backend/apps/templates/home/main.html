@@ -4,36 +4,36 @@
     {# ----------------------------- HEAD BLOCKS ----------------------------- #}
     {% for block in page.head %}
         {% if block.block_type == 'slider' %}
-            {% comp "home/sections/slider.html" /%}
+            {% comp "home/sections/slider.html" block=block /%}
         {% elif block.block_type == 'features' %}
-            {% comp "home/sections/features.html" /%}
+            {% comp "home/sections/features.html" block=block /%}
         {% elif block.block_type == 'about' %}
-            {% comp "home/sections/about.html" /%}
+            {% comp "home/sections/about.html" block=block /%}
         {% endif %}
     {% endfor %}
 
     {# --------------------------- SUMMARY BLOCKS --------------------------- #}
     {% for block in page.summary %}
         {% if block.block_type == 'about' %}
-            {% comp "home/sections/about.html" /%}
+            {% comp "home/sections/about.html" block=block /%}
         {% endif %}
 
         {% comment %} {% if block.block_type == 'team_section' %}
             {% comp "home/sections/team.html" / %} {% endcomment %}
         {% comment %} {% elif block.block_type == 'services_section' %}
-            {% comp "home/sections/services.html" / %}
+            {% comp "home/sections/services.html" block=block / %}
         {% endif %} {% endcomment %}
     {% endfor %}
 
-    {# ----------------------------- LISTING COURSES ----------------------------- #}            {% comp "home/sections/listing.html" /%}
+    {# ----------------------------- LISTING COURSES ----------------------------- #}            {% comp "home/sections/listing.html" block=block /%}
 
     {# ----------------------------- CTA BLOCKS ----------------------------- #}
 
     {% for block in page.CTA %}
         {% if block.block_type == 'clients' %}
-            {% comp "home/sections/clients.html" /%}
+            {% comp "home/sections/clients.html" block=block /%}
         {% elif block.block_type == 'why_choose_section' %}
-            {% comp "home/sections/why_choose.html" /%}
+            {% comp "home/sections/why_choose.html" block=block /%}
         {% elif block.block_type == 'contact_section' %}
             {% comp "contact.sections.card" block=block / %}
         {% endif %}

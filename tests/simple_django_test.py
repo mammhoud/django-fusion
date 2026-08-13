@@ -10,7 +10,7 @@ import sys
 import django
 
 # Setup Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'configs.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, '/app')
 
 try:

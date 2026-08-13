@@ -1,3 +1,8 @@
+# ── Root webpack build artifacts ───────────────────────────────────
+node_modules/
+assets/bundles/
+webpack-stats.json
+
 # Preserved rollback copy of the former Next.js frontend; do not package or commit.
 frontend-next-legacy/
 

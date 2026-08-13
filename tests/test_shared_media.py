@@ -25,11 +25,18 @@ import pytest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-CORE = PROJECT_ROOT / "core"
-PROXY = PROJECT_ROOT / "proxy"
-CTC = CORE / "ctc-research"
+PRECIS = PROJECT_ROOT / "projects" / "precis"
+PRECIS_ASSETS_CONFIG = PRECIS / "backend" / "configs" / "base" / "assets.py"
+PROXY = PROJECT_ROOT / "applications" / "proxy"
+CTC = PROJECT_ROOT / "projects" / "ctc-research"
 
 TEST_DOCKER = os.environ.get("TEST_DOCKER", "false").lower() == "true"
+
+# The former CTC shared-media topology is no longer part of this checkout.
+# Keep those historical checks available for a restored CTC fixture, but do
+# not report false failures when the retired project and its proxy layout are
+# absent. The Precis-local asset checks below remain active.
+LEGACY_CTC_AVAILABLE = CTC.exists()
 CTC_BASE_URL = os.environ.get("CTC_BASE_URL", "http://localhost:5070")
 
 
@@ -44,6 +51,10 @@ def _read(path: Path) -> str:
 
 # ── Shared-Media Configuration Tests ────────────────────────────────────────
 
+@pytest.mark.skipif(
+    not LEGACY_CTC_AVAILABLE,
+    reason="legacy CTC shared-media topology is not present in this checkout",
+)
 class TestSharedMediaConfiguration:
     """Static configuration checks that do not require a running server."""
 
@@ -118,26 +129,26 @@ class TestSharedMediaConfiguration:
 
     def test_ctc_django_static_root_points_to_staticfiles(self) -> None:
         """Django STATIC_ROOT must end in ctc-research/assets/staticfiles."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'STATIC_ROOT = str(settings.get("STATIC_ROOT", ASSETS_DIR / "staticfiles"))' in text
 
     def test_ctc_django_media_root_points_to_media(self) -> None:
         """Django MEDIA_ROOT must be derived from ctc-research/assets/media."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert "MEDIA_ROOT = str(MEDIA_DIR)" in text
         assert "MEDIA_DIR = ASSETS_DIR / \"media\"" in text
 
     def test_ctc_django_static_url_is_relative(self) -> None:
         """STATIC_URL must be a relative /static/ path for shared-media compatibility."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'STATIC_URL  = settings.get("STATIC_URL", "/static/")' in text
 
     def test_ctc_django_media_url_is_relative(self) -> None:
         """MEDIA_URL must be a relative /media/ path for shared-media compatibility."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'MEDIA_URL  = settings.get("MEDIA_URL", "/media/")' in text
 
@@ -167,32 +178,32 @@ class TestLocalMediaServing:
         assert settings.MEDIA_URL == "/media/"
 
     def test_static_root_default_in_assets_config(self) -> None:
-        """STATIC_ROOT default in projects/configs/base/assets.py must end with staticfiles."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        """STATIC_ROOT default in the Precis-local backend asset config must end with staticfiles."""
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'STATIC_ROOT = str(settings.get("STATIC_ROOT", ASSETS_DIR / "staticfiles"))' in text
 
     def test_media_root_in_assets_config(self) -> None:
-        """MEDIA_ROOT in projects/configs/base/assets.py must be derived from MEDIA_DIR."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        """MEDIA_ROOT in the Precis-local backend asset config must be derived from MEDIA_DIR."""
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert "MEDIA_ROOT = str(MEDIA_DIR)" in text
 
     def test_staticfiles_dirs_include_bundles_in_assets_config(self) -> None:
-        """STATICFILES_DIRS in projects/configs/base/assets.py must include the webpack bundles directory."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        """STATICFILES_DIRS in the Precis-local backend asset config must include the webpack bundles directory."""
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert '(f"bundles/{SITE_NAME}", SITE_BUNDLES_DIR)' in text
 
     def test_webpack_loader_bundle_dir_name_in_assets_config(self) -> None:
         """WEBPACK_LOADER BUNDLE_DIR_NAME in assets config must match the site bundle folder."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'BUNDLE_DIR_NAME: f"bundles/{SITE_NAME}/"' in text or 'BUNDLE_DIR_NAME": f"bundles/{SITE_NAME}/"' in text
 
     def test_webpack_loader_stats_file_in_assets_config(self) -> None:
         """WEBPACK_LOADER STATS_FILE in assets config must point to the site bundles.json."""
-        assets_py = CORE / "configs" / "base" / "assets.py"
+        assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'STATS_FILE:      str(_bundles_json)' in text or 'STATS_FILE":      str(_bundles_json)' in text
 

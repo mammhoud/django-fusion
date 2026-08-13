@@ -3,7 +3,7 @@
 
 {% for block in page.head %}
     {% if block.block_type == 'page_title' %}
-                {% comp "content.page_title" / %}
+                {% comp "content.page_title" block=block / %}
 
     {% endif %}
 {% endfor %}
@@ -11,6 +11,6 @@
     <!-- Main Content Sections -->
     {% for block in page.body %}
         {% if block.block_type == 'team_section' %}
-            {% comp "team/sections/team.html" /%}
+            {% comp "team/sections/team.html" block=block /%}
                 {% endif %}
     {% endfor %}

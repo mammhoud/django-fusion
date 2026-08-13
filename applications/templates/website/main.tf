@@ -148,7 +148,7 @@ resource "docker_container" "workspace" {
   env = [
     "CODER_AGENT_TOKEN=${coder_agent.main.token}",
     "CODER_AGENT_URL=http://172.18.0.11:7080",
-    "DATABASE_URL=postgres://${var.postgres_user}:${var.postgres_password}@${var.postgres_host}:${var.postgres_port}/${lower(data.coder_workspace.me.name)}",
+    "DATABASE_URL=postgresql://${var.postgres_user}:${replace(var.postgres_password, "@", "%40")}@${var.postgres_host}:${var.postgres_port}/${lower(data.coder_workspace.me.name)}",
     "REDIS_URL=redis://${var.redis_host}:${var.redis_port}/0",
     "DJANGO_SETTINGS_MODULE=settings",
     "DJANGO_DEBUG=1",

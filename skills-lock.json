@@ -1,6 +1,24 @@
 {
   "version": 1,
   "skills": {
+    "content-creator": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "marketing-skill/skills/content-creator/SKILL.md",
+      "computedHash": "408d010ab3a571a058cd301859f1d644db54e05bb65366e05f3a576180ce670c"
+    },
+    "content-production": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "marketing-skill/skills/content-production/SKILL.md",
+      "computedHash": "2ae038a33ec687865e93d1bbab102d000acd01e595ff74a98c8ae5434f29e8ac"
+    },
+    "content-strategy": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "marketing-skill/skills/content-strategy/SKILL.md",
+      "computedHash": "195c9620009edf383f852d89bc87891d6ee4fb8ea6194474d11db95d64898b37"
+    },
     "deployment-documentation": {
       "source": "aj-geddes/useful-ai-prompts",
       "sourceType": "github",
@@ -24,6 +42,12 @@
       "sourceType": "github",
       "skillPath": "data/skills/explore-data/SKILL.md",
       "computedHash": "eeb0f7d4b8a834f773253a3038ca41b38b5ce2c1706dd0a4f3f7b4a38ce819e3"
+    },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
     },
     "use-case-triage": {
       "source": "anthropics/claude-for-legal",

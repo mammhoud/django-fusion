@@ -1,3 +1,7 @@
+{% load i18n %}
+{% load static %}
+{% prop lesson %}
+
 <div class="video-container mb-4">
     <video id="player" playsinline controls data-poster="{% if lesson.thumbnail %}{{ lesson.thumbnail.url }}{% else %}{% static 'assets/images/course-placeholder.jpg' %}{% endif %}">
         {% if lesson.video_url %}

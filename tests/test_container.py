@@ -9,7 +9,7 @@ since we're testing the live production DB.
 import os
 import sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 os.environ.setdefault("RUNNING_ENV", "docker")
 os.environ.setdefault("SERVER_ENV", "production")
 os.environ.setdefault("ALLOWED_HOSTS", "*")

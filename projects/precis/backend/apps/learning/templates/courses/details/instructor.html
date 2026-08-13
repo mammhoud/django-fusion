@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% prop course %}
 {% if course.instructor.profile.avatar %}
     {% image course.instructor.profile.avatar fill-150x150 as avatar %}
 {% endif %}

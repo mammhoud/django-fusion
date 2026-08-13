@@ -1,7 +1,0 @@
-#!/bin/sh
-# Placeholder sidecar binary — built by `pnpm build:sidecar`
-# This placeholder satisfies Tauri's `externalBin` build validation
-# so that the `seed` binary and `vite` dev server can run without
-# a full PyInstaller build of the Python/Sanic sidecar.
-# Replace with the real binary via: pnpm build:sidecar
-exit 0

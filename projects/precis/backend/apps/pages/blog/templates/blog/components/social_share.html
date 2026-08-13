@@ -1,16 +1,20 @@
 {% load i18n %}
-{#
+{% comment %}
   Social Share Component
   Reusable sharing buttons for Twitter/X, Facebook, LinkedIn, WhatsApp, and Copy Link.
 
   Usage:
-    {% comp_include "blog/components/social_share.html" post=post %}
+    {% comp "blog/components/social_share.html" post=post / %}
 
   Optional context:
     share_title  - override the share title (defaults to post.title)
     share_url    - override the share URL (defaults to request.build_absolute_uri)
     heading      - set to False to hide the "Share this post" heading (default: True)
-#}
+{% endcomment %}
+{% prop post %}
+{% prop share_title default='' %}
+{% prop share_url default='' %}
+{% prop heading default=True %}
 {% with share_title=share_title|default:post.title heading=heading|default:True %}
 {% with share_url=share_url|default:request.build_absolute_uri %}
 <div class="social-share">

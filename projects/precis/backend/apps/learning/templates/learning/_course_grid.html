@@ -139,5 +139,5 @@ Used for displaying courses in grid layout
 
 {# Pagination #}
 {% if page_obj.has_other_pages %}
-  {% comp "courses/_pagination.html" / %}
+  {% comp "learning/_pagination.html" page_obj=page_obj / %}
 {% endif %}

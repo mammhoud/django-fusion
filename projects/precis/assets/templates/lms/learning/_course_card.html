@@ -5,6 +5,7 @@ Course Card Template
 Reusable course card component for both grid and list views.
 Displays: image, title, instructor, price, rating, enrollment button.
 {% endcomment %}
+{% prop course %}
 
 <article class="course-card">
   {# Course Image #}
@@ -12,7 +13,6 @@ Displays: image, title, instructor, price, rating, enrollment button.
     <div class="course-card__image">
       {% image course.image width-300 as img %}
         <img src="{{ img.url }}" alt="{{ course.title }}" loading="lazy">
-      {% endimage %}
       
       {# Discount Badge #}
       {% if course.is_discounted %}

@@ -1,6 +1,6 @@
 """Unit tests for www/worker/modules.py — constant definitions."""
 
-from www.worker.modules import TASK_MODULES
+from configs.tools.worker.modules import TASK_MODULES
 
 
 class TestBaseModulesConstants:

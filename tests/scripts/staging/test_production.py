@@ -85,19 +85,19 @@ class ProductionTester:
     def test_django_check(self):
         """Test Django system check."""
         return self.run_command([
-            'python', 'manage.py', 'check', '--settings=configs.settings'
+            'python', 'manage.py', 'check', '--settings=settings'
         ], "Django System Check")
 
     def test_migrations(self):
         """Test Django migrations."""
         return self.run_command([
-            'python', 'manage.py', 'migrate', '--settings=configs.settings', '--run-syncdb'
+            'python', 'manage.py', 'migrate', '--settings=settings', '--run-syncdb'
         ], "Django Migrations", timeout=300)
 
     def test_collectstatic(self):
         """Test static files collection."""
         return self.run_command([
-            'python', 'manage.py', 'collectstatic', '--noinput', '--settings=configs.settings'
+            'python', 'manage.py', 'collectstatic', '--noinput', '--settings=settings'
         ], "Collect Static Files")
 
     def test_django_shell(self):
@@ -112,7 +112,7 @@ with connection.cursor() as cursor:
 print("Django shell test completed successfully")
 """
         return self.run_command([
-            'python', 'manage.py', 'shell', '--settings=configs.settings', '-c', shell_command
+            'python', 'manage.py', 'shell', '--settings=settings', '-c', shell_command
         ], "Django Shell Test")
 
     def test_admin_pages(self):
@@ -124,7 +124,7 @@ print(f"Admin site registered models: {len(admin.site._registry)}")
 print("Admin test completed successfully")
 """
         return self.run_command([
-            'python', 'manage.py', 'shell', '--settings=configs.settings', '-c', admin_test
+            'python', 'manage.py', 'shell', '--settings=settings', '-c', admin_test
         ], "Django Admin Test")
 
     def test_wagtail_functionality(self):
@@ -141,7 +141,7 @@ except Exception as e:
     print(f"Wagtail test error: {e}")
 """
         return self.run_command([
-            'python', 'manage.py', 'shell', '--settings=configs.settings', '-c', wagtail_test
+            'python', 'manage.py', 'shell', '--settings=settings', '-c', wagtail_test
         ], "Wagtail CMS Test")
 
     def test_user_creation(self):
@@ -165,7 +165,7 @@ assert not User.objects.filter(username=username).exists()
 print("User cleanup successful")
 """
         return self.run_command([
-            'python', 'manage.py', 'shell', '--settings=configs.settings', '-c', user_test
+            'python', 'manage.py', 'shell', '--settings=settings', '-c', user_test
         ], "User Creation Test")
 
     def run_all_tests(self):

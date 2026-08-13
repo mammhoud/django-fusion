@@ -1,8 +1,8 @@
 {% load static %}
-{# ============================================================
+{% comment %}
    ceptor bubble chat widget
    Usage: {% comp_include "components/chat/bubble.html" chat_config=config %}
-   ============================================================ #}
+{% endcomment %}
 
 {% with config=chat_config|default:"{}" %}
 <div id="ceptor-chat-widget"

@@ -22,7 +22,7 @@
                     </nav>
 
                     <!-- Video Player Component -->
-                    {% comp 'learning/video_player.html' /%}
+                    {% comp 'learning/video_player.html' lesson=lesson /%}
 
                     <!-- Lesson Info -->
                     <div class="row align-items-center mb-4">
@@ -110,17 +110,17 @@
 
                         <!-- Resources Tab -->
                         <div class="tab-pane fade" id="resources" role="tabpanel">
-                            {% comp 'learning/lesson_resources.html' /%}
+                            {% comp 'learning/lesson_resources.html' lesson=lesson /%}
                         </div>
 
                         <!-- Discussion Tab -->
                         <div class="tab-pane fade" id="discussion" role="tabpanel">
-                            {% comp 'learning/discussion_comments.html' /%}
+                            {% comp 'learning/discussion_comments.html' lesson=lesson comments=comments comment_form=comment_form reply_form=reply_form /%}
                         </div>
 
                         <!-- Notes Tab -->
                         <div class="tab-pane fade" id="notes" role="tabpanel">
-                            {% comp 'learning/lesson_notes.html' /%}
+                            {% comp 'learning/lesson_notes.html' lesson=lesson user_notes=user_notes /%}
                         </div>
                     </div>
                 </div>
@@ -128,7 +128,7 @@
 
             <!-- Sidebar Column -->
             <div class="col-12 col-lg-4 bg-light">
-                {% comp 'learning/course_sidebar.html' /%}
+                {% comp 'learning/course_sidebar.html' lesson=lesson course_modules=course_modules /%}
             </div>
         </div>
     </div><!-- end container -->

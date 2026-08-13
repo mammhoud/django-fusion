@@ -1,72 +1,60 @@
+/**
+ * Shared Path Utilities for Project Webpack Configs
+ *
+ * Provides consistent path resolution for all project webpack builds.
+ *
+ * Usage:
+ *   const { resolvePaths } = require('../../webpack/paths');
+ *   const paths = resolvePaths(__dirname + '/..');
+ */
+
 const path = require('path');
+const fs = require('fs');
 
-const WORKSPACE_ROOT = path.resolve(__dirname, '..');
-const ASSETS_ROOT = path.join(WORKSPACE_ROOT, 'assets');
-const ASSETS_NODE_MODULES = path.join(ASSETS_ROOT, 'node_modules');
-const DIST_ROOT = path.join(WORKSPACE_ROOT, 'dist');
-
-function normalizeSiteName(value) {
-  const raw = value || process.env.PROJECT_PATH || process.env.DJANGO_WEBSITE || process.env.WEBSITE || 'ctc-research.com';
-  const aliases = {
-    ctc: 'ctc-research',
-    'ctc-website': 'ctc-research',
-    'ctc-website.local': 'ctc-research',
-    'ctc-research.com': 'ctc-research',
-    structa: 'lms',
-    core: 'lms',
-    'structa.cloud': 'lms',
-    resume: 'vresume',
-    VResume: 'vresume',
-    'vresume.structa.cloud': 'vresume',
-    'crm.structa.cloud': 'crm',
-    inventory: 'crm',
-  };
-  return aliases[raw] || raw;
-}
-
-function resolveAssetPaths(siteName = normalizeSiteName()) {
-  const selectedSite = normalizeSiteName(siteName);
-  const siteDirectoryNames = { vresume: 'VResume' };
-  const sourceSiteDir = path.join(WORKSPACE_ROOT, siteDirectoryNames[selectedSite] || selectedSite);
-  const wrapperSiteDir = path.join(WORKSPACE_ROOT, 'websites', selectedSite);
-  const siteDir = require('fs').existsSync(sourceSiteDir) ? sourceSiteDir : wrapperSiteDir;
-  const siteAssetsDir = path.join(siteDir, 'assets');
-  const siteStaticDir = path.join(siteAssetsDir, 'static');
-  const siteBundlesDir = path.join(siteAssetsDir, 'bundles', selectedSite);
-  const sharedStaticDir = path.join(ASSETS_ROOT, 'static');
-  const baseStaticDir = path.join(sharedStaticDir, 'js', 'base');
-  const baseScssDir = path.join(sharedStaticDir, 'scss');
-  const sharedBundlesDir = path.join(ASSETS_ROOT, 'bundles', 'shared');
-  const sharedMediaDir = path.join(ASSETS_ROOT, 'media');
-  const distRoot = DIST_ROOT;
-  const distSharedDir = path.join(DIST_ROOT, 'shared');
-  const distSiteDir = path.join(DIST_ROOT, selectedSite);
+/**
+ * Resolve all standard project paths from a project root.
+ *
+ * @param {string} projectRoot - Absolute path to the project root
+ * @returns {Object} Path map
+ */
+function resolvePaths(projectRoot) {
+  const root = path.resolve(projectRoot);
+  const assetsDir = path.join(root, 'assets');
+  const staticDir = path.join(assetsDir, 'static');
+  const bundlesDir = path.join(assetsDir, 'bundles');
+  const nodeModulesDir = fs.existsSync(path.join(root, 'node_modules'))
+    ? path.join(root, 'node_modules')
+    : null;
 
   return {
-    workspaceRoot: WORKSPACE_ROOT,
-    assetsRoot: ASSETS_ROOT,
-    assetsNodeModules: ASSETS_NODE_MODULES,
-    siteName: selectedSite,
-    siteDir,
-    siteAssetsDir,
-    siteStaticDir,
-    siteBundlesDir,
-    sharedStaticDir,
-    baseStaticDir,
-    baseScssDir,
-    sharedBundlesDir,
-    sharedMediaDir,
-    distRoot,
-    distSharedDir,
-    distSiteDir,
+    // Project
+    projectRoot: root,
+    projectName: path.basename(root),
+
+    // Assets
+    assetsDir,
+    staticDir,
+    bundlesDir,
+
+    // Sub-directories
+    stylesDir: path.join(staticDir, 'styles'),
+    scriptsDir: path.join(staticDir, 'js'),
+    imagesDir: path.join(staticDir, 'images'),
+    fontsDir: path.join(staticDir, 'fonts'),
+    libsDir: path.join(staticDir, 'libs'),
+
+    // Node modules — project-local only (each project has its own package.json)
+    nodeModulesDir: nodeModulesDir || path.join(root, 'node_modules'),
+
+    // Output
+    outputDir: bundlesDir,
+    outputPublicPath: '/static/bundles/',
   };
 }
 
 module.exports = {
-  WORKSPACE_ROOT,
-  ASSETS_ROOT,
-  ASSETS_NODE_MODULES,
-  DIST_ROOT,
-  normalizeSiteName,
-  resolveAssetPaths,
+  resolvePaths,
+  // Backward compat — these always resolve relative to the caller's project root.
+  // Prefer resolvePaths(projectRoot) for explicit path resolution.
+  WORKSPACE_ROOT: path.resolve(__dirname, '..'),
 };

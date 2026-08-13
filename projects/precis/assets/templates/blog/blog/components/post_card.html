@@ -1,17 +1,22 @@
 {% load i18n wagtailimages_tags %}
-{#
+{% comment %}
   Blog Post Card Component
   Inspired by Wagtail bakerydemo patterns.
 
   Usage:
-    {% comp_include "blog/components/post_card.html" post=post %}
+    {% comp "blog/components/post_card.html" post=post / %}
 
   Optional context:
     card_class   - extra CSS classes on the outer card element
     show_excerpt - set to False to hide excerpt (default: True)
     image_height - fill height for featured image (default: 250)
     show_share   - set to True to show social share icons in card footer (default: False)
-#}
+{% endcomment %}
+{% prop post %}
+{% prop card_class default='' %}
+{% prop show_excerpt default=True %}
+{% prop image_height default=250 %}
+{% prop show_share default=False %}
 {% with show_excerpt=show_excerpt|default:True image_height=image_height|default:250 show_share=show_share|default:False %}
 <article class="card h-100 shadow-sm border-0 {{ card_class }}" aria-label="{{ post.title }}">
 

@@ -14,11 +14,19 @@
              │ MCP Protocol (stdio/HTTP)
 ┌────────────▼────────────────────────┐
 │       Kilo MCP Server                │
-│   applications/kilo/                 │
+│   applications/agents/                 │
 │   • search_codebase                  │
 │   • read_files                       │
 │   • run_tests                        │
 │   • get_docs                         │
+└────────────┬────────────────────────┘
+             │
+┌────────────▼────────────────────────┐
+│       Prompt Catalog (read-only)     │
+│   applications/agents/prompts/       │
+│   • skill prompts                    │
+│   • project descriptions              │
+│   • agent workflows                  │
 └────────────┬────────────────────────┘
              │
 ┌────────────▼────────────────────────┐
@@ -42,7 +50,7 @@
 ### Location
 
 ```
-applications/kilo/
+applications/agents/
 ├── config.json          # Tool definitions
 ├── mcp_server.py        # Server implementation
 ├── tools/
@@ -56,7 +64,7 @@ applications/kilo/
 ### Tool Definitions
 
 ```json
-// applications/kilo/config.json
+// applications/agents/config.json
 {
   "tools": [
     {
@@ -159,12 +167,12 @@ for tool in tools:
 # Search the codebase
 results = client.search_codebase(
     pattern="class RegistrationAdapter",
-    directory="projects/lms/"
+    directory="projects/precis/"
 )
 
 # Read specific files
 contents = client.read_files([
-    "projects/lms/plugins/accounts/adapters.py",
+    "projects/precis/plugins/accounts/adapters.py",
     "libs/django-fusion/src/django_fusion/comp/registry.py",
 ])
 ```
@@ -213,7 +221,7 @@ contents = client.read_files([
     {
       "name": "kilo",
       "command": "python",
-      "args": ["applications/kilo/mcp_server.py"],
+      "args": ["applications/agents/mcp_server.py"],
       "env": {
         "PROJECT_ROOT": "/home/structa.cloud"
       }
@@ -239,7 +247,7 @@ contents = client.read_files([
 The Cypercloud platform uses ceptor-ai for its AI chat features:
 
 ```python
-# projects/cypercloud/chat/views.py
+# projects/syntara/chat/views.py
 from ceptor_ai.chat.client import CeptorClient
 
 client = CeptorClient(server_url=settings.AI_SERVER_URL)
@@ -257,22 +265,9 @@ async def chat_stream(request):
 
 ## Task-Based AI Prompts
 
-Pre-built prompt templates for common development tasks:
-
-| Task | Prompt File | Purpose |
-|------|------------|---------|
-| Analyze project | `dev/pre-restructure/ai/tasks/analyze_project.md` | Full project structure analysis |
-| Refactor models | `dev/pre-restructure/ai/tasks/refactor_models.md` | Model restructuring guidance |
-| Write tests | `dev/pre-restructure/ai/tasks/write_tests.md` | Test generation prompts |
-| Security check | `dev/pre-restructure/ai/tasks/security_check.md` | Security audit prompts |
-| Fix N+1 queries | `dev/pre-restructure/ai/tasks/fix_n_plus_one.md` | Query optimization |
-| Merge styles | `dev/pre-restructure/ai/tasks/merge_styles.md` | CSS/SCSS consolidation |
-| Update docs | `dev/pre-restructure/ai/tasks/update_docs.md` | Documentation generation |
-| Uniform docs | `dev/pre-restructure/ai/tasks/uniform_docs.md` | Documentation standardization |
-| Remove duplications | `dev/pre-restructure/ai/tasks/remove_duplications.md` | Code deduplication |
-| Refactor contexts | `dev/pre-restructure/ai/tasks/refactor_context.md` | Context restructuring |
-| Replace patterns | `dev/pre-restructure/ai/tasks/replace_pattern.md` | Pattern replacement |
-| Comprehensive analysis | `dev/pre-restructure/ai/tasks/comprehensive_analysis.md` | Deep code review |
+Pre-built prompt templates for common development tasks were previously stored
+under `docs/dev/pre-restructure/ai/tasks/` (deprecated — directory removed).
+See `docs/ai/prompts.md` and `docs/ai/PROMPT_CATALOG.md` for current AI prompt guidance. The catalog endpoints are repository-specific read-only REST metadata endpoints, not standard MCP `prompts/list` and `prompts/get` methods.
 
 ---
 
@@ -284,4 +279,4 @@ Pre-built prompt templates for common development tasks:
 | Agent instructions | [`agents.md`](agents.md) |
 | Prompt engineering | [`prompts.md`](prompts.md) |
 | Ceptor-AI library | [`../libs/README.md`](../libs/README.md) |
-| Cypercloud AI | [`../projects/cypercloud/`](../projects/cypercloud/) |
+| Cypercloud AI | [`../projects/syntara/`](../projects/syntara/) |

@@ -11,8 +11,8 @@ The Structa Cloud monorepo uses AI extensively through three mechanisms:
 | Mechanism | Location | Purpose |
 |-----------|----------|---------|
 | **AGENTS.md files** | Root + per-project dirs | AI coding assistant behavioral instructions |
-| **Prompt templates** | Cypercloud, POS, ceptor-ai, `docs/ai/` | Chat prompts, code generation, translation |
-| **MCP Servers** | Kilo (`applications/kilo`), ceptor-ai (`libs/ceptor-ai`) | Model Context Protocol tool execution |
+| **Prompt templates** | `applications/agents/prompts/catalog.json`, project `PROMPTS.md`, `docs/ai/` | Skills-as-prompts, agent workflows, code generation, review, translation |
+| **MCP Servers** | Kilo helper (`applications/agents`), optional ceptor-ai (`libs/ceptor-ai` when present) | Read-only repository introspection and MCP tool metadata |
 
 ### How They Work Together
 
@@ -62,15 +62,15 @@ AI agents load ALL AGENTS.md files from root to leaf — later files override ea
 | Location | Scope |
 |----------|-------|
 | [Root AGENTS.md](../AGENTS.md) | Monorepo-wide conventions, template paths, Makefile delegation |
-| `projects/lms/AGENTS.md` | LMS site conventions, plugins, components |
-| `projects/portfolio/AGENTS.md` | Portfolio/VResume site structure, page templates |
-| `projects/cypercloud/templates/AGENTS.md` | AI chat customizer conventions |
-| `projects/assets/templates/AGENTS.md` | Template organization, resolution order |
-| `projects/assets/templates/components/AGENTS.md` | Shared component inventory |
-| `projects/assets/templates/plugins/AGENTS.md` | Plugin template conventions |
+| `projects/precis/AGENTS.md` | LMS site conventions, plugins, components |
+| `projects/vresume/AGENTS.md` (when present; compatibility site) | Portfolio/VResume site structure, page templates |
+| `projects/syntara/templates/AGENTS.md` (when present) | AI chat customizer conventions |
+| `projects/precis/assets/templates/AGENTS.md` | Precis template organization and resolution order |
+| `projects/precis/assets/templates/components/AGENTS.md` | Precis component inventory |
+| `projects/precis/assets/templates/plugins/AGENTS.md` | Precis plugin template conventions |
 | `libs/django-fusion/AGENTS.md` | Component system, routing, canonical imports |
-| `libs/ceptor-ai/AGENTS.md` | AI assistant, MCP server, chat client |
-| `applications/kilo/AGENTS.md` | Kilo MCP server, tool definitions |
+| `libs/ceptor-ai/AGENTS.md` (when present) | AI assistant, MCP server, chat client |
+| `applications/agents/AGENTS.md` | Kilo MCP server, tool definitions |
 
 ### AGENTS.md Structure Convention
 
@@ -89,14 +89,14 @@ AI agents load ALL AGENTS.md files from root to leaf — later files override ea
 
 | Type | Used In | Description | Temperature |
 |------|---------|-------------|:-----------:|
-| **Chat Prompts** | Cypercloud, POS sidecar | Real-time streaming chat | 0.5–0.7 |
+| **Chat Prompts** | Syntara, Formint sidecar | Real-time streaming chat | 0.5–0.7 |
 | **Code Generation** | All projects | New models, views, templates | 0.0–0.3 |
 | **Code Review** | All projects | Security, performance, style audits | 0.0–0.2 |
 | **Translation** | POS i18n audit | Bulk translation prompts | 0.3–0.5 |
 | **System Prompts** | AGENTS.md files | Per-project behavioral instructions | — |
-| **MCP Tool Prompts** | Kilo, ceptor-ai | Tool-calling prompts | 0.0–0.2 |
+| **MCP Tool Prompts** | Kilo helper, optional ceptor-ai | Tool-calling prompts | 0.0–0.2 |
 
-See [prompts.md](prompts.md) for the full template library.
+See [prompts.md](prompts.md) for the human template library and [PROMPT_CATALOG.md](PROMPT_CATALOG.md) for stable skill/agent/project prompt definitions.
 
 ---
 
@@ -104,7 +104,7 @@ See [prompts.md](prompts.md) for the full template library.
 
 Two MCP servers provide tool access to AI assistants:
 
-### Kilo MCP Server (`applications/kilo/`)
+### Kilo MCP Helper (`applications/agents/`)
 
 | Tool | Purpose | Parameters |
 |------|---------|------------|
@@ -160,9 +160,10 @@ See [mcp-integration.md](mcp-integration.md) for full details.
 |----------|------|
 | Agent instructions (detail) | [`agents.md`](agents.md) |
 | Prompt engineering (detail) | [`prompts.md`](prompts.md) |
+| Stable prompt catalog | [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md) |
 | MCP integration (detail) | [`mcp-integration.md`](mcp-integration.md) |
-| Cypercloud AI chat | [`../projects/cypercloud/`](../projects/cypercloud/) |
+| Syntara AI chat | [`../../projects/syntara/`](../../projects/syntara/) |
 | Ceptor-AI library | [`libs/ceptor-ai/`](../../libs/ceptor-ai/) |
 | django-fusion library | [`libs/django-fusion/`](../../libs/django-fusion/) |
-| Kilo MCP server | [`../../applications/kilo/`](../../applications/kilo/) |
+| Kilo MCP helper | [`../../applications/agents/`](../../applications/agents/) |
 | Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |

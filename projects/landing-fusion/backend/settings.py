@@ -63,12 +63,15 @@ INSTALLED_APPS = [
     "taggit",
     # django-fusion — unified fragment/layout rendering pipeline
     "django_fusion",
+    # django-webpack-loader — serves versioned bundles (webpack/landing-fusion.config.js)
+    "webpack_loader",
     # Landing apps (lms-fusion-style organization)
     "apps.content",  # StreamField blocks + block templates
     "apps.pages",  # Wagtail page models + page templates + seed
     "apps.handlers",  # PageHandler views (HTMX fragment rendering)
     "apps.auth",  # Allauth auth adapters + templates (LandingAuthAdapter + social)
     "apps.learning",  # Commercial LMS catalog, enrollment, progress, and learner profile
+    "apps.tasks",  # Background tasks (django-fusion @task — email, content, scheduled)
 ]
 
 MIDDLEWARE = [
@@ -132,7 +135,7 @@ TEMPLATES = [
             "libraries": {
                 # django-fusion component tags (comp, slot, prop, var) — registered
                 # so `{% load components %}` works, mirroring configs/base/templates.py.
-                "components": "django_fusion.comp.templatetags.components",
+                "components": "django_fusion.comp.tags.components",
             },
         },
     },
@@ -332,6 +335,13 @@ MIDDLEWARE.insert(
     MIDDLEWARE.index("django.contrib.sessions.middleware.SessionMiddleware") + 1,
     "django.middleware.locale.LocaleMiddleware",
 )
+# After LocaleMiddleware: activate the locale from the landing ?lang= / cookie
+# resolver so {% translate %} tags on server-rendered pages and fragments
+# follow the same language the content-overlay API uses.
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.locale.LocaleMiddleware") + 1,
+    "apps.handlers.middleware.LandingLocaleMiddleware",
+)
 
 # i18n URL pattern — when True, Django prefixes URLs with the language code
 # (e.g. /en/about/, /ar/about/). The landing site uses cookie-based switching
@@ -363,6 +373,16 @@ WAGTAIL_SITE_NAME = "StructAI Softwares"
 WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "http://localhost:8074")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ── Webpack Loader (django-webpack-loader) ────────────────────────
+# Reads the bundles.json produced by webpack/landing-fusion.config.js.
+# Templates use {% render_bundle 'landing' 'css' %} / 'js' %}.
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "bundles/",
+        "STATS_FILE": str(BASE_DIR / "backend" / "assets" / "static" / "bundles" / "bundles.json"),
+    }
+}
 
 # ── Fusion Asset Pipeline ──────────────────────────────────────────
 # Mirrors the Astro frontend bundler output so both Django template tags

@@ -6,42 +6,60 @@
 
 ## What This Repo Contains
 
-The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript platform** that builds, deploys, and publishes multiple independent web applications, desktop apps, and AI services from a single codebase.
+The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Astro platform** that builds, deploys, and publishes multiple independent web applications, desktop apps, and AI services from a single codebase.
 
 | Layer | Technology | Projects Using It |
 |-------|-----------|-------------------|
-| **Backend** | Python 3.11 + Django 5.1 | LMS, Portfolio, Cypercloud, CTC Research |
-| **Desktop** | Rust + Tauri 2.x | POS (Minimal / Solo / Full) |
-| **Frontend** | TypeScript 5.8 + Vue 3 + React 19 | POS Client, Cypercloud Chat |
-| **AI** | Ollama + OpenAI-compatible + MCP | Cypercloud (CeptorAI) |
-| **Infrastructure** | Docker + Traefik + Nginx + Coolify | All projects |
+| **Backend** | Python 3.11 + Django 5.2 + Wagtail 7.4 | Precis LMS, Landing-Fusion, Syntara, Formint Cloud |
+| **Desktop** | Rust + Tauri 2.x | Formint Community, Formint Professional, Formint Client |
+| **Frontend** | Astro 5 + TypeScript + Vue 3 + React 19 | Landing-Fusion, Formint editions, Syntara Chat |
+| **AI** | Ollama + OpenAI-compatible + MCP | Syntara (CeptorAI) |
+| **Infrastructure** | Docker + Traefik + Nginx + Coder | All projects |
 | **Database** | PostgreSQL 16 (prod) / SQLite (dev) | All Django projects |
-| **Build** | Webpack + Cargo + uv | All projects |
+| **Build** | uv + pnpm + Cargo + Webpack | All projects |
 
 ---
 
 ## Quick Command Reference
 
-### Git & Repo Sync
+### Project Dispatcher
 
 ```bash
-make push              # Push repo + lib submodules to GitHub
-make push-libs         # Push only lib submodules (django-fusion, ceptor-ai)
-make push-lib LIB=django-fusion  # Push a single lib
-make pull              # Fetch + fast-forward/rebase from origin
-make sync              # Pull then push in one step
+cd projects
+make check WEBSITE=lms-fusion         # Checks Precis LMS
+make test WEBSITE=lms-fusion          # Tests Precis LMS
+make run-dev WEBSITE=landing-fusion   # Landing-Fusion dev server
+make check WEBSITE=landing-fusion
+make test WEBSITE=landing-fusion
 ```
 
-### Development
+### Per-Product Commands
 
 ```bash
-make venv-setup        # Create unified .venv at repo root (uv sync)
-make venv-sync         # Sync deps only (faster)
-make venv-info         # Show venv status
-cd projects && make dev WEBSITE=lms   # Run LMS dev server
-cd projects && make check WEBSITE=lms  # Django system checks
-make pos               # POS dev targets
-make cypercloud        # Cypercloud dev targets
+# Precis LMS
+cd projects/precis/backend
+make check && make test && make migrate
+
+# Landing-Fusion
+cd projects/landing-fusion
+make install && make check && make build
+make backend-migrate && make backend-check && make backend-test
+
+# Formint Professional
+cd projects/formints/formint
+make install && make check && make test
+
+# Formint Cloud
+cd projects/formints/formint-cloud
+make install && make check && make test
+
+# Formint Community
+cd projects/formints/formintA
+pnpm install && pnpm tauri dev
+
+# django-fusion library
+cd libs/django-fusion
+uv run pytest
 ```
 
 ### Docker Deployment
@@ -51,21 +69,8 @@ make deploy            # Full stack deploy (DB → media → apps → proxy)
 make deploy-databases  # Postgres + Redis only
 make deploy-app        # Django apps only
 make deploy-proxy      # Traefik reverse proxy
-make deploy-tasks      # Dramatiq worker + Celery scheduler
-make deploy-cypercloud # Cypercloud build + migrate
 make status            # Show all container statuses
 make logs              # Tail all service logs
-make stop              # Stop all services
-make restart           # Stop then redeploy all
-```
-
-### Build & Publish Pipeline
-
-```bash
-make build             # Build all Docker images
-make build-app         # Build Django app images
-make build-media       # Build Nginx media server
-make build-cypercloud  # Build Cypercloud webpack bundles
 ```
 
 ---
@@ -74,21 +79,23 @@ make build-cypercloud  # Build Cypercloud webpack bundles
 
 | Project | Dir | Type | Port | Stack |
 |---------|-----|------|------|-------|
-| **LMS** | `projects/lms/` | Django Site | 5071 | Wagtail + django-fusion |
-| **Portfolio** | `projects/portfolio/` | Django Site | 5072 | Wagtail + Resume Builder |
-| **Cypercloud** | `projects/cypercloud/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
-| **CTC Research** | `projects/ctc-research/` | Django Site | 5070 | Research Portal (merged into LMS) |
-| **POS** | `projects/pos/` | Tauri Desktop | — | Rust + Vue 3 + SQLite |
-| **Shared** | `projects/www/` | Shared Core | — | Shared Django code + workers across sites |
-| **Libs** | `libs/` | Python Packages | — | django-fusion, ceptor-ai |
+| **Precis LMS** | `projects/precis/` | Django Site | — | Wagtail + django-fusion |
+| **Landing-Fusion** | `projects/landing-fusion/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
+| **Syntara** | `projects/syntara/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
+| **Formint Community** | `projects/formints/formintA/` | Tauri Desktop | — | Rust + React 19 + SQLite |
+| **Formint Professional** | `projects/formints/formint/` | Tauri + Django | — | Astro + Django Ninja + Unfold |
+| **Formint Cloud** | `projects/formints/formint-cloud/` | Django Server | 8767 | Django + Channels + Unfold |
+| **Formint Client** | `projects/formints/formintC/` | Tauri Desktop | — | Tauri + Vue 3 + TypeScript |
+| **django-fusion** | `libs/django-fusion/` | Python Package | — | Shared components (submodule) |
 
-### Sub-Projects (POS Variants)
+### Formint Edition Comparison
 
-| Variant | Dir | Description |
-|---------|-----|-------------|
-| **POS Minimal** | `projects/pos/pos-minimal/` | Bare-bones Tauri + Rust backend |
-| **POS Solo** | `projects/pos/pos-solo/` | Standalone with embedded sidecar API |
-| **POS Full** | `projects/pos/pos-full/` | Multi-terminal with external sidecar server |
+| Edition | Architecture | Sync | Admin |
+|---------|-------------|------|-------|
+| **Community** | Rust/Diesel + React 19 + SQLite | None (offline-first) | None |
+| **Professional** | Django Ninja + Astro + Alpine/HTMX + Tauri | Sidecar sync | Unfold |
+| **Cloud** | Full Django + Channels + WebSocket + Unfold | Multi-terminal SaaS | Unfold + Bolt |
+| **Client** | Vue 3 + Tauri + Pinia | Via Cloud API | None |
 
 ---
 
@@ -102,8 +109,8 @@ make build-cypercloud  # Build Cypercloud webpack bundles
                        │      │      │      │
            ┌───────────┼──────┼──────┼──────┼───────────┐
            │           │      │      │      │           │
-     ctc-research    LMS  portfolio  cypercloud   shared-media
-       :5070        :5071    :5072     :5073        :80
+        Precis    Landing   Syntara   Formint    shared-media
+        LMS       Fusion    Chat      Cloud        :80
            │           │      │      │      │           │
            └───────────┴──────┴──────┴──────┴───────────┘
                               │
@@ -126,50 +133,16 @@ make build-cypercloud  # Build Cypercloud webpack bundles
 
 ---
 
-## Build & Publish New Project — Pipeline
+## Multi-Project Philosophy
 
-### 1. Clone a Template
+This monorepo is designed to **build, deploy, and publish multiple independent products** from shared infrastructure:
 
-```bash
-cd projects
-make clone-site WEBSITE=new-project SOURCE_SITE=lms
-```
-
-This copies the LMS structure (or any source) as a starting point for a new Django site.
-
-### 2. Configure the Site
-
-Edit `projects/new-project/configs/settings.yml`:
-- Set `SITE_ID`, `ALLOWED_HOSTS`, database connection
-- Enable plugins: accounts, blog, courses, etc.
-
-### 3. Register in Traefik
-
-Add a router in `applications/proxy/traefik/dynamic/`:
-```yaml
-http:
-  routers:
-    new-project:
-      rule: "Host(`new-project.structa.cloud`)"
-      service: new-project
-      tls:
-        certResolver: letsencrypt
-  services:
-    new-project:
-      loadBalancer:
-        servers:
-          - url: "http://new-project-web:5080"
-```
-
-### 4. Add Docker Compose
-
-Create `projects/new-project/docker-compose.yml` with the standard Django + Gunicorn setup.
-
-### 5. Deploy
-
-```bash
-make deploy-app    # The new site starts alongside existing ones
-```
+1. **Single toolchain** — `uv` for Python, `pnpm` for frontend, `Cargo` for Rust
+2. **Shared settings** — `projects/configs/` provides base Django config reused across sites
+3. **Shared assets** — `projects/assets/` has cross-site templates, static files, locale
+4. **Shared framework** — `libs/django-fusion/` provides components, routing, fragments
+5. **Shared infrastructure** — One Traefik proxy, one Nginx media server, one Postgres cluster
+6. **Per-site isolation** — Each site has its own container, port, database, and domain
 
 ---
 
@@ -181,44 +154,50 @@ structa.cloud/
 │   ├── Makefile           # Canonical dispatcher (WEBSITE= selection)
 │   ├── configs/           # Shared Django settings
 │   ├── assets/            # Shared static/templates/locale
-│   ├── compose/           # Dockerfiles + shared compose
-│   ├── www/               # Shared Django core code
-│   ├── lms/               # LMS site
-│   ├── portfolio/         # Portfolio site
-│   ├── cypercloud/        # AI chat platform
-│   ├── ctc-research/      # Research portal
-│   └── pos/               # POS Tauri desktop app
+│   ├── precis/            # Precis LMS
+│   ├── landing-fusion/    # Landing-Fusion marketing site
+│   ├── syntara/           # Cypercloud AI chat platform
+│   └── formints/          # Multi-edition POS platform
 ├── libs/                  # Reusable Python packages (git submodules)
-│   ├── django-fusion/     # Component system + routing
-│   └── ceptor-ai/         # AI client library
+│   └── django-fusion/     # Component system + routing
 ├── applications/          # Infrastructure + tooling
 │   ├── proxy/             # Traefik reverse proxy
 │   ├── databases/         # Postgres + Redis compose
-│   └── scripts/           # Automation scripts
-├── docs/                  # Documentation (mkdocs)
+│   ├── templates/         # Coder/Terraform workspace templates
+│   └── agents/            # Kilo MCP server
+├── docs/                  # Documentation (docsify)
+│   ├── assets/            # Screenshots and previews
 │   ├── projects/          # Per-project docs
 │   ├── guides/            # Developer guides
-│   ├── infrastructure/    # Infra docs
 │   └── ai/                # AI agents + prompts
 ├── tests/                 # Workspace-level test suite
-├── .venv/                 # Unified Python venv (git-ignored)
+├── .agents/               # AI agent skills and configuration
+├── .github/               # CI/CD workflows
 ├── Makefile               # Root dispatcher
 └── pyproject.toml         # Workspace config (uv + pytest + ruff)
 ```
 
 ---
 
-## Multi-Project Philosophy
+## Name Migration Reference
 
-This monorepo is designed to **build, deploy, and publish multiple independent products** from shared infrastructure:
+The codebase has been through several renames. See this guide for mapping old names to current:
 
-1. **Single venv** — One `.venv` at repo root serves ALL local development
-2. **Shared settings** — `projects/configs/` provides base Django config reused across sites
-3. **Shared assets** — `projects/assets/` has cross-site templates, static files, locale
-4. **Shared infrastructure** — One Traefik proxy, one Nginx media server, one Postgres cluster
-5. **Per-site isolation** — Each site has its own container, port, database, and domain
+| Legacy Name | Current Name | Current Path |
+|---|---|---|
+| `ctc-research` | **Precis LMS** | `projects/precis/` |
+| `lms-fusion` | **Precis LMS** (alias) | `projects/precis/` |
+| `cms-fusion` | Merged into Precis + Landing-Fusion | — |
+| `cypercloud` | **Syntara** (runtime alias preserved) | `projects/syntara/` |
+| `portfolio` / `VResume` | Merged into Precis | `projects/precis/` |
+| `pos-mini` / `forge-pos` | **Formint Community** | `projects/formints/formintA/` |
+| `pos-solo` / `pos-full` | **Formint Professional** (merged) | `projects/formints/formint/` |
+| `pos-cloud` / `formintB` | **Formint Cloud** | `projects/formints/formint-cloud/` |
+| `pos-client` / `formintC` | **Formint Client** | `projects/formints/formintC/` |
+| `core/` | `projects/` | `projects/` |
+| `core/libs/` | `libs/` | `libs/` |
 
-Adding a new project requires: Django site scaffold → Traefik router → Docker Compose → deploy.
+> ⚠️ **Use current names in new code.** Legacy names may appear in migration docs or compatibility manifests but should not be used for new source paths.
 
 ---
 
@@ -226,8 +205,10 @@ Adding a new project requires: Django site scaffold → Traefik router → Docke
 
 | Topic | Path |
 |-------|------|
+| Setup guide | [`guides/01-setup.md`](guides/01-setup.md) |
 | Clone a site | [`guides/06-clone-site.md`](guides/06-clone-site.md) |
 | Deployment guide | [`guides/04-deploy.md`](guides/04-deploy.md) |
-| Infrastructure | [`infrastructure/`](infrastructure/) |
-| Project index | [`projects/`](projects/) |
-| AI platform plan | [`projects/cypercloud/platform-plan.md`](projects/cypercloud/platform-plan.md) |
+| Infrastructure | [`dev/infrastructure/`](dev/infrastructure/) |
+| django-fusion reference | [`libs/django-fusion.md`](libs/django-fusion.md) |
+| AI agents & prompts | [`ai/agents.md`](ai/agents.md) |
+| Formint editions | [`pos/editions.md`](pos/editions.md) |

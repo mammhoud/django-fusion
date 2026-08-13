@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from www.worker.decorators import shared_task
+from configs.tools.worker.decorators import shared_task
 
 
 class TestSharedTaskWithCelery:
@@ -26,7 +26,7 @@ class TestSharedTaskWithCelery:
 
 
 class TestSharedTaskWithoutCelery:
-    @patch("www.worker.decorators.importlib.util.find_spec", return_value=None)
+    @patch("configs.tools.worker.decorators.importlib.util.find_spec", return_value=None)
     def test_no_celery_returns_noop_decorator(self, mock_find):
         decorator = shared_task(name="test.task")
         assert callable(decorator)
@@ -38,7 +38,7 @@ class TestSharedTaskWithoutCelery:
         assert result is my_func
         assert result() == 99
 
-    @patch("www.worker.decorators.importlib.util.find_spec", return_value=None)
+    @patch("configs.tools.worker.decorators.importlib.util.find_spec", return_value=None)
     def test_no_celery_bare_decorator(self, mock_find):
         def my_func():
             return 7
@@ -47,7 +47,7 @@ class TestSharedTaskWithoutCelery:
         assert result is my_func
         assert result() == 7
 
-    @patch("www.worker.decorators.importlib.util.find_spec", return_value=None)
+    @patch("configs.tools.worker.decorators.importlib.util.find_spec", return_value=None)
     def test_no_celery_with_kwargs_only(self, mock_find):
         decorator = shared_task(name="test.kw", bind=True)
         assert callable(decorator)

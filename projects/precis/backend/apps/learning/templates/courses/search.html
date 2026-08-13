@@ -95,10 +95,10 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">
           {% if query %}
-            {% blocktrans with q=query count=total_results %}
-              {{ count }} result for "{{ q }}"
+            {% blocktrans count total_results=total_results with q=query %}
+              {{ total_results }} result for "{{ q }}"
             {% plural %}
-              {{ count }} results for "{{ q }}"
+              {{ total_results }} results for "{{ q }}"
             {% endblocktrans %}
           {% else %}
             {% trans "Browse Courses" %}
@@ -108,7 +108,7 @@
 
       <!-- HTMX-swappable results container -->
       <div id="course-results">
-        {% comp "courses/_search_results.html" /%}
+        {% comp "courses/_search_results.html" courses=courses query=query is_paginated=is_paginated page_obj=page_obj /%}
       </div>
     </div>
   </div>

@@ -1,176 +1,116 @@
 # Structa Cloud — Documentation
 
-> ⚡ **New here?** Start with [Backend Environment](back-env/) — it covers env setup for all projects.
+> ⭐ **Start here:** read [Recommendations first](recommendations.md), then open the relevant guide, project reference, or implementation plan.
 
-## Project Tree (Language → Directory → Project)
+> ⚡ **New here?** Start with [Guides](guides/) — numbered walkthroughs for setup, auth, dev, deployment, and customization.
 
-| Language | Directory | Projects |
-|----------|-----------|----------|
-| 🦀 **Rust** | `docs/rust/` | POS backend (Tauri + Diesel + SQLite) |
-| ⚛️ **TypeScript** | `docs/typescript/` | POS frontend (React 19 + Vite + i18next) |
-| 🐍 **Python/Django** | `docs/python/` | Django core, sites, libs, fusion components |
-| 🐍 **Python/Sanic** | `docs/server/` | POS sidecar (REST + WebSocket API) |
-| 🏗️ **Docker/YAML** | `docs/infrastructure/` | Proxy, databases, Compose, deployment |
-| ⚙️ **Config/Env** | `docs/back-env/` | Backend env vars, settings, site registry |
-| 🗄️ **SQL** | `docs/databases/` | SQLite schema, PostgreSQL, migrations |
-| 🧪 **All** | `docs/tests/` | Testing: Vitest, Rust, pytest, Selenium, E2E |
+## Current Products
 
-## Project Tree
+| Product | Canonical Path | Main Responsibility | Domain |
+|---|---|---|---|
+| **Precis LMS** | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
+| **Landing-Fusion** | `projects/landing-fusion/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
+| **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
+| **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |
+| **django-fusion** | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables | submodule |
+| **Infrastructure** | `applications/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | structa.cloud |
+| **Workspace tests** | `tests/` | Cross-project validation, fixtures, browser tests, deployment checks | — |
+
+## Documentation ownership
+
+| Need | Canonical location |
+|---|---|
+| Recommended priorities and sequencing | [`recommendations.md`](recommendations.md) |
+| Engineering plans and implementation tasks | [`plans/`](plans/README.md) |
+| Product decisions and knowledge-graph objects | `Anytype/` when present |
+| Current project, architecture, development, and deployment references | The topic/project sections below |
+| Historical plan evidence | [`plans/legacy/`](plans/legacy/) |
+
+All new plans must be added under `docs/plans/<scope>/` and linked from the canonical plan registry. The old `docs/dev/plans/`, `docs/plans/migrated/`, and project-local `docs/superpowers/plans/` locations are no longer active authoring paths.
+
+## Repository Structure
 
 ```
 structa.cloud/
-├── projects/                         # Django monorepo
-│   ├── configs/                      # Shared Django settings
-│   │   ├── base/                     # Base configuration modules
-│   │   └── settings/                 # Environment/site settings (YAML)
-│   ├── assets/                       # Shared frontend assets
-│   │   ├── templates/                # Cross-site Django templates
-│   │   ├── static/                   # Shared static files (CSS, JS, images)
-│   │   └── locale/                   # Shared translation files
-│   ├── www/                          # Shared/core Django code (merged)
-│   │   ├── __main__.py               # CLI entry for www sentinel site
-│   │   ├── settings.py               # Django config for shared-task stack
-│   │   ├── ci/                       # CI/CD preflight utilities
-│   │   │   └── utils.py              # Deploy-preflight helpers
-│   │   └── worker/                   # Celery + Dramatiq tasks
-│   │       ├── celery.py             # Celery app bootstrap
-│   │       ├── tasks.py              # Heartbeat & shared tasks
-│   │       ├── email.py              # Dramatiq email actors
-│   │       ├── content.py            # Content management actors
-│   │       ├── decorators.py         # Task decorators
-│   │       ├── runtime.py            # Runtime helpers
-│   │       ├── modules.py            # Task module registry
-│   │       └── apps.py               # Django AppConfig
-│   ├── libs/                         # Local reusable libraries
-│   │   ├── django-fusion/            # Component system + routing framework
-│   │   └── ceptor-ai/                # AI assistant & MCP server
-│   ├── ctc-research/                 # CTC Research site (port 5070)
-│   ├── lms/                          # LMS Demo site (port 5071)
-│   ├── VResume/                      # VResume site (port 5072)
-│   ├── cypercloud/                   # AI Chat Customizer (port 5073)
-│   └── pos/                          # Desktop POS app (Tauri 2 + Rust)
-│       ├── src/                      # React/TypeScript frontend
-│       ├── src-tauri/                # Rust/Tauri backend
-│       ├── sidecar/                  # Python/Sanic sidecar server
-│       └── docs/                     # POS specific docs
-│
-├── applications/                     # Infrastructure & tooling
-│   ├── proxy/                        # Traefik reverse proxy + SSL
-│   ├── databases/                    # Database containers (Postgres, Redis)
-│   ├── compose/                      # Docker Compose orchestration
-│   │   ├── docker-compose.tasks.yml  # Shared-worker stack
-│   │   ├── docker-compose.docs.yml   # Documentation site
-│   │   └── docker-compose.applications.yml  # Site services
-│   └── scripts/                      # Shared build + automation scripts
-│
-├── tests/                            # Integration & E2E tests
-│   ├── unit/                         # Unit tests
-│   ├── integration/                  # Integration tests
-│   ├── selenium/                     # Selenium browser tests
-│   ├── http/                         # HTTP API tests
-│   └── fixtures/                     # Test fixtures (JSON)
-│
-├── docs/                             # ← You are here
-│   ├── README.md                     # This file
-│   ├── rust/                         # Rust/Diesel/Tauri backend docs
-│   ├── typescript/                   # TypeScript/React frontend docs
-│   ├── python/                       # Python/Django backend docs
-│   ├── infrastructure/               # Proxy, DB, deployment, workers
-│   ├── server/                       # Sidecar/Sanic server docs
-│   ├── core/                         # Core architecture docs
-│   ├── sites/                        # Per-site documentation
-│   └── getting-started/              # Quick-start guides
+├── projects/                         # Product code, shared Django config, and assets
+│   ├── precis/                       # Precis LMS — learning platform
+│   │   ├── backend/                  # Django + Wagtail backend
+│   │   ├── assets/                   # Templates, static, SCSS, media
+│   │   └── frontend/                 # Astro frontend shell
+│   ├── landing-fusion/               # Astro marketing site + Django/Wagtail CMS
+│   │   ├── backend/                  # Django + Wagtail backend
+│   │   ├── frontend/                 # Astro frontend
+│   │   └── assets/                   # Project assets
+│   ├── syntara/                      # Cypercloud AI chat/customizer runtime
+│   ├── formints/                     # Multi-edition POS platform
+│   │   ├── formint-community/        # Community (Tauri + React + Rust)
+│   │   ├── formint-pro/              # Professional (Astro + Django + Tauri)
+│   │   ├── formint-cloud/            # Cloud master (Django + Channels)
+│   │   ├── formint-standard/         # Standard edition (Astro + Tauri)
+│   │   ├── formint-client/           # POS Client (Tauri + Vue 3)
+│   │   ├── tests/                    # Shared POS tests
+│   │   └── docs/                     # POS architecture docs
+│   ├── configs/                      # Shared Django settings and workers
+│   ├── assets/                       # Monorepo-level shared assets
+│   ├── scripts/                      # Project-local automation
+│   ├── Makefile                      # Canonical project dispatcher
+│   └── pyproject.toml                # Python workspace dependencies
+├── libs/                             # Reusable libraries
+│   └── django-fusion/                # Shared Django/Wagtail components (submodule)
+├── applications/                     # Databases, proxy, Compose, scripts, Kilo/MCP
+│   ├── proxy/                        # Traefik reverse proxy configs
+│   ├── databases/                    # PostgreSQL + Redis compose
+│   ├── agents/                       # Kilo MCP server
+│   ├── templates/                    # Coder/Terraform templates
+│   └── scripts/                      # Automation scripts
+├── tests/                            # Workspace integration, HTTP, browser, fixtures
+├── docs/                             # This documentation project
+│   ├── assets/                       # Screenshots, previews, diagrams
+│   │   ├── screenshots/formints/     # Formint admin + frontend screenshots
+│   │   └── previews/formints/        # Formint product preview images
+│   ├── guides/                       # Step-by-step numbered walkthroughs
+│   ├── plans/                        # Single active plan registry
+│   ├── projects/                     # Current per-project references
+│   ├── ai/                           # Agents, prompts, MCP
+│   └── design/                       # Design system and branding
+├── .agents/                          # AI agent skills and configuration
+│   ├── skills/                       # Reusable skill definitions (21 skills)
+│   └── kiro/settings/                # MCP server configuration
+├── .github/                          # CI workflows and composite actions
+├── Makefile                          # Root deployment and delegation entry point
+└── pyproject.toml                    # Root Python/tooling configuration
 ```
-
-## Platform Documentation
-
-| Platform | Directory | Covers |
-|----------|-----------|--------|
-| 🦀 **Rust** | [`docs/rust/`](rust/) | POS auth, operations, database schema, email |
-| ⚛️ **TypeScript** | [`docs/typescript/`](typescript/) | POS API layer, components, contexts, hooks |
-| 🐍 **Python/Django** | [`docs/python/`](python/) | Django sites, libs, templates, fusion components |
-| 🏗️ **Infrastructure** | [`docs/infrastructure/`](infrastructure/) | Proxy, databases, workers, Docker Compose, deployment |
-| 🌐 **Server** | [`docs/server/`](server/) | Sanic sidecar, REST endpoints, WebSocket |
-
-## Sites & Projects at a Glance
-
-| Project | Directory | Port | Stack | Domain |
-|---------|-----------|------|-------|--------|
-| **CTC Research** | `projects/ctc-research/` | 5070 | Django + Wagtail | ctc-research.com |
-| **LMS** | `projects/lms/` | 5071 | Django + Wagtail + LMS | structa.cloud |
-| **VResume** | `projects/portfolio/` | 5072 | Django + Wagtail | vresume.structa.cloud |
-| **Cypercloud** | `projects/cypercloud/` | 5073 | Django + AI Chat | localhost |
-| **POS** | `projects/pos/` | — | Tauri 2 + React + Rust | Desktop app |
-| **WWW (Shared Core)** | `projects/www/` | 5080 | Celery + Dramatiq | sentinel site |
-| **Libs** | `libs/` | — | Python packages | submodules |
-
-Each project has a dedicated documentation page in [`docs/sites/`](sites/) with:
-- **Guide** — Development commands and workflows
-- **Code Map** — Key files with paths and customization tags
-- **Remarks** — Notable gotchas, tips, and warnings
-- **Customization Key** — What's 🟢/🔴/🟡/🔵/⚪ per project
-
-### Project Documentation Pages
-
-| Page | Covers |
-|------|--------|
-| [`CTC Research`](sites/ctc-research.md) | CMS, auth, blog, LMS, profile, components |
-| [`LMS`](sites/lms.md) | Learning, courses, certifications, payments |
-| [`VResume`](sites/portfolio.md) | Resume builder, portfolio, blog, PDF export |
-| [`Cypercloud`](sites/cypercloud.md) | AI chat, template discovery, code editor |
-| [`POS`](sites/pos.md) | Desktop POS, Tauri, Rust, React, sidecar |
-| [`WWW (Shared Core)`](sites/www.md) | Task workers, Celery, Dramatiq, CI utils |
-| [`Libs`](sites/libs.md) | django-fusion, ceptor-ai libraries |
-
-## Customization Key (used throughout docs)
-
-| Tag | Meaning |
-|-----|---------|
-| 🟢 `customizable` | Safe to modify, extend, or override |
-| 🔴 `not-customizable` | Core framework code — modify at your own risk |
-| 🟡 `delegate` | Can be extended through delegation/hooks |
-| 🔵 `template` | Template-level customization only |
-| ⚪ `config` | Configured via settings/env vars only |
 
 ## Quick Links
 
+- [⭐ Recommendations first](recommendations.md)
 - [📚 Guides](guides/) — step-by-step tutorials
-- [🗺️ Plans](plans/) — consolidated implementation plans and status
-- [🚀 Getting Started](getting-started/)
+- [🗺️ Canonical plans](plans/README.md) — all active plans and historical evidence
 - [🔄 Recent Changes](recent-changes.md)
 - [🎯 Features Index](features/) — capabilities by project
-- [🔧 Backend Environment](back-env/)
-- [🦀 Rust Backend (POS)](rust/)
-- [⚛️ TypeScript Frontend (POS)](typescript/)
-- [🐍 Python/Django Core](python/)
-- [🏗️ Infrastructure & Deployment](infrastructure/)
-- [🌐 Sidecar Server](server/)
-- [🗄️ Databases](databases/)
+- [🏗️ Infrastructure & Deployment](dev/infrastructure/)
+- [🗄️ Databases](dev/databases/)
 - [🧪 Testing](tests/)
-- [🏢 Sites & Projects](sites/)
-- [🏛️ Core Architecture](core/)
+- [🤖 AI & Agents](ai/) — agent instructions and prompts
+- [🏛️ Project Architecture](dev/technical/architecture/)
+- [📐 Customization](dev/customization/)
 - [📦 Publishing](publish/) — marketplace & distribution
-- [🤖 Agents](agents/) — AI agent instructions
-- [💬 Prompts](prompts/) — prompt engineering
-- [📐 Best Practices](best-practices/) — Markdown conventions & usage
+- [🎨 Design](design/)
 
-## Code-Level READMEs
+## Project Documentation
 
-Simple READMEs at key code locations for quick on-the-spot guidance:
+| Product | Directory | Key Docs |
+|---|---|---|
+| **Precis LMS** | [`precis/`](precis/) | Configuration, Courses, Deployment |
+| **Landing-Fusion** | [`landing-fusion/`](landing-fusion/) | Frontend, Backend API, Deployment |
+| **Syntara/Cypercloud** | [`cypercloud/`](cypercloud/) | Infrastructure, Configuration, Features |
+| **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar (Django), Cloud |
+| **django-fusion** | [`libs/`](libs/) | Component guide, Viewsets, Templates |
+| **Shared Config** | [`dev/back-env/`](dev/back-env/) | Settings reference, Environment variables |
 
-| Location | Links to |
-|----------|----------|
-| `projects/shared/README.md` | → Shared core docs & [`docs/sites/www.md`](sites/www.md) |
-| `projects/shared/shared-methods.md` | → Worker task docs |
-| `projects/configs/README.md` | → `docs/back-env/` |
-| `projects/pos/src/api/README.md` | → `docs/typescript/api.md` |
-| `projects/pos/src/components/README.md` | → `docs/typescript/components.md` |
-| `projects/pos/sidecar/README.md` | → `docs/server/` |
-| `applications/proxy/README.md` | → `docs/infrastructure/proxy.md` |
-| `libs/django-fusion/README.md` | → django-fusion docs & [`docs/sites/libs.md`](sites/libs.md) |
-| `libs/ceptor-ai/README.md` | → ceptor-ai docs & [`docs/sites/libs.md`](sites/libs.md) |
-| `projects/cypercloud/README.md` | → AI Chat Customizer & [`docs/sites/cypercloud.md`](sites/cypercloud.md) |
+## Related
 
----
-
-*Structa Cloud — https://structa.cloud*
+- [`../AGENTS.md`](../AGENTS.md) — repository-wide AI agent instructions
+- [`recommendations.md`](recommendations.md) — recommended priorities
+- [`plans/README.md`](plans/README.md) — canonical plan registry
+- [`plans/document-lifecycle.md`](plans/document-lifecycle.md) — archive/delete policy

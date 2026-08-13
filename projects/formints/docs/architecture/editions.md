@@ -6,7 +6,7 @@
 
 ## Comparison at a glance
 
-| Feature | Community (`formintA/`) | Pro (`formint/`, merged) | Cloud (`formintB/`, pos-cloud) | pos-client (`formintC/`) |
+| Feature | Community (`formintA/`) | Pro (`formint/`, merged) | Cloud (`formint-cloud/`, formint-cloud) | pos-client (`formintC/`) |
 |---------|-------------------------|--------------------------|--------------------------------|--------------------------|
 | **Tauri shell** | ✅ | ✅ | ❌ (hosted) | ✅ (Vue 3) |
 | **Astro frontend** | ❌ | ✅ | ❌ | ❌ |
@@ -22,8 +22,8 @@
 > editions were merged into the Pro package at `formint/` — the merged package
 > owns the Pro Robyn sidecar (`formint/sidecar/`) and both legacy React UIs
 > were removed (the Astro + Alpine + HTMX frontend is canonical). The Cloud
-> master lives in `formintB/` as a **full Django setup** — the Django backend
-> (`backend/`, `pos-cloud`) serves the whole API surface (viewsets, fusion
+> master lives in `formint-cloud/` as a **full Django setup** — the Django backend
+> (`backend/`, `formint-cloud`) serves the whole API surface (viewsets, fusion
 > contract, bolt analytics); the Robyn sidecar that previously served it was
 > removed in favour of a second Django dev server on `:8767`. `formintA/` is
 > the Community tier (formerly forge-pos / pos-mini).
@@ -35,7 +35,7 @@
 | **Community** | [`formintA/`](../../formintA/) | `formint-pos` | **0.1.0** | Formint | `com.mammhoud.pos` |
 | **Standard** | *(merged into `formint/`)* | `formint-pos-sidecar` / `formint-pos-backend` | **0.1.0** | — | — |
 | **Pro** | [`formint/`](../../formint/) | `formint-pos` (frontend `formint-pos-frontend` 0.1.0 · backend `formint-pos-backend` 0.1.0 · sidecar `formint-pos-sidecar` 0.1.0) | **0.1.0** | Formint POS Professional | `cloud.structa.formint.pos` |
-| **Cloud** | [`formintB/`](../../formintB/) | `pos-cloud` | **0.1.0** | — | — |
+| **Cloud** | [`formint-cloud/`](../../formint-cloud/) | `formint-cloud` | **0.1.0** | — | — |
 | **pos-client** | [`formintC/`](../../formintC/) | `pos-client` | **1.0.0** (package) / **0.1.0** (Cargo + Tauri) | POS Client | `com.pos-client.app` |
 
 > **Standalone community version:** published as `github.com/mammhoud/formint-community` —
@@ -49,7 +49,7 @@
 | **Community** | Free, offline-first desktop POS (Rust/Diesel, no sidecar) | `formintA/` (`forge-pos`/`pos-mini`) | Minimal, Mini |
 | **Standard** | Standalone + embedded Robyn sidecar + cloud sync client | merged into `formint/` | Solo |
 | **Pro** | Multi-terminal + cloud master + django-bolt API | `formint/` (merged `formint-pos`) | Full |
-| **Cloud** | Hosted multi-terminal SaaS cloud master | `formintB/` (`pos-cloud`) | Cloud Server |
+| **Cloud** | Hosted multi-terminal SaaS cloud master | `formint-cloud/` (`formint-cloud`) | Cloud Server |
 
 ---
 
@@ -165,16 +165,16 @@
 
 ---
 
-### Cloud — `formintB/` (pos-cloud)
+### Cloud — `formint-cloud/` (formint-cloud)
 
 > Hosted multi-terminal SaaS as a **full Django setup**: the Django backend
-> (`backend/`, package `pos-cloud`) serves the entire API surface —
+> (`backend/`, package `formint-cloud`) serves the entire API surface —
 > django-fusion viewsets, the `/fusion/*` render-mode contract, the
 > Community-UI bridges, and the BoltAPI analytics dashboard — sharing
-> `pos_cloud.db`. The Robyn sidecar that previously served the REST surface
+> `formint_cloud.db`. The Robyn sidecar that previously served the REST surface
 > has been **removed**; a second Django dev server on `:8767` now answers the
 > sidecar-compatible paths the frontend expects. Cloud master that terminals
-> push their data to; automatic backups + monitoring (Cloud capability, landing sync Aug 2026).
+> push their data to; automatic backups + monitoring (Cloud capability).
 
 #### Added components — backend (`backend/`)
 
@@ -206,7 +206,7 @@
 - Device token auth (`DeviceToken` → BaseDeviceToken) for terminal registration
 - django-bolt + django-fusion dashboard on ASGI (channels/daphne), PostgreSQL via psycopg2
 - **Full Django API surface** — all CRUD, fusion contract, and Community-UI bridges served by Django (`:8767` API / `:8082` admin) with the Robyn sidecar removed
-- Automatic cloud backups + monitoring (Cloud capability, landing sync Aug 2026)
+- Automatic cloud backups + monitoring (Cloud capability)
 
 ---
 
@@ -250,12 +250,12 @@ Astro → HTMX/JSON → Django Ninja backend → Django ORM → SQLite
 React → Tauri Commands → Rust/Diesel → SQLite
 ```
 
-### pos-cloud (Cloud)
+### Formint Cloud (Cloud)
 ```
 Branches → sync push → Django ASGI (channels/daphne)   [backend/]
   └── SyncQueue → SyncBroker → ConflictResolver → Broadcast to branches
   └── Unfold admin + Bolt dashboard (CRM + reports)
-  └── SQLite (pos_cloud.db) — PostgreSQL in production via psycopg2
+  └── SQLite (formint_cloud.db) — PostgreSQL in production via psycopg2
   └── Django API server (:8767) — same project; full CRUD + /fusion/* + bridges
 ```
 
@@ -276,6 +276,7 @@ Vue 3 → Tauri Commands → Rust → SQLite
 ## Related docs
 
 - [Canonical edition naming (ADR 0001)](../adr/0001-pos-editions-naming.md)
+- [Pro ↔ Cloud Sync Contract](pro-cloud-sync-contract.md)
 - [Table & column comparison across editions](table-column-comparison.md)
 - [Sidecar migration guide](sidecar-migration-guide.md)
 - [POS architecture (all editions)](pos-architecture.md)

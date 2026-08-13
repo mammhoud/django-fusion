@@ -1,9 +1,11 @@
 # Worker Consolidation Plan
 > **Tags:** #worker #celery #consolidation
-
-> Goal: replace the three per-site Celery worker containers (`lms-worker`,
-> `ctc-worker`, `vresume-worker`) with **one** shared worker subscribed to all
-> three queues, while preserving per-site isolation at the queue level.
+>
+> **Superseded by:** [`../django-fusion/django-fusion-tasks-mcp-plan.md`](../django-fusion/django-fusion-tasks-mcp-plan.md) (2026-08-10)
+>
+> The consolidation goal (one shared worker instead of per-site workers) is still
+> valid, but the implementation strategy is now governed by the django-fusion Tasks
+> & MCP plan, which replaces Celery entirely with Dramatiq via a unified task API.
 
 ## Current state (monorepo, July 2026)
 

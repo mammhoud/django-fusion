@@ -106,7 +106,7 @@ Handles:
                 <input type="checkbox" 
                        name="tags" 
                        value="{{ tag.id }}"
-                       {% if tag.id|stringformat:"s" in request.GET.getlist|add:["tags"] %}checked{% endif %}>
+                       {% if tag.id|stringformat:"s" in request.GET.getlist %}checked{% endif %}>
                 {{ tag.name }} ({{ tag.course_count }})
               </label>
             {% endfor %}
@@ -193,6 +193,3 @@ Handles:
   </div>
 </div>
 
-<style>
-  {% comp "learning/course_catalog.scss" / %}
-</style>

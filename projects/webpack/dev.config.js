@@ -1,3 +1,15 @@
+/**
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  DEPRECATED — Use per-project webpack configs instead.             ║
+ * ║                                                                    ║
+ * ║  landing-fusion → webpack/landing-fusion.config.js                 ║
+ * ║  precis         → webpack/precis.config.js                         ║
+ * ║                                                                    ║
+ * ║  These extend projects/webpack/base.config.js with the shared      ║
+ * ║  common.config.js providing identical loader/plugin support.       ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ */
+
 const path = require('path');
 const webpack = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader');

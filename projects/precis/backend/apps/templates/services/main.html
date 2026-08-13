@@ -6,15 +6,15 @@
     <!-- Main Content Sections -->
     {% for block in page.body %}
         {% if block.block_type == 'services_section' %}
-            {% comp "services/includes/services_section.html" /%}
+            {% comp "services/includes/services_section.html" block=block /%}
         {% elif block.block_type == 'counter_section' %}
-            {% comp "services/includes/counter_section.html" /%}
+            {% comp "services/includes/counter_section.html" block=block /%}
         {% elif block.block_type == 'testimonial_section' %}
-            {% comp "services/includes/testimonial_section.html" /%}
+            {% comp "services/includes/testimonial_section.html" block=block /%}
         {% elif block.block_type == 'pricing_section' %}
-            {% comp "services/includes/pricing_section.html" /%}
+            {% comp "services/includes/pricing_section.html" block=block /%}
         {% elif block.block_type == 'clients' %}
-            {% comp "services/includes/clients_section.html" /%}
+            {% comp "services/includes/clients_section.html" block=block /%}
         {% endif %}
     {% endfor %}
 </main>

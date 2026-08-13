@@ -39,7 +39,6 @@ configure_site_environment("lms-fusion", module="FUSION", default_port=5070)
 # ═══════════════════════════════════════════════════════════════════
 from configs.default import *  # noqa: E402,F401,F403
 
-
 # ═══════════════════════════════════════════════════════════════════
 # ALLOWED_HOSTS — the Django test client connects as ``testserver``
 # ═══════════════════════════════════════════════════════════════════
@@ -65,6 +64,8 @@ if "allauth.headless" not in INSTALLED_APPS:
     INSTALLED_APPS.append("allauth.headless")
 if "apps.auth.apps.PrecisAuthConfig" not in INSTALLED_APPS:
     INSTALLED_APPS.append("apps.auth.apps.PrecisAuthConfig")
+if "apps.tasks" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("apps.tasks")
 
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
@@ -229,3 +230,13 @@ if "STATICFILES_DIRS" in dir():
         d for d in STATICFILES_DIRS
         if not (isinstance(d, tuple) and str(d[1]) == str(_styles_dup))
     ]
+
+# Component templates: the flat single-file tree under ``apps/components/``
+# (contact.sections.field, contact.sections.method, blocks.partials.form_field,
+# content.page_title, ...) only resolves when the apps root is a template dir,
+# because django-fusion prefixes dotted names with ``components/``, ``partials/``
+# or ``tags/`` when generating candidate names. Append it LAST so it never
+# shadows the nested ``name/name.html`` trees already registered above.
+_APPS_TEMPLATE_ROOT = _SITE_DIR / "apps"
+if str(_APPS_TEMPLATE_ROOT) not in [str(d) for d in TEMPLATES[0]["DIRS"]]:
+    TEMPLATES[0]["DIRS"].append(str(_APPS_TEMPLATE_ROOT))

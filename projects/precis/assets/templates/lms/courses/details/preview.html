@@ -21,7 +21,7 @@
                             {% if block.block_type == 'preview_video' %}
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     <div class="ratio ratio-16x9">
-                                        {% comp "blocks/enhanced_video.html" block=block / %}
+                                        {% comp "content.media.embed_block" value=block.value / %}
                                     </div>
                                 </div>
                             {% endif %}

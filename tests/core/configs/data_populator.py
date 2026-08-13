@@ -23,6 +23,9 @@ from PIL import Image as PILImage
 
 # === Django Setup ===
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+_PRECIS_BACKEND = WORKSPACE_ROOT / "projects" / "precis" / "backend"
+if str(_PRECIS_BACKEND) not in sys.path:
+    sys.path.insert(0, str(_PRECIS_BACKEND))
 SITE_NAME = os.environ.get("DJANGO_SITE") or os.environ.get("DJANGO_WEBSITE") or os.environ.get("WEBSITE") or "vresume"
 
 from configs.site import configure_site_environment, site_dir_for

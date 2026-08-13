@@ -31,10 +31,19 @@ from typing import Iterable
 # ---------------------------------------------------------------------------
 # Path helpers
 # ---------------------------------------------------------------------------
-ROOT = Path(__file__).resolve().parent.parent.parent
-CORE = ROOT
-PROXY = ROOT.parent / "proxy"
-CTC = CORE / "ctc-research"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+APPLICATIONS_ROOT = REPOSITORY_ROOT / "applications"
+PROJECTS_ROOT = REPOSITORY_ROOT / "projects"
+PROXY = APPLICATIONS_ROOT / "proxy"
+CTC = PROJECTS_ROOT / "ctc-research"
+PRECIS = PROJECTS_ROOT / "precis"
+
+
+def site_root(site: str) -> Path:
+    """Resolve product source from the current repository layout."""
+    if site in {"lms", "lms-fusion", "structa", "structa.cloud"}:
+        return PRECIS
+    return PROJECTS_ROOT / site
 
 
 class Colors:
@@ -123,7 +132,12 @@ def check_templates(site: str) -> CheckResult:
 def check_django_settings(site: str) -> CheckResult:
     """Verify Django static/media settings point to expected directories."""
     result = CheckResult()
-    assets_py = CORE / "configs" / "base" / "assets.py"
+    product_root = site_root(site)
+    assets_py = (
+        product_root / "backend" / "configs" / "base" / "assets.py"
+        if (product_root / "backend" / "configs").exists()
+        else product_root / "configs" / "base" / "assets.py"
+    )
     text = read_text(assets_py)
 
     expected_patterns = [
@@ -143,7 +157,7 @@ def check_django_settings(site: str) -> CheckResult:
 def check_webpack_config(site: str) -> CheckResult:
     """Verify webpack output path and publicPath match Django BUNDLE_DIR_NAME."""
     result = CheckResult()
-    webpack_main = CORE / "webpack" / "main.config.js"
+    webpack_main = site_root(site) / "webpack" / "main.config.js"
     text = read_text(webpack_main)
 
     if f'"{site}"' not in text and f"'{site}'" not in text:
@@ -219,7 +233,7 @@ def check_traefik_routing(site: str) -> CheckResult:
 def check_bundles_json(site: str, strict: bool) -> CheckResult:
     """Optionally verify that bundles.json exists and is valid JSON."""
     result = CheckResult()
-    bundles_json = CTC / "assets" / "bundles" / site / "bundles.json"
+    bundles_json = site_root(site) / "assets" / "bundles" / site / "bundles.json"
 
     if not bundles_json.exists():
         msg = f"{bundles_json} not found. Run: npm --prefix projects/assets run build:{site_alias(site)}"
@@ -286,6 +300,15 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     site = args.site
+    product_root = site_root(site)
+
+    if not product_root.exists():
+        log_err(
+            f"Cannot verify {site!r}: product root {product_root} is absent. "
+            "This legacy verifier requires the retired CTC project; use the "
+            "owning product's local asset checks instead."
+        )
+        return 1
 
     log_info(f"Verifying asset pipeline for site: {site}")
 

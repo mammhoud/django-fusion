@@ -30,9 +30,10 @@ class WebsiteLayoutTests(SimpleTestCase):
                 assert (ROOT / project / "Makefile").exists()
                 assert (ROOT / project / "assets" / "Makefile").exists()
 
-    def test_each_website_has_local_settings_and_workspace_config(self):
-        assert (ROOT / "configs" / "settings" / "conf.py").exists()
-        assert (ROOT / "configs" / "site.py").exists()
+    def test_each_website_has_local_settings_and_project_owned_config(self):
+        precis_config = ROOT / "precis" / "backend" / "configs"
+        assert (precis_config / "settings" / "conf.py").exists()
+        assert (precis_config / "site.py").exists()
         for website, directory in WEBSITE_DIRS.items():
             with self.subTest(website=website):
                 assert (ROOT / directory / "settings.py").exists()
@@ -200,7 +201,9 @@ class SiteConfigTests(SimpleTestCase):
     def test_site_yaml_aliases_and_security_defaults(self):
         import importlib.util
 
-        spec = importlib.util.spec_from_file_location("workspace_site_config", ROOT / "configs" / "site.py")
+        spec = importlib.util.spec_from_file_location(
+            "precis_site_config", ROOT / "precis" / "backend" / "configs" / "site.py"
+        )
         site_module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(site_module)

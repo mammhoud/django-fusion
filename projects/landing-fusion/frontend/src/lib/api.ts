@@ -144,6 +144,15 @@ export interface ContactData {
   topics: string[];
 }
 
+export interface BlogSnippet {
+  title?: string;
+  language?: string;
+  code?: string;
+  render_preview?: boolean;
+  related_post_href?: string;
+  related_post_title?: string;
+}
+
 export interface PageData {
   id?: number;
   slug: string;
@@ -182,7 +191,8 @@ export interface PageData {
   editions?: Record<string, any>[];
   comparison?: Record<string, any>[];
   applications?: Record<string, any>[];
-  snippets?: Record<string, any>[];
+  /** Flattened BlogPostPage snippet items from the page API. */
+  snippets?: BlogSnippet[];
   /** Editorial media-gallery blocks (ProductPage.gallery — screenshots, GIFs, videos). */
   gallery?: Record<string, any>[];
   /** Deduplicated edition captures used by the product detail gallery. */

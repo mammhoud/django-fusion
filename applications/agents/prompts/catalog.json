@@ -1,0 +1,1139 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "structa-cloud-agent-prompts",
+  "description": "Reusable prompts for Structa Cloud coding agents. Prompts are planning and implementation instructions only; they never grant shell, filesystem, migration, credential, or deployment authority.",
+  "source_of_truth": {
+    "agent_roles": "applications/agents/agent/*.json",
+    "scoped_skills": "applications/agents/skills/*/SKILL.md",
+    "project_rules": "Nearest AGENTS.md plus the project README and Makefile"
+  },
+  "safety_contract": [
+    "Read the repository root AGENTS.md and every nearer AGENTS.md before editing.",
+    "Preserve unrelated worktree changes and inspect git status before modifying files.",
+    "Use the narrowest project-owned validation command; do not run destructive commands without explicit authorization.",
+    "Never put secrets, API keys, private environment values, or personal data in prompt output.",
+    "Treat generated code as a draft until reviewed, tested, and explicitly applied by the user or coding agent.",
+    "Deployment, migration, fixture loading, data deletion, and production changes require an explicit separate decision."
+  ],
+  "skill_prompts": [
+    {
+      "id": "skill.website-redesign-audit",
+      "title": "Audit and redesign an existing website",
+      "description": "Apply the repository's anti-slop frontend, high-end visual design, accessibility, responsive, and project-boundary rules before changing an existing website.",
+      "agent": "frontend-developer",
+      "supporting_agents": [
+        "product-manager",
+        "code-reviewer",
+        "test-engineer"
+      ],
+      "skills": [
+        "design-taste-frontend",
+        "redesign-existing-projects",
+        "high-end-visual-design",
+        "image-to-code"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis",
+        "formint",
+        "syntara"
+      ],
+      "inputs": [
+        "project path",
+        "page or surface",
+        "target audience and user journey",
+        "known visual/content problems",
+        "available assets",
+        "required validation commands"
+      ],
+      "prompt": "Act as the frontend lead for {{project}}. First read the root and nearest AGENTS.md files, the project README, the owning layout/component files, and the relevant tests. Classify the work as greenfield, redesign, or bug fix. Produce a design read covering hierarchy, typography, palette, composition variance, responsive behavior, accessibility, interaction states, content clarity, asset ownership, and performance. Reuse the project's existing component and token systems. Do not introduce generic centered-hero/three-card layouts, arbitrary gradients, fake screenshots, or cross-project assets. Before editing, list exact files and a minimal implementation plan. After editing, run the narrowest frontend/backend checks and report any unavailable browser or image-generation tools.",
+      "expected_output": [
+        "design diagnosis",
+        "file-level change plan",
+        "implementation notes",
+        "responsive/accessibility checklist",
+        "validation results",
+        "remaining risks"
+      ],
+      "safety": "Read-only during the audit phase. Any implementation must remain inside the owning project and be reviewed before deployment."
+    },
+    {
+      "id": "skill.django-fusion-component",
+      "title": "Create or improve a django-fusion component",
+      "description": "Create a registered `{% comp %}` component with props, slots, project-owned templates, and tests while preserving django-fusion registry conventions.",
+      "agent": "django-coder",
+      "supporting_agents": [
+        "django-architect",
+        "frontend-developer",
+        "code-reviewer"
+      ],
+      "skills": [
+        "documentation",
+        "design-taste-frontend"
+      ],
+      "projects": [
+        "django-fusion",
+        "landing-fusion",
+        "precis",
+        "formint"
+      ],
+      "inputs": [
+        "component name",
+        "owning project",
+        "props and types",
+        "named slots",
+        "responsive states",
+        "template and test locations"
+      ],
+      "prompt": "Act as a django-fusion component engineer. Read libs/django-fusion/AGENTS.md, the nearest project AGENTS.md, the component registry implementation, existing `{% comp %}` examples, and relevant tests. Locate an existing component to extend before creating a new one. Define the smallest reusable template/API, use canonical django_fusion imports, preserve prop/slot escaping, avoid IDs for styling, and keep project branding/assets in the project. Add or update focused rendering tests and documentation. Do not execute client-supplied template source, write generated output, or move project-specific templates into the shared library without proving that multiple active products need the behavior.",
+      "expected_output": [
+        "component contract",
+        "template and registration changes",
+        "usage example",
+        "focused tests",
+        "documentation links",
+        "compatibility notes"
+      ],
+      "safety": "Generated component code is a draft. No arbitrary template compilation, filesystem writes through MCP, shell execution, or deployment."
+    },
+    {
+      "id": "skill.wagtail-content-model",
+      "title": "Design a Wagtail field or StreamField block",
+      "description": "Plan a Wagtail field/block change including editor UX, migrations, localization, permissions, template rendering, and tests.",
+      "agent": "django-coder",
+      "supporting_agents": [
+        "django-architect",
+        "product-manager",
+        "test-engineer"
+      ],
+      "skills": [
+        "wagtail-field-customizer",
+        "documentation"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis",
+        "formint"
+      ],
+      "inputs": [
+        "page or snippet model",
+        "field/block name and type",
+        "editor requirements",
+        "required/optional behavior",
+        "localization and permissions",
+        "rendering surface"
+      ],
+      "prompt": "Act as a Wagtail content-model specialist. Read the owning project's AGENTS.md, model/block modules, content panels, migrations, templates, localization rules, and tests. Confirm the field belongs to the correct product boundary. Propose the model/block definition, panel registration, migration impact, editor labels/help text, validation, permissions, translations, API/render contract, and focused tests. Do not run makemigrations or migrate automatically; those are explicit project operations requiring review. Preserve existing StreamField value contracts and use `{% include_block %}` for Wagtail blocks.",
+      "expected_output": [
+        "schema recommendation",
+        "editor/admin impact",
+        "migration plan",
+        "template/API contract",
+        "test plan",
+        "rollback considerations"
+      ],
+      "safety": "Never apply migrations or alter production data as part of prompt execution."
+    },
+    {
+      "id": "skill.mcp-readonly-workflow",
+      "title": "Build or use a safe MCP workflow",
+      "description": "Design read-only MCP tools, prompts, and resources with bounded schemas, stable output, authentication, CSRF/origin policy, and no arbitrary execution.",
+      "agent": "ceptor-ai-toolsmith",
+      "supporting_agents": [
+        "django-architect",
+        "security-auditor",
+        "code-reviewer",
+        "test-engineer"
+      ],
+      "skills": [
+        "mcp-builder",
+        "mcp-deploy-verifier"
+      ],
+      "projects": [
+        "django-fusion",
+        "landing-fusion",
+        "precis",
+        "formint",
+        "syntara"
+      ],
+      "inputs": [
+        "tool or prompt purpose",
+        "transport",
+        "input schema",
+        "output schema",
+        "authorization boundary",
+        "test command"
+      ],
+      "prompt": "Act as the MCP integration specialist. Read applications/agents/AGENTS.md, the existing MCP server, the relevant project AGENTS.md files, and the MCP builder reference. Keep imports side-effect free and optional dependencies lazy. Define bounded JSON-compatible inputs and structured outputs with actionable errors. Separate read-only catalog/analysis operations from any future apply operation. Require project-level authentication, CSRF/origin policy for browser POSTs, rate limiting, audit logging, and explicit human approval for mutations. Never add shell execution, arbitrary filesystem reads/writes, migrations, provider credentials, or deployment behavior to a metadata endpoint. Add deterministic unit/contract tests and document the transport.",
+      "expected_output": [
+        "threat model",
+        "tool/prompt schema",
+        "authorization model",
+        "implementation plan",
+        "contract tests",
+        "operations notes"
+      ],
+      "safety": "Read-only by default. Any mutation requires a separately reviewed capability with diff preview, audit event, and rollback.",
+      "payload_examples": [
+        {
+          "title": "List all designer tools",
+          "method": "GET",
+          "endpoint": "/designer/tools",
+          "response": "{\"ok\": true, \"tools\": [{\"name\": \"designer.component_catalog\", \"title\": \"Browse fusion components\", ...}]}"
+        },
+        {
+          "title": "List prompt catalog",
+          "method": "GET",
+          "endpoint": "/prompts",
+          "response": "{\"ok\": true, \"count\": 15, \"prompts\": [{\"id\": \"skill.interactive-designer\", ...}]}"
+        },
+        {
+          "title": "Get one prompt by ID",
+          "method": "GET",
+          "endpoint": "/prompts/skill.website-redesign-audit",
+          "response": "{\"ok\": true, \"prompt\": {\"id\": \"skill.website-redesign-audit\", ...}}"
+        }
+      ]
+    },
+    {
+      "id": "skill.asset-template-health",
+      "title": "Audit templates, assets, logos, and preloaders",
+      "description": "Find broken template references, duplicate partials, hardcoded asset paths, logo fallbacks, missing preloaders, and incorrect static/media ownership.",
+      "agent": "template-cypercloud",
+      "supporting_agents": [
+        "frontend-developer",
+        "django-coder",
+        "test-engineer"
+      ],
+      "skills": [
+        "scss-bem-converter",
+        "redesign-existing-projects"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis",
+        "formint",
+        "syntara"
+      ],
+      "inputs": [
+        "project path",
+        "template/assets roots",
+        "runtime rendering road",
+        "known broken URL or template",
+        "static build command"
+      ],
+      "prompt": "Act as a template and asset health specialist for {{project}}. Read the root and nearest AGENTS.md files, template search-path settings, URL routing, staticfiles configuration, frontend asset config, and relevant tests. Search for missing preloader styles, duplicate layout/meta partials, logo fallback failures, hardcoded `/static` or media paths, cross-project asset leakage, and generated-file edits. Classify each finding as reachable, legacy-but-reachable, or unreachable. Prefer `{% static %}`, `{% comp %}`, `{% include_block %}`, and project-owned paths according to the runtime. Fix only confirmed issues, add focused checks, and verify both full-page and fragment roads.",
+      "expected_output": [
+        "reachable-path inventory",
+        "finding table with file/line",
+        "minimal fixes",
+        "template/build tests",
+        "remaining legacy items"
+      ],
+      "safety": "Do not delete legacy templates until URL reachability is demonstrated and the user approves archival."
+    },
+    {
+      "id": "skill.background-jobs-migration",
+      "title": "Plan or verify Dramatiq background jobs",
+      "description": "Replace unsafe or fragmented task execution with project-owned Dramatiq workers, retries, idempotency, observability, and MCP-safe enqueue boundaries.",
+      "agent": "django-architect",
+      "supporting_agents": [
+        "django-coder",
+        "devops-engineer",
+        "security-auditor",
+        "test-engineer"
+      ],
+      "skills": [
+        "mcp-builder",
+        "deployment-documentation"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis",
+        "formint",
+        "syntara"
+      ],
+      "inputs": [
+        "current task runner",
+        "queue/broker",
+        "task inventory",
+        "retry policy",
+        "worker command",
+        "deployment environment"
+      ],
+      "prompt": "Act as the background-jobs architect. Inspect the current worker configuration, task modules, broker settings, Compose/Make targets, lifecycle hooks, and tests before proposing changes. Map each task to an owning project, pass stable IDs rather than stale model objects, define idempotency keys, retry/backoff policy, timeout, dead-letter behavior, structured task status, and operational metrics. Keep MCP tools as authenticated enqueue/status adapters; they must not execute arbitrary code or accept unbounded payloads. Do not run migrations, purge queues, stop workers, or deploy without explicit authorization. Preserve compatibility during a staged Celery-to-Dramatiq migration and provide rollback criteria.",
+      "expected_output": [
+        "task inventory",
+        "worker/broker design",
+        "migration phases",
+        "failure/retry model",
+        "tests and smoke checks",
+        "rollback plan"
+      ],
+      "safety": "Queue purges, production worker changes, migrations, and deployment are separate approval gates."
+    },
+    {
+      "id": "skill.interactive-designer",
+      "title": "Interactively design with django-fusion components",
+      "description": "Browse the registered component catalog, suggest Wagtail fields, generate form/table scaffolds, audit website structure, and preview components safely through the MCP designer.",
+      "agent": "django-coder",
+      "supporting_agents": [
+        "django-architect",
+        "frontend-developer",
+        "code-reviewer"
+      ],
+      "skills": [
+        "mcp-builder",
+        "documentation"
+      ],
+      "projects": [
+        "django-fusion",
+        "landing-fusion",
+        "precis",
+        "formint"
+      ],
+      "inputs": [
+        "design intent",
+        "target project",
+        "component or field name",
+        "existing models/templates"
+      ],
+      "prompt": "Act as a django-fusion interactive designer. Read applications/agents/AGENTS.md, the MCP designer tools at /designer/tools, and the owning project AGENTS.md. Start by browsing /designer/component-catalog to discover existing components before designing new ones. Use /designer/wagtail-field for field recommendations, /designer/form-scaffold for form drafts, /designer/table-scaffold for table drafts, and /designer/preview to safely preview registered components with JSON props. All tools are read-only or pure-generation; never apply generated code without explicit project-owner review, migration approval, and test verification. Keep imports canonical and follow the owning project's component, form, and table conventions.",
+      "expected_output": [
+        "component or field draft",
+        "form/table scaffold code",
+        "design recommendation",
+        "review checklist",
+        "next steps"
+      ],
+      "safety": "Read-only and pure-generation. No filesystem writes, template compilation, migration execution, or deployment. All generated code requires separate human-reviewed application.",
+      "payload_examples": [
+        {
+          "title": "Browse component catalog",
+          "method": "GET",
+          "endpoint": "/designer/component-catalog?query=hero&limit=10",
+          "response": "{\"ok\": true, \"components\": [{\"name\": \"blocks/hero.html\", \"identity\": \"...\", \"has_assets\": true}]}"
+        },
+        {
+          "title": "Audit a website surface (POST)",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.website_audit",
+              "arguments": {
+                "project": "landing-fusion",
+                "sections": [
+                  {
+                    "name": "hero",
+                    "kind": "hero",
+                    "has_visual": true,
+                    "has_cta": true,
+                    "text_words": 45
+                  },
+                  {
+                    "name": "features",
+                    "kind": "content",
+                    "is_multi_column": true,
+                    "mobile_strategy": "stack"
+                  },
+                  {
+                    "name": "cta-footer",
+                    "kind": "cta",
+                    "has_eyebrow": true
+                  }
+                ],
+                "surface": "website",
+                "audience": "developer teams",
+                "design_variance": 7
+              }
+            }
+          }
+        },
+        {
+          "title": "Preview a registered component",
+          "method": "GET",
+          "endpoint": "/designer/preview?name=blocks/hero.html&max_chars=5000",
+          "response": "{\"ok\": true, \"name\": \"blocks/hero.html\", \"html\": \"<section>...</section>\", \"truncated\": false}"
+        }
+      ]
+    },
+    {
+      "id": "skill.designer-wagtail-block",
+      "title": "Design a Wagtail StreamField block through MCP",
+      "description": "Use the MCP /designer/wagtail-field tool to recommend a compatible Wagtail StructBlock, ChoiceBlock, or StreamField block, then integrate it with django-fusion component rendering.",
+      "agent": "django-coder",
+      "supporting_agents": [
+        "django-architect",
+        "code-reviewer",
+        "test-engineer"
+      ],
+      "skills": [
+        "wagtail-field-customizer",
+        "mcp-builder"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis"
+      ],
+      "inputs": [
+        "block purpose",
+        "field type (char/text/rich_text/image/choice/struct/stream)",
+        "owning page or snippet model",
+        "editor requirements"
+      ],
+      "prompt": "Act as a Wagtail field designer with MCP tooling. First call GET /designer/wagtail-field?field_type=<type>&name=<name> to get a validated field recommendation. Review the returned kwargs, import path, and panel guidance against the owning project's existing blocks (check blocks.py and wagtail_hooks.py). Propose the block definition, StreamField registration, migration impact, template path, and {% comp %} or {% include_block %} usage. Do not run makemigrations or migrate. Preserve existing StreamField value contracts.",
+      "expected_output": [
+        "field recommendation from MCP",
+        "block code draft",
+        "StreamField registration",
+        "template recommendation",
+        "migration notes"
+      ],
+      "safety": "MCP tool is read-only. Generated code requires separate review, migration creation, and deployment approval.",
+      "payload_examples": [
+        {
+          "title": "Suggest a CharField",
+          "method": "GET",
+          "endpoint": "/designer/wagtail-field?field_type=char&name=subtitle&label=Subtitle&required=False",
+          "response": "{\"ok\": true, \"field\": {\"name\": \"subtitle\", \"class\": \"CharField\", \"kwargs\": {\"max_length\": 255, \"blank\": true}}}"
+        },
+        {
+          "title": "Suggest a StreamField block (POST)",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.wagtail_field",
+              "arguments": {
+                "field_type": "struct",
+                "name": "TestimonialBlock",
+                "label": "Testimonial",
+                "help_text": "Customer testimonial with photo and quote"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill.designer-form-table",
+      "title": "Scaffold a form or table through the MCP designer",
+      "description": "Use /designer/form-scaffold or /designer/table-scaffold to generate review-only django-fusion form or table code, then wire it into a RoutableComponent or FragmentComponent.",
+      "agent": "django-coder",
+      "supporting_agents": [
+        "django-architect",
+        "frontend-developer",
+        "test-engineer"
+      ],
+      "skills": [
+        "mcp-builder",
+        "documentation"
+      ],
+      "projects": [
+        "django-fusion",
+        "landing-fusion",
+        "precis",
+        "formint"
+      ],
+      "inputs": [
+        "form or table purpose",
+        "class name",
+        "fields or columns",
+        "style framework"
+      ],
+      "prompt": "Act as a django-fusion forms/tables engineer. Start with /designer/form-scaffold?class_name=<name>&style_framework=<bootstrap|tailwind> or /designer/table-scaffold?class_name=<name> to generate a scaffold. Review the output against the owning project's existing forms (fragments/forms/) and tables (fragments/tables/). Integrate the scaffold into a RoutableComponent with FormMixin or TableMixin. Use {% comp %} for the template rendering, preserve HTMX attributes, and add focused tests for validation, empty state, and pagination.",
+      "expected_output": [
+        "form or table scaffold",
+        "component integration code",
+        "template updates",
+        "test plan"
+      ],
+      "safety": "Scaffolds are review-only drafts. No migrations, file writes, or deployment through MCP.",
+      "payload_examples": [
+        {
+          "title": "Scaffold a form with fields (POST)",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.form_scaffold",
+              "arguments": {
+                "class_name": "ContactForm",
+                "fields": [
+                  {
+                    "name": "full_name",
+                    "type": "char",
+                    "label": "Full Name",
+                    "required": true
+                  },
+                  {
+                    "name": "email",
+                    "type": "email",
+                    "label": "Email Address",
+                    "required": true
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message",
+                    "help_text": "Tell us about your project"
+                  }
+                ],
+                "style_framework": "bootstrap"
+              }
+            }
+          }
+        },
+        {
+          "title": "Scaffold a table with columns (POST)",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.table_scaffold",
+              "arguments": {
+                "class_name": "CourseTable",
+                "columns": [
+                  {
+                    "name": "title",
+                    "label": "Course",
+                    "orderable": true
+                  },
+                  {
+                    "name": "instructor",
+                    "orderable": true
+                  },
+                  {
+                    "name": "status",
+                    "orderable": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "title": "Simple form scaffold (GET)",
+          "method": "GET",
+          "endpoint": "/designer/form-scaffold?class_name=TestForm&style_framework=tailwind"
+        },
+        {
+          "title": "Simple table scaffold (GET)",
+          "method": "GET",
+          "endpoint": "/designer/table-scaffold?class_name=TestTable"
+        }
+      ]
+    },
+    {
+      "id": "skill.designer-mcp-auth",
+      "title": "Secure django-fusion MCP designer endpoints",
+      "description": "Add API-key authentication and localhost fallback to the DesignerMCPRouter, mirroring the django-fusion designer/views.py staff/superuser + DEBUG/localhost policy.",
+      "agent": "ceptor-ai-toolsmith",
+      "supporting_agents": [
+        "django-architect",
+        "security-auditor",
+        "code-reviewer"
+      ],
+      "skills": [
+        "mcp-builder",
+        "mcp-deploy-verifier"
+      ],
+      "projects": [
+        "django-fusion",
+        "landing-fusion",
+        "precis",
+        "formint"
+      ],
+      "inputs": [
+        "FUSION_MCP_DESIGNER_API_KEY",
+        "X-API-Key header",
+        "FastAPI dependency injection",
+        "_DesignerAuth class"
+      ],
+      "prompt": "Act as the MCP security specialist. Read libs/django-fusion/src/django_fusion/plugins/designer/mcp_router.py and designer/views.py. Implement a two-tier auth policy: (1) API-key mode — when FUSION_MCP_DESIGNER_API_KEY is set, require a matching X-API-Key header on all /designer/ endpoints; (2) Localhost fallback — when no key is configured, allow only 127.0.0.1, ::1, and localhost callers. Use FastAPI Depends() for the auth dependency and an exception handler that returns 403 JSON with a descriptive error. Never hardcode keys in source; resolve from env, Django settings, or the DesignerMCPRouter constructor argument.",
+      "expected_output": [
+        "auth dependency code",
+        "exception handler",
+        "403 error contract",
+        "AGENTS.md auth docs",
+        "test plan"
+      ],
+      "safety": "API key must never appear in source, logs, or prompt output. Localhost-only is the safe default."
+    },
+    {
+      "id": "skill.designer-json-rpc",
+      "title": "Add POST JSON-RPC tools/call to the MCP designer",
+      "description": "Implement POST /designer/tools/call accepting MCP-compliant JSON-RPC bodies for all 8 designer tools, including complex website_audit, webapp_enhancement_plan, and validate operations.",
+      "agent": "ceptor-ai-toolsmith",
+      "supporting_agents": [
+        "django-coder",
+        "code-reviewer",
+        "test-engineer"
+      ],
+      "skills": [
+        "mcp-builder"
+      ],
+      "projects": [
+        "django-fusion"
+      ],
+      "inputs": [
+        "MCP_DESIGNER_TOOLS registry",
+        "_get_handler lookup",
+        "JSON-RPC 2.0 error codes"
+      ],
+      "prompt": "Act as the MCP protocol specialist. Read plugins/designer/mcp_router.py, tools.py, and handlers.py. Add a POST /designer/tools/call endpoint that accepts {jsonrpc: '2.0', id, method: 'tools/call', params: {name: 'designer.website_audit', arguments: {...}}}. Validate jsonrpc version, method name, and params shape before dispatch. Return {jsonrpc: '2.0', id, result: {...}} on success or {jsonrpc: '2.0', id, error: {message}} with proper HTTP status codes (400/404/500). All 8 designer tools must be callable through this endpoint. Expand the tools listing to show all 8 tools.",
+      "expected_output": [
+        "POST handler code",
+        "JSON-RPC error shape",
+        "updated tools list",
+        "AGENTS.md docs",
+        "curl test examples"
+      ],
+      "safety": "JSON-RPC body is validated before dispatch. Handlers remain read-only. No arbitrary execution.",
+      "payload_examples": [
+        {
+          "title": "List available tools",
+          "method": "GET",
+          "endpoint": "/designer/tools",
+          "response": "{\"ok\": true, \"tools\": [{\"name\": \"designer.website_audit\", \"title\": \"Audit a website surface\", ...}]}"
+        },
+        {
+          "title": "Call website_audit via JSON-RPC",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.website_audit",
+              "arguments": {
+                "project": "landing-fusion",
+                "sections": [
+                  {
+                    "name": "hero",
+                    "kind": "hero",
+                    "text_words": 30
+                  }
+                ],
+                "surface": "website"
+              }
+            }
+          },
+          "response": "{\"jsonrpc\": \"2.0\", \"id\": 1, \"result\": {\"project\": \"landing-fusion\", \"scores\": {\"overall\": 78, \"finding_count\": 4}}}"
+        },
+        {
+          "title": "Validate a design draft",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.validate",
+              "arguments": {
+                "draft": {
+                  "kind": "django_form",
+                  "class_name": "ContactForm",
+                  "fields": [
+                    {
+                      "name": "email",
+                      "type": "email",
+                      "required": true
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill.skeleton-loading",
+      "title": "Implement per-component skeleton loading with analyzer integration",
+      "description": "Build the django-fusion skeleton loading system: skeleton variant detection in templates, per-component skeleton config, DOM-order skeleton rendering bridge in Astro, and the fusion-skeleton.ts client module for swap-then-animate behavior.",
+      "agent": "frontend-developer",
+      "supporting_agents": [
+        "django-coder",
+        "django-architect",
+        "template-cypercloud",
+        "test-engineer"
+      ],
+      "skills": [
+        "design-taste-frontend",
+        "high-end-visual-design"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis"
+      ],
+      "inputs": [
+        "analyzer Component schema",
+        "skeleton variant names",
+        "HTMX swap events",
+        "Astro layouts",
+        "fusion-skeleton.ts"
+      ],
+      "prompt": "Act as the skeleton loading specialist. Read the django-fusion analyzer schemas (skeleton and skeleton_config fields), the template parser ({# @skeleton: card #} comments), existing LiveFragment.astro (skeletonVariant prop), and the fusion-js package. Implement: (1) skeleton variant detection in parser.py via SKELETON_COMMENT_RE; (2) Component.skeleton and skeleton_config population in views.py; (3) SkeletonBridge.astro that reads page-level component→skeleton map and renders placeholder markup in DOM order from skeleton_order; (4) fusion-skeleton.ts client module that swaps skeleton→real content on HTMX afterSettle with animate-in. Keep skeleton markup minimal (no heavy CSS, no layout shift). Respect prefers-reduced-motion.",
+      "expected_output": [
+        "parser regex",
+        "SkeletonBridge.astro",
+        "fusion-skeleton.ts",
+        "LiveFragment coexistence docs",
+        "per-component skeleton overrides",
+        "accessibility notes"
+      ],
+      "safety": "Skeleton rendering is pure markup generation. No arbitrary template compilation or filesystem writes."
+    },
+    {
+      "id": "skill.analyzer-schemas",
+      "title": "Extend analyzer Pydantic schemas with load-time metadata",
+      "description": "Add skeleton, skeleton_config, dependencies, load_priority, and skeleton_order fields to Component, Page, and PageComponentUsage schemas for the skeleton loading and asset pipeline systems.",
+      "agent": "django-architect",
+      "supporting_agents": [
+        "django-coder",
+        "code-reviewer"
+      ],
+      "skills": [
+        "mcp-builder"
+      ],
+      "projects": [
+        "django-fusion"
+      ],
+      "inputs": [
+        "schemas.py",
+        "Component/Page/PageComponentUsage models",
+        "backward compatibility constraints"
+      ],
+      "prompt": "Act as the django-fusion schema architect. Read fragments/analyzer/schemas.py and views.py. Extend three Pydantic models with Phase 1.1 fields: Component gets skeleton (str, default '') and skeleton_config (dict, default {}); Page gets dependencies (list[str], default []) and load_priority (str, default 'auto', one of critical/eager/lazy/auto); PageComponentUsage gets skeleton_order (int, default 0, ge=0). All fields must be optional with sensible defaults so existing callers in views.py do not break. Keep Field descriptions documenting the purpose and downstream consumer. The to_dict() method must include the new fields without extra work.",
+      "expected_output": [
+        "updated schemas.py",
+        "backward compat verification",
+        "manual assertion suite",
+        "fields documentation"
+      ],
+      "safety": "Schema changes are additive only. No migration, no database changes, no API contract breakage."
+    },
+    {
+      "id": "skill.webpack-project-config",
+      "title": "Configure per-project webpack with django-fusion base",
+      "description": "Set up a project-level webpack configuration extending the django-fusion base config, with project-owned package.json, Make targets, and django-webpack-loader integration for {% render_bundle %} support.",
+      "agent": "frontend-developer",
+      "supporting_agents": [
+        "django-coder",
+        "devops-engineer"
+      ],
+      "skills": [
+        "deployment-documentation"
+      ],
+      "projects": [
+        "landing-fusion",
+        "precis",
+        "formint"
+      ],
+      "inputs": [
+        "project root path",
+        "webpack base config",
+        "project-specific entry points",
+        "STATICFILES_DIRS"
+      ],
+      "prompt": "Act as the webpack/build specialist. Read the shared webpack base config at projects/webpack/, the django-fusion webpack.config.js, and the target project's static/assets structure. Create: (1) a project-level webpack/<project>.config.js extending the base; (2) a package.json with peer dependencies (webpack, webpack-merge, webpack-bundle-tracker); (3) Make targets: install-assets (npm ci), build-assets (npx webpack --config); (4) django-webpack-loader settings in the project's Django config so {% render_bundle %} works end-to-end. Keep per-project bundles in the project's static tree; never share bundles between projects. Verify with make clean && make install-assets && make build-assets.",
+      "expected_output": [
+        "webpack config file",
+        "package.json",
+        "Make targets",
+        "Django settings",
+        "STATICFILES_DIRS update",
+        "build verification"
+      ],
+      "safety": "npm install must be explicit per project. Do not install globally. Generated bundles go to project-local static directories only."
+    },
+    {
+      "id": "skill.designer-post-endpoint",
+      "title": "Add POST-based designer endpoints for complex operations",
+      "description": "Create POST /designer/tools/call JSON-RPC endpoint handling website_audit, webapp_enhancement_plan, validate, and field-rich form/table scaffolds — the complex tools that need JSON payloads beyond GET query params.",
+      "agent": "ceptor-ai-toolsmith",
+      "supporting_agents": [
+        "django-coder",
+        "security-auditor",
+        "code-reviewer"
+      ],
+      "skills": [
+        "mcp-builder"
+      ],
+      "projects": [
+        "django-fusion"
+      ],
+      "inputs": [
+        "DesignerMCPRouter",
+        "_get_handler",
+        "JSON-RPC 2.0 spec",
+        "MCP tools/call contract"
+      ],
+      "prompt": "Act as the MCP protocol engineer. Extend DesignerMCPRouter with POST /designer/tools/call accepting {jsonrpc, id, method: 'tools/call', params: {name, arguments}}. Validate the JSON-RPC envelope (jsonrpc version, method name, params type) with clear error messages and proper HTTP status codes. Dispatch to the correct handler via _get_handler(name) passing **arguments. Return standard JSON-RPC result or error shapes. Ensure all 8 designer tools are callable. Update AGENTS.md with curl examples showing website_audit with sections payload and form_scaffold with fields array.",
+      "expected_output": [
+        "POST handler implementation",
+        "JSON-RPC envelope validation",
+        "curl examples",
+        "AGENTS.md update",
+        "test plan for all 8 tools"
+      ],
+      "safety": "Same auth dependency applies. POST body is validated before dispatch. Handlers are read-only.",
+      "payload_examples": [
+        {
+          "title": "Full website audit with all fields",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.website_audit",
+              "arguments": {
+                "project": "my-project",
+                "sections": [
+                  {
+                    "name": "hero",
+                    "kind": "hero",
+                    "layout": "full-width",
+                    "has_visual": true,
+                    "has_cta": true,
+                    "has_eyebrow": false,
+                    "is_multi_column": false,
+                    "mobile_strategy": "stack",
+                    "text_words": 45
+                  },
+                  {
+                    "name": "features",
+                    "kind": "content",
+                    "layout": "grid",
+                    "is_multi_column": true,
+                    "mobile_strategy": "stack",
+                    "text_words": 120
+                  }
+                ],
+                "surface": "website",
+                "audience": "developers",
+                "vibe": "technical and clean",
+                "design_variance": 7,
+                "motion_intensity": 3,
+                "dark_mode": true,
+                "accessibility_reviewed": false,
+                "real_assets_available": true
+              }
+            }
+          }
+        },
+        {
+          "title": "Generate an enhancement plan from audit result",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.webapp_enhancement_plan",
+              "arguments": {
+                "project": "my-project",
+                "sections": [
+                  {
+                    "name": "dashboard",
+                    "kind": "content"
+                  }
+                ],
+                "surface": "webapp",
+                "required_features": [
+                  "user-auth",
+                  "role-based-access",
+                  "real-time-updates"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "title": "Preview component with custom props",
+          "method": "POST",
+          "endpoint": "/designer/tools/call",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+              "name": "designer.preview",
+              "arguments": {
+                "name": "blocks/hero.html",
+                "props": {
+                  "title": "Welcome",
+                  "subtitle": "Build fast"
+                },
+                "max_chars": 20000
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "project.landing-fusion",
+      "name": "Landing-Fusion",
+      "path": "projects/landing-fusion/",
+      "description": "Public marketing and catalog product combining an Astro 5 frontend with a Django 5.2/Wagtail 7.4 backend and django-fusion rendering.",
+      "stack": [
+        "Astro 5",
+        "Tailwind CSS 4",
+        "HTMX",
+        "Alpine.js",
+        "Django 5.2",
+        "Wagtail 7.4",
+        "django-fusion"
+      ],
+      "frontend_boundary": "frontend/src owns public pages, layouts, API clients, theme, and browser behavior.",
+      "backend_boundary": "backend/apps owns Wagtail models/blocks, PageHandlers, APIs, fragments, auth, and URL routing.",
+      "agent_sequence": [
+        "product-manager",
+        "frontend-developer",
+        "django-coder",
+        "template-cypercloud",
+        "test-engineer",
+        "code-reviewer"
+      ],
+      "prompt": "Enhance Landing-Fusion as one dual-road product. Read projects/landing-fusion/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
+      "checks": [
+        "cd projects/landing-fusion && make check",
+        "cd projects/landing-fusion && make build",
+        "cd projects/landing-fusion/backend && make check",
+        "cd projects/landing-fusion/backend && make test"
+      ],
+      "related_skills": [
+        "skill.website-redesign-audit",
+        "skill.django-fusion-component",
+        "skill.wagtail-content-model",
+        "skill.asset-template-health",
+        "skill.skeleton-loading",
+        "skill.webpack-project-config",
+        "skill.interactive-designer"
+      ]
+    },
+    {
+      "id": "project.precis",
+      "name": "Precis LMS",
+      "path": "projects/precis/",
+      "description": "The production learning platform for courses, enrollment, payments, progress, certificates, profiles, and multilingual Wagtail content.",
+      "stack": [
+        "Django 5.2",
+        "Wagtail 7.4",
+        "django-fusion",
+        "Astro frontend shell",
+        "SCSS/JS",
+        "allauth"
+      ],
+      "frontend_boundary": "frontend owns the Astro public shell, course/catalog pages, browser state, and E2E contracts.",
+      "backend_boundary": "backend/apps owns learning domain behavior, Wagtail pages, profiles, auth, APIs, fragments, and templates.",
+      "agent_sequence": [
+        "product-manager",
+        "django-architect",
+        "django-coder",
+        "frontend-developer",
+        "test-engineer",
+        "code-reviewer"
+      ],
+      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired lms-fusion paths. Read projects/precis/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
+      "checks": [
+        "cd projects/precis/backend && make check",
+        "cd projects/precis/backend && make test",
+        "cd projects/precis/frontend && npm run check",
+        "cd projects/precis/frontend && npm run build"
+      ],
+      "related_skills": [
+        "skill.website-redesign-audit",
+        "skill.django-fusion-component",
+        "skill.wagtail-content-model",
+        "skill.asset-template-health",
+        "skill.skeleton-loading",
+        "skill.webpack-project-config",
+        "skill.interactive-designer",
+        "skill.background-jobs-migration"
+      ]
+    },
+    {
+      "id": "project.formint",
+      "name": "Formint POS editions",
+      "path": "projects/formints/",
+      "description": "A deliberately separated POS family: Community/Standard native Tauri-Rust editions, Professional Django boundary, Cloud Django master, and a separate Vue client.",
+      "stack": [
+        "Tauri 2",
+        "Rust",
+        "SQLite/Diesel",
+        "Astro",
+        "React/Vue",
+        "Django",
+        "Channels",
+        "Unfold",
+        "django-fusion"
+      ],
+      "edition_boundary": "Select the edition first. Community and Standard have no Python sidecar; Professional has its own Django boundary; Cloud is Django/Channels and must not regain a Robyn sidecar; Client is a separate Vue/Tauri product.",
+      "agent_sequence": [
+        "product-manager",
+        "django-architect",
+        "frontend-developer",
+        "database-engineer",
+        "test-engineer",
+        "security-auditor",
+        "code-reviewer"
+      ],
+      "prompt": "Enhance Formint only after naming the exact edition and reading projects/formints/AGENTS.md plus the edition AGENTS.md, README, Makefile, and tests. Keep frontend/backend/native contracts synchronized. Community and Standard prompts must use Rust/Diesel/SQLite and never invent Django or sidecar code. Professional changes belong in its sidecar/backend/frontend boundary. Cloud serves its API from Django/Channels and must not reintroduce Robyn merely because SIDECAR_BASE remains as a compatibility name. Preserve typed schemas, role authorization, sync/WebSocket frames, transaction safety, offline boundaries, and edition-local assets. Validate with the edition's narrowest check/test commands before cross-edition tests.",
+      "checks": [
+        "cd projects/formints/formint-community && pnpm test",
+        "cd projects/formints/formint-standard && pnpm test",
+        "cd projects/formints/formint-pro && make check",
+        "cd projects/formints/formint-cloud && make check",
+        "cd projects/formints && ./tests/run-all.sh"
+      ],
+      "related_skills": [
+        "skill.website-redesign-audit",
+        "skill.mcp-readonly-workflow",
+        "skill.background-jobs-migration",
+        "skill.asset-template-health"
+      ]
+    },
+    {
+      "id": "project.syntara",
+      "name": "Syntara / Cypercloud",
+      "path": "projects/syntara/",
+      "description": "Django AI chat and template customizer with HTMX, streaming responses, Monaco-style editing, template discovery, and Ceptor-AI provider boundaries.",
+      "stack": [
+        "Django",
+        "HTMX",
+        "Webpack",
+        "SCSS",
+        "SSE",
+        "Ceptor-AI",
+        "Ollama/OpenAI/Anthropic adapters"
+      ],
+      "boundary": "Syntara may inspect configured product templates but must not implicitly mutate Precis, Landing-Fusion, or other products.",
+      "agent_sequence": [
+        "product-manager",
+        "ceptor-ai-toolsmith",
+        "django-coder",
+        "template-cypercloud",
+        "security-auditor",
+        "test-engineer"
+      ],
+      "prompt": "Enhance Syntara using projects/syntara/ as the canonical path; preserve Cypercloud only where runtime compatibility requires it. Read its AGENTS.md, README.md, settings, URLs, chat services, provider boundary, template catalog, and tests. Keep provider credentials in runtime environment/config, preserve JSON/SSE/HTMX response contracts, restrict template discovery to configured roots, and make generated suggestions reviewable before any explicit write. Use django-fusion components where registered, but do not move product templates or execute arbitrary generated code. Prefer deterministic provider stubs and path-filter tests over live AI calls.",
+      "checks": [
+        "cd projects/syntara && python manage.py check",
+        "cd projects/syntara && make test",
+        "cd projects/syntara && make build",
+        "docker compose -f projects/syntara/docker-compose.yml config -q"
+      ],
+      "related_skills": [
+        "skill.mcp-readonly-workflow",
+        "skill.asset-template-health",
+        "skill.django-fusion-component"
+      ]
+    },
+    {
+      "id": "project.django-fusion",
+      "name": "django-fusion library",
+      "path": "libs/django-fusion/",
+      "description": "Reusable Django/Wagtail framework library providing registered components, routing, fragments, forms, tables, health, assets, webpack base config, per-project webpack support, interactive designer with MCP routing (GET + POST JSON-RPC), API-key auth, skeleton loading analyzer integration, prompt catalog, and safe designer/MCP metadata.",
+      "stack": [
+        "Python",
+        "Django",
+        "Wagtail integrations",
+        "django-tables2",
+        "HTMX",
+        "Webpack"
+      ],
+      "boundary": "Shared behavior belongs here only when multiple active products consume the same semantics; product branding, models, content, credentials, and deployment remain outside the library.",
+      "agent_sequence": [
+        "django-architect",
+        "django-coder",
+        "ceptor-ai-toolsmith",
+        "test-engineer",
+        "code-reviewer",
+        "documentation-writer"
+      ],
+      "prompt": "Enhance django-fusion as a reusable library. Read libs/django-fusion/AGENTS.md, PROMPTS.md, relevant numbered docs, public exports, registry/route implementation, and tests. Prefer canonical django_fusion imports and public APIs; do not add compatibility re-exports or product-specific assumptions. Keep optional integrations lazy and imports side-effect free. For MCP/designer work, use bounded JSON schemas, staff/superuser authorization, CSRF/origin policy at the project boundary, read-only annotations, no arbitrary template execution, no filesystem/shell/deployment access, and no project-specific hardcoding. The designer works with ANY project — projects configure guidance via FUSION_AUDIT_GUIDANCE in their Django settings. Update focused tests, docs, changelog, and public references together.",
+      "checks": [
+        "cd libs/django-fusion && uv run pytest -q",
+        "cd libs/django-fusion && uv run ruff check src tests",
+        "cd libs/django-fusion && git diff --check"
+      ],
+      "related_skills": [
+        "skill.django-fusion-component",
+        "skill.wagtail-content-model",
+        "skill.mcp-readonly-workflow",
+        "skill.designer-mcp-auth",
+        "skill.designer-json-rpc",
+        "skill.designer-post-endpoint",
+        "skill.skeleton-loading",
+        "skill.analyzer-schemas",
+        "skill.interactive-designer",
+        "skill.designer-wagtail-block",
+        "skill.designer-form-table",
+        "skill.webpack-project-config"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "workflow.audit-then-implement",
+      "title": "Audit → plan → parallel specialists → implement → verify",
+      "description": "The default orchestration flow for non-trivial website or webapp changes.",
+      "agents": [
+        "product-manager",
+        "django-architect",
+        "frontend-developer",
+        "security-auditor",
+        "test-engineer",
+        "code-reviewer"
+      ],
+      "steps": [
+        "Collect project context and nearest AGENTS.md files",
+        "Run the website audit or relevant skill prompt",
+        "Ask independent specialists for architecture, UI/security, and test plans",
+        "Implement the smallest approved slice",
+        "Run targeted checks in parallel",
+        "Review the diff and report unresolved gates"
+      ]
+    },
+    {
+      "id": "workflow.mcp-read-only",
+      "title": "Read-only MCP prompt workflow",
+      "description": "Use prompt catalog data to guide an agent without allowing the MCP service to mutate the repository.",
+      "agents": [
+        "ceptor-ai-toolsmith",
+        "security-auditor",
+        "code-reviewer"
+      ],
+      "steps": [
+        "List prompts",
+        "Fetch one prompt by stable id",
+        "Fill its project/input variables",
+        "Perform analysis or return a draft",
+        "Require a separate human-approved coding workflow for edits"
+      ]
+    }
+  ]
+}

@@ -20,7 +20,7 @@ from django.conf import settings as django_settings
 # Django setup (for standalone pytest runs)
 # ---------------------------------------------------------------------------
 if not django_settings.configured:
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
     os.environ.setdefault("DJANGO_PRINT_ENV", "false")
     django.setup()
 

@@ -15,6 +15,10 @@ Today, django-fusion is used in the POS ecosystem in two narrow ways:
 1. **Sidecars** (`pos-solo`, `pos-full`) use `DataToken` / `BaseDeviceToken` only for sync-tagging and device auth.
 2. **POS Cloud** uses `django-fusion.routes.ModelViewset`, `SearchableViewMixin`, and `FragmentComponent` for CRM/reports.
 
+> **Related:** The [django-fusion Tasks & MCP plan](django-fusion-tasks-mcp-plan.md) (2026-08-10)
+> governs background task infrastructure, Celery removal, and MCP tooling — including
+> the task primitives that sync engines and scheduled work will use.
+
 This plan lays out how to:
 
 - Turn django-fusion into the **primary data & UI layer** for the sidecars, not just a sync-token helper.
@@ -527,6 +531,20 @@ These items were completed ahead of the original Phase 1–5 plan:
 - `libs/django-fusion/src/django_fusion/routes/fragments.py`
 - `libs/django-fusion/src/django_fusion/core/managers.py`
 - `libs/django-fusion/src/django_fusion/core/cache.py`
+
+---
+
+## 16. Related Plans
+
+| Plan | Path |
+|---|---|
+| django-fusion Tasks & MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
+| Worker Consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
+| Formint POS Professional | [`../pos/formint-pos-professional-plan.md`](../pos/formint-pos-professional-plan.md) |
+| Formint Cloud | [`../pos/cloud-plan.md`](../pos/cloud-plan.md) |
+| Tauri Plugin Migration | [`../pos/tauri-plugins-enhancement-plan.md`](../pos/tauri-plugins-enhancement-plan.md) |
+| Codebase Audit & Migration | [`../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md`](../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md) |
+| Canonical Plan Registry | [`../README.md`](../README.md) |
 
 ---
 

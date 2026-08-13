@@ -62,7 +62,7 @@ const parentPhaseMismatch = Boolean(pageData?.phase && pageData.phase.slug !== s
     <div class='container-fusion'>
       <section class='mx-auto max-w-3xl rounded-xl border border-fu-line bg-fu-card p-6 md:p-8'>
         <p class='tag-marker'>prompt</p>
-        <pre class='mt-4 whitespace-pre-wrap font-mono text-sm leading-7 text-fu-ink'>{pageData?.prompt || 'Prompt content unavailable.'}</pre>
+        <div class='prompt-copy mt-4 whitespace-pre-wrap font-mono text-sm leading-7 text-fu-ink'>{pageData?.prompt || 'Prompt content unavailable.'}</div>
       </section>
       <div class='mx-auto mt-8 grid max-w-3xl gap-6 md:grid-cols-2'>
         {pageData?.context && <section class='rounded-xl border border-fu-line bg-fu-card p-6'><p class='tag-marker'>context</p><div class='prose-fusion mt-4 text-fu-muted' set:html={pageData.context} /></section>}

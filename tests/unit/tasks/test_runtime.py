@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from www.worker.runtime import configure_django_for_website, import_first
+from configs.tools.worker.runtime import configure_django_for_website, import_first
 
 
 def _make_findable_module(name, attrs=None):
@@ -67,7 +67,7 @@ class TestImportFirst:
 # ---------------------------------------------------------------------------
 
 class TestConfigureDjangoForWebsite:
-    @patch("www.worker.runtime.importlib.import_module")
+    @patch("configs.tools.worker.runtime.importlib.import_module")
     def test_configures_for_explicit_website(self, mock_import):
         mock_site = MagicMock()
         mock_site.active_website_name.return_value = "lms"
@@ -95,7 +95,7 @@ class TestConfigureDjangoForWebsite:
         mock_site.configure_site_environment.assert_called_once_with("lms")
 
     @patch.dict("os.environ", {}, clear=False)
-    @patch("www.worker.runtime.importlib.import_module")
+    @patch("configs.tools.worker.runtime.importlib.import_module")
     def test_falls_back_to_default_website(self, mock_import):
         mock_site = MagicMock()
         mock_site.active_website_name.return_value = "ctc-research.com"

@@ -38,8 +38,8 @@ import pytest
 # parents[0] = tests/core/
 # parents[1] = tests/
 # parents[2] = the workspace root /home/structa.cloud/
-# Config files moved from core/configs/settings/CD/ to projects/configs/settings/CD/
-_SRC = Path(__file__).resolve().parents[2] / "projects" / "configs" / "settings" / "CD"
+# Precis owns the active CD settings after the per-project split.
+_SRC = Path(__file__).resolve().parents[2] / "projects" / "precis" / "backend" / "configs" / "settings" / "CD"
 PRODUCTION_PY = _SRC / "production.py"
 CORE_PY = _SRC / "core.py"
 

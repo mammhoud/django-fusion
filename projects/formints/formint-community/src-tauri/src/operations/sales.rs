@@ -103,16 +103,51 @@ pub fn refund_sale(db_path: &PathBuf, sale_id: i32) -> Result<Sale, String> {
     let sale: Sale = sales
         .filter(id.eq(sale_id))
         .first(&mut conn)
-        .map_err(|e| format!("sale {sale_id} not found: {e}"))?;
-    if sale.status == "refunded" {
-        return Err(format!("sale {sale_id} is already refunded"));
+        .map_err(|e| match e {
+            diesel::result::Error::NotFound => format!("sale {sale_id} not found"),
+            other => format!("failed to load sale {sale_id}: {other}"),
+        })?;
+    match sale.status.as_str() {
+        "refunded" => {
+            return Err(format!("sale {sale_id} is already refunded"));
+        }
+        "completed" => {}
+        status => {
+            return Err(format!(
+                "sale {sale_id} cannot be refunded from status {status}"
+            ));
+        }
     }
 
-    diesel::update(sales.filter(id.eq(sale_id)))
+    // Keep the eligibility check in the UPDATE predicate as well as the
+    // user-facing validation above. This makes the transition atomic: two
+    // concurrent refund requests cannot both move the same sale from
+    // `completed` to `refunded`.
+    match diesel::update(sales.filter(id.eq(sale_id)).filter(status.eq("completed")))
         .set(status.eq("refunded"))
         .returning(Sale::as_returning())
-        .get_result(&mut conn)
-        .map_err(|e| format!("failed to refund sale {sale_id}: {e}"))
+        .get_result::<Sale>(&mut conn)
+    {
+        Ok(refunded) => Ok(refunded),
+        Err(diesel::result::Error::NotFound) => {
+            let current: Sale = sales
+                .filter(id.eq(sale_id))
+                .first(&mut conn)
+                .map_err(|e| match e {
+                    diesel::result::Error::NotFound => format!("sale {sale_id} not found"),
+                    other => format!("failed to reload sale {sale_id}: {other}"),
+                })?;
+            if current.status == "refunded" {
+                Err(format!("sale {sale_id} is already refunded"))
+            } else {
+                Err(format!(
+                    "sale {sale_id} cannot be refunded from status {}",
+                    current.status
+                ))
+            }
+        }
+        Err(e) => Err(format!("failed to refund sale {sale_id}: {e}")),
+    }
 }
 
 /// Fetch sale items for a given sale_id (used by Kitchen Display for detail modals)
@@ -207,5 +242,45 @@ mod tests {
         let err = refund_sale(&db_path, 999_999).expect_err("missing sale must fail");
         assert!(err.contains("not found"), "unexpected error: {err}");
         let _ = std::fs::remove_file(&db_path);
+    }
+
+    #[test]
+    fn refund_sale_rejects_non_completed_sales() {
+        for status in ["pending", "cancelled"] {
+            let db_path = temp_db_path(status);
+            let sale = add_sale(
+                &db_path,
+                NewSale {
+                    total_amount: 25.0,
+                    currency: "USD".to_string(),
+                    date: None,
+                    time: None,
+                    order_type: "dine_in".to_string(),
+                    status: status.to_string(),
+                    table_number: Some(1),
+                    delivery_type_id: None,
+                    delivery_zone_id: None,
+                    delivery_address: None,
+                    employee_id: None,
+                    customer_id: None,
+                    discount_code: None,
+                    discount_amount: 0.0,
+                    payment_method: "cash".to_string(),
+                },
+                vec![],
+            )
+            .expect("add_sale should succeed")
+            .0;
+
+            let err = refund_sale(&db_path, sale.id)
+                .expect_err("only completed sales may be refunded");
+            assert!(
+                err.contains(&format!("cannot be refunded from status {status}")),
+                "unexpected error: {err}"
+            );
+            let unchanged = get_sale_by_id(&db_path, sale.id).expect("sale should remain readable");
+            assert_eq!(unchanged.status, status);
+            let _ = std::fs::remove_file(&db_path);
+        }
     }
 }

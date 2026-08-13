@@ -1,0 +1,17 @@
+# Build-context exclusions for the landing-fusion frontend image
+# (build context: projects/landing-fusion).
+# Host node_modules/dist are never copied into the image — the Dockerfile
+# installs dependencies itself, and copying the host's pnpm symlink layout
+# over the container's real directories breaks BuildKit overlay materialization
+# ("cannot replace to directory ... with file").
+**/node_modules
+**/dist
+**/.astro
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.git
+**/logs
+**/.env
+**/test-results
+**/playwright-report

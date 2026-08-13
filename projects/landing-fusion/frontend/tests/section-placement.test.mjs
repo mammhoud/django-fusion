@@ -72,6 +72,8 @@ const lms = readPage('products', 'lms', 'index.html');
 const cms = readPage('products', 'cms', 'index.html');
 const blogDoc = readPage('blog', 'why-landing-pages-as-documents', 'index.html');
 const blogHtmx = readPage('blog', 'htmx-fragments-vs-json-apis', 'index.html');
+const advancedBlog = readPage('blog', 'advanced-content-architecture', 'index.html');
+const htmlSampleBlog = readPage('blog', 'html-component-render-preview', 'index.html');
 
 // Sections seeded only for the full-document pages — must NOT appear on the
 // slim home page. ("data unavailable" cards are a defect, not a section.)
@@ -318,6 +320,7 @@ test('formints page shows all four tiered editions with per-edition pricing', ()
   assert.doesNotMatch(formintsPos, /Models &amp; snippets/);
   assert.doesNotMatch(formintsPos, /CREATE TABLE sales/);
   assert.doesNotMatch(formintsPos, /Diesel migration \(up\.sql\)/);
+  assert.doesNotMatch(formintsPos, /source-panel|view-source:/);
   assert.doesNotMatch(formintsPos, /Tauri command \(invoice PDF\)/);
   // New capability chips + roadmap cards (the Astro road flattens feature
   // blocks into cards; the block title "Product roadmap" renders on Django).
@@ -415,4 +418,26 @@ test('blog post detail pages render seeded bodies and link back to /blog', () =>
   assert.match(blogDoc, /All posts/);
   assert.match(blogDoc, /AHA stack/);
   assert.match(blogDoc, /6 min read/);
+  assert.match(advancedBlog, /When content becomes a product surface/);
+  assert.match(advancedBlog, /Model intent before appearance/);
+  assert.match(advancedBlog, /Design for safe change/);
+  assert.doesNotMatch(advancedBlog, /code sections/);
+});
+
+test('HTML component blog sample exposes code, render preview, and collected variants', () => {
+  assert.match(blog, /html-component-render-preview/);
+  assert.match(htmlSampleBlog, /A self-contained HTML component, rendered safely/);
+  assert.match(htmlSampleBlog, /component\.html/);
+  assert.match(htmlSampleBlog, /Render preview/);
+  assert.match(htmlSampleBlog, /data-preview-pane/);
+  assert.match(htmlSampleBlog, /sandbox/);
+  assert.match(htmlSampleBlog, /referrerpolicy/);
+  assert.match(htmlSampleBlog, /standard-checkout\.jpg/);
+  assert.match(htmlSampleBlog, /pro-admin-dashboard\.jpg/);
+  assert.match(htmlSampleBlog, /Open the product preview/);
+  // The client toggle switches only this post's code/pane pair and keeps the
+  // preview iframe isolated; product and prompt routes have no such control.
+  assert.match(htmlSampleBlog, /showingPreview/);
+  assert.match(htmlSampleBlog, /code\.hidden = !showingPreview/);
+  assert.match(htmlSampleBlog, /pane\.hidden = showingPreview/);
 });

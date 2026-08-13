@@ -6,6 +6,11 @@ frontend/.npm
 frontend/.eslintcache
 frontend/*.tsbuildinfo
 
+# ── Root webpack build artifacts ───────────────────────────────────
+node_modules/
+backend/assets/static/bundles/
+webpack-stats.json
+
 # ── Backend (Django) ───────────────────────────────────────────────
 backend/__pycache__/
 backend/**/__pycache__/

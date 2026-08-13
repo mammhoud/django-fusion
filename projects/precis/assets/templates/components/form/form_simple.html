@@ -1,5 +1,6 @@
-{# ui/forms/form_simple.html — simple standard Django form (no HTMX)
-   ──────────────────────────────────────────────────────────────────
+{% comment %}
+   ui/forms/form_simple.html — simple standard Django form (no HTMX)
+   ----------------------------------------------------------------
    Use when you need a straightforward server-rendered form with
    method/action control, custom form attrs via get_form_attrs(), or a
    {% block actions %} override.  For HTMX forms use form.html instead.
@@ -15,7 +16,7 @@
 
    EXAMPLE:
      {% comp_include "ui/forms/form_simple.html" form=contact_form action="/contact/" %}
-#}
+{% endcomment %}
 {% load i18n %}
 
 <form method="{{ form_method|default:'post' }}"

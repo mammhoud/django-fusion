@@ -33,6 +33,7 @@ except ImportError:  # pragma: no cover - older django-fusion
     fusion_introspection_urls = None
 from apps.core.routes import site
 from apps.pages.pages import landing_api
+from django_fusion.designer import urls as fusion_designer_urls
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
@@ -112,6 +113,7 @@ except Exception:
 # ── Health & admin ───────────────────────────────────────────────────────────
 urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
+    path("fusion/mcp/designer/", include(fusion_designer_urls)),
     # Astro/AHA landing contract. The existing LMS `/api/` contract remains
     # untouched; these `/apis/` and `/fragment/` routes are additive.
     path("apis/render-mode/", landing_api.render_mode_api, name="landing-render-mode"),
