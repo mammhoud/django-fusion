@@ -1,6 +1,0 @@
-# CTC Research routing is defined in dynamic/ctc-research.yml.
-#
-# This legacy file is intentionally kept as a no-op because Traefik loads every
-# YAML file in this directory. Keeping the old duplicate router definitions
-# active would shadow the Precis frontend route and health-check Astro at the
-# nonexistent /health/ endpoint, producing HTTP 503 responses.

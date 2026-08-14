@@ -12,7 +12,7 @@ contracts. The detailed library reference is
   media, and webpack asset checks.
 - `projects/cms-fusion/backend/` and `projects/lms-fusion/backend/` — site
   settings, URL mounts, and compatibility adapters.
-- `applications/proxy/` — Traefik and the read-only `shared-media` Nginx
+- `applications/proxy/` — Traefik and the read-only `shared-proxy` Nginx
   service.
 
 ## Choose one response mode
@@ -52,9 +52,9 @@ Existing project modules import these functions so legacy routes and imports
 continue working. Project-specific CDN, S3, and proxy checks should remain
 adapters.
 
-## Shared-media remarks
+## Shared-proxy remarks
 
-`shared-media` is a proxy/infrastructure service. It mounts static and media
+`shared-proxy` is a proxy/infrastructure service. It mounts static and media
 volumes read-only and routes `/static/` and `/media/` through Nginx. It should
 not be duplicated inside each Django project. Django checks source roots and
 webpack output; the proxy health check remains a deployment concern.

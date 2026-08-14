@@ -31,6 +31,24 @@
       "skillPath": "skills/taste-skill/SKILL.md",
       "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
     },
+    "devops-deployment": {
+      "source": "yonatangross/orchestkit",
+      "sourceType": "github",
+      "skillPath": "plugins/ork/skills/devops-deployment/SKILL.md",
+      "computedHash": "6be3c96f7335fa24f9c57aa478c0ea386253b71d3f81352442e770fa72d310cd"
+    },
+    "docker-compose": {
+      "source": "bagelhole/devops-security-agent-skills",
+      "sourceType": "github",
+      "skillPath": "devops/containers/docker-compose/SKILL.md",
+      "computedHash": "d3119717854229b9b464a870e811c3f9662caa07c6e06ba756e9d1b84e83c324"
+    },
+    "dockerfile-validator": {
+      "source": "akin-ozer/cc-devops-skills",
+      "sourceType": "github",
+      "skillPath": "devops-skills-plugin/skills/dockerfile-validator/SKILL.md",
+      "computedHash": "ec23f10fbd7db4456df3300700eb814474c3a649c1af97a4f76dff93a91f6632"
+    },
     "documentation": {
       "source": "anthropics/knowledge-work-plugins",
       "sourceType": "github",
@@ -48,6 +66,36 @@
       "sourceType": "github",
       "skillPath": "skills/mcp-builder/SKILL.md",
       "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
+    },
+    "modules": {
+      "source": "coder/skills",
+      "sourceType": "github",
+      "skillPath": "skills/modules/SKILL.md",
+      "computedHash": "a48e88830aad941b418cd8b5fe4b0e01d4d4c19bfbc5f0b482bb6cc6ceb7229d"
+    },
+    "reverse-proxy": {
+      "source": "bagelhole/devops-security-agent-skills",
+      "sourceType": "github",
+      "skillPath": "infrastructure/networking/reverse-proxy/SKILL.md",
+      "computedHash": "0539e56223c87417c310319547b4657274756ea3e20613c9b163f936eaec7909"
+    },
+    "ssl-tls-management": {
+      "source": "bagelhole/devops-security-agent-skills",
+      "sourceType": "github",
+      "skillPath": "security/network/ssl-tls-management/SKILL.md",
+      "computedHash": "311f3b8048701b9361da070eb230b455a971308d06bce75ceef0defcf1d37e2f"
+    },
+    "templates": {
+      "source": "coder/skills",
+      "sourceType": "github",
+      "skillPath": "skills/templates/SKILL.md",
+      "computedHash": "409ee199baf1014b7734e43f3c5eea21e85edb2992ae5f2a36fe987788f2387b"
+    },
+    "terraform-module-library": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/cloud-infrastructure/skills/terraform-module-library/SKILL.md",
+      "computedHash": "0cef0ea4f217dd30f7b3b22aeac2a3bbdfa0649e3b7fcece5d5fb0ea87306647"
     },
     "use-case-triage": {
       "source": "anthropics/claude-for-legal",

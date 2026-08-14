@@ -46,10 +46,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: app_db
       PGDATA: /var/lib/postgresql/data/pgdata
-      # Multiple databases – comma‑separated list: db:owner:password
-      # AFFiNE is provisioned by the workspace Coder template and uses this
-      # shared PostgreSQL cluster through the `affine` database.
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:CTCreSearch0x@,db_structa:structa:CTCreSearch0x@,vresume:structa:CTCreSearch0x@,coder:coder:CTCreSearch0x@,db_crm:structa:CTCreSearch0x@,affine:affine:${AFFINE_DB_PASSWORD:-affine}}"
+      # Multiple databases – comma-separated list: db:owner:password.
+      # AFFiNE is a permanent shared proxy service and uses the `affine`
+      # database. Its role password is required; it has no repository default.
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:CTCreSearch0x@,db_structa:structa:CTCreSearch0x@,vresume:structa:CTCreSearch0x@,coder:coder:CTCreSearch0x@,db_crm:structa:CTCreSearch0x@,affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
 
       # ---- NEW: Force re‑initialization on every start ----
       # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again
@@ -90,7 +90,7 @@ services:
     command: >
       redis-server /usr/local/etc/redis/redis.conf
       --appendonly yes
-      --requirepass ${REDIS_PASSWORD:-redis_password}
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
@@ -103,7 +103,7 @@ services:
       - traefik-net
       - site_network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5

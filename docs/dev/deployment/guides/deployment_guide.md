@@ -59,7 +59,7 @@
 | LMS Demo | `lms-web` | 5071 | ✅ Healthy | Django app (gunicorn) |
 | PostgreSQL | `postgres` | 5432 | ✅ Healthy | Primary database |
 | Redis | `default-redis` | 6379 | ✅ Healthy | Cache & session store |
-| Nginx Media | `shared-media` | 80 | ✅ Healthy | Static/media file server |
+| Nginx Media | `shared-proxy` | 80 | ✅ Healthy | Static/media file server |
 
 ---
 
@@ -579,11 +579,11 @@ docker exec postgres psql -U structa_user -d ctc_research_db -c "SELECT 1"
 
 **Solution:**
 ```bash
-# Check shared-media container
-docker ps | grep shared-media
+# Check shared-proxy container
+docker ps | grep shared-proxy
 
 # Check Nginx logs
-docker logs shared-media
+docker logs shared-proxy
 
 # Verify static files collected
 docker exec ctc-research-website python manage.py collectstatic --dry-run

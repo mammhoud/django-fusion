@@ -51,4 +51,4 @@ http:
     structa-media-service:
       loadBalancer:
         servers:
-          - url: 'http://shared-media:80'
+          - url: 'http://shared-proxy:80'

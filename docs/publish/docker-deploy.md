@@ -13,7 +13,7 @@ root Makefile (make deploy)
     │   ├── postgres:5432 (per-site DBs)
     │   └── redis:6379 (shared broker)
     │
-    ├── make deploy-media        → shared-media (Nginx :80)
+    ├── make deploy-media        → shared-proxy (Nginx :80)
     │   ├── Static files: /var/www/sites/<site>/static/
     │   └── Media files:  /var/www/sites/<site>/media/
     │

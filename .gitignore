@@ -62,3 +62,9 @@ base_library.zip
 **/src-tauri/gen/
 **/src-tauri/binaries/
 **/sidecar/build/
+
+# AFFiNE and FileGator data are owned by the shared proxy stack.
+# Keep this legacy pattern for workspaces that have not migrated yet.
+.affine-data-*/
+applications/proxy/affine-data/
+.hypothesis

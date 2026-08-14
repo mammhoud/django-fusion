@@ -42,7 +42,7 @@ npm run build
 
 ```bash
 docker compose -f applications/databases/docker-compose.yml up -d postgres default-redis
-docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shared-media
+docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shared-proxy
 ```
 
 بعد تشغيل الوكيل العكسي افتح:
@@ -53,6 +53,6 @@ docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shar
 
 ## استكشاف الأخطاء
 
-إذا ظهرت صفحة قديمة، أعد بناء صورة `shared-media`. وإذا ظهرت صفحة بلغة
+إذا ظهرت صفحة قديمة، أعد بناء صورة `shared-proxy`. وإذا ظهرت صفحة بلغة
 خاطئة، امسح ملف تعريف اللغة `structa-docs-locale` من المتصفح ثم أعد فتح رابط
 اللغة المطلوب.

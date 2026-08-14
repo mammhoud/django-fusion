@@ -109,7 +109,7 @@ make logs              # Tail all service logs
                        │      │      │      │
            ┌───────────┼──────┼──────┼──────┼───────────┐
            │           │      │      │      │           │
-        Precis    Landing   Syntara   Formint    shared-media
+        Precis    Landing   Syntara   Formint    shared-proxy
         LMS       Fusion    Chat      Cloud        :80
            │           │      │      │      │           │
            └───────────┴──────┴──────┴──────┴───────────┘

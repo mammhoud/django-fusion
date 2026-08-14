@@ -1,81 +1,54 @@
-# ============================================================
-# Workspace Shared Media Frontend (Nginx)
-# ============================================================
-# Provides static/media server with shared proxy settings
+# Shared-proxy Nginx, documentation, and AFFiNE services.
+#
+# AFFiNE is shared infrastructure and is intentionally not part of a Coder
+# workspace or the repository devcontainer.
 
 networks:
   traefik-net:
     external: true
   common:
     external: true
+  warehouse-net:
+    external: true
 
-x-proxy-common: &proxy-common
-  restart: unless-stopped
-  networks:
-    - traefik-net
-    - common
 x-media-base: &media-base
   build:
-    # Context is the repo root so the shared-media Dockerfile and the Docus
-    # service can use one repository-relative Compose boundary.
     context: ../..
     dockerfile: applications/proxy/nginx/Dockerfile
   restart: unless-stopped
   networks:
     - traefik-net
     - common
-  # Resolver smoke test: (1) nginx -t syntax check, (2) the variable-upstream
-  # resolver directive is ACTIVE in the effective config, (3) a real request
-  # through a variable upstream (+ /__resolver_probe__ location) returns 200.
-  # All three must pass or the container is unhealthy — catching the "no
-  # resolver defined" regression at deploy time (variable upstreams 502 even
-  # when the workspace containers are up). NOTE: nginx -T echoes comment
-  # lines, so the grep is anchored to the directive start to avoid matching
-  # a commented-out resolver.
   healthcheck:
-    test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && nginx -T 2>/dev/null | grep -qE '^[[:space:]]*resolver 127[.]0[.]0[.]11' && curl -fsS -o /dev/null http://127.0.0.1/__resolver_probe__ || exit 1"]
+    test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && wget -qO- http://127.0.0.1/health/ | grep -qx healthy"]
     interval: 30s
     timeout: 10s
     retries: 3
-    # Probe targets the docus container, so the resolver path is
-    # exercised against a stable in-stack
-    # container. start_period gives first-start grace for image pulls.
     start_period: 30s
 
 services:
-  shared-media:
+  shared-proxy:
     <<: *media-base
-    container_name: shared-media
-    environment:
-      # Container name prefix for workspace services; must match the Coder
-      # template's `workspace_name` variable (default "workspace").
-      - WORKSPACE_NAME=${WORKSPACE_NAME:-workspace}
-
+    container_name: shared-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms.com`) || Host(`media.vresume.structa.cloud`)"
-      - "traefik.http.services.shared-media.loadbalancer.server.port=80"
+      - "traefik.http.routers.shared-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
+      - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
     volumes:
-      # Site build output staticfiles
       - ../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
       - ../projects/lms/assets/staticfiles:/var/www/sites/lms/static:ro
       - ../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
       - lms-fusion-static:/var/www/sites/lms-fusion/static:ro
-      # Shared application static files
       - ../projects/assets/static:/var/www/static:ro
-      # Site-specific media uploads
       - ../projects/ctc-research/assets/media:/var/www/media/ctc-research:ro
       - ../projects/lms/assets/media:/var/www/media/lms:ro
       - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
-      # Fusion media volumes are created by the site compose files.
       - lms-fusion-media:/var/www/media/lms-fusion:ro
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      # Root index page served at media.structa.cloud/ (location = /).
       - ./nginx/www:/var/www/html:ro
     networks:
       - traefik-net
       - common
-
     deploy:
       resources:
         limits:
@@ -85,11 +58,6 @@ services:
           cpus: '0.5'
           memory: 256M
 
-  # ----------------------------------------------------------
-  # Docus — Nuxt documentation server (docs.structa.cloud)
-  # ----------------------------------------------------------
-  # Docus owns SSR, content search, locale routing, sitemap, and LLM routes.
-  # shared-media Nginx proxies /docs/ and the docs host to this service.
   docus:
     build:
       context: ../..
@@ -120,13 +88,57 @@ services:
           cpus: '0.25'
           memory: 256M
 
-  # NOTE: Docus is a separate Nuxt service proxied by shared-media Nginx.
-  # Rebuild both services after documentation changes:
-  #   docker compose -f docker-compose.nginx.yml build docus shared-media
+  affine-migration:
+    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
+    container_name: proxy-affine-migration
+    command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
+    volumes:
+      - ./affine-data/storage:/root/.affine/storage
+      - ./affine-data/config:/root/.affine/config
+    environment:
+      # This value is inserted into a PostgreSQL URI; percent-encode reserved
+      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
+      DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
+      REDIS_SERVER_HOST: default-redis
+      REDIS_SERVER_PORT: "6379"
+      REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+      AFFINE_INDEXER_ENABLED: "false"
+    networks:
+      - common
+      - warehouse-net
+    restart: "no"
+
+  affine:
+    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
+    container_name: proxy-affine
+    depends_on:
+      affine-migration:
+        condition: service_completed_successfully
+    volumes:
+      - ./affine-data/storage:/root/.affine/storage
+      - ./affine-data/config:/root/.affine/config
+    environment:
+      # This value is inserted into a PostgreSQL URI; percent-encode reserved
+      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
+      DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
+      REDIS_SERVER_HOST: default-redis
+      REDIS_SERVER_PORT: "6379"
+      REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+      AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL:-https://space.structa.cloud}
+      AFFINE_SERVER_PORT: "3010"
+      AFFINE_INDEXER_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3010/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 60s
+    networks:
+      - common
+      - warehouse-net
+    restart: unless-stopped
 
 volumes:
-  # Shared media volumes are named explicitly so standalone proxy and app
-  # Compose invocations resolve the same resources without a pre-create step.
   lms-fusion-static:
     name: lms-fusion-static
     external: true

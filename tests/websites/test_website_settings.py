@@ -127,7 +127,7 @@ class FrontendBuildLayoutTests(SimpleTestCase):
     def test_media_compose_uses_one_shared_media_server(self):
         compose = (PROXY_ROOT / "docker-compose.nginx.yml").read_text()
         nginx_conf = (PROXY_ROOT / "nginx" / "default.conf.template").read_text()
-        assert "container_name: shared-media" in compose
+        assert "container_name: shared-proxy" in compose
         assert "container_name: ctc-media" not in compose
         assert "container_name: lms-media" not in compose
         assert "container_name: vresume-media" not in compose
@@ -189,7 +189,7 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         assert "docker-build-ctc" in makefile
         assert "docker-build-lms" in makefile
         assert "docker-build-vresume" in makefile
-        assert "docker-build-shared-media" in makefile
+        assert "docker-build-shared-proxy" in makefile
         assert "docker-build-all" in makefile
         assert "LOG_BUILD_DIR" in makefile
         assert "LOG_DEPLOY_DIR" in makefile

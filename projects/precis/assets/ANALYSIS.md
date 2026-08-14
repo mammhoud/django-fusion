@@ -16,7 +16,7 @@ This directory is the **canonical shared asset source** for all Structa Cloud pr
 
 | Directory | Used By | How |
 |-----------|---------|-----|
-| `static/` | **All projects** (lms, cms-fusion, lms-fusion, portfolio, cypercloud, fusion-cms) | Via `STATICFILES_DIRS` → `SHARED_STATIC_DIR` in `assets.py`. Served by Nginx `shared-media` at `/static/`. |
+| `static/` | **All projects** (lms, cms-fusion, lms-fusion, portfolio, cypercloud, fusion-cms) | Via `STATICFILES_DIRS` → `SHARED_STATIC_DIR` in `assets.py`. Served by Nginx `shared-proxy` at `/static/`. |
 | `templates/` | **All projects** (lms, cms-fusion, lms-fusion, portfolio, cypercloud, fusion-cms) | Via `TEMPLATES_DIRS` → `BASE_DIR.parent / "assets" / "templates"` in `templates.py`. Served by Django template engine. |
 | `locale/` | **All projects** | Via `LOCALE_PATHS` → `LOCALE_DIRS` in `assets.py`. Used for Django i18n translations. |
 | `fixtures/` | **All projects** | Via `FIXTURE_DIRS` in `assets.py`. Used for database seeding (`loaddata`). |

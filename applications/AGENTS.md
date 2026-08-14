@@ -32,7 +32,7 @@ Traefik / TLS
   ├── product web services
   ├── landing/frontend and backend routes
   ├── Coder and auxiliary services
-  └── shared-media (Nginx)
+  └── shared-proxy (Nginx)
 
 PostgreSQL ── product databases, Coder, application persistence
 Redis ─────── cache, Celery/Dramatiq broker/result databases

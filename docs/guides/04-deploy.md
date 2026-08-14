@@ -37,7 +37,7 @@ Internet
 | Service | Container | Port | Purpose |
 |---------|-----------|------|---------|
 | `default-proxy` | Traefik | 80, 443 | SSL termination, routing |
-| `shared-media` | Nginx | 80 | Static/media files |
+| `shared-proxy` | Nginx | 80 | Static/media files |
 | `postgres` | PostgreSQL 15 | 5432 | Primary database |
 | `default-redis` | Redis 7 | 6379 | Cache, sessions, Celery |
 
@@ -164,9 +164,9 @@ echo | openssl s_client -connect ctc-research.com:443 -servername ctc-research.c
 ### Static Files Not Loading
 
 ```bash
-# Check shared-media
-docker ps | grep shared-media
-docker logs shared-media
+# Check shared-proxy
+docker ps | grep shared-proxy
+docker logs shared-proxy
 
 # Recollect
 docker exec ctc-research-website python manage.py collectstatic --noinput

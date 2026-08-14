@@ -101,8 +101,8 @@ docker exec postgres psql -U structa_user -d ctc_research_db -c "SELECT 1"
 ### Static files not loading
 
 ```bash
-docker ps | grep shared-media
-docker logs shared-media
+docker ps | grep shared-proxy
+docker logs shared-proxy
 docker exec ctc-research-website python manage.py collectstatic --noinput
 ```
 

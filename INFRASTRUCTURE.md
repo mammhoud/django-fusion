@@ -157,12 +157,12 @@ ALLOWED_HOSTS=ctc-research.com,www.ctc-research.com
 
 ---
 
-### shared-media (Nginx)
+### shared-proxy (Nginx)
 
 | Property | Value |
 |----------|-------|
 | **Image** | Custom Dockerfile (Nginx) |
-| **Container Name** | `shared-media` |
+| **Container Name** | `shared-proxy` |
 | **Port** | 80 (internal, proxied via Traefik) |
 | **Status** | ✅ Healthy |
 | **Log Driver** | `json-file` |

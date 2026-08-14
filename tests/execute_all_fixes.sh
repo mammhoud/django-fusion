@@ -75,14 +75,14 @@ echo ""
 
 # Step 9: Restart all services
 echo -e "${BLUE}Step 9: Restart all services${NC}"
-docker compose restart ctc-research-website traefik shared-media
+docker compose restart ctc-research-website traefik shared-proxy
 sleep 5
 echo -e "${GREEN}✅ All services restarted${NC}"
 echo ""
 
 # Step 10: Verify service status
 echo -e "${BLUE}Step 10: Verify service status${NC}"
-docker compose ps | grep -E "ctc-research|traefik|shared-media|postgres|redis"
+docker compose ps | grep -E "ctc-research|traefik|shared-proxy|postgres|redis"
 echo ""
 
 echo "╔════════════════════════════════════════════════════════════╗"

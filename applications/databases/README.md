@@ -97,25 +97,28 @@ The compatibility commands `make up-coder`, `make logs-coder`, and
 `make down-coder` delegate to `applications/docker-compose.yml`. Existing
 `coder_data` volumes are unchanged.
 
-### AFFiNE workspace database
+### AFFiNE shared-service database
 
-The Coder `workspace` template provisions AFFiNE (self-hosted workspace, web +
-API + WebSocket on one origin) and connects it to this PostgreSQL service
-through the external `common` and `warehouse-net` networks:
+AFFiNE is a permanent service owned by
+`applications/proxy/docker-compose.nginx.yml`; the Coder `workspace` template
+and `.devcontainer` do not install, stop, or provision it. The proxy-side
+`affine-migration` and `proxy-affine` containers connect to this PostgreSQL
+service through the external `common` and `warehouse-net` networks:
 
-| Setting | Default | Override |
-|---|---|---|
-| Database | `affine` | `POSTGRES_DATABASES` |
-| Role | `affine` | `POSTGRES_DATABASES` |
-| Password | development-only `affine` | `AFFINE_DB_PASSWORD` / `POSTGRES_DATABASES` |
-| Host | `postgres` | keep the shared service name |
+| Setting | Value |
+|---|---|
+| Database | `affine` |
+| Role | `affine` |
+| Host | `postgres` |
+| Password source | `applications/proxy/.env` (`AFFINE_DB_PASSWORD`) |
 
-Set `AFFINE_DB_PASSWORD` before initializing a new PostgreSQL volume, then set
-the matching AFFiNE credentials in the `affine_database_url` Coder variable.
-AFFiNE also needs the shared `default-redis` service on `common` (its
-`REDIS_SERVER_*` variables default to it). Existing volumes require an
-explicit operator-managed database/user creation or a controlled init rerun;
-this documentation does not run migrations or modify data automatically.
+Keep the decoded password synchronized with the `affine` role created by the
+PostgreSQL bootstrap. Because the proxy composes a PostgreSQL URI, the value in
+`applications/proxy/.env` must percent-encode URI-reserved characters. AFFiNE
+also uses `default-redis` on `common` and receives its password from the same
+ignored proxy environment file. Existing volumes require explicit
+operator-managed database/user changes; this documentation does not run
+migrations or modify data automatically.
 
 ### Adminer
 

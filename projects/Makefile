@@ -145,7 +145,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -314,13 +314,13 @@ docker-build-lms:
 docker-build-vresume:
 	@$(MAKE) docker-build WEBSITE=vresume
 
-docker-build-shared-media:
+docker-build-shared-proxy:
 	@mkdir -p $(LOG_BUILD_DIR)
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
-	 echo "[build] shared-media -> $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log"; \
-	 docker compose -f applications/proxy/docker-compose.nginx.yml build shared-media 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log
+	 echo "[build] shared-proxy -> $(LOG_BUILD_DIR)/docker-build-shared-proxy-$$timestamp.log"; \
+	 docker compose -f applications/proxy/docker-compose.nginx.yml build shared-proxy 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-proxy-$$timestamp.log
 
-docker-build-all: docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media
+docker-build-all: docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy
 
 docker-rebuild rebuild:
 	@mkdir -p $(LOG_BUILD_DIR) $(LOG_DEPLOY_DIR)

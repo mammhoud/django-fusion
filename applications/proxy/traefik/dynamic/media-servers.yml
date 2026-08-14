@@ -1,30 +1,29 @@
 # =============================================================================
-# Media servers — Traefik router config  [DORMANT]
+# Media servers — Traefik router config
 # =============================================================================
-# Container "shared-media" is NOT currently running.
-# All media.* subdomains route to shared-media:80 — no backend available.
-# Domains: media.structa.cloud, media.ctc-research.com, media.lms.com,
-#          media.vresume.structa.cloud
-# To activate: deploy the shared-media Nginx container.
+# All media.* subdomains route to the running shared-proxy Nginx container.
+# Domains: media.structa.cloud, media.ctc-research.com, media.vresume.structa.cloud
+# (media.lms.com was removed — the domain no longer resolves and its certResolver
+# kept triggering failed Let's Encrypt attempts)
 # =============================================================================
 
 http:
   routers:
-    shared-media-http:
+    shared-proxy-http:
       rule: Host(`media.structa.cloud`)
       entryPoints:
       - web
       middlewares:
       - redirect-to-https
-      service: shared-media-service
-    shared-media-https:
+      service: shared-proxy-service
+    shared-proxy-https:
       rule: Host(`media.structa.cloud`)
       entryPoints:
       - web-secure
       middlewares:
       - compress
       - security-headers
-      service: shared-media-service
+      service: shared-proxy-service
       tls:
         certResolver: letsencrypt-http
     ctc-media-http:
@@ -44,23 +43,6 @@ http:
       service: ctc-media-service
       tls:
         certResolver: letsencrypt-http
-    lms-media-http:
-      rule: Host(`media.lms.com`)
-      entryPoints:
-      - web
-      middlewares:
-      - redirect-to-https
-      service: lms-media-service
-    lms-media-https:
-      rule: Host(`media.lms.com`)
-      entryPoints:
-      - web-secure
-      middlewares:
-      - compress
-      - security-headers
-      service: lms-media-service
-      tls:
-        certResolver: letsencrypt-http
     vresume-media-http:
       rule: Host(`media.vresume.structa.cloud`)
       entryPoints:
@@ -77,19 +59,15 @@ http:
       - security-headers
       service: vresume-media-service
   services:
-    shared-media-service:
+    shared-proxy-service:
       loadBalancer:
         servers:
-        - url: http://shared-media:80
+        - url: http://shared-proxy:80
     ctc-media-service:
       loadBalancer:
         servers:
-        - url: http://shared-media:80
-    lms-media-service:
-      loadBalancer:
-        servers:
-        - url: http://shared-media:80
+        - url: http://shared-proxy:80
     vresume-media-service:
       loadBalancer:
         servers:
-        - url: http://shared-media:80
+        - url: http://shared-proxy:80

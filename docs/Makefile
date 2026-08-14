@@ -14,7 +14,7 @@ help: ## Show documentation commands
 		'  make serve         Run the Docus development server' \
 		'  make preview       Preview the generated server output' \
 		'  make check         Validate Docus configuration and locale sources' \
-		'  make deploy        Rebuild the Docus + shared-media services' \
+		'  make deploy        Rebuild the Docus + shared-proxy services' \
 		'  make clean         Remove generated Docus output'
 
 install: ## Install Docus dependencies
@@ -43,8 +43,8 @@ check: ## Validate Docus configuration and locale sources
 	@grep -q "code: 'ar'" $(DocusDir)/nuxt.config.ts
 	@echo 'Docus configuration and English/Arabic source checks passed.'
 
-deploy: ## Rebuild the Docus and shared-media services
-	docker compose -f ../applications/proxy/docker-compose.nginx.yml build docus shared-media
+deploy: ## Rebuild the Docus and shared-proxy services
+	docker compose -f ../applications/proxy/docker-compose.nginx.yml build docus shared-proxy
 
 clean: ## Remove generated Docus output and content
 	rm -rf $(DocusDir)/content $(DocusDir)/.nuxt $(DocusDir)/.output $(DocusDir)/dist

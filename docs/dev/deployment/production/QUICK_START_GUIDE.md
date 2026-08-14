@@ -73,7 +73,7 @@ curl http://localhost:8080/ping
 
 ```bash
 # Start shared media server
-docker compose up -d shared-media
+docker compose up -d shared-proxy
 
 # Verify media server health
 sleep 5
@@ -103,7 +103,7 @@ docker ps | grep -E 'ctc-research|lms|vresume'
 ### Check Container Health
 
 ```bash
-docker ps --filter "status=running" | grep -E 'postgres|redis|traefik|shared-media|website'
+docker ps --filter "status=running" | grep -E 'postgres|redis|traefik|shared-proxy|website'
 ```
 
 ### Test Website Access
@@ -205,7 +205,7 @@ docker logs web-ctc-research
 docker logs lms-website
 docker logs vresume-website
 docker logs traefik
-docker logs shared-media
+docker logs shared-proxy
 ```
 
 ---
@@ -276,7 +276,7 @@ docker logs web-ctc-research
 docker logs traefik
 
 # Media server logs
-docker logs shared-media
+docker logs shared-proxy
 
 # Database logs
 docker logs postgres
@@ -323,7 +323,7 @@ docker exec traefik traefik validate --configfile=/etc/traefik/traefik.yml
 docker exec web-ctc-research python manage.py collectstatic --noinput
 
 # Restart media server
-docker restart shared-media
+docker restart shared-proxy
 ```
 
 ### Database connection error
@@ -375,7 +375,7 @@ docker compose down
 
 ```bash
 docker compose stop web-ctc-research
-docker compose stop shared-media
+docker compose stop shared-proxy
 ```
 
 ### Restart specific service

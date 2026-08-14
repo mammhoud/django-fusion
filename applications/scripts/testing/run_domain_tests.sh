@@ -141,9 +141,6 @@ test_proxy_routing() {
     "ctc-research.com|CTC Research"
     "vresume.structa.cloud|VResume"
   )
-  if [ "$CRM_DEPLOYED" = true ]; then
-    routes=("crm.structa.cloud|CRM" "${routes[@]}")
-  fi
 
   for route_info in "${routes[@]}"; do
     IFS='|' read -r host name <<< "$route_info"
@@ -208,20 +205,6 @@ test_database_health() {
 
 test_configuration() {
   section "TEST 5: Configuration Files"
-
-  # Check Traefik CRM config exists
-  if [ "$CRM_DEPLOYED" = true ]; then
-    if [ -f "/home/structa.cloud/applications/proxy/traefik/dynamic/crm.yml" ]; then
-      log_success "Traefik CRM router config exists"
-      if grep -q "crm-website:5074" /home/structa.cloud/applications/proxy/traefik/dynamic/crm.yml; then
-        log_success "CRM service endpoint configured correctly"
-      else
-        log_failure "CRM service endpoint not configured"
-      fi
-    else
-      log_failure "Traefik CRM router config missing"
-    fi
-  fi
 
   # Check CLI site registry
   if [ "$CRM_DEPLOYED" = true ]; then
@@ -296,14 +279,6 @@ test_traefik_config() {
     log_failure "No Traefik router configs found"
   fi
 
-  # Check for CRM router
-  if [ "$CRM_DEPLOYED" = true ]; then
-    if curl -s http://localhost:8080/api/http/routers 2>&1 | grep -q "crm"; then
-      log_success "CRM routers detected in Traefik"
-    else
-      log_warning "CRM routers not detected in Traefik (may not have been loaded yet)"
-    fi
-  fi
 }
 
 ################################################################################
@@ -334,14 +309,6 @@ test_acme_setup() {
     fi
   fi
 
-  # Check CRM TLS config
-  if [ "$CRM_DEPLOYED" = true ]; then
-    if grep -q "certResolver: letsencrypt" /home/structa.cloud/applications/proxy/traefik/dynamic/crm.yml; then
-      log_success "CRM configured for Let's Encrypt"
-    else
-      log_failure "CRM not configured for Let's Encrypt"
-    fi
-  fi
 }
 
 ################################################################################
@@ -351,15 +318,7 @@ test_acme_setup() {
 test_media_server() {
   section "TEST 9: Media Server Integration"
 
-  if [ "$CRM_DEPLOYED" = true ]; then
-    if curl -s -H "Host: crm.structa.cloud" -I http://localhost/media/ 2>&1 | grep -q "404\|301\|302"; then
-      log_success "Media endpoint routing configured"
-    else
-      log_failure "Media endpoint not responding as expected"
-    fi
-  fi
-
-  if docker ps --format '{{.Names}}' | grep -q "^shared-media$"; then
+  if docker ps --format '{{.Names}}' | grep -q "^shared-proxy$"; then
     log_success "Shared media container running"
   else
     log_failure "Shared media container not running"

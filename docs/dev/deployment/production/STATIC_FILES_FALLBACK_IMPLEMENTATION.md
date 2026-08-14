@@ -143,7 +143,7 @@ Header: X-Frame-Options: DENY (Django response)
 
 ### Test 3: File Exists in Site Directory
 ```bash
-docker exec shared-media ls -lh /var/www/sites/ctc-research/static/wagtailadmin/js/vendor.js
+docker exec shared-proxy ls -lh /var/www/sites/ctc-research/static/wagtailadmin/js/vendor.js
 
 Result: ✅ -rw-r-- 361965 Jun  2 00:07
 ```
@@ -251,14 +251,14 @@ curl -i http://localhost/static/missing.js | grep X-Served-By
 ### View Nginx Configuration
 
 ```bash
-docker exec shared-media nginx -T | grep -A20 "/static"
+docker exec shared-proxy nginx -T | grep -A20 "/static"
 ```
 
 ### Check File Locations
 
 ```bash
 # Check if file exists in nginx
-docker exec shared-media ls /var/www/sites/ctc-research/static/...
+docker exec shared-proxy ls /var/www/sites/ctc-research/static/...
 
 # Check if Django has the file
 docker exec web-ctc-research ls /app/ctc-research/assets/staticfiles/...

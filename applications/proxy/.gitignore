@@ -1,4 +1,4 @@
-# Local environment file with secrets (Cloudflare token, etc.)
+# Local environment file with secrets (DB passwords, etc.)
 # Copy from .env.example and fill in real values.
 .env
 
@@ -15,4 +15,7 @@ acme/backups/
 # Keep the .gitkeep so the directory still resolves for bind mounts.
 certs/
 !certs/.gitkeep
+
+# Persistent application data; keep credentials and user files out of Git.
+affine-data/
 

@@ -1,5 +1,5 @@
 # Docus Nuxt documentation server.
-# The shared-media Nginx proxies the public docs routes to this service.
+# The shared-proxy Nginx proxies the public docs routes to this service.
 FROM node:22-bookworm-slim
 
 WORKDIR /workspace/docs/docus

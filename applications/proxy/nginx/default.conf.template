@@ -1,16 +1,12 @@
-# Docker embedded DNS: the AFFiNE upstream uses variable
-# proxy_pass (see below), so nginx must resolve their container names at
-# request time via this resolver — otherwise requests 502 with "no resolver
-# defined" even when the workspace container is up.
+# Docker embedded DNS: variable proxy_pass directives below resolve shared
+# service names at request time through the embedded Docker DNS resolver.
 resolver 127.0.0.11 valid=30s ipv6=off;
 
-# The workspace origin is space.structa.cloud (root = AFFiNE); former hosts
-# redirect there. Keep .localhost and public hosts on the same host family
-# (space.localhost vs space.structa.cloud).
+# The shared application origin is space.structa.cloud (root = AFFiNE).
+# Local aliases are kept for development only.
 map $host $space_redirect_base {
     default          https://space.structa.cloud;
     affine.localhost http://space.localhost;
-    blinko.localhost http://space.localhost;
 }
 
 
@@ -221,14 +217,9 @@ server {
         add_header Content-Type text/plain;
     }
 
-    # Resolver smoke probe — exercised by the shared-media healthcheck.
-    # Proxies to a stable in-stack container (docus) through the SAME
-    # variable-upstream + resolver path the AFFiNE workspace
-    # containers use. 200 = resolver configured and resolving at runtime;
-    # 502 "no resolver defined" = config regression the healthcheck must catch
-    # at deploy time. Closed-loop and safe: docus always serves its SPA
-    # fallback (200), so the probe never depends on coder-* workspace
-    # containers being up.
+    # Optional resolver probe for operators. The healthcheck intentionally
+    # uses the local endpoint above so proxy health is independent of backend
+    # rollout order.
     location = /__resolver_probe__ {
         access_log off;
         set $resolver_probe docus:3000;
@@ -283,21 +274,18 @@ server {
 }
 
 # ------------------------------------------------------------
-# Workspace origin — space.structa.cloud (root = AFFiNE)
+# Shared workspace origin — space.structa.cloud
 # ------------------------------------------------------------
-# Root serves AFFiNE (web client + API + WebSocket on one origin at
-# coder-${WORKSPACE_NAME}-affine:3010). The upstream name is pinned by the
-# repo's devcontainer compose (.devcontainer/docker-compose.yml) to
-# coder-${WORKSPACE_NAME}-*; WORKSPACE_NAME defaults to "workspace" on both
-# sides. Variable-based upstream keeps `nginx -t` (shared-media healthcheck)
-# green while the workspace is stopped; requests 502 until it is up.
+# AFFiNE is a permanent shared service. It is not tied to a Coder workspace,
+# so workspace deletion cannot cause a public 502 or remove application data.
+# The root serves the AFFiNE web client, API, and WebSocket connection.
 server {
     listen 80;
     server_name space.localhost space.structa.cloud;
 
     location / {
-        set $affine_ws_upstream coder-${WORKSPACE_NAME}-affine:3010;
-        proxy_pass http://$affine_ws_upstream;
+        set $affine_upstream proxy-affine:3010;
+        proxy_pass http://$affine_upstream;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -314,10 +302,8 @@ server {
 # ------------------------------------------------------------
 # Legacy hosts — redirect to space.structa.cloud
 # ------------------------------------------------------------
-# Former AFFiNE (affine.localhost) and Blinko (blinko.structa.cloud) hosts
-# redirect to the consolidated origin so existing bookmarks keep working.
-# FileGator and its host were removed entirely. Traefik routes them here (see
-# ../traefik/dynamic/space.yml, affine.yml, blinko.yml).
+# The former AFFiNE (affine.localhost) host redirects to the consolidated
+# origin so existing bookmarks keep working.
 server {
     listen 80;
     server_name affine.localhost;
@@ -327,21 +313,12 @@ server {
     }
 }
 
-server {
-    listen 80;
-    server_name blinko.localhost blinko.structa.cloud;
-
-    location / {
-        return 301 $space_redirect_base/;
-    }
-}
-
 # ------------------------------------------------------------
 # Docs — docs.structa.cloud (Docus Nuxt server)
 # ------------------------------------------------------------
-# Traefik strips /docs from this host before forwarding to shared-media.
+# Traefik strips /docs from this host before forwarding to shared-proxy.
 # Docus still emits /docs/ asset URLs, which Traefik strips again on the
-# browser's subsequent requests. The variable upstream keeps shared-media's
+# browser's subsequent requests. The variable upstream keeps shared-proxy's
 # Nginx config valid while the Docus workspace service is restarting.
 server {
     listen 80;

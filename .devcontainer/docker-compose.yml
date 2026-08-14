@@ -1,24 +1,8 @@
-# ============================================================
-# Structa Cloud — compose-based devcontainer stack
-# ============================================================
-# The devcontainer now owns ALL workspace services. The Coder workspace
-# template (applications/templates/workspace/) only provisions a single
-# agent-host container that runs THIS devcontainer inside it via
-# coder_devcontainer; it no longer creates the service containers itself.
+# Structa Cloud — compose-based development container
 #
-# Services (all attach to the shared external `common` network so the
-# shared-media nginx and Coder apps can reach them by name):
-#   devcontainer   — full monorepo toolchain (this is what VS Code attaches to)
-#   affine         — AFFiNE workspace, using the SHARED postgres + redis
-#                    (same database network as the rest of the platform)
-#
-# code-server and FileGator were removed as bundled services (the IDE is
-# provided by VS Code/code-server through the devcontainer itself, and the
-# file manager was dropped).
-#
-# Container names are pinned to coder-${WORKSPACE_NAME}-* so the shared-media
-# nginx route (envsubst WORKSPACE_NAME, default "workspace") keeps working.
-# ============================================================
+# AFFiNE is shared infrastructure managed by
+# applications/proxy/docker-compose.nginx.yml. This compose file is limited to
+# the mounted monorepo development environment.
 
 name: structa-devcontainer
 
@@ -27,68 +11,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # docker-in-docker feature (devcontainer.json) needs privileges.
     privileged: true
     volumes:
-      - ..:/workspaces/structa.cloud
+      - ${REPO_HOST_PATH:-..}:/workspaces/structa.cloud
     networks:
       - common
-    environment:
-      - WORKSPACE_NAME=${WORKSPACE_NAME:-workspace}
     command: sleep infinity
-
-  # One-shot AFFiNE predeploy job (creates config/private.key + Prisma
-  # migrations), mirroring the official self-host compose. The shared
-  # postgres/redis are external services, so there is no in-file dependency;
-  # the job retries are handled by the AFFiNE server start below.
-  affine_migration:
-    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
-    container_name: coder-${WORKSPACE_NAME:-workspace}-affine-migration
-    command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
-    volumes:
-      - ../.affine-data-${WORKSPACE_NAME:-workspace}/storage:/root/.affine/storage
-      - ../.affine-data-${WORKSPACE_NAME:-workspace}/config:/root/.affine/config
-    environment:
-      - DATABASE_URL=postgresql://affine:${AFFINE_DB_PASSWORD:-affine}@postgres:5432/affine
-      - REDIS_SERVER_HOST=default-redis
-      - REDIS_SERVER_PORT=6379
-      - REDIS_SERVER_PASSWORD=${REDIS_PASSWORD:-redis_password}
-      - AFFINE_INDEXER_ENABLED=false
-    networks:
-      - common
-      - warehouse-net
-    restart: "no"
-
-  affine:
-    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
-    container_name: coder-${WORKSPACE_NAME:-workspace}-affine
-    depends_on:
-      affine_migration:
-        condition: service_completed_successfully
-    volumes:
-      - ../.affine-data-${WORKSPACE_NAME:-workspace}/storage:/root/.affine/storage
-      - ../.affine-data-${WORKSPACE_NAME:-workspace}/config:/root/.affine/config
-    environment:
-      - DATABASE_URL=postgresql://affine:${AFFINE_DB_PASSWORD:-affine}@postgres:5432/affine
-      - REDIS_SERVER_HOST=default-redis
-      - REDIS_SERVER_PORT=6379
-      - REDIS_SERVER_PASSWORD=${REDIS_PASSWORD:-redis_password}
-      - AFFINE_SERVER_EXTERNAL_URL=${AFFINE_SERVER_EXTERNAL_URL:-https://space.structa.cloud}
-      - AFFINE_SERVER_PORT=3010
-      - AFFINE_INDEXER_ENABLED=false
-    healthcheck:
-      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3010/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
-      interval: 15s
-      timeout: 10s
-      retries: 8
-      start_period: 60s
-    networks:
-      - common
-      - warehouse-net
-    restart: unless-stopped
 
 networks:
   common:
-    external: true
-  warehouse-net:
     external: true

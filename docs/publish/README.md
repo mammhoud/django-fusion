@@ -91,7 +91,7 @@ push to generic
 | ctc-research-website | `projects/compose/Dockerfile` | Local build |
 | lms-website | `projects/compose/Dockerfile` | Local build |
 | vresume-website | `projects/compose/Dockerfile` | Local build |
-| shared-media | `applications/proxy/Dockerfile.nginx` | Local build |
+| shared-proxy | `applications/proxy/Dockerfile.nginx` | Local build |
 | default-proxy | `applications/proxy/Dockerfile` | Local build |
 | shared-worker | `applications/compose/Dockerfile.tasks` | Local build |
 

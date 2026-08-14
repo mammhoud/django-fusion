@@ -46,16 +46,22 @@ providers:
     watch: true
 
 # ===========================================================================
-# ACME / Let's Encrypt — certificate resolver (HTTP-01)
+# ACME / Let's Encrypt — certificate resolver (HTTP-01, no tokens)
 # ===========================================================================
 # All sites obtain trusted Let's Encrypt certs via HTTP-01 challenge on port 80.
-# Traefik handles auto-renewal natively.
+# No DNS provider credential is required. Traefik handles auto-renewal natively.
 #
 # Prerequisites:
 #   - applications/proxy/acme/acme.json must exist with mode 0600
 #     Run: ./applications/proxy/scripts/manage-certs.sh bootstrap-acme
 #   - DNS A records for each domain must point to this server (187.77.166.222)
+#   - Any AAAA record must point to this host (2a02:4780:28:4cb8::1) or be removed.
+#     An off-host AAAA makes Let's Encrypt resolve IPv6 first and fail with
+#     "acme: error: tls ... remote error: tls: internal error".
 #   - Port 80 must be reachable from the internet
+#
+# Run the pre-issuance DNS gate before triggering issuance:
+#   make -C applications/proxy proxy-dns-check
 #
 certificatesResolvers:
   letsencrypt-http:
@@ -65,13 +71,3 @@ certificatesResolvers:
       caServer: https://acme-v02.api.letsencrypt.org/directory
       httpChallenge:
         entryPoint: web
-  letsencrypt-dns:
-    acme:
-      email: structa.cloud@gmail.com
-      storage: /etc/traefik/acme/acme-dns.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory
-      dnsChallenge:
-        provider: cloudflare
-        resolvers:
-          - "1.1.1.1:53"
-          - "1.0.0.1:53"

@@ -1,8 +1,0 @@
-http:
-  routers:
-    traefik-dashboard:
-      rule: 'Host(`traefik.structa.cloud`)'
-      entryPoints: [web-secure]
-      service: api@internal
-      middlewares: [basic-auth]
-      tls:

@@ -1,6 +1,6 @@
 ---
 title: نشر الوثائق
-description: بناء ونشر وثائق Docus عبر shared-media وTraefik.
+description: بناء ونشر وثائق Docus عبر shared-proxy وTraefik.
 navigation:
   title: النشر
   icon: i-lucide-cloud-upload
@@ -13,7 +13,7 @@ navigation:
 ```text
 Docus / Nuxt generate
         ↓
-shared-media Nginx
+shared-proxy Nginx
         ↓
 Traefik + Let's Encrypt
         ↓
@@ -25,8 +25,8 @@ docs.structa.cloud أو media.structa.cloud/docs/
 نفذ من جذر المستودع:
 
 ```bash
-docker compose -f applications/proxy/docker-compose.nginx.yml build shared-media
-docker compose -f applications/proxy/docker-compose.nginx.yml up -d shared-media
+docker compose -f applications/proxy/docker-compose.nginx.yml build shared-proxy
+docker compose -f applications/proxy/docker-compose.nginx.yml up -d shared-proxy
 ```
 
 مرحلة Node داخل Docker تقوم بتثبيت Docus، وتوليد محتوى `en` و`ar`، ثم تنفيذ
@@ -36,7 +36,7 @@ docker compose -f applications/proxy/docker-compose.nginx.yml up -d shared-media
 
 ```bash
 docker compose -f applications/proxy/docker-compose.nginx.yml config -q
-docker inspect --format '{{json .State.Health}}' shared-media
+docker inspect --format '{{json .State.Health}}' shared-proxy
 curl -I https://docs.structa.cloud/en/
 curl -I https://docs.structa.cloud/ar/
 curl -I https://media.structa.cloud/docs/en/

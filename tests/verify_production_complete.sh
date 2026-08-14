@@ -58,7 +58,7 @@ echo "═" | tee -a "$REPORT"
 echo "1️⃣ CONTAINER HEALTH CHECKS" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-CONTAINERS=("traefik" "web-ctc-research" "shared-media" "postgres" "redis")
+CONTAINERS=("traefik" "web-ctc-research" "shared-proxy" "postgres" "redis")
 
 for container in "${CONTAINERS[@]}"; do
     if docker ps --filter "name=$container" --filter "status=running" --quiet | grep -q .; then

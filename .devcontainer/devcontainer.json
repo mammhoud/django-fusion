@@ -3,15 +3,15 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "workspaceFolder": "/workspaces/structa.cloud",
-  "remoteUser": "node",
-  "containerUser": "node",
+  "remoteUser": "root",
+  "containerUser": "root",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "moby": true
     }
   },
-  "postCreateCommand": "npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && pnpm -v && nx --version && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
+  "postCreateCommand": "npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && (cd /tmp && pnpm -v) && npx nx --version && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -19,8 +19,7 @@
         "esbenp.prettier-vscode",
         "ms-python.python",
         "charliermarsh.ruff",
-        "rust-lang.rust-analyzer",
-        "nrwl.angular-console"
+        "rust-lang.rust-analyzer"
       ],
       "settings": {
         "typescript.tsdk": "node_modules/typescript/lib",
@@ -28,6 +27,6 @@
       }
     }
   },
-  "forwardPorts": [3000, 3010, 4321, 5173],
-  "postAttachCommand": "npx nx graph"
+  "forwardPorts": [3000, 4321, 5173],
+  "postAttachCommand": "npm install -g freebuff && echo 'workspace ready'"
 }

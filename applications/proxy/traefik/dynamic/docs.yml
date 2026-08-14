@@ -1,9 +1,9 @@
 # =============================================================================
 # Docs — Structa Cloud documentation (docs.structa.cloud)
 # =============================================================================
-# Docus runs as the `docus` Nuxt server in the shared-media Compose project.
+# Docus runs as the `docus` Nuxt server in the shared-proxy Compose project.
 # The media host keeps `/docs/` as its base path; the docs host uses this
-# router's prefix middleware before shared-media forwards to Docus.
+# router's prefix middleware before shared-proxy forwards to Docus.
 # Requires an A record for docs.structa.cloud pointing at this server.
 # =============================================================================
 
@@ -42,9 +42,9 @@ http:
     docs-service:
       loadBalancer:
         servers:
-          # Shared-media Nginx selects its Docus virtual host from the original
+          # Shared-proxy Nginx selects its Docus virtual host from the original
           # Host header and proxies the resulting request to `docus:3000`.
-          - url: http://shared-media:80
+          - url: http://shared-proxy:80
         healthCheck:
           path: /
           hostname: docs.structa.cloud
