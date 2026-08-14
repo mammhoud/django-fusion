@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 
 class TaskOptions:
@@ -14,8 +15,8 @@ class TaskOptions:
     min_backoff: int = 15_000       # milliseconds
     max_backoff: int = 86_400_000   # milliseconds (24 h)
     time_limit: int = 1_800_000     # milliseconds (30 min)
-    schedule: Optional[str] = None  # cron expression
-    actor_name: Optional[str] = None
+    schedule: str | None = None  # cron expression
+    actor_name: str | None = None
     bind: bool = False
 
     def __init__(
@@ -25,8 +26,8 @@ class TaskOptions:
         min_backoff: int = 15_000,
         max_backoff: int = 86_400_000,
         time_limit: int = 1_800_000,
-        schedule: Optional[str] = None,
-        actor_name: Optional[str] = None,
+        schedule: str | None = None,
+        actor_name: str | None = None,
         bind: bool = False,
     ):
         self.queue = queue
@@ -45,8 +46,8 @@ def task(
     min_backoff: int = 15_000,
     max_backoff: int = 86_400_000,
     time_limit: int = 1_800_000,
-    schedule: Optional[str] = None,
-    actor_name: Optional[str] = None,
+    schedule: str | None = None,
+    actor_name: str | None = None,
     bind: bool = False,
     **backend_kwargs: Any,
 ):

@@ -193,6 +193,18 @@ class TestSyncTaskHistory:
 # ── InProcessBackend ───────────────────────────────────────────
 
 class TestDramatiqBackend:
+    def test_scheduler_publishes_scheduled_entries(self, monkeypatch):
+        """The scheduler publishes jobs; it never executes product code locally."""
+        from django_fusion.tasks import scheduler
+
+        backend = MagicMock()
+        monkeypatch.setattr(task_registry, "_backend", backend)
+        entry = SimpleNamespace(name="scheduled.task")
+
+        scheduler._enqueue_scheduled_task(entry)
+
+        backend.enqueue.assert_called_once_with(entry, (), {})
+
     def test_delayed_enqueue_uses_keyword_argument_payload(self, monkeypatch):
         """Dramatiq options must keep actor args/kwargs in their named slots."""
         from django_fusion.tasks.backends.dramatiq import DramatiqBackend

@@ -6,9 +6,10 @@ import importlib
 import logging
 import os
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,8 @@ class TaskRegistration:
     module: str
     queue: str
     max_retries: int
-    schedule: Optional[str] = None
-    options: Dict[str, Any] = field(default_factory=dict)
+    schedule: str | None = None
+    options: dict[str, Any] = field(default_factory=dict)
 
 
 class TaskRegistry:
@@ -36,7 +37,7 @@ class TaskRegistry:
     """
 
     def __init__(self):
-        self._tasks: Dict[str, TaskRegistration] = {}
+        self._tasks: dict[str, TaskRegistration] = {}
         self._backend = None
         self._discovered = False
 
@@ -60,7 +61,7 @@ class TaskRegistry:
         self,
         func: Callable,
         options,
-        backend_kwargs: Optional[dict] = None,
+        backend_kwargs: dict | None = None,
     ):
         """Register a task function.
 
@@ -114,13 +115,13 @@ class TaskRegistry:
 
     # ── query ──────────────────────────────────────────────────
 
-    def scheduled_tasks(self) -> List[TaskRegistration]:
+    def scheduled_tasks(self) -> list[TaskRegistration]:
         return [t for t in self._tasks.values() if t.schedule]
 
-    def get(self, name: str) -> Optional[TaskRegistration]:
+    def get(self, name: str) -> TaskRegistration | None:
         return self._tasks.get(name)
 
-    def list_tasks(self) -> List[str]:
+    def list_tasks(self) -> list[str]:
         return sorted(self._tasks.keys())
 
     def task_count(self) -> int:
@@ -130,8 +131,8 @@ class TaskRegistry:
 
     def autodiscover(
         self,
-        project_paths: Optional[list[str]] = None,
-        modules: Optional[list[str]] = None,
+        project_paths: list[str] | None = None,
+        modules: list[str] | None = None,
     ) -> list[str]:
         """Import task packages from Django apps and configured project paths.
 
@@ -247,9 +248,12 @@ class TaskRegistry:
             package_root.resolve()
         ):
             for cached_name in tuple(sys.modules):
-                if cached_name == "plugins" or cached_name.startswith("plugins."):
-                    del sys.modules[cached_name]
-                elif cached_name == "apps" or cached_name.startswith("apps."):
+                if (
+                    cached_name == "plugins"
+                    or cached_name.startswith("plugins.")
+                    or cached_name == "apps"
+                    or cached_name.startswith("apps.")
+                ):
                     del sys.modules[cached_name]
 
         try:

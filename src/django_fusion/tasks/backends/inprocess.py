@@ -25,8 +25,9 @@ class InProcessBackend(AbstractTaskBackend):
 
 def _log_start(name, args, kwargs):
     try:
-        from django_fusion.models.tasks import BackgroundTaskLog
         import uuid
+
+        from django_fusion.models.tasks import BackgroundTaskLog
         BackgroundTaskLog.objects.create(
             id=uuid.uuid4(),
             task_name=name,
@@ -59,8 +60,9 @@ def _log_finish(name, result):
 
 def _log_failure(name):
     try:
-        from django_fusion.models.tasks import BackgroundTaskLog
         import traceback
+
+        from django_fusion.models.tasks import BackgroundTaskLog
         log = BackgroundTaskLog.objects.filter(
             task_name=name, status="started"
         ).order_by("-created_at").first()

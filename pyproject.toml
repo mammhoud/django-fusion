@@ -72,6 +72,10 @@ bolt = [
 tables = [
     "django-tables2>=2.7",
 ]
+tasks = [
+    "dramatiq[redis]>=2.0",
+    "apscheduler>=3.10",
+]
 auth = [
     "django-allauth>=65",
 ]

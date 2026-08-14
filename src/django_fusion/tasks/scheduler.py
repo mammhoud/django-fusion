@@ -23,7 +23,6 @@ def _build_scheduler():
     not installed."""
     try:
         from apscheduler.schedulers.background import BackgroundScheduler
-        from apscheduler.triggers.cron import CronTrigger
     except ImportError:
         logger.info("APScheduler not installed — scheduled tasks disabled.")
         return None
@@ -35,12 +34,23 @@ def _build_scheduler():
     return scheduler
 
 
+def _enqueue_scheduled_task(entry) -> None:
+    """Publish a scheduled task to Dramatiq instead of running it locally."""
+    from django_fusion.tasks.registry import task_registry
+
+    backend = task_registry.backend
+    if backend is None:
+        raise RuntimeError("TaskRegistry has no configured backend")
+    backend.enqueue(entry, (), {})
+
+
 def register_scheduled_tasks(scheduler) -> int:
     """Register all tasks that carry a ``schedule`` from the registry.
 
     Returns the number of jobs registered.
     """
     from apscheduler.triggers.cron import CronTrigger
+
     from django_fusion.tasks.registry import task_registry
 
     count = 0
@@ -49,7 +59,8 @@ def register_scheduled_tasks(scheduler) -> int:
             continue
         try:
             scheduler.add_job(
-                entry.func,
+                _enqueue_scheduled_task,
+                args=[entry],
                 trigger=CronTrigger.from_crontab(entry.schedule),
                 id=entry.name,
                 name=entry.name,
