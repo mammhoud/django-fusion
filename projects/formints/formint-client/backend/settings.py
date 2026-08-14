@@ -215,6 +215,57 @@ SHOP_ORDER_TYPES = [
     ("delivery", "Delivery"),
 ]
 
+# Editorial marketing content (craft panels + testimonials) served to the
+# storefront via GET /fusion/editorial/ — the single source of truth so the
+# Astro page never hardcodes placeholder imagery. Image URLs are stable
+# Unsplash/Wikimedia sources (verified reachable); the frontend mirrors this
+# exact payload as its build-time fallback.
+SHOP_EDITORIAL = {
+    "craft": [
+        {
+            "title": "The roast",
+            "caption": "Weekly batches",
+            "body": "Single-origin beans roasted in-house every Monday. The menu follows the season, not the other way around.",
+            "img": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80",
+            "alt": "Freshly roasted coffee beans",
+        },
+        {
+            "title": "The kitchen",
+            "caption": "Before sunrise",
+            "body": "Pastry lamination starts at 4 a.m. Everything from the shakshuka to the cardamom buns is made on the premises.",
+            "img": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+            "alt": "Pastry being laminated in the kitchen",
+        },
+        {
+            "title": "The pickup",
+            "caption": "Eight minutes",
+            "body": "Order ahead and your ticket is queued before you arrive. Average wait from door to cup is under eight minutes.",
+            "img": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+            "alt": "A finished order ready for pickup",
+        },
+    ],
+    "voices": [
+        {
+            "name": "Priya Raghavan",
+            "role": "Regular since 2022",
+            "quote": "The pour-over changes weekly and the board always tells you exactly what you are getting. I have never once been handed a lukewarm cup.",
+            "img": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+        },
+        {
+            "name": "Tomás Herrera",
+            "role": "Rides past on the commute",
+            "quote": "I order the flat white from the bus stop and it is ready when I walk in. Eight minutes, every single time.",
+            "img": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+        },
+        {
+            "name": "Aisha Okafor",
+            "role": "Brings the whole team",
+            "quote": "The harissa chicken bowl is the reason our office meetings happen here now. Half the order list is on the wall of fame.",
+            "img": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80",
+        },
+    ],
+}
+
 # ── Wagtail CMS ────────────────────────────────────────────────────────
 WAGTAIL_SITE_NAME = os.environ.get("WAGTAIL_SITE_NAME", "Formint Café")
 WAGTAILADMIN_BASE_URL = os.environ.get(

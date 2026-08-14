@@ -111,7 +111,7 @@ const isActive = (href: string) => pathname === href.split('#')[0] && href.inclu
             x-show="accountOpen"
             x-cloak
             @click.outside="accountOpen = false"
-            class="absolute right-0 mt-2 w-52 rounded-2xl border border-fu-line bg-fu-card p-2 shadow-xl"
+            class="absolute right-0 mt-2 w-52 rounded-2xl border border-fu-line bg-fu-card p-2 shadow-[0_20px_40px_-15px_hsl(var(--fu-shadow)/0.18)]"
           >
             <p class="px-3 py-1.5 font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted" x-text="user?.email"></p>
             <div set:html={accountMenuHtml} />

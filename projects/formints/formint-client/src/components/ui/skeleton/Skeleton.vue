@@ -8,7 +8,7 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-    <div :class="cn('animate-pulse rounded-xl bg-muted', props.class)">
+    <div :class="cn('fu-shimmer rounded-xl', props.class)">
         <slot />
     </div>
 </template>

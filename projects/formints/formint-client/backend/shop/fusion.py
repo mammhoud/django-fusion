@@ -39,6 +39,8 @@ __all__ = [
     "navigation_api",
     "branding_payload",
     "branding_api",
+    "editorial_payload",
+    "editorial_api",
     "assets_payload",
     "assets_api",
     "session_mode_payload",
@@ -156,6 +158,17 @@ def branding_payload(request: HttpRequest | None = None) -> dict[str, Any]:
     }
 
 
+def editorial_payload(request: HttpRequest | None = None) -> dict[str, Any]:
+    """Storefront editorial content — craft panels + testimonials.
+
+    Reads ``SHOP_EDITORIAL`` from settings (the single source of truth) so
+    the Astro page never hardcodes placeholder imagery. Served at
+    ``GET /fusion/editorial/`` and mirrored by the frontend as its
+    build-time fallback.
+    """
+    return dict(getattr(django_settings, "SHOP_EDITORIAL", {"craft": [], "voices": []}))
+
+
 def assets_payload(request: HttpRequest | None = None) -> dict[str, Any]:
     """Build the FUSION_ASSETS manifest payload (bundle parity)."""
     from django_fusion.config.assets import get_asset_pipeline_options
@@ -196,6 +209,11 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
 def branding_api(request: HttpRequest) -> JsonResponse:
     """GET /fusion/branding/ — storefront branding (settings-driven)."""
     return JsonResponse(branding_payload(request))
+
+
+def editorial_api(request: HttpRequest) -> JsonResponse:
+    """GET /fusion/editorial/ — editorial craft/testimonial content."""
+    return JsonResponse(editorial_payload(request))
 
 
 def assets_api(request: HttpRequest) -> JsonResponse:

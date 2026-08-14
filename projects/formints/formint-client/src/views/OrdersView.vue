@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { ChevronDown, ChevronsUpDown, Printer, CookingPot, Check } from 'lucide-vue-next';
+import Icon from '@/components/ui/Icon.vue';
 import { getSales, getSale, updateOrderStatus, type Sale, type SaleDetail } from '../api';
 import { useOrdersStore } from '@/utils/orders';
 import { useTicketStore } from '@/utils/ticket';
@@ -252,7 +252,7 @@ async function openReceipt(sale: Sale) {
         class="gap-2"
         @click="toggleExpandAll"
       >
-        <ChevronsUpDown class="h-4 w-4" />
+        <Icon name="chevrons-up-down" class="h-4 w-4" />
         {{ allExpanded ? 'Collapse all' : `Expand all (${filteredSales.length})` }}
       </Button>
     </div>
@@ -320,7 +320,8 @@ async function openReceipt(sale: Sale) {
                 <Badge :variant="statusVariant(sale.status)">{{ sale.status }}</Badge>
                 <p class="stat-value-display mt-2 text-xl">{{ money(sale.total_amount) }}</p>
               </div>
-              <ChevronDown
+              <Icon
+                name="chevron-down"
                 class="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
                 :class="isExpanded(sale.id) ? 'rotate-180' : ''"
               />
@@ -337,11 +338,12 @@ async function openReceipt(sale: Sale) {
               :disabled="advancingId !== null"
               @click="advanceStatus(sale)"
             >
-              <CookingPot
+              <Icon
                 v-if="nextStep(sale.status)!.status === 'preparing'"
+                name="cooking-pot"
                 class="h-3.5 w-3.5"
               />
-              <Check v-else class="h-3.5 w-3.5" />
+              <Icon v-else name="check" class="h-3.5 w-3.5" />
               {{ advancingId === sale.id ? 'Updating…' : nextStep(sale.status)!.label }}
             </Button>
           </div>
@@ -440,7 +442,7 @@ async function openReceipt(sale: Sale) {
                   :disabled="receiptLoading"
                   @click="openReceipt(sale)"
                 >
-                  <Printer class="h-4 w-4" />
+                  <Icon name="printer" class="h-4 w-4" />
                   {{ receiptLoading ? 'Preparing…' : 'Print receipt' }}
                 </Button>
               </div>

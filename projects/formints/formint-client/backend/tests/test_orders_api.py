@@ -563,3 +563,38 @@ class TestOrderStatusApi:
     def test_get_is_not_allowed(self, client, pending_order):
         response = client.get(f"/api/orders/{pending_order.pk}/status/")
         assert response.status_code == 405
+
+
+class TestFusionEditorialApi:
+    """GET /fusion/editorial/ — the storefront's editorial content payload.
+
+    Pins the settings-driven contract: craft panels + testimonials served
+    from SHOP_EDITORIAL so the Astro page never hardcodes placeholder
+    imagery (picsum was removed from the storefront in favour of this
+    endpoint).
+    """
+
+    def test_serves_craft_and_voices(self, client):
+        response = client.get("/fusion/editorial/")
+        assert response.status_code == 200
+        payload = response.json()
+        assert len(payload["craft"]) == 3
+        assert len(payload["voices"]) == 3
+        for panel in payload["craft"]:
+            assert panel["img"].startswith("https://")
+            assert panel["alt"]
+        for voice in payload["voices"]:
+            assert voice["img"].startswith("https://")
+            assert voice["name"]
+
+    def test_no_placeholder_imagery(self, client):
+        """The payload must never carry picsum/placeholder image URLs."""
+        response = client.get("/fusion/editorial/")
+        payload = response.json()
+        all_urls = [p["img"] for p in payload["craft"]] + [v["img"] for v in payload["voices"]]
+        assert all("picsum" not in u for u in all_urls)
+
+    def test_craft_titles(self, client):
+        response = client.get("/fusion/editorial/")
+        titles = [p["title"] for p in response.json()["craft"]]
+        assert titles == ["The roast", "The kitchen", "The pickup"]

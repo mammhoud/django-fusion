@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch } from 'vue';
-import { X, Printer } from 'lucide-vue-next';
+import Icon from '@/components/ui/Icon.vue';
 import type { SaleDetail } from '../api';
 import { Button } from '@/components/ui/button';
 
@@ -96,11 +96,11 @@ onUnmounted(() => {
         </p>
         <div class="flex items-center gap-2">
           <Button variant="outline" class="h-8 gap-2 border-white/25 bg-white/10 text-white hover:bg-white/20" @click="printReceipt">
-            <Printer class="h-3.5 w-3.5" />
+            <Icon name="printer" class="h-3.5 w-3.5" />
             Print
           </Button>
           <Button variant="ghost" class="receipt-close h-8 gap-2 text-white hover:bg-white/10" @click="emit('close')">
-            <X class="h-3.5 w-3.5" />
+            <Icon name="x" class="h-3.5 w-3.5" />
             Close
           </Button>
         </div>

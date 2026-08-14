@@ -29,6 +29,7 @@ from . import services
 from .fusion import (
     assets_api,
     branding_api,
+    editorial_api,
     navigation_api,
     render_mode_api,
     session_mode_clear_api,
@@ -67,6 +68,7 @@ __all__ = [
     "render_mode",
     "navigation",
     "branding",
+    "editorial",
     "assets",
     "session_mode",
 ]
@@ -659,6 +661,11 @@ def branding(request: HttpRequest) -> JsonResponse:
 def navigation(request: HttpRequest) -> JsonResponse:
     """GET /fusion/navigation/ — storefront nav items."""
     return navigation_api(request)
+
+
+def editorial(request: HttpRequest) -> JsonResponse:
+    """GET /fusion/editorial/ — editorial craft/testimonial content."""
+    return editorial_api(request)
 
 
 def assets(request: HttpRequest) -> JsonResponse:

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { Plus, Minus, Search, Check, Loader2, X } from 'lucide-vue-next';
+import Icon from '@/components/ui/Icon.vue';
 import { getProducts, createOrder, type Product } from '../api';
 import { useScrollMotion } from '../utils/scrollMotion';
 import { useTicketStore } from '../utils/ticket';
@@ -151,7 +151,7 @@ onUnmounted(() => dispose());
 
       <div class="bezel w-full sm:w-72">
         <div class="bezel-core flex items-center gap-2 px-3 py-2">
-          <Search class="h-4 w-4 shrink-0 text-base-content/40" />
+          <Icon name="search" class="h-4 w-4 shrink-0 text-base-content/40" />
           <input
             v-model="query"
             type="search"
@@ -238,7 +238,7 @@ onUnmounted(() => dispose());
               :src="item.image"
               :alt="item.name"
               loading="lazy"
-              class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              class="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
             />
             <div
               v-else
@@ -268,17 +268,17 @@ onUnmounted(() => dispose());
               <div v-if="qty(item.id) === 0" class="flex justify-end">
                 <Button size="sm" class="gap-1.5 px-4" @click="ticket.add(item.id)">
                   Add
-                  <Plus class="h-3.5 w-3.5" />
+                  <Icon name="plus" class="h-3.5 w-3.5" />
                 </Button>
               </div>
               <div v-else class="bezel inline-flex items-center gap-1 rounded-full">
                 <div class="bezel-core flex items-center gap-1 py-0.5 pl-0.5 pr-1">
                   <Button size="icon" variant="ghost" class="h-7 w-7" @click="ticket.remove(item.id)">
-                    <Minus class="h-3.5 w-3.5" />
+                    <Icon name="minus" class="h-3.5 w-3.5" />
                   </Button>
                   <span class="min-w-6 text-center font-mono text-sm font-bold">{{ qty(item.id) }}</span>
                   <Button size="icon" variant="ghost" class="h-7 w-7" @click="ticket.add(item.id)">
-                    <Plus class="h-3.5 w-3.5" />
+                    <Icon name="plus" class="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
@@ -326,7 +326,7 @@ onUnmounted(() => dispose());
                 :src="f.image"
                 :alt="f.name"
                 loading="lazy"
-                class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                class="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
               />
               <div
                 v-else
@@ -355,7 +355,7 @@ onUnmounted(() => dispose());
                 <span class="font-mono text-lg font-bold tracking-tight text-primary">{{ money(f.price) }}</span>
                 <Button size="sm" class="gap-1.5 px-4" @click="ticket.add(f.id)">
                   Add
-                  <Plus class="h-3.5 w-3.5" />
+                  <Icon name="plus" class="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
@@ -397,7 +397,7 @@ onUnmounted(() => dispose());
             <!-- Success: order placed -->
             <div v-if="placedReference" class="flex items-center gap-3">
               <span class="flex h-8 w-8 items-center justify-center rounded-full bg-success/15 text-success">
-                <Check class="h-4 w-4" />
+                <Icon name="check" class="h-4 w-4" />
               </span>
               <div>
                 <p class="text-sm font-semibold">Order placed</p>
@@ -465,18 +465,26 @@ onUnmounted(() => dispose());
                   class="bezel-core w-32 rounded-xl px-3 py-1.5 text-xs outline-none placeholder:text-muted-foreground/60"
                 />
                 <Button
-                  size="sm"
-                  class="gap-1.5 px-4"
+                  class="group gap-2 pl-4 pr-1.5"
                   :disabled="submitting"
                   @click="placeOrder"
                 >
-                  <Loader2 v-if="submitting" class="h-3.5 w-3.5 animate-spin" />
-                  {{ submitting ? 'Placing…' : 'Place order' }}
+                  <template v-if="submitting">
+                    <Icon name="loader" class="h-4 w-4 animate-spin" />
+                    Placing…
+                  </template>
+                  <template v-else>
+                    Place order
+                    <!-- Button-in-button island — the trailing check rides its own circle. -->
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-primary-foreground transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:scale-105">
+                      <Icon name="check" class="h-4 w-4" />
+                    </span>
+                  </template>
                 </Button>
               </div>
 
               <p v-if="submitError" class="flex items-center gap-1.5 text-xs text-error">
-                <X class="h-3.5 w-3.5" />
+                <Icon name="x" class="h-3.5 w-3.5" />
                 {{ submitError }}
               </p>
             </template>

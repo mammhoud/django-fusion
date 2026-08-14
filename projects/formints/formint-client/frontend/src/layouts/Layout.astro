@@ -5,8 +5,7 @@ import CartDrawer from '@/components/ui/CartDrawer.astro';
 import LoginModal from '@/components/ui/LoginModal.astro';
 import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { THEME_STORAGE_KEY, SHOP_NAME } from '@/lib/site';
-import { FALLBACK_CATALOG } from '@/lib/api';
+import { THEME_STORAGE_KEY, SHOP_NAME, SHOP_TAGLINE } from '@/lib/site';
 import '../styles/globals.css';
 
 // Self-hosted fonts (no Google Fonts link in production).
@@ -21,7 +20,6 @@ interface Props {
 
 const { title = '', description = '' } = Astro.props;
 const pageTitle = title && title !== SHOP_NAME ? `${title} · ${SHOP_NAME}` : SHOP_NAME;
-const fallbackJson = JSON.stringify(FALLBACK_CATALOG);
 ---
 
 <!doctype html>
@@ -31,7 +29,7 @@ const fallbackJson = JSON.stringify(FALLBACK_CATALOG);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
-    <meta name="description" content={description || FALLBACK_CATALOG.shop.tagline} />
+    <meta name="description" content={description || SHOP_TAGLINE} />
 
     <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
@@ -50,6 +48,13 @@ const fallbackJson = JSON.stringify(FALLBACK_CATALOG);
   </head>
 
   <body class="grain min-h-[100dvh] bg-fu-paper text-fu-ink antialiased">
+    <!-- Skip-to-content — keyboard users land in the page, not the nav. -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-fu-ink focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-fu-paper focus:shadow-[0_8px_24px_-8px_hsl(var(--fu-shadow)/0.4)]"
+    >
+      Skip to content
+    </a>
     <Header shopName={SHOP_NAME} />
     <main id="main" class="min-h-[70dvh] pt-24">
       <slot />
@@ -61,11 +66,5 @@ const fallbackJson = JSON.stringify(FALLBACK_CATALOG);
     <Toast />
 
     <HtmxBootstrap />
-
-    <script is:inline define:vars={{ fallbackJson }}>
-      // Storefront data bridge — lets Alpine/HTMX read the seeded catalog even
-      // when the backend is momentarily unavailable during `astro build`.
-      window.__SHOP_CATALOG = JSON.parse(fallbackJson);
-    </script>
   </body>
 </html>

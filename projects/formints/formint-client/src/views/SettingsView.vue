@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useSettingsStore, type AppLocale } from '../utils/settings';
 import { useLanguage, SUPPORTED_LOCALES } from '../utils/i18n';
 import { getClientVersion } from '../utils/version';
 import {
   getFusionAssets,
+  getFusionEditorial,
   getFusionRenderMode,
   getFusionSessionMode,
   setFusionSessionMode,
   clearFusionSessionMode,
+  type EditorialCraft,
+  type EditorialVoice,
   type FusionAssets,
+  type FusionEditorial,
   type FusionRenderMode,
   type FusionSessionMode,
 } from '../api';
@@ -41,6 +45,34 @@ const sessionPreference = ref(false);
 const fusionError = ref('');
 const busy = ref(false);
 
+// ── Editorial story (craft panels + testimonials from /fusion/editorial/) ──
+const editorial = ref<FusionEditorial | null>(null);
+const editorialError = ref('');
+const voiceIndex = ref(0);
+let voiceTimer: ReturnType<typeof setInterval> | undefined;
+
+const craftPanels = () => editorial.value?.craft ?? ([] as EditorialCraft[]);
+const voices = () => editorial.value?.voices ?? ([] as EditorialVoice[]);
+
+function startVoiceTimer() {
+  stopVoiceTimer();
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+  voiceTimer = setInterval(() => {
+    const list = voices();
+    if (list.length > 1) {
+      voiceIndex.value = (voiceIndex.value + 1) % list.length;
+    }
+  }, 7000);
+}
+function stopVoiceTimer() {
+  if (voiceTimer) {
+    clearInterval(voiceTimer);
+    voiceTimer = undefined;
+  }
+}
+
 onMounted(async () => {
   requestAnimationFrame(() => {
     revealed.value = true;
@@ -66,7 +98,16 @@ onMounted(async () => {
   } catch {
     /* surfaced above */
   }
+  // Editorial story — same seeded payload the storefront uses.
+  try {
+    editorial.value = await getFusionEditorial();
+    startVoiceTimer();
+  } catch {
+    editorialError.value = 'Story unavailable — start the Django portal on :8075.';
+  }
 });
+
+onUnmounted(stopVoiceTimer);
 
 function save() {
   void settings.updateAndSaveSettings({
@@ -111,16 +152,17 @@ async function onClearSessionMode() {
         <CardHeader class="p-0">
           <CardTitle>Connection</CardTitle>
           <CardDescription>Endpoints the POS client talks to.</CardDescription>
-        </CardHeader>          <div class="mt-5 space-y-4">
-            <div>
-              <label class="label pb-1.5">
-                <span class="font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-base-content/50">
-                  Backend API URL (Django portal)
-                </span>
-              </label>
-              <Input v-model="portalUrl" type="text" class="bg-background" />
-            </div>
+        </CardHeader>
+        <div class="mt-5 space-y-4">
+          <div>
+            <label class="block pb-1.5">
+              <span class="font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-base-content/50">
+                Backend API URL (Django portal)
+              </span>
+            </label>
+            <Input v-model="portalUrl" type="text" class="bg-background" />
           </div>
+        </div>
 
         <div class="mt-7 flex justify-end">
           <Button @click="save">Save</Button>
@@ -137,16 +179,20 @@ async function onClearSessionMode() {
         </CardHeader>
 
         <div class="mt-5">
-          <select
-            :value="language"
-            @change="onLanguageChange"
-            class="select select-sm select-bordered w-full max-w-xs bg-background font-medium"
-            aria-label="Language"
-          >
-            <option v-for="loc in SUPPORTED_LOCALES" :key="loc" :value="loc">
-              {{ t(`settings.languages.${loc}`) }}
-            </option>
-          </select>
+          <div class="bezel inline-flex max-w-xs">
+            <div class="bezel-core flex items-center">
+              <select
+                :value="language"
+                @change="onLanguageChange"
+                class="w-full bg-transparent px-4 py-2.5 pr-8 text-sm font-semibold outline-none"
+                aria-label="Language"
+              >
+                <option v-for="loc in SUPPORTED_LOCALES" :key="loc" :value="loc">
+                  {{ t(`settings.languages.${loc}`) }}
+                </option>
+              </select>
+            </div>
+          </div>
           <p class="mt-3 text-xs text-muted-foreground">{{ t('settings.autoSave') }}</p>
         </div>
       </div>
@@ -228,6 +274,88 @@ async function onClearSessionMode() {
             <span class="font-mono text-xs font-semibold">Formint Client · Tauri + Vue 3</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- The story — craft panels + testimonials from /fusion/editorial/ -->
+    <div class="bezel pos-reveal" :class="revealed ? 'is-visible' : ''" style="transition-delay: 320ms">
+      <div class="bezel-core p-6 sm:p-7">
+        <CardHeader class="p-0">
+          <CardTitle>About the café</CardTitle>
+          <CardDescription>Roast, kitchen, pickup — the story from the Django portal.</CardDescription>
+        </CardHeader>
+
+        <p v-if="editorialError" class="mt-4 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm text-error">
+          {{ editorialError }}
+        </p>
+
+        <template v-else-if="craftPanels().length">
+          <!-- Craft panels — three chapter cards with seeded imagery -->
+          <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <article
+              v-for="panel in craftPanels()"
+              :key="panel.title"
+              class="group relative flex min-h-[13rem] flex-col justify-end overflow-hidden rounded-[1.25rem] border border-base-300/60 bg-base-200/60"
+            >
+              <img
+                :src="panel.img"
+                :alt="panel.alt"
+                loading="lazy"
+                class="absolute inset-0 h-full w-full object-cover opacity-85 contrast-110 saturate-[0.8] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-base-100/90 via-base-100/25 to-transparent" aria-hidden="true"></div>
+              <div class="relative p-4">
+                <p class="font-mono text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+                  {{ panel.caption }}
+                </p>
+                <h3 class="mt-1 font-display text-lg font-bold tracking-tight">{{ panel.title }}</h3>
+                <p class="mt-1.5 text-xs leading-relaxed text-base-content/65">{{ panel.body }}</p>
+              </div>
+            </article>
+          </div>
+
+          <!-- Testimonial — rotating quote, paused on hover, static under reduced motion -->
+          <div
+            v-if="voices().length"
+            class="bezel mt-5"
+            @mouseenter="stopVoiceTimer()"
+            @mouseleave="startVoiceTimer()"
+          >
+            <div class="bezel-core flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-5">
+              <template v-for="(voice, vi) in voices()" :key="voice.name">
+                <div
+                  v-show="voiceIndex === vi"
+                  class="flex items-center gap-4"
+                >
+                  <img
+                    :src="voice.img"
+                    :alt="voice.name"
+                    loading="lazy"
+                    class="h-14 w-14 shrink-0 rounded-full border-2 border-base-300 object-cover grayscale contrast-125"
+                  />
+                  <div>
+                    <p class="font-display text-base font-bold leading-snug tracking-tight">
+                      “{{ voice.quote }}”
+                    </p>
+                    <p class="mt-1.5 text-sm font-semibold">{{ voice.name }}</p>
+                    <p class="font-mono text-[0.6rem] uppercase tracking-widest text-base-content/45">{{ voice.role }}</p>
+                  </div>
+                </div>
+              </template>
+              <div v-if="voices().length > 1" class="flex shrink-0 items-center gap-1.5 sm:ml-auto">
+                <button
+                  v-for="(voice, vi) in voices()"
+                  :key="`dot-${voice.name}`"
+                  type="button"
+                  class="h-1.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                  :class="voiceIndex === vi ? 'w-6 bg-primary' : 'w-1.5 bg-base-content/20 hover:bg-base-content/40'"
+                  :aria-label="`Show quote from ${voice.name}`"
+                  @click="voiceIndex = vi"
+                ></button>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </div>

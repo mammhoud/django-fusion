@@ -40,6 +40,7 @@ urlpatterns = [
     # Fusion render-mode contract
     path("fusion/render-mode/", views.render_mode, name="fusion_render_mode"),
     path("fusion/navigation/", views.navigation, name="fusion_navigation"),
+    path("fusion/editorial/", views.editorial, name="fusion_editorial"),
     path("fusion/assets/", views.assets, name="fusion_assets"),
     path("fusion/session-mode/", views.session_mode, name="fusion_session_mode"),
 ]

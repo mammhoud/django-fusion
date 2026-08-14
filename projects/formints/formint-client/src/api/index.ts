@@ -336,6 +336,35 @@ export async function getFusionAssets(): Promise<FusionAssets> {
   return apiGet<FusionAssets>('/fusion/assets/');
 }
 
+// ── Editorial (Django GET /fusion/editorial/) ────────────────────────
+// Settings-driven marketing content — craft panels + testimonials — served
+// from the backend's SHOP_EDITORIAL so the POS About section renders the
+// same seeded story as the storefront (no hardcoded placeholders).
+
+export interface EditorialCraft {
+  title: string;
+  caption: string;
+  body: string;
+  img: string;
+  alt: string;
+}
+
+export interface EditorialVoice {
+  name: string;
+  role: string;
+  quote: string;
+  img: string;
+}
+
+export interface FusionEditorial {
+  craft: EditorialCraft[];
+  voices: EditorialVoice[];
+}
+
+export async function getFusionEditorial(): Promise<FusionEditorial> {
+  return apiGet<FusionEditorial>('/fusion/editorial/');
+}
+
 export async function getFusionRenderMode(): Promise<FusionRenderMode> {
   return apiGet<FusionRenderMode>('/fusion/render-mode/');
 }

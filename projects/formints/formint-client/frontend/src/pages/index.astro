@@ -5,9 +5,11 @@ import Badge from '@/components/ui/Badge.astro';
 import Card from '@/components/ui/Card.astro';
 import ScrollMotion from '@/components/ScrollMotion.astro';
 import { fetchCatalog, FALLBACK_CATALOG } from '@/lib/api';
+import { fetchFusionEditorial, FALLBACK_EDITORIAL } from '@/lib/fusion';
 
-// Catalog fetched at build/dev from the Django backend, with a static fallback
-// so `astro build` is never blocked by an offline backend.
+// Catalog + editorial fetched at build/dev from the Django backend, with
+// static mirrors (exact copies of the seeded settings payloads) so
+// `astro build` is never blocked by an offline backend.
 let catalog = FALLBACK_CATALOG;
 try {
   catalog = await fetchCatalog();
@@ -18,10 +20,14 @@ try {
 const featured = catalog.products.filter((p) => p.is_featured).slice(0, 4);
 const shop = catalog.shop;
 
-// Hero art — the lead featured product's photo, art-directed. Falls back to a
-// seeded editorial shot if the product carries no image.
-const heroProduct = featured.find((p) => p.image_url) || featured[0];
-const heroImg = heroProduct?.image_url || 'https://picsum.photos/seed/formint-espresso/1200/1200';
+// Editorial craft panels + testimonials — served by Django (/fusion/editorial/),
+// mirrored for build-time resilience. No placeholder imagery.
+let editorial = FALLBACK_EDITORIAL;
+try {
+  editorial = await fetchFusionEditorial();
+} catch (e) {
+  editorial = FALLBACK_EDITORIAL;
+}
 
 // Marquee band copy — menu vocabulary, kinetic typography.
 const marqueeWords = [
@@ -35,52 +41,8 @@ const marqueeWords = [
   'Harissa Bowl',
 ];
 
-// Craft accordion panels.
-const craftPanels = [
-  {
-    title: 'The roast',
-    caption: 'Weekly batches',
-    body: 'Single-origin beans roasted in-house every Monday. The menu follows the season, not the other way around.',
-    img: 'https://picsum.photos/seed/formint-roast/1200/1600',
-    alt: 'Freshly roasted coffee beans',
-  },
-  {
-    title: 'The kitchen',
-    caption: 'Before sunrise',
-    body: 'Pastry lamination starts at 4 a.m. Everything from the shakshuka to the cardamom buns is made on the premises.',
-    img: 'https://picsum.photos/seed/formint-kitchen/1200/1600',
-    alt: 'Pastry being laminated in the kitchen',
-  },
-  {
-    title: 'The pickup',
-    caption: 'Eight minutes',
-    body: 'Order ahead and your ticket is queued before you arrive. Average wait from door to cup is under eight minutes.',
-    img: 'https://picsum.photos/seed/formint-pickup/1200/1600',
-    alt: 'A finished order ready for pickup',
-  },
-];
-
-// Word-on-the-street carousel (client-safe: only `i` is referenced by Alpine).
-const voices = [
-  {
-    name: 'Priya Raghavan',
-    role: 'Regular since 2022',
-    quote: 'The pour-over changes weekly and the board always tells you exactly what you are getting. I have never once been handed a lukewarm cup.',
-    img: 'https://picsum.photos/seed/formint-priya/400/400',
-  },
-  {
-    name: 'Tomás Herrera',
-    role: 'Rides past on the commute',
-    quote: 'I order the flat white from the bus stop and it is ready when I walk in. Eight minutes, every single time.',
-    img: 'https://picsum.photos/seed/formint-tomas/400/400',
-  },
-  {
-    name: 'Aisha Okafor',
-    role: 'Brings the whole team',
-    quote: 'The harissa chicken bowl is the reason our office meetings happen here now. Half the order list is on the wall of fame.',
-    img: 'https://picsum.photos/seed/formint-aisha/400/400',
-  },
-];
+const craftPanels = editorial.craft;
+const voices = editorial.voices;
 ---
 
 <Layout title={shop.name} description={shop.tagline}>
@@ -103,14 +65,24 @@ const voices = [
     <!-- Blurred backdrop — the active slide's image, cross-faded. -->
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
       {featured.map((p, pi) => (
-        <img
-          data-slide={pi}
-          src={p.image_url || 'https://picsum.photos/seed/formint-hero/1600/1200'}
-          alt=""
-          loading={pi === 0 ? 'eager' : 'lazy'}
-          class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
-          :class="i === Number($el.dataset.slide) ? 'opacity-70' : 'opacity-0'"
-        />
+        p.image_url ? (
+          <img
+            data-slide={pi}
+            src={p.image_url}
+            alt=""
+            loading={pi === 0 ? 'eager' : 'lazy'}
+            class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+            :class="i === Number($el.dataset.slide) ? 'opacity-70' : 'opacity-0'"
+          />
+        ) : (
+          <div
+            data-slide={pi}
+            class="absolute inset-0 flex items-center justify-center bg-fu-line/25 transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+            :class="i === Number($el.dataset.slide) ? 'opacity-70' : 'opacity-0'"
+          >
+            <span class="font-display text-7xl font-bold text-fu-muted/30">{p.name.slice(0, 1)}</span>
+          </div>
+        )
       ))}
       <!-- Wash — keeps the type legible over the blurred photo. -->
       <div class="absolute inset-0 bg-fu-paper/80 dark:bg-fu-ink/80"></div>
@@ -161,7 +133,7 @@ const voices = [
 
           <!-- Dots + counter — the slider's heartbeat. -->
           <div class="ml-1 flex items-center gap-2">
-            {featured.map((p, pi) => (
+            {featured.map((_, pi) => (
               <button
                 type="button"
                 data-slide={pi}
@@ -181,14 +153,24 @@ const voices = [
         <div class="reveal bezel">
           <div class="bezel-core relative flex aspect-square items-center justify-center overflow-hidden">
             {featured.map((p, pi) => (
-              <img
-                data-slide={pi}
-                src={p.image_url || 'https://picsum.photos/seed/formint-hero/1200/1200'}
-                :alt="p.name"
-                loading={pi === 0 ? 'eager' : 'lazy'}
-                class="absolute inset-0 h-full w-full object-cover contrast-110 saturate-[0.85] transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
-                :class="i === Number($el.dataset.slide) ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
-              />
+              p.image_url ? (
+                <img
+                  data-slide={pi}
+                  src={p.image_url}
+                  :alt="p.name"
+                  loading={pi === 0 ? 'eager' : 'lazy'}
+                  class="absolute inset-0 h-full w-full object-cover contrast-110 saturate-[0.85] transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                  :class="i === Number($el.dataset.slide) ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
+                />
+              ) : (
+                <div
+                  data-slide={pi}
+                  class="absolute inset-0 flex items-center justify-center bg-fu-line/25 transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                  :class="i === Number($el.dataset.slide) ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
+                >
+                  <span class="font-display text-8xl font-bold text-fu-muted/30">{p.name.slice(0, 1)}</span>
+                </div>
+              )
             ))}
             <div class="absolute inset-0 bg-fu-ink/10" aria-hidden="true"></div>
             <span class="absolute right-7 top-7 h-2.5 w-2.5 rounded-full bg-fu-mark" style="animation: breathe 2.4s ease-in-out infinite"></span>

@@ -46,7 +46,17 @@ const nav = [
       </aside>
 
       <main class="min-w-0 flex-1">
-        <router-view />
+        <RouterView v-slot="{ Component }">
+          <Transition
+            mode="out-in"
+            enter-active-class="route-enter-active"
+            leave-active-class="route-leave-active"
+            enter-from-class="route-enter-from"
+            leave-to-class="route-leave-to"
+          >
+            <component :is="Component" />
+          </Transition>
+        </RouterView>
       </main>
     </div>
   </div>

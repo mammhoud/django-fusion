@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import Icon from '@/components/ui/Icon.vue';
 import type { Product } from '../api';
 
 const props = defineProps<{ products: Product[] }>();
@@ -15,7 +15,8 @@ const i = ref(0);
 const paused = ref(false);
 let timer: ReturnType<typeof setInterval> | undefined;
 
-const fallbackImg = 'https://picsum.photos/seed/formint-pos-hero/1200/900';
+/** Letter-tile guard for products without imagery — matches MenuView. */
+const letterTile = (name: string) => name.trim().charAt(0).toUpperCase() || '•';
 
 function go(n: number) {
   if (slides.value.length === 0) {
@@ -59,14 +60,22 @@ onUnmounted(stop);
     <div class="bezel-core relative overflow-hidden">
       <!-- Blurred backdrop — active slide's photo, cross-faded behind. -->
       <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-        <img
-          v-for="(p, pi) in slides"
-          :key="`bg-${p.id}`"
-          :src="p.image || fallbackImg"
-          alt=""
-          class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
-          :class="i === pi ? 'opacity-70' : 'opacity-0'"
-        />
+        <template v-for="(p, pi) in slides" :key="`bg-${p.id}`">
+          <img
+            v-if="p.image"
+            :src="p.image"
+            alt=""
+            class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+            :class="i === pi ? 'opacity-70' : 'opacity-0'"
+          />
+          <div
+            v-else
+            class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-base-200 to-base-300/80 transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+            :class="i === pi ? 'opacity-70' : 'opacity-0'"
+          >
+            <span class="font-display text-6xl font-bold text-base-content/15">{{ letterTile(p.name) }}</span>
+          </div>
+        </template>
         <div class="absolute inset-0 bg-base-100/80 dark:bg-base-300/80"></div>
       </div>
 
@@ -74,15 +83,23 @@ onUnmounted(stop);
       <div class="relative grid min-h-[20rem] items-center gap-8 p-7 sm:p-10 md:grid-cols-[minmax(0,15rem)_1fr]">
         <div class="relative mx-auto w-full max-w-[15rem]">
           <div class="relative aspect-square overflow-hidden rounded-[1.5rem] border border-base-300/60 shadow-[0_24px_48px_-24px_hsl(var(--pos-ink)/0.25)]">
-            <img
-              v-for="(p, pi) in slides"
-              :key="`fg-${p.id}`"
-              :src="p.image || fallbackImg"
-              :alt="p.name"
-              loading="lazy"
-              class="absolute inset-0 h-full w-full object-cover transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
-              :class="i === pi ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
-            />
+            <template v-for="(p, pi) in slides" :key="`fg-${p.id}`">
+              <img
+                v-if="p.image"
+                :src="p.image"
+                :alt="p.name"
+                loading="lazy"
+                class="absolute inset-0 h-full w-full object-cover transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                :class="i === pi ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
+              />
+              <div
+                v-else
+                class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-base-200 to-base-300/80 transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                :class="i === pi ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
+              >
+                <span class="font-display text-5xl font-bold text-base-content/15">{{ letterTile(p.name) }}</span>
+              </div>
+            </template>
             <span class="fu-breath absolute right-4 top-4 h-2 w-2 rounded-full bg-primary"></span>
           </div>
         </div>
@@ -119,7 +136,7 @@ onUnmounted(stop);
             :aria-label="'Previous slide'"
             @click="prev"
           >
-            <ChevronLeft class="h-4 w-4" />
+            <Icon name="chevron-left" class="h-4 w-4" />
           </button>
           <button
             type="button"
@@ -127,7 +144,7 @@ onUnmounted(stop);
             :aria-label="'Next slide'"
             @click="next"
           >
-            <ChevronRight class="h-4 w-4" />
+            <Icon name="chevron-right" class="h-4 w-4" />
           </button>
         </div>
 
