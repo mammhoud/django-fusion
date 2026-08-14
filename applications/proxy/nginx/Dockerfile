@@ -1,10 +1,8 @@
-# Shared-media Nginx — static/media server + reverse proxy for Docus and the
-# workspace AFFiNE under space.structa.cloud (root; legacy blinko host
-# 301-redirects there). No other workspace service has a public subdomain.
+# Shared-media Nginx — static/media server + reverse proxy for Docus,
+# permanent AFFiNE, and FileGator. AFFiNE is served at the root of
+# space.structa.cloud; FileGator is available under /files/ and files.structa.cloud.
 #
-# The config is an envsubst template: `WORKSPACE_NAME` controls the container
-# name prefix (coder-<WORKSPACE_NAME>-*) so the proxy tracks the Coder
-# template's `workspace_name` variable without editing the config.
+# The config is an envsubst template rendered by the official Nginx entrypoint.
 #
 # Build context is the repository root (see docker-compose.nginx.yml). Docus
 # is intentionally a separate Nuxt service so its SSR, search, LLM, and

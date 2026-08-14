@@ -16,3 +16,7 @@ acme/backups/
 certs/
 !certs/.gitkeep
 
+# Persistent application data; keep credentials and user files out of Git.
+affine-data/
+filegator-data/
+

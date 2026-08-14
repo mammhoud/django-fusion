@@ -9,14 +9,10 @@
 # files and git commit/push work from both sides.
 #
 #   .devcontainer/docker-compose.yml  (the repo's devcontainer source)
-#     ├─ devcontainer   — full monorepo toolchain (VS Code attaches here)
-#     └─ affine         — AFFiNE workspace   (space.structa.cloud root; shared
-#                                             postgres + redis via common /
-#                                             warehouse-net)
+#     └─ devcontainer   — full monorepo toolchain (VS Code attaches here)
 #
-# Service container names are pinned to coder-${workspace_name}-* inside the
-# devcontainer compose; the shared-media nginx resolves the same names from
-# its WORKSPACE_NAME env var (envsubst template) — both default to "workspace".
+# AFFiNE and FileGator are permanent shared proxy services, not workspace
+# resources. Their data and network identity survive Coder workspace changes.
 #
 # The agent runs as root (passwordless sudo in the image) so the root-owned
 # host checkout stays writable from the workspace (commit/push from both
@@ -38,11 +34,6 @@ variable "docker_network" {
   default     = "common"
   description = "Shared Docker network that hosts the proxy, the devcontainer services, and this agent-host container"
 }
-variable "database_network" {
-  type        = string
-  default     = "warehouse-net"
-  description = "External Docker network attached to the shared PostgreSQL service (used by the devcontainer AFFiNE service)"
-}
 variable "coder_host_ip" {
   type        = string
   default     = "172.18.0.16"
@@ -51,7 +42,7 @@ variable "coder_host_ip" {
 variable "workspace_name" {
   type        = string
   default     = "workspace"
-  description = "Service namespace suffix for the devcontainer service containers (coder-<workspace_name>-affine). Must match the shared-media nginx WORKSPACE_NAME env var (see applications/proxy/nginx/default.conf.template)."
+  description = "Optional lowercase hostname and workspace label suffix; it does not control shared proxy service names."
 
   validation {
     condition     = can(regex("^[a-z0-9][a-z0-9_.-]*$", lower(var.workspace_name)))
@@ -63,23 +54,6 @@ variable "host_repo_path" {
   default     = "/home/structa.cloud"
   description = "Host path of the local checkout to bind-mount as the workspace project folder (/home/coder/structa.cloud). Mounted read-write: no clone happens, so changes and git operations are shared between host and workspace."
 }
-# Secrets for the devcontainer's AFFiNE service. Defaults match a fresh
-# databases stack; set the real values when pushing the template
-# (coder templates push --variable redis_password=...) so no secrets live in
-# the repository.
-variable "redis_password" {
-  type        = string
-  default     = "redis_password"
-  sensitive   = true
-  description = "Password of the shared default-redis service (REDIS_PASSWORD for the devcontainer AFFiNE compose)"
-}
-variable "affine_db_password" {
-  type        = string
-  default     = "affine"
-  sensitive   = true
-  description = "Password of the shared postgres 'affine' role (AFFINE_DB_PASSWORD for the devcontainer AFFiNE compose)"
-}
-
 locals {
   ws_name           = lower(var.workspace_name)
   devcontainer_home = "/home/coder"
@@ -124,31 +98,17 @@ resource "coder_agent" "main" {
     timeout      = 3
   }
   metadata {
-    key          = "affine"
-    display_name = "AFFiNE"
-    script       = <<-EOT
-      name="coder-${local.ws_name}-affine"
-      docker inspect -f '{{.State.Health.Status}}' "$name" 2>/dev/null \
-        || docker inspect -f '{{.State.Status}}' "$name" 2>/dev/null \
-        || echo "not running"
-    EOT
-    interval     = 30
-    timeout      = 5
+    key          = "workspace"
+    display_name = "Workspace"
+    script       = "echo ${data.coder_workspace.me.name}"
+    interval     = 3600
+    timeout      = 3
   }
 }
 
 # ============================================================
 # Coder apps  (reached from the agent over the shared `common` network)
 # ============================================================
-resource "coder_app" "affine" {
-  agent_id     = coder_agent.main.id
-  slug         = "affine"
-  display_name = "AFFiNE Workspace"
-  url          = "http://coder-${local.ws_name}-affine:3010"
-  icon         = "/icon/desktop.svg"
-  share        = "authenticated"
-}
-
 # ============================================================
 # Devcontainer modules  (docker-devcontainer pattern)
 # ============================================================
@@ -174,6 +134,17 @@ module "code-server" {
   folder       = local.workspace_folder
   display_name = "VS Code Web"
   slug         = "code-server"
+  order        = 2
+}
+
+resource "coder_app" "filegator" {
+  agent_id     = coder_agent.main.id
+  slug         = "filegator"
+  display_name = "Files"
+  url          = "http://proxy-filegator:8080"
+  icon         = "/emojis/1f4c1.png"
+  share        = "authenticated"
+  order        = 3
 }
 
 resource "coder_devcontainer" "repo" {
@@ -185,7 +156,7 @@ resource "coder_devcontainer" "repo" {
 # ============================================================
 # Agent-host container
 # ============================================================
-# Persist /home/coder (the git clone + devcontainer state) across restarts.
+# Persist /home/coder (agent and devcontainer state) across restarts.
 resource "docker_volume" "home_volume" {
   name = "coder-${data.coder_workspace.me.id}-home"
   lifecycle {
@@ -202,9 +173,8 @@ resource "docker_container" "workspace" {
   # Prebuilt agent-host image (docker CLI + compose plugin + git + curl + node);
   # same image the devcontainer template uses, so no build step in the template.
   image = "codercom/enterprise-node:ubuntu"
-  # Unique per workspace (unlike the devcontainer service containers, which are
-  # pinned to coder-<workspace_name>-* for the proxy); a fixed name would
-  # conflict whenever a stale container or a second workspace lingers.
+  # Unique per workspace; a fixed name would conflict whenever a stale
+  # container or a second workspace lingers.
   name     = "coder-${data.coder_workspace.me.id}-workspace"
   hostname = local.ws_name
 
@@ -243,10 +213,11 @@ resource "docker_container" "workspace" {
     # directly over the shared `common` network; same plain-HTTP workaround
     # as the binary download above).
     "CODER_AGENT_URL=http://${var.coder_host_ip}:7080",
-    # Passed through to the devcontainer compose (REDIS_PASSWORD /
-    # AFFINE_DB_PASSWORD interpolation in .devcontainer/docker-compose.yml).
-    "REDIS_PASSWORD=${var.redis_password}",
-    "AFFINE_DB_PASSWORD=${var.affine_db_password}",
+    # Passed through to the devcontainer compose (.devcontainer/docker-compose.yml
+    # interpolation): REPO_HOST_PATH so the compose mounts the REAL host
+    # checkout (the daemon is the host daemon, so a relative `..` would bind
+    # an empty host dir).
+    "REPO_HOST_PATH=${var.host_repo_path}",
   ]
 
   volumes {

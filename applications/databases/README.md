@@ -107,10 +107,10 @@ through the external `common` and `warehouse-net` networks:
 |---|---|---|
 | Database | `affine` | `POSTGRES_DATABASES` |
 | Role | `affine` | `POSTGRES_DATABASES` |
-| Password | development-only `affine` | `AFFINE_DB_PASSWORD` / `POSTGRES_DATABASES` |
+| Password | required environment secret | `AFFINE_DB_PASSWORD` / `POSTGRES_DATABASES` |
 | Host | `postgres` | keep the shared service name |
 
-Set `AFFINE_DB_PASSWORD` before initializing a new PostgreSQL volume, then set
+Set a unique `AFFINE_DB_PASSWORD` before initializing a new PostgreSQL volume, then set
 the matching AFFiNE credentials in the `affine_database_url` Coder variable.
 AFFiNE also needs the shared `default-redis` service on `common` (its
 `REDIS_SERVER_*` variables default to it). Existing volumes require an

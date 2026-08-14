@@ -4,7 +4,7 @@
 # Pre-bakes every toolchain the monorepo needs so the devcontainer is complete
 # on first boot (no feature installs or long postCreateCommand):
 #
-#   Node 22 LTS + npm 11 (root package.json packageManager, nx 22)
+#   Node 22 LTS + npm 11 (root package.json packageManager)
 #   pnpm, tsx, astro, bun, yarn, nodemon (global CLIs used across projects)
 #   Python 3.11 + uv (root + projects pyproject.toml, Django/Wagtail/django-fusion)
 #   Rust stable + Tauri v2 system libraries (formints Tauri editions)
@@ -96,7 +96,8 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
 # Finalize — hand shared homes + workspace dir to the non-root user
 # ---------------------------------------------------------------------------
 # The typescript-node base image's non-root user is `node` (UID 1000), not
-# `vscode`; devcontainer.json sets remoteUser: node to match.
+# `vscode`. The devcontainer attaches as root so the root-owned host bind mount
+# remains writable; the image still verifies its non-root toolchain at build.
 RUN chown -R node:node /usr/local/cargo /usr/local/rustup /usr/local/lib/docker \
     && mkdir -p /workspaces && chown -R node:node /workspaces
 

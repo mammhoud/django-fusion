@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 # =============================================================================
 # Proxy / Traefik Makefile
 # =============================================================================
@@ -13,7 +15,8 @@ DYNAMIC_CERTS_FILE  := $(DYNAMIC_DIR)/certs.yml
 COMPOSE_FILE        := $(PROXY_DIR)docker-compose.traefik.yml
 DEFAULT_PROXY_NAME  := default-proxy
 HOSTS_FILE          := /etc/hosts
-LOCAL_HOSTS         := lms-fusion.localhost
+LOCAL_HOSTS         := fusion.localhost cms-fusion.localhost lms-fusion.localhost code.localhost coder.localhost space.localhost files.localhost
+LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:lms-fusion.localhost,DNS:code.localhost,DNS:coder.localhost,DNS:space.localhost,DNS:files.localhost,DNS:localhost,IP:127.0.0.1,IP:::1
 
 # ---------------------------------------------------------------------------
 # Lifecycle
@@ -82,7 +85,7 @@ proxy-certs-selfsigned:
 	@mkdir -p $(CERTS_DIR)
 	@openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout $(CERTS_DIR)/localhost-ca.key -out $(CERTS_DIR)/localhost-ca.crt -subj "/O=Structa Cloud/OU=Local Dev/CN=Structa Local CA"
 	@openssl req -new -nodes -newkey rsa:2048 -keyout $(CERTS_DIR)/localhost.key -out $(CERTS_DIR)/localhost.csr -subj "/O=Structa Cloud/OU=Local Dev/CN=fusion.localhost"
-	@openssl x509 -req -in $(CERTS_DIR)/localhost.csr -CA $(CERTS_DIR)/localhost-ca.crt -CAkey $(CERTS_DIR)/localhost-ca.key -CAcreateserial -out $(CERTS_DIR)/localhost.crt -days 3650 -extfile <(printf "subjectAltName=DNS:lms-fusion.localhost")
+	@openssl x509 -req -in $(CERTS_DIR)/localhost.csr -CA $(CERTS_DIR)/localhost-ca.crt -CAkey $(CERTS_DIR)/localhost-ca.key -CAcreateserial -out $(CERTS_DIR)/localhost.crt -days 3650 -extfile <(printf "subjectAltName=$(LOCAL_CERT_SANS)\n")
 	@rm -f $(CERTS_DIR)/localhost.csr $(CERTS_DIR)/localhost.srl
 	@chmod 600 $(CERTS_DIR)/localhost.key $(CERTS_DIR)/localhost-ca.key
 	@echo "Self-signed certificate generated in $(CERTS_DIR)"
