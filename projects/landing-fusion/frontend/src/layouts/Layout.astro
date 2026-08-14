@@ -128,6 +128,15 @@ void THEME_STORAGE_KEY;
     <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
         var root = document.documentElement;
+        // Reveal motion is progressive enhancement: CSS keeps all content
+        // visible unless JavaScript explicitly opts the document into motion.
+        root.classList.add('js');
+        // Reveal motion is enabled only after Alpine confirms that its
+        // directives are available. Until then the server-rendered document
+        // remains fully readable, including when enhancement fails to load.
+        document.addEventListener('alpine:init', function () {
+          root.classList.add('fusion-motion-ready');
+        }, { once: true });
         var stored = null;
         try { stored = localStorage.getItem(THEME_STORAGE_KEY); } catch (e) {}
         var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;

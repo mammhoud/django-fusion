@@ -216,7 +216,7 @@ class LandingPagesTestCase(TestCase):
             b"Open source and AI",
             b"Products and scale",
             b"The story in numbers",
-            b"Four products, one repo",
+            b"Six products, one repo",
         ):
             self.assertIn(marker, response.content)
         # The startup API carries the timeline steps + stats.
@@ -1007,6 +1007,33 @@ class LandingPagesTestCase(TestCase):
         nav = self.client.get("/apis/navigation/").json()
         self.assertNotIn("Company", [item["label"] for item in nav["nav_items"]])
 
+    def test_ctc_research_is_seeded_as_a_benefit_led_product(self):
+        """The Precis/CTC raw source has a public, navigable product document."""
+        response = self.client.get("/products/ctc-research/")
+        self.assertEqual(response.status_code, 200)
+        for marker in (
+            b"CTC Research",
+            b"Clearer evidence",
+            b"Shorter paths from evidence to action",
+            b"Start focused, grow with confidence",
+        ):
+            self.assertIn(marker, response.content)
+
+        page = self.client.get("/apis/pages/ctc-research/").json()
+        self.assertEqual(page["title"], "CTC Research")
+        self.assertEqual(page["logo_style"], "research")
+        self.assertEqual(page["status"], "live")
+        self.assertTrue(any(item["title"] == "One place for the important context" for item in page["features"]))
+
+        navigation = self.client.get("/apis/navigation/").json()
+        products = next(item for item in navigation["nav_items"] if item["href"] == "/products/")
+        self.assertIn("/products/ctc-research/", [child["href"] for child in products["children"]])
+
+        brand = self.client.get("/apis/brand/").json()
+        ctc_board = next(board for board in brand["boards"] if board["slug"] == "ctc-research")
+        self.assertEqual(ctc_board["mark"], "research")
+        self.assertEqual(ctc_board["essence"], "Evidence, carried forward.")
+
     def test_product_pages_render_with_editions_and_previews(self):
         """Each ProductPage renders hero + editions + visual previews, not code blocks."""
         for slug, hero in (("formint-pos", b"Formints"), ("lms", b"Precis LMS"), ("cms", b"Loop CRM")):
@@ -1615,7 +1642,7 @@ class LandingPagesTestCase(TestCase):
         response = self.client.get("/brand/")
         self.assertEqual(response.status_code, 200)
         for marker in (
-            b"One family, five marks",
+            b"One family, six marks",
             b"The till, made trustworthy.",
             b"Learning, precisely.",
             b"From impression to deal.",
@@ -1637,6 +1664,7 @@ class LandingPagesTestCase(TestCase):
             "cms": "isometric",
             "cypercloud": "orbit",
             "vresume": "ascent",
+            "ctc-research": "research",
         }
         for slug, style in expected.items():
             with self.subTest(slug=slug):

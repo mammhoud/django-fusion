@@ -34,7 +34,7 @@ NAV_ITEMS: tuple[tuple[str, str, bool], ...] = (
     # authenticated profile/dashboard surfaces, but is intentionally not a
     # primary marketing-header destination.
     ("learning", "Learn", False),
-    ("features", "Features", False),       # linked from /products
+    ("features", "Benefits", True),        # benefits and switching guide
     ("blog", "Blog", True),
     ("pricing", "Pricing", True),
     ("contact", "Contact", True),

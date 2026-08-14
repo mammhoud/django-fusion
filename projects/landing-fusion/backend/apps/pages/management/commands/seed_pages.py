@@ -1345,65 +1345,35 @@ DEFAULT_PRODUCT_PAGES = {
         ],
     },
     "cms": {
-        "title": "Loop",
-        "version": "v2.7",
+        "title": "Loop CRM",
+        "version": "coming soon",
+        "status": "development",
         "logo_style": "isometric",
         "category": "platform",
-        "tagline": "Build content-driven websites from Wagtail blocks. This very site is built with it.",
+        "tagline": "A calmer path from social attention to the next customer conversation.",
         "hero": [
             (
                 "hero",
                 {
-                    "title": "Loop",
-                    "subtitle": "A content-driven website builder. Wagtail StreamFields composed into server-rendered pages by django-fusion.",
+                    "title": "Loop CRM",
+                    "subtitle": "A connected customer workspace that helps teams turn attention into useful conversations and opportunities.",
                     "primary_cta": {"label": "See the editions", "href": "/products/cms/#editions", "style": "secondary"},
                     "secondary_cta": {"label": "Explore the stack", "href": "/features/", "style": "white"},
                 },
             )
         ],
         "body": (
-            "<p>Loop is the content-driven website builder behind every "
-            "structa.cloud landing page. Editors compose Wagtail StreamField "
-            "blocks; django-fusion renders them as finished server-side HTML.</p>"
-            "<p>It powers both render roads: Django's fusion-render HTML and the "
-            "Astro frontend's data APIs, from one source of content.</p>"
+            "<p>Loop CRM is a coming-soon customer workspace for teams that want "
+            "a clearer view from first impression to useful follow-up.</p>"
+            "<p>It brings Twenty and Postiz together with the practical content "
+            "and workflow foundations teams already use, so customer context is "
+            "easier to find and the next action is easier to own.</p>"
+            "<p>Start with the customer journey, keep the important context close "
+            "to the work, and give the team a calmer way to improve the process. "
+            "See how the same product thinking supports <a href=\"/products/lms/\">Precis LMS</a>.</p>"
         ),
         "tech": [
             ("tech", {"title": "Built on", "items": ["Wagtail", "Django", "django-fusion", "HTMX", "Alpine.js", "Astro"]}),
-        ],
-        "applications": [
-            (
-                "applications",
-                {
-                    "eyebrow": "Built with Loop",
-                    "title": "Sites and apps running on Loop",
-                    "description": (
-                        "Real usage, not mockups: every structa.cloud property is a "
-                        "Loop build — composed from the same Wagtail blocks you see "
-                        "on this page and rendered server-side."
-                    ),
-                    "applications": [
-                        {
-                            "name": "vResume",
-                            "edition": "Community",
-                            "url": "/products/vresume/preview/community/",
-                            "description": "The cloud resume platform — modern templates, PDF export, and Syntara-powered AI summaries, served from the same content pipeline.",
-                        },
-                        {
-                            "name": "structa.cloud",
-                            "edition": "Community",
-                            "url": "/",
-                            "description": "This site. Every landing page you are reading is composed from StreamField blocks and rendered as finished HTML.",
-                        },
-                        {
-                            "name": "Precis LMS",
-                            "edition": "Business",
-                            "url": "/products/lms/",
-                            "description": "The learning platform — courses, enrollments and payments built on the same django-fusion component system.",
-                        },
-                    ],
-                },
-            )
         ],
         "editions": [
             (
@@ -1442,11 +1412,11 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "features",
                 {
-                    "title": "What Loop ships",
+                    "title": "What Loop CRM makes easier",
                     "features": [
-                        {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Block-based editing", "description": "Editors compose sections; developers own the templates."},
-                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Two render roads", "description": "Fusion-render HTML and data APIs from one Wagtail source of truth."},
-                        {"icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20", "title": "Open source", "description": "django-fusion is public on GitHub under a permissive license."},
+                        {"icon": "M4 5h16v14H4z M4 12h16", "title": "A shared customer context", "description": "Bring the important conversation history and next step into one view."},
+                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "A shorter path to follow-up", "description": "Move from social attention to a useful customer action without losing the thread."},
+                        {"icon": "M3 3v18h18M7 15l4-4 3 3 5-6", "title": "A process teams can improve", "description": "Make progress visible so the team can learn what helps and what needs changing."},
                     ],
                 },
             )
@@ -1455,10 +1425,10 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "faq",
                 {
-                    "title": "Loop questions",
+                    "title": "Loop CRM questions",
                     "items": [
-                        {"question": "Is this the same CMS that runs this site?", "answer": "Yes. Every page you're reading is composed from these StreamField blocks and rendered by django-fusion."},
-                        {"question": "Can I add my own blocks?", "answer": "Absolutely. Blocks are plain Wagtail StructBlocks with Django templates, no framework lock-in."},
+                        {"question": "What is Loop CRM?", "answer": "Loop CRM is the coming-soon workspace that connects customer context, social touchpoints, and follow-up in one calmer flow."},
+                        {"question": "Where does it fit with the rest of the catalog?", "answer": "Loop CRM is focused on customer relationships; Precis LMS focuses on learning, while the wider Structa Cloud applications help teams make important work easier to run."},
                     ],
                 },
             )
@@ -1467,9 +1437,9 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "cta",
                 {
-                    "title": "Ships as HTML, edits as blocks",
-                    "subtitle": "The CMS is open source. Clone it, add your blocks, ship your site.",
-                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/django-fusion", "style": "white"},
+                    "title": "Join the Loop CRM waitlist",
+                    "subtitle": "Tell us where customer follow-up feels harder than it should, and help shape a calmer starting point.",
+                    "primary_cta": {"label": "Join the waitlist", "href": "/contact/", "style": "white"},
                     "secondary_cta": {"label": "Read the Docs", "href": "/about/", "style": "outline"},
                 },
             )
@@ -1559,6 +1529,90 @@ DEFAULT_PRODUCT_PAGES = {
             )
         ],
         "cta": [("cta", {"title": "Your career, published", "subtitle": "Build a resume that ships like a product.", "primary_cta": {"label": "Launch vResume", "href": "https://vresume.structa.cloud", "style": "white"}, "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "outline"}})],
+    },
+    "ctc-research": {
+        "title": "CTC Research",
+        "logo_style": "research",
+        "category": "application",
+        "version": "ready to adapt",
+        "tagline": "A focused research workspace that helps teams turn evidence into decisions and share useful work with confidence.",
+        "hero": [
+            (
+                "hero",
+                {
+                    "title": "CTC Research",
+                    "subtitle": "Give research teams a clearer path from question to evidence, with a workspace that keeps people, progress, and decisions moving together.",
+                    "primary_cta": {"label": "Explore the benefits", "href": "/products/ctc-research/#features", "style": "secondary"},
+                    "secondary_cta": {"label": "Talk about your workflow", "href": "/contact/", "style": "white"},
+                    "trusted_by": "Clearer evidence · calmer collaboration · better decisions",
+                },
+            )
+        ],
+        "body": (
+            "<p>CTC Research gives research teams a calmer path from a useful question to a decision they can explain and act on.</p>"
+            "<p>It keeps the important context close to the work, makes ownership easier to follow, and helps teams share progress without rebuilding the story from scattered documents and conversations.</p>"
+        ),
+        "editions": [
+            (
+                "editions",
+                {
+                    "eyebrow": "Choose the way you work",
+                    "title": "Start focused, grow with confidence",
+                    "description": "Begin with a useful research workspace and add collaboration, reporting, and support as the team’s needs become clearer.",
+                    "editions": [
+                        {
+                            "name": "Community",
+                            "tagline": "A focused workspace for independent researchers and small teams.",
+                            "price": "$0",
+                            "period": "/self-hosted",
+                            "features": ["Organize studies and evidence", "Keep decisions close to context", "Share clear research updates", "Start without a long rollout"],
+                            "cta_label": "Start exploring",
+                            "cta_href": "/contact/",
+                            "featured": False,
+                            "tier": "outline",
+                        },
+                        {
+                            "name": "Business",
+                            "tagline": "Connected research operations for teams that need a shared source of truth.",
+                            "price": "Custom",
+                            "period": "/per deployment",
+                            "features": ["Everything in Community", "Team workflows and permissions", "Decision and progress reporting", "Onboarding and improvement support"],
+                            "cta_label": "Plan your rollout",
+                            "cta_href": "/contact/",
+                            "featured": True,
+                            "tier": "featured",
+                        },
+                    ],
+                },
+            )
+        ],
+        "features": [
+            (
+                "features",
+                {
+                    "eyebrow": "why teams switch",
+                    "title": "Research that helps people move",
+                    "description": "CTC Research reduces the small points of friction that make important work harder to trust and harder to share.",
+                    "features": [
+                        {"icon": "M4 5h16v14H4z M4 12h16", "title": "One place for the important context", "description": "Keep questions, evidence, decisions, and next steps together so the team spends less time reconstructing what happened."},
+                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Shorter paths from evidence to action", "description": "Turn findings into clear decisions and visible next steps while the work is still fresh."},
+                        {"icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z", "title": "Collaboration people can follow", "description": "Make ownership and progress visible without adding another meeting or another private spreadsheet."},
+                        {"icon": "M3 3v18h18M7 15l4-4 3 3 5-6", "title": "Confidence for the next decision", "description": "Give leaders a useful view of the evidence behind a choice, what remains uncertain, and what should happen next."},
+                    ],
+                },
+            )
+        ],
+        "cta": [
+            (
+                "cta",
+                {
+                    "title": "Make the next research decision easier",
+                    "subtitle": "Bring one workflow that feels harder than it should. We will help you find a calmer starting point.",
+                    "primary_cta": {"label": "Talk to us", "href": "/contact/", "style": "white"},
+                    "secondary_cta": {"label": "See all products", "href": "/products/", "style": "outline"},
+                },
+            )
+        ],
     },
     "ceptor-ai": {
         "title": "ceptor-ai",
@@ -1663,15 +1717,15 @@ DEFAULT_ABOUT_SECTIONS = {
             {
                 "title": "Built by one engineer, for real teams",
                 "description": (
-                    "Structa Cloud is a one-person studio with an open-source backbone: "
-                    "the founder designs, builds, and ships every product, and the "
-                    "libraries that make them possible are public on GitHub."
+                    "Structa Cloud shapes applications around the people who use them: "
+                    "clear journeys for customers, useful controls for teams, and a "
+                    "practical path from the first release to steady improvement."
                 ),
                 "features": [
                     {
                         "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
                         "title": "A founder who ships",
-                        "description": "One engineer owns the full stack — Django, Wagtail, Rust, React — and ships every product as finished, server-rendered documents.",
+                        "description": "A focused product owner keeps the journey coherent from the first conversation to launch, so decisions do not get lost between teams.",
                     },
                     {
                         "icon": "M13 10V3L4 14h7v7l9-11h-7z",
@@ -1691,12 +1745,55 @@ DEFAULT_ABOUT_SECTIONS = {
                     {
                         "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
                         "title": "Automation with a human check",
-                        "description": "AI can accelerate research, support, and content workflows while your team keeps the final say.",
+                        "description": "Automation can accelerate research, support, and content workflows while your team keeps the final say.",
                     },
                     {
                         "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
                         "title": "A performance budget, not a promise",
                         "description": "We reserve room for content, images, and future features, then check Core Web Vitals on the devices and networks your customers use.",
+                    },
+                ],
+            },
+        ),
+        (
+            "features",
+            {
+                "eyebrow": "the reason to switch",
+                "title": "Benefits of switching to our applications",
+                "description": (
+                    "Choose applications that help people finish important work with less friction. "
+                    "Every product is shaped around the customer journey, the team operating it, and the confidence you need after launch."
+                ),
+                "features": [
+                    {
+                        "icon": "M13 10V3L4 14h7v7l9-11h-7z",
+                        "title": "Faster answers for customers",
+                        "description": "Clear information and focused journeys help people find the right next step sooner, on the devices they already use.",
+                    },
+                    {
+                        "icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z",
+                        "title": "More time for your team",
+                        "description": "Reduce repeated updates, manual handoffs, and avoidable support work so people can focus on decisions and relationships.",
+                    },
+                    {
+                        "icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20",
+                        "title": "Content you can change",
+                        "description": "Your marketing and operations teams can keep offers, guidance, and service details current without waiting for a release.",
+                    },
+                    {
+                        "icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z",
+                        "title": "A safer path to growth",
+                        "description": "Start with a useful first release, learn from real usage, and add capability without throwing away what already works.",
+                    },
+                    {
+                        "icon": "M3 3v18h18M7 15l4-4 3 3 5-6",
+                        "title": "Decisions backed by visibility",
+                        "description": "Useful reporting shows what customers need, where time is going, and which improvement deserves attention next.",
+                    },
+                    {
+                        "icon": "M4 5h16v14H4z M4 12h16",
+                        "title": "A handover your team can own",
+                        "description": "Clear controls, practical guidance, and a steady support path keep the application useful after launch.",
                     },
                 ],
             },
@@ -1736,7 +1833,7 @@ DEFAULT_ABOUT_SECTIONS = {
             "pricing",
             {
                 "title": "Simple, transparent pricing",
-                "description": "A clear starting point for the products we ship. Edition names, availability, and pricing are product-specific — Precis LMS, for example, is offered as Solo and Business rather than a Community tier.",
+                "description": "A clear starting point for applications that help teams serve customers, manage work, and grow with confidence. Edition names, availability, and pricing are product-specific — Precis LMS, for example, is offered as Solo and Business rather than a Community tier.",
                 "tiers": [
                     {
                         "name": "Open source",
@@ -2077,7 +2174,7 @@ DEFAULT_STARTUP_SECTIONS = {
                 "subtitle": "How structa.cloud grew from freelance Django projects into a monorepo of open-source products, AI tools, and a desktop POS application.",
                 "primary_cta": {"label": "See the products", "href": "/products/", "style": "secondary"},
                 "secondary_cta": {"label": "Meet the founder", "href": "/about/founder/", "style": "white"},
-                "trusted_by": "2019 · freelance → 2026 · five products",
+                "trusted_by": "2019 · freelance → 2026 · six products",
             },
         )
     ],
@@ -2092,7 +2189,7 @@ DEFAULT_STARTUP_SECTIONS = {
             "process",
             {
                 "eyebrow": "the timeline",
-                "title": "From freelance to five products",
+                "title": "From freelance to six products",
                 "description": "A measured path: learn the pattern, extract it, open it, productize it.",
                 "steps": [
                     {
@@ -2117,8 +2214,8 @@ DEFAULT_STARTUP_SECTIONS = {
                     },
                     {
                         "title": "2025–2026 · Products and scale",
-                        "description": "Five products shipping from one monorepo: Formints POS, Precis LMS, Loop CMS, Syntara AI, vResume. Community editions open source, paid editions commercial.",
-                        "deliverable": "Five products, one repo",
+                        "description": "Six products shipping from one monorepo: Formints POS, Precis LMS, Loop CRM, Syntara AI, vResume, and CTC Research. Community editions are open source; paid editions are commercial.",
+                        "deliverable": "Six products, one repo",
                     },
                 ],
             },
@@ -2668,10 +2765,9 @@ class Command(BaseCommand):
                 )
             ],
             body=(
-                "<p>The AHA stack is Astro + HTMX + Alpine.js: a server-first "
-                "rendering stack that ships finished HTML in one response.</p>"
-                "<p>Every capability below exists to keep the page a document: "
-                "fast by default, secure by default, editable by editors.</p>"
+                "<p>This page is the framework: a document your team can read, edit, and improve.</p>"
+                "<p>No React. No Vue. No Svelte. Just server-rendered HTML with HTMX for dynamic regions and Alpine.js for micro-interactions. Try the interactive demos below — they work because the page is a document.</p>"
+                "<p>The point is not the stack. The point is what your customers and your team gain: faster answers, clearer journeys, content you can own, and a release you can keep improving.</p>"
             ),
             **DEFAULT_ABOUT_SECTIONS,
         )
@@ -2691,9 +2787,9 @@ class Command(BaseCommand):
                 (
                     "hero",
                     {
-                        # + Astro accent "five marks"
-                        "title": "One family, five marks",
-                        "subtitle": "Every product carries its own constructed mark — a symbol built from what it does, not a generic glyph. Same system, five distinct identities.",
+                        # + Astro accent "six marks"
+                        "title": "One family, six marks",
+                        "subtitle": "Every product carries its own constructed mark — a symbol built from what it does, not a generic glyph. Same system, six distinct identities.",
                         "primary_cta": {"label": "See the products", "href": "/products/", "style": "secondary"},
                         "secondary_cta": {"label": "Pricing", "href": "/pricing/", "style": "white"},
                     },
@@ -2986,6 +3082,7 @@ class Command(BaseCommand):
             "cms": "79.00",
             "cypercloud": "0.00",
             "vresume": "29.00",
+            "ctc-research": "0.00",
             "ceptor-ai": "0.00",
         }
         try:
@@ -3048,6 +3145,7 @@ class Command(BaseCommand):
             "cms": "فيوجن سي إم إس",
             "cypercloud": "سايبر كلاود",
             "vresume": "فيريسوم",
+            "ctc-research": "سي تي سي ريسيرش",
             "ceptor-ai": "سيبتور إيه آي",
         }.get(slug, en_title)
 

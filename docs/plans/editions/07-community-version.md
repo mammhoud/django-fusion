@@ -3,10 +3,10 @@
 > **For agentic workers:** Execute tasks in order. Most of the code work is
 > done; the remaining tasks are the publish checklist and verification gates.
 
-**Goal:** Ship the Community edition (`formintA/`) as a standalone open-source
+**Goal:** Ship the Community edition (`formint-community/`) as a standalone open-source
 repo at `github.com/mammhoud/formint-community`, renamed to **Formints
 Community**, with CI, a release pipeline, and the landing site pointing at it —
-while keeping `formintA/` the single canonical source.
+while keeping `formint-community/` the single canonical source.
 
 **Status (9 Aug 2026):** Community plan `01-community.md` tasks A1–A5 complete
 (Rust `refund_sale`, refund UI, offline-first banner, e2e, docs note). The
@@ -43,9 +43,9 @@ are the GitHub publish checklist (C4–C6).
 
 ## Rename contract (hard)
 
-| Field | In-repo (`formintA/`) | Community version |
+| Field | In-repo (`formint-community/`) | Community version |
 |-------|-----------------------|-------------------|
-| Repo | `projects/formints/formintA/` | `github.com/mammhoud/formint-community` |
+| Repo | `projects/formints/formint-community/` | `github.com/mammhoud/formint-community` |
 | Package name | `formint-pos` | `formint-community` |
 | Tauri product | `Formint` | `Formints Community` |
 | Tauri identifier | `com.mammhoud.pos` | `com.mammhoud.formint-community` |
@@ -56,7 +56,7 @@ are the GitHub publish checklist (C4–C6).
 ## Architecture
 
 ```
-formintA/ (canonical Community source)
+formint-community/ (canonical Community source)
    │  make community-bundle
    ▼
 scripts/publish/community-bundle.cjs
@@ -76,7 +76,7 @@ formint-community/  (standalone package — git init + push to GitHub)
 `scripts/publish/community-bundle.cjs` + `make community-bundle` / `make
 community-version` in `projects/formints/Makefile`.
 
-- [x] Copy `formintA/` → `formint-community/` excluding generated dirs by path
+- [x] Copy `formint-community/` → `formint-community/` excluding generated dirs by path
       segment (`node_modules`, `dist`, `target`, `gen`, `screenshots`, `.astro`,
       `test-results`, `playwright-report`, `.venv`, `.git`, `.DS_Store`) and
       files (`restaurant.db*`, `appmap.log`, `.env`).
@@ -149,9 +149,9 @@ community-version` in `projects/formints/Makefile`.
 
 ## Task C6: Verification gates (run before tagging)
 
-- [ ] **Step 1:** Community unit tests — `cd projects/formints/formintA && pnpm test`
-- [ ] **Step 2:** Rust tests — `cd formintA/src-tauri && cargo test`
-- [ ] **Step 3:** e2e — `cd formintA && pnpm test:e2e` (refund spec included)
+- [ ] **Step 1:** Community unit tests — `cd projects/formints/formint-community && pnpm test`
+- [ ] **Step 2:** Rust tests — `cd formint-community/src-tauri && cargo test`
+- [ ] **Step 3:** e2e — `cd formint-community && pnpm test:e2e` (refund spec included)
 - [ ] **Step 4:** Bundle smoke — regenerate with `make community-bundle`, then in
       `formint-community/` run `pnpm install` + `pnpm test` + `cargo test` to
       prove the standalone package is self-sufficient.
@@ -162,7 +162,7 @@ community-version` in `projects/formints/Makefile`.
 
 ## Self-Review
 
-1. **Single source of truth:** all feature changes land in `formintA/`; the
+1. **Single source of truth:** all feature changes land in `formint-community/`; the
    bundle is generated, never hand-edited (`COMMUNITY.md` marker enforces this).
 2. **No monorepo leakage:** generated dirs are excluded by path segment, so the
    public repo never contains `node_modules`, cargo `target`, DBs, or logs.

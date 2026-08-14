@@ -51,6 +51,7 @@
   --brand-loop: 24 55% 40%;        /* terracotta — blocks, craft    */
   --brand-syntara: 264 58% 48%;    /* iris — AI signal              */
   --brand-vresume: 346 52% 44%;    /* madder rose — career, growth  */
+  --brand-ctc-research: 183 53% 34%; /* teal — evidence, continuity */
 }
 
 .dark {
@@ -78,6 +79,7 @@
   --brand-loop: 27 72% 66%;
   --brand-syntara: 264 68% 78%;
   --brand-vresume: 346 66% 72%;
+  --brand-ctc-research: 183 62% 66%;
 }
 
 /* Edition preview gallery: reveal each real product capture after it enters
@@ -103,14 +105,14 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .preview-gallery__item.reveal:not(.reveal-visible) .preview-gallery__media img,
-  .preview-gallery__item.reveal:not(.reveal-visible) .preview-gallery__media video {
+  html.fusion-motion-ready .preview-gallery__item.reveal:not(.reveal-visible) .preview-gallery__media img,
+  html.fusion-motion-ready .preview-gallery__item.reveal:not(.reveal-visible) .preview-gallery__media video {
     opacity: .01;
     transform: scale(.985);
   }
 
-  .preview-gallery__item.reveal.reveal-visible .preview-gallery__media img,
-  .preview-gallery__item.reveal.reveal-visible .preview-gallery__media video {
+  html.fusion-motion-ready .preview-gallery__item.reveal.reveal-visible .preview-gallery__media img,
+  html.fusion-motion-ready .preview-gallery__item.reveal.reveal-visible .preview-gallery__media video {
     opacity: 1;
     transform: scale(1);
   }
@@ -689,6 +691,7 @@
   .product-logo[data-brand="loop"]     { color: hsl(var(--brand-loop));     border-color: hsl(var(--brand-loop) / 0.35);     background: hsl(var(--brand-loop) / 0.06); }
   .product-logo[data-brand="syntara"]  { color: hsl(var(--brand-syntara));  border-color: hsl(var(--brand-syntara) / 0.35);  background: hsl(var(--brand-syntara) / 0.06); }
   .product-logo[data-brand="vresume"]  { color: hsl(var(--brand-vresume));  border-color: hsl(var(--brand-vresume) / 0.35);  background: hsl(var(--brand-vresume) / 0.06); }
+  .product-logo[data-brand="ctc-research"] { color: hsl(var(--brand-ctc-research)); border-color: hsl(var(--brand-ctc-research) / 0.35); background: hsl(var(--brand-ctc-research) / 0.06); }
   a:hover .product-logo {
     border-color: currentColor;
   }
@@ -1075,12 +1078,12 @@
      source-toggle) and every .reveal element share ONE recipe via
      --fu-reveal-transition, so the motion language can't drift. */
   [x-cloak] { display: none !important; }
-  .reveal,
-  .hero__eyebrow,
-  .hero__heading,
-  .hero__intro,
-  .hero__actions,
-  .hero__source-toggle {
+  html.fusion-motion-ready .reveal,
+  html.fusion-motion-ready .hero__eyebrow,
+  html.fusion-motion-ready .hero__heading,
+  html.fusion-motion-ready .hero__intro,
+  html.fusion-motion-ready .hero__actions,
+  html.fusion-motion-ready .hero__source-toggle {
     opacity: 0;
     transform: translateY(18px);
     filter: blur(6px);
@@ -1089,12 +1092,12 @@
        offscreen reveal element would cost real memory on card-heavy
        pages. The transition runs on the compositor without it. */
   }
-  .reveal.reveal-visible,
-  .hero__eyebrow.reveal-visible,
-  .hero__heading.reveal-visible,
-  .hero__intro.reveal-visible,
-  .hero__actions.reveal-visible,
-  .hero__source-toggle.reveal-visible {
+  html.fusion-motion-ready .reveal.reveal-visible,
+  html.fusion-motion-ready .hero__eyebrow.reveal-visible,
+  html.fusion-motion-ready .hero__heading.reveal-visible,
+  html.fusion-motion-ready .hero__intro.reveal-visible,
+  html.fusion-motion-ready .hero__actions.reveal-visible,
+  html.fusion-motion-ready .hero__source-toggle.reveal-visible {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
@@ -2541,6 +2544,34 @@
   .blog-preview__card.reveal-visible:hover { transform: translateY(-4px); }
   .team__card.reveal-visible:hover { transform: translateY(-4px); }
   .timeline__card.reveal-visible:hover { transform: translateY(-2px); }
+}
+
+/* Progressive enhancement fallback: reveal-driven content must never be
+   unreadable when a browser blocks Alpine, an observer is unavailable, or
+   JavaScript is disabled. Layout.astro adds `.js` before paint when motion
+   can be attempted; without it, the document remains fully readable. */
+html:not(.js) .reveal,
+html:not(.fusion-motion-ready) .reveal,
+html:not(.js) .hero__eyebrow,
+html:not(.fusion-motion-ready) .hero__eyebrow,
+html:not(.js) .hero__heading,
+html:not(.fusion-motion-ready) .hero__heading,
+html:not(.js) .hero__intro,
+html:not(.fusion-motion-ready) .hero__intro,
+html:not(.js) .hero__actions,
+html:not(.fusion-motion-ready) .hero__actions,
+html:not(.js) .hero__source-toggle,
+html:not(.fusion-motion-ready) .hero__source-toggle,
+html:not(.js) .features__card,
+html:not(.js) .blog-preview__card,
+html:not(.js) .team__card,
+html:not(.js) .timeline__card,
+html:not(.fusion-motion-ready) .timeline__card,
+html:not(.fusion-motion-ready) .brand-board__construction .product-logo {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
 }
 
 /* ────────────────────────────────────────────────────────────────────────

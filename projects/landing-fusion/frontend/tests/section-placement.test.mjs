@@ -195,7 +195,7 @@ test('products is the merged catalog: renamed product cards with logos, status, 
   assert.match(products, /product-logo/);
   assert.match(products, /edition-chip/);
   // Each product renders its own brand-identity chip (no shared generic mark).
-  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"']) {
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"', 'data-brand="ctc-research"']) {
     assert.ok(products.includes(chip), `products should render mark chip: ${chip}`);
   }
   // Seeded CTA (full-document pages close with the about-style CTA).
@@ -284,12 +284,12 @@ test('services page shows the three service lines + build-as-you-go process', ()
 });
 
 test('brand page renders the identity system: one board per product with its constructed mark', () => {
-  assert.match(brand, /One family, five marks/);
+  assert.match(brand, /One family, six marks/);
   // Each brand's essence line + its own data-brand mark chip.
-  for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'Content, composed.', 'Chat, routed around your brand.', 'Your career, on the record.']) {
+  for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'From impression to deal.', 'Chat, routed around your brand.', 'Your career, on the record.', 'Evidence, carried forward.']) {
     assert.ok(brand.includes(essence), `brand should contain essence: ${essence}`);
   }
-  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"']) {
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"', 'data-brand="ctc-research"']) {
     assert.ok(brand.includes(chip), `brand should render mark chip: ${chip}`);
   }
   // Brand story labels + construction notes are present.
@@ -305,7 +305,7 @@ test('brand page renders the identity system: one board per product with its con
 
 test('products page lists every product page card incl. the vResume subproduct', () => {
   assert.match(products, /Projects in this repo/);
-  for (const href of ['/products/formint-pos/', '/products/lms/', '/products/cms/', '/products/vresume/']) {
+  for (const href of ['/products/formint-pos/', '/products/lms/', '/products/cms/', '/products/vresume/', '/products/ctc-research/']) {
     assert.ok(products.includes(href), `products should link to: ${href}`);
   }
 });

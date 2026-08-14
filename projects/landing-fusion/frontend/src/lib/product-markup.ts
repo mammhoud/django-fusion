@@ -40,6 +40,7 @@ const LOGO_BRAND: Record<string, string> = {
   orbit: 'syntara',
   mark: 'syntara',
   ascent: 'vresume',
+  research: 'ctc-research',
 };
 
 const LOGO_SVGS: Record<string, string> = {
@@ -47,6 +48,7 @@ const LOGO_SVGS: Record<string, string> = {
   ribbon: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 8.5h24v7.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5z" stroke-linejoin="round"/><path d="M10.5 19.5l2.4 4.5M16 19.5v4.5M21.5 19.5l-2.4 4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 12.5l2.6 2.6 5-5.4M15.1 15.1V9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   isometric: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 3l11 6v14L16 29 5 23V9l11-6z" stroke-linejoin="round"/><path d="M5 9l11 6 11-6M16 15v14" stroke-linejoin="round"/><path d="M16 10.5l5.8 3.2v6.6L16 23.5l-5.8-3.2v-6.6l5.8-3.2z" stroke-linejoin="round"/><path d="M10.2 13.7l5.8 3.2 5.8-3.2M16 16.9v6.6" stroke-linejoin="round"/></svg>',
   ascent: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 26h7v-7h7v-7h7" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.8 12.2l2.4 2.4 4-4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 6v20" stroke-linecap="round"/></svg>',
+  research: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="16" cy="16" r="9"/><path d="M16 7v18M7 16h18" stroke-linecap="round"/><circle cx="16" cy="16" r="2.5" fill="currentColor" stroke="none"/></svg>',
   orbit: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="16" cy="16" r="2.6" fill="currentColor" stroke="none"/><ellipse cx="16" cy="16" rx="10.5" ry="4.2" transform="rotate(-24 16 16)" stroke-linejoin="round"/><ellipse cx="16" cy="16" rx="10.5" ry="4.2" transform="rotate(24 16 16)" stroke-linejoin="round"/><circle cx="25.2" cy="12.4" r="1.4" fill="currentColor" stroke="none"/></svg>',
 };
 

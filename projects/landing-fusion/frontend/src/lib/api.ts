@@ -430,6 +430,7 @@ export async function fetchNavigationWithFallback(language: LangCode = CONTENT_L
         { label: arabic ? 'الرئيسية' : 'Home', href: '/' },
         { label: arabic ? 'الخدمات' : 'Services', href: '/services/' },
         { label: arabic ? 'المنتجات' : 'Products', href: '/products/' },
+        { label: arabic ? 'الفوائد' : 'Benefits', href: '/features/' },
         { label: arabic ? 'المدونة' : 'Blog', href: '/blog/' },
         { label: arabic ? 'الأسعار' : 'Pricing', href: '/pricing/' },
         { label: arabic ? 'من نحن' : 'About', href: '/about/' },
@@ -494,6 +495,15 @@ export async function fetchPricingWithFallback(): Promise<PricingData> {
           version: 'coming soon', logo_style: 'isometric', status: 'development', href: '/products/cms/',
           editions: [
             { name: 'Community', price: '$0', period: 'open source', tagline: 'Coming soon — the open-source CRM + social scheduler (AGPL-3.0).', tier: 'outline', featured: false },
+          ],
+        },
+        {
+          slug: 'ctc-research', title: 'CTC Research',
+          tagline: 'A focused research workspace that helps teams turn evidence into decisions.',
+          version: 'ready to adapt', logo_style: 'research', status: 'live', href: '/products/ctc-research/',
+          editions: [
+            { name: 'Community', price: '$0', period: 'self-hosted', tagline: 'A focused workspace for independent researchers and small teams.', tier: 'outline', featured: false },
+            { name: 'Business', price: 'Custom', period: 'per deployment', tagline: 'Connected research operations for teams that need a shared source of truth.', tier: 'featured', featured: true },
           ],
         },
         {

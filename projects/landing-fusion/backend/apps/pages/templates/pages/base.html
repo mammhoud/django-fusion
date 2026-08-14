@@ -253,6 +253,14 @@
      Astro road imports the same file raw), so the two roads can never drift. {% endcomment %}
   {% include "fusion/includes/brand_modal.html" %}
 
+  <!-- Reveal motion is enabled only after Alpine confirms that its directives
+       are available. Until then the server-rendered document remains readable. -->
+  <script>
+    document.addEventListener('alpine:init', function () {
+      document.documentElement.classList.add('fusion-motion-ready');
+    }, { once: true });
+  </script>
+
   <!-- AHA runtime: HTMX + Alpine (bundled in the Astro frontend; CDN for the backend templates)
        IMPORTANT: Alpine plugins must load BEFORE alpine itself — the CDN plugin build
        registers on `alpine:init`, which Alpine emits at startup. Loading the collapse

@@ -91,5 +91,17 @@ export const BRAND_SPEC: Record<string, BrandSpec> = {
     voice: 'Bricolage display for the wordmark · Public Sans for the resume body.',
     palette: ['vresume', 'paper', 'ink', 'line', 'link'],
   },
+  'ctc-research': {
+    slug: 'ctc-research',
+    brand: 'ctc-research',
+    mark: 'research',
+    name: 'CTC Research',
+    role: 'Research workspace · evidence · decisions · team progress',
+    essence: 'Evidence, carried forward.',
+    metaphor: 'A research signal with a clear centre — questions, evidence, and decisions held in one orbit.',
+    construction: 'A focused centre plus intersecting paths: the work stays connected from question to next action.',
+    voice: 'Quiet display for findings · JetBrains Mono for status and ownership.',
+    palette: ['ctc-research', 'paper', 'ink', 'line', 'link'],
+  },
 };
 

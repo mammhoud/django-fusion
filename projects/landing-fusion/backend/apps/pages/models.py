@@ -794,6 +794,7 @@ PRODUCT_LOGO_CHOICES = [
     ("isometric", _("Isometric — Loop blocks")),
     ("orbit", _("Orbit — Syntara AI signal")),
     ("ascent", _("Ascent — vResume career path")),
+    ("research", _("Research signal — CTC Research evidence path")),
 ]
 
 PRODUCT_STATUS_CHOICES = [

@@ -14,7 +14,7 @@ const PAGES: Array<[string, RegExp | null]> = [
   ['/faq/', /faq|question/i],
   ['/contact/', null], // "We'd love to hear from you"
   ['/privacy/', /privacy/i],
-  ['/brand/', null], // hero: "One family, five marks"
+  ['/brand/', null], // hero: "One family, six marks"
   ['/profile/', /profile/i],
 ];
 

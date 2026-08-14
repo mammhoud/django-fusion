@@ -1,7 +1,7 @@
 ---
 interface Props {
   /** One of: crest (Formints) / ribbon (Precis LMS) / isometric (Loop) /
-   *  orbit (Syntara) / ascent (vResume) / mark (default fallback). */
+   *  orbit (Syntara) / ascent (vResume) / research (CTC Research) / mark (default fallback). */
   style?: string;
   className?: string;
 }
@@ -18,6 +18,7 @@ const brandByStyle: Record<string, string> = {
   orbit: 'syntara',
   mark: 'syntara',
   ascent: 'vresume',
+  research: 'ctc-research',
 };
 const brand = brandByStyle[logoStyle] ?? 'formints';
 ---
@@ -54,6 +55,14 @@ const brand = brandByStyle[logoStyle] ?? 'formints';
       <path d="M4 26h7v-7h7v-7h7" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M24.8 12.2l2.4 2.4 4-4.4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M4 6v20" stroke-linecap="round"/>
+    </svg>
+  ) : logoStyle === 'research' ? (
+    // CTC Research — a focused centre with intersecting paths from question
+    // to evidence to the next decision.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <circle cx="16" cy="16" r="9"/>
+      <path d="M16 7v18M7 16h18" stroke-linecap="round"/>
+      <circle cx="16" cy="16" r="2.5" fill="currentColor" stroke="none"/>
     </svg>
   ) : (
     // Syntara — AI chat customizer: a core node (the model) with two

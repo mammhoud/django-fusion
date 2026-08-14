@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Finish the Community edition (`formintA/`) by shipping refunds & returns and the offline-first mode indicator, with design, architecture, and data model documented as the base of the extension chain.
+**Goal:** Finish the Community edition (`formint-community/`) by shipping refunds & returns and the offline-first mode indicator, with design, architecture, and data model documented as the base of the extension chain.
 
 **Architecture:** Offline-first desktop POS.
 
@@ -17,12 +17,12 @@ Refunds mutate the existing `sales.status` column ("refunded") via a new `refund
 
 ## Global Constraints
 
-- All changes live under `projects/formints/formintA/` only.
+- All changes live under `projects/formints/formint-community/` only.
 - **No new runtime dependencies.** Rust uses only diesel + diesel_migrations (already in `src-tauri/Cargo.toml`).
 - Tauri port stays 1420. Commands are snake_case (`refund_sale`).
 - **No schema migration needed for refunds:** `sales.status` already exists and accepts `"refunded"`.
 - **Feature inheritance (base tier):** Community is the root of the extension chain — every higher edition (Standard, Pro, Cloud) must include ALL Community features. No upward inheritance applies here.
-- Test commands: Rust `cd projects/formints/formintA/src-tauri && cargo test` · frontend `cd projects/formints/formintA && pnpm test`.
+- Test commands: Rust `cd projects/formints/formint-community/src-tauri && CARGO_BUILD_JOBS=1 cargo test` · frontend `cd projects/formints/formint-community && pnpm test`.
 - AGPL-3.0; keep existing code style and docstrings.
 
 ---
@@ -75,8 +75,8 @@ Diesel schema `src-tauri/src/db/schema.rs`, DB `restaurant.db`. Relevant entitie
 ## Task A1: Rust `refund_sale` command
 
 **Files:**
-- Modify: `formintA/src-tauri/src/operations/sales.rs` (add `refund_sale` + inline test module)
-- Modify: `formintA/src-tauri/src/lib.rs` (register in `invoke_handler`)
+- Modify: `formint-community/src-tauri/src/operations/sales.rs` (add `refund_sale` + inline test module)
+- Modify: `formint-community/src-tauri/src/lib.rs` (register in `invoke_handler`)
 
 **Interfaces:**
 - Consumes: `crate::db::{models::*, open_conn}`, `crate::db::schema::sales::dsl`, `crate::db::run_migrations` (all exist).
@@ -84,7 +84,7 @@ Diesel schema `src-tauri/src/db/schema.rs`, DB `restaurant.db`. Relevant entitie
 
 - [ ] **Step 1: Write the failing test**
 
-Append to `formintA/src-tauri/src/operations/sales.rs`:
+Append to `formint-community/src-tauri/src/operations/sales.rs`:
 
 ```rust
 #[cfg(test)]
@@ -158,12 +158,12 @@ mod tests {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd projects/formints/formintA/src-tauri && cargo test refund_sale`
+Run: `cd projects/formints/formint-community/src-tauri && CARGO_BUILD_JOBS=1 cargo test refund_sale`
 Expected: FAIL — `error[E0425]: cannot find function 'refund_sale' in this scope`
 
 - [ ] **Step 3: Write the minimal implementation**
 
-Add after the existing `update_sale` function in `formintA/src-tauri/src/operations/sales.rs`:
+Add after the existing `update_sale` function in `formint-community/src-tauri/src/operations/sales.rs`:
 
 ```rust
 /// Mark a sale as refunded. The `status` column already exists on `sales`
@@ -191,23 +191,23 @@ pub fn refund_sale(db_path: &PathBuf, sale_id: i32) -> Result<Sale, String> {
 
 - [ ] **Step 4: Register the command**
 
-In `formintA/src-tauri/src/lib.rs`, add `refund_sale,` to the existing `tauri::generate_handler![...]` list that already contains `add_sale`, `update_sale`, `delete_sale`, `get_sales`.
+In `formint-community/src-tauri/src/lib.rs`, add `refund_sale,` to the existing `tauri::generate_handler![...]` list that already contains `add_sale`, `update_sale`, `delete_sale`, `get_sales`.
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `cd projects/formints/formintA/src-tauri && cargo test refund_sale`
+Run: `cd projects/formints/formint-community/src-tauri && CARGO_BUILD_JOBS=1 cargo test refund_sale`
 Expected: PASS — `test result: ok. 3 passed`
 
 - [ ] **Step 6: Run the full Rust suite**
 
-Run: `cd projects/formints/formintA/src-tauri && cargo test`
+Run: `cd projects/formints/formint-community/src-tauri && CARGO_BUILD_JOBS=1 cargo test`
 Expected: all pass (existing + 3 new).
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add projects/formints/formintA/src-tauri/src/operations/sales.rs projects/formints/formintA/src-tauri/src/lib.rs
-git commit -m "feat(formintA): refund_sale command marks a sale refunded (idempotent)"
+git add projects/formints/formint-community/src-tauri/src/operations/sales.rs projects/formints/formint-community/src-tauri/src/lib.rs
+git commit -m "feat(formint-community): refund_sale command marks a sale refunded (idempotent)"
 ```
 
 ---
@@ -215,8 +215,8 @@ git commit -m "feat(formintA): refund_sale command marks a sale refunded (idempo
 ## Task A2: Refund & return UI (Transactions page)
 
 **Files:**
-- Modify: `formintA/src/app/pages/pos/Transactions.tsx`
-- Test: `formintA/src/test/pages/Transactions.test.tsx` (create — mirror `src/test/pages/Sale.test.tsx`)
+- Modify: `formint-community/src/app/pages/pos/Transactions.tsx`
+- Test: `formint-community/src/test/pages/Transactions.test.tsx` (create — mirror `src/test/pages/Sale.test.tsx`)
 
 **Interfaces:**
 - Consumes: `refund_sale` from Task A1 via `invoke('refund_sale', { saleId })`.
@@ -224,7 +224,7 @@ git commit -m "feat(formintA): refund_sale command marks a sale refunded (idempo
 
 - [ ] **Step 1: Write the failing test**
 
-Create `formintA/src/test/pages/Transactions.test.tsx`:
+Create `formint-community/src/test/pages/Transactions.test.tsx`:
 
 ```tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -287,12 +287,12 @@ describe('Transactions refund flow', () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd projects/formints/formintA && pnpm vitest run src/test/pages/Transactions.test.tsx`
+Run: `cd projects/formints/formint-community && pnpm vitest run src/test/pages/Transactions.test.tsx`
 Expected: FAIL — no refund button rendered (or module resolution error, fine at this stage)
 
 - [ ] **Step 3: Implement the refund action**
 
-In `formintA/src/app/pages/pos/Transactions.tsx`:
+In `formint-community/src/app/pages/pos/Transactions.tsx`:
 
 ```tsx
 const [refundTarget, setRefundTarget] = useState<Sale | null>(null);
@@ -333,19 +333,19 @@ Add the button to the row actions (only for `completed` sales), the confirm dial
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd projects/formints/formintA && pnpm vitest run src/test/pages/Transactions.test.tsx`
+Run: `cd projects/formints/formint-community && pnpm vitest run src/test/pages/Transactions.test.tsx`
 Expected: PASS
 
 - [ ] **Step 5: Run the full frontend suite**
 
-Run: `cd projects/formints/formintA && pnpm test`
+Run: `cd projects/formints/formint-community && pnpm test`
 Expected: all existing tests still pass
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add projects/formints/formintA/src/app/pages/pos/Transactions.tsx projects/formints/formintA/src/test/pages/Transactions.test.tsx
-git commit -m "feat(formintA): refund action on the Transactions page with confirm dialog"
+git add projects/formints/formint-community/src/app/pages/pos/Transactions.tsx projects/formints/formint-community/src/test/pages/Transactions.test.tsx
+git commit -m "feat(formint-community): refund action on the Transactions page with confirm dialog"
 ```
 
 ---
@@ -353,16 +353,16 @@ git commit -m "feat(formintA): refund action on the Transactions page with confi
 ## Task A3: Offline-first mode indicator
 
 **Files:**
-- Create: `formintA/src/hooks/useOfflineMode.ts`
-- Modify: `formintA/src/components/AppShell.tsx`
-- Test: `formintA/src/test/hooks/useOfflineMode.test.ts`
+- Create: `formint-community/src/hooks/useOfflineMode.ts`
+- Modify: `formint-community/src/components/AppShell.tsx`
+- Test: `formint-community/src/test/hooks/useOfflineMode.test.ts`
 
 **Interfaces:**
 - Produces: `export function useOfflineMode(): boolean` — `true` while offline. Consumed by `AppShell.tsx`.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `formintA/src/test/hooks/useOfflineMode.test.ts`:
+Create `formint-community/src/test/hooks/useOfflineMode.test.ts`:
 
 ```ts
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -408,12 +408,12 @@ describe('useOfflineMode', () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd projects/formints/formintA && pnpm vitest run src/test/hooks/useOfflineMode.test.ts`
+Run: `cd projects/formints/formint-community && pnpm vitest run src/test/hooks/useOfflineMode.test.ts`
 Expected: FAIL — cannot find module `@/hooks/useOfflineMode`
 
 - [ ] **Step 3: Write the hook**
 
-Create `formintA/src/hooks/useOfflineMode.ts`:
+Create `formint-community/src/hooks/useOfflineMode.ts`:
 
 ```ts
 import { useEffect, useState } from 'react';
@@ -444,7 +444,7 @@ export function useOfflineMode(): boolean {
 
 - [ ] **Step 4: Render the banner in AppShell**
 
-In `formintA/src/components/AppShell.tsx`:
+In `formint-community/src/components/AppShell.tsx`:
 
 ```tsx
 import { useOfflineMode } from '@/hooks/useOfflineMode';
@@ -462,14 +462,14 @@ const offline = useOfflineMode();
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `cd projects/formints/formintA && pnpm vitest run src/test/hooks/useOfflineMode.test.ts && pnpm test`
+Run: `cd projects/formints/formint-community && pnpm vitest run src/test/hooks/useOfflineMode.test.ts && pnpm test`
 Expected: PASS — hook tests green, full suite still green
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add projects/formints/formintA/src/hooks/useOfflineMode.ts projects/formints/formintA/src/components/AppShell.tsx projects/formints/formintA/src/test/hooks/useOfflineMode.test.ts
-git commit -m "feat(formintA): offline-first mode indicator in the app shell"
+git add projects/formints/formint-community/src/hooks/useOfflineMode.ts projects/formints/formint-community/src/components/AppShell.tsx projects/formints/formint-community/src/test/hooks/useOfflineMode.test.ts
+git commit -m "feat(formint-community): offline-first mode indicator in the app shell"
 ```
 
 ---
@@ -481,8 +481,8 @@ git commit -m "feat(formintA): offline-first mode indicator in the app shell"
 ## Task A4: Playwright e2e for the refund flow
 
 **Files:**
-- Create: `formintA/e2e/refund.spec.ts`
-- Modify: `formintA/playwright.config.ts` (add the spec to `testMatch` if it is not already covered)
+- Create: `formint-community/e2e/refund.spec.ts`
+- Modify: `formint-community/playwright.config.ts` (add the spec to `testMatch` if it is not already covered)
 
 **Interfaces:**
 - Consumes: the refund UI from Task A2 (Refund button + Confirm dialog + `refunded` chip).
@@ -490,7 +490,7 @@ git commit -m "feat(formintA): offline-first mode indicator in the app shell"
 
 - [ ] **Step 1: Write the failing spec**
 
-Create `formintA/e2e/refund.spec.ts`, mirroring the bootstrap/mocking conventions of the existing `formintA/e2e/auth-visual.spec.ts` and its `e2e/mocks/` helpers:
+Create `formint-community/e2e/refund.spec.ts`, mirroring the bootstrap/mocking conventions of the existing `formint-community/e2e/auth-visual.spec.ts` and its `e2e/mocks/` helpers:
 
 ```ts
 import { test, expect } from '@playwright/test';
@@ -532,7 +532,7 @@ test('does not show refund for an already refunded sale', async ({ page }) => {
 
 - [ ] **Step 2: Run spec to verify it fails**
 
-Run: `cd projects/formints/formintA && pnpm exec playwright test e2e/refund.spec.ts`
+Run: `cd projects/formints/formint-community && pnpm exec playwright test e2e/refund.spec.ts`
 Expected: FAIL — no Refund button (UI from A2 not present yet, or spec not matching).
 
 - [ ] **Step 3: Implement (or align) the UI per Task A2**
@@ -541,14 +541,14 @@ Ensure the Transactions page renders the Refund button + confirm dialog exactly 
 
 - [ ] **Step 4: Run the full Community e2e suite**
 
-Run: `cd projects/formints/formintA && pnpm exec playwright test`
+Run: `cd projects/formints/formint-community && pnpm exec playwright test`
 Expected: PASS — refund spec + existing specs green.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add projects/formints/formintA/e2e/refund.spec.ts projects/formints/formintA/playwright.config.ts
- git commit -m "test(formintA): Playwright e2e for the refund flow"
+git add projects/formints/formint-community/e2e/refund.spec.ts projects/formints/formint-community/playwright.config.ts
+ git commit -m "test(formint-community): Playwright e2e for the refund flow"
 ```
 
 ## Task A5: SDK applicability note

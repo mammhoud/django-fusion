@@ -9,6 +9,9 @@ acme/acme.json
 acme/acme.json.tmp
 acme/backups/
 
+# Manual cert/ACME backups — tarballs contain private keys.
+backups/
+
 # Legacy self-signed certificates under proxy/certs/.
 # These are local-dev / fallback artifacts; production certs come from
 # Let's Encrypt via Traefik (see proxy/LETSENCRYPT.md).

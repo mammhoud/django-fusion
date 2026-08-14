@@ -23,39 +23,39 @@ interface Props {
 }
 
 const {
-  eyebrow = 'outcomes · not a service list',
-  heading = 'Build faster. Scale smarter. Spend less.',
-  intro = 'A practical path from operational friction to durable momentum — discover the constraint, design the system, automate the repeatable work, then keep improving it.',
+  eyebrow = 'outcomes · not a technology pitch',
+  heading = 'Give your team more room to do its best work.',
+  intro = 'Our applications turn everyday friction into clear, dependable workflows — so customers get a better experience and your team gets time back.',
   metrics = [
-    { value: 'HTML', label: 'content first', detail: 'Make the message available on first paint.' },
-    { value: '1 HTTP', label: 'delivery contract', detail: 'Ship finished HTML before enhancement.' },
-    { value: 'Lean', label: 'progressive enhancement', detail: 'Use interactivity where it earns its place.' },
-    { value: 'Clear', label: 'handoff-ready systems', detail: 'Keep the next decision visible to the team.' },
+    { value: 'Less', label: 'repeated work', detail: 'Replace avoidable admin with dependable flows your team can trust.' },
+    { value: 'Faster', label: 'customer decisions', detail: 'Help people understand, choose, and act without getting stuck.' },
+    { value: 'Ownable', label: 'day-to-day operations', detail: 'Give your team clear controls instead of a permanent dependency.' },
+    { value: 'Ready', label: 'for the next stage', detail: 'Start with today’s need and keep room for tomorrow’s growth.' },
   ],
   problems = [
-    'Manual processes consume engineering time that should go to product work.',
-    'Deployments are slow or risky because environments are not repeatable.',
-    'Cloud spend grows faster than visibility into what drives it.',
-    'Monitoring is reactive, while useful AI opportunities remain unexplored.',
+    'Customers abandon journeys when information is hard to find or actions feel uncertain.',
+    'Teams lose momentum when routine updates require a development queue.',
+    'Leaders lack a shared view of what is working, what is costing time, and what to improve next.',
+    'Growth creates more handoffs, exceptions, and support requests than the current process can carry.',
   ],
   outcomes = [
     {
-      title: 'AI workflow systems',
+      title: 'More time for meaningful work',
       problem: 'Teams lose hours to repetitive research, support, and operations work.',
-      solution: 'We map the workflow, add secure agents where they help, and keep a human approval path.',
-      outcome: 'More useful work completed without adding operational complexity.',
+      solution: 'We simplify the path, automate the repeatable parts, and keep a human approval path where judgment matters.',
+      outcome: 'More useful work completed with less context switching.',
     },
     {
-      title: 'Cloud & delivery engineering',
-      problem: 'Infrastructure changes are difficult to reproduce and releases feel fragile.',
-      solution: 'We turn environments, CI/CD, observability, and recovery into explicit, reviewable systems.',
-      outcome: 'Faster releases with clearer ownership and fewer surprises.',
+      title: 'A calmer customer experience',
+      problem: 'Important journeys feel fragmented, slow, or difficult to understand.',
+      solution: 'We connect the content, actions, and support moments around the way customers actually decide.',
+      outcome: 'More confidence, fewer abandoned journeys, and clearer next steps.',
     },
     {
-      title: 'Cost & reliability review',
-      problem: 'Spend and incidents are treated as separate problems after the fact.',
-      solution: 'We connect usage, architecture, alerts, and operating habits into one improvement backlog.',
-      outcome: 'Better decisions backed by evidence rather than guesswork.',
+      title: 'A system your team can own',
+      problem: 'Every change becomes a specialist request, so small improvements wait too long.',
+      solution: 'We leave practical controls, useful reporting, and a clear improvement rhythm with the people running the work.',
+      outcome: 'Steady improvement without adding unnecessary operational overhead.',
     },
   ],
   ctaHref = '/contact/',
@@ -82,9 +82,9 @@ const {
 
     <div class="mt-20 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
       <div class="lg:sticky lg:top-28">
-        <p class="tag-marker mb-4">the friction</p>
-        <h3 class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Your team should not have to fight the system.</h3>
-        <p class="mt-4 text-sm leading-relaxed text-fu-muted">Start with the business constraint, not a technology shopping list. The right architecture is the one that makes the next decision easier.</p>
+        <p class="tag-marker mb-4">the reason to switch</p>
+        <h3 class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Your applications should make the work feel lighter.</h3>
+        <p class="mt-4 text-sm leading-relaxed text-fu-muted">Start with the customer and the team using the service. The right application removes uncertainty, shortens the path to value, and makes the next improvement easier.</p>
         <a href={ctaHref} class="btn-secondary mt-7 inline-flex">Show me the solution <span aria-hidden="true">→</span></a>
       </div>
       <ul class="grid gap-3" aria-label="Common engineering constraints">
@@ -116,8 +116,8 @@ const {
     <div class="mt-24" aria-labelledby="services-heading">
       <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div class="max-w-2xl">
-          <p class="tag-marker mb-4">outcome-led services</p>
-          <h3 id="services-heading" class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">The technology is only valuable when the result is clear.</h3>
+          <p class="tag-marker mb-4">benefit-led applications</p>
+          <h3 id="services-heading" class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Choose the result you want to feel every day.</h3>
         </div>
         <a href="/services/" class="font-mono text-xs uppercase tracking-[0.14em] text-fu-link hover:text-fu-link-dark">Explore services →</a>
       </div>
@@ -137,20 +137,20 @@ const {
 
     <div class="mt-24 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
       <div>
-        <p class="tag-marker mb-4">architecture, made visible</p>
-        <h3 class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">A clear route from a user request to a useful result.</h3>
-        <p class="mt-4 max-w-xl text-sm leading-relaxed text-fu-muted">Good architecture is a business communication tool. It shows where traffic flows, where decisions happen, and where resilience is designed in.</p>
+        <p class="tag-marker mb-4">confidence, made visible</p>
+        <h3 class="font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl">Know what happens after someone says yes.</h3>
+        <p class="mt-4 max-w-xl text-sm leading-relaxed text-fu-muted">A good application makes the path from interest to outcome easy to understand: people know what to do, teams know what to support, and leaders know what to improve.</p>
       </div>
-      <div class="rounded-xl border border-fu-line bg-fu-ink p-5 text-fu-paper md:p-6" aria-label="Reference architecture">
+      <div class="rounded-xl border border-fu-line bg-fu-ink p-5 text-fu-paper md:p-6" aria-label="Customer journey">
         <div class="grid grid-cols-2 gap-2 text-center font-mono text-[0.65rem] uppercase tracking-[0.12em] sm:grid-cols-4">
-          {['Users', 'Edge', 'Platform', 'Data + AI'].map((node, index) => (
+          {['Discover', 'Choose', 'Use', 'Improve'].map((node, index) => (
             <div class="flex items-center gap-2">
               <span class="flex-1 rounded-md border border-fu-paper/20 px-2 py-3 text-fu-paper/90">{node}</span>
               {index < 3 && <span class="hidden text-fu-mark sm:block" aria-hidden="true">→</span>}
             </div>
           ))}
         </div>
-        <p class="mt-5 border-t border-fu-paper/15 pt-4 text-center text-xs leading-relaxed text-fu-paper/65">Cloudflare · load balancing · Kubernetes · services · databases · secure AI workflows</p>
+        <p class="mt-5 border-t border-fu-paper/15 pt-4 text-center text-xs leading-relaxed text-fu-paper/65">A clear journey · helpful guidance · dependable follow-through · room to improve</p>
       </div>
     </div>
 

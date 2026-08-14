@@ -44,9 +44,6 @@
       "../assets/icons/icon.icns",
       "../assets/icons/icon.ico"
     ],
-    "externalBin": [
-      "binaries/pos-server"
-    ],
     "createUpdaterArtifacts": false,
     "macOS": {
       "minimumSystemVersion": "10.13"

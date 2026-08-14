@@ -79,9 +79,9 @@ pub fn refund_sale(db_path: &PathBuf, sale_id: i32) -> Result<Sale, String> {
             return Err(format!("sale {sale_id} is already refunded"));
         }
         "completed" => {}
-        status => {
+        other_status => {
             return Err(format!(
-                "sale {sale_id} cannot be refunded from status {status}"
+                "sale {sale_id} cannot be refunded from status {other_status}"
             ));
         }
     }

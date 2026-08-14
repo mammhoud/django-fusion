@@ -22,10 +22,6 @@
     "fs:allow-download-read-recursive",
     "fs:allow-download-write-recursive",
     "fs:allow-desktop-read-recursive",
-    "fs:allow-desktop-write-recursive",
-    "shell:allow-spawn",
- "shell:allow-kill",
- "shell:allow-stdin-write",
- "shell:allow-execute"
+    "fs:allow-desktop-write-recursive"
   ]
 }

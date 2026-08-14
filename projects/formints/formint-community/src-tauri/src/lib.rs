@@ -6,7 +6,6 @@ pub mod macros;
 use db::{get_db_path, run_migrations};
 use operations::*;
 use operations::delivery_zones;
-use operations::server::{start_server, stop_server, server_status};
 use tauri::{AppHandle, Emitter, Manager};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
@@ -438,11 +437,6 @@ fn get_user_count(app: AppHandle) -> Result<i64, String> {
 fn verify_user(app: AppHandle, email: String) -> Result<db::models::User, String> {
     let db_path = get_db_path(&app)?;
     auth::verify_user(&db_path, email)
-}
-
-#[tauri::command]
-fn start_support_server(app: AppHandle) -> Result<String, String> {
-    operations::server::start_server(app)
 }
 
 #[tauri::command]
@@ -1204,6 +1198,10 @@ fn load_window_state(app: &AppHandle) -> Result<bool, String> {
     }
 }
 
+// The runtime entry point is not needed by library tests. Keeping it out of
+// the test crate avoids forcing Tauri's bundle icon/resource validation into
+// Rust unit-test compilation.
+#[cfg(not(test))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Load environment variables
@@ -1213,7 +1211,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             let db_path = get_db_path(&app.handle())?;
             run_migrations(&db_path)?;
@@ -1221,14 +1218,6 @@ pub fn run() {
             // Ensure superuser exists from env vars (SUPERUSER_EMAIL + SUPERUSER_PASSWORD)
             if let Err(e) = auth::ensure_superuser_exists(&db_path) {
                 eprintln!("[setup] superuser ensure failed (non-fatal): {e}");
-            }
-
-            // Auto-start the Python/Sanic server
-            #[cfg(not(any(target_os = "android", target_os = "ios")))]
-            {
-                if let Err(e) = start_server(app.handle().clone()) {
-                    eprintln!("[setup] server start failed (non-fatal): {e}");
-                }
             }
 
             // ── System tray icon ──
@@ -1245,15 +1234,11 @@ pub fn run() {
                     .item(&quit_item)
                     .build()?;
 
-                let img_data = include_bytes!("../../assets/icons/icon.png");
-                let img = image::load_from_memory(img_data)
-                    .expect("Failed to decode tray icon PNG");
-                let rgba = img.to_rgba8();
-                let (w, h) = rgba.dimensions();
-                let icon = tauri::image::Image::new_owned(rgba.into_raw(), w, h);
-
+                // The standalone Community bundle carries ICO/ICNS assets, not
+                // a PNG tray image. Tauri uses the application icon for the
+                // window; leave the tray icon optional so Rust tests and
+                // headless builds do not depend on a missing generated PNG.
                 let tray = TrayIconBuilder::new()
-                    .icon(icon)
                     .tooltip("Formint")
                     .menu(&menu)
                     .on_menu_event(|app, event| {
@@ -1385,7 +1370,6 @@ pub fn run() {
             has_users,
             get_user_count,
             verify_user,
-            start_support_server,
             send_auth_confirmation_code,
             setup_account,
             login_user,
@@ -1477,10 +1461,6 @@ pub fn run() {
             add_delivery_zone,
             update_delivery_zone,
             soft_delete_delivery_zone,
-            // Server lifecycle
-            start_server,
-            stop_server,
-            server_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
