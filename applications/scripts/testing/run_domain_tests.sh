@@ -175,9 +175,9 @@ test_database_health() {
   fi
   log_success "PostgreSQL is responding"
 
-  # AppFlowy belongs to the Coder dev-workspace and is initialized from the
-  # shared PostgreSQL bootstrap. FileGator itself needs no database.
-  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "coder" "appflowy")
+  # AppFlowy belongs to the Coder workspace and is initialized from the
+  # shared PostgreSQL bootstrap.
+  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "coder" "affine")
   if [ "$CRM_DEPLOYED" = true ]; then
     databases=("${databases[@]}" "db_crm")
   fi

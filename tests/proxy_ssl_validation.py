@@ -204,12 +204,12 @@ class TestNginxMediaServer:
     """Validate nginx configuration for shared-media."""
 
     def test_nginx_config_exists(self) -> None:
-        conf = PROXY_DIR / "nginx" / "default.conf"
-        assert conf.exists(), "nginx/default.conf not found"
+        conf = PROXY_DIR / "nginx" / "default.conf.template"
+        assert conf.exists(), "nginx/default.conf.template not found"
 
     def test_nginx_config_syntax(self) -> None:
         """nginx -t must pass for the default.conf."""
-        conf = PROXY_DIR / "nginx" / "default.conf"
+        conf = PROXY_DIR / "nginx" / "default.conf.template"
         if not conf.exists():
             pytest.skip("nginx config not found")
 

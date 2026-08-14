@@ -1,43 +1,44 @@
 # =============================================================================
-# FileGator — per-workspace file manager (port 8080)
+# Workspace origin — space.structa.cloud (all workspace services, path-based)
 # =============================================================================
-# Routes filegator.localhost / filegator.structa.cloud to the shared-media
-# nginx, which proxies to the workspace container coder-dev-filegator:8080
-# (see applications/proxy/nginx/default.conf). AppFlowy and code-server are
-# authenticated Coder apps and have no public proxy route.
+# Routes space.localhost / space.structa.cloud to the shared-media nginx,
+# which serves AFFiNE at the root (see
+# applications/proxy/nginx/default.conf.template). The former
+# blinko.structa.cloud host 301-redirects here (same shared-media nginx). The
+# public affine.pro and filegator.structa.cloud hosts were removed entirely.
 #
 # Public host uses Let's Encrypt; the .localhost host stays on the mkcert
 # default cert. They are split because a single certResolver router bundling
-# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
+# a .localhost SAN fails ACME (\".localhost\" is not a public suffix), which
 # would block issuance for the public domain too.
 # =============================================================================
 http:
   routers:
-    filegator-http:
-      rule: 'Host(`filegator.localhost`) || Host(`filegator.structa.cloud`)'
+    space-http:
+      rule: 'Host(`space.localhost`) || Host(`space.structa.cloud`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
-      service: filegator-service
+      service: space-service
       priority: 150
 
-    filegator-https:
-      rule: 'Host(`filegator.structa.cloud`)'
+    space-https:
+      rule: 'Host(`space.structa.cloud`)'
       entryPoints: [web-secure]
       middlewares: [compress]
-      service: filegator-service
+      service: space-service
       tls:
         certResolver: letsencrypt-http
       priority: 150
 
-    filegator-localhost-https:
-      rule: 'Host(`filegator.localhost`)'
+    space-localhost-https:
+      rule: 'Host(`space.localhost`)'
       entryPoints: [web-secure]
       middlewares: [compress]
-      service: filegator-service
+      service: space-service
       priority: 150
 
   services:
-    filegator-service:
+    space-service:
       loadBalancer:
         servers:
           - url: 'http://shared-media:80'

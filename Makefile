@@ -270,7 +270,7 @@ help:
 	@echo "  make deploy-tasks      - Deploy shared-worker (Dramatiq) + shared-scheduler (APScheduler) (starts Redis/Postgres if needed)"
 	@echo "  make status-tasks      - Show status of shared-worker + shared-scheduler"
 	@echo "  make logs-tasks        - Tail logs from shared-worker + shared-scheduler"
-	@echo "  make probe-health      - Probe each site's health endpoint (docs, shared-media, filegator incl.) via 'common' network (handles asymmetric ports/expose)"
+	@echo "  make probe-health      - Probe each site's health endpoint (docs, shared-media incl.) via 'common' network (handles asymmetric ports/expose)"
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
@@ -545,12 +545,10 @@ logs-tasks:
 # `/health/` for services without a Django /health/ endpoint:
 #   - docus:3000:/docs/en/ — Docus English SSR route
 #   - shared-media:80:/health/ — nginx `/health/` returns 200
-#   - filegator:8080:/         — FileGator web UI login page (200;
-#     only verifies the web UI is up, not the repository mount)
 #   - loop-crm-backend:8074:/  — Loop-CRM Django render-first root
 #   - loop-crm-frontend:3000:/__health__ — Astro/Nginx frontend health
 # -----------------------------------------------------------------
-PROBE_HEALTH_SITES := ctc-research-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-media:80:/health/ filegator:8080:/
+PROBE_HEALTH_SITES := ctc-research-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-media:80:/health/
 
 probe-health:
 	@echo "📡 Probing each site's health endpoint from inside the 'common' network..."

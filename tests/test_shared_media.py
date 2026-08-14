@@ -78,35 +78,35 @@ class TestSharedMediaConfiguration:
 
     def test_nginx_config_has_ctc_bundle_location(self) -> None:
         """Nginx must have a location for CTC webpack bundles."""
-        conf = PROXY / "nginx" / "default.conf"
+        conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /static/bundles/ctc-research/ {" in text
         assert "alias /var/www/sites/ctc-research/static/bundles/ctc-research/;" in text
 
     def test_nginx_config_has_ctc_static_location(self) -> None:
         """Nginx must have a location for CTC site-specific static files."""
-        conf = PROXY / "nginx" / "default.conf"
+        conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /sites/ctc-research/static/ {" in text
         assert "alias /var/www/sites/ctc-research/static/;" in text
 
     def test_nginx_config_has_ctc_media_location(self) -> None:
         """Nginx must have a location for CTC site-specific media files."""
-        conf = PROXY / "nginx" / "default.conf"
+        conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /media/ctc-research/ {" in text
         assert "alias /var/www/media/ctc-research/;" in text
 
     def test_nginx_config_has_shared_static_fallback(self) -> None:
         """Nginx must have a fallback /static/ location."""
-        conf = PROXY / "nginx" / "default.conf"
+        conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /static/ {" in text
         assert "alias /var/www/static/;" in text
 
     def test_nginx_config_has_shared_media_fallback(self) -> None:
         """Nginx must have a fallback /media/ location."""
-        conf = PROXY / "nginx" / "default.conf"
+        conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /media/ {" in text
         assert "alias /var/www/media/;" in text

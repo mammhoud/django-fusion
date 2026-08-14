@@ -126,7 +126,7 @@ class FrontendBuildLayoutTests(SimpleTestCase):
 
     def test_media_compose_uses_one_shared_media_server(self):
         compose = (PROXY_ROOT / "docker-compose.nginx.yml").read_text()
-        nginx_conf = (PROXY_ROOT / "nginx" / "default.conf").read_text()
+        nginx_conf = (PROXY_ROOT / "nginx" / "default.conf.template").read_text()
         assert "container_name: shared-media" in compose
         assert "container_name: ctc-media" not in compose
         assert "container_name: lms-media" not in compose

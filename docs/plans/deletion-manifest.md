@@ -33,9 +33,14 @@ Every deletion must have a recorded replacement, archive, evidence scan, hold de
 | DOC-0009 | `docs/Anytype/plans/market-research.md` | update | Broad Structa Cloud research; not POS-specific | `docs/Anytype/plans/pos-market-research.md` | pending | pending | evidence hold | pending | — | Product |
 | DOC-0010 | `docs/Anytype/objects/_status.md` | update | Stale tracker with nonexistent names | This lifecycle plan | — | pending | none | n/a | — | Docs |
 | DOC-0011 | `docs/plans/repository/worker-consolidation.md` | archive | Celery/LMS-inclusive worker design is superseded | `docs/plans/repository/active-monorepo-consolidation-2026-08-14.md` | `docs/plans/repository/worker-consolidation.md` | pending | migration hold | pending | 2026-08-14 | Infrastructure |
-| DOC-0012 | `applications/templates/dev-stack/` | delete | Renamed to the canonical Coder template path | `applications/templates/dev-workspace/` | Git history | pending | deployment hold | pending | 2026-08-14 | Infrastructure |
-| DOC-0013 | `applications/proxy/traefik/dynamic/blinko.yml` | delete | Blinko was replaced by the internal AppFlowy workspace stack; no public Blinko host remains | `applications/templates/dev-workspace/main.tf` AppFlowy resources | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
-| DOC-0014 | `applications/proxy/traefik/dynamic/code-server.yml` | delete | code-server is now an authenticated Coder app without a public subdomain | Coder app in `applications/templates/dev-workspace/main.tf` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0012 | `applications/templates/dev-stack/` | delete | Renamed to the canonical Coder template path | `applications/templates/workspace/` | Git history | pending | deployment hold | pending | 2026-08-14 | Infrastructure |
+| DOC-0016 | `applications/templates/dev-workspace/` | update | Template renamed to `workspace` (containers no longer depend on the Coder workspace name) | `applications/templates/workspace/` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0013 | `applications/proxy/traefik/dynamic/blinko.yml` | keep as redirect | Blinko was replaced by AFFiNE (affine.pro); the router now serves a 301 redirect for legacy bookmarks | `applications/templates/workspace/main.tf` AFFiNE resources | same path (redirect router) | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0014 | `applications/proxy/traefik/dynamic/code-server.yml` | delete | code-server is now an authenticated Coder app without a public subdomain | Coder app in `applications/templates/workspace/main.tf` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0015 | AppFlowy workspace stack (`appflowy-*` containers, `space.structa.cloud` full-stack routes) | replace | AppFlowy Cloud was replaced by AFFiNE (single origin, affine.pro); the space host is now a redirect | `applications/templates/workspace/main.tf` AFFiNE resources | `applications/proxy/traefik/dynamic/affine.yml` + `space.yml` redirect | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0017 | Service containers in `applications/templates/workspace/main.tf` (code-server/filegator/affine images + containers) | replace | All workspace services moved into the repo's compose devcontainer (`.devcontainer/docker-compose.yml`); the template now only provisions an agent-host container that runs the devcontainer | `.devcontainer/docker-compose.yml` + `coder_devcontainer` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0018 | Public `affine.pro` host (Traefik router + cert + nginx server_name) | delete | All workspace services consolidated under `space.structa.cloud` (root = AFFiNE); affine.pro removed entirely | `applications/proxy/traefik/dynamic/space.yml` + nginx template | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0019 | Workspace code-server + FileGator services (containers, Coder apps, `filegator.structa.cloud` route, `applications/proxy/filegator/`) | delete | Bundled services removed from the devcontainer; the IDE runs inside the devcontainer and no file manager is shipped | `.devcontainer/docker-compose.yml` (AFFiNE only) + nginx `space.structa.cloud` root | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
 
 ## Deletion gate
 
@@ -67,9 +72,11 @@ For Git-backed recovery, record the deletion change ID and restore the specific 
 
 The 2026-08-14 monorepo consolidation records completed, deprecated, and
 renamed items in the active repository plan. The `dev-stack` directory is
-replaced by `dev-workspace`; the old path is not a second source tree. The
-historical worker plan remains archived evidence, and the former Blinko and
-code-server public routes are replaced by internal Coder apps. No production
-database, Docker volume, or unrelated product source is deleted by this pass.
+replaced by `workspace` (via the intermediate `dev-workspace` path, DOC-0012 /
+DOC-0016); the old paths are not second source trees. The historical worker
+plan remains archived evidence, and the former Blinko, AppFlowy (space) and
+code-server public routes are replaced by AFFiNE (affine.pro) and internal
+Coder apps. No production database, Docker volume, or unrelated product
+source is deleted by this pass.
 
 No POS or Anytype document is approved for permanent deletion in this pass. The safe action is to update indexes, label historical sources, create verified archives, and delete only after the manifest rows are completed.

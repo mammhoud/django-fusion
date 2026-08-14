@@ -181,7 +181,7 @@ def check_webpack_config(site: str) -> CheckResult:
 def check_nginx_config(site: str) -> CheckResult:
     """Verify Nginx locations and volume mounts for the site."""
     result = CheckResult()
-    nginx_conf = PROXY / "nginx" / "default.conf"
+    nginx_conf = PROXY / "nginx" / "default.conf.template"
     text = read_text(nginx_conf)
 
     required_locations = [

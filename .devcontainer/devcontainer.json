@@ -1,0 +1,33 @@
+{
+  "name": "Structa Cloud — Full Monorepo",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/structa.cloud",
+  "remoteUser": "node",
+  "containerUser": "node",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    }
+  },
+  "postCreateCommand": "npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && pnpm -v && nx --version && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "rust-lang.rust-analyzer",
+        "nrwl.angular-console"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "eslint.workingDirectories": [{ "mode": "auto" }]
+      }
+    }
+  },
+  "forwardPorts": [3000, 3010, 4321, 5173],
+  "postAttachCommand": "npx nx graph"
+}

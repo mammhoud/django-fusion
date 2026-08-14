@@ -304,7 +304,11 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   │   ├── commands/                      #     Agent commands
 │   │   └── skills/                        #     Operational skills
 │   ├── templates/                         #   Coder/Terraform templates
-│   │   ├── dev-workspace/main.tf              #     Coder + FileGator + internal AppFlowy workspace
+│   │   ├── workspace/                     #     Coder template: agent host + AFFiNE devcontainer
+│   │   │   ├── main.tf                    #       single agent-host container + devcontainer wiring
+│   │   │   ├── Dockerfile                 #       code-server image (full toolchain)
+│   │   │   ├── README.md                  #       usage + variable reference
+│   │   │   └── ARCHITECTURE.md            #       topology, routing, persistence
 │   │   └── website/main.tf                #     Website workspace
 │   └── scripts/                           #   Automation scripts
 │

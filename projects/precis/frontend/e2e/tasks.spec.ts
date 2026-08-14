@@ -6,7 +6,7 @@ import { BACKEND_URL } from '../playwright.config';
  * Django backend road. Mirrors the auth-gate contract used elsewhere: anonymous
  * traffic must be bounced to allauth login with a `next` target, never render
  * the audit table. (Authenticated rendering is covered by the backend suite;
- * this keeps the browser contract robust against dev-workspace credential drift.)
+ * this keeps the browser contract robust against workspace credential drift.)
  */
 
 test('task center is auth-gated on the backend', async ({ request }) => {

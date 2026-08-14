@@ -97,28 +97,25 @@ The compatibility commands `make up-coder`, `make logs-coder`, and
 `make down-coder` delegate to `applications/docker-compose.yml`. Existing
 `coder_data` volumes are unchanged.
 
-### AppFlowy dev-workspace database
+### AFFiNE workspace database
 
-The Coder `dev-workspace` template provisions AppFlowy Cloud internally and
-connects it to this PostgreSQL service through the external `common` and
-`warehouse-net` networks:
+The Coder `workspace` template provisions AFFiNE (self-hosted workspace, web +
+API + WebSocket on one origin) and connects it to this PostgreSQL service
+through the external `common` and `warehouse-net` networks:
 
 | Setting | Default | Override |
 |---|---|---|
-| Database | `appflowy` | `POSTGRES_DATABASES` |
-| Role | `appflowy` | `POSTGRES_DATABASES` |
-| Password | development-only `appflowy` | `APPFLOWY_DB_PASSWORD` / `POSTGRES_DATABASES` |
+| Database | `affine` | `POSTGRES_DATABASES` |
+| Role | `affine` | `POSTGRES_DATABASES` |
+| Password | development-only `affine` | `AFFINE_DB_PASSWORD` / `POSTGRES_DATABASES` |
 | Host | `postgres` | keep the shared service name |
 
-Set `APPFLOWY_DB_PASSWORD` before initializing a new PostgreSQL volume, then
-set the matching AppFlowy database credentials in
-`appflowy_database_url` and
-`appflowy_gotrue_database_url` Coder variables. Existing volumes require an
+Set `AFFINE_DB_PASSWORD` before initializing a new PostgreSQL volume, then set
+the matching AFFiNE credentials in the `affine_database_url` Coder variable.
+AFFiNE also needs the shared `default-redis` service on `common` (its
+`REDIS_SERVER_*` variables default to it). Existing volumes require an
 explicit operator-managed database/user creation or a controlled init rerun;
 this documentation does not run migrations or modify data automatically.
-
-The former Blinko database entry is deprecated and is not created by the
-current bootstrap. No Blinko service or public Blinko subdomain remains.
 
 ### Adminer
 
