@@ -152,7 +152,7 @@ class BranchReportViewSet(ModelViewset):
 
 
 # ══════════════════════════════════════════════════════════════════════
-# Cloud registry viewsets — formerly served by the Robyn sidecar
+# Cloud registry viewsets — formerly served by the Robyn server
 # (device-tokens / conflicts / queue) now exposed directly by Django.
 # ══════════════════════════════════════════════════════════════════════
 

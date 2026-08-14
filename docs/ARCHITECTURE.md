@@ -288,6 +288,9 @@ FUSION_TASKS = {
 |:-------|:------|
 | `from celery import shared_task` | `from django_fusion.tasks import task` |
 | `@shared_task` | `@task(queue="default")` |
+
+Celery is retired from the active runtime. Product workers use Dramatiq actors
+under `backend/plugins/workers/`; the table above is a migration mapping only.
 | `my_task.delay()` | `my_task.send()` or `.delay()` (compat alias) |
 | `from sentry_sdk.integrations.celery import CeleryIntegration` | `try/except ImportError` — safe fallback |
 | `dispatch_job(func)` | `@task` decorator + `.send()` |
@@ -606,7 +609,7 @@ projects/<project>/backend/db.sqlite3    # Per-project SQLite
 
 ```
 structa.cloud/
-├── docs/                     # Documentation (docsify)
+├── docs/                     # Documentation (Docus + Nuxt Content)
 │   └── plans/                # Plan registry (editions, pos, django-fusion, ...)
 ├── projects/                 # All product code
 │   ├── precis/               # LMS — courses, enrollment, progress

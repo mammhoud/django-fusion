@@ -5,6 +5,8 @@ import Stats from '@/components/blocks/Stats.astro';
 import OutcomeFramework from '@/components/blocks/OutcomeFramework.astro';
 import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import RenderModeSwitch from '@/components/ui/RenderModeSwitch.astro';
+import ContentError from '@/components/ui/ContentError.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, CONTENT_LANGUAGE } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 import { teaserCopy } from '@/lib/teaser-translations';
@@ -277,6 +279,9 @@ const productCards = (pageData?.products || []).map((product: any) => ({
       </a>
     </div>
   </section>
+
+  <!-- HTMX → backend: server-rendered fragment replaces this region -->
+  {pageData ? <RenderModeSwitch route='home' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
 
   <CTA
     heading={pageCta?.title || 'Built open-source, shipped as HTML'}

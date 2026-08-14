@@ -44,10 +44,11 @@ default:
       csrf_trusted_origins: [http://localhost, http://127.0.0.1]
       cors_allowed_origins: [http://localhost, http://127.0.0.1]
     crm:
-      path: crm
-      aliases: [crm, sales, inventory, crm.structa.cloud]
+      # Canonical CRM runtime after the Twenty/Postiz merge.
+      path: loop-crm
+      aliases: [crm, sales, inventory, loop-crm, crm.structa.cloud]
       domain: crm.structa.cloud
-      port: 5074
+      port: 8074
       module: CMS
       ssl_enabled: false
       allowed_hosts: [crm.structa.cloud, www.crm.structa.cloud, localhost, 127.0.0.1]
@@ -61,7 +62,7 @@ default:
     # as the only registered site that would survive the runtime site-tracker
     # check in `projects/configs/site.py:active_website_name()`. With this entry,
     # the tasks stack can declare `WEBSITE=www` (or via alias `WEBSITE=shared`)
-    # and the celery/dramatiq autodiscover picks up www.worker task modules
+    # and django-fusion discovers the configured plugins.workers modules
     # without impersonating any specific tenant. The app uses CMS module so it
     # passes the Pydantic validator; the actual settings live at
     # `projects/www/settings.py`.

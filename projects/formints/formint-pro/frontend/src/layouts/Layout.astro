@@ -206,7 +206,7 @@ const { title = 'Formint POS Professional' } = Astro.props;
         <span class="htmx-indicator__spinner" aria-hidden="true"></span>
         <div class="htmx-indicator__text">
           <strong id="htmx-indicator-target">Loading data…</strong>
-          <span id="htmx-indicator-hint">Fetching from the sidecar…</span>
+          <span id="htmx-indicator-hint">Fetching from the server…</span>
         </div>
       </div>
     </div>
@@ -241,7 +241,7 @@ const { title = 'Formint POS Professional' } = Astro.props;
               if (stored === 'true') this.sidebarCollapsed = true;
             } catch {}
 
-            // Fetch navigation from sidecar (API → invoke → snapshot transport)
+            // Fetch navigation from server (API → invoke → snapshot transport)
             await this.fetchNav();
           },
 
@@ -329,7 +329,7 @@ const { title = 'Formint POS Professional' } = Astro.props;
           },
 
           moduleIcon(icon: string) {
-            // Material icon names from the sidecar → sprite ids (see scripts/gen-tabler-sprite.mjs)
+            // Material icon names from the server → sprite ids (see scripts/gen-tabler-sprite.mjs)
             const map: Record<string, string> = {
               shopping_cart: 'cart', restaurant: 'chef-hat', people: 'users',
               contact_page: 'id-badge', analytics: 'chart-line',

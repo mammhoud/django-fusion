@@ -35,8 +35,8 @@ frontend/
 ## Backend contract
 
 The frontend talks to the Django cloud master in `../backend/`. Formint Cloud
-serves the former sidecar-compatible API directly from Django; the
-`SIDECAR_BASE`/`VITE_SIDECAR_URL` naming is compatibility vocabulary, not proof
+serves the former server-compatible API directly from Django; the
+`SERVER_BASE`/`VITE_SERVER_URL` naming is compatibility vocabulary, not proof
 that a Robyn process exists.
 
 Keep these contracts synchronized with backend tests and README documentation:

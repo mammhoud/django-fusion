@@ -41,21 +41,21 @@ make dev
 ```bash
 cd projects/pos/pos-solo
 
-# Start frontend + sidecar
+# Start frontend + server
 make dev
 
-# Just the sidecar API server
-make sidecar
+# Just the server API server
+make server
 
-# Run sidecar tests
-cd sidecar && uv run pytest
+# Run server tests
+cd server && uv run pytest
 ```
 
 **Key commands:**
-- `make dev` — Frontend + sidecar (http://localhost:1420, API :8766)
-- `make sidecar` — Sidecar only (http://localhost:8766)
+- `make dev` — Frontend + server (http://localhost:1420, API :8766)
+- `make server` — Server only (http://localhost:8766)
 - `make seed` — Seed the database
-- `cd sidecar && uv run pytest -v` — Run all tests
+- `cd server && uv run pytest -v` — Run all tests
 
 ---
 
@@ -64,20 +64,20 @@ cd sidecar && uv run pytest
 ```bash
 cd projects/pos/pos-full
 
-# Start frontend + sidecar
+# Start frontend + server
 make dev
 
 # Admin dashboard (Django Unfold)
 make admin-bootstrap
 
 # Run tests
-cd sidecar && uv run pytest
+cd server && uv run pytest
 ```
 
 **Key commands:**
-- `make dev` — Frontend + sidecar (http://localhost:1420, API :8767)
+- `make dev` — Frontend + server (http://localhost:1420, API :8767)
 - `make admin-bootstrap` — Bootstrap admin + dashboard
-- `cd sidecar && uv run pytest -v` — Run tests
+- `cd server && uv run pytest -v` — Run tests
 
 ---
 
@@ -90,10 +90,10 @@ projects/pos/
 │   └── src-tauri/     # Rust backend (Diesel ORM)
 ├── pos-solo/          # Branch POS (Python + React + Tauri)
 │   ├── src/           # React frontend
-│   └── sidecar/       # Python API server (Robyn + Django ORM)
+│   └── server/       # Python API server (Robyn + Django ORM)
 ├── pos-full/          # Enterprise POS (Python + React + Tauri)
 │   ├── src/           # React frontend
-│   └── sidecar/       # Python API server + Django admin
+│   └── server/       # Python API server + Django admin
 ├── pos-cloud/         # SaaS cloud server (Django)
 ├── pos-client/        # Vue.js thin client
 ├── shared/            # Shared Python modules
@@ -144,7 +144,7 @@ function MyComponent() {
 1. Create the page component in `src/pages/`
 2. Add route to `App.tsx`
 3. Add navigation entry to `SideNav.tsx`
-4. Add API endpoint to `sidecar/routes/` (if backend needed)
+4. Add API endpoint to `server/routes/` (if backend needed)
 5. Register CRUD in `server.py` (if needed)
 
 ---
@@ -156,12 +156,12 @@ function MyComponent() {
 cd projects/pos/pos-mini
 cargo test
 
-# pos-solo: Sidecar Python tests
-cd projects/pos/pos-solo/sidecar
+# pos-solo: Server Python tests
+cd projects/pos/pos-solo/server
 uv run pytest -v
 
-# pos-full: Sidecar Python tests
-cd projects/pos/pos-full/sidecar
+# pos-full: Server Python tests
+cd projects/pos/pos-full/server
 uv run pytest -v
 ```
 
@@ -170,14 +170,14 @@ uv run pytest -v
 ## Common Tasks
 
 ### Add a new model field
-1. Update the Django model in `sidecar/models/`
+1. Update the Django model in `server/models/`
 2. Run `python3 manage.py makemigrations` (or use `--migrate` flag)
 3. Update serialization in `handlers.py` `_ser_*()` function
 4. Update TypeScript types in `src/types.ts`
 
 ### Add a new API endpoint
-1. Add handler in `sidecar/routes/` (or use `_register_crud()` for standard CRUD)
-2. Register route in `sidecar/routes/__init__.py` `register_all()`
+1. Add handler in `server/routes/` (or use `_register_crud()` for standard CRUD)
+2. Register route in `server/routes/__init__.py` `register_all()`
 3. Add RTK Query endpoint in `src/store/api/endpoints/`
 4. Use hook in React component
 

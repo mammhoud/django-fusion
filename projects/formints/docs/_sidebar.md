@@ -14,7 +14,7 @@
 - [Commands Reference](COMMANDS.md)
 - [Bolt Integration](BOLT_INTEGRATION.md)
 - [Rust Integration](RUST_INTEGRATION.md)
-- [Sidecar v2](SIDECAR_V2.md)
+- [Server v2](SERVER_V2.md)
 - [Pinia Integration](PINIA_INTEGRATION.md)
 - [Cloud Plan](CLOUD_PLAN.md)
 

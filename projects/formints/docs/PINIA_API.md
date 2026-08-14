@@ -1,6 +1,6 @@
 # Pinia / Frontend API Integration
 
-> **Purpose:** Document how to connect Vue.js (Pinia) or React frontend to the Robyn sidecar API  
+> **Purpose:** Document how to connect Vue.js (Pinia) or React frontend to the Robyn server API  
 > **Last Updated:** 20 July 2026
 
 ---
@@ -28,7 +28,7 @@ src/stores/
 
 ```typescript
 // src/stores/client.ts
-// Full-featured HTTP + WebSocket client for POS sidecar
+// Full-featured HTTP + WebSocket client for POS server
 
 type WsHandler = (data: any) => void;
 
@@ -51,7 +51,7 @@ class PosClient {
   private wsManager = new WsManager();
 
   constructor(baseUrl?: string) {
-    this.baseUrl = baseUrl || localStorage.getItem('pos_sidecar_url')
+    this.baseUrl = baseUrl || localStorage.getItem('pos_server_url')
       || 'http://127.0.0.1:8766';
   }
 
@@ -598,7 +598,7 @@ export default {
     // 1. Check health / auto-login
     const healthy = await posClient.healthCheck();
     if (!healthy) {
-      console.warn('Sidecar not running - some features unavailable');
+      console.warn('Server not running - some features unavailable');
       return;
     }
 

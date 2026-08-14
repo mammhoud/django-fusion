@@ -151,7 +151,7 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
         help_text="Default meta description for pages without one")
     meta_keywords = models.CharField(max_length=300, blank=True, default="",
         help_text="Comma-separated keywords")
-    meta_author = models.CharField(max_length=200, blank=True, default="Mahmoud Ezzat Moustafa",
+    meta_author = models.CharField(max_length=200, blank=True, default="Mahmoud Ezzat",
         help_text="Default meta author")
     og_image = models.ForeignKey(
         "wagtailimages.Image", on_delete=models.SET_NULL, null=True, blank=True,

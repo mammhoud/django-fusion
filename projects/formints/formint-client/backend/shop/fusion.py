@@ -1,7 +1,7 @@
 """
 FormintC — Fusion render-mode contract (mirrors formint/fusion.py + landing-fusion).
 
-Dual-mode content delivery, identical to ``projects/formints/formint/sidecar/formint/fusion.py``:
+Dual-mode content delivery, identical to ``projects/formints/formint/server/formint/fusion.py``:
 
 * ``fusion_render_first=True``  → "fusion render first" — Django serves finished
   server-rendered HTML / fusion-encoded JSON as the source of truth.
@@ -28,6 +28,7 @@ from django.conf import settings as django_settings
 from django.http import HttpRequest, JsonResponse
 
 from django_fusion.plugins.htmx import is_htmx_request
+from django_fusion.routes.rendering.render_mode import resolve_render_first
 from django_fusion.routes.rendering.session import FusionCodec, session_checker
 
 __all__ = [
@@ -53,19 +54,11 @@ __all__ = [
 def get_effective_render_first(request: HttpRequest | None = None) -> bool:
     """Return the effective ``fusion_render_first`` preference.
 
-    Priority:
-    1. ``X-Fusion-Render-First`` header — per-request override.
-    2. Session preference — ``fusion_render_first`` key set via
-       ``FusionSessionChecker`` (per-session render-mode toggle).
-    3. ``FUSION_RENDER_FIRST_DEFAULT`` setting (env ``FUSION_RENDER_FIRST``).
+    Thin wrapper over django-fusion's canonical ``resolve_render_first``
+    chain: ``X-Fusion-Render-First`` header → explicit session preference →
+    the ``FUSION_RENDER_FIRST`` setting.
     """
-    if request is not None:
-        header = request.headers.get("X-Fusion-Render-First")
-        if header in ("true", "false"):
-            return header == "true"
-        if "fusion_render_first" in request.session:
-            return bool(request.session["fusion_render_first"])
-    return bool(getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", False))
+    return resolve_render_first(request)
 
 
 def render_mode_payload(request: HttpRequest | None = None) -> dict[str, Any]:

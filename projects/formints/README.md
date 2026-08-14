@@ -24,7 +24,7 @@ Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 | Edition | Contents | Target |
 |---------|----------|--------|
 | **Mini** (`forge-pos/`) | Core POS (Tauri + Rust + SQLite) | Offline-only deployments |
-| **Formint** (`formint-pos/`) | **Merged package** — Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin (consolidates the former Full + Solo editions) | Enterprise multi-device |
+| **Formint** (`formint-pos/`) | **Merged package** — Astro frontend + Django Ninja backend + Robyn server + Unfold admin (consolidates the former Full + Solo editions) | Enterprise multi-device |
 | **Client** (`pos-client/`) | Vue 3 + Tauri desktop | Separate client app |
 | **Cloud** (`formint-cloud/`) | Django ASGI + Unfold + Bolt dashboard | Cloud CRM master |
 
@@ -35,7 +35,7 @@ Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 
 ## 🚀 Quick Start
 
-### Mini Edition (no sidecar)
+### Mini Edition (no server)
 ```bash
 cd forge-pos
 pnpm install
@@ -57,7 +57,7 @@ make check        # django check + astro check
 ```bash
 make formint-install   # Install merged package
 make formint-env       # Run full env (backend + frontend)
-make server-test       # Run merged sidecar test suite
+make server-test       # Run merged server test suite
 make screenshots       # Capture marketplace screenshots
 make clean             # Delete build artifacts
 ```
@@ -108,7 +108,7 @@ formint-pos/                 # Merged package (formerly pos-full + pos-solo)
 │   ├── formint/             # Models (45), views, api, fusion, handlers
 │   ├── configs/             # Settings + URL routing
 │   └── Makefile             # dev/check/migrate/test/seed targets
-├── sidecar/                 # Merged Robyn sidecar (streams, ws_client, sync)
+├── server/                 # Merged Robyn server (streams, ws_client, sync)
 │   ├── server.py            # Robyn REST + WebSocket (60-70+ endpoints)
 │   ├── routes/              # CRUD + state + webhooks + reports
 │   ├── services/            # sync, scheduler, webhook services
@@ -132,10 +132,10 @@ formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 |-------|-----------|
 | Frontend | Astro, Alpine.js, HTMX (merged) · React 19 (archived legacy) |
 | Backend | Django 5 + Ninja + django-fusion + django-tables2 |
-| Sidecar | Python 3, Robyn, Django ORM (mirror), WebSocket streams |
+| Server | Python 3, Robyn, Django ORM (mirror), WebSocket streams |
 | Admin | django-unfold (dashboard, KPI cards, charts) |
 | Desktop | Rust (Tauri 2) |
-| Testing | pytest (sidecar + backend), Vitest (frontend contract) |
+| Testing | pytest (server + backend), Vitest (frontend contract) |
 | Build | make, pnpm/npm, pip/.venv |
 
 ---
@@ -143,10 +143,10 @@ formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 ## ✨ Key Features
 
 - **Cross-platform desktop POS** — Windows, macOS, Linux, Android, iOS
-- **Merged Formint package** — one boundary for frontend + backend + sidecar
+- **Merged Formint package** — one boundary for frontend + backend + server
 - **Django Ninja REST API** — 45 paginated resources with django-fusion encoder/decoder
 - **Unfold admin panel** — KPI dashboard, charts, loyalty & settings management
-- **Robyn sidecar** — WebSocket streams, data sync, webhooks, scheduler
+- **Robyn server** — WebSocket streams, data sync, webhooks, scheduler
 - **Role-based auth** — Superuser with 2FA support
 - **Inventory tracking** — Low-stock alerts, purchase orders, supplier management
 - **Kitchen display system** — Ticket flow: pending → preparing → ready → delivered
@@ -163,7 +163,7 @@ formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 
 | Document | Description |
 |----------|-------------|
-| [`SIDECAR_V2.md`](docs/SIDECAR_V2.md) | **Sidecar v2 reference** — Robyn + Django ORM, 70+ APIs, WS streams, signals, approval, sync, cloud plan |
+| [`SERVER_V2.md`](docs/SERVER_V2.md) | **Server v2 reference** — Robyn + Django ORM, 70+ APIs, WS streams, signals, approval, sync, cloud plan |
 | [`CHANGELOG.md`](CHANGELOG.md) | Full version history |
 | [`PUBLISH.md`](PUBLISH.md) | Marketplace publish kit (ThemeForest, CodeCanyon, Gumroad) |
 | [`docs/README.md`](docs/README.md) | Editions overview & architecture |
@@ -174,7 +174,7 @@ formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 | [`docs/customization-react.md`](docs/customization-react.md) | React customization guide |
 | [`docs/customization-tauri.md`](docs/customization-tauri.md) | Tauri customization guide |
 | [`docs/i18n-conventions.md`](docs/i18n-conventions.md) | Translation conventions |
-| [`docs/server/README.md`](docs/server/README.md) | Sidecar API reference [Solo/Full] |
+| [`docs/server/README.md`](docs/server/README.md) | Server API reference [Solo/Full] |
 | [`docs/back-env/README.md`](docs/back-env/README.md) | Backend environment setup [Full] |
 
 ---
@@ -188,8 +188,8 @@ SUPERUSER_EMAIL=admin@pos.local
 SUPERUSER_PASSWORD=changeme
 SUPERUSER_NAME=Admin
 DATABASE_URL=restaurant.db
-SIDECAR_HOST=127.0.0.1
-SIDECAR_PORT=8765
+SERVER_HOST=127.0.0.1
+SERVER_PORT=8765
 ```
 
 ---

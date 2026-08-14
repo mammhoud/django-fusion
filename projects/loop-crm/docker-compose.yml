@@ -1,0 +1,182 @@
+# Loop-CRM — Django render-first backend + Astro frontend + Postgres + Redis.
+# The backend owns CRM/marketing/finance/account routes; the frontend serves
+# the Astro overview shell. Traefik routes crm.structa.cloud to both services.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: loop-crm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: loop_crm
+      POSTGRES_USER: loop_crm
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+    volumes:
+      - loop-crm-postgres:/var/lib/postgresql/data
+    networks:
+      - common
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loop_crm -d loop_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    container_name: loop-crm-redis
+    restart: unless-stopped
+    networks:
+      - common
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: projects/loop-crm/Dockerfile
+    image: loop-crm-backend:latest
+    container_name: loop-crm-backend
+    restart: unless-stopped
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
+      DJANGO_ALLOWED_HOSTS: crm.structa.cloud,www.crm.structa.cloud,loop-crm-backend,localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://crm.structa.cloud,https://www.crm.structa.cloud
+      USE_POSTGRES: "1"
+      POSTGRES_DB: loop_crm
+      POSTGRES_USER: loop_crm
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      REDIS_URL: redis://redis:6379/0
+      FUSION_BOLT_ENABLED: "1"
+      FUSION_BOLT_JWT_SECRET: "${FUSION_BOLT_JWT_SECRET:?Set FUSION_BOLT_JWT_SECRET in projects/loop-crm/.env}"
+      FUSION_BOLT_JWT_ISSUER: loop-crm
+      SECURE_SSL_REDIRECT: "0"
+      DEFAULT_FROM_EMAIL: Loop CRM <noreply@structa.cloud>
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - common
+      - traefik-net
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && python manage.py collectstatic --noinput
+      && exec gunicorn wsgi:application --bind 0.0.0.0:8074 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8074/\", timeout=5)'" ]
+      interval: 15s
+      timeout: 8s
+      retries: 12
+      start_period: 45s
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: projects/loop-crm/Dockerfile
+    image: loop-crm-backend:latest
+    container_name: loop-crm-worker
+    restart: unless-stopped
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
+      USE_POSTGRES: "1"
+      POSTGRES_DB: loop_crm
+      POSTGRES_USER: loop_crm
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      REDIS_URL: redis://redis:6379/0
+      FUSION_BOLT_ENABLED: "1"
+      FUSION_BOLT_JWT_SECRET: "${FUSION_BOLT_JWT_SECRET:?Set FUSION_BOLT_JWT_SECRET in projects/loop-crm/.env}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - common
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && exec python manage.py rundramatiq --processes 2 --threads 4"
+
+  # APScheduler cron runner for django-fusion @task(schedule=...) jobs
+  # (e.g. sync_task_history, which keeps the website TaskExecution record
+  # fresh without a Task Center page view).
+  scheduler:
+    build:
+      context: ../..
+      dockerfile: projects/loop-crm/Dockerfile
+    image: loop-crm-backend:latest
+    container_name: loop-crm-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
+      USE_POSTGRES: "1"
+      POSTGRES_DB: loop_crm
+      POSTGRES_USER: loop_crm
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      REDIS_URL: redis://redis:6379/0
+      FUSION_BOLT_ENABLED: "1"
+      FUSION_BOLT_JWT_SECRET: "${FUSION_BOLT_JWT_SECRET:?Set FUSION_BOLT_JWT_SECRET in projects/loop-crm/.env}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - common
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && exec python -m django_fusion.tasks.scheduler"
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: projects/loop-crm/frontend/Dockerfile
+      args:
+        PUBLIC_SITE_URL: https://crm.structa.cloud
+    image: loop-crm-frontend:latest
+    container_name: loop-crm-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - traefik-net
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/__health__"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  loop-crm-postgres:
+    name: loop-crm-postgres

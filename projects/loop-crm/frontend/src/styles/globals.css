@@ -1,0 +1,46 @@
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+
+:root {
+  --loop-bg: #0b1114;
+  --loop-bg-deep: #081013;
+  --loop-panel: #111b1e;
+  --loop-panel-raised: #162326;
+  --loop-line: #2a3b3d;
+  --loop-line-soft: #203033;
+  --loop-ink: #edf4f0;
+  --loop-muted: #9aadaa;
+  --loop-dim: #708381;
+  --loop-accent: #8bcbb5;
+  --loop-accent-bright: #b6e3d1;
+  --loop-shadow: rgba(3, 17, 19, .42);
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  color: var(--loop-ink);
+  background: var(--loop-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--loop-bg); }
+body { min-width: 320px; margin: 0; background: var(--loop-bg); color: var(--loop-ink); }
+a { color: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--loop-accent-bright); outline-offset: 3px; }
+
+.loop-app-shell::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: .24;
+  background-image: linear-gradient(rgba(139, 203, 181, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 203, 181, .035) 1px, transparent 1px);
+  background-size: 5rem 5rem;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

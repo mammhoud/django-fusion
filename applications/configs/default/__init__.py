@@ -60,7 +60,7 @@ LOCAL_APPS = [
     "apps.pages.branding.apps.BrandingConfig",
 ]
 INSTALLED_APPS += LOCAL_APPS
-INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
+# Worker implementations live in the product's plugins/workers package.
 
 
 # ═══════════════════════════════════════════════════════════════════

@@ -13,7 +13,7 @@ Add a Playwright E2E test using the bolt pattern (API-only, no browser):
 - File: tests/api/[feature].spec.ts
 - Use Playwright's request fixture: test('...', async ({ request }) => { ... })
 - Target: http://localhost:8765 (pos-full) or http://localhost:8766 (pos-solo)
-- Graceful skip with test.skip() if sidecar not running
+- Graceful skip with test.skip() if server not running
 - Verify status codes, response shapes, and data integrity
 ```
 
@@ -47,13 +47,13 @@ Add a new Page Object Model for [page]:
 
 ### Run tests for a specific edition
 ```bash
-# POS Full (sidecar on 8765)
+# POS Full (server on 8765)
 npx playwright test --project=pos-full
 
-# POS Solo (sidecar on 8766)
+# POS Solo (server on 8766)
 npx playwright test --project=pos-solo
 
-# POS Mini (no sidecar)
+# POS Mini (no server)
 npx playwright test --project=pos-mini
 
 # API-only tests (no browser)

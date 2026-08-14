@@ -35,7 +35,7 @@ onMounted(async () => {
 
     <div v-if="!loading && items.length === 0" class="text-center py-12">
       <p class="text-lg opacity-60">No menu items available</p>
-      <p class="text-sm opacity-40 mt-2">Connect to the POS sidecar to see items</p>
+      <p class="text-sm opacity-40 mt-2">Connect to the POS server to see items</p>
     </div>
   </div>
 </template>

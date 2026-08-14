@@ -53,24 +53,12 @@ if settings.get("SENTRY.ENABLED", False) and sentry_dsn and str(sentry_dsn).stri
     )
 
 # -------------------------------------------------------------------
-# 🥬 USE CASE: Background Tasks (Celery + Redis)
+# ⚙️ USE CASE: Background Tasks (Dramatiq + APScheduler)
 # -------------------------------------------------------------------
-# Check if Celery is configured via its broker URL
-if settings.get("CELERY.BROKER_URL"):
-    CELERY_BROKER_URL = settings.get("CELERY.BROKER_URL")
-    CELERY_RESULT_BACKEND = settings.get("CELERY.RESULT_BACKEND")
-    CELERY_ACCEPT_CONTENT = settings.get("CELERY.ACCEPT_CONTENT", ["json"])
-    CELERY_TASK_SERIALIZER = settings.get("CELERY.TASK_SERIALIZER", "json")
-    CELERY_RESULT_SERIALIZER = settings.get("CELERY.RESULT_SERIALIZER", "json")
-    CELERY_TIMEZONE = settings.get("CELERY.TIMEZONE", "UTC")
-    CELERY_TASK_TRACK_STARTED = settings.get("CELERY.TASK_TRACK_STARTED", True)
-    CELERY_TASK_TIME_LIMIT = settings.get("CELERY.TASK_TIME_LIMIT", 30 * 60)
-    CELERY_TASK_SOFT_TIME_LIMIT = settings.get("CELERY.TASK_SOFT_TIME_LIMIT", 20 * 60)
-    CELERY_WORKER_MAX_TASKS_PER_CHILD = settings.get("CELERY.WORKER_MAX_TASKS_PER_CHILD", 100)
-    CELERY_WORKER_CONCURRENCY = settings.get("CELERY.WORKER_CONCURRENCY", 4)
-    CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = settings.get("CELERY.BROKER_CONNECTION_RETRY_ON_STARTUP", True)
-    CELERY_BROKER_HEARTBEAT = settings.get("CELERY.BROKER_HEARTBEAT", 10)
-    CELERY_BROKER_POOL_LIMIT = settings.get("CELERY.BROKER_POOL_LIMIT", 10)
+FUSION_TASKS = {
+    "BACKEND": "django_fusion.tasks.backends.dramatiq.DramatiqBackend",
+    "BROKER_URL": os.environ.get("DRAMATIQ_BROKER_URL", "redis://localhost:6379/1"),
+}
 
 # -------------------------------------------------------------------
 # 🚦 USE CASE: Rate Limiting (Django Ratelimit)
@@ -120,11 +108,6 @@ if settings.get("CSP_ENABLED", False):
     CSP_FRAME_ANCESTORS = ["'none'"]
     CSP_BLOCK_ALL_MIXED_CONTENT = True
     CSP_UPGRADE_INSECURE_REQUESTS = True
-
-# -------------------------------------------------------------------
-# 🐕 USE CASE: Background Tasks (Django-RQ + Redis)
-# -------------------------------------------------------------------
-RQ_QUEUES = settings.get("RQ_QUEUES", {})
 
 # -------------------------------------------------------------------
 # 🧩 Add other service configurations here, each behind an env flag.

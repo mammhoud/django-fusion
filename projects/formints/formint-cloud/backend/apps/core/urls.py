@@ -40,7 +40,7 @@ def _health(request):
 
 urlpatterns = [
     path("health", _health, name="health"),
-    # Community-UI data bridges (sidecar /api/sales|products|settings contract)
+    # Community-UI data bridges (server /api/sales|products|settings contract)
     path("sales", bridge_sales, name="bridge_sales"),
     path("products", bridge_products, name="bridge_products"),
     path("settings", bridge_settings, name="bridge_settings"),

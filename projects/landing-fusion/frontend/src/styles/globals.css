@@ -976,6 +976,35 @@
       0 1px 0 hsl(var(--fu-line) / 0.6),
       0 14px 36px -20px hsl(var(--fu-ink) / 0.45);
   }
+  /* Shared breadcrumb — the public-site counterpart to django-fusion's
+     `.fu-breadcrumb`; the backend partial and Astro component use this same
+     contract so nested pages never drift between render roads. */
+  .site-breadcrumb {
+    margin-block: 1.25rem 0;
+    color: hsl(var(--fu-muted));
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .site-breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+    padding: .7rem .85rem;
+    list-style: none;
+    border: 1px solid hsl(var(--fu-line));
+    border-radius: .5rem;
+    background: hsl(var(--fu-card) / .58);
+  }
+  .site-breadcrumb__item { display: inline-flex; align-items: center; gap: .45rem; min-width: 0; }
+  .site-breadcrumb__link { color: hsl(var(--fu-muted)); text-decoration: none; text-underline-offset: .2em; transition: color .25s var(--fu-ease-out); }
+  .site-breadcrumb__link:hover,.site-breadcrumb__link:focus-visible { color: hsl(var(--fu-link)); text-decoration: underline; }
+  .site-breadcrumb__separator { color: hsl(var(--fu-line)); user-select: none; }
+  .site-breadcrumb__item--current { color: hsl(var(--fu-ink)); font-weight: 600; }
+
   .site-nav a {
     font-size: 0.9rem;
     color: hsl(var(--fu-muted));

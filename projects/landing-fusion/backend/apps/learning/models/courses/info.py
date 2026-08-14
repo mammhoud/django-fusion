@@ -10,16 +10,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-
-from apps.content.models.languages import SUPPORTED_LANGUAGE_CHOICES
-
+from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.fields import RichTextField
 from wagtail.search import index
 from wagtail.snippets.views.snippets import SnippetViewSet
 
-from modelcluster.models import ClusterableModel
-
+from apps.content.models.languages import SUPPORTED_LANGUAGE_CHOICES
 from apps.learning.managers.course import CourseQuerySet
 
 

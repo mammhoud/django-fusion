@@ -13,7 +13,6 @@ from wagtail.snippets.models import register_snippet
 
 from .languages import SUPPORTED_LANGUAGE_CHOICES
 
-
 # Keep editorial overlays aligned with the Wagtail/UI language catalog. Empty
 # overlays intentionally fall back to canonical content until an editor adds
 # a translation; the schema must still accept every advertised language.

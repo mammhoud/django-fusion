@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { FusionDecoder, FusionDecodeError } from './fusion-decoder';
 
 /**
- * Real payload produced by the formint sidecar's ``FusionCodec.encode``:
+ * Real payload produced by the formint server's ``FusionCodec.encode``:
  *   {"component": "formint.branch_summary", "fusion_render_first": true, "htmx": false}
  */
 const REAL_ENCODED_POINTER =

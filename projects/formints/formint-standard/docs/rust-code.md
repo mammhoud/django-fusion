@@ -1,7 +1,7 @@
 # Formint — Rust Backend Documentation
 
 > **Path:** `src-tauri/src/` | **Language:** Rust (Edition 2021) | **ORM:** Diesel 2.x | **DB:** SQLite  
-> **No sidecar** — all data directly through Diesel ORM in-process
+> **No server** — all data directly through Diesel ORM in-process
 
 ---
 
@@ -15,7 +15,7 @@ main.rs (Tauri app builder)
               └── db/ (Diesel ORM — connection, schema, models)
 ```
 
-forge-pos is the **only edition** where the Rust backend handles ALL data operations directly. No Python sidecar, no HTTP layer — just Tauri IPC → Rust → Diesel → SQLite.
+forge-pos is the **only edition** where the Rust backend handles ALL data operations directly. No Python server, no HTTP layer — just Tauri IPC → Rust → Diesel → SQLite.
 
 ## Database Schema (37 Tables)
 
@@ -117,7 +117,7 @@ fn add_product(app: AppHandle, product: db::models::NewProduct) -> Result<db::mo
 | `employee_schedules.rs` | CRUD | Shift management |
 | `payrolls.rs` | CRUD | Payroll |
 | `reports.rs` | CRUD (metadata) | Report tracking |
-| `sidecar.rs` | start_sidecar, stop_sidecar, sidecar_status | Sidecar lifecycle |
+| `server.rs` | start_server, stop_server, server_status | Server lifecycle |
 | `hardware.rs` | trigger_cash_drawer, print_thermal_receipt, check_printer_status | Thermal printer |
 | `email.rs` | send_support_email | SMTP email |
 
@@ -162,9 +162,9 @@ try {
 | Feature | forge-pos | formint-pos |
 |---------|:--------:|:-----------:|
 | Data access | `invoke()` → Rust/Diesel | Django Ninja API → HTTP |
-| Python sidecar | ❌ | ✅ Robyn |
+| Python server | ❌ | ✅ Robyn |
 | Django ORM | ❌ (Diesel) | ✅ |
 | Admin panel | ❌ | ✅ Unfold |
 | Cloud sync | ❌ | ✅ Child→Master |
 | WebSocket | ❌ | ✅ /ws/entities |
-| Hardware printer | ✅ Direct ESC/POS | ❌ (sidecar) |
+| Hardware printer | ✅ Direct ESC/POS | ❌ (server) |

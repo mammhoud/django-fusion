@@ -27,7 +27,7 @@ onMounted(async () => {
       <div class="stat bg-base-200 rounded-box p-4">
         <div class="stat-title">Products</div>
         <div class="stat-value text-primary">{{ products.length }}</div>
-        <div class="stat-desc">From sidecar API</div>
+        <div class="stat-desc">From server API</div>
       </div>
       <div class="stat bg-base-200 rounded-box p-4">
         <div class="stat-title">Orders</div>
@@ -35,7 +35,7 @@ onMounted(async () => {
         <div class="stat-desc">Recent transactions</div>
       </div>
       <div class="stat bg-base-200 rounded-box p-4">
-        <div class="stat-title">Sidecar</div>
+        <div class="stat-title">Server</div>
         <div class="stat-value" :class="health?.status === 'ok' ? 'text-success' : 'text-error'">
           {{ health?.status === 'ok' ? 'Online' : 'Offline' }}
         </div>

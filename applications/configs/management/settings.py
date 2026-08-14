@@ -11,10 +11,10 @@ Mirrors the per-site settings.py pattern (see `projects/precis/backend/settings.
 but with two differences:
 
 1. No `_SITE_APP_DIR = _SITE_DIR / "www"`. The shared stack runs the
-   `www.worker` package globally — registered once via
+   `plugins.workers` package globally — registered once via
    `projects/configs/base/apps.py` — so no per-site `www/` override is
    needed. Adding `_SITE_APP_DIR` here would *block* `www.core` and
-   `www.worker` imports because the shared stack doesn't ship a
+   `plugins.workers` imports because the shared stack doesn't ship a
    per-site `www/` directory of its own.
 
 2. Calls `configure_site_environment("www", module="CMS",
@@ -28,7 +28,7 @@ Once this module is importable from runtime `sys.path`, it loads as
 (resolves to /app/www/settings.py under the `PROJECT_PATH=tools` bake
 which copies into /app/www/) and as `www.settings` when both
 `PROJECT_PATH=tools` and `DJANGO_SETTINGS_MODULE=www.settings` are
-set. With either path resolvable, celery-beat and shared-worker's
+set. With either path resolvable, the Dramatiq scheduler and shared-worker's
 `python manage.py rundramatiq` calls resolve cleanly without the
 historical `Unknown site 'shared'` rejection.
 
@@ -84,10 +84,10 @@ from configs.settings import *  # noqa: E402,F401,F403
 # which site "www" identifies as.
 WEBSITE_NAME = "www"
 
-# No LOCAL_APPS appended here on purpose. The `www.worker` Celery /
-# Dramatiq app is registered globally in
+# No LOCAL_APPS appended here on purpose. The `plugins.workers` Dramatiq app
+# is registered globally in
 # `projects/configs/base/apps.py:INSTALLED_APPS`. Site-specific apps that
 # `projects/<site>/settings.py` append (wagtail pages, plugins, etc.) are
 # intentionally NOT added — the shared stack is site-agnostic and
 # task dispatches it performs cross sites via the explicit queue
-# routing inside `www.worker.tasks`.
+# routing inside `plugins.workers`.

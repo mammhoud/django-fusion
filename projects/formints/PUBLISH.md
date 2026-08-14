@@ -13,7 +13,7 @@ The merged **Formint** package is the canonical edition to list.
 | Edition | Contents | Target |
 |---------|----------|--------|
 | **Mini** | Core POS app (Tauri + Rust + SQLite) | Offline-only deployments |
-| **Formint (merged)** | Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin (consolidates former Solo + Full) | Enterprise multi-device |
+| **Formint (merged)** | Astro frontend + Django Ninja backend + Robyn server + Unfold admin (consolidates former Solo + Full) | Enterprise multi-device |
 
 > **For marketplace listing, always use `formint-pos/`** (the merged package).
 
@@ -31,7 +31,7 @@ The merged **Formint** package is the canonical edition to list.
 
 POS is a modern, cross-platform desktop POS app for restaurants and cafes.
 Built with Tauri, React 19, Rust, and SQLite. Works offline. Includes a
-Python/Sanic API sidecar with Django ORM, WebSocket chat, data sync between
+Python/Sanic API server with Django ORM, WebSocket chat, data sync between
 devices, and full enterprise features — inventory, payroll, kitchen display,
 suppliers, tax reports, loyalty program, and 29 database tables.
 
@@ -128,7 +128,7 @@ and I have full rights to sell it on ThemeForest/CodeCanyon.
 
 The product ships in 3 editions:
 - **Minimal**: Core desktop app only
-- **Solo**: Core + REST API sidecar + Cloud CRM sync
-- **Full**: Core + sidecar + Django ORM + WebSocket + data sync + Cloud CRM master (this listing)
+- **Solo**: Core + REST API server + Cloud CRM sync
+- **Full**: Core + server + Django ORM + WebSocket + data sync + Cloud CRM master (this listing)
 
 All source code is included, documented, and buildable from scratch.

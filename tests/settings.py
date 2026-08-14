@@ -349,10 +349,11 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # Remove ceptor_ai to avoid table conflicts with email_log
-    # Blog app only — accounts/ceptor have complex deps needing full project setup
-    "plugins.blog",
-    # Skip apps.accounts to avoid admin autodiscover issues with www.apps.accounts.models.tags
+    # Remove ceptor_ai to avoid table conflicts with email_log. The old
+    # ``plugins.blog`` package was retired with the legacy site layout; blog
+    # behavior is covered by product-local settings/tests now.
+    # Skip apps.accounts to avoid admin autodiscover issues with
+    # www.apps.accounts.models.tags.
 ]
 
 

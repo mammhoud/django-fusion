@@ -1,7 +1,7 @@
 /**
  * Data API
  * ========
- * Read-only access to the Rust-managed SQLite database via the sidecar.
+ * Read-only access to the Rust-managed SQLite database via the server.
  *
  * Endpoints:
  *   GET /api/sales          — list all sales with line items
@@ -11,11 +11,11 @@
  *   GET /invoice/render/<id> — render an invoice as HTML
  */
 
-import sidecar, { SIDECAR_BASE } from './sidecar';
+import server, { SERVER_BASE } from './server';
 
 // ---- Types ----------------------------------------------------------------
 
-export interface SidecarSaleItem {
+export interface ServerSaleItem {
   id: number;
   sale_id: number;
   product_name: string;
@@ -25,7 +25,7 @@ export interface SidecarSaleItem {
   subtotal: number;
 }
 
-export interface SidecarSale {
+export interface ServerSale {
   id: number;
   total_amount: number;
   currency: string;
@@ -40,10 +40,10 @@ export interface SidecarSale {
   customer_id: number | null;
   created_at: string;
   updated_at: string;
-  items: SidecarSaleItem[];
+  items: ServerSaleItem[];
 }
 
-export interface SidecarProduct {
+export interface ServerProduct {
   id: number;
   name: string;
   price: number;
@@ -52,7 +52,7 @@ export interface SidecarProduct {
   image: string | null;
 }
 
-export interface SidecarSettings {
+export interface ServerSettings {
   id: number;
   restaurant_name: string | null;
   address: string | null;
@@ -79,28 +79,28 @@ export const data = {
    * List all sales with line items.
    */
   listSales: () =>
-    sidecar.get<SidecarSale[]>('/api/sales'),
+    server.get<ServerSale[]>('/api/sales'),
 
   /**
    * Get a single sale by ID with line items.
    */
   getSale: (saleId: number) =>
-    sidecar.get<SidecarSale>(`/api/sales/${saleId}`),
+    server.get<ServerSale>(`/api/sales/${saleId}`),
 
   /**
    * List all products.
    */
   listProducts: () =>
-    sidecar.get<SidecarProduct[]>('/api/products'),
+    server.get<ServerProduct[]>('/api/products'),
 
   /**
    * Get app settings.
    */
   getSettings: () =>
-    sidecar.get<SidecarSettings>('/api/settings'),
+    server.get<ServerSettings>('/api/settings'),
 
   /**
-   * Get the URL for a sidecar-rendered invoice.
+   * Get the URL for a server-rendered invoice.
    * Open this URL in the system browser or an iframe.
    */
   getInvoiceUrl: (
@@ -108,17 +108,17 @@ export const data = {
     type: InvoiceType = 'commercial',
     design: InvoiceDesign = 'modern',
   ): string =>
-    `${SIDECAR_BASE}/invoice/render/${saleId}?type=${type}&design=${design}`,
+    `${SERVER_BASE}/invoice/render/${saleId}?type=${type}&design=${design}`,
 
   /**
-   * Fetch the rendered invoice HTML from the sidecar.
+   * Fetch the rendered invoice HTML from the server.
    */
   getInvoiceHtml: (
     saleId: number,
     type: InvoiceType = 'commercial',
     design: InvoiceDesign = 'modern',
   ) =>
-    sidecar.get<string>(`/invoice/render/${saleId}?type=${type}&design=${design}`),
+    server.get<string>(`/invoice/render/${saleId}?type=${type}&design=${design}`),
 };
 
 export default data;

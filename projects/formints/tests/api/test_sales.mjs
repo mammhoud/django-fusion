@@ -1,5 +1,5 @@
 /**
- * API tests for POS Sales & Deals endpoints via Robyn sidecar.
+ * API tests for POS Sales & Deals endpoints via Robyn server.
  *
  * ⚠️ NOTE: Requires a WORKING Robyn server. Currently the server fails
  * to start with "Apps aren't loaded yet" (Django ORM bootstrap issue).
@@ -9,7 +9,7 @@
  *   node tests/api/test_sales.mjs
  *
  * Requires pos-full Robyn server running on :8000 (or POS_API_URL env var)
- *   Start with: cd pos-full/sidecar && python3 server.py
+ *   Start with: cd pos-full/server && python3 server.py
  */
 
 const BASE_URL = process.env.POS_API_URL || 'http://127.0.0.1:8000';

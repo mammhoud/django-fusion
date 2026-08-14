@@ -30,7 +30,7 @@
 ## Tech Stack
 
 - **Frontend:** React + TypeScript + Vite + TailwindCSS (editions) / Astro + Alpine + HTMX (formint-pos)
-- **Backend:** Rust (Tauri) + Python (Robyn/Django sidecar)
+- **Backend:** Rust (Tauri) + Python (Robyn/Django server)
 - **API (formint-pos):** Django Ninja + ninja-extra, django-fusion encoder/decoder
 - **State:** RTK Query + Pinia
 - **Desktop:** Tauri v2

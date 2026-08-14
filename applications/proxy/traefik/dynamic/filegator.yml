@@ -3,8 +3,8 @@
 # =============================================================================
 # Routes filegator.localhost / filegator.structa.cloud to the shared-media
 # nginx, which proxies to the workspace container coder-dev-filegator:8080
-# (see applications/proxy/nginx/default.conf). This replaces the old Blinko
-# route (blinko.structa.cloud).
+# (see applications/proxy/nginx/default.conf). AppFlowy and code-server are
+# authenticated Coder apps and have no public proxy route.
 #
 # Public host uses Let's Encrypt; the .localhost host stays on the mkcert
 # default cert. They are split because a single certResolver router bundling

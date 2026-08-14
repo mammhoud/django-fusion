@@ -1,7 +1,7 @@
 # Formint — AI Agent Instructions
 
 > **Project:** `projects/formints/formintA/` (site slug `formint-pos`)  
-> **Type:** Tauri desktop app (no sidecar)  
+> **Type:** Tauri desktop app (no server)  
 > **Stack:** React 19 + TypeScript + Vite + Tailwind CSS + Rust (Tauri 2) + Diesel ORM + SQLite (direct)
 
 ---
@@ -11,7 +11,7 @@
 Formint is the lightweight edition (formerly pos-mini / forge-pos), marketed as
 **Formints** on the landing site (`/products/formint-pos/`). It uses Tauri with a React frontend and
 a Rust backend that talks directly to SQLite via Diesel ORM — **no Python
-sidecar**. This makes it the simplest and fastest to deploy.
+server**. This makes it the simplest and fastest to deploy.
 
 ---
 
@@ -19,7 +19,7 @@ sidecar**. This makes it the simplest and fastest to deploy.
 
 | Feature | POS Full | POS Solo | Formint |
 |---------|:--------:|:--------:|:---------:|
-| Python sidecar | ✅ | ✅ | ❌ |
+| Python server | ✅ | ✅ | ❌ |
 | Django ORM | ✅ | ✅ | ❌ (Diesel direct) |
 | Multi-store sync | ✅ | ❌ | ❌ |
 | Employee management | ✅ | ❌ | ❌ |
@@ -77,12 +77,12 @@ Same as the merged package — see `../formint-pos/README.md` and the archived R
 
 ---
 
-## No Python Sidecar
+## No Python Server
 
-Formint does **not** include a Python sidecar. All data operations go through
+Formint does **not** include a Python server. All data operations go through
 Tauri invoke → Rust → Diesel → SQLite. This means:
 
-- **No `sidecar/` directory**
+- **No `server/` directory**
 - **No Django ORM models**
 - **No Fusion fragments**
 - **No `fusion-decoder.ts` or `fusion-store.ts`**

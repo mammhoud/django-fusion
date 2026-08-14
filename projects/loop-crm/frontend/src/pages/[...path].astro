@@ -1,0 +1,71 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import AppShell from '@/components/AppShell.astro';
+const pages = [
+  { path: '/', title: 'Revenue workspace', kicker: 'Loop CRM · operating system', description: 'One workspace for the relationship graph, multi-channel publishing, approval workflows, and the revenue each touchpoint influenced.', module: 'overview' },
+  { path: '/crm/', title: 'CRM', kicker: 'Sales', description: 'The relationship graph and pipeline operating system.', module: 'crm' },
+  { path: '/crm/companies/', title: 'Companies', kicker: 'CRM · companies', description: 'Accounts, ownership, firmographics, and custom attributes.', module: 'crm' },
+  { path: '/crm/contacts/', title: 'Contacts', kicker: 'CRM · contacts', description: 'People, roles, communication history, and account relationships.', module: 'crm' },
+  { path: '/crm/pipelines/', title: 'Pipelines', kicker: 'CRM · pipelines', description: 'Configurable stages, probabilities, and forecasting views.', module: 'crm' },
+  { path: '/crm/deals/', title: 'Deals', kicker: 'CRM · deals', description: 'Revenue opportunities connected to campaigns and touchpoints.', module: 'crm' },
+  { path: '/crm/activities/', title: 'Activities', kicker: 'CRM · activities', description: 'Calls, emails, meetings, notes, tasks, and social interactions.', module: 'crm' },
+  { path: '/marketing/', title: 'Marketing', kicker: 'Growth', description: 'Plan, approve, publish, and measure every channel from one calendar.', module: 'marketing' },
+  { path: '/marketing/calendar/', title: 'Content calendar', kicker: 'Marketing · calendar', description: 'A visual queue for drafts, approvals, scheduled posts, and retries.', module: 'marketing' },
+  { path: '/marketing/campaigns/', title: 'Campaigns', kicker: 'Marketing · campaigns', description: 'Group content, spend, performance, and influenced deals.', module: 'marketing' },
+  { path: '/marketing/channels/', title: 'Channels', kicker: 'Marketing · channels', description: 'Connect provider accounts and see their publish and analytics capabilities.', module: 'marketing' },
+  { path: '/marketing/media/', title: 'Media library', kicker: 'Marketing · media', description: 'Reusable image and video assets with alt text and post attachments.', module: 'marketing' },
+  { path: '/finance/', title: 'Finance', kicker: 'Finance · revenue control', description: 'Turn closed pipeline into invoices, payments, and recognized revenue without losing campaign context.', module: 'finance' },
+  { path: '/finance/invoices/', title: 'Invoices', kicker: 'Finance · invoices', description: 'Issue customer invoices from real companies and deals, then keep payment state current.', module: 'finance' },
+  { path: '/finance/payments/', title: 'Payments', kicker: 'Finance · payments', description: 'Record receipts against issued invoices and keep outstanding balances honest.', module: 'finance' },
+  { path: '/finance/revenue/', title: 'Recognized revenue', kicker: 'Finance · recognized revenue', description: 'Review revenue events created from won pipeline and trace them back to campaigns and invoices.', module: 'finance' },
+  { path: '/attribution/', title: 'Attribution', kicker: 'RevOps', description: 'See which content and conversations create pipeline revenue.', module: 'attribution' },
+  { path: '/attribution/touchpoints/', title: 'Touchpoints', kicker: 'Attribution · touchpoints', description: 'Every social interaction credited toward a deal.', module: 'attribution' },
+  { path: '/attribution/reports/', title: 'Revenue reports', kicker: 'Attribution · reports', description: 'First, last, linear, time-decay, and position-based revenue views.', module: 'attribution' },
+  { path: '/settings/', title: 'Workspace', kicker: 'Workspace', description: 'Configure people, automations, integrations, and audit history.', module: 'workspace' },
+  { path: '/settings/members/', title: 'Members & roles', kicker: 'Workspace · members', description: 'Seven role profiles keep sales, marketing, and RevOps permissions clear.', module: 'workspace' },
+  { path: '/settings/workflows/', title: 'Workflows', kicker: 'Workspace · workflows', description: 'Cross-module triggers and actions executed by Dramatiq.', module: 'workspace' },
+  { path: '/settings/integrations/', title: 'Integrations', kicker: 'Workspace · integrations', description: 'Provider-neutral OAuth and connector capabilities for publishing.', module: 'workspace' },
+  { path: '/settings/custom-fields/', title: 'Custom fields', kicker: 'Workspace · custom fields', description: 'Twenty-style extensibility for tenant-specific objects and revenue metadata.', module: 'workspace' },
+  { path: '/settings/audit/', title: 'Audit log', kicker: 'Workspace · audit', description: 'An append-only trail for revenue operations changes.', module: 'workspace' },
+];
+
+export function getStaticPaths() {
+  return pages.map((page) => ({
+    params: { path: page.path === '/' ? undefined : page.path.replace(/^\//, '').replace(/\/$/, '') },
+    props: page,
+  }));
+}
+
+const page = Astro.props;
+// Bolt is the canonical API road. Set PUBLIC_API_PREFIX=/api/v1 when the
+// optional django-bolt runtime is intentionally not installed.
+const API_PREFIX = import.meta.env.PUBLIC_API_PREFIX ?? '/bolt';
+const cards = page.module === 'overview'
+  ? [
+      { label: 'Twenty DNA · CRM', value: 'Relationship graph → pipeline', copy: 'Companies, contacts, activities, configurable stages, ownership, and deals.', href: '/crm/' },
+      { label: 'Postiz DNA · publishing', value: 'Plan → approve → publish', copy: 'A channel-aware content calendar with media, approvals, and capabilities.', href: '/marketing/' },
+      { label: 'RevOps · attribution', value: 'Touch → revenue', copy: 'Connect content and conversations to influenced revenue.', href: '/attribution/' },
+    ]
+  : page.module === 'marketing'
+    ? [{ label: 'Content operations', value: 'Approval queue + publishing calendar', copy: 'Draft, review, schedule, publish, and retry without coupling the UI to a provider.', href: '/marketing/calendar/' }, { label: 'Provider surface', value: '12 platform families', copy: 'Explicit connector capabilities keep integrations replaceable.', href: '/settings/integrations/' }]
+    : page.module === 'workspace'
+      ? [{ label: 'Automation', value: 'Cross-module workflows', copy: 'Dramatiq is the single execution boundary for publishing, analytics, and attribution.', href: '/settings/workflows/' }]
+      : page.module === 'finance'
+        ? [{ label: 'Revenue control', value: 'Invoice → payment → recognized revenue', copy: 'Closed-won deals can create an invoice and a campaign-linked revenue event without losing the sales trail.', href: '/finance/invoices/' }, { label: 'API surface', value: 'Three finance resources', copy: 'Invoices, payments, and revenue events are exposed through the same Bolt and compatibility contracts.', href: `${API_PREFIX}/invoices` }]
+        : [{ label: 'Data surface', value: 'Ready for the API road', copy: 'Each domain screen can ship independently behind the canonical Bolt endpoints.', href: page.module === 'crm' ? `${API_PREFIX}/companies` : page.module === 'attribution' ? `${API_PREFIX}/touchpoints` : `${API_PREFIX}/dashboard` }];
+---
+<Layout title={`${page.title} — Loop CRM`}>
+  <AppShell title={page.title} kicker={page.kicker} description={page.description} path={page.path}>
+    <section class="loop-page-cards" aria-label={`${page.title} highlights`}>
+      {cards.map((card) => (
+        <a class:list={['loop-page-card', cards.length === 1 && 'loop-page-card--wide']} href={card.href}>
+          <span>{card.label}</span><strong>{card.value}</strong><p>{card.copy}</p><b aria-hidden="true">→</b>
+        </a>
+      ))}
+    </section>
+    {page.module === 'overview' && <section class="loop-workflow-strip"><span>Workflow catalog</span><strong>Lead capture · content approval · publish & attribute · deal won</strong></section>}
+  </AppShell>
+</Layout>
+<style>
+  .loop-page-cards { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:1rem; margin-top:3rem; } .loop-page-card { position:relative; display:flex; min-height:13rem; flex-direction:column; grid-column:span 5; padding:1.45rem; border:1px solid var(--loop-line); border-radius:.72rem .28rem .72rem .28rem; background:rgba(17,27,30,.82); box-shadow:0 1.5rem 3rem var(--loop-shadow); text-decoration:none; transition:border-color .25s ease,transform .25s ease,background .25s ease; } .loop-page-card:nth-child(1) { grid-column:span 7; min-height:15rem; } .loop-page-card:nth-child(3) { grid-column:4 / span 5; margin-top:-2rem; } .loop-page-card:hover { border-color:#4d8575; background:#172c2b; transform:translateY(-3px); } .loop-page-card span,.loop-workflow-strip span { color:var(--loop-accent); font:600 .62rem "JetBrains Mono",monospace; letter-spacing:.11em; text-transform:uppercase; } .loop-page-card strong { display:block; margin-top:.9rem; color:var(--loop-ink); font-size:clamp(1.3rem,2.4vw,1.8rem); font-weight:620; line-height:1.04; letter-spacing:-.045em; text-wrap:balance; } .loop-page-card p { max-width:34rem; margin:.65rem 0 0; color:var(--loop-muted); line-height:1.55; } .loop-page-card b { margin-top:auto; align-self:flex-end; color:var(--loop-accent-bright); font:500 1.25rem "JetBrains Mono",monospace; transition:transform .2s ease; } .loop-page-card:hover b { transform:translateX(4px); } .loop-workflow-strip { display:flex; flex-wrap:wrap; gap:1rem 2rem; align-items:baseline; margin-top:1rem; padding:1.1rem 1.3rem; border-left:2px solid var(--loop-accent); color:var(--loop-accent-bright); background:rgba(17,27,30,.72); } .loop-workflow-strip span { font-size:.58rem; } .loop-workflow-strip strong { color:var(--loop-ink); font-weight:560; } @media(max-width:800px) { .loop-page-card,.loop-page-card--wide,.loop-page-card:nth-child(1),.loop-page-card:nth-child(3) { grid-column:span 12; margin-top:0; } } @media(prefers-reduced-motion:reduce) { .loop-page-card,.loop-page-card b { transition:none; } }
+</style>

@@ -2,18 +2,18 @@
 
 > **Directory:** `docs/typescript/`
 > **Languages:** TypeScript, TSX
-> **Framework:** React 18 + Vite + Tailwind CSS (no sidecar, no Python)
+> **Framework:** React 18 + Vite + Tailwind CSS (no server, no Python)
 
 ---
 
 POS Mini uses the same TypeScript/React conventions as POS Full but with a
-simpler architecture (no sidecar, no Fusion, direct Rust/Diesel data access).
+simpler architecture (no server, no Fusion, direct Rust/Diesel data access).
 
 See the archived **`../../formint-pos/legacy-react/pos-full/docs/typescript/index.md`** for the base conventions.
 
 ### POS Mini Specific
 
-- **No Python sidecar** → no FusionDecoder, FusionStore, or fusion-types
+- **No Python server** → no FusionDecoder, FusionStore, or fusion-types
 - **Direct Tauri invoke** → all data goes through Rust commands
 - **Simpler state** → no WebSocket, no multi-store sync
 - **No role system** → all features available to the single user

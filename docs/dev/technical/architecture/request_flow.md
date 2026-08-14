@@ -139,28 +139,30 @@ VResume is optimized for "Fragment Swapping" to reduce bandwidth and improve per
 
 ---
 
-## ⏳ Background Tasks Flow (Celery)
+## ⏳ Background Tasks Flow (Dramatiq)
 
-VResume utilizes Celery (via `django_celery_beat` and `django_celery_results`) to handle long-running processes asynchronously, primarily for email marketing and form tracking.
+Active products enqueue broker-neutral django-fusion tasks backed by Dramatiq.
+Worker implementations live under each product's `backend/plugins/workers/`
+package and the shared worker loads only paths listed in
+`FUSION_TASK_PROJECT_PATHS`.
 
 ### Newsletter Triggers:
-1. **Author Action**: Editor creates/updates a `BlogPage` or `Project` and checks `send_newsletter_on_publish = True`.
-2. **Save Override**: In `models/page.py` or `models/snippets/project.py`, the `save` method detects this flag, resets it to `False`, and queues a Celery task.
-   ```python
-   trigger_blog_newsletter.delay(self.pk)
-   ```
-3. **Celery Worker**: The `trigger_blog_newsletter` task runs:
-   - Fetches the published content.
-   - Generates a beautified HTML email template.
-   - Creates a `Campaign` record.
-   - Enqueues `send_campaign_to_all.delay(campaign.id)`.
-4. **Email Delivery**: The system iterates over confirmed `Subscribers` and dispatches emails via `send_campaign_email` task, embedding tracking pixels and redirect URLs for analytics.
+1. **Author Action**: Editor creates or updates publishable content.
+2. **Service Layer**: The handler records the content and calls a task wrapper.
+3. **Dramatiq Worker**: The actor renders the message, creates the campaign
+   record, and enqueues any follow-up actor on the appropriate queue.
+4. **Email Delivery**: Email actors send through the selected site's configured
+   Django email backend and write a shared task audit record.
 
 ### Form Submission Flow:
-1. **User Action**: Submits contact form.
-2. **View Logic**: `contact_submit` in `form_views.py` processes the POST request.
-3. **Service Layer**: Passes data to `FormSubmissionService.save_submission` to record it in the DB.
-4. **Notification**: `FormSubmissionService.send_notification_email` sends an async-style confirmation/notification.
+1. **User Action**: Submits the contact form.
+2. **View Logic**: The request validates and persists the submission.
+3. **Service Layer**: The service enqueues a django-fusion task when background
+   delivery is appropriate.
+4. **Notification**: The shared Dramatiq worker sends the notification.
+
+Celery, Celery Beat, and their Django result apps are retired; APScheduler
+publishes scheduled django-fusion tasks to the same Dramatiq broker.
 
 ---
 

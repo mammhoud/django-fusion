@@ -3,15 +3,15 @@ import { ref } from 'vue';
 import { useSettingsStore } from '../utils/settings';
 
 // Env-driven defaults (Vite .env); user-configured settings still win.
-const ENV_SIDECAR_URL = (import.meta.env?.VITE_SIDECAR_URL as string | undefined) || 'http://localhost:8765';
+const ENV_SERVER_URL = (import.meta.env?.VITE_SERVER_URL as string | undefined) || 'http://localhost:8765';
 const ENV_PORTAL_URL = (import.meta.env?.VITE_PORTAL_URL as string | undefined) || 'http://localhost:8080';
 
 const settings = useSettingsStore();
-const sidecarUrl = ref(settings.$state.sidecarUrl || ENV_SIDECAR_URL);
+const serverUrl = ref(settings.$state.serverUrl || ENV_SERVER_URL);
 const portalUrl = ref(settings.$state.portalUrl || ENV_PORTAL_URL);
 
 function save() {
-  settings.$patch({ sidecarUrl: sidecarUrl.value, portalUrl: portalUrl.value });
+  settings.$patch({ serverUrl: serverUrl.value, portalUrl: portalUrl.value });
 }
 </script>
 
@@ -25,9 +25,9 @@ function save() {
 
         <div class="form-control mt-4">
           <label class="label">
-            <span class="label-text">Sidecar API URL</span>
+            <span class="label-text">Server API URL</span>
           </label>
-          <input v-model="sidecarUrl" type="text" class="input input-bordered" />
+          <input v-model="serverUrl" type="text" class="input input-bordered" />
         </div>
 
         <div class="form-control mt-2">

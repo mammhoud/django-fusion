@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ============================================================================
-# POS — run merged sidecar tests (alias for py/full — pos-solo merged)
+# POS — run merged server tests (alias for py/full — pos-solo merged)
 # ============================================================================
 # pos-solo was merged into formint-pos; its unique test (test_ws_client.py)
-# lives with the combined suite at formint-pos/sidecar/tests/. This wrapper is
+# lives with the combined suite at formint-pos/server/tests/. This wrapper is
 # kept as an alias so existing CI/docs invocations keep working.
 #
 # Usage:

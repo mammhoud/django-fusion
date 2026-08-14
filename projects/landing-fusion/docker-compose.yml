@@ -14,7 +14,16 @@ services:
       CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
       CORS_ALLOWED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
       DJANGO_DB_PATH: /data/db.sqlite3
-      DEFAULT_FROM_EMAIL: Structa Cloud <structa.cloud@gmail.com>
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      # Gmail SMTP (structa.cloud@gmail.com) — resolved from .env; console
+      # backend stays the default so an unset .env cannot break local dev.
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
       WAGTAILADMIN_BASE_URL: https://structa.cloud
       # Keep the data-API road as the deployment default; requests can still
       # opt into fusion-render with X-Fusion-Render-First: true.
@@ -41,6 +50,42 @@ services:
       timeout: 5s
       retries: 12
       start_period: 45s
+
+  scheduler:
+    build:
+      context: ../..
+      dockerfile: projects/landing-fusion/backend/Dockerfile
+    image: landing-fusion-backend:latest
+    container_name: landing-fusion-scheduler
+    restart: unless-stopped
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      DJANGO_SECRET_KEY: ${LANDING_DJANGO_SECRET_KEY:-landing-fusion-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,landing-fusion-backend
+      DJANGO_DB_PATH: /data/db.sqlite3
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+    volumes:
+      # Shares the same SQLite DB volume as the backend so the scheduler's
+      # sync_task_history job mirrors into the same TaskExecution table.
+      - landing-fusion-db:/data
+    # The backend applies migrations at startup. Running `migrate` here too
+    # would contend for the shared SQLite file's write lock and re-apply/
+    # duplicate migration rows, so wait for the backend to be healthy instead.
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: python -m django_fusion.tasks.scheduler
 
   frontend:
     build:

@@ -16,6 +16,7 @@ applications/
 │   ├── traefik/              # static/dynamic routers and middleware
 │   ├── nginx/                # shared static/media server
 │   └── scripts/              # certificate validation/backup/restore
+├── docker-compose.yml       # Coder control-plane Compose stack
 ├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose
 ├── scripts/                  # dev, staging, testing, production automation
 ├── agents/                   # FastAPI MCP/introspection server and agent skills

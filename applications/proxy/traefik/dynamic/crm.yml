@@ -1,49 +1,56 @@
 # =============================================================================
-# CRM — Traefik router config  [DORMANT]
+# Loop-CRM — active CRM subdomain routing
 # =============================================================================
-# Container "crm-website" is NOT currently running.
-# Routes crm.structa.cloud / www.crm.structa.cloud → no backend available.
-# DNS records for these domains do not exist (NXDOMAIN).
-# TLS certResolver removed to suppress ACME noise — uses fallback cert.
-# To activate: deploy the CRM compose stack and restore certResolver.
+# Frontend serves the Astro overview shell. Django owns authenticated account,
+# API, HTMX, and domain screens so CRM/marketing/finance mutations remain real.
+# Requires DNS A/AAAA records for crm.structa.cloud and www.crm.structa.cloud.
 # =============================================================================
 
 http:
   routers:
-    crm-site-http:
+    loop-crm-backend-http:
+      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/api`) || PathPrefix(`/bolt`) || PathPrefix(`/accounts`) || PathPrefix(`/account`) || PathPrefix(`/admin`) || PathPrefix(`/fragments`) || PathPrefix(`/fragment`) || PathPrefix(`/crm`) || PathPrefix(`/marketing`) || PathPrefix(`/attribution`) || PathPrefix(`/finance`) || PathPrefix(`/settings`) || PathPrefix(`/static`) || PathPrefix(`/media`))'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: loop-crm-backend
+      priority: 200
+    loop-crm-backend-https:
+      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/api`) || PathPrefix(`/bolt`) || PathPrefix(`/accounts`) || PathPrefix(`/account`) || PathPrefix(`/admin`) || PathPrefix(`/fragments`) || PathPrefix(`/fragment`) || PathPrefix(`/crm`) || PathPrefix(`/marketing`) || PathPrefix(`/attribution`) || PathPrefix(`/finance`) || PathPrefix(`/settings`) || PathPrefix(`/static`) || PathPrefix(`/media`))'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: loop-crm-backend
+      priority: 200
+      tls:
+        certResolver: letsencrypt-http
+    loop-crm-site-http:
       rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
-      service: crm-site-service
-      priority: 10
-    crm-site-https:
+      service: loop-crm-frontend
+      priority: 100
+    loop-crm-site-https:
       rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)'
       entryPoints: [web-secure]
-      middlewares: [compress, csrf-headers, security-headers]
-      service: crm-site-service
-    crm-site-media-http:
-      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
-      entryPoints: [web]
-      middlewares: [compress, redirect-to-https]
-      service: crm-site-media-service
-      priority: 100
-    crm-site-media-https:
-      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
-      entryPoints: [web-secure]
       middlewares: [compress, security-headers]
-      service: crm-site-media-service
+      service: loop-crm-frontend
       priority: 100
+      tls:
+        certResolver: letsencrypt-http
+
   services:
-    crm-site-service:
+    loop-crm-backend:
       loadBalancer:
         servers:
-          - url: 'http://crm-website:5074'
+          - url: 'http://loop-crm-backend:8074'
         healthCheck:
-          path: /health/
-          hostname: crm.structa.cloud
-          interval: 30s
-          timeout: 10s
-    crm-site-media-service:
+          path: /
+          interval: 15s
+          timeout: 8s
+    loop-crm-frontend:
       loadBalancer:
         servers:
-          - url: 'http://shared-media:80'
+          - url: 'http://loop-crm-frontend:3000'
+        healthCheck:
+          path: /__health__
+          interval: 15s
+          timeout: 8s

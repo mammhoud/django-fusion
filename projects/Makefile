@@ -69,19 +69,25 @@ else ifeq ($(WEBSITE),vresume.structa.cloud)
   COMPOSE_FILE ?= docker-compose.yml
 
 else ifeq ($(WEBSITE),crm)
-  SITE := crm
-  TEST_WEBSITE := crm
-  COMPOSE_FILE ?= docker-compose.yml
+  SITE := loop-crm
+  TEST_WEBSITE := loop-crm
+  COMPOSE_FILE ?= loop-crm/docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/manage.py
+  PYTHON := uv run python
 
 else ifeq ($(WEBSITE),crm.structa.cloud)
-  SITE := crm
-  TEST_WEBSITE := crm
-  COMPOSE_FILE ?= docker-compose.yml
+  SITE := loop-crm
+  TEST_WEBSITE := loop-crm
+  COMPOSE_FILE ?= loop-crm/docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/manage.py
+  PYTHON := uv run python
 
 else ifeq ($(WEBSITE),inventory)
-  SITE := crm
-  TEST_WEBSITE := crm
-  COMPOSE_FILE ?= docker-compose.yml
+  SITE := loop-crm
+  TEST_WEBSITE := loop-crm
+  COMPOSE_FILE ?= loop-crm/docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/manage.py
+  PYTHON := uv run python
 
 else ifeq ($(WEBSITE),cms-fusion)
   SITE := cms-fusion
@@ -126,22 +132,20 @@ MANAGE ?= uv run $(RUN_MODULE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),portfolio,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
-DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),lms-fusion),backend,$(SITE)))))
+DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),lms-fusion loop-crm),backend,$(SITE)))))
 # Internal health-check port for the selected website container.
-DOCKER_HEALTH_PORT := $(if $(filter $(SITE),ctc-research),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),lms-fusion),5074,8000))))
-# Per-site celery worker service name, resolved from the per-site docker-compose.yml.
-# Mirrors the SITE→service mapping pattern used by DOCKER_SERVICE.
-#   ctc-research  → ctc-worker      (NOT ctc-research-worker; that's the global tasks compose name)
-#   lms      → lms-worker
-#   vresume       → vresume-worker
-# Override per-call:  make docker-redeploy-with-worker WEBSITE=ctc-research DOCKER_WORKER=my-worker
-DOCKER_WORKER ?= $(if $(filter $(SITE),ctc-research),ctc-worker,$(if $(filter $(SITE),lms),lms-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms-fusion),worker,$(SITE)-worker))))
+DOCKER_HEALTH_PORT := $(if $(filter $(SITE),ctc-research),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),lms-fusion loop-crm),8074,8000))))
+# Per-site worker service name, resolved from the per-site Compose file.
+# The shared Dramatiq worker owns cross-product background execution. Precis/LMS
+# is deliberately mapped to a non-existent worker name so explicit LMS web
+# maintenance cannot silently start an LMS background service.
+DOCKER_WORKER ?= $(if $(filter $(SITE),ctc-research),ctc-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms lms-fusion),lms-background-disabled,$(SITE)-worker)))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -158,9 +162,9 @@ help:
 		'Common workflows:' \
 		'  check          - Run Django system checks for the selected website' \
 		'  test           - Run the default pytest suite' \
-		'  tests-website  - Run website tests for WEBSITE=ctc|structa|vresume|all' \
+		'  tests-website  - Run website tests for an explicitly selected site' \
 		'  build-assets   - Build frontend assets for the selected website' \
-		'  build-assets-all - Build frontend assets for ctc, structa, and vresume' \
+		'  build-assets-all - Build active frontend assets (LMS excluded)' \
 		'  docker-up      - Build and start selected website containers' \
 		'  docker-down    - Stop selected website containers' \
 		'  docker-logs    - Follow logs for the selected website service' \
@@ -180,7 +184,7 @@ help:
 		'Development and server:' \
 		'  run-dev        - Run Django dev server for selected website' \
 		'  run-local      - Alias for run-dev for local machine use' \
-		'  check-all      - Run Django checks for ctc, structa, and vresume' \
+		'  check-all      - Run active product checks (LMS excluded)' \
 		'  test-fusion    - Run lms-fusion tests' \
 		'  test-local     - Run local pytest via uv' \
 		'  server         - Start the ASGI server (container default)' \
@@ -219,8 +223,11 @@ website-formints:
 
 website-pos: website-formints  ## Alias — POS editions dispatcher (projects/formints/Makefile)
 
+# Aggregate project commands intentionally exclude the Precis/LMS product.
+# Precis remains available through WEBSITE=lms-fusion for explicit maintenance,
+# but it is not part of repository-wide install/check/deploy workflows.
 projects:
-	@for project in ctc-research lms portfolio; do \
+	@for project in landing-fusion loop-crm syntara formints; do \
 		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
@@ -229,10 +236,12 @@ check:
 	$(MANAGE) check
 
 check-all:
-	@for website in ctc structa vresume; do \
-		echo "==> check WEBSITE=$$website"; \
-		$(MAKE) check WEBSITE=$$website; \
-	done
+	@echo "==> check WEBSITE=landing-fusion"
+	@$(MAKE) -C landing-fusion check
+	@echo "==> check WEBSITE=loop-crm"
+	@$(MAKE) -C loop-crm check
+	@echo "==> check Formint editions"
+	@$(MAKE) -C formints check-all
 
 # Domain drift check — verifies cms-fusion and lms-fusion domain code is in sync
 domain-drift:
@@ -249,8 +258,8 @@ validate-compose-env:
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'postgres' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'postgres' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%s\n' ''
-	@printf '%s\n' 'Required runtime env names: DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME REDIS_URL CELERY_BROKER_URL CELERY_RESULT_BACKEND'
-	@printf '%s\n' 'Redis database indexes: REDIS_URL=/0, CELERY_BROKER_URL=/1, CELERY_RESULT_BACKEND=/2'
+	@printf '%s\n' 'Required runtime env names: DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME REDIS_URL DRAMATIQ_BROKER_URL'
+	@printf '%s\n' 'Redis database indexes: REDIS_URL=/0, DRAMATIQ_BROKER_URL=/1'
 
 build-assets:
 	PROJECT_PATH=$(SITE) $(MAKE) -C assets build
@@ -335,7 +344,7 @@ docker-redeploy docker-deploy deploy redeploy:
 # data-driven from the compose file at call time.
 #
 # Usage:
-#   make docker-redeploy-with-worker WEBSITE=lms
+#   make docker-redeploy-with-worker WEBSITE=lms  # web-only; LMS worker disabled
 #   make docker-redeploy-with-worker WEBSITE=ctc-research
 #   make docker-redeploy-with-worker WEBSITE=vresume
 #   make docker-redeploy-with-worker WEBSITE=ctc-research DOCKER_WORKER=ctc-worker-beat
@@ -387,6 +396,14 @@ docker-prune-containers:
 ctc-research-up:
 	@$(MAKE) docker-up WEBSITE=ctc-research
 
+loop-crm-up:
+	@docker network create common 2>/dev/null || true
+	@docker network create traefik-net 2>/dev/null || true
+	@docker compose -f loop-crm/docker-compose.yml up -d --build --remove-orphans
+
+loop-crm-migrate:
+	@docker compose -f loop-crm/docker-compose.yml run --rm backend python manage.py migrate --noinput
+
 structa-up:
 	@$(MAKE) docker-up WEBSITE=structa
 
@@ -424,7 +441,7 @@ populate-data-site:
 
 populate-data-all:
 	mkdir -p $(LOG_DIR)
-	@for site in ctc-research lms vresume; do \
+	@for site in landing-fusion loop-crm; do \
 		$(PYTHON) ../tests/scripts/utilities/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
@@ -434,7 +451,7 @@ verify-runtime-site:
 
 full-site-check:
 	@if [[ "$(TEST_WEBSITE)" == "all" ]]; then \
-		for website in ctc structa vresume; do \
+		for website in landing-fusion loop-crm; do \
 			echo "==> full-site-check WEBSITE=$$website"; \
 			$(MAKE) full-site-check WEBSITE=$$website; \
 		done; \
@@ -517,20 +534,19 @@ docker-deploy-traefik:
 	@sleep 5
 	docker compose -f docker-compose.yml ps traefik
 
-# Deploy all three websites
+# Deploy active websites only. Precis/LMS remains an explicit per-site
+# maintenance target and is intentionally excluded from the full deploy.
 docker-deploy-websites:
 	@mkdir -p $(LOG_DEPLOY_DIR) $(LOG_BUILD_DIR)
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
 	 echo "[deploy-all] writing to $(LOG_DEPLOY_DIR)/deploy-all-$$timestamp.log"; \
 	 { \
-		 echo "Deploying all websites..."; \
-		 echo "Building ctc-research..."; \
-		 $(MAKE) docker-redeploy WEBSITE=ctc-research; \
-		 echo "Building lms..."; \
-		 $(MAKE) docker-redeploy WEBSITE=lms; \
-		 echo "Building VResume..."; \
-		 $(MAKE) docker-redeploy WEBSITE=vresume; \
-		 echo "All websites deployed!"; \
+		 echo "Deploying active websites (LMS excluded)..."; \
+		 echo "Building landing-fusion..."; \
+		 $(MAKE) -C landing-fusion docker-up; \
+		 echo "Building loop-crm..."; \
+		 $(MAKE) -C loop-crm docker-up; \
+		 echo "Active websites deployed (LMS excluded)."; \
 		 docker compose -f docker-compose.yml ps; \
 	 } 2>&1 | tee $(LOG_DEPLOY_DIR)/deploy-all-$$timestamp.log
 
@@ -547,7 +563,6 @@ docker-deploy-full: docker-clean docker-deploy-warehouse docker-deploy-traefik d
 	@echo "Access points:"
 	@echo "  - Traefik Dashboard: http://localhost:8080"
 	@echo "  - CTC Research: http://ctc-research.local:5070"
-	@echo "  - LMS Demo: http://lms.local:5071"
 	@echo "  - VResume: http://vresume.local:5072"
 	@echo "  - Adminer: http://localhost (via traefik)"
 	@echo ""
@@ -579,10 +594,9 @@ docker-health-check:
 
 # Probe health for all three website containers by wrapping docker-health-check per site.
 probe-health:
-	@echo "Probing health for all three sites..."
-	@$(MAKE) docker-health-check WEBSITE=ctc-research
-	@$(MAKE) docker-health-check WEBSITE=lms
-	@$(MAKE) docker-health-check WEBSITE=vresume
+	@echo "Probing health for active sites..."
+	@$(MAKE) docker-health-check WEBSITE=landing-fusion
+	@$(MAKE) docker-health-check WEBSITE=loop-crm
 
 # Restart all services
 docker-restart-all:
@@ -608,17 +622,16 @@ docker-start-all:
 ###############################################################################
 
 
-# Lint all Python code
+# Lint/typecheck active Python products. Precis/LMS remains explicit via its
+# own backend Makefile and is not part of aggregate checks.
 lint:
-	$(PYTHON) -m pylint ctc-research lms VResume 2>/dev/null || echo "Linting completed with warnings"
+	$(PYTHON) -m pylint landing-fusion loop-crm syntara formints tests 2>/dev/null || echo "Linting completed with warnings"
 
-# Format Python code
 format:
-	$(PYTHON) -m black ctc-research lms VResume tests/
+	$(PYTHON) -m black landing-fusion loop-crm syntara formints tests/
 
-# Type checking with mypy
 typecheck:
-	$(PYTHON) -m mypy ctc-research lms VResume --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
+	$(PYTHON) -m mypy landing-fusion loop-crm syntara formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
 
 # Run all checks: lint, format, typecheck
 lint-all: lint typecheck

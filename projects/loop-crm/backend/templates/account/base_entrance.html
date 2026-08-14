@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{% block head_title %}Account{% endblock %} — Loop CRM{% endblock %}
+{% block content %}
+<section class="loop-auth-card" aria-labelledby="auth-title">
+  <p class="loop-eyebrow">Loop CRM · account</p>
+  <div class="loop-auth-card__inner"><h1 id="auth-title">{% block auth_heading %}Account access{% endblock %}</h1>{% block auth_inner %}{% endblock %}</div>
+</section>
+{% endblock %}
+{% block head %}<style>
+.loop-auth-card{max-width:34rem;margin:3rem auto;padding:1.5rem;border:1px solid var(--line);border-radius:1rem;background:linear-gradient(145deg,rgba(23,33,45,.97),rgba(15,22,30,.9));box-shadow:0 1.5rem 4rem #0003}.loop-auth-card h1{font-size:clamp(2rem,5vw,3.2rem)}.loop-auth-card__inner{margin-top:1.5rem}.loop-auth-card label{display:block;margin-bottom:.35rem;color:#b5c1ce;font-size:.82rem}.loop-auth-card input{width:100%;padding:.7rem;border:1px solid #334252;border-radius:.45rem;background:#0d141c;color:var(--ink);font:inherit}.loop-auth-card input:focus{outline:2px solid #73d1bb88;border-color:var(--accent)}.loop-auth-card form p{margin:1rem 0}.loop-auth-card .helptext{display:block;margin-top:.25rem;color:var(--muted);font-size:.72rem}.loop-auth-card .errorlist{margin:.35rem 0;padding-left:1.1rem;color:#ffaaa1;font-size:.78rem}.loop-auth-card a{color:var(--accent-2)}.loop-auth-card__actions{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.2rem}.loop-auth-card__link{font-size:.8rem}
+</style>{% endblock %}

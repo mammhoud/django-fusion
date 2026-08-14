@@ -13,13 +13,13 @@ Usage (in core/routes.py)::
 
     from apps.core.application import CoreApp
 
-    site = Site(title="LMS Fusion", viewsets=[LMSApp(), BlogApp(), CoreApp()])
+    module = Module(title="LMS Fusion", viewsets=[LMSApp(), BlogApp(), CoreApp()])
 """
 
 from __future__ import annotations
 
-from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
+from django_fusion.routes.core.sites import Application
 
 
 class CoreApp(Application):
@@ -38,7 +38,7 @@ class CoreApp(Application):
 
     @viewprop
     def viewsets(self):
-        from apps.core.site.components import CMSHeadContentFragment, CheckoutFragment
+        from apps.core.site.components import CheckoutFragment, CMSHeadContentFragment
         return [
             CMSHeadContentFragment(),
             CheckoutFragment(),

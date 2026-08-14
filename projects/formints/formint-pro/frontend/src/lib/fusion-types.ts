@@ -1,7 +1,7 @@
 /**
  * Shared TypeScript types for the Formint POS django-fusion fragment system.
  *
- * Mirrors the payloads served by the formint sidecar:
+ * Mirrors the payloads served by the formint server:
  *   - `/fusion/pointer/`  → `{ encoded, decoded, fusion_render_first }`
  *   - `/fusion/page/`     → PageHandler full page (browser) or fragment (HTMX)
  *   - `/api/v1/render-mode` → fusion envelope `{ status, message, data }`

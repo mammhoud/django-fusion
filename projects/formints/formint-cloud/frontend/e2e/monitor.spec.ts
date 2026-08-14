@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
  * Requires the cloud stack:
  *   - backend API on :8767 (`make dev-api` from projects/formints/formint-cloud)
  *   - frontend dev server (started automatically by the Playwright webServer)
- *   - the Astro dev proxy `/monitor` → SIDECAR entry (astro.config.mjs) —
+ *   - the Astro dev proxy `/monitor` → SERVER entry (astro.config.mjs) —
  *     the /telemetry page test relies on it for the same-origin fetch
  *
  * Covers:

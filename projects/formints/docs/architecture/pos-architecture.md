@@ -19,14 +19,14 @@
 │  ┌──────────────────▼──────────────────────────┐   │
 │  │        Rust Backend (Tauri Commands)         │   │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
-│  │  │ Commands │  │  Diesel  │  │  Sidecar │   │   │
+│  │  │ Commands │  │  Diesel  │  │  Server │   │   │
 │  │  │ products │  │   ORM    │  │  Manager │   │   │
 │  │  │  sales   │  │ SQLite   │  │  (Robyn) │   │   │
 │  │  └──────────┘  └──────────┘  └──────────┘   │   │
 │  └──────────────────┬──────────────────────────┘   │
 │                     │                                │
 │  ┌──────────────────▼──────────────────────────┐   │
-│  │     Python Sidecar (Robyn + Django ORM)      │   │
+│  │     Python Server (Robyn + Django ORM)      │   │
 │  │  - REST API on port 8766                    │   │
 │  │  - WebSocket /ws/entities                   │   │
 │  │  - Django ORM for shared database            │   │
@@ -38,7 +38,7 @@
 ## Data Flow
 
 1. **Frontend** → RTK Query mutations → Rust Tauri commands → Diesel ORM → SQLite
-2. **Frontend** → HTTP → Python Robyn sidecar → Django ORM → SQLite
+2. **Frontend** → HTTP → Python Robyn server → Django ORM → SQLite
 3. **WebSocket** → `/ws/entities` ← Entity change events (real-time)
 4. **Multi-node** → Sync engine pushes approved changes between instances
 
@@ -46,7 +46,7 @@
 
 - **SQLite** for embedded database (zero-config, single-file)
 - **Tauri commands** for native operations (file I/O, printing, system dialogs)
-- **Python sidecar** for complex business logic (sync, webhooks, reporting)
+- **Python server** for complex business logic (sync, webhooks, reporting)
 - **RTK Query** for API caching and optimistic UI updates
 - **Shared database** between Rust and Python via `restaurant.db`
 
@@ -57,7 +57,7 @@
 > Hosted multi-terminal SaaS master. Not a Tauri app — a single Django package
 > (`formint-cloud`, `backend/`) serving the full surface on `:8767` (API + fusion
 > contract + Community-UI bridges) and the bolt/unfold admin on `:8082`, over
-> `formint_cloud.db`. The Robyn sidecar that previously served this surface has
+> `formint_cloud.db`. The Robyn server that previously served this surface has
 > been removed — Django answers the same paths.
 
 ```
@@ -78,4 +78,4 @@
 
 1. **Branches** → `sync_push` / `heartbeat` WebSockets → Django channels consumers (`apps/handlers/consumers.py`) → broker → `SyncQueueItem` → conflict resolution → broadcast back
 2. **Read-heavy clients** → Django (`:8767`) → Django ORM → `formint_cloud.db` (the `/fusion/*` contract, root CRUD, and `/api/*` bridges are served directly by Django)
-3. **Fusion contract** — `apps/handlers/fusion.py` mirrors the endpoint contract the sidecar previously exposed so consumers can target the same paths unchanged
+3. **Fusion contract** — `apps/handlers/fusion.py` mirrors the endpoint contract the server previously exposed so consumers can target the same paths unchanged

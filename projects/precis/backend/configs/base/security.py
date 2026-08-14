@@ -108,7 +108,7 @@ JWT_AUTH = {
 # -------------------------------
 # Authentication URLs
 # -------------------------------
-LOGIN_URL = "/auth/sign-in/"
+LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 

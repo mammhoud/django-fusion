@@ -23,11 +23,11 @@ import type { MonitorStatus } from '@formints/client';
  * Same-origin relative ('' → `/monitor/status`) so the browser request goes
  * through the Astro dev proxy (astro.config.mjs adds a `/monitor` entry) —
  * matching the `dashboard.ts` convention of "same-origin relative paths ...
- * without CORS or absolute URLs". Override with VITE_SIDECAR_URL when the
+ * without CORS or absolute URLs". Override with VITE_SERVER_URL when the
  * frontend and API are served from different origins.
  */
 export const MONITOR_BASE =
-  (import.meta.env?.VITE_SIDECAR_URL as string | undefined) || '';
+  (import.meta.env?.VITE_SERVER_URL as string | undefined) || '';
 
 export interface MonitorApi {
   /** GET /monitor/status — db reachability, last backup, queue depth. */

@@ -38,8 +38,10 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_structa')\gexec
 SELECT 'CREATE DATABASE db_lms_fusion'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_lms_fusion')\gexec
 
--- NOTE: the `blinko` database was removed (2026-08) when the dev-stack
--- workspace replaced Blinko with FileGator (no database required).
+-- The `appflowy` database/user is created by
+-- 00.initdb-multiple-databases.sh from INITDB_MULTIPLE_DATABASES so the
+-- Coder dev-workspace can connect to the shared PostgreSQL service. The former
+-- Blinko database is deprecated and is not recreated.
 
 -- -----------------------------------------------------------------------------
 -- 3. Grant privileges and set ownership for each database

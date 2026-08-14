@@ -53,8 +53,9 @@
 | File | Services |
 |------|----------|
 | `applications/compose/docker-compose.applications.yml` | All Django site containers |
-| `applications/compose/docker-compose.tasks.yml` | shared-worker + shared-scheduler |
-| `applications/databases/docker-compose.yml` | Postgres + Redis + Coder |
+| `applications/docker-compose.tasks.yml` | shared-worker + shared-scheduler |
+| `applications/databases/docker-compose.yml` | Postgres + Redis |
+| `applications/docker-compose.yml` | Coder control plane |
 | `applications/proxy/docker-compose.yml` | Traefik proxy |
 | `applications/proxy/docker-compose.nginx.yml` | Nginx media server |
 | `applications/proxy/docker-compose.nginx.yml` (`docs` service) | Documentation site |
@@ -69,7 +70,7 @@ make deploy-databases    # Postgres + Redis only
 make deploy-app          # Django site containers
 make deploy-tasks        # Worker + scheduler
 make deploy-proxy        # Traefik proxy
-make deploy-coder        # Coder platform
+docker compose -f applications/docker-compose.yml up -d coder  # Coder platform
 make status              # Show all container statuses
 make logs                # Tail logs from all services
 make stop                # Stop all services

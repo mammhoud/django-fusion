@@ -1,24 +1,39 @@
 # django-fusion — Unified Background Tasks & MCP Integration Plan
 
-> **Status:** Planned
+> **Status:** Dramatiq migration implemented; MCP and production hardening remain
 > **Owner:** django-fusion core team
 > **Created:** 2026-08-10
 > **Scope:** `libs/django-fusion/`, `projects/precis/`, `projects/landing-fusion/`, `projects/formints/`
 > **Depends on:** django-fusion enhancement roadmap, worker consolidation, ceptor-ai MCP server
 > **Companion plan:** [`django-fusion-llm-mcp-enhancement-plan.md`](django-fusion-llm-mcp-enhancement-plan.md) adds provider-neutral LLM routing, AI component workflows, caching, streaming, and governance on top of this task layer.
+>
+> **Current implementation note (2026-08-14):** The broker-agnostic decorator,
+> registry, Dramatiq backend, scheduled-task registry, and filesystem project
+> discovery are implemented in `libs/django-fusion/src/django_fusion/tasks/`.
+> The active infrastructure Compose stack now runs Dramatiq plus APScheduler;
+> Celery Beat, the historical `applications/compose/` path, and LMS task
+> participation in the shared worker are deprecated. See the current
+> repository plan at [`../repository/active-monorepo-consolidation-2026-08-14.md`](../repository/active-monorepo-consolidation-2026-08-14.md).
 
 ---
 
 ## 1. Executive Summary
 
-The Structa Cloud monorepo currently runs a **hybrid Celery + Dramatiq** background-task stack with three per-site Celery workers, a shared Dramatiq worker, and a Celery Beat scheduler. The fusion product line (Precis LMS, Landing-Fusion) has **no background-task solution** — it removed `www.worker` from `INSTALLED_APPS` and relies on django-fusion's own task stack, which today is a thin `dispatch_job()` wrapper around django-rq.
+The 2026-08-14 migration completed the worker runtime change: production
+background work uses Dramatiq, scheduled work uses APScheduler, and active
+product actors live under `backend/plugins/workers/`. Precis/LMS task paths are
+not loaded by the infrastructure shared worker. This plan now tracks remaining
+MCP and production-hardening work rather than proposing another broker migration.
 
-This plan proposes:
+Completed in the migration:
 
-1. **Replace Celery entirely** with Dramatiq as the sole task broker, completing the worker consolidation plan.
-2. **Build a unified background-task API** in django-fusion (`django_fusion.tasks`) that abstracts the broker and provides task discovery, logging, retry, scheduling, and observability — working identically whether the backend is Dramatiq, django-rq, or in-process.
-3. **Add MCP tools** to django-fusion for AI-driven task management: inspect queues, retry failed tasks, trigger tasks, view task history.
-4. **Wire Precis LMS, Landing-Fusion, and Formint** to the unified API with project-owned task modules.
+1. Celery, Celery Beat, Django-Q, Django-RQ, and Temporal worker entrypoints were removed from the active runtime.
+2. `django_fusion.tasks` gained filesystem/dotted-module discovery, Dramatiq actor registration, delayed publishing, audit logging, and in-process testing.
+3. Product task implementations moved from `apps/tasks` to `plugins/workers`; model/migration ownership remains in `apps/tasks` where needed.
+4. The shared worker and scheduler commands are defined in `applications/docker-compose.tasks.yml`.
+
+Remaining work is limited to MCP authorization/transport hardening, production
+observability, and deployment-host verification.
 
 ---
 
@@ -28,12 +43,12 @@ This plan proposes:
 
 | Component | Location | Technology | Status |
 |---|---|---|---|
-| Shared Dramatiq worker | `projects/configs/tools/worker/` | Dramatiq + Redis | **Active** — email + content tasks |
-| Shared Celery scheduler | `projects/configs/tools/worker/celery.py` | Celery Beat | **Active** — heartbeat + cleanup |
-| Per-site Celery workers | `lms-worker`, `ctc-worker`, `vresume-worker` | Celery | **Active** — scheduled per-site |
+| Shared Dramatiq worker | `applications/docker-compose.tasks.yml` + product `backend/plugins/workers/` | Dramatiq + Redis | **Active** — explicit active-product paths |
+| Shared scheduler | `django_fusion.tasks.scheduler` | APScheduler | **Active** — configured Fusion schedules |
+| Per-site product workers | product Compose files | mixed legacy | **Deprecated for aggregate workflows** — shared Dramatiq owns active task paths; LMS is excluded |
 | Worker consolidation plan | [`docs/plans/repository/worker-consolidation.md`](../repository/worker-consolidation.md) | Celery → shared | **Planned** — Phases 1-4 |
-| django-fusion task log | `django_fusion.models.tasks.BackgroundTaskLog` | django-rq | **Exists** — thin wrapper |
-| django-fusion dispatch | `django_fusion.services.jobs.dispatch_job` | django-rq | **Exists** — hardcoded to RQ |
+| django-fusion task log | `django_fusion.models.tasks.BackgroundTaskLog` | Dramatiq | **Active** — shared audit record |
+| django-fusion dispatch | `django_fusion.tasks` and `django_fusion.services.jobs` | Dramatiq | **Active** — `dispatch_job` is a deprecated compatibility wrapper |
 | ceptor-ai MCP server | `libs/ceptor-ai/src/ceptor_ai/mcp_server.py` | FastAPI + MCP | **Active** — read-only metadata |
 | Kilo MCP server | `applications/agents/mcp_server.py` | FastAPI | **Active** — introspection |
 
@@ -51,15 +66,17 @@ This plan proposes:
 
 ### 2.3 Duplicated Worker Code
 
-The codebase has **three copies** of essentially the same worker package:
+The former codebase had **three copies** of essentially the same worker package:
 
 | Path | Role |
 |---|---|
-| `projects/www/worker/` | Legacy shared worker (used by CTC Research, LMS, VResume) |
-| `projects/configs/management/workers/` | Management-context worker duplicate |
-| `projects/configs/tools/worker/` | Tools-context worker duplicate |
+| `projects/www/worker/` | Historical path; no longer a current source of truth |
+| `applications/configs/management/workers/` | Historical duplicate; keep only as migration evidence until deletion gates pass |
+| `applications/configs/tools/worker/` | Current infrastructure actor package |
 
-All three contain identical `celery.py`, `email.py`, `content.py`, `tasks.py`, `modules.py`, and `decorators.py`. Only one should remain.
+Those duplicate worker trees are deleted. Active actors now live in product-owned
+`backend/plugins/workers/` packages, and `django-fusion` owns only the reusable
+registry/backend/scheduler API.
 
 ---
 
@@ -125,8 +142,9 @@ django-fusion's `TaskRegistry` scans `INSTALLED_APPS` for `tasks` subpackages an
 
 - Remove all Celery dependencies: `celery`, `django-celery-beat`, `django-celery-results`
 - Consolidate to Dramatiq as the single task broker
-- Use `django-dramatiq` + `apscheduler` (or Dramatiq's built-in scheduler) for periodic tasks
-- Keep exactly one worker codebase (`projects/configs/worker/`)
+- Use `django-dramatiq` + `apscheduler` for periodic tasks
+- Keep one shared infrastructure worker plus one `backend/plugins/workers/`
+  package per active product
 
 ### 4.2 Implementation Steps
 

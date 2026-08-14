@@ -1,39 +1,16 @@
-{% comment %} ──────────────────────────────────────────────────────────
-   pages/partials/breadcrumbs.html — in-page navigation for subpages.
-
-   Rendered at the top of the shared content region (page_content.html) when
-   the handler attaches a ``breadcrumbs`` trail — currently for the About
-   subpages (team / founder / startup), service phases + prompts, product
-   detail + preview, and blog posts. Mirrors the frontend
-   ``Breadcrumb.astro`` component (schema.org BreadcrumbList, same mono
-   uppercase styling) so both render roads show identical trails.
-
-   Contract:
-     breadcrumbs        — list of {"label": str, "href": str} ancestors, newest last
-     page               — the current Wagtail page (its title is the final crumb)
-     breadcrumb_current — optional override for the final crumb (e.g. a preview
-                          shows the edition name instead of the page title)
-   ────────────────────────────────────────────────────────────────────── {% endcomment %}
-
+{% comment %}Landing-Fusion breadcrumb trail for nested pages.{% endcomment %}
 {% if breadcrumbs %}
-<nav aria-label="Breadcrumb" class="breadcrumbs" style="padding-block:1.25rem 0;">
+<nav aria-label="Breadcrumb" class="site-breadcrumb" data-fusion-component="breadcrumb">
   <div class="container-fusion">
-    <ol itemscope itemtype="https://schema.org/BreadcrumbList"
-        style="display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:0;padding:0;list-style:none;font-family:'JetBrains Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--fu-muted));">
+    <ol class="site-breadcrumb__list" itemscope itemtype="https://schema.org/BreadcrumbList">
       {% for crumb in breadcrumbs %}
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"
-          style="display:flex;align-items:center;gap:.4rem;">
+      <li class="site-breadcrumb__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <meta itemprop="position" content="{{ forloop.counter }}">
-        <a href="{{ crumb.href }}" itemprop="item" style="color:hsl(var(--fu-muted));text-decoration:none;transition:color .2s ease;" onmouseover="this.style.color='hsl(var(--fu-link))'" onmouseout="this.style.color='hsl(var(--fu-muted))'">
-          <span itemprop="name">{{ crumb.label }}</span>
-        </a>
-        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true" style="opacity:.4;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-        </svg>
+        <a href="{{ crumb.href }}" itemprop="item" class="site-breadcrumb__link"><span itemprop="name">{{ crumb.label }}</span></a>
+        <span class="site-breadcrumb__separator" aria-hidden="true">/</span>
       </li>
       {% endfor %}
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" aria-current="page"
-          style="display:flex;align-items:center;gap:.4rem;font-weight:500;color:hsl(var(--fu-ink));">
+      <li class="site-breadcrumb__item site-breadcrumb__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" aria-current="page">
         <meta itemprop="position" content="{{ breadcrumbs|length|add:1 }}">
         <span itemprop="name">{{ breadcrumb_current|default:localized_content.title|default:page.title }}</span>
       </li>

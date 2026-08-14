@@ -51,15 +51,15 @@ services:
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
       REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/2
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
       SITE_DOMAIN: ctc-research.com
       SITE_PORT: "443"
       WAGTAILADMIN_BASE_URL: https://ctc-research.com
       MEDIA_ROOT: /app/media
       ALLOWED_HOSTS: localhost,127.0.0.1,lms-fusion.localhost,lms-fusion.com,www.lms-fusion.com,ctc-research.com,www.ctc-research.com,arch.ctc-research.com,lms-fusion-backend
       CSRF_TRUSTED_ORIGINS: http://localhost:5074,http://lms-fusion.localhost,https://lms-fusion.com,https://www.lms-fusion.com,https://ctc-research.com,https://www.ctc-research.com,https://arch.ctc-research.com
-      CELERY_TASK_DEFAULT_QUEUE: lms-fusion
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:5074/health/"]
       interval: 30s
@@ -120,7 +120,7 @@ services:
       PROJECT_PATH: lms-fusion
       WEBSITE_DIR: /app/lms-fusion
       DJANGO_WEBSITE_DIR: /app/lms-fusion
-      CELERY_TASK_DEFAULT_QUEUE: lms-fusion
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
@@ -128,9 +128,13 @@ services:
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
       REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/2
-    command: celery -A apps.domain.services.email.tasks:app worker --loglevel=info --queues=lms-fusion
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,courses,system,default
     volumes:
       # The backend is mounted at the runtime site root because the shared
       # entrypoint and SiteCLI expect manage.py/settings.py there.
@@ -143,6 +147,62 @@ services:
       # backend does, otherwise it imports the image-baked (potentially stale)
       # copy and crashes on new modules (e.g. django_fusion.models.certificate).
       # :rw required — django-fusion's editable install touches egg-info at import.
+      - ../../libs:/app/libs:rw
+      - ../../logs:/app/logs:z
+      - lms-fusion-media:/app/media:rw
+      - ./Env:/app/lms-fusion/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  scheduler:
+    build:
+      context: ../../
+      dockerfile: projects/precis/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis
+        PROJECT_PATH: lms-fusion
+    image: lms-fusion-backend:latest
+    container_name: lms-fusion-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: lms-fusion
+      DJANGO_SITE: lms-fusion
+      PROJECT_PATH: lms-fusion
+      WEBSITE_DIR: /app/lms-fusion
+      DJANGO_WEBSITE_DIR: /app/lms-fusion
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    # The backend (RUN_SETUP=true) applies migrations before serving, so
+    # waiting on its healthcheck guarantees the TaskExecution table exists
+    # before sync_task_history fires.
+    depends_on:
+      backend:
+        condition: service_healthy
+    command: python -m django_fusion.tasks.scheduler
+    volumes:
+      # The backend is mounted at the runtime site root because the shared
+      # entrypoint and SiteCLI expect manage.py/settings.py there.
+      - ./backend:/app/lms-fusion:rw
+      - ./assets:/app/assets:ro
+      # Live libs mirror: the scheduler must see the same django-fusion source
+      # the backend does (incl. tasks/scheduler.py + tasks/sync.py).
       - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
       - lms-fusion-media:/app/media:rw

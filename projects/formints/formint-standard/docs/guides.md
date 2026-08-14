@@ -141,7 +141,7 @@ See `src-tauri/tauri.conf.json` for:
 - App window dimensions (default: 1200×800)
 - Bundle identifier: `com.mammhoud.pos`
 - Icon paths (icns, ico, png)
-- External binaries (sidecar)
+- External binaries (server)
 - Updater endpoints
 
 ---

@@ -191,6 +191,8 @@ export interface PageData {
   editions?: Record<string, any>[];
   comparison?: Record<string, any>[];
   applications?: Record<string, any>[];
+  /** Product business profile (ProductPage.profile) — ICP, capacity, reports, channels, tone. */
+  profile?: Record<string, any>[];
   /** Flattened BlogPostPage snippet items from the page API. */
   snippets?: BlogSnippet[];
   /** Editorial media-gallery blocks (ProductPage.gallery — screenshots, GIFs, videos). */
@@ -399,7 +401,7 @@ export async function fetchSiteSettingsWithFallback(): Promise<SiteSettings> {
       site_name: 'Structa Cloud', site_tagline: 'Platforms that ship as finished HTML.',
       logo_url: null, favicon_url: null, primary_color: '#0B57D0', accent_color: '#FFE14D',
       meta_description: 'Platforms, AI tools, and open-source libraries shipped as finished HTML.',
-      meta_keywords: '', meta_author: 'Mahmoud Ezzat Moustafa', og_image_url: null, twitter_handle: '',
+      meta_keywords: '', meta_author: 'Mahmoud Ezzat', og_image_url: null, twitter_handle: '',
       analytics_provider: '', google_tag_manager_id: '', google_analytics_id: '',
       nav_show_home: true, nav_show_contact: true, nav_cta_label: 'Get Started', nav_cta_url: '/contact/',
       footer_description: 'Platforms, AI tools, and open-source libraries.', footer_address: '', footer_phone: '',
@@ -467,40 +469,31 @@ export async function fetchPricingWithFallback(): Promise<PricingData> {
       products: [
         {
           slug: 'formint-pos', title: 'Formints',
-          tagline: 'Desktop point-of-sale in four editions: Community, Standard, Pro, Cloud.',
+          tagline: 'Desktop point-of-sale in four editions: Community, Standard, Pro, Custom.',
           version: 'beta 0.2', logo_style: 'crest', status: 'live', href: '/products/formint-pos/',
           editions: [
             { name: 'Community', price: '$0', period: 'open source', tagline: 'Offline-first POS for a single terminal.', tier: 'outline', featured: false },
-            { name: 'Standard', price: '$119', period: 'one-time license', tagline: 'A polished standalone terminal for growing businesses.', tier: 'default', featured: false },
-            { name: 'Pro', price: '$79', period: 'per year', tagline: 'Multi-terminal POS with a cloud master.', tier: 'featured', featured: true },
-            { name: 'Cloud', price: 'Custom', period: 'per month', tagline: 'Fully hosted multi-terminal operations.', tier: 'managed', featured: false },
+            { name: 'Standard', price: '$119', period: 'one-time license', offer_label: '50% off · launch', offer_old_price: '$238', tagline: 'A polished standalone terminal for growing businesses.', tier: 'default', featured: false },
+            { name: 'Pro', price: '$129', period: 'per year', offer_label: '50% off · launch', offer_old_price: '$258', tagline: 'Multi-terminal POS with a cloud master.', tier: 'featured', featured: true },
+            { name: 'Custom', price: 'Custom', period: 'custom quote', tagline: 'Fully hosted multi-terminal operations.', tier: 'managed', featured: false },
           ],
         },
         {
           slug: 'lms', title: 'Precis LMS',
-          tagline: 'Courses, enrollments, payments, and a learning experience your team can own.',
+          tagline: 'The merged content + learning platform: courses, enrollments, payments, landing pages and blog.',
           version: 'v1', logo_style: 'ribbon', status: 'live', href: '/products/lms/',
           editions: [
-            { name: 'Solo', price: '$29', period: 'per month', tagline: 'A polished learning experience for active creators.', tier: 'featured', featured: true },
-            { name: 'Business', price: '$99', period: 'per month', tagline: 'Cohorts, staff, and connected systems for organizations.', tier: 'default', featured: false },
+            { name: 'Solo', price: '$29', period: 'per month', tagline: 'A polished learning experience plus a landing page, for active creators.', tier: 'default', featured: false },
+            { name: 'Standard', price: '$299', period: 'per year', offer_label: '50% off · launch', offer_old_price: '$598', tagline: 'Cohorts, staff, a full CMS site, and connected systems for organizations.', tier: 'featured', featured: true },
+            { name: 'Custom', price: 'Custom', period: 'custom quote', tagline: 'A managed deployment bundling the full LMS + CMS + blog platform.', tier: 'managed', featured: false },
           ],
         },
         {
-          slug: 'cms', title: 'Loop',
-          tagline: 'Build content-driven websites from Wagtail blocks.',
-          version: 'v2.7', logo_style: 'isometric', status: 'live', href: '/products/cms/',
+          slug: 'cms', title: 'Loop CRM',
+          tagline: 'A unified sales + marketing platform — CRM, social scheduling and attribution.',
+          version: 'coming soon', logo_style: 'isometric', status: 'development', href: '/products/cms/',
           editions: [
-            { name: 'Community', price: '$0', period: 'open source', tagline: 'A landing page with the core section blocks.', tier: 'outline', featured: false },
-            { name: 'Business', price: 'Custom', period: 'per project', tagline: 'A managed multi-site with custom blocks and analytics.', tier: 'featured', featured: true },
-          ],
-        },
-        {
-          slug: 'cypercloud', title: 'Syntara',
-          tagline: 'AI chat customizer with an embeddable, branded experience.',
-          version: 'beta', logo_style: 'orbit', status: 'live', href: '/products/cypercloud/',
-          editions: [
-            { name: 'Community', price: '$0', period: 'open source', tagline: 'Self-hosted chat client with multi-model support.', tier: 'outline', featured: false },
-            { name: 'Business', price: '$39', period: 'per month', tagline: 'Managed chat with branding, rules, and analytics.', tier: 'featured', featured: true },
+            { name: 'Community', price: '$0', period: 'open source', tagline: 'Coming soon — the open-source CRM + social scheduler (AGPL-3.0).', tier: 'outline', featured: false },
           ],
         },
         {

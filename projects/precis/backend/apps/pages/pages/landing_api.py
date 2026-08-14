@@ -30,27 +30,16 @@ def _requested_language(request: HttpRequest) -> str:
 def get_effective_render_first(request: HttpRequest | None = None) -> bool:
     """Return the effective ``fusion_render_first`` preference.
 
-    Mirrors landing-fusion's ``get_effective_render_first`` (and
-    django-fusion's ``FusionDualModeMixin``): the ``X-Fusion-Render-First:
-    true|false`` header overrides per request; otherwise the
-    ``FUSION_RENDER_FIRST`` setting decides the mode.
+    Thin wrapper over django-fusion's canonical ``resolve_render_first``
+    chain (``X-Fusion-Render-First`` header → explicit session preference →
+    the ``FUSION_RENDER_FIRST`` setting).
 
     ``True``  → “fusion render first” — Django renders finished HTML.
     ``False`` → “data APIs” — the client renders from /apis/* JSON.
     """
-    if request is not None:
-        header = request.headers.get("X-Fusion-Render-First")
-        if header in ("true", "false"):
-            return header == "true"
-    from django.conf import settings as django_settings
+    from django_fusion.routes.rendering.render_mode import resolve_render_first
 
-    return bool(
-        getattr(
-            django_settings,
-            "FUSION_RENDER_FIRST",
-            getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", True),
-        )
-    )
+    return resolve_render_first(request)
 
 
 def _live_page(slug: str, language: str = "en"):

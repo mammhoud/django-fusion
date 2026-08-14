@@ -6,22 +6,22 @@ Defines the ``AccountsApp`` Application (routable-components hierarchy node)
 for accounts-related content (profiles, auth, etc.).  Event management has
 been moved to ``apps.pages.events.application.EventsApp``.
 
-Kept in the accounts app so core routing only assembles the ``Site`` from
+Kept in the accounts app so core routing only assembles the ``Module`` from
 app-level Application classes.
 
 Usage (in core/routes.py)::
 
     from apps.pages.accounts.application import AccountsApp
 
-    site = Site(title="LMS Fusion", viewsets=[LMSApp(), BlogApp(), AccountsApp(), EventsApp(), CoreApp()])
+    module = Module(title="LMS Fusion", viewsets=[LMSApp(), BlogApp(), AccountsApp(), EventsApp(), CoreApp()])
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
+from django_fusion.routes.core.sites import Application
 
 
 class AccountsApp(Application):

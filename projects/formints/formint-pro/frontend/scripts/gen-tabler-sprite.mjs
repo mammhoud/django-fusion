@@ -21,7 +21,7 @@ const OUT_FILE = new URL('../src/components/ui/icons/Sprite.astro', import.meta.
  */
 const ALIAS = {
   cart: 'shopping-cart',
-  // material-icon names coming from the sidecar navigation API
+  // material-icon names coming from the server navigation API
   shopping_cart: 'shopping-cart',
   restaurant: 'chef-hat',
   people: 'users',

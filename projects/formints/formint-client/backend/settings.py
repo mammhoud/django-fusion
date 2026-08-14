@@ -239,7 +239,9 @@ FUSION_ASSET_PIPELINE = {
 #           /shop/fragments/* HTML fragments.
 # Override per request with the ``X-Fusion-Render-First: true|false`` header.
 # Env: FUSION_RENDER_FIRST=1|0
-FUSION_RENDER_FIRST_DEFAULT = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"
+FUSION_RENDER_FIRST = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"
+# Legacy alias — the canonical resolver reads ``FUSION_RENDER_FIRST`` first.
+FUSION_RENDER_FIRST_DEFAULT = FUSION_RENDER_FIRST
 
 # django-fusion component registry — template subdirectories whose *.html
 # files become registered include-path components.

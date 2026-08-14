@@ -2,10 +2,10 @@
 
 > **Generated:** 2026-07-23  
 > **Scope:** `pos-mini`, `pos-solo`, `pos-full` (historical)  
-> **Stack:** Tauri v2 (Rust backend) + React (TypeScript frontend) + SQLite (Diesel ORM) + Python/Sanic sidecar
+> **Stack:** Tauri v2 (Rust backend) + React (TypeScript frontend) + SQLite (Diesel ORM) + Python/Sanic server
 
 > ⚠️ **Archived reference**: pos-solo and pos-full were merged into
-> `formint-pos/`; the Robyn sidecar now lives at `formint-pos/sidecar/` and the
+> `formint-pos/`; the Robyn server now lives at `formint-pos/server/` and the
 > legacy React UIs under `formint-pos/legacy-react/`.
 
 ---
@@ -18,15 +18,15 @@
 ├──────────────┬────────────────┬────────────────┬───────────────────┤
 │              │   pos-mini     │   pos-solo     │    pos-full       │
 ├──────────────┼────────────────┼────────────────┼───────────────────┤
-│ Backend      │ Rust (Tauri)   │ Python Sidecar │ Python Sidecar    │
-│ DB Access    │ Diesel ORM     │ Sidecar HTTP   │ Sidecar HTTP      │
+│ Backend      │ Rust (Tauri)   │ Python Server │ Python Server    │
+│ DB Access    │ Diesel ORM     │ Server HTTP   │ Server HTTP      │
 │ Frontend→BE  │ Tauri invoke() │ REST API       │ REST API + RTK-Q  │
-│ Sync         │ N/A (local)    │ Sidecar WebSocket sync             │
+│ Sync         │ N/A (local)    │ Server WebSocket sync             │
 │ Tables       │ 15             │ 15             │ 15                │
 ├──────────────┼────────────────┼────────────────┼───────────────────┤
 │ Pages        │ 22             │ 23 (+ Notes)   │ 23 (+ Notes)      │
 │ Tauri Cmds   │ 100+           │ N/A            │ N/A               │
-│ Sidecar APIs │ N/A            │ 84+ CRUD       │ 84+ CRUD          │
+│ Server APIs │ N/A            │ 84+ CRUD       │ 84+ CRUD          │
 └──────────────┴────────────────┴────────────────┴───────────────────┘
 ```
 
@@ -34,9 +34,9 @@
 
 **pos-mini:** `React → invoke("get_products") → Tauri IPC → Rust (Diesel) → SQLite`
 
-**pos-solo:** `React → fetch("/api/products") → Sidecar (Python/Sanic) → SQLite`
+**pos-solo:** `React → fetch("/api/products") → Server (Python/Sanic) → SQLite`
 
-**pos-full:** `React → RTK Query → fetch("/api/products") → Sidecar (Python/Sanic) → SQLite`
+**pos-full:** `React → RTK Query → fetch("/api/products") → Server (Python/Sanic) → SQLite`
 
 ---
 
@@ -201,7 +201,7 @@ All three versions share **identical type definitions** in `types.ts`. The only 
 | `hardware.rs` | print_thermal_receipt, trigger_cash_drawer, check_printer_status | ❌ **0 registered!** | N/A (ESC/POS, serial) |
 | `auth.rs` | check_auth_required, has_users, verify_user, login, send_confirmation_code, verify_and_setup_account, change_password, ensure_superuser_exists, get_superuser_email | ✅ 9 | users |
 | `dump.rs` | dump_to_json, dump_all, dump_unuploaded | ✅ 1 (dump_database) | all tables |
-| `sidecar.rs` | start_sidecar, stop_sidecar, sidecar_status | ✅ 3 | — |
+| `server.rs` | start_server, stop_server, server_status | ✅ 3 | — |
 | `email.rs` | send_support_email | ✅ 1 | — |
 | `db.rs` | export_database_cmd, import_database_cmd | ✅ 2 | — (file I/O) |
 
@@ -220,9 +220,9 @@ All three versions share **identical type definitions** in `types.ts`. The only 
 
 ---
 
-## 5. Sidecar API (pos-solo & pos-full)
+## 5. Server API (pos-solo & pos-full)
 
-Both pos-solo and pos-full use an **identical** Python/Sanic sidecar with `_register_crud()` for automatic REST endpoints.
+Both pos-solo and pos-full use an **identical** Python/Sanic server with `_register_crud()` for automatic REST endpoints.
 
 ### 5.1 Registered CRUD Endpoints
 
@@ -259,7 +259,7 @@ Both solo and full have `/ws/entities` for real-time entity streaming.
 
 ### 5.3 pos-mini vs pos-solo/full API Gap
 
-| Feature | pos-mini (Tauri) | pos-solo/full (Sidecar) |
+| Feature | pos-mini (Tauri) | pos-solo/full (Server) |
 |---------|-----------------|------------------------|
 | `notes` | ❌ No module | ✅ `/api/notes` |
 | `support-tickets` | ❌ | ✅ `/api/support-tickets` |
@@ -431,7 +431,7 @@ The 21 SideNav items use 16 unique gradient values, with **5 clashes**:
                               ┌────────────────┘
                               ▼
                     ┌──────────────────┐
-                    │ Python Sidecar   │
+                    │ Python Server   │
                     │ Sanic server     │
                     │ _register_crud() │
                     └──────┬───────────┘
@@ -461,7 +461,7 @@ The 21 SideNav items use 16 unique gradient values, with **5 clashes**:
                            │
                            ▼
                     ┌──────────────────┐
-                    │ Python Sidecar   │
+                    │ Python Server   │
                     │ Sanic server     │
                     │ (same as solo)   │
                     └──────┬───────────┘
@@ -485,7 +485,7 @@ The 21 SideNav items use 16 unique gradient values, with **5 clashes**:
 | `up.sql` | `pos-solo/src-tauri/migrations/2026-01-01-000000_create_all/` | All 15 tables | POS KO |
 | `up.sql` | `pos-full/src-tauri/migrations/2026-01-01-000000_create_all/` | All 15 tables | POS KO |
 | `seed.rs` | `pos-mini/src-tauri/src/bin/` | Uses presets: all/base/gaming/coffee | 3 brands |
-| `sync_state.json` | `pos-full/sidecar/` | Runtime sync tracking (solo/full only) | — |
+| `sync_state.json` | `pos-full/server/` | Runtime sync tracking (solo/full only) | — |
 
 ### 9.2 Seed Presets (seed.rs)
 
@@ -524,7 +524,7 @@ The 21 SideNav items use 16 unique gradient values, with **5 clashes**:
 | 8 | Reports icon mismatch (FaFileAlt in nav vs MdBarChart in page) | SideNav.tsx, Reports.tsx | Navigation confusion |
 | 9 | 3 pages missing i18n groups (KitchenDisplay, InvoicePage, EmployeeSchedule) | en.json | Hardcoded English strings |
 | 10 | `notes` page in solo/full but not in mini | — | Feature gap |
-| 11 | `support-tickets` API in sidecar but not in mini Rust | — | Feature gap |
+| 11 | `support-tickets` API in server but not in mini Rust | — | Feature gap |
 
 ---
 
@@ -546,7 +546,7 @@ The 21 SideNav items use 16 unique gradient values, with **5 clashes**:
 ### Future Work
 
 8. Add `notes` feature to pos-mini (port from solo/full)
-9. Add `support-tickets` endpoint to pos-mini sidecar
+9. Add `support-tickets` endpoint to pos-mini server
 10. Unify Home card border colors across all pages (currently consistent but could use the theme system)
 
 ---
@@ -556,13 +556,13 @@ The 21 SideNav items use 16 unique gradient values, with **5 clashes**:
 ```
                     pos-mini        pos-solo        pos-full
 ─────────────────────────────────────────────────────────────
-Backend             Rust Tauri      Python Sidecar  Python Sidecar
+Backend             Rust Tauri      Python Server  Python Server
 Frontend→Backend    invoke() IPC    fetch() REST    RTK Query REST
-DB Access           Diesel ORM      Sidecar SQL     Sidecar SQL
+DB Access           Diesel ORM      Server SQL     Server SQL
 Total Tables        15              15              15
 Rust Op Modules     26              N/A             N/A
 Tauri Commands      100+            N/A             N/A
-Sidecar Endpoints   N/A             50+ CRUD        50+ CRUD
+Server Endpoints   N/A             50+ CRUD        50+ CRUD
 TS Pages            22              23 (+Notes)     23 (+Notes)
 TS Types            30              30              30 (+RTK types)
 i18n Groups         20/23           20/23           20/23

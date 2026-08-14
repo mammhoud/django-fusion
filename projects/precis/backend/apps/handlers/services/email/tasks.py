@@ -1,6 +1,6 @@
 """Compatibility imports for shared email background tasks."""
 
-from configs.tools.worker.email import (
+from plugins.workers.shared_email import (
     send_bulk_email_task,
     send_email_raw,
     send_email_task,

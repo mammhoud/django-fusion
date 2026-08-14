@@ -1,0 +1,6 @@
+<article class="loop-run-row loop-run-row--{{ run.status }}" data-workflow-run="{{ run.pk }}">
+  <span class="loop-run-row__status" aria-label="Run status">{{ run.get_status_display }}</span>
+  <span>{{ workflow.name }}</span>
+  <time datetime="{{ run.queued_at|date:'c' }}">{{ run.queued_at|date:'M j, H:i' }}</time>
+  {% if run.error %}<small>{{ run.error }}</small>{% endif %}
+</article>

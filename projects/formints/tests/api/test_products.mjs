@@ -1,5 +1,5 @@
 /**
- * API tests for POS CRM endpoints via Robyn sidecar.
+ * API tests for POS CRM endpoints via Robyn server.
  *
  * ⚠️ NOTE: Requires a WORKING Robyn server. Currently the server fails
  * to start with "Apps aren't loaded yet" (Django ORM bootstrap issue).
@@ -10,7 +10,7 @@
  *
  * Requires:
  *   - pos-full Robyn server running on :8000 (or POS_API_URL env var)
- *     Start with: cd pos-full/sidecar && python3 server.py
+ *     Start with: cd pos-full/server && python3 server.py
  *   - Node.js 18+
  */
 
@@ -55,8 +55,8 @@ async function run() {
   assert(healthRes.ok || healthRes.status !== 0, `Server is reachable (status ${healthRes.status})`);
 
   if (!healthRes.ok) {
-    console.log('\n  ⚠️  Server not reachable — is the Robyn sidecar running?');
-    console.log('     Start it with: cd pos-full/sidecar && python3 server.py\n');
+    console.log('\n  ⚠️  Server not reachable — is the Robyn server running?');
+    console.log('     Start it with: cd pos-full/server && python3 server.py\n');
     const total = passed + failed;
     console.log(`📊 Results: ${passed}/${total} passed, ${failed} failed\n`);
     process.exit(failed > 0 ? 1 : 0);

@@ -30,7 +30,7 @@ export default defineConfig({
       proxy: {
         // ── ASGI backend (Daphne/uvicorn on 8766, was Robyn on 8767) ──
         '/htmx': BACKEND,
-        // Narrowed to concrete sidecar paths — a bare '/fusion' prefix would
+        // Narrowed to concrete server paths — a bare '/fusion' prefix would
         // shadow the Astro page route at /fusion/ (Vite proxy runs before the
         // page router in dev mode).
         '/fusion/page/': BACKEND,
@@ -44,8 +44,8 @@ export default defineConfig({
         '/fusion/layouts/': BACKEND,
         '/fusion/branches/summary/': BACKEND,
         '/api': BACKEND,
-        // POS data endpoints (HTMX fragments + checkout from sidecar).
-        // NOTE: no '/pos/' proxy — the sidecar registers no /pos/* routes, and a
+        // POS data endpoints (HTMX fragments + checkout from server).
+        // NOTE: no '/pos/' proxy — the server registers no /pos/* routes, and a
         // bare prefix would shadow the Astro pages at /pos/* (see /crm/ bypass).
         '/sales/': BACKEND,
         '/kds/': BACKEND,
@@ -58,7 +58,7 @@ export default defineConfig({
         '/approvals/': BACKEND,
         '/webhooks/': BACKEND,
         // /crm/<page>/ navigations are Astro pages (Accept: text/html); only
-        // API fetches (Accept: */* or application/json) reach the sidecar.
+        // API fetches (Accept: */* or application/json) reach the server.
         // Without the bypass, the bare prefix shadows every /crm/* page in dev.
         '/crm/': {
           target: BACKEND,
@@ -79,7 +79,7 @@ export default defineConfig({
         '/delivery-types/': BACKEND,
         '/delivery-zones/': BACKEND,
         '/shifts/': BACKEND,
-        // Sidecar model CRUD endpoints (used by Astro form modals)
+        // Server model CRUD endpoints (used by Astro form modals)
         '/products/': BACKEND,
         '/customers/': BACKEND,
         '/inventory/': BACKEND,

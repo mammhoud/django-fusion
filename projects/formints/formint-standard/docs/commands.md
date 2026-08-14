@@ -1,7 +1,7 @@
 # Formint — CLI Commands Reference
 
 > **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite  
-> **No sidecar** — all data operations through Tauri invoke/ Rust backend directly
+> **No server** — all data operations through Tauri invoke/ Rust backend directly
 
 ---
 
@@ -23,7 +23,7 @@
 | `make build-android` | Build Android APK (requires Android SDK + NDK) |
 | `make build-ios` | Build iOS app (requires macOS + Xcode) |
 | `make build-all` | Build all platforms sequentially |
-| `make build-sidecar` | Build Python sidecar binary (not included in forge-pos) |
+| `make build-server` | Build Python server binary (not included in forge-pos) |
 
 ## Checking & Testing
 
@@ -109,8 +109,8 @@
 | `SUPERUSER_EMAIL` | — | Superuser email (auth) |
 | `SUPERUSER_PASSWORD` | — | Superuser password |
 | `DATABASE_URL` | `restaurant.db` | SQLite database path |
-| `SIDECAR_HOST` | `127.0.0.1` | Sidecar bind address (optional) |
-| `SIDECAR_PORT` | `8765` | Sidecar port |
+| `SERVER_HOST` | `127.0.0.1` | Server bind address (optional) |
+| `SERVER_PORT` | `8765` | Server port |
 | `SMTP_*` | — | SMTP email configuration |
 
 ## Quick Reference

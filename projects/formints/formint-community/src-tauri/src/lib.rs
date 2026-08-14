@@ -6,7 +6,7 @@ pub mod macros;
 use db::{get_db_path, run_migrations};
 use operations::*;
 use operations::delivery_zones;
-use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
+use operations::server::{start_server, stop_server, server_status};
 use tauri::{AppHandle, Emitter, Manager};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
@@ -441,8 +441,8 @@ fn verify_user(app: AppHandle, email: String) -> Result<db::models::User, String
 }
 
 #[tauri::command]
-fn start_support_sidecar(app: AppHandle) -> Result<String, String> {
-    operations::sidecar::start_sidecar(app)
+fn start_support_server(app: AppHandle) -> Result<String, String> {
+    operations::server::start_server(app)
 }
 
 #[tauri::command]
@@ -1223,11 +1223,11 @@ pub fn run() {
                 eprintln!("[setup] superuser ensure failed (non-fatal): {e}");
             }
 
-            // Auto-start the Python/Sanic sidecar
+            // Auto-start the Python/Sanic server
             #[cfg(not(any(target_os = "android", target_os = "ios")))]
             {
-                if let Err(e) = start_sidecar(app.handle().clone()) {
-                    eprintln!("[setup] sidecar start failed (non-fatal): {e}");
+                if let Err(e) = start_server(app.handle().clone()) {
+                    eprintln!("[setup] server start failed (non-fatal): {e}");
                 }
             }
 
@@ -1385,7 +1385,7 @@ pub fn run() {
             has_users,
             get_user_count,
             verify_user,
-            start_support_sidecar,
+            start_support_server,
             send_auth_confirmation_code,
             setup_account,
             login_user,
@@ -1477,10 +1477,10 @@ pub fn run() {
             add_delivery_zone,
             update_delivery_zone,
             soft_delete_delivery_zone,
-            // Sidecar lifecycle
-            start_sidecar,
-            stop_sidecar,
-            sidecar_status,
+            // Server lifecycle
+            start_server,
+            stop_server,
+            server_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

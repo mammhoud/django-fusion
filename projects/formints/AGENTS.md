@@ -10,9 +10,9 @@ several related products; choose the edition deliberately before editing.
 
 | Path | Identity | Architecture | Use for |
 |---|---|---|---|
-| `formint-community/` | Community (`formint-pos`) | Tauri 2 + React 19 + Rust + Diesel/SQLite; no Python sidecar | Offline-first desktop POS |
+| `formint-community/` | Community (`formint-pos`) | Tauri 2 + React 19 + Rust + Diesel/SQLite; no Python server | Offline-first desktop POS |
 | `formint-pro/` | Professional | Astro + HTMX/Alpine frontend, Django boundary, typed APIs, Fusion fragments, Unfold, Tauri shell | Merged professional product |
-| `formint-cloud/` | Cloud master (`formint-cloud`) | Django full setup, frontend, django-fusion, Unfold, Channels/WebSocket sync; no Robyn sidecar | Hosted multi-terminal SaaS |
+| `formint-cloud/` | Cloud master (`formint-cloud`) | Django full setup, frontend, django-fusion, Unfold, Channels/WebSocket sync; no Robyn server | Hosted multi-terminal SaaS |
 | `formint-standard/` | Standard edition | Astro 5 + React 19 + Tauri 2 + Rust/Diesel | Standard desktop POS |
 | `formint-client/` | POS Client | Tauri 2 + Vue 3 + TypeScript + Pinia | Separate desktop client |
 | `tests/` | Shared POS validation | pytest, Vitest, API tests, Selenium, Playwright | Cross-edition contracts and flows |
@@ -26,13 +26,13 @@ new source paths unless the compatibility contract specifically requires it.
 
 ```text
 formint-pro/
-├── sidecar/                 # Django boundary, models, APIs, fragments
+├── server/                 # Django boundary, models, APIs, fragments
 │   ├── formint/             # domain models, schemas, controllers, views
 │   ├── models/              # POS/CRM/HR/inventory/sync model modules
 │   ├── routes/              # API and fragment routes
 │   ├── fragments/           # server-rendered data fragments
 │   ├── services/            # sync and scheduler services
-│   └── tests/               # sidecar/backend integration tests
+│   └── tests/               # server/backend integration tests
 ├── frontend/                # Astro shell and client API/fusion helpers
 ├── src-tauri/               # native desktop shell
 ├── assets/                  # source/static product assets
@@ -48,7 +48,7 @@ changes synchronized with frontend types and contract tests.
 
 `formint-cloud` now serves the API surface directly from Django on the configured
 cloud/API port and uses Channels for WebSocket sync. Do not reintroduce a
-Robyn sidecar merely because a variable is still named `SIDECAR_BASE`; that
+Robyn server merely because a variable is still named `SERVER_BASE`; that
 name is retained for frontend compatibility. Verify the current `README.md`,
 `Makefile`, `backend/configs/`, and `frontend/astro.config.mjs` before changing
 ports or server topology.
@@ -124,7 +124,7 @@ or start services.
 
 ## Testing matrix
 
-- `formint-pro/sidecar/tests/`: backend models, APIs, fragments, sync, WebSockets.
+- `formint-pro/server/tests/`: backend models, APIs, fragments, sync, WebSockets.
 - `formint-pro/frontend/src/**/test*`: frontend contract/unit tests.
 - `formint-cloud/backend/apps/test_*.py`: cloud surface and WebSocket parity tests.
 - `tests/pos-e2e/`: shared Playwright flows and API tests.

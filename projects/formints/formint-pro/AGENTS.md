@@ -12,7 +12,7 @@ merged professional product. The `formint-community/`, `formint-cloud/`, and
 
 ```text
 formint-pro/
-├── sidecar/                 # Django boundary — models, APIs, fragments, admin
+├── server/                 # Django boundary — models, APIs, fragments, admin
 │   ├── formint/             # Domain models, Ninja schemas, controllers, API,
 │   │   ├── models/          #   views, fusion components, handlers, templates
 │   │   ├── schemas.py       # Ninja writable/patch schema factory
@@ -40,19 +40,19 @@ formint-pro/
 ├── assets/                  # Source/static product assets
 ├── migration/               # Compatibility manifest and migration notes
 ├── README.md
-└── Makefile                 # Root orchestrator (frontend + sidecar + desktop)
+└── Makefile                 # Root orchestrator (frontend + server + desktop)
 ```
 
 ## Architecture
 
 - **Backend:** Django + django-ninja (typed REST API) + django-fusion (tables,
   forms, fragments, render-mode) + Unfold (admin). The development server uses
-  Django runserver on port 8767. A Robyn server (`sidecar/server.py`) exists
+  Django runserver on port 8767. A Robyn server (`server/server.py`) exists
   for Tauri desktop bundling as an external binary; do not introduce a second
   Robyn process for the main API surface.
 - **Frontend:** Astro 5 + Alpine.js + HTMX shell proxying `/api`, `/htmx`, and
   `/fusion` to the backend.
-- **Desktop:** Tauri 2 shell wrapping the Astro frontend with the sidecar as an
+- **Desktop:** Tauri 2 shell wrapping the Astro frontend with the server as an
   external binary.
 - **Render-mode:** Supports fusion-render and data-api modes via
   `X-Fusion-Render-First` header — landing-fusion parity contract.
@@ -65,8 +65,8 @@ formint-pro/
 - Keep Ninja schemas, controllers, and frontend types synchronized.
 - Use `{% comp %}` for registered django-fusion components in server templates.
 - Preserve Unfold admin integrations and the fusion render-mode toggle.
-- Model changes require migrations in `sidecar/formint/models/migrations/`.
-- The `SIDECAR_BASE` variable naming is retained for frontend compatibility;
+- Model changes require migrations in `server/formint/models/migrations/`.
+- The `SERVER_BASE` variable naming is retained for frontend compatibility;
   the API is served by Django, not a separate Robyn process.
 
 ## Commands
@@ -89,7 +89,7 @@ make status           # Tmux sessions + endpoint health
 
 ## Testing
 
-- `sidecar/tests/`: Backend models, APIs, fragments, sync, WebSocket tests.
+- `server/tests/`: Backend models, APIs, fragments, sync, WebSocket tests.
 - `frontend/src/tests/`: Frontend contract/unit tests (Vitest).
 - `src-tauri/`: Rust tests via `cargo test --manifest-path src-tauri/Cargo.toml`.
 - Run `make check` before `make test`; use the narrowest suite first.
@@ -97,7 +97,7 @@ make status           # Tmux sessions + endpoint health
 ## Do not
 
 - Do not copy `formint-community` Tauri/Rust patterns into this edition.
-- Do not add a separate Robyn/sidecar process; the API is Django-native.
+- Do not add a separate Robyn/server process; the API is Django-native.
 - Do not import `formint-cloud` or `formint-community` internals.
 - Do not hard-code ports outside the existing `BACKEND_PORT`/`FRONTEND_PORT` convention.
 - Do not commit `restaurant.db`, generated installers, secrets, or signing keys.
@@ -108,4 +108,4 @@ make status           # Tmux sessions + endpoint health
 - [`README.md`](README.md) — Full product README with API reference
 - [`../../docs/pos/`](../../docs/pos/) — POS documentation
 - [`../../docs/plans/pos/formint-pos-professional-plan.md`](../../docs/plans/pos/formint-pos-professional-plan.md)
-- [`sidecar/ARCHITECTURE.md`](sidecar/ARCHITECTURE.md) — Sidecar architecture
+- [`server/ARCHITECTURE.md`](server/ARCHITECTURE.md) — Server architecture

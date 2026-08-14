@@ -1,0 +1,16 @@
+<a class="loop-app-brand" href="/" aria-label="Loop CRM overview"><span class="loop-app-mark">↻</span><span>Loop CRM</span></a>
+<nav aria-label="Workspace modules">
+  {% for item in navigation %}
+    <div class="loop-app-nav-group">
+      <span class="loop-app-nav-label">{% if forloop.first %}Workspace{% elif item.id == 'workspace' %}Administration{% else %}{{ item.label }}{% endif %}</span>
+      <a class="loop-app-nav-link{% if item.active %} is-active{% endif %}" href="{{ item.href }}" hx-target="#loop-app-content" hx-select="#loop-app-content" hx-swap="outerHTML"{% if item.active %} aria-current="page"{% endif %}>
+        <span class="loop-app-nav-icon" aria-hidden="true">{{ item.icon }}</span><span>{{ item.label }}</span>
+      </a>
+      {% if item.children %}
+        <div class="loop-app-nav-children" aria-label="{{ item.label }} pages">
+          {% for child in item.children %}<a class="loop-app-nav-child{% if child.active %} is-active{% endif %}" href="{{ child.href }}" hx-target="#loop-app-content" hx-select="#loop-app-content" hx-swap="outerHTML"{% if child.active %} aria-current="page"{% endif %}>{{ child.label }}</a>{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</nav>

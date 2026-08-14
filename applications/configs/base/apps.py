@@ -78,9 +78,6 @@ THIRD_PARTY_APPS = [
     "heroicons",
     "embed_video",
     "colorfield",
-    "django_rq",
-    "django_celery_beat",
-    "django_celery_results",
     "django_dramatiq",
 ]
 
@@ -110,7 +107,7 @@ INSTALLED_APPS: list[str] = AppRegistry.merge(
     EFFECTIVE_WAGTAIL_APPS,
     EFFECTIVE_LOCAL_LIBRARY_APPS,
     EFFECTIVE_THIRD_PARTY_APPS,
-    ["www.worker"],
+    # Product worker apps are loaded from each product's plugins/workers path.
 )
 # Per-site LOCAL_APPS are appended by each website's settings.py after
 # the `from configs.settings import *` line.

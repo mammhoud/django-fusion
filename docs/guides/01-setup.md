@@ -50,6 +50,6 @@ Common targets:
 
 ## Recommended enhancements
 
-1. Add a `docs.yml` workflow that runs `docsify-cli` to validate sidebar links and render the docs on every docs PR.
+1. Add a `docs.yml` workflow that runs `npm --prefix docs/docus run build` to validate Docus routes and locales on every docs PR.
 2. Pin `actions/checkout` and `actions/setup-python` to specific hashes for supply-chain security.
-3. Add a `make docs-serve` target in `projects/Makefile` that starts a local docsify server for preview.
+3. Keep `make -C docs serve` as the canonical local Docus preview command.

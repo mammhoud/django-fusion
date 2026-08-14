@@ -2,7 +2,7 @@
 /**
  * Formint Cloud — Live end-to-end stack verification.
  *
- * Boots the two Django roads that replace the removed Robyn sidecar and
+ * Boots the two Django roads that replace the removed Robyn server and
  * sweeps the full HTTP surface the frontend consumes:
  *
  *   :8767  — API surface  (daphne, configs.asgi:application) — REST CRUD,

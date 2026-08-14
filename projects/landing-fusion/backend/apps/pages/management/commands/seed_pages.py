@@ -86,11 +86,11 @@ DEFAULT_PAGE_TRANSLATIONS = {
                 "cta": {"title": "لنبنِ شيئاً مفيداً", "subtitle": "أخبرنا عن فريقك والعميل والنتيجة التي تريد الوصول إليها."},
             },
         },
-        "sv": {"title": "Team", "content": {"hero": {"title": "Personerna bakom structa.cloud", "subtitle": "En ingenjör, tre produktledare och de öppna källkodsbidragarna som får monorepot att leverera.", "primary_cta": {"label": "Träffa grundaren"}, "secondary_cta": {"label": "Ta kontakt"}}, "cta": {"title": "Byggt i öppenhet", "subtitle": "Varje rad av structa.cloud är offentlig på GitHub. Kom och bygg med oss.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Tillbaka till Om oss"}}}},
-        "fr": {"title": "Équipe", "content": {"hero": {"title": "Les personnes derrière structa.cloud", "subtitle": "Un ingénieur, trois responsables produit et les contributeurs open source qui font avancer le monorepo.", "primary_cta": {"label": "Rencontrer le fondateur"}, "secondary_cta": {"label": "Contactez-nous"}}, "cta": {"title": "Construit en toute transparence", "subtitle": "Chaque ligne de structa.cloud est publique sur GitHub. Venez construire avec nous.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Retour à À propos"}}}},
-        "de": {"title": "Team", "content": {"hero": {"title": "Die Menschen hinter structa.cloud", "subtitle": "Ein Engineer, drei Produktverantwortliche und die Open-Source-Beitragenden, die das Monorepo zum Laufen bringen.", "primary_cta": {"label": "Den Gründer kennenlernen"}, "secondary_cta": {"label": "Kontakt aufnehmen"}}, "cta": {"title": "In Offenheit gebaut", "subtitle": "Jede Zeile von structa.cloud ist öffentlich auf GitHub. Bauen Sie mit uns.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Zurück zu Über uns"}}}},
-        "es": {"title": "Equipo", "content": {"hero": {"title": "Las personas detrás de structa.cloud", "subtitle": "Un ingeniero, tres responsables de producto y los contribuidores de código abierto que hacen avanzar el monorepo.", "primary_cta": {"label": "Conoce al fundador"}, "secondary_cta": {"label": "Ponte en contacto"}}, "cta": {"title": "Construido en abierto", "subtitle": "Cada línea de structa.cloud es pública en GitHub. Ven a construir con nosotros.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Volver a Acerca de"}}}},
-        "pt": {"title": "Equipa", "content": {"hero": {"title": "As pessoas por detrás da structa.cloud", "subtitle": "Um engenheiro, três responsáveis de produto e os contribuidores de código aberto que fazem o monorepo avançar.", "primary_cta": {"label": "Conheça o fundador"}, "secondary_cta": {"label": "Entre em contacto"}}, "cta": {"title": "Construído em aberto", "subtitle": "Cada linha da structa.cloud é pública no GitHub. Venha construir connosco.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Voltar a Sobre"}}}},
+        "sv": {"title": "Team", "content": {"hero": {"title": "Personerna bakom structa.cloud", "subtitle": "Två grundare som äger produkt, affär och de öppna källkodsbiblioteken som får monorepot att leverera.", "primary_cta": {"label": "Träffa grundaren"}, "secondary_cta": {"label": "Ta kontakt"}}, "cta": {"title": "Byggt i öppenhet", "subtitle": "Varje rad av structa.cloud är offentlig på GitHub. Kom och bygg med oss.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Tillbaka till Om oss"}}}},
+        "fr": {"title": "Équipe", "content": {"hero": {"title": "Les personnes derrière structa.cloud", "subtitle": "Deux cofondateurs qui possèdent le produit, le business et les bibliothèques open source qui font avancer le monorepo.", "primary_cta": {"label": "Rencontrer le fondateur"}, "secondary_cta": {"label": "Contactez-nous"}}, "cta": {"title": "Construit en toute transparence", "subtitle": "Chaque ligne de structa.cloud est publique sur GitHub. Venez construire avec nous.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Retour à À propos"}}}},
+        "de": {"title": "Team", "content": {"hero": {"title": "Die Menschen hinter structa.cloud", "subtitle": "Zwei Mitgründer, die Produkt, Business und die Open-Source-Bibliotheken verantworten, die das Monorepo zum Laufen bringen.", "primary_cta": {"label": "Den Gründer kennenlernen"}, "secondary_cta": {"label": "Kontakt aufnehmen"}}, "cta": {"title": "In Offenheit gebaut", "subtitle": "Jede Zeile von structa.cloud ist öffentlich auf GitHub. Bauen Sie mit uns.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Zurück zu Über uns"}}}},
+        "es": {"title": "Equipo", "content": {"hero": {"title": "Las personas detrás de structa.cloud", "subtitle": "Dos cofundadores que lideran el producto, el negocio y las bibliotecas de código abierto que hacen avanzar el monorepo.", "primary_cta": {"label": "Conoce al fundador"}, "secondary_cta": {"label": "Ponte en contacto"}}, "cta": {"title": "Construido en abierto", "subtitle": "Cada línea de structa.cloud es pública en GitHub. Ven a construir con nosotros.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Volver a Acerca de"}}}},
+        "pt": {"title": "Equipa", "content": {"hero": {"title": "As pessoas por detrás da structa.cloud", "subtitle": "Dois cofundadores que lideram o produto, o negócio e as bibliotecas de código aberto que fazem o monorepo avançar.", "primary_cta": {"label": "Conheça o fundador"}, "secondary_cta": {"label": "Entre em contacto"}}, "cta": {"title": "Construído em aberto", "subtitle": "Cada linha da structa.cloud é pública no GitHub. Venha construir connosco.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Voltar a Sobre"}}}},
     },
     "founder": {
         "ar": {
@@ -103,11 +103,11 @@ DEFAULT_PAGE_TRANSLATIONS = {
                 "cta": {"title": "هل لديك منتج يحتاج إلى مسار أوضح؟", "subtitle": "لنحوّل الفكرة إلى أول إصدار يمكن استخدامه وقياسه."},
             },
         },
-        "sv": {"title": "Grundare", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Fullstackutvecklare, bidragsgivare till öppen källkod och ingenjören bakom structa.cloud. Django, Wagtail och AI-drivna system.", "primary_cta": {"label": "Träffa teamet"}, "secondary_cta": {"label": "Visa på GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Byggt i öppenhet", "subtitle": "Hela monorepot är offentligt på GitHub. Community-utgåvorna är gratis, Pro-utgåvorna är kommersiella.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Kontakt"}}}},
-        "fr": {"title": "Fondateur", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Développeur full-stack, contributeur open source et l'ingénieur derrière structa.cloud. Django, Wagtail et des systèmes pilotés par l'IA.", "primary_cta": {"label": "Rencontrer l'équipe"}, "secondary_cta": {"label": "Voir sur GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construit en toute transparence", "subtitle": "L'ensemble du monorepo est public sur GitHub. Les éditions Communauté sont gratuites, les éditions Pro sont commerciales.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Contact"}}}},
-        "de": {"title": "Gründer", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Full-Stack-Entwickler, Open-Source-Mitwirkender und der Engineer hinter structa.cloud. Django, Wagtail und KI-gestützte Systeme.", "primary_cta": {"label": "Das Team kennenlernen"}, "secondary_cta": {"label": "Auf GitHub ansehen"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "In Offenheit gebaut", "subtitle": "Das gesamte Monorepo ist öffentlich auf GitHub. Community-Editionen sind kostenlos, Pro-Editionen kommerziell.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Kontakt"}}}},
-        "es": {"title": "Fundador", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Desarrollador full-stack, contribuidor de código abierto y el ingeniero detrás de structa.cloud. Django, Wagtail y sistemas impulsados por IA.", "primary_cta": {"label": "Conoce al equipo"}, "secondary_cta": {"label": "Ver en GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construido en abierto", "subtitle": "Todo el monorepo es público en GitHub. Las ediciones Community son gratuitas, las Pro son comerciales.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Contacto"}}}},
-        "pt": {"title": "Fundador", "content": {"hero": {"title": "Mahmoud Ezzat Moustafa", "subtitle": "Programador full-stack, contribuidor de código aberto e o engenheiro por detrás da structa.cloud. Django, Wagtail e sistemas baseados em IA.", "primary_cta": {"label": "Conheça a equipa"}, "secondary_cta": {"label": "Ver no GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construído em aberto", "subtitle": "Todo o monorepo é público no GitHub. As edições Community são gratuitas, as Pro são comerciais.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Contacto"}}}},
+        "sv": {"title": "Grundare", "content": {"hero": {"title": "Mahmoud Ezzat", "subtitle": "Fullstackutvecklare, bidragsgivare till öppen källkod och ingenjören bakom structa.cloud. Django, Wagtail och AI-drivna system.", "primary_cta": {"label": "Träffa teamet"}, "secondary_cta": {"label": "Visa på GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Byggt i öppenhet", "subtitle": "Hela monorepot är offentligt på GitHub. Community-utgåvorna är gratis, Pro-utgåvorna är kommersiella.", "primary_cta": {"label": "Visa på GitHub"}, "secondary_cta": {"label": "Kontakt"}}}},
+        "fr": {"title": "Fondateur", "content": {"hero": {"title": "Mahmoud Ezzat", "subtitle": "Développeur full-stack, contributeur open source et l'ingénieur derrière structa.cloud. Django, Wagtail et des systèmes pilotés par l'IA.", "primary_cta": {"label": "Rencontrer l'équipe"}, "secondary_cta": {"label": "Voir sur GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construit en toute transparence", "subtitle": "L'ensemble du monorepo est public sur GitHub. Les éditions Communauté sont gratuites, les éditions Pro sont commerciales.", "primary_cta": {"label": "Voir sur GitHub"}, "secondary_cta": {"label": "Contact"}}}},
+        "de": {"title": "Gründer", "content": {"hero": {"title": "Mahmoud Ezzat", "subtitle": "Full-Stack-Entwickler, Open-Source-Mitwirkender und der Engineer hinter structa.cloud. Django, Wagtail und KI-gestützte Systeme.", "primary_cta": {"label": "Das Team kennenlernen"}, "secondary_cta": {"label": "Auf GitHub ansehen"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "In Offenheit gebaut", "subtitle": "Das gesamte Monorepo ist öffentlich auf GitHub. Community-Editionen sind kostenlos, Pro-Editionen kommerziell.", "primary_cta": {"label": "Auf GitHub ansehen"}, "secondary_cta": {"label": "Kontakt"}}}},
+        "es": {"title": "Fundador", "content": {"hero": {"title": "Mahmoud Ezzat", "subtitle": "Desarrollador full-stack, contribuidor de código abierto y el ingeniero detrás de structa.cloud. Django, Wagtail y sistemas impulsados por IA.", "primary_cta": {"label": "Conoce al equipo"}, "secondary_cta": {"label": "Ver en GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construido en abierto", "subtitle": "Todo el monorepo es público en GitHub. Las ediciones Community son gratuitas, las Pro son comerciales.", "primary_cta": {"label": "Ver en GitHub"}, "secondary_cta": {"label": "Contacto"}}}},
+        "pt": {"title": "Fundador", "content": {"hero": {"title": "Mahmoud Ezzat", "subtitle": "Programador full-stack, contribuidor de código aberto e o engenheiro por detrás da structa.cloud. Django, Wagtail e sistemas baseados em IA.", "primary_cta": {"label": "Conheça a equipa"}, "secondary_cta": {"label": "Ver no GitHub"}, "trusted_by": "Python · Django · Wagtail · AI tooling"}, "cta": {"title": "Construído em aberto", "subtitle": "Todo o monorepo é público no GitHub. As edições Community são gratuitas, as Pro são comerciais.", "primary_cta": {"label": "Ver no GitHub"}, "secondary_cta": {"label": "Contacto"}}}},
     },
     "startup": {
         "ar": {
@@ -1031,7 +1031,7 @@ DEFAULT_PRODUCT_PAGES = {
         "version": "beta 0.2",
         "logo_style": "crest",
         "category": "application",
-        "tagline": "Desktop point-of-sale in four editions: Community, Standard, Pro, Cloud.",
+        "tagline": "Desktop point-of-sale in four editions: Community, Standard, Pro, Custom.",
         "hero": [
             (
                 "hero",
@@ -1040,7 +1040,7 @@ DEFAULT_PRODUCT_PAGES = {
                     "subtitle": "A desktop point-of-sale application with a Tauri 2 + Rust core, React/Vite shell, and SQLite storage.",
                     "primary_cta": {"label": "See the editions", "href": "/products/formint-pos/#editions", "style": "secondary"},
                     "secondary_cta": {"label": "View the repo", "href": "https://github.com/mammhoud/formint-community", "style": "white"},
-                    "trusted_by": "Community · Standard · Pro · Cloud",
+                    "trusted_by": "Community · Standard · Pro · Custom",
                 },
             )
         ],
@@ -1050,7 +1050,7 @@ DEFAULT_PRODUCT_PAGES = {
             "<p>It ships in four editions that share one codebase: Community "
             "(free, offline-first single terminal), Standard (standalone with "
             "an embedded Python sidecar + cloud sync), Pro (multi-terminal "
-            "with a cloud master), and Cloud (fully hosted multi-terminal "
+            "with a cloud master), and Custom (fully hosted multi-terminal "
             "with managed cloud CRM).</p>"
         ),
         "tech": [
@@ -1080,6 +1080,8 @@ DEFAULT_PRODUCT_PAGES = {
                             "tagline": "Standalone terminal for growing businesses: high-end design, food & beverage tools, and integrations.",
                             "price": "$119",
                             "period": "/one-time license",
+                            "offer_label": "50% off · launch",
+                            "offer_old_price": "$238",
                             "features": ["Everything in Community", "High-end interface design", "Inventory adjustments + stock control", "Food & beverage (F&B) menu support", "Kitchen display + payroll", "REST API for integrations", "Inventory + sales analytics", "Invoice PDF generation", "Loyalty & rewards program", "Multi-currency & tax profiles", "Custom roles & permissions", "Data export (CSV/JSON)", "Deployment & support quoted per site"],
                             "preview_images": [
                                 {"url": "/static/related/formints/standard-checkout.jpg", "kind": "image", "label": "Front of house", "alt": "Formints Standard point-of-sale checkout screen"},
@@ -1094,10 +1096,10 @@ DEFAULT_PRODUCT_PAGES = {
                         },
                         {        "name": "Pro",
         "tagline": "Multi-terminal with a cloud master, WebSocket streaming, and a high-throughput Rust API.",
-        "price": "$79",
+        "price": "$129",
         "period": "/per year",
         "offer_label": "50% off · launch",
-        "offer_old_price": "$158",
+        "offer_old_price": "$258",
                             "features": ["Everything in Standard", "Multi-terminal sync (cloud master)", "High-throughput Rust API (60k+ RPS)", "WebSocket real-time streaming", "Product sync engine (master)", "Employee scheduling + KPIs", "Change signals + approvals", "Deployment & support fees apply"],
                             "preview_images": [
                                 {"url": "/static/related/formints/pro-admin-dashboard.jpg", "label": "Admin dashboard", "alt": "Formints Pro admin dashboard"},
@@ -1109,10 +1111,10 @@ DEFAULT_PRODUCT_PAGES = {
                             "tier": "featured",
                         },
                         {
-                            "name": "Cloud",
+                            "name": "Custom",
                             "tagline": "Fully hosted multi-terminal. The Pro cloud master, managed for you.",
                             "price": "Custom",
-                            "period": "/per month",
+                            "period": "/custom quote",
                             "features": ["Everything in Pro", "Hosted cloud CRM master", "Unlimited terminals", "Cross-device data sync", "Automatic cloud backups + monitoring", "Dedicated onboarding + support", "Contact us for a managed-cloud quote"],
                             "cta_label": "Talk to Sales",
                             "cta_href": "/contact/",
@@ -1153,9 +1155,9 @@ DEFAULT_PRODUCT_PAGES = {
                 "comparison",
                 {
                     "eyebrow": "Compare editions",
-                    "title": "Community vs Standard vs Pro vs Cloud",
+                    "title": "Community vs Standard vs Pro vs Custom",
                     "description": "Every edition shares the Tauri + Rust core. Rows below show exactly what moves you up the ladder.",
-                    "columns": ["Community", "Standard", "Pro", "Cloud"],
+                    "columns": ["Community", "Standard", "Pro", "Custom"],
                     "rows": [
                         {"feature": "React 19 + TypeScript frontend", "cells": ["Yes", "Yes", "Yes", "Yes"]},
                         {"feature": "Tauri 2 + Rust backend", "cells": ["Yes", "Yes", "Yes", "Yes"]},
@@ -1203,7 +1205,7 @@ DEFAULT_PRODUCT_PAGES = {
                     "features": [
                         {"icon": "M4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7M4 7h16M4 7l2-3h12l2 3", "title": "Fast, native checkout", "description": "A Rust core keeps every keystroke instant, with no web latency on the counter."},
                         {"icon": "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a2 2 0 011.4.6l4.4 4.4a2 2 0 01.6 1.4V19a2 2 0 01-2 2z", "title": "SQLite by default", "description": "Zero-config local storage that scales up to a synced multi-terminal setup in Pro."},
-                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Four editions, one codebase", "description": "Community, Standard, Pro, Cloud, feature-gated from a single Tauri + Rust core."},
+                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Four editions, one codebase", "description": "Community, Standard, Pro, Custom, feature-gated from a single Tauri + Rust core."},
                     ],
                 },
             ),
@@ -1215,8 +1217,27 @@ DEFAULT_PRODUCT_PAGES = {
                     "features": [
                         {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Loyalty & rewards engine", "description": "Points, tiers and voucher redemption built into the sale flow — Standard and up."},
                         {"icon": "M3 3v18h18M7 15l4-4 3 3 5-6", "title": "Multi-currency & tax profiles", "description": "Per-terminal currency and tax profiles for border regions — Standard and up."},
-                        {"icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87", "title": "Automatic cloud backups", "description": "Scheduled encrypted backups of the cloud master with point-in-time restore — Cloud."},
+                        {"icon": "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87", "title": "Automatic cloud backups", "description": "Scheduled encrypted backups of the cloud master with point-in-time restore — Custom."},
                     ],
+                },
+            )
+        ],
+        "profile": [
+            (
+                "profile",
+                {
+                    "eyebrow": "Who it serves",
+                    "title": "Ideal customers, capacity and reporting",
+                    "icp_intro": "Formints is for people who run a counter: the businesses it solves problems for, and how they behave.",
+                    "icps": [
+                        {"title": "Independent café & restaurant owner", "who": "Runs one to three outlets with 3–15 staff, an F&B menu and high-volume counter service.", "behaviour": "Needs fast, offline-resilient checkout at rush hour, daily stock counts, and end-of-day sales. They care about food-cost margin and keeping regulars with a loyalty programme."},
+                        {"title": "Retail / pharmacy shop manager", "who": "A single store with SKU-heavy inventory, barcode scanning and cash/card/split payments.", "behaviour": "Scans and sells, watches low-stock alerts for reorders, and needs a profit view per item. They want invoice PDFs and the option to send them over WhatsApp."},
+                        {"title": "Multi-terminal operator", "who": "A growing group running several terminals that must stay in sync with a cloud master.", "behaviour": "Needs cross-device sync, change approvals, employee scheduling and KPI dashboards. They run Pro or Custom and value managed backups."},
+                    ],
+                    "capacity": "From a single offline terminal (Community) to multi-terminal cloud sync (Pro/Custom). Handles 50,000+ SKUs locally and a high-throughput Rust API (60k+ requests/second) on the master.",
+                    "reports": ["Sales by hour / day", "Cost of goods & gross profit", "Stock levels & low-stock alerts", "Tax & multi-currency", "Employee & payroll", "Loyalty points redeemed"],
+                    "channels": "Invoices export as PDF and can be shared over WhatsApp or email; every transaction accrues loyalty points for the customer, with tiers and vouchers redeemable at the till.",
+                    "tone": "Operational and no-nonsense: 'run the counter'. It speaks to busy owners in plain, confident terms — speed, margin and control, not jargon.",
                 },
             )
         ],
@@ -1226,7 +1247,7 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "Formints POS questions",
                     "items": [
-                        {"question": "Which edition should I start with?", "answer": "Community is open source and perfect for a single terminal. Upgrade to Standard for the sidecar API + cloud sync, to Pro for a multi-terminal cloud master, or to Cloud for the fully hosted setup."},
+                        {"question": "Which edition should I start with?", "answer": "Community is open source and perfect for a single terminal. Upgrade to Standard for the sidecar API + cloud sync, to Pro for a multi-terminal cloud master, or to Custom for the fully hosted setup."},
                         {"question": "Can I reuse the schema in another project?", "answer": "Yes. The SQLite schema and Rust models are public reference material under the repo's license."},
                     ],
                 },
@@ -1248,57 +1269,75 @@ DEFAULT_PRODUCT_PAGES = {
         "title": "Precis LMS",
         "logo_style": "ribbon",
         "category": "platform",
-        "tagline": "The learning platform behind structa.cloud: courses, enrollments, payments.",
+        "tagline": "The merged content + learning platform: courses, enrollments, payments, landing pages and blog — one Wagtail source of truth.",
         "hero": [
             (
                 "hero",
                 {
                     "title": "Precis LMS",
-                    "subtitle": "A content-driven learning platform built on Django + django-fusion with a Next.js frontend.",
+                    "subtitle": "One content-driven platform for learning AND publishing: courses, enrollments, payments, landing pages and a full blog, all on Django + django-fusion.",
                     "primary_cta": {"label": "See the editions", "href": "/products/lms/#editions", "style": "secondary"},
                     "secondary_cta": {"label": "Learn more", "href": "/about/", "style": "white"},
+                    "trusted_by": "LMS + CMS + blog, one codebase",
                 },
             )
         ],
         "body": (
-            "<p>Precis LMS powers the Structa Cloud learning platform: courses, "
-            "enrollments, payments (Stripe), and progress tracking, all served "
-            "by Django/Wagtail with django-fusion's component pipeline.</p>"
-            "<p>Its frontend is a Next.js app consuming django-fusion APIs and "
-            "server-rendered fragments, the same content-driven pattern the "
-            "landing CMS uses.</p>"
+            "<p>Precis LMS is the merged content + learning platform behind "
+            "structa.cloud. It combines the learning stack — courses, "
+            "enrollments, payments (Stripe), quizzes, certificates and "
+            "progress tracking — with the full CMS: Wagtail StreamField "
+            "landing pages, a blog, and GSAP-driven animations, all rendered "
+            "by django-fusion.</p>"
+            "<p>The former Loop CMS is folded into Precis, so one codebase "
+            "powers the storefront, the catalog, the blog and the academy. "
+            "Both render roads — Django's fusion HTML and the Astro data "
+            "APIs — serve from the same Wagtail source of truth.</p>"
         ),
         "tech": [
-            ("tech", {"title": "Built on", "items": ["Django", "Wagtail", "django-fusion", "Next.js", "React", "Stripe"]}),
+            ("tech", {"title": "Built on", "items": ["Django", "Wagtail", "django-fusion", "Astro", "HTMX", "Alpine.js", "GSAP", "Stripe"]}),
         ],
         "editions": [
             (
                 "editions",
                 {
                     "eyebrow": "Editions & pricing",
-                    "title": "Scale from one course to a cohort",
+                    "title": "From one course to a full academy + site",
                     "editions": [
                         {
                             "name": "Solo",
-                            "tagline": "For active creators and small academies who want a polished learning experience.",
+                            "tagline": "For active creators and small academies who want a polished learning experience plus a landing page.",
                             "price": "$29",
                             "period": "/per month",
-                            "features": ["Unlimited courses", "Priority support", "Advanced analytics", "Offline downloads", "Certificates", "SSO & role management", "Dedicated success manager", "High-end learning experience design"],
+                            "features": ["Unlimited courses", "Landing page (core blocks)", "Blog + FAQ sections", "Payments (Stripe)", "Offline downloads", "Certificates", "SSO & role management", "Dedicated success manager", "High-end learning experience design", "Priority support", "Advanced analytics"],
                             "cta_label": "Go Solo",
+                            "cta_href": "/contact/",
+                            "featured": False,
+                            "tier": "default",
+                        },
+                        {
+                            "name": "Standard",
+                            "tagline": "For teams and organizations with cohorts, staff, custom branding, and a full CMS site.",
+                            "price": "$299",
+                            "period": "/per year",
+                            "offer_label": "50% off · launch",
+                            "offer_old_price": "$598",
+                            "features": ["Everything in Solo", "Custom branding", "Full CMS (custom StreamField blocks)", "Full GSAP animations", "API access", "Bulk enrollments + cohorts", "HTMX forms", "SEO + analytics", "SSO & role management"],
+                            "cta_label": "Get Standard",
                             "cta_href": "/contact/",
                             "featured": True,
                             "tier": "featured",
                         },
                         {
-                            "name": "Business",
-                            "tagline": "For organizations with cohorts, staff, and connected systems.",
-                            "price": "$99",
-                            "period": "/per month",
-                            "features": ["Everything in Solo", "Custom branding", "API access"],
+                            "name": "Custom",
+                            "tagline": "A managed deployment bundling the full LMS + CMS + blog platform, quoted to your scale.",
+                            "price": "Custom",
+                            "period": "/custom quote",
+                            "features": ["Everything in Standard", "Multi-site + roles", "Custom animations + design", "Managed hosting + backups", "Custom integrations", "Dedicated success manager", "SLA + onboarding"],
                             "cta_label": "Contact Sales",
                             "cta_href": "/contact/",
                             "featured": False,
-                            "tier": "default",
+                            "tier": "managed",
                         },
                     ],
                 },
@@ -1310,10 +1349,31 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "What Precis LMS ships",
                     "features": [
-                        {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Content-driven courses", "description": "Lessons, quizzes and certificates composed in Wagtail StreamFields."},
+                        {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Courses, quizzes & certificates", "description": "Lessons, quizzes, certificates and progress tracking composed in Wagtail StreamFields."},
                         {"icon": "M3 3v18h18M7 15l4-4 3 3 5-6", "title": "Payments built in", "description": "Stripe checkout for courses, enrollments, and subscriptions."},
-                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Fragment-rendered UI", "description": "django-fusion HTMX fragments keep the app server-rendered and fast."},
+                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Landing pages + CMS", "description": "Build landing pages from Wagtail blocks, with HTMX fragments and GSAP animations — the full Loop CMS folded in."},
+                        {"icon": "M4 5h16v14H4zM8 8h8M8 12h8M8 16h5", "title": "Blog & editorial", "description": "Posts, categories, tags, comments and RSS — the complete blog engine, served server-rendered."},
+                        {"icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20", "title": "Two render roads", "description": "django-fusion serves fusion-render HTML and data APIs from one Wagtail source of truth."},
                     ],
+                },
+            )
+        ],
+        "profile": [
+            (
+                "profile",
+                {
+                    "eyebrow": "Who it serves",
+                    "title": "Ideal customers, capacity and reporting",
+                    "icp_intro": "Precis is for anyone who teaches AND publishes: the people it solves problems for, and how they behave.",
+                    "icps": [
+                        {"title": "Independent educator", "who": "A solo trainer, consultant or coach with one to five courses. They sell knowledge, not software, and want a polished academy without a dev team.", "behaviour": "Buys a course or subscription, expects payments + certificates + progress to 'just work', and values low admin overhead. They rarely configure anything; they upload content and share a link."},
+                        {"title": "Training business / academy", "who": "A team running cohorts with staff, custom branding and connected systems (CRM, SSO, analytics). They need enrollments at scale and API access.", "behaviour": "Onboards cohorts in bulk, tracks completion and revenue, and integrates with internal tools. They care about reporting, roles and reliability more than the price of the seat."},
+                        {"title": "Marketing team / founder", "who": "A founder or marketer publishing landing pages and a blog in multiple languages. They need block-based editing and full animations without a frontend engineer on call.", "behaviour": "Ships a campaign page, writes posts, and checks SEO + analytics. They expect edits to go live instantly and the site to stay fast — the CMS is a tool, not a project."},
+                    ],
+                    "capacity": "Scales from a single course to unlimited courses and enrollments; from one landing page to a full multi-language site with blog. No minimum content count to start — one course is enough; there is no artificial cap on pages, posts or enrollments.",
+                    "reports": ["Enrollment & progress", "Completion & certificates", "Revenue (Stripe)", "Course performance", "Blog traffic & SEO", "Certificate issuance"],
+                    "channels": "Invoices and enrollment receipts can reach customers by email and WhatsApp; learners earn certificates and progress badges as they complete modules. Loyalty is progress-based: completion points unlock certificates and drip content.",
+                    "tone": "Editorial and precise — 'teach and publish with clarity'. It speaks to educators and founders who want substance over spectacle, with a voice that is calm, structured and exact.",
                 },
             )
         ],
@@ -1323,7 +1383,8 @@ DEFAULT_PRODUCT_PAGES = {
                 {
                     "title": "Precis LMS questions",
                     "items": [
-                        {"question": "How does this relate to the landing CMS?", "answer": "LMS and CMS share django-fusion. The CMS is the content-driven website builder; LMS is its highest-value use case."},
+                        {"question": "Is the CMS included in Precis now?", "answer": "Yes. Loop CMS was folded into Precis — landing pages, blog, HTMX fragments, GSAP animations and SEO all live in the same codebase and the same Wagtail source of truth."},
+                        {"question": "Can I run just the blog or just the LMS?", "answer": "Yes. Every feature is optional: use only courses, only the blog, only landing pages, or the full bundle. Editions gate the feature set, not the combination."},
                         {"question": "Can I embed LMS on my own site?", "answer": "Yes. Courses and progress are served as server-rendered fragments that any Fusion site can embed."},
                     ],
                 },
@@ -1333,8 +1394,8 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "cta",
                 {
-                    "title": "Teach on the AHA stack",
-                    "subtitle": "From one course to a full academy: content-driven, payment-enabled, server-rendered.",
+                    "title": "Teach and publish from one stack",
+                    "subtitle": "From one course to a full academy plus a CMS site: content-driven, payment-enabled, server-rendered.",
                     "primary_cta": {"label": "See pricing", "href": "/products/lms/#editions", "style": "white"},
                     "secondary_cta": {"label": "Contact Us", "href": "/contact/", "style": "outline"},
                 },
@@ -1342,121 +1403,76 @@ DEFAULT_PRODUCT_PAGES = {
         ],
     },
     "cms": {
-        "title": "Loop",
-        "version": "v2.7",
+        "title": "Loop CRM",
+        "version": "coming soon",
         "logo_style": "isometric",
+        "status": "development",
         "category": "platform",
-        "tagline": "Build content-driven websites from Wagtail blocks. This very site is built with it.",
+        "tagline": "A unified sales + marketing platform — CRM, social scheduling and attribution, from social impression to closed deal.",
         "hero": [
             (
                 "hero",
                 {
-                    "title": "Loop",
-                    "subtitle": "A content-driven website builder. Wagtail StreamFields composed into server-rendered pages by django-fusion.",
-                    "primary_cta": {"label": "See the editions", "href": "/products/cms/#editions", "style": "secondary"},
-                    "secondary_cta": {"label": "Explore the stack", "href": "/features/", "style": "white"},
+                    "title": "Loop CRM",
+                    "subtitle": "The open-source CRM + social scheduling platform — a merge of Twenty's sales engine and Postiz's social publishing, built on django-fusion.",
+                    "primary_cta": {"label": "Join the waitlist", "href": "/contact/", "style": "secondary"},
+                    "secondary_cta": {"label": "Read the plan", "href": "/about/", "style": "white"},
+                    "trusted_by": "Coming soon · under development",
                 },
             )
         ],
         "body": (
-            "<p>Loop is the content-driven website builder behind every "
-            "structa.cloud landing page. Editors compose Wagtail StreamField "
-            "blocks; django-fusion renders them as finished server-side HTML.</p>"
-            "<p>It powers both render roads: Django's fusion-render HTML and the "
-            "Astro frontend's data APIs, from one source of content.</p>"
+            "<p>Loop was the content CMS behind structa.cloud. That CMS is now "
+            "folded into <a href=\"/products/lms/\">Precis</a>, and the Loop "
+            "brand is being repurposed for <strong>Loop CRM</strong> — a unified "
+            "sales and marketing platform.</p>"
+            "<p><strong>Status: under development.</strong> Loop CRM merges the "
+            "Twenty CRM (companies, contacts, deals, pipelines) with the Postiz "
+            "social scheduler (posts, channels, analytics) into one django-fusion "
+            "codebase — one source of truth from social impression to closed "
+            "deal.</p>"
         ),
         "tech": [
-            ("tech", {"title": "Built on", "items": ["Wagtail", "Django", "django-fusion", "HTMX", "Alpine.js", "Astro"]}),
-        ],
-        "applications": [
-            (
-                "applications",
-                {
-                    "eyebrow": "Built with Loop",
-                    "title": "Sites and apps running on Loop",
-                    "description": (
-                        "Real usage, not mockups: every structa.cloud property is a "
-                        "Loop build — composed from the same Wagtail blocks you see "
-                        "on this page and rendered server-side."
-                    ),
-                    "applications": [
-                        {
-                            "name": "vResume",
-                            "edition": "Community",
-                            "url": "/products/vresume/preview/community/",
-                            "description": "The cloud resume platform — modern templates, PDF export, and Syntara-powered AI summaries, served from the same content pipeline.",
-                        },
-                        {
-                            "name": "structa.cloud",
-                            "edition": "Community",
-                            "url": "/",
-                            "description": "This site. Every landing page you are reading is composed from StreamField blocks and rendered as finished HTML.",
-                        },
-                        {
-                            "name": "Precis LMS",
-                            "edition": "Business",
-                            "url": "/products/lms/",
-                            "description": "The learning platform — courses, enrollments and payments built on the same django-fusion component system.",
-                        },
-                    ],
-                },
-            )
+            ("tech", {"title": "Planned stack", "items": ["Django", "django-fusion", "Astro", "HTMX", "Alpine.js", "Redux", "PostgreSQL", "Redis", "Dramatiq"]}),
         ],
         "editions": [
             (
                 "editions",
                 {
                     "eyebrow": "Editions & pricing",
-                    "title": "From one page to a whole site",
+                    "title": "Pricing to be announced",
                     "editions": [
                         {
                             "name": "Community",
-                            "tagline": "A single landing page with the core section blocks.",
+                            "tagline": "Coming soon — the open-source CRM + social scheduler (AGPL-3.0).",
                             "price": "$0",
                             "period": "/open source",
-                            "features": ["Wagtail StreamField blocks", "django-fusion rendering", "HTMX fragments", "MIT license"],
-                            "cta_label": "Self-host",
-                            "cta_href": "https://github.com/mammhoud/django-fusion",
+                            "features": ["CRM: companies, contacts, deals, pipelines", "Social scheduling (Postiz DNA)", "Attribution & RevOps reports", "django-fusion rendering + HTMX", "Open source (AGPL-3.0)"],
+                            "cta_label": "Join the waitlist",
+                            "cta_href": "/contact/",
                             "featured": False,
                             "tier": "outline",
                         },
-                        {
-                            "name": "Business",
-                            "tagline": "A full marketing site with custom blocks + analytics. Multi-site, multi-editor, fully managed.",
-                            "price": "Custom",
-                            "period": "/project",
-                            "features": ["Everything in Community", "Custom StreamField blocks", "Blog + FAQ sections", "Analytics + SEO", "HTMX forms", "Multi-site + roles", "Dedicated support"],
-                            "cta_label": "Contact Sales",
-                            "cta_href": "/contact/",
-                            "featured": True,
-                            "tier": "featured",
-                        },
                     ],
                 },
             )
         ],
-        "features": [
+        "profile": [
             (
-                "features",
+                "profile",
                 {
-                    "title": "What Loop ships",
-                    "features": [
-                        {"icon": "M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z", "title": "Block-based editing", "description": "Editors compose sections; developers own the templates."},
-                        {"icon": "M13 10V3L4 14h7v7l9-11h-7z", "title": "Two render roads", "description": "Fusion-render HTML and data APIs from one Wagtail source of truth."},
-                        {"icon": "M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20", "title": "Open source", "description": "django-fusion is public on GitHub under a permissive license."},
+                    "eyebrow": "Who it serves",
+                    "title": "Ideal customers, capacity and reporting",
+                    "icp_intro": "Loop CRM is built for revenue teams that live in the gap between marketing and sales.",
+                    "icps": [
+                        {"title": "RevOps lead", "who": "A RevOps or growth lead who owns pipeline AND marketing ROI. They need every social interaction attributed to a deal and a single dashboard of truth.", "behaviour": "Connects channels, maps campaigns to deals, and reads attribution reports weekly. They care about closed-loop reporting and workflow automation more than any single feature."},
+                        {"title": "Sales team", "who": "Account executives and sales managers tracking companies, contacts, deals and pipeline stages.", "behaviour": "Works a pipeline daily, logs activities, and needs deal context including which social touchpoints influenced the deal."},
+                        {"title": "Social media manager", "who": "A marketer scheduling posts across 30+ channels and reporting on performance.", "behaviour": "Plans a content calendar, schedules posts, and needs analytics tied back to pipeline — not vanity metrics."},
                     ],
-                },
-            )
-        ],
-        "faq": [
-            (
-                "faq",
-                {
-                    "title": "Loop questions",
-                    "items": [
-                        {"question": "Is this the same CMS that runs this site?", "answer": "Yes. Every page you're reading is composed from these StreamField blocks and rendered by django-fusion."},
-                        {"question": "Can I add my own blocks?", "answer": "Absolutely. Blocks are plain Wagtail StructBlocks with Django templates, no framework lock-in."},
-                    ],
+                    "capacity": "Designed for multi-tenant workspaces: thousands of companies, contacts and deals per workspace; a social scheduler across 30+ platforms. Scale targets are published with the first release.",
+                    "reports": ["Pipeline & forecast", "Deal attribution", "Campaign ROI", "Post analytics", "RevOps dashboard"],
+                    "channels": "Social publishing across 30+ platforms with analytics aggregated per campaign; customer communication and invoicing channels are on the roadmap for the CRM release.",
+                    "tone": "Revenue-operations direct: 'from social impression to closed deal'. It speaks to operators who want one source of truth, with a voice that is confident, metrics-first and outcome-driven.",
                 },
             )
         ],
@@ -1464,10 +1480,10 @@ DEFAULT_PRODUCT_PAGES = {
             (
                 "cta",
                 {
-                    "title": "Ships as HTML, edits as blocks",
-                    "subtitle": "The CMS is open source. Clone it, add your blocks, ship your site.",
-                    "primary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud/django-fusion", "style": "white"},
-                    "secondary_cta": {"label": "Read the Docs", "href": "/about/", "style": "outline"},
+                    "title": "From social impression to closed deal",
+                    "subtitle": "Loop CRM is under development. Join the waitlist to follow the build and shape the roadmap.",
+                    "primary_cta": {"label": "Join the waitlist", "href": "/contact/", "style": "white"},
+                    "secondary_cta": {"label": "See Precis (the CMS)", "href": "/products/lms/", "style": "outline"},
                 },
             )
         ],
@@ -1477,6 +1493,9 @@ DEFAULT_PRODUCT_PAGES = {
         "logo_style": "orbit",
         "status": "development",
         "category": "platform",
+        # Hidden from the catalog, pricing tabs and homepage while under
+        # development — its detail page stays reachable by direct link.
+        "hidden": True,
         "tagline": "AI chat customizer. Embed Syntara-powered chat into any site.",
         "hero": [
             (
@@ -1512,6 +1531,23 @@ DEFAULT_PRODUCT_PAGES = {
                 },
             )
         ],
+        "profile": [
+            (
+                "profile",
+                {
+                    "eyebrow": "Who it serves",
+                    "title": "Ideal customers, capacity and reporting",
+                    "icp_intro": "Syntara is for SaaS owners who want AI chat that matches their brand.",
+                    "icps": [
+                        {"title": "SaaS founder", "who": "A product owner embedding support and sales chat into their site, fully branded.", "behaviour": "Embeds a widget, tunes behaviour rules, and watches chat analytics. They want the chat to feel native, not bolted on."},
+                    ],
+                    "capacity": "Embeds as a widget on any site; multi-model via ceptor-ai. Under development — capacity targets ship with 1.0.",
+                    "reports": ["Chat analytics"],
+                    "channels": "Embedded chat widget; routing and notifications are on the roadmap.",
+                    "tone": "API-first and precise: 'chat, routed around your brand'.",
+                },
+            )
+        ],
         "cta": [("cta", {"title": "Chat that looks like your brand", "subtitle": "Embed Syntara-powered chat in an afternoon.", "primary_cta": {"label": "Get Started", "href": "/contact/", "style": "white"}, "secondary_cta": {"label": "View ceptor-ai on GitHub", "href": "https://github.com/mammhoud/ceptor-ai", "style": "outline"}})],
     },
     "vresume": {
@@ -1521,7 +1557,7 @@ DEFAULT_PRODUCT_PAGES = {
         # Subproduct — stays catalog-only (visible on /products/ + pricing
         # tabs) but is excluded from the homepage preview cards.
         "show_on_home": False,
-        "tagline": "Cloud resume platform. Create, update, publish professional resumes — with Syntara-powered AI summaries.",
+        "tagline": "Cloud resume platform. Create, update, publish professional resumes — with AI-powered summaries.",
         "hero": [
             (
                 "hero",
@@ -1550,8 +1586,26 @@ DEFAULT_PRODUCT_PAGES = {
                     "title": "From one resume to a hosted portfolio",
                     "editions": [
                         {"name": "Community", "tagline": "One resume with the default template.", "price": "$0", "period": "/forever", "features": ["Modern resume templates", "Live preview", "PDF export"], "cta_label": "View on GitHub", "cta_href": "https://github.com/mammhoud", "featured": False, "tier": "outline"},
-                        {"name": "Business", "tagline": "Custom domain + multiple resumes.", "price": "$9", "period": "/per month", "features": ["Everything in Community", "Custom domain", "Multiple resumes", "Syntara AI summaries", "Analytics"], "cta_label": "Upgrade", "cta_href": "/contact/", "featured": True, "tier": "featured"},
+                        {"name": "Business", "tagline": "Custom domain + multiple resumes.", "price": "$9", "period": "/per month", "features": ["Everything in Community", "Custom domain", "Multiple resumes", "AI summaries", "Analytics"], "cta_label": "Upgrade", "cta_href": "/contact/", "featured": True, "tier": "featured"},
                     ],
+                },
+            )
+        ],
+        "profile": [
+            (
+                "profile",
+                {
+                    "eyebrow": "Who it serves",
+                    "title": "Ideal customers, capacity and reporting",
+                    "icp_intro": "vResume is for people who need a professional resume that ships like a product.",
+                    "icps": [
+                        {"title": "Job seeker", "who": "An active candidate applying across roles who needs a clean, modern resume fast.", "behaviour": "Builds a resume in one sitting, exports PDF, and shares a live link. They value templates and speed over customisation."},
+                        {"title": "Freelancer / career switcher", "who": "A freelancer or switcher repositioning their profile with an AI-assisted summary.", "behaviour": "Iterates on wording, uses the Syntara-powered summary, and wants a custom domain to look established."},
+                    ],
+                    "capacity": "One resume on Community; multiple resumes with a custom domain on Business. Hosted at vresume.structa.cloud with CI/CD deploys.",
+                    "reports": ["Profile views", "Link clicks", "PDF downloads"],
+                    "channels": "Share the live resume link over WhatsApp or email; AI summaries keep the profile sharp before every application.",
+                    "tone": "Career-forward and optimistic: 'your career, published'. It speaks to the candidate who wants to look ready before the interview.",
                 },
             )
         ],
@@ -1816,7 +1870,7 @@ DEFAULT_FAQ_SECTIONS = {
                 "items": [
                     {
                         "question": "What is structa.cloud?",
-                        "answer": "Structa Cloud is the portfolio and product hub for Mahmoud Ezzat Moustafa: a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.",
+                        "answer": "Structa Cloud is the portfolio and product hub for Mahmoud Ezzat: a full-stack developer building Django/Wagtail platforms, AI tools, and open-source libraries.",
                     },
                     {
                         "question": "What is the AHA stack?",
@@ -1824,7 +1878,7 @@ DEFAULT_FAQ_SECTIONS = {
                     },
                     {
                         "question": "Which products are available and in what editions?",
-                        "answer": "Formints POS (Community, Standard, Pro, Cloud), Precis LMS (Solo, Business), Loop CMS (Community, Business), Syntara AI chat (Community, Business) and vResume (Community, Business). Product editions are priced by capability; paid tiers add richer learning operations, integrations, cloud sync, multi-terminal and hosted features.",
+                        "answer": "Formints POS (Community, Standard, Pro, Custom), Precis LMS (Solo, Standard, Custom), Loop CMS (Community, Standard, Custom) and vResume (Community, Business). Syntara AI chat is in development. Product editions are priced by capability; paid tiers add richer learning operations, integrations, cloud sync, multi-terminal and hosted features.",
                     },
                     {
                         "question": "Are the libraries free to use?",
@@ -1895,7 +1949,7 @@ DEFAULT_TEAM_SECTIONS = {
             "hero",
             {
                 "title": "The people behind structa.cloud",
-                "subtitle": "One engineer, three product leads, and the open-source contributors who make the monorepo ship.",
+                "subtitle": "Two co-founders who own the product, the business, and the open-source libraries that make the monorepo ship.",
                 "primary_cta": {"label": "Meet the founder", "href": "/about/", "style": "secondary"},
                 "secondary_cta": {"label": "Get in touch", "href": "/contact/", "style": "white"},
             },
@@ -1903,8 +1957,9 @@ DEFAULT_TEAM_SECTIONS = {
     ],
     "body": (
         "<p>structa.cloud is built in the open. The founder runs the "
-        "architecture; each product has a named lead; the libraries are "
-        "public on GitHub for anyone to contribute to.</p>"
+        "architecture and product; his co-founder runs business and "
+        "operations; the libraries are public on GitHub for anyone to "
+        "contribute to.</p>"
     ),
     "team": [
         (
@@ -1915,8 +1970,8 @@ DEFAULT_TEAM_SECTIONS = {
                 "description": "Every product is a project in the monorepo, and every project has an owner.",
                 "members": [
                     {
-                        "name": "Mahmoud Ezzat Moustafa",
-                        "role": "Founder · full-stack engineer",
+                        "name": "Mahmoud Ezzat",
+                        "role": "Founder & CEO · full-stack engineer",
                         "bio": "Architect of the monorepo: Django/Wagtail platforms, the AHA landing stack, and the AI libraries. Ships everything as server-rendered documents.",
                         "initials": "ME",
                         "links": [
@@ -1927,39 +1982,14 @@ DEFAULT_TEAM_SECTIONS = {
                         ],
                     },
                     {
-                        "name": "Formints",
-                        "role": "Product lead · point-of-sale",
-                        "bio": "The Tauri 2 + Rust desktop POS: SQLite, four editions, one codebase. Community is open source on GitHub.",
-                        "initials": "FP",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/formint-community"}],
-                    },
-                    {
-                        "name": "Precis LMS",
-                        "role": "Product lead · learning platform",
-                        "bio": "Courses, enrollments and Stripe payments on django-fusion. The highest-value use case of the CMS.",
-                        "initials": "PL",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud"}],
-                    },
-                    {
-                        "name": "Loop CMS",
-                        "role": "Product lead · website builder",
-                        "bio": "Wagtail StreamField blocks rendered by django-fusion. This very site is built with it.",
-                        "initials": "LC",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/django-fusion"}],
-                    },
-                    {
-                        "name": "Syntara",
-                        "role": "Product lead · AI chat",
-                        "bio": "Ceptor-ai powered chat embedded into any site. Under development — a preview of what's next.",
-                        "initials": "SY",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud/ceptor-ai"}],
-                    },
-                    {
-                        "name": "vResume",
-                        "role": "Product lead · cloud resume",
-                        "bio": "Create, update and publish professional resumes with custom domains and CI/CD deployments.",
-                        "initials": "VR",
-                        "links": [{"platform": "GitHub", "url": "https://github.com/mammhoud"}],
+                        "name": "Moustafa Mobarak",
+                        "role": "Co-founder · business & operations",
+                        "bio": "Leads business development, partnerships and operations — turning the product into a company teams can buy from, deploy, and rely on.",
+                        "initials": "MM",
+                        "links": [
+                            {"platform": "GitHub", "url": "https://github.com/mammhoud"},
+                            {"platform": "LinkedIn", "url": "https://linkedin.com/in/mammhoud"},
+                        ],
                     },
                 ],
             },
@@ -1988,8 +2018,8 @@ DEFAULT_FOUNDER_SECTIONS = {
         (
             "hero",
             {
-                "title": "Mahmoud Ezzat Moustafa",
-                "subtitle": "Full-stack developer, open-source contributor, and the engineer behind structa.cloud. Django, Wagtail, and AI-powered systems.",
+                "title": "Mahmoud Ezzat",
+                "subtitle": "Founder & CEO of structa.cloud — full-stack developer, open-source contributor, and the engineer behind the monorepo. Django, Wagtail, and AI-powered systems.",
                 "primary_cta": {"label": "Meet the team", "href": "/about/team/", "style": "secondary"},
                 "secondary_cta": {"label": "View on GitHub", "href": "https://github.com/mammhoud", "style": "white"},
                 "trusted_by": "Python · Django · Wagtail · AI tooling",
@@ -1997,8 +2027,9 @@ DEFAULT_FOUNDER_SECTIONS = {
         )
     ],
     "body": (
-        "<p>Mahmoud Ezzat Moustafa is a full-stack developer specializing in "
-        "Python/Django, Wagtail CMS, and AI tooling. He builds server-rendered "
+        "<p>Mahmoud Ezzat is the founder and CEO of structa.cloud — a "
+        "full-stack developer specializing in Python/Django, Wagtail CMS, and "
+        "AI tooling. He builds server-rendered "
         "platforms that ship as documents — no heavy SPAs, no framework "
         "overhead. Every project in the structa.cloud monorepo carries his "
         "signature: finished HTML in one response.</p>"
@@ -2114,8 +2145,8 @@ DEFAULT_STARTUP_SECTIONS = {
                     },
                     {
                         "title": "2025–2026 · Products and scale",
-                        "description": "Five products shipping from one monorepo: Formints POS, Precis LMS, Loop CMS, Syntara AI, vResume. Community editions open source, paid editions commercial.",
-                        "deliverable": "Five products, one repo",
+                        "description": "Four public products shipping from one monorepo: Formints POS, Precis LMS, Loop CRM, and vResume — with Syntara AI chat in development. Community editions open source, paid editions commercial.",
+                        "deliverable": "Four products, one repo",
                     },
                 ],
             },
@@ -2452,10 +2483,17 @@ class Command(BaseCommand):
                 "into one list — each product IS a project in this repo.</p>"
             ),
             projects=[],
-            faq=DEFAULT_FAQ_SECTIONS["faq"],
             **DEFAULT_ABOUT_SECTIONS,
         )
         self._created(created, "products")
+
+        # The generic FAQ lives on /faq/ only. Clear any stale backfill on the
+        # Products document so hidden-product references (Syntara, ceptor-ai)
+        # never leak onto the catalog page.
+        products_node = ProductsPage.objects.filter(slug="products").first()
+        if products_node is not None and products_node.faq:
+            products_node.faq = []
+            products_node.save(update_fields=["faq"])
 
         # ── Product pages (children of Products) ─────────────────────────
         # Rename cleanup — the POS product moved from slug ``forge-pos`` to
@@ -2759,7 +2797,6 @@ class Command(BaseCommand):
                             "Formints POS",
                             "Precis LMS",
                             "Loop CMS",
-                            "Syntara",
                             "vResume",
                             "Website building",
                             "Product development",

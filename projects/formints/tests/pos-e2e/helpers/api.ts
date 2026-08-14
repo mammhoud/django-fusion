@@ -12,7 +12,7 @@ import { APIRequestContext, request } from '@playwright/test';
  * import { test, expect } from '@playwright/test';
  * import { createApiContext, apiHealthCheck } from '../../helpers/api';
  *
- * test('sidecar health', async () => {
+ * test('server health', async () => {
  *   const ctx = await createApiContext('http://localhost:8765');
  *   const healthy = await apiHealthCheck(ctx);
  *   expect(healthy).toBe(true);
@@ -20,8 +20,8 @@ import { APIRequestContext, request } from '@playwright/test';
  * ```
  */
 
-/** Default sidecar URL shared across POS editions */
-export const SIDECAR_URL = 'http://localhost:8765';
+/** Default server URL shared across POS editions */
+export const SERVER_URL = 'http://localhost:8765';
 
 /** Default RTK Query API URL */
 export const API_URL = 'http://localhost:8766';

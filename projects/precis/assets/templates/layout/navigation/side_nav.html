@@ -1,28 +1,13 @@
 {% load i18n static %}
-{# Side navigation component #}
 <aside id="side-nav" class="side-nav" aria-label="{% trans 'Side navigation' %}">
-    <div class="side-nav__inner">
-        <nav class="side-nav__menu">
-            <ul class="side-nav__list list-unstyled mb-0">
-                <li class="side-nav__item">
-                    <a href="{% url 'profile:dashboard' %}" class="side-nav__link">
-                        <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
-                        {% trans "Dashboard" %}
-                    </a>
-                </li>
-                <li class="side-nav__item">
-                    <a href="{% url 'profile:courses' %}" class="side-nav__link">
-                        <i class="bi bi-book me-2" aria-hidden="true"></i>
-                        {% trans "My Courses" %}
-                    </a>
-                </li>
-                <li class="side-nav__item">
-                    <a href="{% url 'profile:settings' %}" class="side-nav__link">
-                        <i class="bi bi-gear me-2" aria-hidden="true"></i>
-                        {% trans "Settings" %}
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+  <div class="side-nav__inner">
+    <nav class="side-nav__menu">
+      <p class="side-nav__label">{% trans "Learning workspace" %}</p>
+      <ul class="side-nav__list list-unstyled mb-0">
+        <li class="side-nav__item"><a href="{% url 'profile:dashboard' %}" class="side-nav__link{% if request.path == '/profile/' %} is-active{% endif %}"{% if request.path == '/profile/' %} aria-current="page"{% endif %}><i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>{% trans "Dashboard" %}</a></li>
+        <li class="side-nav__item"><a href="{% url 'profile:courses' %}" class="side-nav__link{% if '/profile/courses' in request.path %} is-active{% endif %}"{% if '/profile/courses' in request.path %} aria-current="page"{% endif %}><i class="bi bi-book me-2" aria-hidden="true"></i>{% trans "My Courses" %}</a></li>
+        <li class="side-nav__item"><a href="{% url 'profile:settings' %}" class="side-nav__link{% if '/profile/settings' in request.path %} is-active{% endif %}"{% if '/profile/settings' in request.path %} aria-current="page"{% endif %}><i class="bi bi-gear me-2" aria-hidden="true"></i>{% trans "Settings" %}</a></li>
+      </ul>
+    </nav>
+  </div>
 </aside>

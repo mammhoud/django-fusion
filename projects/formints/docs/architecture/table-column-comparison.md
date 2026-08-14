@@ -7,14 +7,14 @@
 | Edition | DB Layer | Table Names | Prefix |
 |---------|----------|------------|--------|
 | **Minimal** | Diesel ORM (Rust) | Raw SQLite | *(no prefix)* |
-| **Solo** | Django ORM (Python sidecar) | Managed by Django | `full_` for core, `pos_crm_` for CRM, `pos_sync_` / `pos_signal_` for system |
-| **Full** | Django ORM (Python sidecar) | Managed by Django | Same as Solo, plus additional CRM tables |
+| **Solo** | Django ORM (Python server) | Managed by Django | `full_` for core, `pos_crm_` for CRM, `pos_sync_` / `pos_signal_` for system |
+| **Full** | Django ORM (Python server) | Managed by Django | Same as Solo, plus additional CRM tables |
 
 ---
 
 ## 1. Tables With Identical Names Across All Three Editions
 
-No tables have *identical* names across all three editions because the Django sidecar uses the `full_` prefix. However, these tables are **semantically equivalent**:
+No tables have *identical* names across all three editions because the Django server uses the `full_` prefix. However, these tables are **semantically equivalent**:
 
 | Minimal (Diesel) | Solo (Django) | Full (Django) | Match |
 |:----------------|:--------------|:--------------|:------|
@@ -42,7 +42,7 @@ No tables have *identical* names across all three editions because the Django si
 
 ## 2. Tables Unique to Minimal (No Django Equivalent)
 
-These Diesel tables have **no counterpart** in the Solo/Full Django sidecar. Data from these tables must be either dropped, merged, or transformed during migration:
+These Diesel tables have **no counterpart** in the Solo/Full Django server. Data from these tables must be either dropped, merged, or transformed during migration:
 
 | Minimal Table | Status | What Happens to the Data |
 |:-------------|:-------|:------------------------|
@@ -62,7 +62,7 @@ These Diesel tables have **no counterpart** in the Solo/Full Django sidecar. Dat
 
 ## 3. Tables Unique to Solo/Full (No Diesel Equivalent)
 
-These exist only in the sidecar's Django ORM. They don't need migration from Minimal:
+These exist only in the server's Django ORM. They don't need migration from Minimal:
 
 | Django Table | Model | Purpose | Present In |
 |:-------------|:------|:--------|:-----------|

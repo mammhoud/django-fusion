@@ -4,7 +4,7 @@ The historical ``parents[5]`` heuristic resolved the monorepo root on the host
 (``<repo>/projects/precis/backend/configs/settings/conf.py`` is six levels
 deep), but overran with ``IndexError`` inside the container
 (``/app/lms-fusion/configs/settings/conf.py`` is only four levels deep). That
-silently broke the entrypoint's database-readiness check and the Celery
+silently broke the entrypoint's database-readiness check and the Dramatiq
 worker. ``_resolve_workspace_dir()`` now walks up to the directory owning
 ``libs/`` instead — the repo root on the host and ``/app`` in the container
 both carry it.

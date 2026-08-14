@@ -5,7 +5,7 @@
 
 ## Overview
 
-Formint is a lightweight, offline-first Point of Sale desktop application built with **Tauri**, **React 19**, and **Rust/Diesel ORM**. It uses an embedded **SQLite** database — no external server or sidecar required.
+Formint is a lightweight, offline-first Point of Sale desktop application built with **Tauri**, **React 19**, and **Rust/Diesel ORM**. It uses an embedded **SQLite** database — no external server or server required.
 
 ---
 
@@ -52,7 +52,7 @@ formintA/  (site slug formint-pos)
 │   ├── pages/              # 22 route-level pages
 │   ├── contexts/           # React contexts (Theme, Auth, Language)
 │   ├── hooks/              # Custom React hooks (2)
-│   ├── api/                # Tauri invoke wrappers (chat, data, sidecar)
+│   ├── api/                # Tauri invoke wrappers (chat, data, server)
 │   ├── utils/              # Utilities (invoice PDF, export)
 │   ├── i18n/               # Internationalization (5 languages)
 │   └── test/               # Vitest tests
@@ -62,7 +62,7 @@ formintA/  (site slug formint-pos)
 │   │   ├── operations/     # 27 CRUD operation modules
 │   │   └── db/             # Diesel models + schema
 │   ├── migrations/         # SQLite migrations
-│   └── binaries/           # Sidecar binaries
+│   └── binaries/           # Server binaries
 ├── docs/                   # This documentation
 └── scripts/                # Build, dev, CI scripts
 ```

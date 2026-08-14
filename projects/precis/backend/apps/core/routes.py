@@ -1,14 +1,14 @@
 """
-LMS Fusion — Routable Components Site Configuration
+LMS Fusion — Routable Components Module Configuration
 ======================================================
 
-Defines the Application and Site hierarchy for the routable-components
+Defines the Application and Module hierarchy for the routable-components
 routing system. Coexists with the existing manual URL routing in apps/urls.py.
 
 Wire into projects/urls.py::
 
-    from apps.core.routes import site
-    urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
+    from apps.core.routes import module
+    urlpatterns += [path("osoul/", include((module.urls[0], module.urls[1]), namespace=module.urls[2]))]
 
 Generated URL prefix: /osoul/
   /osoul/lms/dashboard/
@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import Any
 
 from django_fusion.routes.core.sites import Application
-from django_fusion.routes.core.sites import Site
+from django_fusion.routes.core.sites import Module
 from django_fusion.routes.core.base import viewprop
 
 # ---------------------------------------------------------------------------
@@ -124,31 +124,31 @@ class BlogApp(Application):
 
 
 # ---------------------------------------------------------------------------
-# Site — lazy creation to avoid circular imports during module load.
+# Module — lazy creation to avoid circular imports during module load.
 # ---------------------------------------------------------------------------
 
-_site: Site | None = None
+_module: Module | None = None
 
 
-def get_site() -> Site:
-    """Build the Site once, memoized.
+def get_module() -> Module:
+    """Build the Module once, memoized.
 
-    Lazily creates the Site instance after Django has fully initialized
+    Lazily creates the Module instance after Django has fully initialized
     the app registry.  Applications are imported at the top of this
     module, so their ``viewsets`` lazy-import components only when first
     accessed.
     """
-    global _site
-    if _site is None:
-        _site = Site(
+    global _module
+    if _module is None:
+        _module = Module(
             title="LMS Fusion",
             viewsets=[
                 LMSApp(),
                 BlogApp(),
             ],
         )
-    return _site
+    return _module
 
 
-# Expose as 'site' for backwards compatibility.
-site = get_site()
+# Expose as 'module'.
+module = get_module()

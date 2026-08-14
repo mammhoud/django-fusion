@@ -16,6 +16,10 @@ RUN corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm r
 # The alias resolves to /libs/django-fusion/js/fusion-js/src relative to the
 # Astro config, so place the package exactly there.
 COPY libs/django-fusion/js/fusion-js /libs/django-fusion/js/fusion-js
+# Shared django-fusion TEMPLATES behind the `@fusion-templates` alias (the
+# single source of truth for cross-road partials imported `?raw` by
+# BrandModal.astro etc.). Same /libs/... mirror as fusion-js above.
+COPY libs/django-fusion/src/django_fusion/templates /libs/django-fusion/src/django_fusion/templates
 COPY projects/landing-fusion/frontend/. .
 
 ENV HOST=0.0.0.0 \

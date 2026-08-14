@@ -87,6 +87,21 @@ WEBSITE_NAME = "lms-fusion"
 WEBSITE_IDENTIFIER = "lms-fusion"
 WAGTAIL_SITE_NAME = cfg("WAGTAIL_SITE_NAME", "Fusion LMS")
 
+# ── Task Center (website-record contract) ──────────────────────────
+# The shared worker writes django_fusion's BackgroundTaskLog; the authenticated
+# /tasks/ page (and the scheduled sync_task_history job) mirror it into
+# apps.tasks.TaskExecution filtered by this site so the website record stays
+# fresh without a Task Center page view.
+FUSION_TASK_SITE_NAME = cfg("FUSION_TASK_SITE_NAME", WEBSITE_NAME)
+FUSION_TASK_EXECUTION_MODEL = cfg("FUSION_TASK_EXECUTION_MODEL", "tasks.TaskExecution")
+FUSION_TASK_MODULES = [
+    "plugins.workers.email_tasks",
+    "plugins.workers.course_tasks",
+    "plugins.workers.content_tasks",
+    "plugins.workers.legacy_email_tasks",
+    "plugins.workers.campaign_tasks",
+]
+
 
 # ═══════════════════════════════════════════════════════════════════
 # Branding — teal theme (env var > _site.yml > fallback)

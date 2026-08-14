@@ -257,7 +257,7 @@ import Skeleton from '../components/ui/Skeleton.astro';
   });
 
   // Admin preference (UserSettings.fusion_render_mode) saved in the Unfold
-  // admin: the sidecar origin can't BroadcastChannel to this origin, so the
+  // admin: the server origin can't BroadcastChannel to this origin, so the
   // watcher polls the DB-truth fields of GET /fusion/session-mode/ and fires
   // here when the row changes. Apply it like a toggle — persist to the
   // session, update the decoder cache, broadcast to every open tab, refresh.

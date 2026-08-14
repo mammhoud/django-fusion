@@ -34,7 +34,7 @@ npm run test:e2e:report
 pos-e2e/
 ├── playwright.config.ts     # Central config with 5 Playwright projects
 ├── fixtures/
-│   └── auth.ts              # Shared auth fixtures (mocks Fusion sidecar + API)
+│   └── auth.ts              # Shared auth fixtures (mocks Fusion server + API)
 ├── pages/                   # Page Object Models (POMs)
 │   ├── BasePage.ts          # Shared selectors: nav, layout, loading/error/empty
 │   ├── HomePage.ts          # Dashboard page
@@ -51,7 +51,7 @@ pos-e2e/
 │   │   ├── sale.spec.ts     # POS transaction interface
 │   │   └── inventory.spec.ts # Inventory management
 │   └── api/                 # API-only tests (bolt pattern)
-│       └── pos-api.spec.ts  # Sidecar health, auth, CRUD
+│       └── pos-api.spec.ts  # Server health, auth, CRUD
 └── README.md                # This file
 ```
 
@@ -97,7 +97,7 @@ test('login returns token', async () => {
 
 ## Auth Mocking
 
-POS editions use a Fusion sidecar (port 8765) and RTK Query API (port 8766). The test fixtures **mock** these services so tests run without a real backend.
+POS editions use a Fusion server (port 8765) and RTK Query API (port 8766). The test fixtures **mock** these services so tests run without a real backend.
 
 ```ts
 // fixtures/auth.ts provides custom fixtures:
@@ -151,7 +151,7 @@ test('your feature', async ({ adminPage }) => {
 | Edition | Port | Pages | Notes |
 |---------|:----:|:-----:|-------|
 | `pos-full` | 1420 | 24 | Tauri + Redux, primary edition |
-| `pos-solo` | 1421 | 24 | Robyn sidecar variant |
+| `pos-solo` | 1421 | 24 | Robyn server variant |
 | `pos-mini` | 1422 | 23 | No Redux, no Notes page |
 | `pos-client` | 1423 | views | `views/` architecture instead of `pages/` |
 | `pos-cloud` | 1424 | — | Scaffolded; tests skipped until `src/` is built |
@@ -177,7 +177,7 @@ test('your feature', async ({ adminPage }) => {
 | Problem | Solution |
 |---------|----------|
 | Tests timeout on `networkidle` | Increase timeout in `playwright.config.ts` |
-| Sidecar not mocked | Ensure `setupAuth()` is called in the fixture |
+| Server not mocked | Ensure `setupAuth()` is called in the fixture |
 | Port conflict | Editions use strict ports (1420-1424). Kill existing dev servers first |
 | `ERR_CONNECTION_REFUSED` | Dev server not started. Check `webServer` config |
 | Role-based page shows wrong content | Check the fixture role matches the page's expected role |

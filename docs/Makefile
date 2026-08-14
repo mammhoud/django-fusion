@@ -1,64 +1,50 @@
-# docs/Makefile – Documentation build, serve, deploy, clean
-.PHONY: help build serve deploy clean check
+# docs/Makefile — Docus documentation build, serve, validate, and deploy
+.PHONY: help install build build-static serve preview check clean deploy
 
 .DEFAULT_GOAL := help
 
-GREEN  := \033[0;32m
-YELLOW := \033[1;33m
-BLUE   := \033[0;34m
-CYAN   := \033[0;36m
-RED    := \033[0;31m
-NC     := \033[0m
+DocusDir := docus
 
-help: ## Show docs commands help
-	@echo -e "$(CYAN)=========================================$(NC)"
-	@echo -e "$(CYAN)      DOCUMENTATION COMMANDS             $(NC)"
-	@echo -e "$(CYAN)=========================================$(NC)"
-	@echo ""
-	@awk 'BEGIN {FS = ":.*##"; printf ""} /^[a-zA-Z_-]+:.*?##/ { printf "  $(CYAN)%-25s$(NC) %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+help: ## Show documentation commands
+	@printf '%s\n' \
+		'Docus documentation commands:' \
+		'  make install       Install Docus dependencies' \
+		'  make build         Build the Docus Nuxt server' \
+		'  make build-static  Generate an optional static export' \
+		'  make serve         Run the Docus development server' \
+		'  make preview       Preview the generated server output' \
+		'  make check         Validate Docus configuration and locale sources' \
+		'  make deploy        Rebuild the Docus + shared-media services' \
+		'  make clean         Remove generated Docus output'
 
-build: ## Build docs with MkDocs
-	@echo -e "$(BLUE)Building documentation...$(NC)"
-	@if command -v mkdocs >/dev/null 2>&1; then \
-		mkdocs build; \
-		echo -e "$(GREEN)✅ Built into site/$(NC)"; \
-	else \
-		echo -e "$(RED)mkdocs not installed$(NC)"; \
-	fi
+install: ## Install Docus dependencies
+	cd $(DocusDir) && npm install
 
-serve: ## Serve docs locally
-	@echo -e "$(BLUE)Serving docs at http://localhost:8000...$(NC)"
-	@if command -v mkdocs >/dev/null 2>&1; then \
-		mkdocs serve; \
-	else \
-		echo -e "$(RED)mkdocs not installed$(NC)"; \
-	fi
+build: ## Build the Docus Nuxt server
+	cd $(DocusDir) && npm run build
 
-deploy: ## Deploy to GitHub Pages
-	@echo -e "$(BLUE)Deploying docs...$(NC)"
-	@if command -v mkdocs >/dev/null 2>&1; then \
-		mkdocs gh-deploy; \
-		echo -e "$(GREEN)✅ Deployed$(NC)"; \
-	else \
-		echo -e "$(RED)mkdocs not installed$(NC)"; \
-	fi
+build-static: ## Generate an optional static Docus export
+	cd $(DocusDir) && npm run build:static
 
-clean: ## Remove built docs
-	@echo -e "$(BLUE)Cleaning docs...$(NC)"
-	@rm -rf site/
-	@echo -e "$(GREEN)✅ Cleaned$(NC)"
+serve: ## Serve Docus locally at the /docs/ base path
+	cd $(DocusDir) && npm run dev
 
-check: ## Check docs structure
-	@echo -e "$(BLUE)Checking docs...$(NC)"
-	@if [ -f "mkdocs.yml" ]; then \
-		echo -e "$(GREEN)✅ mkdocs.yml found$(NC)"; \
-		echo "Sections:"; \
-		grep "^  - " mkdocs.yml | sed 's/^/  /'; \
-	else \
-		echo -e "$(RED)❌ mkdocs.yml missing$(NC)"; \
-	fi
-	@echo ""
-	@if [ -d "docs" ]; then \
-		echo "Doc directories:"; \
-		ls -d docs/*/ 2>/dev/null | sed 's|docs/||; s|/||; s|^|  |'; \
-	fi
+preview: ## Preview the generated Docus server output
+	cd $(DocusDir) && npm run preview
+
+check: ## Validate Docus configuration and locale sources
+	@test -f $(DocusDir)/nuxt.config.ts
+	@test -f $(DocusDir)/app.config.ts
+	@test -f $(DocusDir)/ar-content/index.md
+	@test -f $(DocusDir)/ar-content/guides/quickstart.md
+	@test -f $(DocusDir)/ar-content/guides/deployment.md
+	@node --check $(DocusDir)/scripts/prepare-content.mjs
+	@grep -q "@nuxtjs/i18n" $(DocusDir)/package.json
+	@grep -q "code: 'ar'" $(DocusDir)/nuxt.config.ts
+	@echo 'Docus configuration and English/Arabic source checks passed.'
+
+deploy: ## Rebuild the Docus and shared-media services
+	docker compose -f ../applications/proxy/docker-compose.nginx.yml build docus shared-media
+
+clean: ## Remove generated Docus output and content
+	rm -rf $(DocusDir)/content $(DocusDir)/.nuxt $(DocusDir)/.output $(DocusDir)/dist

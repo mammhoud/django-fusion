@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # ============================================================================
-# POS — run merged sidecar tests (pos-full + pos-solo absorbed into formint-pos)
+# POS — run merged server tests (pos-full + pos-solo absorbed into formint-pos)
 # ============================================================================
 # pos-full and pos-solo were merged into formint-pos (see the merge commit).
-# Their Robyn sidecar now lives at formint-pos/sidecar/ — this wrapper runs
+# Their Robyn server now lives at formint-pos/server/ — this wrapper runs
 # the combined suite from that single location.
 #
 # Test-grouping note
 # ------------------
-# Each sidecar test file bootstraps its own Django settings at import time
+# Each server test file bootstraps its own Django settings at import time
 # (independent in-memory DBs). Running the whole tests/ directory in ONE
 # pytest session lets the first file's `settings.configure()` win and breaks
 # the rest (Django settings are process-global). The documented canonical
 # invocation is therefore the 3-file subset below; the remaining files run
-# as their own groups. See sidecar/ARCHITECTURE.md → Test Results.
+# as their own groups. See server/ARCHITECTURE.md → Test Results.
 #
 # Usage:
 #   bash py/full/run.sh                    — all groups (rust_db excluded)
@@ -23,12 +23,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"  # projects/pos/
-SIDECAR="$ROOT/formint-pos/sidecar"
-cd "$SIDECAR"
+SERVER="$ROOT/formint-pos/server"
+cd "$SERVER"
 
 PY=python3
-if [ -x "$SIDECAR/.venv/bin/python3" ]; then
-    PY="$SIDECAR/.venv/bin/python3"
+if [ -x "$SERVER/.venv/bin/python3" ]; then
+    PY="$SERVER/.venv/bin/python3"
 fi
 
 EXTRA_ARGS=("$@")
@@ -36,7 +36,7 @@ if [ ${#EXTRA_ARGS[@]} -eq 0 ]; then
     EXTRA_ARGS=("-k" "not rust_db")
 fi
 
-echo "▸ Running merged sidecar tests from $SIDECAR"
+echo "▸ Running merged server tests from $SERVER"
 echo "  python: $PY"
 echo ""
 
@@ -58,4 +58,4 @@ for f in tests/test_pos_models.py tests/test_extra_models.py tests/test_conftest
 done
 
 echo ""
-echo "✅ All sidecar test groups finished"
+echo "✅ All server test groups finished"

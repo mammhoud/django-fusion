@@ -15,7 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "landing-fusion-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if host.strip()]
+# Default to backend + localhost only (secure fallback). Production
+# docker-compose.yml sets DJANGO_ALLOWED_HOSTS explicitly with the public
+# domains appended, so this default never tightens a deployed site.
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,landing-fusion-backend,landing-fusion-frontend").split(",") if host.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -71,7 +74,9 @@ INSTALLED_APPS = [
     "apps.handlers",  # PageHandler views (HTMX fragment rendering)
     "apps.auth",  # Allauth auth adapters + templates (LandingAuthAdapter + social)
     "apps.learning",  # Commercial LMS catalog, enrollment, progress, and learner profile
-    "apps.tasks",  # Background tasks (django-fusion @task — email, content, scheduled)
+    # TaskExecution remains in apps.tasks; worker implementations live in
+    # plugins.workers and are loaded explicitly below.
+    "apps.tasks",
 ]
 
 MIDDLEWARE = [
@@ -206,12 +211,24 @@ ACCOUNT_PASSWORD_RESET_URL = "/accounts/password/reset/"
 
 # Branded transactional email. Console backend in dev so the messages render to
 # the server log (visible in the preview run); swap to SMTP in production via
-# EMAIL_BACKEND/EMAIL_HOST/… env vars.
+# EMAIL_BACKEND/EMAIL_HOST/… env vars (see .env.example — Gmail SMTP for
+# structa.cloud@gmail.com).
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Structa Cloud <structa.cloud@gmail.com>")
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
 EMAIL_SUBJECT_PREFIX = ""  # subjects already carry the brand via templates
+
+# Gmail SMTP (structa.cloud@gmail.com) — populated from env so no secrets live
+# in the repo. The values only take effect once EMAIL_BACKEND is set to the SMTP
+# backend; they stay inert while the console backend is the dev default.
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() in {"1", "true", "yes", "on"}
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "false").lower() in {"1", "true", "yes", "on"}
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
 # ── Newsletter provider (Mailchimp / Brevo / webhook) ─────────────
 # NEWSLETTER_PROVIDER selects the sync target for NewsletterSubscriber
@@ -446,3 +463,13 @@ FUSION_PIPELINE = {
 # Override per request with the ``X-Fusion-Render-First: true|false`` header.
 # Env: FUSION_RENDER_FIRST=1|0
 FUSION_RENDER_FIRST = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"
+
+# ── Task Center (website-record contract) ──────────────────────────
+# The shared worker writes django_fusion's BackgroundTaskLog; the authenticated
+# /tasks/ page mirrors it into apps.tasks.TaskExecution filtered by this site.
+FUSION_TASK_SITE_NAME = os.environ.get("FUSION_TASK_SITE_NAME", "landing-fusion")
+FUSION_TASK_EXECUTION_MODEL = os.environ.get("FUSION_TASK_EXECUTION_MODEL", "tasks.TaskExecution")
+FUSION_TASK_MODULES = [
+    "plugins.workers.email_tasks",
+    "plugins.workers.content_tasks",
+]

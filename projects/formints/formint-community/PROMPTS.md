@@ -14,13 +14,13 @@ Same as the merged package — see `../formint-pos/legacy-react/` (archived pos-
 ```
 Add a new page at src/pages/NewFeature.tsx for POS Mini (lightweight edition):
 - PageLayout wrapper (no auth — lightweight single-user)
-- Tauri invoke calls (no sidecar — all data via Rust/Diesel)
+- Tauri invoke calls (no server — all data via Rust/Diesel)
 - Loading, error, empty, and normal states
 - CTC teal theme classes
-- No Python imports or sidecar dependencies
+- No Python imports or server dependencies
 ```
 
-### Add a new Tauri invoke call (no sidecar)
+### Add a new Tauri invoke call (no server)
 ```
 Add a new Tauri invoke for [feature]:
 - Create the Rust command in src-tauri/src/commands/[feature].rs
@@ -54,7 +54,7 @@ Create a new SQL migration for [change]:
 
 ## Python Prompts
 
-**POS Mini does not include a Python sidecar.** No Python prompts apply.
+**POS Mini does not include a Python server.** No Python prompts apply.
 All backend logic is in Rust + Diesel + SQLite.
 
 ---

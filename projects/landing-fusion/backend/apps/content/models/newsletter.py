@@ -14,9 +14,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.admin.ui.tables import BooleanColumn, Column, DateColumn
 from wagtail.admin.widgets.button import HeaderButton
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import IndexView, SnippetViewSet
 

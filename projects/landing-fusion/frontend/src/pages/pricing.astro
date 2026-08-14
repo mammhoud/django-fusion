@@ -37,7 +37,7 @@ function editionCardClass(tier: string): string {
 
 <Layout
   title={pageData?.title || 'Pricing'}
-  description={pageData?.search_description || 'Every structa.cloud product with its editions and pricing: Formints POS, Precis LMS, Loop CMS, Syntara, vResume. Community editions are open source.'}
+  description={pageData?.search_description || 'Every structa.cloud product with its editions and pricing: Formints POS, Precis LMS, Loop CMS, and vResume. Community editions are open source.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -162,7 +162,7 @@ function editionCardClass(tier: string): string {
         <div class='card p-6'>
           <p class='tag-marker mb-1'>rung three</p>
           <h3 class='mb-2 font-display text-lg font-semibold text-fu-ink'>Go managed</h3>
-          <p class='text-sm leading-relaxed text-fu-muted'>Cloud editions are quoted per deployment or per month — hosted, monitored, and supported for you.</p>
+          <p class='text-sm leading-relaxed text-fu-muted'>Custom editions are quoted per deployment — hosted, monitored, and supported for you.</p>
           <a href='/contact/' class='mt-4 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Contact sales →</a>
         </div>
       </div>
@@ -182,7 +182,7 @@ function editionCardClass(tier: string): string {
 
   <CTA
     heading={pageCta?.title || 'Most of our builds are open source'}
-    intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.'}
+    intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Custom editions are commercial.'}
     ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
     ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
   />

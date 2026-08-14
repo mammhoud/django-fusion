@@ -92,7 +92,7 @@ src/
 │   ├── index.ts             # Unified API exports
 │   ├── data.ts              # Data operations
 │   ├── chat.ts              # Chat/support operations
-│   ├── sidecar.ts           # Sidecar communication
+│   ├── server.ts           # Server communication
 │   └── tickets.ts           # Kitchen ticket operations
 │
 ├── utils/                    # Utility modules
@@ -217,7 +217,7 @@ src-tauri/
 │   │   ├── shifts.rs        # Shift management
 │   │   ├── hardware.rs      # ESC/POS printer support
 │   │   ├── kitchen_tickets.rs # Kitchen display tickets
-│   │   ├── sidecar.rs       # Sidecar process management
+│   │   ├── server.rs       # Server process management
 │   │   └── dump.rs          # Database import/export
 │   │
 │   └── bin/
@@ -230,8 +230,8 @@ src-tauri/
 │   ├── invoice.html         # Invoice email template
 │   └── support_email.html   # Support email template
 │
-├── binaries/                # Sidecar binaries (platform-specific)
-│   └── pos-sidecar-*        # Compiled sidecar for current platform
+├── binaries/                # Server binaries (platform-specific)
+│   └── pos-server-*        # Compiled server for current platform
 │
 └── icons/                   # App icons
     ├── icon.icns            # macOS icon
@@ -287,7 +287,7 @@ scripts/
 │   └── diff-i18n.cjs        # i18n diff for CI
 ├── publish/
 │   ├── build-all.cjs        # Multi-platform build orchestrator
-│   ├── build-sidecar.cjs    # Sidecar builder
+│   ├── build-server.cjs    # Server builder
 │   ├── generate-checksums.cjs # Checksum generation
 │   └── verify-checksum.cjs  # Checksum verification
 └── README.md                # Scripts documentation

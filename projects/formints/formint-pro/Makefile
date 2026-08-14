@@ -1,27 +1,27 @@
 # ============================================================================
-# Formint POS — Root Makefile (frontend + sidecar + full commands)
+# Formint POS — Root Makefile (frontend + server + full commands)
 # ============================================================================
 # Orchestrates the merged package:
-#   - sidecar/   : Django + Ninja + django-fusion + Unfold admin + Robyn server
+#   - server/   : Django + Ninja + django-fusion + Unfold admin + Robyn server
 #                  (single merged Django project — pos_full + formint apps)
 #   - frontend/  : Astro + Alpine.js + HTMX shell (proxies /api, /htmx, /fusion)
 #   - src-tauri/ : Tauri v2 desktop shell
 #
 # Design: delegates to per-layer Makefiles via $(MAKE) -C, mirroring
-# landing-fusion's root Makefile (frontend targets here, sidecar via
-# `backend-*` → sidecar/Makefile). The parent `projects/pos/Makefile`
+# landing-fusion's root Makefile (frontend targets here, server via
+# `backend-*` → server/Makefile). The parent `projects/pos/Makefile`
 # delegates its `formint-*` targets here too.
 #
 # Quick start:
-#   make install          — sidecar .venv + deps, frontend npm install, migrate
+#   make install          — server .venv + deps, frontend npm install, migrate
 #   make seed             — migrate + idempotent superuser (admin@formint.local)
-#   make env              — run BOTH servers in tmux (sidecar :8767 + frontend :4321)
+#   make env              — run BOTH servers in tmux (server :8767 + frontend :4321)
 #   make dev-backend      — runserver :8767 (foreground)
 #   make dev-frontend     — astro dev :4321 (foreground)
-#   make test             — sidecar tests + frontend contract tests
+#   make test             — server tests + frontend contract tests
 #   make check            — django check + astro check
 #   make stop             — kill the tmux env sessions
-#   make build            — production frontend build + sidecar collectstatic
+#   make build            — production frontend build + server collectstatic
 #
 # Env overrides: BACKEND_PORT (8767), FRONTEND_PORT (4321), NODE_BIN
 
@@ -29,17 +29,17 @@
 NODE_BIN := $(shell dirname $$(command -v node 2>/dev/null) 2>/dev/null)
 export PATH := $(NODE_BIN):$(PATH)
 
-BACKEND_DIR  := sidecar
+BACKEND_DIR  := server
 FRONTEND_DIR := frontend
 BACKEND_PORT := 8767
 FRONTEND_PORT := 4321
 
 .PHONY: help install seed migrate check test env dev-backend dev-frontend stop \
         build preview clean screenshots \
-        backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-clean backend-sidecar-binary backend-sidecar-install-bin \
+        backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-clean backend-server-binary backend-server-install-bin \
         frontend-install frontend-dev frontend-build frontend-preview frontend-check frontend-test frontend-clean \
         desktop desktop-dev desktop-backend tauri tauri-dev tauri-build \
-        desktop-build bundle sidecar-build sidecar-install-bin release sidecar-binary
+        desktop-build bundle server-build server-install-bin release server-binary
 
 help: ## Show all commands
 	@echo ''
@@ -68,10 +68,10 @@ help: ## Show all commands
 	@echo '  make preview          Astro preview (:4321)'
 	@echo '  make clean            Remove build artifacts + db + node_modules'
 	@echo ''
-	@echo '── Backend (delegates to sidecar/Makefile) ─────────────────'
+	@echo '── Backend (delegates to server/Makefile) ─────────────────'
 	@echo '  make backend-help backend-dev backend-server backend-check backend-migrate'
 	@echo '  make backend-test backend-seed backend-seed-force backend-clean'
-	@echo '  make backend-sidecar-binary backend-sidecar-install-bin'
+	@echo '  make backend-server-binary backend-server-install-bin'
 	@echo ''
 	@echo '── Frontend ────────────────────────────────────────────────'
 	@echo '  make frontend-install frontend-dev frontend-build frontend-preview'
@@ -87,9 +87,9 @@ help: ## Show all commands
 	@echo '  make desktop-build    Full production desktop build (frontend + collectstatic + Tauri bundle)'
 	@echo '  make bundle           Alias for make desktop-build'
 	@echo '  make tauri-build      Raw Tauri production bundle (assumes frontend built)'
-	@echo '  make sidecar-build    PyInstaller sidecar binary → dist/formint-backend'
-	@echo '  make sidecar-install-bin  Copy the sidecar binary into src-tauri/binaries/ (Tauri externalBin)'
-	@echo '  make sidecar-binary   Build PyInstaller formint-backend → sidecar/dist'
+	@echo '  make server-build    PyInstaller server binary → dist/formint-backend'
+	@echo '  make server-install-bin  Copy the server binary into src-tauri/binaries/ (Tauri externalBin)'
+	@echo '  make server-binary   Build PyInstaller formint-backend → server/dist'
 	@echo '  make release          check + test + web build + desktop bundle'
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
@@ -117,7 +117,7 @@ migrate: ## Apply backend migrations
 
 # ── Running environments ──────────────────────────────────────────────────
 
-env: ## Run sidecar (:8767) + frontend (:4321) in tmux sessions
+env: ## Run server (:8767) + frontend (:4321) in tmux sessions
 	@echo '── Starting Formint POS environment ──'
 	@echo '  Backend  → http://127.0.0.1:$(BACKEND_PORT)/api/v1/docs'
 	@echo '  Admin    → http://127.0.0.1:$(BACKEND_PORT)/admin/'
@@ -183,7 +183,7 @@ screenshots: ## Capture frontend + admin screenshots → Landing-Fusion related/
 
 # ── Backend delegation ────────────────────────────────────────────────────
 
-backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-seed-force backend-clean backend-sidecar-binary backend-sidecar-install-bin:
+backend-help backend-dev backend-server backend-check backend-migrate backend-test backend-seed backend-seed-force backend-clean backend-server-binary backend-server-install-bin:
 	$(MAKE) -C $(BACKEND_DIR) $(@:backend-%=%)
 
 # ── Frontend delegation ───────────────────────────────────────────────────
@@ -228,14 +228,14 @@ desktop-build: ## Full production desktop build (collectstatic + frontend + Taur
 
 bundle: desktop-build ## Alias for make desktop-build
 
-sidecar-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
-	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
+server-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
+	$(MAKE) -C $(BACKEND_DIR) server-binary
 
-sidecar-build: ## Build the Robyn sidecar binary → sidecar/dist/formint-backend
-	$(MAKE) -C $(BACKEND_DIR) sidecar-binary
+server-build: ## Build the Robyn server binary → server/dist/formint-backend
+	$(MAKE) -C $(BACKEND_DIR) server-binary
 
-sidecar-install-bin: ## Copy the sidecar binary into src-tauri/binaries/ (Tauri externalBin)
-	$(MAKE) -C $(BACKEND_DIR) sidecar-install-bin
+server-install-bin: ## Copy the server binary into src-tauri/binaries/ (Tauri externalBin)
+	$(MAKE) -C $(BACKEND_DIR) server-install-bin
 
 release: ## Full release pipeline: check + test + web build + desktop bundle
 	@echo '── Release pipeline ──'

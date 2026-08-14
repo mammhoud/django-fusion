@@ -45,7 +45,7 @@
       "../assets/icons/icon.ico"
     ],
     "externalBin": [
-      "binaries/pos-sidecar"
+      "binaries/pos-server"
     ],
     "createUpdaterArtifacts": false,
     "macOS": {

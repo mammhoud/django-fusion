@@ -19,7 +19,6 @@ from __future__ import annotations
 from typing import Any
 
 from django.urls import path
-
 from django_fusion.routes.core.base import menu_path
 from django_fusion.routes.core.sites import Application
 

@@ -30,7 +30,7 @@
  * config (endpoints) and renders the branch containers.
  */
 import Skeleton from '@/components/ui/Skeleton.astro';
-import { fusionApiUrl } from '@/lib/site';
+import { browserApiUrl, browserEndpoint, fusionApiUrl } from '@/lib/site';
 
 interface Props {
   /** Backend route to fetch — must match an apps/handlers url, e.g. '/features/'. */
@@ -59,9 +59,14 @@ const {
   dataRoute,
 } = Astro.props;
 
-// HTML-road endpoint — the server-rendered fragment (same join as LiveFragment).
-const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}/${route.replace(/^\/+/, '')}`;
-const hasBackend = fusionApiUrl !== '' || import.meta.env.PUBLIC_ENABLE_BACKEND === 'true';
+// HTML-road endpoint — the server-rendered fragment. Same join as
+// LiveFragment: `/fragment/pages/<slug>/` (the backend renders the content
+// region only when the request carries HX-Request). Must go through
+// browserEndpoint (browser-safe origin) — fusionApiUrl is the Docker-internal
+// server URL and would both leak loopback DNS and point at the wrong path.
+const fragmentRoute = `/fragment/pages/${route.replace(/^\/+|\/+$/g, '') || 'home'}/`;
+const endpoint = browserEndpoint(fragmentRoute);
+const hasBackend = Boolean(fusionApiUrl || browserApiUrl) || import.meta.env.PUBLIC_ENABLE_BACKEND === 'true';
 
 // Per-instance config passed to the Alpine component. Endpoints are resolved
 // here (build time) so the client never re-derives them from env vars.

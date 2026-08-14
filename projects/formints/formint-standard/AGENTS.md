@@ -43,7 +43,7 @@ wrappers, and Rust command signatures as the integration boundary.
 
 ## Architecture constraints
 
-- There is **no Python sidecar**, Django ORM, or server-rendered Fusion route in
+- There is **no Python server**, Django ORM, or server-rendered Fusion route in
   this edition.
 - Data flow is `React → Tauri invoke → Rust → SQLite`.
 - Keep TypeScript invoke wrappers, Rust command arguments/results, and database

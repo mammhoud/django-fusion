@@ -14,7 +14,7 @@ import WizardForm from '../../../components/ui/WizardForm.astro';
       <p class="eyebrow">API-first · Tauri-invoke fallback · offline snapshot</p>
       <h1>Sync Center</h1>
       <p class="intro">
-        One transport for every data round-trip: the app queries the sidecar API,
+        One transport for every data round-trip: the app queries the server API,
         restarts it via Tauri invokes when it is down, and falls back to cached
         snapshots offline — so operations never hard-stop.
       </p>
@@ -35,7 +35,7 @@ import WizardForm from '../../../components/ui/WizardForm.astro';
       <dl x-show="!transportLoading" class="transport-strip__grid">
         <div><dt>Transport</dt><dd x-text="status.transport">—</dd></div>
         <div><dt>Tauri shell</dt><dd x-text="status.tauri ? 'available' : 'browser mode'">—</dd></div>
-        <div><dt>Sidecar</dt><dd x-text="status.sidecar || 'n/a'">—</dd></div>
+        <div><dt>Server</dt><dd x-text="status.server || 'n/a'">—</dd></div>
         <div><dt>Health</dt><dd x-text="status.health ? `ok · ${status.health.models} models` : 'unreachable'">—</dd></div>
       </dl>
       <div class="mt-3 flex gap-2">
@@ -55,7 +55,7 @@ import WizardForm from '../../../components/ui/WizardForm.astro';
     <section class="card" aria-labelledby="sync-stats-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">Cloud sidecar sync</p>
+          <p class="eyebrow">Cloud server sync</p>
           <h2 id="sync-stats-title">Approval ledger</h2>
         </div>
         <Icon name="sync" class="h-5 w-5" style="color: var(--color-primary)" />
@@ -107,7 +107,7 @@ import WizardForm from '../../../components/ui/WizardForm.astro';
         </div>
         <div slot="step-2">
           <div class="space-y-3 text-sm">
-            <p class="text-xs opacity-60">Final step — review entered values and push to the cloud sidecar.</p>
+            <p class="text-xs opacity-60">Final step — review entered values and push to the cloud server.</p>
             <button class="btn btn-primary btn-sm gap-1" @click="finishWizard()">
               <Icon name="cloud-upload" class="h-4 w-4" />
               Push to cloud
@@ -128,7 +128,7 @@ import WizardForm from '../../../components/ui/WizardForm.astro';
       syncRunning: false,
       syncMessage: '',
       status: {
-        transport: '—', tauri: false, sidecar: null, capabilities: null, health: null,
+        transport: '—', tauri: false, server: null, capabilities: null, health: null,
       },
       stats: {} as Record<string, number>,
 
@@ -205,10 +205,10 @@ import WizardForm from '../../../components/ui/WizardForm.astro';
             }),
           });
           this.syncMessage = res.ok
-            ? 'Push registered with the sidecar (approval pending).'
-            : 'Push failed — check the sidecar.';
+            ? 'Push registered with the server (approval pending).'
+            : 'Push failed — check the server.';
         } catch {
-          this.syncMessage = 'Push failed — sidecar unreachable.';
+          this.syncMessage = 'Push failed — server unreachable.';
         }
       },
     }));

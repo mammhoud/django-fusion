@@ -38,7 +38,7 @@ describe('Sync Center page — transport + components + wizard', () => {
 describe('FusionTable component contract', () => {
   const component = read('components/ui/FusionTable.astro');
 
-  it('is data-driven from the sidecar Components API', () => {
+  it('is data-driven from the server Components API', () => {
     expect(component).toContain("import('../../lib/fusion-api')");
     expect(component).toContain('fusionTable(this.resource');
   });
@@ -57,7 +57,7 @@ describe('FusionTable component contract', () => {
 describe('FusionForm component contract', () => {
   const component = read('components/ui/FusionForm.astro');
 
-  it('renders fields from the sidecar form schema', () => {
+  it('renders fields from the server form schema', () => {
     expect(component).toContain("import('../../lib/fusion-api')");
     expect(component).toContain('fieldType(name)');
     expect(component).toContain('fieldChoices(name)');
@@ -121,7 +121,7 @@ describe('fusion-api transport lib', () => {
 
   it('defines the three-tier fallback (api → invoke → snapshot)', () => {
     expect(lib).toContain("source: 'api' | 'invoke' | 'snapshot'");
-    expect(lib).toContain('startSidecar()');
+    expect(lib).toContain('startServer()');
     expect(lib).toContain('readSnapshot');
   });
 
@@ -135,6 +135,6 @@ describe('fusion-api transport lib', () => {
   it('surfaces the Tauri bridge and native capabilities', () => {
     expect(lib).toContain('isTauri()');
     expect(lib).toContain('nativeCapabilities()');
-    expect(lib).toContain('formint_sidecar_status');
+    expect(lib).toContain('formint_server_status');
   });
 });

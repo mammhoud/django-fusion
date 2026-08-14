@@ -1,16 +1,16 @@
-"""Unit tests for www/worker/modules.py — constant definitions."""
+"""Unit tests for the shared worker module registry."""
 
-from configs.tools.worker.modules import TASK_MODULES
+from plugins.workers.modules import TASK_MODULES
 
 
 class TestBaseModulesConstants:
     def test_task_modules_is_list(self):
-        assert isinstance(TASK_MODULES, list)
+        assert isinstance(TASK_MODULES, tuple)
 
-    def test_task_modules_non_empty(self):
-        assert len(TASK_MODULES) > 0
+    def test_task_modules_contains_shared_actors(self):
+        assert "plugins.workers.shared_email" in TASK_MODULES
+        assert "plugins.workers.shared_content" in TASK_MODULES
 
     def test_all_entries_are_dotted_paths(self):
         for module_path in TASK_MODULES:
-            assert "." in module_path, f"Expected dotted path, got: {module_path}"
-            assert module_path.startswith("ceptor_ai.")
+            assert "." in module_path

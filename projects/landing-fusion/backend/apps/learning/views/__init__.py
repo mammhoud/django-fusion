@@ -11,13 +11,13 @@ from .common import (
     learning_login_required,
 )
 from .courses import catalog, course_detail
-from .lessons import complete_lesson, course_continue, course_watch, lesson_navigate
 from .enrollment import (
     course_enrollment_form,
     enroll,
     enrollment_list,
     enrollment_status_update,
 )
+from .lessons import complete_lesson, course_continue, course_watch, lesson_navigate
 from .profile import dashboard, profile_dashboard
 from .wishlist import toggle_wishlist
 

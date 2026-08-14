@@ -1,4 +1,4 @@
-"""Tests for shared task bootstrap imports used by Celery compose services."""
+"""Tests for shared Dramatiq worker bootstrap imports."""
 
 import os
 import subprocess
@@ -9,7 +9,7 @@ from pathlib import Path
 def test_runtime_configures_ctc_research_settings():
     repo_root = Path(__file__).resolve().parents[3]
     code = """
-from configs.tools.worker.runtime import configure_django_for_website
+from plugins.workers.runtime import configure_django_for_website
 selected = configure_django_for_website('ctc-research')
 from django.conf import settings
 print(selected)
@@ -31,6 +31,6 @@ print(settings.STATIC_ROOT)
 
 
 def test_task_imports_are_available():
-    import configs.tools.worker.celery as celery_module
+    from plugins.workers import TASK_MODULES
 
-    assert isinstance(celery_module.TASK_IMPORTS, tuple)
+    assert "plugins.workers.email_tasks" in TASK_MODULES

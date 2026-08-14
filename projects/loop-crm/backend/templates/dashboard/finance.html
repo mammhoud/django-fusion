@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — Loop CRM{% endblock %}
+{% block content %}
+  <nav class="loop-breadcrumb" aria-label="Breadcrumb">
+    {% for crumb in breadcrumbs %}<span>{% if not forloop.first %}<span class="loop-breadcrumb__separator" aria-hidden="true">/</span> {% endif %}{% if forloop.last %}<span aria-current="page">{{ crumb.label }}</span>{% else %}<a href="{{ crumb.href }}">{{ crumb.label }}</a>{% endif %}</span>{% endfor %}
+  </nav>
+  <div class="loop-page-heading"><div><p class="loop-eyebrow">{{ page_kicker }}</p><h1>{{ page_title }}</h1><p class="loop-lede">{{ page_description }}</p></div><span class="loop-page-heading__mark">CASH<br>FLOW</span></div>
+  <div class="loop-finance-layout">
+    {% if page_title == "Payments" %}
+      {% include "dashboard/partials/payment_form.html" %}
+      <section id="finance-ledger" class="loop-stack" aria-live="polite">
+        <div class="loop-section-heading"><div><span class="loop-card__label">Receipt ledger</span><h2>{{ payments|length }} payment{{ payments|length|pluralize }}</h2></div><span class="loop-pill">database-backed</span></div>
+        {% if payments %}<div class="loop-crm-list">{% for payment in payments %}<article class="loop-crm-row"><div class="loop-crm-row__main"><strong>{{ payment.invoice.number }} · {{ payment.invoice.company.name }}</strong><p>{{ payment.get_method_display }}{% if payment.reference %} · {{ payment.reference }}{% endif %}</p><small>{{ payment.paid_on }}</small></div><div class="loop-crm-row__aside"><strong>{{ payment.amount }}</strong><span>received</span></div></article>{% endfor %}</div>{% else %}<div class="loop-empty-state"><strong>No payments yet</strong><p>Record a receipt against an issued invoice.</p></div>{% endif %}
+      </section>
+    {% elif page_title == "Revenue" %}
+      <div class="loop-card loop-card--wide"><span class="loop-card__label">Revenue control</span><strong class="loop-card__value">Closed-won pipeline becomes recognized revenue</strong><p class="loop-card__copy">Every event stays linked to the deal, campaign, and invoice that produced it.</p></div>
+      <section id="finance-ledger" class="loop-stack" aria-live="polite">
+        <div class="loop-section-heading"><div><span class="loop-card__label">Recognized revenue</span><h2>{{ revenue_events|length }} event{{ revenue_events|length|pluralize }}</h2></div><span class="loop-pill">attribution bridge</span></div>
+        {% if revenue_events %}<div class="loop-crm-list">{% for event in revenue_events %}<article class="loop-crm-row"><div class="loop-crm-row__main"><strong>{{ event.deal.name }}</strong><p>{% if event.campaign %}{{ event.campaign.name }} · {% endif %}{{ event.get_kind_display }}</p><small>{{ event.recognized_on }}</small></div><div class="loop-crm-row__aside"><strong>{{ event.amount }}</strong><span>{{ event.deal.workspace.currency }}</span></div></article>{% endfor %}</div>{% else %}<div class="loop-empty-state"><strong>No recognized revenue events</strong><p>Activate the deal-won workflow after a closed-won stage change.</p></div>{% endif %}
+      </section>
+    {% else %}
+      {% include "dashboard/partials/invoice_form.html" %}
+      <section id="finance-ledger" class="loop-stack" aria-live="polite">
+        <div class="loop-section-heading"><div><span class="loop-card__label">Receivable ledger</span><h2>{{ invoices|length }} invoice{{ invoices|length|pluralize }}</h2></div><span class="loop-pill">database-backed</span></div>
+        {% if invoices %}<div class="loop-crm-list">{% for invoice in invoices %}<article class="loop-crm-row"><div class="loop-crm-row__main"><strong>{{ invoice.number }} · {{ invoice.company.name }}</strong><p>{% if invoice.deal %}{{ invoice.deal.name }} · {% endif %}Due {{ invoice.due_on }}</p><small>{{ invoice.get_status_display }}{% if invoice.notes %} · {{ invoice.notes }}{% endif %}</small></div><div class="loop-crm-row__aside"><strong>{{ invoice.currency }} {{ invoice.total }}</strong><span>{{ invoice.currency }} {{ invoice.outstanding }} outstanding</span></div></article>{% endfor %}</div>{% else %}<div class="loop-empty-state"><strong>No invoices yet</strong><p>Issue the first invoice from a real company or won deal.</p></div>{% endif %}
+        <div class="loop-finance-summary"><span>Payments received <strong>{{ payments|length }}</strong></span><span>Recognized events <strong>{{ revenue_events|length }}</strong></span></div>
+      </section>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -419,7 +419,9 @@ class LearningCoreTestCase(TestCase):
         payload = course_detail_to_dict(self.course)
         module_payload = next(m for m in payload["modules"] if m["id"] == self.module.pk)
         lesson_payload = next(
-            l for l in module_payload["lessons"] if l["id"] == self.lesson_one.pk
+            lesson
+            for lesson in module_payload["lessons"]
+            if lesson["id"] == self.lesson_one.pk
         )
         self.assertEqual(len(lesson_payload["resources"]), 1)
         self.assertEqual(lesson_payload["resources"][0]["title"], "Slides: first deploy")

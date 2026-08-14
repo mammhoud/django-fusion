@@ -25,20 +25,19 @@ COMPOSE_CMD := docker compose -f docker-compose.yml
 NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
 
 # -----------------------------------------------------------------
-# Shared-task compose (Dramatiq worker + celery-beat scheduler).
-# The compose file pins `container_name: shared-worker` /
-# `container_name: shared-scheduler` literally, so TASKS_PROJECT_NAME
-# only affects *image tagging* (compose-shared-worker:latest etc.),
-# not container naming. Freezing it to 'compose' lets `make deploy-tasks`
-# reuse the locally cached images without rebuilding.
+# Shared-task compose (Dramatiq worker + APScheduler process).
+# The shared task compose pins `container_name: shared-worker` /
+# `container_name: shared-scheduler` literally. TASKS_PROJECT_NAME only
+# affects Compose metadata; it does not select an LMS or other website.
 # Override on the command line if your cache lives elsewhere, e.g.:
 #   make deploy-tasks TASKS_PROJECT_NAME=apps-tasks
 # -----------------------------------------------------------------
 TASKS_COMPOSE_FILE := applications/docker-compose.tasks.yml
 TASKS_PROJECT_NAME := compose
-# Default DB for the shared task stack. The worker image is Precis-owned
-# (SOURCE_PATH=precis, DJANGO_SITE=lms-fusion), so default to the LMS database.
-# Override with make deploy-tasks TASKS_DB_NAME=db_ctc if a run targets another site.
+# Default persistence DB for shared task audit/scheduler records. This is
+# infrastructure storage, not an LMS worker identity. Website-specific task
+# payloads carry their own site key.
+# Override with make deploy-tasks TASKS_DB_NAME=db_ctc when required.
 TASKS_DB_NAME ?= db_structa
 
 # -----------------------------------------------------------------
@@ -73,7 +72,8 @@ DEPLOY_ORDER_PATTERNS := $(subst $(space),|,$(VALID_DEPLOY_ORDERS))
 PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
-	applications/docker-compose.tasks.yml
+	applications/docker-compose.tasks.yml \
+	applications/docker-compose.yml
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
@@ -267,7 +267,7 @@ help:
 	@echo "  make deploy-proxy      - Deploy and restart reverse proxy"
 	@echo "  make deploy-media      - Build and start media server"
 	@echo "  make deploy-redis      - Start the shared default-redis broker"
-	@echo "  make deploy-tasks      - Deploy shared-worker (Dramatiq) + shared-scheduler (celery-beat) (starts Redis/Postgres if needed)"
+	@echo "  make deploy-tasks      - Deploy shared-worker (Dramatiq) + shared-scheduler (APScheduler) (starts Redis/Postgres if needed)"
 	@echo "  make status-tasks      - Show status of shared-worker + shared-scheduler"
 	@echo "  make logs-tasks        - Tail logs from shared-worker + shared-scheduler"
 	@echo "  make probe-health      - Probe each site's health endpoint (docs, shared-media, filegator incl.) via 'common' network (handles asymmetric ports/expose)"
@@ -366,11 +366,11 @@ deploy: deploy-all
 #
 # Rationale for postgres-first ordering:
 #   1. databases          – Postgres must exist first; everything
-#                           (Django apps, Coder, Celery workers) hits it.
+#                           (Django apps, Coder, Dramatiq workers) hits it.
 #   2. coder              – depends_on: postgres: service_healthy.
 #   3. media              – shared-media volume server must publish
 #                           before Django apps mount it for uploads.
-#   4. app + tasks        – Django apps + Celery workers (need DB + media).
+#   4. app + tasks        – Django apps + Dramatiq workers (need DB + media).
 #   5. docs               – independent (no DB / no media).
 #   6. proxy              – Traefik last so apps + media register their
 #                           labels on first boot rather than after.
@@ -469,13 +469,14 @@ deploy-redis:
 	@echo "✅ default-redis ready"
 
 # Shared-task worker deploy: databases → parse-check → down → up.
+# No product-specific worker is started by this target.
 # Bakes the hand-rolled docker compose invocation into a reproducible
 # target so the cache-aligned --project-name flag and the idempotent
 # down/up steps all live in one place.
 # Depends on deploy-databases so that Postgres + default-redis are
-# already running before Dramatiq/Celery try to connect.
+# already running before Dramatiq tries to connect.
 deploy-tasks: deploy-databases _wait-redis
-	@echo "🚀 Deploying shared-task workers (Dramatiq + celery-beat)..."
+	@echo "🚀 Deploying shared-task workers (Dramatiq + APScheduler)..."
 	@echo "  compose:  $(TASKS_COMPOSE_FILE)"
 	@echo "  project:  $(TASKS_PROJECT_NAME)"
 	@echo ""
@@ -542,13 +543,14 @@ logs-tasks:
 # keeping the `<container>:<internal-port>[:<path>]` shape. The
 # optional `:<path>` (leading slash included) overrides the default
 # `/health/` for services without a Django /health/ endpoint:
-#   - docs:80:/README.md       — docsify/nginx; probes a real markdown
-#     page (its own compose healthcheck only checks the SPA shell /)
+#   - docus:3000:/docs/en/ — Docus English SSR route
 #   - shared-media:80:/health/ — nginx `/health/` returns 200
 #   - filegator:8080:/         — FileGator web UI login page (200;
 #     only verifies the web UI is up, not the repository mount)
+#   - loop-crm-backend:8074:/  — Loop-CRM Django render-first root
+#   - loop-crm-frontend:3000:/__health__ — Astro/Nginx frontend health
 # -----------------------------------------------------------------
-PROBE_HEALTH_SITES := ctc-research-website:5070 lms-web:5071 vresume-web:5072 docs:80:/README.md shared-media:80:/health/ filegator:8080:/
+PROBE_HEALTH_SITES := ctc-research-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-media:80:/health/ filegator:8080:/
 
 probe-health:
 	@echo "📡 Probing each site's health endpoint from inside the 'common' network..."
@@ -586,7 +588,7 @@ deploy-media:
 	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
 
 deploy-docs:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d docs
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d --build docus shared-media
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -596,7 +598,7 @@ deploy-databases:
 
 deploy-coder:
 	@echo "🚀 Deploying Coder platform..."
-	@$(MAKE) -C $(DATABASES_DIR) deploy-coder
+	@docker compose -f applications/docker-compose.yml up -d coder
 	@echo "✅ Coder platform deployed"
 
 deploy-cypercloud:
@@ -1059,7 +1061,7 @@ build-media:
 	@cd $(SERVICES_DIR) && docker compose -f docker-compose.media.yml build
 
 build-docs:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build docs
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build docus shared-media
 
 # -----------------------------------------------------------------
 # Validation

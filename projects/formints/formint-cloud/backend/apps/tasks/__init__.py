@@ -1,8 +1,4 @@
-"""Formint Cloud background tasks.
+"""Deprecated worker location.
 
-Each module uses ``@task`` from ``django_fusion.tasks`` to register
-broker-agnostic background jobs.  Discovered automatically by django-fusion
-via ``DjangoFusionConfig.ready()``.
+Formint Cloud's scheduled worker now lives in ``plugins.workers``.
 """
-
-from apps.tasks.backup_tasks import run_backup  # noqa: F401

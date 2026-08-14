@@ -2,12 +2,12 @@
 
 ## What's Here
 
-Typed HTTP client and WebSocket connection managers for communicating with the sidecar server.
+Typed HTTP client and WebSocket connection managers for communicating with the server server.
 
 ```
 api/
 ├── index.ts        # Barrel exports — import everything from here
-├── sidecar.ts      # 🔴 Base HTTP client + health check
+├── server.ts      # 🔴 Base HTTP client + health check
 ├── chat.ts         # 🔴 Chat REST + WebSocket (createChatWs)
 ├── tickets.ts      # 🟢 Support ticket CRUD
 └── data.ts         # 🟢 Sales, products, settings, invoice
@@ -17,18 +17,18 @@ api/
 
 | Module | Tag | How to customize |
 |--------|-----|-----------------|
-| `sidecar.ts` | 🔴 `not-customizable` | Base URL, timeouts — change breaks all API calls |
-| `chat.ts` | 🔴 `not-customizable` | WebSocket protocol must match sidecar |
+| `server.ts` | 🔴 `not-customizable` | Base URL, timeouts — change breaks all API calls |
+| `chat.ts` | 🔴 `not-customizable` | WebSocket protocol must match server |
 | `tickets.ts` | 🟢 `customizable` | Add new ticket fields, query params |
 | `data.ts` | 🟢 `customizable` | Add new data endpoints |
 
 ## Quick Usage
 
 ```typescript
-import { sidecar, chat, tickets, data, createChatWs } from '../api';
+import { server, chat, tickets, data, createChatWs } from '../api';
 
 // Health check
-const ok = await sidecar.healthCheck();
+const ok = await server.healthCheck();
 
 // Get sales
 const result = await data.listSales();
@@ -44,4 +44,4 @@ conn.send({ type: 'message', text: 'Hello!', sender: 'user' });
 ## Reference
 
 - [API Layer Docs →](../../docs/typescript/api.md)
-- [Sidecar API Reference →](../../docs/server/api-reference.md)
+- [Server API Reference →](../../docs/server/api-reference.md)

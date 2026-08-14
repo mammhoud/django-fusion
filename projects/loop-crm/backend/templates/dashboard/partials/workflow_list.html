@@ -1,0 +1,10 @@
+<section id="workflow-list"{% if workflow_list_oob %} hx-swap-oob="outerHTML"{% endif %} class="loop-stack" aria-live="polite" aria-busy="false">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Workflow registry</span><h2>{{ workflows|length }} configured workflow{{ workflows|length|pluralize }}</h2></div><span class="loop-pill">database-backed</span></div>
+  {% if workflows %}
+    <div class="loop-workflow-list">
+      {% for workflow in workflows %}{% include "dashboard/partials/workflow_row.html" %}{% endfor %}
+    </div>
+  {% else %}
+    <div class="loop-empty-state"><strong>No workflows configured</strong><p>Define the first trigger and action plan to start the revenue loop.</p></div>
+  {% endif %}
+</section>

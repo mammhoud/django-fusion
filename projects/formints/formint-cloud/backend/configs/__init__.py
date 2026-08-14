@@ -54,7 +54,7 @@ SHARED_APPS = [
     "apps.core.apps.CoreConfig",
     "apps.domain.apps.DomainConfig",
     "apps.handlers.apps.HandlersConfig",
-    "apps.tasks",
+    # Worker implementations live in plugins.workers.
 ]
 
 # Apps replicated into EVERY tenant schema (tenant-scoped tables).
@@ -75,7 +75,7 @@ TENANT_APPS = [
     "apps.core.apps.CoreConfig",
     "apps.domain.apps.DomainConfig",
     "apps.handlers.apps.HandlersConfig",
-    "apps.tasks",
+    # Worker implementations live in plugins.workers.
 ]
 
 if TENANCY_ENABLED:
@@ -303,6 +303,7 @@ COMPONENTS_INCLUDE_PATH_ROOTS = [
 
 FUSION_SITE_NAME = "formint_cloud"
 FUSION_SITE_TITLE = "POS Cloud Platform"
+FUSION_TASK_MODULES = ["plugins.workers.backup_tasks"]
 
 # ══════════════════════════════════════════════════════════════════════
 # django-bolt Configuration

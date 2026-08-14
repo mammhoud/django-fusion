@@ -513,6 +513,17 @@
 {% endwith %}
 {% endwith %}
 
+{% comment %} Product profile (ProductPage.profile) — the business profile: ideal
+   customer profiles (who + behaviour), capacity & scale, dashboards/reports,
+   channels & loyalty, and the product's distinct marketing tone. Rendered by
+   content/blocks/product_profile.html on this road and by the data API on the
+   Astro road, from the same Wagtail source of truth. {% endcomment %}
+{% if page.profile %}
+<section id="profile" class="container-fusion" style="padding-block:4rem 5rem;">
+  {% include_block page.profile %}
+</section>
+{% endif %}
+
 {% comment %} Proof / answers / contact / close. {% endcomment %}
 {% with testimonial_blocks=localized_blocks.testimonials %}{% if testimonial_blocks %}{% for block in testimonial_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}
 {% with faq_blocks=localized_blocks.faq %}{% if faq_blocks %}{% for block in faq_blocks %}{% include_block block %}{% endfor %}{% endif %}{% endwith %}

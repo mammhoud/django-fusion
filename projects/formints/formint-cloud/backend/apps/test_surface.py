@@ -1,6 +1,6 @@
-"""POS Cloud — migrated sidecar surface tests.
+"""POS Cloud — migrated server surface tests.
 
-The Robyn sidecar was removed; Django now serves the same surface directly:
+The Robyn server was removed; Django now serves the same surface directly:
 - `/fusion/*` contract (health, render-mode, nav, session-mode, assets)
 - Community-UI bridges (`/api/sales`, `/api/products`, `/api/settings`)
 - System endpoints (`/stats`)
@@ -23,7 +23,7 @@ User = get_user_model()
 
 
 class SurfaceUrlResolutionTests(TestCase):
-    """All migrated sidecar paths resolve to a handler."""
+    """All migrated server paths resolve to a handler."""
 
     SURFACE_PATHS = [
         "/stats",
@@ -53,7 +53,7 @@ class SurfaceUrlResolutionTests(TestCase):
 
 
 class AnonymousParityTests(TestCase):
-    """Endpoints the sidecar served anonymously keep working anonymously."""
+    """Endpoints the server served anonymously keep working anonymously."""
 
     def setUp(self):
         self.client = Client()
@@ -239,7 +239,7 @@ class FusionSessionModePersistenceTests(TestCase):
 
 class CrudAuthGatingTests(TestCase):
     """Root CRUD is gated: anonymous gets a JSON 401, authenticated gets
-    the sidecar's JSON ``{count, items}`` shape."""
+    the server's JSON ``{count, items}`` shape."""
 
     # Root surface paths — JSON CRUD served by apps/handlers/surface.py.
     SURFACE_PATHS = [

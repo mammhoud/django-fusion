@@ -10,7 +10,7 @@
 
 Formint POS Professional is the restaurant-focused POS product built from the existing POS capabilities. This directory is the product boundary for:
 
-- `sidecar/` — merged Django boundary (Django Ninja + ninja-extra + django-fusion + Unfold admin + Robyn/django-bolt APIs)
+- `server/` — merged Django boundary (Django Ninja + ninja-extra + django-fusion + Unfold admin + Robyn/django-bolt APIs)
 - `frontend/` — Astro + Alpine.js + HTMX shell (landing-fusion skeleton-loading pattern)
 - `src-tauri/` — Tauri desktop shell (same architecture as the merged packages)
 - `assets/` — shared source assets and static build inputs
@@ -20,12 +20,12 @@ Formint POS Professional is the restaurant-focused POS product built from the ex
 
 ```text
 formint-pos/
-├── Makefile                     # root orchestrator (frontend + sidecar + full + env)
-├── sidecar/                     # merged Django boundary — no Wagtail
-│   ├── Makefile                 # sidecar targets (dev/check/migrate/test/seed/server)
+├── Makefile                     # root orchestrator (frontend + server + full + env)
+├── server/                     # merged Django boundary — no Wagtail
+│   ├── Makefile                 # server targets (dev/check/migrate/test/seed/server)
 │   ├── configs/                 # settings (Unfold + fusion render-mode) + URL wiring
 │   ├── manage.py                # Django entrypoint (DJANGO_SETTINGS_MODULE=configs)
-│   ├── server.py                # Robyn sidecar server (API + WebSocket, :8766)
+│   ├── server.py                # Robyn server server (API + WebSocket, :8766)
 │   ├── bolt_api.py              # django-bolt REST API (check-bolt → /bolt/*)
 │   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
@@ -35,7 +35,7 @@ formint-pos/
 │   │   ├── api.py               # NinjaAPI with fusion encoder renderer + system endpoints
 │   │   ├── components.py        # django-fusion table/form components
 │   │   ├── fusion_components.py # branch summary fragment (FusionDualModeMixin)
-│   │   ├── core.py              # FormintSite (django-fusion Site — nav source of truth)
+│   │   ├── core.py              # FormintModule (django-fusion Module — nav source of truth)
 │   │   ├── fusion.py            # render-mode/nav/assets contract (landing-fusion parity)
 │   │   ├── handlers.py          # class-based HTMX fragment handlers
 │   │   ├── admin.py             # canonical Unfold admin (superset of both editions)
@@ -43,7 +43,7 @@ formint-pos/
 │   │   └── templates/           # fusion table + form templates
 ├── frontend/                    # Astro shell
 │   ├── Makefile                 # frontend targets (install/dev/build/check/test)
-│   ├── astro.config.mjs         # dev proxy → sidecar :8767
+│   ├── astro.config.mjs         # dev proxy → server :8767
 │   └── src/pages/               # index.astro + data.astro (HTMX + skeleton loading)
 ├── src-tauri/                   # Tauri desktop shell
 ├── assets/                      # shared assets
@@ -96,7 +96,7 @@ rendered fragments and lean HTMX data-only responses (see `formint/fusion.py`).
 | Endpoint | Description |
 |---|---|
 | `/api/v1/render-mode` | Active mode (`fusion-render` vs `data-api`) |
-| `/api/v1/navigation` | Nav from `FormintSite` (Home / Data / Admin) |
+| `/api/v1/navigation` | Nav from `FormintModule` (Home / Data / Admin) |
 | `/api/v1/assets` | `FUSION_ASSETS` manifest |
 | `/fusion/render-mode/` · `/fusion/navigation/` · `/fusion/assets/` | Same contract at the fragment path |
 
@@ -171,7 +171,7 @@ Validation: `make check` (astro check) and `make build`.
 
 ## Tauri shell
 
-`src-tauri/` keeps the same desktop shell architecture as the merged editions. The sidecar/desktop layer consumes the same Robyn/Django APIs — see [`../docs/`](../docs/) for the full architecture documentation.
+`src-tauri/` keeps the same desktop shell architecture as the merged editions. The server/desktop layer consumes the same Robyn/Django APIs — see [`../docs/`](../docs/) for the full architecture documentation.
 
 ## Migration notes
 

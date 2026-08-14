@@ -1239,7 +1239,7 @@ _bolt_catch_all = csrf_exempt(_bolt_dispatch)
 
 urlpatterns = [
     path("health", _root_health, name="root_health"),
-    # Sidecar surface: /stats + root CRUD paths the frontend proxies to :8767
+    # Server surface: /stats + root CRUD paths the frontend proxies to :8767
     path("stats", apps_handlers_surface_stats, name="stats"),
     path("monitor/status", apps_handlers_surface_monitor_status, name="monitor-status"),
     path("", include((apps_handlers_surface_urlpatterns, "surface"), namespace="surface")),
@@ -1258,6 +1258,6 @@ urlpatterns = [
     # REST API (django-fusion viewsets + sync receivers + community bridges)
     path("api/", include("apps.core.urls")),
 
-    # django-fusion API-first handlers (sidecar contract)
+    # django-fusion API-first handlers (server contract)
     path("fusion/", include("apps.handlers.urls")),
 ]
