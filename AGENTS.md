@@ -12,8 +12,10 @@ compatibility aliases.
 ```text
 structa.cloud/
 ├── projects/                 # Product code, shared Django config, and assets
-│   ├── precis/               # Current LMS / learning platform
-│   ├── landing-fusion/       # Astro marketing site + Django/Wagtail CMS
+│   ├── precis/               # Product grouping: LMS, research, and marketing sites
+│   │   ├── main/             # Current LMS / learning platform (lms-fusion runtime)
+│   │   ├── ctc-research/     # Medical research center site
+│   │   └── landi/            # Astro marketing site + Django/Wagtail CMS (landing-fusion runtime)
 │   ├── syntara/              # Cypercloud AI chat/customizer runtime
 │   ├── formints/             # POS editions, cloud backend, and shared tests
 │   ├── configs/              # Shared Django settings and workers
@@ -36,8 +38,8 @@ structa.cloud/
 
 | Product | Canonical path | Main responsibility | Local guidance |
 |---|---|---|---|
-| Precis LMS | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/AGENTS.md` |
-| Landing-Fusion | `projects/landing-fusion/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/landing-fusion/AGENTS.md` |
+| Precis LMS | `projects/precis/main/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/main/AGENTS.md` |
+| Landing-Fusion | `projects/precis/landi/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/landi/AGENTS.md` |
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
 | django-fusion | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables, and assets | `libs/django-fusion/AGENTS.md` |
@@ -46,9 +48,14 @@ structa.cloud/
 
 ### Name and migration rules
 
-- `precis` is the current filesystem location for the LMS product. The
+- `precis/main` is the current filesystem location for the LMS product. The
   dispatcher still accepts `WEBSITE=lms-fusion`; that alias maps to
-  `projects/precis/`.
+  `projects/precis/main/`.
+- `precis/landi` is the current filesystem location for the Landing-Fusion
+  marketing site; `landing-fusion` remains its runtime/site identity and maps
+  to `projects/precis/landi/`.
+- `precis/ctc-research` is the standalone medical research center site, mapped
+  from `WEBSITE=ctc` / `ctc-research` to `projects/precis/ctc-research/`.
 - `lms-fusion/` is a retired compatibility/documentation boundary. Do not add
   new product code there; update Precis or Landing-Fusion instead.
 - `syntara` is the current filesystem location for the product historically
@@ -73,9 +80,9 @@ root safety and repository rules remain in force.
 ```text
 /AGENTS.md
 ├── projects/AGENTS.md
-│   ├── projects/precis/AGENTS.md
-│   │   └── projects/precis/backend/AGENTS.md
-│   ├── projects/landing-fusion/AGENTS.md
+│   ├── projects/precis/main/AGENTS.md
+│   │   └── projects/precis/main/backend/AGENTS.md
+│   ├── projects/precis/landi/AGENTS.md
 │   ├── projects/syntara/AGENTS.md
 │   └── projects/formints/AGENTS.md
 │       ├── projects/formints/formint-pro/AGENTS.md
@@ -199,7 +206,7 @@ make test WEBSITE=landing-fusion   # workspace pytest target; use the project ba
 make run-dev WEBSITE=ctc-research   # legacy site alias if present in checkout
 
 # Landing-Fusion direct workflows
-cd projects/landing-fusion
+cd projects/precis/landi
 make install
 make check
 make build
@@ -208,7 +215,7 @@ make backend-check
 make backend-test
 
 # Precis backend
-cd projects/precis/backend
+cd projects/precis/main/backend
 make check
 make test
 make migrate

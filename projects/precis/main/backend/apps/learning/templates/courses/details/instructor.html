@@ -1,0 +1,58 @@
+{% load i18n %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% prop course %}
+{% if course.instructor.profile.avatar %}
+    {% image course.instructor.profile.avatar fill-150x150 as avatar %}
+{% endif %}
+
+<!-- Instructor Section -->
+<div class="section">
+	<div class="container">
+		<div class="row align-items-center">
+			
+			<!-- Instructor Avatar -->
+			<div class="col-12 col-lg-3 text-center">
+				<img src="{% if course.instructor.profile.avatar %}{{ avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
+					alt="{{ course.instructor.get_full_name }}"
+					class="rounded-circle mb-3"
+					width="150" height="150">
+			</div>
+
+			<!-- Instructor Details -->
+			<div class="col-12 col-lg-9">
+				<h3>{% trans "About the Instructor" %}</h3>
+
+				<h5 class="text-primary">
+					{{ course.instructor.get_full_name|default:course.instructor.username }}
+				</h5>
+
+				{% if course.instructor.profile.title %}
+				<p class="text-muted">{{ course.instructor.profile.title }}</p>
+				{% endif %}
+
+				<p>
+					{% blocktrans with bio=course.instructor.profile.bio %}
+						{{ bio|default:"Experienced instructor with passion for teaching and sharing knowledge." }}
+					{% endblocktrans %}
+				</p>
+
+				<div class="d-flex flex-wrap gap-2 mt-3">
+
+					{% if course.instructor.profile.website %}
+					<a href="{{ course.instructor.profile.website }}" class="button button-sm button-radius button-white-2">
+						<i class="bi bi-globe me-2"></i>{% trans "Website" %}
+					</a>
+					{% endif %}
+
+					{% if course.instructor.profile.linkedin %}
+					<a href="{{ course.instructor.profile.linkedin }}" class="button button-sm button-radius button-white-2">
+						<i class="bi bi-linkedin me-2"></i>{% trans "LinkedIn" %}
+					</a>
+					{% endif %}
+					
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>

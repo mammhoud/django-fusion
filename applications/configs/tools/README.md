@@ -1,7 +1,7 @@
 # Shared configuration tools
 
 Worker implementations are maintained in the product package
-`projects/precis/backend/plugins/workers/`. The infrastructure stack is
+`projects/precis/main/backend/plugins/workers/`. The infrastructure stack is
 Dramatiq-only and schedules periodic jobs with APScheduler.
 
 ```bash

@@ -1,0 +1,34 @@
+/// <reference types="astro/client" />
+
+interface ToastStore {
+  visible: boolean;
+  message: string;
+  variant: 'success' | 'error' | 'info' | 'warning';
+  show?: (message: string, variant?: 'success' | 'error' | 'info' | 'warning', duration?: number) => void;
+}
+
+declare global {
+  interface ImportMetaEnv {
+    readonly PUBLIC_FUSION_API_URL?: string;
+    readonly PUBLIC_BUILD_API_URL?: string;
+  }
+
+  interface Window {
+    htmx?: unknown;
+    /** Redux store instance (configureStore result). */
+    __reduxStore?: {
+      getState: () => { toast: ToastStore; site: { theme: string; loaded: boolean } };
+      dispatch: (action: unknown) => void;
+      subscribe: (listener: () => void) => () => void;
+    };
+    /** Redux-powered toast helper. */
+    __showToast?: (message: string, variant?: 'success' | 'error' | 'info' | 'warning') => void;
+    Alpine?: {
+      store(name: string, value?: unknown): unknown;
+      store(name: 'toast'): ToastStore;
+    } & Record<string, unknown>;
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+export {};

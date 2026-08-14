@@ -100,7 +100,7 @@ Tinker is a Django-based AI-powered template customizer and chat application tha
 - ✅ Used in: `chat/customizer.py` for template catalog integration
 - ✅ No migration needed (already renamed in library)
 
-**Note:** "osoul" references in code are URL prefixes (`/osoul/`), not package names. The package is `django-fusion`.
+**Note:** the routable-component URL prefix is `/components/` (formerly `/osoul/`), not a package name. The package is `django-fusion`.
 
 ### 5. Verification
 

@@ -5,7 +5,7 @@ The `www` site (created from the merge of `projects/shared/` and
 used across all websites. It serves as the sentinel site for the
 shared-task worker stack (shared-worker + shared-scheduler).
 
-Mirrors the per-site settings.py pattern (see `projects/precis/backend/settings.py`)
+Mirrors the per-site settings.py pattern (see `projects/precis/main/backend/settings.py`)
 but with two differences:
 
 1. No `_SITE_APP_DIR = _SITE_DIR / "www"`. The shared stack runs the
@@ -32,12 +32,12 @@ historical `Unknown site 'shared'` rejection.
 
 DEV-TIME ONLY:
 Production workers run with PROJECT_PATH=lms-fusion baked at build time
-in `projects/precis/compose/Dockerfile.backend` (override-able via the
+in `projects/precis/main/compose/Dockerfile.backend` (override-able via the
 `TASKS_PROJECT_PATH=www` build arg passed from
 `applications/docker-compose.tasks.yml`). Under the default
 PROJECT_PATH=lms-fusion, `python manage.py rundramatiq` is invoked with
 DJANGO_SETTINGS_MODULE=settings resolving to
-`projects/precis/backend/settings.py` (bind-mounted at runtime) — NOT this module.
+`projects/precis/main/backend/settings.py` (bind-mounted at runtime) — NOT this module.
 
 Setting TASKS_PROJECT_PATH=www IS the runtime wiring: the
 Dockerfile's `COPY projects/${PROJECT_PATH}` step bakes www/ contents

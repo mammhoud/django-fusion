@@ -5,7 +5,7 @@ and shared Python libraries, all sharing one repository and one CI pipeline.
 
 ## Contexts
 
-- [Landing Fusion](./projects/landing-fusion/CONTEXT.md) — the public structa.cloud site: a product catalog and the documentation of everything the monorepo ships
+- [Landing Fusion](./projects/precis/landi/CONTEXT.md) — the public structa.cloud site: a product catalog and the documentation of everything the monorepo ships
 - [Forge POS](./projects/pos/CONTEXT.md) — a desktop point-of-sale application sold in four editions (Community · Standard · Pro · Cloud)
 - [LMS](./projects/lms/) — a content-driven learning platform (courses, enrollments, payments)
 - [Cypercloud](./projects/cypercloud/) — an AI chat customizer platform built on ceptor-ai

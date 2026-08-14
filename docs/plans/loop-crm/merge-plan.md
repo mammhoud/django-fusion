@@ -1,6 +1,6 @@
 # Loop-CRM — Merge & Architecture Plan
 
-> **Status:** Foundation integrated; django-bolt API migration, token auth, navigation, workflow execution, finance ledger, RevOps dashboard (revenue-trend card + funnel-to-board deep links), and browser coverage shipped. Provider OAuth adapters remain credential-gated.
+> **Status:** Open work — the 8 unimplemented social adapters + their connect flows, the AI hub (Phase 4), Twenty-style extensibility (custom objects, saved views, visual workflow editor), the remaining domain screens, and realtime/email-sync/webhooks/CSV + full Bolt OpenAPI. See §12 for the ordered roadmap.
 > **Source projects:** [twentyhq/twenty](https://github.com/twentyhq/twenty) (CRM) · [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) (social scheduling)
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **License:** AGPL-3.0
@@ -117,60 +117,14 @@ those Twenty-style fields discoverable without hard-coding workspace schemas.
 
 Helpers live in `apps/core/permissions.py`; django-bolt's JWT/API-key
 backends and `IsAuthenticated` guards protect the canonical API road. The
-Django compatibility road remains intentionally usable for local development.
+Django compatibility road (`/api/v1/`) is session-authenticated
+(`@login_required`) and workspace-scoped; anonymous callers are redirected to
+`/accounts/login/` instead of receiving unscoped (cross-tenant) rows or counts.
 
 ---
 
-## 6. Delivery status and roadmap
+## 6. Roadmap (remaining work)
 
-- **Phase 0 (done) — scaffold:** domain models, admin, django-fusion wiring,
-  Dramatiq actors, Astro frontend, Compose + Makefile, Redux store.
-- **Phase 1 (foundation done) — API + navigation:** the Loop-CRM
-  `Application` owns browser routes; `apps/core/navigation.py` is the module
-  registry for Django templates and Astro; responsive side navigation exposes
-  every module and subpage; `/api/v1/` exposes dashboard, CRM, marketing,
-  attribution, workflow, and integration catalog endpoints.
-- **Phase 1b (implemented) — Bolt API migration:** `apps/core/bolt_api.py`
-  registers the full resource/catalog surface on django-bolt, mounts
-  `/bolt/` through Django URLs, and exposes `/bolt/auth/token`. The reusable
-  `django_fusion.plugins.apis` bridge supplies model schema generation, CRUD
-  mounting, dual-mode responses, JWT bearer tokens, and optional API keys.
-  `/api/v1/` remains a compatibility road when the optional Bolt runtime is
-  not installed; the repository's django-bolt placeholder is detected as
-  unavailable rather than treated as a working server. Token responses include
-  rotating access/refresh pairs at `/auth/token` and `/auth/refresh`.
-- **Phase 1c (implemented) — interaction verticals:** `WorkflowDefinition` and
-  `WorkflowRun` are persisted in the core database and seeded with the four
-  product workflow templates. The workflow editor and content calendar use
-  validated Django forms, HTMX partial responses, CSRF headers, and explicit
-  empty/error/loading states. `Post.transition_to()` prevents lifecycle skips,
-  while Dramatiq task discovery now registers actors once through
-  `apps/tasks/tasks.py`.
-- **Phase 2 (contract done) — connectors:** the Postiz-style 12-platform
-  capability catalog and `SocialConnector`/`PublishResult` contract are in
-  `apps/marketing/connectors.py`. The Dramatiq actor now moves posts through
-  `publishing → failed|published` and never claims success without a provider
-  adapter. OAuth/token storage and concrete provider adapters are credential-
-  gated follow-up work.
-- **Phase 3 (implemented) — workflows + attribution + finance:** the cross-module
-  workflow catalog covers lead capture, content approval, publish-and-attribute,
-  and deal-won revenue closure. Dramatiq now executes concrete CRM activity,
-  attribution, revenue-event, and invoice actions with idempotent records;
-  unconfigured external notifications/publishers are explicitly deferred rather
-  than reported as successful. `Deal.transition_to_stage()` queues the deal-won
-  workflow when a pipeline lead becomes closed-won.
-- **Phase 3b (implemented) — finance surface:** `/finance/`, invoices, payments,
-  and recognized-revenue pages use real ModelForms, tenant-safe relationships,
-  HTMX reset/list fragments, Bolt resources, and explicit empty/loading/error
-  states. The RevOps dashboard adds a recognized-revenue trend card backed by
-  the read-only revenue-trend aggregate (trailing six months, zero-filled,
-  workspace-scoped, `grand_total` rollup) exposed on both the canonical
-  `/bolt/revenue/trend` road and the `/api/v1/revenue/trend` compatibility
-  road through a shared finance service, with backend and contract tests.
-  Funnel stages deep-link to the deals board via
-  `/crm/deals/?pipeline=<id>&stage=<id>`, which selects the pipeline, scrolls
-  the stage column into view, dims the other columns, and shows a clearable
-  focus chip that honors `prefers-reduced-motion`.
 - **Phase 4 — AI hub:** lead scoring, sales emails, and social post generation
   behind provider adapters, with explicit workspace consent and audit logging.
 - **Phase 5 — domain screens:** replace the navigation-ready module surfaces
@@ -229,7 +183,7 @@ production data.
 
 ---
 
-## 8. Data tables, extensible fields, and account security plan
+## 8. Data tables and extensible fields plan
 
 ### Package analysis
 
@@ -245,9 +199,143 @@ production data.
 
 1. **Tables** — ship the members/roles table first using `django-tables2`, with explicit columns, search, role filtering, and no secret/token fields. Reuse the table contract for companies, deals, posts, and audit rows as those screens become real.
 2. **Fields** — persist field definitions per workspace/object type; support text, number, boolean, date, URL, email, select, and multi-select with JSON-safe validation. Keep field definitions versionable and archive rather than hard-delete fields.
-3. **Accounts** — expose `/accounts/login/`, `/accounts/signup/`, logout, password reset, and `/account/profile/`; display the current role, workspace, permission groups, and token status without rendering raw tokens.
-4. **Token security** — verify signature, issuer/audience, expiry, token type, active user, and optional role/workspace claims. Use short-lived access tokens, rotated refresh tokens, HTTPS-only production cookies, CSRF for browser mutations, and API keys only for explicitly configured machine access.
-5. **Testing** — cover anonymous token rejection, inactive-user rejection, role/workspace mismatch, allauth page rendering, table column safety, custom-field validation, and Bolt auth round-trips. Browser-level tests should exercise login → profile → protected route once a browser dependency is available.
+
+## 9. Source parity gap audit — partial & missing
+
+Loop-CRM is a **feature merge**, not a port. Shipped parity and the net-new
+merge layer are omitted here; the tables below record only what remains partial
+or deferred against each source.
+
+### Twenty (CRM) — partial & missing
+
+| Twenty capability | Loop-CRM status | Notes |
+|---|---|---|
+| Custom **fields** | ⚠️ partial | `CustomFieldDefinition` (9 types) validated into the JSON column |
+| Custom **objects** (arbitrary) | ❌ not added | fixed to company/contact/deal/campaign/post — no runtime object schema |
+| Saved views (list/kanban per user) | ❌ not added | one board + generic resource tables |
+| No-code workflow editor | ⚠️ partial | persisted JSON catalog + form; no visual DAG editor |
+| Email sync (Gmail/Outlook) | ❌ not added | |
+| Notes/tasks/favorites as first-class | ⚠️ partial | folded into `Activity` types only |
+| GraphQL / webhooks / CSV import | ❌ not added | REST only (`/bolt/` + `/api/v1/`) |
+| AI agents | ❌ not added | Phase 4 |
+
+### Postiz (social scheduling) — partial & missing
+
+| Postiz capability | Loop-CRM status | Notes |
+|---|---|---|
+| Real publish adapters | ⚠️ 4 of 12 | LinkedIn, X, Mastodon, Bluesky |
+| Analytics | ⚠️ partial | X metrics real; others return `{}` honestly |
+| OAuth connect | ⚠️ 2 flows | LinkedIn + X redirect OAuth; Mastodon/Bluesky app-password pending |
+| 30+ channels | ❌ not added | 12 cataloged, 4 implemented |
+| AI generation / copilot | ❌ not added | Phase 4 |
+| Canva editor / RSS / marketplace | ❌ not added | |
+
+---
+
+## 10. Page-by-page interaction inventory
+
+| Route | Screen | Interactions |
+|---|---|---|
+| `/overview/` | RevOps dashboard island | fetch dashboard/board/trend in parallel, KPI cards, funnel→board deep-links, revenue-trend bars with tooltips, skeleton/error/empty states |
+| `/crm/companies/` | Companies | real list + HTMX create form, error/empty states, tactile rows |
+| `/crm/contacts/` | Contacts | list + create form, cross-workspace relationship rejection |
+| `/crm/pipelines/` | Pipelines | resource table (real data) |
+| `/crm/deals/` | Deals board island | GSAP drag, keyboard chevrons, optimistic move + rollback, CSRF echo, pipeline tabs, stage focus chip, deep-link scroll |
+| `/crm/activities/` | Activities | module card (deferred — not yet a real table) |
+| `/marketing/` | Marketing landing | module cards |
+| `/marketing/calendar/` | Content calendar | composer + lifecycle transitions (submit/approve/schedule/publish/retry), channel status chips |
+| `/marketing/channels/` | Channels | connect (OAuth), disconnect, refresh, capability/status display |
+| `/marketing/campaigns/` | Campaigns | resource table |
+| `/marketing/media/` | Media library | module card (deferred) |
+| `/finance/` + `/invoices/` + `/payments/` + `/revenue/` | Finance | ModelForms, HTMX reset/list fragments, revenue trend |
+| `/attribution/`, `/touchpoints/`, `/reports/` | Attribution | touchpoints table; reports view |
+| `/tasks/` | Task center | shared+local job history |
+| `/settings/members/` | Members | django-tables2 + role matrix |
+| `/settings/workflows/` | Workflows | create/toggle/queue-run fragments |
+| `/settings/integrations/` | Integrations | platform catalog table |
+| `/settings/custom-fields/` | Custom fields | field catalog table |
+| `/settings/audit/` | Audit log | append-only trail table |
+| `/account/*` | allauth | login/signup/logout, password reset/change, email, social connections, profile |
+
+---
+
+## 11. Enhancement & optimization guide
+
+### Performance
+- Keep every animation on `transform`/`opacity` (never `top`/`left`/`width`/`height`);
+  the board uses GSAP `x,y` and the dash uses CSS `transform` only.
+- Use `will-change` sparingly; add it only to the drag cards and the trend bars.
+- Scope `backdrop-filter` to the sidebar/topbar; never on scrolling containers.
+- `async for` + `acount()` on the Bolt road; `[:100]` + `values(*fields)` on the
+  compatibility road; keep `select_related` on the render-first row helpers.
+- The dual road already shares `apps/core/resources.py` — do not fork it.
+
+### Motion & accessibility
+- Honor `prefers-reduced-motion` everywhere (the shell disables transition and
+  animation; the board skips GSAP drag and uses keyboard chevrons).
+- Use staggered reveal (`animation-delay` cascade) for lists; never mount grids
+  instantly.
+- Use `min-h-[100dvh]`, never `h-screen`; grid (`grid-cols-…`) not flex-math.
+- One accent, desaturated; no pure black, no neon glows, no emoji/symbols
+  (SVG icons instead), tactile `:active` on every interactive surface.
+
+### Data & API
+- Add a resource by extending `RESOURCES` in `apps/core/resources.py` — both
+  roads and the generic table screen pick it up automatically.
+- Keep FK validation in `_resolve_relation`; never accept an unscoped FK.
+- New writes must set `workspace_id` from `current_workspace_id` and reject a
+  null workspace rather than defaulting to unscoped.
+
+### Testing
+- `apps/core/test_tenancy.py` owns cross-tenant isolation; add a read + a
+  mutation assertion for every new screen.
+- Frontend contract tests read source for behavior; add one per island/screen.
+
+---
+
+## 12. Feature-merge roadmap — clone → complete multi-functional CRM
+
+Ordered by impact; each phase is independently shippable.
+
+1. **Remaining platform adapters** — Instagram/Facebook/TikTok/YouTube/Reddit/
+   Discord/Slack/WhatsApp + their connect flows (app-password for Bluesky,
+   instance OAuth for Mastodon). Keep the `SocialConnector` contract.
+2. **AI hub (Phase 4)** — post generation, sales-email drafting, lead scoring
+   behind provider adapters with workspace consent + `AuditLog` writes; reuse
+   the `workflow_actions` deferred-action pattern.
+3. **Twenty-style extensibility** — saved views per user, arbitrary custom
+   objects (a `CustomObjectDefinition` + generic JSON record table, not
+   polymorphic models), and a visual (no-code) workflow editor.
+4. **Domain screens (Phase 5)** — paginated HTMX/JSON screens for activities,
+   media library, and approval/report queues; convert the two remaining
+   module cards into real tables.
+5. **Realtime + integrations** — WebSocket pipeline/board sync (or re-use
+   django-fusion's task/monitor contracts), webhooks for deal-won/post-
+   published, email sync, CSV import/export.
+6. **Data/API surface** — finish per-resource OpenAPI docs on the Bolt road
+   and add pagination/filtering to `resource_api`.
+
+---
+
+## 13. Build guide — adding an animated interactive screen
+
+1. **Choose the road** — render-first (Django template + HTMX, like the
+   calendar/channels) or data (Astro shell + a React island, like the board).
+   Islands mount their own `<StoreProvider>`; never nest Astro `<slot/>` inside
+   React.
+2. **State cycle** — always ship loading (skeleton, not spinner), empty
+   ("how to populate"), error (inline + retry), and success states.
+3. **Data** — the island fetches `/api/v1/…` with same-origin cookies (echo the
+   `csrftoken` cookie as `X-CSRFToken` for mutations); the render-first screen
+   uses `apps/core/resources.py` + a `LoopPageView` subclass + a partial.
+4. **Schemas** — register the resource in `RESOURCES` so `/bolt/` + `/api/v1/`
+   and the generic table inherit the contract; add a msgspec schema on the Bolt
+   road for typed bodies.
+5. **Motion** — GSAP for drag/scrolltelling (isolated in `useEffect` with
+   cleanup); CSS for reveal/breathe/tactile. `transform`/`opacity` only;
+   `prefers-reduced-motion` fallback; no framer-motion + GSAP in the same tree.
+6. **Integrations** — provider I/O stays behind `SocialConnector` in a Dramatiq
+   actor; templates/views never call a provider directly.
 
 ## Related
 

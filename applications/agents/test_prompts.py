@@ -52,7 +52,7 @@ def test_listing_is_concise_and_detail_is_complete():
     assert listing["count"] >= 10
     assert all(set(item) >= {"id", "title", "description", "kind"} for item in listing["prompts"])
     assert detail is not None
-    assert detail["path"] == "projects/landing-fusion/"
+    assert detail["path"] == "projects/precis/landi/"
     assert detail["checks"]
     assert get_prompt("does-not-exist") is None
 
@@ -75,7 +75,7 @@ def test_mcp_prompt_endpoints_list_detail_and_not_found():
 
     detail = client.get("/prompts/project.landing-fusion")
     assert detail.status_code == 200
-    assert detail.json()["prompt"]["path"] == "projects/landing-fusion/"
+    assert detail.json()["prompt"]["path"] == "projects/precis/landi/"
 
     missing = client.get("/prompts/does-not-exist")
     assert missing.status_code == 404

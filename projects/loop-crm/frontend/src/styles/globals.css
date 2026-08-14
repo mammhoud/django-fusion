@@ -274,3 +274,52 @@ button, a { -webkit-tap-highlight-color: transparent; }
     @apply font-sans;
   }
 }
+
+/* ── Motion engine (GSAP + CSS only; transform/opacity, reduced-motion safe) ── */
+@keyframes loop-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes loop-breathe {
+  0%, 100% { opacity: .5; transform: scale(.82); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+/* Staggered waterfall reveal for the non-draggable dashboard surfaces. */
+.loop-dash__kpis > *,
+.loop-dash__grid > *,
+.loop-dash__trend-col {
+  animation: loop-rise .6s cubic-bezier(.16, 1, .3, 1) both;
+}
+.loop-dash__kpis > *:nth-child(2) { animation-delay: 60ms; }
+.loop-dash__kpis > *:nth-child(3) { animation-delay: 120ms; }
+.loop-dash__kpis > *:nth-child(4) { animation-delay: 180ms; }
+.loop-dash__kpis > *:nth-child(5) { animation-delay: 240ms; }
+.loop-dash__grid > *:nth-child(2) { animation-delay: 90ms; }
+.loop-dash__trend-col:nth-child(2) { animation-delay: 60ms; }
+.loop-dash__trend-col:nth-child(3) { animation-delay: 120ms; }
+.loop-dash__trend-col:nth-child(4) { animation-delay: 180ms; }
+.loop-dash__trend-col:nth-child(5) { animation-delay: 240ms; }
+.loop-dash__trend-col:nth-child(6) { animation-delay: 300ms; }
+
+/* Perpetual breathing status dots. */
+.loop-board__dot,
+.loop-channel__dot--connected {
+  animation: loop-breathe 2.6s ease-in-out infinite;
+}
+
+/* Tactile press feedback on interactive surfaces. */
+.loop-dash__stat-link:active,
+.loop-dash__stage--link:active {
+  transform: translateY(1px) scale(.995);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-dash__kpis > *,
+  .loop-dash__grid > *,
+  .loop-dash__trend-col,
+  .loop-board__dot,
+  .loop-channel__dot--connected {
+    animation: none;
+  }
+}

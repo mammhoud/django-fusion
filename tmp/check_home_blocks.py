@@ -57,9 +57,9 @@ def dump(db_path, label):
 
 # Precis home page table: content_homepage or apps' home
 for p in [
-    "projects/precis/backend/db.sqlite3",
-    "projects/precis/db.sqlite3",
-    "projects/precis/frontend/db.sqlite3",
+    "projects/precis/main/backend/db.sqlite3",
+    "projects/precis/main/db.sqlite3",
+    "projects/precis/main/frontend/db.sqlite3",
 ]:
     if os.path.exists(p):
         dump(p, "PRECIS")
@@ -68,8 +68,8 @@ else:
     print("no precis db found")
 
 for p in [
-    "projects/landing-fusion/db.sqlite3",
-    "projects/landing-fusion/backend/db.sqlite3",
+    "projects/precis/landi/db.sqlite3",
+    "projects/precis/landi/backend/db.sqlite3",
 ]:
     if os.path.exists(p):
         dump(p, "LANDING-FUSION")

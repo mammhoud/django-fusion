@@ -365,7 +365,7 @@ Django returns only the contents of `#branch-summary-content`, for example a lis
 
 ### Shared project assets
 
-Create a single project-level assets workspace beside `frontend/` and `backend/`, following `projects/landing-fusion/assets/`:
+Create a single project-level assets workspace beside `frontend/` and `backend/`, following `projects/precis/landi/assets/`:
 
 ```text
 projects/pos/formint-pos/

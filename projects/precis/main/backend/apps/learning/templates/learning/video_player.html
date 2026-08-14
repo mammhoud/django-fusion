@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load static %}
+{% prop lesson %}
+
+<div class="video-container mb-4">
+    <video id="player" playsinline controls data-poster="{% if lesson.thumbnail %}{{ lesson.thumbnail.url }}{% else %}{% static 'assets/images/course-placeholder.jpg' %}{% endif %}">
+        {% if lesson.video_url %}
+        <source src="{{ lesson.video_url }}" type="video/mp4">
+        {% elif lesson.video_file %}
+        <source src="{{ lesson.video_file.url }}" type="video/mp4">
+        {% else %}
+        <source src="{% static 'assets/videos/demo-lesson.mp4' %}" type="video/mp4">
+        {% endif %}
+        
+        <!-- Caption files -->
+        {% if lesson.captions_file %}
+        <track kind="captions" label="English" srclang="en" src="{{ lesson.captions_file.url }}" default>
+        {% endif %}
+    </video>
+</div>

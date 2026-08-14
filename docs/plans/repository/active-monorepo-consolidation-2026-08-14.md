@@ -6,7 +6,7 @@
 
 ## Decision record
 
-- Precis remains an active product at `projects/precis/`.
+- Precis remains an active product at `projects/precis/main/`.
 - Precis/LMS is **not** a shared-worker tenant: its background queues,
   scheduler, and task package are excluded from shared task discovery.
 - A single infrastructure-owned `shared-worker` consumes Dramatiq actors and a

@@ -21,9 +21,9 @@ map $host $static_root {
     lms-fusion.localhost /var/www/sites/lms-fusion/static;
     lms-fusion.com /var/www/sites/lms-fusion/static;
     www.lms-fusion.com /var/www/sites/lms-fusion/static;
-    ctc-research.com /var/www/sites/lms-fusion/static;
-    www.ctc-research.com /var/www/sites/lms-fusion/static;
-    arch.ctc-research.com /var/www/sites/lms-fusion/static;
+    ctc-research.com /var/www/sites/ctc-research/static;
+    www.ctc-research.com /var/www/sites/ctc-research/static;
+    arch.ctc-research.com /var/www/sites/ctc-research/static;
 }
 
 map $host $media_root {
@@ -34,9 +34,9 @@ map $host $media_root {
     lms-fusion.localhost /var/www/media/lms-fusion;
     lms-fusion.com /var/www/media/lms-fusion;
     www.lms-fusion.com /var/www/media/lms-fusion;
-    ctc-research.com /var/www/media/lms-fusion;
-    www.ctc-research.com /var/www/media/lms-fusion;
-    arch.ctc-research.com /var/www/media/lms-fusion;
+    ctc-research.com /var/www/media/ctc-research;
+    www.ctc-research.com /var/www/media/ctc-research;
+    arch.ctc-research.com /var/www/media/ctc-research;
 }
 
 server {

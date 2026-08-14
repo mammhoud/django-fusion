@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd /home/structa.cloud/projects/landing-fusion
+cd /home/structa.cloud/projects/precis/landi
 # Kill any stale dev servers from earlier sessions
 for port in 8074 4321; do
   fuser -k "$port"/tcp 2>/dev/null || true

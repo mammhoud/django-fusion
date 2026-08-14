@@ -896,7 +896,7 @@
     {
       "id": "project.landing-fusion",
       "name": "Landing-Fusion",
-      "path": "projects/landing-fusion/",
+      "path": "projects/precis/landi/",
       "description": "Public marketing and catalog product combining an Astro 5 frontend with a Django 5.2/Wagtail 7.4 backend and django-fusion rendering.",
       "stack": [
         "Astro 5",
@@ -917,12 +917,12 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Landing-Fusion as one dual-road product. Read projects/landing-fusion/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
+      "prompt": "Enhance Landing-Fusion as one dual-road product. Read projects/precis/landi/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
       "checks": [
-        "cd projects/landing-fusion && make check",
-        "cd projects/landing-fusion && make build",
-        "cd projects/landing-fusion/backend && make check",
-        "cd projects/landing-fusion/backend && make test"
+        "cd projects/precis/landi && make check",
+        "cd projects/precis/landi && make build",
+        "cd projects/precis/landi/backend && make check",
+        "cd projects/precis/landi/backend && make test"
       ],
       "related_skills": [
         "skill.website-redesign-audit",
@@ -937,7 +937,7 @@
     {
       "id": "project.precis",
       "name": "Precis LMS",
-      "path": "projects/precis/",
+      "path": "projects/precis/main/",
       "description": "The production learning platform for courses, enrollment, payments, progress, certificates, profiles, and multilingual Wagtail content.",
       "stack": [
         "Django 5.2",
@@ -957,12 +957,12 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired lms-fusion paths. Read projects/precis/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
+      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired lms-fusion paths. Read projects/precis/main/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
       "checks": [
-        "cd projects/precis/backend && make check",
-        "cd projects/precis/backend && make test",
-        "cd projects/precis/frontend && npm run check",
-        "cd projects/precis/frontend && npm run build"
+        "cd projects/precis/main/backend && make check",
+        "cd projects/precis/main/backend && make test",
+        "cd projects/precis/main/frontend && npm run check",
+        "cd projects/precis/main/frontend && npm run build"
       ],
       "related_skills": [
         "skill.website-redesign-audit",

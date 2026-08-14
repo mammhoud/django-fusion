@@ -4,11 +4,11 @@ cd /home/structa.cloud
 
 # ── landing-fusion :8074 ──
 tmux kill-session -t hcheck_lf 2>/dev/null
-tmux new-session -d -s hcheck_lf 'cd /home/structa.cloud/projects/landing-fusion/backend && PORT=8074 make dev > /tmp/hcheck_lf.log 2>&1'
+tmux new-session -d -s hcheck_lf 'cd /home/structa.cloud/projects/precis/landi/backend && PORT=8074 make dev > /tmp/hcheck_lf.log 2>&1'
 
 # ── precis :8079 ──
 tmux kill-session -t hcheck_pr 2>/dev/null
-tmux new-session -d -s hcheck_pr 'cd /home/structa.cloud/projects/precis/backend && PORT=8079 make dev > /tmp/hcheck_pr.log 2>&1'
+tmux new-session -d -s hcheck_pr 'cd /home/structa.cloud/projects/precis/main/backend && PORT=8079 make dev > /tmp/hcheck_pr.log 2>&1'
 
 sleep 14
 

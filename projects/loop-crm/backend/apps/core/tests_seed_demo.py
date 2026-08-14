@@ -160,9 +160,10 @@ class DashboardScopingTests(TestCase):
         self.assertEqual(counts["contacts"], 1)
         self.assertEqual(counts["pipelines"], 1)
 
-    def test_anonymous_requests_stay_unscoped(self):
+    def test_dashboard_requires_authentication(self):
         self.client.logout()
         response = self.client.get("/api/v1/dashboard/")
-        self.assertEqual(response.status_code, 200)
-        # Anonymous has no workspace to scope to, so the endpoint still answers.
-        self.assertIn("counts", response.json()["data"])
+        # Anonymous callers are redirected to login instead of receiving
+        # unscoped (cross-tenant) counts.
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response["Location"])

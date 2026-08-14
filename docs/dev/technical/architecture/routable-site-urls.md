@@ -1,12 +1,12 @@
 # Routable Site URLs
 
-The `lms-demo` and `ctc-research` websites mount the shared routable
-component site from `www.core.routes` at the `/osoul/` prefix:
+The `lms-fusion` (Precis main) and `ctc-research` websites mount the shared routable
+component site from `apps.core.routes` at the `/components/` prefix:
 
 ```python
-from www.core.routes import site
+from apps.core.routes import module
 
-urlpatterns += [path("osoul/", include(site.urls))]
+urlpatterns += [path("components/", include((module.urls[0], module.urls[1]), namespace=module.urls[2]))]
 ```
 
 Mounting the site before Wagtail's catch-all URL patterns keeps these generated
@@ -16,18 +16,18 @@ component routes available at a stable prefix on both websites.
 
 | URL | App | Purpose | Access |
 | --- | --- | --- | --- |
-| `/osoul/lms/dashboard/` | LMS | Staff LMS dashboard page. | Authenticated staff users only. |
-| `/osoul/lms/courses/list-fragment/` | LMS | HTMX course-list fragment rendered inside the LMS dashboard. | Authenticated staff users only. |
-| `/osoul/blog/posts/list-fragment/` | Blog | HTMX blog-post list fragment. | Public read access. |
-| `/osoul/blog/posts/create-fragment/` | Blog | HTMX blog-post creation fragment. | Public route visibility follows `BlogApp.has_view_permission`; write actions should still be restricted by the underlying viewset/form permissions. |
+| `/components/lms/dashboard/` | LMS | Staff LMS dashboard page. | Authenticated staff users only. |
+| `/components/lms/courses/list-fragment/` | LMS | HTMX course-list fragment rendered inside the LMS dashboard. | Authenticated staff users only. |
+| `/components/blog/posts/list-fragment/` | Blog | HTMX blog-post list fragment. | Public read access. |
+| `/components/blog/posts/create-fragment/` | Blog | HTMX blog-post creation fragment. | Public route visibility follows `BlogApp.has_view_permission`; write actions should still be restricted by the underlying viewset/form permissions. |
 
 ## Permission behavior
 
 - `LMSApp.has_view_permission` requires both `user.is_authenticated` and
-  `user.is_staff`, so all generated LMS routes under `/osoul/lms/` are intended
+  `user.is_staff`, so all generated LMS routes under `/components/lms/` are intended
   for authenticated staff users.
 - `BlogApp.has_view_permission` returns `True`, so generated blog routes under
-  `/osoul/blog/` are publicly visible for read use. Mutating blog operations
+  `/components/blog/` are publicly visible for read use. Mutating blog operations
   should continue to rely on the blog component or viewset permission checks.
 
 ## HTMX fragment expectations
@@ -42,7 +42,7 @@ already-rendered page shell. They should not be treated as standalone pages.
 
   ```html
   <div
-    hx-get="/osoul/lms/courses/list-fragment/"
+    hx-get="/components/lms/courses/list-fragment/"
     hx-trigger="load"
     hx-target="this"
     hx-swap="outerHTML"

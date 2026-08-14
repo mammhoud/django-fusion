@@ -1,0 +1,98 @@
+{# assets/templates/courses/_filters.html #}
+{% load i18n %}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-4">{% trans "Filters" %}</h5>
+        
+        <!-- Filter Form -->
+        <form method="get" 
+              hx-get="{% url 'plugins:course_search' %}" 
+              hx-target="#course-results-container" 
+              hx-trigger="change, keyup changed delay:500ms from:input[type='search']"
+              hx-push-url="true"
+              id="courses-filter-form">
+            
+            <!-- Search bar -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase">{% trans "Search" %}</label>
+                <div class="input-group shadow-sm rounded">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="search" 
+                           name="q" 
+                           value="{{ query }}" 
+                           class="form-control border-start-0 ps-0" 
+                           placeholder="{% trans 'Search courses...' %}">
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase">{% trans "Language" %}</label>
+                <select name="language" class="form-select shadow-sm">
+                    <option value="">{% trans "All Languages" %}</option>
+                    {% for lang in filter_options.languages %}
+                    <option value="{{ lang }}" {% if active_filters.language == lang %}selected{% endif %}>{{ lang|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Difficulty -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase">{% trans "Difficulty" %}</label>
+                <select name="difficulty" class="form-select shadow-sm">
+                    <option value="">{% trans "All Levels" %}</option>
+                    {% for diff in filter_options.difficulties %}
+                    <option value="{{ diff }}" {% if active_filters.difficulty_level == diff or active_filters.difficulty == diff %}selected{% endif %}>{{ diff|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Specializations -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase">{% trans "Specialization" %}</label>
+                <select name="specialization" class="form-select shadow-sm">
+                    <option value="">{% trans "All Specializations" %}</option>
+                    {% for spec in filter_options.specializations %}
+                    <option value="{{ spec.slug }}" {% if active_filters.specialization == spec.slug %}selected{% endif %}>
+                        {{ spec.title }} ({{ spec.course_count }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-secondary small text-uppercase">{% trans "Price" %}</label>
+                {% for price_opt in filter_options.price_ranges %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="price" id="price-{{ price_opt.value }}" value="{{ price_opt.value }}" {% if active_filters.price_range == price_opt.value or active_filters.price == price_opt.value %}checked{% endif %}>
+                    <label class="form-check-label text-muted small" for="price-{{ price_opt.value }}">
+                        {{ price_opt.label }} ({{ price_opt.count }})
+                    </label>
+                </div>
+                {% endfor %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="price" id="price-all" value="" {% if not active_filters.price_range and not active_filters.price %}checked{% endif %}>
+                    <label class="form-check-label text-muted small" for="price-all">
+                        {% trans "All" %}
+                    </label>
+                </div>
+            </div>
+
+            <!-- Clear filters button -->
+            <div class="d-grid mt-4">
+                <a href="{% url 'plugins:course_search' %}" 
+                   class="btn btn-outline-secondary btn-sm"
+                   hx-get="{% url 'plugins:course_search' %}"
+                   hx-target="#course-results-container"
+                   hx-push-url="true"
+                   onclick="document.getElementById('courses-filter-form').reset();">
+                    {% trans "Clear Filters" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

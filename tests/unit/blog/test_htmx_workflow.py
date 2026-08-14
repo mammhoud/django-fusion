@@ -58,7 +58,7 @@ class TestBlogPostCreateFragment:
         client.force_login(staff_user)
 
         # Use the routable component URL
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.get(url, HTTP_HX_REQUEST="true")
 
         assert response.status_code == 200
@@ -69,7 +69,7 @@ class TestBlogPostCreateFragment:
         """Non-HTMX GET request returns 400."""
         client.force_login(staff_user)
 
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.get(url)  # No HX-Request header
 
         assert response.status_code == 400
@@ -78,7 +78,7 @@ class TestBlogPostCreateFragment:
         """POST with valid data creates a new post."""
         client.force_login(staff_user)
 
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.post(
             url,
             {
@@ -102,7 +102,7 @@ class TestBlogPostCreateFragment:
         """POST with invalid data returns form with error messages."""
         client.force_login(staff_user)
 
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.post(
             url,
             {
@@ -119,14 +119,14 @@ class TestBlogPostCreateFragment:
         """Non-staff user cannot access the create form."""
         client.force_login(regular_user)
 
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.get(url, HTTP_HX_REQUEST="true")
 
         assert response.status_code == 403
 
     def test_post_without_login_redirects(self, client):
         """Anonymous user is redirected to login."""
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.get(url, HTTP_HX_REQUEST="true")
 
         assert response.status_code in [302, 403]
@@ -146,7 +146,7 @@ class TestBlogPostListFragment:
             status="published",
         )
 
-        url = "/osoul/blog/posts/list-fragment/"
+        url = "/components/blog/posts/list-fragment/"
         response = client.get(url, HTTP_HX_REQUEST="true")
 
         assert response.status_code == 200
@@ -170,7 +170,7 @@ class TestBlogPostListFragment:
             status="published",
         )
 
-        url = "/osoul/blog/posts/list-fragment/"
+        url = "/components/blog/posts/list-fragment/"
         response = client.get(
             url,
             {"q": "Python"},
@@ -200,7 +200,7 @@ class TestBlogPostListFragment:
             status="published",
         )
 
-        url = "/osoul/blog/posts/list-fragment/"
+        url = "/components/blog/posts/list-fragment/"
         response = client.get(
             url,
             {"category": category.slug},
@@ -235,7 +235,7 @@ class TestNamespaceConflicts:
     def test_routable_component_urls_are_unique(self, client, staff_user, db):
         """Routable component URLs don't conflict with traditional routes."""
         # Routable component URL
-        routable_url = "/osoul/blog/posts/list-fragment/"
+        routable_url = "/components/blog/posts/list-fragment/"
 
         # Traditional blog list URL
         traditional_url = reverse("blog:list")
@@ -252,11 +252,11 @@ class TestNamespaceConflicts:
 
     def test_no_wagtail_conflicts(self, client, db):
         """Routable components don't conflict with Wagtail pages."""
-        # The /osoul/ prefix should isolate routable components
+        # The /components/ prefix should isolate routable components
         # Wagtail handles everything at root level
 
         # Try accessing a routable component
-        url = "/osoul/blog/posts/list-fragment/"
+        url = "/components/blog/posts/list-fragment/"
         response = client.get(url, HTTP_HX_REQUEST="true")
 
         # Should get a valid response (or 400 for non-HTMX, but not 404)
@@ -270,7 +270,7 @@ class TestOOBFragments:
         """Successful post creation returns OOB fragments."""
         client.force_login(staff_user)
 
-        url = "/osoul/blog/posts/create-fragment/"
+        url = "/components/blog/posts/create-fragment/"
         response = client.post(
             url,
             {

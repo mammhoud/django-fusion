@@ -106,18 +106,18 @@ nav:
   - Projects:
     - Overview: projects/README.md
     - Landing Fusion:
-        - Overview: projects/landing-fusion/README.md
-        - Backend API: projects/landing-fusion/backend-api.md
-        - Frontend: projects/landing-fusion/frontend.md
+        - Overview: projects/precis/landi/README.md
+        - Backend API: projects/precis/landi/backend-api.md
+        - Frontend: projects/precis/landi/frontend.md
     - Precis LMS:
-        - Overview: projects/precis/README.md
-        - Courses: projects/precis/courses.md
+        - Overview: projects/precis/main/README.md
+        - Courses: projects/precis/main/courses.md
     - LMS (Legacy): projects/lms/README.md
     - Portfolio: projects/portfolio/README.md
     - Syntara (Cypercloud): projects/cypercloud/README.md
     - Formints POS:
-        - Overview: projects/pos/README.md
-        - Editions: projects/pos/editions.md
+        - Overview: projects/formints/README.md
+        - Editions: projects/formints/docs/README.md
     - Shared: projects/shared/README.md
     - Libraries:
         - Overview: projects/libs/README.md

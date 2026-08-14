@@ -14,7 +14,7 @@ PROXY_DIR         := applications/proxy
 SERVICES_DIR      := services
 DATABASES_DIR     := applications/databases
 CYPERCLOUD_DIR    := projects/cypercloud
-POS_DIR           := projects/pos
+POS_DIR           := projects/formints
 SOURCE_DIR        := source
 
 # -----------------------------------------------------------------
@@ -323,11 +323,11 @@ help:
 	@echo "  make structa           - Delegate to projects/Makefile with WEBSITE=structa"
 	@echo "  make vresume           - Delegate to projects/Makefile with WEBSITE=vresume"
 	@echo "  make cypercloud        - Delegate to projects/cypercloud/Makefile (AI chat customizer)"
-	@echo '  make pos               - Show POS targets from projects/pos/Makefile'
-	@echo '  make forge-pos         - Delegate to projects/pos/forge-pos/Makefile (forge POS edition)'
-	@echo '  make pos-solo          - Delegate to projects/pos/pos-solo/Makefile (branch device)'
-	@echo '  make pos-full          - Delegate to projects/pos/pos-full/Makefile (master manager)'
-	@echo '  make pos-client        - Delegate to projects/pos/pos-client/Makefile (Vue 3 client)'
+	@echo '  make pos               - Show POS targets from projects/formints/Makefile'
+	@echo '  make community-*       - Formint Community edition (check/test/dev/clean)'
+	@echo '  make pro-*             - Formint Pro edition (check/test/env/clean)'
+	@echo '  make cloud-*           - Formint Cloud edition (check/test/dev-backend)'
+	@echo '  make client-*          - Formint pos-client edition (build/lint/test)'
 	@echo "  make lms-fusion        - Delegate to projects/Makefile with WEBSITE=lms-fusion"
 	@echo "  make lms-fusion check  - Django system checks for Fusion LMS"
 	@echo "  make lms-fusion migrate - Run migrations for Fusion LMS"
@@ -1163,11 +1163,11 @@ help-all:
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "Individual Component Help:"
 	@echo "  make -C $(CORE_DIR) help    - Application service commands"
-	@echo "  make pos            - POS desktop app (projects/pos/Makefile)"
+	@echo "  make pos            - POS desktop app (projects/formints/Makefile)"
 	@echo "  make lms-fusion     - Fusion LMS site (projects/Makefile)"
 	@echo "  make cms-fusion     - Fusion CMS site (projects/Makefile)"
-	@echo "  make pos-{mini,solo,full,client}"
-	@echo "                      - Individual POS edition Makefiles"
+	@echo "  make {community,standard,pro,cloud,client}-*"
+	@echo "                      - Formint edition Makefiles"
 	@echo "  make -C $(PROXY_DIR) help           - Proxy management commands"
 	@echo "  make -C $(SERVICES_DIR) help        - Service-specific commands"
 	@echo "  make -C $(DATABASES_DIR) help       - Database commands"
@@ -1246,18 +1246,6 @@ domain-drift:
 test-fusion:
 	@$(MAKE) -C $(CORE_DIR) test-fusion
 
-forge-pos:
-	@$(MAKE) -C $(POS_DIR)/forge-pos $(filter-out $@,$(MAKECMDGOALS))
-
-pos-solo:
-	@$(MAKE) -C $(POS_DIR)/pos-solo $(filter-out $@,$(MAKECMDGOALS))
-
-pos-full:
-	@$(MAKE) -C $(POS_DIR)/pos-full $(filter-out $@,$(MAKECMDGOALS))
-
-pos-client:
-	@$(MAKE) -C $(POS_DIR)/pos-client $(filter-out $@,$(MAKECMDGOALS))
-
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)
 
@@ -1301,7 +1289,7 @@ venv-info:           ## Show venv status and paths
 	@echo "🐍 Python Venv Info"
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "   Python version: $$(cat .python-version 2>/dev/null || echo 'not set')"
-	@echo "   Docker Python:  python:3.11-slim (see projects/precis/compose/Dockerfile.backend)"
+	@echo "   Docker Python:  python:3.11-slim (see projects/precis/main/compose/Dockerfile.backend)"
 	@echo "   Venv location:  $(WORKSPACE_ROOT)/.venv"
 	@if [ -d "$(WORKSPACE_ROOT)/.venv" ]; then \
 		echo "   Venv exists:    ✅"; \
@@ -1318,17 +1306,8 @@ venv-info:           ## Show venv status and paths
 # -----------------------------------------------------------------
 %:
 	@true 2>/dev/null; \
-	if echo '$*' | grep -qE '^pos-'; then \
-		edition=$$(echo '$*' | sed 's/^pos-//'); \
-		if [ -d "$(POS_DIR)/pos-$$edition" ]; then \
-			$(MAKE) -C $(POS_DIR)/pos-$$edition $(filter-out pos-$$edition,$(MAKECMDGOALS)); \
-		else \
-			echo "❌ Unknown POS edition: pos-$$edition"; exit 1; \
-		fi; \
-	elif echo '$*' | grep -qE '^(setup|dev|build|check)-(mini|solo|full|client)$$'; then \
+	if echo '$*' | grep -qE '^(community|standard|pro|cloud|client|sdk)-'; then \
 		$(MAKE) -C $(POS_DIR) $*; \
-	else \
-		if grep -qE '^$*[^a-zA-Z]' $(CORE_DIR)/Makefile 2>/dev/null; then \
-			$(MAKE) -C $(CORE_DIR) $*; \
-		fi \
+	elif grep -qE '^$*[^a-zA-Z]' $(CORE_DIR)/Makefile 2>/dev/null; then \
+		$(MAKE) -C $(CORE_DIR) $*; \
 	fi

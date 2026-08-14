@@ -48,7 +48,7 @@ overlays (PageTranslation snippet), newsletter, and site settings.
 ## Quick Commands
 
 ```bash
-cd projects/landing-fusion/backend
+cd projects/precis/landi/backend
 
 # Run dev server
 uv run --project ../.. python manage.py runserver 0.0.0.0:8074

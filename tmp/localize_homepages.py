@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-FIXTURE = Path("projects/precis/backend/assets/fixtures/dump-data.json")
+FIXTURE = Path("projects/precis/main/backend/assets/fixtures/dump-data.json")
 
 # Locale code -> homepage page PK (mirrors wagtailcore.page locales in the dump)
 LOCALE_PK = {"ar": 8, "de": 13, "es": 18, "fr": 23, "pt-br": 28}

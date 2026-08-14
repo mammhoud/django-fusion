@@ -3,16 +3,32 @@ from __future__ import annotations
 
 from urllib.request import Request, urlopen
 
+from django.contrib.auth import get_user_model
 from django.test import LiveServerTestCase
+
+User = get_user_model()
 
 
 class LoopCRMHTTPFlowTests(LiveServerTestCase):
     """Exercise the same URLs a browser and HTMX client use."""
 
+    def setUp(self):
+        # Dashboard pages and data APIs now require authentication. Establish a
+        # session through the in-process client and replay its sessionid over
+        # the real HTTP transport below.
+        self.user = User.objects.create_user(
+            username="e2e", email="e2e@example.com", password="Strong-pass-123"
+        )
+        self.client.force_login(self.user)
+        self.session_cookie = self.client.session.session_key
+
     def fetch(self, path: str, *, htmx: bool = False) -> str:
+        headers = {"HX-Request": "true"} if htmx else {}
+        if getattr(self, "session_cookie", None):
+            headers["Cookie"] = f"sessionid={self.session_cookie}"
         request = Request(
             f"{self.live_server_url}{path}",
-            headers={"HX-Request": "true"} if htmx else {},
+            headers=headers,
         )
         with urlopen(request, timeout=5) as response:  # noqa: S310 - local test server
             self.assertEqual(response.status, 200)

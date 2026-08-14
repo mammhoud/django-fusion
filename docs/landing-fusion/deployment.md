@@ -20,11 +20,11 @@ Browser → Traefik Proxy (:443, SSL)
 ## Docker Compose
 
 ```yaml
-# projects/landing-fusion/docker-compose.yml
+# projects/precis/landi/docker-compose.yml
 services:
   backend:
     build: ../..  # Monorepo root
-    context: projects/landing-fusion/backend
+    context: projects/precis/landi/backend
     port: 8074
     env:
       DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud
@@ -33,7 +33,7 @@ services:
 
   frontend:
     build:
-      context: projects/landing-fusion/frontend
+      context: projects/precis/landi/frontend
     port: 3000
 ```
 
@@ -43,19 +43,19 @@ services:
 
 ```bash
 # Build images
-docker compose -f projects/landing-fusion/docker-compose.yml build
+docker compose -f projects/precis/landi/docker-compose.yml build
 
 # Start services
-docker compose -f projects/landing-fusion/docker-compose.yml up -d
+docker compose -f projects/precis/landi/docker-compose.yml up -d
 
 # View logs
-docker compose -f projects/landing-fusion/docker-compose.yml logs -f
+docker compose -f projects/precis/landi/docker-compose.yml logs -f
 
 # Restart
-docker compose -f projects/landing-fusion/docker-compose.yml restart
+docker compose -f projects/precis/landi/docker-compose.yml restart
 
 # Stop
-docker compose -f projects/landing-fusion/docker-compose.yml down
+docker compose -f projects/precis/landi/docker-compose.yml down
 ```
 
 ---

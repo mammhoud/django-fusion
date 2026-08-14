@@ -1,0 +1,22 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% block head_title %}{% trans "Confirm email" %}{% endblock %}
+{% block auth_heading %}{% trans "Confirm your address" %}{% endblock %}
+{% block auth_inner %}
+{% if confirmation %}
+  {% if can_confirm %}
+    <p class="loop-lede">Confirm <strong>{{ confirmation.email_address.email }}</strong> for account <strong>{{ confirmation.email_address.user.username }}</strong>.</p>
+    <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+      {% csrf_token %}
+      <div class="loop-auth-card__actions"><button class="loop-button loop-button--primary" type="submit">{% trans "Confirm" %}</button></div>
+    </form>
+  {% else %}
+    <p class="loop-lede" style="color:#ffaaa1">This address is already confirmed. Sign in to continue.</p>
+    <div class="loop-auth-card__actions"><a class="loop-button loop-button--primary" href="{% url 'account_login' %}">{% trans "Sign in" %}</a></div>
+  {% endif %}
+{% else %}
+  <p class="loop-lede" style="color:#ffaaa1">This confirmation link is invalid or expired. Request a new verification email.</p>
+  <div class="loop-auth-card__actions"><a class="loop-button loop-button--primary" href="{% url 'account_email' %}">{% trans "Manage email" %}</a></div>
+{% endif %}
+{% endblock %}

@@ -3,7 +3,7 @@
 > **Status:** Active
 > **Owner:** django-fusion core team
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/webpack/`, `projects/landing-fusion/`, `projects/precis/`
+> **Scope:** `libs/django-fusion/webpack/`, `projects/precis/landi/`, `projects/precis/main/`
 > **Depends on:** Existing webpack.config.js, workspace system, django-fusion-webpack-integration-plan.md
 
 ---
@@ -42,7 +42,7 @@ This plan enhances the system so **projects can define their own webpack entries
 | **No project-level SCSS/JS entry points** | Projects (landing-fusion, precis) must fork `webpack.config.js` to add their own entries. |
 | **No `FUSION_WEBPACK` Django setting** | Projects cannot configure webpack from `settings.py` — must use env vars or workspace files. |
 | **Workspace files must live in `libs/django-fusion/webpack/workspaces/`** | Or use `FUSION_WEBPACK_WORKSPACE_PATH` which is undocumented. No convention for project-owned workspace files. |
-| **No `.env.example` for landing-fusion** | Missing from `projects/landing-fusion/` — no reference for webpack/fusion config. |
+| **No `.env.example` for landing-fusion** | Missing from `projects/precis/landi/` — no reference for webpack/fusion config. |
 | **Precis `.env.example` is stale (ctc-research)** | References ctc-research domain, DB, and settings — not Precis-specific. |
 | **No multi-project build command** | Each project must run its own `npm run build` in the django-fusion directory. |
 
@@ -87,14 +87,14 @@ libs/django-fusion/
 │   └── workspaces/
 │       └── default.js         ← base workspace
 │
-projects/landing-fusion/
+projects/precis/landi/
 ├── .env.example               ← NEW: webpack + fusion + project settings
 ├── backend/settings.py        ← defines FUSION_WEBPACK dict
 └── webpack/                   ← Project-owned webpack
     ├── landing-fusion.config.js  ← NEW: extends projects/webpack/base.config.js
     └── landing.js                ← DEPRECATED (use landing-fusion.config.js)
 
-projects/precis/
+projects/precis/main/
 ├── backend/.env.example       ← UPDATED: precis-specific settings
 ├── backend/settings.py        ← defines FUSION_WEBPACK dict
 └── webpack/                   ← Project-owned webpack
@@ -105,7 +105,7 @@ projects/precis/
 ### 3.2 How Projects Extend the Shared Base
 
 ```javascript
-// projects/landing-fusion/webpack/landing-fusion.config.js
+// projects/precis/landi/webpack/landing-fusion.config.js
 const createConfig = require('../../webpack/base.config');
 
 module.exports = createConfig({
@@ -125,11 +125,11 @@ module.exports = createConfig({
 Build commands:
 ```bash
 # Landing-Fusion
-cd projects/landing-fusion
+cd projects/precis/landi
 npx webpack --config webpack/landing-fusion.config.js --mode=production
 
 # Precis LMS
-cd projects/precis
+cd projects/precis/main
 npx webpack --config webpack/precis.config.js --mode=production
 ```
 
@@ -143,20 +143,20 @@ FUSION_WEBPACK = {
     "WORKSPACE_PATH": "/absolute/path/to/project/webpack/landing.js",  # Alt: direct path
     "ENTRIES": {                             # Additional entry points
         "landing": [
-            "projects/landing-fusion/assets/static/styles/main.scss",
-            "projects/landing-fusion/assets/static/js/app.js",
+            "projects/precis/landi/assets/static/styles/main.scss",
+            "projects/precis/landi/assets/static/js/app.js",
         ],
         # Entries are merged with the base "fusion" entry
     },
-    "OUTPUT_PATH": "projects/landing-fusion/backend/assets/static/bundles/",
+    "OUTPUT_PATH": "projects/precis/landi/backend/assets/static/bundles/",
     "OUTPUT_PUBLIC_PATH": "/static/bundles/",
-    "STATS_FILE": "projects/landing-fusion/backend/webpack-stats.json",
+    "STATS_FILE": "projects/precis/landi/backend/webpack-stats.json",
     "PLUGINS": [],                           # Additional webpack plugins (resolved by name)
     "SCSS_INCLUDE_PATHS": [                  # Additional sass-loader includePaths
-        "projects/landing-fusion/assets/static/styles/",
+        "projects/precis/landi/assets/static/styles/",
     ],
     "ALIASES": {                             # Additional resolve.alias entries
-        "@landing": "projects/landing-fusion/assets/static/",
+        "@landing": "projects/precis/landi/assets/static/",
     },
 }
 ```
@@ -167,19 +167,19 @@ FUSION_WEBPACK = {
 # django-fusion webpack (fusion component library):
 cd libs/django-fusion
 FUSION_WEBPACK_WORKSPACE=landing \
-  FUSION_WEBPACK_WORKSPACE_PATH=../../projects/landing-fusion/webpack/landing-fusion.config.js \
-  FUSION_PROJECT_ROOT=../../projects/landing-fusion \
+  FUSION_WEBPACK_WORKSPACE_PATH=../../projects/precis/landi/webpack/landing-fusion.config.js \
+  FUSION_PROJECT_ROOT=../../projects/precis/landi \
   npx webpack --config webpack.config.js --mode production
 
 # Project webpack (project-specific assets):
-cd projects/landing-fusion
+cd projects/precis/landi
 npx webpack --config webpack/landing-fusion.config.js --mode=production
 
-cd projects/precis
+cd projects/precis/main
 npx webpack --config webpack/precis.config.js --mode=production
 
 # Or via the Django management command (fusion webpack only):
-cd projects/landing-fusion/backend
+cd projects/precis/landi/backend
 python manage.py webpack_validate --rebuild
 # (reads FUSION_WEBPACK from settings and passes the correct env vars to webpack)
 ```
@@ -281,7 +281,7 @@ class Command(BaseCommand):
 
 ### 4.3 Landing-Fusion `.env.example`
 
-Create `projects/landing-fusion/.env.example` with all relevant settings.
+Create `projects/precis/landi/.env.example` with all relevant settings.
 
 ### 4.4 Precis `.env.example` — Update
 
@@ -296,7 +296,7 @@ Replace the ctc-research-specific `.env.example` with Precis-specific settings.
 | Webpack Integration (Phase 1-2 done, Phase 3 planned) | [`django-fusion-webpack-integration-plan.md`](django-fusion-webpack-integration-plan.md) |
 | django-fusion Tasks & MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
 | Fusion Assets & Templates Cleanup | [`fusion-assets-templates-cleanup.md`](fusion-assets-templates-cleanup.md) |
-| Landing-Fusion | [`../landing-fusion/README.md`](../landing-fusion/README.md) |
+| Landing-Fusion | [`../precis/landi/README.md`](../precis/landi/README.md) |
 | Canonical Plan Registry | [`../README.md`](../README.md) |
 
 ---

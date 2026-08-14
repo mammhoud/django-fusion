@@ -1,0 +1,9 @@
+
+{% extends "base_page.html" %}
+
+{# Fusion-only Wagtail EventPage template.
+   Lives in the site-specific backend/templates/ tree and extends the
+   project base page layout. #}
+{% block content %}
+    {% comp "events/main.html" /%}
+{% endblock %}

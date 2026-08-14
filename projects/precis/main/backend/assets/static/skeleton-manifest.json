@@ -1,0 +1,25 @@
+{
+  "pages": {
+    "blog/blog_index.html": {
+      "title": "Blog Index",
+      "skeletons": []
+    },
+    "blog/blog_detail.html": {
+      "title": "Blog Detail",
+      "skeletons": []
+    },
+    "blog/blog_list.html": {
+      "title": "Blog List",
+      "skeletons": []
+    },
+    "courses/catalog.html": {
+      "title": "Catalog",
+      "skeletons": []
+    },
+    "courses/detail.html": {
+      "title": "Detail",
+      "skeletons": []
+    }
+  },
+  "components": {}
+}

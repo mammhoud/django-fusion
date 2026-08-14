@@ -1,13 +1,13 @@
 """
 Test URL configuration for blog app tests.
-Wraps blog URLs with the 'blog' namespace and includes osoul routable component routes.
+Wraps blog URLs with the 'blog' namespace and includes routable component routes.
 """
 from django.contrib import admin
 from django.urls import include, path
 
 
-def _get_osoul_urls():
-    """Lazily build osoul site URLs to avoid import-time side effects."""
+def _get_component_urls():
+    """Lazily build component site URLs to avoid import-time side effects."""
     try:
         from django_fusion.routes.core.sites import Application, Module
         from plugins.blog.components import BlogPostCreateFragment, BlogPostListFragment
@@ -26,12 +26,12 @@ def _get_osoul_urls():
         return (patterns, app_name)
     except Exception as e:
         import sys
-        print(f"Warning: Could not build osoul URLs: {e}", file=sys.stderr)
+        print(f"Warning: Could not build component URLs: {e}", file=sys.stderr)
         return ([], "test")
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("blog/", include("plugins.blog.urls", namespace="blog")),
-    path("osoul/", include(_get_osoul_urls())),
+    path("components/", include(_get_component_urls())),
 ]

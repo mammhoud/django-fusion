@@ -181,5 +181,9 @@ const breadcrumbs = breadcrumbsFor(path, title);
     .loop-app-status { display:none; }
     .loop-app-content { padding:1.6rem 1rem 3.5rem; }
   }
-  @media (prefers-reduced-motion:reduce) { .loop-app-shell * { transition:none!important; } }
+  @keyframes loop-breathe { 0%,100% { opacity:.5; transform:scale(.82); } 50% { opacity:1; transform:scale(1.12); } }
+  .loop-app-status i, .loop-app-context__signal { animation:loop-breathe 2.6s ease-in-out infinite; }
+  .loop-app-nav-link:active { transform:translateY(1px); }
+  .loop-app-profile:active { transform:scale(.94); }
+  @media (prefers-reduced-motion:reduce) { .loop-app-shell * { transition:none!important; animation:none!important; } }
 </style>

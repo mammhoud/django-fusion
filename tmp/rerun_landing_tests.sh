@@ -3,7 +3,7 @@ cd /home/structa.cloud
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 
 echo '=== products API excludes hidden ceptor-ai? ==='
-cd projects/landing-fusion/backend
+cd projects/precis/landi/backend
 "$UV_BIN" --project .. run --frozen python manage.py shell -c "
 from django.test import Client
 import json
@@ -16,5 +16,5 @@ print('sample:', slugs[:4])
 " 2>&1 | tail -4
 
 echo '=== landing frontend tests ==='
-cd /home/structa.cloud/projects/landing-fusion/frontend
+cd /home/structa.cloud/projects/precis/landi/frontend
 npm test 2>&1 | grep -E 'ℹ (tests|pass|fail)' | head -5

@@ -1,0 +1,13 @@
+{% load i18n %}
+{% if breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}" class="fu-breadcrumb" data-fusion-component="breadcrumb">
+  <ol class="fu-breadcrumb__list" itemscope itemtype="https://schema.org/BreadcrumbList">
+    {% for crumb in breadcrumbs %}
+    <li class="fu-breadcrumb__item{% if forloop.last %} fu-breadcrumb__item--active{% endif %}" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <meta itemprop="position" content="{{ forloop.counter }}">
+      {% if forloop.last %}<span class="fu-breadcrumb__current" itemprop="name" aria-current="page">{{ crumb.label|default:crumb.title }}</span>{% else %}<a href="{{ crumb.url|default:crumb.href }}" class="fu-breadcrumb__link" itemprop="item"><span itemprop="name">{{ crumb.label|default:crumb.title }}</span></a><span class="fu-breadcrumb__separator" aria-hidden="true">/</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</nav>
+{% endif %}

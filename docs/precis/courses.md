@@ -64,7 +64,7 @@ All views use django-fusion's PageHandler for unified fragment/full-page renderi
 ## Seed Data
 
 ```bash
-cd projects/precis/backend
+cd projects/precis/main/backend
 uv run --project ../.. python manage.py seed_learning
 ```
 

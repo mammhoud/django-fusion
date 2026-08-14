@@ -1,0 +1,13 @@
+{% load wagtail_newsletter %}
+
+{% mrml %}
+<mjml>
+    <mj-body>
+        <h1>{{ page.title }}</h1>
+
+        {% if page.newsletter_recipients.greeting %}
+        {{ page.newsletter_recipients.greeting|newsletter_richtext }}
+        {% endif %}
+    </mj-body>
+</mjml>
+{% endmrml %}

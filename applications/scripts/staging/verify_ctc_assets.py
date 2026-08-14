@@ -35,15 +35,24 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 APPLICATIONS_ROOT = REPOSITORY_ROOT / "applications"
 PROJECTS_ROOT = REPOSITORY_ROOT / "projects"
 PROXY = APPLICATIONS_ROOT / "proxy"
-CTC = PROJECTS_ROOT / "ctc-research"
-PRECIS = PROJECTS_ROOT / "precis"
+CTC = PROJECTS_ROOT / "precis" / "ctc-research"
+MAIN = PROJECTS_ROOT / "precis" / "main"
 
 
 def site_root(site: str) -> Path:
     """Resolve product source from the current repository layout."""
     if site in {"lms", "lms-fusion", "structa", "structa.cloud"}:
-        return PRECIS
+        return MAIN
+    if site == "ctc-research":
+        return CTC
     return PROJECTS_ROOT / site
+
+
+def site_rel(site: str) -> str:
+    """Relative product path under projects/ for compose mount assertions."""
+    if site in {"lms", "lms-fusion", "structa", "structa.cloud"}:
+        return "precis/main"
+    return f"precis/{site}"
 
 
 class Colors:
@@ -198,8 +207,8 @@ def check_nginx_config(site: str) -> CheckResult:
     compose_text = read_text(compose)
 
     required_mounts = [
-        f"../projects/{site}/assets/staticfiles:/var/www/sites/{site}/static:ro",
-        f"../projects/{site}/assets/media:/var/www/media/{site}:ro",
+        f"../projects/{site_rel(site)}/assets/staticfiles:/var/www/sites/{site}/static:ro",
+        f"../projects/{site_rel(site)}/assets/media:/var/www/media/{site}:ro",
     ]
 
     for mount in required_mounts:

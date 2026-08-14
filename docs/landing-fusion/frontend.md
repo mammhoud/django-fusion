@@ -63,7 +63,7 @@
 ## Quick Commands
 
 ```bash
-cd projects/landing-fusion/frontend
+cd projects/precis/landi/frontend
 
 # Dev server
 npm run dev          # http://localhost:3000

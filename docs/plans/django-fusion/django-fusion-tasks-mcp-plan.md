@@ -3,7 +3,7 @@
 > **Status:** Dramatiq migration implemented; MCP and production hardening remain
 > **Owner:** django-fusion core team
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/`, `projects/precis/`, `projects/landing-fusion/`, `projects/formints/`
+> **Scope:** `libs/django-fusion/`, `projects/precis/main/`, `projects/precis/landi/`, `projects/formints/`
 > **Depends on:** django-fusion enhancement roadmap, worker consolidation, ceptor-ai MCP server
 > **Companion plan:** [`django-fusion-llm-mcp-enhancement-plan.md`](django-fusion-llm-mcp-enhancement-plan.md) adds provider-neutral LLM routing, AI component workflows, caching, streaming, and governance on top of this task layer.
 >
@@ -121,7 +121,7 @@ registry/backend/scheduler API.
 Each project defines task modules that django-fusion discovers automatically:
 
 ```
-projects/precis/backend/
+projects/precis/main/backend/
 ├── apps/
 │   ├── tasks/                    # ← Project task package
 │   │   ├── __init__.py           # from django_fusion.tasks import registry
@@ -891,10 +891,10 @@ urlpatterns = [
 
 ## 7. Phase 4 — Project-Level Integration
 
-### 7.1 Precis LMS (`projects/precis/backend/`)
+### 7.1 Precis LMS (`projects/precis/main/backend/`)
 
 > **Note:** Import paths below are illustrative. During implementation, validate
-> against the actual app structure at `projects/precis/backend/apps/` (e.g., LMS
+> against the actual app structure at `projects/precis/main/backend/apps/` (e.g., LMS
 > models may be at `apps.pages.lms.models`, `apps.plugins.lms`, or similar).
 
 ```python
@@ -982,7 +982,7 @@ def generate_ai_course_description(course_id: int):
     ...
 ```
 
-### 7.2 Landing-Fusion (`projects/landing-fusion/`)
+### 7.2 Landing-Fusion (`projects/precis/landi/`)
 
 ```python
 # apps/tasks/email_tasks.py
@@ -1180,11 +1180,11 @@ FUSION_EMAIL_MAX_RETRIES = 5
 ### 9.2 Per-Project Overrides
 
 ```python
-# projects/precis/backend/settings.py
+# projects/precis/main/backend/settings.py
 FUSION_TASKS["DEFAULT_MAX_RETRIES"] = 5       # Courses are important
 FUSION_TASKS["LOG_RETENTION_DAYS"] = 90        # Keep course history longer
 
-# projects/landing-fusion/backend/settings.py
+# projects/precis/landi/backend/settings.py
 FUSION_TASKS["LOG_RETENTION_DAYS"] = 14        # Marketing tasks don't need long retention
 
 # projects/formints/formint/settings.py
@@ -1292,8 +1292,8 @@ Agent:  "Retry those failed email tasks."
 |---|---|---|
 | 1. **Add `django_fusion.tasks` without removing Celery** | django-fusion package only | None — new code, no consumers |
 | 2. **Add MCP tools** | django-fusion + ceptor-ai | None — read-only tools |
-| 3. **Wire Precis LMS tasks** | `projects/precis/` | Low — no existing tasks to break |
-| 4. **Wire Landing-Fusion tasks** | `projects/landing-fusion/` | Low — no existing tasks to break |
+| 3. **Wire Precis LMS tasks** | `projects/precis/main/` | Low — no existing tasks to break |
+| 4. **Wire Landing-Fusion tasks** | `projects/precis/landi/` | Low — no existing tasks to break |
 | 5. **Wire Formint tasks** | `projects/formints/` | Medium — existing sync tasks need migration |
 | 6. **Migrate shared worker tasks** | `projects/configs/` | Medium — existing Celery tasks → Dramatiq |
 | 7. **Remove Celery** | All projects | Medium — requires Docker/CI updates |
@@ -1373,7 +1373,7 @@ class TestMCPHandlers:
 ### 12.2 Project-Level Tests
 
 ```python
-# projects/precis/backend/apps/tasks/tests/test_email_tasks.py
+# projects/precis/main/backend/apps/tasks/tests/test_email_tasks.py
 
 class TestEmailTasks:
     def test_send_enrollment_confirmation_enqueued(self):

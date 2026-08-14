@@ -1,0 +1,35 @@
+{% load i18n %}
+{% prop block %}
+
+<section class="clients-section py-5">
+    <div class="container">
+        {% if block.value.title %}
+            <div class="text-center mb-4">
+                <h2>{{ block.value.title }}</h2>
+            </div>
+        {% endif %}
+        <div class="row g-4 align-items-center justify-content-center">
+            {% for client in block.value.clients %}
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="clients-section__logo p-3 text-center">
+                        {% if client.logo %}
+                            <img src="{{ client.logo }}" alt="{{ client.name|default:'' }}" class="img-fluid" loading="lazy">
+                        {% elif client.name %}
+                            <span class="fw-semibold text-muted">{{ client.name }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                {% for partner in partners %}
+                    <div class="col-6 col-md-3 col-lg-2">
+                        <div class="clients-section__logo p-3 text-center">
+                            {% if partner.name %}<span class="fw-semibold text-muted">{{ partner.name }}</span>{% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted text-center w-100">{% trans "No clients available." %}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>

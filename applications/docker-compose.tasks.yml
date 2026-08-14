@@ -28,9 +28,9 @@ x-shared-tasks-base: &shared-tasks-base
     # This file sits one level deep (applications/), unlike projects/<site>/
     # which is two deep, so all host paths below use `..` (repo root).
     context: ..
-    dockerfile: projects/precis/compose/Dockerfile.backend
+    dockerfile: projects/precis/main/compose/Dockerfile.backend
     args:
-      SOURCE_PATH: precis
+      SOURCE_PATH: precis/main
       # The generic backend image supplies Django's shared management/settings
       # bootstrap. Product task packages are mounted separately below; no LMS
       # task package is included in the shared worker.
@@ -94,8 +94,8 @@ services:
       # Shared task/config code is hot-reloadable without rebuilding the image.
       # The management/settings bootstrap is shared infrastructure; this
       # mount does not expose Precis application tasks to discovery.
-      - ../projects/precis/backend/configs:/app/shared/configs:z
-      - ../projects/landing-fusion/backend:/app/task-projects/landing-fusion/backend:ro
+      - ../projects/precis/main/backend/configs:/app/shared/configs:z
+      - ../projects/precis/landi/backend:/app/task-projects/landing-fusion/backend:ro
       - ../projects/loop-crm/backend:/app/task-projects/loop-crm/backend:ro
       - ../projects/formints/formint-cloud/backend:/app/task-projects/formint-cloud/backend:ro
     command: >
@@ -114,8 +114,8 @@ services:
       - ../projects/assets:/app/assets:z
       - ../libs:/app/libs:z
       - ../projects/logs:/app/logs:z
-      - ../projects/precis/backend/configs:/app/shared/configs:z
-      - ../projects/landing-fusion/backend:/app/task-projects/landing-fusion/backend:ro
+      - ../projects/precis/main/backend/configs:/app/shared/configs:z
+      - ../projects/precis/landi/backend:/app/task-projects/landing-fusion/backend:ro
       - ../projects/loop-crm/backend:/app/task-projects/loop-crm/backend:ro
       - ../projects/formints/formint-cloud/backend:/app/task-projects/formint-cloud/backend:ro
     command: >

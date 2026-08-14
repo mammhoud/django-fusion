@@ -1,0 +1,51 @@
+{% extends "blog/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title|default:"Tag Management" }}{% endblock %}
+
+{% block content %}
+<div class="tag-list">
+    <h1>{{ page_title|default:"Tag Management" }}</h1>
+
+    <div class="tag-actions">
+        <a href="{% url 'blog:tag_create' %}" class="btn btn-primary">{% trans "Create Tag" %}</a>
+        <a href="{% url 'blog:tag_cleanup' %}" class="btn btn-secondary">{% trans "Cleanup Unused" %}</a>
+    </div>
+
+    <form method="get" class="search-form">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="{% trans 'Search tags...' %}">
+        <button type="submit">{% trans 'Search' %}</button>
+    </form>
+
+    <p>{% trans "Total tags:" %} {{ total_tags }}</p>
+    <p>{% trans "Unused tags:" %} {{ unused_count }}</p>
+
+    <table class="tag-table">
+        <thead>
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Slug" %}</th>
+                <th>{% trans "Posts" %}</th>
+                <th>{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tag in tags %}
+            <tr>
+                <td>{{ tag.name }}</td>
+                <td>{{ tag.slug }}</td>
+                <td>{{ tag.post_count }}</td>
+                <td>
+                    <a href="{% url 'blog:tag_edit' tag.slug %}">{% trans "Edit" %}</a>
+                    <a href="{% url 'blog:tag_delete' tag.slug %}">{% trans "Delete" %}</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">{% trans "No tags found." %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

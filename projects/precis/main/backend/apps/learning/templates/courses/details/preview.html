@@ -1,0 +1,74 @@
+{% load i18n %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% prop course %}
+
+<!-- Preview Video Modal -->
+{% if course.preview_video %}
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">
+                    {% trans "Course Preview" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <!-- Video Carousel -->
+                <div id="previewVideoCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for block in course.preview_video %}
+                            {% if block.block_type == 'preview_video' %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <div class="ratio ratio-16x9">
+                                        {% comp "content.media.embed_block" value=block.value / %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Carousel Controls - Only show if multiple videos -->
+                    {% with total_videos=course.preview_video|length %}
+                        {% if total_videos > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#previewVideoCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">{% trans "Previous" %}</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#previewVideoCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">{% trans "Next" %}</span>
+                            </button>
+
+                            <!-- Carousel Indicators -->
+                            <div class="carousel-indicators">
+                                {% for block in course.preview_video %}
+                                    {% if block.block_type == 'preview_video' %}
+                                        <button type="button" data-bs-target="#previewVideoCarousel"
+                                                data-bs-slide-to="{{ forloop.counter0 }}"
+                                                class="{% if forloop.first %}active{% endif %}"
+                                                aria-label="{% trans 'Slide' %} {{ forloop.counter }}">
+                                        </button>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!-- Video Counter -->
+                {% with total_videos=course.preview_video|length %}
+                    {% if total_videos > 1 %}
+                        <div class="video-counter text-center py-2 bg-light">
+                            <small class="text-muted">
+                                <span id="currentVideo">1</span> / <span id="totalVideos">{{ total_videos }}</span>
+                            </small>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

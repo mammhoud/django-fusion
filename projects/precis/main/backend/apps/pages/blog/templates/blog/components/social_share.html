@@ -1,0 +1,96 @@
+{% load i18n %}
+{% comment %}
+  Social Share Component
+  Reusable sharing buttons for Twitter/X, Facebook, LinkedIn, WhatsApp, and Copy Link.
+
+  Usage:
+    {% comp "blog/components/social_share.html" post=post / %}
+
+  Optional context:
+    share_title  - override the share title (defaults to post.title)
+    share_url    - override the share URL (defaults to request.build_absolute_uri)
+    heading      - set to False to hide the "Share this post" heading (default: True)
+{% endcomment %}
+{% prop post %}
+{% prop share_title default='' %}
+{% prop share_url default='' %}
+{% prop heading default=True %}
+{% with share_title=share_title|default:post.title heading=heading|default:True %}
+{% with share_url=share_url|default:request.build_absolute_uri %}
+<div class="social-share">
+  {% if heading %}
+  <h2 class="h6 mb-3">{% trans "Share this post" %}</h2>
+  {% endif %}
+  <div class="d-flex gap-2 flex-wrap align-items-center">
+
+    <a href="https://twitter.com/intent/tweet?text={{ share_title|urlencode }}&url={{ share_url|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-sm btn-outline-secondary"
+       aria-label="{% trans 'Share on Twitter / X' %}">
+      <i class="bi bi-twitter-x me-1" aria-hidden="true"></i>Twitter / X
+    </a>
+
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-sm btn-outline-secondary"
+       aria-label="{% trans 'Share on Facebook' %}">
+      <i class="bi bi-facebook me-1" aria-hidden="true"></i>Facebook
+    </a>
+
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ share_url|urlencode }}&title={{ share_title|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-sm btn-outline-secondary"
+       aria-label="{% trans 'Share on LinkedIn' %}">
+      <i class="bi bi-linkedin me-1" aria-hidden="true"></i>LinkedIn
+    </a>
+
+    <a href="https://wa.me/?text={{ share_title|urlencode }}%20{{ share_url|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-sm btn-outline-secondary"
+       aria-label="{% trans 'Share on WhatsApp' %}">
+      <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>WhatsApp
+    </a>
+
+    <button type="button"
+            class="btn btn-sm btn-outline-secondary js-copy-link"
+            data-url="{{ share_url }}"
+            aria-label="{% trans 'Copy link to clipboard' %}">
+      <i class="bi bi-link-45deg me-1" aria-hidden="true"></i>
+      <span class="js-copy-link-label">{% trans "Copy link" %}</span>
+    </button>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('.js-copy-link').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var url = btn.dataset.url;
+      var label = btn.querySelector('.js-copy-link-label');
+      navigator.clipboard.writeText(url).then(function () {
+        label.textContent = '{% trans "Copied!" %}';
+        btn.classList.replace('btn-outline-secondary', 'btn-success');
+        setTimeout(function () {
+          label.textContent = '{% trans "Copy link" %}';
+          btn.classList.replace('btn-success', 'btn-outline-secondary');
+        }, 2000);
+      }).catch(function () {
+        // Fallback for older browsers
+        var ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        label.textContent = '{% trans "Copied!" %}';
+        setTimeout(function () { label.textContent = '{% trans "Copy link" %}'; }, 2000);
+      });
+    });
+  });
+})();
+</script>
+{% endwith %}
+{% endwith %}

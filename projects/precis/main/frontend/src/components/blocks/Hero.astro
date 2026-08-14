@@ -1,0 +1,170 @@
+---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
+// ═══════════════════════════════════════════════════════════════════
+// Precis LMS hero — brand-kit treatment (high-end-visual-design §3B)
+// Editorial Luxury × Asymmetric Editorial Split: massive Fraunces serif
+// on the left, interactive double-bezel View-Source panel on the right.
+// Motion: spring cubic-bezier reveals; the evidence line sweeps in.
+// Signature element preserved: the View Source toggle.
+// ═══════════════════════════════════════════════════════════════════
+
+interface Props {
+  eyebrow?: string;
+  heading?: string;
+  accent?: string;
+  intro?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  status?: string;
+}
+
+const {
+  eyebrow = 'server-rendered · zero heavy SPA',
+  heading = 'Your website, delivered as',
+  accent = 'plain HTML',
+  intro =
+    'Fusion CMS renders every page as server-rendered HTML — no 500&nbsp;KB JavaScript bundle, no hydration, no client framework to babysit. What the browser downloads is what your server sent.',
+  primaryCta = { label: 'Start building', href: '/#cta' },
+  secondaryCta = { label: 'Read the docs', href: '/about' },
+  status = '200 OK · text/html · 0 KB client JS',
+} = Astro.props;
+
+const sourceMarkup = [
+  '<!doctype html>',
+  '<html lang="en">',
+  '  <head>',
+  '    <meta charset="utf-8" />',
+  '    <title>Fusion CMS</title>',
+  '    <meta name="description" content="Your website, delivered as plain HTML." />',
+  '  </head>',
+  '  <body>',
+  '    <header>',
+  `      <h1>${heading} ${accent}</h1>`,
+  `      <p>${intro.replace(/&nbsp;/g, ' ')}</p>`,
+  `      <a href="${primaryCta.href}">${primaryCta.label}</a>`,
+  '    </header>',
+  '  </body>',
+  '</html>',
+].join('\n');
+---
+
+<section class="hero">
+  <!-- Skeleton while Alpine boots (x-intersect reveals) — component-matched height -->
+  <div data-hydrate-skeleton>
+    <Skeleton variant="hero-section" />
+  </div>
+  <div data-hydrate-content>
+  <div class="hero__inner">
+    <!-- ghost Protocol Mark watermark -->
+    <svg class="hero__ghost" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+      <circle cx="98" cy="92" r="9" stroke="#1f8a70" stroke-width="3"/>
+      <rect x="60" y="40" width="16" height="128" fill="currentColor"/>
+      <rect x="76" y="40" width="56" height="16" fill="currentColor"/>
+      <rect x="76" y="84" width="44" height="16" fill="currentColor"/>
+      <line x1="36" y1="178" x2="152" y2="178" stroke="#c9962e" stroke-width="3"/>
+    </svg>
+
+    <div class="hero__content">
+      <p
+        class="hero__eyebrow"
+        x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak
+      >
+        {eyebrow}
+      </p>
+
+      <h1
+        class="hero__heading"
+        x-data x-intersect="$el.classList.add('reveal-visible')"
+      >
+        {heading}{' '}
+        <span class="hero__accent">
+          <span class="relative z-10">{accent}</span>
+          <span class="hero__accent-mark" aria-hidden="true"></span>
+        </span>
+      </h1>
+
+      <p
+        class="hero__intro"
+        x-data x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 100ms"
+      >
+        {intro}
+      </p>
+
+      <div
+        class="hero__actions"
+        x-data x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 200ms"
+      >
+        <a href={primaryCta.href} class="btn-primary group relative !px-8 !py-3.5 overflow-hidden">
+          <span class="relative z-10">{primaryCta.label}</span>
+          <span class="absolute inset-0 z-0 -translate-x-full bg-fu-link-dark transition-transform duration-500 group-hover:translate-x-0" style="transition-timing-function: cubic-bezier(0.32,0.72,0,1)" aria-hidden="true"></span>
+          <span class="relative z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/15 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-[1px]" style="transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </a>
+        <a href={secondaryCta.href} class="btn-secondary !px-8 !py-3.5">
+          {secondaryCta.label}
+        </a>
+      </div>
+
+      <p
+        class="hero__status"
+        x-data x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 260ms"
+      >
+        <span class="status-line"><span class="dot" aria-hidden="true"></span>{status}</span>
+      </p>
+    </div>
+
+    <!-- ── View Source toggle: the signature, in a double-bezel frame ── -->
+    <div
+      class="hero__source-toggle"
+      x-data="{ showSource: false }"
+      x-intersect="$el.classList.add('reveal-visible')"
+      style="transition-delay: 320ms"
+    >
+      <div class="bezel">
+        <div class="bezel__core">
+          <div class="hero__source-bar">
+            <p class="tag-marker !text-fu-teal">view-source:fusion-cms</p>
+            <button
+              type="button"
+              class="btn-secondary !h-9 !px-4 !py-0 font-mono text-xs uppercase tracking-wider"
+              @click="showSource = !showSource"
+              :aria-expanded="showSource.toString()"
+              aria-controls="hero-source"
+            >
+              <svg x-show="!showSource" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9"/>
+              </svg>
+              <svg x-show="showSource" x-cloak class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 5l16 16M4 21L20 5"/>
+              </svg>
+              <span x-text="showSource ? 'Back to rendered' : 'View source'"></span>
+            </button>
+          </div>
+
+          <!-- Rendered state -->
+          <div id="hero-source" x-show="!showSource">
+            <div class="source-panel" aria-hidden="true">
+              <code><span class="tok-com">&lt;!-- the hero, as it ships to the browser --&gt;</span></code>
+            </div>
+          </div>
+
+          <!-- Source state -->
+          <div x-show="showSource" x-cloak>
+            <pre class="source-panel" role="region" aria-label="Source of this hero section"><code>{sourceMarkup}</code></pre>
+            <p class="mt-2 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
+              That&apos;s it. One HTTP response, no framework.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>

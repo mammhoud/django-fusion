@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from decimal import Decimal
 
+from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
 from django.http import JsonResponse
 from django_fusion.plugins.apis.auth import (
@@ -22,6 +23,8 @@ from apps.crm.custom_fields import custom_object_catalog
 from apps.marketing.connectors import platform_catalog
 
 from .bolt_api import RESOURCE_MODELS
+from .resources import create_row, delete_row, get_row, list_rows, resolve_resource, update_row
+from .tenancy import current_workspace_id
 from .workflows import persisted_workflow_catalog
 
 
@@ -33,20 +36,60 @@ def _json_value(value):
     return value
 
 
-def resource_api(request, resource: str):
-    if request.method != "GET":
-        return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
-    model_config = RESOURCE_MODELS.get(resource)
-    if model_config is None:
-        return JsonResponse({"detail": "Unknown resource."}, status=404)
-    model, fields = model_config
+def _body_json(request):
     try:
-        rows = list(model.objects.values(*fields)[:100])
-    except (OperationalError, ProgrammingError):
-        rows = []
-    return JsonResponse(
-        {"results": [{key: _json_value(value) for key, value in row.items()} for row in rows], "count": len(rows), "next": None, "previous": None}
-    )
+        return json.loads(request.body or b"{}")
+    except (TypeError, ValueError):
+        return None
+
+
+@login_required
+def resource_api(request, resource: str, pk: int | None = None):
+    """Full tenant-scoped CRUD for a registered resource.
+
+    GET (list) / POST (create) on the collection, and GET / PATCH / DELETE on
+    the ``/<pk>/`` detail route. Every write is scoped to the caller's
+    workspace and validated against the resource's write allowlist.
+    """
+    if resolve_resource(resource) is None:
+        return JsonResponse({"detail": "Unknown resource."}, status=404)
+    workspace_id = current_workspace_id(request)
+    method = request.method
+
+    if pk is None:
+        if method == "GET":
+            rows = list_rows(resource, workspace_id)
+            return JsonResponse({"results": rows, "count": len(rows), "next": None, "previous": None})
+        if method == "POST":
+            payload = _body_json(request)
+            if payload is None:
+                return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            row, errors, status = create_row(resource, payload, workspace_id)
+            if errors:
+                return JsonResponse(errors, status=status)
+            return JsonResponse(row, status=201)
+        return JsonResponse({"detail": f"This endpoint does not accept {method}."}, status=405)
+
+    if method == "GET":
+        row = get_row(resource, pk, workspace_id)
+        if row is None:
+            return JsonResponse({"detail": "Not found."}, status=404)
+        return JsonResponse(row)
+    if method == "PATCH":
+        payload = _body_json(request)
+        if payload is None:
+            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+        row, errors, status = update_row(resource, pk, payload, workspace_id)
+        if status == 404:
+            return JsonResponse({"detail": "Not found."}, status=404)
+        if errors:
+            return JsonResponse(errors, status=status)
+        return JsonResponse(row)
+    if method == "DELETE":
+        if not delete_row(resource, pk, workspace_id):
+            return JsonResponse({"detail": "Not found."}, status=404)
+        return JsonResponse({"ok": True}, status=204)
+    return JsonResponse({"detail": f"This endpoint does not accept {method}."}, status=405)
 
 
 def _dashboard_workspace_id(request):
@@ -56,6 +99,7 @@ def _dashboard_workspace_id(request):
         return None
 
 
+@login_required
 def dashboard_api(request):
     if request.method != "GET":
         return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
@@ -67,7 +111,7 @@ def dashboard_api(request):
             counts[key] = queryset.count()
         except (OperationalError, ProgrammingError):
             counts[key] = 0
-    return JsonResponse({"data": {"counts": counts, "workflow_count": len(persisted_workflow_catalog())}})
+    return JsonResponse({"data": {"counts": counts, "workflow_count": len(persisted_workflow_catalog(workspace_id=workspace_id))}})
 
 
 def token_api(request):
@@ -125,8 +169,9 @@ def refresh_token_api(request):
     return JsonResponse(result)
 
 
+@login_required
 def workflows_api(request):
-    results = persisted_workflow_catalog()
+    results = persisted_workflow_catalog(workspace_id=current_workspace_id(request))
     return JsonResponse({"results": results, "count": len(results)})
 
 
@@ -134,6 +179,7 @@ def integrations_api(request):
     return JsonResponse({"results": platform_catalog(), "count": len(platform_catalog())})
 
 
+@login_required
 def custom_fields_api(request):
     profile = getattr(request.user, "profile", None)
     workspace = getattr(profile, "workspace", None) if profile else None

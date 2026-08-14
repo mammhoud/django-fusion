@@ -1,0 +1,15 @@
+/* ============================================================
+ * CTC-RESEARCH.COM — Color Master
+ *
+ * 1. Site palette  (_palette.scss)  — --theme-* tokens only
+ * 2. Shared system (_shared.scss)   — semantic/component tokens
+ *
+ * DO NOT add raw color values here. Use _palette.scss for
+ * site-specific tokens and _shared.scss for shared ones.
+ * ============================================================ */
+
+/* 1 ── Site palette (blue/teal, light + dark) */
+@import 'palette';
+
+/* 2 ── Shared semantic & component tokens (colocated _shared.scss) */
+@import 'shared';

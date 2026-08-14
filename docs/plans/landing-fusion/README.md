@@ -2,7 +2,7 @@
 
 > **Status:** Active  
 > **Owner:** Landing Fusion team  
-> **Project:** [`projects/landing-fusion/`](../../../projects/landing-fusion/)
+> **Project:** [`projects/precis/landi/`](../../../projects/precis/landi/)
 
 Landing Fusion is the Astro + Tailwind + HTMX + Alpine frontend paired with the Django + Wagtail editable content backend. This page is the canonical plan entry point under the main documentation project.
 
@@ -22,7 +22,7 @@ Landing Fusion is the Astro + Tailwind + HTMX + Alpine frontend paired with the 
 ## Verification
 
 ```bash
-cd projects/landing-fusion/backend && make check && make test
+cd projects/precis/landi/backend && make check && make test
 cd ../frontend && npm run check
 ```
 
@@ -42,5 +42,5 @@ and secrets stay in the backend/worker boundary, never in Astro browser code.
 
 - [`../../recommendations.md`](../../recommendations.md) — recommended priority order
 - [`../README.md`](../README.md) — canonical plan registry
-- [`../../../projects/landing-fusion/README.md`](../../../projects/landing-fusion/README.md) — project quickstart
+- [`../../../projects/precis/landi/README.md`](../../../projects/precis/landi/README.md) — project quickstart
 - [`../document-lifecycle.md`](../document-lifecycle.md) — plan lifecycle and archive policy

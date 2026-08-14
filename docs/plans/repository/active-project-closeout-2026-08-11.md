@@ -15,11 +15,12 @@ implemented.
 
 | Product | Canonical path | Former boundary | Closeout status |
 |---|---|---|---|
-| Precis LMS | `projects/precis/` | `projects/lms-fusion/` | Active and deployed |
-| Landing-Fusion | `projects/landing-fusion/` | CMS-Fusion landing slice | Active |
+| Precis LMS | `projects/precis/main/` | `projects/lms-fusion/` | Active and deployed |
+| Landing-Fusion | `projects/precis/landi/` | CMS-Fusion landing slice | Active |
+| CTC Research | `projects/precis/ctc-research/` | `projects/ctc-research/` | Active (standalone research site) |
 | Syntara | `projects/syntara/` | Cypercloud | Active |
 | Formints | `projects/formints/` | POS edition workspace | Active |
-| Forge POS | `projects/pos/forge-pos/` | POS desktop edition | Active |
+| Forge POS | `projects/formints/formint-community/` (was `projects/pos/forge-pos/`) | POS desktop edition | Migrated/removed |
 | django-fusion | `libs/django-fusion/` | Shared Fusion framework | Active |
 
 Retired names remain in migration evidence and compatibility documentation.
@@ -29,7 +30,7 @@ New code and new plans must use the canonical paths above.
 
 ### Precis LMS deployment
 
-- Backend and frontend images built successfully from `projects/precis/`.
+- Backend and frontend images built successfully from `projects/precis/main/`.
 - `lms-fusion-backend` became healthy with zero restarts.
 - PostgreSQL, Redis, worker, and Traefik services were running.
 - Direct and Traefik-routed responses returned HTTP 200 for:
@@ -106,19 +107,19 @@ The following remain planned or require separate product approval:
 
 ```bash
 # Precis backend
-cd projects/precis
+cd projects/precis/main
 uv run python backend/manage.py check
 uv run pytest backend/tests/test_api_smoke.py \
   backend/tests/test_fixture_content.py \
   backend/tests/test_fixture_data.py -q --tb=short
 
 # Precis frontend
-cd projects/precis/frontend
+cd projects/precis/main/frontend
 npm run check
 npm run build
 
 # Landing-Fusion backend/frontend
-cd projects/landing-fusion/backend && make check && make test
+cd projects/precis/landi/backend && make check && make test
 cd ../frontend && npm run check && npm run build
 
 # Repository documentation hygiene
@@ -131,6 +132,6 @@ python applications/scripts/check_markdown_links.py
 - [`../README.md`](../README.md)
 - [`../document-lifecycle.md`](../document-lifecycle.md)
 - [`../deletion-manifest.md`](../deletion-manifest.md)
-- [`../../../projects/precis/README.md`](../../../projects/precis/README.md)
-- [`../../../projects/landing-fusion/README.md`](../../../projects/landing-fusion/README.md)
+- [`../../../projects/precis/main/README.md`](../../../projects/precis/main/README.md)
+- [`../../../projects/precis/landi/README.md`](../../../projects/precis/landi/README.md)
 - [`../../../libs/django-fusion/CHANGELOG.md`](../../../libs/django-fusion/CHANGELOG.md)

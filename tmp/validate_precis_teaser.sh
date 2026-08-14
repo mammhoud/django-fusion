@@ -1,6 +1,6 @@
 #!/bin/bash
 set -u
-cd /home/structa.cloud/projects/precis/backend
+cd /home/structa.cloud/projects/precis/main/backend
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 
 echo "=== ruff ==="
@@ -15,7 +15,7 @@ timeout 600 "$UV_BIN" run python manage.py test \
 
 echo
 echo "=== precis frontend check ==="
-cd /home/structa.cloud/projects/precis/frontend
+cd /home/structa.cloud/projects/precis/main/frontend
 npm run check 2>&1 | grep -E '^Result|error|Error' | tail -4
 
 echo "DONE"

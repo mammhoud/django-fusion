@@ -1,0 +1,198 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList, SEEDED_FALLBACK_SLUGS } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+export async function getStaticPaths() {
+  // Keep the frontend build independent from backend startup order.
+  try {
+    const list = await fetchPageList();
+    const slugs = list.pages
+      .filter((p) => p.type === 'ProductPage')
+      .map((p) => p.slug);
+    if (slugs.length) return slugs.map((slug) => ({ params: { slug } }));
+  } catch {
+    // The backend may be starting after the Astro build.
+  }
+  return SEEDED_FALLBACK_SLUGS.products.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
+  ]);
+} catch { /* use fallbacks */ }
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const pageTech = (pageData?.tech as any[] | undefined);
+const pageEditions = (pageData?.editions as any[] | undefined);
+const pageSnippets = (pageData?.snippets as any[] | undefined);
+const pageFeatures = (pageData?.features as any[] | undefined);
+const pageFaq = (pageData?.faq as any[] | undefined);
+
+const techItems = pageTech?.map((t: any) => String(t || ''));
+const editions = pageEditions?.map((e: any) => ({
+  name: String(e.name || ''),
+  tagline: String(e.tagline || ''),
+  price: String(e.price || ''),
+  period: String(e.period || ''),
+  features: (e.features || []) as string[],
+  cta: { label: String(e.cta_label || 'Get started'), href: String(e.cta_href || '/#cta') },
+  highlighted: Boolean(e.featured),
+}));
+const snippets = pageSnippets?.map((s: any) => ({
+  title: String(s.title || ''),
+  language: String(s.language || ''),
+  code: String(s.code || ''),
+}));
+const capabilities = pageFeatures?.map((f: any) => ({
+  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  title: String(f.title || ''),
+  description: String(f.description || ''),
+}));
+const faqItems = pageFaq?.map((f: any) => ({
+  question: String(f.question || ''),
+  answer: String(f.answer || ''),
+}));
+---
+
+
+<Layout
+  title={pageData?.title || 'Product'}
+  description={pageData?.search_description || pageData?.title || 'Product page'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug={slug}
+>
+  <Hero
+    eyebrow={pageHero?.badge || `products · ${slug}`}
+    heading={pageHero?.title || pageData?.title || 'Product'}
+    accent=''
+    intro={pageHero?.subtitle || ''}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Back to products', href: '/products/' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
+    status='200 OK · text/html · the product, in one response'
+  />
+
+  {techItems?.length ? (
+    <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
+      <div class='container-fusion'>
+        <div class='mx-auto mb-8 max-w-2xl text-center'>
+          <p class='tag-marker mb-4'>stack</p>
+          <h2 class='mb-4 font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl'>Built on</h2>
+        </div>
+        <div class='flex flex-wrap items-center justify-center gap-2.5'>
+          {techItems.map((t) => (
+            <span class='inline-flex items-center rounded-md border border-fu-line bg-fu-card px-3 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted'>{t}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {editions?.length ? (
+    <section id='editions' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mx-auto mb-14 max-w-2xl text-center'>
+          <p class='tag-marker mb-4'>editions &amp; pricing</p>
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Editions</h2>
+        </div>
+        <div class='grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3'>
+          {editions.map((ed) => (
+            <div class:list={['card relative flex flex-col p-6 sm:p-8', ed.highlighted && 'border-fu-link shadow-lg md:-translate-y-1']}>
+              {ed.highlighted && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}
+              <p class='tag-marker mb-1'>{ed.name}</p>
+              {ed.tagline && <p class='mb-6 text-sm text-fu-muted'>{ed.tagline}</p>}
+              <div class='mb-7 flex items-baseline gap-2'>
+                <span class='font-mono text-[2rem] font-semibold tracking-tight text-fu-ink'>{ed.price}</span>
+                {ed.period && <span class='font-mono text-xs uppercase tracking-wider text-fu-muted'>{ed.period}</span>}
+              </div>
+              <ul class='mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm'>
+                {ed.features.map((f) => (
+                  <li class='flex items-start gap-2.5'>
+                    <svg class='mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-fu-link' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'>
+                      <path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/>
+                    </svg>
+                    <span class='text-fu-ink/80'>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <a href={ed.cta.href} class:list={['mt-auto w-full', ed.highlighted ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {snippets?.length ? (
+    <section id='snippets' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mx-auto mb-14 max-w-2xl text-center'>
+          <p class='tag-marker mb-4'>reference</p>
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Models &amp; snippets</h2>
+          <p class='text-fu-muted'>Copy these patterns into your own Fusion project.</p>
+        </div>
+        <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+          {snippets.map((snip) => (
+            <figure class='card overflow-hidden'>
+              <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
+                <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
+                {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
+              </figcaption>
+              <pre class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{snip.code}</code></pre>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {capabilities?.length ? (
+    <section class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mx-auto mb-14 max-w-2xl text-center'>
+          <p class='tag-marker mb-4'>capabilities</p>
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>What it ships</h2>
+        </div>
+        <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
+          {capabilities.map((cap, i) => (
+            <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+              <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
+                <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} />
+                </svg>
+              </div>
+              <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{cap.title}</h3>
+              <p class='text-sm leading-relaxed text-fu-muted'>{cap.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : <ContentError label="Product data unavailable" />}
+
+  {faqItems?.length ? <FAQ items={faqItems} heading='Questions, answered' intro='The honest answers to product questions.' /> : null}
+
+  <CTA
+    heading={pageCta?.title || 'Everything is open source'}
+    intro={pageCta?.subtitle || 'Explore the full product line.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
+    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+  />
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

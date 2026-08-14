@@ -3,7 +3,7 @@
 import os
 import sys
 
-sys.path.insert(0, "/home/structa.cloud/projects/precis/backend")
+sys.path.insert(0, "/home/structa.cloud/projects/precis/main/backend")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 import django

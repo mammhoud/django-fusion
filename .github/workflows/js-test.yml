@@ -4,22 +4,18 @@ name: JS Tests (frontend builds + smoke tests)
 on:
   pull_request:
     paths:
-      - 'projects/precis/frontend/**'
+      - 'projects/precis/main/frontend/**'
       - 'projects/cms-fusion/frontend/**'
-      - 'projects/pos/pos-e2e/**'
-      - 'projects/pos/pos-full/**'
-      - 'projects/pos/pos-solo/**'
-      - 'projects/pos/pos-mini/**'
+      - 'projects/formints/tests/pos-e2e/**'
+      - 'projects/formints/**'
       - '.github/workflows/js-test.yml'
   push:
     branches: ['**']
     paths:
-      - 'projects/precis/frontend/**'
+      - 'projects/precis/main/frontend/**'
       - 'projects/cms-fusion/frontend/**'
-      - 'projects/pos/pos-e2e/**'
-      - 'projects/pos/pos-full/**'
-      - 'projects/pos/pos-solo/**'
-      - 'projects/pos/pos-mini/**'
+      - 'projects/formints/tests/pos-e2e/**'
+      - 'projects/formints/**'
       - '.github/workflows/js-test.yml'
   workflow_dispatch:
 
@@ -34,14 +30,14 @@ jobs:
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: projects/precis/frontend
+        working-directory: projects/precis/main/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/precis/frontend/package-lock.json
+          cache-dependency-path: projects/precis/main/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Check Astro types
@@ -104,14 +100,14 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: projects/pos/pos-e2e
+        working-directory: projects/formints/tests/pos-e2e
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/pos/pos-e2e/package-lock.json
+          cache-dependency-path: projects/formints/tests/pos-e2e/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run API E2E tests

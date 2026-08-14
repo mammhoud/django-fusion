@@ -16,6 +16,15 @@ const useAppSelector = useSelector.withTypes<RootState>();
 const BOARD_URL = '/api/v1/board/';
 const MOVE_URL = (dealId: number) => `/api/v1/deals/${dealId}/stage/`;
 
+// Django's csrftoken cookie is readable from JS (CSRF_COOKIE_HTTPONLY=False),
+// so the kanban can echo it back on the move mutation. Mirrors the
+// landing-fusion proxied-Django convention.
+function readCsrfToken(): string {
+  if (typeof document === 'undefined') return '';
+  const match = document.cookie.match(/(?:^|; )csrftoken=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const formatMoney = (raw: string | number) => money.format(Number(raw));
 
@@ -98,7 +107,10 @@ function Board() {
     try {
       const res = await fetch(MOVE_URL(dealId), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': readCsrfToken(),
+        },
         body: JSON.stringify({ stage_id: toStageId }),
       });
       if (!res.ok) throw new Error(`Move rejected (${res.status})`);

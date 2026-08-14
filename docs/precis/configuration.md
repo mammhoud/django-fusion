@@ -40,7 +40,7 @@ sites:
 ## Quick Commands
 
 ```bash
-cd projects/precis/backend
+cd projects/precis/main/backend
 
 # Check settings
 uv run --project ../.. python manage.py diffsettings

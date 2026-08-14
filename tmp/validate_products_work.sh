@@ -4,7 +4,7 @@ cd /home/structa.cloud
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 
 echo '════════ landing-fusion: seed products ════════'
-cd projects/landing-fusion/backend
+cd projects/precis/landi/backend
 "$UV_BIN" --project .. run --frozen python manage.py seed_pages 2>&1 | grep -iE 'product|error|failed' | tail -10
 
 echo '════════ landing-fusion: /apis/products/ API ════════'
@@ -24,7 +24,7 @@ echo '════════ landing-fusion: seed products rerun (idempotent) 
 "$UV_BIN" --project .. run --frozen python manage.py seed_pages 2>&1 | grep -iE 'product|error|failed' | tail -4
 
 echo '════════ precis: seed products ════════'
-cd /home/structa.cloud/projects/precis/backend
+cd /home/structa.cloud/projects/precis/main/backend
 "$UV_BIN" --project .. run --frozen python manage.py setup_wagtail_home 2>&1 | grep -iE 'product|error|failed' | tail -8
 
 echo '════════ precis: /api/products/ API ════════'

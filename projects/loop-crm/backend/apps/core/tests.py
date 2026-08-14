@@ -22,6 +22,13 @@ from apps.marketing.models import Campaign, Post, SocialChannel
 
 
 class NavigationContractTests(TestCase):
+    def _login(self, username: str = "member") -> User:
+        user = User.objects.create_user(
+            username=username, email=f"{username}@example.com", password="Strong-pass-123"
+        )
+        self.client.force_login(user)
+        return user
+
     def test_module_and_subpage_active_states(self):
         tree = navigation_context("/crm/deals/")
         crm = next(item for item in tree if item["id"] == "crm")
@@ -50,6 +57,7 @@ class NavigationContractTests(TestCase):
         self.assertEqual(dashboard["url"], "/")
 
     def test_fusion_application_routes_render(self):
+        self._login()
         response = self.client.get("/crm/deals/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Deals")
@@ -93,6 +101,7 @@ class NavigationContractTests(TestCase):
         self.assertNotContains(response, 'href="/crm/contacts/" aria-current="page"')
 
     def test_workflow_create_toggle_and_queue_are_real_interactions(self):
+        self._login()
         workflow = WorkflowDefinition.objects.get(slug="lead-capture")
         response = self.client.get("/settings/workflows/")
         self.assertContains(response, "database-backed")
@@ -136,6 +145,7 @@ class NavigationContractTests(TestCase):
         self.assertEqual(WorkflowRun.objects.filter(definition=workflow).count(), 1)
 
     def test_content_calendar_composes_and_transitions_posts(self):
+        self._login()
         workspace = Workspace.objects.create(name="Test workspace", slug="test-workspace")
         channel = SocialChannel.objects.create(
             workspace=workspace,
@@ -169,6 +179,7 @@ class NavigationContractTests(TestCase):
         self.assertEqual(post.status, "pending_approval")
 
     def test_crm_company_contact_and_deal_forms_are_real_htmx_interactions(self):
+        self._login()
         workspace = Workspace.objects.create(name="CRM workspace", slug="crm-workspace")
         response = self.client.get("/crm/companies/")
         self.assertEqual(response.status_code, 200)
@@ -232,6 +243,7 @@ class NavigationContractTests(TestCase):
         self.assertEqual(Deal.objects.get(name="Northline annual planning").stage_id, stage.pk)
 
     def test_crm_contact_and_deal_forms_reject_cross_workspace_relationships(self):
+        self._login()
         first = Workspace.objects.create(name="First workspace", slug="first-workspace")
         second = Workspace.objects.create(name="Second workspace", slug="second-workspace")
         company = Company.objects.create(workspace=second, name="Second account")
@@ -256,6 +268,41 @@ class NavigationContractTests(TestCase):
         self.assertEqual(signup.status_code, 200)
         self.assertContains(login, "Sign in")
         self.assertContains(signup, "Create account")
+
+    def test_domain_subpages_render_real_list_screens(self):
+        self._login()
+        for path in [
+            "/crm/pipelines/",
+            "/marketing/campaigns/",
+            "/attribution/touchpoints/",
+            "/attribution/reports/",
+            "/settings/integrations/",
+            "/settings/custom-fields/",
+            "/settings/audit/",
+        ]:
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200, path)
+            self.assertContains(response, "workspace-scoped")
+
+    def test_allauth_password_email_and_social_pages_render(self):
+        reset = self.client.get("/accounts/password/reset/")
+        self.assertEqual(reset.status_code, 200)
+        self.assertContains(reset, "Reset password")
+
+        user = User.objects.create_user(username="account-member", email="account-member@example.com", password="Strong-pass-123")
+        user.profile.workspace = Workspace.objects.create(name="Account workspace", slug="account-workspace")
+        user.profile.save()
+        self.client.force_login(user)
+        from django.urls import reverse
+
+        for path, marker in [
+            ("/accounts/password/change/", "Change password"),
+            ("/accounts/email/", "Email addresses"),
+            (reverse("socialaccount_connections"), "Connected accounts"),
+        ]:
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200, path)
+            self.assertContains(response, marker)
 
         user = User.objects.create_user(username="member", email="member@example.com", password="Strong-pass-123")
         user.profile.role = "revops_manager"
@@ -321,6 +368,7 @@ class NavigationContractTests(TestCase):
         self.assertEqual(response.json()["user"]["workspace_id"], workspace.pk)
 
     def test_finance_invoice_payment_and_revenue_surfaces_are_real(self):
+        self._login()
         workspace = Workspace.objects.create(name="Finance workspace", slug="finance-workspace")
         company = Company.objects.create(workspace=workspace, name="Northline Studio")
         response = self.client.get("/finance/")
@@ -463,6 +511,7 @@ class TaskCenterTests(TestCase):
         self.assertEqual(sync_website_record("loop-crm"), 0)
 
     def test_api_contracts_expose_integration_and_workflow_catalogs(self):
+        self.client.force_login(self.user)
         integrations = self.client.get("/api/v1/integrations/")
         workflows = self.client.get("/api/v1/workflows/")
         self.assertEqual(integrations.status_code, 200)

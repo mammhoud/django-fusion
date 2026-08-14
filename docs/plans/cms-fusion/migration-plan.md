@@ -1,8 +1,8 @@
 # Fusion CMS - Migration & Integration Plan
 
 > **Status:** Superseded by Precis and Landing-Fusion
-> **Canonical runtime:** [`projects/precis/`](../../../projects/precis/)
-> **Canonical landing slice:** [`projects/landing-fusion/`](../../../projects/landing-fusion/)
+> **Canonical runtime:** [`projects/precis/main/`](../../../projects/precis/main/)
+> **Canonical landing slice:** [`projects/precis/landi/`](../../../projects/precis/landi/)
 > **Historical boundary:** `projects/cms-fusion/`
 > **Last reviewed:** 2026-08-11
 
@@ -25,20 +25,20 @@ configuration.
 ## Current verification commands
 
 ```bash
-cd projects/precis
+cd projects/precis/main
 uv run python backend/manage.py check
 uv run pytest backend/tests/test_api_smoke.py \
   backend/tests/test_fixture_content.py \
   backend/tests/test_fixture_data.py -q --tb=short
 cd frontend && npm run check && npm run build
 
-cd ../landing-fusion/backend && make check && make test
+cd ../precis/landi/backend && make check && make test
 cd ../frontend && npm run check && npm run build
 ```
 
 ## Related
 
 - [`../../README.md`](../README.md)
-- [`../../../projects/precis/README.md`](../../../projects/precis/README.md)
-- [`../../../projects/landing-fusion/README.md`](../../../projects/landing-fusion/README.md)
+- [`../../../projects/precis/main/README.md`](../../../projects/precis/main/README.md)
+- [`../../../projects/precis/landi/README.md`](../../../projects/precis/landi/README.md)
 - [`../../repository/active-project-closeout-2026-08-11.md`](../repository/active-project-closeout-2026-08-11.md)

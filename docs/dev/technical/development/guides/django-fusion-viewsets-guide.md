@@ -1,4 +1,4 @@
-# Django-Osoul ViewSet Integration Guide
+# Django-Fusion ViewSet Integration Guide
 
 ## Overview
 

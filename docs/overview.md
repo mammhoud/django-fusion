@@ -37,11 +37,11 @@ make test WEBSITE=landing-fusion
 
 ```bash
 # Precis LMS
-cd projects/precis/backend
+cd projects/precis/main/backend
 make check && make test && make migrate
 
 # Landing-Fusion
-cd projects/landing-fusion
+cd projects/precis/landi
 make install && make check && make build
 make backend-migrate && make backend-check && make backend-test
 
@@ -79,8 +79,8 @@ make logs              # Tail all service logs
 
 | Project | Dir | Type | Port | Stack |
 |---------|-----|------|------|-------|
-| **Precis LMS** | `projects/precis/` | Django Site | — | Wagtail + django-fusion |
-| **Landing-Fusion** | `projects/landing-fusion/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
+| **Precis LMS** | `projects/precis/main/` | Django Site | — | Wagtail + django-fusion |
+| **Landing-Fusion** | `projects/precis/landi/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
 | **Syntara** | `projects/syntara/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
 | **Formint Community** | `projects/formints/formintA/` | Tauri Desktop | — | Rust + React 19 + SQLite |
 | **Formint Professional** | `projects/formints/formint/` | Tauri + Django | — | Astro + Django Ninja + Unfold |
@@ -185,11 +185,11 @@ The codebase has been through several renames. See this guide for mapping old na
 
 | Legacy Name | Current Name | Current Path |
 |---|---|---|
-| `ctc-research` | **Precis LMS** | `projects/precis/` |
-| `lms-fusion` | **Precis LMS** (alias) | `projects/precis/` |
+| `ctc-research` | **Precis LMS** | `projects/precis/main/` |
+| `lms-fusion` | **Precis LMS** (alias) | `projects/precis/main/` |
 | `cms-fusion` | Merged into Precis + Landing-Fusion | — |
 | `cypercloud` | **Syntara** (runtime alias preserved) | `projects/syntara/` |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/` |
+| `portfolio` / `VResume` | Merged into Precis | `projects/precis/main/` |
 | `pos-mini` / `forge-pos` | **Formint Community** | `projects/formints/formintA/` |
 | `pos-solo` / `pos-full` | **Formint Professional** (merged) | `projects/formints/formint/` |
 | `pos-cloud` / `formintB` | **Formint Cloud** | `projects/formints/formint-cloud/` |

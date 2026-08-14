@@ -11,9 +11,12 @@ revenue operations.
 Foundation integrated. The domain models, django-fusion Site/Application
 registry, shared module/sidebar navigation, finance ledger, RevOps dashboard
 (revenue-trend card + funnel-to-board deep links), responsive Astro shell,
-canonical optional
-django-bolt API, compatibility JSON API, workflow catalog, provider-neutral connector surface, cross-module workflow actions, and
-Dramatiq publishing boundary are in place. Provider OAuth credentials and
+canonical optional django-bolt API, compatibility JSON API, workflow catalog,
+provider-neutral connector surface, cross-module workflow actions, and
+Dramatiq publishing boundary are in place. Multi-tenant isolation is enforced
+end-to-end: every read/mutation path is workspace-scoped through
+`apps/core/tenancy.py`, dashboard pages and data APIs require login, and the
+kanban move mutation is CSRF-protected. Provider OAuth credentials and
 concrete API adapters are intentionally the next integration boundary (see `docs/plans/loop-crm/merge-plan.md`).
 
 ## Layout
@@ -62,6 +65,14 @@ npm run dev           # Astro on :4321, proxies /api|/admin|/fragment(s) to :800
   JWT bearer tokens and optional `X-API-Key` authentication. `/api/v1/` stays
   as a compatibility fallback for environments that do not install the
   optional `django-fusion[bolt]` extra.
+- **Tenancy + auth are enforced, not assumed** — `Workspace` is the multi-tenant
+  root on every domain record, and `apps/core/tenancy.py`
+  (`current_workspace_id`) scopes every read/write path (render-first screens,
+  `/api/v1/`, and `/bolt/`). Dashboard pages, read APIs, and mutations require
+  a session; anonymous callers are redirected to `/accounts/login/`. The kanban
+  drag-to-move POST is CSRF-protected: the board echoes the `csrftoken` cookie
+  as `X-CSRFToken`, and the board payload sets that cookie via
+  `ensure_csrf_cookie`.
 - **Navigation is shared by contract** — `apps/core/navigation.py` drives
   Django and the top-level django-fusion `LoopCrmModule` → `LoopCrmApplication`
   route tree. `/fragments/navigation/` preloads the complete navigator through

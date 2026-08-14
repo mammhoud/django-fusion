@@ -333,7 +333,7 @@ rules) and `theme.*.js` has `drop_console` applied.
 
 **Variation: `precis-atelier`** — LMS surfaces get `--pc-*` tokens on top of the shared `--fu-*` fusion layer.
 
-1. Create `assets/styles/theme/{_tokens,_light,_dark,_index}.scss` — every file banner starts `// Variation: precis-atelier — LMS academy on the shared fusion layer`; new `--pc-*` tokens are declared alongside the inherited `--fu-*` (via `@use '../landing-fusion/theme' as fu` is *not* required — fu tokens are simply re-declared with the same values where LMS pages need them, but prefer importing the shared fusion theme when the fusion layer is present).
+1. Create `assets/styles/theme/{_tokens,_light,_dark,_index}.scss` — every file banner starts `// Variation: precis-atelier — LMS academy on the shared fusion layer`; new `--pc-*` tokens are declared alongside the inherited `--fu-*` (via `@use '../precis/landi/theme' as fu` is *not* required — fu tokens are simply re-declared with the same values where LMS pages need them, but prefer importing the shared fusion theme when the fusion layer is present).
 2. Move `_typography.scss`, `_buttons.scss` under `base/` / `components/`; keep `fusion.scss` + `globals.css` as entries.
 3. Rename `webpack/precis.config.js` → `webpack/workspace.js` (theme entry + ts/tsx/html rules from the 4.1 template); update the `package.json` scripts (`build`, `dev`, `clean`) and Makefile `build` target to the new filename.
 4. Delete the duplicated `assets/static/styles/fusion-theme.scss` and add `assets/static/css/*.css` to gitignore.

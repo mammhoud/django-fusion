@@ -4,7 +4,7 @@ default:
     lms:
       # Runtime identity remains lms-fusion; the active project directory is
       # Precis after the LMS migration.
-      path: precis
+      path: precis/main
       aliases: [structa, core, demo, structa.cloud, lms-fusion]
       domain: structa.cloud
       port: 5071

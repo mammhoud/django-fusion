@@ -1,0 +1,117 @@
+{% load i18n static unfold %}
+{% load webpack_loader %}
+
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+<!DOCTYPE html>
+<html class="{% if theme %}{{ theme }}{% endif %}{% block html_class %}{% endblock %}" dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr,auto" }}" lang="{{ LANGUAGE_CODE|default:" en-us" }}" {% block html_attr %}
+    data-sidenav-view="{{ sidenav }}" {% endblock html_attr %}>
+<head>
+    <title>{% block title %}{% firstof page_title page.title 'Fusion CMS' %}{% endblock %}</title>
+    {% block meta_tags %}{% endblock %}
+    {% block meta %}
+    {% endblock meta %}
+    {% block styles %}
+    {% endblock styles %}
+
+    {% block favicon %}
+    {% endblock favicon %}
+    {% block css %}
+    {% block layout_css %}
+        {% render_bundle 'static' 'css' %}
+
+    {% endblock layout_css %}
+
+    {% endblock css %}
+    {% block extrastyle %}{% endblock %}
+    {% block extrascripts %}{% endblock %}
+    {% block extrahead %}{% endblock %}
+    {% block js %}
+    {% endblock js %}
+    {% block responsive %}
+    {% endblock %}
+    {% block blockbots %}{% endblock %}
+    {% block extra_head %}
+    {% endblock extra_head %}
+
+</head>
+{# {% comp "notification" with hx_connection="/" /%} #}
+
+<body data-navigation data-header-menu data-preloader="2" class="{% block bodyclass %}{% endblock bodyclass %}" {% block body_attr %}
+hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
+
+    {# ====================================================== #}
+    {# Theme colors and body-level custom attributes #}
+    {# ====================================================== #}
+    {% block theme_colors %}
+    {# Optional: define color variables or theme setup here #}
+    {% endblock theme_colors %}
+
+    {# ====================================================== #}
+    {# Loader (optional preloader animation) #}
+    {# ====================================================== #}
+    {% block loader %}
+    {% endblock loader %}
+
+    {# ====================================================== #}
+    {# Header Section (navigation, logo, breadcrumbs, etc.) #}
+    {# ====================================================== #}
+    {% block header %}
+    {% endblock header %}
+
+    {# ====================================================== #}
+    {# Main Body / Content #}
+    {# ====================================================== #}
+
+    {% block body %}
+
+    {% endblock body %}
+
+    {# ====================================================== #}
+    {# Base scripts or layout-level extensions #}
+    {# ====================================================== #}
+    {% block base %}
+    {% endblock base %}
+
+    {# ====================================================== #}
+    {# Extra JS or body-end includes #}
+    {# ====================================================== #}
+    {% block extrabody %}
+    {% endblock extrabody %}
+
+    {% block extra_body %}
+    {% endblock extra_body %}
+
+    {# Notification system — toasts, alerts, Django messages, HTMX OOB fragments #}
+    {% block notifications %}
+        {# FIXME: notification include causes RecursionError in template render chain #}
+        {# {% comp "plugins/notifications/notification.html" /%} #}
+    {% endblock notifications %}
+
+    {# Cookie Consent — shared templates for all sites #}
+    {% comp "components/cookies/cookie-consent.html" /%}
+    {% comp "components/cookies/cookie-policy.html" /%}
+    {% comp "components/cookies/privacy-policy.html" /%}
+
+    {% block scripts %}
+    {% endblock scripts %}
+
+    {# ====================================================== #}
+    {# Unified JavaScript Modules via Webpack bundles         #}
+    {# main = shared libraries (HTMX, Alpine, etc.)           #}
+    {# app  = site-specific entry point                       #}
+    {# ====================================================== #}
+    {% render_bundle 'main' 'js' %}
+    {% render_bundle 'app' 'js' %}
+    {% block extra_styles %}
+    {% endblock extra_styles %}
+
+    {% block extra_scripts %}
+    {% endblock extra_scripts %}
+
+</body>
+
+{% block extra_assets %}{% endblock extra_assets %}
+
+</html>

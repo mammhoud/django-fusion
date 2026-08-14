@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from apps.core import views as core_views
+from apps.core.api import resource_api
 from apps.core.bolt_api import bolt
 from apps.core.fusion import loop_crm_module
 from apps.crm import views as crm_views
@@ -28,11 +29,17 @@ urlpatterns = [
     path("fragments/finance/invoices/create/", finance_views.invoice_create, name="invoice_create"),
     path("fragments/finance/payments/create/", finance_views.payment_create, name="payment_create"),
     path("fragments/posts/<int:pk>/transition/", marketing_views.post_transition, name="post_transition"),
+    path("fragments/marketing/channels/<int:pk>/disconnect/", marketing_views.channel_disconnect, name="channel_disconnect"),
+    path("fragments/marketing/channels/<int:pk>/refresh/", marketing_views.channel_refresh, name="channel_refresh"),
     path("api/v1/", include("apps.core.urls")),
     path("api/v1/", include("apps.crm.urls")),
     path("api/v1/", include("apps.marketing.urls")),
     path("api/v1/", include("apps.attribution.urls")),
     path("api/v1/", include("apps.finance.urls")),
+    # Generic detail road for every registered resource: GET/PATCH/DELETE
+    # ``/api/v1/<resource>/<pk>/``. Declared after the explicit app URLs so the
+    # specific routes (``deals/<pk>/stage/``, ``revenue/trend/``) win first.
+    path("api/v1/<str:resource>/<int:pk>/", resource_api, name="resource_detail_api"),
     path("account/profile/", core_views.profile_view, name="profile"),
     path("connect/", include("apps.marketing.oauth_urls")),
 ]

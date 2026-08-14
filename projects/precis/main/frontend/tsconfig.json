@@ -1,0 +1,12 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "node_modules", "playwright.config.ts", "e2e", "playwright-report", "test-results"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@fusion/*": ["../../../libs/django-fusion/js/fusion-js/src/*"]
+    }
+  }
+}

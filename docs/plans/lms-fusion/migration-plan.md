@@ -1,20 +1,20 @@
 # LMS Fusion - Migration & django-fusion Integration Plan
 
 > **Status:** Superseded by the canonical Precis project
-> **Canonical runtime:** [`projects/precis/`](../../../projects/precis/)
+> **Canonical runtime:** [`projects/precis/main/`](../../../projects/precis/main/)
 > **Historical boundary:** `projects/lms-fusion/`
 > **Last reviewed:** 2026-08-11
 
 This document is retained as migration evidence. It is no longer an active
 implementation checklist. New LMS work belongs in Precis and must use the
-current `projects/precis/` paths, settings, tests, Docker Compose, and Astro
+current `projects/precis/main/` paths, settings, tests, Docker Compose, and Astro
 frontend. The original sections below are preserved so historical decisions
 and verification claims remain traceable.
 
 ## Disposition
 
 - Core django-fusion integration: complete in the historical migration.
-- Runtime ownership: moved to `projects/precis/`.
+- Runtime ownership: moved to `projects/precis/main/`.
 - API ownership: remains project-owned; django-fusion provides rendering,
   routing, components, fragments, and data-response primitives.
 - Remaining historical checkboxes: not reinterpreted as current work. Verify
@@ -23,7 +23,7 @@ and verification claims remain traceable.
 ## Current verification commands
 
 ```bash
-cd projects/precis
+cd projects/precis/main
 uv run python backend/manage.py check
 uv run pytest backend/tests/test_api_smoke.py \
   backend/tests/test_fixture_content.py \
@@ -40,6 +40,6 @@ no new code should be added under the retired LMS Fusion boundary.
 ## Related
 
 - [`../../README.md`](../README.md)
-- [`../../../projects/precis/README.md`](../../../projects/precis/README.md)
+- [`../../../projects/precis/main/README.md`](../../../projects/precis/main/README.md)
 - [`../../repository/active-project-closeout-2026-08-11.md`](../repository/active-project-closeout-2026-08-11.md)
 - [`../../../libs/django-fusion/CHANGELOG.md`](../../../libs/django-fusion/CHANGELOG.md)

@@ -73,12 +73,26 @@ def workflow_catalog() -> list[dict[str, Any]]:
     return [dict(workflow, actions=list(workflow["actions"])) for workflow in WORKFLOW_CATALOG]
 
 
-def persisted_workflow_catalog() -> list[dict[str, Any]]:
-    """Return workflow records from the database without a dummy-data fallback."""
+def persisted_workflow_catalog(workspace_id: int | None = None) -> list[dict[str, Any]]:
+    """Return workflow records scoped to global templates + one workspace.
+
+    ``workspace_id=None`` returns only the product's global templates
+    (``workspace__isnull=True``). Passing a workspace adds that tenant's own
+    definitions on top, so a member never sees another tenant's automations.
+    """
+    from django.db.models import Q
+
     from .models import WorkflowDefinition
 
     try:
-        definitions = WorkflowDefinition.objects.exclude(status="archived").order_by("name")
+        definitions = WorkflowDefinition.objects.exclude(status="archived")
+        if workspace_id is None:
+            definitions = definitions.filter(workspace__isnull=True)
+        else:
+            definitions = definitions.filter(
+                Q(workspace__isnull=True) | Q(workspace_id=workspace_id)
+            )
+        definitions = definitions.order_by("name")
         return [
             {
                 "id": definition.slug,

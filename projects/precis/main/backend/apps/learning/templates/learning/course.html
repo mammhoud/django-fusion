@@ -1,0 +1,272 @@
+{% extends base_page|default:"base_page.html" %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags comp %}
+
+{% block extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'styles/course-premium.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<section class="course-hero"
+         style="{% if course.header_image %}{% image course.header_image fill-1920x800 as bg %}background-image: url({{ bg.url }});{% endif %}">
+  <div class="course-hero__overlay"></div>
+  <div class="course-hero__inner reveal">
+    <div class="course-hero__content">
+      <span class="course-hero__eyebrow">
+        {{ course.difficulty_level }} · {{ course.duration }}h · {{ course.get_language_display }}
+      </span>
+      <h1 class="course-hero__title">{{ course.title }}</h1>
+      <p class="course-hero__subtitle">{{ course.short_description }}</p>
+      <div class="course-hero__actions">
+        <a href="#enroll" class="btn-primary-pill">{% trans "Enroll now" %} <span class="btn-arrow">↗</span></a>
+        <a href="/all-courses/" class="btn-ghost-pill">← {% trans "Back to catalog" %}</a>
+      </div>
+    </div>
+    <div class="course-hero__stats">
+      <div class="course-hero__stat">
+        <span class="course-hero__stat-value">{{ course.enrolled_count|default:0 }}+</span>
+        <span class="course-hero__stat-label">{% trans "Students" %}</span>
+      </div>
+      <div class="course-hero__stat">
+        <span class="course-hero__stat-value">{{ course.modules.count }}</span>
+        <span class="course-hero__stat-label">{% trans "Modules" %}</span>
+      </div>
+      <div class="course-hero__stat">
+        <span class="course-hero__stat-value">{{ course.duration }}h</span>
+        <span class="course-hero__stat-label">{% trans "Duration" %}</span>
+      </div>
+      {% if course.has_certificate %}
+      <div class="course-hero__stat">
+        <span class="course-hero__stat-value">✓</span>
+        <span class="course-hero__stat-label">{% trans "Certificate" %}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<main class="course-main">
+  <div class="course-main__grid">
+
+    {# LEFT: Content column #}
+    <div class="course-main__content">
+
+      {# Overview #}
+      <article class="card-premium reveal">
+        <div class="card-premium__shell">
+          <div class="card-premium__core">
+            <p class="tag-marker">{% trans "course overview" %}</p>
+            <h2 class="card-premium__title">{% trans "Why this course matters" %}</h2>
+            <p class="card-premium__body">{{ course.description }}</p>
+            {% if course.header_image %}<img src="{{ bg.url }}" alt="{{ course.title }}" class="card-premium__hero-image" loading="lazy">{% endif %}
+          </div>
+        </div>
+      </article>
+
+      {# StreamField overview blocks #}
+      {% if course.overview %}
+      <article class="card-premium reveal">
+        <div class="card-premium__shell">
+          <div class="card-premium__core">
+            {% for block in course.overview %}
+            {% include_block block %}
+            {% endfor %}
+          </div>
+        </div>
+      </article>
+      {% endif %}
+
+      {# Objectives #}
+      {% if course.objectives %}
+      <article class="card-premium reveal">
+        <div class="card-premium__shell">
+          <div class="card-premium__core">
+            <h3 class="card-premium__section-title">{% trans "What you'll learn" %}</h3>
+            <ul class="card-premium__objectives-grid">
+              {% for obj in course.objectives_list %}
+              <li><span class="check-icon">✓</span><span>{{ obj }}</span></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </article>
+      {% endif %}
+
+      {# Target audience #}
+      {% if course.target_audience %}
+      <article class="card-premium reveal">
+        <div class="card-premium__shell">
+          <div class="card-premium__core">
+            <h3 class="card-premium__section-title">{% trans "Who this course is for" %}</h3>
+            <ul class="card-premium__list">
+              {% for item in course.target_audience_list %}
+              <li><span>→</span><span>{{ item }}</span></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </article>
+      {% endif %}
+
+      {# Requirements #}
+      {% if course.requirements %}
+      <article class="card-premium reveal">
+        <div class="card-premium__shell">
+          <div class="card-premium__core">
+            <h3 class="card-premium__section-title">{% trans "Requirements" %}</h3>
+            <ul class="card-premium__list">
+              {% for item in course.requirements_list %}
+              <li><span>•</span><span>{{ item }}</span></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </article>
+      {% endif %}
+
+    </div>
+
+    {# RIGHT: Sticky sidebar #}
+    <aside class="course-main__sidebar" id="enroll">
+      <div class="card-premium card-premium--sticky reveal">
+        <div class="card-premium__shell">
+          <div class="card-premium__core">
+            <p class="tag-marker mb-4">{% trans "course facts" %}</p>
+
+            <div class="sidebar-price">
+              {% if course.is_free %}
+                <span class="sidebar-price__value text-green">{% trans "Free" %}</span>
+              {% elif course.is_discounted %}
+                <span class="sidebar-price__value">${{ course.current_price|floatformat:2 }}</span>
+                <span class="sidebar-price__original">${{ course.original_price|floatformat:2 }}</span>
+                <span class="sidebar-price__discount">-{{ course.discount_percentage_calculated }}%</span>
+              {% else %}
+                <span class="sidebar-price__value">${{ course.price|floatformat:2 }}</span>
+              {% endif %}
+            </div>
+
+            <dl class="sidebar-facts">
+              <div class="sidebar-facts__row"><dt>{% trans "Duration" %}</dt><dd>{{ course.duration }} hours</dd></div>
+              <div class="sidebar-facts__row"><dt>{% trans "Level" %}</dt><dd>{{ course.difficulty_level }}</dd></div>
+              <div class="sidebar-facts__row"><dt>{% trans "Language" %}</dt><dd>{{ course.get_language_display }}</dd></div>
+              <div class="sidebar-facts__row"><dt>{% trans "Modules" %}</dt><dd>{{ course.modules.count }}</dd></div>
+              <div class="sidebar-facts__row"><dt>{% trans "Certificate" %}</dt><dd>{% if course.has_certificate %}{% trans "Included" %}{% else %}—{% endif %}</dd></div>
+              {% if course.average_rating %}
+              <div class="sidebar-facts__row"><dt>{% trans "Rating" %}</dt><dd class="sidebar-facts__rating">{{ course.average_rating|floatformat:1 }} ★</dd></div>
+              {% endif %}
+            </dl>
+
+            <a href="/contact/" class="btn-primary-pill btn-primary-pill--full mt-6">
+              {% if course.is_free %}{% trans "Enroll for free" %}{% else %}{% trans "Enroll now" %}{% endif %}
+              <span class="btn-arrow">↗</span>
+            </a>
+
+            {% if course.is_discounted and course.discount_until %}
+            <p class="sidebar-discount-note">{% blocktrans with date=course.discount_until|date:"M d, Y" %}Offer ends {{ date }}{% endblocktrans %}</p>
+            {% endif %}
+
+            {% if course.has_certificate %}
+            <div class="sidebar-cert-badge">
+              <span class="sidebar-cert-badge__icon">🏅</span>
+              <span>{% trans "Certificate included" %}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+{# Syllabus accordion #}
+{% if course.modules.exists %}
+<section class="syllabus-section reveal">
+  <div class="syllabus-section__inner">
+    <div class="syllabus-section__header">
+      <p class="tag-marker">{% trans "learning path" %}</p>
+      <h2 class="syllabus-section__title">{% trans "Course syllabus" %}</h2>
+      <p class="syllabus-section__subtitle">{{ course.modules.count }} modules · {% trans "step-by-step learning path" %}</p>
+    </div>
+
+    <div class="syllabus-accordion">
+      {% for module in course.modules.all %}
+      <details class="syllabus-accordion__item" {% if forloop.first %}open{% endif %}>
+        <summary class="syllabus-accordion__trigger">
+          <span class="syllabus-accordion__index">{{ forloop.counter|stringformat:"02d" }}</span>
+          <span class="syllabus-accordion__label">
+            <span class="syllabus-accordion__module-title">{{ module.title }}</span>
+            {% if module.description %}<span class="syllabus-accordion__module-desc">{{ module.description }}</span>{% endif %}
+          </span>
+          <span class="syllabus-accordion__meta">
+            <span class="syllabus-accordion__lesson-count">{{ module.lessons.count }} {% trans "lessons" %}</span>
+            <span class="syllabus-accordion__chevron">▾</span>
+          </span>
+        </summary>
+        <ul class="syllabus-accordion__lessons">
+          {% for lesson in module.lessons.all %}
+          <li class="syllabus-accordion__lesson">
+            <span class="syllabus-accordion__lesson-icon">
+              {% if lesson.is_preview %}▶{% else %}○{% endif %}
+            </span>
+            <span class="syllabus-accordion__lesson-title">{{ lesson.title }}</span>
+            <span class="syllabus-accordion__lesson-duration">{{ lesson.duration }} min</span>
+            {% if lesson.is_preview %}<span class="syllabus-accordion__lesson-badge">{% trans "Preview" %}</span>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# Instructor #}
+{% if course.instructor %}
+<section class="instructor-section reveal">
+  <div class="instructor-section__inner">
+    <div class="card-premium">
+      <div class="card-premium__shell">
+        <div class="card-premium__core instructor-card">
+          {% if course.instructor.profile.avatar %}
+            {% image course.instructor.profile.avatar fill-200x200 as avatar_img %}
+            <img src="{{ avatar_img.url }}" alt="{{ course.instructor.get_full_name }}" class="instructor-card__avatar" width="100" height="100">
+          {% else %}
+            <div class="instructor-card__avatar-placeholder">{{ course.instructor.get_full_name|first|default:"I" }}</div>
+          {% endif %}
+          <div class="instructor-card__info">
+            <p class="tag-marker">{% trans "instructor" %}</p>
+            <h3 class="instructor-card__name">{{ course.instructor.get_full_name|default:course.instructor.username }}</h3>
+            {% if course.instructor.profile.title %}<p class="instructor-card__title">{{ course.instructor.profile.title }}</p>{% endif %}
+            {% if course.instructor.profile.bio %}<p class="instructor-card__bio">{{ course.instructor.profile.bio }}</p>{% endif %}
+            <div class="instructor-card__links">
+              {% if course.instructor.profile.website %}<a href="{{ course.instructor.profile.website }}" class="btn-ghost-sm">{% trans "Website" %}</a>{% endif %}
+              {% if course.instructor.profile.linkedin %}<a href="{{ course.instructor.profile.linkedin }}" class="btn-ghost-sm">{% trans "LinkedIn" %}</a>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+  })();
+</script>
+{% endblock extra_js %}

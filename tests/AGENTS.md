@@ -40,8 +40,8 @@ uv run pytest tests/websites/ -q
 uv run pytest tests/core/ -q
 
 # Product-local suites
-cd projects/precis && uv run pytest backend/tests/
-cd projects/landing-fusion/backend && make test
+cd projects/precis/main && uv run pytest backend/tests/
+cd projects/precis/landi/backend && make test
 cd projects/formints/formint && make test
 cd libs/django-fusion && uv run pytest
 ```

@@ -10,7 +10,7 @@ def test_django_fusion_task_registry_supports_project_paths():
 
     registry = TaskRegistry()
     assert hasattr(registry, "autodiscover")
-    assert registry._import_project_path("projects/landing-fusion/backend") is not None
+    assert registry._import_project_path("projects/precis/landi/backend") is not None
 
 
 def test_shared_tasks_compose_uses_dramatiq_and_excludes_lms():

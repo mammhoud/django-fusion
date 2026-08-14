@@ -8,8 +8,8 @@
 
 | Product | Canonical Path | Main Responsibility | Domain |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
-| **Landing-Fusion** | `projects/landing-fusion/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
+| **Precis LMS** | `projects/precis/main/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
+| **Landing-Fusion** | `projects/precis/landi/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
 | **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
 | **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |
 | **django-fusion** | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables | submodule |
@@ -33,14 +33,16 @@ All new plans must be added under `docs/plans/<scope>/` and linked from the cano
 ```
 structa.cloud/
 ├── projects/                         # Product code, shared Django config, and assets
-│   ├── precis/                       # Precis LMS — learning platform
-│   │   ├── backend/                  # Django + Wagtail backend
-│   │   ├── assets/                   # Templates, static, SCSS, media
-│   │   └── frontend/                 # Astro frontend shell
-│   ├── landing-fusion/               # Astro marketing site + Django/Wagtail CMS
-│   │   ├── backend/                  # Django + Wagtail backend
-│   │   ├── frontend/                 # Astro frontend
-│   │   └── assets/                   # Project assets
+│   ├── precis/                       # Product grouping: LMS, research, marketing
+│   │   ├── main/                     # Precis LMS — learning platform
+│   │   │   ├── backend/              # Django + Wagtail backend
+│   │   │   ├── assets/               # Templates, static, SCSS, media
+│   │   │   └── frontend/             # Astro frontend shell
+│   │   ├── ctc-research/             # Medical research center site
+│   │   └── landi/                    # Astro marketing site + Django/Wagtail CMS
+│   │       ├── backend/              # Django + Wagtail backend
+│   │       ├── frontend/             # Astro frontend
+│   │       └── assets/               # Project assets
 │   ├── syntara/                      # Cypercloud AI chat/customizer runtime
 │   ├── formints/                     # Multi-edition POS platform
 │   │   ├── formint-community/        # Community (Tauri + React + Rust)

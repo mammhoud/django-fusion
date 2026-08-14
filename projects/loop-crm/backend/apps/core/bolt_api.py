@@ -4,48 +4,48 @@ The Bolt API is the primary API road when the optional django-bolt runtime is
 installed. The existing ``apps.core.api`` Django views remain mounted under
 ``/api/v1/`` as a compatibility fallback for local installations that do not
 install the Rust-backed runtime.
+
+Both roads consume ``apps.core.resources`` so the resource contract, write
+allowlist, FK validation, tenant scoping, and serialization are identical.
 """
 from __future__ import annotations
 
 from decimal import Decimal
 from typing import Any
 
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
-from django_fusion.plugins.apis import build_bolt_auth
+from django_fusion.plugins.apis import (
+    build_bolt_auth,
+    generate_msgspec_schema,
+)
 from django_fusion.plugins.apis.bolt import (
     build_bolt_api,
     mount_refresh_endpoint,
     mount_token_endpoint,
 )
 
-from apps.attribution.models import AttributionTouchpoint
 from apps.crm.custom_fields import custom_object_catalog
-from apps.crm.models import Company, Contact, Deal, Pipeline
-from apps.finance.models import Invoice, Payment, RevenueEvent
+from apps.finance.models import RevenueEvent
 from apps.finance.services import revenue_trend_results
 from apps.marketing.connectors import platform_catalog
-from apps.marketing.models import Campaign, Post, SocialChannel
 
+from .resources import (
+    RESOURCES,
+    create_row,
+    delete_row,
+    get_row,
+    list_rows,
+    update_row,
+)
 from .workflows import persisted_workflow_catalog
 
+#: Historical alias; both roads read the same resource registry.
 RESOURCE_MODELS: dict[str, tuple[type[Any], tuple[str, ...]]] = {
-    "companies": (Company, ("id", "name", "industry", "website")),
-    "contacts": (Contact, ("id", "first_name", "last_name", "email", "title")),
-    "deals": (Deal, ("id", "name", "value", "expected_close_date", "stage__name")),
-    "pipelines": (Pipeline, ("id", "name", "description", "is_default")),
-    "campaigns": (Campaign, ("id", "name", "description", "budget")),
-    "channels": (SocialChannel, ("id", "platform", "account_name", "is_active")),
-    "posts": (Post, ("id", "content", "scheduled_at", "status")),
-    "touchpoints": (
-        AttributionTouchpoint,
-        ("id", "source", "occurred_at", "weight"),
-    ),
-    "invoices": (Invoice, ("id", "number", "company__name", "status", "currency", "total", "due_on")),
-    "payments": (Payment, ("id", "invoice__number", "amount", "paid_on", "method")),
-    "revenue": (RevenueEvent, ("id", "deal__name", "campaign__name", "kind", "amount", "recognized_on")),
+    slug: (resource.model, resource.read_fields) for slug, resource in RESOURCES.items()
 }
 
 
@@ -61,36 +61,53 @@ def _json_value(value: Any) -> Any:
     return value
 
 
-async def _resource_rows(model: type[Any], fields: tuple[str, ...]) -> list[dict[str, Any]]:
-    try:
-        rows = [
-            row
-            async for row in model.objects.values(*fields).order_by("-pk")[:100]
-        ]
-    except (OperationalError, ProgrammingError):
-        rows = []
-    return [
-        {key: _json_value(value) for key, value in row.items()}
-        for row in rows
-    ]
-
-
 def _workspace_id(user: Any) -> int | None:
     profile = getattr(user, "profile", None)
     return getattr(profile, "workspace_id", None)
 
 
+def _workspace(user: Any):
+    """Return the caller's Workspace instance (for FK-filtered catalogs)."""
+    profile = getattr(user, "profile", None)
+    return getattr(profile, "workspace", None)
+
+
+async def _request_user(request: Any) -> Any:
+    return getattr(request, "user", None) or getattr(request, "auth", None)
+
+
+async def _request_body(request: Any) -> dict[str, Any]:
+    """Read a Bolt JSON body into a plain dict across Bolt versions."""
+    body = getattr(request, "json", {})
+    if callable(body):
+        body = body()
+    import inspect
+
+    if inspect.isawaitable(body):
+        body = await body
+    if hasattr(body, "items"):
+        return dict(body.items())
+    try:
+        import msgspec
+
+        return dict(msgspec.structs.asdict(body))
+    except (ImportError, TypeError, AttributeError):
+        return {}
+
+
 async def _dashboard(workspace_id: int | None = None) -> dict[str, Any]:
     counts: dict[str, int] = {}
-    for key, (model, _fields) in RESOURCE_MODELS.items():
+    for key, resource in RESOURCES.items():
         try:
-            queryset = model.objects.filter(workspace_id=workspace_id) if workspace_id is not None else model.objects
+            queryset = resource.model.objects.all()
+            if workspace_id is not None:
+                queryset = queryset.filter(workspace_id=workspace_id)
             counts[key] = await queryset.acount()
         except (OperationalError, ProgrammingError):
             counts[key] = 0
     return {
         "counts": counts,
-        "workflow_count": len(persisted_workflow_catalog()),
+        "workflow_count": len(persisted_workflow_catalog(workspace_id=workspace_id)),
     }
 
 
@@ -139,11 +156,13 @@ if bolt is not None:
 
     @bolt.get("/dashboard", **_protected)
     async def dashboard(request: Any) -> dict[str, Any]:
-        return await _dashboard(workspace_id=_workspace_id(getattr(request, "user", None)))
+        return await _dashboard(workspace_id=_workspace_id(await _request_user(request)))
 
     @bolt.get("/workflows", **_protected)
     async def workflows(request: Any) -> dict[str, Any]:
-        results = persisted_workflow_catalog()
+        results = persisted_workflow_catalog(
+            workspace_id=_workspace_id(await _request_user(request))
+        )
         return {"results": results, "count": len(results)}
 
     @bolt.get("/integrations", **_protected)
@@ -153,13 +172,13 @@ if bolt is not None:
 
     @bolt.get("/custom-fields", **_protected)
     async def custom_fields(request: Any) -> dict[str, Any]:
-        results = custom_object_catalog()
+        results = custom_object_catalog(_workspace(await _request_user(request)))
         return {"results": results, "count": len(results)}
 
     @bolt.get("/revenue/trend", **_protected)
     async def revenue_trend(request: Any) -> dict[str, Any]:
         """Trailing-six-month recognized-revenue trend for the RevOps dashboard."""
-        workspace_id = _workspace_id(getattr(request, "user", None))
+        workspace_id = _workspace_id(await _request_user(request))
         queryset = RevenueEvent.objects.all()
         if workspace_id is not None:
             queryset = queryset.filter(workspace_id=workspace_id)
@@ -177,20 +196,73 @@ if bolt is not None:
             rows = []
         return revenue_trend_results(rows)
 
-    def _register_collection(
-        resource: str,
-        model: type[Any],
-        fields: tuple[str, ...],
-    ) -> None:
+    def _register_collection(resource: str) -> None:
+        """Register full tenant-scoped CRUD for one resource on the Bolt road."""
+        config = RESOURCES[resource]
+        model = config.model
+
+        # Typed request/response bodies via msgspec; optional so the road still
+        # works if the schema dependency is unavailable.
+        try:
+            struct = generate_msgspec_schema(
+                model, name=f"{model.__name__}Schema", fields=list(config.read_fields)
+            )
+        except Exception:  # pragma: no cover - msgspec optional
+            struct = None
+
+        list_options = dict(_protected)
+        detail_options = dict(_protected)
+        if struct is not None:
+            list_options["response_model"] = list[struct]
+            detail_options["response_model"] = struct
+
+        @bolt.get(f"/{resource}", **list_options)
         async def list_resource(request: Any) -> dict[str, Any]:
-            results = await _resource_rows(model, fields)
+            results = list_rows(resource, _workspace_id(await _request_user(request)))
             return {"results": results, "count": len(results), "next": None, "previous": None}
 
-        list_resource.__name__ = f"list_{resource}"
-        bolt.get(f"/{resource}", **_protected)(list_resource)
+        @bolt.post(f"/{resource}", **detail_options)
+        async def create_resource(request: Any) -> Any:
+            body = await _request_body(request)
+            row, errors, _status = await sync_to_async(create_row)(
+                resource, body, _workspace_id(await _request_user(request))
+            )
+            if errors:
+                return {"detail": "Validation failed.", "errors": errors}
+            return row
 
-    for _resource, (_model, _fields) in RESOURCE_MODELS.items():
-        _register_collection(_resource, _model, _fields)
+        @bolt.get(f"/{resource}/{{pk}}", **detail_options)
+        async def retrieve_resource(request: Any, pk: Any) -> Any:
+            row = await sync_to_async(get_row)(
+                resource, pk, _workspace_id(await _request_user(request))
+            )
+            if row is None:
+                return {"detail": "Not found."}
+            return row
+
+        @bolt.patch(f"/{resource}/{{pk}}", **detail_options)
+        async def update_resource(request: Any, pk: Any) -> Any:
+            body = await _request_body(request)
+            row, errors, status = await sync_to_async(update_row)(
+                resource, pk, body, _workspace_id(await _request_user(request))
+            )
+            if status == 404:
+                return {"detail": "Not found."}
+            if errors:
+                return {"detail": "Validation failed.", "errors": errors}
+            return row
+
+        @bolt.delete(f"/{resource}/{{pk}}", status_code=204, auth=auth_backends, guards=_protected["guards"])
+        async def delete_resource(request: Any, pk: Any) -> Any:
+            ok = await sync_to_async(delete_row)(
+                resource, pk, _workspace_id(await _request_user(request))
+            )
+            if not ok:
+                return {"detail": "Not found."}
+            return None
+
+    for _resource in RESOURCES:
+        _register_collection(_resource)
 
 
 __all__ = ["RESOURCE_MODELS", "bolt"]

@@ -1,0 +1,311 @@
+[
+  {
+    "model": "lms.specialization",
+    "pk": 6,
+    "fields": {
+      "title": "Clinical Research",
+      "slug": "clinical-research",
+      "description": "Design rigorous clinical studies, manage research protocols, and interpret evidence for better healthcare decisions.",
+      "is_active": true,
+      "order": 6,
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.specialization",
+    "pk": 7,
+    "fields": {
+      "title": "Medical AI & Digital Health",
+      "slug": "medical-ai-digital-health",
+      "description": "Apply artificial intelligence, data analytics, and digital health methods responsibly in medical research.",
+      "is_active": true,
+      "order": 7,
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.specialization",
+    "pk": 8,
+    "fields": {
+      "title": "Evidence Synthesis",
+      "slug": "evidence-synthesis",
+      "description": "Find, assess, synthesize, and communicate evidence through systematic reviews and meta-analysis.",
+      "is_active": true,
+      "order": 8,
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.specialization",
+    "pk": 9,
+    "fields": {
+      "title": "Scientific Communication",
+      "slug": "scientific-communication",
+      "description": "Turn complex research into clear manuscripts, reports, presentations, and publishable scientific narratives.",
+      "is_active": true,
+      "order": 9,
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.specialization",
+    "pk": 10,
+    "fields": {
+      "title": "Research Ethics & Integrity",
+      "slug": "research-ethics-integrity",
+      "description": "Build trustworthy research practices around ethics, governance, reproducibility, and publication integrity.",
+      "is_active": true,
+      "order": 10,
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 13,
+    "fields": {
+      "name": "Clinical Research",
+      "slug": "clinical-research"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 14,
+    "fields": {
+      "name": "Medical AI",
+      "slug": "medical-ai"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 15,
+    "fields": {
+      "name": "Biostatistics",
+      "slug": "biostatistics"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 16,
+    "fields": {
+      "name": "Systematic Review",
+      "slug": "systematic-review"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 17,
+    "fields": {
+      "name": "Scientific Writing",
+      "slug": "scientific-writing"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 18,
+    "fields": {
+      "name": "Research Ethics",
+      "slug": "research-ethics"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 19,
+    "fields": {
+      "name": "Evidence-Based Medicine",
+      "slug": "evidence-based-medicine"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 20,
+    "fields": {
+      "name": "Clinical Data",
+      "slug": "clinical-data"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 9,
+    "fields": {
+      "title": "Clinical Trial Design & Protocol Development",
+      "slug": "clinical-trial-design-protocol-development",
+      "specializations": [6],
+      "tags": [13, 20],
+      "description": "Learn how to frame a clinical research question, select an appropriate study design, develop a defensible protocol, and plan outcomes that can produce reliable evidence.",
+      "short_description": "Design clear, ethical, and analysis-ready clinical trials.",
+      "objectives": "Translate a clinical question into a research protocol\nChoose between common trial designs and endpoints\nPlan recruitment, bias control, and data quality\nPrepare a protocol structure suitable for review",
+      "requirements": "Basic familiarity with medical research terminology\nNo prior programming experience required",
+      "target_audience": "Clinicians, research coordinators, public-health professionals, and postgraduate researchers",
+      "price": "149.99",
+      "original_price": "199.99",
+      "discount_percentage": "25.00",
+      "difficulty_level": "intermediate",
+      "duration": 18,
+      "language": "en",
+      "is_published": true,
+      "is_featured": true,
+      "is_active": true,
+      "has_certificate": true,
+      "pass_percentage": "70.00",
+      "instructor": 1,
+      "publication_date": "2026-08-08T00:00:00Z",
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 10,
+    "fields": {
+      "title": "Biostatistics for Clinical Research",
+      "slug": "biostatistics-clinical-research",
+      "specializations": [6],
+      "tags": [13, 15, 20],
+      "description": "Build practical statistical reasoning for clinical studies, from descriptive summaries and uncertainty to regression, power, and transparent interpretation of results.",
+      "short_description": "Use statistics confidently to interpret clinical evidence.",
+      "objectives": "Summarize clinical datasets with appropriate descriptive measures\nChoose and interpret common statistical tests\nUnderstand confidence intervals, effect sizes, and power\nCommunicate statistical results without overstating claims",
+      "requirements": "Comfort with percentages and basic algebra\nA clinical or research context is helpful but not required",
+      "target_audience": "Medical researchers, clinicians, data managers, and graduate students",
+      "price": "129.99",
+      "original_price": "169.99",
+      "discount_percentage": "23.53",
+      "difficulty_level": "intermediate",
+      "duration": 22,
+      "language": "en",
+      "is_published": true,
+      "is_featured": true,
+      "is_active": true,
+      "has_certificate": true,
+      "pass_percentage": "70.00",
+      "instructor": 1,
+      "publication_date": "2026-08-08T00:00:00Z",
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 11,
+    "fields": {
+      "title": "Systematic Reviews & Evidence Synthesis",
+      "slug": "systematic-reviews-evidence-synthesis",
+      "specializations": [8],
+      "tags": [16, 19],
+      "description": "Move from a focused research question to a reproducible search, critical appraisal, evidence table, and clear synthesis suitable for clinical decision-making.",
+      "short_description": "Plan reproducible reviews that turn literature into evidence.",
+      "objectives": "Formulate answerable review questions\nBuild transparent search and screening workflows\nAssess risk of bias and certainty of evidence\nPresent a synthesis that supports responsible decisions",
+      "requirements": "Basic literature-search experience is recommended\nAccess to a reference manager is helpful",
+      "target_audience": "Systematic reviewers, librarians, clinicians, and evidence-based medicine learners",
+      "price": "159.99",
+      "original_price": "0.00",
+      "discount_percentage": "0.00",
+      "difficulty_level": "advanced",
+      "duration": 24,
+      "language": "en",
+      "is_published": true,
+      "is_featured": true,
+      "is_active": true,
+      "has_certificate": true,
+      "pass_percentage": "75.00",
+      "instructor": 1,
+      "publication_date": "2026-08-08T00:00:00Z",
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 12,
+    "fields": {
+      "title": "Medical AI & Clinical Data Analytics",
+      "slug": "medical-ai-clinical-data-analytics",
+      "specializations": [7],
+      "tags": [14, 15, 20],
+      "description": "Explore responsible machine learning for healthcare data, including dataset quality, clinical context, validation, bias, explainability, and safe communication of model results.",
+      "short_description": "Apply responsible AI methods to real clinical data questions.",
+      "objectives": "Identify common sources of bias in clinical datasets\nPrepare and validate data for research analysis\nCompare useful model evaluation strategies\nExplain limitations and risks to clinical stakeholders",
+      "requirements": "Basic Python or data-analysis experience\nFoundational clinical research knowledge is useful",
+      "target_audience": "Clinical data scientists, health researchers, informaticians, and AI practitioners",
+      "price": "179.99",
+      "original_price": "229.99",
+      "discount_percentage": "21.74",
+      "difficulty_level": "advanced",
+      "duration": 26,
+      "language": "en",
+      "is_published": true,
+      "is_featured": true,
+      "is_active": true,
+      "has_certificate": true,
+      "pass_percentage": "75.00",
+      "instructor": 1,
+      "publication_date": "2026-08-08T00:00:00Z",
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 13,
+    "fields": {
+      "title": "Scientific & Medical Manuscript Writing",
+      "slug": "scientific-medical-manuscript-writing",
+      "specializations": [9],
+      "tags": [17, 19],
+      "description": "Develop a publishable scientific manuscript from research question to discussion, using clear structure, evidence-aware language, effective tables and figures, and responsible AI assistance.",
+      "short_description": "Turn rigorous research into a clear, publishable manuscript.",
+      "objectives": "Structure an IMRaD manuscript for the intended audience\nWrite precise abstracts, results, and discussions\nUse tables and figures to clarify evidence\nApply responsible AI support without compromising authorship or integrity",
+      "requirements": "A research project, dataset, or manuscript idea to develop\nBasic academic writing experience",
+      "target_audience": "Medical writers, clinicians, researchers, and postgraduate students",
+      "price": "119.99",
+      "original_price": "149.99",
+      "discount_percentage": "20.00",
+      "difficulty_level": "intermediate",
+      "duration": 16,
+      "language": "en",
+      "is_published": true,
+      "is_featured": true,
+      "is_active": true,
+      "has_certificate": true,
+      "pass_percentage": "70.00",
+      "instructor": 1,
+      "publication_date": "2026-08-08T00:00:00Z",
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 14,
+    "fields": {
+      "title": "Research Ethics, GCP & Publication Integrity",
+      "slug": "research-ethics-gcp-publication-integrity",
+      "specializations": [10],
+      "tags": [18, 19],
+      "description": "Strengthen the trustworthiness of health research through informed consent, governance, Good Clinical Practice, data stewardship, authorship, peer review, and publication integrity.",
+      "short_description": "Build trustworthy research from protocol to publication.",
+      "objectives": "Recognize core principles of human-subject research ethics\nApply Good Clinical Practice concepts to study workflows\nProtect participant data and research records\nAvoid common authorship, reporting, and publication-integrity failures",
+      "requirements": "No prerequisites\nDesigned for anyone contributing to health research",
+      "target_audience": "Clinical investigators, research teams, medical writers, students, and ethics professionals",
+      "price": "99.99",
+      "original_price": "0.00",
+      "discount_percentage": "0.00",
+      "difficulty_level": "beginner",
+      "duration": 12,
+      "language": "en",
+      "is_published": true,
+      "is_featured": true,
+      "is_active": true,
+      "has_certificate": true,
+      "pass_percentage": "70.00",
+      "instructor": 1,
+      "publication_date": "2026-08-08T00:00:00Z",
+      "created_at": "2026-08-08T00:00:00Z",
+      "updated_at": "2026-08-08T00:00:00Z"
+    }
+  }
+]

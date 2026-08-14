@@ -1,6 +1,7 @@
 """Render-first finance pages and tenant-scoped HTMX mutations."""
 from __future__ import annotations
 
+from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
@@ -90,6 +91,7 @@ def _finance_context(request):
 
 
 @require_POST
+@login_required
 def invoice_create(request: HttpRequest) -> HttpResponse:
     form = InvoiceForm(request.POST, request=request)
     if not form.is_valid():
@@ -99,6 +101,7 @@ def invoice_create(request: HttpRequest) -> HttpResponse:
 
 
 @require_POST
+@login_required
 def payment_create(request: HttpRequest) -> HttpResponse:
     form = PaymentForm(request.POST, request=request)
     if not form.is_valid():
@@ -107,6 +110,7 @@ def payment_create(request: HttpRequest) -> HttpResponse:
     return render(request, "dashboard/partials/payment_success.html", _finance_context(request))
 
 
+@login_required
 def revenue_trend_api(request: HttpRequest) -> JsonResponse:
     """Monthly recognized-revenue totals for the RevOps dashboard trend card.
 

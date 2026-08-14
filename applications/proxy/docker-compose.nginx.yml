@@ -35,13 +35,13 @@ services:
       - "traefik.http.routers.shared-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
       - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
     volumes:
-      - ../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../projects/lms/assets/staticfiles:/var/www/sites/lms/static:ro
+      - ../projects/precis/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../projects/precis/main/assets/staticfiles:/var/www/sites/lms/static:ro
       - ../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
       - lms-fusion-static:/var/www/sites/lms-fusion/static:ro
       - ../projects/assets/static:/var/www/static:ro
-      - ../projects/ctc-research/assets/media:/var/www/media/ctc-research:ro
-      - ../projects/lms/assets/media:/var/www/media/lms:ro
+      - ../projects/precis/ctc-research/assets/media:/var/www/media/ctc-research:ro
+      - ../projects/precis/main/assets/media:/var/www/media/lms:ro
       - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
       - lms-fusion-media:/var/www/media/lms-fusion:ro
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro

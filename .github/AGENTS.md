@@ -10,8 +10,8 @@ monorepo paths and project aliases in `projects/Makefile`.
 
 | Area | Current paths | Typical validation |
 |---|---|---|
-| Workspace Python | `tests/`, `projects/precis/`, `libs/django-fusion/` | `uv run pytest`, Django checks |
-| Landing-Fusion | `projects/landing-fusion/` | backend tests, Astro check/build, Playwright |
+| Workspace Python | `tests/`, `projects/precis/main/`, `libs/django-fusion/` | `uv run pytest`, Django checks |
+| Landing-Fusion | `projects/precis/landi/` | backend tests, Astro check/build, Playwright |
 | Syntara/Cypercloud | `projects/syntara/` | Django checks/tests, asset build |
 | Formints POS | `projects/formints/` | pytest, Vitest, TypeScript, Rust, Playwright |
 | Infrastructure | `applications/`, root Makefile | Compose/YAML/proxy/deploy preflight |
@@ -47,8 +47,8 @@ Use the checked-in Python workspace configuration and the current project path:
 - run: uv run pytest
 ```
 
-Set `working-directory` explicitly for `projects/precis/backend`,
-`projects/landing-fusion/backend`, or a POS sidecar/backend job. Avoid assuming
+Set `working-directory` explicitly for `projects/precis/main/backend`,
+`projects/precis/landi/backend`, or a POS sidecar/backend job. Avoid assuming
 that every Django project uses the same settings module.
 
 ## JavaScript, TypeScript, and Rust jobs

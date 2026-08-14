@@ -1,0 +1,22 @@
+{% load i18n wagtailimages_tags components %}
+{# Products page clients/partners section block #}
+{% prop block %}
+<section class="clients-section py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center justify-content-center g-4">
+            {% for client in block.value.clients %}
+            <div class="col-6 col-md-3 col-lg-2 text-center">
+                {% if client.logo %}
+                {% image client.logo width-150 as logo_img %}
+                <img src="{{ logo_img.url }}"
+                     alt="{{ client.name }}"
+                     class="img-fluid opacity-75"
+                     loading="lazy">
+                {% else %}
+                <span class="text-muted">{{ client.name }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

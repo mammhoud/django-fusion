@@ -356,8 +356,8 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 
 | Product | Path | Port | Stack | Key AGENTS.md |
 |---|---|---|---|---|
-| **Precis LMS** | `projects/precis/` | — | Django + Wagtail + django-fusion | `projects/precis/backend/AGENTS.md` |
-| **Landing-Fusion** | `projects/landing-fusion/` | 8074 | Astro 5 + Django + Wagtail | `projects/landing-fusion/AGENTS.md` |
+| **Precis LMS** | `projects/precis/main/` | — | Django + Wagtail + django-fusion | `projects/precis/main/backend/AGENTS.md` |
+| **Landing-Fusion** | `projects/precis/landi/` | 8074 | Astro 5 + Django + Wagtail | `projects/precis/landi/AGENTS.md` |
 | **Syntara** | `projects/syntara/` | 5073 | Django + CeptorAI + Ollama | `projects/syntara/AGENTS.md` |
 | **Formint Community** | `projects/formints/formintA/` | — | Tauri 2 + React 19 + Rust/Diesel | `projects/formints/formintA/AGENTS.md` |
 | **Formint Professional** | `projects/formints/formint/` | — | Astro + Django Ninja + Tauri | `projects/formints/AGENTS.md` |
@@ -398,11 +398,11 @@ uv sync
 
 ```bash
 # Precis LMS
-cd projects/precis/backend
+cd projects/precis/main/backend
 make check && make migrate && make seed
 
 # Landing-Fusion
-cd projects/landing-fusion
+cd projects/precis/landi
 make install && make backend-migrate && make backend-seed
 
 # Formint Cloud
@@ -422,7 +422,7 @@ python manage.py migrate
 
 ```bash
 # Landing-Fusion (frontend + backend)
-cd projects/landing-fusion
+cd projects/precis/landi
 make dev                     # Astro frontend (default port)
 make backend-dev             # Django backend (:8074)
 
@@ -440,8 +440,8 @@ make dev-frontend            # Community UI
 
 ```bash
 # Per-product
-cd projects/precis/backend && make test
-cd projects/landing-fusion && make backend-test
+cd projects/precis/main/backend && make test
+cd projects/precis/landi && make backend-test
 cd projects/formints/formint && make test
 
 # Library
@@ -457,11 +457,11 @@ cd projects && make test WEBSITE=lms-fusion
 
 | Legacy Name | Current Name | Current Path | Notes |
 |---|---|---|---|
-| `ctc-research` | Precis LMS | `projects/precis/` | `WEBSITE=ctc-research` alias preserved |
-| `lms-fusion` | Precis LMS (alias) | `projects/precis/` | `WEBSITE=lms-fusion` dispatcher alias |
-| `lms` | Precis LMS | `projects/precis/` | Legacy docs reference |
+| `ctc-research` | CTC Research (standalone) | `projects/precis/ctc-research/` | `WEBSITE=ctc-research` maps to the standalone research site |
+| `lms-fusion` | Precis LMS (alias) | `projects/precis/main/` | `WEBSITE=lms-fusion` dispatcher alias |
+| `lms` | Precis LMS | `projects/precis/main/` | Legacy docs reference |
 | `cms-fusion` | Merged | — | Split into Precis + Landing-Fusion |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/` | Resume builder merged |
+| `portfolio` / `VResume` | Merged into Precis | `projects/precis/main/` | Resume builder merged |
 | `cypercloud` | Syntara | `projects/syntara/` | Runtime alias preserved |
 | `core/` | `projects/` | `projects/` | Renamed 2026 |
 | `core/libs/` | `libs/` | `libs/` | Moved to repo root |

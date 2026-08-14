@@ -40,7 +40,7 @@ Only **minimal references** remain in fusion projects:
 | `cli.py` | Path mapping for ceptor-ai | Remove mapping |
 
 ### ⚠️ CTC Research (Out of Scope)
-`projects/ctc-research/` has ~80 files importing from ceptor_ai. This legacy project needs its own migration plan. Not in scope for fusion cleanup.
+`projects/precis/ctc-research/` has ~80 files importing from ceptor_ai. This legacy project needs its own migration plan. Not in scope for fusion cleanup.
 
 ### ⚠️ Cypercloud (Separate Concern)
 `projects/cypercloud/` intentionally uses ceptor-ai for AI chat/MCP. Separate treatment needed.

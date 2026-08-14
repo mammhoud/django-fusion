@@ -2,7 +2,7 @@
 > **Tags:** #ctc-research #ceptor-ai #migration
 
 **Date:** July 30, 2026  
-**Scope:** ~80+ files across `projects/ctc-research/`  
+**Scope:** ~80+ files across `projects/precis/ctc-research/`  
 **Goal:** Remove all ceptor-ai imports, migrating to native models, Wagtail blocks, and django-fusion equivalents.
 
 ---

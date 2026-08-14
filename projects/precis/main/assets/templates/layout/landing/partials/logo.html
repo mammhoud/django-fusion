@@ -1,0 +1,22 @@
+{% load static wagtailimages_tags %}
+
+{# Logo logic — brand_settings.logo (Wagtail image) → text fallback → SVG fallback #}
+{# FIXED: was incorrectly reading from social_settings.logo instead of brand_settings.logo #}
+{% if brand_settings and brand_settings.logo %}
+{% image brand_settings.logo max-165x120 as logo %}
+{% endif %}
+
+<div class="header-logo">
+    <a href="/">
+        {% if logo %}
+        {# 1. Brand logo image from Wagtail #}
+        <img src="{{ logo.url }}" alt="{{ brand_settings.site_name|default:'Logo' }}" class="logo-img">
+        {% elif brand_settings.site_name %}
+        {# 2. Text fallback — site name with uppercase styling #}
+        <h3 class="uppercase letter-spacing-1">{{ brand_settings.site_name }}</h3>
+        {% else %}
+        {# 3. SVG fallback — default brand mark #}
+        <img src="{% static 'images/brand/lms-ribbon.svg' %}" alt="logo" class="logo-img">
+        {% endif %}
+    </a>
+</div>

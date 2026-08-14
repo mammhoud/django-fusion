@@ -3,13 +3,15 @@ from __future__ import annotations
 
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
+from apps.core.tenancy import current_workspace_id
 from apps.core.views import LoopPageView
 
 from .forms import CompanyForm, ContactForm, DealForm
@@ -25,34 +27,34 @@ def _member_workspace_id(request: HttpRequest) -> int | None:
 
 
 def company_rows(request: HttpRequest) -> list[Company]:
-    queryset = Company.objects.select_related("workspace", "owner").order_by("name")[:50]
+    queryset = Company.objects.select_related("workspace", "owner")
     workspace_id = _member_workspace_id(request)
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
     try:
-        return list(queryset)
+        return list(queryset.order_by("name")[:50])
     except (OperationalError, ProgrammingError):
         return []
 
 
 def contact_rows(request: HttpRequest) -> list[Contact]:
-    queryset = Contact.objects.select_related("workspace", "company", "owner").order_by("last_name", "first_name")[:50]
+    queryset = Contact.objects.select_related("workspace", "company", "owner")
     workspace_id = _member_workspace_id(request)
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
     try:
-        return list(queryset)
+        return list(queryset.order_by("last_name", "first_name")[:50])
     except (OperationalError, ProgrammingError):
         return []
 
 
 def deal_rows(request: HttpRequest) -> list[Deal]:
-    queryset = Deal.objects.select_related("workspace", "company", "contact", "pipeline", "stage", "owner").order_by("-created_at")[:50]
+    queryset = Deal.objects.select_related("workspace", "company", "contact", "pipeline", "stage", "owner")
     workspace_id = _member_workspace_id(request)
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
     try:
-        return list(queryset)
+        return list(queryset.order_by("-created_at")[:50])
     except (OperationalError, ProgrammingError):
         return []
 
@@ -105,6 +107,7 @@ def _crm_context(request: HttpRequest, kind: str) -> dict:
 
 
 @require_POST
+@login_required
 def company_create(request: HttpRequest) -> HttpResponse:
     form = CompanyForm(request.POST, request=request)
     if not form.is_valid():
@@ -114,6 +117,7 @@ def company_create(request: HttpRequest) -> HttpResponse:
 
 
 @require_POST
+@login_required
 def contact_create(request: HttpRequest) -> HttpResponse:
     form = ContactForm(request.POST, request=request)
     if not form.is_valid():
@@ -123,6 +127,7 @@ def contact_create(request: HttpRequest) -> HttpResponse:
 
 
 @require_POST
+@login_required
 def deal_create(request: HttpRequest) -> HttpResponse:
     form = DealForm(request.POST, request=request)
     if not form.is_valid():
@@ -163,8 +168,15 @@ def _deal_payload(deal: Deal) -> dict:
     }
 
 
+@login_required
+@ensure_csrf_cookie
 def pipeline_board_api(request: HttpRequest) -> JsonResponse:
-    """Board payload: pipelines with stages and stage-scoped deals."""
+    """Board payload: pipelines with stages and stage-scoped deals.
+
+    ``ensure_csrf_cookie`` guarantees the ``csrftoken`` cookie is present, so
+    the kanban island's subsequent CSRF-protected move POST has a token to
+    echo back.
+    """
     if request.method != "GET":
         return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
     workspace_id = _workspace_scope(request)
@@ -191,17 +203,21 @@ def pipeline_board_api(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"results": results, "count": len(results)})
 
 
-@csrf_exempt
+@login_required
 def deal_move_api(request: HttpRequest, pk: int) -> JsonResponse:
     """Move a deal to another stage of its own pipeline (kanban drop).
 
-    The compatibility /api/v1/ road is a local-dev surface (the canonical
-    Bolt road authenticates with JWTs); JSON mutations here are exempt from
-    CSRF so the kanban island can move deals without a form token.
+    Session-authenticated and CSRF-protected; the kanban island echoes the
+    ``csrftoken`` cookie back as ``X-CSRFToken`` (see PipelineBoard.tsx). The
+    canonical Bolt road authenticates with JWTs and does not need CSRF.
     """
     if request.method not in ("PATCH", "POST"):
         return JsonResponse({"detail": "This endpoint accepts PATCH/POST only."}, status=405)
-    deal = get_object_or_404(Deal, pk=pk)
+    workspace_id = current_workspace_id(request)
+    deals = Deal.objects.all()
+    if workspace_id is not None:
+        deals = deals.filter(workspace_id=workspace_id)
+    deal = get_object_or_404(deals, pk=pk)
     try:
         payload = json.loads(request.body or b"{}")
     except ValueError:
@@ -209,7 +225,10 @@ def deal_move_api(request: HttpRequest, pk: int) -> JsonResponse:
     stage_id = payload.get("stage_id")
     if stage_id is None:
         return JsonResponse({"detail": "stage_id is required."}, status=400)
-    stage = get_object_or_404(PipelineStage, pk=stage_id)
+    stages = PipelineStage.objects.select_related("pipeline")
+    if workspace_id is not None:
+        stages = stages.filter(pipeline__workspace_id=workspace_id)
+    stage = get_object_or_404(stages, pk=stage_id)
     try:
         deal.transition_to_stage(stage)
     except ValueError as exc:

@@ -8,8 +8,10 @@ repository root `AGENTS.md` first.
 
 ```text
 projects/
-├── precis/             # Current LMS / learning platform
-├── landing-fusion/     # Astro + Django/Wagtail public landing/catalog site
+├── precis/             # Product grouping: LMS, research, and marketing sites
+│   ├── main/           # Current LMS / learning platform (lms-fusion runtime)
+│   ├── ctc-research/   # Medical research center site
+│   └── landi/          # Astro + Django/Wagtail public landing/catalog site (landing-fusion runtime)
 ├── syntara/            # Cypercloud AI chat/customizer runtime
 ├── formints/           # POS editions and their shared test suites
 ├── loop-crm/           # Unified CRM + social scheduling (Twenty + Postiz merge)
@@ -34,11 +36,11 @@ Important mappings include:
 
 | `WEBSITE` value | Current code | Meaning |
 |---|---|---|
-| `lms-fusion` | `projects/precis/` | Current LMS runtime identity after migration |
-| `landing-fusion` | `projects/landing-fusion/` | Landing-Fusion frontend/backend pair |
+| `lms-fusion` | `projects/precis/main/` | Current LMS runtime identity after migration |
+| `landing-fusion` | `projects/precis/landi/` | Landing-Fusion frontend/backend pair |
 | `loop-crm` | `projects/loop-crm/` | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | `cypercloud` (where supported) | `projects/syntara/` | Historical product name |
-| `ctc`, `ctc-research` | checkout-dependent CTC site | Legacy site dispatcher path; verify directory before use |
+| `ctc`, `ctc-research` | `projects/precis/ctc-research/` | Standalone medical research center site |
 | `structa`, `lms` | checkout-dependent LMS alias | Historical public-site aliases |
 | `vresume`, `portfolio` | checkout-dependent portfolio alias | Historical portfolio aliases |
 
@@ -80,11 +82,13 @@ Avoid importing one product's settings into another product.
 
 ## Product guidance
 
-- Precis: `precis/backend/AGENTS.md`; backend app code is under
-  `precis/backend/apps/`, with product assets beside `backend/` and the Astro
-  frontend under `precis/frontend/`.
-- Landing-Fusion: `landing-fusion/AGENTS.md`; keep the Astro frontend and
+- Precis: `precis/main/backend/AGENTS.md`; backend app code is under
+  `precis/main/backend/apps/`, with product assets beside `backend/` and the Astro
+  frontend under `precis/main/frontend/`.
+- Landing-Fusion: `precis/landi/AGENTS.md`; keep the Astro frontend and
   Django/Wagtail backend contracts synchronized.
+- CTC Research: `precis/ctc-research/AGENTS.md`; standalone medical research
+  center site, separated from the Precis LMS runtime.
 - Syntara: `syntara/AGENTS.md`; keep AI providers, template discovery, and SSE
   behavior behind the `chat/` application boundaries.
 - Formints: `formints/AGENTS.md`; each edition has its own backend/frontend/

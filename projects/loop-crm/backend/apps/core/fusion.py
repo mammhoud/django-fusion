@@ -17,10 +17,20 @@ from apps.finance.views import (
     PaymentListView,
     RevenueListView,
 )
-from apps.marketing.views import ContentCalendarView
+from apps.marketing.views import ChannelListView, ContentCalendarView
 
 from .navigation import navigation_context
-from .views import DashboardView, MemberListView, ModuleView, TaskCenterView, WorkflowListView
+from .views import (
+    AuditLogView,
+    CustomFieldsView,
+    DashboardView,
+    IntegrationsView,
+    MemberListView,
+    ModuleView,
+    ResourceListView,
+    TaskCenterView,
+    WorkflowListView,
+)
 
 
 class LoopCrmApplication(Application):
@@ -34,28 +44,28 @@ class LoopCrmApplication(Application):
         menu_path("crm/", ModuleView.as_view(module_id="crm", page_title="CRM", page_kicker="Sales", page_description="The relationship graph and pipeline operating system."), name="crm", icon="account_tree", title="CRM"),
         path("crm/companies/", CompanyListView.as_view(), name="crm_companies"),
         path("crm/contacts/", ContactListView.as_view(), name="crm_contacts"),
-        path("crm/pipelines/", ModuleView.as_view(module_id="crm", page_title="Pipelines", page_kicker="CRM · pipelines"), name="crm_pipelines"),
+        path("crm/pipelines/", ResourceListView.as_view(resource="pipelines", module_id="crm", page_title="Pipelines", page_kicker="CRM · pipelines", page_description="Configurable stages, probabilities, and forecasting views.", empty_message="No pipelines yet."), name="crm_pipelines"),
         path("crm/deals/", DealListView.as_view(), name="crm_deals"),
         path("crm/activities/", ModuleView.as_view(module_id="crm", page_title="Activities", page_kicker="CRM · activities"), name="crm_activities"),
         menu_path("marketing/", ModuleView.as_view(module_id="marketing", page_title="Marketing", page_kicker="Growth", page_description="Plan, approve, publish, and measure every channel from one calendar."), name="marketing", icon="campaign", title="Marketing"),
         path("marketing/calendar/", ContentCalendarView.as_view(), name="marketing_calendar"),
-        path("marketing/campaigns/", ModuleView.as_view(module_id="marketing", page_title="Campaigns", page_kicker="Marketing · campaigns"), name="marketing_campaigns"),
-        path("marketing/channels/", ModuleView.as_view(module_id="marketing", page_title="Channels", page_kicker="Marketing · channels"), name="marketing_channels"),
+        path("marketing/campaigns/", ResourceListView.as_view(resource="campaigns", module_id="marketing", page_title="Campaigns", page_kicker="Marketing · campaigns", page_description="Group content, spend, performance, and influenced deals.", empty_message="No campaigns yet."), name="marketing_campaigns"),
+        path("marketing/channels/", ChannelListView.as_view(), name="marketing_channels"),
         path("marketing/media/", ModuleView.as_view(module_id="marketing", page_title="Media library", page_kicker="Marketing · media"), name="marketing_media"),
         menu_path("finance/", FinanceDashboardView.as_view(), name="finance", icon="account_balance", title="Finance"),
         path("finance/invoices/", InvoiceListView.as_view(), name="finance_invoices"),
         path("finance/payments/", PaymentListView.as_view(), name="finance_payments"),
         path("finance/revenue/", RevenueListView.as_view(), name="finance_revenue"),
         menu_path("attribution/", ModuleView.as_view(module_id="attribution", page_title="Attribution", page_kicker="RevOps", page_description="See which content and conversations create pipeline revenue."), name="attribution", icon="insights", title="Attribution"),
-        path("attribution/touchpoints/", ModuleView.as_view(module_id="attribution", page_title="Touchpoints", page_kicker="Attribution · touchpoints"), name="attribution_touchpoints"),
-        path("attribution/reports/", ModuleView.as_view(module_id="attribution", page_title="Revenue reports", page_kicker="Attribution · reports"), name="attribution_reports"),
+        path("attribution/touchpoints/", ResourceListView.as_view(resource="touchpoints", module_id="attribution", page_title="Touchpoints", page_kicker="Attribution · touchpoints", page_description="Every social interaction credited toward a deal.", empty_message="No touchpoints yet."), name="attribution_touchpoints"),
+        path("attribution/reports/", ResourceListView.as_view(resource="touchpoints", module_id="attribution", page_title="Revenue reports", page_kicker="Attribution · reports", page_description="First, last, linear, time-decay, and position-based revenue views.", empty_message="No touchpoints to report on yet."), name="attribution_reports"),
         menu_path("tasks/", TaskCenterView.as_view(site_name="loop-crm", template_name="dashboard/tasks.html"), name="tasks", icon="bolt", title="Tasks"),
         menu_path("settings/", ModuleView.as_view(module_id="workspace", page_title="Workspace", page_kicker="Workspace", page_description="Configure people, automations, integrations, and audit history."), name="settings", icon="settings", title="Workspace"),
         path("settings/members/", MemberListView.as_view(), name="settings_members"),
         path("settings/workflows/", WorkflowListView.as_view(), name="settings_workflows"),
-        path("settings/integrations/", ModuleView.as_view(module_id="workspace", page_title="Integrations", page_kicker="Workspace · integrations"), name="settings_integrations"),
-        path("settings/custom-fields/", ModuleView.as_view(module_id="workspace", page_title="Custom fields", page_kicker="Workspace · custom fields"), name="settings_custom_fields"),
-        path("settings/audit/", ModuleView.as_view(module_id="workspace", page_title="Audit log", page_kicker="Workspace · audit"), name="settings_audit"),
+        path("settings/integrations/", IntegrationsView.as_view(), name="settings_integrations"),
+        path("settings/custom-fields/", CustomFieldsView.as_view(), name="settings_custom_fields"),
+        path("settings/audit/", AuditLogView.as_view(), name="settings_audit"),
     ]
 
     def application_context(self, request) -> dict:

@@ -46,19 +46,22 @@ class _Http:
         return cls._request(url, headers={"Authorization": f"Bearer {token}", "Accept": "application/json"})
 
     @classmethod
-    def post_json(cls, url: str, token: str, payload: dict, extra_headers: dict | None = None) -> tuple[int, dict]:
+    def post_json(cls, url: str, token: str | None, payload: dict, extra_headers: dict | None = None) -> tuple[int, dict]:
         headers = {
-            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
             **(extra_headers or {}),
         }
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         return cls._request(url, method="POST", headers=headers, data=json.dumps(payload).encode("utf-8"))
 
     @classmethod
-    def post_form(cls, url: str, fields: dict) -> tuple[int, dict]:
+    def post_form(cls, url: str, fields: dict, token: str | None = None) -> tuple[int, dict]:
         data = urllib.parse.urlencode(fields).encode("utf-8")
         headers = {"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         return cls._request(url, method="POST", headers=headers, data=data)
 
 
@@ -218,7 +221,88 @@ class XConnector(SocialConnector):
         return True
 
 
+class MastodonConnector(SocialConnector):
+    """Mastodon status publisher (ActivityPub ``POST /api/v1/statuses``)."""
+
+    platform = "mastodon"
+
+    def __init__(self, channel):
+        self.channel = channel
+
+    def _base_url(self) -> str:
+        name = self.channel.account_name.strip().lstrip("@")
+        instance = name.rsplit("@", 1)[-1].rstrip("/") if "@" in name else "mastodon.social"
+        return instance if instance.startswith("http") else f"https://{instance}"
+
+    def publish(self, post) -> PublishResult:
+        if not self.channel.oauth_token:
+            return PublishResult(False, message="Connect a Mastodon account before publishing.")
+        status, body = _Http.post_form(
+            f"{self._base_url()}/api/v1/statuses",
+            {"status": post.content[:500]},
+            token=self.channel.oauth_token,
+        )
+        if status not in (200, 201):
+            return PublishResult(False, message=_error_message(status, body, "Mastodon rejected the post"))
+        external_id = str(body.get("id") or "").strip()
+        if not external_id:
+            return PublishResult(False, message="Mastodon returned no status id for the post.")
+        return PublishResult(True, external_id=external_id, message="Published to Mastodon.")
+
+    def fetch_analytics(self, post) -> dict[str, int]:
+        # Mastodon exposes per-status counters (not impressions) on the status
+        # resource; keep this honest rather than fabricating a metric.
+        return {}
+
+
+class BlueskyConnector(SocialConnector):
+    """Bluesky (AT Protocol) publisher using an app password session."""
+
+    platform = "bluesky"
+    _base_url = "https://bsky.social"
+
+    def __init__(self, channel):
+        self.channel = channel
+
+    def _session(self) -> dict | None:
+        status, body = _Http.post_json(
+            f"{self._base_url}/xrpc/com.atproto.server.createSession",
+            None,
+            {"identifier": self.channel.account_name.strip(), "password": self.channel.oauth_token},
+        )
+        return body if status == 200 else None
+
+    def publish(self, post) -> PublishResult:
+        if not (self.channel.oauth_token and self.channel.account_name):
+            return PublishResult(False, message="Connect a Bluesky account before publishing.")
+        session = self._session()
+        if not session or not session.get("accessJwt") or not session.get("did"):
+            return PublishResult(False, message="Bluesky login failed. Check the handle and app password.")
+        record = {
+            "text": post.content[:300],
+            "createdAt": timezone.now().isoformat(),
+        }
+        status, body = _Http.post_json(
+            f"{self._base_url}/xrpc/com.atproto.repo.createRecord",
+            session["accessJwt"],
+            {"repo": session["did"], "collection": "app.bsky.feed.post", "record": record},
+        )
+        if status not in (200, 201):
+            return PublishResult(False, message=_error_message(status, body, "Bluesky rejected the post"))
+        uri = str(body.get("uri") or "").strip()
+        if not uri:
+            return PublishResult(False, message="Bluesky returned no post URI.")
+        return PublishResult(True, external_id=uri, message="Published to Bluesky.")
+
+    def fetch_analytics(self, post) -> dict[str, int]:
+        # AT Protocol does not expose per-post public metrics via the session
+        # API; return nothing rather than a fake metric.
+        return {}
+
+
 ADAPTERS: dict[str, type[SocialConnector]] = {
     "linkedin": LinkedInConnector,
     "twitter": XConnector,
+    "mastodon": MastodonConnector,
+    "bluesky": BlueskyConnector,
 }

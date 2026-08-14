@@ -26,7 +26,7 @@ A typical site tree looks like this:
 2. The `Site` contains application objects such as `CustomizerApp`, `LMSApp`, or `BlogApp`.
 3. Each application returns viewset instances from `viewsets`.
 4. Viewsets expose full-page routes, fragment-only routes, form endpoints, or model-backed routes.
-5. Site URL configuration includes the site routes under a prefix such as `/osoul/` or `/tinker/`.
+5. Site URL configuration includes the site routes under a prefix such as `/components/` or `/tinker/`.
 
 Keep reusable framework behavior in `libs/django-fusion/`. Keep site-specific registration in the relevant site path such as `core/ctc-research/`, `core/lms-demo/`, or `core/VResume/`.
 

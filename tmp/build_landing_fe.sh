@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-cd /home/structa.cloud/projects/landing-fusion/frontend
+cd /home/structa.cloud/projects/precis/landi/frontend
 echo '=== astro build ==='
 npx astro build 2>&1 | tail -4
 echo '=== products page built? ==='

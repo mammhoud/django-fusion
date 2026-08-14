@@ -296,7 +296,7 @@ anything:
 - [x] Update the 18 AGENTS.md files and 2 event template comments.
   - Replaced `projects/assets/templates/AGENTS.md` references with `libs/django-fusion/AGENTS.md`.
   - Replaced `projects/assets/templates` cross-site references with the django-fusion framework templates path.
-  - Rewrote `projects/ctc-research/` scope lines to refer to this fusion project.
+  - Rewrote `projects/precis/ctc-research/` scope lines to refer to this fusion project.
   - Rewrote the `event_page.html` comments to remove `projects/assets/templates/` references.
   - Note: the project-level `backend/AGENTS.md` still lists `projects/assets/` as a legacy fallback for non-fusion sites; those entries will be removed during Phase 1–3 execution.
 - [ ] Produce a diff matrix: `cms-fusion/backend` vs `cms/cms-full/` and `lms-fusion/backend` vs `cms/lms-full/`, `lms/cms/`, `lms/lms/`.

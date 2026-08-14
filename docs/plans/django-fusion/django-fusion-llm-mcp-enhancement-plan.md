@@ -3,7 +3,7 @@
 > **Status:** Planned — architecture and delivery gates defined; runtime provider integrations are not yet claimed complete.
 > **Owner:** django-fusion core team with project owners
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/`, `projects/precis/`, `projects/landing-fusion/`, `projects/formints/`
+> **Scope:** `libs/django-fusion/`, `projects/precis/main/`, `projects/precis/landi/`, `projects/formints/`
 > **Parent plan:** [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md)
 
 ## 1. Purpose
@@ -414,7 +414,7 @@ do not assume that a generic JSON-RPC POST accepts a generator response.
 
 ### 9.1 Precis LMS
 
-Owner: `projects/precis/backend/`.
+Owner: `projects/precis/main/backend/`.
 
 Candidate task modules:
 
@@ -436,7 +436,7 @@ structured output validation, and no-publish-without-approval behavior.
 
 ### 9.2 Landing-Fusion
 
-Owner: `projects/landing-fusion/backend/`.
+Owner: `projects/precis/landi/backend/`.
 
 Candidate task modules:
 
@@ -623,9 +623,9 @@ labels.
 | Unified tasks and task MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
 | django-fusion enhancements | [`django-fusion-enhancements.md`](django-fusion-enhancements.md) |
 | Worker consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
-| Landing-Fusion plan | [`../landing-fusion/README.md`](../landing-fusion/README.md) |
-| Precis product handoff | [`../../../projects/precis/README.md`](../../../projects/precis/README.md) |
-| Precis backend guidance | [`../../../projects/precis/backend/AGENTS.md`](../../../projects/precis/backend/AGENTS.md) |
+| Landing-Fusion plan | [`../precis/landi/README.md`](../precis/landi/README.md) |
+| Precis product handoff | [`../../../projects/precis/main/README.md`](../../../projects/precis/main/README.md) |
+| Precis backend guidance | [`../../../projects/precis/main/backend/AGENTS.md`](../../../projects/precis/main/backend/AGENTS.md) |
 | Formint Professional plan | [`../pos/formint-pos-professional-plan.md`](../pos/formint-pos-professional-plan.md) |
 | POS editions index | [`../editions/README.md`](../editions/README.md) |
 | Plan registry | [`../README.md`](../README.md) |

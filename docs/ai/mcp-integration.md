@@ -167,12 +167,12 @@ for tool in tools:
 # Search the codebase
 results = client.search_codebase(
     pattern="class RegistrationAdapter",
-    directory="projects/precis/"
+    directory="projects/precis/main/"
 )
 
 # Read specific files
 contents = client.read_files([
-    "projects/precis/plugins/accounts/adapters.py",
+    "projects/precis/main/plugins/accounts/adapters.py",
     "libs/django-fusion/src/django_fusion/comp/registry.py",
 ])
 ```

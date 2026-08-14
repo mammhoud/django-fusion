@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load webpack_loader %}
+{% block meta %}
+{% comp 'partials/meta.html' /%}
+{% endblock meta %}
+{% block html_attr %}data-theme="light"{% endblock html_attr %}
+{% block styles %}
+    {{ block.super }}
+{% endblock styles %}
+
+{% block extrastyle %}
+    {{ block.super }}
+{% endblock %}
+
+{% block css %}
+{% endblock css %}
+
+{% block extra_head %}
+{% endblock extra_head %}
+
+{% block loader %}
+{% endblock loader %}
+
+{% block header %}
+{% endblock header %}
+
+{% block bodyclass %}auth-page{% endblock %}
+
+{% block body_attr %}
+data-page="auth"
+{% endblock body_attr %}
+
+{% block body %}
+<main class="auth-container auth-container--vars" {% if request.user.is_authenticated %}hx-disabled="true"{% endif %}>
+
+  {% block content %}
+  {% endblock content %}
+</main>
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+{% if PASSKEY_LOGIN_ENABLED %}
+{% comp "plugins/mfa/webauthn/snippets/login_script.html" button_id="passkey_login" / %}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+{% endblock scripts %}
+
+{% block extra_scripts %}
+    {{ block.super }}
+{% endblock %}
+
+{% block extra_assets %}
+    {{ block.super }}
+{% endblock %}
+

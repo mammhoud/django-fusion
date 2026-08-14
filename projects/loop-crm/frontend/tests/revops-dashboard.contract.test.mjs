@@ -43,7 +43,7 @@ test('Dashboard counts are workspace-scoped on both API roads', async () => {
   const compatApi = await read('../backend/apps/core/api.py');
   assert.match(compatApi, /filter\(workspace_id=workspace_id\) if workspace_id is not None/);
   const boltApi = await read('../backend/apps/core/bolt_api.py');
-  assert.match(boltApi, /_workspace_id\(getattr\(request, "user", None\)\)/);
+  assert.match(boltApi, /_workspace_id\(await _request_user\(request\)\)/);
 });
 
 test('Finance revenue-trend endpoint is mounted on the API road', async () => {

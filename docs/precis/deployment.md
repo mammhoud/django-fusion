@@ -7,12 +7,12 @@
 ## Docker Compose
 
 ```yaml
-# projects/precis/docker-compose.yml
+# projects/precis/main/docker-compose.yml
 services:
   backend:
     build:
       context: ../..
-      dockerfile: projects/precis/compose/Dockerfile.backend
+      dockerfile: projects/precis/main/compose/Dockerfile.backend
     ports:
       - "5074:5074"
 
@@ -30,13 +30,13 @@ services:
 
 ```bash
 # Build (from repository root; production requires POSTGRES_PASSWORD and REDIS_PASSWORD)
-docker compose -f projects/precis/docker-compose.yml build
+docker compose -f projects/precis/main/docker-compose.yml build
 
 # Start (loads .env when present; required production secrets must be exported)
-docker compose -f projects/precis/docker-compose.yml up -d
+docker compose -f projects/precis/main/docker-compose.yml up -d
 
 # Logs
-docker compose -f projects/precis/docker-compose.yml logs -f
+docker compose -f projects/precis/main/docker-compose.yml logs -f
 ```
 
 ---

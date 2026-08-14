@@ -100,17 +100,20 @@ else ifeq ($(WEBSITE),lms-fusion)
   # lms-fusion is the runtime/site identity; Precis is its current
   # filesystem location after the project migration.
   SITE := lms-fusion
-  PROJECT_DIR := precis
+  PROJECT_DIR := precis/main
   TEST_WEBSITE := lms-fusion
-  COMPOSE_FILE ?= precis/docker-compose.yml
+  COMPOSE_FILE ?= precis/main/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
 else ifeq ($(WEBSITE),landing-fusion)
+  # landing-fusion is the runtime/site identity; its filesystem location is
+  # projects/precis/landi after the monorepo regrouping.
   SITE := landing-fusion
+  PROJECT_DIR := precis/landi
   TEST_WEBSITE := landing-fusion
-  COMPOSE_FILE ?= docker-compose.yml
-  MANAGE := uv run python $(SITE)/backend/__main__.py
+  COMPOSE_FILE ?= precis/landi/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
 else ifeq ($(WEBSITE),loop-crm)
@@ -210,7 +213,12 @@ scripts script:
 	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
 
 website-ctc:
-	$(MAKE) -C ctc-research $(filter-out $@,$(MAKECMDGOALS))
+	$(MAKE) -C precis/ctc-research $(filter-out $@,$(MAKECMDGOALS))
+
+website-precis:
+	$(MAKE) -C precis/main $(filter-out $@,$(MAKECMDGOALS))
+
+website-lms-fusion: website-precis  ## Alias — Precis is the current lms-fusion runtime
 
 website-structa:
 	$(MAKE) -C lms $(filter-out $@,$(MAKECMDGOALS))
@@ -227,7 +235,7 @@ website-pos: website-formints  ## Alias — POS editions dispatcher (projects/fo
 # Precis remains available through WEBSITE=lms-fusion for explicit maintenance,
 # but it is not part of repository-wide install/check/deploy workflows.
 projects:
-	@for project in landing-fusion loop-crm syntara formints; do \
+	@for project in precis/landi loop-crm syntara formints; do \
 		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
@@ -237,7 +245,7 @@ check:
 
 check-all:
 	@echo "==> check WEBSITE=landing-fusion"
-	@$(MAKE) -C landing-fusion check
+	@$(MAKE) -C precis/landi check
 	@echo "==> check WEBSITE=loop-crm"
 	@$(MAKE) -C loop-crm check
 	@echo "==> check Formint editions"
@@ -275,7 +283,7 @@ test-local tests-local:
 
 test-fusion:
 	@echo '🚀 Running lms-fusion tests...'
-	@uv run python -m pytest precis/backend/tests/ -q --tb=short
+	@uv run python -m pytest precis/main/backend/tests/ -q --tb=short
 	@echo ''
 	@echo '✅ lms-fusion tests complete'
 
@@ -543,7 +551,7 @@ docker-deploy-websites:
 	 { \
 		 echo "Deploying active websites (LMS excluded)..."; \
 		 echo "Building landing-fusion..."; \
-		 $(MAKE) -C landing-fusion docker-up; \
+		 $(MAKE) -C precis/landi docker-up; \
 		 echo "Building loop-crm..."; \
 		 $(MAKE) -C loop-crm docker-up; \
 		 echo "Active websites deployed (LMS excluded)."; \
@@ -625,13 +633,13 @@ docker-start-all:
 # Lint/typecheck active Python products. Precis/LMS remains explicit via its
 # own backend Makefile and is not part of aggregate checks.
 lint:
-	$(PYTHON) -m pylint landing-fusion loop-crm syntara formints tests 2>/dev/null || echo "Linting completed with warnings"
+	$(PYTHON) -m pylint precis/landi loop-crm syntara formints tests 2>/dev/null || echo "Linting completed with warnings"
 
 format:
-	$(PYTHON) -m black landing-fusion loop-crm syntara formints tests/
+	$(PYTHON) -m black precis/landi loop-crm syntara formints tests/
 
 typecheck:
-	$(PYTHON) -m mypy landing-fusion loop-crm syntara formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
+	$(PYTHON) -m mypy precis/landi loop-crm syntara formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
 
 # Run all checks: lint, format, typecheck
 lint-all: lint typecheck

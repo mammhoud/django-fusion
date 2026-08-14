@@ -44,7 +44,7 @@ Completed phase reports are archived under `plans/legacy/` and must not be prese
 |:--:|---|---|---|
 | P0 | Formint edition extension chain — next executable task | [`plans/editions/README.md`](plans/editions/README.md) | Edition-specific tests |
 | P0 | Landing-Fusion content work — preserve rendering contract | [`plans/landing-fusion/`](plans/landing-fusion/) | Backend tests + `npm run check` |
-| P1 | Precis LMS — close frontend/deployment gates | `projects/precis/backend/` | Site checks, tests, builds |
+| P1 | Precis LMS — close frontend/deployment gates | `projects/precis/main/backend/` | Site checks, tests, builds |
 | P1 | Repository cleanup — don't delete compatibility sources prematurely | [`plans/repository/migration-cleanup-master.md`](plans/repository/migration-cleanup-master.md) | Reference scan |
 | P2 | django-fusion tasks & MCP — unified bg task API, Celery removal, MCP tooling | [`plans/django-fusion/django-fusion-tasks-mcp-plan.md`](plans/django-fusion/django-fusion-tasks-mcp-plan.md) | `uv run pytest libs/django-fusion/` |
 | P2 | Docs maintenance — link validation, stale ref removal | [`plans/document-lifecycle.md`](plans/document-lifecycle.md) | Link checker |
@@ -62,7 +62,7 @@ Completed phase reports are archived under `plans/legacy/` and must not be prese
 | Old → New | When |
 |---|---|
 | `formintB` / `pos-cloud` → `formint-cloud` | 2026-08-09 |
-| `lms-fusion` → Precis LMS (`projects/precis/`) | Active |
+| `lms-fusion` → Precis LMS (`projects/precis/main/`) | Active |
 | `cypercloud` → Syntara (`projects/syntara/`) | Active |
 | `core/` → `projects/` | 2026 |
 

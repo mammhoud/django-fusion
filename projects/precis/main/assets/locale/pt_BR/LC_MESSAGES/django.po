@@ -1,0 +1,28 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-12 00:00+0000\n"
+"PO-Revision-Date: 2026-08-12 00:00+0000\n"
+"Last-Translator: structa.cloud\n"
+"Language-Team: structa.cloud\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+
+#: apps/templates/home/main.html
+msgid "Courses with visible progress"
+msgstr "Cursos com progresso visível"
+
+#: apps/templates/home/main.html
+msgid "Follow serious learning paths with clear content, progress, and a next useful action."
+msgstr "Siga trilhas de aprendizado sérias com conteúdo claro, progresso visível e uma próxima ação útil."
+
+#: apps/templates/home/main.html
+msgid "Open the catalog"
+msgstr "Abrir o catálogo"
+
