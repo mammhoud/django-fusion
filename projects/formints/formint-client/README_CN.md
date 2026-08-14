@@ -1,4 +1,4 @@
-# Tauri Vue3 应用模板
+# Formint Client
 
 **中文** | [English](README.md)
 
@@ -29,8 +29,8 @@
 1. **克隆仓库**
 
     ```bash
-    git clone https://github.com/KitsuneX07/tauri-vue-app.git
-    cd tauri-vue-app
+    git clone <repo-url> formint-client
+    cd formint-client
     ```
 
 2. **安装依赖**
@@ -80,7 +80,7 @@ vue-tsc --noEmit  # TypeScript 类型检查
 ## 项目结构
 
 ```
-tauri-vue-app/
+formint-client/
 ├── src/                    # Vue 前端源代码
 │   ├── components/         # 可重用的 Vue 组件
 │   │   └── TitleBar.vue   # 自定义标题栏组件

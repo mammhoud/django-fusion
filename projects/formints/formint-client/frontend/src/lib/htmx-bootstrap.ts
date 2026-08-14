@@ -1,14 +1,15 @@
 /**
  * HTMX bootstrap — wires CSRF headers onto every htmx request (the backend
- * expects the Django CSRF token on POSTs) and surfaces server errors + the
- * cartUpdated event to the Alpine toast system.
+ * expects the Django CSRF token on POSTs) and surfaces server errors to the
+ * Alpine toast system.
+ *
+ * `HX-Trigger` response headers (e.g. `cartUpdated`) are handled natively by
+ * htmx.org — it fires the named events on the request target, which bubble to
+ * `body` where the badge/drawer listen via `cartUpdated from:body`. No manual
+ * dispatch is needed (a previous version double-fired every event).
  */
 import type Htmx from 'htmx.org';
-
-function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
-  return match ? decodeURIComponent(match[2]) : null;
-}
+import { getCsrfToken } from './csrf';
 
 type HtmxEvent = Event & { detail?: Record<string, any> };
 
@@ -21,7 +22,7 @@ export function initHtmxBootstrap(htmx: typeof Htmx): void {
   // from forms whose buttons live outside a <form>).
   htmx.on('htmx:configRequest', (evt: Event) => {
     const detail = asHtmxDetail(evt);
-    const csrf = getCookie('csrftoken');
+    const csrf = getCsrfToken();
     if (csrf && detail.verb !== 'get') {
       detail.headers = detail.headers || {};
       detail.headers['X-CSRFToken'] = csrf;
@@ -30,29 +31,22 @@ export function initHtmxBootstrap(htmx: typeof Htmx): void {
     detail.credentials = 'same-origin';
   });
 
-  // Broadcast cart mutations to every listener (badge, drawer).
-  htmx.on('htmx:afterSwap', (evt: Event) => {
-    const detail = asHtmxDetail(evt);
-    const trigger = detail?.xhr?.getResponseHeader?.('HX-Trigger');
-    if (trigger) {
-      document.body.dispatchEvent(new CustomEvent(trigger.replace(/[^\w:]/g, '')));
-    }
-  });
-
   // Surf 4xx/5xx fragment responses as error toasts.
   htmx.on('htmx:responseError', (evt: Event) => {
     const detail = asHtmxDetail(evt);
     const status = detail?.xhr?.status;
+    const message =
+      status === 403
+        ? // A 403 with a token present means a stale session; without one the
+          // CSRF cookie simply had not arrived yet.
+          getCsrfToken()
+          ? 'Session expired — sign in again.'
+          : 'Security check failed — refresh the page.'
+        : `Request failed (${status}).`;
     window.dispatchEvent(
       new CustomEvent('fusion:toast', {
-        detail: {
-          message: status === 403 ? 'Session expired — sign in again.' : `Request failed (${status}).`,
-          kind: 'error',
-        },
+        detail: { message, kind: 'error' },
       }),
     );
   });
-
-  // Server-set HX-Trigger on the response header (Django sets HX-Trigger) is
-  // handled natively by HTMX; this just guards custom event dispatch.
 }

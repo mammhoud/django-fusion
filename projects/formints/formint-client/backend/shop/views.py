@@ -48,6 +48,8 @@ from .models import Category, Order, Product
 
 __all__ = [
     "catalog_api",
+    "orders_api",
+    "order_detail_api",
     "auth_status_api",
     "products_fragment",
     "cart_count_fragment",
@@ -112,6 +114,66 @@ def catalog_api(request: HttpRequest) -> JsonResponse:
         ],
     }
     return JsonResponse(data)
+
+
+def _order_payload(order: Order, *, detail: bool = False) -> dict:
+    """Serialize an order for the POS API (decimal-safe string amounts)."""
+    payload = {
+        "id": order.pk,
+        "reference": order.reference,
+        "customer_name": order.customer_name,
+        "status": order.status,
+        "order_type": order.order_type,
+        "total_amount": str(order.total),
+        "currency": "$",
+        "created_at": order.created_at.isoformat(),
+        "items": [
+            {
+                "id": i.pk,
+                "product_name": i.product_name,
+                "unit_price": str(i.unit_price),
+                "quantity": i.quantity,
+                "subtotal": str(i.line_total),
+            }
+            for i in order.items.all()
+        ],
+    }
+    if detail:
+        payload.update(
+            {
+                "customer_email": order.customer_email,
+                "customer_phone": order.customer_phone,
+                "notes": order.notes,
+                "subtotal": str(order.subtotal),
+                "tax": str(order.tax),
+            }
+        )
+    return payload
+
+
+@require_GET
+def orders_api(request: HttpRequest) -> JsonResponse:
+    """Recent orders as JSON — the POS client's Orders/Dashboard data source.
+
+    Mirrors ``catalog_api``: a plain data endpoint for the Vue POS client.
+    Returns the most recent 50 orders with line items; amounts are strings
+    (decimal-safe), matching the storefront catalog convention.
+    """
+    orders = Order.objects.prefetch_related("items").order_by("-created_at")[:50]
+    return JsonResponse(
+        {"orders": [_order_payload(o) for o in orders]}
+    )
+
+
+@require_GET
+def order_detail_api(request: HttpRequest, pk: int) -> JsonResponse:
+    """GET /api/orders/<pk>/ — full detail for one order.
+
+    The POS Orders view expands a card to fetch this: adds customer contact,
+    notes and the subtotal/tax breakdown on top of the list payload.
+    """
+    order = get_object_or_404(Order.objects.prefetch_related("items"), pk=pk)
+    return JsonResponse(_order_payload(order, detail=True))
 
 
 @require_GET

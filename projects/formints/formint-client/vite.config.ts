@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath, URL } from "node:url";
 import { readFileSync, existsSync } from "node:fs";
 
 // ── Dependency-free .env loader ─────────────────────────────────────────────
@@ -27,6 +28,13 @@ const HMR_PORT = Number(envVal("HMR_PORT", "1421"));
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
     plugins: [vue(), tailwindcss()],
+
+    // Path alias — shadcn-vue components import via @/…
+    resolve: {
+        alias: {
+            "@": fileURLToPath(new URL("./src", import.meta.url)),
+        },
+    },
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //

@@ -6,7 +6,10 @@
 <script>
   import htmx from 'htmx.org';
   import { initHtmxBootstrap } from '@/lib/htmx-bootstrap';
+  import { csrfHeaders, getCsrfToken } from '@/lib/csrf';
 
   initHtmxBootstrap(htmx);
   (window as any).htmx = htmx;
+  // Global for the Alpine fetch calls (login / logout) which cannot import modules.
+  (window as any).FormintCsrf = { headers: csrfHeaders, getToken: getCsrfToken };
 </script>

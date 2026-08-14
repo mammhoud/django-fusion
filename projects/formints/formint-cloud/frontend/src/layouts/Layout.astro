@@ -1,6 +1,6 @@
 ---
 import '../../assets/styles/index.css';
-import AppShell from '../components/AppShell';
+import AppIsland from '../AppIsland';
 
 interface Props {
   title?: string;
@@ -87,7 +87,8 @@ const route = Astro.url.pathname;
 
     <!-- The whole app chrome + page content hydrates client-side inside this
          island; `client:only` skips SSR because Tauri APIs aren't available
-         at build time. -->
-    <AppShell route={route} client:only="react" />
+         at build time. AppIsland restores the provider stack (auth, theme,
+         language, currency, modals) around AppShell. -->
+    <AppIsland route={route} client:only="react" />
   </body>
 </html>

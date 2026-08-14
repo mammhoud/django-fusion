@@ -35,11 +35,12 @@ const fallbackJson = JSON.stringify(FALLBACK_CATALOG);
 
     <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
-        var root = document.documentElement;
-        var stored = null;
+        document.documentElement.classList.add('js');
+        const root = document.documentElement;
+        let stored = null;
         try { stored = localStorage.getItem(THEME_STORAGE_KEY); } catch (e) {}
-        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var dark = stored ? stored === 'dark' : prefersDark;
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = stored ? stored === 'dark' : prefersDark;
         root.classList.remove('light', 'dark');
         root.classList.add(dark ? 'dark' : 'light');
       })();
@@ -48,9 +49,9 @@ const fallbackJson = JSON.stringify(FALLBACK_CATALOG);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
 
-  <body class="min-h-[100dvh] bg-fu-paper text-fu-ink antialiased">
+  <body class="grain min-h-[100dvh] bg-fu-paper text-fu-ink antialiased">
     <Header shopName={SHOP_NAME} />
-    <main id="main" class="min-h-[70dvh]">
+    <main id="main" class="min-h-[70dvh] pt-24">
       <slot />
     </main>
     <Footer shopName={SHOP_NAME} />

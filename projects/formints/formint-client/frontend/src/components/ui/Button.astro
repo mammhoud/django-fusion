@@ -1,0 +1,61 @@
+---
+/**
+ * Button — shadcn-style primitive for the storefront.
+ * Renders an <a> when href is given, otherwise a <button>. Variants are
+ * mapped onto the fu-* paper/ink tokens so it matches the design system.
+ */
+import { cn } from '@/lib/utils';
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'outline' | 'ghost' | 'mark' | 'destructive';
+  size?: 'sm' | 'md' | 'lg' | 'icon';
+  class?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  [key: string]: any;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  class: className = '',
+  type = 'button',
+  disabled = false,
+  ...forwarded
+} = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fu-link/40';
+
+const variants: Record<string, string> = {
+  primary:
+    'bg-fu-fill text-white shadow-[0_12px_28px_-14px_hsl(var(--fu-shadow)/0.45)] hover:bg-fu-fill-hover',
+  outline: 'border border-fu-line bg-transparent text-fu-ink hover:border-fu-ink/30 hover:bg-fu-line/40',
+  ghost: 'text-fu-muted hover:bg-fu-line/40 hover:text-fu-ink',
+  mark: 'bg-fu-mark text-fu-ink hover:brightness-95',
+  destructive: 'bg-rose-600 text-white hover:bg-rose-500',
+};
+
+const sizes: Record<string, string> = {
+  sm: 'h-8 px-4 text-xs',
+  md: 'h-10 px-5 text-sm',
+  lg: 'h-12 px-7 text-sm',
+  icon: 'h-10 w-10',
+};
+
+const cls = cn(base, variants[variant], sizes[size], className);
+---
+
+{
+  href ? (
+    <a href={href} class={cls} aria-disabled={disabled ? 'true' : undefined} {...forwarded}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class={cls} disabled={disabled} {...forwarded}>
+      <slot />
+    </button>
+  )
+}

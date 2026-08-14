@@ -61,6 +61,12 @@ const productCards = (pageData?.products || []).map((product: any) => ({
   logo_style: String(product.logo_style || ''),
   status: String(product.status || ''),
   editions: Array.isArray(product.editions) ? product.editions : [],
+  // The first edition's offer chip (e.g. the Community edition's
+  // "Offline-first · open source") surfaces on the card, mirroring the
+  // badge-offer treatment on the product detail page.
+  offer_label: Array.isArray(product.editions)
+    ? String(product.editions.find((e: any) => e.offer_label)?.offer_label || '')
+    : '',
   tech: Array.isArray(product.tech) ? product.tech : [],
   external: String(product.href || '').startsWith('http'),
 }));
@@ -167,11 +173,10 @@ const productCards = (pageData?.products || []).map((product: any) => ({
         <p class='mt-3 max-w-xl text-fu-muted'>
           {pageData?.search_description || 'Open-source libraries, cloud platforms, and desktop apps from one codebase.'}
         </p>
-      </div>
-
-      <!-- Products preview — server-rendered at build time, then kept in sync
+      </div>      <!-- Products preview — server-rendered at build time, then kept in sync
            with the Redux products slice by the client ProductGrid. -->
       <ProductGrid products={productCards} />
+
     </div>
   </section>
 

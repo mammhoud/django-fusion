@@ -10,8 +10,36 @@ while keeping `formintA/` the single canonical source.
 
 **Status (9 Aug 2026):** Community plan `01-community.md` tasks A1–A5 complete
 (Rust `refund_sale`, refund UI, offline-first banner, e2e, docs note). The
-bundle generator, rename, and landing seed update are implemented. Remaining
-tasks are the GitHub publish checklist (C4–C6).
+bundle generator, rename, and landing seed update are implemented — including
+the **offline-first badge** (`offer_label: "Offline-first · open source"`) and
+**refund flow** (see [Shipped surface](#shipped-surface) below). Remaining tasks
+are the GitHub publish checklist (C4–C6).
+
+## Shipped surface
+
+### Offline-first badge
+
+- Landing seed (`seed_pages.py`): the Community edition carries
+  `offer_label: "Offline-first · open source"`, rendered as a `badge-offer`
+  chip on the edition card (`/products/formint-pos/`) **and** on the home page
+  product card (`index.astro` derives it from the first offer-bearing
+  edition).
+- In-app: `useOfflineMode` hook surfaces the offline state as a calm top
+  banner ("Offline mode — data stays on this device") whenever the OS reports
+  the device offline.
+- Verified: landing backend tests assert the badge text, the capability cards,
+  and the API `offer_label`; the home page HTML renders the `badge-offer` chip.
+
+### Refund flow
+
+- **UI:** Transactions → a completed sale exposes **Refund** → confirm dialog
+  (`refundTarget` / `refunding` state) → `invoke('refund_sale', { saleId })` →
+  local state flips the row to `Refunded` (no stale reload) + toast feedback.
+- **Rust:** `sales::refund_sale` (`src-tauri/src/operations/sales.rs`) marks
+  `sales.status = "refunded"`. Only `completed` sales; idempotent (a second
+  refund on the same sale errors "already refunded"); missing sales error.
+- **Coverage:** Rust unit tests (`refund_sale_*`), `Transactions.test.tsx`,
+  and `e2e/refund.spec.ts` (shipped in the bundle).
 
 ## Rename contract (hard)
 
@@ -66,6 +94,13 @@ community-version` in `projects/formints/Makefile`.
 - [x] `seed_pages.py`: all four `github.com/mammhoud/formint-pos` links →
       `github.com/mammhoud/formint-community` (hero repo CTA, Community edition
       card CTA, “View on GitHub”, team-card link).
+- [x] Community edition carries the **offline-first badge**
+      (`offer_label: "Offline-first · open source"`) — `badge-offer` chip on
+      the edition card **and** the home page product card (data-driven from
+      the first offer-bearing edition).
+- [x] “What Formints POS ships” capability cards include **Offline-first mode**
+      and **Refunds & returns** (feature grid + edition bullets + comparison
+      table all cover both).
 - [x] Verified no remaining `mammhoud/formint-pos` refs in landing backend; no
       test asserts the old URL.
 
@@ -121,7 +156,9 @@ community-version` in `projects/formints/Makefile`.
       `formint-community/` run `pnpm install` + `pnpm test` + `cargo test` to
       prove the standalone package is self-sufficient.
 - [ ] **Step 5:** Landing seed — re-seed a dev landing DB and confirm the
-      Formints Community card CTA points at `mammhoud/formint-community`.
+      Formints Community card CTA points at `mammhoud/formint-community` **and**
+      the `badge-offer` chip renders "Offline-first · open source" on the home
+      product card and the edition card.
 
 ## Self-Review
 

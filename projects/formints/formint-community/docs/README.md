@@ -1,11 +1,31 @@
 # Formint — Documentation
 
 > **Version:** 0.1.0 | **Stack:** Tauri 2 + React 19 + Rust/Diesel + SQLite
-> **Repository:** [github.com/mammhoud/POS](https://github.com/mammhoud/POS)
+> **Repository:** [github.com/mammhoud/formint-community](https://github.com/mammhoud/formint-community)
 
 ## Overview
 
 Formint is a lightweight, offline-first Point of Sale desktop application built with **Tauri**, **React 19**, and **Rust/Diesel ORM**. It uses an embedded **SQLite** database — no external server or server required.
+
+---
+
+## Key Features
+
+- **Offline-first mode + offline-first badge** — everything runs on one device:
+  no server, no sidecar, no cloud. The **offline-first badge**
+  ("Offline-first · open source") marks the Community edition on the landing
+  site's edition and product cards, and in-app a calm banner ("Offline mode —
+  data stays on this device") appears whenever the OS reports the device
+  offline (`useOfflineMode`).
+- **Refunds & returns** — from **Transactions**, open a completed sale and
+  click **Refund**, confirm in the dialog, and the sale flips to a visually
+  distinct `Refunded` state via the Rust `refund_sale` command. Only
+  `completed` sales can be refunded, once only (a second attempt returns a
+  clear error); the transaction trail is preserved — no data is deleted.
+- Sales, receipting + inventory with cash, card, and split payments
+- ESC/POS thermal printer support + invoice PDF generation with advanced receipt templates
+- i18n (English / French / Arabic), role-based access control (5 default roles), and 5 theme variants with Theme Studio
+- KDS (Kitchen Display System)
 
 ---
 

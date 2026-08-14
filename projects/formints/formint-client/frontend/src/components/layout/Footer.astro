@@ -1,21 +1,41 @@
 ---
-interface Props {
-  shopName?: string;
-}
-const { shopName = 'The Daily Grind' } = Astro.props;
+import { SHOP_NAME, SHOP_OPEN_HOURS, SHOP_VERSION } from '@/lib/site';
+import { fetchFusionBranding, fetchFusionAssets } from '@/lib/fusion';
+import Badge from '@/components/ui/Badge.astro';
+
+// Site contract from django-fusion (falls back to the static site config).
+const branding = await fetchFusionBranding();
+const assets = await fetchFusionAssets();
+const shopName = branding?.site.name || SHOP_NAME;
+const shopTagline =
+  branding?.site.tagline || 'Roasted in small batches, brewed to order.';
+const fusionVersion = assets?.version || 'dev';
+const renderFirst = assets?.fusion_render_first ?? false;
 ---
 
-<footer class="border-t border-fu-line bg-fu-card">
+<footer
+  class="border-t border-fu-line bg-fu-card"
+  x-data={`{ shopName: '${shopName}', tagline: '${shopTagline}', fusionVersion: '${fusionVersion}', renderFirst: ${renderFirst},
+    init() {
+      fetch('/fusion/branding/', { headers: { Accept: 'application/json' } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d?.site?.name) { this.shopName = d.site.name; this.tagline = d.site.tagline; } })
+        .catch(() => {});
+      fetch('/fusion/assets/', { headers: { Accept: 'application/json' } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d?.version) this.fusionVersion = d.version; if (typeof d?.fusion_render_first === 'boolean') this.renderFirst = d.fusion_render_first; })
+        .catch(() => {});
+    } }`}
+>
   <div class="container-fusion grid gap-10 py-14 md:grid-cols-3">
     <div>
-      <p class="font-mono text-sm font-semibold tracking-tight text-fu-ink">{shopName}</p>
-      <p class="mt-3 max-w-[40ch] text-sm leading-relaxed text-fu-muted">
-        Roasted in small batches, brewed to order. This storefront runs on the
-        AHA stack — Astro renders, HTMX swaps, Alpine hydrates.
+      <p class="font-mono text-sm font-semibold tracking-tight text-fu-ink" x-text="shopName">{shopName}</p>
+      <p class="mt-3 max-w-[40ch] text-sm leading-relaxed text-fu-muted" x-text="tagline">
+        {shopTagline}
       </p>
       <div class="mt-4 flex items-center gap-2">
         <span class="live-dot" aria-hidden="true"></span>
-        <span class="font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted">Open now · Mon–Sun 7:00 → 19:00</span>
+        <span class="font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted">{SHOP_OPEN_HOURS}</span>
       </div>
     </div>
 
@@ -40,13 +60,18 @@ const { shopName = 'The Daily Grind' } = Astro.props;
     </div>
   </div>
   <div class="border-t border-fu-line">
-    <div class="container-fusion flex flex-col items-center justify-between gap-2 py-6 sm:flex-row">
+    <div class="container-fusion flex flex-col items-center justify-between gap-3 py-6 sm:flex-row">
       <p class="font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted">
-        © 2026 {shopName} · Structa Cloud
+        © 2026 <span x-text="shopName">{shopName}</span> · Structa Cloud
       </p>
-      <p class="font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted">
-        Astro · HTMX · Alpine · Django
-      </p>
+      <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
+        <!-- Fusion render mode — live from /fusion/assets/ -->
+        <Badge variant={renderFirst ? 'mark' : 'outline'} x-text="renderFirst ? 'fusion-render' : 'data-api'">data-api</Badge>
+        <p class="font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted">
+          Client v<span x-text={`'${SHOP_VERSION}'`}>{SHOP_VERSION}</span> ·
+          Fusion <span x-text="fusionVersion">{fusionVersion}</span>
+        </p>
+      </div>
     </div>
   </div>
 </footer>

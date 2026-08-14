@@ -94,6 +94,15 @@ function main() {
   pkg.homepage = 'https://structa.cloud';
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 
+  // ── Rename: package-lock.json (keep the lock name in sync) ──
+  const lockPath = path.join(DEST, 'package-lock.json');
+  if (fs.existsSync(lockPath)) {
+    const lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
+    lock.name = PACKAGE_NAME;
+    if (lock.packages?.['']) lock.packages[''].name = PACKAGE_NAME;
+    fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
+  }
+
   // ── Rename: tauri.conf.json ──
   const tauriPath = path.join(DEST, 'src-tauri', 'tauri.conf.json');
   const tauri = JSON.parse(fs.readFileSync(tauriPath, 'utf8'));
@@ -137,6 +146,32 @@ function main() {
       }
     }
   }
+
+  // ── Rename: shipped docs ──
+  // Source docs legitimately reference the in-repo identifier (com.mammhoud.pos)
+  // and the old codename (pos-ko), so the public copies must be rewritten.
+  // COMMUNITY.md is excluded — it documents the rename mapping itself — and the
+  // standalone README is written fresh below, so neither needs patching.
+  function patchMarkdown(dir, pattern, to) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fp = path.join(dir, entry.name);
+      if (entry.isSymbolicLink()) continue; // never read/write through links
+      if (entry.isDirectory()) {
+        if (!EXCLUDE.has(entry.name)) patchMarkdown(fp, pattern, to);
+      } else if (
+        (entry.name.endsWith('.md') || entry.name.endsWith('.markdown')) &&
+        entry.name !== 'COMMUNITY.md'
+      ) {
+        const content = fs.readFileSync(fp, 'utf8');
+        if (pattern.test(content)) {
+          fs.writeFileSync(fp, content.replace(new RegExp(pattern.source, 'g'), to));
+          console.log(`  patched ${path.relative(DEST, fp)} → ${to}`);
+        }
+      }
+    }
+  }
+  patchMarkdown(DEST, /\bcom\.mammhoud\.pos\b/, IDENTIFIER);
+  patchMarkdown(DEST, /\bpos-ko\b/, PACKAGE_NAME);
 
   // ── Standalone README (replaces the monorepo one — no ../relative links) ──
   const readme = `# Formints Community

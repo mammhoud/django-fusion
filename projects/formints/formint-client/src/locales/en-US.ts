@@ -33,14 +33,18 @@ const enUS = {
         languages: {
             "zh-CN": "简体中文",
             "en-US": "English",
+            "ar-SA": "العربية",
+            "fr-FR": "Français",
         },
     },
     home: {
-        welcome: "Welcome to Tauri Vue App",
-        description: "This is a cross-platform desktop application built with Tauri and Vue 3.",
+        welcome: "Welcome to Formint Client",
+        description: "The point-of-sale desktop app for restaurants and coffee shops.",
     },
     navigation: {
         home: "Home",
+        menu: "Menu",
+        orders: "Orders",
         settings: "Settings",
     },
 };

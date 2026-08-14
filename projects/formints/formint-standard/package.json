@@ -107,7 +107,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@playwright/test": "^1.48.0",
+    "@playwright/test": "1.49.1",
     "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2",

@@ -17,7 +17,8 @@ help: ## Show backend commands
 	@echo "=== FormintC Purchase Backend (Django) ==="
 	@grep -E '^[a-zA-Z_-]+:.*?##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-16s %s\n", $$1, $$2}'
 
-dev: ## Run Django dev server (:8075)
+dev: ## Run Django dev server (:8075), applying existing migrations first
+	$(MANAGE) migrate --noinput
 	$(MANAGE) runserver 0.0.0.0:$${PORT:-$(DEFAULT_PORT)}
 
 install: ## Install Python deps (workspace venv)
@@ -39,5 +40,5 @@ shell: ## Django shell
 check: ## Django system checks
 	$(MANAGE) check
 
-test: ## Run backend tests
-	$(UV_RUN) pytest tests/
+test: ## Run backend tests (skips gracefully when tests/ is absent)
+	@if [ -d tests ]; then $(UV_RUN) python -m pytest tests/ -q; else echo 'No tests/ directory yet — nothing to run.'; fi

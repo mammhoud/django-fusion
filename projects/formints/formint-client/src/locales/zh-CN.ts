@@ -33,14 +33,18 @@ const zhCN = {
         languages: {
             "zh-CN": "简体中文",
             "en-US": "English",
+            "ar-SA": "العربية",
+            "fr-FR": "Français",
         },
     },
     home: {
-        welcome: "欢迎使用 Tauri Vue 应用",
-        description: "这是一个使用 Tauri 和 Vue 3 构建的跨平台桌面应用程序。",
+        welcome: "欢迎使用 Formint Client",
+        description: "面向餐厅和咖啡店的桌面收银（POS）应用。",
     },
     navigation: {
         home: "首页",
+        menu: "菜单",
+        orders: "订单",
         settings: "设置",
     },
 };

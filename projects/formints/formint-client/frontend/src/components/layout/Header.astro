@@ -1,8 +1,25 @@
 ---
+import { SHOP_NAME } from '@/lib/site';
+import { fetchFusionNavigation } from '@/lib/fusion';
+
 interface Props {
   shopName?: string;
 }
-const { shopName = 'The Daily Grind' } = Astro.props;
+const { shopName: propName = SHOP_NAME } = Astro.props;
+// Site contract from the django-fusion site (falls back to static config).
+const fusionNav = await fetchFusionNavigation();
+const shopName = fusionNav?.brand.label || propName;
+const accountLinks =
+  fusionNav?.modules.find((m) => m.id === 'account')?.routes ?? [{ label: 'My orders', href: '/orders/mine/' }];
+const staffLinks =
+  fusionNav?.modules.find((m) => m.id === 'staff')?.routes ?? [{ label: 'Staff desk', href: '/employee/' }];
+// Pre-built account menu HTML — avoids inline .map() chains in the template
+// (the Astro compiler mangles sibling arrow params in element-bodied maps).
+const linkCls = 'block rounded-lg px-3 py-2 text-sm text-fu-ink hover:bg-fu-line/40';
+const accountMenuHtml = [
+  ...accountLinks.map((r) => `<a href="${r.href}" class="${linkCls}">${r.label}</a>`),
+  ...staffLinks.map((r) => `<a x-show="user?.is_staff" href="${r.href}" class="${linkCls}">${r.label}</a>`),
+].join('');
 const pathname = Astro.url.pathname;
 
 const links = [
@@ -15,10 +32,10 @@ const links = [
 const isActive = (href: string) => pathname === href.split('#')[0] && href.includes('#');
 ---
 
+<!-- Floating island nav — detached glass pill, morphing hamburger -->
 <header
-  class="sticky top-0 z-50 border-b border-fu-line/70 backdrop-blur-md"
-  x-data="{
-    open: false, scrolled: false, authed: false, user: null, authLoading: true,
+  class="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6"
+  x-data={`{ open: false, scrolled: false, authed: false, user: null, authLoading: true, menuOpen: false, shopName: '${shopName}',
     async checkAuth() {
       try {
         const res = await fetch('/apis/auth/status/', { credentials: 'include', headers: { Accept: 'application/json' } });
@@ -26,117 +43,181 @@ const isActive = (href: string) => pathname === href.split('#')[0] && href.inclu
       } catch (e) { /* offline */ }
       finally { this.authLoading = false; }
     },
+    async fetchFusion() {
+      try {
+        const res = await fetch('/fusion/navigation/', { headers: { Accept: 'application/json' } });
+        if (res.ok) { const d = await res.json(); if (d?.brand?.label) this.shopName = d.brand.label; }
+      } catch (e) { /* offline */ }
+    },
     async logout() {
-      try { await fetch('/api/auth/browser/v1/auth/session', { method: 'DELETE', credentials: 'include', headers: { Accept: 'application/json' } }); } catch (e) {}
+      try { await fetch('/api/auth/browser/v1/auth/session', { method: 'DELETE', credentials: 'include', headers: window.FormintCsrf?.headers?.({ Accept: 'application/json' }) || { Accept: 'application/json' } }); } catch (e) {}
       window.location.href = '/';
     },
-    init() { this.checkAuth(); },
-  }"
-  x-bind:style="scrolled
-    ? 'background-color: hsl(var(--fu-paper) / 0.97); box-shadow: 0 1px 0 hsl(var(--fu-line) / 0.6), 0 14px 36px -20px hsl(var(--fu-ink) / 0.4);'
-    : 'background-color: hsl(var(--fu-paper) / 0.9);'"
+    init() { this.checkAuth(); this.fetchFusion(); },
+  }`}
   @fusion:header-scrolled.window="scrolled = $event.detail.scrolled"
 >
-  <div class="container-fusion">
-    <div class="flex h-16 items-center justify-between">
-      <!-- Wordmark -->
-      <a href="/" class="flex items-center gap-2.5 font-mono text-sm font-semibold tracking-tight text-fu-ink" aria-label={shopName}>
-        <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <rect width="32" height="32" rx="7" fill="hsl(var(--fu-ink))" />
-          <path d="M8 12l6 6-6 6" stroke="hsl(var(--fu-mark))" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-          <circle cx="21" cy="14" r="3.2" fill="hsl(var(--fu-link))" />
-          <path d="M21 17.2v6" stroke="hsl(var(--fu-link))" stroke-width="2.2" stroke-linecap="round" />
-        </svg>
-        <span>{shopName}</span>
+  <!-- The island itself -->
+  <div
+    class="mx-auto flex h-14 max-w-[1100px] items-center justify-between gap-3 rounded-full border border-fu-line/70 bg-fu-paper/80 px-3 pl-4 shadow-[0_8px_32px_-12px_hsl(var(--fu-shadow)/0.12),inset_0_1px_0_hsl(0_0%_100%/0.6)] backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] dark:border-fu-line/60 dark:bg-fu-paper/70 dark:shadow-[0_8px_32px_-12px_hsl(var(--fu-shadow)/0.5),inset_0_1px_0_hsl(0_0%_100%/0.08)]"
+    :class="scrolled ? 'border-fu-line shadow-[0_16px_40px_-16px_hsl(var(--fu-shadow)/0.2),inset_0_1px_0_hsl(0_0%_100%/0.6)] dark:shadow-[0_16px_40px_-16px_hsl(var(--fu-shadow)/0.6),inset_0_1px_0_hsl(0_0%_100%/0.1)]' : ''"
+  >
+    <!-- Wordmark -->
+    <a href="/" class="flex shrink-0 items-center gap-2.5 font-mono text-sm font-semibold tracking-tight text-fu-ink" :aria-label="shopName">
+      <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="hsl(var(--fu-ink))" />
+        <path d="M8 12l6 6-6 6" stroke="hsl(var(--fu-mark))" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        <circle cx="21" cy="14" r="3.2" fill="hsl(var(--fu-link))" />
+        <path d="M21 17.2v6" stroke="hsl(var(--fu-link))" stroke-width="2.2" stroke-linecap="round" />
+      </svg>
+      <span class="hidden sm:inline" x-text="shopName">{shopName}</span>
+    </a>
+
+    <!-- Desktop nav — inline, inside the island -->
+    <nav class="hidden items-center gap-1 md:flex" aria-label="Main">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          class:list={[
+            'rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300',
+            isActive(l.href) ? 'bg-fu-line/50 text-fu-ink' : 'text-fu-muted hover:bg-fu-line/30 hover:text-fu-ink',
+          ]}
+        >
+          {l.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Right cluster -->
+    <div class="flex items-center gap-1.5">
+      <a
+        href="/accounts/signup/"
+        class="hidden rounded-full border border-fu-line px-4 py-2 text-sm font-medium text-fu-ink transition-colors hover:bg-fu-line/40 sm:inline-flex"
+      >
+        Create account
       </a>
 
-      <!-- Desktop nav -->
-      <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
-        {links.map((l) => (
-          <a
-            href={l.href}
-            class:list={[
-              'text-sm font-medium transition-colors',
-              isActive(l.href) ? 'text-fu-ink' : 'text-fu-muted hover:text-fu-ink',
-            ]}
-          >
-            {l.label}
-          </a>
-        ))}
-      </nav>
-
-      <!-- Right cluster -->
-      <div class="flex items-center gap-2">
-        <a
-          href="/accounts/signup/"
-          class="hidden rounded-full border border-fu-line px-4 py-2 text-sm font-medium text-fu-ink transition-colors hover:bg-fu-line/40 sm:inline-flex"
-        >
-          Create account
-        </a>
-
-        <!-- Auth state -->
-        <template x-if="authed">
-          <div class="relative" x-data="{ accountOpen: false }">
-            <button
-              type="button"
-              class="flex h-9 w-9 items-center justify-center rounded-full bg-fu-ink font-mono text-xs font-bold text-fu-paper"
-              x-text="(user?.display?.[0] || '?').toUpperCase()"
-              @click="accountOpen = !accountOpen"
-              aria-label="Account menu"
-            />
-            <div
-              x-show="accountOpen"
-              x-cloak
-              @click.outside="accountOpen = false"
-              class="absolute right-0 mt-2 w-52 rounded-2xl border border-fu-line bg-fu-card p-2 shadow-xl"
-            >
-              <p class="px-3 py-1.5 font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted" x-text="user?.email"></p>
-              <a href="/orders/mine/" class="block rounded-lg px-3 py-2 text-sm text-fu-ink hover:bg-fu-line/40">My orders</a>
-              <a x-show="user?.is_staff" href="/employee/" class="block rounded-lg px-3 py-2 text-sm text-fu-ink hover:bg-fu-line/40">Staff desk</a>
-              <button @click="logout()" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-rose-600 hover:bg-rose-50">Sign out</button>
-            </div>
-          </div>
-        </template>
-        <template x-if="!authed && !authLoading">
+      <!-- Auth state -->
+      <template x-if="authed">
+        <div class="relative" x-data="{ accountOpen: false }">
           <button
             type="button"
-            class="hidden rounded-full bg-fu-link px-4 py-2 text-sm font-semibold text-white transition-transform active:scale-95 sm:inline-flex"
-            @click="$dispatch('fusion:open-login')"
+            class="flex h-9 w-9 items-center justify-center rounded-full bg-fu-ink font-mono text-xs font-bold text-fu-paper transition-transform duration-300 active:scale-95"
+            x-text="(user?.display?.[0] || '?').toUpperCase()"
+            @click="accountOpen = !accountOpen"
+            aria-label="Account menu"
+          />
+          <div
+            x-show="accountOpen"
+            x-cloak
+            @click.outside="accountOpen = false"
+            class="absolute right-0 mt-2 w-52 rounded-2xl border border-fu-line bg-fu-card p-2 shadow-xl"
           >
-            Sign in
-          </button>
-        </template>
-
-        <!-- Cart button + badge -->
+            <p class="px-3 py-1.5 font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted" x-text="user?.email"></p>
+            <div set:html={accountMenuHtml} />
+            <button @click="logout()" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10">Sign out</button>
+          </div>
+        </div>
+      </template>
+      <template x-if="!authed && !authLoading">
         <button
           type="button"
-          class="relative flex h-9 w-9 items-center justify-center rounded-full border border-fu-line text-fu-ink transition-colors hover:bg-fu-line/40"
-          @click="$dispatch('fusion:open-cart')"
-          aria-label="Open cart"
+          class="hidden rounded-full bg-fu-fill px-4 py-2 text-sm font-semibold text-white transition-transform duration-300 active:scale-95 md:inline-flex"
+          @click="$dispatch('fusion:open-login')"
         >
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l2.4 12.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6" />
-            <circle cx="9.5" cy="20.5" r="1.2" fill="currentColor" stroke="none" />
-            <circle cx="17" cy="20.5" r="1.2" fill="currentColor" stroke="none" />
-          </svg>
-          <span
-            id="cart-count"
-            hx-get="/shop/fragments/cart/count/"
-            hx-trigger="load, cartUpdated from:body"
-            hx-swap="innerHTML"
-            class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-fu-mark px-1 font-mono text-[0.65rem] font-bold text-fu-ink"
-          >0</span>
+          Sign in
         </button>
-      </div>
+      </template>
+
+      <!-- Cart button + badge -->
+      <button
+        type="button"
+        class="relative flex h-9 w-9 items-center justify-center rounded-full border border-fu-line text-fu-ink transition-transform duration-300 hover:border-fu-ink/40 active:scale-95"
+        @click="$dispatch('fusion:open-cart')"
+        aria-label="Open cart"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l2.4 12.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6" />
+          <circle cx="9.5" cy="20.5" r="1.2" fill="currentColor" stroke="none" />
+          <circle cx="17" cy="20.5" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        <span
+          id="cart-count"
+          hx-get="/shop/fragments/cart/count/"
+          hx-trigger="load, cartUpdated from:body"
+          hx-swap="innerHTML"
+          class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-fu-mark px-1 font-mono text-[0.65rem] font-bold text-fu-ink"
+        >0</span>
+      </button>
+
+      <!-- Morphing hamburger (mobile menu trigger) -->
+      <button
+        type="button"
+        class="relative flex h-9 w-9 items-center justify-center rounded-full border border-fu-line text-fu-ink md:hidden"
+        @click="menuOpen = !menuOpen"
+        :aria-expanded="menuOpen"
+        aria-label="Toggle menu"
+      >
+        <span
+          class="absolute h-0.5 w-4 rounded-full bg-current transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          :class="menuOpen ? 'rotate-45' : '-translate-y-1.5'"
+        ></span>
+        <span
+          class="absolute h-0.5 w-4 rounded-full bg-current transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          :class="menuOpen ? 'opacity-0 scale-x-50' : ''"
+        ></span>
+        <span
+          class="absolute h-0.5 w-4 rounded-full bg-current transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          :class="menuOpen ? '-rotate-45' : 'translate-y-1.5'"
+        ></span>
+      </button>
     </div>
+  </div>
+
+  <!-- Full-screen overlay menu — staggered mask reveal -->
+  <div
+    x-show="menuOpen"
+    x-cloak
+    x-transition:enter="transition ease-[cubic-bezier(0.32,0.72,0,1)] duration-500"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-[cubic-bezier(0.32,0.72,0,1)] duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    @click.outside="menuOpen = false"
+    @keydown.escape.window="menuOpen = false"
+    class="fixed inset-0 z-40 flex flex-col items-center justify-center gap-2 bg-fu-paper/90 backdrop-blur-3xl md:hidden"
+  >
+    {links.map((l) => (
+      <a
+        href={l.href}
+        @click="menuOpen = false"
+        class="font-display text-4xl font-bold tracking-tight text-fu-ink transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:text-fu-link"
+        :class="menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'"
+        style={`transition-delay: ${120 + links.indexOf(l) * 90}ms`}
+      >
+        {l.label}
+      </a>
+    ))}
+    <a
+      href="/accounts/signup/"
+      @click="menuOpen = false"
+      class="mt-6 rounded-full bg-fu-fill px-8 py-3 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+      :class="menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'"
+      style={`transition-delay: ${120 + links.length * 90}ms`}
+    >
+      Create account
+    </a>
   </div>
 </header>
 
 <script>
-  // Scroll state for the header shadow (transform/opacity only).
+  // Scroll state for the island shadow (transform/opacity only).
   let ticking = false;
   const onScroll = () => {
-    if (ticking) return;
+    if (ticking) {
+      return;
+    }
     ticking = true;
     requestAnimationFrame(() => {
       window.dispatchEvent(new CustomEvent('fusion:header-scrolled', { detail: { scrolled: window.scrollY > 8 } }));

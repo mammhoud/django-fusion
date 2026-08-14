@@ -1,5 +1,5 @@
 {
-    "name": "pos-client",
+    "name": "formint-client",
     "private": true,
     "version": "1.0.0",
     "type": "module",
@@ -13,6 +13,9 @@
         "format": "prettier --write ."
     },
     "dependencies": {
+        "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+        "@fontsource-variable/jetbrains-mono": "^5.3.0",
+        "@fontsource-variable/public-sans": "^5.3.0",
         "@heroicons/vue": "^2.2.0",
         "@tailwindcss/vite": "^4.1.11",
         "@tauri-apps/api": "^2",
@@ -20,7 +23,12 @@
         "@tauri-apps/plugin-log": "~2.6.0",
         "@tauri-apps/plugin-opener": "^2",
         "@tauri-apps/plugin-store": "~2.3.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-vue-next": "^1.0.0",
         "pinia": "^3.0.3",
+        "reka-ui": "^2.10.3",
+        "tailwind-merge": "^3.6.0",
         "tailwindcss": "^4.1.11",
         "vue": "^3.5.13",
         "vue-i18n": "^9.14.4",

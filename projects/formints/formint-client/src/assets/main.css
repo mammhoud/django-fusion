@@ -75,3 +75,208 @@
     --depth: 0;
     --noise: 0;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Formint Client — POS design system
+   Soft Structuralism: airy floating components, diffused ambient
+   shadows, bold grotesk display type. Same family as the Formint Café
+   storefront (fu-* tokens + Bricolage Grotesque / Public Sans).
+   ════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --pos-ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+    --pos-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --pos-dur: 600ms;
+    --pos-ink: 40 6% 10%;
+    --pos-muted: 45 5% 44%;
+    --pos-line: 45 14% 88%;
+    --pos-verdigris: 158 42% 32%;
+    --pos-paper: 46 25% 98%;
+}
+
+[data-theme="sunset"],
+html.dark {
+    --pos-ink: 45 20% 93%;
+    --pos-muted: 45 5% 66%;
+    --pos-line: 45 6% 20%;
+    --pos-verdigris: 158 50% 62%;
+    --pos-paper: 45 6% 8%;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   shadcn/ui tokens — mapped onto the POS palette so the shadcn-vue
+   primitives (Button / Card / Badge / Input / Switch / Skeleton) speak
+   the same design language: paper backgrounds, ink type, verdigris
+   accent, full-bleed radius. Inline theme keeps Tailwind utilities
+   reading the raw vars (no emitted --color-* collision with daisyUI).
+   ════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --background: hsl(46 25% 98%);
+    --foreground: hsl(40 6% 10%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(40 6% 10%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(40 6% 10%);
+    --primary: hsl(158 42% 32%);
+    --primary-foreground: hsl(0 0% 100%);
+    --secondary: hsl(45 14% 92%);
+    --secondary-foreground: hsl(40 6% 10%);
+    --muted: hsl(45 14% 92%);
+    --muted-foreground: hsl(45 5% 44%);
+    --accent: hsl(45 14% 92%);
+    --accent-foreground: hsl(40 6% 10%);
+    --destructive: hsl(3 64% 51%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(45 14% 88%);
+    --input: hsl(45 14% 86%);
+    --ring: hsl(158 42% 32%);
+    --radius: 1rem;
+}
+
+[data-theme="sunset"],
+html.dark {
+    --background: hsl(45 6% 8%);
+    --foreground: hsl(45 20% 93%);
+    --card: hsl(45 6% 11%);
+    --card-foreground: hsl(45 20% 93%);
+    --popover: hsl(45 6% 11%);
+    --popover-foreground: hsl(45 20% 93%);
+    --primary: hsl(158 50% 62%);
+    --primary-foreground: hsl(45 6% 8%);
+    --secondary: hsl(45 6% 16%);
+    --secondary-foreground: hsl(45 20% 93%);
+    --muted: hsl(45 6% 16%);
+    --muted-foreground: hsl(45 5% 66%);
+    --accent: hsl(45 6% 16%);
+    --accent-foreground: hsl(45 20% 93%);
+    --destructive: hsl(0 72% 51%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(45 6% 20%);
+    --input: hsl(45 6% 22%);
+    --ring: hsl(158 50% 62%);
+    --radius: 1rem;
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+    body {
+        font-family: "Public Sans Variable", "Public Sans", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+    h1, h2, h3, .font-display {
+        font-family: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
+        letter-spacing: -0.02em;
+    }
+    code, .font-mono {
+        font-family: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+    }
+    ::selection {
+        background: hsl(var(--pos-verdigris) / 0.18);
+    }
+}
+
+@layer components {
+    /* ── Double-bezel (Doppelrand) — machined nested enclosure ─────────── */
+    .bezel {
+        border-radius: 2rem;
+        border: 1px solid hsl(var(--pos-line) / 0.7);
+        background: hsl(var(--pos-ink) / 0.03);
+        padding: 6px;
+        box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.7);
+    }
+    .bezel-core {
+        border-radius: calc(2rem - 6px);
+        background: var(--color-base-100, #fff);
+        box-shadow:
+            inset 0 1px 1px hsl(0 0% 100% / 0.6),
+            0 24px 48px -24px hsl(var(--pos-ink) / 0.08);
+    }
+
+    /* ── Button-in-button island CTA ───────────────────────────────────── */
+    .btn-island {
+        display: inline-flex;
+        height: 2.25rem;
+        width: 2.25rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: hsl(0 0% 100% / 0.16);
+        color: currentColor;
+        transition: transform var(--pos-dur) var(--pos-ease-spring);
+    }
+    .group:hover .btn-island {
+        transform: translateX(2px) scale(1.05);
+    }
+
+    /* ── Eyebrow badge ─────────────────────────────────────────────────── */
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 999px;
+        border: 1px solid hsl(var(--pos-line));
+        padding: 0.25rem 0.75rem;
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: hsl(var(--pos-muted));
+        background: var(--color-base-100, #fff);
+    }
+
+    /* ── Stat value ────────────────────────────────────────────────────── */
+    .stat-value-display {
+        font-family: "Bricolage Grotesque Variable", sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+    }
+}
+
+/* ── Reveal-on-mount (kept transform/opacity-only) ────────────────────── */
+.pos-reveal {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+    transition:
+        opacity 0.7s var(--pos-ease-spring),
+        transform 0.7s var(--pos-ease-spring);
+}
+.pos-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pos-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

@@ -1,5 +1,9 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import Button from '@/components/ui/Button.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Card from '@/components/ui/Card.astro';
+import Skeleton from '@/components/ui/Skeleton.astro';
 import { fetchCatalog, FALLBACK_CATALOG } from '@/lib/api';
 
 // Catalog fetched at build/dev from the Django backend, with a static fallback
@@ -16,27 +20,37 @@ const shop = catalog.shop;
 ---
 
 <Layout title={shop.name} description={shop.tagline}>
-  <!-- Hero — asymmetric split: copy left, floating mark right -->
-  <section class="container-fusion grid items-center gap-12 pb-20 pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:pt-24">
-    <div>
-      <p class="tag-marker mb-4 flex items-center gap-2">
+  <!-- Hero — editorial split: massive type left, double-bezel mark right -->
+  <section class="container-fusion grid items-center gap-16 pb-28 pt-8 lg:grid-cols-[1.05fr_0.95fr] lg:pb-36">
+    <div class="relative">
+      <p class="eyebrow reveal" x-data x-intersect="$el.classList.add('is-visible')">
         <span class="live-dot" aria-hidden="true"></span>
         Open now · Mon–Sun 7:00 → 19:00
       </p>
-      <h1 class="font-display text-5xl font-bold leading-[1.02] tracking-tighter text-fu-ink md:text-6xl">
+      <h1 class="reveal mt-6 font-display font-bold text-hero tracking-tighter text-fu-ink reveal-stagger-1" x-data x-intersect="$el.classList.add('is-visible')">
         {shop.tagline.split('.')[0]}.
         <span class="block text-fu-muted">Order ahead, pick up fast.</span>
       </h1>
-      <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-fu-muted">
+      <p class="reveal mt-7 max-w-[44ch] text-lg leading-relaxed text-fu-muted reveal-stagger-2" x-data x-intersect="$el.classList.add('is-visible')">
         A single shop page: menu, cart, checkout, and order status — served as
         finished HTML with HTMX swaps and Alpine micro-interactions. No SPA, no
         wait.
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="#menu" class="btn-primary">Browse the menu</a>
-        <a href="/accounts/signup/" class="btn-ghost">Create an account</a>
+      <div class="reveal group mt-10 flex flex-wrap gap-4 reveal-stagger-3" x-data x-intersect="$el.classList.add('is-visible')">
+        <Button href="#menu">
+          Browse the menu
+          <span class="btn-island" aria-hidden="true">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </span>
+        </Button>
+        <Button href="/accounts/signup/" variant="outline">
+          Create an account
+          <span class="btn-island" aria-hidden="true">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </span>
+        </Button>
       </div>
-      <dl class="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-fu-line pt-6">
+      <dl class="reveal mt-14 grid max-w-md grid-cols-3 gap-6 border-t border-fu-line pt-7 reveal-stagger-4" x-data x-intersect="$el.classList.add('is-visible')">
         <div>
           <dt class="font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted">Roast</dt>
           <dd class="mt-1 font-display text-2xl font-bold text-fu-ink">weekly</dd>
@@ -52,41 +66,128 @@ const shop = catalog.shop;
       </dl>
     </div>
 
-    <!-- Floating mark — perpetual micro-interaction, isolated (transform-only) -->
-    <div class="relative mx-auto w-full max-w-sm lg:max-w-none">
-      <div class="float-slow relative mx-auto aspect-square w-64 rounded-[2.5rem] border border-fu-line bg-fu-card shadow-diffusion sm:w-80">
-        <div class="absolute inset-0 flex items-center justify-center">
-          <svg class="h-32 w-32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="13" fill="hsl(var(--fu-link) / 0.12)" />
-            <path d="M8 12l6 6-6 6" stroke="hsl(var(--fu-ink))" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-            <circle cx="21" cy="13" r="3" fill="hsl(var(--fu-link))" />
-            <path d="M21 16v7" stroke="hsl(var(--fu-link))" stroke-width="2.2" stroke-linecap="round" />
-          </svg>
+    <!-- Double-bezel mark — perpetual float, isolated (transform-only) -->
+    <div class="relative mx-auto w-full max-w-sm lg:max-w-none" x-data x-intersect="$el.classList.add('is-visible')">
+      <div class="bezel reveal">
+        <div class="bezel-core relative flex aspect-square items-center justify-center overflow-hidden">
+          <div class="float-slow absolute inset-0 flex items-center justify-center">
+            <svg class="h-36 w-36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <circle cx="16" cy="16" r="13" fill="hsl(var(--fu-link) / 0.12)" />
+              <path d="M8 12l6 6-6 6" stroke="hsl(var(--fu-ink))" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="21" cy="13" r="3" fill="hsl(var(--fu-link))" />
+              <path d="M21 16v7" stroke="hsl(var(--fu-link))" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <span class="absolute right-7 top-7 h-2.5 w-2.5 rounded-full bg-fu-mark" style="animation: breathe 2.4s ease-in-out infinite"></span>
         </div>
-        <span class="absolute right-6 top-6 h-2 w-2 rounded-full bg-fu-mark" style="animation: breathe 2.4s ease-in-out infinite"></span>
       </div>
-      <div class="float-slow absolute -right-2 top-6 rounded-2xl border border-fu-line bg-fu-card px-4 py-3 shadow-diffusion" style="animation-delay: 0.6s">
-        <p class="font-mono text-[0.6rem] uppercase tracking-widest text-fu-muted">Featured</p>
-        <p class="text-sm font-semibold text-fu-ink">{featured[0]?.name || 'Espresso'}</p>
+      <div class="float-slow absolute -right-2 top-8 rounded-2xl border border-fu-line/70 bg-fu-card px-4 py-3 shadow-diffusion" style="animation-delay: 0.6s">
+        <Badge variant="outline">Featured</Badge>
+        <p class="mt-2 text-sm font-semibold text-fu-ink">{featured[0]?.name || 'Espresso'}</p>
       </div>
-      <div class="float-slow absolute -left-4 bottom-10 rounded-2xl border border-fu-line bg-fu-card px-4 py-3 shadow-diffusion" style="animation-delay: 1.2s">
-        <p class="font-mono text-[0.6rem] uppercase tracking-widest text-fu-muted">Subtotal</p>
-        <p class="font-mono text-sm font-bold text-fu-ink">$0.00</p>
+      <div class="float-slow absolute -left-4 bottom-12 rounded-2xl border border-fu-line/70 bg-fu-card px-4 py-3 shadow-diffusion" style="animation-delay: 1.2s">
+        <Badge variant="mark">Subtotal</Badge>
+        <p class="mt-2 font-mono text-sm font-bold text-fu-ink">$0.00</p>
       </div>
     </div>
   </section>
 
-  <!-- Menu — category pills drive an HTMX product grid -->
-  <section id="menu" class="border-t border-fu-line bg-fu-card/60 py-16">
+  <!-- Showcase — horizontal scroll pills under the editorial split -->
+  <section
+    class="container-fusion pb-4 pt-2"
+    x-data="{ scrolled: 0, maxScroll: 0,
+      measure() {
+        const el = this.$refs.track;
+        if (!el) return;
+        this.maxScroll = el.scrollWidth - el.clientWidth;
+        this.scrolled = el.scrollLeft;
+      },
+      init() {
+        this.$nextTick(() => this.measure());
+      },
+      onScroll() {
+        this.measure();
+      },
+      nudge(dir) {
+        const el = this.$refs.track;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollBy({ left: dir * el.clientWidth * 0.75, behavior: reduce ? 'auto' : 'smooth' });
+      } }"
+    @resize.window="measure"
+  >
+    <div class="reveal flex items-end justify-between gap-6" x-intersect="$el.classList.add('is-visible')">
+      <div>
+        <p class="eyebrow">Fresh this week</p>
+        <h2 class="mt-3 font-display text-2xl font-bold tracking-tight text-fu-ink sm:text-3xl">
+          The showcase
+        </h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          @click="nudge(-1)"
+          :disabled="scrolled <= 0"
+          aria-label="Scroll left"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-fu-line bg-fu-card text-fu-ink transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-fu-ink/40 disabled:opacity-35 disabled:hover:border-fu-line active:scale-95"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+        </button>
+        <button
+          type="button"
+          @click="nudge(1)"
+          :disabled="scrolled >= maxScroll - 1"
+          aria-label="Scroll right"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-fu-line bg-fu-card text-fu-ink transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-fu-ink/40 disabled:opacity-35 disabled:hover:border-fu-line active:scale-95"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scroll track — snap pills, edge fade, drag/arrow driven -->
+    <div
+      x-ref="track"
+      @scroll="onScroll"
+      tabindex="0"
+      role="region"
+      aria-label="Featured products"
+      class="showcase-track reveal mt-8 reveal-stagger-1"
+      x-intersect="$el.classList.add('is-visible')"
+    >
+      {catalog.products.map((p) => (
+        <a
+          href="#menu"
+          class="showcase-pill group relative block overflow-hidden rounded-[1.5rem] border border-fu-line/60 bg-fu-card transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_24px_48px_-24px_hsl(var(--fu-shadow)/0.25)] active:scale-[0.99] dark:hover:shadow-[0_24px_48px_-24px_hsl(var(--fu-shadow)/0.5)]"
+        >
+          <div class="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-fu-line/25">
+            <span class="font-display text-4xl font-bold text-fu-muted/40 transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-110">{p.name.slice(0, 1)}</span>
+            <span class="absolute left-4 top-4 h-1.5 w-1.5 rounded-full bg-fu-mark opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+          </div>
+          <div class="flex items-start justify-between gap-3 p-4">
+            <div class="min-w-0">
+              <h3 class="truncate text-sm font-semibold leading-snug text-fu-ink">{p.name}</h3>
+              {p.tags.length > 0 && (
+                <p class="mt-1 truncate font-mono text-[0.6rem] uppercase tracking-wider text-fu-muted">{p.tags.slice(0, 2).join(' · ')}</p>
+              )}
+            </div>
+            <span class="shrink-0 font-mono text-sm font-bold text-fu-ink">${p.price}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Menu — asymmetric bento: category pills drive an HTMX product grid -->
+  <section id="menu" class="border-t border-fu-line bg-fu-card/50 py-24 lg:py-32">
     <div class="container-fusion">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p class="tag-marker">Menu</p>
-          <h2 class="mt-1 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div class="reveal" x-data x-intersect="$el.classList.add('is-visible')">
+          <p class="eyebrow">Menu</p>
+          <h2 class="mt-4 font-display text-4xl font-bold tracking-tighter text-fu-ink md:text-5xl">
             Choose your order
           </h2>
         </div>
-        <p class="max-w-[38ch] text-sm text-fu-muted">
+        <p class="reveal max-w-[38ch] text-sm leading-relaxed text-fu-muted reveal-stagger-1" x-data x-intersect="$el.classList.add('is-visible')">
           Add items to your cart — the badge and drawer update via HTMX without a page reload.
         </p>
       </div>
@@ -94,14 +195,15 @@ const shop = catalog.shop;
       <!-- Category pills (HTMX-powered grid below) -->
       <div
         id="category-pills"
-        class="mt-8 flex flex-wrap gap-2"
+        class="reveal mt-10 flex flex-wrap gap-2 reveal-stagger-2"
         x-data="{ active: '' }"
+        x-intersect="$el.classList.add('is-visible')"
       >
         <button
           type="button"
-          class="rounded-full border px-4 py-2 text-sm font-medium transition-colors"
-          :class="active === '' ? 'border-fu-ink bg-fu-ink text-fu-paper' : 'border-fu-line text-fu-ink hover:bg-fu-line/40'"
-          @click="active = ''; htmx.trigger('#product-grid', 'filterChanged')"
+          class="rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-95"
+          :class="active === '' ? 'border-fu-ink bg-fu-ink text-fu-paper shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.4)] dark:shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.6)]' : 'border-fu-line text-fu-ink hover:bg-fu-line/40'"
+          @click="active = ''; htmx.ajax('GET', '/shop/fragments/products/', { target: '#product-grid', swap: 'innerHTML', values: { category: '' } })"
           data-category=""
         >
           All
@@ -109,9 +211,9 @@ const shop = catalog.shop;
         {catalog.categories.map((c) => (
           <button
             type="button"
-            class="rounded-full border px-4 py-2 text-sm font-medium transition-colors"
-            :class="active === {`'${c.slug}'`} ? 'border-fu-ink bg-fu-ink text-fu-paper' : 'border-fu-line text-fu-ink hover:bg-fu-line/40'"
-            @click="active = {`'${c.slug}'`}; htmx.trigger('#product-grid', 'filterChanged')"
+            class="rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-95"
+            :class="active === $el.dataset.category ? 'border-fu-ink bg-fu-ink text-fu-paper shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.4)] dark:shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.6)]' : 'border-fu-line text-fu-ink hover:bg-fu-line/40'"
+            @click="active = $el.dataset.category; htmx.ajax('GET', '/shop/fragments/products/', { target: '#product-grid', swap: 'innerHTML', values: { category: $el.dataset.category } })"
             data-category={c.slug}
           >
             {c.name}
@@ -122,57 +224,78 @@ const shop = catalog.shop;
       <!-- Product grid — swapped from the Django backend fragment -->
       <div
         id="product-grid"
-        class="mt-6"
+        class="mt-8"
         hx-get="/shop/fragments/products/"
-        hx-trigger="load, filterChanged from:#category-pills"
-        hx-vals="js:{ category: document.querySelector('#category-pills [data-category].border-fu-ink')?.dataset.category || '' }"
+        hx-trigger="load"
         hx-swap="innerHTML"
         hx-indicator="#grid-indicator"
       >
-        <!-- Fallback SSR grid (renders even before HTMX swaps) -->
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {catalog.products.map((p) => (
-            <article class="group relative flex flex-col overflow-hidden rounded-3xl border border-fu-line/70 bg-fu-card p-4 shadow-diffusion transition-all duration-300 hover:-translate-y-1">
-              <div class="mb-3 flex aspect-[4/3] items-center justify-center rounded-2xl bg-fu-line/30">
-                <span class="font-mono text-3xl font-semibold text-fu-muted/50">{p.name.slice(0, 1)}</span>
+        <!-- Fallback SSR grid (renders even before HTMX swaps) — asymmetric bento -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {catalog.products.map((p, i) => (
+            <Card
+              hover
+              class:list={[
+                'group flex h-full flex-col overflow-hidden',
+                // Bento rhythm: first item spans two columns on large screens.
+                i === 0 ? 'lg:col-span-2 lg:row-span-2' : '',
+              ]}
+            >
+              <div class:list={[
+                'relative flex items-center justify-center overflow-hidden bg-fu-line/25',
+                i === 0 ? 'aspect-[16/10] lg:aspect-auto lg:flex-1' : 'aspect-[4/3]',
+              ]}>
+                <span class:list={['font-display font-bold text-fu-muted/40', i === 0 ? 'text-7xl' : 'text-4xl']}>{p.name.slice(0, 1)}</span>
+                <span class="absolute left-4 top-4 h-1.5 w-1.5 rounded-full bg-fu-mark opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
               </div>
-              <div class="flex flex-1 flex-col">
-                <div class="flex items-start justify-between gap-2">
-                  <h3 class="text-sm font-semibold leading-snug text-fu-ink">{p.name}</h3>
+              <div class="flex flex-1 flex-col p-5">
+                <div class="flex items-start justify-between gap-3">
+                  <h3 class:list={['font-semibold leading-snug text-fu-ink', i === 0 ? 'text-xl' : 'text-sm']}>{p.name}</h3>
                   <span class="shrink-0 font-mono text-sm font-bold text-fu-ink">${p.price}</span>
                 </div>
+                {i === 0 && <p class="mt-2 max-w-[36ch] text-sm leading-relaxed text-fu-muted">{p.description}</p>}
                 {p.tags.length > 0 && (
-                  <div class="mt-2 flex flex-wrap gap-1">
+                  <div class="mt-3 flex flex-wrap gap-1.5">
                     {p.tags.map((t) => (
-                      <span class="rounded-full bg-fu-line/40 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-fu-muted">{t}</span>
+                      <span class="rounded-full bg-fu-line/40 px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-fu-muted">{t}</span>
                     ))}
                   </div>
                 )}
               </div>
-            </article>
+            </Card>
           ))}
         </div>
       </div>
-      <div id="grid-indicator" class="htmx-indicator mt-4">
-        <div class="skeleton-shimmer h-1 w-32 rounded-full"></div>
+      <div id="grid-indicator" class="htmx-indicator mt-6">
+        <Skeleton class="h-1 w-32 rounded-full" />
       </div>
     </div>
   </section>
 
-  <!-- Employee / account strip -->
-  <section class="container-fusion py-16">
-    <div class="grid gap-6 md:grid-cols-2">
-      <a href="/orders/mine/" class="card-sheet group transition-all duration-300 hover:-translate-y-1">
-        <p class="tag-marker">Customers</p>
-        <h3 class="mt-2 font-display text-xl font-bold tracking-tight text-fu-ink">Your order history</h3>
-        <p class="mt-2 text-sm text-fu-muted">Sign in to track every pickup, reorder favourites, and keep your details on file.</p>
-        <span class="mt-4 inline-block text-sm font-semibold text-fu-link group-hover:text-fu-ink">View my orders →</span>
+  <!-- Employee / account strip — double-bezel cards -->
+  <section class="container-fusion pb-28 pt-8 lg:pb-36">
+    <div class="grid gap-8 md:grid-cols-2">
+      <a href="/orders/mine/" class="bezel group reveal block transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1.5" x-data x-intersect="$el.classList.add('is-visible')">
+        <div class="bezel-core p-7 sm:p-9">
+          <p class="tag-marker">Customers</p>
+          <h3 class="mt-3 font-display text-2xl font-bold tracking-tight text-fu-ink">Your order history</h3>
+          <p class="mt-3 max-w-[40ch] text-sm leading-relaxed text-fu-muted">Sign in to track every pickup, reorder favourites, and keep your details on file.</p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-fu-link transition-colors duration-300 group-hover:text-fu-ink">
+            View my orders
+            <svg class="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </span>
+        </div>
       </a>
-      <a href="/employee/" class="card-sheet group transition-all duration-300 hover:-translate-y-1">
-        <p class="tag-marker">Team</p>
-        <h3 class="mt-2 font-display text-xl font-bold tracking-tight text-fu-ink">Staff desk</h3>
-        <p class="mt-2 text-sm text-fu-muted">A live order inbox for the floor — new orders, prep queue, and daily totals, gated behind staff auth.</p>
-        <span class="mt-4 inline-block text-sm font-semibold text-fu-link group-hover:text-fu-ink">Open the desk →</span>
+      <a href="/employee/" class="bezel group reveal block transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1.5 reveal-stagger-1" x-data x-intersect="$el.classList.add('is-visible')">
+        <div class="bezel-core p-7 sm:p-9">
+          <p class="tag-marker">Team</p>
+          <h3 class="mt-3 font-display text-2xl font-bold tracking-tight text-fu-ink">Staff desk</h3>
+          <p class="mt-3 max-w-[40ch] text-sm leading-relaxed text-fu-muted">A live order inbox for the floor — new orders, prep queue, and daily totals, gated behind staff auth.</p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-fu-link transition-colors duration-300 group-hover:text-fu-ink">
+            Open the desk
+            <svg class="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </span>
+        </div>
       </a>
     </div>
   </section>

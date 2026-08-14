@@ -1,13 +1,13 @@
 {% if cart_payload.items %}
-<ul class="divide-y divide-zinc-100">
+<ul class="divide-y divide-fu-line/70">
   {% for item in cart_payload.items %}
-  <li class="flex items-center gap-3 py-3">
-    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-zinc-100 font-mono text-sm font-semibold text-zinc-400">
+  <li class="flex items-center gap-3 py-4">
+    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-fu-line/50 bg-fu-line/25 font-display text-sm font-bold text-fu-muted/60">
       {{ item.name|slice:":1" }}
     </div>
     <div class="min-w-0 flex-1">
-      <p class="truncate text-sm font-medium text-zinc-900">{{ item.name }}</p>
-      <p class="text-xs text-zinc-500">${{ item.unit_price }} × {{ item.quantity }}</p>
+      <p class="truncate text-sm font-semibold text-fu-ink">{{ item.name }}</p>
+      <p class="mt-0.5 font-mono text-xs text-fu-muted">${{ item.unit_price }} × {{ item.quantity }}</p>
     </div>
     <div class="flex items-center gap-1.5">
       <button
@@ -17,8 +17,11 @@
         hx-target="#cart-drawer"
         hx-swap="innerHTML"
         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-        class="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-200 text-sm text-zinc-600 transition-colors hover:bg-zinc-100"
-      >+</button>
+        class="flex h-8 w-8 items-center justify-center rounded-full border border-fu-line text-fu-ink transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-fu-ink/40 hover:bg-fu-line/40 active:scale-90"
+        aria-label="Increase {{ item.name }} quantity"
+      >
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+      </button>
       <button
         type="button"
         hx-post="{% url 'shop:cart_update' item.id %}"
@@ -26,40 +29,47 @@
         hx-target="#cart-drawer"
         hx-swap="innerHTML"
         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-        class="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-200 text-sm text-zinc-600 transition-colors hover:bg-zinc-100"
-      >−</button>
+        class="flex h-8 w-8 items-center justify-center rounded-full border border-fu-line text-fu-ink transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-fu-ink/40 hover:bg-fu-line/40 active:scale-90"
+        aria-label="Decrease {{ item.name }} quantity"
+      >
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
+      </button>
       <button
         type="button"
         hx-post="{% url 'shop:cart_remove' item.id %}"
         hx-target="#cart-drawer"
         hx-swap="innerHTML"
         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-        class="flex h-7 w-7 items-center justify-center rounded-full text-zinc-300 transition-colors hover:bg-rose-50 hover:text-rose-500"
+        class="flex h-8 w-8 items-center justify-center rounded-full text-fu-muted/50 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-rose-500/10 hover:text-rose-500 active:scale-90"
         aria-label="Remove {{ item.name }}"
-      >✕</button>
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
-    <span class="w-16 text-right font-mono text-sm font-semibold text-zinc-900">${{ item.line_total }}</span>
+    <span class="w-16 text-right font-mono text-sm font-bold text-fu-ink">${{ item.line_total }}</span>
   </li>
   {% endfor %}
 </ul>
-<div class="mt-4 border-t border-zinc-200 pt-4">
-  <div class="flex justify-between text-sm text-zinc-500">
-    <span>Subtotal</span><span class="font-mono text-zinc-900">${{ cart_payload.subtotal }}</span>
+<div class="mt-4 rounded-2xl border border-fu-line/60 bg-fu-line/20 p-4">
+  <div class="flex justify-between text-sm text-fu-muted">
+    <span>Subtotal</span><span class="font-mono text-fu-ink">${{ cart_payload.subtotal }}</span>
   </div>
-  <div class="mt-1 flex justify-between text-sm text-zinc-500">
-    <span>Tax (10%)</span><span class="font-mono text-zinc-900">${{ cart_payload.tax }}</span>
+  <div class="mt-1 flex justify-between text-sm text-fu-muted">
+    <span>Tax (10%)</span><span class="font-mono text-fu-ink">${{ cart_payload.tax }}</span>
   </div>
-  <div class="mt-2 flex justify-between text-base font-bold text-zinc-900">
+  <div class="mt-2 flex justify-between text-base font-bold text-fu-ink">
     <span>Total</span><span class="font-mono">${{ cart_payload.total }}</span>
   </div>
   <a
     href="{% url 'shop:checkout' %}"
-    class="mt-4 flex w-full items-center justify-center rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white transition-transform duration-150 hover:bg-zinc-700 active:scale-[0.98]"
-  >Proceed to checkout</a>
+    class="group mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-fu-ink px-5 py-3 text-sm font-semibold text-fu-paper transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-fu-link active:scale-[0.98]"
+  >Proceed to checkout
+    <svg class="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+  </a>
 </div>
 {% else %}
 <div class="px-2 py-14 text-center">
-  <p class="font-mono text-xs uppercase tracking-widest text-zinc-400">cart is empty</p>
-  <p class="mt-2 text-sm text-zinc-500">Add something delicious from the menu.</p>
+  <p class="font-mono text-xs uppercase tracking-widest text-fu-muted">cart is empty</p>
+  <p class="mt-2 text-sm text-fu-muted">Add something delicious from the menu.</p>
 </div>
 {% endif %}

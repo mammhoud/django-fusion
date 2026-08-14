@@ -1,0 +1,168 @@
+# formint-client-ci: Lint + typecheck + build + full-stack e2e for the
+# Formint Client POS (Vue 3 + Tauri shell, Astro storefront, Django backend).
+#
+# Runs on every push / PR touching the project (or the django-fusion
+# submodule it depends on). The backend is self-contained (SQLite) so no
+# services are needed. Failures are isolated per job.
+
+name: Formint Client CI
+
+on:
+  pull_request:
+    paths:
+      - 'projects/formints/formint-client/**'
+      - 'libs/django-fusion/**'
+      - '.github/workflows/formint-client-ci.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'projects/formints/formint-client/**'
+      - 'libs/django-fusion/**'
+      - '.github/workflows/formint-client-ci.yml'
+  workflow_dispatch:
+
+# Prevent duplicate runs on the same PR/branch
+concurrency:
+  group: formint-client-ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Vue POS client (root workspace) ──────────────────────────────────
+  vue-pos:
+    name: Vue POS — Lint + Typecheck + Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/formints/formint-client
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: projects/formints/formint-client/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (oxlint)
+        run: pnpm lint
+
+      - name: Typecheck + build (vue-tsc → vite build)
+        run: pnpm build
+
+  # ── Astro storefront (own workspace) ─────────────────────────────────
+  astro-storefront:
+    name: Storefront — Astro Check + Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/formints/formint-client/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: projects/formints/formint-client/frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck (astro check)
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+  # ── Django backend (uv workspace, SQLite) ────────────────────────────
+  backend:
+    name: Backend — Django Checks + Seed + Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: 'latest'
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Django system checks
+        run: make -C projects/formints/formint-client/backend check
+
+      - name: Migrate + seed demo catalog
+        run: make -C projects/formints/formint-client/backend seed
+
+      - name: Backend tests
+        run: make -C projects/formints/formint-client/backend test
+
+  # ── Full-stack e2e (boots Django + Astro, runs node --test) ───────
+  e2e:
+    name: E2E — Storefront × Django
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: 'latest'
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: projects/formints/formint-client/frontend/pnpm-lock.yaml
+
+      - name: Install storefront dependencies
+        working-directory: projects/formints/formint-client/frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Run e2e suite (boots Django + Astro)
+        run: make -C projects/formints/formint-client e2e

@@ -87,7 +87,7 @@ def navigation_payload(request: HttpRequest | None = None) -> dict[str, Any]:
     each module carries its child routes. The Astro header/sidenav consumes
     this directly as the single source of truth for the storefront links.
     """
-    shop_name = getattr(django_settings, "SHOP_NAME", "The Daily Grind")
+    shop_name = getattr(django_settings, "SHOP_NAME", "Formint Café")
     is_staff = bool(getattr(getattr(request, "user", None), "is_staff", False))
     modules = [
         {
@@ -122,7 +122,7 @@ def navigation_payload(request: HttpRequest | None = None) -> dict[str, Any]:
             }
         )
     return {
-        "brand": {"label": shop_name, "href": "/", "tag": "pos-client"},
+        "brand": {"label": shop_name, "href": "/", "tag": "formint-client"},
         "modules": modules,
     }
 
@@ -144,7 +144,7 @@ def branding_payload(request: HttpRequest | None = None) -> dict[str, Any]:
     )
     return {
         "site": {
-            "name": name or getattr(django_settings, "SHOP_NAME", "The Daily Grind"),
+            "name": name or getattr(django_settings, "SHOP_NAME", "Formint Café"),
             "tagline": tagline or getattr(django_settings, "SHOP_TAGLINE", ""),
             "language": get_language(),
         },

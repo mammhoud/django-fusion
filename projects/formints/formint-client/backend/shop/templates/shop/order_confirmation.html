@@ -1,7 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Order {{ order.reference }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Print receipt — 80mm thermal slip, screen chrome hidden. */
+    @media print {
+        @page { size: 80mm auto; margin: 0; }
+        body { background: #fff !important; }
+        body > header,
+        .no-print { display: none !important; }
+        main {
+            padding: 0 !important;
+            max-width: none !important;
+        }
+        .receipt-slip {
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 1.2rem !important;
+            max-width: 80mm;
+            margin: 0 auto;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="text-align:center; padding:3rem 0 2rem;">
+<div class="no-print" style="text-align:center; padding:3rem 0 2rem;">
   <div style="width:56px; height:56px; margin:0 auto 1.2rem; border-radius:50%; background:hsl(158 42% 32%); display:flex; align-items:center; justify-content:center;">
     <span style="color:#fff; font-size:1.5rem;">✓</span>
   </div>
@@ -10,7 +35,14 @@
   <p class="muted">Your reference is <strong style="font-family:'JetBrains Mono',monospace; color:hsl(var(--fu-ink)); letter-spacing:0.1em;">{{ order.reference }}</strong> — show it at pickup.</p>
 </div>
 
-<div class="card" style="max-width:34rem; margin:0 auto;">
+<div class="card receipt-slip" style="max-width:34rem; margin:0 auto;">
+  <!-- Self-contained slip: the printed copy must identify the order. -->
+  <div style="text-align:center; margin-bottom:1rem;">
+    <p style="margin:0; font-weight:700; letter-spacing:0.02em;">{{ shop_name }}</p>
+    <p class="kicker" style="margin-top:0.3rem;">Order #{{ order.reference }}</p>
+    <p class="muted" style="margin:0.2rem 0 0; font-size:0.85rem;">{{ order.customer_name }}</p>
+  </div>
+  <div style="border-top:1px dashed hsl(var(--fu-line)); margin-bottom:0.8rem;"></div>
   <p class="kicker">Summary · {{ order.created_at|date:"g:i A" }}</p>
   <ul style="list-style:none; margin:0.6rem 0 0; padding:0;">
     {% for item in order.items.all %}
@@ -26,7 +58,42 @@
   <p class="mt-2 muted" style="font-size:0.9rem;">{{ order.get_order_type_display }}{% if order.notes %} · {{ order.notes }}{% endif %}</p>
 </div>
 
-<div style="text-align:center; margin-top:2rem;">
-  <a href="/" class="btn btn-primary">Back to the menu</a>
+<div class="no-print" style="text-align:center; margin-top:2rem;">
+  <a href="/" class="btn btn-primary">Back to the menu</a>          <button type="button" id="print-receipt" class="btn btn-ghost" style="margin-left:0.6rem;">
+            Print receipt
+          </button>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  /**
+   * Print the receipt: OS-native dialog when this page is rendered inside
+   * the Tauri webview (desktop app), browser print dialog otherwise.
+   */
+  function printReceipt() {
+    var internals = window.__TAURI_INTERNALS__;
+    if (internals && typeof internals.invoke === 'function') {
+      internals.invoke('print_receipt').catch(function () {
+        window.print();
+      });
+    } else {
+      window.print();
+    }
+  }
+
+  var btn = document.getElementById('print-receipt');
+  if (btn) {
+    btn.addEventListener('click', printReceipt);
+  }
+
+  // Auto-open the print dialog right after the order is placed. The short
+  // delay lets the receipt paint so the print snapshot includes it.
+  window.addEventListener('load', function () {
+    setTimeout(printReceipt, 400);
+  });
+})();
+</script>
 {% endblock %}
