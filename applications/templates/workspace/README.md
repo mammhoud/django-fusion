@@ -30,18 +30,21 @@ access.
 | AFFiNE Workspace | devcontainer service `coder-workspace-affine` | `http://coder-workspace-affine:3010` |
 | VS Code Web (code-server) | agent-host container | `http://localhost:13337` (via Coder app) |
 
-## Project source (cloned, not mounted)
+## Project source (mounted, not cloned)
 
-The project directory is a **fresh `git clone`** performed by the `git-clone`
-module at workspace start — **not** a bind mount of a local directory. The
-clone lives in the agent-host container's persistent home volume at
-`/home/coder/structa.cloud` (from `repo_url`), which survives restarts. There
-are no host-path mounts in the Terraform for the project source; the only
-mounts are the named home volume, the Docker socket, and (inside the
-devcontainer) the same cloned folder bind-mounted by the devcontainer CLI, so
-the browser editor, the devcontainer, and AFFiNE's data all share one copy of
-the source. Set `repo_url` to your fork when the repo is private so the clone
-uses your authenticated GitHub identity.
+The project directory is a **bind mount** of the host's local checkout: the
+Terraform mounts `host_repo_path` (default `/home/structa.cloud`, the monorepo
+on this host) at `/home/coder/structa.cloud` in the workspace container. There
+is **no git clone** — the mounted folder IS the source, so:
+
+- edits made locally appear in the workspace immediately (and vice versa),
+- the workspace always runs the latest local state, not a stale clone,
+- git commit/push work from **both** sides (the agent runs as root so the
+  root-owned checkout stays writable; git identity comes from the agent env).
+
+The devcontainer CLI bind-mounts that same folder into the devcontainer and
+the VS Code Web editor opens it directly — one copy of the source shared by
+the browser editor, the devcontainer, and AFFiNE's `.affine-data-*` directory.
 
 ## Workspace name constraint
 
@@ -55,14 +58,13 @@ prefix from its `WORKSPACE_NAME` env var via an envsubst template
 
 The template follows the
 [docker-devcontainer reference template](https://registry.coder.com/templates/coder/docker-devcontainer):
-on start it installs the devcontainer CLI, clones the repository from
-`repo_url` (default: the Structa Cloud monorepo) into the persistent home
-volume, and auto-starts the repository's compose devcontainer through
-`coder_devcontainer`. The `code-server` module opens that same folder in the
-browser editor. The agent-host container mounts the host Docker socket, so the
-devcontainer stack (including the AFFiNE containers) is created on the shared
-host daemon where the proxy can reach it — no privileged Docker-in-Docker
-needed.
+on start it installs the devcontainer CLI, then auto-starts the mounted
+repository's compose devcontainer through `coder_devcontainer` (the project
+folder `/home/coder/structa.cloud` is already bind-mounted from the host — no
+clone). The `code-server` module opens that same folder in the browser editor.
+The agent-host container mounts the host Docker socket, so the devcontainer
+stack (including the AFFiNE containers) is created on the shared host daemon
+where the proxy can reach it — no privileged Docker-in-Docker needed.
 
 The devcontainer itself is compose-based:
 
@@ -75,11 +77,8 @@ The devcontainer itself is compose-based:
 
 AFFiNE uses the shared `postgres` service (`affine` database created by the
 databases bootstrap) and the shared authenticated `default-redis` service.
-Persistent data lives under the cloned repo: `.affine-data-<workspace_name>/`
-(`storage` + `config`).
-
-Set `repo_url` when creating the workspace to point at any repository that
-contains a `devcontainer.json` + `docker-compose.yml`.
+Persistent data lives under the mounted repo: `.affine-data-<workspace_name>/`
+(`storage` + `config`), shared with the host checkout.
 
 ## Prerequisites
 
@@ -149,6 +148,15 @@ authenticated app proxy and the shared-media nginx handle access.
 | `database_network` | `warehouse-net` | External network attached to the shared PostgreSQL service |
 | `coder_host_ip` | `172.18.0.16` | Coder server address for the agent binary download |
 | `workspace_name` | `workspace` | Container name suffix; must match nginx `WORKSPACE_NAME` |
+| `host_repo_path` | `/home/structa.cloud` | Host checkout bind-mounted as the project folder (mount, not clone) |
+| `redis_password` | `redis_password` | Secret (sensitive); passed to the devcontainer AFFiNE compose — set the real value at push time with `--variable redis_password=...` |
+| `affine_db_password` | `affine` | Secret (sensitive); the shared postgres `affine` role password — set the real value at push time with `--variable affine_db_password=...` |
+
+First-run maintenance on an existing postgres volume: create the `affine`
+database and role once (`CREATE ROLE affine WITH LOGIN PASSWORD '...'; CREATE
+DATABASE affine OWNER affine;`) — the bootstrap init script only runs on a new
+volume — and keep `REDIS_PASSWORD` in `applications/databases/.env` in sync with
+the running `default-redis` (`--requirepass`).
 
 AFFiNE versions/passwords are configured in the devcontainer compose
 (`.devcontainer/docker-compose.yml`, env-overridable) rather than as template

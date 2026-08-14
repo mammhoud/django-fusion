@@ -33,17 +33,18 @@ No workspace container publishes a host port; the editor is **VS Code Web**
 (code-server `coder_app` in the agent-host container, `display_apps` sets
 `vscode = false` to drop the VS Code Desktop button) plus the web terminal.
 
-## Project source (cloned, not mounted)
+## Project source (mounted, not cloned)
 
-The project directory is a **fresh `git clone`** by the `git-clone` module at
-workspace start — **not** a bind mount of a local directory. The clone lives
-in the agent-host container's persistent home volume at
-`/home/coder/<repo>` (from `repo_url`) and survives restarts. Terraform mounts
-no host path for the project: the only mounts are the named home volume and
-the Docker socket. The devcontainer CLI bind-mounts that same cloned folder
-into the devcontainer, and code-server opens it directly — one copy of the
-source shared by the browser editor, the devcontainer, and AFFiNE's
-`.affine-data-*` directory.
+The project directory is a **bind mount** of the host's local checkout:
+Terraform mounts `host_repo_path` (default `/home/structa.cloud`) at
+`/home/coder/structa.cloud` in the agent-host container. There is **no git
+clone** — the mounted folder IS the source, so local edits appear in the
+workspace immediately, the workspace runs the latest local state, and git
+commit/push work from both host and container (the agent runs as root via
+passwordless sudo so the root-owned checkout stays writable). The devcontainer
+CLI bind-mounts that same folder into the devcontainer and code-server opens
+it directly — one copy shared by the browser editor, the devcontainer, and
+AFFiNE's `.affine-data-*` directory.
 
 ## Template container (agent host)
 
@@ -66,16 +67,16 @@ the template — AFFiNE lives in the devcontainer compose.
 ## Devcontainer (docker-devcontainer pattern)
 
 On start the template installs the devcontainer CLI (devcontainers-cli
-module), clones the repository from the `repo_url` parameter (git-clone
-module, default: the Structa Cloud monorepo), installs the browser editor
-(code-server module, folder = the same clone), then auto-starts the
-repository's devcontainer via `coder_devcontainer`:
+module), installs the browser editor (code-server module, folder = the
+mounted `/home/coder/structa.cloud`), then auto-starts the repository's
+devcontainer via `coder_devcontainer` — no clone step, the project is the
+bind-mounted host checkout:
 
 ```text
-start ──► devcontainers-cli module ──► git-clone module
-   │                                       │
-   └──────────► coder_devcontainer ────────┘
-                   workspace_folder = /home/coder/<repo>
+start ──► devcontainers-cli module
+   │
+   └──────────► coder_devcontainer ────────► code-server module
+                   workspace_folder = /home/coder/structa.cloud (bind mount)
                    → docker compose -f .devcontainer/docker-compose.yml up
 ```
 
@@ -96,7 +97,7 @@ can reach it — no privileged Docker-in-Docker needed.
 
 | Container | Image | Port | Networks | Public path |
 |---|---|---|---|---|
-| `coder-<workspace-id>-workspace` | `codercom/enterprise-node:ubuntu` (prebuilt) | — (code-server :13337 via Coder app) | `common` | none (agent host) |
+| `coder-<workspace-id>-workspace` | `codercom/enterprise-node:ubuntu` (prebuilt) | — (code-server :13337 via Coder app) | `common` | none (agent host; mounts host repo at `/home/coder/structa.cloud`) |
 | `coder-<workspace_name>-affine-migration` | `ghcr.io/toeverything/affine` | — (one-shot) | `common`, `warehouse-net` | none |
 | `coder-<workspace_name>-affine` | `ghcr.io/toeverything/affine` | 3010 | `common`, `warehouse-net` | `space.structa.cloud/` |
 

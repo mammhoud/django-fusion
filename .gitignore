@@ -62,3 +62,6 @@ base_library.zip
 **/src-tauri/gen/
 **/src-tauri/binaries/
 **/sidecar/build/
+
+# AFFiNE workspace data (lives under the mounted repo in the workspace)
+.affine-data-*/

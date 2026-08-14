@@ -8,18 +8,20 @@ workspace applications.
 
 | Template | What it provisions | Public routing | Workspace constraint |
 |---|---|---|---|
-| [**workspace**](./workspace/README.md) | AFFiNE + devcontainer | AFFiNE (`space.structa.cloud`) | None (set `workspace_name`) |
-| [**devcontainer**](./devcontainer/README.md) | Any repo's devcontainer via Docker-in-Docker | Coder app | None |
+| [**workspace**](./workspace/README.md) | Mounted monorepo + devcontainer + AFFiNE + VS Code Web | AFFiNE (`space.structa.cloud`) | None (set `workspace_name`) |
 
 ### workspace
 
-The development workspace is a single agent-host container that runs the
-repository's compose devcontainer inside it (docker-devcontainer pattern): the
-devcontainers-cli and git-clone modules clone `repo_url` (default: the Structa
-Cloud monorepo) and `coder_devcontainer` auto-starts its `.devcontainer/` — a
-compose stack (`docker-compose.yml`) with the full-toolchain `devcontainer`
-service (Dockerfile, docker-in-docker), plus AFFiNE. No fixed host ports are
-published; the IDE runs inside the devcontainer itself.
+The single development workspace template: one agent-host container that
+**bind-mounts the host's local checkout** (`host_repo_path`, default
+`/home/structa.cloud`, → `/home/coder/structa.cloud`) instead of cloning it, so
+edits made locally or in the workspace are the same files and git commit/push
+work from both sides. The `devcontainers-cli` module + `coder_devcontainer`
+auto-start the repository's `.devcontainer/` (compose stack with the
+full-toolchain `devcontainer` service plus AFFiNE), the `code-server` module
+provides the **VS Code Web** browser editor on the same folder, and
+`display_apps` disables the VS Code Desktop button. No host ports are
+published; the agent runs as root so the root-owned checkout stays writable.
 
 The workspace is served under ONE public origin, `space.structa.cloud` (root =
 AFFiNE, web + API + WebSocket). Routes resolve through the shared-media nginx
@@ -31,20 +33,6 @@ hosts were removed.
 
 → [workspace README](./workspace/README.md) ·
 [main.tf](./workspace/main.tf)
-
-### devcontainer
-
-Modeled on the official
-[`coder/docker-devcontainer`](https://registry.coder.com/templates/coder/docker-devcontainer)
-template: a single privileged container runs Docker-in-Docker, clones
-`repo_url` (default: the Structa Cloud monorepo), and `coder_devcontainer`
-auto-starts its `.devcontainer/` so the IDE opens the devcontainer directly.
-Home and the inner Docker daemon persist on dedicated volumes. Unlike
-`workspace`, devcontainers run on the workspace's own bridge network — use
-`workspace` when the devcontainer needs the shared host infrastructure.
-
-→ [devcontainer README](./devcontainer/README.md) ·
-[main.tf](./devcontainer/main.tf)
 
 ## Shared infrastructure
 
@@ -74,9 +62,8 @@ docker compose up -d postgres default-redis
 cd ..
 docker compose -f docker-compose.yml up -d coder
 
-# 3. Push the templates
+# 3. Push the template
 coder templates push workspace --directory applications/templates/workspace
-coder templates push devcontainer --directory applications/templates/devcontainer
 
 # 4. Create workspace (any name works; containers use workspace_name)
 #    Open AFFiNE from the Coder workspace page, or visit https://space.structa.cloud
@@ -88,15 +75,10 @@ coder templates push devcontainer --directory applications/templates/devcontaine
 ```text
 applications/templates/
 ├── README.md
-├── workspace/
-│   ├── main.tf       # agent-host container + AFFiNE devcontainer
-│   ├── README.md     # full workspace configuration and validation
-│   └── ARCHITECTURE.md
-├── devcontainer/
-│   ├── main.tf       # privileged docker-devcontainer (Docker-in-Docker)
-│   ├── scripts/
-│   │   └── init-docker-in-docker.sh
-│   └── README.md
+└── workspace/
+    ├── main.tf       # mounted monorepo + AFFiNE devcontainer + VS Code Web
+    ├── README.md     # full workspace configuration and validation
+    └── ARCHITECTURE.md
 
 .devcontainer/
 ├── Dockerfile          # devcontainer image (full monorepo toolchain)

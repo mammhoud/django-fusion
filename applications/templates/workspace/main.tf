@@ -1,9 +1,12 @@
 # =============================================================================
-# workspace — Coder Template
+# workspace — Coder Template (single merged template)
 # =============================================================================
-# Provisions ONE agent-host container (docker CLI + git + curl) that runs the
-# repository's compose devcontainer INSIDE it via coder_devcontainer on the
-# host Docker socket. All workspace services now live in the devcontainer:
+# The ONLY workspace template: ONE agent-host container that bind-mounts the
+# host's local checkout (`/home/structa.cloud` -> `/home/coder/structa.cloud`)
+# and runs the repository's compose devcontainer INSIDE it via
+# coder_devcontainer on the host Docker socket. No git clone — the mounted
+# folder IS the source, so edits made locally or in the workspace are the same
+# files and git commit/push work from both sides.
 #
 #   .devcontainer/docker-compose.yml  (the repo's devcontainer source)
 #     ├─ devcontainer   — full monorepo toolchain (VS Code attaches here)
@@ -15,9 +18,9 @@
 # devcontainer compose; the shared-media nginx resolves the same names from
 # its WORKSPACE_NAME env var (envsubst template) — both default to "workspace".
 #
-# The devcontainer image/toolchain is NOT defined here — the Coder template
-# only hosts the agent; the devcontainer CLI (devcontainers-cli module) builds
-# and runs the repo devcontainer through the mounted host socket.
+# The agent runs as root (passwordless sudo in the image) so the root-owned
+# host checkout stays writable from the workspace (commit/push from both
+# sides); the container keeps the docker CLI/compose/node tooling.
 # =============================================================================
 
 terraform {
@@ -55,11 +58,32 @@ variable "workspace_name" {
     error_message = "workspace_name must be a valid Docker container name suffix (lowercase alphanumerics plus '.', '_', '-')."
   }
 }
+variable "host_repo_path" {
+  type        = string
+  default     = "/home/structa.cloud"
+  description = "Host path of the local checkout to bind-mount as the workspace project folder (/home/coder/structa.cloud). Mounted read-write: no clone happens, so changes and git operations are shared between host and workspace."
+}
+# Secrets for the devcontainer's AFFiNE service. Defaults match a fresh
+# databases stack; set the real values when pushing the template
+# (coder templates push --variable redis_password=...) so no secrets live in
+# the repository.
+variable "redis_password" {
+  type        = string
+  default     = "redis_password"
+  sensitive   = true
+  description = "Password of the shared default-redis service (REDIS_PASSWORD for the devcontainer AFFiNE compose)"
+}
+variable "affine_db_password" {
+  type        = string
+  default     = "affine"
+  sensitive   = true
+  description = "Password of the shared postgres 'affine' role (AFFINE_DB_PASSWORD for the devcontainer AFFiNE compose)"
+}
 
 locals {
   ws_name           = lower(var.workspace_name)
   devcontainer_home = "/home/coder"
-  workspace_folder  = "${local.devcontainer_home}/${try(module.git-clone[0].folder_name, "structa.cloud")}"
+  workspace_folder  = "${local.devcontainer_home}/structa.cloud"
 }
 
 # ============================================================
@@ -68,15 +92,6 @@ locals {
 data "coder_workspace" "me" {}
 data "coder_provisioner" "me" {}
 data "coder_workspace_owner" "me" {}
-
-data "coder_parameter" "repo_url" {
-  type         = "string"
-  name         = "repo_url"
-  display_name = "Git Repository"
-  description  = "Repository to clone for the devcontainer. Must contain a devcontainer.json + docker-compose.yml (the Structa Cloud monorepo root has both)."
-  default      = "https://github.com/mammhoud/structa.cloud"
-  mutable      = true
-}
 
 # ============================================================
 # Coder agent  (runs inside the agent-host container)
@@ -148,18 +163,9 @@ module "devcontainers-cli" {
   version  = "~> 1.0"
 }
 
-module "git-clone" {
-  count    = data.coder_workspace.me.start_count
-  source   = "registry.coder.com/coder/git-clone/coder"
-  agent_id = coder_agent.main.id
-  url      = data.coder_parameter.repo_url.value
-  base_dir = local.devcontainer_home
-  version  = "~> 2.0"
-}
-
 # Browser editor ("VS Code Web"): code-server runs in the agent-host
-# container and opens the same cloned repo folder that the devcontainer
-# bind-mounts, so both editors see the same files.
+# container and opens the mounted project folder that the devcontainer
+# bind-mounts too, so both editors see the same files.
 module "code-server" {
   count        = data.coder_workspace.me.start_count
   source       = "registry.coder.com/coder/code-server/coder"
@@ -220,7 +226,10 @@ resource "docker_container" "workspace" {
         mkdir -p "$HOME/.local/bin"
         ln -sf /tmp/coder-agent "$HOME/.local/bin/coder"
         export PATH="$HOME/.local/bin:$PATH"
-        exec /tmp/coder-agent agent
+        # Run the agent as root (passwordless sudo, -E keeps the agent env)
+        # so the root-owned bind-mounted checkout is writable from the
+        # workspace — git commit/push work from both host and container.
+        exec sudo -n -E /tmp/coder-agent agent
     else
         echo "coder-agent download failed after retries" >&2
         exit 1
@@ -234,6 +243,10 @@ resource "docker_container" "workspace" {
     # directly over the shared `common` network; same plain-HTTP workaround
     # as the binary download above).
     "CODER_AGENT_URL=http://${var.coder_host_ip}:7080",
+    # Passed through to the devcontainer compose (REDIS_PASSWORD /
+    # AFFINE_DB_PASSWORD interpolation in .devcontainer/docker-compose.yml).
+    "REDIS_PASSWORD=${var.redis_password}",
+    "AFFINE_DB_PASSWORD=${var.affine_db_password}",
   ]
 
   volumes {
@@ -243,6 +256,11 @@ resource "docker_container" "workspace" {
   volumes {
     volume_name    = docker_volume.home_volume.name
     container_path = local.devcontainer_home
+  }
+  # The project source: bind-mount the host checkout (no clone).
+  volumes {
+    host_path      = var.host_repo_path
+    container_path = local.workspace_folder
   }
 
   networks_advanced {
