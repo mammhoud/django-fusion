@@ -25,8 +25,13 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 ├── .github/                                # CI/CD workflows and composite actions
 │   └── workflows/                          # GitHub Actions workflow files
 │
-├── docs/                                   # 📚 Documentation project (docsify)
-│   ├── index.html                          #   Docsify SPA entry point
+├── docs/                                   # 📚 Documentation project (Docus + Nuxt Content)
+│   ├── docus/                              #   Docus Nuxt app and locale sources
+│   │   ├── nuxt.config.ts                  #     English + Arabic routing
+│   │   ├── app.config.ts                  #     Branding, search, SEO
+│   │   ├── ar-content/                     #     Authored Arabic core guides
+│   │   └── scripts/prepare-content.mjs     #     Builds English content tree
+│   ├── index.html                          #   Redirect to the Docus locale route
 │   ├── README.md                           #   Documentation hub
 │   ├── overview.md                         #   Repo overview + name migration reference
 │   ├── _sidebar.md                         #   Sidebar navigation
@@ -117,7 +122,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   ├── cypercloud/                         #   Cypercloud/Syntara docs
 │   ├── lms/                                #   Legacy LMS docs
 │   ├── guides/                             #   Guides directory
-│   └── Dockerfile                          #   Docsify container
+│   └── Dockerfile                          #   Standalone Docus static container
 │
 ├── projects/                               # 🔵 All product code + shared Django config
 │   ├── AGENTS.md                           #   Project-level conventions
@@ -238,12 +243,12 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   │   │   │   ├── editions.md            #         Edition comparison
 │   │   │   │   ├── pos-architecture.md    #         Full architecture
 │   │   │   │   └── table-column-comparison.md
-│   │   │   ├── SIDECAR_V2.md
+│   │   │   ├── SERVER_V2.md
 │   │   │   └── screenshots/               #         (source of docs/assets copies)
 │   │   ├── formintA/                      #       Community (Tauri + React + Rust)
 │   │   │   └── AGENTS.md
 │   │   ├── formint/                       #       Professional (Astro + Django + Tauri)
-│   │   │   ├── sidecar/                   #         Django/Robyn boundary, APIs
+│   │   │   ├── server/                    #         Django/Robyn boundary, APIs
 │   │   │   ├── frontend/                  #         Astro + Alpine/HTMX shell
 │   │   │   └── src-tauri/                 #         Native desktop shell
 │   │   ├── formint-cloud/                 #       Cloud master (Django + Channels)
@@ -299,7 +304,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   │   ├── commands/                      #     Agent commands
 │   │   └── skills/                        #     Operational skills
 │   ├── templates/                         #   Coder/Terraform templates
-│   │   ├── dev-stack/main.tf              #     Code-server + FileGator workspace
+│   │   ├── dev-workspace/main.tf              #     Coder + FileGator + internal AppFlowy workspace
 │   │   └── website/main.tf                #     Website workspace
 │   └── scripts/                           #   Automation scripts
 │
@@ -460,7 +465,7 @@ cd projects && make test WEBSITE=lms-fusion
 | `pos-solo` / `pos-full` | Formint Professional | `projects/formints/formint/` | Merged editions |
 | `pos-cloud` / `formintB` | Formint Cloud | `projects/formints/formint-cloud/` | Renamed 2026-08 |
 | `formint-pos` / `formint-community` | Formint Community | `projects/formints/formintA/` | Published package |
-| `formint-pos-backend` | Formint Professional | `projects/formints/formint/sidecar/` | Package name |
+| `formint-pos-backend` | Formint Professional | `projects/formints/formint/server/` | Package name |
 | `formint-pos-frontend` | Formint Professional | `projects/formints/formint/frontend/` | Package name |
 
 ---

@@ -2,7 +2,7 @@
 
 ## System Design
 
-Formint is a **single-process desktop application** built with Tauri 2. The frontend (React 19 + TypeScript) communicates with the Rust backend through Tauri's `invoke()` IPC mechanism. There is no HTTP server, no API gateway, and no sidecar process.
+Formint is a **single-process desktop application** built with Tauri 2. The frontend (React 19 + TypeScript) communicates with the Rust backend through Tauri's `invoke()` IPC mechanism. There is no HTTP server, no API gateway, and no server process.
 
 ---
 

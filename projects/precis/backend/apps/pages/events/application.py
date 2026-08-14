@@ -11,15 +11,15 @@ Usage (in core/routes.py)::
 
     from apps.pages.events.application import EventsApp
 
-    site = Site(title="LMS Fusion", viewsets=[LMSApp(), BlogApp(), EventsApp(), CoreApp()])
+    module = Module(title="LMS Fusion", viewsets=[LMSApp(), BlogApp(), EventsApp(), CoreApp()])
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
+from django_fusion.routes.core.sites import Application
 
 
 class EventsApp(Application):

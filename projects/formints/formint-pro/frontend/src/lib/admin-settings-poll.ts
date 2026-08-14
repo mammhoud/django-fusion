@@ -8,7 +8,7 @@
  *
  * Client-side cross-tab transports (`BroadcastChannel` / `storage` events,
  * see `session-sync.ts`) are origin-scoped, so an admin save made on the
- * sidecar origin (`:8767`) can never reach tabs on the Astro origin
+ * server origin (`:8767`) can never reach tabs on the Astro origin
  * (`:4321`) directly. Propagation must go through the server: this watcher
  * polls `GET /fusion/session-mode/`, which reports the **DB-truth** admin
  * preference (``admin_preference``) plus a per-row version

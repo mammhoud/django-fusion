@@ -64,7 +64,7 @@
     "build:android": "pnpm tauri android build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",
     "build:ios": "pnpm tauri ios build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",
     "build:all": "node ../scripts/publish/build-all.cjs",
-    "build:sidecar": "PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs",
+    "build:server": "PROJECT_ROOT=. node ../scripts/publish/build-server.cjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

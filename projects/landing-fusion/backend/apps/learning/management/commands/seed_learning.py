@@ -14,8 +14,15 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils.html import format_html
 
-from apps.learning.models import Course, CourseTag, Lesson, LessonResource, Module, Review, Specialization
-
+from apps.learning.models import (
+    Course,
+    CourseTag,
+    Lesson,
+    LessonResource,
+    Module,
+    Review,
+    Specialization,
+)
 
 YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@mammhoud"
 COURSE_SLUG = "ship-django-products"

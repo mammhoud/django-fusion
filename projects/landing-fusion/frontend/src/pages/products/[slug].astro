@@ -65,6 +65,9 @@ const pagePreviewGallery = (pageData?.preview_gallery as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 const pageGallery = (pageData?.gallery as any[] | undefined);
+const pageProfile = (pageData?.profile as any[] | undefined)?.[0] as any | undefined;
+const profileIcp = (pageProfile?.icps || []) as { title: string; who: string; behaviour: string }[];
+const profileReports = (pageProfile?.reports || []) as string[];
 
 const techItems = pageTech?.map((t: any) => String(t || '')).filter(Boolean);
 const editions = pageEditions?.map((e: any) => ({
@@ -380,6 +383,74 @@ const faqItems = pageFaq?.map((f: any) => ({
       </div>
     </section>
   ) : <ContentError label="Product data unavailable" />}
+
+  {pageProfile ? (
+    <section id='profile' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-10 max-w-2xl'>
+          {pageProfile.eyebrow && <p class='tag-marker mb-4'>{pageProfile.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{pageProfile.title}</h2>
+          {pageProfile.icp_intro && <p class='text-fu-muted'>{pageProfile.icp_intro}</p>}
+        </div>
+
+        {profileIcp.length ? (
+          <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+            {profileIcp.map((persona, i) => (
+              <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
+                <span class='tag-marker' style='margin:0'>ideal customer</span>
+                <h3 class='mt-4 font-display text-lg font-semibold text-fu-ink'>{persona.title}</h3>
+                <div class='mt-4'>
+                  <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>who</span>
+                  <p class='mt-1 text-sm leading-relaxed text-fu-ink/80'>{persona.who}</p>
+                </div>
+                <div class='mt-4'>
+                  <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>behaviour</span>
+                  <p class='mt-1 text-sm leading-relaxed text-fu-muted'>{persona.behaviour}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {pageProfile.capacity && (
+          <div class='card mt-8 p-6'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>capacity &amp; scale</span>
+            <p class='mt-2 leading-relaxed text-fu-ink/80'>{pageProfile.capacity}</p>
+          </div>
+        )}
+
+        {profileReports.length ? (
+          <div class='card mt-8 p-6'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>dashboards &amp; reports</span>
+            <ul class='mt-4 grid gap-2.5 sm:grid-cols-2'>
+              {profileReports.map((report) => (
+                <li class='flex items-start gap-2.5 text-sm text-fu-ink/80'>
+                  <svg class='mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-fu-link' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'>
+                    <path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/>
+                  </svg>
+                  <span>{report}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {pageProfile.channels && (
+          <div class='card mt-8 p-6'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>channels &amp; loyalty</span>
+            <p class='mt-2 leading-relaxed text-fu-ink/80'>{pageProfile.channels}</p>
+          </div>
+        )}
+
+        {pageProfile.tone && (
+          <div class='mt-8 border-l-2 border-fu-link pl-5'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>marketing tone</span>
+            <p class='mt-2 max-w-2xl italic leading-relaxed text-fu-ink/80'>{pageProfile.tone}</p>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null}
 
   {faqItems?.length ? <FAQ items={faqItems} /> : null}
 

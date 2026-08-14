@@ -1,31 +1,31 @@
 /**
- * POS Sidecar API
+ * POS Server API
  * ==================
- * Central barrel export for all sidecar API modules.
+ * Central barrel export for all server API modules.
  *
  * Usage:
- *   import { sidecar, data } from './api';
+ *   import { server, data } from './api';
  *
  *   // Health check
- *   const running = await sidecar.healthCheck();
+ *   const running = await server.healthCheck();
  *
  *   // Data
  *   const sales = await data.listSales();
  *   const url = data.getInvoiceUrl(42, 'commercial', 'modern');
  */
 
-export { sidecar, SIDECAR_BASE, SIDECAR_WS_BASE } from './sidecar';
+export { server, SERVER_BASE, SERVER_WS_BASE } from './server';
 export type {
-  SidecarResponse,
+  ServerResponse,
   HealthResponse,
-} from './sidecar';
+} from './server';
 
 export { data } from './data';
 export type {
-  SidecarSale,
-  SidecarSaleItem,
-  SidecarProduct,
-  SidecarSettings,
+  ServerSale,
+  ServerSaleItem,
+  ServerProduct,
+  ServerSettings,
   InvoiceType,
   InvoiceDesign,
 } from './data';

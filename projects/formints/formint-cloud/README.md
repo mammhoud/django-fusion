@@ -6,7 +6,7 @@ Hosted multi-terminal SaaS cloud master for Formints. This edition merges the
 django-bolt analytics, Unfold admin, and channels WebSocket sync — with the
 API surface the frontend consumes served directly by Django on `:8767`
 (the port the Community UI already targets, so no frontend rewrites were
-needed). The Robyn sidecar has been removed.
+needed). The Robyn server has been removed.
 
 ## Layout (formintC-style project structure, precis-style apps)
 
@@ -18,10 +18,10 @@ formint-cloud/
 │       ├── core/            # models (Org, Branch, CRM, reports, sync data) + viewsets + admin
 │       ├── domain/          # sync domain services (broker, queue, conflict resolver)
 │       └── handlers/        # consumers, sync dashboard, fragments, sync API receivers,
-│                            #   fusion contract (fusion.py) + sidecar surface (surface.py)
+│                            #   fusion contract (fusion.py) + server surface (surface.py)
 ├── frontend/                # formintA Community UI (Astro + React 19)
 │   ├── astro.config.mjs     # dev proxies → API :8767 + admin :8082
-│   └── src/                 # pages, components, api client (SIDECAR_BASE → :8767)
+│   └── src/                 # pages, components, api client (SERVER_BASE → :8767)
 └── Makefile                 # one-command orchestration
 ```
 
@@ -36,7 +36,7 @@ Astro frontend (:4323) ──┬── /organizations /branches /leads /deals �
 ```
 
 - **Django API server (:8767)** — one Django process serving the full
-  sidecar-compatible surface: django-fusion viewsets for every core model
+  server-compatible surface: django-fusion viewsets for every core model
   (`/organizations`, `/branches`, `/leads`, `/contacts`, `/deals`,
   `/inventory-reports`, `/branch-reports`, `/sync/*`, `/device-tokens`,
   `/conflicts`, `/queue`), the `/fusion/*` render-mode contract, the
@@ -55,7 +55,7 @@ Astro frontend (:4323) ──┬── /organizations /branches /leads /deals �
 make install        # backend venv + frontend deps
 make migrate        # apply Django migrations
 make dev-backend    # Django :8082 (Unfold admin + bolt analytics)
-make dev-api        # Django :8767 (sidecar-compatible API surface)
+make dev-api        # Django :8767 (server-compatible API surface)
 make dev-frontend   # Astro :4323 (Community UI)
 make check          # django check + astro check
 make test           # backend Django test suite
@@ -69,7 +69,7 @@ make test           # backend Django test suite
 > `make dev-api` boots clean. The seeded dev DB is gitignored, so this is
 > required on every fresh checkout.
 >
-> `make dev-sidecar` is kept as an alias for `make dev-api` for
+> `make dev-server` is kept as an alias for `make dev-api` for
 > backwards compatibility with older muscle memory / scripts.
 
 ## API surface (served by Django on :8767)
@@ -97,8 +97,8 @@ make test           # backend Django test suite
 The Django Channels consumer (`apps/handlers/consumers.py`, routed in
 `configs/asgi.py`) serves the real-time stream the Astro frontend consumes
 at `/ws/sync-events/` — same per-branch group + entity-event protocol the
-removed Robyn sidecar's `/ws/sync` provided, but served directly by Django
-(no separate sidecar process). Use **daphne** to serve it:
+removed Robyn server's `/ws/sync` provided, but served directly by Django
+(no separate server process). Use **daphne** to serve it:
 
 ```bash
 cd backend && .venv/bin/daphne -b 127.0.0.1 -p 8767 configs.asgi:application
@@ -196,8 +196,8 @@ captures at 2× DPR, then downscales to 1280px wide and palette-quantizes to
 
 ## Notes
 
-- The frontend is the formintA Community UI; `SIDECAR_BASE` points at the
-  API server (`VITE_SIDECAR_URL` overrides it) — the variable name is kept
+- The frontend is the formintA Community UI; `SERVER_BASE` points at the
+  API server (`VITE_SERVER_URL` overrides it) — the variable name is kept
   for compatibility even though Django now answers on that port.
 - This edition has no Tauri shell — the Cloud master is hosted (SaaS), so the
   desktop app (`formint-community/src-tauri`, `formint/src-tauri`) does not apply.

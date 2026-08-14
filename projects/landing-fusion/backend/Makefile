@@ -1,7 +1,7 @@
 # landing-fusion backend — Django + Wagtail (landing-only)
 # Mirrors projects/cms-fusion/backend conventions, trimmed to the landing slice.
 # ============================================================
-.PHONY: help dev server install migrate static collectstatic superuser shell check test format lint fix
+.PHONY: help dev server scheduler install migrate static collectstatic superuser shell check test format lint fix
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -32,6 +32,9 @@ dev: ## Run Django dev server
 
 server: ## Production server (gunicorn, WSGI)
 	$(UV_RUN) gunicorn wsgi:application --bind 0.0.0.0:$${PORT:-$(DEFAULT_PORT)} --workers $${WORKERS:-4} --timeout $${TIMEOUT:-120} --log-level $${LOG_LEVEL:-info}
+
+scheduler: ## APScheduler cron runner for @task(schedule=...) jobs
+	$(UV_RUN) python -m django_fusion.tasks.scheduler
 
 install: ## Install Python deps (workspace venv)
 	@echo -e "$(BLUE)Syncing workspace deps...$(NC)"

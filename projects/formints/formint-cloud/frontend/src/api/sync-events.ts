@@ -3,7 +3,7 @@
  * =====================
  * Typed client for the POS Cloud real-time sync stream, served by the
  * Django Channels ``SyncEventConsumer`` at ``/ws/sync-events/`` (the
- * surface formerly served by the Robyn sidecar's ``/ws/sync``).
+ * surface formerly served by the Robyn server's ``/ws/sync``).
  *
  * The frontend connects once (optionally identifying with a
  * `branch_code`), and receives live `sync_event` / `broker_message`
@@ -21,11 +21,11 @@
  *   conn.close();
  */
 
-import { SIDECAR_WS_BASE } from './sidecar';
+import { SERVER_WS_BASE } from './server';
 
 // ---- Types ----------------------------------------------------------------
 
-/** Frames the sidecar sends to connected clients. */
+/** Frames the server sends to connected clients. */
 export interface SyncEventFrame {
   type: 'sync_event' | 'broker_message' | 'identify_ack' | 'error';
   entity_type?: string;
@@ -43,7 +43,7 @@ export interface SyncEventsOptions {
   branchCode?: string;
   /** Node id sent with the identify frame. */
   nodeId?: string;
-  /** Called for every frame received from the sidecar. */
+  /** Called for every frame received from the server. */
   onEvent?: (frame: SyncEventFrame) => void;
   /** Called when the connection closes (after reconnect attempts stop). */
   onClose?: (code: number, reason: string) => void;
@@ -58,7 +58,7 @@ export interface SyncEventsOptions {
 export interface SyncEventsConnection {
   /** True while the socket is open. */
   readonly open: boolean;
-  /** Send a JSON frame to the sidecar. */
+  /** Send a JSON frame to the server. */
   send: (frame: Record<string, unknown>) => boolean;
   /** Close the connection. */
   close: () => void;
@@ -67,7 +67,7 @@ export interface SyncEventsConnection {
 // ---- Client ---------------------------------------------------------------
 
 /**
- * Open a WebSocket connection to the sidecar sync-events stream.
+ * Open a WebSocket connection to the server sync-events stream.
  */
 export function createSyncEventsWs(options: SyncEventsOptions = {}): SyncEventsConnection {
   const {
@@ -87,7 +87,7 @@ export function createSyncEventsWs(options: SyncEventsOptions = {}): SyncEventsC
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   const connect = () => {
-    socket = new WebSocket(`${SIDECAR_WS_BASE}/ws/sync-events/`);
+    socket = new WebSocket(`${SERVER_WS_BASE}/ws/sync-events/`);
 
     socket.onopen = () => {
       open = true;

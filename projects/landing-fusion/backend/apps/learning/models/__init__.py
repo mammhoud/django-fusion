@@ -10,6 +10,7 @@ the same structure:
 This module re-exports every public model so the old flat import
 (``from apps.learning.models import Course``) keeps resolving unchanged.
 """
+from .certificate import Certificate
 from .courses import (
     Course,
     CourseEnrollmentLead,
@@ -23,7 +24,6 @@ from .courses import (
     Specialization,
 )
 from .enrollment import Enrollment
-from .certificate import Certificate
 from .review import Review
 from .wishlist import Wishlist
 

@@ -1,8 +1,8 @@
-# POS Rust Integration Guide — Sidecar Linking
+# POS Rust Integration Guide — Server Linking
 
 > **Status:** Planning Phase  
 > **Last Updated:** 20 July 2026  
-> **Purpose:** Document how Rust Tauri backend links with Robyn sidecar
+> **Purpose:** Document how Rust Tauri backend links with Robyn server
 
 ---
 
@@ -25,7 +25,7 @@ The POS application has two data layers:
 │                     │ Tauri IPC (invoke)                      │
 │                     ▼                                         │
 │  ┌──────────────────────────────────────────────────────┐    │
-│  │  Robyn Sidecar (Django ORM, shared SQLite)             │    │
+│  │  Robyn Server (Django ORM, shared SQLite)             │    │
 │  │  • Cloud sync (push/pull data to cloud)               │    │
 │  │  • Node registry (register, heartbeat, events)        │    │
 │  │  • Config management (device, master, cloud)          │    │
@@ -40,7 +40,7 @@ The POS application has two data layers:
 
 ## 2. Current Rust Modules
 
-| Module | File | Purpose | Sidecar Link? |
+| Module | File | Purpose | Server Link? |
 |--------|------|---------|--------------|
 | `auth.rs` | `operations/auth.rs` | Login, password, sessions | ❌ Standalone |
 | `products.rs` | `operations/products.rs` | Product CRUD | ❌ Standalone |
@@ -49,15 +49,15 @@ The POS application has two data layers:
 | `categories.rs` | `operations/categories.rs` | Category CRUD | ❌ Standalone |
 | `inventory.rs` | `operations/inventory.rs` | Inventory CRUD | ❌ Standalone |
 | `employees.rs` | `operations/employees.rs` | Employee CRUD | ❌ Standalone |
-| `sidecar.rs` | `operations/sidecar.rs` | Process lifecycle | ✅ Starts/Stops sidecar |
+| `server.rs` | `operations/server.rs` | Process lifecycle | ✅ Starts/Stops server |
 | `recipes.rs` | `operations/recipes.rs` | Recipe management | ❌ Standalone |
 | `settings.rs` | `operations/settings.rs` | App settings | ❌ Standalone |
 
 ---
 
-## 3. What to Add to Rust for Sidecar Linking
+## 3. What to Add to Rust for Server Linking
 
-### 3.1 Module: `sync.rs` — Push Local Data to Sidecar
+### 3.1 Module: `sync.rs` — Push Local Data to Server
 
 ```rust
 // src-tauri/src/operations/sync.rs
@@ -74,9 +74,9 @@ pub struct SyncResult {
 }
 
 #[tauri::command]
-pub async fn push_sales_to_sidecar(
+pub async fn push_sales_to_server(
     pool: State<'_, DbPool>,
-    sidecar_url: String,
+    server_url: String,
     sales: Vec<i32>,  // sale IDs to sync
 ) -> Result<SyncResult, String> {
     let conn = pool.get().map_err(|e| e.to_string())?;
@@ -90,7 +90,7 @@ pub async fn push_sales_to_sidecar(
 
         let client = reqwest::Client::new();
         match client
-            .post(format!("{}/sync/receive/sales", sidecar_url))
+            .post(format!("{}/sync/receive/sales", server_url))
             .json(&serde_json::json!({
                 "node_id": std::env::var("POS_NODE_ID").unwrap_or("unknown".into()),
                 "sales": [sale],
@@ -110,7 +110,7 @@ pub async fn push_sales_to_sidecar(
 }
 ```
 
-### 3.2 Module: `tokens.rs` — Get Device Token from Sidecar
+### 3.2 Module: `tokens.rs` — Get Device Token from Server
 
 ```rust
 // src-tauri/src/operations/tokens.rs
@@ -118,13 +118,13 @@ pub async fn push_sales_to_sidecar(
 
 #[tauri::command]
 pub async fn get_device_token(
-    sidecar_url: String,
+    server_url: String,
     device_id: String,
     role: String,  // admin, manager, cashier, viewer
 ) -> Result<String, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .post(format!("{}/auth/token", sidecar_url))
+        .post(format!("{}/auth/token", server_url))
         .json(&serde_json::json!({
             "device_id": device_id,
             "role": role,
@@ -140,12 +140,12 @@ pub async fn get_device_token(
 
 #[tauri::command]
 pub async fn refresh_device_token(
-    sidecar_url: String,
+    server_url: String,
     current_token: String,
 ) -> Result<String, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .post(format!("{}/auth/refresh", sidecar_url))
+        .post(format!("{}/auth/refresh", server_url))
         .header("Authorization", format!("Bearer {}", current_token))
         .send()
         .await
@@ -156,7 +156,7 @@ pub async fn refresh_device_token(
 }
 ```
 
-### 3.3 Module: `config.rs` — Pull Device Config from Sidecar
+### 3.3 Module: `config.rs` — Pull Device Config from Server
 
 ```rust
 // src-tauri/src/operations/config.rs
@@ -166,13 +166,13 @@ use serde_json::Value;
 
 #[tauri::command]
 pub async fn get_device_config(
-    sidecar_url: String,
+    server_url: String,
     node_id: String,
     token: String,
 ) -> Result<Value, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .get(format!("{}/nodes/{}/config", sidecar_url, node_id))
+        .get(format!("{}/nodes/{}/config", server_url, node_id))
         .header("Authorization", format!("Bearer {}", token))
         .send()
         .await
@@ -183,7 +183,7 @@ pub async fn get_device_config(
 
 #[tauri::command]
 pub async fn set_device_config(
-    sidecar_url: String,
+    server_url: String,
     node_id: String,
     config_key: String,
     config_value: Value,
@@ -191,7 +191,7 @@ pub async fn set_device_config(
 ) -> Result<Value, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .post(format!("{}/nodes/{}/config", sidecar_url, node_id))
+        .post(format!("{}/nodes/{}/config", server_url, node_id))
         .header("Authorization", format!("Bearer {}", token))
         .json(&serde_json::json!({
             "config_key": config_key,
@@ -213,12 +213,12 @@ pub async fn set_device_config(
 
 #[tauri::command]
 pub async fn get_pending_approvals(
-    sidecar_url: String,
+    server_url: String,
     token: String,
 ) -> Result<Value, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .get(format!("{}/approvals/pending", sidecar_url))
+        .get(format!("{}/approvals/pending", server_url))
         .header("Authorization", format!("Bearer {}", token))
         .send()
         .await
@@ -229,14 +229,14 @@ pub async fn get_pending_approvals(
 
 #[tauri::command]
 pub async fn approve_change(
-    sidecar_url: String,
+    server_url: String,
     approval_id: i32,
     reviewer: String,
     token: String,
 ) -> Result<Value, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .post(format!("{}/approvals/{}/approve", sidecar_url, approval_id))
+        .post(format!("{}/approvals/{}/approve", server_url, approval_id))
         .header("Authorization", format!("Bearer {}", token))
         .json(&serde_json::json!({ "reviewer": reviewer }))
         .send()
@@ -263,8 +263,8 @@ fn main() {
             operations::products::list_products,
             // ... (all existing) ...
             
-            // Sidecar link — add these
-            operations::sync::push_sales_to_sidecar,
+            // Server link — add these
+            operations::sync::push_sales_to_server,
             operations::tokens::get_device_token,
             operations::tokens::refresh_device_token,
             operations::config::get_device_config,
@@ -296,7 +296,7 @@ tokio = { version = "1", features = ["full"] }
 ## 6. Data Flow Diagram
 
 ```
-React Frontend                Rust Backend                    Sidecar
+React Frontend                Rust Backend                    Server
      │                            │                              │
      │  invoke('list_products')   │                              │
      ├───────────────────────────►│                              │
@@ -319,17 +319,17 @@ React Frontend                Rust Backend                    Sidecar
 
 ---
 
-## 7. Sidecar URL Resolution
+## 7. Server URL Resolution
 
 ```rust
-// How the frontend determines the sidecar URL
-fn get_sidecar_url() -> String {
-    std::env::var("POS_SIDECAR_URL")
+// How the frontend determines the server URL
+fn get_server_url() -> String {
+    std::env::var("POS_SERVER_URL")
         .unwrap_or_else(|_| "http://127.0.0.1:8766".to_string())
 }
 ```
 
-The sidecar URL is configurable via:
-1. Environment variable `POS_SIDECAR_URL`
+The server URL is configurable via:
+1. Environment variable `POS_SERVER_URL`
 2. App settings (stored in Rust DB)
 3. Default: `http://127.0.0.1:8766` (Full) or `http://127.0.0.1:8765` (Solo)

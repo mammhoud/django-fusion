@@ -221,8 +221,6 @@ class MainSettings(BaseSettings):
             CONFIG_DIR / "storage.yml",
             CONFIG_DIR / "email.yml",
             CONFIG_DIR / "logging.yml",
-            CONFIG_DIR / "celery.yml",
-            CONFIG_DIR / "rq.yml",
             CONFIG_DIR / "default" / f"_{self.SERVER_ENV.value}.yml",
             CONFIG_DIR / ".secrets.yml",
         ]

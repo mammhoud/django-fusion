@@ -62,6 +62,7 @@ UNFOLD = {
     "SITE_DROPDOWN": [
         {"icon": "home", "title": _("View Site"), "link": "/"},
         {"icon": "edit_note", "title": _("Wagtail CMS"), "link": "/admin/"},
+        {"icon": "bolt", "title": _("Task Center"), "link": "/tasks/"},
     ],
 
     # ── Sidebar Navigation ─────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 pub mod native;
-pub mod sidecar;
+pub mod server;
 
 use std::fs;
 use tauri::{AppHandle, Manager};
@@ -41,18 +41,18 @@ fn persist_window_state(app: &AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn start_formint_sidecar(app: AppHandle) -> Result<String, String> {
-    sidecar::start(&app)
+fn start_formint_server(app: AppHandle) -> Result<String, String> {
+    server::start(&app)
 }
 
 #[tauri::command]
-fn stop_formint_sidecar() -> Result<String, String> {
-    sidecar::stop()
+fn stop_formint_server() -> Result<String, String> {
+    server::stop()
 }
 
 #[tauri::command]
-fn formint_sidecar_status() -> Result<String, String> {
-    sidecar::status()
+fn formint_server_status() -> Result<String, String> {
+    server::status()
 }
 
 #[tauri::command]
@@ -71,8 +71,8 @@ pub fn run() {
             if let Err(error) = restore_window_state(app.handle()) {
                 eprintln!("[formint] window restore skipped: {error}");
             }
-            if let Err(error) = sidecar::start(app.handle()) {
-                eprintln!("[formint] sidecar auto-start skipped: {error}");
+            if let Err(error) = server::start(app.handle()) {
+                eprintln!("[formint] server auto-start skipped: {error}");
             }
             Ok(())
         })
@@ -84,9 +84,9 @@ pub fn run() {
             }
         })
         .invoke_handler(tauri::generate_handler![
-            start_formint_sidecar,
-            stop_formint_sidecar,
-            formint_sidecar_status,
+            start_formint_server,
+            stop_formint_server,
+            formint_server_status,
             native_capabilities,
         ])
         .run(tauri::generate_context!())

@@ -38,7 +38,7 @@ set -Eeuo pipefail
 # ── Paths ────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-SIDECAR="${ROOT}/sidecar"
+SERVER="${ROOT}/server"
 CAPTURES_DIR="${ROOT}/docs/screenshots/admin/_captures"
 SCREENSHOTS_DIR="${ROOT}/docs/screenshots/admin"
 LOG="/tmp/django-shots.log"
@@ -108,7 +108,7 @@ mkdir -p "${CAPTURES_DIR}"
 
 # ── 4. Boot Django runserver detached ────────────────────────────────────
 echo "▸ Bootstrapping admin database & superuser…"
-cd "${SIDECAR}"
+cd "${SERVER}"
 python3 manage.py migrate
 POS_FULL_ADMIN_EMAIL="${ADMIN_EMAIL}" \
 POS_FULL_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \

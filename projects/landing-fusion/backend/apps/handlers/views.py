@@ -123,7 +123,7 @@ class LandingPageView(PageHandler):
                 "breadcrumb_current": self._get_localized_title(page, language),
                 "site_name": "Structa Cloud",
                 # Main nav (show_in_nav items only) — single source of truth is
-                # LandingSite.NAV_ITEMS; the header partial renders from this.
+                # LandingModule.NAV_ITEMS; the header partial renders from this.
                 "nav_items": self._get_nav_items(),
                 # Breadcrumb trail for subpages (team/founder/startup, phases +
                 # prompts, product detail/preview, blog posts). Rendered by
@@ -264,7 +264,7 @@ class LandingPageView(PageHandler):
         from wagtail.models import Page
 
         from apps.content.models.translations import PageTranslation
-        from apps.core.site import landing_site
+        from apps.core.site import landing_module
 
         language = _requested_content_language(self.request)
         landing_root = HomePage.objects.first()
@@ -281,7 +281,7 @@ class LandingPageView(PageHandler):
             return translation.title if translation and translation.title else fallback
 
         items = []
-        for item in landing_site.get_navigation_context(self.request):
+        for item in landing_module.get_navigation_context(self.request):
             if not item.get("show_in_nav", True):
                 continue
             clean = {k: v for k, v in item.items() if k != "show_in_nav"}

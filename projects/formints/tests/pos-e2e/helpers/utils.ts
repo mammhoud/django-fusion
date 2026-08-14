@@ -60,7 +60,7 @@ export function captureConsoleErrors(page: Page) {
 /**
  * Wait for a FusionPage fragment to finish loading.
  * After the initial page load, FusionPage may fetch a fragment
- * from the sidecar. This waits for that to complete.
+ * from the server. This waits for that to complete.
  */
 export async function waitForFusionFragment(page: Page, timeout: number = 10000): Promise<void> {
   try {

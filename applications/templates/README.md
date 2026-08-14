@@ -1,72 +1,80 @@
 # Coder Templates
 
-Terraform templates for [Coder](https://coder.com) workspaces. Each template
-provisions a development environment with the monorepo mounted, Docker socket
-access, and a Coder agent for IDE/port-forwarding.
+Terraform templates for [Coder](https://coder.com) workspaces. Templates
+provision the monorepo, Docker access, and a Coder agent for authenticated
+workspace applications.
 
 ## Templates
 
-| Template | What it provisions | Traefik? | Workspace constraint |
+| Template | What it provisions | Public routing | Workspace constraint |
 |---|---|---|---|
-| [**dev-stack**](./dev-stack/README.md) | code-server IDE + FileGator file manager | Yes (via shared-media nginx) | Must be named `dev` |
-| [**website**](./website/README.md) | Django/Wagtail (landing-fusion backend) | No | None (any name works) |
+| [**dev-workspace**](./dev-workspace/README.md) | code-server + FileGator + AppFlowy Cloud | FileGator only | Must be named `dev` |
+| [**website**](./website/README.md) | Django/Wagtail landing-fusion workspace | Coder app | None |
 
-### dev-stack
+### dev-workspace
 
-Multi-service dev workspace. Spins up a code-server IDE with Node.js/npm and a
-workspace-scoped FileGator file manager, both routed through the shared
-reverse-proxy stack (Traefik → shared-media nginx) at `code.structa.cloud`
-and `filegator.structa.cloud`.
+The development workspace includes an internal code-server IDE, a
+workspace-scoped FileGator, and a PostgreSQL-backed AppFlowy Cloud stack.
+AppFlowy and code-server are exposed only as authenticated Coder apps; no
+fixed host ports or public `blinko.structa.cloud`, `code.structa.cloud`, or
+`ws.structa.cloud` routes are configured.
 
-→ [dev-stack README](./dev-stack/README.md) · [main.tf](./dev-stack/main.tf)
+FileGator retains `filegator.structa.cloud` for compatibility with the shared
+proxy, but its container port is internal-only as well.
+
+→ [dev-workspace README](./dev-workspace/README.md) ·
+[main.tf](./dev-workspace/main.tf)
 
 ### website
 
-Single-container Django/Wagtail workspace. Builds from the landing-fusion
-Dockerfile, creates an isolated PostgreSQL database, runs migrations, and starts
-the Django dev server. Accessed through Coder's built-in port forwarding.
+Single-container Django/Wagtail workspace. It builds from the landing-fusion
+Dockerfile, creates an isolated PostgreSQL database, runs migrations, and
+starts the Django development server through Coder.
 
 → [website README](./website/README.md) · [main.tf](./website/main.tf)
 
 ## Shared infrastructure
 
-Both templates depend on infrastructure defined outside the templates
-directory:
-
 | Component | Defined in |
 |---|---|
-| PostgreSQL + Redis + Coder | `applications/databases/docker-compose.yml` |
-| Traefik reverse proxy + shared-media nginx | `applications/proxy/docker-compose.yml` |
-| Traefik dynamic routes | `applications/proxy/traefik/dynamic/*.yml` |
-| Docker network (`common`) | Created externally |
+| PostgreSQL + Redis | `applications/databases/docker-compose.yml` |
+| Coder control plane | `applications/docker-compose.yml` |
+| Traefik + shared-media nginx | `applications/proxy/docker-compose.yml` |
+| FileGator route | `applications/proxy/traefik/dynamic/filegator.yml` |
+| Docker networks (`common`, `warehouse-net`) | Infrastructure deployment |
 
-The databases docker-compose must be running before any workspace is created.
+The database and Redis services must be running before creating a
+`dev-workspace`. A new PostgreSQL volume creates the `appflowy` database and
+role; existing volumes need the normal database maintenance step to add them.
 
 ## Quick start
 
 ```bash
-# 1. Start infrastructure
+# 1. Start shared database infrastructure
 cd applications/databases
-docker compose up -d
+docker compose up -d postgres default-redis
 
-# 2. Push templates to Coder (or use the Coder UI)
-coder templates push dev-stack  --directory applications/templates/dev-stack
-coder templates push website    --directory applications/templates/website
+# 2. Start Coder
+cd ..
+docker compose -f docker-compose.yml up -d coder
 
-# 3. Create a workspace from the Coder dashboard
-#    - dev-stack: name it "dev" (required!)
-#    - website:   name it anything
+# 3. Push the templates
+coder templates push dev-workspace --directory applications/templates/dev-workspace
+coder templates push website --directory applications/templates/website
+
+# 4. Create dev-workspace with workspace name "dev"
+#    Open code-server and AppFlowy from the Coder workspace page.
 ```
 
 ## File layout
 
-```
+```text
 applications/templates/
-├── README.md              ← you are here
-├── dev-stack/
-│   ├── main.tf            ← code-server + FileGator
-│   └── README.md          ← full docs
+├── README.md
+├── dev-workspace/
+│   ├── main.tf       # Coder + FileGator + internal AppFlowy Cloud
+│   └── README.md     # full workspace configuration and validation
 └── website/
-    ├── main.tf            ← Django/Wagtail
-    └── README.md          ← full docs
+    ├── main.tf
+    └── README.md
 ```

@@ -5,7 +5,7 @@ SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
     "services", "process", "blog", "badges",
     "tech", "editions", "snippets", "comparison", "team", "gallery",
-    "applications", "variants",
+    "applications", "variants", "profile",
 ]
 
 
@@ -1064,3 +1064,62 @@ class BadgesSectionBlock(blocks.StructBlock):
         icon = "group"
         label = _("Badges section")
         template = "content/blocks/badges.html"
+
+
+class IcpPersonaBlock(blocks.StructBlock):
+    """One ideal-customer persona — who they are and how they behave.
+
+    Paired fields per persona: ``title`` (a short handle, e.g. "Independent
+    café owner"), ``who`` (the demographic / role / business profile) and
+    ``behaviour`` (buying habits, pain points, goals and triggers). Rendered
+    as a labelled card in the product profile so every product answers
+    "which people and businesses does this solve problems for?"
+    """
+
+    title = blocks.CharBlock(max_length=120, label=_("Persona"))
+    who = blocks.TextBlock(label=_("Who"), help_text=_(
+        "Demographic / role / business type — who they are in detail."
+    ))
+    behaviour = blocks.TextBlock(label=_("Behaviour"), help_text=_(
+        "Buying habits, pain points, goals and triggers — how they actually operate."
+    ))
+
+    class Meta:
+        icon = "user"
+        label = _("Ideal customer persona")
+
+
+class ProductProfileBlock(blocks.StructBlock):
+    """A product's business profile — ICP, capacity, financial & supply-chain
+    reporting, dashboards, channels/loyalty and marketing tone.
+
+    This is the "who does it serve and what does it do for them" document that
+    sits behind every product page. It is deliberately structured so each
+    product can express a *different* ICP and a *different* marketing voice
+    instead of sharing one generic pitch. Rendered on both roads from the same
+    Wagtail source of truth.
+    """
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, label=_("Title"))
+    icp_intro = blocks.TextBlock(required=False, label=_("ICP intro"))
+    icps = blocks.ListBlock(IcpPersonaBlock(), label=_("Ideal customer profiles"))
+    capacity = blocks.TextBlock(required=False, label=_("Capacity & scale"), help_text=_(
+        "Minimum inventory / data size and the throughput the software can process."
+    ))
+    reports = blocks.ListBlock(
+        blocks.CharBlock(max_length=160, label=_("Report")),
+        label=_("Dashboards & reports"),
+        help_text=_("Financial, supply-chain and marketing reports the product ships."),
+    )
+    channels = blocks.TextBlock(required=False, label=_("Channels & loyalty"), help_text=_(
+        "How invoices reach customers (WhatsApp, email, print) and how loyalty points accrue."
+    ))
+    tone = blocks.TextBlock(required=False, label=_("Marketing tone"), help_text=_(
+        "The marketing voice for this product — distinct per ICP."
+    ))
+
+    class Meta:
+        icon = "user"
+        label = _("Product profile")
+        template = "content/blocks/product_profile.html"

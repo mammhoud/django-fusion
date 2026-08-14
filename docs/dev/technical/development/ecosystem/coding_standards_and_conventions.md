@@ -81,7 +81,7 @@ from typing import List
 
 # Third-party
 import requests
-from celery import shared_task
+from django_fusion.tasks import task
 
 # Django
 from django.db import models

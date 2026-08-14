@@ -1,6 +1,6 @@
 /* ==========================================================================
    Structa Cloud Docs — Custom Theme
-   Overrides Docsify 4 vue.css with a premium dark developer-documentation theme
+   Overrides Docus 4 vue.css with a premium dark developer-documentation theme
    ========================================================================== */
 
 /* ── Font Import ─────────────────────────────────────────────────────────── */
@@ -415,7 +415,7 @@ body {
 }
 
 /* ── Copy Code Button ────────────────────────────────────────────────────── */
-.docsify-copy-code-button {
+.docs-copy-code-button {
   font-family: var(--font-sans) !important;
   font-size: 11.5px !important;
   font-weight: 500 !important;
@@ -427,7 +427,7 @@ body {
   transition: all var(--transition-fast);
 }
 
-.docsify-copy-code-button:hover {
+.docs-copy-code-button:hover {
   background: var(--bg-elevated) !important;
   color: var(--text-primary) !important;
   border-color: var(--accent) !important;
@@ -468,7 +468,7 @@ body {
 }
 
 /* ── Pagination (prev/next) ──────────────────────────────────────────────── */
-.docsify-pagination-container {
+.docs-pagination-container {
   display: flex;
   justify-content: space-between;
   margin-top: 48px;
@@ -535,7 +535,7 @@ body {
   .sidebar,
   .sidebar-toggle,
   .github-corner,
-  .docsify-copy-code-button,
+  .docs-copy-code-button,
   .progress {
     display: none !important;
   }

@@ -1,6 +1,6 @@
--- DataToken Shell — local sync queue for offline-sidecar sync.
+-- DataToken Shell — local sync queue for offline-server sync.
 -- The sync_queue table marks rows that need syncing when the
--- Django sidecar is unavailable. When the sidecar reconnects,
+-- Django server is unavailable. When the server reconnects,
 -- pending rows are flushed and real DataToken rows are created.
 
 CREATE TABLE sync_queue (

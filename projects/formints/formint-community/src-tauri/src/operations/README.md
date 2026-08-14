@@ -29,14 +29,14 @@ operations/
 ├── tax_reports.rs           # 🟢 Tax report CRUD
 ├── reports.rs               # 🟢 Report metadata
 ├── dump.rs                  # 🟢 JSON dump for backup/cloud sync
-└── sidecar.rs               # 🔴 Sidecar lifecycle (start/stop/status)
+└── server.rs               # 🔴 Server lifecycle (start/stop/status)
 ```
 
 ## Customization Tags
 
 | Tag | Modules | Notes |
 |-----|---------|-------|
-| 🔴 `not-customizable` | auth, sales, inventory_transactions, sidecar | Core infrastructure |
+| 🔴 `not-customizable` | auth, sales, inventory_transactions, server | Core infrastructure |
 | 🟢 `customizable` | All other 21 modules | Freely modify CRUD logic |
 
 ## Uniform CRUD Pattern

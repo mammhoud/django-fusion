@@ -102,13 +102,13 @@ build-ios:            ## Build iOS app (requires macOS + Xcode)
 build-all:            ## Build all platforms sequentially
 	pnpm build:all
 
-# ── Sidecar ───────────────────────────────────────────────────────────────
+# ── Server ───────────────────────────────────────────────────────────────
 
-build-sidecar:        ## Build the Python/Sanic sidecar binary for the current platform
-	PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs
+build-server:        ## Build the Python/Sanic server binary for the current platform
+	PROJECT_ROOT=. node ../scripts/publish/build-server.cjs
 
-build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. build-sidecar-x86_64-unknown-linux-gnu)
-	PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs --target $*
+build-server-%:      ## Build the server for a specific target triple (e.g. build-server-x86_64-unknown-linux-gnu)
+	PROJECT_ROOT=. node ../scripts/publish/build-server.cjs --target $*
 
 # ── Screenshots ─────────────────────────────────────────────────────────────
 

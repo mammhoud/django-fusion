@@ -30,6 +30,7 @@ from apps.content.blocks import (
     PostVariantBlock,
     PricingSectionBlock,
     ProcessSectionBlock,
+    ProductProfileBlock,
     ProjectBlock,
     ServicesSectionBlock,
     SnippetsSectionBlock,
@@ -476,7 +477,7 @@ class ShowInNavMixin(models.Model):
     """Shared nav-control fields for page types (matches migration 0004).
 
     ``show_in_nav``/``nav_order`` let editors toggle a page in the header nav
-    and set its position. The main nav source of truth is ``LandingSite``
+    and set its position. The main nav source of truth is ``LandingModule``
     (apps/core/site.py); these fields are used by the Wagtail-tree nav
     fallback and exposed on the page API.
     """
@@ -940,6 +941,17 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         verbose_name=_("Media gallery"),
         help_text=_("Visual gallery: screenshots, GIFs and videos in a grid, carousel or stack."),
     )
+    profile = StreamField(
+        [("profile", ProductProfileBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Product profile"),
+        help_text=_(
+            "The business profile: ideal customer profiles (who + behaviour), "
+            "capacity & scale, financial/supply-chain reporting, channels & "
+            "loyalty, and the product's distinct marketing tone."
+        ),
+    )
     faq = StreamField(
         [("faq", FaqSectionBlock())],
         use_json_field=True,
@@ -976,6 +988,7 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         # sections from being created accidentally.
         FieldPanel("features"),
         FieldPanel("gallery"),
+        FieldPanel("profile"),
         FieldPanel("faq"),
         *ShowInNavMixin.nav_panels,
         *DisplayModeMixin.display_panels,

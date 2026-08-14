@@ -1,14 +1,8 @@
-"""Workflow definitions for long-running async processes.
+"""Long-running process definitions owned by the Precis domain.
 
-Sub-packages
-------------
-workflows.temporal  Temporal.io workflow and activity definitions for:
-                    - Email campaign execution
-                    - Certificate generation pipeline
-                    - Bulk enrollment processing
-
-Usage::
-
-    from apps.domain.workflows.temporal.workflows import EmailCampaignWorkflow
-    from apps.domain.workflows.temporal.activities import send_batch_activity
+Background execution is intentionally implemented in
+``plugins.workers``. Campaign onboarding and batch processing are Dramatiq
+actors in ``plugins.workers.campaign_tasks``; this package remains the domain
+namespace for synchronous workflow/business helpers and contains no worker
+runtime.
 """

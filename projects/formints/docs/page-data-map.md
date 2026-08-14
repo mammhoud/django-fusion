@@ -16,7 +16,7 @@
 |--------|:--------:|:--------:|:--------:|
 | **Pages** | 23 | 25 | 25 |
 | **Data layer** | Rust/Diesel (`invoke()`) | RTK Query + invoke (mixed) | RTK Query + invoke (mixed) |
-| **Python sidecar** | ❌ | ✅ (port 8765) | ✅ (port 8766) |
+| **Python server** | ❌ | ✅ (port 8765) | ✅ (port 8766) |
 | **Cloud sync** | ❌ | ✅ (child→master) | ✅ (master↔children) |
 | **Admin panel** | ❌ | ❌ | ✅ (Unfold) |
 | **WebSocket** | ❌ | ✅ /ws/config | ✅ /ws/entities + /ws/nodes |
@@ -115,7 +115,7 @@
 | **Form submits** | None |
 | **Data written** | None |
 | **API pattern** | `invoke()` or RTK Query |
-| **Enhance** | Could use `useGetAnalyticsQuery` from legacy.ts for sidecar editions |
+| **Enhance** | Could use `useGetAnalyticsQuery` from legacy.ts for server editions |
 
 ### 3.5 TRANSACTIONS
 
@@ -128,7 +128,7 @@
 | **Form submits** | Delete confirmation |
 | **Data written** | Deletes Transaction |
 | **API pattern** | `invoke()` — **should migrate to RTK Query** |
-| **Naming conflict** | `types.ts` defines `Transaction` as sale-based with `items[]`, while sidecar `/sales` endpoint returns `Sale` with separate `SaleItem`. The `/transactions` endpoint in `routes/data.py` bridges this gap, but the field `total_amount` vs `total` mismatch exists. |
+| **Naming conflict** | `types.ts` defines `Transaction` as sale-based with `items[]`, while server `/sales` endpoint returns `Sale` with separate `SaleItem`. The `/transactions` endpoint in `routes/data.py` bridges this gap, but the field `total_amount` vs `total` mismatch exists. |
 
 ### 3.6 INVENTORY
 
@@ -141,7 +141,7 @@
 | **Form submits** | Add/edit ingredient form, add transaction form |
 | **Data written** | `Ingredient`, `InventoryTransaction` |
 | **API pattern** | RTK Query: legacy.ts + inventory.ts |
-| **Conflict** | **Dual model problem**: The page uses the old `Ingredient` model (name, unit, current_quantity, reorder_level) while the sidecar has `Product` + `InventoryTransaction` (product-based stock). The `ingredients` endpoint path doesn't actually exist on the sidecar — it's mapped through legacy.ts to `/ingredients` which may 404. **Recommendation:** Migrate to product-based inventory or add Ingredient model to sidecar. |
+| **Conflict** | **Dual model problem**: The page uses the old `Ingredient` model (name, unit, current_quantity, reorder_level) while the server has `Product` + `InventoryTransaction` (product-based stock). The `ingredients` endpoint path doesn't actually exist on the server — it's mapped through legacy.ts to `/ingredients` which may 404. **Recommendation:** Migrate to product-based inventory or add Ingredient model to server. |
 
 ### 3.7 EMPLOYEES
 
@@ -154,7 +154,7 @@
 | **Form submits** | Add/edit employee form, add/edit employee type form |
 | **Data written** | `Employee`, `EmployeeType` |
 | **API pattern** | RTK Query: `/employees`, `/employee-types` |
-| **Conflict** | **Employee model mismatch**: `types.ts` defines `Employee` with `name`, `phone`, `email`, `employee_type_id`, `salary`. Sidecar `models/pos.py` defines `Employee` with `first_name`, `last_name`, `role`, `hourly_rate`. These are completely different schemas. The RTK Query endpoint will return sidecar fields, but the page expects types.ts fields. **Critical:** `/employees` returns `first_name + last_name` but page displays `name`. |
+| **Conflict** | **Employee model mismatch**: `types.ts` defines `Employee` with `name`, `phone`, `email`, `employee_type_id`, `salary`. Server `models/pos.py` defines `Employee` with `first_name`, `last_name`, `role`, `hourly_rate`. These are completely different schemas. The RTK Query endpoint will return server fields, but the page expects types.ts fields. **Critical:** `/employees` returns `first_name + last_name` but page displays `name`. |
 
 ### 3.8 RECIPES
 
@@ -167,7 +167,7 @@
 | **Form submits** | Add/edit recipe form, add ingredient to recipe form |
 | **Data written** | `Recipe`, `RecipeIngredient` |
 | **API pattern** | `invoke()` — **should migrate to RTK Query** |
-| **Enhance** | The `/recipes` endpoint exists in legacy.ts but the page still uses invoke. Recipe ingredients have no dedicated sidecar model. |
+| **Enhance** | The `/recipes` endpoint exists in legacy.ts but the page still uses invoke. Recipe ingredients have no dedicated server model. |
 
 ### 3.9 REPORTS
 
@@ -193,7 +193,7 @@
 | **Form submits** | Settings form (restaurant name, address, phone, email, tax_rate, currency, receipt_footer, logo), Database import, Password change |
 | **Data written** | `Settings` |
 | **API pattern** | `invoke()` — **should migrate**. RTK Query `useUpdateSettingsMutation` already exists in core.ts. |
-| **Naming** | `Settings` type in `types.ts` has optional fields; sidecar `Settings` in `core.ts` endpoint has different shape. Import/export/password are Tauri-specific and can't migrate to HTTP. |
+| **Naming** | `Settings` type in `types.ts` has optional fields; server `Settings` in `core.ts` endpoint has different shape. Import/export/password are Tauri-specific and can't migrate to HTTP. |
 
 ### 3.11 CUSTOMERS
 
@@ -206,7 +206,7 @@
 | **Form submits** | Add/edit customer form (name, phone, email, notes) |
 | **Data written** | `Customer` |
 | **API pattern** | RTK Query: `/customers` |
-| **Conflict** | `types.ts` `Customer` has `name`, `phone`, `email`, `loyalty_points`. Sidecar `models/pos.py` `Customer` has `first_name`, `last_name`, `phone`, `email`, `loyalty_points`. Same `name` vs `first_name`/`last_name` split issue as Employees. |
+| **Conflict** | `types.ts` `Customer` has `name`, `phone`, `email`, `loyalty_points`. Server `models/pos.py` `Customer` has `first_name`, `last_name`, `phone`, `email`, `loyalty_points`. Same `name` vs `first_name`/`last_name` split issue as Employees. |
 
 ### 3.12 SUPPLIERS
 
@@ -302,7 +302,7 @@
 | **Actions** | Submit support message |
 | **Form submits** | Support form (name, email, subject, message) |
 | **Data written** | `SupportTicket` |
-| **API pattern** | Via sidecar or external |
+| **API pattern** | Via server or external |
 
 ### 3.20 INVOICE
 
@@ -350,9 +350,9 @@
 | Access Pattern | Count | Pages |
 |---------------|:-----:|-------|
 | `invoke()` calls | All | Every page uses Tauri IPC to Rust/Diesel backend |
-| RTK Query | 0 | No HTTP API available (no sidecar) |
+| RTK Query | 0 | No HTTP API available (no server) |
 
-**Limitations:** pos-mini has no sidecar. All data goes through Tauri invoke commands to Rust/Diesel. No HTTP REST, no WebSocket, no cloud sync.
+**Limitations:** pos-mini has no server. All data goes through Tauri invoke commands to Rust/Diesel. No HTTP REST, no WebSocket, no cloud sync.
 
 ### 4.2 pos-solo: Data Layer
 
@@ -393,7 +393,7 @@ Identical to pos-solo (pages are copied). Backend has extra capabilities (cloud 
 
 ### 5.3 Route Path Conflicts
 
-| Frontend Route | Sidecar Path | Notes |
+| Frontend Route | Server Path | Notes |
 |---------------|-------------|-------|
 | `/inventory` | `/inventory` (InventoryTransaction CRUD) + `/ingredients` (legacy) | Two different models at different paths |
 | `/employees` | `/employees` (Employee CRUD) + `/employee-types` | Separate endpoints for types |
@@ -463,10 +463,10 @@ Identical to pos-solo (pages are copied). Backend has extra capabilities (cloud 
 
 | # | Recommendation | Affected Pages | Effort | Impact |
 |---|---------------|----------------|:------:|:------:|
-| 1 | **Fix Employee model mismatch** — add computed `name` property or migrate frontend to `first_name`/`last_name`. **CRITICAL:** Backend returns `first_name`/`last_name` but frontend displays `name` — data is broken when accessed via sidecar. | Employees | Small | **Critical** — broken data |
+| 1 | **Fix Employee model mismatch** — add computed `name` property or migrate frontend to `first_name`/`last_name`. **CRITICAL:** Backend returns `first_name`/`last_name` but frontend displays `name` — data is broken when accessed via server. | Employees | Small | **Critical** — broken data |
 | 2 | **Fix Customer model mismatch** — same `name`→`first_name`/`last_name` split as Employees | Customers | Small | **Critical** — broken data |
 | 3 | **Migrate 11 invoke pages to RTK Query** — Payroll, Settings, Suppliers, TaxReports, About, KitchenDisplay, Roles, EmployeeSchedule, Recipes, Transactions, ReceiptTemplates | 11 pages | Medium | High — enables browser mode |
-| 4 | **Add Ingredient model to sidecar** — or migrate Inventory page to Product-based stock | Inventory | Medium | High — fixes 404 on `/ingredients` |
+| 4 | **Add Ingredient model to server** — or migrate Inventory page to Product-based stock | Inventory | Medium | High — fixes 404 on `/ingredients` |
 
 ### 7.2 Medium Term
 
@@ -511,9 +511,9 @@ Identical to pos-solo (pages are copied). Backend has extra capabilities (cloud 
 
 ---
 
-## 9. Sidecar API Coverage Gap
+## 9. Server API Coverage Gap
 
-| Frontend Endpoint File | Paths | Sidecar Status |
+| Frontend Endpoint File | Paths | Server Status |
 |-----------------------|-------|:--------------:|
 | `products.ts` | `/products` | ✅ CRUD via `_register_crud` |
 | `customers.ts` | `/customers` | ✅ CRUD via `_register_crud` |
@@ -523,14 +523,14 @@ Identical to pos-solo (pages are copied). Backend has extra capabilities (cloud 
 | `suppliers.ts` | `/suppliers`, `/purchase-orders` | ✅ CRUD via `_register_crud` |
 | `kitchen.ts` | `/kitchen-tickets`, `/recipes`, `/transactions` | ✅ Kitchen CRUD, transactions via data.py |
 | `payroll.ts` | `/payroll`, `/tax-reports`, `/employee-schedules` | ✅ HR models added + CRUD |
-| `receipts.ts` | `/receipt-templates` | ⬜ **Missing** — no ReceiptTemplate model on sidecar |
+| `receipts.ts` | `/receipt-templates` | ⬜ **Missing** — no ReceiptTemplate model on server |
 | `analytics.ts` | `/reports/sales`, `/reports/sales/cashback`, `/reports/inventory/count` | ✅ Reports routes |
-| `roles.ts` | `/roles` | ⬜ **Missing** — no Role model on sidecar |
+| `roles.ts` | `/roles` | ⬜ **Missing** — no Role model on server |
 | `legacy.ts` | `/ingredients`, `/employee-types`, `/recipes`, `/analytics`, `/transactions` | ✅ EmployeeTypes via HR models, Analytics/Transactions via data.py. ⬜ **Ingredients and Recipes missing** |
 | `notes.ts` | `/notes` | ✅ Note model added + CRUD |
 
-**Missing sidecar routes:**
-1. `/ingredients` — no Ingredient model (frontend expects it for Inventory page). **Recommendation:** Add Ingredient model to sidecar or create a data-derivation route from `Product` + `InventoryTransaction` (similar to how `routes/data.py` derives `/transactions` from `Sale`).
+**Missing server routes:**
+1. `/ingredients` — no Ingredient model (frontend expects it for Inventory page). **Recommendation:** Add Ingredient model to server or create a data-derivation route from `Product` + `InventoryTransaction` (similar to how `routes/data.py` derives `/transactions` from `Sale`).
 2. `/recipes` — no Recipe model (frontend expects it for Recipes/Reports pages). **Recommendation:** Create a thin Recipe model (id, product_id, yield_quantity, is_active) or a data-derivation route.
 3. `/receipt-templates` — no ReceiptTemplate model
 4. `/roles` — no Role model
@@ -543,7 +543,7 @@ Identical to pos-solo (pages are copied). Backend has extra capabilities (cloud 
 ```
 pos-mini:
   React → invoke() → Rust/Diesel → SQLite
-  (no HTTP, no sidecar, fully offline)
+  (no HTTP, no server, fully offline)
 
 pos-solo:
   React → RTK Query → HTTP → Robyn (port 8765) → Django ORM → SQLite

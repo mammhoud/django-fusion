@@ -18,10 +18,10 @@ import htmx from 'htmx.org';
 // uses htmx.ajax() to refresh the table slot after a form save).
 window.htmx = htmx;
 
-// Allow cross-origin requests to the configured Django sidecar.
+// Allow cross-origin requests to the configured Django server.
 // htmx 2.x defaults `selfRequestsOnly` to true, so an HTMX fragment pointing
-// at the sidecar on another origin (Astro on :4321 → Django on :8074) is
-// rejected with `htmx:invalidPath`. The sidecar gates fragment CORS to its
+// at the server on another origin (Astro on :4321 → Django on :8074) is
+// rejected with `htmx:invalidPath`. The server gates fragment CORS to its
 // allowed origins, so this only widens the client to reach that gated backend.
 htmx.config.selfRequestsOnly = false;
 

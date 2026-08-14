@@ -15,7 +15,7 @@ This directory contains scripts shared across all POS editions (mini, solo, full
 | `PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs` | Auto-seed database if missing |
 | `node ../scripts/dev/check-i18n.cjs` | Audit i18n translation gaps |
 | `PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs` | Generate SHA256 checksums for build artifacts |
-| `PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs` | Build Python sidecar binary via PyInstaller |
+| `PROJECT_ROOT=. node ../scripts/publish/build-server.cjs` | Build Python server binary via PyInstaller |
 | `bash ../scripts/dev/capture-screenshots.sh` | Capture 6 POS route screenshots |
 
 Most scripts accept `PROJECT_ROOT` env var to locate the edition directory. When called from an edition's `package.json` or `Makefile`, pass `PROJECT_ROOT=.` (the CWD is the edition root).
@@ -40,8 +40,8 @@ These remain in each edition's local `scripts/` directory (not shared):
 
 | Edition | Script | Purpose |
 |---------|--------|---------|
-| `formint-pos` | `dev/start-browser-dev.cjs` | Starts sidecar + frontend dev server together |
-| `formint-pos` | `dev/test-sidecar-api.sh` | curl-based API smoke test against running sidecar |
+| `formint-pos` | `dev/start-browser-dev.cjs` | Starts server + frontend dev server together |
+| `formint-pos` | `dev/test-server-api.sh` | curl-based API smoke test against running server |
 | `formint-pos` | `dev/capture-admin-screenshots.sh` | Captures Unfold admin dashboard screenshots |
 
 ---
@@ -51,7 +51,7 @@ These remain in each edition's local `scripts/` directory (not shared):
 | Script | Description | Usage | Env Required |
 |--------|------------|-------|-------------|
 | `build-all.cjs` | Builds for all platforms (Linux x86_64/aarch64/armv7, Windows x86_64/aarch64/i686, macOS x86_64/aarch64, Android). Handles cross-compilation detection, Android SDK checks, and generates checksums. | `node build-all.cjs` | — (CWD = edition root) |
-| `build-sidecar.cjs` | Builds the POS Python sidecar into a standalone binary via PyInstaller. Installs PyInstaller into a temporary venv if not already available. Supports `--target` for specific target triples. | `PROJECT_ROOT=. node build-sidecar.cjs`, `PROJECT_ROOT=. node build-sidecar.cjs --target x86_64-unknown-linux-gnu` | `PROJECT_ROOT` |
+| `build-server.cjs` | Builds the POS Python server into a standalone binary via PyInstaller. Installs PyInstaller into a temporary venv if not already available. Supports `--target` for specific target triples. | `PROJECT_ROOT=. node build-server.cjs`, `PROJECT_ROOT=. node build-server.cjs --target x86_64-unknown-linux-gnu` | `PROJECT_ROOT` |
 | `generate-checksums.cjs` | Scans `src-tauri/target/release/bundle/` for build artifacts and generates SHA256 `.sha256` files + a `CHECKSUMS.txt` manifest. | `PROJECT_ROOT=. node generate-checksums.cjs` | `PROJECT_ROOT` |
 | `verify-checksum.cjs` | Verifies a file's integrity by comparing its SHA256 hash against a checksum file. Auto-discovers `.sha256` files. | `node verify-checksum.cjs <file>` | — |
 | `generate-android-keystore.sh` | Interactive script to generate an Android release keystore for app signing. Prompts for passwords and certificate information. | `bash generate-android-keystore.sh` | — |
@@ -75,7 +75,7 @@ All shared scripts resolve edition-specific paths using the `PROJECT_ROOT` envir
 # From projects/formints/formintA/ (or formint-pos/)
 PROJECT_ROOT=. node ../scripts/dev/update-year.cjs
 PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs
-PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs
+PROJECT_ROOT=. node ../scripts/publish/build-server.cjs
 ```
 
 Scripts that don't need `PROJECT_ROOT` (like `check-i18n.cjs`, `kill-port.cjs`, `build-all.cjs`) resolve their paths from `process.cwd()` and can be called directly from the edition root:
@@ -95,7 +95,7 @@ port-kill:            @node ../scripts/dev/kill-port.cjs
 i18n-audit:           node ../scripts/dev/check-i18n.cjs
 i18n-fix:             node ../scripts/dev/i18n-merge-ar.cjs
 screenshots:          @bash ../scripts/dev/capture-screenshots.sh
-build-sidecar:        PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs
+build-server:        PROJECT_ROOT=. node ../scripts/publish/build-server.cjs
 ```
 
 The root `projects/pos/Makefile` also has convenience targets:

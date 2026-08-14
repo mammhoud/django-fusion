@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
+from django_fusion.designer import urls as fusion_designer_urls
+from django_fusion.tasks.views import TaskCenterView
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -13,7 +15,6 @@ from apps.content.views import BroadcastEmailView
 from apps.handlers.fusion import landing_pages_application
 from apps.learning.fusion import learning_application
 from apps.pages import api as pages_api
-from django_fusion.designer import urls as fusion_designer_urls
 
 # ── Fusion introspection (plugin map + component usage + render tracker) ──
 try:
@@ -82,6 +83,13 @@ urlpatterns = [
 
     # ── Auth status (allauth pages are registered once above) ─────────
     path("apis/auth/status/", pages_api.auth_status_api, name="auth_status_api"),
+
+    # ── Task Center — authenticated background-job history ────────────
+    path(
+        "tasks/",
+        TaskCenterView.as_view(site_name="landing-fusion", template_name="tasks/task_center.html"),
+        name="tasks",
+    ),
 
     # ── Fragment endpoints (HTMX HTML swaps) ──────────────────────────
     path("fragment/contact/", pages_api.contact_submit_api, name="contact_submit"),

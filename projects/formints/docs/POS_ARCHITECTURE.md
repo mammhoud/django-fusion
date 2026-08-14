@@ -99,9 +99,9 @@
 | **Frontend** | React 19 + TypeScript + Vite (Tauri) | Desktop UI |
 | **Desktop** | Tauri 2 + Rust + Diesel | Desktop shell + local CRUD |
 
-### What is a Sidecar?
+### What is a Server?
 
-A **sidecar** is a companion process that runs alongside the Tauri desktop application to provide HTTP REST + WebSocket APIs. It uses Robyn as the async server and Django ORM for database access.
+A **server** is a companion process that runs alongside the Tauri desktop application to provide HTTP REST + WebSocket APIs. It uses Robyn as the async server and Django ORM for database access.
 
 ```
 ┌──────────────────────────────────────┐
@@ -115,7 +115,7 @@ A **sidecar** is a companion process that runs alongside the Tauri desktop appli
 │         │  (invoke)        │ :8765/66 │
 │         ▼                  ▼          │
 │  ┌──────────────────────────────────┐ │
-│  │     Sidecar Process (Robyn)      │ │
+│  │     Server Process (Robyn)      │ │
 │  │  ┌────────────────────────────┐ │ │
 │  │  │  Django ORM (SQLite)       │ │ │
 │  │  │  models/ + shared/         │ │ │
@@ -134,7 +134,7 @@ A **sidecar** is a companion process that runs alongside the Tauri desktop appli
 ┌─────────────────────────────────────────────────┐
 │           POS Mini (Standalone Terminal)         │
 │                                                   │
-│  Backend: Rust/Diesel (no sidecar)                │
+│  Backend: Rust/Diesel (no server)                │
 │  Frontend: Tauri + React + TypeScript            │
 │  Database: SQLite via Diesel ORM                 │
 │  Data ops: Tauri IPC `invoke()` commands         │
@@ -144,7 +144,7 @@ A **sidecar** is a companion process that runs alongside the Tauri desktop appli
 ```
 
 **Key characteristics:**
-- No Python sidecar — pure Rust/Diesel backend
+- No Python server — pure Rust/Diesel backend
 - Data accessed via Tauri `invoke()` (not HTTP REST)
 - No cloud sync, no node registry, no admin panel
 - Smallest footprint, fastest startup
@@ -166,7 +166,7 @@ A **sidecar** is a companion process that runs alongside the Tauri desktop appli
 
 **Directory Structure:**
 ```
-pos-solo/sidecar/
+pos-solo/server/
 ├── server.py              # Robyn entry point: bootstrap + middleware + CRUD
 ├── routes/                # Route handler modules
 │   ├── __init__.py        # register_all(app)
@@ -184,7 +184,7 @@ pos-solo/sidecar/
 │   └── sync.py            # SyncLog
 ├── tests/
 │   └── test_unified_api.py  # 155 tests
-├── Makefile               # Sidecar commands
+├── Makefile               # Server commands
 ├── pyproject.toml          # Python project metadata
 └── requirements.txt        # Dependencies
 ```
@@ -207,7 +207,7 @@ pos-solo/sidecar/
 
 **Directory Structure:**
 ```
-pos-full/sidecar/
+pos-full/server/
 ├── configs/               # Centralized Django settings
 │   ├── __init__.py        # Django + Unfold settings
 │   ├── admin.py           # 17+ model admin registrations
@@ -260,9 +260,9 @@ pos-full/sidecar/
 | **Tests** | — | 155 | 53 |
 
 **Key distinctions:**
-- **pos-mini** is a minimal Tauri desktop app with Rust/Diesel local CRUD — no sidecar, no API, no cloud sync.
-- **pos-solo** is a branch device with a local Robyn sidecar (port 8765), Redux frontend, and cloud sync pushing data to pos-full master.
-- **pos-full** is the master manager with a Robyn sidecar (port 8766), Unfold Django admin dashboard (port 8000), node registry, and full cloud sync in both directions.
+- **pos-mini** is a minimal Tauri desktop app with Rust/Diesel local CRUD — no server, no API, no cloud sync.
+- **pos-solo** is a branch device with a local Robyn server (port 8765), Redux frontend, and cloud sync pushing data to pos-full master.
+- **pos-full** is the master manager with a Robyn server (port 8766), Unfold Django admin dashboard (port 8000), node registry, and full cloud sync in both directions.
 
 ---
 
@@ -330,7 +330,7 @@ server.py                         routes/state.py
 
 ### Test Helpers
 
-Each sidecar's test suite includes a standalone Django bootstrap helper that decouples tests from server.py:
+Each server's test suite includes a standalone Django bootstrap helper that decouples tests from server.py:
 
 ```python
 # tests/django_setup.py — standalone Django ORM bootstrap for tests
@@ -370,7 +370,7 @@ def _ensure_tables(use_migrations=False):
 
 ```bash
 # All migration management goes through manage.py (Django's standard CLI)
-cd sidecar/
+cd server/
 
 python3 manage.py makemigrations          # Generate migration files from models
 python3 manage.py migrate                 # Apply all pending migrations
@@ -394,7 +394,7 @@ Each AppConfig uses `models_module` to point to a dedicated module (e.g., `model
 #### Migration Files
 
 ```
-pos-solo/sidecar/models/
+pos-solo/server/models/
 ├── apps.py                    # PosSoloConfig (label=pos_unified)
 ├── models.py                  # models_module — imports all ~16 models
 ├── pos.py, menu.py, node.py, config.py, sync.py  # Model definitions
@@ -408,7 +408,7 @@ pos-solo/sidecar/models/
         ├── __init__.py
         └── 0001_initial.py    # posapp: ~30 models (~560 lines)
 
-pos-full/sidecar/models/
+pos-full/server/models/
 ├── apps.py                    # PosFullConfig (label=pos_full)
 ├── models.py                  # models_module — imports all ~16 models
 ├── pos.py, menu.py, node.py, config.py, sync.py  # Model definitions
@@ -631,7 +631,7 @@ For local POS devices (cash registers, tablets):
 │       │ HTTP API      │ Tauri IPC            │
 │       ▼               ▼                      │
 │  ┌──────────────────────────────────────┐   │
-│  │  Sidecar (Robyn, port 8765/8766)     │   │
+│  │  Server (Robyn, port 8765/8766)     │   │
 │  │  Django ORM → SQLite                 │   │
 │  └──────────────────────────────────────┘   │
 │                                              │
@@ -742,7 +742,7 @@ Old import paths are preserved as re-export shims:
 
 ### 9.1 Current Architecture
 
-The Rust backend (Tauri) manages its own SQLite tables via Diesel for local CRUD operations. The sidecar provides additional API endpoints for cloud sync, node management, and approval workflows.
+The Rust backend (Tauri) manages its own SQLite tables via Diesel for local CRUD operations. The server provides additional API endpoints for cloud sync, node management, and approval workflows.
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -757,7 +757,7 @@ The Rust backend (Tauri) manages its own SQLite tables via Diesel for local CRUD
 │  │  ├── inventory.rs   → inventory table           │  │
 │  │  ├── employees.rs   → employees table           │  │
 │  │  ├── auth.rs        → users table               │  │
-│  │  ├── sidecar.rs     → sidecar process lifecycle │  │
+│  │  ├── server.rs     → server process lifecycle │  │
 │  │  └── ...                                         │  │
 │  └─────────────────────────────────────────────────┘  │
 │                                                         │
@@ -766,16 +766,16 @@ The Rust backend (Tauri) manages its own SQLite tables via Diesel for local CRUD
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 9.2 What to Add to Rust Code for Sidecar Linking
+### 9.2 What to Add to Rust Code for Server Linking
 
-To link the Rust backend with the sidecar, add these modules to `src-tauri/src/operations/`:
+To link the Rust backend with the server, add these modules to `src-tauri/src/operations/`:
 
 | Module | Purpose | Added To |
 |--------|---------|----------|
-| `sidecar.rs` | Start/stop/status of Robyn sidecar process | ✅ Already exists |
-| `sync.rs` | Push local data to sidecar `/api/sync/push/*` | ⬜ **Not yet** |
-| `tokens.rs` | Request device tokens from sidecar `/auth/token` | ⬜ **Not yet** |
-| `config.rs` | Pull device config from sidecar `/nodes/:id/config` | ⬜ **Not yet** |
+| `server.rs` | Start/stop/status of Robyn server process | ✅ Already exists |
+| `sync.rs` | Push local data to server `/api/sync/push/*` | ⬜ **Not yet** |
+| `tokens.rs` | Request device tokens from server `/auth/token` | ⬜ **Not yet** |
+| `config.rs` | Pull device config from server `/nodes/:id/config` | ⬜ **Not yet** |
 | `approvals.rs` | Check approval queue status `/approvals/pending` | ⬜ **Not yet** |
 
 ### 9.3 Sync Module (Proposed)
@@ -788,20 +788,20 @@ use tauri::State;
 use crate::db::DbPool;
 
 #[tauri::command]
-pub async fn push_products_to_sidecar(
+pub async fn push_products_to_server(
     pool: State<'_, DbPool>,
-    sidecar_url: String,
+    server_url: String,
 ) -> Result<SyncResult, String> {
     let conn = pool.get().map_err(|e| e.to_string())?;
     let products: Vec<Product> = products::table.load(&conn).map_err(|e| e.to_string())?;
 
     let client = reqwest::Client::new();
     let resp = client
-        .post(format!("{}/api/sync/push/products", sidecar_url))
+        .post(format!("{}/api/sync/push/products", server_url))
         .json(&serde_json::json!({ "products": products }))
         .send()
         .await
-        .map_err(|e| format!("Sidecar push failed: {}", e))?;
+        .map_err(|e| format!("Server push failed: {}", e))?;
 
     Ok(resp.json().await.unwrap_or_default())
 }
@@ -809,10 +809,10 @@ pub async fn push_products_to_sidecar(
 #[tauri::command]
 pub async fn sync_sales_after_offline(
     pool: State<'_, DbPool>,
-    sidecar_url: String,
+    server_url: String,
 ) -> Result<SyncResult, String> {
     // Fetch unsynced sales from local DB
-    // Push to sidecar /sync/receive/sales
+    // Push to server /sync/receive/sales
     // Update local sync status
     todo!()
 }
@@ -826,13 +826,13 @@ pub async fn sync_sales_after_offline(
 
 #[tauri::command]
 pub async fn get_device_token(
-    sidecar_url: String,
+    server_url: String,
     device_id: String,
     role: String,
 ) -> Result<String, String> {
     let client = reqwest::Client::new();
     let resp = client
-        .post(format!("{}/auth/token", sidecar_url))
+        .post(format!("{}/auth/token", server_url))
         .json(&serde_json::json!({
             "device_id": device_id,
             "role": role
@@ -867,12 +867,12 @@ src/store/
 
 ### 10.2 Legacy Pinia Stores (Vue.js Reference)
 
-For a Vue.js frontend, create Pinia stores that wrap the Robyn sidecar API:
+For a Vue.js frontend, create Pinia stores that wrap the Robyn server API:
 
 ```
 src/stores/
 ├── index.ts              # Barrel exports
-├── sidecar.ts            # Base API client (fetch + auth)
+├── server.ts            # Base API client (fetch + auth)
 ├── products.ts           # Product CRUD store
 ├── sales.ts              # Sales store
 ├── nodes.ts              # Node registry store
@@ -886,8 +886,8 @@ src/stores/
 ### 10.2 Base API Client
 
 ```typescript
-// src/stores/sidecar.ts
-// Base HTTP + WebSocket client for Robyn sidecar API
+// src/stores/server.ts
+// Base HTTP + WebSocket client for Robyn server API
 
 export interface ApiResponse<T> {
   data: T | null;
@@ -896,7 +896,7 @@ export interface ApiResponse<T> {
   status: number;
 }
 
-class SidecarClient {
+class ServerClient {
   private baseUrl: string;
   private token: string | null = null;
   private wsConnections: Map<string, WebSocket> = new Map();
@@ -934,7 +934,7 @@ class SidecarClient {
   ): WebSocket { /* ... */ }
 }
 
-export const sidecar = new SidecarClient();
+export const server = new ServerClient();
 ```
 
 ### 10.3 Pinia Store Examples
@@ -942,7 +942,7 @@ export const sidecar = new SidecarClient();
 ```typescript
 // src/stores/nodes.ts
 import { defineStore } from 'pinia';
-import { sidecar } from './sidecar';
+import { server } from './server';
 
 interface Node {
   node_id: string;
@@ -970,14 +970,14 @@ export const useNodeStore = defineStore('nodes', {
   actions: {
     async fetchNodes() {
       this.loading = true;
-      const { data, error } = await sidecar.get<Node[]>('/nodes');
+      const { data, error } = await server.get<Node[]>('/nodes');
       if (data) this.nodes = data;
       if (error) this.error = error;
       this.loading = false;
     },
 
     connectNodeStream() {
-      const ws = sidecar.connectWebSocket('/ws/nodes', (msg: any) => {
+      const ws = server.connectWebSocket('/ws/nodes', (msg: any) => {
         if (msg.type === 'node_event') {
           // Update node in state or add new
           const idx = this.nodes.findIndex(n => n.node_id === msg.node_id);
@@ -993,11 +993,11 @@ export const useNodeStore = defineStore('nodes', {
     },
 
     async registerNode(nodeData: Partial<Node>) {
-      return sidecar.post<Node>('/nodes/register', nodeData);
+      return server.post<Node>('/nodes/register', nodeData);
     },
 
     async sendHeartbeat(nodeId: string) {
-      return sidecar.post('/nodes/heartbeat', { node_id: nodeId });
+      return server.post('/nodes/heartbeat', { node_id: nodeId });
     },
   },
 });
@@ -1049,12 +1049,12 @@ export const useApprovalStore = defineStore('approvals', {
 ### 10.4 React Hooks Wrapper
 
 ```typescript
-// src/hooks/useSidecarStore.ts
+// src/hooks/useServerStore.ts
 import { useNodeStore } from '../stores/nodes';
 import { useSyncStore } from '../stores/sync';
 import { useApprovalStore } from '../stores/approvals';
 
-export function useSidecarStores() {
+export function useServerStores() {
   const nodes = useNodeStore();
   const sync = useSyncStore();
   const approvals = useApprovalStore();
@@ -1242,7 +1242,7 @@ Local POS Device (offline-capable):
 │        │                 │          │
 │        │                 │          │
 │  ┌─────▼─────────────────▼────────┐ │
-│  │  Sidecar (Robyn, port 8765)    │ │
+│  │  Server (Robyn, port 8765)    │ │
 │  │  • REST API for all entities   │ │
 │  │  • WebSocket /ws/config        │ │
 │  │  • Sync client → Cloud Server  │ │
@@ -1273,7 +1273,7 @@ pos-full includes a **Django Unfold** admin dashboard — a modern, dark-themed 
 ### Access (current — merged package)
 
 ```bash
-cd formint-pos/sidecar
+cd formint-pos/server
 python3 manage.py migrate
 python3 manage.py --ensure-superuser   # Auto-create admin from env vars
 python3 manage.py runserver 0.0.0.0:8767
@@ -1341,9 +1341,9 @@ Product screenshots live in Landing-Fusion `backend/assets/static/related/formin
 - [ ] **Failover** — Automated cloud link failover
 
 ### 🔧 Recommended: Rust Integration (Next)
-- [ ] Add `sync.rs` to Rust operations — push local data to sidecar
-- [ ] Add `tokens.rs` — request device tokens from sidecar
-- [ ] Add `config.rs` — pull device config from sidecar
-- [ ] Add `approvals.rs` — check approval queue from sidecar
-- [ ] Create Pinia stores for all sidecar API categories
+- [ ] Add `sync.rs` to Rust operations — push local data to server
+- [ ] Add `tokens.rs` — request device tokens from server
+- [ ] Add `config.rs` — pull device config from server
+- [ ] Add `approvals.rs` — check approval queue from server
+- [ ] Create Pinia stores for all server API categories
 - [ ] Add WebSocket manager for auto-reconnecting streams

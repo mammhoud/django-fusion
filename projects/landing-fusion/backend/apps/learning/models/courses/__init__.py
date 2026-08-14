@@ -1,9 +1,9 @@
-from .info import Course, CourseSnippetViewSet
 from .detail import Module, Specialization
-from .specification import Lesson, LessonResource
-from .progress import LessonProgress, ModuleProgress
-from .tag import CourseTag
 from .enrollment_lead import CourseEnrollmentLead
+from .info import Course, CourseSnippetViewSet
+from .progress import LessonProgress, ModuleProgress
+from .specification import Lesson, LessonResource
+from .tag import CourseTag
 
 __all__ = [
     "Course",

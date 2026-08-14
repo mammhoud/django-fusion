@@ -4,7 +4,7 @@ Selenium test configuration for POS admin panel.
 Requires:
   - Chromium/Chrome installed
   - selenium (`pip install selenium webdriver-manager`)
-  - pos-full sidecar running on :8000 with superuser seeded
+  - pos-full server running on :8000 with superuser seeded
 
 Usage:
     cd projects/pos
@@ -29,10 +29,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 _HERE = Path(__file__).resolve().parent          # pos/tests/selenium/
 _TESTS = _HERE.parent                            # pos/tests/
 _POS = _TESTS.parent                             # pos/
-_SIDECAR_FULL = _POS / "pos-full" / "sidecar"
+_SERVER_FULL = _POS / "pos-full" / "server"
 
-if str(_SIDECAR_FULL) not in sys.path:
-    sys.path.insert(0, str(_SIDECAR_FULL))
+if str(_SERVER_FULL) not in sys.path:
+    sys.path.insert(0, str(_SERVER_FULL))
 
 # ── Config ──────────────────────────────────────────────────────────────
 ADMIN_URL = os.environ.get("POS_ADMIN_URL", "http://127.0.0.1:8000/admin/")

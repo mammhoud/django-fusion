@@ -1,6 +1,6 @@
 {
   "version": "pos-full",
-  "description": "Complete seed data for POS Full with restaurant + gaming center data (sidecar + Redux + CRM)",
+  "description": "Complete seed data for POS Full with restaurant + gaming center data (server + Redux + CRM)",
   "generated": "2026-07-23",
   "tables": 29,
   "data": {
@@ -82,8 +82,8 @@
       "sales.customer_id": "INTEGER FK customers"
     }
   },
-  "architecture": "Rust (Tauri shell) + Python sidecar + Redux RTK Query + WebSocket middleware",
-  "key_difference": "Same schema as solo. Uses sidecar with full CRM, notes, websocket real-time sync.",
+  "architecture": "Rust (Tauri shell) + Python server + Redux RTK Query + WebSocket middleware",
+  "key_difference": "Same schema as solo. Uses server with full CRM, notes, websocket real-time sync.",
   "migration": "2026-01-01-000000_create_all/up.sql (single consolidated migration)",
   "seed_strategy": "All data uses INSERT OR IGNORE so restaurant and gaming center data coexist"
 }

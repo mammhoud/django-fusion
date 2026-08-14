@@ -23,6 +23,7 @@ except ImportError:
     assets_urls = None
 from django_fusion.core.health.views import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_fusion.core.utils import get_root_redirect_pattern
+from django_fusion.tasks.views import TaskCenterView
 
 # ── Fusion introspection (plugin map + component usage + render tracker) ──
 try:
@@ -33,7 +34,7 @@ except ImportError:  # pragma: no cover - older django-fusion
     fusion_introspection_urls = None
 from django_fusion.designer import urls as fusion_designer_urls
 
-from apps.core.routes import site
+from apps.core.routes import module
 from apps.pages.blog import api as blog_api
 from apps.pages.pages import landing_api
 
@@ -138,6 +139,11 @@ urlpatterns = [
     path("api/newsletter/subscribe/", landing_api.newsletter_subscribe_api, name="landing-newsletter"),
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
+    # ── Task Center — authenticated background-job history (shared record).
+    # site_name is intentionally left empty so the view filters on the same
+    # website the task backend stamps into each log (FUSION_TASK_SITE_NAME /
+    # WEBSITE_NAME / WEBSITE env chain).
+    path("tasks/", TaskCenterView.as_view(), name="tasks"),
     path("accounts/", include("allauth.urls")),
     # ── Auth — django-allauth headless API (/api/auth/browser/v1/auth/*)
     # Consumed by the Alpine login modal (Astro frontend + Django templates).
@@ -196,7 +202,7 @@ urlpatterns += [
 ]
 
 # ── Routable component site ─────────────────────────────────────────────
-urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
+urlpatterns += [path("osoul/", include((module.urls[0], module.urls[1]), namespace=module.urls[2]))]
 
 # ── Old slug redirects (about-page → about, team-page → team) ──────────────
 class _LocalePreservingRedirectView(RedirectView):

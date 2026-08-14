@@ -2,7 +2,7 @@
 
 > **Edition:** Formint (formerly pos-mini)  
 > **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite  
-> **No sidecar** — pure Rust/Diesel backend, no Python dependencies
+> **No server** — pure Rust/Diesel backend, no Python dependencies
 
 ---
 
@@ -31,9 +31,9 @@ forge-pos/
 │   ├── index.css                # Base CSS + Tailwind imports
 │   ├── types.ts                 # Shared TypeScript type definitions
 │   │
-│   ├── api/                     # Sidecar / Tauri invoke wrappers
+│   ├── api/                     # Server / Tauri invoke wrappers
 │   │   ├── index.ts             # Barrel exports
-│   │   ├── sidecar.ts           # HTTP client (optional sidecar)
+│   │   ├── server.ts           # HTTP client (optional server)
 │   │   ├── chat.ts              # Chat WebSocket
 │   │   ├── tickets.ts           # Support tickets
 │   │   └── data.ts              # Sales, products, settings
@@ -154,7 +154,7 @@ forge-pos/
 │       │   ├── receipt_templates.rs, tax_reports.rs
 │       │   ├── employee_schedules.rs, payrolls.rs
 │       │   ├── reports.rs, transactions.rs, dump.rs
-│       │   ├── sidecar.rs       # Sidecar lifecycle
+│       │   ├── server.rs       # Server lifecycle
 │       │   └── hardware.rs      # Printer & cash drawer
 │       └── bin/
 │           └── seed.rs          # Seed binary

@@ -1,0 +1,19 @@
+<aside id="loop-navigation" class="loop-sidebar" aria-label="Loop CRM navigation"{% if not navigation_fragment %} hx-get="/fragments/navigation/?path={{ request.path|urlencode }}" hx-trigger="load" hx-target="this" hx-select="#loop-navigation" hx-swap="outerHTML" hx-indicator="#loop-navigation-loader"{% endif %}>
+  <a class="loop-brand" href="/" aria-label="Loop CRM overview"><span class="loop-mark">↻</span><span>Loop CRM</span></a>
+  <div id="loop-navigation-loader" class="loop-nav-loading htmx-indicator" role="status" aria-live="polite"><span class="loop-skeleton loop-skeleton--line"></span>Loading navigator</div>
+  <nav class="loop-nav" aria-label="Workspace modules">
+    {% for item in navigation %}
+      <div class="loop-nav__label">{% if forloop.first %}Workspace{% elif item.id == 'workspace' %}Administration{% else %}{{ item.label }}{% endif %}</div>
+      <a class="loop-nav__link" href="{{ item.href }}"{% if item.active %} aria-current="page"{% endif %} hx-target="#loop-content" hx-select="#loop-content" hx-swap="outerHTML">
+        <span class="loop-nav__icon" aria-hidden="true">{{ item.icon }}</span><span>{{ item.label }}</span>
+      </a>
+      {% if item.children %}
+        <div class="loop-nav__children" aria-label="{{ item.label }} pages">
+          {% for child in item.children %}
+            <a class="loop-nav__child" href="{{ child.href }}"{% if child.active %} aria-current="page"{% endif %} hx-target="#loop-content" hx-select="#loop-content" hx-swap="outerHTML">{{ child.label }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </nav>
+</aside>

@@ -175,9 +175,9 @@ test_database_health() {
   fi
   log_success "PostgreSQL is responding"
 
-  # `blinko` DB removed 2026-08 — the dev-stack workspace replaced Blinko
-  # with FileGator, which needs no database.
-  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "coder")
+  # AppFlowy belongs to the Coder dev-workspace and is initialized from the
+  # shared PostgreSQL bootstrap. FileGator itself needs no database.
+  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "coder" "appflowy")
   if [ "$CRM_DEPLOYED" = true ]; then
     databases=("${databases[@]}" "db_crm")
   fi

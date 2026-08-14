@@ -515,7 +515,7 @@ class DeviceToken(BaseDeviceToken):
     and sync cascade (mark_data_synced, mark_data_sync_failed)
     are inherited from :class:`django_fusion.core.models.BaseDeviceToken`.
 
-    Table: ``cloud_device_tokens`` (shared with pos-full/solo sidecars).
+    Table: ``cloud_device_tokens`` (shared with pos-full/solo servers).
     """
 
     class Role(models.TextChoices):

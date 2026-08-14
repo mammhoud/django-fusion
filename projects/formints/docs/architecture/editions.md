@@ -12,7 +12,7 @@
 | **Astro frontend** | ❌ | ✅ | ❌ | ❌ |
 | **Rust backend** | ✅ | ✅ (minimal shell) | ❌ | ✅ |
 | **Django Ninja backend** | ❌ | ✅ | ✅ | ❌ |
-| **Robyn sidecar** | ❌ | ✅ | ❌ (full Django setup) | ❌ |
+| **Robyn server** | ❌ | ✅ | ❌ (full Django setup) | ❌ |
 | **Unfold admin** | ❌ | ✅ | ✅ | ❌ |
 | **WebSocket streams** | ❌ | ✅ | ✅ (channels) | ❌ |
 | **Cloud sync** | ❌ (sync client target) | ✅ | ✅ (cloud master) | ❌ |
@@ -20,11 +20,11 @@
 
 > **Note**: The former `pos-full` (Cloud Master) and `pos-solo` (Standalone)
 > editions were merged into the Pro package at `formint/` — the merged package
-> owns the Pro Robyn sidecar (`formint/sidecar/`) and both legacy React UIs
+> owns the Pro Robyn server (`formint/server/`) and both legacy React UIs
 > were removed (the Astro + Alpine + HTMX frontend is canonical). The Cloud
 > master lives in `formint-cloud/` as a **full Django setup** — the Django backend
 > (`backend/`, `formint-cloud`) serves the whole API surface (viewsets, fusion
-> contract, bolt analytics); the Robyn sidecar that previously served it was
+> contract, bolt analytics); the Robyn server that previously served it was
 > removed in favour of a second Django dev server on `:8767`. `formintA/` is
 > the Community tier (formerly forge-pos / pos-mini).
 
@@ -33,8 +33,8 @@
 | Edition | Directory | Package | Version | Tauri product | Tauri identifier |
 |---------|-----------|---------|---------|---------------|------------------|
 | **Community** | [`formintA/`](../../formintA/) | `formint-pos` | **0.1.0** | Formint | `com.mammhoud.pos` |
-| **Standard** | *(merged into `formint/`)* | `formint-pos-sidecar` / `formint-pos-backend` | **0.1.0** | — | — |
-| **Pro** | [`formint/`](../../formint/) | `formint-pos` (frontend `formint-pos-frontend` 0.1.0 · backend `formint-pos-backend` 0.1.0 · sidecar `formint-pos-sidecar` 0.1.0) | **0.1.0** | Formint POS Professional | `cloud.structa.formint.pos` |
+| **Standard** | *(merged into `formint/`)* | `formint-pos-server` / `formint-pos-backend` | **0.1.0** | — | — |
+| **Pro** | [`formint/`](../../formint/) | `formint-pos` (frontend `formint-pos-frontend` 0.1.0 · backend `formint-pos-backend` 0.1.0 · server `formint-pos-server` 0.1.0) | **0.1.0** | Formint POS Professional | `cloud.structa.formint.pos` |
 | **Cloud** | [`formint-cloud/`](../../formint-cloud/) | `formint-cloud` | **0.1.0** | — | — |
 | **pos-client** | [`formintC/`](../../formintC/) | `pos-client` | **1.0.0** (package) / **0.1.0** (Cargo + Tauri) | POS Client | `com.pos-client.app` |
 
@@ -46,8 +46,8 @@
 
 | Canonical edition | Product tier | Directory / package | Legacy names |
 |-------------------|--------------|---------------------|--------------|
-| **Community** | Free, offline-first desktop POS (Rust/Diesel, no sidecar) | `formintA/` (`forge-pos`/`pos-mini`) | Minimal, Mini |
-| **Standard** | Standalone + embedded Robyn sidecar + cloud sync client | merged into `formint/` | Solo |
+| **Community** | Free, offline-first desktop POS (Rust/Diesel, no server) | `formintA/` (`forge-pos`/`pos-mini`) | Minimal, Mini |
+| **Standard** | Standalone + embedded Robyn server + cloud sync client | merged into `formint/` | Solo |
 | **Pro** | Multi-terminal + cloud master + django-bolt API | `formint/` (merged `formint-pos`) | Full |
 | **Cloud** | Hosted multi-terminal SaaS cloud master | `formint-cloud/` (`formint-cloud`) | Cloud Server |
 
@@ -57,7 +57,7 @@
 
 ### Community — `formintA/` (formerly forge-pos / pos-mini)
 
-> Lightweight Tauri + React + Rust/Diesel desktop app. No sidecar. Product
+> Lightweight Tauri + React + Rust/Diesel desktop app. No server. Product
 > slug on the landing site: `/products/formint-pos/`.
 
 #### Added components (frontend — React 19)
@@ -105,14 +105,14 @@
 ### Standard — merged into `formint/`
 
 > Standalone tier: everything in Community's data model **plus** the embedded
-> Robyn sidecar (REST API, inventory, analytics, WebSocket streams) and the
+> Robyn server (REST API, inventory, analytics, WebSocket streams) and the
 > cloud sync client that pushes products/sales/nodes to a cloud master.
 > Since the `pos-solo` merge this tier shares the `formint/` codebase with Pro;
 > it is gated by configuration, not a separate directory.
 
 #### Added components & features (over Community)
 
-- **Robyn sidecar** (`formint/sidecar/`) — REST + WebSocket on `:8766`, Django ORM as data authority
+- **Robyn server** (`formint/server/`) — REST + WebSocket on `:8766`, Django ORM as data authority
 - **Django ORM models** — `full_` / `pos_crm_` / `pos_sync_` tables (30 models)
 - **Node registry + heartbeats** — `Node`, `Heartbeat`, `NodeEvent`, `DeviceConfig`, `MasterDevice`
 - **Cloud sync client** — pushes products, sales, nodes to a cloud master
@@ -127,18 +127,18 @@
 ### Pro — `formint/` (merged formint-pos, recommended)
 
 > **Phase 2 status:** merge complete — `pos-full` + `pos-solo` consolidated.
-> Astro + Alpine + HTMX frontend · Django Ninja backend · Robyn sidecar ·
+> Astro + Alpine + HTMX frontend · Django Ninja backend · Robyn server ·
 > Unfold admin · Tauri v2 shell.
 
-#### Added components — backend (`sidecar/`)
+#### Added components — backend (`server/`)
 
 | Layer | Components |
 |-------|-----------|
 | **API** | `formint/api.py` (NinjaAPI + fusion encoder), `controllers.py` (45 ModelController CRUD resources), `schemas.py` (ninja_schema Out + writable/patch factories) |
 | **HTMX fragments** | `components.py` (TableMixin tables + FormMixin forms), `handlers.py` (BranchSummaryHandler, TableFragmentHandler, FormFragmentHandler), `fusion_components.py` (FusionDualModeMixin + FragmentComponent) |
-| **Fusion render-mode** | `fusion.py` (encode_fragment_pointer, render-mode/nav/assets contract), `core.py` (FormintSite nav source of truth), `views.py` (/fusion/* endpoints) |
+| **Fusion render-mode** | `fusion.py` (encode_fragment_pointer, render-mode/nav/assets contract), `core.py` (FormintModule nav source of truth), `views.py` (/fusion/* endpoints) |
 | **Admin** | `admin.py` (canonical Unfold ModelAdmin superset), `dashboard.py` (10 KPI cards · 5 charts · 3 tables) |
-| **Robyn sidecar routes** | `admin.py`, `apikeys.py`, `approvals.py`, `config.py`, `crm.py`, `data.py`, `fusion_fragments.py`, `htmx_fragments.py`, `info.py`, `kds.py`, `nodes.py`, `reports.py`, `state.py`, `sync.py`, `webhooks.py` |
+| **Robyn server routes** | `admin.py`, `apikeys.py`, `approvals.py`, `config.py`, `crm.py`, `data.py`, `fusion_fragments.py`, `htmx_fragments.py`, `info.py`, `kds.py`, `nodes.py`, `reports.py`, `state.py`, `sync.py`, `webhooks.py` |
 
 #### Added components — frontend (`frontend/`)
 
@@ -155,7 +155,7 @@
 - Django Ninja + ninja-extra typed REST API — **45 paginated resources** with fusion envelope `{ status, message, data }`
 - django-fusion **data components** — server-rendered tables + forms over HTMX (render-first / data-API dual mode)
 - **Unfold admin** — KPI dashboard, charts, loyalty & settings management, 2FA
-- **Robyn sidecar** — WebSocket streams, data sync, webhooks, scheduler (`:8766`)
+- **Robyn server** — WebSocket streams, data sync, webhooks, scheduler (`:8766`)
 - **Cloud sync** — multi-terminal push to a cloud master; sync approval + conflict handling
 - **Cloud CRM** — companies, pipelines, stages, contacts, deals, activities, notes
 - **Node registry** — `Node`/`Heartbeat`/`NodeEvent`/`DeviceConfig`/`MasterDevice`/`CloudLink`/`SyncLog`
@@ -171,9 +171,9 @@
 > (`backend/`, package `formint-cloud`) serves the entire API surface —
 > django-fusion viewsets, the `/fusion/*` render-mode contract, the
 > Community-UI bridges, and the BoltAPI analytics dashboard — sharing
-> `formint_cloud.db`. The Robyn sidecar that previously served the REST surface
+> `formint_cloud.db`. The Robyn server that previously served the REST surface
 > has been **removed**; a second Django dev server on `:8767` now answers the
-> sidecar-compatible paths the frontend expects. Cloud master that terminals
+> server-compatible paths the frontend expects. Cloud master that terminals
 > push their data to; automatic backups + monitoring (Cloud capability).
 
 #### Added components — backend (`backend/`)
@@ -186,13 +186,13 @@
 | **Request handlers** | `apps/handlers/` | `sync_api.py` (sync_receive_products/sales/inventory/heartbeat + broadcast), `sync_dashboard.py` (branch health, queue summary/by-branch/list/retry/cancel, conflict list/resolve/dismiss/stats, recent activity), `consumers.py` (channels ASGI), `middleware.py`, `fragments/{layouts, modals, reports, skeletons, tables}.py` (django-fusion), `fusion.py` (render-mode contract), `surface.py` (root CRUD + bridges) |
 | **Config** | `configs/` | `asgi.py`, `wsgi.py`, `urls.py`, `dashboard.py` (django-bolt) + `manage.py` |
 
-#### Sidecar surface — served by Django (`apps/handlers/surface.py` + `fusion.py`)
+#### Server surface — served by Django (`apps/handlers/surface.py` + `fusion.py`)
 
-> The Robyn sidecar is gone; Django answers the same paths on `:8767`.
+> The Robyn server is gone; Django answers the same paths on `:8767`.
 
 | Area | Django module | Paths |
 |------|---------------|-------|
-| **Root CRUD** | `apps/handlers/surface.py` | `/organizations`, `/branches`, `/leads`, `/contacts`, `/deals`, `/inventory-reports`, `/branch-reports`, `/sync/{logs,products,sales,inventory}`, `/device-tokens`, `/conflicts`, `/queue` (generic JSON CRUD, `{count, items}` sidecar shape; JSON 401 for anonymous, staff-only token role/is_active writes, `token_hash` never serialized) |
+| **Root CRUD** | `apps/handlers/surface.py` | `/organizations`, `/branches`, `/leads`, `/contacts`, `/deals`, `/inventory-reports`, `/branch-reports`, `/sync/{logs,products,sales,inventory}`, `/device-tokens`, `/conflicts`, `/queue` (generic JSON CRUD, `{count, items}` server shape; JSON 401 for anonymous, staff-only token role/is_active writes, `token_hash` never serialized) |
 | **Community-UI bridges** | `apps/handlers/surface.py` | `/api/sales`, `/api/products`, `/api/settings` (anonymous, read-only) |
 | **Fusion contract** | `apps/handlers/fusion.py` | `/fusion/health`, `/fusion/render-mode`, `/fusion/nav`, `/fusion/session-mode` (GET/POST/DELETE), `/fusion/assets` |
 | **System** | `configs/urls.py` | `/stats`, `/health` |
@@ -205,7 +205,7 @@
 - **CRM SaaS** — Leads, Contacts, Deals pipelines
 - Device token auth (`DeviceToken` → BaseDeviceToken) for terminal registration
 - django-bolt + django-fusion dashboard on ASGI (channels/daphne), PostgreSQL via psycopg2
-- **Full Django API surface** — all CRUD, fusion contract, and Community-UI bridges served by Django (`:8767` API / `:8082` admin) with the Robyn sidecar removed
+- **Full Django API surface** — all CRUD, fusion contract, and Community-UI bridges served by Django (`:8767` API / `:8082` admin) with the Robyn server removed
 - Automatic cloud backups + monitoring (Cloud capability)
 
 ---
@@ -242,7 +242,7 @@ Astro → HTMX/JSON → Django Ninja backend → Django ORM → SQLite
   └── /htmx   (django-fusion tables + forms fragments)
   └── /fusion (render-mode / navigation / assets)
   └── /admin  (Unfold dashboard + KPI cards + charts)
-  └── Robyn Sidecar (:8766) → WebSocket streams + data sync + webhooks
+  └── Robyn Server (:8766) → WebSocket streams + data sync + webhooks
 ```
 
 ### Community — `formintA/` (formerly forge-pos / pos-mini)
@@ -278,5 +278,5 @@ Vue 3 → Tauri Commands → Rust → SQLite
 - [Canonical edition naming (ADR 0001)](../adr/0001-pos-editions-naming.md)
 - [Pro ↔ Cloud Sync Contract](pro-cloud-sync-contract.md)
 - [Table & column comparison across editions](table-column-comparison.md)
-- [Sidecar migration guide](sidecar-migration-guide.md)
+- [Server migration guide](server-migration-guide.md)
 - [POS architecture (all editions)](pos-architecture.md)

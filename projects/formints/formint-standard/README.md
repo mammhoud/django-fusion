@@ -1,10 +1,10 @@
 # Formint
 
-> **Product:** Formints (site slug `formint-pos`) · Minimal desktop POS — Tauri + React + Rust/Diesel ORM (embedded SQLite). No sidecar.
+> **Product:** Formints (site slug `formint-pos`) · Minimal desktop POS — Tauri + React + Rust/Diesel ORM (embedded SQLite). No server.
 
 This is the **formint-pos edition** of POS (formerly pos-mini / forge-pos). It includes the full React frontend with
 the **Rust/Diesel ORM** backend running directly inside the Tauri process — no
-external Python sidecar needed. All data operations use `invoke()` to call
+external Python server needed. All data operations use `invoke()` to call
 Tauri commands backed by Diesel.
 
 > **Edition identity on the landing site:** this project is marketed as the
@@ -44,12 +44,12 @@ Tauri commands backed by Diesel.
 
 ## What's NOT Included
 
-- Python/Robyn sidecar server (use [`formint-pos`](../formint-pos/) for that)
+- Python/Robyn server server (use [`formint-pos`](../formint-pos/) for that)
 - Zustand API stores (forge-pos uses `invoke()` directly)
 - Django ORM models
 - Cloud CRM sync
 
-> Need a sidecar API + cloud sync? Use [`formint-pos`](../formint-pos/) (the merged package, formerly pos-full + pos-solo).
+> Need a server API + cloud sync? Use [`formint-pos`](../formint-pos/) (the merged package, formerly pos-full + pos-solo).
 
 ## Documentation
 
@@ -130,7 +130,7 @@ pnpm build:desktop     # Production desktop app (Tauri bundle)
 | Feature | Mini (formint-pos, this edition) | Merged (formint-pos) |
 |---------|:---------:|:-----------:|
 | Rust/Diesel ORM | ✅ | ❌ (Django is data authority) |
-| Robyn sidecar | ❌ | ✅ |
+| Robyn server | ❌ | ✅ |
 | Django Ninja backend | ❌ | ✅ |
 | Cloud CRM sync | ❌ | ✅ |
 | WebSocket support | ❌ | ✅ |

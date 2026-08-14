@@ -2,8 +2,8 @@
 
 This package (formerly `projects/www/`) provides the shared worker and CI
 infrastructure used across all Structa Cloud sites:
-  - tools.worker:  Celery task definitions, Dramatiq actors, email sending
-                   (runs globally via the shared-task stack)
+  - plugins.workers: Dramatiq actors and email sending
+                     (runs globally via the shared-task stack)
   - tools.ci:      CI/CD utility modules for preflight checks and validation
   - tools.settings.py: Django settings for the sentinel `www` site used by
                  shared-worker / shared-scheduler

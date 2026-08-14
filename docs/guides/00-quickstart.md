@@ -79,7 +79,7 @@ make check WEBSITE=ctc-research
 ## Common issues
 
 - **Missing submodules**: `django-fusion` or `ceptor-ai` import errors almost always mean submodules were not initialized.
-- **DB_NAME not set**: shared-worker and shared-scheduler require `DB_NAME` to be explicit; see `applications/compose/docker-compose.tasks.yml`.
+- **DB_NAME not set**: shared-worker and shared-scheduler require `DB_NAME` to be explicit; see `applications/docker-compose.tasks.yml`.
 - **Site directory not found**: ensure `WEBSITE` matches a canonical site name in `projects/cli.py`.
 
 ## Troubleshooting

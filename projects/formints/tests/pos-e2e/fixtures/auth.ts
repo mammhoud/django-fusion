@@ -3,12 +3,12 @@ import { test as base, Page } from '@playwright/test';
 /**
  * Shared authentication fixtures for POS E2E tests.
  *
- * POS editions use a Fusion sidecar (Python/Sanic on port 8765) for
+ * POS editions use a Fusion server (Python/Sanic on port 8765) for
  * health checks and rendering preferences, and an RTK Query API on
  * port 8766 for data operations.
  *
  * These fixtures mock the auth layer so tests don't need a running
- * sidecar or backend.
+ * server or backend.
  *
  * Tauri invoke mock: The app imports `invoke` from `@tauri-apps/api/core`
  * (a real npm package). Internally it calls window.__TAURI_INTERNALS__.invoke().
@@ -156,10 +156,10 @@ function getInvokeMockScript(): string {
 // ── Mock helpers ────────────────────────────────────────────────
 
 /**
- * Mock the Fusion sidecar health check endpoint so the app starts
- * without needing a running Python sidecar.
+ * Mock the Fusion server health check endpoint so the app starts
+ * without needing a running Python server.
  */
-export async function mockSidecarHealth(page: Page): Promise<void> {
+export async function mockServerHealth(page: Page): Promise<void> {
   if (!page || typeof page.route !== 'function') return;
   try {
     await page.route('**/fusion/health', (route) =>
@@ -223,7 +223,7 @@ export async function mockAuthApi(page: Page, user: MockUser = DEFAULT_USER): Pr
 }
 
 /**
- * Set up all mocks at once — Tauri IPC, sidecar health, and auth API.
+ * Set up all mocks at once — Tauri IPC, server health, and auth API.
  *
  * The Tauri invoke mock is added via addInitScript so it's available
  * before any JavaScript executes on the page.
@@ -235,7 +235,7 @@ export async function setupAuth(page: Page, user: MockUser = DEFAULT_USER): Prom
   await page.addInitScript(getInvokeMockScript());
 
   // Mock network routes
-  await mockSidecarHealth(page);
+  await mockServerHealth(page);
   await mockAuthApi(page, user);
 }
 

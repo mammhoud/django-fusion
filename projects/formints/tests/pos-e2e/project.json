@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "pos-e2e",
+  "root": "projects/formints/tests/pos-e2e",
+  "targets": {
+    "test": { "executor": "nx:run-commands", "options": { "command": "npm run test:all", "cwd": "projects/formints/tests/pos-e2e" } }
+  }
+}

@@ -91,7 +91,7 @@ const ssrGridProducts = mergedCatalog.filter(
 ---
 
 
-<Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'The full structa.cloud catalog: Formints, Precis LMS, Loop, Syntara, and vResume. Every product with its editions, pricing, and tech stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
+<Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'The full structa.cloud catalog: Formints, Precis LMS, Loop, and vResume. Every product with its editions, pricing, and tech stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
   <Hero
     eyebrow={pageHero?.badge || 'products, the full catalog'}
     heading={pageHero?.title || 'Most of what we build, shipped as'}
@@ -211,7 +211,7 @@ const ssrGridProducts = mergedCatalog.filter(
 
   <Testimonials testimonials={pageTestimonials?.map((t: any) => ({ quote: String(t.quote || ''), author: String(t.author || ''), role: String(t.role || '') }))} />
   <RenderModeSwitch route='/products/' />
-  <CTA heading={pageCta?.title || 'Most of our builds are open source'} intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Cloud editions are commercial.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
+  <CTA heading={pageCta?.title || 'Most of our builds are open source'} intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Custom editions are commercial.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
   <Toast />
   <HtmxBootstrap />
 </Layout>

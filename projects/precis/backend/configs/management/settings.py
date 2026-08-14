@@ -11,10 +11,10 @@ Mirrors the per-site settings.py pattern (see `projects/ctc-research/settings.py
 but with two differences:
 
 1. No `_SITE_APP_DIR = _SITE_DIR / "www"`. The shared stack runs the
-   `www.worker` package globally — registered once via
+   `plugins.workers` package globally — registered once via
    `projects/configs/base/apps.py` — so no per-site `www/` override is
    needed. Adding `_SITE_APP_DIR` here would *block* `www.core` and
-   `www.worker` imports because the shared stack doesn't ship a
+   `plugins.workers` imports because the shared stack doesn't ship a
    per-site `www/` directory of its own.
 
 2. Calls `configure_site_environment("www", module="CMS",
@@ -28,12 +28,16 @@ Once this module is importable from runtime `sys.path`, it loads as
 (resolves to /app/www/settings.py under the `PROJECT_PATH=tools` bake
 which copies into /app/www/) and as `www.settings` when both
 `PROJECT_PATH=tools` and `DJANGO_SETTINGS_MODULE=www.settings` are
-set. With either path resolvable, celery-beat and shared-worker's
+set. With either path resolvable, the Dramatiq scheduler and shared-worker's
 `python manage.py rundramatiq` calls resolve cleanly without the
 historical `Unknown site 'shared'` rejection.
 
 DEV-TIME ONLY:
-Production workers run with PROJECT_PATH=ctc-research baked at build time
+Product workers run with their product backend baked at build time; the
+shared worker mounts only explicitly selected product `plugins/workers` paths.
+The retired Temporal campaign worker is no longer a runtime entrypoint.
+
+Production web workers run with their product backend baked at build time;
 in `projects/compose/Dockerfile` (override-able via the
 `TASKS_PROJECT_PATH=tools` build arg passed from
 `applications/compose/docker-compose.tasks.yml`). Under the default
@@ -53,6 +57,7 @@ default bake, this file is loaded by:
   - any future tooling that explicitly sets DJANGO_SETTINGS_MODULE=www.settings
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -72,7 +77,13 @@ for _path in reversed((str(_WORKSPACE_DIR), str(_SITE_DIR))):
 # ── Site tracker ─────────────────────────────────────────────────────────
 from configs.site import configure_site_environment
 
-configure_site_environment("www", module="CMS", default_port=5080)
+# The shared worker uses the infrastructure-only `shared` sentinel. Keep
+# `www` as a compatibility alias for older local invocations.
+configure_site_environment(
+    os.environ.get("DJANGO_SITE") or os.environ.get("WEBSITE") or "shared",
+    module="CMS",
+    default_port=5080,
+)
 
 # ── Shared Django settings ──────────────────────────────────────────────
 from configs.settings import *  # noqa: E402,F401,F403
@@ -82,12 +93,18 @@ from configs.settings import *  # noqa: E402,F401,F403
 # but we re-assert them to make the intent visible in this file —
 # future readers shouldn't have to chase down the registry to verify
 # which site "www" identifies as.
-WEBSITE_NAME = "www"
+WEBSITE_NAME = os.environ.get("DJANGO_SITE") or os.environ.get("WEBSITE") or "shared"
 
-# No LOCAL_APPS appended here on purpose. The `www.worker` Celery /
-# Dramatiq app is registered globally in
+# No product-local apps are appended here on purpose. The `plugins.workers` Dramatiq app
+# is registered globally in
 # `projects/configs/base/apps.py:INSTALLED_APPS`. Site-specific apps that
 # `projects/<site>/settings.py` append (wagtail pages, plugins, etc.) are
 # intentionally NOT added — the shared stack is site-agnostic and
 # task dispatches it performs cross sites via the explicit queue
-# routing inside `www.worker.tasks`.
+# routing inside `plugins.workers`.
+
+# Background-only sentinel: never import the site `apps.urls` tree. That tree
+# instantiates ``LMSApp`` and pulls in per-site models (apps.learning, etc.)
+# that are absent from this site-agnostic INSTALLED_APPS, which crashes
+# ``rundramatiq`` during Django's system checks (check_url_config).
+ROOT_URLCONF = "configs.management.urls"

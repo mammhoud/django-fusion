@@ -4,21 +4,21 @@ Blog Application for lms-fusion.com
 
 Defines the ``BlogApp`` Application (routable-components hierarchy node)
 for the Blog. Kept in the blog app so core routing only assembles the
-``Site`` from app-level Application classes.
+``Module`` from app-level Application classes.
 
 Usage (in core/routes.py)::
 
     from apps.pages.blog.application import BlogApp
 
-    site = Site(title="LMS Fusion", viewsets=[LMSApp(), BlogApp()])
+    module = Module(title="LMS Fusion", viewsets=[LMSApp(), BlogApp()])
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from django_fusion.routes.core.sites import Application
 from django_fusion.routes.core.base import viewprop
+from django_fusion.routes.core.sites import Application
 
 
 class BlogApp(Application):

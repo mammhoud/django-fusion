@@ -40,12 +40,12 @@ BRAND_SPEC = {
     "cms": {
         "brand": "loop",
         "mark": "isometric",
-        "name": "Loop",
-        "role": "Content CMS · build sites from Wagtail blocks · 2 editions",
-        "essence": "Content, composed.",
-        "metaphor": "Blocks inside blocks — sites assembled from content, not templates.",
-        "construction": "An isometric cube containing a nested cube: blocks composing blocks, all the way down.",
-        "voice": "Bricolage display for the mark · Public Sans for editorial body.",
+        "name": "Loop CRM",
+        "role": "CRM + social scheduling · Twenty + Postiz merged · coming soon",
+        "essence": "From impression to deal.",
+        "metaphor": "A closed loop — every social touchpoint routes through the deal it influenced, one source of truth.",
+        "construction": "An isometric cube (the CRM) orbiting a signal node (social): attribution closing the loop between marketing and sales.",
+        "voice": "JetBrains Mono accent — a revenue-ops product, labelled like a dashboard.",
         "palette": ["loop", "paper", "ink", "line", "mark"],
     },
     "cypercloud": {

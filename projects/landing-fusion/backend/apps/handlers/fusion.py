@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from django.urls import path
 from django.views.generic import RedirectView
-
 from django_fusion.routes.core.base import menu_path
 from django_fusion.routes.core.sites import Application
 
@@ -77,12 +76,12 @@ class LandingPagesApplication(Application):
         routed child view (or any renderer consuming ``application_context``)
         gets the same site name, navigation, and render-mode contract.
         """
-        from apps.core.site import landing_site
+        from apps.core.site import landing_module
 
         render_first = get_effective_render_first(request)
         return {
             "site_name": "Structa Cloud",
-            "nav_items": landing_site.get_navigation_context(request),
+            "nav_items": landing_module.get_navigation_context(request),
             "fusion_render_first": render_first,
             "fusion_render_mode": "fusion-render" if render_first else "data-api",
         }

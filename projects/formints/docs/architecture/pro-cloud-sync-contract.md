@@ -2,7 +2,7 @@
 
 > **Editions:** `formint/` (Pro) → `formint-cloud/` (Cloud)  
 > **Last updated:** 2026-08-10  
-> **Related docs:** [Editions](editions.md) · [Sidecar v2](../SIDECAR_V2.md) · [Sync Architecture](../SYNC_ARCHITECTURE.md)
+> **Related docs:** [Editions](editions.md) · [Server v2](../SERVER_V2.md) · [Sync Architecture](../SYNC_ARCHITECTURE.md)
 
 ---
 
@@ -28,7 +28,7 @@
 ┌──────────────────────────────────────┐       ┌─────────────────────────────────────────┐
 │  formint/  (Pro — Desktop Terminal)  │       │  formint-cloud/  (Hosted SaaS Master)   │
 │                                      │       │                                         │
-│  Robyn Sidecar :8766                 │       │  Django ASGI (daphne) :8767             │
+│  Robyn Server :8766                 │       │  Django ASGI (daphne) :8767             │
 │  ┌────────────────────────────────┐  │       │  ┌───────────────────────────────────┐  │
 │  │ SyncClient (HTTP)              │──┼─ POST ─▶│ sync_api.py                        │  │
 │  │  /sync/push/branch-data         │  │       │  /api/sync/receive/{products,        │  │
@@ -70,7 +70,7 @@
 
 ### 2.1 REST Path (Pro → Cloud)
 
-The Pro sidecar's `SyncClient` (`routes/state.py`) wraps `httpx` to POST to the Cloud REST receivers. It is used for:
+The Pro server's `SyncClient` (`routes/state.py`) wraps `httpx` to POST to the Cloud REST receivers. It is used for:
 
 - **Scheduled bulk sync** — `POST /sync/push/branch-data` batches products, sales, inventory + heartbeat
 - **On-demand cloud push** — `POST /cloud/push/:entity_type` for individual entity types
@@ -78,7 +78,7 @@ The Pro sidecar's `SyncClient` (`routes/state.py`) wraps `httpx` to POST to the 
 
 ### 2.2 WebSocket Path (Pro ↔ Cloud, Bidirectional)
 
-The Pro sidecar's `CloudSyncClient` (`ws_client.py`) maintains a persistent WebSocket to `/ws/sync-events/`. It:
+The Pro server's `CloudSyncClient` (`ws_client.py`) maintains a persistent WebSocket to `/ws/sync-events/`. It:
 
 - **Identifies** with `{type: "identify", payload: {branch_code, node_id}}`
 - **Pushes** real-time entity CRUD events as `{type: "sync_push", payload: {entity_type, action, node_id, branch_code, timestamp, data, count}}`
@@ -296,7 +296,7 @@ POST /api/sync/receive/heartbeat
 
 ### 4.5 Bulk Branch Data (Pro composite endpoint)
 
-The Pro sidecar composites multiple pushes into one call:
+The Pro server composites multiple pushes into one call:
 
 ```
 POST /sync/push/branch-data
@@ -806,7 +806,7 @@ Boots both Django roads (`:8767` daphne, `:8082` runserver), sweeps all ~60 endp
 
 ### 11.3 Pro-Side Sync Tests
 
-**Pro side:** `sidecar/tests/test_data_sync.py`
+**Pro side:** `server/tests/test_data_sync.py`
 - `TestModelParity` (6 tests) — validates data model alignment
 - `TestRealCrossORM` (12 tests, skipped without Rust DB) — end-to-end cross-ORM validation
 

@@ -86,12 +86,9 @@ RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
 # ── Entrypoint and helper scripts ───────────────────────────────────────────
 COPY projects/precis/compose/entrypoint     /entrypoint
 COPY projects/precis/compose/start          /start
-COPY projects/precis/compose/rqworker-start /rqworker-start
-COPY projects/precis/compose/flower         /flower
-
 RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/media ${APP_HOME}/${PROJECT_PATH}/assets/staticfiles \
-    && sed -i 's/\r$//g' /entrypoint /start /rqworker-start /flower \
-    && chmod +x /entrypoint /start /rqworker-start /flower
+    && sed -i 's/\r$//g' /entrypoint /start \
+    && chmod +x /entrypoint /start
 
 ENTRYPOINT ["/entrypoint"]
 CMD ["server"]

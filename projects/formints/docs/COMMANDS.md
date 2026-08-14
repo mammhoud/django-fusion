@@ -24,7 +24,7 @@
 | Clean artifacts | `make clean` | `make clean` | `make clean` | `make clean` |
 | DB seed | `make seed` | `make seed` | `make seed` | — |
 | Frontend port | `:1420` | `:1420` | `:1420` | `:1420` |
-| Sidecar port | — | `:8765` | `:8766` | — |
+| Server port | — | `:8765` | `:8766` | — |
 
 ---
 
@@ -69,7 +69,7 @@ make formint-install       # Install merged package (backend + frontend)
 make formint-env           # Run full formint env (backend :8767 + frontend :4321)
 make formint-test          # Run merged package tests
 make check-mini            # TypeScript + Rust check for mini
-make server-test           # Run merged sidecar suite
+make server-test           # Run merged server suite
 
 # Direct per-edition access
 make -C forge-pos dev-desktop
@@ -91,7 +91,7 @@ make cargo-check        # Rust compilation check
 
 **Directory:** `projects/pos/pos-mini/`  
 **Stack:** React 19 + Tauri 2 + Rust/Diesel + SQLite  
-**No sidecar** — pure desktop app
+**No server** — pure desktop app
 
 ### Development
 
@@ -112,8 +112,8 @@ make cargo-check        # Rust compilation check
 | `make build-android` | Build Android APK (requires SDK + NDK) |
 | `make build-ios` | Build iOS app (requires macOS + Xcode) |
 | `make build-all` | Build all platforms sequentially |
-| `make build-sidecar` | Build the Python/Sanic sidecar binary (not used in mini, but available) |
-| `make build-sidecar-x86_64-unknown-linux-gnu` | Build sidecar for a specific target triple |
+| `make build-server` | Build the Python/Sanic server binary (not used in mini, but available) |
+| `make build-server-x86_64-unknown-linux-gnu` | Build server for a specific target triple |
 
 ### Testing & Checking
 
@@ -162,8 +162,8 @@ make cargo-check        # Rust compilation check
 ## Formint POS (merged package)
 
 **Directory:** `projects/pos/formint-pos/`  
-**Stack:** Astro + Alpine.js + HTMX frontend, Django 5 + Ninja + django-fusion backend, Robyn sidecar, Unfold admin  
-**Backend port:** `:8767` · **Frontend port:** `:4321` · **Sidecar port:** `:8765`  
+**Stack:** Astro + Alpine.js + HTMX frontend, Django 5 + Ninja + django-fusion backend, Robyn server, Unfold admin  
+**Backend port:** `:8767` · **Frontend port:** `:4321` · **Server port:** `:8765`  
 **Admin panel:** `http://127.0.0.1:8767/admin/`  
 **API docs:** `http://127.0.0.1:8767/api/v1/docs`
 
@@ -243,11 +243,11 @@ make cargo-check        # Rust compilation check
 
 ## POS Server
 
-The POS server is a consolidated **Robyn + Django ORM** server located in `formint-pos/sidecar/`.
+The POS server is a consolidated **Robyn + Django ORM** server located in `formint-pos/server/`.
 
 Commands are available from the POS root Makefile (`projects/pos/Makefile`).
 
-### Merged Sidecar (port 8765)
+### Merged Server (port 8765)
 
 | Command | Description |
 |---------|-------------|
@@ -255,7 +255,7 @@ Commands are available from the POS root Makefile (`projects/pos/Makefile`).
 | `make server-run` | Start server on port 8765 |
 | `make server-dev` | Start server with hot reload and verbose output (`--dev --verbose`) |
 | `make server-check` | Validate server imports |
-| `make server-test` | Run merged sidecar test suite (171 passing + legacy known issues) |
+| `make server-test` | Run merged server test suite (171 passing + legacy known issues) |
 | `make server-clean` | Remove `restaurant.db` |
 
 ---
@@ -270,11 +270,11 @@ Commands are available from the POS root Makefile (`projects/pos/Makefile`).
 
 ## Testing Scripts
 
-Unit tests and integration tests for the POS sidecar servers live in:
+Unit tests and integration tests for the POS server servers live in:
 
 | Test Suite | Location | Count | Run Command |
 |-----------|----------|:-----:|-------------|
-| Merged sidecar | `formint-pos/sidecar/tests/` | 171 passing (+85 legacy failures, 21 errors) | `make server-test` |
+| Merged server | `formint-pos/server/tests/` | 171 passing (+85 legacy failures, 21 errors) | `make server-test` |
 | Formint backend | `formint-pos/backend/` | 35 | `make formint-test` |
 | Rust unit tests | `forge-pos/src-tauri/src/` | inline | `make check-mini` |
 | Vitest (Frontend) | `formint-pos/frontend/src/` + `tests/js/` | inline | `make formint-test` |
@@ -312,7 +312,7 @@ make formint-env           # Start backend :8767 + frontend :4321 in tmux
 cd projects/pos
 make formint-check         # Django check + astro check
 make formint-test          # Backend suite + frontend contract tests
-make server-test           # Run merged sidecar test suite
+make server-test           # Run merged server test suite
 make screenshots           # Capture admin screenshots
 ```
 
@@ -339,7 +339,7 @@ make clean-build           # Clean → install → build (one command)
 make port-kill             # Kills any process on port 1420
 ```
 
-### Sidecar won't start
+### Server won't start
 ```bash
 # Check Python dependencies
 make server-install

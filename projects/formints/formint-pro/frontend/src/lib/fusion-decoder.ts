@@ -107,7 +107,7 @@ export class FusionDecoder {
 
   /** Decode a Formint fragment pointer from its encoded string (or a raw
    * envelope / object). Validates the ``component`` field that the formint
-   * sidecar always includes. */
+   * server always includes. */
   decodeFragmentPointer(body: string | Record<string, unknown>): FragmentPointer {
     let pointer: unknown;
     if (typeof body === 'string') {

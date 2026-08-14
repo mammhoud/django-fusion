@@ -1,0 +1,4 @@
+<section id="post-list"{% if post_list_oob %} hx-swap-oob="outerHTML"{% endif %} class="loop-stack" aria-live="polite">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Publishing queue</span><h2>{{ posts|length }} scheduled item{{ posts|length|pluralize }}</h2></div><span class="loop-pill">stateful content</span></div>
+  {% if posts %}<div class="loop-post-list">{% for post in posts %}{% include "dashboard/partials/post_row.html" %}{% endfor %}</div>{% else %}<div class="loop-empty-state"><strong>No content in the queue</strong><p>Compose a post and connect it to a real channel before publishing.</p></div>{% endif %}
+</section>

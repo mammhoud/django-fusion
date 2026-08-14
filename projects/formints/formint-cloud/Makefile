@@ -6,16 +6,16 @@
 #                 (apps/core models+viewsets, apps/domain sync services,
 #                 apps/handlers consumers/dashboard/fragments) + Unfold admin
 #                 + django-fusion contract + django-bolt analytics. The API
-#                 surface formerly served by the Robyn sidecar now runs on
+#                 surface formerly served by the Robyn server now runs on
 #                 Django directly (two dev servers share the same codebase:
-#                 :8082 admin/bolt, :8767 sidecar-compatible API contract).
+#                 :8082 admin/bolt, :8767 server-compatible API contract).
 #   - frontend/ : formintA Community UI (Astro + React) wired to :8767
 #
 # Quick start:
 #   make install          — backend .venv + frontend deps
 #   make migrate          — apply Django migrations
 #   make dev-backend      — runserver :8082 (admin + bolt analytics)
-#   make dev-api          — runserver :8767 (sidecar-compatible API surface)
+#   make dev-api          — runserver :8767 (server-compatible API surface)
 #   make dev-frontend     — astro dev :4323 (foreground)
 #   make test             — backend Django test suite
 #   make check            — django check + astro check
@@ -44,7 +44,7 @@ help: ## Show all commands
 	@echo '  make install          backend venv + frontend deps'
 	@echo '  make migrate          apply Django migrations'
 	@echo '  make dev-backend      Django :$(BACKEND_PORT) (Unfold admin + bolt)'
-	@echo '  make dev-api          Django :$(API_PORT) (sidecar-compatible API)'
+	@echo '  make dev-api          Django :$(API_PORT) (server-compatible API)'
 	@echo '  make dev-frontend     Astro :$(FRONTEND_PORT)'
 	@echo '  make verify-stack     boot :$(API_PORT)+:$(BACKEND_PORT), sweep full surface'
 	@echo '  make styles           compile tactical SCSS token layer → static CSS'
@@ -67,7 +67,7 @@ dev-backend: ## Django dev server (Unfold admin + fusion road)
 dev-api: ## Django API surface on :8767 (daphne — serves REST + WebSocket sync-events)
 	cd $(BACKEND_DIR) && ./.venv/bin/daphne -b 127.0.0.1 -p $(API_PORT) configs.asgi:application
 
-dev-sidecar: dev-api ## Legacy alias — the Robyn sidecar was replaced by Django
+dev-server: dev-api ## Legacy alias — the Robyn server was replaced by Django
 
 dev-frontend: ## Astro dev server (proxies API :8767 + admin :8082)
 	cd $(FRONTEND_DIR) && pnpm dev

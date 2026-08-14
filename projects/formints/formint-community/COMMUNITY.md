@@ -2,7 +2,7 @@
 
 `formint-community/` is the in-repo **Community** edition of Formints —
 a free, offline-first desktop point of sale (Tauri 2 + React 19 +
-Rust/Diesel, no Python sidecar). This is the canonical source; make feature
+Rust/Diesel, no Python server). This is the canonical source; make feature
 changes here directly.
 
 The standalone public repo bundle (`github.com/mammhoud/formint-community`)

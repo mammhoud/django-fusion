@@ -4,9 +4,9 @@
 # Uniform dispatcher over the POS editions in projects/formints/:
 #
 #   - formint-community/ Community — free, offline-first Tauri + React 19 +
-#                                 Rust/Diesel desktop POS (no sidecar)
+#                                 Rust/Diesel desktop POS (no server)
 #   - formint-pro/    Professional — merged package: Django Ninja backend +
-#                                 Robyn sidecar + Astro frontend + Tauri
+#                                 Robyn server + Astro frontend + Tauri
 #   - formint-cloud/ Cloud   — Django Formint Cloud SaaS master (Unfold admin)
 #                                 + Community UI frontend
 #   - formint-standard/ Standard — Astro 5 + React 19 + Tauri 2 desktop POS
@@ -68,11 +68,11 @@ help:                 ## Show this help menu
 	@echo '║  POS v4.0 — Community · Standard · Pro · Cloud · Client ║'
 	@echo '╚══════════════════════════════════════════════════════════╝'
 	@echo '── Editions (uniform verbs: install | check | test | run | stop | clean) ──'
-  @echo '  Community (formint-community) — make community-{install,check,test,dev,clean}'
-  @echo '  Standard (formint-standard)   — make standard-{install,check,test,env,stop,clean}'
-  @echo '  Pro (formint-pro)       — make pro-{install,check,test,env,stop,clean}'
-  @echo '  Cloud (formint-cloud)   — make cloud-{install,check,test,dev-backend,stop,clean}'
-  @echo '  pos-client (formint-client)  — make client-{install,dev,build,lint,test,clean}'
+	@echo '  Community (formint-community) — make community-{install,check,test,dev,clean}'
+	@echo '  Standard (formint-standard)   — make standard-{install,check,test,env,stop,clean}'
+	@echo '  Pro (formint-pro)       — make pro-{install,check,test,env,stop,clean}'
+	@echo '  Cloud (formint-cloud)   — make cloud-{install,check,test,dev-backend,stop,clean}'
+	@echo '  pos-client (formint-client)  — make client-{install,dev,build,lint,test,clean}'
 	@echo '  SDK (@formints/client) — make sdk-{install,build,typecheck,test}'
 	@echo ''
 	@echo '── Aggregates ──────────────────────────────────────────────'
@@ -93,16 +93,16 @@ help:                 ## Show this help menu
 	@echo '── Merged (Standard/Pro) quick start ──────────────────────'
 	@echo '  make standard-env         Backend :8767 + frontend :4321 (tmux)'
 	@echo '  make standard-test        Backend + frontend contract tests'
-	@echo '  make server-test          Merged Robyn sidecar pytest suite'
+	@echo '  make server-test          Merged Robyn server pytest suite'
 	@echo ''
 	@echo '── Cloud quick start ───────────────────────────────────────'
 	@echo '  make cloud-dev-backend    Django :8082 (Unfold admin + bolt)'
-	@echo '  make cloud-dev-api        Django :8767 (sidecar-compatible API)'
+	@echo '  make cloud-dev-api        Django :8767 (server-compatible API)'
 	@echo '  make cloud-dev-frontend   Astro :4323 (Community UI)'
 	@echo '  make cloud-test           Backend Django test suite'
 	@echo '── Community bundle (standalone public repo) ───────────────'
-  @echo '  make community-bundle     Refresh publish/community-bundle/ from formint-community'
-  @echo '  make community-version    Alias for community-bundle'
+	@echo '  make community-bundle     Refresh publish/community-bundle/ from formint-community'
+	@echo '  make community-version    Alias for community-bundle'
 	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
 	@echo '  make screenshots          Capture marketplace screenshots'
@@ -110,7 +110,7 @@ help:                 ## Show this help menu
 	@echo ''
 	@echo '── Legacy aliases (kept for back-compat) ──────────────────'
 	@echo '  make mini-*       → community-* · make formint-* → standard/pro (formint)'
-	@echo '@echo '  make cloud-*      → cloud (formint-cloud) · make server-* → sidecar tests''
+	@echo '  make cloud-*      → cloud (formint-cloud) · make server-* → server tests'
 	@echo ''
 
 # ── Aggregates ─────────────────────────────────────────────────────────────
@@ -240,7 +240,7 @@ cloud-test:           ## Cloud backend Django test suite
 cloud-dev-backend:    ## Django :8082 (Unfold admin + bolt)
 	$(MAKE) -C $(CLOUD) dev-backend
 
-cloud-dev-api:        ## Django :8767 (sidecar-compatible API)
+cloud-dev-api:        ## Django :8767 (server-compatible API)
 	$(MAKE) -C $(CLOUD) dev-api
 
 cloud-dev-frontend:   ## Astro :4323 (Community UI)
@@ -291,26 +291,26 @@ sdk-test:             ## Run SDK vitest suite
 community-bundle community-version: ## Refresh the standalone community bundle from formint-community
 	node scripts/publish/community-bundle.cjs
 
-# ── Sidecar server (merged formint/sidecar) ────────────────────────────────
+# ── Server server (merged formint/server) ────────────────────────────────
 
-server-install:       ## Install merged sidecar dependencies
-	cd $(MERGED)/sidecar && pip install -r requirements.txt
-	@echo '✓ Sidecar dependencies installed'
+server-install:       ## Install merged server dependencies
+	cd $(MERGED)/server && pip install -r requirements.txt
+	@echo '✓ Server dependencies installed'
 
-server-run:           ## Start sidecar (port 8765)
-	cd $(MERGED)/sidecar && python3 server.py --port 8765
+server-run:           ## Start server (port 8765)
+	cd $(MERGED)/server && python3 server.py --port 8765
 
-server-dev:           ## Start sidecar with hot reload
-	cd $(MERGED)/sidecar && python3 server.py --port 8765 --dev --verbose
+server-dev:           ## Start server with hot reload
+	cd $(MERGED)/server && python3 server.py --port 8765 --dev --verbose
 
-server-check:         ## Validate sidecar imports
-	cd $(MERGED)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -c 'from server import app; print("✓ sidecar OK")'
+server-check:         ## Validate server imports
+	cd $(MERGED)/server && DJANGO_SETTINGS_MODULE='' python3 -c 'from server import app; print("✓ server OK")'
 
-server-test:          ## Run merged sidecar test suite
-	cd $(MERGED)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
+server-test:          ## Run merged server test suite
+	cd $(MERGED)/server && DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
 
-server-clean:         ## Clean sidecar data
-	rm -f $(MERGED)/sidecar/restaurant.db
+server-clean:         ## Clean server data
+	rm -f $(MERGED)/server/restaurant.db
 	@echo '✓ Database cleaned'
 
 # ── Legacy aliases (back-compat) ───────────────────────────────────────────
@@ -339,7 +339,7 @@ publish:              ## Prepare publish bundle from the merged edition
 	@mkdir -p publish-bundle
 	@rsync -a --exclude='node_modules' --exclude='.git' --exclude='src-tauri/target' \
 		--exclude='src-tauri/gen' --exclude='dist' --exclude='legacy-react' \
-		--exclude='sidecar/.venv' $(MERGED)/ publish-bundle/
+		--exclude='server/.venv' $(MERGED)/ publish-bundle/
 	@cp PUBLISH.md publish-bundle/ 2>/dev/null || true
 	@echo '✓ Bundle ready at publish-bundle/'
 	@du -sh publish-bundle/

@@ -56,7 +56,7 @@ All 17 sections of the UI Enhancement Master Plan complete; remaining work track
 - **KDS enhancements (from P2/P3 plan)** — Time-elapsed progress bar (green→yellow→red), overdue badge, 'overdue-first' sort, mute-30-min, and chime-variant dropdown
 - **Settings → Theme tab** — New "Theme" tab in Settings with Theme Studio link, "Preview Theme Components" modal, and active theme info display
 - **ThemePreviewModal** — Modal component showing buttons, forms, alerts, badges, tabs, stats, cards, tables, and progress bars across all 5 theme variants (default, corporate, luxury, pastel, cyberpunk)
-- **Email-based Support Chat** — Floating support widget using `VITE_SUPPORT_EMAIL` env var with mailto: links; hides entirely when email not configured; removed WebSocket/sidecar/ticket system dependency
+- **Email-based Support Chat** — Floating support widget using `VITE_SUPPORT_EMAIL` env var with mailto: links; hides entirely when email not configured; removed WebSocket/server/ticket system dependency
 
 ### Changed
 - **Framer-motion removed** — Dependency dropped; components migrated to FlyonUI CSS animations

@@ -78,7 +78,7 @@ const renderMode = assetManifest
   ? {
       fusion_render_first: assetManifest.fusion_render_first,
       mode: (assetManifest.fusion_render_first ? 'fusion-render' : 'data-api') as 'fusion-render' | 'data-api',
-      content: { html: '/', data: `/apis/pages/${contentSlug}/` },
+      content: { html: `/fragment/pages/${contentSlug}/`, data: `/apis/pages/${contentSlug}/` },
     }
   : null;
 

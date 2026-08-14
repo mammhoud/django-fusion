@@ -216,13 +216,13 @@ POS Solo (Node, port 8765)                    POS Full (Server, port 8766)
 
 ---
 
-## 5. Organization Plan: One Server per Sidecar
+## 5. Organization Plan: One Server per Server
 
-Each POS sidecar now has a clear role and organized structure:
+Each POS server now has a clear role and organized structure:
 
-### formint-pos/sidecar/ → Merged Robyn sidecar
+### formint-pos/server/ → Merged Robyn server
 ```
-sidecar/
+server/
 ├── server.py         # Thin entry point
 ├── routes/           # Route handler modules (7+ modules)
 ├── models/           # Django ORM models (organized packages)
@@ -231,8 +231,8 @@ sidecar/
 └── Django portal files **removed** — Robyn server.py handles everything
 ```
 
-> **Note**: The former `pos-solo/sidecar` and `pos-full/sidecar` directories were
-> merged into the single `formint-pos/sidecar/` when the editions were consolidated.
+> **Note**: The former `pos-solo/server` and `pos-full/server` directories were
+> merged into the single `formint-pos/server/` when the editions were consolidated.
 
 ### Cloud Server (Future: `projects/pos/cloud/`)
 ```

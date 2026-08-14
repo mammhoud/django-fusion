@@ -73,7 +73,7 @@ class ScheduledBackupTaskTest(TestCase):
 
     def test_run_backup_task_executes_command(self):
         """Smoke test: the task function calls the command without error."""
-        from apps.tasks.backup_tasks import run_backup
+        from plugins.workers.backup_tasks import run_backup
 
         with tempfile.TemporaryDirectory() as dest:
             # The task uses the default dest (alongside the DB).

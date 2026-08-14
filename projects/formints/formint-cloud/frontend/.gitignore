@@ -8,7 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # SQLite database — contains all restaurant data, DO NOT COMMIT
-# (WAL mode generates .db-shm / .db-wal sidecar files, also ignored)
+# (WAL mode generates .db-shm / .db-wal server files, also ignored)
 restaurant.db
 *.db
 *.db-shm
@@ -34,10 +34,10 @@ dist-ssr
 
 # Build artifacts and checksums are generated, don't commit
 src-tauri/target/
-sidecar/.venv-build/
-sidecar/__pycache__/
-sidecar/build/
-sidecar/dist/
+server/.venv-build/
+server/__pycache__/
+server/build/
+server/dist/
 src-tauri/binaries/dist/
 src-tauri/binaries/build/
 *.spec

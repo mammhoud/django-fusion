@@ -1,0 +1,14 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}{% trans "Create account" %}{% endblock %}
+{% block auth_heading %}Create account{% endblock %}
+{% block auth_inner %}
+<p class="loop-lede">Start with a viewer role. A workspace administrator can grant additional capabilities.</p>
+{% if form.non_field_errors %}<ul class="errorlist">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+<form method="post" action="{% url 'account_signup' %}">
+  {% csrf_token %}
+  {% for field in form %}{% if field.is_hidden %}{{ field }}{% else %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}{% for error in field.errors %}<span class="helptext" style="color:#ffaaa1">{{ error }}</span>{% endfor %}</p>{% endif %}{% endfor %}
+  {% if redirect_field %}{{ redirect_field }}{% endif %}
+  <div class="loop-auth-card__actions"><button class="loop-button loop-button--primary" type="submit">Create account</button><a class="loop-auth-card__link" href="{% url 'account_login' %}">Sign in</a></div>
+</form>
+{% endblock %}

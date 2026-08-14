@@ -26,7 +26,7 @@ dead React code removed; `forge-pos` and `pos-cloud` remain in
 `projects/pos/` for parity/rollback. All new work uses `formint-pos` /
 `Formint` identifiers.
 
-The package keeps the established Tauri architecture (Rust shell + sidecar
+The package keeps the established Tauri architecture (Rust shell + server
 backend + web frontend) while upgrading the backend to a fully typed REST API
 with server-rendered data components and a modern admin panel.
 
@@ -36,10 +36,10 @@ with server-rendered data components and a modern admin panel.
 
 ```text
 formint-pos/
-├── sidecar/                     # merged Django boundary — no Wagtail
+├── server/                     # merged Django boundary — no Wagtail
 │   ├── configs/                 # settings (Unfold + fusion render-mode), URLs
 │   ├── manage.py                # CLI + --ensure-superuser bootstrap
-│   ├── server.py                # Robyn sidecar server (API + WebSocket, :8766)
+│   ├── server.py                # Robyn server server (API + WebSocket, :8766)
 │   ├── bolt_api.py              # django-bolt REST API
 │   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
@@ -49,7 +49,7 @@ formint-pos/
 │   │   ├── api.py               # NinjaAPI + fusion JSONRenderer + system endpoints
 │   │   ├── components.py        # django-fusion table/form data components
 │   │   ├── fusion_components.py # branch summary fragment (FusionDualModeMixin)
-│   │   ├── core.py              # FormintSite (django-fusion Site — nav source of truth)
+│   │   ├── core.py              # FormintModule (django-fusion Module — nav source of truth)
 │   │   ├── fusion.py            # render-mode/nav/assets contract + FusionCodec pointer
 │   │   ├── handlers.py          # HTMX fragment handlers + FormintPageView (PageHandler)
 │   │   ├── views.py             # thin URL-facing delegation to handlers + /fusion/* endpoints
@@ -57,13 +57,13 @@ formint-pos/
 │   │   ├── dashboard.py         # Unfold dashboard callback (KPIs/charts/tables)
 │   │   └── templates/           # fusion table + form templates
 │   ├── django_templates/admin/  # Unfold admin index override (dashboard UI)
-│   └── Makefile                 # sidecar targets (dev/check/migrate/test/seed/server)
-├── Makefile                     # root orchestrator (frontend + sidecar + full + env)
+│   └── Makefile                 # server targets (dev/check/migrate/test/seed/server)
+├── Makefile                     # root orchestrator (frontend + server + full + env)
 ├── frontend/                    # Astro shell
 │   ├── Makefile                 # frontend targets (install/dev/build/check/test)
-│   ├── astro.config.mjs         # dev proxy → sidecar :8767 (/api, /htmx, /fusion)
+│   ├── astro.config.mjs         # dev proxy → server :8767 (/api, /htmx, /fusion)
 │   └── src/                     # pages/ (index, data) + components/ui/Skeleton + lib/htmx-bootstrap + tests/
-├── src-tauri/                   # Tauri shell (sidecar supervision + native)
+├── src-tauri/                   # Tauri shell (server supervision + native)
 ├── assets/                      # shared static assets
 └── migration/
     └── compatibility-manifest.json
@@ -140,7 +140,7 @@ contract as `projects/landing-fusion/backend/apps/pages/api.py`:
 | Endpoint | Description |
 |---|---|
 | `/api/v1/render-mode` | Report active mode (`fusion-render` vs `data-api`) |
-| `/api/v1/navigation` | Nav items from `FormintSite` (single source of truth) |
+| `/api/v1/navigation` | Nav items from `FormintModule` (single source of truth) |
 | `/api/v1/assets` | `FUSION_ASSETS` manifest (bundle parity) |
 | `/fusion/render-mode/` | Same report at the fragment path (HTMX shell) |
 | `/fusion/navigation/` | Nav JSON at the fragment path |
@@ -158,7 +158,7 @@ contract as `projects/landing-fusion/backend/apps/pages/api.py`:
   `FUSION_RENDER_FIRST_DEFAULT` (env `FUSION_RENDER_FIRST`, default `1`).
   The header still wins per-request; the session preference (set/cached by
   `FusionSessionChecker`) sits above the configured default.
-* **`formint/core.py`** — `FormintSite(Site)` from `django_fusion.routes.core.sites`
+* **`formint/core.py`** — `FormintModule(Module)` from `django_fusion.routes.core.sites`
   with `NAV_ITEMS` (Home / Data / Admin) — mirrors landing-fusion's
   `apps/core/site.py`.
 * **`formint/handlers.py`** — class-based HTMX fragment handlers
@@ -166,7 +166,7 @@ contract as `projects/landing-fusion/backend/apps/pages/api.py`:
   mirroring landing-fusion's `apps/handlers/views.py` organization;
   `views.py` stays a thin URL-facing delegation layer so routes never break.
 
-Settings (`sidecar/configs/`):
+Settings (`server/configs/`):
 
 ```python
 FUSION_RENDER_FIRST_DEFAULT = os.environ.get('FUSION_RENDER_FIRST', '1') == '1'
@@ -218,7 +218,7 @@ dashboard callbacks; `formint/dashboard.py` kept as a reference copy):
 
 Superuser bootstrap (idempotent): `python manage.py --ensure-superuser`,
 which reads `FORMINT_ADMIN_EMAIL` / `FORMINT_ADMIN_PASSWORD` /
-`FORMINT_ADMIN_NAME` (defaults in `sidecar/configs/`) and seeds a
+`FORMINT_ADMIN_NAME` (defaults in `server/configs/`) and seeds a
 `UserSettings` row. **When `DJANGO_DEBUG=0` the default password is refused.**
 
 **Operator-facing render-mode setting** — `UserSettings.fusion_render_mode`
@@ -240,7 +240,7 @@ toggle without touching HTTP or cookies:
 
 - **Astro shell** with Alpine.js + HTMX; frontend owns layout, skeletons,
   retry, and empty/error states.
-- `astro.config.mjs` proxies `/api`, `/htmx` and `/fusion` to the sidecar at `:8767`.
+- `astro.config.mjs` proxies `/api`, `/htmx` and `/fusion` to the server at `:8767`.
 - `src/pages/index.astro` + `src/pages/data.astro` showcase the API + HTMX
   table/form components with landing-fusion skeleton loading
   (`src/components/ui/Skeleton.astro`, `src/lib/htmx-bootstrap.ts`, global
@@ -284,10 +284,10 @@ toggle without touching HTTP or cookies:
 ## 5. Tauri shell
 
 `src-tauri/` keeps the same desktop shell architecture as the merged
-editions: Rust supervises the sidecar process and exposes native
+editions: Rust supervises the server process and exposes native
 capabilities; Django owns domain rules, persistence, permissions, audit, and
-fusion fragment rendering. The Django entry point is `sidecar/manage.py`
-(`DJANGO_SETTINGS_MODULE=configs`); `server.py` runs the Robyn sidecar
+fusion fragment rendering. The Django entry point is `server/manage.py`
+(`DJANGO_SETTINGS_MODULE=configs`); `server.py` runs the Robyn server
 (API + WebSocket on `:8766`) and `bolt_api.py` the django-bolt API layer.
 
 ---
@@ -314,7 +314,7 @@ Unified test directory: [`../tests/`](../tests/)
 | Admin selenium | `tests/selenium/formint/` | `pytest tests/selenium/formint/` |
 
 **Live browser verification** (Chrome DevTools automation against the dev
-stack: Astro `:4321` → Django sidecar `:8767`) — all steps passed with no
+stack: Astro `:4321` → Django server `:8767`) — all steps passed with no
 console errors or failed network requests:
 
 - Page loads: title `Fusion — Formint POS`, heading `Fusion render contract`.
@@ -375,7 +375,7 @@ landing-fusion's root + backend split):
 | `make backend-*` / `make frontend-*` | Delegate to the layer Makefiles |
 | `make tauri` / `make tauri-dev` / `make tauri-build` | Tauri CLI / dev / build |
 
-**`formint-pos/sidecar/Makefile`** — `install`, `migrate`, `dev` (:8767),
+**`formint-pos/server/Makefile`** — `install`, `migrate`, `dev` (:8767),
 `server` (Robyn, :8766), `check`, `test`, `seed`, `ensure-superuser`,
 `shell`, `collectstatic`, `clean`.
 
@@ -409,7 +409,7 @@ Parent `projects/pos/Makefile` delegates: `make formint-install`,
 - [`README.md`](../formint-pos/README.md) — package readme
 - [`compatibility-manifest.json`](../formint-pos/migration/compatibility-manifest.json)
 - [`POS_ARCHITECTURE.md`](POS_ARCHITECTURE.md) — all-editions architecture
-- [`SIDECAR_V2.md`](SIDECAR_V2.md) — sidecar API reference
+- [`SERVER_V2.md`](SERVER_V2.md) — server API reference
 - [`tests/README.md`](../tests/README.md) — unified test suite
 
 ## 12. django-fusion enhancement surface (all wired)
@@ -428,7 +428,7 @@ into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
   form fragments with model defaults patched.
 - `ModelSchema` (`django_fusion.routes.schemas.model_schema`) — decoders for
   every Out schema; `JSONRenderer` (encoder) wraps every API response.
-- `Site` (`django_fusion.routes.core.sites`) — `FormintSite` nav context.
+- `Module` (`django_fusion.routes.core.sites`) — `FormintModule` nav context.
 - `fusion_json_response` (`routes.rendering.renderers`) — render-first
   table responses.
 

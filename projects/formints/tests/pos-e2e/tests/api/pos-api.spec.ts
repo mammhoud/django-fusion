@@ -7,7 +7,7 @@ import {
   createEntity,
   getEntity,
   deleteEntity,
-  SIDECAR_URL,
+  SERVER_URL,
   API_URL,
 } from '../../helpers/api';
 
@@ -17,7 +17,7 @@ import {
  * Tests backend API endpoints directly — no browser needed.
  *
  * These tests validate:
- * - Sidecar health (Fusion/Robyn)
+ * - Server health (Fusion/Robyn)
  * - Auth API (login → token)
  * - CRUD operations on key entities
  * - Error handling (invalid auth, missing resources)
@@ -26,19 +26,19 @@ import {
  *   npx playwright test tests/api/ --project=pos-full
  *
  * ## Prerequisites
- *   - Sidecar must be running on port 8765
+ *   - Server must be running on port 8765
  *   - Backend API must be running on port 8766
  */
 
-test.describe('POS API — Sidecar Health', () => {
-  test('sidecar health endpoint returns ok', async () => {
-    const ctx = await createApiContext(SIDECAR_URL);
+test.describe('POS API — Server Health', () => {
+  test('server health endpoint returns ok', async () => {
+    const ctx = await createApiContext(SERVER_URL);
 
     const healthy = await apiHealthCheck(ctx, '/fusion/health');
 
-    // Sidecar may not be running in CI — skip gracefully
+    // Server may not be running in CI — skip gracefully
     if (!healthy) {
-      test.skip(true, 'Sidecar not running — skipping health check');
+      test.skip(true, 'Server not running — skipping health check');
       return;
     }
 
@@ -46,16 +46,16 @@ test.describe('POS API — Sidecar Health', () => {
     await ctx.dispose();
   });
 
-  test('sidecar health returns valid JSON even when unhealthy', async () => {
-    const ctx = await createApiContext(SIDECAR_URL);
+  test('server health returns valid JSON even when unhealthy', async () => {
+    const ctx = await createApiContext(SERVER_URL);
 
     try {
       const res = await ctx.get('/fusion/health', { timeout: 5000 });
       const body = await res.json().catch(() => null);
       expect(body).toBeDefined();
     } catch {
-      // Sidecar not running — skip gracefully (same as health check test)
-      test.skip(true, 'Sidecar not running — skipping');
+      // Server not running — skip gracefully (same as health check test)
+      test.skip(true, 'Server not running — skipping');
     }
 
     await ctx.dispose();

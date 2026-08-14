@@ -1,7 +1,12 @@
 # CTC Research - Feature Implementation Status
 
+> **Historical snapshot:** This report predates the 2026-08-14 worker migration.
+> Temporal worker examples below are archival documentation only. Active
+> background execution uses Dramatiq actors under `backend/plugins/workers/` and
+> APScheduler through django-fusion.
+
 **Date**: 2026-02-18
-**Status**: All Core Features Verified ✅
+**Status**: Historical snapshot — not an active deployment runbook
 
 ---
 
@@ -289,13 +294,15 @@ EMAIL_HOST_USER = 'your_email@gmail.com'
 EMAIL_HOST_PASSWORD = 'your_app_password'
 ```
 
-### Temporal Worker Setup
+### Retired Temporal Worker Setup (historical)
 ```bash
 # To run background email tasks
 python manage.py run_temporal_worker
 ```
 
-**Management Command**: `/root/site/ctc-research/core/CI/management/commands/run_temporal_worker.py`
+The former Temporal management command was removed on 2026-08-14. Use the
+shared Dramatiq worker and `python -m django_fusion.tasks.scheduler` described
+in [`docs/dev/infrastructure/worker-stack.md`](../../../../infrastructure/worker-stack.md).
 
 ---
 

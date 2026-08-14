@@ -12,7 +12,6 @@ Tests cover:
 
 from __future__ import annotations
 
-import pytest
 from django.contrib.auth.models import AnonymousUser, Permission, User
 from django.test import RequestFactory, TestCase
 
@@ -38,7 +37,7 @@ class TestRoutableComponent(TestCase):
     """Tests for RoutableComponent base class."""
 
     def setUp(self):
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class PublicComponent(RoutableComponent):
             route_name = "public"
@@ -116,7 +115,7 @@ class TestRoutableComponent(TestCase):
         self.assertTrue(comp.show_in_menu)
 
     def test_get_route_url_raises_without_route_name(self):
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class NoNameComp(RoutableComponent):
             route_name = None
@@ -132,7 +131,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_returns_explicit_value(self):
         """When fragment_name is set, get_fragment_name() returns it as-is."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class ExplicitComp(RoutableComponent):
             route_name = "my-route"
@@ -145,7 +144,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_derives_from_route_name(self):
         """When fragment_name is not set, get_fragment_name() derives from route_name."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class DerivedComp(RoutableComponent):
             route_name = "dashboard"
@@ -158,7 +157,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_returns_none_without_route_name(self):
         """When neither fragment_name nor route_name is set, returns None."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class NoNameNoFragment(RoutableComponent):
             route_name = None
@@ -171,7 +170,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_template_path_conversion(self):
         """The derived fragment_name maps to the components/ template dir."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class MyComp(RoutableComponent):
             route_name = "settings"
@@ -185,7 +184,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_explicit_overrides_default(self):
         """Explicit fragment_name takes priority over route_name derivation."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class OverrideComp(RoutableComponent):
             route_name = "dashboard"
@@ -207,7 +206,7 @@ class TestFragmentComponent(TestCase):
     """Tests for FragmentComponent."""
 
     def setUp(self):
-        from django_fusion.routes import FragmentComponent
+        from django_fusion.routes.components.fragments import FragmentComponent
 
         class SimpleFragment(FragmentComponent):
             route_name = "simple-fragment"
@@ -312,7 +311,7 @@ class TestFragmentComponent(TestCase):
 
     def test_fragment_component_inherits_default_fragment_name(self):
         """FragmentComponent inherits get_fragment_name() default from RoutableComponent."""
-        from django_fusion.routes import FragmentComponent
+        from django_fusion.routes.components.fragments import FragmentComponent
 
         class NoFragmentName(FragmentComponent):
             route_name = "my-frag"
@@ -324,7 +323,7 @@ class TestFragmentComponent(TestCase):
 
     def test_fragment_component_explicit_fragment_name_overrides_default(self):
         """Explicit fragment_name on FragmentComponent takes priority over route_name."""
-        from django_fusion.routes import FragmentComponent
+        from django_fusion.routes.components.fragments import FragmentComponent
 
         class ExplicitFrag(FragmentComponent):
             route_name = "my-frag"
@@ -656,7 +655,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_routable_component_with_route_name(self):
         """resolve_template_name() returns the route_name-derived path when
         strategy is 'fragment' and fragment_name is not set."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class DashboardComponent(RoutableComponent):
             route_name = "dashboard"
@@ -671,7 +670,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_routable_component_explicit_override(self):
         """Explicit fragment_name on RoutableComponent takes priority over
         route_name derivation in resolve_template_name()."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class ProfileComponent(RoutableComponent):
             route_name = "profile"
@@ -686,7 +685,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_routable_component_no_fragment_no_route_name(self):
         """resolve_template_name() falls back to template_name when neither
         fragment_name nor route_name is set, even in fragment strategy."""
-        from django_fusion.routes import RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class BareComponent(RoutableComponent):
             route_name = None
@@ -708,7 +707,7 @@ class TestFragmentDetector(TestCase):
     """Tests for FragmentDetector strategy detection."""
 
     def setUp(self):
-        from django_fusion.routes import FragmentDetector
+        from django_fusion.routes.http.detection import FragmentDetector
         self.detector = FragmentDetector()
         self.factory = RequestFactory()
 
@@ -749,7 +748,8 @@ class TestApplicationMenuOrdering(TestCase):
     """Tests for Application.menu_items() ordering by menu_order."""
 
     def test_menu_items_sorted_by_menu_order(self):
-        from django_fusion.routes import Application, AppMenuMixin, RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
+        from django_fusion.routes.core.sites import Application, AppMenuMixin
 
         class CompA(AppMenuMixin, RoutableComponent):
             route_name = "a"
@@ -783,7 +783,8 @@ class TestApplicationMenuOrdering(TestCase):
         self.assertEqual(titles, ["B", "C", "A"])
 
     def test_show_in_menu_false_hides_item(self):
-        from django_fusion.routes import Application, AppMenuMixin, RoutableComponent
+        from django_fusion.routes.components.routable import RoutableComponent
+        from django_fusion.routes.core.sites import Application, AppMenuMixin
 
         class HiddenComp(AppMenuMixin, RoutableComponent):
             route_name = "hidden"
@@ -819,7 +820,8 @@ class TestSite(TestCase):
     """Tests for Site class."""
 
     def setUp(self):
-        from django_fusion.routes import Application, RoutableComponent, Site
+        from django_fusion.routes.components.routable import RoutableComponent
+        from django_fusion.routes.core.sites import Application, Module
 
         class DashboardComponent(RoutableComponent):
             route_name = "dashboard"
@@ -838,7 +840,7 @@ class TestSite(TestCase):
             app_name = "test_app"
             viewsets = [DashboardComponent(), SettingsComponent()]
 
-        class TestSite(Site):
+        class TestSite(Module):
             title = "Test Site"
             app_name = "test_site"
 
@@ -868,9 +870,9 @@ class TestSite(TestCase):
         self.assertTrue(any(isinstance(v, self.TestApp) for v in site.viewsets))
 
     def test_site_title_defaults_to_class_name(self):
-        from django_fusion.routes import Site
+        from django_fusion.routes.core.sites import Module
 
-        class MySite(Site):
+        class MySite(Module):
             pass
 
         site = MySite()
@@ -878,9 +880,9 @@ class TestSite(TestCase):
         self.assertIsNotNone(site.title)
 
     def test_site_has_view_permission_with_permission(self):
-        from django_fusion.routes import Site
+        from django_fusion.routes.core.sites import Module
 
-        class RestrictedSite(Site):
+        class RestrictedSite(Module):
             permission = "auth.view_user"
 
         site = RestrictedSite()
@@ -915,7 +917,7 @@ class TestBaseViewset(TestCase):
     """Tests for BaseViewset base class."""
 
     def test_viewset_parents_empty(self):
-        from django_fusion.routes import Viewset
+        from django_fusion.routes.core.base import Viewset
 
         class EmptyViewset(Viewset):
             pass
@@ -924,7 +926,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(vs.parents(), [])
 
     def test_viewset_parents_hierarchy(self):
-        from django_fusion.routes import Viewset
+        from django_fusion.routes.core.base import Viewset
 
         class ParentViewset(Viewset):
             pass
@@ -939,7 +941,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(child.parents(), [parent])
 
     def test_viewset_parents_multi_level(self):
-        from django_fusion.routes import Viewset
+        from django_fusion.routes.core.base import Viewset
 
         class GrandparentViewset(Viewset):
             pass
@@ -961,7 +963,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(child.parents(), [grandparent, parent])
 
     def test_viewset_has_view_permission_default(self):
-        from django_fusion.routes import Viewset
+        from django_fusion.routes.core.base import Viewset
 
         class TestViewset(Viewset):
             pass
@@ -972,14 +974,14 @@ class TestBaseViewset(TestCase):
         self.assertTrue(vs.has_view_permission(user))
 
     def test_viewset_reverse_raises_without_parent(self):
-        from django_fusion.routes import Viewset
+        from django_fusion.routes.core.base import Viewset
 
         class TestViewset(Viewset):
             pass
 
         vs = TestViewset()
         # reverse without proper namespace setup will fail
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception):  # noqa: B017
             vs.reverse("some-view")
 
 
@@ -991,11 +993,10 @@ class TestModelViewset(TestCase):
     """Tests for ModelViewset CRUD operations."""
 
     def setUp(self):
-        from django.contrib.auth.models import Permission
 
         # Create a simple test model
         from django.db import models
-        from django_fusion.routes import ModelViewset
+        from django_fusion.routes.models.crud import ModelViewset
 
         class TestArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -1059,7 +1060,7 @@ class TestReadonlyModelViewset(TestCase):
 
     def setUp(self):
         from django.db import models
-        from django_fusion.routes import ReadonlyModelViewset
+        from django_fusion.routes.models.crud import ReadonlyModelViewset
 
         class TestItem(models.Model):
             name = models.CharField(max_length=50)
@@ -1089,7 +1090,7 @@ class TestFragmentDetectorAdditional(TestCase):
     """Additional tests for FragmentDetector."""
 
     def setUp(self):
-        from django_fusion.routes import FragmentDetector
+        from django_fusion.routes.http.detection import FragmentDetector
         self.detector = FragmentDetector()
         self.factory = RequestFactory()
 
@@ -1144,7 +1145,7 @@ class TestApplicationHasViewPermission(TestCase):
     """Tests for Application.has_view_permission."""
 
     def test_application_has_view_permission_with_permission(self):
-        from django_fusion.routes import Application
+        from django_fusion.routes.core.sites import Application
 
         class RestrictedApp(Application):
             permission = "auth.add_user"
@@ -1170,7 +1171,7 @@ class TestApplicationHasViewPermission(TestCase):
         self.assertTrue(app.has_view_permission(user))
 
     def test_application_has_view_permission_callable(self):
-        from django_fusion.routes import Application
+        from django_fusion.routes.core.sites import Application
 
         class CustomPermApp(Application):
             title = "Custom Perm App"
@@ -1186,7 +1187,7 @@ class TestApplicationHasViewPermission(TestCase):
         self.assertTrue(app.has_view_permission(admin_user))
 
     def test_application_has_view_permission_no_permission(self):
-        from django_fusion.routes import Application
+        from django_fusion.routes.core.sites import Application
 
         class OpenApp(Application):
             title = "Open App"
@@ -1208,7 +1209,7 @@ class TestAppMenuMixin(TestCase):
     """Tests for AppMenuMixin."""
 
     def test_title_defaults_to_class_name(self):
-        from django_fusion.routes import AppMenuMixin
+        from django_fusion.routes.core.sites import AppMenuMixin
 
         class MyAdmin(AppMenuMixin):
             pass
@@ -1218,7 +1219,7 @@ class TestAppMenuMixin(TestCase):
         self.assertIsNotNone(mixin.title)
 
     def test_has_view_permission_delegates_to_parent(self):
-        from django_fusion.routes import AppMenuMixin
+        from django_fusion.routes.core.sites import AppMenuMixin
 
         class TestMenuItem(AppMenuMixin):
             pass

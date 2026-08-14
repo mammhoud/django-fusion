@@ -33,7 +33,7 @@ import Icon from '../../../components/ui/Icon.astro';
         <div x-show="loading" class="space-y-2"><template x-for="i in 4"><div class="skeleton-shimmer h-8 rounded"></div></template></div>
         <div x-show="!loading" class="space-y-2">
           <div class="flex justify-between text-xs"><span class="opacity-50">Server</span><span :class="health.status === 'ok' ? 'text-[var(--color-success-strong)]' : 'text-[var(--color-error-strong)]'" x-text="health.status || 'unknown'">ok</span></div>
-          <div class="flex justify-between text-xs"><span class="opacity-50">Service</span><span x-text="health.service || '---'">formint-sidecar</span></div>
+          <div class="flex justify-between text-xs"><span class="opacity-50">Service</span><span x-text="health.service || '---'">formint-server</span></div>
           <div class="flex justify-between text-xs"><span class="opacity-50">Phase</span><span x-text="'Phase ' + (health.phase || 2)">Phase 2</span></div>
           <div class="flex justify-between text-xs"><span class="opacity-50">Registered Models</span><span x-text="health.models || 0">0</span></div>
           <div class="flex justify-between text-xs"><span class="opacity-50">Auth Methods</span><span x-text="(health.auth_methods || ['bearer_token','api_key']).join(', ')">bearer_token, api_key</span></div>

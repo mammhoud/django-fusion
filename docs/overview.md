@@ -165,7 +165,7 @@ structa.cloud/
 │   ├── databases/         # Postgres + Redis compose
 │   ├── templates/         # Coder/Terraform workspace templates
 │   └── agents/            # Kilo MCP server
-├── docs/                  # Documentation (docsify)
+├── docs/                  # Documentation (Docus + Nuxt Content)
 │   ├── assets/            # Screenshots and previews
 │   ├── projects/          # Per-project docs
 │   ├── guides/            # Developer guides

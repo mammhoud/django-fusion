@@ -1,83 +1,99 @@
 # Shared Background Task Architecture
 
-This repository runs multiple Django websites from one workspace.  Web requests
-remain website-specific, while asynchronous work is handled by one shared task
-project at the repository root: `tasks/`.
+The monorepo uses one broker-neutral task API from `django-fusion` and Dramatiq
+for production execution. HTTP servers remain product-specific; the shared
+worker consumes only explicitly configured active product task packages.
 
 ## Runtime roles
 
 | Layer | Location | Responsibility |
-| --- | --- | --- |
-| Website servers | `ctc-research.com/`, `structa.cloud/` | HTTP/ASGI/WSGI, templates, site settings, static/media configuration |
-| Shared settings | `configs/` | Site discovery, security defaults, Celery/RQ/Redis configuration, app registry |
-| Shared tasks server | `tasks/` | Celery app and reusable email/content/background tasks for every website |
-| Broker/backend | Redis (`CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`) | Queue transport and task results |
+|---|---|---|
+| Product servers | `projects/landing-fusion/`, `projects/loop-crm/`, `projects/formints/` | HTTP, settings, product models, task producers |
+| Task API | `libs/django-fusion/src/django_fusion/tasks/` | `@task`, registry, audit logging, backend abstraction |
+| Product workers | `<product>/backend/plugins/workers/` | Dramatiq actors owned by each product |
+| Shared worker | `applications/docker-compose.tasks.yml` | Loads configured product paths and executes actors |
+| Shared scheduler | `django_fusion.tasks.scheduler` | Publishes cron tasks to the Dramatiq broker |
+| Broker | Redis database 1 | `DRAMATIQ_BROKER_URL` transport |
 
-## Task package
+Precis/LMS task modules are deliberately excluded from the shared worker. They
+remain available only through explicit product maintenance configuration.
 
-The root `tasks/` package is the canonical place for shared background jobs:
+## Task package contract
 
-- `tasks.celery` defines the Celery application (`celery -A tasks ...`).
-- `tasks.email` contains templated, bulk, and raw email tasks.
-- `tasks.content` contains content/account utility tasks, including user counts
-  and welcome email delivery.
-- `tasks.ceptor_ai` records the ceptor-ai task modules the shared worker
-  should import/autodiscover when ceptor-ai is installed in production.
+Every active product exposes a `plugins/workers` package with a `TASK_MODULES`
+ tuple/list:
 
-Website-local task modules now act as compatibility imports.  Existing imports
-such as `plugins.accounts.services.email.tasks.send_email_task` still work, but
-they point at the shared implementation in `tasks.email`.
+```text
+backend/
+├── apps/tasks/                 # optional TaskExecution model boundary
+└── plugins/workers/
+    ├── __init__.py             # TASK_MODULES
+    └── *_tasks.py              # @task-decorated actors
+```
 
-## Website selection
-
-Shared tasks accept a `website` argument when work is site-specific:
+Actors use the django-fusion API:
 
 ```python
-from tasks.email import send_email_task
+from django_fusion.tasks import task
 
-send_email_task.delay(
-    to="student@example.com",
-    subject="Welcome",
-    template="emails/welcome.html",
-    context={"name": "Student"},
-    website="ctc-research.com",
-)
+@task(queue="email", max_retries=3)
+def send_welcome_email(user_id: int) -> None:
+    ...
 ```
 
-At execution time the task calls `configure_site_environment()` from
-`configs.site`, selects the correct website settings/source tree, and then
-initializes Django if needed.  If `website` is omitted, the worker falls back to
-`DJANGO_WEBSITE`, `WEBSITE`, or the configured default site.
+Callers enqueue with `.send(...)`. The legacy `.delay(...)` attribute is only a
+small source-compatibility alias implemented by django-fusion; it does not
+import or require Celery.
 
-## Docker Compose
+## Discovery and site context
 
-Use `compose/docker-compose.tasks.yml` with the base infrastructure compose file
-to run one shared worker and one shared beat scheduler:
+The shared worker receives product backend directories through
+`FUSION_TASK_PROJECT_PATHS` and may receive dotted modules through
+`FUSION_TASK_MODULES`. `TaskRegistry` adds each project path to the import path,
+loads its `plugins.workers` package and imports its declared child modules.
+
+Site-specific actors should carry a serializable `website` or `site` argument
+when they access product data. The worker records the site key in the shared
+task audit record and does not select a product by a global default.
+
+## Compose runtime
 
 ```bash
-docker compose \
-  -f compose/docker-compose.yml \
-  -f compose/docker-compose.tasks.yml \
-  up shared-tasks-worker shared-tasks-beat
+docker compose -f applications/docker-compose.tasks.yml config -q
+DB_NAME=db_structa docker compose -f applications/docker-compose.tasks.yml up -d
 ```
 
-Both services use the same Redis broker/result backend and can process tasks
-submitted by either website server.  Queue routing is configured in
-`configs/settings/ENV/celery.yml`:
+The worker command is:
 
-- `shared.email.*` routes to the `email` queue.
-- `shared.content.*` routes to the `shared` queue.
+```bash
+python manage.py rundramatiq \
+  --processes 2 --threads 4 \
+  --queues shared,email,content,system,crm,marketing,finance,default
+```
 
-## Email sending
+The scheduler command is:
 
-Email tasks use the selected website's `EmailService` when available, falling
-back across the known service import paths for the two site layouts.  Raw email
-sending uses Django's `EmailMultiAlternatives` after the selected site's Django
-settings are initialized.
+```bash
+python -m django_fusion.tasks.scheduler
+```
 
-## ceptor-ai tasks
+The scheduler publishes scheduled actors to Redis; it does not execute product
+functions in the scheduler process. The Dramatiq worker remains the only active
+consumer.
 
-`ceptor-ai` is an optional production dependency.  The shared worker keeps
-its imports deferred so local environments without ceptor-ai still boot.  The
-expected ceptor-ai task modules are listed in `tasks/ceptor_ai.py` and can
-be added to as upstream exposes more task modules.
+## Retired runtimes
+
+Celery, Celery Beat, Django-Q, Django-RQ, and Temporal worker entrypoints are
+not part of the active runtime. Their old settings, commands, and duplicate
+worker packages have been removed. Superseded plans remain historical evidence
+only and must not be used as deployment instructions.
+
+## Operational checks
+
+- `docker compose ... config -q` validates interpolation without starting services.
+- `uv run pytest libs/django-fusion/tests/test_tasks.py tests/unit/tasks tests/websites/test_shared_tasks.py -q`
+  covers registry discovery, delayed publishing, worker paths, and LMS exclusion.
+- If no actors appear, verify mounted product paths and each package's
+  `TASK_MODULES` before changing queues.
+- If Redis reports `NOAUTH`, verify `REDIS_PASSWORD` interpolation in
+  `DRAMATIQ_BROKER_URL`.

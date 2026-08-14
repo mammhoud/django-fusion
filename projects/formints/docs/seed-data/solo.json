@@ -1,6 +1,6 @@
 {
   "version": "pos-solo",
-  "description": "Complete seed data for POS Solo with restaurant + gaming center data (sidecar architecture)",
+  "description": "Complete seed data for POS Solo with restaurant + gaming center data (server architecture)",
   "generated": "2026-07-23",
   "tables": 29,
   "data": {
@@ -82,8 +82,8 @@
       "sales.customer_id": "INTEGER FK customers"
     }
   },
-  "architecture": "Rust (Tauri shell) + Python sidecar + Redux RTK Query",
-  "key_difference": "No product_type column (unlike mini). Uses sidecar instead of direct Rust operations.",
+  "architecture": "Rust (Tauri shell) + Python server + Redux RTK Query",
+  "key_difference": "No product_type column (unlike mini). Uses server instead of direct Rust operations.",
   "migration": "2026-01-01-000000_create_all/up.sql (single consolidated migration)",
   "seed_strategy": "All data uses INSERT OR IGNORE so restaurant and gaming center data coexist"
 }

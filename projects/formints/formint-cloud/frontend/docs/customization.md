@@ -1,7 +1,7 @@
 # Formint — Customization Guide
 
 > **Applies to:** formintA (site slug formint-pos) (Tauri + React + Rust/Diesel)  
-> **Adapt for:** formint-pos (merged package — use the Robyn sidecar / Django Ninja API instead of Tauri invoke)
+> **Adapt for:** formint-pos (merged package — use the Robyn server / Django Ninja API instead of Tauri invoke)
 
 ---
 

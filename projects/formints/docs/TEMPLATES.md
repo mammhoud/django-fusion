@@ -12,14 +12,14 @@ Formints uses a **dual-interface** architecture:
 
 1. **Desktop app** — Rust/Tauri native window with an Astro frontend. Templates are
    Astro `.astro` components, served locally by the Tauri webview. No Django involved.
-2. **Admin sidecar** — Optional Django backend (`formint-pro/sidecar/`) that provides
+2. **Admin server** — Optional Django backend (`formint-pro/server/`) that provides
    a django-unfold admin interface for cloud sync, user management, and product inventory.
 
 The admin is the **only** Django template surface in Formints. The desktop app's UI is
 entirely Astro + React 19 + Alpine.js.
 
 ```
-Desktop App                     Admin Sidecar (optional)
+Desktop App                     Admin Server (optional)
 ┌──────────────────┐           ┌──────────────────────────┐
 │ Tauri Webview    │           │ Django + django-unfold    │
 │ ├── Astro pages  │   sync    │ ├── admin/base.html      │
@@ -36,7 +36,7 @@ Desktop App                     Admin Sidecar (optional)
 
 ```
 projects/formints/
-├── formint-pro/sidecar/templates/admin/
+├── formint-pro/server/templates/admin/
 │   ├── base.html                          ← Root admin layout (django-unfold)
 │   ├── dashboard.html                     ← Admin dashboard with stats
 │   ├── login.html                         ← Admin login (superuser or PIN)
@@ -48,7 +48,7 @@ projects/formints/
 │   ├── App.astro                          ← Root Astro app
 │   └── pages/                             ← Astro pages (28 in Standard)
 │
-└── formint-pro/sidecar/models/            ← Django models with DataToken sync
+└── formint-pro/server/models/            ← Django models with DataToken sync
     ├── extra.py                           ← Cash register, drawer, receipt
     └── loyalty.py                         ← Loyalty program models
 ```
@@ -131,12 +131,12 @@ Tauri window → src/App.astro → React 19 components
 No Django templates. All UI is Astro + React.
 ```
 
-### 4.2 Standard Edition (Optional Django Sidecar)
+### 4.2 Standard Edition (Optional Django Server)
 
 ```
 Tauri window → same Astro + React UI as Community
     │
-    └── Optional: formint-pro/sidecar/ Django admin
+    └── Optional: formint-pro/server/ Django admin
         │
         ├── /admin/            → django-unfold admin
         │   ├── Products CRUD
@@ -147,12 +147,12 @@ Tauri window → same Astro + React UI as Community
             └── Sync endpoints for DataToken sync_batch()
 ```
 
-### 4.3 Pro Edition (Required Django Sidecar)
+### 4.3 Pro Edition (Required Django Server)
 
 ```
 Tauri window → Astro + Alpine + HTMX
     │
-    └── formint-pro/sidecar/ (always running)
+    └── formint-pro/server/ (always running)
         │
         ├── /admin/            → Full django-unfold admin
         ├── /api/v1/           → REST API
@@ -203,12 +203,12 @@ Sync status is shown on the dashboard via `DataToken.objects.sync_batch()` query
 
 ### 6.1 Tauri → Django Communication
 
-The desktop app communicates with the optional sidecar via HTTP:
+The desktop app communicates with the optional server via HTTP:
 
 ```typescript
-// src/api/sidecar.ts — Tauri frontend
-export async function pushToSidecar(endpoint: string, data: unknown) {
-  const base = await getSidecarBaseUrl(); // e.g., http://localhost:5173
+// src/api/server.ts — Tauri frontend
+export async function pushToServer(endpoint: string, data: unknown) {
+  const base = await getServerBaseUrl(); // e.g., http://localhost:5173
   const res = await fetch(`${base}/api/v1/${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -225,8 +225,8 @@ The Rust backend can tag data for sync without Django:
 ```rust
 // src-tauri/src/operations/dispatcher.rs
 fn create_currency(name: &str, code: &str) -> Result<()> {
-    // 1. Try sidecar API
-    if let Ok(_) = sidecar::post("/api/v1/currencies", ...) {
+    // 1. Try server API
+    if let Ok(_) = server::post("/api/v1/currencies", ...) {
         return Ok(()); // DataToken auto-tagged by Django
     }
 
@@ -252,12 +252,12 @@ fn create_currency(name: &str, code: &str) -> Result<()> {
 
 | File | Role |
 |---|---|
-| `formint-pro/sidecar/templates/admin/base.html` | django-unfold admin layout |
-| `formint-pro/sidecar/templates/admin/dashboard.html` | Admin dashboard |
-| `formint-pro/sidecar/templates/admin/products.html` | Product CRUD |
-| `formint-pro/sidecar/templates/admin/users.html` | User management |
-| `formint-pro/sidecar/templates/admin/settings.html` | Sync & server config |
-| `formint-pro/sidecar/models/` | Django models (extra.py, loyalty.py) |
+| `formint-pro/server/templates/admin/base.html` | django-unfold admin layout |
+| `formint-pro/server/templates/admin/dashboard.html` | Admin dashboard |
+| `formint-pro/server/templates/admin/products.html` | Product CRUD |
+| `formint-pro/server/templates/admin/users.html` | User management |
+| `formint-pro/server/templates/admin/settings.html` | Sync & server config |
+| `formint-pro/server/models/` | Django models (extra.py, loyalty.py) |
 | `formint-community/src/App.astro` | Community edition Astro root |
 | `formint-community/src-tauri/src/operations/dispatcher.rs` | DataToken Shell (Rust) |
 | `docs/plans/editions/` | Per-edition architecture plans |

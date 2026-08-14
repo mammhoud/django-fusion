@@ -8,7 +8,7 @@ from apps.handlers.fusion import (
 from apps.handlers.surface import fusion_monitor
 
 urlpatterns = [
-    # Fusion contract — served at /fusion/* (sidecar-compatible)
+    # Fusion contract — served at /fusion/* (server-compatible)
     path("health", fusion_health, name="fusion_health"),
     path("render-mode", render_mode, name="fusion_render_mode"),
     path("nav", navigation, name="fusion_nav"),

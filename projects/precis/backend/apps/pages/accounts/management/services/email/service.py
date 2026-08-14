@@ -145,35 +145,19 @@ class EmailService:
         context: dict[str, Any],
         delay: int = 0,
     ) -> str:
-        """
-        Queue an email for async sending via django-rq.
-        """
-        # Import here to avoid circular imports
-        from django_fusion.services.jobs import dispatch_job
+        """Queue a template email through the shared Dramatiq worker."""
+        from plugins.workers.legacy_email_tasks import send_template_email
 
-        # Lazy import to break circular dependency with tasks module
-        from apps.pages.accounts.management.services.email.tasks import send_email_task
-
-        # Note: django-rq uses 'at' or 'in' for delays, we'll use enqueue_in if delay > 0
-        if delay > 0:
-            from datetime import timedelta
-
-            import django_rq
-            queue = django_rq.get_queue("email")
-            # We don't have a direct equivalent of apply_async(countdown) in dispatch_job yet,
-            # but we can use django_rq directly or extend dispatch_job.
-            # For now, let's use dispatch_job for the logging benefit, and handling delay directly in it.
-            # Actually, dispatch_job enqueues immediately.
-            # I'll update dispatch_job later if needed. For now, let's just use it or standard enqueue_in.
-
-            # Re-evaluating: I'll use standard enqueue_in for now if delay is needed,
-            # but user usually wants logging. I'll stick to a simpler dispatch for consistency.
-            job = dispatch_job(send_email_task, to, subject, template, context, queue_name="email")
-        else:
-            job = dispatch_job(send_email_task, to, subject, template, context, queue_name="email")
-
-        logger.info(f"Email job queued for {to}: {subject} (job: {job.id})")
-        return job.id
+        options = {"delay": delay * 1000} if delay > 0 else None
+        message_id = send_template_email.send(
+            to,
+            subject,
+            template,
+            context,
+            **({"_fusion_options": options} if options else {}),
+        )
+        logger.info("Email job queued for %s: %s (job: %s)", to, subject, message_id)
+        return message_id
 
     def send_test(self, to: str) -> bool:
         """Send a test email using standard configuration."""

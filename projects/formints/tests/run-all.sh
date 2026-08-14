@@ -6,7 +6,7 @@
 #
 # Usage:
 #   bash tests/run-all.sh              — run everything (default)
-#   bash tests/run-all.sh py           — Python sidecar tests only
+#   bash tests/run-all.sh py           — Python server tests only
 #   bash tests/run-all.sh py-formint   — formint-pos backend tests only
 #   bash tests/run-all.sh js           — JS vitest tests only
 #   bash tests/run-all.sh api          — JS API endpoint tests only
@@ -19,10 +19,10 @@
 set -uo pipefail  # NOTE: no set -e — we capture exit codes manually
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"          # projects/pos/
-# pos-full + pos-solo were merged into formint-pos; the combined Robyn sidecar
-# lives at formint-pos/sidecar and the merged Django backend at formint-pos/backend.
+# pos-full + pos-solo were merged into formint-pos; the combined Robyn server
+# lives at formint-pos/server and the merged Django backend at formint-pos/backend.
 FORMINT="$ROOT/formint-pos"
-SIDECAR="$FORMINT/sidecar"
+SERVER="$FORMINT/server"
 BACKEND="$FORMINT/backend"
 TESTS="$ROOT/tests"
 
@@ -49,14 +49,14 @@ banner() {
   echo "╚══════════════════════════════════════════════════════════╝"
 }
 
-run_py_sidecar() {
-  banner "Python: merged sidecar (formint-pos/sidecar — pos-full + pos-solo)"
+run_py_server() {
+  banner "Python: merged server (formint-pos/server — pos-full + pos-solo)"
   bash "$TESTS/py/full/run.sh" 2>&1 | tail -15
   local st=${PIPESTATUS[0]}
   if [ "$st" -eq 0 ]; then
-    echo "  ✅ merged sidecar — PASSED"; PASS=$((PASS + 1))
+    echo "  ✅ merged server — PASSED"; PASS=$((PASS + 1))
   else
-    echo "  ❌ merged sidecar — FAILED (exit $st)"; FAIL=$((FAIL + 1))
+    echo "  ❌ merged server — FAILED (exit $st)"; FAIL=$((FAIL + 1))
   fi
 }
 
@@ -84,7 +84,7 @@ run_js() {
 }
 
 # ────────────────────────────────────────────────────────────────────────────
-# 4. API — Node.js endpoint tests (requires running sidecar)
+# 4. API — Node.js endpoint tests (requires running server)
 # ────────────────────────────────────────────────────────────────────────────
 run_api() {
   banner "API: Node.js endpoint tests"
@@ -124,7 +124,7 @@ run_api() {
 }
 
 # ────────────────────────────────────────────────────────────────────────────
-# 5. SELENIUM — Admin panel browser tests (requires running sidecar + chrom*)
+# 5. SELENIUM — Admin panel browser tests (requires running server + chrom*)
 # ────────────────────────────────────────────────────────────────────────────
 run_selenium() {
   banner "Selenium: Admin panel browser tests"
@@ -169,24 +169,24 @@ echo ""
 
 case "$MODE" in
   all)
-    run_py_sidecar
+    run_py_server
     run_py_formint
     run_js
     [[ "$QUICK" == "true" ]] || run_api
     [[ "$QUICK" == "true" ]] || run_selenium
     ;;
   py)
-    run_py_sidecar
+    run_py_server
     run_py_formint
     ;;
-  py-sidecar)
-    run_py_sidecar
+  py-server)
+    run_py_server
     ;;
   py-full)
-    run_py_sidecar
+    run_py_server
     ;;
   py-solo)
-    run_py_sidecar
+    run_py_server
     ;;
   py-formint)
     run_py_formint
@@ -207,7 +207,7 @@ case "$MODE" in
     ;;
   --quick)
     QUICK=true
-    run_py_sidecar
+    run_py_server
     run_py_formint
     run_js
     ;;

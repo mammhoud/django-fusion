@@ -12,6 +12,7 @@ projects/
 ├── landing-fusion/     # Astro + Django/Wagtail public landing/catalog site
 ├── syntara/            # Cypercloud AI chat/customizer runtime
 ├── formints/           # POS editions and their shared test suites
+├── loop-crm/           # Unified CRM + social scheduling (Twenty + Postiz merge)
 ├── configs/            # Shared settings, middleware, workers, env config
 ├── assets/             # Monorepo-level shared assets
 ├── lms-fusion/         # Retired compatibility boundary; no new code
@@ -35,6 +36,7 @@ Important mappings include:
 |---|---|---|
 | `lms-fusion` | `projects/precis/` | Current LMS runtime identity after migration |
 | `landing-fusion` | `projects/landing-fusion/` | Landing-Fusion frontend/backend pair |
+| `loop-crm` | `projects/loop-crm/` | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | `cypercloud` (where supported) | `projects/syntara/` | Historical product name |
 | `ctc`, `ctc-research` | checkout-dependent CTC site | Legacy site dispatcher path; verify directory before use |
 | `structa`, `lms` | checkout-dependent LMS alias | Historical public-site aliases |
@@ -87,6 +89,9 @@ Avoid importing one product's settings into another product.
   behavior behind the `chat/` application boundaries.
 - Formints: `formints/AGENTS.md`; each edition has its own backend/frontend/
   native boundary and the professional/cloud products are not interchangeable.
+- Loop-CRM: `loop-crm/README.md`; keep the CRM/marketing/attribution app
+  boundaries separate, use `django_fusion.*` components (no django-cotton), and
+  treat `apps/tasks/` (Dramatiq) as the sole background-worker runtime.
 - Retired `lms-fusion/`: use only for migration history and compatibility
   documentation. New learning features belong in Precis or Landing-Fusion.
 

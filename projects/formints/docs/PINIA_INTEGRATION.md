@@ -1,19 +1,19 @@
-# Pinia ↔ Sidecar API Integration Guide
+# Pinia ↔ Server API Integration Guide
 
 > **Version:** 1.0.0 — **Last Updated:** 20 July 2026
 > **Applies to:** pos-solo (port 8765), pos-full (port 8766)
 
-Complete guide for wiring Vue/Pinia stores to the Robyn sidecar REST + WebSocket APIs.
+Complete guide for wiring Vue/Pinia stores to the Robyn server REST + WebSocket APIs.
 
 ---
 
 ## 1. Quick Start
 
 ```typescript
-// src/stores/sidecar.ts — base HTTP + WebSocket client
+// src/stores/server.ts — base HTTP + WebSocket client
 import { defineStore } from 'pinia'
 
-export const useSidecar = defineStore('sidecar', {
+export const useServer = defineStore('server', {
   state: () => ({
     baseUrl: 'http://localhost:8765',
     token: null as string | null,
@@ -85,7 +85,7 @@ export const useSidecar = defineStore('sidecar', {
 ```typescript
 // src/stores/products.ts
 import { defineStore } from 'pinia'
-import { useSidecar } from './sidecar'
+import { useServer } from './server'
 
 interface Product {
   id: number; name: string; price: number; sku?: string
@@ -103,7 +103,7 @@ export const useProductStore = defineStore('products', {
   actions: {
     async fetchAll(page = 1) {
       this.loading = true
-      const { data } = await useSidecar().get(`/products?page=${page}&per_page=50`)
+      const { data } = await useServer().get(`/products?page=${page}&per_page=50`)
       if (data) {
         this.items = data.data
         this.pagination = data.pagination
@@ -112,19 +112,19 @@ export const useProductStore = defineStore('products', {
     },
 
     async getById(id: number) {
-      return (await useSidecar().get<Product>(`/products/${id}`)).data
+      return (await useServer().get<Product>(`/products/${id}`)).data
     },
 
     async create(product: Partial<Product>) {
-      return useSidecar().post('/products', product)
+      return useServer().post('/products', product)
     },
 
     async update(id: number, product: Partial<Product>) {
-      return useSidecar().patch(`/products/${id}`, product)
+      return useServer().patch(`/products/${id}`, product)
     },
 
     async remove(id: number) {
-      return useSidecar().del(`/products/${id}`)
+      return useServer().del(`/products/${id}`)
     },
   },
 })
@@ -162,21 +162,21 @@ export const useSaleStore = defineStore('sales', {
   actions: {
     async fetchAll(page = 1) {
       this.loading = true
-      const { data } = await useSidecar().get(`/sales?page=${page}`)
+      const { data } = await useServer().get(`/sales?page=${page}`)
       if (data) this.sales = data.data
       this.loading = false
     },
 
     async createWithItems(sale: Partial<Sale>, items: Partial<SaleItem>[]) {
-      return useSidecar().post('/sales/with-items', { ...sale, items })
+      return useServer().post('/sales/with-items', { ...sale, items })
     },
 
     async getById(id: number) {
-      return (await useSidecar().get<Sale>(`/sales/${id}`)).data
+      return (await useServer().get<Sale>(`/sales/${id}`)).data
     },
 
     async refund(id: number) {
-      return useSidecar().patch(`/sales/${id}`, { status: 'refunded' })
+      return useServer().patch(`/sales/${id}`, { status: 'refunded' })
     },
   },
 })
@@ -205,13 +205,13 @@ export const useCustomerStore = defineStore('customers', {
   actions: {
     async fetchAll(page = 1) {
       this.loading = true
-      const { data } = await useSidecar().get(`/customers?page=${page}`)
+      const { data } = await useServer().get(`/customers?page=${page}`)
       if (data) this.items = data.data
       this.loading = false
     },
-    async create(c: Partial<Customer>) { return useSidecar().post('/customers', c) },
-    async update(id: number, c: Partial<Customer>) { return useSidecar().patch(`/customers/${id}`, c) },
-    async remove(id: number) { return useSidecar().del(`/customers/${id}`) },
+    async create(c: Partial<Customer>) { return useServer().post('/customers', c) },
+    async update(id: number, c: Partial<Customer>) { return useServer().patch(`/customers/${id}`, c) },
+    async remove(id: number) { return useServer().del(`/customers/${id}`) },
   },
 })
 ```
@@ -230,16 +230,16 @@ export const useInventoryStore = defineStore('inventory', {
 
   actions: {
     async fetchAll(page = 1) {
-      const { data } = await useSidecar().get(`/inventory?page=${page}`)
+      const { data } = await useServer().get(`/inventory?page=${page}`)
       if (data) this.transactions = data.data
     },
     async stockIn(productId: number, qty: number, ref = '') {
-      return useSidecar().post('/inventory', {
+      return useServer().post('/inventory', {
         product_id: productId, transaction_type: 'in', quantity: qty, reference: ref,
       })
     },
     async stockOut(productId: number, qty: number, ref = '') {
-      return useSidecar().post('/inventory', {
+      return useServer().post('/inventory', {
         product_id: productId, transaction_type: 'out', quantity: qty, reference: ref,
       })
     },
@@ -267,12 +267,12 @@ export const useEmployeeStore = defineStore('employees', {
   state: () => ({ items: [] as Employee[] }),
   actions: {
     async fetchAll() {
-      const { data } = await useSidecar().get('/employees')
+      const { data } = await useServer().get('/employees')
       if (data) this.items = data.data
     },
-    async create(e: Partial<Employee>) { return useSidecar().post('/employees', e) },
-    async deactivate(id: number) { return useSidecar().patch(`/employees/${id}`, { is_active: false }) },
-    async remove(id: number) { return useSidecar().del(`/employees/${id}`) },
+    async create(e: Partial<Employee>) { return useServer().post('/employees', e) },
+    async deactivate(id: number) { return useServer().patch(`/employees/${id}`, { is_active: false }) },
+    async remove(id: number) { return useServer().del(`/employees/${id}`) },
   },
 })
 ```
@@ -321,33 +321,33 @@ export const useNodeStore = defineStore('nodes', {
 
   actions: {
     async fetchAll(page = 1) {
-      const { data } = await useSidecar().get(`/nodes?page=${page}`)
+      const { data } = await useServer().get(`/nodes?page=${page}`)
       if (data) this.nodes = data.data
     },
 
     async register(node: Partial<Node>) {
-      return useSidecar().post('/nodes/register', node)
+      return useServer().post('/nodes/register', node)
     },
 
     async heartbeat(nodeId: string) {
-      return useSidecar().post('/nodes/heartbeat', { node_id: nodeId })
+      return useServer().post('/nodes/heartbeat', { node_id: nodeId })
     },
 
     async update(nodeId: string, updates: Partial<Node>) {
-      return useSidecar().patch(`/nodes/${nodeId}`, updates)
+      return useServer().patch(`/nodes/${nodeId}`, updates)
     },
 
     async remove(nodeId: string) {
-      return useSidecar().del(`/nodes/${nodeId}`)
+      return useServer().del(`/nodes/${nodeId}`)
     },
 
     async getHistory(nodeId: string) {
-      return (await useSidecar().get(`/nodes/${nodeId}/history`)).data
+      return (await useServer().get(`/nodes/${nodeId}/history`)).data
     },
 
     // WebSocket (pos-full only)
     connectNodeStream(filters?: { node_id?: string; event_type?: string }) {
-      const url = `${useSidecar().baseUrl.replace('http', 'ws')}/ws/nodes`
+      const url = `${useServer().baseUrl.replace('http', 'ws')}/ws/nodes`
       this.ws = new WebSocket(url)
       this.ws.onopen = () => { this.wsConnected = true }
       this.ws.onmessage = (e) => {
@@ -404,34 +404,34 @@ export const useConfigStore = defineStore('config', {
 
   actions: {
     async fetchDevices() {
-      const { data } = await useSidecar().get('/config/devices')
+      const { data } = await useServer().get('/config/devices')
       if (data) this.devices = data.data
     },
 
     async getNodeConfig(nodeId: string) {
-      return (await useSidecar().get(`/nodes/${nodeId}/config`)).data
+      return (await useServer().get(`/nodes/${nodeId}/config`)).data
     },
 
     async setNodeConfig(nodeId: string, key: string, value: any) {
-      return useSidecar().post(`/nodes/${nodeId}/config`, { config_key: key, config_value: value })
+      return useServer().post(`/nodes/${nodeId}/config`, { config_key: key, config_value: value })
     },
 
     async deleteNodeConfig(nodeId: string, key: string) {
-      return useSidecar().del(`/nodes/${nodeId}/config/${key}`)
+      return useServer().del(`/nodes/${nodeId}/config/${key}`)
     },
 
     async fetchCloudLinks() {
-      const { data } = await useSidecar().get('/config/cloud-links')
+      const { data } = await useServer().get('/config/cloud-links')
       if (data) this.cloudLinks = data.data
     },
 
     async testCloudLink(id: number) {
-      return useSidecar().post(`/config/cloud-links/${id}/test`, {})
+      return useServer().post(`/config/cloud-links/${id}/test`, {})
     },
 
     // WebSocket config stream (both editions)
     connectConfigStream() {
-      const url = `${useSidecar().baseUrl.replace('http', 'ws')}/ws/config`
+      const url = `${useServer().baseUrl.replace('http', 'ws')}/ws/config`
       this.ws = new WebSocket(url)
       this.ws.onopen = () => { this.wsConnected = true }
       this.ws.onmessage = (e) => {
@@ -475,25 +475,25 @@ export const useSyncStore = defineStore('sync', {
 
   actions: {
     async fetchStatus() {
-      const { data } = await useSidecar().get('/sync/status')
+      const { data } = await useServer().get('/sync/status')
       if (data) Object.assign(this, data)
     },
 
     async triggerSync() {
-      return useSidecar().post('/sync/trigger', {})
+      return useServer().post('/sync/trigger', {})
     },
 
     async fetchLog(page = 1) {
-      const { data } = await useSidecar().get(`/sync/log?page=${page}`)
+      const { data } = await useServer().get(`/sync/log?page=${page}`)
       if (data) this.log = data.data
     },
 
     async updateConfig(config: { enabled?: boolean; cloud_url?: string; api_key?: string }) {
-      return useSidecar().patch('/sync/config', config)
+      return useServer().patch('/sync/config', config)
     },
 
     async pushToCloud(entityType: string, payload: any) {
-      return useSidecar().post(`/cloud/push/${entityType}`, payload)
+      return useServer().post(`/cloud/push/${entityType}`, payload)
     },
   },
 })
@@ -525,25 +525,25 @@ export const useApprovalStore = defineStore('approvals', {
 
   actions: {
     async fetchPending() {
-      const { data } = await useSidecar().get('/approvals/pending')
+      const { data } = await useServer().get('/approvals/pending')
       if (data) this.pending = data
     },
 
     async fetchStats() {
-      const { data } = await useSidecar().get('/approvals/stats')
+      const { data } = await useServer().get('/approvals/stats')
       if (data) this.stats = data
     },
 
     async approve(id: number, reviewer = 'manager', notes = '') {
-      return useSidecar().post(`/approvals/${id}/approve`, { reviewer, notes })
+      return useServer().post(`/approvals/${id}/approve`, { reviewer, notes })
     },
 
     async reject(id: number, reviewer = 'manager', notes = '') {
-      return useSidecar().post(`/approvals/${id}/reject`, { reviewer, notes })
+      return useServer().post(`/approvals/${id}/reject`, { reviewer, notes })
     },
 
     async all() {
-      const { data } = await useSidecar().get('/approvals')
+      const { data } = await useServer().get('/approvals')
       return data?.data || []
     },
   },
@@ -572,35 +572,35 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async login(deviceId: string, role = 'cashier') {
-      const { data } = await useSidecar().post('/auth/token', { device_id: deviceId, role })
+      const { data } = await useServer().post('/auth/token', { device_id: deviceId, role })
       if (data?.token) {
         this.token = data.token
         this.deviceId = deviceId
         this.role = role
         this.isAuthenticated = true
-        useSidecar().setToken(data.token)
+        useServer().setToken(data.token)
       }
       return data
     },
 
     async refresh() {
       if (!this.token) return
-      const { data } = await useSidecar().post('/auth/refresh', { token: this.token })
+      const { data } = await useServer().post('/auth/refresh', { token: this.token })
       if (data?.token) {
         this.token = data.token
-        useSidecar().setToken(data.token)
+        useServer().setToken(data.token)
       }
     },
 
     async verify() {
-      const { data } = await useSidecar().get('/auth/verify')
+      const { data } = await useServer().get('/auth/verify')
       return data?.valid === true
     },
 
     logout() {
       this.token = null
       this.isAuthenticated = false
-      useSidecar().setToken(null)
+      useServer().setToken(null)
     },
   },
 })
@@ -627,9 +627,9 @@ export const useDashboardStore = defineStore('dashboard', {
   actions: {
     async fetchAll() {
       const [info, health, stats] = await Promise.all([
-        useSidecar().get('/'),
-        useSidecar().get('/health'),
-        useSidecar().get('/stats'),
+        useServer().get('/'),
+        useServer().get('/health'),
+        useServer().get('/stats'),
       ])
       this.serviceInfo = info.data
       this.health = health.data
@@ -648,7 +648,7 @@ export const useDashboardStore = defineStore('dashboard', {
 ## 3. WebSocket Connection Lifecycle
 
 ```
-Pinia Store                    Sidecar WS
+Pinia Store                    Server WS
      │                              │
      ├── connectNodeStream() ──────►│  new WebSocket(url)
      │                              │
@@ -741,7 +741,7 @@ interface DeviceToken {
 
 ```typescript
 // src/stores/index.ts
-export { useSidecar } from './sidecar'
+export { useServer } from './server'
 export { useProductStore } from './products'
 export { useSaleStore } from './sales'
 export { useCustomerStore } from './customers'
@@ -762,20 +762,20 @@ export { wsManager } from '../utils/wsManager'
 
 ```typescript
 // src/App.vue or main.ts
-import { useSidecar, useAuthStore, useNodeStore, useConfigStore } from '@/stores'
+import { useServer, useAuthStore, useNodeStore, useConfigStore } from '@/stores'
 
 async function initializeApp() {
-  const sidecar = useSidecar()
+  const server = useServer()
 
   // 1. Health check
-  const healthy = await sidecar.healthCheck()
-  if (!healthy) { console.error('Sidecar unreachable'); return }
+  const healthy = await server.healthCheck()
+  if (!healthy) { console.error('Server unreachable'); return }
 
   // 2. Auth (if token exists, verify; otherwise login)
   const auth = useAuthStore()
   const savedToken = localStorage.getItem('pos_token')
   if (savedToken) {
-    sidecar.setToken(savedToken)
+    server.setToken(savedToken)
     const valid = await auth.verify()
     if (!valid) await auth.login('DEVICE-001', 'cashier')
   } else {

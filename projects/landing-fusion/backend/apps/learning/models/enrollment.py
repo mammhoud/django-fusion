@@ -8,9 +8,10 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .courses.info import Course
-from .certificate import Certificate
 from apps.learning.managers.enrollments import EnrollmentQuerySet
+
+from .certificate import Certificate
+from .courses.info import Course
 
 
 class Enrollment(models.Model):

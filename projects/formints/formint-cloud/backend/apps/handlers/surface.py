@@ -1,22 +1,22 @@
-"""POS Cloud — Django-native surface mirroring the removed Robyn sidecar.
+"""POS Cloud — Django-native surface mirroring the removed Robyn server.
 
 The Astro frontend's dev proxy sends these root paths to ``:8767``
 (``/organizations``, ``/branches``, ``/leads``, ``/contacts``, ``/deals``,
 ``/inventory-reports``, ``/branch-reports``, ``/device-tokens``,
 ``/conflicts``, ``/queue``, ``/fusion``, ``/api``, ``/stats``,
-``/health``).  Previously the Robyn sidecar served them from the shared
+``/health``).  Previously the Robyn server served them from the shared
 Django ORM; now Django serves them directly so the frontend URL contract
-is unchanged and the sidecar can be removed.
+is unchanged and the server can be removed.
 
 This module provides:
 
 * Generic JSON CRUD at the root paths (``GET/POST /{collection}/`` and
   ``GET/PATCH/DELETE /{collection}/{pk}/``) — same ``{count, items}``
-  shape the Robyn sidecar returned, now gated by an authenticated
+  shape the Robyn server returned, now gated by an authenticated
   session (anonymous callers get a JSON ``401``, not a redirect).
 * ``bridge_sales`` / ``bridge_products`` / ``bridge_settings`` — the
   Community-UI data bridges (wired at ``/api/*`` in ``apps/core/urls.py``).
-* ``stats`` — the sidecar's ``/stats`` counts payload.
+* ``stats`` — the server's ``/stats`` counts payload.
 
 Sensitive ``DeviceToken`` fields (``token_hash``, ``token_prefix``,
 ``capabilities``, ``allowed_entities``) are excluded from both
@@ -82,7 +82,7 @@ def _json_ready(value: Any) -> Any:
 
 
 def _serialize(instance: models.Model) -> dict[str, Any]:
-    """Serialize a model instance to a flat JSON dict (sidecar style).
+    """Serialize a model instance to a flat JSON dict (server style).
 
     Sensitive fields are omitted.
     """
@@ -99,7 +99,7 @@ def _serialize(instance: models.Model) -> dict[str, Any]:
     return data
 
 
-# ── Generic JSON CRUD (sidecar /{collection} contract, auth-gated) ────────
+# ── Generic JSON CRUD (server /{collection} contract, auth-gated) ────────
 
 def _writable_fields(
     model: type[models.Model],
@@ -221,7 +221,7 @@ def _make_crud(
     return dispatch
 
 
-# ── Community-UI bridges (sidecar /api/sales|products|settings contract) ────
+# ── Community-UI bridges (server /api/sales|products|settings contract) ────
 # Wired at /api/sales etc. in apps/core/urls.py.
 
 def _ser_sale(s: BranchSale) -> dict[str, Any]:
@@ -285,7 +285,7 @@ def _models():
 
 
 def stats(request: HttpRequest) -> JsonResponse:
-    """GET /stats — counts for every core model (sidecar contract)."""
+    """GET /stats — counts for every core model (server contract)."""
     models_ = _models()
     counts = {m.__name__: m.objects.count() for m in models_}
     return JsonResponse({
@@ -337,7 +337,7 @@ def fusion_monitor(request: HttpRequest) -> HttpResponse:
 
     Renders the ``core.monitor.tile`` fragment component (latest backup +
     sync queue depth) so the Astro frontend can embed it via the fusion
-    render-mode contract.  Mirrors the ``/fusion/*`` sidecar surface:
+    render-mode contract.  Mirrors the ``/fusion/*`` server surface:
     returns rendered fragment HTML, not JSON.
     """
     from apps.handlers.fragments.monitor import MonitorTileView

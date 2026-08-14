@@ -1,7 +1,7 @@
 //! DataToken Shell — local sync queue operations.
 //!
 //! These functions mark data changes that need syncing when the Django
-//! sidecar is unavailable. Uses raw SQL with manual result mapping to
+//! server is unavailable. Uses raw SQL with manual result mapping to
 //! avoid Diesel type-compatibility issues with SQLite Text columns.
 
 use diesel::prelude::*;

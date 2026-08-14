@@ -1,0 +1,43 @@
+{
+  "name": "loop-crm",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Loop-CRM frontend — Astro 5 + Tailwind 4 + HTMX + Alpine.js + Redux + GSAP, mirroring the landing-fusion AHA-stack architecture.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "playwright test --config=playwright.config.mjs"
+  },
+  "dependencies": {
+    "@alpinejs/collapse": "^3.14.9",
+    "@alpinejs/intersect": "^3.14.9",
+    "@astrojs/alpinejs": "^1.0.0",
+    "@astrojs/mdx": "^4.2.1",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@reduxjs/toolkit": "^2.12.0",
+    "@types/alpinejs": "^3.13.11",
+    "alpinejs": "^3.15.12",
+    "astro": "^5.6.1",
+    "gsap": "^3.15.0",
+    "htmx.org": "^2.0.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/react": "^4.2.0",
+    "@tailwindcss/vite": "^4.1.4",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.8.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@playwright/test": "^1.52.0"
+  }
+}

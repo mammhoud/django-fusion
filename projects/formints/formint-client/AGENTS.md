@@ -99,7 +99,7 @@ python manage.py seed_shop
 
 ## Do not
 
-- Do not introduce a Python sidecar or django-fusion render-mode server; this
+- Do not introduce a Python server or django-fusion render-mode server; this
   edition uses a simple Django backend.
 - Do not copy `formint-pro` or `formint-cloud` sync/Channels/WebSocket code.
 - Do not add Tauri plugins or permissions without updating `capabilities/`.

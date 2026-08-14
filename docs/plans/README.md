@@ -15,11 +15,13 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Scope | Entry point | What belongs here |
 |---|---|---|
 | Repository | [`repository/`](repository/) | Cross-project architecture, cleanup, migrations, and delivery |
+| Active monorepo consolidation | [`repository/active-monorepo-consolidation-2026-08-14.md`](repository/active-monorepo-consolidation-2026-08-14.md) | Shared Dramatiq, LMS aggregate exclusion, Nx, dev-workspace, and AppFlowy |
 | Formint/POS | [`pos/README.md`](pos/README.md) | Canonical product, desktop, cloud, sync, and migration plans |
 | Formint editions | [`editions/README.md`](editions/README.md) | Community → Standard → Pro → Cloud → Client → SDK execution chain |
 | CMS Fusion | [`cms-fusion/`](cms-fusion/) | Superseded migration evidence; active work is in Precis/Landing-Fusion |
 | LMS Fusion | [`lms-fusion/`](lms-fusion/) | Superseded migration evidence; active LMS work is in Precis |
 | Landing-Fusion | [`landing-fusion/`](landing-fusion/) | Landing site architecture, content, and frontend work |
+| Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Formint Cloud | [`pos/cloud-plan.md`](pos/cloud-plan.md) | Cloud master: Channels, WebSocket sync, Bolt dashboard, Unfold admin |
 | Lifecycle | [`document-lifecycle.md`](document-lifecycle.md) | Status, ownership, archive, deletion, and rollback policy |
@@ -29,6 +31,8 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | External library plan | [`../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md`](../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md) | Maintained in the django-fusion submodule |
 
 ## Current recommendations
+
+0. **Monorepo runtime baseline:** follow [`repository/active-monorepo-consolidation-2026-08-14.md`](repository/active-monorepo-consolidation-2026-08-14.md) before adding new worker or Coder services. Precis/LMS is explicit-only for maintenance and is excluded from aggregate deploy/check commands.
 
 1. **Formint/POS vertical slice:** continue the canonical Professional plan and the edition chain in the order shown in [`editions/README.md`](editions/README.md). Formint-cloud is the current cloud master (renamed from `formintB`/`pos-cloud`).
 2. **Landing-Fusion quality:** preserve the post-only code-rendering contract and run its backend/frontend checks before adding new content blocks.
@@ -47,9 +51,11 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | CMS Fusion migration (merged → Precis/Landing-Fusion) | Superseded; evidence retained | [`cms-fusion/migration-plan.md`](cms-fusion/migration-plan.md) |
 | LMS Fusion migration (now Precis) | Superseded; evidence retained | [`lms-fusion/migration-plan.md`](lms-fusion/migration-plan.md) |
 | Landing-Fusion | Active | [`landing-fusion/`](landing-fusion/) |
+| Loop-CRM merge | Scaffold shipped | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
 | Active project closeout | Audit complete | [`repository/active-project-closeout-2026-08-11.md`](repository/active-project-closeout-2026-08-11.md) |
 | Repository migration cleanup | Partial / gate-based | [`repository/migration-cleanup-master.md`](repository/migration-cleanup-master.md) |
-| django-fusion Tasks & MCP | Planned | [`django-fusion/django-fusion-tasks-mcp-plan.md`](django-fusion/django-fusion-tasks-mcp-plan.md) |
+| django-fusion Tasks & MCP | Baseline implemented; MCP/production hardening remaining | [`django-fusion/django-fusion-tasks-mcp-plan.md`](django-fusion/django-fusion-tasks-mcp-plan.md) |
+| Active monorepo consolidation | In progress / baseline landed | [`repository/active-monorepo-consolidation-2026-08-14.md`](repository/active-monorepo-consolidation-2026-08-14.md) |
 | django-fusion LLM & AI MCP Enhancement | Planned / companion | [`django-fusion/django-fusion-llm-mcp-enhancement-plan.md`](django-fusion/django-fusion-llm-mcp-enhancement-plan.md) |
 | django-fusion Webpack Enhancement | Active | [`django-fusion/django-fusion-webpack-enhancement-plan.md`](django-fusion/django-fusion-webpack-enhancement-plan.md) |
 | django-fusion Analyzer + Skeleton + Asset APIs | Planned | [`django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) |
@@ -63,7 +69,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | `pos-cloud` → `formint-cloud` | 2026-08-09 | Package name in editions.md, AGENTS.md, docs |
 | `lms-fusion` alias → Precis | Active | Compatibility alias preserved; canonical is `projects/precis/` |
 | `cypercloud` → `syntara` | Active | Runtime alias preserved for external contracts |
-| Tasks & MCP plan created | 2026-08-10 | Celery replacement, unified task API, MCP tools for bg tasks |
+| Tasks & MCP plan created | 2026-08-10 | Unified task API and MCP follow-up; shared Dramatiq baseline is now implemented |
 | LLM & AI MCP enhancement plan created | 2026-08-10 | Provider-neutral routing, model levels, caching, streaming, secure AI component workflows |
 | Webpack enhancement + env configs | 2026-08-10 | Project-customizable webpack, landing-fusion/precis .env.example, project workspace configs |
 
@@ -91,6 +97,7 @@ docs/plans/
 ├── cms-fusion/               # CMS Fusion plans (merged → Precis/Landing-Fusion)
 ├── lms-fusion/               # LMS Fusion plans (now Precis)
 ├── landing-fusion/           # Landing-Fusion plans
+├── loop-crm/                 # Loop-CRM merge plan (Twenty + Postiz)
 ├── django-fusion/            # Shared framework plans
 ├── legacy/                   # Read-only historical evidence
 ├── migrated/                 # Migrated plan archives

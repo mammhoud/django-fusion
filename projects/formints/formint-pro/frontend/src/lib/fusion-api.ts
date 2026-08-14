@@ -3,10 +3,10 @@
 // Single source of truth for every data round-trip in the app. All pages use
 // `fusionFetch()` instead of raw `fetch()` so the app degrades gracefully:
 //
-//   1. API path    — fetch `/api/v1/…` from the sidecar backend (HTTP).
+//   1. API path    — fetch `/api/v1/…` from the server backend (HTTP).
 //   2. Invoke path — if the API is unreachable, call Tauri commands to
-//                    (re)start the sidecar, wait for it, and retry once.
-//   3. Native path — if the sidecar still cannot start, fall back to
+//                    (re)start the server, wait for it, and retry once.
+//   3. Native path — if the server still cannot start, fall back to
 //                    `native_capabilities` (Rust) + a localStorage snapshot
 //                    cache so the UI never hard-crashes offline.
 //
@@ -70,23 +70,23 @@ export async function nativeCapabilities(): Promise<NativeCapabilities | null> {
   }
 }
 
-// ── Sidecar lifecycle via Tauri invokes ────────────────────────────────────
+// ── Server lifecycle via Tauri invokes ────────────────────────────────────
 
-export async function sidecarStatus(): Promise<string | null> {
+export async function serverStatus(): Promise<string | null> {
   const bridge = tauriBridge();
   if (!bridge) return null;
   try {
-    return (await bridge.invoke('formint_sidecar_status')) as string;
+    return (await bridge.invoke('formint_server_status')) as string;
   } catch {
     return null;
   }
 }
 
-export async function startSidecar(): Promise<boolean> {
+export async function startServer(): Promise<boolean> {
   const bridge = tauriBridge();
   if (!bridge) return false;
   try {
-    const res = (await bridge.invoke('start_formint_sidecar')) as string;
+    const res = (await bridge.invoke('start_formint_server')) as string;
     return res === 'started' || res === 'already-running';
   } catch {
     return false;
@@ -153,7 +153,7 @@ async function httpRequest<T = any>(
 }
 
 /**
- * Resolve a path against the API when the sidecar is reachable; otherwise
+ * Resolve a path against the API when the server is reachable; otherwise
  * attempt to start it via Tauri and retry. Returns the transport source so
  * the UI can show "live API" vs "offline snapshot".
  */
@@ -171,11 +171,11 @@ export async function fusionFetch<T = any>(
     return first;
   }
 
-  // 2. Invoke path — sidecar may be down: ask Tauri to (re)start it.
+  // 2. Invoke path — server may be down: ask Tauri to (re)start it.
   const bridge = tauriBridge();
   if (bridge) {
     for (let attempt = 0; attempt < START_RETRIES; attempt++) {
-      await startSidecar();
+      await startServer();
       await new Promise((r) => setTimeout(r, START_RETRY_DELAY_MS));
       const retry = await httpRequest<T>(path, init);
       if (retry.ok) {
@@ -272,19 +272,19 @@ export async function syncApprovals() {
 export async function transportStatus(): Promise<{
   transport: 'api' | 'invoke' | 'snapshot';
   tauri: boolean;
-  sidecar: string | null;
+  server: string | null;
   capabilities: NativeCapabilities | null;
   health: { status: string; models: number } | null;
 }> {
-  const [health, caps, sidecar] = await Promise.all([
+  const [health, caps, server] = await Promise.all([
     fusionHealth().then((r) => r.data).catch(() => null),
     nativeCapabilities(),
-    sidecarStatus(),
+    serverStatus(),
   ]);
   return {
     transport: health ? 'api' : isTauri() ? 'invoke' : 'snapshot',
     tauri: isTauri(),
-    sidecar,
+    server,
     capabilities: caps,
     health,
   };

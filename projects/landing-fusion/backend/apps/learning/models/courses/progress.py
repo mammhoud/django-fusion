@@ -2,8 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .specification import Lesson
 from apps.learning.managers.progress import LessonProgressQuerySet
+
+from .specification import Lesson
 
 
 class ModuleProgress(models.Model):

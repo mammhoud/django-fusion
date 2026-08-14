@@ -17,10 +17,10 @@ roads (see `Render mode` in [CONTEXT.md](../CONTEXT.md)). Glossary terms
 
 | Product (slug) | Category | Editions | Free entry | Paid range | Featured tier |
 |---|---|---|---|---|---|
-| **Formints** (`formint-pos`) — flagship | application | Community · Standard · Pro | Community $0 | $79 – $119 | — |
-| **Precis LMS** (`lms`) | platform | Solo · Business | — | $29 – $99 | Solo |
-| **Loop** (`cms`) | platform | Community · Business | Community $0 | Custom | Business |
-| **Syntara** (`cypercloud`) | platform | Community · Business | Community $0 | $39 | Business |
+| **Formints** (`formint-pos`) — flagship | application | Community · Standard · Pro · Custom | Community $0 | $119 – $129 | Pro |
+| **Precis LMS** (`lms`) | platform | Solo · Standard · Custom | — | $29 – $299 | Standard |
+| **Loop** (`cms`) | platform | Community · Standard · Custom | Community $0 | $99 / Custom | Standard |
+| **Syntara** (`cypercloud`) | platform | Community · Business | hidden — in development | — | — |
 | **vResume** (`vresume`) | platform | Community · Business | Community $0 | $9 | Business |
 | **ceptor-ai** (`ceptor-ai`) | library | Open Source | Open Source $0 | — | — |
 
@@ -38,29 +38,37 @@ Syntara AI summaries), not a sold product — it ships one Open Source edition.
 | Edition | Price | Tier | Distinguishing features |
 |---|---|---|---|
 | Community | $0 | outline | Offline-first single terminal; sales, receipting + inventory; cash/card/split payments; refunds & returns |
-| Standard | $119 | default | Everything in Community; F&B menu support, kitchen display + payroll; REST API; inventory + sales analytics; invoice PDFs; loyalty & rewards; multi-currency & tax profiles; custom roles; CSV/JSON export |
-| Pro | $79 | default | Everything in Standard; multi-terminal sync via a cloud master; WebSocket streaming; high-throughput Rust API |
+| Standard | $119 | default | Everything in Community; F&B menu support, kitchen display + payroll; REST API; inventory + sales analytics; invoice PDFs; loyalty & rewards; multi-currency & tax profiles; custom roles; CSV/JSON export (50% off · launch, was $238) |
+| Pro | $129 | featured | Everything in Standard; multi-terminal sync via a cloud master; WebSocket streaming; high-throughput Rust API (50% off · launch, was $258) |
+| Custom | Custom | managed | Everything in Pro; hosted cloud CRM master; unlimited terminals; automatic backups + monitoring; dedicated onboarding |
 
 **Precis LMS — learning platform for creators and organizations**
 
 | Edition | Price | Tier | Distinguishing features |
 |---|---|---|---|
-| Solo | $29 | featured | Unlimited courses; certificates; offline downloads; advanced analytics; SSO & role management; dedicated success manager; high-end learning experience design |
-| Business | $99 | default | Everything in Solo; custom branding; API access |
+| Solo | $29 | default | Unlimited courses; certificates; offline downloads; advanced analytics; SSO & role management; dedicated success manager; high-end learning experience design |
+| Standard | $299 | featured | Everything in Solo; custom branding; API access; bulk enrollments + cohorts; priority support; advanced analytics (50% off · launch, was $598) |
+| Custom | Custom | managed | Everything in Standard; dedicated success manager; managed hosting + backups; custom integrations; SLA + onboarding |
 
 **Loop — Wagtail CMS landing sites, self-hosted or managed**
 
 | Edition | Price | Tier | Distinguishing features |
 |---|---|---|---|
 | Community | $0 | outline | Wagtail StreamField blocks; django-fusion rendering; HTMX fragments; MIT license |
-| Business | Custom | featured | Everything in Community; custom StreamField blocks; blog + FAQ sections; analytics + SEO; HTMX forms; multi-site + roles; dedicated support |
+| Standard | $99 | featured | Everything in Community; custom StreamField blocks; blog + FAQ sections; analytics + SEO; HTMX forms; full GSAP animations |
+| Custom | Custom | managed | Everything in Standard; multi-site + roles; dedicated support; managed hosting; custom animations + design |
 
-**Syntara — managed chat client over ceptor-ai**
+**Syntara — managed chat client over ceptor-ai (hidden: in development)**
 
 | Edition | Price | Tier | Distinguishing features |
 |---|---|---|---|
 | Community | $0 | outline | ceptor-ai chat client; MCP server; multi-model support |
 | Business | $39 | featured | Everything in Community; branded widget; behavior rules; analytics |
+
+> Syntara is `hidden=True` in the catalog seed: excluded from `/products/`,
+> `/pricing/`, the homepage grid, the nav dropdown and `/brand/` boards while
+> under development. Its detail page (`/products/cypercloud/`) stays reachable
+> by direct link.
 
 **vResume — resume builder**
 

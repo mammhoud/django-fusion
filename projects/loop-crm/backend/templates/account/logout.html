@@ -1,0 +1,8 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}{% trans "Sign out" %}{% endblock %}
+{% block auth_heading %}Sign out{% endblock %}
+{% block auth_inner %}
+<p class="loop-lede">End this browser session on this device.</p>
+<form method="post" action="{% url 'account_logout' %}">{% csrf_token %}<div class="loop-auth-card__actions"><button class="loop-button loop-button--primary" type="submit">Sign out</button><a class="loop-auth-card__link" href="/">Stay in workspace</a></div></form>
+{% endblock %}

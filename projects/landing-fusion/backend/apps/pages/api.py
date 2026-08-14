@@ -29,28 +29,16 @@ logger = logging.getLogger(__name__)
 def get_effective_render_first(request=None) -> bool:
     """Return the effective ``fusion_render_first`` preference.
 
-    Mirrors django-fusion's ``FusionDualModeMixin.get_effective_render_first()``
-    for the landing project: the ``X-Fusion-Render-First: true|false`` header
-    overrides per request; otherwise the ``FUSION_RENDER_FIRST`` setting
-    (read fresh from Django settings, which is what django-fusion's
-    ``DjangoComponentsSettings`` resolves at init) decides the mode.
+    Thin wrapper over django-fusion's canonical ``resolve_render_first``
+    chain (``X-Fusion-Render-First`` header → explicit session preference →
+    the ``FUSION_RENDER_FIRST`` setting).
 
     ``True``  → “fusion render first” — Django renders finished HTML.
     ``False`` → “data APIs” — the client renders from /apis/* JSON.
     """
-    if request is not None:
-        header = request.headers.get("X-Fusion-Render-First")
-        if header in ("true", "false"):
-            return header == "true"
-    from django.conf import settings as django_settings
+    from django_fusion.routes.rendering.render_mode import resolve_render_first
 
-    return bool(
-        getattr(
-            django_settings,
-            "FUSION_RENDER_FIRST",
-            getattr(django_settings, "FUSION_RENDER_FIRST_DEFAULT", False),
-        )
-    )
+    return resolve_render_first(request)
 
 
 def brand_api(request):
@@ -167,7 +155,7 @@ def site_settings_api(request):
         # ── SEO ──
         "meta_description": getattr(settings, "meta_description", "") if settings else "",
         "meta_keywords": getattr(settings, "meta_keywords", "") if settings else "",
-        "meta_author": getattr(settings, "meta_author", "Mahmoud Ezzat Moustafa") if settings else "Mahmoud Ezzat Moustafa",
+        "meta_author": getattr(settings, "meta_author", "Mahmoud Ezzat") if settings else "Mahmoud Ezzat",
         "og_image_url": _get_rendition_url(settings, "og_image", "width-1200") if settings else None,
         "twitter_handle": getattr(settings, "twitter_handle", "") if settings else "",
         # ── Analytics ──
@@ -210,13 +198,13 @@ def site_settings_api(request):
 def navigation_api(request):
     """GET /apis/navigation/ — nav links from the django-fusion Site.
 
-    Uses ``LandingSite.get_navigation_context()`` as the single source of truth
+    Uses ``LandingModule.get_navigation_context()`` as the single source of truth
     for navigation structure. Falls back to walking the Wagtail page tree if
-    the Site class is unavailable.
+    the Module class is unavailable.
     """
     try:
-        from apps.core.site import landing_site
-        nav_items = landing_site.get_navigation_context(request)
+        from apps.core.site import landing_module
+        nav_items = landing_module.get_navigation_context(request)
         # Filter to show_in_nav=True only
         nav_items = [item for item in nav_items if item.get("show_in_nav", True)]
         # Remove the show_in_nav key from the response (children carry their own)

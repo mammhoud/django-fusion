@@ -78,9 +78,6 @@ THIRD_PARTY_APPS = [
     "heroicons",
     "embed_video",
     "colorfield",
-    "django_rq",
-    "django_celery_beat",
-    "django_celery_results",
     "django_dramatiq",
 ]
 
@@ -110,7 +107,6 @@ INSTALLED_APPS: list[str] = AppRegistry.merge(
     EFFECTIVE_WAGTAIL_APPS,
     EFFECTIVE_LOCAL_LIBRARY_APPS,
     EFFECTIVE_THIRD_PARTY_APPS,
-    ["configs.tools.worker.apps.WorkerConfig"],
 )
 # Precis app-specific entries are appended by backend/settings.py after
 # the `from configs.default import *` line.

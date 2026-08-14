@@ -8,7 +8,7 @@ commercial naming was changed to **Community, Standard, Pro, Cloud** and the cod
 (seed data, pricing page, tests, copy) now uses the canonical names.
 
 Why: the new names match the real product tiers — Community signals the free
-open-source tier, Standard the standalone tier with the embedded sidecar + cloud sync
+open-source tier, Standard the standalone tier with the embedded server + cloud sync
 client, Pro the multi-terminal tier with the cloud master + django-bolt API, and Cloud
 the fully hosted multi-terminal variant. "Minimal/Solo/Full" described directory shape,
 not the product story.

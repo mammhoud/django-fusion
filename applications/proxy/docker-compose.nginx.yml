@@ -16,8 +16,10 @@ x-proxy-common: &proxy-common
     - common
 x-media-base: &media-base
   build:
-    context: ./nginx
-    dockerfile: Dockerfile
+    # Context is the repo root so the shared-media Dockerfile and the Docus
+    # service can use one repository-relative Compose boundary.
+    context: ../..
+    dockerfile: applications/proxy/nginx/Dockerfile
   restart: unless-stopped
   networks:
     - traefik-net
@@ -35,9 +37,9 @@ x-media-base: &media-base
     interval: 30s
     timeout: 10s
     retries: 3
-    # Probe targets the docs container, which builds/rebuilds at deploy
-    # time — give first-start grace so a slow docs build cannot flap
-    # shared-media unhealthy (mirrors the dev-stack 120s start_period).
+    # Probe targets the filegator container, so the resolver path is
+    # exercised against a stable in-stack
+    # container. start_period gives first-start grace for image pulls.
     start_period: 30s
 
 services:
@@ -69,6 +71,8 @@ services:
       # /media/ (read-only view for serving).
       - ../../projects/assets/media/filegator:/var/www/media/filegator:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
+      # Root index page served at media.structa.cloud/ (location = /).
+      - ./nginx/www:/var/www/html:ro
     networks:
       - traefik-net
       - common
@@ -80,6 +84,41 @@ services:
           memory: 512M
         reservations:
           cpus: '0.5'
+          memory: 256M
+
+  # ----------------------------------------------------------
+  # Docus — Nuxt documentation server (docs.structa.cloud)
+  # ----------------------------------------------------------
+  # Docus owns SSR, content search, locale routing, sitemap, and LLM routes.
+  # shared-media Nginx proxies /docs/ and the docs host to this service.
+  docus:
+    build:
+      context: ../..
+      dockerfile: docs/Dockerfile
+    image: structa-docus:latest
+    container_name: docus
+    restart: unless-stopped
+    environment:
+      NUXT_APP_BASE_URL: /docs/
+      NUXT_SITE_URL: https://docs.structa.cloud
+      NUXT_HOST: 0.0.0.0
+      NUXT_PORT: 3000
+    networks:
+      - traefik-net
+      - common
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/docs/en/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
           memory: 256M
 
   # ----------------------------------------------------------
@@ -128,44 +167,9 @@ services:
           cpus: '0.25'
           memory: 128M
 
-  # ----------------------------------------------------------
-  # Docs — Structa Cloud documentation (Docsify SPA)
-  # ----------------------------------------------------------
-  # Served under the shared-media host via nginx `location /docs/`
-  # (see ./nginx/default.conf). The docs/ dir is a Docsify SPA served by
-  # its own nginx (docs/Dockerfile) with history-mode routing: the SPA
-  # index.html sets basePath '/docs/', and nginx strips that prefix when
-  # proxying (proxy_pass http://docs:80/), so docsify's /docs/* fetches
-  # resolve to the container root where the .md files actually live.
-  # NOTE: .md gzip at the proxy requires the docs image to serve .md as
-  # text/markdown (baked into docs/Dockerfile via include mime.types + a
-  # same-level types block). A proxy-only redeploy with a stale docs image
-  # silently reverts .md to application/octet-stream (no gzip); rebuild this
-  # service with `docker compose -f docker-compose.nginx.yml build docs`.
-  docs:
-    build:
-      context: ../../docs
-      dockerfile: Dockerfile
-    image: structa-docs:latest
-    container_name: docs
-    restart: unless-stopped
-    networks:
-      - traefik-net
-      - common
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.1'
-          memory: 64M
+  # NOTE: Docus is a separate Nuxt service proxied by shared-media Nginx.
+  # Rebuild both services after documentation changes:
+  #   docker compose -f docker-compose.nginx.yml build docus shared-media
 
 volumes:
   filegator-private:

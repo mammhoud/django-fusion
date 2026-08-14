@@ -41,7 +41,9 @@ Django site uses it for:
 pip install django-fusion
 
 # Import (canonical paths)
-from django_fusion.routes import Viewset, ModelViewset, Site, Application
+from django_fusion.routes.core.base import Viewset
+from django_fusion.routes.models.crud import ModelViewset
+from django_fusion.routes.core.sites import Module, Application
 from django_fusion.comp.generic import ListModelView, CreateModelView
 
 # Template

@@ -224,10 +224,6 @@ if [ "$#" -eq 0 ]; then
 fi
 
 case "$1" in
-    celery)
-        echo "[RUN] Executing celery via uv: $*"
-        exec uv run "$@"
-        ;;
     uv|uvicorn|python|pytest|/bin/*|/usr/bin/*|/usr/local/bin/*)
         echo "[RUN] Executing command directly: $*"
         exec "$@"

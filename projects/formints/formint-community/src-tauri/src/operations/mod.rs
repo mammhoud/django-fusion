@@ -23,6 +23,6 @@ pub mod tax_reports;
 pub mod employee_schedules;
 pub mod reports;
 pub mod support_messages;
-pub mod sidecar;
+pub mod server;
 pub mod user_actions;
 pub mod finance;

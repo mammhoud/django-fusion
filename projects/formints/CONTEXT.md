@@ -24,12 +24,12 @@ _Avoid_: managed, SaaS
 ## Editions
 
 **Edition**:
-A priced configuration of the product with its own feature set: Community (free, offline-first), Standard (standalone + sidecar), Pro (multi-terminal + cloud master), Cloud (hosted multi-terminal).
+A priced configuration of the product with its own feature set: Community (free, offline-first), Standard (standalone + server), Pro (multi-terminal + cloud master), Cloud (hosted multi-terminal).
 _Avoid_: Minimal, Solo, Full (legacy names)
 
 ## Architecture
 
-**Sidecar**:
+**Server**:
 The embedded Python (Robyn) API server that extends a terminal with a REST API, inventory, analytics, and sync in Standard and above.
 _Avoid_: backend, API server
 

@@ -8,7 +8,7 @@
 </p>
 
 **Formints Community** is the open-source, offline-first edition of the
-Formints point of sale. Everything runs on one device — no server, no sidecar,
+Formints point of sale. Everything runs on one device — no server, no server,
 no cloud. Your data stays in a local SQLite database (`restaurant.db`).
 
 Built with **Tauri 2 + Rust/Diesel + React 19**.
@@ -17,7 +17,7 @@ Built with **Tauri 2 + Rust/Diesel + React 19**.
 
 This repository ships the **Community** edition only. The commercial editions
 (Standard, Pro, Cloud) live at [structa.cloud](https://structa.cloud) and add an
-embedded Python sidecar, multi-terminal cloud sync, a cloud CRM master, and
+embedded Python server, multi-terminal cloud sync, a cloud CRM master, and
 hosted operations.
 
 ## Features

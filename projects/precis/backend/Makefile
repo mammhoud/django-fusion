@@ -1,6 +1,6 @@
 # Django backend, tests, linting, server, and frontend delegation
 # ============================================================
-.PHONY: help dev server install install-internal setup migrate static collectstatic \
+.PHONY: help dev server scheduler install install-internal setup migrate static collectstatic \
         superuser test test-quick test-url populate-data populate-data-test-only \
         populate-data-pages-only populate-data-clear test-reports clean-test-reports check format \
         lint fix fix-unused shell debug db-shell reset-db clean-migrations \
@@ -58,6 +58,9 @@ env-show: ## Show active Django website environment wiring
 dev: ## Run Django dev server
 	$(call clean_broken_venv)
 	$(MANAGE) runserver 0.0.0.0:$${PORT:-$(DEFAULT_PORT)}
+
+scheduler: ## APScheduler cron runner for @task(schedule=...) jobs
+	$(UV_RUN) python -m django_fusion.tasks.scheduler
 
 server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var)
 	$(call clean_broken_venv)

@@ -2,17 +2,17 @@
 
 > **Directory:** `docs/rust/`
 > **Language:** Rust (2021 edition)
-> **Framework:** Tauri 2.x + Diesel ORM (direct — no sidecar)
+> **Framework:** Tauri 2.x + Diesel ORM (direct — no server)
 
 ---
 
-POS Mini uses Rust/Tauri with direct Diesel + SQLite access — **no Python sidecar**.
+POS Mini uses Rust/Tauri with direct Diesel + SQLite access — **no Python server**.
 
 See the archived **`../../formint-pos/legacy-react/pos-full/docs/rust/index.md`** for the base Rust conventions.
 
 ## POS Mini Specific
 
-- **No Python sidecar** — all data logic lives in Rust
+- **No Python server** — all data logic lives in Rust
 - **Direct Diesel access** — no intermediary HTTP layer
 - **SQL migrations are raw SQL files** embedded at compile time via `include_str!`
 - **Simpler command set** — no sync, no multi-store, no employee commands

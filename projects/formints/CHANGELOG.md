@@ -8,12 +8,12 @@
 - **Sync API** — `SyncController` under `/api/v1/sync/` exposing the merged
   `ProductSyncEngine` (push products/config/catalog, receive sales/reports/
   inventory, approve/reject pending changes, approvals list, ledger stats,
-  connectivity status) so the desktop app drives cloud sidecar sync over HTTP
+  connectivity status) so the desktop app drives cloud server sync over HTTP
 - **Components API** — `ComponentsController` under `/api/v1/components/`
   serving django-fusion tables, forms, and fragments (branch summary) as JSON
   data the Astro shell renders directly
 - **Unified transport** — `frontend/src/lib/fusion-api.ts`: API-first with
-  Tauri-invoke fallback (auto-restart sidecar) and offline snapshot cache;
+  Tauri-invoke fallback (auto-restart server) and offline snapshot cache;
   registered as `$store.api` in `Layout.astro`; nav fetch now goes through it
 - **Reusable UI components** — `FusionTable` (data-driven tables + skeleton +
   pagination), `FusionForm` (schema-driven fields + validation), `WizardForm`
@@ -34,7 +34,7 @@
   included) for a single URL contract
 
 ### Verification
-- Sidecar: `make check` + `manage.py test formint` (108 tests, OK)
+- Server: `make check` + `manage.py test formint` (108 tests, OK)
 - Frontend: `npm run check` (0 errors) + `npm test` (80 tests, OK)
 
 
@@ -56,7 +56,7 @@
 
 ### Verification
 
-- Use each edition's documented frontend, sidecar, and native test commands.
+- Use each edition's documented frontend, server, and native test commands.
 - Keep generated native targets, bundles, databases, and screenshots ignored.
 
 
@@ -69,9 +69,9 @@
 > **Per-edition changelogs:** [forge-pos](../pos/forge-pos/CHANGELOG.md)
 
 ### Added (formint-pos — merged package)
-- **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn sidecar + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
-- **Robyn sidecar** — Merged from the former Full/Solo sidecars (streams, ws_client, sync signals, services, middleware, routes) into `formint-pos/sidecar/`
-- **Sidecar test fixes** — `bolt_api` collection crash fixed (removed stale `namespace` kwarg); `test_bolt_api` gracefully skips when `AsyncTestClient` is unavailable
+- **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn server + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
+- **Robyn server** — Merged from the former Full/Solo servers (streams, ws_client, sync signals, services, middleware, routes) into `formint-pos/server/`
+- **Server test fixes** — `bolt_api` collection crash fixed (removed stale `namespace` kwarg); `test_bolt_api` gracefully skips when `AsyncTestClient` is unavailable
 - **Screenshots** — Unfold admin screenshots consolidated into Landing-Fusion `related/formints/`
 
 ### Added (formint-cloud — cloud backups + monitoring)
@@ -93,15 +93,15 @@
 ### Added (forge-pos)
 - **Settings → Theme tab** — New tab with Theme Studio link, "Preview Theme Components" modal, and active theme info
 - **ThemePreviewModal** — Modal previewing all components across 5 theme variants
-- **Email-based Support Chat** — Using `VITE_SUPPORT_EMAIL` env var with mailto links; removed WebSocket/sidecar/ticket deps
+- **Email-based Support Chat** — Using `VITE_SUPPORT_EMAIL` env var with mailto links; removed WebSocket/server/ticket deps
 
 ### Changed (forge-pos)
 - **ThemeShowcase page deleted** — Merged into ThemePreviewModal (Settings → Theme)
 - **Dashboard text dimming** — Menu labels, descriptions, and accent strips use reduced opacity
-- **SupportChat simplified** — No longer depends on sidecar health check or ticket system
+- **SupportChat simplified** — No longer depends on server health check or ticket system
 
 ### Changed (formint-pos)
-- **Django Bolt API** — `bolt_api.py` sidecar module with BoltAPI integration (carried into the merged sidecar)
+- **Django Bolt API** — `bolt_api.py` server module with BoltAPI integration (carried into the merged server)
 - **Bolt tests** — `test_bolt_api.py` and `bolt_urlconf.py` for URL routing verification
 
 ---
@@ -109,12 +109,12 @@
 ## v1.2.0 — 20 July 2026
 
 ### Added
-- **Sidecar v2 Documentation** — Comprehensive [`docs/SIDECAR_V2.md`](docs/SIDECAR_V2.md) with full architecture, 70+ API catalog, WebSocket streams, Django signals, and cloud bridge plan
+- **Server v2 Documentation** — Comprehensive [`docs/SERVER_V2.md`](docs/SERVER_V2.md) with full architecture, 70+ API catalog, WebSocket streams, Django signals, and cloud bridge plan
 - **`docs/README.md` updated** — Modernised edition overview (Solo→Robyn, Full→Cloud Master), shared module map, and new whatʼ s new section
-- **`README.md` updated** — `SIDECAR_V2.md` added as top entry in documentation table
+- **`README.md` updated** — `SERVER_V2.md` added as top entry in documentation table
 
 ### Changed
-- **Sidecar Sanic→Robyn migration documented** — All editions now use Robyn async Python server with Django ORM
+- **Server Sanic→Robyn migration documented** — All editions now use Robyn async Python server with Django ORM
 - **Solo edition** replaces Extended (Sanic→Robyn, unified models, approval workflow, product sync)
 - **Full edition** upgraded (Robyn + Cloud Master + Rust-backed posapp + django-bolt)
 
@@ -138,14 +138,14 @@
 
 ### Changed
 - **WebSocket fixed** — Persistent connection with auto-reconnect (no longer creates new WS per message)
-- **TypeScript API layer** — New `api/` module with `sidecar.ts`, `chat.ts`, `tickets.ts`, `data.ts`
-- **Sidecar API expanded** — 9 new endpoints (sales, products, settings, invoice, support tickets, chat WS)
+- **TypeScript API layer** — New `api/` module with `server.ts`, `chat.ts`, `tickets.ts`, `data.ts`
+- **Server API expanded** — 9 new endpoints (sales, products, settings, invoice, support tickets, chat WS)
 - **Makefile** — `make editions` generates all 3 editions from canonical `pos-full/` source
 - **Scripts paths** — Internal `__dirname`/`SCRIPT_DIR` paths updated for new directory structure
 
 ### Fixed
 - Chat support WebSocket creating new connection for every message
-- `make build-sidecar` path in Makefile
+- `make build-server` path in Makefile
 - `make screenshots` capture script for 6 marketplace screenshots
 - i18n diff script path in GitHub Actions workflow
 
@@ -165,7 +165,7 @@
 - **Diesel Migrations** — 6 SQLite migrations
 - **SMTP Email** — Configurable email sending for receipts and reports
 - **Auth System** — Optional superuser-based authentication with env vars
-- **Sidecar API** — Python/Sanic REST API (26 endpoints) for Full edition
+- **Server API** — Python/Sanic REST API (26 endpoints) for Full edition
 - **Invoice PDF** — Tax, commercial, proforma, credit, receipt invoice types
 - **PDF & Excel Export** — Report generation in PDF and Excel formats
 - **Dark & Light Mode** — Theme switching with CSS custom properties

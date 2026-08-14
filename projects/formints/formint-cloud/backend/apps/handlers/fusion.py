@@ -1,11 +1,11 @@
-"""POS Cloud — django-fusion contract views (Django-native sidecar surface).
+"""POS Cloud — django-fusion contract views (Django-native server surface).
 
-The removed Robyn sidecar exposed a ``/fusion/*`` render-mode contract that
+The removed Robyn server exposed a ``/fusion/*`` render-mode contract that
 the Astro frontend consumed (health, render-mode, nav, session-mode,
 assets).  These views replicate that exact contract directly on Django so
 the frontend URL surface is unchanged::
 
-    GET    /fusion/health       — sidecar-compatible health
+    GET    /fusion/health       — server-compatible health
     GET    /fusion/render-mode  — effective render preference
     GET    /fusion/nav          — POS Cloud shell navigation tree
     GET    /fusion/session-mode — current session render preference
@@ -37,7 +37,7 @@ NAV_ITEMS = [
 
 
 def fusion_health(request: HttpRequest) -> JsonResponse:
-    """GET /fusion/health — sidecar contract health for the frontend."""
+    """GET /fusion/health — server contract health for the frontend."""
     return JsonResponse({
         "status": "healthy",
         "service": "pos-cloud",

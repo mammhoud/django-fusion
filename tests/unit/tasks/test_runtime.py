@@ -7,8 +7,7 @@ import types
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from configs.tools.worker.runtime import configure_django_for_website, import_first
+from plugins.workers.runtime import configure_django_for_website, import_first
 
 
 def _make_findable_module(name, attrs=None):
@@ -46,9 +45,8 @@ class TestImportFirst:
 
     def test_skips_module_with_missing_attr(self):
         mod = _make_findable_module("_has_no_attr")
-        with patch.dict(sys.modules, {"_has_no_attr": mod}):
-            with pytest.raises(ImportError):
-                import_first(["_has_no_attr.Missing"])
+        with patch.dict(sys.modules, {"_has_no_attr": mod}), pytest.raises(ImportError):
+            import_first(["_has_no_attr.Missing"])
 
     def test_first_module_has_attr_second_skipped(self):
         mod_a = _make_findable_module("_mod_a", {"X": "first"})
@@ -67,7 +65,7 @@ class TestImportFirst:
 # ---------------------------------------------------------------------------
 
 class TestConfigureDjangoForWebsite:
-    @patch("configs.tools.worker.runtime.importlib.import_module")
+    @patch("plugins.workers.runtime.importlib.import_module")
     def test_configures_for_explicit_website(self, mock_import):
         mock_site = MagicMock()
         mock_site.active_website_name.return_value = "lms"
@@ -95,7 +93,7 @@ class TestConfigureDjangoForWebsite:
         mock_site.configure_site_environment.assert_called_once_with("lms")
 
     @patch.dict("os.environ", {}, clear=False)
-    @patch("configs.tools.worker.runtime.importlib.import_module")
+    @patch("plugins.workers.runtime.importlib.import_module")
     def test_falls_back_to_default_website(self, mock_import):
         mock_site = MagicMock()
         mock_site.active_website_name.return_value = "ctc-research.com"
@@ -122,6 +120,6 @@ class TestConfigureDjangoForWebsite:
             import os
             os.environ.pop(var, None)
 
-        result = configure_django_for_website(None)
+        configure_django_for_website(None)
         # Should use "ctc-research.com" as the default argument
         mock_site.active_website_name.assert_called_once()
