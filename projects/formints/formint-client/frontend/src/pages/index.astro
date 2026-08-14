@@ -3,7 +3,6 @@ import Layout from '@/layouts/Layout.astro';
 import Button from '@/components/ui/Button.astro';
 import Badge from '@/components/ui/Badge.astro';
 import Card from '@/components/ui/Card.astro';
-import Skeleton from '@/components/ui/Skeleton.astro';
 import ScrollMotion from '@/components/ScrollMotion.astro';
 import { fetchCatalog, FALLBACK_CATALOG } from '@/lib/api';
 
@@ -86,66 +85,123 @@ const voices = [
 
 <Layout title={shop.name} description={shop.tagline}>
   <!-- ════════════════════════════════════════════════════════════════════
-       ATTENTION — Artistic asymmetry hero. Text pulled left on an ultra-wide
-       container; the art piece floats in from the bottom right and overlaps
-       the type. No stamps on the text, no pills under it, no raw stats.
+       ATTENTION — hero slider. Featured picks cycle with a blurred
+       backdrop: the active slide's photo bleeds blurred behind the whole
+       section while the sharp art piece floats bottom-right and the text
+       cross-fades left. Alpine drives it (arrows, dots, auto-advance,
+       pause on hover); only the index `i` lives in the client scope.
        ════════════════════════════════════════════════════════════════════ -->
-  <section class="container-fusion grid items-center gap-14 pb-24 pt-4 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 lg:pb-32 lg:pt-8">
-    <div class="relative z-10 max-w-5xl">
-      <p class="eyebrow reveal" x-data x-intersect="$el.classList.add('is-visible')">
-        <span class="live-dot" aria-hidden="true"></span>
-        Open now · Mon–Sun 7:00 → 19:00
-      </p>
-      <h1
-        class="reveal mt-7 max-w-5xl font-display font-bold text-hero tracking-tighter text-fu-ink"
-        x-data
-        x-intersect="$el.classList.add('is-visible')"
-      >
-        {shop.tagline.split('.')[0]}.
-        <span class="block text-fu-muted">Brewed to the table.</span>
-      </h1>
-      <p class="reveal reveal-stagger-1 mt-7 max-w-[46ch] text-lg leading-relaxed text-fu-muted" x-data x-intersect="$el.classList.add('is-visible')">
-        A single shop page that works like the counter does: pick from the
-        menu, order ahead, and your ticket is queued before you arrive. No
-        app, no wait, no small talk required.
-      </p>
-      <div class="reveal reveal-stagger-2 mt-10 flex flex-wrap gap-4" x-data x-intersect="$el.classList.add('is-visible')">
-        <Button href="#menu">
-          Browse the menu
-          <span class="btn-island" aria-hidden="true">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-          </span>
-        </Button>
-        <Button href="/accounts/signup/" variant="outline">
-          Create an account
-          <span class="btn-island" aria-hidden="true">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-          </span>
-        </Button>
-      </div>
+  <section
+    class="relative overflow-hidden pb-24 pt-4 lg:pb-32 lg:pt-8"
+    x-data={`{ i: 0, timer: null, next() { this.i = (this.i + 1) % ${featured.length || 1}; }, prev() { this.i = (this.i - 1 + ${featured.length || 1}) % ${featured.length || 1}; }, go(n) { this.i = n; }, start() { this.stop(); if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; this.timer = setInterval(() => this.next(), 6000); }, stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } } }`}
+    x-init="start()"
+    @mouseenter="stop()"
+    @mouseleave="start()"
+    @focusin="stop()"
+    @focusout="start()"
+  >
+    <!-- Blurred backdrop — the active slide's image, cross-faded. -->
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      {featured.map((p, pi) => (
+        <img
+          data-slide={pi}
+          src={p.image_url || 'https://picsum.photos/seed/formint-hero/1600/1200'}
+          alt=""
+          loading={pi === 0 ? 'eager' : 'lazy'}
+          class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl transition-opacity duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          :class="i === Number($el.dataset.slide) ? 'opacity-70' : 'opacity-0'"
+        />
+      ))}
+      <!-- Wash — keeps the type legible over the blurred photo. -->
+      <div class="absolute inset-0 bg-fu-paper/80 dark:bg-fu-ink/80"></div>
     </div>
 
-    <!-- Floating art — overlaps the text column from the bottom right. -->
-    <div class="relative mx-auto w-full max-w-sm lg:-ml-10 lg:mt-16 lg:max-w-none" x-data x-intersect="$el.classList.add('is-visible')">
-      <div class="reveal bezel">
-        <div class="bezel-core relative flex aspect-square items-center justify-center overflow-hidden">
-          <img
-            src={heroImg}
-            alt={heroProduct?.name || 'Featured pour'}
-            class="h-full w-full object-cover contrast-110 saturate-[0.85] transition-transform duration-[1200ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-[1.03]"
-            loading="eager"
-          />
-          <div class="absolute inset-0 bg-fu-ink/10" aria-hidden="true"></div>
-          <span class="absolute right-7 top-7 h-2.5 w-2.5 rounded-full bg-fu-mark" style="animation: breathe 2.4s ease-in-out infinite"></span>
+    <div class="container-fusion relative grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+      <div class="relative z-10 max-w-5xl">
+        <!-- Slide copy — cross-fades between featured picks. -->
+        <div class="relative min-h-[22rem] sm:min-h-[19rem]">
+          {featured.map((p, pi) => (
+            <div
+              data-slide={pi}
+              class="absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+              :class="i === Number($el.dataset.slide) ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'"
+            >
+              <p class="eyebrow">
+                <span class="live-dot" aria-hidden="true"></span>
+                Open now · {p.category || 'Mon–Sun 7:00 → 19:00'}
+              </p>
+              <h1 class="mt-7 max-w-5xl font-display font-bold text-hero tracking-tighter text-fu-ink">
+                {p.name}.
+                <span class="block text-fu-muted">{p.tags.slice(0, 2).join(' · ') || 'Brewed to the table'}</span>
+              </h1>
+              <p class="mt-7 max-w-[46ch] text-lg leading-relaxed text-fu-muted">
+                {p.description}
+              </p>
+              <p class="mt-6 font-mono text-sm font-bold text-fu-ink">
+                ${p.price} <span class="font-normal text-fu-muted">/ {p.unit || 'each'}</span>
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <!-- Static CTAs + slider controls. -->
+        <div class="reveal reveal-stagger-2 mt-10 flex flex-wrap items-center gap-4" x-data x-intersect="$el.classList.add('is-visible')">
+          <Button href="#menu">
+            Browse the menu
+            <span class="btn-island" aria-hidden="true">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </span>
+          </Button>
+          <Button href="/accounts/signup/" variant="outline">
+            Create an account
+            <span class="btn-island" aria-hidden="true">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </span>
+          </Button>
+
+          <!-- Dots + counter — the slider's heartbeat. -->
+          <div class="ml-1 flex items-center gap-2">
+            {featured.map((p, pi) => (
+              <button
+                type="button"
+                data-slide={pi}
+                @click="go(Number($el.dataset.slide))"
+                :aria-label="`Go to slide ${Number($el.dataset.slide) + 1}`"
+                class="h-1.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                :class="i === Number($el.dataset.slide) ? 'w-8 bg-fu-ink' : 'w-1.5 bg-fu-line hover:bg-fu-ink/40'"
+              ></button>
+            ))}
+            <p class="ml-3 font-mono text-xs uppercase tracking-widest text-fu-muted" x-text="('0' + (i + 1)) + ' / 04'">01 / 04</p>
+          </div>
         </div>
       </div>
-      <!-- Floating caption card — product identity, not stats. -->
-      <div class="float-slow absolute -left-6 bottom-10 rounded-2xl border border-fu-line/70 bg-fu-card px-4 py-3 shadow-diffusion sm:-left-10" style="animation-delay: 0.6s">
-        <Badge variant="mark">Featured</Badge>
-        <p class="mt-2 text-sm font-semibold text-fu-ink">{heroProduct?.name || 'Espresso'}</p>
-      </div>
-      <div class="float-slow absolute -right-2 top-10 rounded-full border border-fu-line/70 bg-fu-card px-4 py-2 font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted shadow-diffusion" style="animation-delay: 1.2s">
-        Roasted weekly
+
+      <!-- Floating art — swaps with the active slide, overlaps the text from the bottom right. -->
+      <div class="relative mx-auto w-full max-w-sm lg:-ml-10 lg:mt-16 lg:max-w-none" x-data x-intersect="$el.classList.add('is-visible')">
+        <div class="reveal bezel">
+          <div class="bezel-core relative flex aspect-square items-center justify-center overflow-hidden">
+            {featured.map((p, pi) => (
+              <img
+                data-slide={pi}
+                src={p.image_url || 'https://picsum.photos/seed/formint-hero/1200/1200'}
+                :alt="p.name"
+                loading={pi === 0 ? 'eager' : 'lazy'}
+                class="absolute inset-0 h-full w-full object-cover contrast-110 saturate-[0.85] transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                :class="i === Number($el.dataset.slide) ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0'"
+              />
+            ))}
+            <div class="absolute inset-0 bg-fu-ink/10" aria-hidden="true"></div>
+            <span class="absolute right-7 top-7 h-2.5 w-2.5 rounded-full bg-fu-mark" style="animation: breathe 2.4s ease-in-out infinite"></span>
+          </div>
+        </div>
+        <!-- Floating caption card — product identity, not stats. -->
+        <div class="float-slow absolute -left-6 bottom-10 rounded-2xl border border-fu-line/70 bg-fu-card px-4 py-3 shadow-diffusion sm:-left-10" style="animation-delay: 0.6s">
+          <Badge variant="mark">Featured</Badge>
+          <p class="mt-2 text-sm font-semibold text-fu-ink" x-text="featured[i]?.name || 'Espresso'">Espresso</p>
+        </div>
+        <div class="float-slow absolute -right-2 top-10 rounded-full border border-fu-line/70 bg-fu-card px-4 py-2 font-mono text-[0.65rem] uppercase tracking-widest text-fu-muted shadow-diffusion" style="animation-delay: 1.2s">
+          Roasted weekly
+        </div>
       </div>
     </div>
   </section>
@@ -256,7 +312,7 @@ const voices = [
           type="button"
           class="rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-95"
           :class="active === '' ? 'border-fu-ink bg-fu-ink text-fu-paper shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.4)] dark:shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.6)]' : 'border-fu-line text-fu-ink hover:bg-fu-line/40'"
-          @click="active = ''; htmx.ajax('GET', '/shop/fragments/products/', { target: '#product-grid', swap: 'innerHTML', values: { category: '' } })"
+          @click="active = ''; htmx.ajax('GET', '/shop/fragments/products/', { target: '#product-grid', swap: 'innerHTML', indicator: '#grid-indicator', values: { category: '' } })"
           data-category=""
         >
           All
@@ -266,7 +322,7 @@ const voices = [
             type="button"
             class="rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-95"
             :class="active === $el.dataset.category ? 'border-fu-ink bg-fu-ink text-fu-paper shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.4)] dark:shadow-[0_8px_20px_-8px_hsl(var(--fu-shadow)/0.6)]' : 'border-fu-line text-fu-ink hover:bg-fu-line/40'"
-            @click="active = $el.dataset.category; htmx.ajax('GET', '/shop/fragments/products/', { target: '#product-grid', swap: 'innerHTML', values: { category: $el.dataset.category } })"
+            @click="active = $el.dataset.category; htmx.ajax('GET', '/shop/fragments/products/', { target: '#product-grid', swap: 'innerHTML', indicator: '#grid-indicator', values: { category: $el.dataset.category } })"
             data-category={c.slug}
           >
             {c.name}
@@ -274,15 +330,18 @@ const voices = [
         ))}
       </div>
 
-      <!-- Product grid — swapped from the Django backend fragment -->
-      <div
-        id="product-grid"
-        class="mt-10"
-        hx-get="/shop/fragments/products/"
-        hx-trigger="load"
-        hx-swap="innerHTML"
-        hx-indicator="#grid-indicator"
-      >
+      <!-- Product grid — swapped from the Django backend fragment. The grid
+           sits in a relative wrapper so the bento skeleton overlay (a sibling,
+           never wiped by the innerHTML swap) can cover it during category
+           swaps — landing-fusion-style loading state without layout shift. -->
+      <div class="relative mt-10">
+        <div
+          id="product-grid"
+          hx-get="/shop/fragments/products/"
+          hx-trigger="load"
+          hx-swap="innerHTML"
+          hx-indicator="#grid-indicator"
+        >
         <!-- Fallback SSR grid (renders even before HTMX swaps) — gapless bento -->
         <div class="grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {catalog.products.map((p, i) => (
@@ -338,8 +397,19 @@ const voices = [
           ))}
         </div>
       </div>
-      <div id="grid-indicator" class="htmx-indicator mt-6">
-        <Skeleton class="h-1 w-32 rounded-full" />
+
+        <!-- Loading state — bento-shaped skeleton grid, shown while a
+             category swap is in flight. Sits outside #product-grid so the
+             swap never destroys it. -->
+        <div id="grid-indicator" class="htmx-indicator absolute inset-0 z-10" aria-hidden="true">
+          <div class="grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="skeleton-shimmer aspect-[4/3] rounded-[1.5rem] lg:col-span-2 lg:row-span-2 lg:aspect-auto"></div>
+            <div class="skeleton-shimmer aspect-[4/3] rounded-[1.5rem]"></div>
+            <div class="skeleton-shimmer aspect-[4/3] rounded-[1.5rem]"></div>
+            <div class="skeleton-shimmer aspect-[4/3] rounded-[1.5rem]"></div>
+            <div class="skeleton-shimmer aspect-[4/3] rounded-[1.5rem]"></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

@@ -14,7 +14,7 @@ from decimal import Decimal
 
 import pytest
 
-from shop.models import Order, Product
+from shop.models import Cart, Order, Product, PromoCode
 
 pytestmark = pytest.mark.django_db
 
@@ -244,3 +244,322 @@ class TestOrderDetailApi:
 
     def test_post_is_not_allowed(self, client, order):
         assert client.post(f"/api/orders/{order.pk}/").status_code == 405
+
+
+class TestOrderFulfilmentFields:
+    """The checkout extras — ready time, delivery address, table number,
+    payment method and promo codes — persisted via the POS JSON API."""
+
+    def _post(self, client, products, **extra):
+        body = {
+            "items": [{"product_id": products["espresso"].pk, "quantity": 2}],
+            "order_type": "delivery",
+            "customer_name": "Ada Lovelace",
+        }
+        body.update(extra)
+        return client.post("/api/orders/", data=body, content_type="application/json")
+
+    def test_delivery_fields_persisted(self, client, products):
+        response = self._post(
+            client,
+            products,
+            delivery_address="123 Roastery Lane, Apt 4",
+            delivery_city="Chicago",
+            delivery_zip="60601",
+            payment_method="card",
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        assert payload["delivery_address"] == "123 Roastery Lane, Apt 4"
+        assert payload["delivery_city"] == "Chicago"
+        assert payload["delivery_zip"] == "60601"
+        assert payload["payment_method"] == "card"
+        order = Order.objects.get(pk=payload["id"])
+        assert order.delivery_address == "123 Roastery Lane, Apt 4"
+        assert order.payment_method == "card"
+
+    def test_dine_in_table_persisted(self, client, products):
+        payload = self._post(
+            client, products, order_type="dine_in", table_number="12"
+        ).json()
+        assert payload["table_number"] == "12"
+
+    def test_ready_at_persisted(self, client, products):
+        payload = self._post(
+            client,
+            products,
+            ready_at="2026-08-14T18:30:00Z",
+        ).json()
+        assert payload["ready_at"] is not None
+        order = Order.objects.get(pk=payload["id"])
+        assert order.ready_at is not None
+        assert order.ready_at.hour == 18
+
+    def test_invalid_payment_defaults_to_cash(self, client, products):
+        payload = self._post(client, products, payment_method="crypto").json()
+        assert payload["payment_method"] == "cash"
+
+    def test_item_notes_persisted(self, client, products):
+        response = client.post(
+            "/api/orders/",
+            data={
+                "items": [
+                    {
+                        "product_id": products["espresso"].pk,
+                        "quantity": 2,
+                        "note": "No sugar",
+                    }
+                ],
+                "order_type": "takeaway",
+            },
+            content_type="application/json",
+        )
+        assert response.status_code == 201
+        item = Order.objects.get(pk=response.json()["id"]).items.first()
+        assert item.note == "No sugar"
+
+
+class TestPromoCodes:
+    @pytest.fixture(autouse=True)
+    def promo(self):
+        return PromoCode.objects.create(
+            code="WELCOME10",
+            discount_type=PromoCode.DiscountType.PERCENT,
+            value=Decimal("10.00"),
+            is_active=True,
+        )
+
+    def test_percent_promo_applied(self, client, products, promo):
+        # 2 × 3.50 = 7.00; 10% off → 6.30; tax 0.63; total 6.93.
+        response = client.post(
+            "/api/orders/",
+            data={
+                "items": [{"product_id": products["espresso"].pk, "quantity": 2}],
+                "promo_code": "welcome10",  # case-insensitive
+            },
+            content_type="application/json",
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        assert payload["promo_code"] == "WELCOME10"
+        assert payload["discount"] == "0.70"
+        assert payload["subtotal"] == "7.00"
+        assert payload["tax"] == "0.63"
+        assert payload["total_amount"] == "6.93"
+        promo.refresh_from_db()
+        assert promo.used_count == 1
+
+    def test_fixed_promo_capped_at_subtotal(self, client, products):
+        PromoCode.objects.create(
+            code="FLAT50",
+            discount_type=PromoCode.DiscountType.FIXED,
+            value=Decimal("50.00"),
+            is_active=True,
+        )
+        payload = client.post(
+            "/api/orders/",
+            data={
+                "items": [{"product_id": products["espresso"].pk, "quantity": 1}],
+                "promo_code": "FLAT50",
+            },
+            content_type="application/json",
+        ).json()
+        # Discount never exceeds the subtotal (3.50) — order total is free.
+        assert payload["discount"] == "3.50"
+        assert payload["total_amount"] == "0.00"
+
+    def test_unknown_promo_ignored(self, client, products):
+        payload = client.post(
+            "/api/orders/",
+            data={
+                "items": [{"product_id": products["espresso"].pk, "quantity": 1}],
+                "promo_code": "NOPE123",
+            },
+            content_type="application/json",
+        ).json()
+        assert payload["discount"] == "0.00"
+        assert payload["promo_code"] == ""
+        assert payload["total_amount"] == "3.85"
+
+    def test_inactive_promo_ignored(self, client, products, promo):
+        promo.is_active = False
+        promo.save(update_fields=["is_active"])
+        payload = client.post(
+            "/api/orders/",
+            data={
+                "items": [{"product_id": products["espresso"].pk, "quantity": 1}],
+                "promo_code": "WELCOME10",
+            },
+            content_type="application/json",
+        ).json()
+        assert payload["discount"] == "0.00"
+        assert payload["promo_code"] == ""
+
+    def test_exhausted_promo_ignored(self, client, products, promo):
+        promo.max_uses = 1
+        promo.used_count = 1
+        promo.save(update_fields=["max_uses", "used_count"])
+        payload = client.post(
+            "/api/orders/",
+            data={
+                "items": [{"product_id": products["espresso"].pk, "quantity": 1}],
+                "promo_code": "WELCOME10",
+            },
+            content_type="application/json",
+        ).json()
+        assert payload["discount"] == "0.00"
+        assert payload["promo_code"] == ""
+
+
+class TestCheckoutPage:
+    """The server-rendered checkout — anonymous render, promo apply and the
+    form-value preservation across the promo round-trip."""
+
+    @pytest.fixture(autouse=True)
+    def cart_in_session(self, client, products):
+        cart = Cart.objects.create(session_key="checkout-test-session")
+        cart.items.create(
+            product=products["espresso"], quantity=1, unit_price=products["espresso"].price
+        )
+        from shop.services import CART_SESSION_KEY
+
+        session = client.session
+        session[CART_SESSION_KEY] = cart.pk
+        session.save()
+        return cart
+
+    def test_anonymous_checkout_renders(self, client):
+        response = client.get("/checkout/")
+        assert response.status_code == 200
+        assert b"Promo code" in response.content
+        assert b"Ready by" in response.content
+
+    def test_apply_promo_preserves_form_values(self, client):
+        PromoCode.objects.create(
+            code="WELCOME10",
+            discount_type=PromoCode.DiscountType.PERCENT,
+            value=Decimal("10.00"),
+            is_active=True,
+        )
+        response = client.post(
+            "/checkout/",
+            {
+                "apply_promo": "1",
+                "promo_code": "WELCOME10",
+                "customer_name": "Grace Hopper",
+                "order_type": "takeaway",
+                "notes": "Window seat",
+            },
+        )
+        assert response.status_code == 302
+        rendered = client.get("/checkout/")
+        assert rendered.status_code == 200
+        html = rendered.content.decode()
+        # The form survived the promo round-trip (no field loss).
+        assert 'value="Grace Hopper"' in html
+        assert "Window seat" in html
+        assert "WELCOME10 applied" in html
+        # Discount shown and math correct: 3.50 − 0.35, tax on 3.15.
+        assert "0.35" in html
+
+    def test_invalid_promo_shows_error_but_keeps_values(self, client):
+        response = client.post(
+            "/checkout/",
+            {
+                "apply_promo": "1",
+                "promo_code": "NOPE",
+                "customer_name": "Ada Lovelace",
+                "order_type": "delivery",
+                "delivery_address": "1 Test St",
+            },
+        )
+        assert response.status_code == 302
+        rendered = client.get("/checkout/")
+        html = rendered.content.decode()
+        assert "isn&#x27;t valid" in html or "isn't valid" in html
+        assert 'value="Ada Lovelace"' in html
+        assert 'value="1 Test St"' in html
+
+
+class TestOrderStatusApi:
+    """POST /api/orders/<pk>/status/ — the kitchen advance flow."""
+
+    @pytest.fixture
+    def pending_order(self):
+        return Order.objects.create(
+            customer_name="Kitchen Test",
+            status=Order.Status.PENDING,
+            subtotal=Decimal("4.00"),
+            tax=Decimal("0.40"),
+            total=Decimal("4.40"),
+        )
+
+    def _advance(self, client, pk, status):
+        return client.post(
+            f"/api/orders/{pk}/status/",
+            data={"status": status},
+            content_type="application/json",
+        )
+
+    def test_pending_to_preparing(self, client, pending_order):
+        response = self._advance(client, pending_order.pk, "preparing")
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["status"] == "preparing"
+        pending_order.refresh_from_db()
+        assert pending_order.status == Order.Status.PREPARING
+
+    def test_preparing_to_ready(self, client, pending_order):
+        self._advance(client, pending_order.pk, "preparing")
+        response = self._advance(client, pending_order.pk, "ready")
+        assert response.status_code == 200
+        assert response.json()["status"] == "ready"
+
+    def test_ready_to_completed(self, client, pending_order):
+        for step in ("preparing", "ready", "completed"):
+            response = self._advance(client, pending_order.pk, step)
+            assert response.status_code == 200, response.content
+        pending_order.refresh_from_db()
+        assert pending_order.status == Order.Status.COMPLETED
+
+    def test_forward_skip_is_allowed(self, client, pending_order):
+        # The POS flow is pending → preparing → ready; confirmed is skipped
+        # entirely, so any forward move (not just +1) is legal.
+        response = self._advance(client, pending_order.pk, "ready")
+        assert response.status_code == 200
+        pending_order.refresh_from_db()
+        assert pending_order.status == Order.Status.READY
+
+    def test_backward_move_is_rejected(self, client, pending_order):
+        for step in ("preparing", "ready"):
+            self._advance(client, pending_order.pk, step)
+        response = self._advance(client, pending_order.pk, "pending")
+        assert response.status_code == 409
+        pending_order.refresh_from_db()
+        assert pending_order.status == Order.Status.READY
+
+    def test_terminal_completed_cannot_move(self, client, pending_order):
+        for step in ("preparing", "ready", "completed"):
+            self._advance(client, pending_order.pk, step)
+        response = self._advance(client, pending_order.pk, "cancelled")
+        assert response.status_code == 409
+        pending_order.refresh_from_db()
+        assert pending_order.status == Order.Status.COMPLETED
+
+    def test_open_order_can_be_cancelled(self, client, pending_order):
+        response = self._advance(client, pending_order.pk, "cancelled")
+        assert response.status_code == 200
+        pending_order.refresh_from_db()
+        assert pending_order.status == Order.Status.CANCELLED
+
+    def test_invalid_status_is_rejected(self, client, pending_order):
+        response = self._advance(client, pending_order.pk, "shipped")
+        assert response.status_code == 400
+
+    def test_unknown_order_returns_404(self, client):
+        response = self._advance(client, 999999, "preparing")
+        assert response.status_code == 404
+
+    def test_get_is_not_allowed(self, client, pending_order):
+        response = client.get(f"/api/orders/{pending_order.pk}/status/")
+        assert response.status_code == 405

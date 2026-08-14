@@ -1,4 +1,6 @@
 """Shop domain models — categories, products, session cart and orders."""
+from decimal import Decimal
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -116,6 +118,8 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     # unit price snapshot so later price edits do not rewrite open carts
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    # per-item instruction ("no onions", "extra shot")
+    note = models.CharField(max_length=200, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -130,6 +134,55 @@ class CartItem(models.Model):
     @property
     def line_total(self):
         return self.quantity * self.unit_price
+
+
+class PromoCode(models.Model):
+    """A checkout discount code — fixed amount or percentage off the subtotal."""
+
+    class DiscountType(models.TextChoices):
+        PERCENT = "percent", "Percent"
+        FIXED = "fixed", "Fixed amount"
+
+    code = models.CharField(max_length=40, unique=True)
+    discount_type = models.CharField(
+        max_length=10, choices=DiscountType.choices, default=DiscountType.PERCENT
+    )
+    value = models.DecimalField(max_digits=8, decimal_places=2)
+    is_active = models.BooleanField(default=True)
+    max_uses = models.PositiveIntegerField(default=0, help_text="0 = unlimited")
+    used_count = models.PositiveIntegerField(default=0)
+    valid_from = models.DateTimeField(null=True, blank=True)
+    valid_until = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self):
+        return self.code
+
+    @property
+    def is_usable(self) -> bool:
+        from django.utils import timezone
+
+        if not self.is_active:
+            return False
+        if self.max_uses and self.used_count >= self.max_uses:
+            return False
+        now = timezone.now()
+        if self.valid_from and now < self.valid_from:
+            return False
+        if self.valid_until and now > self.valid_until:
+            return False
+        return True
+
+    def discount_for(self, subtotal) -> Decimal:
+        """Discount amount for a given subtotal (never negative, never > subtotal)."""
+        if self.discount_type == self.DiscountType.FIXED:
+            amount = min(Decimal(str(self.value)), Decimal(str(subtotal)))
+        else:
+            amount = (Decimal(str(subtotal)) * Decimal(str(self.value))) / Decimal("100")
+        return max(Decimal("0"), min(amount, Decimal(str(subtotal)))).quantize(Decimal("0.01"))
 
 
 # ── Orders ─────────────────────────────────────────────────────────────────
@@ -168,9 +221,23 @@ class Order(models.Model):
         max_length=16, choices=Status.choices, default=Status.PENDING
     )
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
+    # Order fulfilment details — filled conditionally by order type.
+    ready_at = models.DateTimeField(null=True, blank=True, help_text="Requested ready/pickup time")
+    table_number = models.CharField(max_length=20, blank=True, help_text="Dine-in table / seat")
+    delivery_address = models.CharField(max_length=300, blank=True)
+    delivery_city = models.CharField(max_length=120, blank=True)
+    delivery_zip = models.CharField(max_length=20, blank=True)
+    payment_method = models.CharField(
+        max_length=16,
+        choices=[("cash", "Cash"), ("card", "Card on pickup")],
+        default="cash",
+    )
+    # Promo applied at checkout (code + computed discount snapshot).
+    promo_code = models.CharField(max_length=40, blank=True)
     reference = models.CharField(max_length=12, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -220,6 +287,7 @@ class OrderItem(models.Model):
     product_name = models.CharField(max_length=200)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+    note = models.CharField(max_length=200, blank=True, default="")
 
     def __str__(self):
         return f"{self.quantity} × {self.product_name}"

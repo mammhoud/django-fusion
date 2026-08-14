@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/catalog/", views.catalog_api, name="catalog_api"),
     path("api/orders/", views.orders_api, name="orders_api"),
     path("api/orders/<int:pk>/", views.order_detail_api, name="order_detail_api"),
+    path("api/orders/<int:pk>/status/", views.order_status_api, name="order_status_api"),
     path("apis/auth/status/", views.auth_status_api, name="auth_status"),
     # HTMX fragments (django-fusion dual-mode handlers)
     path("shop/fragments/products/", views.products_fragment, name="products_fragment"),
@@ -20,6 +21,7 @@ urlpatterns = [
     path("shop/cart/add/", views.cart_add, name="cart_add"),
     path("shop/cart/update/<int:item_id>/", views.cart_update, name="cart_update"),
     path("shop/cart/remove/<int:item_id>/", views.cart_remove, name="cart_remove"),
+    path("shop/cart/note/<int:item_id>/", views.cart_note, name="cart_note"),
     # Checkout + orders
     path("checkout/", views.checkout_page, name="checkout"),
     path("orders/", views.place_order, name="place_order"),

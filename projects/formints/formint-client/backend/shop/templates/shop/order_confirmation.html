@@ -46,16 +46,32 @@
   <p class="kicker">Summary · {{ order.created_at|date:"g:i A" }}</p>
   <ul style="list-style:none; margin:0.6rem 0 0; padding:0;">
     {% for item in order.items.all %}
-    <li style="display:flex; justify-content:space-between; gap:1rem; padding:0.55rem 0; border-bottom:1px solid hsl(var(--fu-line));">
-      <span>{{ item.quantity }} × {{ item.product_name }}</span>
-      <span class="muted" style="font-family:'JetBrains Mono',monospace;">${{ item.line_total }}</span>
+    <li style="padding:0.55rem 0; border-bottom:1px solid hsl(var(--fu-line));">
+      <div style="display:flex; justify-content:space-between; gap:1rem;">
+        <span>{{ item.quantity }} × {{ item.product_name }}</span>
+        <span class="muted" style="font-family:'JetBrains Mono',monospace;">${{ item.line_total }}</span>
+      </div>
+      {% if item.note %}<p class="muted" style="font-size:0.75rem; margin:0.2rem 0 0;">“{{ item.note }}”</p>{% endif %}
     </li>
     {% endfor %}
   </ul>
   <div class="mt-2" style="display:flex; justify-content:space-between;"><span class="muted">Subtotal</span><span>${{ order.subtotal }}</span></div>
+  {% if order.discount %}
+  <div style="display:flex; justify-content:space-between; color:hsl(158 42% 32%);"><span class="muted">Discount{% if order.promo_code %} ({{ order.promo_code }}){% endif %}</span><span>−${{ order.discount }}</span></div>
+  {% endif %}
   <div style="display:flex; justify-content:space-between;"><span class="muted">Tax</span><span>${{ order.tax }}</span></div>
   <div style="display:flex; justify-content:space-between; font-weight:700;"><span>Total</span><span>${{ order.total }}</span></div>
-  <p class="mt-2 muted" style="font-size:0.9rem;">{{ order.get_order_type_display }}{% if order.notes %} · {{ order.notes }}{% endif %}</p>
+  <p class="mt-2 muted" style="font-size:0.9rem;">
+    {{ order.get_order_type_display }} · {{ order.get_payment_method_display }}
+    {% if order.table_number %} · Table {{ order.table_number }}{% endif %}
+    {% if order.ready_at %} · Ready {{ order.ready_at|date:"g:i A" }}{% endif %}
+    {% if order.notes %} · {{ order.notes }}{% endif %}
+  </p>
+  {% if order.delivery_address %}
+  <p class="muted" style="font-size:0.9rem; margin-top:0.4rem;">
+    Deliver to {{ order.delivery_address }}{% if order.delivery_city %}, {{ order.delivery_city }}{% endif %}{% if order.delivery_zip %} {{ order.delivery_zip }}{% endif %}
+  </p>
+  {% endif %}
 </div>
 
 <div class="no-print" style="text-align:center; margin-top:2rem;">

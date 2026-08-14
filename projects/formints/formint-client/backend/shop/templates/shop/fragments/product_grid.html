@@ -26,8 +26,7 @@
           type="button"
           hx-post="{% url 'shop:cart_add' %}"
           hx-vals='{"product_id": {{ p.id }}, "quantity": 1}'
-          hx-target="#cart-count"
-          hx-swap="innerHTML"
+          hx-swap="none"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
           class="inline-flex items-center justify-center rounded-full bg-fu-ink px-4 py-2 text-xs font-semibold text-fu-paper transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-fu-link active:scale-95"
         >

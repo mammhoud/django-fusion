@@ -35,6 +35,7 @@ __all__ = [
     "CartAddHandler",
     "CartUpdateHandler",
     "CartRemoveHandler",
+    "CartNoteHandler",
     "get_handler_response",
 ]
 
@@ -158,6 +159,26 @@ class CartRemoveHandler:
         cart = services.get_or_create_cart(request)
         services.remove_item(cart, item_id)
 
+        component = CartDrawerFragment()
+        component.setup(request)
+        response = _fragment_response(request, component)
+        response["HX-Trigger"] = "cartUpdated"
+        return response
+
+
+class CartNoteHandler:
+    """POST /shop/cart/note/<item_id>/ — set a per-item instruction."""
+
+    def post(self, request: HttpRequest, item_id: int) -> HttpResponse:
+        if not is_htmx_request(request):
+            return _not_htmx({"detail": "HTMX action — use from the Astro shell"})
+
+        cart = services.get_or_create_cart(request)
+        services.set_note(cart, item_id, request.POST.get("note", ""))
+
+        # Re-render the drawer so the saved note is visible; the badge count
+        # is unchanged so only the drawer swaps (HX-Trigger keeps parity with
+        # the other cart mutations for any other listeners).
         component = CartDrawerFragment()
         component.setup(request)
         response = _fragment_response(request, component)

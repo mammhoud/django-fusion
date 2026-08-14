@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Cart, CartItem, Category, Order, OrderItem, Product
+from .models import Cart, CartItem, Category, Order, OrderItem, Product, PromoCode
 
 
 @admin.register(Category)
@@ -53,11 +53,54 @@ class OrderAdmin(admin.ModelAdmin):
         "reference",
         "customer_name",
         "order_type",
+        "payment_method",
         "status",
         "total",
         "created_at",
     )
-    list_filter = ("status", "order_type", "created_at")
+    list_filter = ("status", "order_type", "payment_method", "created_at")
     search_fields = ("reference", "customer_name", "customer_email")
-    readonly_fields = ("reference", "subtotal", "tax", "total", "created_at", "updated_at")
+    readonly_fields = (
+        "reference",
+        "subtotal",
+        "discount",
+        "tax",
+        "total",
+        "created_at",
+        "updated_at",
+    )
+    fieldsets = (
+        (None, {"fields": ("reference", "status", "order_type", "payment_method")}),
+        ("Customer", {"fields": ("customer_name", "customer_email", "customer_phone")}),
+        (
+            "Fulfilment",
+            {
+                "fields": (
+                    "ready_at",
+                    "table_number",
+                    "delivery_address",
+                    "delivery_city",
+                    "delivery_zip",
+                )
+            },
+        ),
+        ("Totals", {"fields": ("subtotal", "discount", "tax", "total")}),
+        ("Promo", {"fields": ("promo_code",)}),
+        ("Notes", {"fields": ("notes",)}),
+    )
     inlines = [OrderItemInline]
+
+
+@admin.register(PromoCode)
+class PromoCodeAdmin(admin.ModelAdmin):
+    list_display = (
+        "code",
+        "discount_type",
+        "value",
+        "is_active",
+        "used_count",
+        "max_uses",
+    )
+    list_filter = ("discount_type", "is_active")
+    list_editable = ("is_active", "value")
+    search_fields = ("code",)

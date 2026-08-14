@@ -39,6 +39,7 @@ from .handlers import (
     CartAddHandler,
     CartCountHandler,
     CartDrawerHandler,
+    CartNoteHandler,
     CartRemoveHandler,
     CartUpdateHandler,
     ProductGridHandler,
@@ -58,6 +59,7 @@ __all__ = [
     "cart_add",
     "cart_update",
     "cart_remove",
+    "cart_note",
     "checkout_page",
     "place_order",
     "order_confirmation",
@@ -146,7 +148,15 @@ def _order_payload(order: Order, *, detail: bool = False) -> dict:
                 "customer_phone": order.customer_phone,
                 "notes": order.notes,
                 "subtotal": str(order.subtotal),
+                "discount": str(order.discount),
                 "tax": str(order.tax),
+                "payment_method": order.payment_method,
+                "promo_code": order.promo_code,
+                "ready_at": order.ready_at.isoformat() if order.ready_at else None,
+                "table_number": order.table_number,
+                "delivery_address": order.delivery_address,
+                "delivery_city": order.delivery_city,
+                "delivery_zip": order.delivery_zip,
             }
         )
     return payload
@@ -234,9 +244,28 @@ def order_create_api(request: HttpRequest) -> JsonResponse:
     order_type = body.get("order_type", Order.OrderType.TAKEAWAY)
     if order_type not in Order.OrderType.values:
         order_type = Order.OrderType.TAKEAWAY
+    payment_method = body.get("payment_method", "cash")
+    if payment_method not in {"cash", "card"}:
+        payment_method = "cash"
 
+    # Promo — validated server-side; discount applies to the subtotal and
+    # tax is computed on the discounted amount.
+    promo = services.resolve_promo(str(body.get("promo_code", "")).strip())
     subtotal = sum(p.price * q for p, q in quantities)
-    tax = (subtotal * Decimal("0.10")).quantize(Decimal("0.01"))
+    discount = services.apply_discount(subtotal, promo)
+    taxable = max(subtotal - discount, Decimal("0"))
+    tax = (taxable * Decimal("0.10")).quantize(Decimal("0.01"))
+    total = (taxable + tax).quantize(Decimal("0.01"))
+
+    ready_at_raw = body.get("ready_at") or None
+    ready_at = None
+    if ready_at_raw:
+        try:
+            from django.utils.dateparse import parse_datetime
+
+            ready_at = parse_datetime(str(ready_at_raw))
+        except (TypeError, ValueError):
+            ready_at = None
 
     order = Order.objects.create(
         user=request.user if request.user.is_authenticated else None,
@@ -245,17 +274,34 @@ def order_create_api(request: HttpRequest) -> JsonResponse:
         customer_phone=str(body.get("customer_phone", "")).strip(),
         order_type=order_type,
         notes=str(body.get("notes", "")).strip(),
+        ready_at=ready_at,
+        table_number=str(body.get("table_number", "")).strip(),
+        delivery_address=str(body.get("delivery_address", "")).strip(),
+        delivery_city=str(body.get("delivery_city", "")).strip(),
+        delivery_zip=str(body.get("delivery_zip", "")).strip(),
+        payment_method=payment_method,
+        promo_code=promo.code if promo else "",
         subtotal=subtotal,
+        discount=discount,
         tax=tax,
-        total=subtotal + tax,
+        total=total,
     )
     for product, quantity in quantities:
+        note = ""
+        for entry in raw_items:
+            if entry.get("product_id") == product.pk:
+                note = str(entry.get("note", "")).strip()[:200]
+                break
         order.items.create(
             product=product,
             product_name=product.name,
             unit_price=product.price,
             quantity=quantity,
+            note=note,
         )
+    if promo:
+        promo.used_count += 1
+        promo.save(update_fields=["used_count"])
     return JsonResponse(_order_payload(order, detail=True), status=201)
 
 
@@ -267,6 +313,73 @@ def order_detail_api(request: HttpRequest, pk: int) -> JsonResponse:
     notes and the subtotal/tax breakdown on top of the list payload.
     """
     order = get_object_or_404(Order.objects.prefetch_related("items"), pk=pk)
+    return JsonResponse(_order_payload(order, detail=True))
+
+
+@csrf_exempt
+@require_POST
+def order_status_api(request: HttpRequest, pk: int) -> JsonResponse:
+    """POST /api/orders/<pk>/status/ — advance an order's fulfilment status.
+
+    JSON body: {"status": "preparing" | "ready" | "completed" | "cancelled"}
+
+    The POS Orders view drives the kitchen flow (pending → preparing →
+    ready) with these buttons. Only explicit transitions are allowed — a
+    status can only move forward in the fulfilment chain, and a completed
+    or cancelled order is terminal. Returns the updated order payload
+    (detail=True) so the client can refresh its card in place.
+
+    ``@csrf_exempt`` mirrors ``orders_api`` — the POS client posts
+    cross-origin without a token.
+    """
+    import json
+
+    order = get_object_or_404(Order.objects.prefetch_related("items"), pk=pk)
+
+    try:
+        body = json.loads(request.body or b"{}")
+    except ValueError:
+        return JsonResponse({"error": "invalid JSON body"}, status=400)
+
+    status = str(body.get("status", "")).strip().lower()
+    if status not in Order.Status.values:
+        return JsonResponse(
+            {"error": f"invalid status: {status}"}, status=400
+        )
+
+    # Forward-only guard: each step in the chain is reachable only from its
+    # predecessor. Terminal states (completed / cancelled) never move.
+    chain = [
+        Order.Status.PENDING,
+        Order.Status.CONFIRMED,
+        Order.Status.PREPARING,
+        Order.Status.READY,
+        Order.Status.COMPLETED,
+    ]
+    if order.status in (Order.Status.COMPLETED, Order.Status.CANCELLED):
+        return JsonResponse(
+            {"error": f"order is already {order.status} and cannot change"}, status=409
+        )
+    if status not in chain:
+        # Cancelled is a legal value but must come from an open status.
+        if status == Order.Status.CANCELLED:
+            order.status = Order.Status.CANCELLED
+            order.save(update_fields=["status", "updated_at"])
+            return JsonResponse(_order_payload(order, detail=True))
+        return JsonResponse({"error": f"invalid status: {status}"}, status=400)
+    if order.status in chain and chain.index(status) <= chain.index(order.status):
+        return JsonResponse(
+            {
+                "error": (
+                    f"cannot move from {order.status} to {status}; "
+                    "status can only advance forward in the fulfilment chain"
+                )
+            },
+            status=409,
+        )
+
+    order.status = status
+    order.save(update_fields=["status", "updated_at"])
     return JsonResponse(_order_payload(order, detail=True))
 
 
@@ -324,24 +437,75 @@ def cart_remove(request: HttpRequest, item_id: int):
     return get_handler_response(CartRemoveHandler, request, item_id)
 
 
+@require_POST
+def cart_note(request: HttpRequest, item_id: int):
+    return get_handler_response(CartNoteHandler, request, item_id)
+
+
 # ── Full pages (PageHandler — unified fragment/layout pipeline) ─────────────
 
 
 class CheckoutPageView(PageHandler):
-    """Server-rendered checkout with a live HTMX cart summary."""
+    """Server-rendered checkout with a live HTMX cart summary.
+
+    GET  → render the checkout form (session promo applied to totals, and
+           the form prefilled from the last promo apply so no field is lost
+           on the bounce).
+    POST → apply/remove the promo code (``apply_promo``/``clear_promo``),
+           stash the current form values, and bounce back to GET so the
+           discount is visible.
+    """
 
     template_name = "shop/checkout.html"
     page_title = "Checkout"
 
+    # Form fields preserved across the promo apply/clear bounce.
+    CHECKOUT_STASH_FIELDS = (
+        "customer_name",
+        "customer_email",
+        "customer_phone",
+        "order_type",
+        "payment_method",
+        "ready_at",
+        "table_number",
+        "delivery_address",
+        "delivery_city",
+        "delivery_zip",
+        "notes",
+    )
+
     def get_context_data(self, request=None, **kwargs):
         context = super().get_context_data(request=request, **kwargs)
         cart = services.get_or_create_cart(request)
+        promo = services.get_session_promo(request)
+        payload = services.cart_payload(cart)
+        payload.update(services.checkout_totals(cart, promo))
+        stash = request.session.pop("checkout_stash", {})
+        # Prefill the form — stashed values win, user profile fills the
+        # blanks, everything else starts empty. Resolved here (not in the
+        # template) so anonymous users never hit ``user.first_name``.
+        user = request.user
+        user_defaults = {
+            "customer_name": getattr(user, "first_name", "") if user.is_authenticated else "",
+            "customer_email": user.email if user.is_authenticated else "",
+        }
+        form = {
+            field: (stash.get(field) or user_defaults.get(field) or "")
+            for field in self.CHECKOUT_STASH_FIELDS
+        }
         context.update(
             {
-                "cart_payload": services.cart_payload(cart),
+                "cart_payload": payload,
+                "promo_code": promo.code if promo else "",
+                "promo_error": request.session.pop("checkout_promo_error", ""),
+                "form": form,
                 "shop": {
                     "name": settings.SHOP_NAME,
                     "order_types": settings.SHOP_ORDER_TYPES,
+                    "payment_methods": [
+                        ("cash", "Cash"),
+                        ("card", "Card on pickup"),
+                    ],
                 },
             }
         )
@@ -353,6 +517,26 @@ class CheckoutPageView(PageHandler):
             # The storefront home is served by the Astro frontend at "/".
             return redirect("/")
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        cart = services.get_or_create_cart(request)
+        if not services.cart_payload(cart)["items"]:
+            return redirect("/")
+        # Preserve the form across the bounce so applying a promo never
+        # wipes the customer's half-filled checkout.
+        request.session["checkout_stash"] = {
+            field: request.POST.get(field, "") for field in self.CHECKOUT_STASH_FIELDS
+        }
+        if request.POST.get("clear_promo"):
+            services.clear_session_promo(request)
+        else:
+            code = request.POST.get("promo_code", "").strip()
+            promo = services.set_session_promo(request, code)
+            if not promo:
+                request.session["checkout_promo_error"] = (
+                    "That code isn't valid right now."
+                )
+        return redirect("shop:checkout")
 
 
 checkout_page = CheckoutPageView.as_view()
@@ -398,6 +582,8 @@ my_orders = MyOrdersPageView.as_view()
 @require_POST
 def place_order(request: HttpRequest):
     """Convert the session cart into an Order."""
+    from django.utils.dateparse import parse_datetime
+
     cart = services.get_or_create_cart(request)
     payload = services.cart_payload(cart)
     if not payload["items"]:
@@ -407,6 +593,20 @@ def place_order(request: HttpRequest):
     order_type = request.POST.get("order_type", Order.OrderType.TAKEAWAY)
     if order_type not in Order.OrderType.values:
         order_type = Order.OrderType.TAKEAWAY
+    payment_method = request.POST.get("payment_method", "cash")
+    if payment_method not in {"cash", "card"}:
+        payment_method = "cash"
+
+    # Promo from the session (validated again at read time).
+    promo = services.get_session_promo(request)
+    subtotal = Decimal(str(payload["subtotal"]))
+    discount = services.apply_discount(subtotal, promo)
+    taxable = max(subtotal - discount, Decimal("0"))
+    tax = (taxable * Decimal("0.10")).quantize(Decimal("0.01"))
+    total = (taxable + tax).quantize(Decimal("0.01"))
+
+    ready_at_raw = request.POST.get("ready_at", "").strip() or None
+    ready_at = parse_datetime(ready_at_raw) if ready_at_raw else None
 
     order = Order.objects.create(
         user=request.user if request.user.is_authenticated else None,
@@ -415,9 +615,17 @@ def place_order(request: HttpRequest):
         customer_phone=request.POST.get("customer_phone", "").strip(),
         order_type=order_type,
         notes=request.POST.get("notes", "").strip(),
-        subtotal=Decimal(str(payload["subtotal"])),
-        tax=Decimal(str(payload["tax"])),
-        total=Decimal(str(payload["total"])),
+        ready_at=ready_at,
+        table_number=request.POST.get("table_number", "").strip(),
+        delivery_address=request.POST.get("delivery_address", "").strip(),
+        delivery_city=request.POST.get("delivery_city", "").strip(),
+        delivery_zip=request.POST.get("delivery_zip", "").strip(),
+        payment_method=payment_method,
+        promo_code=promo.code if promo else "",
+        subtotal=subtotal,
+        discount=discount,
+        tax=tax,
+        total=total,
     )
     for item in cart.items.select_related("product"):
         order.items.create(
@@ -425,8 +633,13 @@ def place_order(request: HttpRequest):
             product_name=item.product.name,
             unit_price=item.unit_price,
             quantity=item.quantity,
+            note=item.note,
         )
+    if promo:
+        promo.used_count += 1
+        promo.save(update_fields=["used_count"])
     services.clear(cart)
+    services.clear_session_promo(request)
     return redirect("shop:order_confirmation", reference=order.reference)
 
 

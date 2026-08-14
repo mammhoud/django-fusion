@@ -3,8 +3,11 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { Plus, Minus, Search, Check, Loader2, X } from 'lucide-vue-next';
 import { getProducts, createOrder, type Product } from '../api';
 import { useScrollMotion } from '../utils/scrollMotion';
+import { useTicketStore } from '../utils/ticket';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+
+const ticket = useTicketStore();
 
 const items = ref<Product[]>([]);
 const loading = ref(true);
@@ -39,11 +42,10 @@ const filtered = computed(() => {
   });
 });
 
-/** Local ticket — quantities per product, running total. */
-const ticket = ref<Record<number, number>>({});
-const totalItems = computed(() => Object.values(ticket.value).reduce((a, b) => a + b, 0));
+/** Running total — computed in the view because it needs the catalog prices. */
+const totalItems = computed(() => ticket.totalItems);
 const totalPrice = computed(() =>
-  Object.entries(ticket.value).reduce((a, [id, qty]) => {
+  Object.entries(ticket.quantities).reduce((a, [id, qty]) => {
     const p = items.value.find((x) => x.id === Number(id));
     return a + (p ? p.price * qty : 0);
   }, 0),
@@ -55,14 +57,19 @@ const ORDER_TYPES = [
   { value: 'dine_in', label: 'Dine in' },
   { value: 'delivery', label: 'Delivery' },
 ];
-const orderType = ref('takeaway');
+
+/** Payment + fulfilment extras for the register ticket. */
+const PAYMENT_METHODS = [
+  { value: 'cash', label: 'Cash' },
+  { value: 'card', label: 'Card' },
+];
 
 const submitting = ref(false);
 const submitError = ref('');
 const placedReference = ref('');
 
 async function placeOrder() {
-  if (submitting.value || totalItems.value === 0) {
+  if (submitting.value || ticket.totalItems === 0) {
     return;
   }
   submitting.value = true;
@@ -70,15 +77,19 @@ async function placeOrder() {
   placedReference.value = '';
   try {
     const order = await createOrder({
-      items: Object.entries(ticket.value).map(([id, quantity]) => ({
+      items: Object.entries(ticket.quantities).map(([id, quantity]) => ({
         product_id: Number(id),
         quantity,
       })),
-      order_type: orderType.value,
-      customer_name: 'Guest',
+      order_type: ticket.orderType,
+      payment_method: ticket.paymentMethod,
+      notes: ticket.notes.trim(),
+      ready_at: ticket.readyAt ? new Date(ticket.readyAt).toISOString() : null,
+      customer_name: ticket.customerName.trim() || 'Guest',
     });
     placedReference.value = order.reference;
-    ticket.value = {};
+    ticket.recordPlacedOrder(order.reference);
+    ticket.clear();
   } catch (err) {
     submitError.value = err instanceof Error ? err.message : 'Could not place the order.';
   } finally {
@@ -86,19 +97,7 @@ async function placeOrder() {
   }
 }
 
-function add(id: number) {
-  ticket.value = { ...ticket.value, [id]: (ticket.value[id] ?? 0) + 1 };
-}
-function remove(id: number) {
-  const next = { ...ticket.value };
-  if ((next[id] ?? 0) <= 1) {
-    delete next[id];
-  } else {
-    next[id] -= 1;
-  }
-  ticket.value = next;
-}
-const qty = (id: number) => ticket.value[id] ?? 0;
+const qty = (id: number) => ticket.quantities[id] ?? 0;
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 
@@ -109,6 +108,12 @@ const cardSpan = (i: number) =>
 /** Letter-tile fallback for products without imagery. */
 const letterTile = (name: string) => name.trim().charAt(0).toUpperCase() || '•';
 
+/** Featured picks — the card-stacking chapter below the bento grid. */
+const featured = computed(() => {
+  const picks = items.value.filter((p) => p.is_featured);
+  return (picks.length ? picks : items.value).slice(0, 4);
+});
+
 onMounted(async () => {
   requestAnimationFrame(() => {
     revealed.value = true;
@@ -116,20 +121,21 @@ onMounted(async () => {
   try {
     items.value = await getProducts();
     await nextTick();
-    refresh(document.getElementById('menu-grid') ?? document.body);
+    // Scope covers both the bento grid and the featured stack below it.
+    refresh(document.getElementById('menu-scroll-scope') ?? document.body);
   } catch {
     /* empty state below */
   }
   loading.value = false;
   await nextTick();
-  refresh(document.getElementById('menu-grid') ?? document.body);
+  refresh(document.getElementById('menu-scroll-scope') ?? document.body);
 });
 
 onUnmounted(() => dispose());
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div id="menu-scroll-scope" class="space-y-8">
     <!-- Asymmetric header: search floats right, title anchors left -->
     <div
       class="pos-reveal flex flex-wrap items-end justify-between gap-6"
@@ -260,18 +266,18 @@ onUnmounted(() => dispose());
             <!-- Add / stepper — tactile, springy -->
             <div class="mt-auto">
               <div v-if="qty(item.id) === 0" class="flex justify-end">
-                <Button size="sm" class="gap-1.5 px-4" @click="add(item.id)">
+                <Button size="sm" class="gap-1.5 px-4" @click="ticket.add(item.id)">
                   Add
                   <Plus class="h-3.5 w-3.5" />
                 </Button>
               </div>
               <div v-else class="bezel inline-flex items-center gap-1 rounded-full">
                 <div class="bezel-core flex items-center gap-1 py-0.5 pl-0.5 pr-1">
-                  <Button size="icon" variant="ghost" class="h-7 w-7" @click="remove(item.id)">
+                  <Button size="icon" variant="ghost" class="h-7 w-7" @click="ticket.remove(item.id)">
                     <Minus class="h-3.5 w-3.5" />
                   </Button>
                   <span class="min-w-6 text-center font-mono text-sm font-bold">{{ qty(item.id) }}</span>
-                  <Button size="icon" variant="ghost" class="h-7 w-7" @click="add(item.id)">
+                  <Button size="icon" variant="ghost" class="h-7 w-7" @click="ticket.add(item.id)">
                     <Plus class="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -281,6 +287,82 @@ onUnmounted(() => dispose());
         </article>
       </div>
     </div>
+
+    <!-- Featured — card-stacking chapter. Each [data-stack-card] rises and
+         overlaps the one above as it scrolls in (initCardStack), so the
+         picks read as a physical deck. Static overlap keeps content legible
+         under reduced motion / mobile. -->
+    <section
+      v-if="!loading && featured.length"
+      class="pos-reveal pt-6"
+      :class="revealed ? 'is-visible' : ''"
+    >
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="eyebrow">Featured</p>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight md:text-3xl">Barista&rsquo;s picks</h2>
+          <p class="mt-2 max-w-lg text-sm text-base-content/50">
+            House favourites from the counter &mdash; each card stacks over the last as you scroll.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-10 flex flex-col">
+        <article
+          v-for="(f, i) in featured"
+          :key="f.id"
+          data-stack-card
+          class="fu-stack-card relative overflow-hidden rounded-[1.25rem] border border-border/70 bg-card text-card-foreground shadow-[0_24px_48px_-24px_hsl(var(--pos-ink)/0.12)]"
+          :class="i > 0 ? '-mt-10 sm:-mt-16' : ''"
+        >
+          <div class="flex flex-col sm:flex-row">
+            <!-- Imagery — Image Scale & Fade target, full-height on desktop -->
+            <div
+              data-gsap-media
+              class="relative aspect-[16/10] overflow-hidden bg-base-200/70 sm:aspect-auto sm:w-72 sm:shrink-0"
+            >
+              <img
+                v-if="f.image"
+                :src="f.image"
+                :alt="f.name"
+                loading="lazy"
+                class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div
+                v-else
+                class="flex h-full w-full items-center justify-center bg-gradient-to-br from-base-200 to-base-300/80"
+              >
+                <span class="font-display text-6xl font-bold text-base-content/15">{{ letterTile(f.name) }}</span>
+              </div>
+              <Badge
+                v-if="f.category"
+                variant="outline"
+                class="absolute left-3 top-3 border-white/20 bg-black/30 text-white backdrop-blur-md"
+              >
+                {{ f.category }}
+              </Badge>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-1 flex-col justify-between gap-4 p-5 sm:p-6">
+              <div>
+                <h3 class="font-display text-lg font-bold leading-snug tracking-tight">{{ f.name }}</h3>
+                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-base-content/55">
+                  {{ f.unit === 'each' ? 'Hand-pulled to order' : `${f.unit} — the counter favourite` }}
+                </p>
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="font-mono text-lg font-bold tracking-tight text-primary">{{ money(f.price) }}</span>
+                <Button size="sm" class="gap-1.5 px-4" @click="ticket.add(f.id)">
+                  Add
+                  <Plus class="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <!-- Empty states -->
     <div
@@ -339,7 +421,7 @@ onUnmounted(() => dispose());
                 <div class="bezel">
                   <div class="bezel-core flex items-center gap-1 py-0.5 pl-0.5 pr-1">
                     <select
-                      v-model="orderType"
+                      v-model="ticket.orderType"
                       class="bg-transparent py-1 pl-2 pr-6 text-xs font-semibold outline-none"
                       aria-label="Order type"
                     >
@@ -349,6 +431,39 @@ onUnmounted(() => dispose());
                     </select>
                   </div>
                 </div>
+                <div class="bezel">
+                  <div class="bezel-core flex items-center gap-1 py-0.5 pl-0.5 pr-1">
+                    <select
+                      v-model="ticket.paymentMethod"
+                      class="bg-transparent py-1 pl-2 pr-6 text-xs font-semibold outline-none"
+                      aria-label="Payment method"
+                    >
+                      <option v-for="m in PAYMENT_METHODS" :key="m.value" :value="m.value">
+                        {{ m.label }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <input
+                  v-model="ticket.customerName"
+                  type="text"
+                  placeholder="Customer name"
+                  aria-label="Customer name"
+                  class="bezel-core w-36 rounded-xl px-3 py-1.5 text-xs outline-none placeholder:text-muted-foreground/60"
+                />
+                <input
+                  v-model="ticket.readyAt"
+                  type="datetime-local"
+                  aria-label="Ready by"
+                  class="bezel-core rounded-xl px-3 py-1.5 text-xs outline-none"
+                />
+                <input
+                  v-model="ticket.notes"
+                  type="text"
+                  placeholder="Notes…"
+                  aria-label="Order notes"
+                  class="bezel-core w-32 rounded-xl px-3 py-1.5 text-xs outline-none placeholder:text-muted-foreground/60"
+                />
                 <Button
                   size="sm"
                   class="gap-1.5 px-4"

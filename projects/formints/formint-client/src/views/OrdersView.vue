@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { ChevronDown, ChevronsUpDown, Printer } from 'lucide-vue-next';
-import { getSales, getSale, type Sale, type SaleDetail } from '../api';
+import { ref, computed, onMounted, watch } from 'vue';
+import { ChevronDown, ChevronsUpDown, Printer, CookingPot, Check } from 'lucide-vue-next';
+import { getSales, getSale, updateOrderStatus, type Sale, type SaleDetail } from '../api';
 import { useOrdersStore } from '@/utils/orders';
+import { useTicketStore } from '@/utils/ticket';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,6 +13,10 @@ import ReceiptView from '@/components/ReceiptView.vue';
 /** Expanded-orders state + detail cache + status filter live in the store,
  *  so they survive navigating away from this view and back. */
 const ordersStore = useOrdersStore();
+
+/** Ticket store — its dataVersion bumps when a new order is placed, so a
+ *  mounted Orders view refetches instead of staying stale. */
+const ticketStore = useTicketStore();
 
 const sales = ref<Sale[]>([]);
 const loading = ref(true);
@@ -41,6 +46,52 @@ const statusCounts = computed(() => {
 const formatStatus = (status: string) =>
   status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
+/** Fulfilment chain — the kitchen advances one step at a time.
+ *  Confirmed is a backend-only state not used in the POS flow, so the
+ *  UI advances pending → preparing → ready → completed. */
+const STATUS_CHAIN = ['pending', 'preparing', 'ready', 'completed'];
+
+/** Next step in the chain, or null when the order is terminal/complete. */
+function nextStep(status: string): { status: string; label: string } | null {
+  const i = STATUS_CHAIN.indexOf(status);
+  if (i < 0 || i >= STATUS_CHAIN.length - 1) {
+    return null;
+  }
+  const next = STATUS_CHAIN[i + 1];
+  const labels: Record<string, string> = {
+    preparing: 'Start preparing',
+    ready: 'Mark ready',
+    completed: 'Complete',
+  };
+  return { status: next, label: labels[next] ?? next };
+}
+
+const advancingId = ref<number | null>(null);
+
+/** Advance one order a step; on success update the card + cached detail in place. */
+async function advanceStatus(sale: Sale) {
+  const step = nextStep(sale.status);
+  if (!step || advancingId.value !== null) {
+    return;
+  }
+  advancingId.value = sale.id;
+  try {
+    const updated = await updateOrderStatus(sale.id, step.status);
+    const idx = sales.value.findIndex((s) => s.id === sale.id);
+    if (idx !== -1) {
+      sales.value = sales.value.map((s) => (s.id === sale.id ? updated : s));
+    }
+    // Keep the cached detail fresh so an open expansion matches.
+    ordersStore.setDetail(updated);
+    // A completed order may vanish from the active filter — prune leftovers.
+    ordersStore.prune(sales.value.map((s) => s.id));
+  } catch {
+    // Leave the card as-is; the badge still reflects the server's state.
+  } finally {
+    advancingId.value = null;
+  }
+}
+
 /** Orders visible under the active status filter. */
 const filteredSales = computed(() =>
   ordersStore.statusFilter === 'all'
@@ -64,17 +115,29 @@ function isExpanded(id: number) {
   return ordersStore.expandedIds.includes(id);
 }
 
+/** Fetch the order list, pruning expanded ids that no longer exist. */
+async function loadSales() {
+  try {
+    sales.value = await getSales();
+    ordersStore.prune(sales.value.map((s) => s.id));
+  } catch {}
+}
+
 onMounted(async () => {
   requestAnimationFrame(() => {
     revealed.value = true;
   });
-  try {
-    sales.value = await getSales();
-    // Drop expanded ids that no longer exist in the refreshed list.
-    ordersStore.prune(sales.value.map((s) => s.id));
-  } catch {}
+  await loadSales();
   loading.value = false;
 });
+
+// Refetch whenever a new order is placed (signal bumped by MenuView's ticket).
+watch(
+  () => ticketStore.dataVersion,
+  () => {
+    loadSales();
+  },
+);
 
 const statusVariant = (status: string) =>
   status === 'completed' || status === 'ready'
@@ -154,7 +217,15 @@ async function openReceipt(sale: Sale) {
       customer_phone: '',
       notes: '',
       subtotal: sale.total_amount,
+      discount: 0,
       tax: 0,
+      payment_method: 'cash',
+      promo_code: '',
+      ready_at: null,
+      table_number: '',
+      delivery_address: '',
+      delivery_city: '',
+      delivery_zip: '',
     };
   } finally {
     receiptLoading.value = false;
@@ -255,6 +326,25 @@ async function openReceipt(sale: Sale) {
               />
             </div>
           </button>
+
+          <!-- Kitchen actions — advance one step at a time -->
+          <div v-if="nextStep(sale.status)" class="mt-4 flex items-center justify-between gap-3 border-t border-border/40 pt-3">
+            <p class="font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+              Next: {{ formatStatus(nextStep(sale.status)!.status) }}
+            </p>
+            <Button
+              size="sm"
+              :disabled="advancingId !== null"
+              @click="advanceStatus(sale)"
+            >
+              <CookingPot
+                v-if="nextStep(sale.status)!.status === 'preparing'"
+                class="h-3.5 w-3.5"
+              />
+              <Check v-else class="h-3.5 w-3.5" />
+              {{ advancingId === sale.id ? 'Updating…' : nextStep(sale.status)!.label }}
+            </Button>
+          </div>
 
           <!-- Expanded detail — lazy-fetched from GET /api/orders/<id>/ -->
           <div v-if="isExpanded(sale.id)" class="mt-5 border-t border-border/60 pt-5">

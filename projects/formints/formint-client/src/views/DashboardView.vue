@@ -1,16 +1,22 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { getHealth, getProducts, getSales, type HealthStatus, type Product, type Sale } from '../api';
+import { useTicketStore } from '@/utils/ticket';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import ProductSlider from '@/components/ProductSlider.vue';
 
 const health = ref<HealthStatus | null>(null);
 const products = ref<Product[]>([]);
 const sales = ref<Sale[]>([]);
 const loading = ref(true);
 const revealed = ref(false);
+
+/** Ticket store — its dataVersion bumps when a new order is placed, so a
+ *  mounted Dashboard refetches its live stats instead of staying stale. */
+const ticketStore = useTicketStore();
 
 /** Perpetual micro-interaction: the shift clock. */
 const now = ref(new Date());
@@ -32,6 +38,14 @@ onUnmounted(() => {
   }
 });
 
+/** Fetch sales + animate the count-up (used on mount and on refresh). */
+async function loadSales() {
+  try {
+    sales.value = await getSales();
+  } catch {}
+  animateCount(saleCountUp, sales.value.length);
+}
+
 onMounted(async () => {
   requestAnimationFrame(() => {
     revealed.value = true;
@@ -42,13 +56,18 @@ onMounted(async () => {
   try {
     products.value = await getProducts();
   } catch {}
-  try {
-    sales.value = await getSales();
-  } catch {}
+  await loadSales();
   loading.value = false;
   animateCount(productCountUp, products.value.length);
-  animateCount(saleCountUp, sales.value.length);
 });
+
+// Refetch whenever a new order is placed (signal bumped by MenuView's ticket).
+watch(
+  () => ticketStore.dataVersion,
+  () => {
+    loadSales();
+  },
+);
 
 /** Count-up: animates a stat from 0 to its target once loaded.
  *  Reduced-motion users get the final value immediately — no animation. */
@@ -86,6 +105,9 @@ const marqueeNames = computed(() => {
 
 <template>
   <div class="space-y-8">
+    <!-- Hero slider — featured picks with a blurred backdrop -->
+    <ProductSlider v-if="!loading && products.length > 0" :products="products" />
+
     <!-- Asymmetric hero: title left, shift clock right -->
     <div
       class="pos-reveal flex flex-wrap items-end justify-between gap-6"

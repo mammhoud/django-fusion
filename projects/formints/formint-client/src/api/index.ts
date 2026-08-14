@@ -57,6 +57,7 @@ export interface Product {
   unit: string;
   category?: string;
   image?: string;
+  is_featured: boolean;
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -68,6 +69,7 @@ export async function getProducts(): Promise<Product[]> {
     unit: p.unit,
     category: p.category,
     image: p.image_url || undefined,
+    is_featured: p.is_featured,
   }));
 }
 
@@ -99,7 +101,15 @@ export interface OrderDetailApi extends OrderApi {
   customer_phone: string;
   notes: string;
   subtotal: string;
+  discount: string;
   tax: string;
+  payment_method: string;
+  promo_code: string;
+  ready_at: string | null;
+  table_number: string;
+  delivery_address: string;
+  delivery_city: string;
+  delivery_zip: string;
 }
 
 export interface OrdersResponse {
@@ -133,7 +143,15 @@ export interface SaleDetail extends Sale {
   customer_phone: string;
   notes: string;
   subtotal: number;
+  discount: number;
   tax: number;
+  payment_method: string;
+  promo_code: string;
+  ready_at: string | null;
+  table_number: string;
+  delivery_address: string;
+  delivery_city: string;
+  delivery_zip: string;
 }
 
 function mapOrderToSale(o: OrderApi): Sale {
@@ -167,6 +185,7 @@ export async function getSales(): Promise<Sale[]> {
 export interface OrderLineInput {
   product_id: number;
   quantity: number;
+  note?: string;
 }
 
 /** Create an order from the register ticket — POST /api/orders/. */
@@ -177,6 +196,13 @@ export async function createOrder(input: {
   customer_email?: string;
   customer_phone?: string;
   notes?: string;
+  ready_at?: string | null;
+  table_number?: string;
+  delivery_address?: string;
+  delivery_city?: string;
+  delivery_zip?: string;
+  payment_method?: string;
+  promo_code?: string;
 }): Promise<SaleDetail> {
   const response = await fetch(`${getPortalUrl()}/api/orders/`, {
     method: 'POST',
@@ -195,7 +221,46 @@ export async function createOrder(input: {
     customer_phone: data.customer_phone,
     notes: data.notes,
     subtotal: Number(data.subtotal),
+    discount: Number(data.discount ?? 0),
     tax: Number(data.tax),
+    payment_method: data.payment_method ?? 'cash',
+    promo_code: data.promo_code ?? '',
+    ready_at: data.ready_at ?? null,
+    table_number: data.table_number ?? '',
+    delivery_address: data.delivery_address ?? '',
+    delivery_city: data.delivery_city ?? '',
+    delivery_zip: data.delivery_zip ?? '',
+  };
+}
+
+/** Advance an order's fulfilment status — POST /api/orders/<pk>/status/. */
+export async function updateOrderStatus(id: number, status: string): Promise<SaleDetail> {
+  const response = await fetch(`${getPortalUrl()}/api/orders/${id}/status/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => null);
+    throw new Error(detail?.error || `API error: ${response.status}`);
+  }
+  const data = await response.json();
+  return {
+    ...mapOrderToSale(data),
+    customer_name: data.customer_name,
+    customer_email: data.customer_email,
+    customer_phone: data.customer_phone,
+    notes: data.notes,
+    subtotal: Number(data.subtotal),
+    discount: Number(data.discount ?? 0),
+    tax: Number(data.tax),
+    payment_method: data.payment_method ?? 'cash',
+    promo_code: data.promo_code ?? '',
+    ready_at: data.ready_at ?? null,
+    table_number: data.table_number ?? '',
+    delivery_address: data.delivery_address ?? '',
+    delivery_city: data.delivery_city ?? '',
+    delivery_zip: data.delivery_zip ?? '',
   };
 }
 
@@ -209,7 +274,15 @@ export async function getSale(id: number): Promise<SaleDetail> {
     customer_phone: data.customer_phone,
     notes: data.notes,
     subtotal: Number(data.subtotal),
+    discount: Number(data.discount ?? 0),
     tax: Number(data.tax),
+    payment_method: data.payment_method ?? 'cash',
+    promo_code: data.promo_code ?? '',
+    ready_at: data.ready_at ?? null,
+    table_number: data.table_number ?? '',
+    delivery_address: data.delivery_address ?? '',
+    delivery_city: data.delivery_city ?? '',
+    delivery_zip: data.delivery_zip ?? '',
   };
 }
 

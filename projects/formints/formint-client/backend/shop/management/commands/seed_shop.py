@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from shop.models import Category, Order, OrderItem, Product
+from shop.models import Category, Order, OrderItem, Product, PromoCode
 
 CATALOG = [
     {
@@ -381,5 +381,24 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(f"  ✓ {len(demo_orders)} demo orders")
             )
+
+        # ── Demo promo codes (idempotent) ────────────────────────────────
+        promos = [
+            {"code": "WELCOME10", "discount_type": PromoCode.DiscountType.PERCENT, "value": "10.00"},
+            {"code": "FLAT5", "discount_type": PromoCode.DiscountType.FIXED, "value": "5.00"},
+            {"code": "FREEDEL", "discount_type": PromoCode.DiscountType.FIXED, "value": "2.50"},
+        ]
+        for spec in promos:
+            PromoCode.objects.update_or_create(
+                code=spec["code"],
+                defaults={
+                    "discount_type": spec["discount_type"],
+                    "value": Decimal(spec["value"]),
+                    "is_active": True,
+                },
+            )
+        self.stdout.write(
+            self.style.SUCCESS(f"  ✓ {len(promos)} promo codes (WELCOME10, FLAT5, FREEDEL)")
+        )
 
         self.stdout.write(self.style.SUCCESS("Seed complete."))
