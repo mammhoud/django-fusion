@@ -177,6 +177,51 @@ class Role(models.Model):
 
 
 # ===========================================================================
+# Currency and TaxProfile — Standard parity reference data
+# ===========================================================================
+
+class Currency(models.Model):
+    """Supported POS currency and its exchange-rate metadata."""
+
+    code = models.CharField(max_length=3, unique=True)
+    name = models.CharField(max_length=100)
+    symbol = models.CharField(max_length=8, blank=True, default="")
+    exchange_rate = models.DecimalField(max_digits=12, decimal_places=6, default=1)
+    is_default = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "pos_full"
+        db_table = "full_currencies"
+        ordering = ["code"]
+
+    def __str__(self) -> str:
+        return f"{self.code} — {self.name}"
+
+
+class TaxProfile(models.Model):
+    """Named tax rate shared by products and reporting clients."""
+
+    name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=30, unique=True)
+    rate = models.DecimalField(max_digits=6, decimal_places=4, default=0)
+    is_default = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "pos_full"
+        db_table = "full_tax_profiles"
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.rate}%)"
+
+
+# ===========================================================================
 # InventoryAdjustment — manual stock corrections
 # ===========================================================================
 

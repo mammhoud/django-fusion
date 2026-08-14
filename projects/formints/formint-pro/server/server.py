@@ -28,7 +28,7 @@ Usage:
     python server.py --version                  # Show version
     pos-full-server --port 8766                 # Via pyproject.toml entry point
 
-Full docs: projects/pos/docs/POS_ARCHITECTURE.md
+Full docs: projects/formints/docs/POS_ARCHITECTURE.md
 """
 
 from __future__ import annotations

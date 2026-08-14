@@ -35,6 +35,7 @@ from formint.models import (
     Payroll, EmployeeSchedule, TaxReport,
     Note,
     Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
+    Currency, TaxProfile,
     ClientCategory, LoyaltyTransaction, UserSettings,
     SyncApproval, DeviceToken, SignalEvent,
     Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote,
@@ -52,6 +53,7 @@ __all__ = [
     "PayrollController", "EmployeeScheduleController", "TaxReportController",
     "NoteController", "IngredientController", "RecipeController",
     "ReceiptTemplateController", "RoleController", "InventoryAdjustmentController",
+    "CurrencyController", "TaxProfileController",
     "ClientCategoryController", "LoyaltyTransactionController",
     "UserSettingsController", "SyncApprovalController", "DeviceTokenController",
     "SignalEventController", "CompanyController", "PipelineController",
@@ -240,6 +242,16 @@ class InventoryAdjustmentController(ModelControllerBase):
     model_config = _config(InventoryAdjustment, s.InventoryAdjustmentOut)
 
 
+@api_controller("/currencies", tags=["settings"])
+class CurrencyController(ModelControllerBase):
+    model_config = _config(Currency, s.CurrencyOut)
+
+
+@api_controller("/tax-profiles", tags=["settings"])
+class TaxProfileController(ModelControllerBase):
+    model_config = _config(TaxProfile, s.TaxProfileOut)
+
+
 # ── Loyalty & Client Settings ──────────────────────────────────────────────
 
 @api_controller("/client-categories", tags=["loyalty"])
@@ -323,6 +335,7 @@ ALL_CONTROLLERS = [
     PayrollController, EmployeeScheduleController, TaxReportController,
     NoteController, IngredientController, RecipeController,
     ReceiptTemplateController, RoleController, InventoryAdjustmentController,
+    CurrencyController, TaxProfileController,
     ClientCategoryController, LoyaltyTransactionController,
     UserSettingsController, SyncApprovalController, DeviceTokenController,
     SignalEventController, CompanyController, PipelineController,

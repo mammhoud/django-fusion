@@ -784,6 +784,11 @@ class Tenant(TenantMixin):
         related_name="tenant",
         verbose_name=_("organization"),
     )
+    # Per-tenant overrides for the identity layer (signup gate, social
+    # provider keys, login redirect, branch adapter aliases). Mirrors the
+    # ``BranchSettings.settings`` JSON convention; read by the tenant-aware
+    # auth adapter and provider helpers.
+    settings = models.JSONField(_("settings"), default=dict, blank=True)
     # Gate schema auto-creation on tenancy being active: under SQLite
     # (dev default) saving a Tenant must NOT emit CREATE SCHEMA SQL — it
     # would raise OperationalError. When tenancy is flipped on, the
@@ -797,6 +802,12 @@ class Tenant(TenantMixin):
 
     def __str__(self):
         return f"Tenant[{self.schema_name}] {self.organization.name}"
+
+    @property
+    def default_branch(self):
+        """Headquarters (or first) branch for tenant-scoped landing logic."""
+        branches = self.organization.branches.all()
+        return branches.filter(is_headquarters=True).first() or branches.first()
 
 
 class Domain(DomainMixin):

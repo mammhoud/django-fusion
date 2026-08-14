@@ -23,6 +23,7 @@ from models.hr import Payroll, EmployeeSchedule, TaxReport  # noqa: F401
 from models.notes import Note  # noqa: F401
 from models.extra import (  # noqa: F401
     Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
+    Currency, TaxProfile,
 )
 from models.loyalty import ClientCategory, LoyaltyTransaction, UserSettings  # noqa: F401
 from models.approval import SyncApproval  # noqa: F401

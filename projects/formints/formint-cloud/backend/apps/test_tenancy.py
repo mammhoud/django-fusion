@@ -74,6 +74,83 @@ class BranchSettingsTest(TestCase):
         self.assertIn("USD", str(s))
 
 
+class TenantSettingsFieldTest(TestCase):
+    """Tenant.settings JSON column — identity-layer overrides (8.4)."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Acme", slug="acme-settings")
+
+    def test_settings_defaults_to_empty_dict(self):
+        tenant = Tenant(schema_name="acme-settings", organization=self.org)
+        self.assertEqual(tenant.settings, {})
+
+    def test_settings_json_round_trip(self):
+        tenant = Tenant(schema_name="acme-settings-2", organization=self.org)
+        tenant.settings = {"allow_signup": False, "social": {"google": {"key": "k"}}}
+        self.assertEqual(tenant.settings["allow_signup"], False)
+        self.assertEqual(tenant.settings["social"]["google"]["key"], "k")
+
+    def test_default_branch_resolves_headquarters(self):
+        tenant = Tenant(schema_name="acme-settings-3", organization=self.org)
+        branch = Branch.objects.create(
+            name="HQ", code="ACME-HQ", organization=self.org, is_headquarters=True
+        )
+        Branch.objects.create(name="Satellite", code="ACME-SAT", organization=self.org)
+        self.assertEqual(tenant.default_branch, branch)
+
+
+class TenantContextProcessorTest(TestCase):
+    """context_processors.tenant — None tenant under SQLite/dev."""
+
+    def test_returns_none_tenant_context(self):
+        from apps.core.context_processors import tenant
+
+        ctx = tenant(None)
+        self.assertIsNone(ctx["current_tenant"])
+        self.assertIsNone(ctx["branch_settings"])
+
+
+class TenantProviderSettingsTest(TestCase):
+    """services.tenant_providers — global fallback with no active tenant."""
+
+    def test_provider_falls_back_to_settings(self):
+        from apps.core.services.tenant_providers import tenant_provider_settings
+
+        # No active tenant → falls back to (empty) global settings.
+        self.assertEqual(tenant_provider_settings("google"), {})
+
+
+class TenantAwareAdapterTest(TestCase):
+    """auth_adapters.TenantAwareAccountAdapter — defaults with no tenant."""
+
+    def _request(self):
+        from django.contrib.auth import get_user_model
+        from django.test import RequestFactory
+
+        request = RequestFactory().get("/")
+        user = get_user_model().objects.create_user(
+            username="adapter-test", email="a@example.com", password="x"
+        )
+        request.user = user
+        return request
+
+    def test_signup_open_without_tenant(self):
+        from apps.core.auth_adapters import TenantAwareAccountAdapter
+
+        adapter = TenantAwareAccountAdapter()
+        self.assertTrue(adapter.is_open_for_signup(self._request()))
+
+    def test_login_redirect_without_tenant(self):
+        from apps.core.auth_adapters import TenantAwareAccountAdapter
+
+        adapter = TenantAwareAccountAdapter()
+        # No tenant → base fallback, never a tenant-scoped route.
+        self.assertEqual(
+            adapter.get_login_redirect_url(self._request()),
+            "/accounts/profile/",  # formint-cloud has no LOGIN_REDIRECT_URL override
+        )
+
+
 class TenantModelTest(TestCase):
     """Tenant/Domain registry models import and behave as data records on SQLite.
 

@@ -37,6 +37,7 @@ from formint.models import (
     Payroll, EmployeeSchedule, TaxReport,
     # Extras
     Note, Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
+    Currency, TaxProfile,
     # Loyalty & settings (primary focus)
     ClientCategory, LoyaltyTransaction, UserSettings,
     # Sync / token / audit
@@ -388,6 +389,20 @@ class RoleAdmin(ModelAdmin):
 @admin.register(InventoryAdjustment)
 class InventoryAdjustmentAdmin(ModelAdmin):
     list_display = ["id", "ingredient", "quantity", "adjustment_type", "reason", "created_at"]
+
+
+@admin.register(Currency)
+class CurrencyAdmin(ModelAdmin):
+    list_display = ["code", "name", "symbol", "exchange_rate", "is_default", "is_active"]
+    list_filter = ["is_default", "is_active"]
+    search_fields = ["code", "name"]
+
+
+@admin.register(TaxProfile)
+class TaxProfileAdmin(ModelAdmin):
+    list_display = ["name", "code", "rate", "is_default", "is_active"]
+    list_filter = ["is_default", "is_active"]
+    search_fields = ["name", "code"]
 
 
 # ── Sync / Token / Audit ───────────────────────────────────────────────────

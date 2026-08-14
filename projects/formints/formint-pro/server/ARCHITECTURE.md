@@ -172,7 +172,7 @@ To add HTML serving, Robyn supports `@app.get("/", const=True)` with `serve_file
 ## Shared Module Map
 
 ```
-projects/pos/shared/
+projects/formints/formint-pro/shared/
 ├── signals/__init__.py       # Signal definitions + fire_* helpers
 ├── models/
 │   ├── audit.py              # SignalEvent

@@ -22,8 +22,8 @@ export const ROLE_ROUTES: Record<string, Set<string>> = {
   manager: new Set([
     '/dashboard', '/sale', '/kitchen', '/transactions',
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
-    '/employees', '/schedule', '/payroll', '/customers', '/roles', '/register',
-    '/analytics', '/reports', '/reports?tab=taxReports',
+    '/employees', '/schedule', '/payroll', '/customers', '/roles', '/currencies', '/tax-profiles', '/register',
+    '/analytics', '/reports', '/export', '/reports?tab=taxReports',
     '/settings', '/notes', '/coupons', '/support-chat', '/about',
   ]),
   employee: new Set([
@@ -95,6 +95,8 @@ const navCategories: NavCategory[] = [
       { label: 'nav.payroll', desc: 'nav.payrollDesc', route: '/payroll', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
       { label: 'nav.customers', desc: 'nav.customersDesc', route: '/customers', icon: Ic('hi:user-group'), colorClass: 'bg-secondary' },
       { label: 'nav.roles', desc: 'nav.rolesDesc', route: '/roles', icon: Ic('hi:shield-check'), colorClass: 'bg-secondary' },
+      { label: 'nav.currencies', desc: 'Manage sale currencies', route: '/currencies', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
+      { label: 'nav.taxProfiles', desc: 'Manage named tax rates', route: '/tax-profiles', icon: Ic('hi:receipt-percent'), colorClass: 'bg-secondary' },
       { label: 'nav.register', desc: 'nav.registerDesc', route: '/register', icon: Ic('hi:banknotes'), colorClass: 'bg-secondary' },
     ],
   },
@@ -106,6 +108,7 @@ const navCategories: NavCategory[] = [
     items: [
       { label: 'nav.analytics', desc: 'nav.analyticsDesc', route: '/analytics', icon: Ic('hi:chart-bar'), colorClass: 'bg-error' },
       { label: 'nav.reports', desc: 'nav.reportsDesc', route: '/reports', icon: Ic('hi:document-chart-bar'), colorClass: 'bg-error' },
+      { label: 'nav.export', desc: 'Export local data', route: '/export', icon: Ic('hi:arrow-down-tray'), colorClass: 'bg-error' },
       { label: 'nav.taxReports', desc: 'nav.taxReportsDesc', route: '/reports?tab=taxReports', icon: Ic('hi:receipt-percent'), colorClass: 'bg-error' },
     ],
   },
@@ -433,10 +436,6 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
   const closeTimerRef = useRef<number | null>(null);
   const navContainerRef = useRef<HTMLDivElement | null>(null);
   const userRole = user?.role || 'manager';
-  // Visible categories — shared by the stagger (footer reveal follows the last
-  // category's delay) and the nav render.
-  const visibleCategories = filterNavByRole(navCategories, userRole);
-
   // Reset closing state whenever the drawer is re-opened, then trigger the
   // staggered mask reveal (links rise out of their hidden box) right after
   // the glass pill begins its slide-in.

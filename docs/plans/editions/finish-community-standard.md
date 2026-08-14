@@ -1,5 +1,13 @@
 # Finish Community, Standard & Cloud Editions — Implementation Plan
 
+> **ARCHIVED / SUPERSEDED (14 Aug 2026):** This working file was split into the
+> per-edition plans in [`docs/plans/editions/`](README.md) (`01-community.md`,
+> `02-standard.md`, `03-pro.md`, `04-cloud.md`), which are now the canonical
+> Formints plans and reference the current `formint-community`,
+> `formint-standard`, `formint-pro`, and `formint-cloud` paths. The task code
+> below is retained for history only — do not execute it; its retired
+> `formintA/`, `formint/`, and `formintB/` paths no longer exist.
+>
 > **Note (9 Aug 2026):** this plan was split into per-edition plans with design, architecture, and data-model sections — see [`docs/plans/editions/`](README.md) (`01-community.md`, `02-standard.md`, `04-cloud.md`). **Part C (Cloud) was added here on request** and mirrors `04-cloud.md`. The task code below remains valid.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

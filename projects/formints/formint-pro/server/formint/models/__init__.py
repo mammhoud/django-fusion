@@ -26,6 +26,8 @@ light (no direct ``models.*`` imports at phase 1).
 from models.models import (  # noqa: F401 — imported during phase 2
     Activity,
     CRMNote,
+    Currency,
+    TaxProfile,
     Category,
     ClientCategory,
     CloudLink,

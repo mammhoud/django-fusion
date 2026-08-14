@@ -2,6 +2,33 @@
 
 > All notable changes to the POS restaurant point-of-sale desktop app.
 
+## Unreleased — edition completion
+
+### Community version (formint-community)
+- Bundle generator + rename contract (Formints Community, `com.mammhoud.formint-community`) and landing seed sync (offline-first badge, refund flow) are complete; GitHub publish remains an external operator action.
+
+### Added (pos-client — formint-client)
+- Shop API contract tests — catalog, auth status, cart-count fragment (D1), plus the existing orders/checkout/promo/editorial suite.
+- `my_orders_fragment` — HTMX fragment for the signed-in customer's recent orders (D5), mirroring `products_fragment`.
+
+### Added (Formint Cloud — tenant identity layer)
+- `Tenant.settings` JSON column + migration (per-tenant signup gate, social provider keys, login redirect).
+- `TenantAwareAccountAdapter`, `tenant` context processor, `tenant_provider_settings` helper, and `branch_database_aliases` — all SQLite-safe and tenant-inert without `DB_ENGINE=django_tenants`.
+
+### Changed (Formint Pro)
+- Canonical documentation now points to `formint-pro/server/` and describes Django as the primary API boundary.
+- Added Pro Standard-parity currency and tax-profile models, admin/API routes, and read-only CSV/JSON exports.
+- Retained the Robyn/django-bolt runner as an explicitly optional compatibility path rather than claiming it was removed.
+
+### Changed (Formint Cloud and SDK)
+- Added the missing Cloud `src/AppIsland.tsx` entry point so the Astro frontend hydrates its existing provider stack.
+- `@formints/client` resource modules are built and consumed by the Cloud monitor surface.
+
+### Verification
+- `@formints/client`: 6 Vitest tests, typecheck, and ESM build pass.
+- Cloud frontend: Astro check passes with 0 errors.
+- Pro frontend: Astro check passes with 0 errors; backend gates require the absent local `server/.venv`.
+
 ## 2026-08-11 — Formint Pro: sync + admin + components enhancement
 
 ### Added (formint-pos)
@@ -66,7 +93,7 @@
 
 ## Unreleased — 3 August 2026
 
-> **Per-edition changelogs:** [forge-pos](../pos/forge-pos/CHANGELOG.md)
+> **Per-edition changelogs:** forge-pos merged into formint-community/standard (see `docs/plans/legacy/pos/`)
 
 ### Added (formint-pos — merged package)
 - **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn server + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
@@ -88,7 +115,7 @@
 
 ## v1.3.0 — 30 July 2026
 
-> **Per-edition changelogs:** [forge-pos](../pos/forge-pos/CHANGELOG.md)
+> **Per-edition changelogs:** forge-pos merged into formint-community/standard (see `docs/plans/legacy/pos/`)
 
 ### Added (forge-pos)
 - **Settings → Theme tab** — New tab with Theme Studio link, "Preview Theme Components" modal, and active theme info

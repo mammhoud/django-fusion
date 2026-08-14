@@ -26,7 +26,7 @@ from pathlib import Path
 
 _PATH = Path(__file__).resolve().parent
 
-# Add server/ and projects/pos/ to Python path so `import configs` and `import models` work
+# Add server/ and the project root to Python path so `import configs` and `import models` work
 sys.path.insert(0, str(_PATH))                     # server/ (configs, models, handlers, routes)
 sys.path.insert(0, str(_PATH.parent.parent))       # pos-full/ (project root)
 

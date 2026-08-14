@@ -1,7 +1,7 @@
 """Seed a test restaurant.db with Rust/Diesel schema + sample rows for cross-ORM tests.
 
 Run: python3 tests/seed_rust_db.py
-Creates: projects/pos/pos-full/restaurant.db
+Creates: projects/formints/formint-pro/restaurant.db
 """
 
 import sqlite3

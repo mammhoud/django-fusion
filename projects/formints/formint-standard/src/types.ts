@@ -386,6 +386,28 @@ export interface ReportMetadata {
   created_at: string;
 }
 
+export interface Currency {
+  id: number;
+  code: string;
+  name: string;
+  symbol: string;
+  exchange_rate: number;
+  is_default: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TaxProfile {
+  id: number;
+  name: string;
+  rate: number;
+  is_default: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface InventoryAlert {
   id: number;
   ingredient_id: number;

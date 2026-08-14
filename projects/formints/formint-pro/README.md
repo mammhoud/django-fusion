@@ -10,7 +10,7 @@
 
 Formint POS Professional is the restaurant-focused POS product built from the existing POS capabilities. This directory is the product boundary for:
 
-- `server/` — merged Django boundary (Django Ninja + ninja-extra + django-fusion + Unfold admin + Robyn/django-bolt APIs)
+- `server/` — Django boundary (Django Ninja + ninja-extra + django-fusion + Unfold admin), with an optional legacy Robyn/django-bolt compatibility runner for desktop packaging
 - `frontend/` — Astro + Alpine.js + HTMX shell (landing-fusion skeleton-loading pattern)
 - `src-tauri/` — Tauri desktop shell (same architecture as the merged packages)
 - `assets/` — shared source assets and static build inputs
@@ -25,8 +25,8 @@ formint-pos/
 │   ├── Makefile                 # server targets (dev/check/migrate/test/seed/server)
 │   ├── configs/                 # settings (Unfold + fusion render-mode) + URL wiring
 │   ├── manage.py                # Django entrypoint (DJANGO_SETTINGS_MODULE=configs)
-│   ├── server.py                # Robyn server server (API + WebSocket, :8766)
-│   ├── bolt_api.py              # django-bolt REST API (check-bolt → /bolt/*)
+│   ├── server.py                # Optional legacy Robyn compatibility runner (:8766)
+│   ├── bolt_api.py              # Optional django-bolt compatibility API (/bolt/*)
 │   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
 │   │   ├── models/              # re-exports pos_full models (unified layer)
@@ -103,7 +103,7 @@ rendered fragments and lean HTMX data-only responses (see `formint/fusion.py`).
 ### Quick start (make)
 
 ```bash
-cd projects/pos/formint-pos
+cd projects/formints/formint-pro
 make install   # backend .venv + deps + migrate + frontend npm install
 make seed      # migrate + superuser + demo data (admin@formint.local / admin123)
 make seed-force  # wipe + re-seed all demo data
@@ -121,7 +121,7 @@ make test      # 66 backend tests + frontend contract tests
 make stop      # stop the tmux env
 ```
 
-Full command list: `make help`. The parent `projects/pos/Makefile` delegates
+Full command list: `make help`. The parent `projects/formints/Makefile` delegates
 `make formint-{install,run,env,stop,test,check,clean}` here.
 
 Validation: `make check` (django check + astro check), `make test`.
@@ -136,21 +136,21 @@ Validation: `make check` (django check + astro check), `make test`.
 
 | Home — branch summary with live counts | Data — server-rendered tables |
 |----------------------------------------|-------------------------------|
-| ![Home](<../../landing-fusion/backend/assets/static/related/formints/standard-checkout.jpg>) | ![Data](<../../landing-fusion/backend/assets/static/related/formints/standard-operations.jpg>) |
+| ![Home](<../../precis/landi/backend/assets/static/related/formints/standard-checkout.jpg>) | ![Data](<../../precis/landi/backend/assets/static/related/formints/standard-operations.jpg>) |
 
 ### Admin (Unfold master manager)
 
 | Dashboard — KPI cards + charts | Products |
 |-------------------------------|----------|
-| ![Dashboard](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg>) | ![Products](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-products.jpg>) |
+| ![Dashboard](<../../precis/landi/backend/assets/static/related/formints/pro-admin-dashboard.jpg>) | ![Products](<../../precis/landi/backend/assets/static/related/formints/pro-admin-products.jpg>) |
 
 | Customers | Sales |
 |-----------|-------|
-| ![Customers](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-customers.jpg>) | ![Sales](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-sales.jpg>) |
+| ![Customers](<../../precis/landi/backend/assets/static/related/formints/pro-admin-customers.jpg>) | ![Sales](<../../precis/landi/backend/assets/static/related/formints/pro-admin-sales.jpg>) |
 
 | Loyalty — client categories | Settings — user preferences |
 |-----------------------------|-----------------------------|
-| ![Loyalty](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-loyalty.jpg>) | ![Settings](<../../landing-fusion/backend/assets/static/related/formints/pro-admin-settings.jpg>) |
+| ![Loyalty](<../../precis/landi/backend/assets/static/related/formints/pro-admin-loyalty.jpg>) | ![Settings](<../../precis/landi/backend/assets/static/related/formints/pro-admin-settings.jpg>) |
 
 > Captured from a seeded dev environment (`make env` + `make seed`).
 -->
@@ -158,7 +158,7 @@ Validation: `make check` (django check + astro check), `make test`.
 ## Frontend
 
 ```bash
-cd projects/pos/formint-pos/frontend
+cd projects/formints/formint-pro/frontend
 make install   # npm install
 make dev       # astro dev :4321
 ```
@@ -171,7 +171,7 @@ Validation: `make check` (astro check) and `make build`.
 
 ## Tauri shell
 
-`src-tauri/` keeps the same desktop shell architecture as the merged editions. The server/desktop layer consumes the same Robyn/Django APIs — see [`../docs/`](../docs/) for the full architecture documentation.
+`src-tauri/` keeps the same desktop shell architecture as the merged editions. The desktop layer uses Django as its primary API authority; the legacy Robyn runner remains only as a compatibility packaging path — see [`../docs/`](../docs/) for the full architecture documentation.
 
 ## Migration notes
 

@@ -425,13 +425,13 @@ def tenant_provider_settings(provider_id: str) -> dict:
 
 ### 8.5 Checklist for this tenant step
 
-- [ ] Add `apps/core/auth_adapters.py` (`TenantAwareAccountAdapter`)
-- [ ] Set `ACCOUNT_ADAPTER = "apps.core.auth_adapters.TenantAwareAccountAdapter"`
-- [ ] Add `apps/core/context_processors.py` (tenant + branch_settings) and register in `TEMPLATES`
-- [ ] Add `Tenant.settings` JSON column + migration
-- [ ] Add `apps/core/services/tenant_providers.py` (per-tenant provider overrides)
-- [ ] Document `DATABASES` branch aliases + `.using(alias)` read-only convention
-- [ ] Tests (SQLite-safe): adapter falls back to defaults with no tenant; context processor returns `None` tenant; provider helper falls back to settings
+- [x] Add `apps/core/auth_adapters.py` (`TenantAwareAccountAdapter`)
+- [x] Set `ACCOUNT_ADAPTER = "apps.core.auth_adapters.TenantAwareAccountAdapter"`
+- [x] Add `apps/core/context_processors.py` (tenant + branch_settings) and register in `TEMPLATES`
+- [x] Add `Tenant.settings` JSON column + migration
+- [x] Add `apps/core/services/tenant_providers.py` (per-tenant provider overrides)
+- [x] Document `DATABASES` branch aliases + `.using(alias)` read-only convention
+- [x] Tests (SQLite-safe): adapter falls back to defaults with no tenant; context processor returns `None` tenant; provider helper falls back to settings
 
 **Verification (SQLite, `TENANCY_ENABLED=False`):** all four pieces import,
 run and fall back gracefully — `connection.tenant` is `None`, the context

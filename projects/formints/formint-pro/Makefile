@@ -2,15 +2,15 @@
 # Formint POS — Root Makefile (frontend + server + full commands)
 # ============================================================================
 # Orchestrates the merged package:
-#   - server/   : Django + Ninja + django-fusion + Unfold admin + Robyn server
-#                  (single merged Django project — pos_full + formint apps)
+#   - server/   : Django + Ninja + django-fusion + Unfold admin
+#                  (single merged Django project; optional legacy Robyn compatibility runner)
 #   - frontend/  : Astro + Alpine.js + HTMX shell (proxies /api, /htmx, /fusion)
 #   - src-tauri/ : Tauri v2 desktop shell
 #
 # Design: delegates to per-layer Makefiles via $(MAKE) -C, mirroring
 # landing-fusion's root Makefile (frontend targets here, server via
-# `backend-*` → server/Makefile). The parent `projects/pos/Makefile`
-# delegates its `formint-*` targets here too.
+# `backend-*` → server/Makefile). The parent `projects/formints/Makefile`
+# delegates its `pro-*` targets here too.
 #
 # Quick start:
 #   make install          — server .venv + deps, frontend npm install, migrate
@@ -61,7 +61,7 @@ help: ## Show all commands
 	@echo ''
 	@echo '── Validation ──────────────────────────────────────────────'
 	@echo '  make check            Django check + astro check'
-	@echo '  make test             Backend suite (35) + frontend contract tests'
+	@echo '  make test             Backend suite + frontend contract tests'
 	@echo ''
 	@echo '── Build ───────────────────────────────────────────────────'
 	@echo '  make build            Frontend production build + backend collectstatic'
@@ -231,7 +231,7 @@ bundle: desktop-build ## Alias for make desktop-build
 server-binary: ## PyInstaller formint-backend → src-tauri/binaries/<target-triple>
 	$(MAKE) -C $(BACKEND_DIR) server-binary
 
-server-build: ## Build the Robyn server binary → server/dist/formint-backend
+server-build: ## Build the optional legacy compatibility binary → server/dist/formint-backend
 	$(MAKE) -C $(BACKEND_DIR) server-binary
 
 server-install-bin: ## Copy the server binary into src-tauri/binaries/ (Tauri externalBin)

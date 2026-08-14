@@ -6,7 +6,7 @@
 
 ## Comparison at a glance
 
-| Feature | Community (`formintA/`) | Pro (`formint/`, merged) | Cloud (`formint-cloud/`, formint-cloud) | pos-client (`formintC/`) |
+| Feature | Community (`formint-community/`) | Pro (`formint-pro/`, merged) | Cloud (`formint-cloud/`, formint-cloud) | pos-client (`formint-client/`) |
 |---------|-------------------------|--------------------------|--------------------------------|--------------------------|
 | **Tauri shell** | ✅ | ✅ | ❌ (hosted) | ✅ (Vue 3) |
 | **Astro frontend** | ❌ | ✅ | ❌ | ❌ |
@@ -18,44 +18,43 @@
 | **Cloud sync** | ❌ (sync client target) | ✅ | ✅ (cloud master) | ❌ |
 | **Port** | 1420 | 8767 (backend) / 4321 (frontend) | 8767 (API) / 8082 (admin) | 1420 |
 
-> **Note**: The former `pos-full` (Cloud Master) and `pos-solo` (Standalone)
-> editions were merged into the Pro package at `formint/` — the merged package
-> owns the Pro Robyn server (`formint/server/`) and both legacy React UIs
-> were removed (the Astro + Alpine + HTMX frontend is canonical). The Cloud
-> master lives in `formint-cloud/` as a **full Django setup** — the Django backend
-> (`backend/`, `formint-cloud`) serves the whole API surface (viewsets, fusion
-> contract, bolt analytics); the Robyn server that previously served it was
-> removed in favour of a second Django dev server on `:8767`. `formintA/` is
-> the Community tier (formerly forge-pos / pos-mini).
+> **Note**: The former `pos-full` and `pos-solo` products were merged into
+> `formint-pro/`; its Django server is canonical and its Robyn/django-bolt
+> runner is retained only for compatibility packaging. The legacy React UIs
+> were removed in favour of the Astro + Alpine + HTMX frontend. `formint-cloud/`
+> is a separate full-Django hosted master; Django serves its API, fusion
+> contract, and bolt analytics on the documented ports. `formint-community/`
+> is the standalone Community tier, while `formint-standard/` is the separate
+> local-first Standard tier.
 
 ## Version matrix
 
 | Edition | Directory | Package | Version | Tauri product | Tauri identifier |
 |---------|-----------|---------|---------|---------------|------------------|
-| **Community** | [`formintA/`](../../formintA/) | `formint-pos` | **0.1.0** | Formint | `com.mammhoud.pos` |
-| **Standard** | *(merged into `formint/`)* | `formint-pos-server` / `formint-pos-backend` | **0.1.0** | — | — |
-| **Pro** | [`formint/`](../../formint/) | `formint-pos` (frontend `formint-pos-frontend` 0.1.0 · backend `formint-pos-backend` 0.1.0 · server `formint-pos-server` 0.1.0) | **0.1.0** | Formint POS Professional | `cloud.structa.formint.pos` |
+| **Community** | [`formint-community/`](../../formint-community/) | `formint-pos` | **0.1.0** | Formint | `com.mammhoud.pos` |
+| **Standard** | [`formint-standard/`](../../formint-standard/) | `formint-standard` | **0.1.0** | Formint Standard | `com.mammhoud.formint-standard` |
+| **Pro** | [`formint-pro/`](../../formint-pro/) | `formint-pos` (frontend `formint-pos-frontend` 0.1.0 · backend `formint-pos-backend` 0.1.0 · server `formint-pos-server` 0.1.0) | **0.1.0** | Formint POS Professional | `cloud.structa.formint.pos` |
 | **Cloud** | [`formint-cloud/`](../../formint-cloud/) | `formint-cloud` | **0.1.0** | — | — |
-| **pos-client** | [`formintC/`](../../formintC/) | `pos-client` | **1.0.0** (package) / **0.1.0** (Cargo + Tauri) | POS Client | `com.pos-client.app` |
+| **pos-client** | [`formint-client/`](../../formint-client/) | `pos-client` | **1.0.0** (package) / **0.1.0** (Cargo + Tauri) | POS Client | `com.pos-client.app` |
 
 > **Standalone community version:** published as `github.com/mammhoud/formint-community` —
 > package `formint-community`, product **Formints Community**, identifier
-> `com.mammhoud.formint-community`. Refreshed from `formintA/` via `make community-bundle`.
+> `com.mammhoud.formint-community`. Refreshed from `formint-community/` via `make community-bundle`.
 
 ### Edition → directory mapping (canonical names)
 
 | Canonical edition | Product tier | Directory / package | Legacy names |
 |-------------------|--------------|---------------------|--------------|
-| **Community** | Free, offline-first desktop POS (Rust/Diesel, no server) | `formintA/` (`forge-pos`/`pos-mini`) | Minimal, Mini |
-| **Standard** | Standalone + embedded Robyn server + cloud sync client | merged into `formint/` | Solo |
-| **Pro** | Multi-terminal + cloud master + django-bolt API | `formint/` (merged `formint-pos`) | Full |
+| **Community** | Free, offline-first desktop POS (Rust/Diesel, no server) | `formint-community/` | Minimal, Mini |
+| **Standard** | Standalone Rust/Diesel POS with money, tax, permissions, export, and sync queue | `formint-standard/` | Solo |
+| **Pro** | Django-first multi-terminal POS with CRM, fusion, sync, and optional legacy runner | `formint-pro/` | Full |
 | **Cloud** | Hosted multi-terminal SaaS cloud master | `formint-cloud/` (`formint-cloud`) | Cloud Server |
 
 ---
 
 ## Per-edition components & features
 
-### Community — `formintA/` (formerly forge-pos / pos-mini)
+### Community — `formint-community/` (formerly forge-pos / pos-mini)
 
 > Lightweight Tauri + React + Rust/Diesel desktop app. No server. Product
 > slug on the landing site: `/products/formint-pos/`.
@@ -102,18 +101,17 @@
 
 ---
 
-### Standard — merged into `formint/`
+### Standard — `formint-standard/`
 
-> Standalone tier: everything in Community's data model **plus** the embedded
-> Robyn server (REST API, inventory, analytics, WebSocket streams) and the
-> cloud sync client that pushes products/sales/nodes to a cloud master.
-> Since the `pos-solo` merge this tier shares the `formint/` codebase with Pro;
-> it is gated by configuration, not a separate directory.
+> Standalone tier: everything in Community's local-first workflow plus the
+> Rust/Diesel money, tax-profile, permissions, export, and sync-queue surfaces.
+> Standard is a maintained canonical package at `formint-standard/`; it is not
+> an alias for the Pro Django server.
 
 #### Added components & features (over Community)
 
-- **Robyn server** (`formint/server/`) — REST + WebSocket on `:8766`, Django ORM as data authority
-- **Django ORM models** — `full_` / `pos_crm_` / `pos_sync_` tables (30 models)
+- **Standard local data layer** (`formint-standard/src-tauri/`) — Rust/Diesel SQLite with offline queue and reconnect support
+- **Standard reference data** — currencies, tax profiles, permission resolution, and CSV/JSON export surfaces
 - **Node registry + heartbeats** — `Node`, `Heartbeat`, `NodeEvent`, `DeviceConfig`, `MasterDevice`
 - **Cloud sync client** — pushes products, sales, nodes to a cloud master
 - **Loyalty & rewards program** — loyalty transactions, points issued/redeemed
@@ -124,21 +122,21 @@
 
 ---
 
-### Pro — `formint/` (merged formint-pos, recommended)
+### Pro — `formint-pro/` (merged formint-pos, recommended)
 
 > **Phase 2 status:** merge complete — `pos-full` + `pos-solo` consolidated.
-> Astro + Alpine + HTMX frontend · Django Ninja backend · Robyn server ·
-> Unfold admin · Tauri v2 shell.
+> Astro + Alpine + HTMX frontend · Django Ninja backend · optional legacy
+> Robyn/django-bolt compatibility runner · Unfold admin · Tauri v2 shell.
 
 #### Added components — backend (`server/`)
 
 | Layer | Components |
 |-------|-----------|
-| **API** | `formint/api.py` (NinjaAPI + fusion encoder), `controllers.py` (45 ModelController CRUD resources), `schemas.py` (ninja_schema Out + writable/patch factories) |
+| **API** | `server/formint/api.py` (NinjaAPI + fusion encoder), `server/formint/controllers.py` (45+ ModelController CRUD resources), `server/formint/schemas.py` (fusion Out + writable/patch factories) |
 | **HTMX fragments** | `components.py` (TableMixin tables + FormMixin forms), `handlers.py` (BranchSummaryHandler, TableFragmentHandler, FormFragmentHandler), `fusion_components.py` (FusionDualModeMixin + FragmentComponent) |
 | **Fusion render-mode** | `fusion.py` (encode_fragment_pointer, render-mode/nav/assets contract), `core.py` (FormintModule nav source of truth), `views.py` (/fusion/* endpoints) |
 | **Admin** | `admin.py` (canonical Unfold ModelAdmin superset), `dashboard.py` (10 KPI cards · 5 charts · 3 tables) |
-| **Robyn server routes** | `admin.py`, `apikeys.py`, `approvals.py`, `config.py`, `crm.py`, `data.py`, `fusion_fragments.py`, `htmx_fragments.py`, `info.py`, `kds.py`, `nodes.py`, `reports.py`, `state.py`, `sync.py`, `webhooks.py` |
+| **Compatibility routes** | `server/server.py`, `server/bolt_api.py`, and `server/routes/` — optional legacy Robyn/django-bolt packaging path |
 
 #### Added components — frontend (`frontend/`)
 
@@ -155,7 +153,8 @@
 - Django Ninja + ninja-extra typed REST API — **45 paginated resources** with fusion envelope `{ status, message, data }`
 - django-fusion **data components** — server-rendered tables + forms over HTMX (render-first / data-API dual mode)
 - **Unfold admin** — KPI dashboard, charts, loyalty & settings management, 2FA
-- **Robyn server** — WebSocket streams, data sync, webhooks, scheduler (`:8766`)
+- **Optional legacy runner** — Robyn WebSocket/data-sync compatibility path (`:8766`); Django remains the primary server API
+- **Standard parity** — currency/tax-profile models and admin, `/api/v1/currencies/`, `/api/v1/tax-profiles/`, and read-only CSV/JSON exports
 - **Cloud sync** — multi-terminal push to a cloud master; sync approval + conflict handling
 - **Cloud CRM** — companies, pipelines, stages, contacts, deals, activities, notes
 - **Node registry** — `Node`/`Heartbeat`/`NodeEvent`/`DeviceConfig`/`MasterDevice`/`CloudLink`/`SyncLog`
@@ -210,7 +209,7 @@
 
 ---
 
-### pos-client — `formintC/` (Vue 3 desktop)
+### pos-client — `formint-client/` (Vue 3 desktop)
 
 > Separate Vue 3 + Tauri desktop client app (not an upgrade of formint-pos).
 
@@ -230,22 +229,29 @@
 
 - Dashboard (quick actions), Menu catalog, Orders (sale list), Settings (connection)
 - Bilingual i18n (EN / zh-CN), custom title bar, Pinia state management
+- **Django shop backend** — `catalog_api` / `orders_api` JSON, auth-status API,
+  cart/checkout flow, `place_order`, and the django-fusion dual-mode fragments
+  (`products_fragment`, `cart_count_fragment`, `cart_drawer_fragment`,
+  `my_orders_fragment` — the signed-in customer's recent orders, D5)
+- **Shop API contract tests** — catalog, auth status, and cart-count fragment
+  (D1) plus the orders/checkout/promo/editorial suite under `backend/tests/`
+
 
 ---
 
 ## Architecture per edition
 
-### Pro — `formint/` (merged formint-pos — recommended)
+### Pro — `formint-pro/` (merged formint-pos — recommended)
 ```
 Astro → HTMX/JSON → Django Ninja backend → Django ORM → SQLite
   └── /api/v1 (45 paginated resources, django-fusion encoder/decoder)
   └── /htmx   (django-fusion tables + forms fragments)
   └── /fusion (render-mode / navigation / assets)
   └── /admin  (Unfold dashboard + KPI cards + charts)
-  └── Robyn Server (:8766) → WebSocket streams + data sync + webhooks
+  └── optional Robyn compatibility runner (:8766) → legacy WebSocket/data-sync contract
 ```
 
-### Community — `formintA/` (formerly forge-pos / pos-mini)
+### Community — `formint-community/` (formerly forge-pos / pos-mini)
 ```
 React → Tauri Commands → Rust/Diesel → SQLite
 ```

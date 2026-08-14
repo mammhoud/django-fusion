@@ -8,7 +8,7 @@ native capabilities.
 ## Local development
 
 ```bash
-cd projects/pos/formint-pos/server
+cd projects/formints/formint-pro/server
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[dev]'
@@ -44,7 +44,7 @@ activity, loyalty transaction mix), and recent activity tables. Injected via
 ### Run
 
 ```bash
-cd projects/pos/formint-pos/backend
+cd projects/formints/formint-pro/backend
 python manage.py migrate
 python manage.py --ensure-superuser   # auto-creates admin + UserSettings row
 python manage.py runserver 127.0.0.1:8000

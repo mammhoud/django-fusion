@@ -34,12 +34,13 @@ The detailed repository plan remains authoritative for implementation. Anytype c
 
 | Document | Status | Decision |
 |---|---|---|
-| `docs/plans/pos/formint-pos-professional-plan.md` | Current | Canonical Professional product and engineering contract |
-| `docs/plans/pos/README.md` | Update needed | Align index with all POS migration documents and statuses |
+| `docs/plans/editions/README.md` | Current (canonical) | Formints edition chain 01–08 — the main, latest product + engineering plans |
+| `docs/plans/pos/formint-pos-professional-plan.md` | Superseded → editions | Retired `projects/pos/` scope; canonical scope is now `editions/03-pro.md` + `04-cloud.md` |
+| `docs/plans/pos/README.md` | Archived / superseded | Points at `editions/README.md`; retained as migration evidence |
 | `docs/plans/pos/forge-pos-plan.md` | Historical / migration source | Keep until every transfer gate passes; never market as a product |
-| `docs/plans/pos/pos-solo-enhancement.md` | Historical / removed working file | Do not recreate unless a migration reference is recovered; use Formint/Forge plans |
-| `docs/plans/pos/tauri-plugins-enhancement-plan.md` | Current migration plan | Select plugins through capability and platform gates |
-| `docs/plans/pos/cloud-plan.md` | Current planned architecture | Sole POS plan allowed to define cloud django-bolt transport |
+| `docs/plans/pos/pos-solo-enhancement.md` | Historical / removed working file | Do not recreate unless a migration reference is recovered; use Formints/Forge plans |
+| `docs/plans/pos/tauri-plugins-enhancement-plan.md` | Historical migration plan | Select plugins through capability and platform gates; Formints owns the desktop contract |
+| `docs/plans/pos/cloud-plan.md` | Superseded → `editions/04-cloud.md` | Cloud master is now `formint-cloud`; django-bolt transport is Cloud-only |
 | `docs/Anytype/architecture/editions.md` | Current | Community, Formint Professional, POS Cloud |
 | `docs/Anytype/plans/formint-pos-professional-plan.md` | Current summary | Product/use-case copy of the repository plan |
 | `docs/Anytype/plans/forge-migration.md` | Current migration summary | Parity and deletion gates |

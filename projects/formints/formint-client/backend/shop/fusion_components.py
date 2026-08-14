@@ -15,12 +15,13 @@ from django_fusion.routes.components.dual_mode import FusionDualModeMixin
 from django_fusion.routes.components.fragments import FragmentComponent
 
 from . import services
-from .models import Product
+from .models import Order, Product
 
 __all__ = [
     "ProductGridFragment",
     "CartCountFragment",
     "CartDrawerFragment",
+    "MyOrdersFragment",
 ]
 
 
@@ -92,4 +93,23 @@ class CartDrawerFragment(FragmentComponent):
         context = super().get_fragment_context(**kwargs)
         cart = services.get_or_create_cart(self.request)
         context.update({"cart": cart, "cart_payload": services.cart_payload(cart)})
+        return context
+
+
+class MyOrdersFragment(FragmentComponent):
+    """Order history — the signed-in customer's recent orders (storefront drawer)."""
+
+    fragment_name = "shop.fragments.my_orders"
+    template_name = "shop/fragments/my_orders.html"
+    htmx_only = True
+
+    def get_fragment_context(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_fragment_context(**kwargs)
+        user = getattr(self.request, "user", None)
+        orders = (
+            Order.objects.filter(user=user).order_by("-created_at")[:10]
+            if user is not None and user.is_authenticated
+            else Order.objects.none()
+        )
+        context.update({"orders": orders})
         return context

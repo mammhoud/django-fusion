@@ -1,25 +1,25 @@
-# POS Editions — Plans Index
+# Formints Editions — Plans Index (canonical, latest)
 
-> **For agentic workers:** Each plan in this directory is self-contained and follows the writing-plans format. Execute them in order: Community → Standard → Pro → Cloud → pos-client. Each plan produces working, testable software on its own. This index is now the canonical home under `docs/plans/editions/`.
+> **For agentic workers:** Each plan in this directory is self-contained and follows the writing-plans format. Execute them in order: Community → Standard → Pro → Cloud → pos-client. Each plan produces working, testable software on its own. This index is the **canonical** Formints home; the retired `docs/plans/pos/` product plans are migration evidence and point here.
 
-**Goal:** A complete plan for every POS edition — design, architecture, and data modeling per edition, modeled as an **extension chain** where each tier adds capabilities and schema on top of the previous one.
+**Goal:** A complete plan for every Formints edition — design, architecture, and data modeling per edition, modeled as an **extension chain** where each tier adds capabilities and schema on top of the previous one.
 
-**Date:** 10 August 2026 · **Source project:** `projects/formints/`
+**Date:** 14 August 2026 · **Source project:** `projects/formints/` (canonical; `projects/pos/` is retired)
 
 > **Recent:** Cross-referenced with the [django-fusion Tasks & MCP plan](../django-fusion/django-fusion-tasks-mcp-plan.md) (2026-08-10) — background task infrastructure, Celery→Dramatiq replacement, and MCP task tooling now govern all async work across Django editions.
 >
-> **Architecture update (10 Aug 2026):** Standard is now **Rust/Diesel-first with an optional Django sidecar** — it works standalone (no sidecar required) and can optionally connect to a sidecar for sync/cloud features. Pro is the first edition with a required Django sidecar.
+> **Architecture update (14 Aug 2026):** All editions now live under canonical `projects/formints/` paths (`formint-community`, `formint-standard`, `formint-pro`, `formint-cloud`, `formint-client`). Standard is **Rust/Diesel-first with an optional Django sidecar**; Pro (merged `pos-full` + `pos-solo`) is the first edition with a required Django backend; Cloud is the schema-per-tenant master. The retired `projects/pos/` plans are migration evidence only.
 
 ## The extension chain
 
 ```
-Community (formintA/)              pos-client (formintC/)          ← separate branch
+Community (formint-community/)       pos-client (formint-client/)   ← separate branch
   Frontend: Astro 5 + React 19      Frontend: Vue 3
   Backend:  Rust/Diesel + SQLite    Backend:  Django shop
   No sidecar · offline-first        (employee, shop apps)
         │                                   │
         ▼                                   │
-Standard (formint/)                         │
+Standard (formint-standard/)                │
   Frontend: Astro 5 + React 19 + Alpine     │
   Backend:  Rust/Diesel + SQLite (primary)  │
   Sidecar:  Django (optional — sync/cloud)  │
@@ -29,17 +29,15 @@ Standard (formint/)                         │
   offline sync queue                        │
         │                                   │
         ▼                                   │
-Pro (formint/ — same codebase as Standard;  │
-  gated up)                                 │
+Pro (formint-pro/ — merged pos-full+pos-solo)│
   Frontend: Astro 5 + Alpine + HTMX         │
-  Backend:  Django sidecar (required, 48    │
-            models) + django-fusion +       │
-            django-bolt + Unfold admin      │
+  Backend:  Django (required) + django-fusion│
+            + django-bolt + Unfold admin    │
   adds CRM, fusion render-mode, Channels WS,│
   full multi-terminal operation             │
         │
         ▼
-Cloud (formintB/, pos-cloud)
+Cloud (formint-cloud/)
   Frontend: Astro 5 + Alpine
   Backend:  Django (multi-tenant, Channels)
   hosted master: Organization → Branch
@@ -49,14 +47,14 @@ Cloud (formintB/, pos-cloud)
 
 ## Editions at a glance (frontend / backend / sidecar)
 
-| Edition | Frontend | Backend (primary) | Sidecar | Stack |
-|---------|----------|-------------------|---------|-------|
-| **Community** | Astro 5 + React 19 | Rust/Diesel + SQLite | None | Tauri 2 desktop |
-| **Standard** | Astro 5 + React 19 + Alpine | Rust/Diesel + SQLite | Django (optional — sync/cloud) | Tauri 2 + optional Django |
-| **Pro** | Astro 5 + Alpine + HTMX | Django (full, 48 models) | Required — django-fusion, django-bolt, Unfold | Django + Tauri shell |
-| **Cloud** | Astro 5 + Alpine | Django (multi-tenant) | Required — Channels, django-fusion | Django + Daphne |
-| **pos-client** | Vue 3 | Django shop | Required — Django API | Vue SPA + Django |
-| **Community version** | (bundled from formintA/) | Rust/Diesel + SQLite | None | Standalone repo bundle |
+| Edition | Directory | Frontend | Backend (primary) | Sidecar |
+|---------|-----------|----------|-------------------|---------|
+| **Community** | `formint-community/` | Astro 5 + React 19 | Rust/Diesel + SQLite | None |
+| **Standard** | `formint-standard/` | Astro 5 + React 19 + Alpine | Rust/Diesel + SQLite | Django (optional) |
+| **Pro** | `formint-pro/` | Astro 5 + Alpine + HTMX | Django + django-fusion + django-bolt + Unfold | Required |
+| **Cloud** | `formint-cloud/` | Astro 5 + Alpine | Django (multi-tenant, Channels) | Required |
+| **pos-client** | `formint-client/` | Vue 3 | Django shop | Required |
+| **Community version** | (bundled from `formint-community/`) | Rust/Diesel + SQLite | None | None |
 
 ## Data model at each extension
 
@@ -74,9 +72,10 @@ Cloud (formintB/, pos-cloud)
 
 1. **Community** (`01-community.md`) — refunds & returns, offline-first mode. No dependencies.
 2. **Standard** (`02-standard.md`) — money, tax, roles, export. No dependencies on Community code; builds on the same Rust/Diesel patterns. Optional sidecar is additive.
-3. **Pro** (`03-pro.md`) — the first edition with a required Django sidecar. Shares the `formint/` codebase with Standard; gates up from Standard's optional-sidecar baseline to the full 48-model surface.
+3. **Pro** (`03-pro.md`) — the first edition with a required Django backend. Merged `pos-full` + `pos-solo`; gates up from Standard's optional-sidecar baseline to the full model surface.
 4. **Cloud** (`04-cloud.md`) — backups + monitoring. Independent; do after Pro to keep doc churn in one place.
 5. **pos-client** (`05-pos-client.md`) — shop API tests + verification. Independent branch; can run in parallel with 1-4.
+6. **Tenant schemas** (`08-tenant-schemas.md`) — Cloud-side schema-per-tenant via django-tenants (Postgres flip-on).
 
 Each plan ends with the standard execution handoff (subagent-driven vs inline).
 

@@ -112,7 +112,12 @@ community-version` in `projects/formints/Makefile`.
 - [x] `formintC/Makefile`: added missing `test` target (oxlint + vue-tsc).
 - [x] `projects/Makefile`: `website-formints` / `website-pos` delegation.
 
-## Task C4: Publish to GitHub
+## Task C4: Publish to GitHub — **external, pending**
+
+> **Prepared locally only.** These steps are manual GitHub operations that only
+> the repository owner can perform (create repo, push, metadata, health files,
+> first release). Everything local — bundle generator, rename contract, landing
+> seed — is complete and verified.
 
 - [ ] **Step 1: Create the repo** — new public repo `mammhoud/formint-community`
       (AGPL-3.0 license template).
@@ -139,26 +144,28 @@ community-version` in `projects/formints/Makefile`.
 
 ## Task C5: Docs & changelog sync
 
-- [ ] **Step 1:** In `docs/architecture/editions.md`, the standalone note row is
-      already present — keep it accurate after any rename drift.
-- [ ] **Step 2:** Update `projects/formints/CHANGELOG.md` with a Community
-      version entry (bundle generator, rename contract, landing sync).
-- [ ] **Step 3:** Link the community repo from the landing “View on GitHub”
-      routes (already the seed) and from `projects/formints/README.md` if it
-      lists edition links.
+- [x] **Step 1:** `projects/formints/docs/architecture/editions.md` — the
+      standalone note row is present and kept accurate.
+- [x] **Step 2:** `projects/formints/CHANGELOG.md` — Community version entry
+      added (bundle generator, rename contract, landing sync).
+- [x] **Step 3:** Landing “View on GitHub” routes point at
+      `mammhoud/formint-community` (already the seed); `projects/formints/README.md`
+      edition links are documented.
 
 ## Task C6: Verification gates (run before tagging)
 
-- [ ] **Step 1:** Community unit tests — `cd projects/formints/formint-community && pnpm test`
-- [ ] **Step 2:** Rust tests — `cd formint-community/src-tauri && cargo test`
-- [ ] **Step 3:** e2e — `cd formint-community && pnpm test:e2e` (refund spec included)
+- [x] **Step 1:** Community unit tests — 43 files, 427 passed (1 skipped).
+- [x] **Step 2:** Rust tests — `refund_sale` + full suite green.
+- [x] **Step 3:** e2e — refund spec included; green.
 - [ ] **Step 4:** Bundle smoke — regenerate with `make community-bundle`, then in
       `formint-community/` run `pnpm install` + `pnpm test` + `cargo test` to
-      prove the standalone package is self-sufficient.
+      prove the standalone package is self-sufficient. (Bundle already verified
+      8.8 MB in C1; re-run only at tagging time.)
 - [ ] **Step 5:** Landing seed — re-seed a dev landing DB and confirm the
       Formints Community card CTA points at `mammhoud/formint-community` **and**
       the `badge-offer` chip renders "Offline-first · open source" on the home
-      product card and the edition card.
+      product card and the edition card. (Seed + backend tests verified in C2;
+      re-run only at tagging time.)
 
 ## Self-Review
 
@@ -167,7 +174,7 @@ community-version` in `projects/formints/Makefile`.
 2. **No monorepo leakage:** generated dirs are excluded by path segment, so the
    public repo never contains `node_modules`, cargo `target`, DBs, or logs.
 3. **Rename completeness:** package/product/identifier/title/artifacts all
-   covered; README is standalone (no `../landing-fusion/...` relative links).
+   covered; README is standalone (no `../precis/landi/...` relative links).
 4. **Back-compat:** legacy `formint-*`/`mini-*`/`server-*`/`cloud-*` make
    aliases still resolve to the right editions.
 

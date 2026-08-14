@@ -127,7 +127,7 @@ def rust_db() -> RustDB:
             "No Rust-built restaurant.db found. "
             "Build the Rust/Tauri app first (creates pos-full/restaurant.db), "
             "or set RUST_DB_PATH=/path/to/restaurant.db. "
-            "Expected location: projects/pos/pos-full/restaurant.db"
+            "Expected location: projects/formints/formint-pro/restaurant.db"
         )
 
     if not _has_rust_tables(db_path):

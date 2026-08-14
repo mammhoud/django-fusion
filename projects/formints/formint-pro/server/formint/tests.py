@@ -5,8 +5,8 @@ from django.test import TestCase
 from django.utils import timezone
 
 from formint.models import (
-    Category, ClientCategory, Customer, LoyaltyTransaction, Product,
-    Sale, UserSettings,
+    Category, ClientCategory, Customer, Currency,
+    LoyaltyTransaction, Product, Sale, TaxProfile, UserSettings,
 )
 
 User = get_user_model()
@@ -1307,3 +1307,34 @@ class FormintComponentsApiTests(TestCase):
     def test_fragment_404_for_unknown(self):
         response = self.client.get('/api/v1/components/fragments/unknown/')
         self.assertEqual(response.status_code, 404)
+
+
+class FormintStandardParityTests(TestCase):
+    """Pro exposes the Standard money, tax, and export reference surfaces."""
+
+    def test_currency_and_tax_profile_controllers_are_registered(self):
+        paths = self.client.get('/api/v1/openapi.json').json()['paths']
+        self.assertIn('/api/v1/currencies/', paths)
+        self.assertIn('/api/v1/tax-profiles/', paths)
+
+    def test_currency_and_tax_profile_models_are_manageable(self):
+        currency = Currency.objects.create(
+            code='USD', name='US Dollar', symbol='$', is_default=True,
+        )
+        profile = TaxProfile.objects.create(
+            name='Standard', code='standard', rate='20.0000', is_default=True,
+        )
+        self.assertEqual(str(currency), 'USD — US Dollar')
+        self.assertIn('20.0000', str(profile))
+
+    def test_export_contract_supports_csv_and_json(self):
+        Product.objects.create(name='Coffee', price='3.50')
+        csv_response = self.client.get('/export/products.csv')
+        self.assertEqual(csv_response.status_code, 200)
+        self.assertIn('text/csv', csv_response['Content-Type'])
+        self.assertIn('Coffee', csv_response.content.decode())
+
+        json_response = self.client.get('/export/products.csv?format=json')
+        self.assertEqual(json_response.status_code, 200)
+        self.assertEqual(json_response.json()['count'], 1)
+        self.assertEqual(json_response.json()['items'][0]['name'], 'Coffee')

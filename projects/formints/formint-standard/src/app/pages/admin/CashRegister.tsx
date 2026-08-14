@@ -9,7 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { Shift } from '../../../types';
 
 function validAmount(value: string): boolean {
-  const amount = Number(value);
+  const normalized = value.trim();
+  if (!normalized) return false;
+  const amount = Number(normalized);
   return Number.isFinite(amount) && amount >= 0;
 }
 

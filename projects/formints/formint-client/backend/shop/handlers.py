@@ -25,13 +25,19 @@ from django_fusion.plugins.htmx import is_htmx_request
 
 from . import services
 from .fusion import get_effective_render_first
-from .fusion_components import CartCountFragment, CartDrawerFragment, ProductGridFragment
+from .fusion_components import (
+    CartCountFragment,
+    CartDrawerFragment,
+    MyOrdersFragment,
+    ProductGridFragment,
+)
 from .models import Product
 
 __all__ = [
     "ProductGridHandler",
     "CartCountHandler",
     "CartDrawerHandler",
+    "MyOrdersHandler",
     "CartAddHandler",
     "CartUpdateHandler",
     "CartRemoveHandler",
@@ -97,6 +103,24 @@ class CartDrawerHandler:
     """GET /shop/fragments/cart/drawer/ — cart drawer body fragment."""
 
     component_class = CartDrawerFragment
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        if not is_htmx_request(request):
+            return _not_htmx(
+                {
+                    "detail": "This endpoint is an HTMX data fragment.",
+                    "product": "formintc-purchase",
+                }
+            )
+        component = self.component_class()
+        component.setup(request)
+        return _fragment_response(request, component)
+
+
+class MyOrdersHandler:
+    """GET /shop/fragments/my-orders/ — signed-in customer's recent orders."""
+
+    component_class = MyOrdersFragment
 
     def get(self, request: HttpRequest) -> HttpResponse:
         if not is_htmx_request(request):

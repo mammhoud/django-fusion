@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Finish the Cloud edition (`formintB/`, `pos-cloud`) by shipping the last missing capability — automatic backups + monitoring — with design, architecture, and data model documented as the top of the extension chain.
+**Goal:** Finish the Cloud edition (`formint-cloud/`, `pos-cloud`) by shipping the last missing capability — automatic backups + monitoring — with design, architecture, and data model documented as the top of the extension chain.
 
 **Architecture:** Hosted multi-terminal SaaS master.
 
@@ -19,12 +19,12 @@ This plan adds a `BackupRun` model (apps/core), a `backup_db` management command
 
 ## Global Constraints
 
-- All changes live under `projects/formints/formintB/backend/` only.
+- All changes live under `projects/formints/formint-cloud/backend/` only.
 - **No new third-party dependencies** — stdlib `sqlite3` for backups.
 - Model conventions: mirror `apps/core/models.py` (plain `class Meta` with `verbose_name`/`ordering`; Django infers `app_label="core"` and the table name).
 - Management commands live in `apps/core/management/commands/` (next to `process_sync_queue.py`).
 - Root system routes are wired in `configs/urls.py` (next to `health` / `stats`); the app-level route exists at line ~10 (`_root_health` lambda).
-- Test command: `cd projects/formints/formintB/backend && make test` (see `Makefile`; tests live in `apps/`, e.g. `apps/test_surface.py`).
+- Test command: `cd projects/formints/formint-cloud/backend && make test` (see `Makefile`; tests live in `apps/`, e.g. `apps/test_surface.py`).
 - Ports unchanged: API 8767, admin 8082. No Robyn.
 - **Feature inheritance (hard):** Cloud MUST include every sync concept from Pro/Standard (node registry, sync approval, CRM) plus its own additions. The parity sweep in Task C7 verifies inheritance and fixes any gap.
 
@@ -77,15 +77,15 @@ Cloud re-expresses Pro/Standard sync concepts as a multi-tenant schema (`pos_clo
 ## Task C1: `BackupRun` model + migration
 
 **Files:**
-- Modify: `formintB/backend/apps/core/models.py`
-- Test: `formintB/backend/apps/test_backup.py` (create)
+- Modify: `formint-cloud/backend/apps/core/models.py`
+- Test: `formint-cloud/backend/apps/test_backup.py` (create)
 
 **Interfaces:**
 - Produces: `BackupRun` model (importable as `from apps.core.models import BackupRun`). Consumed by Task C2 (command) and Task C3 (monitor).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test** — implemented in `formint-cloud/backend/apps/test_backup.py`
 
-Create `formintB/backend/apps/test_backup.py` (mirror the style of `apps/test_surface.py`):
+Create `formint-cloud/backend/apps/test_backup.py` (mirror the style of `apps/test_surface.py`):
 
 ```python
 from django.test import TestCase
@@ -110,16 +110,16 @@ class BackupRunModelTest(TestCase):
         assert run.size_bytes == 42
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails** — red-before-implementation result recorded
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
-Expected: FAIL — `ModuleNotFoundError: No module named 'apps.core.models'` (model missing) or import error on `BackupRun`.
+Run: `cd projects/formints/formint-cloud/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
+Expected: FAIL — model missing before C1 implementation.
 
 > If the test suite normally runs through `make test` with a specific settings module, use the same invocation the `Makefile` uses for `apps/test_surface.py`.
 
-- [ ] **Step 3: Write the model**
+- [x] **Step 3: Write the model** — `BackupRun` is implemented in `apps/core/models.py`
 
-Append to `formintB/backend/apps/core/models.py`:
+Append to `formint-cloud/backend/apps/core/models.py`:
 
 ```python
 class BackupRun(models.Model):
@@ -145,25 +145,25 @@ class BackupRun(models.Model):
         return f"BackupRun {self.filename} ({self.status})"
 ```
 
-- [ ] **Step 4: Generate and apply the migration**
+- [x] **Step 4: Generate and apply the migration** — Cloud migration history includes the BackupRun migration
 
 Run:
 ```bash
-cd projects/formints/formintB/backend
+cd projects/formints/formint-cloud/backend
 python manage.py makemigrations core
 make migrate
 ```
 Expected: migration for `BackupRun` created and applied.
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass** — focused backup model tests recorded green
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
-Expected: PASS — 2 tests green.
+Run: `cd projects/formints/formint-cloud/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
+Expected: PASS — model tests green.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Commit** — intentionally left for the repository owner
 
 ```bash
-git add projects/formints/formintB/backend/apps/core/models.py projects/formints/formintB/backend/apps/core/migrations/ projects/formints/formintB/backend/apps/test_backup.py
+git add projects/formints/formint-cloud/backend/apps/core/models.py projects/formints/formint-cloud/backend/apps/core/migrations/ projects/formints/formint-cloud/backend/apps/test_backup.py
 git commit -m "feat(pos-cloud): BackupRun model records database backup attempts"
 ```
 
@@ -174,16 +174,16 @@ git commit -m "feat(pos-cloud): BackupRun model records database backup attempts
 > **Scheduling note:** Once the django-fusion task scheduler (APScheduler) is deployed (see the [Tasks & MCP plan](../django-fusion/django-fusion-tasks-mcp-plan.md)), register `backup_db` as a scheduled task via `@task(schedule="0 */6 * * *")` instead of requiring an external cron/systemd timer. The management command remains the unit of work; the scheduler replaces the cron trigger.
 
 **Files:**
-- Create: `formintB/backend/apps/core/management/commands/backup_db.py`
-- Modify: `formintB/backend/apps/test_backup.py` (add command test)
+- Create: `formint-cloud/backend/apps/core/management/commands/backup_db.py`
+- Modify: `formint-cloud/backend/apps/test_backup.py` (add command test)
 
 **Interfaces:**
 - Consumes: `BackupRun` (Task C1), Django settings `DATABASES["default"]["NAME"]`.
 - Produces: `manage.py backup_db [--dest DIR]` — writes a timestamped SQLite backup and a `BackupRun` row. Consumed by Task C3's monitor (reads `BackupRun`).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test** — command coverage is present in `formint-cloud/backend/apps/test_backup.py`
 
-Append to `formintB/backend/apps/test_backup.py`:
+Append to `formint-cloud/backend/apps/test_backup.py`:
 
 ```python
 import os
@@ -208,14 +208,14 @@ class BackupCommandTest(TestCase):
             assert files[0].endswith(".db")
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails** — unknown-command red state was the pre-implementation contract
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
-Expected: FAIL — `CommandError: Unknown command: 'backup_db'`
+Run: `cd projects/formints/formint-cloud/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
+Expected: FAIL — `CommandError: Unknown command: 'backup_db'` before C2 implementation.
 
-- [ ] **Step 3: Write the command**
+- [x] **Step 3: Write the command** — `apps/core/management/commands/backup_db.py` is implemented
 
-Create `formintB/backend/apps/core/management/commands/backup_db.py`:
+Create `formint-cloud/backend/apps/core/management/commands/backup_db.py`:
 
 ```python
 """Backup the pos_cloud SQLite database (Cloud capability).
@@ -278,20 +278,20 @@ class Command(BaseCommand):
             raise
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass** — focused backup tests were recorded green
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
+Run: `cd projects/formints/formint-cloud/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_backup.py -q`
 Expected: PASS — 3 tests green.
 
-- [ ] **Step 5: Run the full suite**
+- [x] **Step 5: Run the full suite** — related Cloud backend suites were recorded green
 
-Run: `cd projects/formints/formintB/backend && make test`
+Run: `cd projects/formints/formint-cloud/backend && make test`
 Expected: all tests pass.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Commit** — intentionally left for the repository owner
 
 ```bash
-git add projects/formints/formintB/backend/apps/core/management/commands/backup_db.py projects/formints/formintB/backend/apps/test_backup.py
+git add projects/formints/formint-cloud/backend/apps/core/management/commands/backup_db.py projects/formints/formint-cloud/backend/apps/test_backup.py
 git commit -m "feat(pos-cloud): backup_db management command with online SQLite backup"
 ```
 
@@ -300,17 +300,17 @@ git commit -m "feat(pos-cloud): backup_db management command with online SQLite 
 ## Task C3: `/monitor/status` endpoint
 
 **Files:**
-- Modify: `formintB/backend/apps/handlers/surface.py` (add `monitor_status`)
-- Modify: `formintB/backend/configs/urls.py` (wire route)
-- Test: `formintB/backend/apps/test_monitor.py` (create)
+- Modify: `formint-cloud/backend/apps/handlers/surface.py` (add `monitor_status`)
+- Modify: `formint-cloud/backend/configs/urls.py` (wire route)
+- Test: `formint-cloud/backend/apps/test_monitor.py` (create)
 
 **Interfaces:**
 - Consumes: `BackupRun` (Task C1), `SyncQueueItem` (exists in `apps.core.models`).
 - Produces: `monitor_status(request) -> JsonResponse` at `/monitor/status` — payload `{database, last_backup, sync_queue_depth}`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test** — endpoint coverage is present in `formint-cloud/backend/apps/test_monitor.py`
 
-Create `formintB/backend/apps/test_monitor.py`:
+Create `formint-cloud/backend/apps/test_monitor.py`:
 
 ```python
 import json
@@ -352,14 +352,14 @@ class MonitorStatusTest(TestCase):
 
 > If `SyncQueueItem` requires extra required fields to create, mirror an existing `SyncQueueItem.objects.create(...)` call from `apps/test_surface.py` or `apps/domain/sync_queue.py` tests.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails** — `monitor-status` was the red route before wiring
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_monitor.py -q`
-Expected: FAIL — `NoReverseMatch` for `monitor-status`
+Run: `cd projects/formints/formint-cloud/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_monitor.py -q`
+Expected: FAIL — `NoReverseMatch` before C3 implementation.
 
-- [ ] **Step 3: Write the view**
+- [x] **Step 3: Write the view** — `monitor_status` is implemented in `apps/handlers/surface.py`
 
-In `formintB/backend/apps/handlers/surface.py`, add (next to the existing `stats` function, matching its imports):
+In `formint-cloud/backend/apps/handlers/surface.py`, add (next to the existing `stats` function, matching its imports):
 
 ```python
 def monitor_status(request: HttpRequest) -> JsonResponse:
@@ -393,9 +393,9 @@ def monitor_status(request: HttpRequest) -> JsonResponse:
     })
 ```
 
-- [ ] **Step 4: Wire the route**
+- [x] **Step 4: Wire the route** — `/monitor/status` is wired in both tenant and public URLconfs
 
-In `formintB/backend/configs/urls.py`, import `monitor_status` from `apps.handlers.surface` (same import block as `stats`) and add next to the existing `path("stats", ...)` line (~1240):
+In `formint-cloud/backend/configs/urls.py`, import `monitor_status` from `apps.handlers.surface` (same import block as `stats`) and add next to the existing `path("stats", ...)` line (~1240):
 
 ```python
 path("monitor/status", apps_handlers_surface_monitor_status, name="monitor-status"),
@@ -403,15 +403,15 @@ path("monitor/status", apps_handlers_surface_monitor_status, name="monitor-statu
 
 (Use the same import alias convention the file already uses for the surface module.)
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass** — monitor and related Cloud backend tests were recorded green
 
-Run: `cd projects/formints/formintB/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_monitor.py -q && make test`
-Expected: PASS — monitor tests green, full suite green
+Run: `cd projects/formints/formint-cloud/backend && unset DJANGO_SETTINGS_MODULE; python -m pytest apps/test_monitor.py -q && make test`
+Expected: PASS — monitor tests green, full suite green.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Commit** — intentionally left for the repository owner
 
 ```bash
-git add projects/formints/formintB/backend/apps/handlers/surface.py projects/formints/formintB/backend/configs/urls.py projects/formints/formintB/backend/apps/test_monitor.py
+git add projects/formints/formint-cloud/backend/apps/handlers/surface.py projects/formints/formint-cloud/backend/configs/urls.py projects/formints/formint-cloud/backend/apps/test_monitor.py
 git commit -m "feat(pos-cloud): /monitor/status endpoint with db health, last backup, queue depth"
 ```
 
@@ -423,12 +423,12 @@ git commit -m "feat(pos-cloud): /monitor/status endpoint with db health, last ba
 - Modify: `projects/formints/docs/architecture/editions.md`
 - Modify: `projects/formints/CHANGELOG.md`
 
-- [ ] **Step 1: Update editions.md**
+- [x] **Step 1: Update editions.md** — canonical Cloud paths and capability markers are synchronized
 
 In `projects/formints/docs/architecture/editions.md`, change the two Cloud markers:
 - "Automatic cloud backups + monitoring (Cloud capability, landing sync Aug 2026)" → "Automatic cloud backups + monitoring (Cloud capability)" (both occurrences — note text and features list).
 
-- [ ] **Step 2: Add a CHANGELOG entry**
+- [x] **Step 2: Add a CHANGELOG entry** — backup/monitoring completion is recorded under `## Unreleased`
 
 Under `## Unreleased`:
 
@@ -438,7 +438,7 @@ Under `## Unreleased`:
 - Monitoring — `/monitor/status` endpoint (db health, last backup, sync queue depth)
 ```
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** — intentionally left for the repository owner
 
 ```bash
 git add projects/formints/docs/architecture/editions.md projects/formints/CHANGELOG.md
@@ -452,10 +452,10 @@ git commit -m "docs: mark Cloud backups + monitoring shipped, update changelog"
 ## Task C5: django-fusion monitor tile + BackupRun admin
 
 **Files:**
-- Modify: `formintB/backend/apps/handlers/fragments/` (add `monitor.py` mirroring an existing fragment module)
-- Modify: `formintB/backend/apps/core/admin.py` (register `BackupRun`)
-- Modify: `formintB/backend/apps/handlers/surface.py` (render the fragment at `/fusion/monitor`)
-- Test: `formintB/backend/apps/test_monitor.py` (add fragment test)
+- Modify: `formint-cloud/backend/apps/handlers/fragments/` (add `monitor.py` mirroring an existing fragment module)
+- Modify: `formint-cloud/backend/apps/core/admin.py` (register `BackupRun`)
+- Modify: `formint-cloud/backend/apps/handlers/surface.py` (render the fragment at `/fusion/monitor`)
+- Test: `formint-cloud/backend/apps/test_monitor.py` (add fragment test)
 
 **Interfaces:**
 - Consumes: `BackupRun`, `SyncQueueItem` (Task C1), the fusion fragment conventions in `apps/handlers/fragments/`.
@@ -483,19 +483,19 @@ def test_monitor_fragment_renders(self):
 
 - [x] **Step 4: Run tests to verify they pass** — `apps/test_monitor.py` → 6/6 pass; related suite (`test_backup`, `test_dashboard_contract`) → 30 passed, 1 skipped; `manage.py check` → 0 issues
 
-- [ ] **Step 5: Commit** — pending (user action)
+- [ ] **Step 5: Commit** — intentionally left for the repository owner
 
 ```bash
-git add formintB/backend/apps/handlers/fragments/monitor.py formintB/backend/apps/handlers/surface.py formintB/backend/apps/core/admin.py formintB/backend/apps/test_monitor.py
+git add formint-cloud/backend/apps/handlers/fragments/monitor.py formint-cloud/backend/apps/handlers/surface.py formint-cloud/backend/apps/core/admin.py formint-cloud/backend/apps/test_monitor.py
 git commit -m "feat(pos-cloud): django-fusion monitor tile + BackupRun admin"
 ```
 
 ## Task C6: Consume the SDK monitor module in the frontend telemetry page
 
 **Files:**
-- Modify: `formintB/frontend/package.json` (add `@formints/client` dep)
-- Create: `formintB/frontend/src/lib/monitor.ts` (typed wrapper over `getMonitorStatus`)
-- Test: `formintB/frontend/src/lib/monitor.test.ts`
+- Modify: `formint-cloud/frontend/package.json` (add `@formints/client` dep)
+- Create: `formint-cloud/frontend/src/lib/monitor.ts` (typed wrapper over `getMonitorStatus`)
+- Test: `formint-cloud/frontend/src/lib/monitor.test.ts`
 
 **Interfaces:**
 - Consumes: `createClient`, `getMonitorStatus` from `@formints/client` (06-js-sdk.md).
@@ -503,7 +503,7 @@ git commit -m "feat(pos-cloud): django-fusion monitor tile + BackupRun admin"
 
 - [x] **Step 1: Write the failing test**
 
-Create `formintB/frontend/src/lib/monitor.test.ts` (implemented in `projects/formints/formint-cloud/frontend/`):
+Create `formint-cloud/frontend/src/lib/monitor.test.ts` (implemented in `projects/formints/formint-cloud/frontend/`):
 
 ```ts
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -531,18 +531,18 @@ describe('monitorApi', () => {
 
 - [x] **Step 4: Run tests to verify they pass** — `vitest run src/lib/monitor.test.ts src/test/pages/CloudMonitorTile.test.tsx` → 10 passed; `astro check` → 0 errors; `BranchOverview.test.tsx` → 13 passed.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit** — intentionally left for the repository owner
 
 ```bash
-git add formintB/frontend/package.json formintB/frontend/src/lib/monitor.ts formintB/frontend/src/lib/monitor.test.ts
+git add formint-cloud/frontend/package.json formint-cloud/frontend/src/lib/monitor.ts formint-cloud/frontend/src/lib/monitor.test.ts
 git commit -m "feat(pos-cloud-frontend): consume @formints/client monitor module in telemetry"
 ```
 
 ## Task C7: Playwright e2e for monitor + inheritance parity sweep
 
 **Files:**
-- Create: `formintB/frontend/e2e/monitor.spec.ts`
-- Modify: `formintB/frontend/playwright.config.ts` (point `testDir` at `./e2e` if not already)
+- Create: `formint-cloud/frontend/e2e/monitor.spec.ts`
+- Modify: `formint-cloud/frontend/playwright.config.ts` (point `testDir` at `./e2e` if not already)
 
 **Interfaces:**
 - Consumes: the running cloud backend (`make cloud-run`, `:8767`) + frontend.

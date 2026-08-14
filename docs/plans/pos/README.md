@@ -1,10 +1,15 @@
-# Formint POS — Plan Index
+# Formint POS — Plan Index (legacy, merged into Formints)
 
-> **Plan directory:** `projects/pos/`  
+> **ARCHIVED / SUPERSEDED:** This directory is historical migration evidence. The
+> canonical, latest Formints product + edition plans live in
+> [`../editions/README.md`](../editions/README.md) and the code lives under
+> `projects/formints/` (not `projects/pos/`). Formints is the main product line.
+>
+> **Plan directory (retired):** `projects/pos/`  
 > **Lifecycle policy:** [`../document-lifecycle.md`](../document-lifecycle.md)  
 > **Marketing claims:** [`../marketing-claims.md`](../marketing-claims.md)  
-> **Canonical Professional plan:** [`formint-pos-professional-plan.md`](formint-pos-professional-plan.md)
-> **Created:** 2026-07-25 | **Updated:** 2026-08-04 | **Branch:** `generic`
+> **Canonical (now):** [`../editions/README.md`](../editions/README.md) — edition chain 01–08
+> **Created:** 2026-07-25 | **Archived:** 2026-08-14 | **Branch:** `generic`
 
 ---
 

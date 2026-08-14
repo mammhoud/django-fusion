@@ -43,6 +43,7 @@ from .handlers import (
     CartNoteHandler,
     CartRemoveHandler,
     CartUpdateHandler,
+    MyOrdersHandler,
     ProductGridHandler,
     get_handler_response,
 )
@@ -57,6 +58,7 @@ __all__ = [
     "products_fragment",
     "cart_count_fragment",
     "cart_drawer_fragment",
+    "my_orders_fragment",
     "cart_add",
     "cart_update",
     "cart_remove",
@@ -422,6 +424,12 @@ def cart_count_fragment(request: HttpRequest):
 def cart_drawer_fragment(request: HttpRequest):
     """HTMX fragment — cart drawer body."""
     return get_handler_response(CartDrawerHandler, request)
+
+
+@require_GET
+def my_orders_fragment(request: HttpRequest):
+    """HTMX fragment — signed-in customer's recent orders (storefront drawer)."""
+    return get_handler_response(MyOrdersHandler, request)
 
 
 @require_POST

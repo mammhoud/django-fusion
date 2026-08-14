@@ -125,6 +125,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Tenant-aware identity layer (returns None tenant on
+                # SQLite/public schema — see apps/core/context_processors.py).
+                "apps.core.context_processors.tenant",
             ],
         },
     },
@@ -178,6 +181,13 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ── Tenant-aware auth adapter (identity layer, optional allauth) ──
+# Inert without django-allauth installed: the adapter module imports
+# allauth lazily and falls back to a plain base class, so this setting is
+# always safe. When allauth is added it becomes the tenant-aware account
+# adapter automatically.
+ACCOUNT_ADAPTER = "apps.core.auth_adapters.TenantAwareAccountAdapter"
 
 # ══════════════════════════════════════════════════════════════════════
 # Unfold Admin Theme

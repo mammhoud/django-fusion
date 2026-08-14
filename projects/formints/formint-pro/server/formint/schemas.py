@@ -29,6 +29,7 @@ from formint.models import (
     Payroll, EmployeeSchedule, TaxReport,
     Note,
     Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
+    Currency, TaxProfile,
     ClientCategory, LoyaltyTransaction, UserSettings,
     SyncApproval, DeviceToken, SignalEvent,
     Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote,
@@ -44,7 +45,7 @@ __all__ = [
     "KitchenTicketOut", "SupportTicketOut",
     "PayrollOut", "EmployeeScheduleOut", "TaxReportOut",
     "NoteOut", "IngredientOut", "RecipeOut", "ReceiptTemplateOut",
-    "RoleOut", "InventoryAdjustmentOut",
+    "RoleOut", "InventoryAdjustmentOut", "CurrencyOut", "TaxProfileOut",
     "ClientCategoryOut", "LoyaltyTransactionOut", "UserSettingsOut",
     "SyncApprovalOut", "DeviceTokenOut", "SignalEventOut",
     "CompanyOut", "PipelineOut", "StageOut", "ContactOut", "DealOut",
@@ -382,6 +383,24 @@ class InventoryAdjustmentOut(FusionModelSchema):
             "previous_quantity", "new_quantity", "reason", "notes",
             "created_by", "created_at",
             "is_synced", "synced_at", "sync_status",
+        ]
+
+
+class CurrencyOut(FusionModelSchema):
+    class Config:
+        model = Currency
+        include = [
+            "id", "code", "name", "symbol", "exchange_rate",
+            "is_default", "is_active", "created_at", "updated_at",
+        ]
+
+
+class TaxProfileOut(FusionModelSchema):
+    class Config:
+        model = TaxProfile
+        include = [
+            "id", "name", "code", "rate", "is_default", "is_active",
+            "created_at", "updated_at",
         ]
 
 

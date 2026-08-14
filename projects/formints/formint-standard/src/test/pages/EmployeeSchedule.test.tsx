@@ -6,7 +6,7 @@ import {
   userEvent,
 } from '../test-utils';
 import { mockInvokeSuccess, resetInvokeMocks, mockInvokeError } from '../mocks/tauri';
-import EmployeeSchedule, { validateForm } from '../../app/pages/admin/EmployeeSchedule';
+import EmployeeSchedule from '../../app/pages/admin/EmployeeSchedule';
 
 const mockEmployees = [
   { id: 1, name: 'John Doe', phone: '1234567890', email: 'john@example.com', employee_type_id: 1, salary: 3000, is_active: true, joined_at: '2024-01-15' },
@@ -126,8 +126,8 @@ describe('EmployeeSchedule Page', () => {
     await userEvent.click(screen.getByText(/schedule\\.addShift|Add Shift/));
 
     await userEvent.selectOptions(screen.getByRole('combobox', { name: /schedule\\.selectEmployee|Select employee/i }), '1');
-    const start = screen.getByRole('textbox', { name: /schedule\\.start|Start/i });
-    const end = screen.getByRole('textbox', { name: /schedule\\.end|End/i });
+    const start = screen.getByLabelText(/schedule\.start|Start/i);
+    const end = screen.getByLabelText(/schedule\.end|End/i);
     await userEvent.type(start, '2026-01-15T17:00');
     await userEvent.type(end, '2026-01-15T09:00');
     await userEvent.click(screen.getByRole('button', { name: /common\\.save|Save/i }));

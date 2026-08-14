@@ -24,12 +24,16 @@ import importlib.util
 from django.contrib import admin
 from django.urls import include, path
 
+from formint.export_views import export_resource
+
 urlpatterns = [
     # ── Django admin (Unfold-themed) ──
     path("admin/", admin.site.urls),
 
     # ── Formint app (fusion render-mode contract, session-mode, etc.) ──
     path("", include("formint.urls")),
+    # Read-only CSV/JSON exports shared with Standard clients.
+    path("export/<str:resource>.<str:file_format>", export_resource, name="formint-export"),
 
     # ── django-bolt reverse-only URLs ──
 ]

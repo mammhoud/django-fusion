@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
+  <img src="../precis/landi/backend/assets/static/related/formints/pro-admin-dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
 </p>
 
 POS is a modern, offline-first desktop point-of-sale application for
@@ -91,9 +91,9 @@ See [`formint-pos/README.md`](formint-pos/README.md) and
 
 | | | |
 |:---:|:---:|:---:|
-| ![Dashboard](../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg) | ![Products](../landing-fusion/backend/assets/static/related/formints/pro-admin-products.jpg) | ![Customers](../landing-fusion/backend/assets/static/related/formints/pro-admin-customers.jpg) |
+| ![Dashboard](../precis/landi/backend/assets/static/related/formints/pro-admin-dashboard.jpg) | ![Products](../precis/landi/backend/assets/static/related/formints/pro-admin-products.jpg) | ![Customers](../precis/landi/backend/assets/static/related/formints/pro-admin-customers.jpg) |
 | **Unfold Admin — Dashboard** | **Unfold Admin — Products** | **Unfold Admin — Customers** |
-| ![Sales](../landing-fusion/backend/assets/static/related/formints/pro-admin-sales.jpg) | ![Loyalty](../landing-fusion/backend/assets/static/related/formints/pro-admin-loyalty.jpg) | ![Settings](../landing-fusion/backend/assets/static/related/formints/pro-admin-settings.jpg) |
+| ![Sales](../precis/landi/backend/assets/static/related/formints/pro-admin-sales.jpg) | ![Loyalty](../precis/landi/backend/assets/static/related/formints/pro-admin-loyalty.jpg) | ![Settings](../precis/landi/backend/assets/static/related/formints/pro-admin-settings.jpg) |
 | **Unfold Admin — Sales** | **Unfold Admin — Loyalty** | **Unfold Admin — Settings** |
 
 ---

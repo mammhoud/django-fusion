@@ -17,6 +17,7 @@ urlpatterns = [
     path("shop/fragments/products/", views.products_fragment, name="products_fragment"),
     path("shop/fragments/cart/count/", views.cart_count_fragment, name="cart_count"),
     path("shop/fragments/cart/drawer/", views.cart_drawer_fragment, name="cart_drawer"),
+    path("shop/fragments/my-orders/", views.my_orders_fragment, name="my_orders_fragment"),
     # Cart actions (HTMX POST)
     path("shop/cart/add/", views.cart_add, name="cart_add"),
     path("shop/cart/update/<int:item_id>/", views.cart_update, name="cart_update"),

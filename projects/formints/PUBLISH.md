@@ -48,22 +48,22 @@ make -C formint-pos screenshots
 ```
 
 ### 1. Unfold Admin — Dashboard
-![POS — Dashboard](../landing-fusion/backend/assets/static/related/formints/pro-admin-dashboard.jpg)
+![POS — Dashboard](../precis/landi/backend/assets/static/related/formints/pro-admin-dashboard.jpg)
 
 ### 2. Unfold Admin — Products
-![POS — Products](../landing-fusion/backend/assets/static/related/formints/pro-admin-products.jpg)
+![POS — Products](../precis/landi/backend/assets/static/related/formints/pro-admin-products.jpg)
 
 ### 3. Unfold Admin — Customers
-![POS — Customers](../landing-fusion/backend/assets/static/related/formints/pro-admin-customers.jpg)
+![POS — Customers](../precis/landi/backend/assets/static/related/formints/pro-admin-customers.jpg)
 
 ### 4. Unfold Admin — Sales
-![POS — Sales](../landing-fusion/backend/assets/static/related/formints/pro-admin-sales.jpg)
+![POS — Sales](../precis/landi/backend/assets/static/related/formints/pro-admin-sales.jpg)
 
 ### 5. Unfold Admin — Loyalty (client categories)
-![POS — Loyalty](../landing-fusion/backend/assets/static/related/formints/pro-admin-loyalty.jpg)
+![POS — Loyalty](../precis/landi/backend/assets/static/related/formints/pro-admin-loyalty.jpg)
 
 ### 6. Unfold Admin — Settings
-![POS — Settings](../landing-fusion/backend/assets/static/related/formints/pro-admin-settings.jpg)
+![POS — Settings](../precis/landi/backend/assets/static/related/formints/pro-admin-settings.jpg)
 
 ---
 

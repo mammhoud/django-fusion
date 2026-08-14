@@ -127,7 +127,7 @@ pub fn purge_flushed(db_path: &PathBuf, older_than_days: i32) -> Result<usize, S
     let mut conn = open_conn(db_path)?;
     diesel::sql_query(format!(
         "DELETE FROM sync_queue WHERE status = 'flushed' \
-         AND flushed_at < datetime('now', '-{older_than_days} days')"
+         AND flushed_at <= datetime('now', '-{older_than_days} days')"
     ))
     .execute(&mut conn)
     .map_err(|e| format!("purge_flushed: {e}"))

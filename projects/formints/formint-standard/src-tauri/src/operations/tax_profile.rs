@@ -283,13 +283,11 @@ mod tests {
     #[test]
     fn update_cannot_make_inactive_default() {
         let db = temp_db("inactive_def");
-        create_tax_profile(&db, "Standard", 0.15, true).expect("create");
+        let standard = create_tax_profile(&db, "Standard", 0.15, true).expect("create");
         let reduced = create_tax_profile(&db, "Reduced", 0.07, false).expect("create");
-        // Cannot set the only active default to inactive
-        let std_id = get_tax_profile(&db, reduced.id).unwrap();
-        // Make reduced the default first, then deactivate standard
+        // Make reduced the default first, then deactivate standard.
         let _ = update_tax_profile(&db, reduced.id, None, None, Some(true), None).expect("set default");
-        let updated = update_tax_profile(&db, std_id.id, None, None, None, Some(false)).expect("deactivate");
+        let updated = update_tax_profile(&db, standard.id, None, None, None, Some(false)).expect("deactivate");
         assert!(!updated.is_active);
         let _ = std::fs::remove_file(&db);
     }

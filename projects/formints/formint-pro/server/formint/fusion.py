@@ -1,7 +1,7 @@
 """
 Formint — Fusion render-mode contract (mirrors landing-fusion's /apis/ helpers).
 
-Dual-mode content delivery, identical to ``projects/landing-fusion/backend/apps/pages/api.py``:
+Dual-mode content delivery, identical to ``projects/precis/landi/backend/apps/pages/api.py``:
 
 * ``fusion_render_first=True``  → “fusion render first” — Django serves finished
   server-rendered HTML / fusion-encoded JSON as the source of truth.
