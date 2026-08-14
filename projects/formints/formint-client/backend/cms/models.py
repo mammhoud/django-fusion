@@ -73,6 +73,33 @@ class BadgesSectionBlock(blocks.StructBlock):
         label = _("Badges section")
 
 
+class CraftPanelBlock(blocks.StructBlock):
+    """One craft accordion panel — the roast / the kitchen / the pickup."""
+
+    title = blocks.CharBlock(max_length=80, required=True)
+    caption = blocks.CharBlock(max_length=120, required=False)
+    body = blocks.TextBlock(required=False, rows=3)
+    img = blocks.URLBlock(required=True, help_text=_("Panel image URL (e.g. Unsplash)."))
+    alt = blocks.CharBlock(max_length=160, required=False, help_text=_("Accessible alt text."))
+
+    class Meta:
+        icon = "image"
+        label = _("Craft panel")
+
+
+class TestimonialBlock(blocks.StructBlock):
+    """One testimonial voice — name, role, quote, and portrait."""
+
+    name = blocks.CharBlock(max_length=80, required=True)
+    role = blocks.CharBlock(max_length=120, required=False)
+    quote = blocks.TextBlock(required=True, rows=3)
+    img = blocks.URLBlock(required=True, help_text=_("Portrait image URL (e.g. Unsplash)."))
+
+    class Meta:
+        icon = "user"
+        label = _("Testimonial")
+
+
 class HeadingBlock(blocks.StructBlock):
     heading = blocks.CharBlock(max_length=120, required=True)
     level = blocks.ChoiceBlock(
@@ -118,6 +145,38 @@ class CmsPage(Page):
 
 
 # ── Site settings (theme as Wagtail settings) ─────────────────────────
+
+@register_setting
+class EditorialSettings(BaseSiteSetting):
+    """Storefront editorial content — craft panels + testimonials.
+
+    Served to the storefront and POS via ``GET /fusion/editorial/``. The
+    payload is built from these streams when populated; ``SHOP_EDITORIAL``
+    in settings remains the seed/build-time fallback (the data migration
+    copies it here so the Wagtail admin becomes the live source of truth).
+    """
+
+    craft = StreamField(
+        [("panel", CraftPanelBlock())],
+        blank=True,
+        use_json_field=True,
+        help_text=_("Craft accordion panels (the roast, the kitchen, the pickup)."),
+    )
+    voices = StreamField(
+        [("voice", TestimonialBlock())],
+        blank=True,
+        use_json_field=True,
+        help_text=_("Testimonial carousel voices."),
+    )
+
+    panels = [
+        FieldPanel("craft"),
+        FieldPanel("voices"),
+    ]
+
+    class Meta:
+        verbose_name = _("Editorial settings")
+
 
 @register_setting
 class ThemeSettings(BaseSiteSetting):

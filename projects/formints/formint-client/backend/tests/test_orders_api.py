@@ -598,3 +598,56 @@ class TestFusionEditorialApi:
         response = client.get("/fusion/editorial/")
         titles = [p["title"] for p in response.json()["craft"]]
         assert titles == ["The roast", "The kitchen", "The pickup"]
+
+    def test_db_settings_override_settings_payload(self, client):
+        """Edits in the Wagtail EditorialSettings replace the settings seed."""
+        from cms.models import EditorialSettings
+        from wagtail.models import Site
+
+        site = Site.objects.get(is_default_site=True)
+        EditorialSettings.objects.filter(site=site).delete()
+        EditorialSettings.objects.create(
+            site=site,
+            craft=[
+                {
+                    "type": "panel",
+                    "value": {
+                        "title": "The espresso bar",
+                        "caption": "Since 2019",
+                        "body": "A two-group La Marzocco and a lot of patience.",
+                        "img": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+                        "alt": "Espresso machine pouring a shot",
+                    },
+                    "id": "panel-1",
+                }
+            ],
+            voices=[
+                {
+                    "type": "voice",
+                    "value": {
+                        "name": "Noor Al-Rashid",
+                        "role": "Opening shift",
+                        "quote": "The first pull of the day is always the best one.",
+                        "img": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+                    },
+                    "id": "voice-1",
+                }
+            ],
+        )
+        response = client.get("/fusion/editorial/")
+        payload = response.json()
+        assert [p["title"] for p in payload["craft"]] == ["The espresso bar"]
+        assert payload["voices"][0]["name"] == "Noor Al-Rashid"
+
+    def test_empty_db_falls_back_to_settings(self, client):
+        """Cleared streams fall back to the SHOP_EDITORIAL settings seed."""
+        from cms.models import EditorialSettings
+        from wagtail.models import Site
+
+        EditorialSettings.objects.filter(site=Site.objects.get(is_default_site=True)).update(
+            craft=[], voices=[]
+        )
+        response = client.get("/fusion/editorial/")
+        payload = response.json()
+        assert len(payload["craft"]) == 3
+        assert len(payload["voices"]) == 3

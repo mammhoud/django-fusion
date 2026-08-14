@@ -161,12 +161,47 @@ def branding_payload(request: HttpRequest | None = None) -> dict[str, Any]:
 def editorial_payload(request: HttpRequest | None = None) -> dict[str, Any]:
     """Storefront editorial content — craft panels + testimonials.
 
-    Reads ``SHOP_EDITORIAL`` from settings (the single source of truth) so
-    the Astro page never hardcodes placeholder imagery. Served at
-    ``GET /fusion/editorial/`` and mirrored by the frontend as its
+    Source of truth is the ``EditorialSettings`` Wagtail site setting (the
+    streams editors manage in the admin). When the streams are empty — fresh
+    install before the seed, or an editor clearing them — falls back to the
+    ``SHOP_EDITORIAL`` settings value so the payload never goes blank. Served
+    at ``GET /fusion/editorial/`` and mirrored by the frontend as its
     build-time fallback.
     """
-    return dict(getattr(django_settings, "SHOP_EDITORIAL", {"craft": [], "voices": []}))
+    default = dict(getattr(django_settings, "SHOP_EDITORIAL", {"craft": [], "voices": []}))
+    try:
+        from cms.models import EditorialSettings
+
+        site_setting = (
+            EditorialSettings.for_request(request) if request is not None else None
+        )
+    except Exception:
+        site_setting = None
+    if site_setting is None or (not site_setting.craft and not site_setting.voices):
+        return default
+
+    craft = [
+        {
+            "title": panel.value.get("title", ""),
+            "caption": panel.value.get("caption", ""),
+            "body": panel.value.get("body", ""),
+            "img": panel.value.get("img", ""),
+            "alt": panel.value.get("alt", ""),
+        }
+        for panel in site_setting.craft
+        if panel.block_type == "panel"
+    ]
+    voices = [
+        {
+            "name": voice.value.get("name", ""),
+            "role": voice.value.get("role", ""),
+            "quote": voice.value.get("quote", ""),
+            "img": voice.value.get("img", ""),
+        }
+        for voice in site_setting.voices
+        if voice.block_type == "voice"
+    ]
+    return {"craft": craft, "voices": voices}
 
 
 def assets_payload(request: HttpRequest | None = None) -> dict[str, Any]:
