@@ -1,8 +1,7 @@
-# Shared-media Nginx, documentation, AFFiNE, and FileGator services.
+# Shared-proxy Nginx, documentation, and AFFiNE services.
 #
-# AFFiNE and FileGator are shared infrastructure. They are intentionally not
-# part of a Coder workspace or the repository devcontainer, so restarting or
-# deleting a workspace cannot delete the shared services or their data.
+# AFFiNE is shared infrastructure and is intentionally not part of a Coder
+# workspace or the repository devcontainer.
 
 networks:
   traefik-net:
@@ -28,13 +27,13 @@ x-media-base: &media-base
     start_period: 30s
 
 services:
-  shared-media:
+  shared-proxy:
     <<: *media-base
-    container_name: shared-media
+    container_name: shared-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms.com`) || Host(`media.vresume.structa.cloud`)"
-      - "traefik.http.services.shared-media.loadbalancer.server.port=80"
+      - "traefik.http.routers.shared-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
+      - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
     volumes:
       - ../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
       - ../projects/lms/assets/staticfiles:/var/www/sites/lms/static:ro
@@ -97,6 +96,8 @@ services:
       - ./affine-data/storage:/root/.affine/storage
       - ./affine-data/config:/root/.affine/config
     environment:
+      # This value is inserted into a PostgreSQL URI; percent-encode reserved
+      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
       DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
       REDIS_SERVER_HOST: default-redis
       REDIS_SERVER_PORT: "6379"
@@ -117,6 +118,8 @@ services:
       - ./affine-data/storage:/root/.affine/storage
       - ./affine-data/config:/root/.affine/config
     environment:
+      # This value is inserted into a PostgreSQL URI; percent-encode reserved
+      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
       DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
       REDIS_SERVER_HOST: default-redis
       REDIS_SERVER_PORT: "6379"
@@ -133,24 +136,6 @@ services:
     networks:
       - common
       - warehouse-net
-    restart: unless-stopped
-
-  filegator:
-    image: filegator/filegator:latest
-    container_name: proxy-filegator
-    user: root
-    command: ["sh", "-c", "chown -R www-data:www-data /var/www/filegator/private /var/www/filegator/repository && exec apache2-foreground"]
-    volumes:
-      - ./filegator-data/repository:/var/www/filegator/repository
-      - ./filegator-data/private:/var/www/filegator/private
-    networks:
-      - common
-    healthcheck:
-      test: ["CMD-SHELL", "php -r \"exit(@file_get_contents('http://127.0.0.1:8080/') === false ? 1 : 0);\""]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
     restart: unless-stopped
 
 volumes:

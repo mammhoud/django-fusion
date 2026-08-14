@@ -132,10 +132,10 @@ after verifying the fusion projects no longer need it. Verify that
 8. **Shared assets server**
    - *Source design assets* (`<project>/assets/`) are copied or symlinked into
      the Next.js build at build time; they do not need a runtime server.
-   - *Uploaded media* (`/media/`) is served by the global `shared-media` Nginx
+   - *Uploaded media* (`/media/`) is served by the global `shared-proxy` Nginx
      container.
    - Do not run a separate static server per project in production; rely on
-     Next.js for frontend static files and on `shared-media` for uploads.
+     Next.js for frontend static files and on `shared-proxy` for uploads.
 
 9. **Proxy integration**
    - Each fusion project gets an explicit Traefik dynamic router config:
@@ -292,12 +292,12 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
   > **Deferred:** Full-stack Docker testing is a deployment concern. The compose files and Traefik configs are in place. Local development uses the dev servers (see Phase 5 validation results).
 
 #### Phase 8 — Shared Media / Static Serving
-- [ ] Route uploaded media to the global `shared-media` Nginx container.
-  > **Deferred:** This is a production deployment concern. The existing `shared-media` Nginx container from the non-fusion stack is reusable. No code changes needed until production deployment.
-- [ ] Mount the shared media volume in Django containers and `shared-media`.
+- [ ] Route uploaded media to the global `shared-proxy` Nginx container.
+  > **Deferred:** This is a production deployment concern. The existing `shared-proxy` Nginx container from the non-fusion stack is reusable. No code changes needed until production deployment.
+- [ ] Mount the shared media volume in Django containers and `shared-proxy`.
   > **Deferred:** Same as above.
 - [x] Frontend source assets are build-time only (symlinked or copied during `npm run build:theme`). Not exposed at runtime.
-- [ ] Document which URLs route to Next.js, Django, or `shared-media`.
+- [ ] Document which URLs route to Next.js, Django, or `shared-proxy`.
   > **Deferred:** This documentation can be added as part of production deployment docs.
 
 ### 5. Deliverables
@@ -310,7 +310,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 6. Validation results (checks, tests, builds, smoke tests).
 7. Webpack/Next.js build-pipeline configuration per project.
 8. Docker-Compose and Traefik router configuration per project.
-9. Shared-media/static-serving routing documentation.
+9. Shared-proxy/static-serving routing documentation.
 
 ### 6. Success Criteria
 
@@ -329,7 +329,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 - [x] Next.js frontends import project-level SCSS and render consistent branding.
 - [x] Each fusion project has a working top-level `docker-compose.yml`.
 - [x] Traefik routes traffic to the correct backend and frontend containers.
-- [ ] Uploaded media is served by `shared-media`, not per-project static servers.
+- [ ] Uploaded media is served by `shared-proxy`, not per-project static servers.
   > **Deferred:** Production deployment concern.
 
 ### 7. Final Status — All Issues Resolved
@@ -340,7 +340,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 4. **System-check warnings** — ✅ **Known, non-blocking.** 12 treebeard compatibility warnings remain (`treebeard.E001` — Wagtail model managers not subclassing `MP_NodeManager`). These are Wagtail compatibility warnings that will be resolved in a future treebeard upgrade. Not actionable in this project.
 5. **Missing `django_fusion.web.adapters` / `.backends`** — ✅ **Non-blocking.** The `django_fusion.web/` directory exists with `__init__.py` and `views.py`. No fusion project code imports from `web.adapters` or `web.backends`. These are forward-looking promises in the package docstring.
 6. **Health URL routing** — ✅ **Resolved.** The duplicate `health_admin/` route inclusion was removed from both fusion `www/urls.py` files. Top-level health routes (`/health/`, `/assets/health/`, `/health/database/`) provide the canonical health check URLs. The `try/except Exception: pass` block was also eliminated, removing silent error swallowing.
-7. **Shared media serving (Phase 8)** — ✅ **Configured in Traefik.** Both fusion projects' Traefik configs (`cms-fusion.yml`, `lms-fusion.yml`) route `/static/` and `/media/` paths to the existing `shared-media:80` Nginx container. Media volumes are defined in docker-compose. The routing documentation is a production deployment concern.
+7. **Shared media serving (Phase 8)** — ✅ **Configured in Traefik.** Both fusion projects' Traefik configs (`cms-fusion.yml`, `lms-fusion.yml`) route `/static/` and `/media/` paths to the existing `shared-proxy:80` Nginx container. Media volumes are defined in docker-compose. The routing documentation is a production deployment concern.
 
 ### 8. Notes
 

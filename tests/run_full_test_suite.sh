@@ -169,8 +169,8 @@ done
 
 # Check shared media server
 log "Checking shared media server..."
-if docker exec shared-media ls -q /var/www/static 2>/dev/null | wc -l | grep -q .; then
-  count=$(docker exec shared-media find /var/www/static -type f | wc -l)
+if docker exec shared-proxy ls -q /var/www/static 2>/dev/null | wc -l | grep -q .; then
+  count=$(docker exec shared-proxy find /var/www/static -type f | wc -l)
   success "Shared media server has $count static files"
 else
   warning "Shared media server not responding yet"

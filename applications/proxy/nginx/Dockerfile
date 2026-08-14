@@ -1,6 +1,5 @@
-# Shared-media Nginx — static/media server + reverse proxy for Docus,
-# permanent AFFiNE, and FileGator. AFFiNE is served at the root of
-# space.structa.cloud; FileGator is available under /files/ and files.structa.cloud.
+# Shared-proxy Nginx — static/media server + reverse proxy for Docus and
+# permanent AFFiNE at the root of space.structa.cloud.
 #
 # The config is an envsubst template rendered by the official Nginx entrypoint.
 #

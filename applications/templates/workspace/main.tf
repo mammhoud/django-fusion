@@ -11,8 +11,8 @@
 #   .devcontainer/docker-compose.yml  (the repo's devcontainer source)
 #     └─ devcontainer   — full monorepo toolchain (VS Code attaches here)
 #
-# AFFiNE and FileGator are permanent shared proxy services, not workspace
-# resources. Their data and network identity survive Coder workspace changes.
+# AFFiNE is a permanent shared proxy service, not a workspace resource. Its
+# data and network identity survive Coder workspace changes.
 #
 # The agent runs as root (passwordless sudo in the image) so the root-owned
 # host checkout stays writable from the workspace (commit/push from both
@@ -135,16 +135,6 @@ module "code-server" {
   display_name = "VS Code Web"
   slug         = "code-server"
   order        = 2
-}
-
-resource "coder_app" "filegator" {
-  agent_id     = coder_agent.main.id
-  slug         = "filegator"
-  display_name = "Files"
-  url          = "http://proxy-filegator:8080"
-  icon         = "/emojis/1f4c1.png"
-  share        = "authenticated"
-  order        = 3
 }
 
 resource "coder_devcontainer" "repo" {

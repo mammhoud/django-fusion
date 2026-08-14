@@ -15,8 +15,8 @@ DYNAMIC_CERTS_FILE  := $(DYNAMIC_DIR)/certs.yml
 COMPOSE_FILE        := $(PROXY_DIR)docker-compose.traefik.yml
 DEFAULT_PROXY_NAME  := default-proxy
 HOSTS_FILE          := /etc/hosts
-LOCAL_HOSTS         := fusion.localhost cms-fusion.localhost lms-fusion.localhost code.localhost coder.localhost space.localhost files.localhost
-LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:lms-fusion.localhost,DNS:code.localhost,DNS:coder.localhost,DNS:space.localhost,DNS:files.localhost,DNS:localhost,IP:127.0.0.1,IP:::1
+LOCAL_HOSTS         := fusion.localhost cms-fusion.localhost lms-fusion.localhost code.localhost coder.localhost space.localhost
+LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:lms-fusion.localhost,DNS:code.localhost,DNS:coder.localhost,DNS:space.localhost,DNS:localhost,IP:127.0.0.1,IP:::1
 
 # ---------------------------------------------------------------------------
 # Lifecycle
@@ -64,6 +64,12 @@ proxy-reload:
 .PHONY: proxy-validate
 proxy-validate:
 	@python3 $(PROXY_DIR)scripts/validate-traefik-config.py
+
+# Pre-issuance DNS gate: warns when a HTTP-01 certResolver domain has an
+# off-host A/AAAA record (the cause of `acme: error: tls ... internal error`).
+.PHONY: proxy-dns-check
+proxy-dns-check:
+	@python3 $(PROXY_DIR)scripts/check-dns-records.py
 
 # ---------------------------------------------------------------------------
 # Dashboard helpers

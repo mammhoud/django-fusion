@@ -17,9 +17,8 @@
 - The Coder template is now `applications/templates/dev-workspace/` and must
   be used with workspace name `dev` because the proxy routes stable container
   names.
-- AppFlowy is the dev-workspace application and uses the shared PostgreSQL
-  service through `common` and `warehouse-net`; FileGator remains a separate
-  workspace service.
+- AFFiNE is the shared proxy application and uses the shared PostgreSQL
+  service through `common` and `warehouse-net`; FileGator has been removed.
 - The root JavaScript layer is orchestrated by Nx. Product-local npm/pnpm
   manifests remain authoritative for dependency installation.
 
@@ -74,8 +73,8 @@
 - AppFlowy and code-server are authenticated Coder apps only. The old
   `blinko.structa.cloud`, `blinko.localhost`, `code.structa.cloud`, and
   `ws.structa.cloud` routes are removed.
-- FileGator keeps its existing public route, but its workspace container also
-  no longer publishes host port 1111, eliminating the bind collision.
+- FileGator, its image, data directories, Coder app, and public routes were
+  removed from the active infrastructure.
 - Template and database README files document network attachment, persistence,
   secret overrides, and the existing-volume caveat.
 
@@ -87,7 +86,7 @@
 | Celery Beat in shared task stack | Deprecated and removed from Compose command | `django_fusion.tasks.scheduler` (APScheduler) |
 | `applications/compose/docker-compose.tasks.yml` | Retired path in current checkout | `applications/docker-compose.tasks.yml` |
 | `applications/templates/dev-stack/` | Renamed | `applications/templates/dev-workspace/` |
-| Blinko workspace service | Deprecated and removed | Internal AppFlowy Cloud Coder app; FileGator remains separate |
+| Blinko workspace service | Deprecated and removed | Shared AFFiNE proxy service; FileGator removed |
 | Precis Temporal campaign worker | Removed | `plugins.workers.campaign_tasks` Dramatiq actors |
 | Historical worker-consolidation Celery target | Superseded documentation | This plan + django-fusion task API |
 

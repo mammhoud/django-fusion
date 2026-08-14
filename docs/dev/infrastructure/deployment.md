@@ -37,7 +37,7 @@
 | VResume | `vresume-website` | 5072 | Django app |
 | PostgreSQL | `postgres` | 5432 | Primary database |
 | Redis | `default-redis` | 6379 | Cache & sessions |
-| Nginx Media | `shared-media` | 80 | Static/media files |
+| Nginx Media | `shared-proxy` | 80 | Static/media files |
 
 ## Project layout
 
@@ -156,7 +156,7 @@ docker stats ctc-research-website
 ### Static files not loading
 
 ```bash
-docker ps | grep shared-media
-docker logs shared-media
+docker ps | grep shared-proxy
+docker logs shared-proxy
 docker exec ctc-research-website python manage.py collectstatic --noinput
 ```

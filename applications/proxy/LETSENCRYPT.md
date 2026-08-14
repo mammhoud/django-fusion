@@ -1,325 +1,198 @@
-# Let's Encrypt (DNS-01) Deployment Runbook
+# Let's Encrypt (HTTP-01) Deployment Runbook
 
-**Scope:** `applications/proxy/traefik/*` and `applications/proxy/docker-compose.traefik.yml` (the local
-proxy stack). Production deployment is currently Coolify-managed — see
-[Coolify deployment](#coolify-deployment) below.
+**Scope:** `applications/proxy/traefik/*` and `applications/proxy/docker-compose.traefik.yml`
+(the `default-proxy` Traefik stack).
 
-**Provider:** Cloudflare (DNS-01 challenge)
+**Provider:** Let's Encrypt — HTTP-01 challenge (`letsencrypt-http`). **No DNS
+provider token is required.** DNS for `structa.cloud` is hosted at Hostinger
+(`ns1/ns2.dns-parking.com`), not Cloudflare.
+
 **Client:** Traefik v3 native `certificatesResolvers` (no external
-`dehydrated` / `lego` / `acme.sh` container required)
-**Staging strategy:** 3-stage rollout with `applications/proxy/traefik/dynamic/certs.yml`
-(self-signed) kept as fallback until the last stage.
+`dehydrated` / `lego` / `acme.sh` container required).
 
 ---
 
-## Why DNS-01?
+## DNS topology
 
-- The proxy container is reachable from Cloudflare, but HTTP-01 requires
-  port 80 to be reachable from Let's Encrypt directly. DNS-01 works even
-  if the box is behind a firewall or WAF that blocks :80 from arbitrary
-  internet hosts.
-- DNS-01 also covers wildcard certs if we ever need them.
+`structa.cloud` is the apex domain and points directly at this server. Every
+product subdomain is a `CNAME` to `structa.cloud`, so it inherits the apex A
+and AAAA records:
+
+```text
+structa.cloud            A      187.77.166.222          (this server, IPv4)
+structa.cloud            AAAA   2a02:4780:28:4cb8::1    (this server, IPv6 — or leave unset)
+space.structa.cloud      CNAME  structa.cloud
+coder.structa.cloud      CNAME  structa.cloud
+docs.structa.cloud       CNAME  structa.cloud
+media.structa.cloud      CNAME  structa.cloud
+```
+
+Because the subdomains are CNAMEs, fixing the **single** apex A/AAAA record
+fixes every subdomain at once.
+
+---
+
+## Why HTTP-01?
+
+- The proxy binds `0.0.0.0:80` / `[::]:80` on the public host, and port 80 is
+  reachable from Let's Encrypt, so HTTP-01 issues certs directly with no
+  external credential.
+- No API token, no DNS provider integration, no wildcard requirement.
 
 ---
 
 ## Prerequisites
 
-1. **Cloudflare account** managing the zones for:
-   - `ctc-research.com`
-   - `structa.cloud`
-   - `vresume.structa.cloud`
-2. **API token** with `Zone / DNS / Edit` scope, restricted to the three
-   zones above. Create at:
-   <https://dash.cloudflare.com/profile/api-tokens>
-3. **A valid contact email** for the Let's Encrypt account (used for
-   expiry notifications). `admin@structa.cloud` is the default.
-4. **Docker / docker compose** on the deploy host.
+1. DNS at Hostinger (hPanel → DNS / Nameservers):
+   - apex `A` → `187.77.166.222`
+   - apex `AAAA` → `2a02:4780:28:4cb8::1` (this host's IPv6), **or delete the
+     AAAA record entirely** so Let's Encrypt uses IPv4.
+   - each product subdomain → `CNAME structa.cloud`
+2. `applications/proxy/acme/acme.json` exists with mode `0600` (run
+   `./scripts/production/manage-certs.sh bootstrap-acme`).
+3. Inbound TCP 80/443 open on the host firewall / hosting security group.
+4. A valid contact email for the Let's Encrypt account (used for expiry
+   notifications). `admin@structa.cloud` is the default.
 
 ---
 
-## File layout (after this migration)
+## Pre-issuance DNS gate
 
+Before triggering issuance, resolve every HTTP-01 domain and confirm the
+records point at this host:
+
+```bash
+make -C applications/proxy proxy-dns-check
+# or: python3 applications/proxy/scripts/check-dns-records.py
 ```
+
+Exit `0` means all domains resolve to this host. Any off-host A/AAAA or
+NXDOMAIN is printed and the command exits non-zero.
+
+---
+
+## File layout
+
+```text
 applications/proxy/
-├── .env.example                  # template — copy to .env
-├── .env                          # gitignored; CF_DNS_API_TOKEN lives here
-├── .gitignore                    # excludes .env and acme/acme.json
+├── .env.example                  # template — copy to .env (optional; no tokens needed)
+├── .env                          # gitignored; LETSENCRYPT_EMAIL + DB passwords
+├── .gitignore                    # excludes .env and acme/*.json
 ├── acme/
-│   ├── .gitkeep                  # ensures dir is tracked
+│   ├── .gitkeep                  # keeps the dir tracked
 │   └── acme.json                 # gitignored; mode 0600; LE store
-├── certs/                        # legacy self-signed — kept for rollback
+├── certs/                        # local mkcert/self-signed fallback for .localhost
 ├── scripts/
-│   └── manage-certs.sh           # bootstrap-acme, status, check-expiry, ...
+│   ├── check-dns-records.py      # pre-issuance DNS gate
+│   ├── validate-traefik-config.py
+│   └── production/manage-certs.sh # bootstrap-acme, status, check-expiry
 ├── traefik/
-│   ├── dynamic.yml               # static config — has certificatesResolvers
+│   ├── dynamic.yml               # static config — certificatesResolvers
 │   └── dynamic/
-│       ├── vresume.yml           # Stage 1: tls block added
-│       ├── ctc-research.yml      # Stage 2
-│       ├── structa-cloud.yml     # Stage 2
-│       ├── media-servers.yml     # Stage 2
-│       ├── dashboard.yml         # Stage 2
-│       ├── catchall.yml          # no certResolver (uses Traefik default)
-│       ├── middlewares.yml
-│       └── certs.yml             # Stage 3: deleted
-└── docker-compose.traefik.yml    # local compose — mounts ./acme + env vars
+│       ├── space.yml             # space.structa.cloud / space.localhost
+│       ├── coder.yml             # coder.structa.cloud / coder.localhost
+│       ├── code.yml              # code.structa.cloud redirect alias
+│       ├── docs.yml              # docs.structa.cloud
+│       └── ...                   # one file per product host
+└── docker-compose.traefik.yml    # local compose — mounts ./acme
 ```
 
 ---
 
-## Stage 1 (this commit) — verify on `vresume.structa.cloud`
-
-**Goal:** Prove DNS-01 works end-to-end against the **Let's Encrypt
-staging** server using a single low-risk site (`vresume.structa.cloud`).
-The self-signed certs in `applications/proxy/certs.yml` remain loaded, so if anything
-fails we still serve traffic — just with the old self-signed cert.
-
-### 1.1 Local setup
+## Local setup
 
 ```bash
 cd <repo-root>
 
-# 1. Configure credentials
+# 1. (Optional) configure the ACME contact email
 cp applications/proxy/.env.example applications/proxy/.env
-$EDITOR applications/proxy/.env           # set CF_DNS_API_TOKEN
+$EDITOR applications/proxy/.env           # set LETSENCRYPT_EMAIL (no token required)
 
 # 2. Bootstrap ACME storage (creates ./acme/acme.json, mode 0600)
-./applications/proxy/scripts/manage-certs.sh bootstrap-acme
+./applications/proxy/scripts/production/manage-certs.sh bootstrap-acme
 
-# 3. Confirm files
-ls -la applications/proxy/acme/           # acme.json, mode 0600
-```
-
-### 1.2 Start the proxy (local compose)
-
-```bash
+# 3. Start the proxy
 docker compose -f applications/proxy/docker-compose.traefik.yml up -d
 docker logs -f default-proxy | grep -i acme
 ```
 
-Expected log line on the first https request to `vresume.structa.cloud`:
-
-```
-... level=info msg="legolog: [INFO] [vresume.structa.cloud] acme: Obtaining bundled SAN certificate"
-... level=info msg="legolog: [INFO] [vresume.structa.cloud] Server responded with a certificate"
-```
-
-### 1.3 Verify the staging cert is served
-
-```bash
-# Should report a Let's Encrypt staging issuer (Fake LE Intermediate X1 / X2)
-echo | openssl s_client -connect vresume.structa.cloud:443 -servername vresume.structa.cloud 2>/dev/null \
-  | openssl x509 -noout -issuer -subject -dates
-```
-
-Also visit `https://vresume.structa.cloud` in a browser. The browser will
-show **"untrusted"** because staging certs aren't trusted by client
-trust stores — that's expected and confirms you're hitting a *new* LE
-cert rather than the old self-signed one.
-
-### 1.4 Inspect Traefik's store
-
-```bash
-./applications/proxy/scripts/manage-certs.sh status
-./applications/proxy/scripts/manage-certs.sh check-expiry
-```
-
-### 1.5 Rollback (if Stage 1 fails)
-
-```bash
-# Drop the tls block from vresume.yml
-git checkout -- applications/proxy/traefik/dynamic/vresume.yml
-docker compose -f applications/proxy/docker-compose.traefik.yml restart default-proxy
-```
-
-The site reverts to the self-signed cert from `certs.yml` — no outage.
+On the first HTTPS request to a configured host, Traefik runs the HTTP-01
+challenge and stores the cert in `acme.json`.
 
 ---
 
-## Stage 2 — flip to production, enable remaining sites
-
-**Pre-condition:** Stage 1 LE cert verified on `vresume.structa.cloud`.
-
-### 2.1 Switch the static config to the production CA
-
-In `applications/proxy/traefik/dynamic.yml`, **remove** the staging line:
-
-```diff
-       email: ${LETSENCRYPT_EMAIL:-admin@structa.cloud}
-       storage: /etc/traefik/acme/acme.json
--      # STAGING — remove this line (or set to https://acme-v02.api.letsencrypt.org/directory)
--      # once the vresume test cert is verified.
--      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-       dnsChallenge:
-```
-
-If you'd rather keep the line for future staging tests, set it to the
-production URL:
-
-```yaml
-caServer: https://acme-v02.api.letsencrypt.org/directory
-```
-
-Restart: `docker compose -f applications/proxy/docker-compose.traefik.yml restart default-proxy`.
-
-### 2.2 Add `tls: { certResolver: letsencrypt }` to remaining https routers
-
-Files to edit (each `*-https` router — NOT the `*-http` redirect ones):
-
-- `applications/proxy/traefik/dynamic/ctc-research.yml`
-  - `ctc-site-https`
-  - `ctc-site-media-https`
-- `applications/proxy/traefik/dynamic/structa-cloud.yml`
-  - `structa-site-https`
-  - `structa-media-https`
-- `applications/proxy/traefik/dynamic/media-servers.yml`
-  - `shared-media-https`
-  - `ctc-media-https`
-  - `lms-media-https`
-  - `vresume-media-https`
-- `applications/proxy/traefik/dynamic/dashboard.yml`
-  - `traefik-dashboard` (already on `web-secure`; just add the `tls` block)
-
-`catchall.yml`'s routers are intentionally left without `certResolver` —
-LE can't issue a cert for a regex host, and Traefik's default cert
-gracefully handles unmatched hosts.
-
-### 2.3 Verify
-
-For each of the 9 https routers above (2 ctc-research, 2 structa-cloud,
-4 media, 1 dashboard), hit the URL and confirm the issuer is
-`Let's Encrypt` (or `R3` / `R10` / `R11`):
+## Verify the certificate is served
 
 ```bash
-for h in ctc-research.com www.ctc-research.com arch.ctc-research.com \
-         structa.cloud www.structa.cloud core.structa.cloud \
-         media.structa.cloud media.ctc-research.com \
-         media.lms.com media.vresume.structa.cloud \
-         traefik.structa.cloud; do
+for h in space.structa.cloud coder.structa.cloud docs.structa.cloud structa.cloud; do
   iss=$(echo | openssl s_client -connect "$h:443" -servername "$h" 2>/dev/null \
         | openssl x509 -noout -issuer 2>/dev/null | sed 's/^issuer=//')
   echo "$h -> $iss"
 done
 ```
 
-All should report a `Let's Encrypt` issuer.
+All should report `Let's Encrypt` (or `R3` / `R10` / `R11`).
 
-### 2.4 Rollback
-
-`git checkout` the edited files and restart — the self-signed
-`certs.yml` is still in place and will pick up the SAN.
-
----
-
-## Stage 3 — delete the static certs block
-
-**Pre-condition:** All sites on Stage 2 are serving LE certs for at
-least 24h and have at least one successful auto-renew (visible in
-`./manage-certs.sh check-expiry`).
+Inspect the store:
 
 ```bash
-git rm applications/proxy/traefik/dynamic/certs.yml
-# Optional: keep the on-disk .crt/.key files for emergency rollback
-#   - they are no longer referenced by Traefik
-git commit -m "chore(proxy): drop static self-signed certs (LE migration complete)"
-docker compose -f applications/proxy/docker-compose.traefik.yml restart default-proxy
+./applications/proxy/scripts/production/manage-certs.sh status
+./applications/proxy/scripts/production/manage-certs.sh check-expiry
 ```
-
-After Stage 3, the only cert path is `applications/proxy/acme/acme.json`.
-
----
-
-## Local compose
-
-Already wired in `applications/proxy/docker-compose.traefik.yml`:
-
-- `./acme:/etc/traefik/acme:rw` volume mount
-- `CF_DNS_API_TOKEN`, `CF_API_EMAIL`, `CF_API_KEY`, `LETSENCRYPT_EMAIL`
-  env vars sourced from `applications/proxy/.env` (or `${VAR:-}` defaults)
-
----
-
-## Coolify deployment
-
-The production proxy is currently `default-proxy` managed by Coolify
-(see `projects/docker-compose.yml` comment "Traefik → managed by
-Coolify"). To keep Coolify in sync with the local compose:
-
-1. In the Coolify UI for `default-proxy`:
-   - **Add volume mount**: `./acme → /etc/traefik/acme` (read-write)
-   - **Add environment variables**:
-     - `CF_DNS_API_TOKEN` (Secret, scope restricted to the resource)
-     - `LETSENCRYPT_EMAIL` (Plain)
-   - **Sync** the `applications/proxy/traefik/dynamic.yml` and `applications/proxy/traefik/dynamic/*.yml`
-     files to whatever directory Coolify mounts at `/etc/traefik/`.
-     (Coolify typically reads from a configured git source — make sure
-     this repo (or a deploy mirror) is the source.)
-2. SSH to the Coolify host and bootstrap the on-disk acme.json:
-   ```bash
-   cd /data/coolify/proxy          # or wherever Coolify mounts configs
-   ./scripts/manage-certs.sh bootstrap-acme
-   docker restart default-proxy
-   ```
-3. Follow Stages 1 → 2 → 3 from above.
 
 ---
 
 ## Troubleshooting
 
-### `acme: error: 400 :: urn:ietf:params:acme:error:dns :: DNS problem: NXDOMAIN`
+### `acme: error: tls :: <ipv6>: ... remote error: tls: internal error`
 
-Cloudflare couldn't find the `_acme-challenge` TXT record. Usually
-means the API token doesn't have DNS edit scope for the zone, or the
-zone isn't on Cloudflare.
+Let's Encrypt resolved the hostname to an IPv6 address that is **not this
+server**, followed the HTTP→HTTPS redirect on the wrong box, and failed the
+TLS handshake.
 
-### `acme: error: 403 :: ...`
+Root cause: the apex `structa.cloud` has an `AAAA` record pointing at a
+Hostinger edge (`2a02:4780:41:3f58::1`) instead of this host's IPv6
+(`2a02:4780:28:4cb8::1`). Because the subdomains are `CNAME structa.cloud`,
+they inherit the wrong record and lego tries IPv6 first.
 
-API token is missing or wrong scope. Regenerate at
-<https://dash.cloudflare.com/profile/api-tokens> with
-`Zone / DNS / Edit` restricted to the relevant zone(s).
+Fix (Hostinger hPanel → DNS): set the apex `AAAA` to
+`2a02:4780:28:4cb8::1`, **or** delete it so Let's Encrypt falls back to the
+`A` record `187.77.166.222`.
 
-### Staging vs production — which am I on?
+Then reload:
 
 ```bash
-# staging issuer contains "Fake" or "STAGING"
-echo | openssl s_client -connect <host>:443 -servername <host> 2>/dev/null \
-  | openssl x509 -noout -issuer
-# Production issuer is "Let's Encrypt" with R3 / R10 / R11
+docker restart default-proxy
 ```
+
+### `acme: error: dns :: DNS problem: NXDOMAIN`
+
+The domain has no public A record, so Let's Encrypt can't route the challenge.
+Add the `A` record (or a `CNAME` to `structa.cloud`) and re-check.
 
 ### Rate limits
 
-Let's Encrypt has aggressive rate limits (5 duplicate certs per week
-per domain). Always test on the **staging** server (which has much
-higher limits) before flipping to production.
-
-### `LETSENCRYPT_EMAIL` must be set
-
-The `email` field in `certificatesResolvers` is required for ACME
-account registration. The static config uses
-`${LETSENCRYPT_EMAIL:-admin@structa.cloud}`; the docker-compose passes
-the env var through with a non-empty default, so this is safe in
-normal operation. If you run Traefik outside of docker-compose, make
-sure `LETSENCRYPT_EMAIL` is exported in the shell before starting it.
+Let's Encrypt has aggressive rate limits (5 duplicate certs per week per
+domain). Use the pre-issuance DNS gate and fix DNS before triggering repeated
+issuance attempts.
 
 ### acme.json is empty after restart
 
-The `acme.json` file must exist with mode `0600` **before** the
-container starts. If it doesn't, Traefik will create it on first
-write, but if the host filesystem doesn't allow the right mode
-(e.g. tmpfs with default umask) the container will fail to read it.
-Run `./scripts/manage-certs.sh bootstrap-acme` to be safe.
+`acme.json` must exist with mode `0600` **before** the container starts. Run
+`./scripts/production/manage-certs.sh bootstrap-acme`, then start the proxy
+and hit an HTTPS endpoint to trigger issuance.
 
-### Rollback from a failed LE cert
+### `LETSENCRYPT_EMAIL` must be set
 
-Until Stage 3, just revert the `tls:` block from the affected
-router file. After Stage 3, you have to either re-add a static
-certs.yml block or restore acme.json from `./acme/backups/`.
+The resolver `email` field is required for ACME account registration. The
+static config uses `structa.cloud@gmail.com`; the compose file passes
+`LETSENCRYPT_EMAIL` through with an `admin@structa.cloud` default, so this is
+safe in normal operation.
 
 ---
 
 ## References
 
 - [Traefik ACME / Let's Encrypt docs](https://doc.traefik.io/traefik/https/acme/)
-- [Traefik DNS-01 challenge](https://doc.traefik.io/traefik/https/acme/#dnschallenge)
-- [Cloudflare API tokens](https://dash.cloudflare.com/profile/api-tokens)
+- [Traefik HTTP-01 challenge](https://doc.traefik.io/traefik/https/acme/#httpchallenge)
 - [Let's Encrypt rate limits](https://letsencrypt.org/docs/rate-limits/)

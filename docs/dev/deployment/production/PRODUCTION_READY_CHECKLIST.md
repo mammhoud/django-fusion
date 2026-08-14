@@ -11,7 +11,7 @@
 ```
 ✅ traefik           UP 28 minutes (healthy)
 ✅ web-ctc-research  UP 2 minutes (healthy)
-✅ shared-media      UP 28 minutes (healthy)
+✅ shared-proxy      UP 28 minutes (healthy)
 ✅ postgres          UP 2 hours (healthy)
 ✅ redis             UP 2 hours (healthy)
 ```

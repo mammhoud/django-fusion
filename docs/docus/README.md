@@ -12,7 +12,7 @@ npm install
 npm run dev
 ```
 
-The local site uses the `/docs/` base path to match the deployed shared-media
+The local site uses the `/docs/` base path to match the deployed shared-proxy
 route. Open `http://localhost:3000/docs/`.
 
 ## Languages
@@ -40,8 +40,8 @@ remain fully functional.
 
 ## Deployment contract
 
-- `media.structa.cloud/docs/` is proxied by shared-media Nginx to `docus:3000`.
-- `docs.structa.cloud/` is proxied through the same shared-media service.
+- `media.structa.cloud/docs/` is proxied by shared-proxy Nginx to `docus:3000`.
+- `docs.structa.cloud/` is proxied through the same shared-proxy service.
 - Traefik keeps the existing `/docs` strip-prefix middleware for the docs host.
 - `NUXT_APP_BASE_URL=/docs/` keeps asset and locale links valid on both hosts.
 

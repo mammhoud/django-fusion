@@ -7,7 +7,6 @@ resolver 127.0.0.11 valid=30s ipv6=off;
 map $host $space_redirect_base {
     default          https://space.structa.cloud;
     affine.localhost http://space.localhost;
-    blinko.localhost http://space.localhost;
 }
 
 
@@ -284,25 +283,6 @@ server {
     listen 80;
     server_name space.localhost space.structa.cloud;
 
-    location = /files {
-        return 301 /files/;
-    }
-
-    location /files/ {
-        set $filegator_upstream proxy-filegator:8080;
-        proxy_pass http://$filegator_upstream/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Prefix /files;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 300s;
-        client_max_body_size 2g;
-    }
-
     location / {
         set $affine_upstream proxy-affine:3010;
         proxy_pass http://$affine_upstream;
@@ -319,32 +299,11 @@ server {
     }
 }
 
-# A dedicated alias is useful for bookmarks and integrations that cannot use
-# the /files/ path. It is covered by the same Traefik certificate route.
-server {
-    listen 80;
-    server_name files.localhost files.structa.cloud;
-
-    location / {
-        set $filegator_host_upstream proxy-filegator:8080;
-        proxy_pass http://$filegator_host_upstream;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 300s;
-        client_max_body_size 2g;
-    }
-}
-
 # ------------------------------------------------------------
 # Legacy hosts — redirect to space.structa.cloud
 # ------------------------------------------------------------
-# Former AFFiNE (affine.localhost) and Blinko (blinko.structa.cloud) hosts
-# redirect to the consolidated origin so existing bookmarks keep working.
+# The former AFFiNE (affine.localhost) host redirects to the consolidated
+# origin so existing bookmarks keep working.
 server {
     listen 80;
     server_name affine.localhost;
@@ -354,21 +313,12 @@ server {
     }
 }
 
-server {
-    listen 80;
-    server_name blinko.localhost blinko.structa.cloud;
-
-    location / {
-        return 301 $space_redirect_base/;
-    }
-}
-
 # ------------------------------------------------------------
 # Docs — docs.structa.cloud (Docus Nuxt server)
 # ------------------------------------------------------------
-# Traefik strips /docs from this host before forwarding to shared-media.
+# Traefik strips /docs from this host before forwarding to shared-proxy.
 # Docus still emits /docs/ asset URLs, which Traefik strips again on the
-# browser's subsequent requests. The variable upstream keeps shared-media's
+# browser's subsequent requests. The variable upstream keeps shared-proxy's
 # Nginx config valid while the Docus workspace service is restarting.
 server {
     listen 80;

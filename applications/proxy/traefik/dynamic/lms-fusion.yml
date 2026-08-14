@@ -1,34 +1,21 @@
 # =============================================================================
-# lms-fusion — Traefik router config  [DORMANT]
+# lms-fusion — Traefik router config  [DORMANT / LOCAL DEV ONLY]
 # =============================================================================
 # Containers "lms-fusion-frontend" and "lms-fusion-backend" NOT currently running.
-# Routes lms-fusion.com / www.lms-fusion.com / lms-fusion.localhost
-# → no backend available.
+# Public lms-fusion.com / www.lms-fusion.com routers were removed because those
+# domains no longer resolve, and their certResolver kept triggering failed
+# Let's Encrypt attempts.
 # Local development host: lms-fusion.localhost
 # To activate: deploy the LMS-Fusion compose stack.
-#
-# Public hosts use Let's Encrypt; the .localhost host stays on the mkcert
-# default cert. They are split because a single certResolver router bundling
-# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
-# would block issuance for the public domains too.
 # =============================================================================
 
 http:
   routers:
     lms-fusion-site-http:
-      rule: 'Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)'
+      rule: 'Host(`lms-fusion.localhost`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: lms-fusion-frontend-service
-      priority: 10
-
-    lms-fusion-site-https:
-      rule: 'Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)'
-      entryPoints: [web-secure]
-      middlewares: [compress, csrf-headers, security-headers]
-      service: lms-fusion-frontend-service
-      tls:
-        certResolver: letsencrypt-http
       priority: 10
 
     lms-fusion-site-localhost-https:
@@ -38,15 +25,6 @@ http:
       service: lms-fusion-frontend-service
       priority: 10
 
-    lms-fusion-api:
-      rule: '(Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
-      entryPoints: [web, web-secure]
-      middlewares: [compress, csrf-headers, security-headers]
-      service: lms-fusion-backend-service
-      tls:
-        certResolver: letsencrypt-http
-      priority: 100
-
     lms-fusion-api-localhost:
       rule: '(Host(`lms-fusion.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
       entryPoints: [web, web-secure]
@@ -55,7 +33,7 @@ http:
       priority: 100
 
     lms-fusion-media:
-      rule: '(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      rule: '(Host(`lms-fusion.localhost`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, security-headers]
       service: lms-fusion-media-service
@@ -83,4 +61,4 @@ http:
     lms-fusion-media-service:
       loadBalancer:
         servers:
-          - url: 'http://shared-media:80'
+          - url: 'http://shared-proxy:80'

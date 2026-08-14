@@ -2,23 +2,21 @@
 
 Provisions one Coder agent-host container that bind-mounts the local Structa
 Cloud checkout and starts its compose-based development container. The
-workspace includes the full monorepo toolchain, VS Code Web, a web terminal,
-and an authenticated Files app that points to the permanent shared FileGator
-service. It does not provision AFFiNE, FileGator, or any application database.
+workspace includes the full monorepo toolchain, VS Code Web, and a web
+terminal. It does not provision AFFiNE, FileGator, or any application database.
 
 ## Access model
 
-The shared proxy owns application services and public routing:
+The shared proxy owns AFFiNE and public routing:
 
 - `https://space.structa.cloud/` → permanent AFFiNE
-- `https://space.structa.cloud/files/` → shared FileGator
-- `https://files.structa.cloud/` → shared FileGator alias
 - `https://coder.structa.cloud/` → Coder control plane
+- `https://code.structa.cloud/` → secure redirect to Coder
 
 `blinko.structa.cloud` remains a legacy redirect to `space.structa.cloud`.
-`affine.pro` is intentionally not routed or renewed. DNS records must point to
-the proxy host outside this repository; Traefik requests the public
-Let's Encrypt certificate for `space.structa.cloud` and `files.structa.cloud`.
+`affine.pro` and FileGator routes are intentionally absent. DNS records must
+point public hosts to the proxy outside this repository; Traefik requests the
+Let's Encrypt certificates.
 
 The workspace Coder apps are authenticated through Coder. No workspace service
 publishes a host port.
@@ -42,40 +40,38 @@ The agent runs as root because the host checkout is root-owned. This avoids the
 The template creates one agent-host container with the Docker socket, a
 persistent `/home/coder` volume, and the mounted repository. The
 `devcontainers-cli` module and `coder_devcontainer` resource start only the
-repository's `.devcontainer/docker-compose.yml`; that compose file now owns
-only the development container.
+repository's `.devcontainer/docker-compose.yml`; that compose file owns only
+the development container.
 
 The code-server module provides VS Code Web. VS Code Desktop is disabled in the
-agent display. The Files Coder app connects to `proxy-filegator:8080` on the
-shared `common` network.
+agent display.
 
 ## Prerequisites
 
 The following infrastructure must already be running:
 
 - Coder control plane
-- PostgreSQL and Redis for shared applications
-- Traefik and shared-media Nginx
+- PostgreSQL and Redis for shared AFFiNE
+- Traefik and shared-proxy Nginx
 - External Docker networks `common`, `traefik-net`, and `warehouse-net`
 - Proxy credentials `AFFINE_DB_PASSWORD` and `REDIS_PASSWORD` supplied through
   `applications/proxy/.env` or the deployment environment
 
 AFFiNE data is stored outside the workspace at
-`applications/proxy/affine-data/`. FileGator data is stored at
-`applications/proxy/filegator-data/repository/`; both paths are ignored by Git.
+`applications/proxy/affine-data/`, which is ignored by Git.
 
 ## Push and create
 
 ```bash
 coder templates push \
   -d applications/templates/workspace \
-  -m "Shared proxy services with mounted monorepo devcontainer" \
+  -m "AFFiNE shared proxy with mounted monorepo devcontainer" \
   -y workspace
 ```
 
 Create a workspace from the pushed `workspace` template, then open VS Code Web
-or Files from the Coder workspace page. AFFiNE and the public FileGator route
-are independent of the workspace lifecycle.
+from the Coder workspace page. AFFiNE is independent of the workspace
+lifecycle.
 
 ## Validation
 

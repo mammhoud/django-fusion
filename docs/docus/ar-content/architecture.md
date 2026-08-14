@@ -14,7 +14,7 @@ navigation:
 |---|---|
 | Docus | تحويل Markdown إلى موقع Nuxt ثابت مع البحث والتنقل |
 | Nuxt i18n | المسارات `/en/` و`/ar/` وتحديد اتجاه النص |
-| shared-media | خدمة الملفات الثابتة عبر Nginx |
+| shared-proxy | خدمة الملفات الثابتة عبر Nginx |
 | Traefik | TLS والتوجيه العام للنطاقات الفرعية |
 | Git | مصدر Markdown والمراجعات |
 
@@ -25,7 +25,7 @@ navigation:
 - `media.structa.cloud/docs/en/` — مسار التوافق تحت مضيف الوسائط.
 - `media.structa.cloud/docs/ar/` — المسار العربي تحت مضيف الوسائط.
 
-يتم استخدام نفس صورة `shared-media` للمسارين. يزيل Traefik بادئة `/docs` عند
+يتم استخدام نفس صورة `shared-proxy` للمسارين. يزيل Traefik بادئة `/docs` عند
 التوجيه إلى مضيف الوثائق، بينما يحتفظ Nginx بها عند التقديم تحت مضيف الوسائط.
 
 ## الأمان والأداء

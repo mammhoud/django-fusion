@@ -67,5 +67,4 @@ base_library.zip
 # Keep this legacy pattern for workspaces that have not migrated yet.
 .affine-data-*/
 applications/proxy/affine-data/
-applications/proxy/filegator-data/
 .hypothesis

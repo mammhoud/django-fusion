@@ -12,7 +12,7 @@ Browser → Traefik Proxy (:443, SSL)
     ├── /apis/* → landing-fusion-backend (Django, :8074)
     ├── /accounts/* → landing-fusion-backend
     ├── /learning/* → landing-fusion-backend
-    └── /static/* → shared-media (Nginx)
+    └── /static/* → shared-proxy (Nginx)
 ```
 
 ---

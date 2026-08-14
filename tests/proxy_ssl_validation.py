@@ -22,7 +22,7 @@ except ImportError:  # pragma: no cover
     pytest = None  # type: ignore
 
 PROJECT_ROOT = Path(__file__).parent.parent
-PROXY_DIR = PROJECT_ROOT / "proxy"
+PROXY_DIR = PROJECT_ROOT / "applications" / "proxy"
 CERTS_DIR = PROXY_DIR / "certs"
 TRAEFIK_DYNAMIC_DIR = PROXY_DIR / "traefik" / "dynamic"
 
@@ -131,7 +131,8 @@ class TestTraefikConfiguration:
         required = [
             "ctc-research.yml",
             "structa-cloud.yml",
-            "vresume.yml",
+            "lms-fusion.yml",
+            "space.yml",
             "middlewares.yml",
             "certs.yml",
             "catchall.yml",
@@ -153,7 +154,7 @@ class TestTraefikConfiguration:
             data = yaml.safe_load(f)
 
         certs = data.get("tls", {}).get("certificates", [])
-        assert len(certs) >= 3, "Expected at least 3 certificate entries"
+        assert certs, "Expected at least one fallback certificate entry"
 
         for entry in certs:
             cert_file = entry.get("certFile", "").replace("/etc/traefik/certs/", "")
@@ -179,7 +180,6 @@ class TestTraefikConfiguration:
         expected_hosts = [
             "media.structa.cloud",
             "media.ctc-research.com",
-            "media.lms.com",
             "media.vresume.structa.cloud",
         ]
         for host in expected_hosts:
@@ -190,18 +190,18 @@ class TestTraefikConfiguration:
             )
             assert found, f"No HTTPS router found for {host}"
 
-        # Check that services point to shared-media
+        # Check that services point to shared-proxy
         for svc_name, svc in services.items():
             servers = svc.get("loadBalancer", {}).get("servers", [])
             for srv in servers:
-                assert "shared-media" in srv.get("url", ""), f"{svc_name} does not route to shared-media"
+                assert "shared-proxy" in srv.get("url", ""), f"{svc_name} does not route to shared-proxy"
 
 
 # ── Nginx Media Server Tests ───────────────────────────────────────────────
 
 
 class TestNginxMediaServer:
-    """Validate nginx configuration for shared-media."""
+    """Validate nginx configuration for shared-proxy."""
 
     def test_nginx_config_exists(self) -> None:
         conf = PROXY_DIR / "nginx" / "default.conf.template"
@@ -222,17 +222,13 @@ class TestNginxMediaServer:
 
     def test_media_directories_exist(self) -> None:
         """All site media directories must exist."""
-        sites = ["ctc-research", "lms", "VResume"]
-        for site in sites:
-            media_dir = PROJECT_ROOT / "core" / site / "assets" / "media"
-            assert media_dir.exists(), f"Media directory missing: {media_dir}"
+        media_dir = PROJECT_ROOT / "projects" / "precis" / "assets" / "media"
+        assert media_dir.exists(), f"Media directory missing: {media_dir}"
 
     def test_staticfiles_directories_exist(self) -> None:
         """All site staticfiles directories must exist."""
-        sites = ["ctc-research", "lms", "VResume"]
-        for site in sites:
-            static_dir = PROJECT_ROOT / "core" / site / "assets" / "staticfiles"
-            assert static_dir.exists(), f"Staticfiles directory missing: {static_dir}"
+        static_dir = PROJECT_ROOT / "projects" / "precis" / "assets" / "static"
+        assert static_dir.exists(), f"Static directory missing: {static_dir}"
 
 
 # ── Domain Response Tests ──────────────────────────────────────────────────

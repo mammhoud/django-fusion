@@ -16,7 +16,7 @@ Traefik Proxy (default-proxy)
   ├── ctc-research.com ──────→ ctc-research-website:5070
   ├── structa.cloud ─────────→ lms-web:5071
   ├── vresume.structa.cloud ─→ vresume-web:5072
-  ├── media.structa.cloud ───→ shared-media:80
+  ├── media.structa.cloud ───→ shared-proxy:80
   │
   └── Internal services (on common network):
        ├── postgres:5432
@@ -33,7 +33,7 @@ Traefik Proxy (default-proxy)
 | Component | Container | Port | Documentation |
 |-----------|-----------|------|---------------|
 | **Traefik Proxy** | `default-proxy` | 80, 443 | [`proxy.md`](proxy.md) |
-| **Nginx Media** | `shared-media` | 80 | — |
+| **Nginx Media** | `shared-proxy` | 80 | — |
 | **PostgreSQL** | `default-postgres` | 5432 | [`../databases/`](../databases/) |
 | **Redis** | `default-redis` | 6379 | — |
 | **Dramatiq Worker** | `shared-worker` | — | [`shared-worker.md`](shared-worker.md) |

@@ -6,7 +6,7 @@ Audits the ctc-research.com frontend asset pipeline for consistency across:
   - Django templates (bundle tag usage)
   - Django settings (STATIC_ROOT, MEDIA_ROOT, STATIC_URL, MEDIA_URL)
   - Webpack configuration (output paths, publicPath, entry points)
-  - Nginx shared-media server (locations and volume mounts)
+  - Nginx shared-proxy server (locations and volume mounts)
   - Traefik routing (static/media path prefixes and media subdomain)
 
 Usage:
@@ -210,13 +210,13 @@ def check_nginx_config(site: str) -> CheckResult:
 
 
 def check_traefik_routing(site: str) -> CheckResult:
-    """Verify Traefik routes static/media paths to shared-media."""
+    """Verify Traefik routes static/media paths to shared-proxy."""
     result = CheckResult()
     traefik_file = PROXY / "traefik" / "dynamic" / f"{site}.yml"
     text = read_text(traefik_file)
 
-    if "shared-media:80" not in text:
-        result.add_error(f"{traefik_file}: static/media service does not route to shared-media:80")
+    if "shared-proxy:80" not in text:
+        result.add_error(f"{traefik_file}: static/media service does not route to shared-proxy:80")
 
     if "PathPrefix(`/static/`)" not in text or "PathPrefix(`/media/`)" not in text:
         result.add_error(f"{traefik_file}: missing /static/ or /media/ PathPrefix rules")

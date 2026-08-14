@@ -2,13 +2,13 @@
 
 Terraform templates for [Coder](https://coder.com) workspaces. The active
 `workspace` template provides a mounted monorepo development environment;
-shared applications run independently in the proxy stack.
+AFFiNE runs independently in the shared proxy stack.
 
 ## Templates
 
-| Template | Provisioned workspace | Shared application routes |
+| Template | Provisioned workspace | Shared application route |
 |---|---|---|
-| [workspace](./workspace/README.md) | Agent host, mounted devcontainer, VS Code Web, web terminal, authenticated Files app | AFFiNE at `space.structa.cloud/`; FileGator at `space.structa.cloud/files/` and `files.structa.cloud` |
+| [workspace](./workspace/README.md) | Agent host, mounted devcontainer, VS Code Web, and web terminal | AFFiNE at `space.structa.cloud/` |
 
 ## workspace
 
@@ -18,15 +18,14 @@ the host, in the Coder agent host, and in the devcontainer. The agent runs as
 root so npm and Git can write to the root-owned checkout.
 
 The `devcontainers-cli` module and `coder_devcontainer` start only
-`.devcontainer/docker-compose.yml`. AFFiNE and FileGator are not installed by
-or stopped with a workspace; they are permanent services in
+`.devcontainer/docker-compose.yml`. AFFiNE is not installed by or stopped with
+a workspace; it is a permanent service in
 `applications/proxy/docker-compose.nginx.yml` using shared PostgreSQL/Redis
-and persistent proxy-owned data directories.
+and proxy-owned persistent data.
 
-The Coder template disables VS Code Desktop and provides VS Code Web. It also
-provides a Files app backed by the shared FileGator service. Antigravity is not
-included because no runnable image or supported deployment contract was
-specified.
+The Coder template disables VS Code Desktop and provides VS Code Web.
+Antigravity is not included because no runnable image or supported deployment
+contract was specified.
 
 ## Shared infrastructure
 
@@ -34,10 +33,9 @@ specified.
 |---|---|
 | PostgreSQL + Redis | `applications/databases/docker-compose.yml` |
 | Coder control plane | `applications/docker-compose.yml` |
-| AFFiNE, FileGator, shared-media, and Docus | `applications/proxy/docker-compose.nginx.yml` |
-| Workspace and Files routing | `applications/proxy/traefik/dynamic/space.yml` |
-| Legacy Blinko redirect | `applications/proxy/traefik/dynamic/blinko.yml` |
-| Coder routing | `applications/proxy/traefik/dynamic/coder.yml` |
+| AFFiNE, shared-proxy, and Docus | `applications/proxy/docker-compose.nginx.yml` |
+| AFFiNE routing | `applications/proxy/traefik/dynamic/space.yml` |
+| Code/Coder routing | `applications/proxy/traefik/dynamic/code.yml` and `coder.yml` |
 | Docker networks | `common`, `traefik-net`, `warehouse-net` |
 
 ## Quick start
@@ -55,7 +53,7 @@ docker compose -f docker-compose.traefik.yml up -d
 cd ../..
 coder templates push \
   -d applications/templates/workspace \
-  -m "Mounted monorepo workspace with shared proxy applications" \
+  -m "AFFiNE shared proxy with mounted monorepo devcontainer" \
   -y workspace
 ```
 
@@ -75,8 +73,7 @@ applications/templates/
 └── devcontainer.json
 
 applications/proxy/
-├── docker-compose.nginx.yml # shared-media + Docus + AFFiNE + FileGator
+├── docker-compose.nginx.yml # shared-proxy + Docus + AFFiNE
 ├── affine-data/             # ignored persistent AFFiNE files
-├── filegator-data/          # ignored persistent FileGator repository
 └── nginx/default.conf.template
 ```

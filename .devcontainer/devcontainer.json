@@ -11,7 +11,7 @@
       "moby": true
     }
   },
-  "postCreateCommand": "npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && pnpm -v && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
+  "postCreateCommand": "npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && (cd /tmp && pnpm -v) && npx nx --version && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -28,5 +28,5 @@
     }
   },
   "forwardPorts": [3000, 4321, 5173],
-  "postAttachCommand": "echo 'workspace ready'"
+  "postAttachCommand": "npm install -g freebuff && echo 'workspace ready'"
 }

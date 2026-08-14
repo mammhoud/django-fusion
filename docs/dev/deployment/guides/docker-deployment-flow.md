@@ -11,7 +11,7 @@ This guide defines the stable deployment flow for the current repository layout.
 | `applications/docker-compose.tasks.yml` | Shared Dramatiq worker/APScheduler for cross-site background jobs. | `docker compose -f applications/databases/docker-compose.yml -f applications/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat` |
 | `applications/proxy/docker-compose.traefik.yml` | Traefik edge proxy and TLS termination. | `docker compose -f applications/proxy/docker-compose.traefik.yml up -d` |
 | `applications/proxy/docker-compose.nginx.yml` | Optional Nginx static/media reverse proxy when Traefik is not serving assets directly. | `docker compose -f docker-compose.yml -f applications/proxy/docker-compose.nginx.yml up -d` |
-| `applications/proxy/docker-compose.nginx.yml` (`shared-media` service) | Docus static documentation (English + Arabic, served at `/docs/`). | `docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shared-media` |
+| `applications/proxy/docker-compose.nginx.yml` (`shared-proxy` service) | Docus static documentation (English + Arabic, served at `/docs/`). | `docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shared-proxy` |
 
 ## Recommended production sequence
 

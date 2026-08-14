@@ -32,7 +32,7 @@ CTC = PROJECT_ROOT / "projects" / "ctc-research"
 
 TEST_DOCKER = os.environ.get("TEST_DOCKER", "false").lower() == "true"
 
-# The former CTC shared-media topology is no longer part of this checkout.
+# The former CTC shared-proxy topology is no longer part of this checkout.
 # Keep those historical checks available for a restored CTC fixture, but do
 # not report false failures when the retired project and its proxy layout are
 # absent. The Precis-local asset checks below remain active.
@@ -49,29 +49,29 @@ def _read(path: Path) -> str:
         return ""
 
 
-# ── Shared-Media Configuration Tests ────────────────────────────────────────
+# ── Shared-Proxy Configuration Tests ────────────────────────────────────────
 
 @pytest.mark.skipif(
     not LEGACY_CTC_AVAILABLE,
-    reason="legacy CTC shared-media topology is not present in this checkout",
+    reason="legacy CTC shared-proxy topology is not present in this checkout",
 )
 class TestSharedMediaConfiguration:
     """Static configuration checks that do not require a running server."""
 
     def test_nginx_compose_mounts_ctc_staticfiles(self) -> None:
-        """shared-media must mount ctc-research staticfiles read-only."""
+        """shared-proxy must mount ctc-research staticfiles read-only."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
         assert "../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro" in text
 
     def test_nginx_compose_mounts_ctc_media(self) -> None:
-        """shared-media must mount ctc-research media read-only."""
+        """shared-proxy must mount ctc-research media read-only."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
         assert "../projects/ctc-research/assets/media:/var/www/media/ctc-research:ro" in text
 
     def test_nginx_compose_mounts_shared_static(self) -> None:
-        """shared-media must mount the workspace shared static files."""
+        """shared-proxy must mount the workspace shared static files."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
         assert "../projects/assets/static:/var/www/static:ro" in text
@@ -112,20 +112,20 @@ class TestSharedMediaConfiguration:
         assert "alias /var/www/media/;" in text
 
     def test_traefik_ctc_routes_static_media_to_shared_media(self) -> None:
-        """Traefik must route ctc-research.com /static /media /sites to shared-media."""
+        """Traefik must route ctc-research.com /static /media /sites to shared-proxy."""
         traefik = PROXY / "traefik" / "dynamic" / "ctc-research.yml"
         text = _read(traefik)
         assert "PathPrefix(`/static/`)" in text
         assert "PathPrefix(`/media/`)" in text
         assert "PathPrefix(`/sites/`)" in text
-        assert "shared-media:80" in text
+        assert "shared-proxy:80" in text
 
     def test_traefik_media_subdomain_routes_to_shared_media(self) -> None:
-        """media.ctc-research.com must route to shared-media."""
+        """media.ctc-research.com must route to shared-proxy."""
         traefik = PROXY / "traefik" / "dynamic" / "media-servers.yml"
         text = _read(traefik)
         assert 'Host(`media.ctc-research.com`)' in text
-        assert "shared-media:80" in text
+        assert "shared-proxy:80" in text
 
     def test_ctc_django_static_root_points_to_staticfiles(self) -> None:
         """Django STATIC_ROOT must end in ctc-research/assets/staticfiles."""
@@ -141,13 +141,13 @@ class TestSharedMediaConfiguration:
         assert "MEDIA_DIR = ASSETS_DIR / \"media\"" in text
 
     def test_ctc_django_static_url_is_relative(self) -> None:
-        """STATIC_URL must be a relative /static/ path for shared-media compatibility."""
+        """STATIC_URL must be a relative /static/ path for shared-proxy compatibility."""
         assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'STATIC_URL  = settings.get("STATIC_URL", "/static/")' in text
 
     def test_ctc_django_media_url_is_relative(self) -> None:
-        """MEDIA_URL must be a relative /media/ path for shared-media compatibility."""
+        """MEDIA_URL must be a relative /media/ path for shared-proxy compatibility."""
         assets_py = PRECIS_ASSETS_CONFIG
         text = _read(assets_py)
         assert 'MEDIA_URL  = settings.get("MEDIA_URL", "/media/")' in text
@@ -215,40 +215,40 @@ class TestRunningServerMedia:
 
     @pytest.mark.skipif(not TEST_DOCKER, reason="Set TEST_DOCKER=true to run live container checks")
     def test_shared_media_container_is_running(self) -> None:
-        """shared-media container must be running."""
+        """shared-proxy container must be running."""
         result = subprocess.run(
-            ["docker", "ps", "--filter", "name=shared-media", "--format", "{{.Names}}"],
+            ["docker", "ps", "--filter", "name=shared-proxy", "--format", "{{.Names}}"],
             capture_output=True,
             text=True,
         )
         assert result.returncode == 0
-        assert "shared-media" in result.stdout
+        assert "shared-proxy" in result.stdout
 
     @pytest.mark.skipif(not TEST_DOCKER, reason="Set TEST_DOCKER=true to run live container checks")
     def test_shared_media_container_exposes_static_volume(self) -> None:
-        """shared-media container must have CTC staticfiles mounted."""
+        """shared-proxy container must have CTC staticfiles mounted."""
         result = subprocess.run(
-            ["docker", "exec", "shared-media", "ls", f"/var/www/sites/ctc-research/static/"],
+            ["docker", "exec", "shared-proxy", "ls", f"/var/www/sites/ctc-research/static/"],
             capture_output=True,
             text=True,
         )
-        assert result.returncode == 0, f"shared-media cannot list CTC static: {result.stderr}"
+        assert result.returncode == 0, f"shared-proxy cannot list CTC static: {result.stderr}"
 
     @pytest.mark.skipif(not TEST_DOCKER, reason="Set TEST_DOCKER=true to run live container checks")
     def test_shared_media_container_exposes_media_volume(self) -> None:
-        """shared-media container must have CTC media mounted."""
+        """shared-proxy container must have CTC media mounted."""
         result = subprocess.run(
-            ["docker", "exec", "shared-media", "ls", f"/var/www/media/ctc-research/"],
+            ["docker", "exec", "shared-proxy", "ls", f"/var/www/media/ctc-research/"],
             capture_output=True,
             text=True,
         )
-        assert result.returncode == 0, f"shared-media cannot list CTC media: {result.stderr}"
+        assert result.returncode == 0, f"shared-proxy cannot list CTC media: {result.stderr}"
 
     @pytest.mark.skipif(not TEST_DOCKER, reason="Set TEST_DOCKER=true to run live container checks")
     def test_nginx_config_is_valid_inside_container(self) -> None:
-        """nginx -t must pass inside shared-media."""
+        """nginx -t must pass inside shared-proxy."""
         result = subprocess.run(
-            ["docker", "exec", "shared-media", "nginx", "-t"],
+            ["docker", "exec", "shared-proxy", "nginx", "-t"],
             capture_output=True,
             text=True,
         )

@@ -1,6 +1,6 @@
 # Proxy & Routing
 
-> **Related Names:** `Traefik`, `SSL`, `Let's Encrypt`, `Cloudflare`, `DNS-01`, `ACME`, `certificate`, `media`, `nginx`, `shared-media`
+> **Related Names:** `Traefik`, `SSL`, `Let's Encrypt`, `Cloudflare`, `DNS-01`, `ACME`, `certificate`, `media`, `nginx`, `shared-proxy`
 > **Tags:** #proxy #ssl #letsencrypt #routing #infrastructure
 
 The default proxy (`default-proxy`) serves SSL on port 443.
@@ -34,7 +34,7 @@ CF_API_KEY=<key>
 
 ## Shared media
 
-Nginx media server (`shared-media`) serves static/media files for all sites.
+Nginx media server (`shared-proxy`) serves static/media files for all sites.
 
 Media subdomains:
 

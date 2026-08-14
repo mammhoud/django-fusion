@@ -1,12 +1,10 @@
 # =============================================================================
 # Workspace origin — space.structa.cloud (all workspace services, path-based)
 # =============================================================================
-# Routes space.localhost / space.structa.cloud to the shared-media nginx,
+# Routes space.localhost / space.structa.cloud to the shared-proxy nginx,
 # which serves AFFiNE at the root (see
-# applications/proxy/nginx/default.conf.template). The former
-# blinko.structa.cloud host 301-redirects here (same shared-media nginx). The
-# affine.pro remains removed; FileGator is served through the files host
-# and the /files/ path on the shared space origin.
+# applications/proxy/nginx/default.conf.template). The affine.pro host remains
+# removed; AFFiNE is served only at the root of the shared space origin.
 #
 # Public host uses Let's Encrypt; the .localhost host stays on the mkcert
 # default cert. They are split because a single certResolver router bundling
@@ -38,38 +36,9 @@ http:
       service: space-service
       priority: 150
 
-    files-http:
-      rule: 'Host(`files.localhost`) || Host(`files.structa.cloud`)'
-      entryPoints: [web]
-      middlewares: [redirect-to-https]
-      service: files-service
-      priority: 160
-
-    files-https:
-      rule: 'Host(`files.structa.cloud`)'
-      entryPoints: [web-secure]
-      middlewares: [compress]
-      service: files-service
-      tls:
-        certResolver: letsencrypt-http
-      priority: 160
-
-    files-localhost-https:
-      rule: 'Host(`files.localhost`)'
-      entryPoints: [web-secure]
-      middlewares: [compress]
-      service: files-service
-      priority: 160
-
   services:
     space-service:
       loadBalancer:
         servers:
-          - url: 'http://shared-media:80'
-        passHostHeader: true
-
-    files-service:
-      loadBalancer:
-        servers:
-          - url: 'http://shared-media:80'
+          - url: 'http://shared-proxy:80'
         passHostHeader: true

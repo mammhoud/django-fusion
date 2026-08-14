@@ -3,7 +3,10 @@
   "version": "1.0.3",
   "private": true,
   "description": "Nx orchestration layer for the Structa Cloud JavaScript monorepo",
-  "packageManager": "npm@11",
+  "packageManager": "npm@11.19.0",
+  "allowScripts": {
+    "nx@22.7.8": true
+  },
   "scripts": {
     "nx": "nx",
     "nx:graph": "nx graph",

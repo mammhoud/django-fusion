@@ -12,7 +12,7 @@ Internet → Traefik (port 443, SSL)
               ├── ctc-research.com        → Django app container
               ├── lms.com            → Django app container
               ├── vresume.structa.cloud   → Django app container
-              ├── media.*                 → Nginx shared-media
+              ├── media.*                 → Nginx shared-proxy
               ├── dashboard.structa.cloud → Monitoring dashboard
               └── docs.structa.cloud      → Documentation site
 ```

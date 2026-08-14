@@ -30,7 +30,7 @@ case "$SITE" in
         ;;
     all)
         DJANGO_SITE="all"
-        SERVICE="ctc-research-website lms-website vresume-website shared-media"
+        SERVICE="ctc-research-website lms-website vresume-website shared-proxy"
         ;;
     *)
         DJANGO_SITE="$SITE"

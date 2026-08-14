@@ -11,7 +11,7 @@
 | `default-postgres` | PostgreSQL 16 | 5432 | `common` |
 | `default-redis` | Redis 7 | 6379 | `common` |
 | `default-proxy` | Traefik 3 | 80, 443 | `traefik-net` |
-| `shared-media` | Nginx (static/media) | 80 | `common` |
+| `shared-proxy` | Nginx (static/media) | 80 | `common` |
 | `shared-worker` | Dramatiq worker | — | `common` |
 | `shared-scheduler` | Celery Beat | — | `common` |
 | `ctc-research-website` | Django/Gunicorn | 5070 | `common` |

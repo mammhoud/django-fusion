@@ -33,7 +33,7 @@ Run all targets from `projects/` directory: `cd projects && make <target>`
 | `make docker-build-lms` | Build LMS Demo image |
 | `make docker-build-vresume` | Build VResume image |
 | `make docker-build-server` | Build server image |
-| `make docker-build-shared-media` | Build shared media image |
+| `make docker-build-shared-proxy` | Build shared media image |
 
 ### Docker Operations
 | Command | Description |

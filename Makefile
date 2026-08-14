@@ -270,7 +270,7 @@ help:
 	@echo "  make deploy-tasks      - Deploy shared-worker (Dramatiq) + shared-scheduler (APScheduler) (starts Redis/Postgres if needed)"
 	@echo "  make status-tasks      - Show status of shared-worker + shared-scheduler"
 	@echo "  make logs-tasks        - Tail logs from shared-worker + shared-scheduler"
-	@echo "  make probe-health      - Probe each site's health endpoint (docs, shared-media incl.) via 'common' network (handles asymmetric ports/expose)"
+	@echo "  make probe-health      - Probe each site's health endpoint (docs, shared-proxy incl.) via 'common' network (handles asymmetric ports/expose)"
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
@@ -368,7 +368,7 @@ deploy: deploy-all
 #   1. databases          – Postgres must exist first; everything
 #                           (Django apps, Coder, Dramatiq workers) hits it.
 #   2. coder              – depends_on: postgres: service_healthy.
-#   3. media              – shared-media volume server must publish
+#   3. media              – shared-proxy volume server must publish
 #                           before Django apps mount it for uploads.
 #   4. app + tasks        – Django apps + Dramatiq workers (need DB + media).
 #   5. docs               – independent (no DB / no media).
@@ -544,11 +544,11 @@ logs-tasks:
 # optional `:<path>` (leading slash included) overrides the default
 # `/health/` for services without a Django /health/ endpoint:
 #   - docus:3000:/docs/en/ — Docus English SSR route
-#   - shared-media:80:/health/ — nginx `/health/` returns 200
+#   - shared-proxy:80:/health/ — nginx `/health/` returns 200
 #   - loop-crm-backend:8074:/  — Loop-CRM Django render-first root
 #   - loop-crm-frontend:3000:/__health__ — Astro/Nginx frontend health
 # -----------------------------------------------------------------
-PROBE_HEALTH_SITES := ctc-research-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-media:80:/health/
+PROBE_HEALTH_SITES := ctc-research-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-proxy:80:/health/
 
 probe-health:
 	@echo "📡 Probing each site's health endpoint from inside the 'common' network..."
@@ -580,13 +580,13 @@ probe-health:
 	done
 
 deploy-media:
-	@docker rm -f shared-media 2>/dev/null || true
+	@docker rm -f shared-proxy 2>/dev/null || true
 	# NOTE: no host-wide `docker volume prune` here — that would wipe volumes
 	# from other projects. If you need to prune, run `make prune-volumes`.
 	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
 
 deploy-docs:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d --build docus shared-media
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d --build docus shared-proxy
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -934,7 +934,7 @@ status:
 	@docker ps --filter "name=structa-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "  (No containers running)"
 	@echo ""
 	@echo "Media Server:"
-	@docker ps --filter "name=shared-media" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Media server not running)"
+	@docker ps --filter "name=shared-proxy" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Media server not running)"
 	@echo ""
 	@echo "Databases:"
 	@echo ""
@@ -955,7 +955,7 @@ logs:
 	@docker logs vresume-website --tail 20 2>/dev/null || echo "  (vresume-website not found)"
 	@echo ""
 	@echo "Media Server Logs:"
-	@docker logs shared-media --tail 20 2>/dev/null || echo "  (shared-media not found)"
+	@docker logs shared-proxy --tail 20 2>/dev/null || echo "  (shared-proxy not found)"
 	@echo ""
 	@echo "Coder Logs (tail 50):"
 	@docker logs coder --tail 50 2>/dev/null || echo "  (Coder container not found)"
@@ -1059,7 +1059,7 @@ build-media:
 	@cd $(SERVICES_DIR) && docker compose -f docker-compose.media.yml build
 
 build-docs:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build docus shared-media
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build docus shared-proxy
 
 # -----------------------------------------------------------------
 # Validation

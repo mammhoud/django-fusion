@@ -220,7 +220,7 @@ Media Request Flow
 │
 ├─ URL: /media/uploads/image.jpg
 │
-├─ 1. Nginx (shared-media server)
+├─ 1. Nginx (shared-proxy server)
 │   └─ serves from /var/www/media/
 │
 ├─ 2. File System Search
@@ -296,8 +296,8 @@ ls -la assets/media/
 # 2. Verify permissions
 chmod 755 assets/media/
 
-# 3. Restart shared-media container
-docker compose restart shared-media
+# 3. Restart shared-proxy container
+docker compose restart shared-proxy
 
 # 4. Verify
 curl http://localhost/media/
@@ -345,7 +345,7 @@ Before deployment, verify all items:
 - [ ] PostgreSQL healthy
 - [ ] Redis healthy
 - [ ] Traefik healthy
-- [ ] shared-media healthy
+- [ ] shared-proxy healthy
 - [ ] All web containers up
 
 ### Assets Built ✓

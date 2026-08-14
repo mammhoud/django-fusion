@@ -72,7 +72,7 @@ echo "✅ All images built successfully"
 
 # 2. Verify images created
 echo "[3.2] Verifying images..."
-docker images | grep -E "(ctc-research|lms|vresume|traefik|postgres|redis|shared-media)"
+docker images | grep -E "(ctc-research|lms|vresume|traefik|postgres|redis|shared-proxy)"
 ```
 
 ### Phase 4: Start Infrastructure Services
@@ -80,7 +80,7 @@ docker images | grep -E "(ctc-research|lms|vresume|traefik|postgres|redis|shared
 ```bash
 # 1. Start only infrastructure (no websites yet)
 echo "[4.1] Starting infrastructure services..."
-docker compose -f docker-compose.yml up -d traefik postgres redis shared-media
+docker compose -f docker-compose.yml up -d traefik postgres redis shared-proxy
 
 # 2. Wait for services to initialize
 echo "[4.2] Waiting for infrastructure initialization (60s)..."
@@ -283,7 +283,7 @@ docker compose -f docker-compose.yml build --no-cache >> $LOG_FILE 2>&1
 
 # Phase 4: Start Infrastructure
 echo "🌐 Phase 4: Starting Infrastructure..." | tee -a $LOG_FILE
-docker compose -f docker-compose.yml up -d traefik postgres redis shared-media
+docker compose -f docker-compose.yml up -d traefik postgres redis shared-proxy
 sleep 60
 
 # Phase 5: Start Websites
@@ -409,7 +409,7 @@ docker compose ps
 # traefik                   Up (healthy)
 # postgres                  Up (healthy)
 # redis                     Up (healthy)
-# shared-media              Up (healthy)
+# shared-proxy              Up (healthy)
 # web-ctc-research          Up (healthy)
 # web-lms              Up (healthy)
 # web-vresume               Up (healthy)

@@ -1,4 +1,4 @@
-# Local environment file with secrets (Cloudflare token, etc.)
+# Local environment file with secrets (DB passwords, etc.)
 # Copy from .env.example and fill in real values.
 .env
 
@@ -18,5 +18,4 @@ certs/
 
 # Persistent application data; keep credentials and user files out of Git.
 affine-data/
-filegator-data/
 

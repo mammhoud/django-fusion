@@ -36,7 +36,7 @@ RUN apt-get update -qq \
         libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev \
         librsvg2-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev \
         libssl-dev libpq-dev libffi-dev libxml2-dev libxslt1-dev \
-        python3 python3-pip python3-venv \
+        python3 python3-pip python3-venv make \
     && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------

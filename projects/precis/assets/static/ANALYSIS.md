@@ -7,7 +7,7 @@
 
 ## Directory Overview
 
-This directory contains all shared frontend assets (JS, CSS/SCSS, images, fonts, videos). It is served at `/static/` via Django's staticfiles framework and Nginx `shared-media`.
+This directory contains all shared frontend assets (JS, CSS/SCSS, images, fonts, videos). It is served at `/static/` via Django's staticfiles framework and Nginx `shared-proxy`.
 
 **Configuration source:** `projects/configs/base/assets.py` → `SHARED_STATIC_DIR`
 

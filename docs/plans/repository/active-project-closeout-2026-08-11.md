@@ -97,7 +97,7 @@ The following remain planned or require separate product approval:
 - FlyonUI migration from the retired Next.js frontend.
 - Full public-page browser coverage for the former LMS frontend.
 - Unified task/MCP provider integrations in django-fusion.
-- Full shared-media production rollout beyond the verified local Traefik path.
+- Full shared-proxy production rollout beyond the verified local Traefik path.
 - POS edition roadmap items and tenant/cloud work.
 - Treebeard manager modernization warnings that require an upstream/library
   compatibility decision.

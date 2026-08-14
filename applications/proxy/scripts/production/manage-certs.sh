@@ -3,12 +3,12 @@
 ################################################################################
 # SSL Certificate Management Script for Traefik
 # ─────────────────────────────────────────────────────────────────────────────
-# Production certificates are now obtained via Let's Encrypt DNS-01 (Cloudflare),
-# managed natively by Traefik. This script is retained for:
+# Production certificates are obtained via Let's Encrypt HTTP-01 (no DNS
+# provider token), managed natively by Traefik. This script is retained for:
 #   • Bootstrapping the local ACME storage (bootstrap-acme)
 #   • Inspecting what Traefik has stored (status)
 #   • Legacy self-signed cert generation (generate-self-signed) — kept as a
-#     fallback for environments without DNS provider access.
+#     fallback for environments without public DNS.
 #
 # Usage:
 #   ./manage-certs.sh [command] [options]
@@ -24,7 +24,7 @@
 #   validate               Validate certificate and key pairs (legacy)
 #   help                   Show this help message
 #
-# See applications/proxy/LETSENCRYPT.md for the full DNS-01 deployment runbook.
+# See applications/proxy/LETSENCRYPT.md for the full HTTP-01 deployment runbook.
 ################################################################################
 
 set -e
@@ -462,7 +462,7 @@ Other:
 
 Examples:
   # First-time LE setup
-  cp applications/proxy/.env.example applications/proxy/.env  # fill in CF_DNS_API_TOKEN
+  cp applications/proxy/.env.example applications/proxy/.env  # optional: set LETSENCRYPT_EMAIL
   ./manage-certs.sh bootstrap-acme
   docker compose -f applications/proxy/docker-compose.traefik.yml up -d
   ./manage-certs.sh status
@@ -475,9 +475,9 @@ Examples:
   ./manage-certs.sh generate-self-signed
   ./manage-certs.sh validate
 
-DNS-01 / Let's Encrypt Configuration:
-  See applications/proxy/LETSENCRYPT.md for the full runbook (provider credentials,
-  staged rollout, acme.json bootstrapping, rollback).
+Let's Encrypt Configuration (HTTP-01, no DNS tokens):
+  See applications/proxy/LETSENCRYPT.md for the full runbook (DNS prerequisites,
+  acme.json bootstrapping, verification, rollback).
 
 Supported Domains (CN + SANs):
   • ctc-research.com       (www.ctc-research.com, arch.ctc-research.com)
@@ -485,7 +485,7 @@ Supported Domains (CN + SANs):
   • vresume.structa.cloud  (www.vresume.structa.cloud, resume.structa.cloud)
 
 Certificate Information:
-  • Primary:  Let's Encrypt (DNS-01, Cloudflare) — auto-renewed by Traefik
+  • Primary:  Let's Encrypt (HTTP-01, no tokens) — auto-renewed by Traefik
   • Fallback: Self-signed (365 days) — managed by this script
   • Storage:  ./acme/acme.json (LE)  and  ./certs/ (self-signed)
 
