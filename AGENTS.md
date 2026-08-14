@@ -66,7 +66,7 @@ Use concrete canonical modules and do not add re-export shims. Examples:
 
 ```python
 from django_fusion.routes.core.base import Viewset, Route, route
-from django_fusion.routes.core.sites import Application, Site
+from django_fusion.routes.core.sites import Application, Module
 from django_fusion.routes.components.routable import RoutableComponent
 from django_fusion.routes.components.fragments import FragmentComponent
 from django_fusion.routes.http.detection import FragmentDetector

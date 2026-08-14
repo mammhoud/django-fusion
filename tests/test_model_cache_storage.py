@@ -3,7 +3,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
 from django.core.cache import cache
-
 from django_fusion.models.cache_storage import CachingStorage
 
 

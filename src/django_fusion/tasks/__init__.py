@@ -27,10 +27,12 @@ Auto-configuration::
 The backend is wired during Django's ``AppConfig.ready()``.
 """
 
-from django_fusion.tasks.registry import TaskRegistry, TaskRegistration, task_registry
-from django_fusion.tasks.decorators import task, TaskOptions
+import os
+
 from django_fusion.tasks.backends.base import AbstractTaskBackend
 from django_fusion.tasks.backends.inprocess import InProcessBackend
+from django_fusion.tasks.decorators import TaskOptions, task
+from django_fusion.tasks.registry import TaskRegistration, TaskRegistry, task_registry
 
 __all__ = [
     "task",
@@ -41,6 +43,14 @@ __all__ = [
     "AbstractTaskBackend",
     "InProcessBackend",
 ]
+
+
+# Register the scheduled task-history sync.  Imported here so
+# ``task_registry.autodiscover()`` (which imports ``django_fusion.tasks``) also
+# registers the periodic ``sync_task_history`` job.
+from django_fusion.tasks.sync import sync_task_history  # noqa: E402, F401
+
+__all__.append("sync_task_history")
 
 
 def _configure_from_settings():
@@ -65,8 +75,11 @@ def _configure_from_settings():
         "BACKEND",
         "django_fusion.tasks.backends.dramatiq.DramatiqBackend",
     )
-    broker_url = fusion_tasks.get(
-        "BROKER_URL", "redis://localhost:6379/1"
+    broker_url = (
+        fusion_tasks.get("BROKER_URL")
+        or os.getenv("DRAMATIQ_BROKER_URL")
+        or os.getenv("REDIS_URL")
+        or "redis://localhost:6379/1"
     )
 
     try:

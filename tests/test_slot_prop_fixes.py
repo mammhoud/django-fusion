@@ -13,7 +13,6 @@ from types import SimpleNamespace
 import pytest
 from django.template import Context, engines
 from django.test import override_settings
-
 from django_fusion.comp._init import components
 from django_fusion.comp.tags.tags.prop import PropNode
 from django_fusion.config.params import Param, Params, Value
@@ -98,7 +97,6 @@ def test_slot_default_fallback_rendered_once():
 def test_prop_node_parses_kwarg_style_default():
     """``{% prop show_icons default=True %}`` keeps the kwarg default."""
     from django.template.base import Parser, Token, TokenType
-
     from django_fusion.comp.tags.tags.prop import do_prop
 
     token = Token(

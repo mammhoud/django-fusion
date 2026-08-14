@@ -1,22 +1,22 @@
 # All Rights Reserved.
 
 """
-Site and Application routing for django-fusion.
+Module and Application routing for django-fusion.
 
-This module provides the Site and Application classes for declarative,
+This module provides the Module and Application classes for declarative,
 class-based URL routing in Django. It allows organizing viewsets into
 hierarchical structures with menu integration.
 
 Classes:
     AppMenuMixin: A route that can be listed in an Application menu.
     Application: A viewset that represents an application with menu items.
-    Site: A top-level viewset that contains applications.
+    Module: A top-level viewset that contains applications.
 
-The routing follows the pattern: Site → Application → Viewset
+The routing follows the pattern: Module → Application → Viewset
 Each level can define its own URL patterns, permissions, and menu items.
 
 Example:
-    class MySite(Site):
+    class MyModule(Module):
         class MyApp(Application):
             pass
 """
@@ -28,7 +28,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
 
-from django.urls import NoReverseMatch, include, path
+from django.urls import NoReverseMatch, URLPattern, include, path
 from django.utils.functional import cached_property
 
 from django_fusion.contrib import camel_case_to_title, strip_suffixes
@@ -295,7 +295,9 @@ class Application(NotificationMixin, IndexViewMixin, Viewset):
                 yield menu_item
 
 
-class Site(IndexViewMixin, Viewset):
+class Module(IndexViewMixin, Viewset):
+    """Top-level route module — a viewset that contains applications."""
+
     title: str | None = None
     icon: str = "view_comfy"
     menu_template_name: str = "side-nav/site_menu.html"
@@ -311,7 +313,7 @@ class Site(IndexViewMixin, Viewset):
 
         if self.title is None:
             # pluralize class name
-            self.title = camel_case_to_title(strip_suffixes(self.__class__.__name__, ["Site"]))
+            self.title = camel_case_to_title(strip_suffixes(self.__class__.__name__, ["Module"]))
             if not self.title:
                 self.title = "Template Title"
 
@@ -319,7 +321,7 @@ class Site(IndexViewMixin, Viewset):
         attr = super().__getattribute__(name)
 
         if name == "title" and attr is None:
-            title = camel_case_to_title(strip_suffixes(self.__class__.__name__, ["Site"]))
+            title = camel_case_to_title(strip_suffixes(self.__class__.__name__, ["Module"]))
             if not title:
                 title = "Template Title"
             return title
@@ -327,11 +329,11 @@ class Site(IndexViewMixin, Viewset):
         return attr
 
     def _get_resolver_extra(self) -> dict[str, Any]:
-        return {"viewset": self, "site": self}
+        return {"viewset": self, "module": self}
 
-    def menu_items(self) -> Iterator[Site | Application]:
+    def menu_items(self) -> Iterator[Module | Application]:
         for viewset in self._children:
-            if isinstance(viewset, Site | Application):
+            if isinstance(viewset, Module | Application):
                 yield viewset
 
     def has_view_permission(self, user: Any, obj: Any | None = None) -> bool:
@@ -388,15 +390,18 @@ class Site(IndexViewMixin, Viewset):
     def url_pattern(self) -> URLPattern:
         """Return a URL pattern ready for ``include()`` in urlpatterns.
 
-        Shortcut that avoids the manual ``(site.urls[0], site.urls[1])``
+        Shortcut that avoids the manual ``(module.urls[0], module.urls[1])``
         tuple unpacking.  Usage::
 
-            urlpatterns += [path("", include(site.url_pattern))]
+            urlpatterns += [path("", include(module.url_pattern))]
 
         Equivalent to::
 
             urlpatterns += [
-                path("", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))
+                path("", include((module.urls[0], module.urls[1]), namespace=module.urls[2]))
             ]
         """
         return path("", include((self.urls[0], self.urls[1]), namespace=self.urls[2]))
+
+
+__all__ = ["AppMenuMixin", "Application", "Module"]

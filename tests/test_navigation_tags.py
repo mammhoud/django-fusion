@@ -11,6 +11,7 @@ attribute generation based on the ``UNPOLY_ENABLED`` Django setting.
 
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 from unittest.mock import patch
 
@@ -18,8 +19,6 @@ import pytest
 from django.conf import settings
 from django.http import HttpRequest
 from django.template import engines
-from django.utils.safestring import mark_safe
-
 
 # ── Template directory paths ──────────────────────────────────────────────
 
@@ -259,7 +258,7 @@ class TestNavLinkPython:
 
     def test_resolves_named_url(self):
         """nav_link should resolve a named URL pattern via reverse().
-        
+
         The test URL configuration has no named patterns registered, so
         reverse() will raise NoReverseMatch.  The tag falls back to
         returning the raw URL name — it should never crash.
@@ -312,8 +311,8 @@ class TestNavLinkPython:
         assert ctx["is_active"] is True
 
     def test_attrs_is_safe_string(self):
-        from django_fusion.comp.tags.navigation import nav_link
         from django.utils.safestring import SafeString
+        from django_fusion.comp.tags.navigation import nav_link
         request = _make_request("/")
         ctx = nav_link({}, url="/blog/", label="Blog", request=request)
         assert isinstance(ctx["attrs"], SafeString)
@@ -479,10 +478,8 @@ class TestNavLinkTemplate:
             assert 'up-target="#panel-content"' in html
             assert "hx-get=" not in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_renders_htmx_in_htmx_mode(self):
         settings.UNPOLY_ENABLED = False
@@ -498,10 +495,8 @@ class TestNavLinkTemplate:
             assert 'hx-target="#panel-content"' in html
             assert 'hx-trigger="click"' in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_renders_hx_push_url_in_htmx_mode(self):
         settings.UNPOLY_ENABLED = False
@@ -512,10 +507,8 @@ class TestNavLinkTemplate:
             )
             assert 'hx-push-url="true"' in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_no_hx_push_url_in_unpoly_mode(self):
         """Unpoly mode should not include hx-push-url."""
@@ -527,10 +520,8 @@ class TestNavLinkTemplate:
             )
             assert "hx-push-url" not in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_renders_icon_when_provided(self):
         html = _render(
@@ -580,10 +571,8 @@ class TestNavLinkTemplate:
             )
             assert 'up-layer="modal"' in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_css_class_rendered(self):
         html = _render(
@@ -647,10 +636,8 @@ class TestNavPanelTemplate:
             assert " up-follow " in html
             assert "hx-get=" not in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_renders_htmx_in_htmx_mode(self):
         settings.UNPOLY_ENABLED = False
@@ -663,10 +650,8 @@ class TestNavPanelTemplate:
             assert " up-follow " not in html
             assert 'hx-get="/blog/"' in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_renders_hx_push_url_in_htmx_mode(self):
         settings.UNPOLY_ENABLED = False
@@ -678,10 +663,8 @@ class TestNavPanelTemplate:
             )
             assert 'hx-push-url="true"' in html
         finally:
-            try:
+            with contextlib.suppress(AttributeError):
                 delattr(settings, "UNPOLY_ENABLED")
-            except AttributeError:
-                pass
 
     def test_renders_title_header(self):
         html = _render(
@@ -804,8 +787,8 @@ def test_nav_panel_importable():
 
 
 def test_navigation_library_has_register():
-    from django_fusion.comp.tags import navigation
     from django.template import Library
+    from django_fusion.comp.tags import navigation
     assert hasattr(navigation, "register")
     assert isinstance(navigation.register, Library)
 

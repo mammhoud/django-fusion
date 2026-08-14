@@ -21,7 +21,6 @@ import sys
 import pytest
 from django.conf import settings
 
-
 # 1. sys.path bootstrap + opt-in deprecation-warning gate.
 #
 # `tests/` must be on sys.path so the `stubs.X` library paths declared
@@ -46,6 +45,7 @@ os.environ.setdefault("DJANGO_FUSION_QUIET_DEPRECATION", "1")
 # `sys.modules`. `configure()` applies `TEST_SETTINGS` to Django and
 # runs `django.setup()`. Idempotent unless `only_if_unconfigured=False`.
 import _django_settings  # noqa: E402
+
 _django_settings.configure()
 
 

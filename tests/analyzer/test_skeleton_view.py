@@ -35,7 +35,7 @@ class TestAnalyzerOptionsDefaults:
         from django_fusion.config.analyzer import AnalyzerOptions
 
         opts = AnalyzerOptions()
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             opts.enabled = True  # type: ignore[misc]
 
 
@@ -47,10 +47,10 @@ class TestSkeletonVariantResolution:
 
     @pytest.fixture(autouse=True)
     def _imports(self):
+        from django_fusion.fragments.analyzer.schemas import Component
         from django_fusion.fragments.analyzer.skeleton_view import (
             _resolve_skeleton_variant,
         )
-        from django_fusion.fragments.analyzer.schemas import Component
 
         self.resolve = _resolve_skeleton_variant
         self.Component = Component

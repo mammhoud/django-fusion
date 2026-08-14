@@ -54,40 +54,10 @@ def dispatch_job(func, *args, queue_name="default", **kwargs):
     except Exception:
         pass
 
-    # Fall back to legacy django-rq path
-    BackgroundTaskLog = _get_task_log_model()
-    if BackgroundTaskLog is None:
-        try:
-            import django_rq
-        except ImportError as exc:
-            raise RuntimeError(
-                "dispatch_job requires django-rq when no task-log model is configured"
-            ) from exc
-        return django_rq.get_queue(queue_name).enqueue(func, *args, **kwargs)
-
-    try:
-        log_entry = BackgroundTaskLog.objects.create(
-            task_name=f"{func.__module__}.{func.__name__}",
-            queue_name=queue_name,
-            args=list(args),
-            kwargs=kwargs,
-            status="queued",
-        )
-
-        import django_rq
-        queue = django_rq.get_queue(queue_name)
-        job = queue.enqueue(
-            run_logged_job, *args,
-            log_entry_id=str(log_entry.id), func=func, **kwargs
-        )
-
-        log_entry.job_id = job.id
-        log_entry.save(update_fields=["job_id"])
-
-        return job
-    except Exception as e:
-        logger.error(f"Failed to dispatch job {func.__name__}: {e}")
-        raise e
+    raise RuntimeError(
+        f"Task {func.__module__}.{func.__name__} is not registered with "
+        "django-fusion's Dramatiq registry; add it under plugins.workers."
+    )
 
 
 def run_logged_job(log_entry_id, func, *args, **kwargs):

@@ -7,8 +7,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-import pytest
-
 _SRC = Path(__file__).resolve().parent.parent.parent / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
@@ -254,8 +252,8 @@ class TestComponentAssetsTag:
 class TestComponentAssetViews:
     def test_views_importable(self):
         from django_fusion.core.assets.views import (
-            ComponentAssetsView,
             ComponentAssetDetailView,
+            ComponentAssetsView,
             PageAssetsView,
         )
         assert ComponentAssetsView is not None

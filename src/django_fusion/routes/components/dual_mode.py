@@ -9,7 +9,7 @@ flag already used by ``RoutableComponent``:
   (server-rendered HTML is the source of truth — SEO friendly).
 * ``fusion_render_first=False`` → the component returns a codec-encoded JSON
   payload (``FusionCodec``) so a client-side frontend (Astro + Alpine.js,
-  Next.js, etc.) can render from data. The payload includes the **Site**
+  Next.js, etc.) can render from data. The payload includes the **Module**
   encapsulation (navigation, apps, branding, active language) so the client
   can build chrome around the content.
 
@@ -34,17 +34,15 @@ and override :meth:`get_fragment_data` (data payload) and optionally
 
 from __future__ import annotations
 
-import logging
 from typing import Any
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.translation import get_language
 
 from django_fusion.plugins.htmx.core import is_htmx_request
+from django_fusion.routes.rendering.render_mode import resolve_render_first
 from django_fusion.routes.rendering.renderers import fusion_json_response
-from django_fusion.routes.rendering.session import FusionCodec, get_session_render_first
-
-logger = logging.getLogger(__name__)
+from django_fusion.routes.rendering.session import FusionCodec
 
 
 class FusionDualModeMixin:
@@ -79,36 +77,19 @@ class FusionDualModeMixin:
     def get_effective_render_first(self, request: HttpRequest | None = None) -> bool:
         """Return the effective render-first preference.
 
-        Priority:
-        1. ``force_render_first`` — hard override to HTML mode.
-        2. ``force_data_mode`` — hard override to data mode.
-        3. ``X-Fusion-Render-First`` header — per-request override.
-        4. Session preference (``get_session_render_first``) when available.
-        5. Component / setting default via ``get_fusion_render_first()``.
+        Delegates to the canonical ``resolve_render_first`` chain
+        (force → header → explicit session preference → component/setting
+        default).  The session preference is only consulted when the operator
+        explicitly stored it — never auto-seeded — so the configured default
+        stays reachable for browser traffic.
         """
-        if self.force_render_first:
-            return True
-        if self.force_data_mode:
-            return False
-
         request = request or getattr(self, "request", None)
-        if request is not None:
-            # Per-request override lets data-mode clients (Astro, Next.js)
-            # opt into a mode for a single request without touching the session.
-            header = request.headers.get("X-Fusion-Render-First")
-            if header in ("true", "false"):
-                return header == "true"
-
-            try:
-                # Django's ``request.session`` raises ``ImproperlyConfigured``
-                # (not ``AttributeError``) when SessionMiddleware is absent,
-                # so gate on the middleware via a nested try.
-                if hasattr(request, "session"):
-                    return bool(get_session_render_first(request))
-            except Exception:
-                logger.debug("Session preference unavailable, falling back to default", exc_info=True)
-
-        return bool(self.get_fusion_render_first())  # type: ignore[attr-defined]
+        return resolve_render_first(
+            request,
+            force_render_first=self.force_render_first,
+            force_data_mode=self.force_data_mode,
+            default=self.get_fusion_render_first(),  # type: ignore[attr-defined]
+        )
 
     # ------------------------------------------------------------------
     # Data payload
@@ -125,7 +106,7 @@ class FusionDualModeMixin:
         """Return metadata merged into the data-mode payload.
 
         Includes component identity, render-first flag, fragment name,
-        active language, and (when resolvable) the Site encapsulation.
+        active language, and (when resolvable) the Module encapsulation.
         """
         meta: dict[str, Any] = {
             "component": type(self).__name__,
@@ -133,36 +114,36 @@ class FusionDualModeMixin:
             "fusion_render_first": self.get_effective_render_first(),
             "language": get_language(),
         }
-        site_ctx = self.get_site_context()
-        if site_ctx:
-            meta["site"] = site_ctx
+        module_ctx = self.get_module_context()
+        if module_ctx:
+            meta["module"] = module_ctx
         return meta
 
-    def get_site_context(self) -> dict[str, Any] | None:
-        """Walk the parent viewset hierarchy to find the enclosing ``Site``.
+    def get_module_context(self) -> dict[str, Any] | None:
+        """Walk the parent viewset hierarchy to find the enclosing ``Module``.
 
-        Returns ``None`` when no Site is reachable. Otherwise returns a
-        serialisable dict with the site title and navigation items, so a
+        Returns ``None`` when no Module is reachable. Otherwise returns a
+        serialisable dict with the module title and navigation items, so a
         client-side frontend can render the site chrome (header/footer)
         around data-mode content.
         """
-        from django_fusion.routes.core.sites import Application, Site
+        from django_fusion.routes.core.sites import Application, Module
 
-        site: Site | None = None
+        module: Module | None = None
         app: Application | None = None
         current = getattr(self, "parent", None)
         while current is not None:
-            if isinstance(current, Site) and site is None:
-                site = current
+            if isinstance(current, Module) and module is None:
+                module = current
             if isinstance(current, Application) and app is None:
                 app = current
             current = getattr(current, "parent", None)
 
-        if site is None:
+        if module is None:
             return None
 
         navigation: list[dict[str, Any]] = []
-        for item in site.menu_items():
+        for item in module.menu_items():
             nav_item: dict[str, Any] = {}
             if isinstance(item, Application):
                 nav_item = {
@@ -191,7 +172,7 @@ class FusionDualModeMixin:
             navigation.append(nav_item)
 
         return {
-            "title": site.title,
+            "title": module.title,
             "navigation": navigation,
             "active_app": app.title if app else None,
         }
@@ -225,7 +206,7 @@ class FusionDualModeMixin:
               "message": "Success",
               "data": {
                 "encoded": "fusion_v1:<base64>",
-                "meta": { ... component identity + site navigation ... },
+                "meta": { ... component identity + module navigation ... },
               }
             }
 

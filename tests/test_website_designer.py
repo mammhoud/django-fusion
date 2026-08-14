@@ -1,13 +1,11 @@
 """Tests for structured website/webapp enhancement MCP tools."""
 
 import pytest
-
 from django_fusion.plugins.designer.tools import MCP_DESIGNER_TOOLS
 from django_fusion.plugins.designer.website import (
     designer_webapp_enhancement_plan,
     designer_website_audit,
 )
-
 
 SECTIONS = [
     {

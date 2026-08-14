@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import pytest
 from django.test import Client
-
 from django_fusion.plugins import PluginRegistry, plugins
 from django_fusion.plugins.catalog import CORE_PLUGINS, PLUGIN_CATALOG
 

@@ -3,7 +3,8 @@
 Import route classes and helpers from their concrete modules:
 
 * ``django_fusion.routes.core.base`` — base viewsets, routes, and descriptors
-* ``django_fusion.routes.core.sites`` — ``Site`` and ``Application``
+* ``django_fusion.routes.core.sites`` — ``Module`` and ``Application``
+* ``django_fusion.routes.core.landing`` — ``Landing`` (marketing navigation module)
 * ``django_fusion.routes.components`` — routable and fragment components
 * ``django_fusion.routes.models`` — model viewsets and CRUD mixins
 * ``django_fusion.routes.pages`` — page handlers and pagination views

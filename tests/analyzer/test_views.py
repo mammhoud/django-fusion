@@ -31,7 +31,6 @@ from pathlib import Path
 
 import pytest
 
-
 # ────────────────────────────────────────────────────────────────────
 # Module-scoped real customizer fragment fixture
 # ────────────────────────────────────────────────────────────────────
@@ -293,7 +292,6 @@ class TestAnalyzeViewPost:
 
     def test_empty_body_returns_400(self, tmp_path):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
@@ -303,7 +301,6 @@ class TestAnalyzeViewPost:
 
     def test_malformed_json_returns_400(self, tmp_path):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
@@ -317,7 +314,6 @@ class TestAnalyzeViewPost:
 
     def test_non_dict_json_returns_400(self, tmp_path):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
@@ -331,7 +327,6 @@ class TestAnalyzeViewPost:
 
     def test_valid_minimal_payload_returns_200_spec_shape(self, tmp_path):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         (tmp_path / "hello.html").write_text(
@@ -357,7 +352,6 @@ class TestAnalyzeViewPost:
 
     def test_garbage_depth_does_not_crash(self, tmp_path):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         (tmp_path / "ok.html").write_text("hi")
@@ -372,7 +366,6 @@ class TestAnalyzeViewPost:
 
     def test_filter_as_string_falls_back_to_empty(self, tmp_path):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
@@ -421,7 +414,6 @@ class TestAnalyzeViewEndToEnd:
 
     def test_real_fragment_yields_200_response(self, shared_e2e_dir):
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
@@ -447,7 +439,6 @@ class TestAnalyzeViewEndToEnd:
         ``{% comp \"customizer/card\" with ... %}`` invocation).
         """
         from django.test import RequestFactory
-
         from django_fusion.fragments.analyzer.views import AnalyzeView
 
         # Skip if the fragment is unavailable (e.g. installed-wheel).

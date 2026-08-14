@@ -30,13 +30,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from django_fusion.fragments.analyzer.parser import (
     CompUsage,
     parse_kwargs,
     parse_template,
 )
-
 
 # ────────────────────────────────────────────────────────────────────
 # FIXTURES: the 3 {% comp %} forms + the real customizer fragment
@@ -487,7 +485,7 @@ class TestSectionMarkers:
         assert p.sections[0].name == "Contact Form"
         assert p.sections[0].marker_type == "html"
 
-    def test_standard_visual_separator_is_NOT_a_section(self):
+    def test_standard_visual_separator_is_not_a_section(self):
         """``{# ---- Title ---- #}`` style separators must NOT be
         picked up — those are commentary, not analyzable."""
         body = 'before\n{# ---- Section: Foo ---- #}\nafter'

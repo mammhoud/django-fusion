@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
 from django.test import RequestFactory
-
 from django_fusion.fragments.page_context import resolve_page_context
 
 

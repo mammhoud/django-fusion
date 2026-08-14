@@ -22,10 +22,9 @@ import itertools
 from typing import Any
 
 import pytest
-from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.test import RequestFactory, override_settings
 
 # Tables are created by ``_django_settings.configure()`` at conftest time
@@ -40,7 +39,7 @@ _counter = itertools.count()
 def _uid(name: str) -> str:
     return f"{name}_{next(_counter)}"
 
-from django_fusion.core.middlewares.access import (
+from django_fusion.core.middlewares.access import (  # noqa: E402
     RoleBasedAccessMiddleware,
     _check_groups,
     _check_permissions,
@@ -50,7 +49,6 @@ from django_fusion.core.middlewares.access import (
     require_groups,
     require_permissions,
 )
-
 
 # ==============================================================================
 # Fixtures
@@ -628,11 +626,11 @@ class TestProcessViewUrlRules:
 
 def test_middleware_importable() -> None:
     """RoleBasedAccessMiddleware is importable from the canonical path."""
-    from django_fusion.core.middlewares.access import (
-        RoleBasedAccessMiddleware as Imported,
-    )
     from django_fusion.core.middlewares import (
         RoleBasedAccessMiddleware as FromPackage,
+    )
+    from django_fusion.core.middlewares.access import (
+        RoleBasedAccessMiddleware as Imported,
     )
 
     assert Imported is FromPackage

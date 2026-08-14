@@ -3,7 +3,6 @@ from types import SimpleNamespace
 
 import pytest
 from django.test import override_settings
-
 from django_fusion.routes.pages.catalog import PageCatalog, TemplateRoot
 
 

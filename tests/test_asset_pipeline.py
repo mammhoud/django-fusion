@@ -221,7 +221,10 @@ def test_render_first_gate_keeps_webpack_links_in_render_first_mode(tmp_path):
 
 def test_component_manifest_cache_tracks_path_and_file_changes(tmp_path):
     """Different manifest files and rewrites never reuse stale data."""
-    from django_fusion.config.manifest import clear_asset_manifest_cache, load_asset_manifest
+    from django_fusion.config.manifest import (
+        clear_asset_manifest_cache,
+        load_asset_manifest,
+    )
 
     first = tmp_path / "first.json"
     second = tmp_path / "second.json"

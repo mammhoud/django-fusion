@@ -65,7 +65,6 @@ import sys
 import textwrap
 from pathlib import Path
 
-
 # ── Project-root discovery (same pattern as test_conftest_debug_is_quiet.py) ──
 
 _THIS_FILE = Path(__file__).resolve()

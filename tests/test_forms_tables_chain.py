@@ -29,8 +29,6 @@ silently break site template overrides.
 """
 from __future__ import annotations
 
-import pytest
-
 from django_fusion.fragments.forms import FormMixin
 from django_fusion.fragments.tables import TableMixin
 

@@ -14,7 +14,6 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.template import engines
 
-
 # ── Template directory paths ──────────────────────────────────────────────
 
 _ASSETS_TEMPLATES = str(
@@ -377,8 +376,8 @@ def test_all_tags_importable_from_submodules():
 
 
 def test_components_module_has_register():
-    from django_fusion.comp.tags import components
     from django.template import Library
+    from django_fusion.comp.tags import components
     assert hasattr(components, "register")
     assert isinstance(components.register, Library)
 

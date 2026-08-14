@@ -163,7 +163,7 @@ class SiteMiddleware:
         self, request: HttpRequest, view_func: Callable, view_args: list, view_kwargs: dict
     ) -> HttpResponse | None:
         """
-        Apply `.has_view_permission(user)` check on `site` and `app` in resolver match metadata.
+        Apply `.has_view_permission(user)` check on `module` and `app` in resolver match metadata.
         """
         if getattr(view_func, "disable_site_middleware", False):
             return None
@@ -182,10 +182,10 @@ class SiteMiddleware:
         except AttributeError:
             return None
 
-        site = extra.get("site")
+        module = extra.get("module")
         app = extra.get("app")
 
-        self._check_permission(site, request.user)
+        self._check_permission(module, request.user)
         self._check_permission(app, request.user)
 
         for name, value in extra.items():

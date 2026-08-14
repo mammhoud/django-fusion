@@ -179,7 +179,7 @@ templates).
 ### Application with a landing layout
 
 ```python
-from django_fusion.routes.core.sites import Application, Site
+from django_fusion.routes.core.sites import Application, Module
 from django_fusion.routes.components.routable import RoutableComponent
 
 class HomeComponent(RoutableComponent):
@@ -192,11 +192,11 @@ class MyApp(Application):
     title = "My App"
     base_template_name = "fusion/layouts/landing.html"
 
-class MySite(Site):
+class MyModule(Module):
     title = "My Site"
     name = "my_site"
 
-site = MySite()
+module = MyModule()
 site.register(MyApp)
 ```
 

@@ -57,15 +57,12 @@ templatetag library.
 from __future__ import annotations
 
 import re
-
-import pytest
-
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from django.template import engines
 from django.test import override_settings
-
 from django_fusion.comp._init import components
 
 # -----------------------------------------------------------------
@@ -150,22 +147,22 @@ def make_wagtail_block(
 
 def make_field_config(**overrides) -> SimpleNamespace:
     """A canonical ``field_config`` with sensible test defaults."""
-    base = dict(
-        field_type="text",
-        name="sample",
-        label="Sample Label",
-        required=False,
-        placeholder="Type here…",
-        default_value="",
-        choices=None,
-        help_text="",
-        icon="edit",
-        min_length=None,
-        max_length=None,
-        min_value=None,
-        max_value=None,
-        pattern=None,
-    )
+    base = {
+        "field_type": "text",
+        "name": "sample",
+        "label": "Sample Label",
+        "required": False,
+        "placeholder": "Type here…",
+        "default_value": "",
+        "choices": None,
+        "help_text": "",
+        "icon": "edit",
+        "min_length": None,
+        "max_length": None,
+        "min_value": None,
+        "max_value": None,
+        "pattern": None,
+    }
     base.update(overrides)
     return SimpleNamespace(**base)
 

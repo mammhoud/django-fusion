@@ -65,7 +65,8 @@ django_fusion  .web            Web layer: allauth adapters, auth backends, and v
 Canonical import paths
 -----------------------
 Routing:           from django_fusion.routes.core.base import Viewset
-                   from django_fusion.routes.core.sites import Site
+                   from django_fusion.routes.core.sites import Module, Application
+                   from django_fusion.routes.core.landing import Landing
 Generic CBVs:      from django_fusion.fragments.generic.list import ListModelView
                    from django_fusion.fragments.forms.create import CreateModelView
                    from django_fusion.fragments.forms.search import SearchableViewMixin

@@ -21,11 +21,11 @@ def _reset_registry():
     from django_fusion.tasks.registry import TaskRegistry
     registry = TaskRegistry()
     # Swap the singleton — test isolation
-    import django_fusion.tasks.registry as reg_mod
     import django_fusion.tasks.decorators as dec_mod
+    import django_fusion.tasks.registry as reg_mod
     old_registry = reg_mod.task_registry
     reg_mod.task_registry = registry
-    dec_mod_task_registry = getattr(dec_mod, "task_registry", None)
+    getattr(dec_mod, "task_registry", None)
     yield
     reg_mod.task_registry = old_registry
 
@@ -74,9 +74,9 @@ class TestTaskDecorator:
         assert reg.func.__name__ == "send_email"
 
     def test_decorator_adds_send_and_delay(self):
+        from django_fusion.tasks.backends.inprocess import InProcessBackend
         from django_fusion.tasks.decorators import task
         from django_fusion.tasks.registry import task_registry
-        from django_fusion.tasks.backends.inprocess import InProcessBackend
 
         task_registry.configure(InProcessBackend())
 
@@ -167,9 +167,9 @@ class TestTaskRegistry:
 
 class TestInProcessBackend:
     def test_enqueue_runs_synchronously(self):
+        from django_fusion.tasks.backends.inprocess import InProcessBackend
         from django_fusion.tasks.decorators import task
         from django_fusion.tasks.registry import task_registry
-        from django_fusion.tasks.backends.inprocess import InProcessBackend
 
         task_registry.configure(InProcessBackend())
 
@@ -185,9 +185,9 @@ class TestInProcessBackend:
         assert result == "inprocess"
 
     def test_inprocess_logs_to_background_task_log(self):
+        from django_fusion.tasks.backends.inprocess import InProcessBackend
         from django_fusion.tasks.decorators import task
         from django_fusion.tasks.registry import task_registry
-        from django_fusion.tasks.backends.inprocess import InProcessBackend
 
         task_registry.configure(InProcessBackend())
 

@@ -22,7 +22,6 @@ from pathlib import Path
 
 import pytest
 
-
 # --------------------------------------------------------------------
 # Fixtures
 # --------------------------------------------------------------------
@@ -111,7 +110,7 @@ class TestAnalyzerSubdirIsPopulated:
     ) -> None:
         test_modules = sorted(analyzer_dir.glob("test_*.py"))
         assert test_modules, (
-            f"tests/analyzer/ exists but contains ZERO test_*.py "
-            f"modules. The migration target should hold at least "
-            f"the parser/scanner/views test modules. Restore them."
+            "tests/analyzer/ exists but contains ZERO test_*.py "
+            "modules. The migration target should hold at least "
+            "the parser/scanner/views test modules. Restore them."
         )

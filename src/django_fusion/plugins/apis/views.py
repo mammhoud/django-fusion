@@ -29,15 +29,14 @@ from typing import Any
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 
-from django_fusion.config.conf import resolve_render_first_setting
+from django_fusion.routes.rendering.render_mode import (
+    header_render_first,
+    resolve_render_first,
+)
 from django_fusion.routes.rendering.renderers import fusion_json_response
 from django_fusion.routes.rendering.session import FusionCodec
 
 __all__ = ["APISViewMixin", "APIApplication"]
-
-
-def _settings_default() -> bool:
-    return resolve_render_first_setting(default=True)
 
 
 class APISViewMixin:
@@ -81,13 +80,15 @@ class APISViewMixin:
     ) -> bool:
         """Resolve the effective render-first mode for *request*.
 
-        Priority: header → per-view mapping → view default → settings.
+        Priority: header → per-view mapping → the canonical
+        ``resolve_render_first`` chain (explicit session preference → view
+        default → settings).  The API plugin's settings fallback defaults to
+        render-first (True) when no setting name is configured.
         """
         # 1. Per-request header override.
-        if request is not None:
-            header = request.headers.get("X-Fusion-Render-First")
-            if header in ("true", "false"):
-                return header == "true"
+        header = header_render_first(request)
+        if header is not None:
+            return header
 
         # 2. Per-view mapping.
         if view_name is not None:
@@ -95,13 +96,12 @@ class APISViewMixin:
             if view_name in mapping:
                 return bool(mapping[view_name])
 
-        # 3. View/application default option.
-        default = self.get_fusion_render_first()
-        if default is not None:
-            return bool(default)
-
-        # 4. Global setting.
-        return _settings_default()
+        # 3+. Canonical chain (session preference → view default → setting).
+        return resolve_render_first(
+            request,
+            default=self.get_fusion_render_first(),
+            setting_default=True,
+        )
 
     # ------------------------------------------------------------------
     # Response action

@@ -1,12 +1,14 @@
 """Tests for django_fusion.tasks module."""
 
+import contextlib
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
 import pytest
-
-from django_fusion.tasks.decorators import task, TaskOptions
-from django_fusion.tasks.registry import TaskRegistry, task_registry
-from django_fusion.tasks.backends.inprocess import InProcessBackend
 from django_fusion.tasks.backends.base import AbstractTaskBackend
-
+from django_fusion.tasks.backends.inprocess import InProcessBackend
+from django_fusion.tasks.decorators import TaskOptions, task
+from django_fusion.tasks.registry import TaskRegistry, task_registry
 
 # ── Helpers ────────────────────────────────────────────────────
 
@@ -153,7 +155,84 @@ class TestTaskDecorator:
         assert named.options.actor_name == "custom.actor"
 
 
+# ── sync_task_history scheduled task ────────────────────────
+
+class TestSyncTaskHistory:
+    def test_registered_with_schedule(self):
+        """The scheduled sync task is registered with a cron schedule."""
+        from django_fusion.tasks import sync_task_history
+
+        assert getattr(sync_task_history, "_fusion_task", False) is True
+        assert sync_task_history.options.queue == "system"
+        assert sync_task_history.options.schedule == "*/10 * * * *"
+
+    def test_registry_lists_it_as_scheduled(self):
+        """The registry exposes the sync task through scheduled_tasks()."""
+        from django_fusion.tasks import sync_task_history
+
+        scheduled = {
+            reg.name for reg in task_registry.scheduled_tasks() if reg.schedule
+        }
+        assert f"{sync_task_history.__module__}.{sync_task_history.__name__}" in scheduled
+
+    def test_sync_calls_website_record(self, monkeypatch):
+        """Running the task mirrors the website record for the resolved site."""
+        from django_fusion.tasks import sync_task_history
+        from django_fusion.tasks import views as views_mod
+
+        seen = []
+        monkeypatch.setattr(views_mod, "resolve_default_site", lambda: "loop-crm")
+        monkeypatch.setattr(
+            views_mod, "sync_website_record", lambda site: seen.append(site) or 3
+        )
+
+        assert sync_task_history() == 3
+        assert seen == ["loop-crm"]
+
+
 # ── InProcessBackend ───────────────────────────────────────────
+
+class TestDramatiqBackend:
+    def test_delayed_enqueue_uses_keyword_argument_payload(self, monkeypatch):
+        """Dramatiq options must keep actor args/kwargs in their named slots."""
+        from django_fusion.tasks.backends.dramatiq import DramatiqBackend
+
+        backend = DramatiqBackend.__new__(DramatiqBackend)
+        actor = MagicMock()
+        actor.send_with_options.return_value = SimpleNamespace(message_id="msg-1")
+        backend._get_or_create_actor = lambda registration: actor
+
+        monkeypatch.setattr(
+            DramatiqBackend,
+            "_create_log",
+            staticmethod(lambda *args, **kwargs: None),
+        )
+        monkeypatch.setattr(
+            DramatiqBackend,
+            "_touch_website_log",
+            staticmethod(lambda *args, **kwargs: None),
+        )
+
+        registration = SimpleNamespace(
+            name="test.delayed",
+            queue="email",
+            max_retries=1,
+        )
+        message_id = backend.enqueue(
+            registration,
+            (42,),
+            {"recipient": "user@example.com"},
+            options={"delay": 1_000},
+        )
+
+        assert message_id == "msg-1"
+        actor.send_with_options.assert_called_once()
+        call = actor.send_with_options.call_args.kwargs
+        assert call["args"] == (42,)
+        assert call["kwargs"]["recipient"] == "user@example.com"
+        assert call["kwargs"]["_fusion_job_id"]
+        assert call["delay"] == 1_000
+
 
 class TestInProcessBackend:
     def test_runs_task_synchronously(self):
@@ -208,8 +287,8 @@ class TestDispatchJobDeprecation:
         table.  Mock ``_get_task_log_model`` to return None so the
         deprecation path is exercised without hitting the DB.
         """
-        from django_fusion.services.jobs import dispatch_job
         import django_fusion.services.jobs as jmod
+        from django_fusion.services.jobs import dispatch_job
 
         # Reset the module-level flag so the warning fires again
         jmod._DEPRECATION_SHOWN = False
@@ -221,8 +300,6 @@ class TestDispatchJobDeprecation:
             def noop():
                 pass
 
-            try:
+            # Expected when django-rq is not installed.
+            with contextlib.suppress(RuntimeError):
                 dispatch_job(noop)
-            except RuntimeError:
-                # expected when django-rq is not installed
-                pass

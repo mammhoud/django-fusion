@@ -5,7 +5,6 @@ import pytest
 from django.template import Context, TemplateSyntaxError, engines
 from django.template.exceptions import TemplateDoesNotExist
 from django.test import override_settings
-
 from django_fusion.comp._init import components
 from django_fusion.comp.tags.tags.prop import PropNode
 from django_fusion.config.params import Param, Params, Value

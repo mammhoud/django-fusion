@@ -1,0 +1,36 @@
+{% load i18n %}
+<section class="task-center" aria-labelledby="task-center-title">
+  <header class="task-center__header">
+    <h1 id="task-center-title">{% trans "Task Center" %}</h1>
+    {% if site_name %}
+      <p class="task-center__site">{% blocktrans %}Background jobs for {{ site_name }}{% endblocktrans %}</p>
+    {% endif %}
+  </header>
+
+  {% if is_empty %}
+    <p class="task-center__empty">{% trans "No background tasks have run yet." %}</p>
+  {% else %}
+    <table class="task-center__table">
+      <thead>
+        <tr>
+          <th>{% trans "Task" %}</th>
+          <th>{% trans "Queue" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th>{% trans "Created" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in task_logs %}
+          <tr>
+            <td>{{ log.task_name }}</td>
+            <td>{{ log.queue_name }}</td>
+            <td>
+              <span class="task-center__status task-center__status--{{ log.status }}">{{ log.status }}</span>
+            </td>
+            <td>{{ log.created_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>

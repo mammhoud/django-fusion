@@ -8,14 +8,9 @@ from pathlib import Path
 import pytest
 from django.http import HttpResponse, StreamingHttpResponse
 from django.test import Client, override_settings
-from django.test.utils import setup_test_environment
-
 from django_fusion.fragments import (
     FragmentRequestRenderer,
-    FragmentRequestView,
-    clear_fragment_components,
     get_fragment_component,
-    register_fragment_component,
     unregister_fragment_component,
 )
 from django_fusion.fragments.renderer import resolve_template, validate_fragment_name
@@ -51,7 +46,6 @@ def template_dir():
 
 @pytest.fixture
 def registered_component(template_settings):
-    from django_fusion.routes.components.routable import RoutableComponent
     from django_fusion.routes.components.fragments import FragmentComponent
 
     class DemoComponent(FragmentComponent):

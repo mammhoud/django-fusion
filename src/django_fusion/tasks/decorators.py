@@ -90,7 +90,35 @@ def task(
             return func(*args, **kwargs)
 
         wrapper.send = lambda *a, **kw: task_registry.send(wrapper, *a, **kw)
-        wrapper.delay = wrapper.send  # Celery-compatibility alias
+
+        def send_with_options(*a, **kw):
+            """Dramatiq-compatible enqueue helper for broker options.
+
+            Supports Dramatiq's common ``args=``/``kwargs=`` calling form
+            while keeping the neutral registry API underneath.
+            """
+            call_args = tuple(kw.pop("args", a))
+            call_kwargs = dict(kw.pop("kwargs", {}))
+            broker_options = {
+                key: kw.pop(key)
+                for key in ("delay", "at_front")
+                if key in kw
+            }
+            call_kwargs.update(kw)
+            return task_registry.send(
+                wrapper,
+                *call_args,
+                _fusion_options=broker_options,
+                **call_kwargs,
+            )
+
+        # Dramatiq's actor exposes ``fn`` and ``send_with_options``; retaining
+        # those names makes the migration safe for existing producers/tests.
+        wrapper.fn = func
+        wrapper.send_with_options = send_with_options
+        # ``delay`` is retained as a neutral migration alias for callers that
+        # previously used Celery-style enqueue syntax; it never imports Celery.
+        wrapper.delay = wrapper.send
         wrapper.run = lambda *a, **kw: task_registry.run(wrapper, *a, **kw)
         wrapper._fusion_task = True
         wrapper.options = options

@@ -1,23 +1,21 @@
 """Tests for django_fusion.routes.rendering.renderers and configurable fusion_render_first."""
 
+import base64
 import json
 from typing import Any
-from unittest import mock
 
 import pytest
-
-import base64
-
 from django.test import RequestFactory
-
-from django_fusion.routes.rendering.renderers import FusionFragmentPointer
-from django_fusion.routes.rendering.renderers import FusionFragmentSchema
-from django_fusion.routes.rendering.renderers import FusionJSONEncoder
-from django_fusion.routes.rendering.renderers import FusionJSONRenderer
-from django_fusion.routes.rendering.renderers import fusion_json_response
-from django_fusion.routes.rendering.renderers import RESPONSE_CODE_GROUPS, _status_to_message
+from django_fusion.routes.rendering.renderers import (
+    RESPONSE_CODE_GROUPS,
+    FusionFragmentPointer,
+    FusionFragmentSchema,
+    FusionJSONEncoder,
+    FusionJSONRenderer,
+    _status_to_message,
+    fusion_json_response,
+)
 from django_fusion.routes.rendering.session import FusionCodec, FusionSessionChecker
-
 
 # ── Fixtures ─────────────────────────────────────────────────────
 
@@ -366,7 +364,7 @@ class TestFusionCodecRoundTrip:
 
     def test_decode_garbage_b64_raises(self):
         """Non-base64 payload should raise an exception."""
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             FusionCodec.decode("fusion_v1:!!!not-base64!!!")
 
     def test_encode_fragment_pointer_preserves_fields(self):
@@ -412,8 +410,8 @@ class TestFusionRenderFirstSetting:
         assert TrueComponent.get_fusion_render_first() is True
 
     def test_setting_fallback(self, monkeypatch: Any) -> None:
-        from django_fusion.routes.components.routable import RoutableComponent
         from django_fusion.config.conf import get_settings
+        from django_fusion.routes.components.routable import RoutableComponent
 
         class FallbackComponent(RoutableComponent):
             fusion_render_first = None
@@ -427,4 +425,4 @@ class TestFusionRenderFirstSetting:
         """The old ``FUSION_RENDER_FIRST_DEFAULT`` attribute stays readable."""
         from django_fusion.config.conf import get_settings
 
-        assert get_settings().FUSION_RENDER_FIRST_DEFAULT == get_settings().render_first_default
+        assert get_settings().render_first_default == get_settings().FUSION_RENDER_FIRST_DEFAULT

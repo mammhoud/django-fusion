@@ -33,13 +33,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from django_fusion.fragments.analyzer.scanner import (
     MAX_DEPTH,
     _matches_filters,
     scan,
 )
-
 
 # ────────────────────────────────────────────────────────────────────
 # Module-scoped tree fixtures

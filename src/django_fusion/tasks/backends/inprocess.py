@@ -12,7 +12,7 @@ class InProcessBackend(AbstractTaskBackend):
     dependency required.
     """
 
-    def enqueue(self, registration, args: tuple, kwargs: dict) -> str:
+    def enqueue(self, registration, args: tuple, kwargs: dict, options: dict | None = None) -> str:
         _log_start(registration.name, args, kwargs)
         try:
             result = registration.func(*args, **kwargs)

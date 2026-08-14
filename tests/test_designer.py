@@ -6,7 +6,6 @@ from types import SimpleNamespace
 import pytest
 from django.template import Engine
 from django.test import RequestFactory
-
 from django_fusion.comp._init import Component, components
 from django_fusion.plugins.designer.handlers import (
     designer_component_catalog,
@@ -17,7 +16,10 @@ from django_fusion.plugins.designer.handlers import (
     designer_wagtail_field,
 )
 from django_fusion.plugins.designer.tools import MCP_DESIGNER_TOOLS
-from django_fusion.plugins.designer.views import designer_tools_call, designer_tools_list
+from django_fusion.plugins.designer.views import (
+    designer_tools_call,
+    designer_tools_list,
+)
 
 
 @pytest.fixture(autouse=True)

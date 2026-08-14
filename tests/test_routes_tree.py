@@ -108,12 +108,16 @@ def test_canonical_route_symbols_bind_to_new_implementations():
     from django_fusion.routes.core.base import BaseViewset, Viewset
     from django_fusion.routes.core.base import (
         BaseViewset as ConcreteBase,
+    )
+    from django_fusion.routes.core.base import (
         Viewset as ConcreteViewset,
     )
-    from django_fusion.routes.core.sites import Application, Site
+    from django_fusion.routes.core.sites import Application, Module
     from django_fusion.routes.core.sites import (
         Application as ConcreteApplication,
-        Site as ConcreteSite,
+    )
+    from django_fusion.routes.core.sites import (
+        Module as ConcreteModule,
     )
     from django_fusion.routes.rendering.session import FusionCodec
     from django_fusion.routes.rendering.session import FusionCodec as ConcreteCodec
@@ -121,7 +125,7 @@ def test_canonical_route_symbols_bind_to_new_implementations():
     assert BaseViewset is ConcreteBase
     assert Viewset is ConcreteViewset
     assert Application is ConcreteApplication
-    assert Site is ConcreteSite
+    assert Module is ConcreteModule
     assert RoutableComponent is ConcreteRoutable
     assert FragmentComponent is ConcreteFragment
     assert FusionCodec is ConcreteCodec
@@ -130,7 +134,6 @@ def test_canonical_route_symbols_bind_to_new_implementations():
 def test_template_resolver_uses_canonical_package_template_name():
     """The resolver returns a direct name loadable from package templates."""
     from django.template.loader import get_template
-
     from django_fusion.routes.rendering.template_resolver import TemplateResolverMixin
 
     class ResolverView(TemplateResolverMixin):

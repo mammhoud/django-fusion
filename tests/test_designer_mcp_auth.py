@@ -6,11 +6,9 @@ import os
 from unittest.mock import patch
 
 import pytest
+from django_fusion.plugins.designer.mcp_router import DesignerMCPRouter, _DesignerAuth
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
-from django_fusion.plugins.designer.mcp_router import DesignerMCPRouter, _DesignerAuth
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -161,6 +159,7 @@ class TestDesignerAuthIsolation:
     @pytest.mark.anyio
     async def test_remote_fails_no_key(self):
         from unittest.mock import AsyncMock
+
         from fastapi import HTTPException
         request = AsyncMock()
         request.client.host = "10.0.0.1"
@@ -180,6 +179,7 @@ class TestDesignerAuthIsolation:
     @pytest.mark.anyio
     async def test_remote_fails_wrong_key(self):
         from unittest.mock import AsyncMock
+
         from fastapi import HTTPException
         request = AsyncMock()
         request.client.host = "10.0.0.1"

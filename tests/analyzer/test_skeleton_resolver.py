@@ -112,7 +112,7 @@ class TestSkeletonOptions:
     def test_frozen(self):
         from django_fusion.config.skeleton import SkeletonOptions
         opts = SkeletonOptions()
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             opts.enabled = True  # type: ignore[misc]
 
 

@@ -47,7 +47,6 @@ from pathlib import Path
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Test-local Django bootstrap. Mirrors
 # ``tests/test_comp_registry.py::_boot_django`` so this file is

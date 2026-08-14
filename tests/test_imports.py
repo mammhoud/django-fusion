@@ -62,8 +62,8 @@ def test_shared_model_bases_are_public_and_abstract():
 
 def test_context_exports_canonical_fragment_handler_without_dead_detection():
     """The context module exposes one handler implementation and no dead predicate."""
-    from django_fusion.core.context.context import FragmentHandlerMixin
     from django_fusion.core.context import _context_mixins
+    from django_fusion.core.context.context import FragmentHandlerMixin
     from django_fusion.core.context.context import (
         FragmentHandlerMixin as ContextFragmentHandlerMixin,
     )
@@ -103,7 +103,9 @@ def test_dispatch_job_reports_missing_optional_queue_dependency(monkeypatch):
 def test_route_tree_contract_is_covered():
     """The physical route-tree migration has a dedicated regression suite."""
     from django_fusion.routes.components.routable import RoutableComponent
-    from django_fusion.routes.components.routable import RoutableComponent as ConcreteRoutable
+    from django_fusion.routes.components.routable import (
+        RoutableComponent as ConcreteRoutable,
+    )
 
     assert RoutableComponent is ConcreteRoutable
 

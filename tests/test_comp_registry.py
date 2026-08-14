@@ -17,7 +17,6 @@ apps registry deterministically across Django versions.
 from __future__ import annotations
 
 from pathlib import Path
-
 from unittest.mock import patch
 
 import pytest
@@ -135,8 +134,8 @@ def _boot_django_for_module(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def reset_components():
-    from django_fusion.comp.apps import _register_builtin_component_paths
     from django_fusion.comp._init import components  # imports after settings
+    from django_fusion.comp.apps import _register_builtin_component_paths
 
     # Reset and re-populate the component registry so each test in
     # this module starts with the same state Django built at startup.
@@ -195,8 +194,8 @@ def test_include_path_discovers_sidecar_assets_lazily():
 
 
 def test_register_include_path_idempotent():
-    from django_fusion.comp.registry import register_include_path
     from django_fusion.comp._init import components
+    from django_fusion.comp.registry import register_include_path
 
     register_include_path("partials/auth_buttons.html")
     first_id = id(components._components["partials/auth_buttons.html"])
@@ -206,9 +205,9 @@ def test_register_include_path_idempotent():
 
 
 def test_include_aliases_share_one_component_and_reject_collisions():
+    from django_fusion.comp._init import components
     from django_fusion.comp.cache import get_component_map_cache
     from django_fusion.comp.registry import register_include_paths
-    from django_fusion.comp._init import components
 
     cache = get_component_map_cache()
     cache.invalidate_component("card")
@@ -222,8 +221,11 @@ def test_include_aliases_share_one_component_and_reject_collisions():
 
 
 def test_bulk_registration_repairs_alias_for_existing_path():
-    from django_fusion.comp.registry import register_include_path, register_include_paths
     from django_fusion.comp._init import components
+    from django_fusion.comp.registry import (
+        register_include_path,
+        register_include_paths,
+    )
 
     register_include_path("partials/auth_buttons.html")
     component = components._components.pop("auth_buttons")

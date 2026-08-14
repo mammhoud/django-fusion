@@ -10,7 +10,7 @@ class AbstractTaskBackend(ABC):
     """Interface that all task backends must implement."""
 
     @abstractmethod
-    def enqueue(self, registration, args: tuple, kwargs: dict) -> Any:
+    def enqueue(self, registration, args: tuple, kwargs: dict, options: dict | None = None) -> Any:
         """Enqueue a registered task for background execution.
 
         Args:
