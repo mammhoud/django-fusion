@@ -180,6 +180,17 @@ export default function Home() {
           />
         </div>
         <div className="min-w-0">
+          {/* Eyebrow pill — register design language: breathing verdigris dot
+              + uppercase micro-label above the brand headline. */}
+          <div
+            className="flex items-center gap-2 mb-2.5 animate-fade-in"
+            style={{ animationDelay: '0.05s' }}
+          >
+            <span className="eyebrow">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary fu-breath" aria-hidden="true" />
+              {t('home.brandEyebrow', 'Formints · POS')}
+            </span>
+          </div>
           <h1
             className="text-2xl md:text-4xl font-bold text-base-content leading-tight truncate animate-fade-in"
             style={{ animationDelay: '0.15s' }}
@@ -199,7 +210,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
         style={{ animationDelay: '0.1s' }}
       >
-        <Card padding="sm" variant="bordered" className="shadow-sm">
+        <Card padding="sm" variant="bezel" hover>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {QUICK_ACCESS.map((qa, i) => (
               <button

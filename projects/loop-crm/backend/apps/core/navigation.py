@@ -14,8 +14,8 @@ MODULES: tuple[dict[str, Any], ...] = (
     {
         "id": "overview",
         "label": "Overview",
-        "href": "/",
-        "icon": "⌂",
+        "href": "/overview/",
+        "icon": "overview",
         "description": "Revenue, publishing, and attribution at a glance.",
         "children": (),
     },
@@ -23,7 +23,7 @@ MODULES: tuple[dict[str, Any], ...] = (
         "id": "crm",
         "label": "CRM",
         "href": "/crm/",
-        "icon": "◈",
+        "icon": "crm",
         "description": "Companies, contacts, pipeline, and relationship history.",
         "children": (
             {"id": "companies", "label": "Companies", "href": "/crm/companies/"},
@@ -37,7 +37,7 @@ MODULES: tuple[dict[str, Any], ...] = (
         "id": "marketing",
         "label": "Marketing",
         "href": "/marketing/",
-        "icon": "◌",
+        "icon": "marketing",
         "description": "Campaigns, content calendar, channels, and media.",
         "children": (
             {"id": "calendar", "label": "Content calendar", "href": "/marketing/calendar/"},
@@ -50,7 +50,7 @@ MODULES: tuple[dict[str, Any], ...] = (
         "id": "finance",
         "label": "Finance",
         "href": "/finance/",
-        "icon": "▣",
+        "icon": "finance",
         "description": "Invoices, payments, recognized revenue, and cash visibility.",
         "children": (
             {"id": "invoices", "label": "Invoices", "href": "/finance/invoices/"},
@@ -62,7 +62,7 @@ MODULES: tuple[dict[str, Any], ...] = (
         "id": "attribution",
         "label": "Attribution",
         "href": "/attribution/",
-        "icon": "↗",
+        "icon": "attribution",
         "description": "Connect social touchpoints to pipeline revenue.",
         "children": (
             {"id": "touchpoints", "label": "Touchpoints", "href": "/attribution/touchpoints/"},
@@ -73,7 +73,7 @@ MODULES: tuple[dict[str, Any], ...] = (
         "id": "tasks",
         "label": "Tasks",
         "href": "/tasks/",
-        "icon": "⚡",
+        "icon": "tasks",
         "description": "Background job history — workflows, attribution, publishing, and finance.",
         "children": (),
     },
@@ -81,7 +81,7 @@ MODULES: tuple[dict[str, Any], ...] = (
         "id": "workspace",
         "label": "Workspace",
         "href": "/settings/",
-        "icon": "⚙",
+        "icon": "workspace",
         "description": "Members, workflows, integrations, and audit history.",
         "children": (
             {"id": "members", "label": "Members & roles", "href": "/settings/members/"},

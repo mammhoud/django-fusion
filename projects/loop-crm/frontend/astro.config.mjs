@@ -44,6 +44,8 @@ export default defineConfig({
         '/api': { target: BACKEND_URL, changeOrigin: true },
         '/bolt': { target: BACKEND_URL, changeOrigin: true },
         '/accounts': { target: BACKEND_URL, changeOrigin: true },
+        '/account': { target: BACKEND_URL, changeOrigin: true },
+        '/connect': { target: BACKEND_URL, changeOrigin: true },
         '/static': { target: BACKEND_URL, changeOrigin: true },
         '/media': { target: BACKEND_URL, changeOrigin: true },
         '/admin': { target: BACKEND_URL, changeOrigin: true },

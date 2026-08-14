@@ -30,6 +30,7 @@ class LoopCrmApplication(Application):
 
     urlpatterns = [
         menu_path("", DashboardView.as_view(), name="dashboard", icon="dashboard", title="Overview"),
+        path("overview/", DashboardView.as_view(), name="overview"),
         menu_path("crm/", ModuleView.as_view(module_id="crm", page_title="CRM", page_kicker="Sales", page_description="The relationship graph and pipeline operating system."), name="crm", icon="account_tree", title="CRM"),
         path("crm/companies/", CompanyListView.as_view(), name="crm_companies"),
         path("crm/contacts/", ContactListView.as_view(), name="crm_contacts"),

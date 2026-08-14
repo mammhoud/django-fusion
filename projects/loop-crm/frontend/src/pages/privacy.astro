@@ -1,0 +1,36 @@
+---
+import '../styles/globals.css';
+---
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Loop CRM privacy notice." />
+    <title>Privacy — Loop CRM</title>
+  </head>
+  <body class="loop-site-body loop-landing">
+    <header class="loop-nav">
+      <a class="loop-nav__brand" href="/"><span class="loop-nav__mark">↻</span><span>Loop CRM</span></a>
+      <div class="loop-nav__actions"><a class="loop-nav__signin" href="/accounts/login/">Sign in</a></div>
+    </header>
+    <main class="loop-legal">
+      <p class="loop-eyebrow">Legal</p>
+      <h1>Privacy notice</h1>
+      <p>Loop CRM is an open source application (AGPL-3.0). When you self-host, your data stays on infrastructure you control. When you use the hosted workspace at structa.cloud, the service processes only the data you enter: accounts, companies, contacts, deals, posts, and revenue records, to operate the workspace you asked for.</p>
+      <p>We do not sell personal data. Authentication data (email, and optional GitHub or Google OAuth identity) is used solely to identify you in the workspace. You can export or delete your workspace data at any time by contacting the workspace administrator.</p>
+      <p>This notice is intentionally short. The full source of the application is public, so every data path is inspectable.</p>
+    </main>
+  </body>
+</html>
+<style>
+  .loop-landing { min-height:100dvh; background:var(--loop-bg-deep); }
+  .loop-nav { position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; padding:.7rem clamp(1rem,5vw,4.5rem); border-bottom:1px solid rgba(42,59,61,.6); background:rgba(8,16,19,.72); backdrop-filter:blur(18px); }
+  .loop-nav__brand { display:flex; align-items:center; gap:.6rem; color:var(--loop-ink); text-decoration:none; font-weight:700; letter-spacing:-.04em; }
+  .loop-nav__mark { display:grid; place-items:center; width:2.1rem; height:2.1rem; border:1px solid #477c6c; border-radius:.6rem .3rem .6rem .3rem; background:#142a27; color:var(--loop-accent-bright); }
+  .loop-nav__signin { color:var(--loop-muted); font-size:.88rem; text-decoration:none; }
+  .loop-legal { max-width:46rem; margin:0 auto; padding:clamp(3rem,7vw,6rem) clamp(1rem,5vw,4.5rem); }
+  .loop-eyebrow { margin:0 0 .8rem; color:var(--loop-accent); font:600 .64rem "JetBrains Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
+  .loop-legal h1 { margin:0; color:var(--loop-ink); font-size:clamp(2rem,5vw,3.6rem); font-weight:650; letter-spacing:-.06em; }
+  .loop-legal p { color:var(--loop-muted); line-height:1.7; }
+</style>

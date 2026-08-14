@@ -105,16 +105,16 @@ export default function StatCard(props: StatCardProps) {
   if (props.loading) {
     const skeleton = (
       <div
-        className={`stat relative overflow-hidden ${surfaceClass} animate-pulse ${compact ? 'p-3' : 'p-4'} ${className}`.trim()}
+        className={`stat relative overflow-hidden ${surfaceClass} ${compact ? 'p-3' : 'p-4'} ${className}`.trim()}
       >
         <div className="stat-title">
-          <div className={`rounded bg-base-300/50 ${compact ? 'h-2 w-14' : 'h-3 w-20'}`} />
+          <div className={`fu-shimmer rounded ${compact ? 'h-2 w-14' : 'h-3 w-20'}`} />
         </div>
         <div className="stat-value">
-          <div className={`rounded bg-base-300/50 mt-1.5 ${compact ? 'h-5 w-16' : 'h-8 w-28'}`} />
+          <div className={`fu-shimmer rounded mt-1.5 ${compact ? 'h-5 w-16' : 'h-8 w-28'}`} />
         </div>
         <div className="stat-desc">
-          <div className={`rounded bg-base-300/50 mt-1.5 ${compact ? 'h-2 w-24' : 'h-2.5 w-36'}`} />
+          <div className={`fu-shimmer rounded mt-1.5 ${compact ? 'h-2 w-24' : 'h-2.5 w-36'}`} />
         </div>
       </div>
     );
@@ -209,7 +209,7 @@ export default function StatCard(props: StatCardProps) {
     <>
       {iconBadge}
       <div className={`stat-title ${compactTitleClass} ${icon ? 'pe-12' : ''} truncate min-w-0`}>{title}</div>
-      <div className={`stat-value ${semanticColor} ${compactValueClass} truncate min-w-0 tabular-nums`}>{value}</div>
+      <div className={`stat-value stat-value-display ${semanticColor} ${compactValueClass} truncate min-w-0 tabular-nums`}>{value}</div>
       {desc && (
         <div
           className={`stat-desc ${semanticColor}/70 ${compactDescClass} line-clamp-1 min-w-0 ${onDescClick ? 'cursor-pointer hover:text-primary hover:underline transition-colors' : ''}`.trim()}

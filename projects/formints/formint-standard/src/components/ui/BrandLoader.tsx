@@ -55,8 +55,8 @@ export default function BrandLoader({ variant = 'default' }: BrandLoaderProps) {
         <svg viewBox="0 0 120 120" className="absolute inset-0 -rotate-90">
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FB923C" />
-              <stop offset="100%" stopColor="#EA580C" />
+              <stop offset="0%" stopColor="#2F745B" />
+              <stop offset="100%" stopColor="#3E9474" />
             </linearGradient>
           </defs>
           {/* track */}
@@ -86,7 +86,7 @@ export default function BrandLoader({ variant = 'default' }: BrandLoaderProps) {
           Formint
         </span>
         <div className="flex items-baseline gap-0.5">
-          <span className={`text-3xl font-extrabold tabular-nums ${dark ? 'text-orange-400' : 'text-primary'}`}>
+          <span className={`text-3xl font-extrabold tabular-nums ${dark ? 'text-[#6ECFAB]' : 'text-primary'}`}>
             {progress}
           </span>
           <span className={`text-sm font-medium ${dark ? 'text-white/50' : 'text-base-content/50'}`}>%</span>

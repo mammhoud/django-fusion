@@ -1,0 +1,36 @@
+---
+import '../styles/globals.css';
+---
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Loop CRM terms of use." />
+    <title>Terms — Loop CRM</title>
+  </head>
+  <body class="loop-site-body loop-landing">
+    <header class="loop-nav">
+      <a class="loop-nav__brand" href="/"><span class="loop-nav__mark">↻</span><span>Loop CRM</span></a>
+      <div class="loop-nav__actions"><a class="loop-nav__signin" href="/accounts/login/">Sign in</a></div>
+    </header>
+    <main class="loop-legal">
+      <p class="loop-eyebrow">Legal</p>
+      <h1>Terms of use</h1>
+      <p>Loop CRM is distributed under the GNU Affero General Public License v3. You are free to run, modify, and redistribute the software under the terms of that license. The hosted workspace at structa.cloud is provided as is, without warranty of any kind.</p>
+      <p>By creating a workspace you agree to use the service lawfully, keep your credentials confidential, and not disrupt other tenants of the hosted service. Workspace administrators control member access and data retention for the teams they manage.</p>
+      <p>For questions about the license or the hosted service, open an issue in the public source repository.</p>
+    </main>
+  </body>
+</html>
+<style>
+  .loop-landing { min-height:100dvh; background:var(--loop-bg-deep); }
+  .loop-nav { position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; padding:.7rem clamp(1rem,5vw,4.5rem); border-bottom:1px solid rgba(42,59,61,.6); background:rgba(8,16,19,.72); backdrop-filter:blur(18px); }
+  .loop-nav__brand { display:flex; align-items:center; gap:.6rem; color:var(--loop-ink); text-decoration:none; font-weight:700; letter-spacing:-.04em; }
+  .loop-nav__mark { display:grid; place-items:center; width:2.1rem; height:2.1rem; border:1px solid #477c6c; border-radius:.6rem .3rem .6rem .3rem; background:#142a27; color:var(--loop-accent-bright); }
+  .loop-nav__signin { color:var(--loop-muted); font-size:.88rem; text-decoration:none; }
+  .loop-legal { max-width:46rem; margin:0 auto; padding:clamp(3rem,7vw,6rem) clamp(1rem,5vw,4.5rem); }
+  .loop-eyebrow { margin:0 0 .8rem; color:var(--loop-accent); font:600 .64rem "JetBrains Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
+  .loop-legal h1 { margin:0; color:var(--loop-ink); font-size:clamp(2rem,5vw,3.6rem); font-weight:650; letter-spacing:-.06em; }
+  .loop-legal p { color:var(--loop-muted); line-height:1.7; }
+</style>

@@ -617,7 +617,7 @@ export default function Employees() {
         )}
       </>
 
-      {/* Unified Add/Edit Employee wizard — personal → contact → role */
+      {/* Unified Add/Edit Employee wizard — personal → contact → role */}
       <EmployeeWizard
         isOpen={!!employeeModal}
         onClose={closeEmployeeModal}
@@ -632,7 +632,7 @@ export default function Employees() {
         contentTestId="employee-form-modal"
       />
 
-      {/* Employee detail — profile and audit trail */
+      {/* Employee detail — profile and audit trail */}
       <EmployeeDetail
         employee={detailEmployee}
         employeeTypes={employeeTypes}

@@ -10,6 +10,7 @@ const bemModifiers: Record<string, string> = {
   interactive: 'card--interactive',
   primary: 'card--primary',
   compact: 'card--compact',
+  bezel: 'card--bezel',
 };
 
 const paddingClasses = {
@@ -52,8 +53,11 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   radius?: 'lg' | 'xl' | '2xl' | 'none';
   /** Shadow depth. Default: sm (BEM default shadow) */
   shadow?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
-  /** BEM card modifier — applies a preset card class */
-  variant?: 'glass' | 'elevated' | 'bordered' | 'flat' | 'interactive' | 'primary' | 'compact';
+  /** BEM card modifier — applies a preset card class.
+   *  `bezel` renders the Double-Bezel (Doppelrand) nested enclosure:
+   *  an outer machined shell (`.bezel`) around an inner core (`.bezel-core`)
+   *  with a concentric radius — the register client's signature card. */
+  variant?: 'glass' | 'elevated' | 'bordered' | 'flat' | 'interactive' | 'primary' | 'compact' | 'bezel';
   /** Legacy border prop — maps to variant='bordered'. Kept for backward compat. */
   border?: 'base-200' | 'base-300' | 'theme' | 'none';
   /** Enable hover lift effect (card--hover) */
@@ -86,6 +90,26 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
   ) => {
     // Derive variant from legacy border prop if no explicit variant
     const resolvedVariant = variant || (border && borderToVariant[border]);
+
+    // ── Double-Bezel (Doppelrand) variant — nested machined enclosure ──
+    // Outer shell carries the bezel (hairline ring + tinted tray), the inner
+    // core carries the surface + concentric radius. Padding/radius apply to
+    // the core; hover lift applies to the shell.
+    if (resolvedVariant === 'bezel') {
+      return (
+        <div
+          ref={ref}
+          className={`bezel ${hover ? 'transition-transform duration-300 hover:-translate-y-0.5' : ''} ${className}`}
+          {...props}
+        >
+          <div
+            className={`bezel-core ${paddingClasses[padding]} ${center ? 'text-center' : ''} ${spaceY ? `space-y-${spaceY}` : ''}`}
+          >
+            {children}
+          </div>
+        </div>
+      );
+    }
 
     const classes = [
       'card',

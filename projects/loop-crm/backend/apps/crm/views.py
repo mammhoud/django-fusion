@@ -1,16 +1,19 @@
 """Render-first CRM screens and HTMX create interactions."""
 from __future__ import annotations
 
+import json
+
 from django.db import OperationalError, ProgrammingError
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from apps.core.views import LoopPageView
 
 from .forms import CompanyForm, ContactForm, DealForm
-from .models import Company, Contact, Deal
+from .models import Company, Contact, Deal, Pipeline, PipelineStage
 
 
 def _member_workspace_id(request: HttpRequest) -> int | None:
@@ -126,3 +129,89 @@ def deal_create(request: HttpRequest) -> HttpResponse:
         return render(request, "dashboard/partials/deal_form.html", {"deal_form": form}, status=422)
     form.save()
     return render(request, "dashboard/partials/deal_success.html", _crm_context(request, "deals"))
+
+
+def _workspace_scope(request: HttpRequest):
+    try:
+        profile = request.user.profile
+    except Exception:  # noqa: BLE001
+        profile = None
+    return getattr(profile, "workspace_id", None)
+
+
+def _stage_payload(stage: PipelineStage) -> dict:
+    return {
+        "id": stage.pk,
+        "name": stage.name,
+        "stage_type": stage.stage_type,
+        "color": stage.color,
+        "probability": stage.probability,
+        "order": stage.order,
+    }
+
+
+def _deal_payload(deal: Deal) -> dict:
+    return {
+        "id": deal.pk,
+        "name": deal.name,
+        "company": deal.company.name,
+        "company_id": deal.company_id,
+        "value": str(deal.value),
+        "owner": getattr(deal.owner, "get_full_name", lambda: "")() or getattr(deal.owner, "username", ""),
+        "expected_close_date": deal.expected_close_date.isoformat(),
+        "campaign": deal.campaign.name if deal.campaign_id else None,
+    }
+
+
+def pipeline_board_api(request: HttpRequest) -> JsonResponse:
+    """Board payload: pipelines with stages and stage-scoped deals."""
+    if request.method != "GET":
+        return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
+    workspace_id = _workspace_scope(request)
+    pipelines = Pipeline.objects.prefetch_related("stages", "deals__company", "deals__owner", "deals__campaign").order_by("order")
+    if workspace_id is not None:
+        pipelines = pipelines.filter(workspace_id=workspace_id)
+    results = []
+    for pipeline in pipelines:
+        stages = list(pipeline.stages.all())
+        deal_rows = {deal.stage_id: deal for deal in pipeline.deals.all()}
+        results.append(
+            {
+                "id": pipeline.pk,
+                "name": pipeline.name,
+                "stages": [
+                    {
+                        **_stage_payload(stage),
+                        "deals": [_deal_payload(deal_rows[stage.pk])] if stage.pk in deal_rows else [],
+                    }
+                    for stage in stages
+                ],
+            }
+        )
+    return JsonResponse({"results": results, "count": len(results)})
+
+
+@csrf_exempt
+def deal_move_api(request: HttpRequest, pk: int) -> JsonResponse:
+    """Move a deal to another stage of its own pipeline (kanban drop).
+
+    The compatibility /api/v1/ road is a local-dev surface (the canonical
+    Bolt road authenticates with JWTs); JSON mutations here are exempt from
+    CSRF so the kanban island can move deals without a form token.
+    """
+    if request.method not in ("PATCH", "POST"):
+        return JsonResponse({"detail": "This endpoint accepts PATCH/POST only."}, status=405)
+    deal = get_object_or_404(Deal, pk=pk)
+    try:
+        payload = json.loads(request.body or b"{}")
+    except ValueError:
+        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+    stage_id = payload.get("stage_id")
+    if stage_id is None:
+        return JsonResponse({"detail": "stage_id is required."}, status=400)
+    stage = get_object_or_404(PipelineStage, pk=stage_id)
+    try:
+        deal.transition_to_stage(stage)
+    except ValueError as exc:
+        return JsonResponse({"detail": str(exc)}, status=400)
+    return JsonResponse({"ok": True, "deal": _deal_payload(deal), "stage_id": stage.pk})

@@ -13,7 +13,6 @@ const HomeIcon = Ic('hi:home');
 const PinIcon = Ic('hi:map-pin');
 const LogoutIcon = Ic('hi:arrow-right-start-on-rectangle');
 const HelpIcon = Ic('hi:help-circle');
-const CloseIcon = Ic('hi:x-mark');
 const RoleBadgeIcon = Ic('hi:check-badge');
 
 // ── Role-based nav visibility ──
@@ -220,7 +219,7 @@ function NavItemButton({
         )}
       </div>
       {isActive && isExpanded && (
-        <div className="ms-auto w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+        <div className="ms-auto w-1.5 h-1.5 rounded-full bg-primary fu-breath shrink-0" />
       )}
     </button>
   );
@@ -434,10 +433,21 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
   const closeTimerRef = useRef<number | null>(null);
   const navContainerRef = useRef<HTMLDivElement | null>(null);
   const userRole = user?.role || 'manager';
+  // Visible categories — shared by the stagger (footer reveal follows the last
+  // category's delay) and the nav render.
+  const visibleCategories = filterNavByRole(navCategories, userRole);
 
-  // Reset closing state whenever the drawer is re-opened.
+  // Reset closing state whenever the drawer is re-opened, then trigger the
+  // staggered mask reveal (links rise out of their hidden box) right after
+  // the glass pill begins its slide-in.
+  const [revealed, setRevealed] = useState(false);
   useEffect(() => {
-    if (isOpen) setClosing(false);
+    if (isOpen) {
+      setClosing(false);
+      setRevealed(false);
+      const id = window.setTimeout(() => setRevealed(true), 60);
+      return () => window.clearTimeout(id);
+    }
   }, [isOpen]);
 
   // Clean up any pending close timer on unmount.
@@ -493,33 +503,51 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
             onClick={requestClose}
           />
 
-          {/* Panel */}
+          {/* Panel — floating glass pill chrome */}
           <aside
-            className={`fixed top-0 left-0 h-full w-80 max-w-[90vw] z-50
-              bg-base-100/90 backdrop-blur-xl
-              border-r border-base-300/50
-              shadow-2xl flex flex-col
-              rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l
+            className={`fixed top-3 bottom-3 left-3 w-80 max-w-[calc(100vw-1.5rem)] z-50
+              glass-pill rounded-[2rem] flex flex-col overflow-hidden
+              rtl:left-auto rtl:right-3
               ${closing
                 ? (isRtl ? 'animate--drawer-out-right' : 'animate--drawer-out-left')
                 : (isRtl ? 'animate--drawer-in-right' : 'animate--drawer-in-left')}`}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-base-300/50">
-              <span className="text-sm font-semibold text-base-content/50 uppercase tracking-wider">
-                {t('nav.navigation')}
-              </span>
-              <button
-                onClick={onClose}
-                className="p-1.5 rounded-lg text-base-content/40 hover:text-base-content
-                  hover:bg-base-200/50 dark:hover:bg-white/10 transition-all active:scale-[0.9]"
-              >
-                <CloseIcon className="w-5 h-5" />
-              </button>
+            {/* Header — eyebrow + hamburger→X morph */}
+            <div
+              className={`nav-mask overflow-hidden px-4 pt-4 pb-2 ${revealed ? 'is-visible' : ''}`}
+              style={{ transitionDelay: '80ms' }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-base-content/50">
+                  {t('nav.navigation')}
+                </span>
+                <button
+                  onClick={requestClose}
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full
+                    transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    hover:bg-base-200/80 dark:hover:bg-white/10 active:scale-95"
+                  aria-label={t('common.closeNavigation') || 'Close navigation'}
+                  aria-expanded="true"
+                >
+                  <span
+                    className={`absolute h-[1.5px] w-4 rounded-full bg-base-content
+                      transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                      ${revealed ? 'rotate-45' : '-translate-y-[4.5px]'}`}
+                  />
+                  <span
+                    className={`absolute h-[1.5px] w-4 rounded-full bg-base-content
+                      transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                      ${revealed ? '-rotate-45' : 'translate-y-[4.5px]'}`}
+                  />
+                </button>
+              </div>
             </div>
 
             {/* Home link */}
-            <div className="px-4 pt-3 pb-1">
+            <div
+              className={`nav-mask overflow-hidden px-4 pt-3 pb-1 ${revealed ? 'is-visible' : ''}`}
+              style={{ transitionDelay: '140ms' }}
+            >
               <button
                 onClick={() => handleNavigate('/dashboard')}
                 onMouseEnter={() => preloadRoute('/dashboard')}
@@ -543,7 +571,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                 </div>
                 {currentRoute === '/dashboard' && (
                   <div
-                    className="ms-auto w-1.5 h-1.5 rounded-full bg-primary"
+                    className="ms-auto w-1.5 h-1.5 rounded-full bg-primary fu-breath"
                   />
                 )}
               </button>

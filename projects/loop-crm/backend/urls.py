@@ -34,6 +34,7 @@ urlpatterns = [
     path("api/v1/", include("apps.attribution.urls")),
     path("api/v1/", include("apps.finance.urls")),
     path("account/profile/", core_views.profile_view, name="profile"),
+    path("connect/", include("apps.marketing.oauth_urls")),
 ]
 
 # django-bolt owns the canonical high-throughput API road when its optional

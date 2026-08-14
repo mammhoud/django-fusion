@@ -33,6 +33,11 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    # Social providers (landing-fusion parity): GitHub + Google OAuth. Client
+    # IDs/secrets come from env; empty values disable the buttons in the login
+    # template through allauth's SOCIALACCOUNT_ENABLED context flag.
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.google",
     "django_tables2",
     # django-dramatiq wires Dramatiq into Django (provides `rundramatiq`).
     "django_dramatiq",
@@ -85,6 +90,37 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
+# allauth adapters — thin wrappers over allauth defaults (landing-fusion
+# parity). Social signup follows the same open-registration policy as email.
+ACCOUNT_ADAPTER = "apps.core.adapters.LoopAuthAdapter"
+SOCIALACCOUNT_ADAPTER = "apps.core.adapters.LoopSocialAccountAdapter"
+
+# Social providers — GitHub + Google. Client IDs/secrets come from env vars;
+# values are read at request time so empty IDs simply disable the button.
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("GITHUB_CLIENT_ID", ""),
+            "secret": os.environ.get("GITHUB_CLIENT_SECRET", ""),
+        },
+        "SCOPE": ["read:user", "user:email"],
+    },
+    "google": {
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID", ""),
+            "secret": os.environ.get("GOOGLE_CLIENT_SECRET", ""),
+        },
+        "SCOPE": ["profile", "email"],
+    },
+}
+
+# Social connector OAuth clients (LinkedIn + X). Empty values keep the
+# adapters honest: publishing requires a token, refresh requires these.
+LINKEDIN_CLIENT_ID = os.environ.get("LINKEDIN_CLIENT_ID", "")
+LINKEDIN_CLIENT_SECRET = os.environ.get("LINKEDIN_CLIENT_SECRET", "")
+X_CLIENT_ID = os.environ.get("X_CLIENT_ID", "")
+X_CLIENT_SECRET = os.environ.get("X_CLIENT_SECRET", "")
+
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Loop CRM <noreply@structa.cloud>")
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 
@@ -95,11 +131,24 @@ CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_TRUSTED_ORIGINS = [
+_csrf_trusted_origins = [
     origin.strip()
     for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
     if origin.strip()
 ]
+if DEBUG:
+    # The Astro shell proxies /accounts to Django; the browser sees the Astro
+    # origin (and the direct backend port), so both must be trusted in dev for
+    # the landing's Start free signup POST to pass the CSRF origin check.
+    _csrf_trusted_origins += [
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8001",
+        "http://127.0.0.1:4321",
+        "http://127.0.0.1:4323",
+        "http://localhost:8000",
+        "http://localhost:4321",
+    ]
+CSRF_TRUSTED_ORIGINS = _csrf_trusted_origins
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 X_FRAME_OPTIONS = "DENY"
@@ -197,12 +246,48 @@ def _redis_url(db: int = 0) -> str:
     return f"redis://{auth}{host}:{port}/{db}"
 
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": _redis_url(0),
+def _redis_reachable(timeout: float = 0.4) -> bool:
+    """Probe whether a Redis server answers on the configured dev defaults.
+
+    Dependency-free socket check so ``make dev`` and the browser suite work
+    without a Redis process. Explicit REDIS_URL/REDIS_HOST configuration
+    always requires a real server (production behavior unchanged).
+    """
+    try:
+        import socket
+
+        host = os.environ.get("REDIS_HOST", "127.0.0.1")
+        port = int(os.environ.get("REDIS_PORT", "6379"))
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+if os.environ.get("REDIS_URL") or os.environ.get("REDIS_HOST"):
+    # Explicit configuration: Redis is required (compose, prod, CI).
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": _redis_url(0),
+        }
     }
-}
+elif DEBUG and not _redis_reachable():
+    # Unconfigured local dev with no Redis running: fall back to an in-process
+    # cache so allauth's login rate-limiter and session flows never 500.
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "loop-crm-dev",
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": _redis_url(0),
+        }
+    }
 
 # Shared/website task-record contract for the Task Center page. The shared
 # worker writes django_fusion's BackgroundTaskLog; the Task Center mirrors it

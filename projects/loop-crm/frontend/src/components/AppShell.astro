@@ -1,5 +1,6 @@
 ---
 import { breadcrumbsFor, navigationFor } from '@/lib/navigation';
+import { iconSvg } from '@/lib/icons';
 
 interface Props {
   title: string;
@@ -13,15 +14,16 @@ const breadcrumbs = breadcrumbsFor(path, title);
 ---
 <a class="loop-skip-link" href="#loop-app-content">Skip to content</a>
 <div class="loop-app-shell" data-loop-nav-shell>
+  <div class="loop-app-backdrop" data-loop-nav-backdrop aria-hidden="true" />
   <aside id="loop-app-navigation" class="loop-app-sidebar" aria-label="Loop CRM navigation">
     <div id="loop-app-navigation-content" hx-get={`/fragments/navigation/?variant=astro&path=${encodeURIComponent(path)}`} hx-trigger="load" hx-target="this" hx-select="*" hx-swap="innerHTML">
-      <a class="loop-app-brand" href="/" aria-label="Loop CRM overview"><span class="loop-app-mark">↻</span><span><strong>Loop</strong><small>revenue workspace</small></span></a>
+      <a class="loop-app-brand" href="/" aria-label="Loop CRM overview"><span class="loop-app-mark" set:html={iconSvg('loop', 22)} /><span><strong>Loop</strong><small>revenue workspace</small></span></a>
       <nav aria-label="Workspace modules">
         {navigation.map((module, index) => (
           <div class="loop-app-nav-group">
             <span class="loop-app-nav-label">{index === 0 ? 'Workspace' : module.id === 'workspace' ? 'Administration' : module.label}</span>
             <a class:list={['loop-app-nav-link', module.active && 'is-active']} href={module.href} aria-current={module.active ? 'page' : undefined}>
-              <span class="loop-app-nav-icon" aria-hidden="true">{module.icon}</span><span>{module.label}</span>{module.active && <i aria-hidden="true" />}
+              <span class="loop-app-nav-icon" aria-hidden="true" set:html={iconSvg(module.icon)} /><span>{module.label}</span>{module.active && <i aria-hidden="true" />}
             </a>
             {module.children.length > 0 && (
               <div class="loop-app-nav-children" aria-label={`${module.label} pages`}>
@@ -35,9 +37,12 @@ const breadcrumbs = breadcrumbsFor(path, title);
   </aside>
   <div class="loop-app-main">
     <header class="loop-app-topbar">
-      <button class="loop-app-menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false" data-loop-nav-toggle>☰</button>
+      <button class="loop-app-menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false" data-loop-nav-toggle>
+        <svg class="loop-app-menu-icon loop-app-menu-icon--open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+        <svg class="loop-app-menu-icon loop-app-menu-icon--close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+      </button>
       <div class="loop-app-context"><span class="loop-app-context__signal" aria-hidden="true" />Revenue operations <span>/</span> unified workspace</div>
-      <div class="loop-app-topbar__right"><span class="loop-app-status"><i aria-hidden="true" />local workspace</span><a href="/account/profile/" class="loop-app-profile" aria-label="Open account profile">ME</a></div>
+      <div class="loop-app-topbar__right"><span class="loop-app-status"><i aria-hidden="true" />local workspace</span><a href="/account/profile/" class="loop-app-profile" aria-label="Open account profile"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6" /><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" /></svg></a></div>
     </header>
     <main id="loop-app-content" class="loop-app-content">
       <nav class="loop-app-breadcrumb" aria-label="Breadcrumb">
@@ -52,11 +57,20 @@ const breadcrumbs = breadcrumbsFor(path, title);
 </div>
 <script>
   const button = document.querySelector('[data-loop-nav-toggle]');
+  const backdrop = document.querySelector('[data-loop-nav-backdrop]');
+  const setOpen = (open: boolean) => {
+    const shell = document.querySelector('[data-loop-nav-shell]');
+    shell?.setAttribute('data-nav-open', String(open));
+    button?.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('loop-nav-locked', open);
+  };
   button?.addEventListener('click', () => {
     const shell = document.querySelector('[data-loop-nav-shell]');
-    const open = shell?.getAttribute('data-nav-open') !== 'true';
-    shell?.setAttribute('data-nav-open', String(open));
-    button.setAttribute('aria-expanded', String(open));
+    setOpen(shell?.getAttribute('data-nav-open') !== 'true');
+  });
+  backdrop?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (event) => {
+    if ((event as KeyboardEvent).key === 'Escape') setOpen(false);
   });
 
   const navigationCacheKey = 'loop-crm:navigation:astro';
@@ -109,33 +123,36 @@ const breadcrumbs = breadcrumbsFor(path, title);
 <style>
   .loop-skip-link { position:fixed; z-index:60; top:.75rem; left:.75rem; transform:translateY(-150%); padding:.55rem .75rem; border:1px solid var(--loop-accent); border-radius:.45rem; background:var(--loop-panel-raised); color:var(--loop-accent-bright); transition:transform .2s ease; }
   .loop-skip-link:focus { transform:translateY(0); }
-  .loop-app-shell { position:relative; z-index:1; display:grid; grid-template-columns:18rem minmax(0,1fr); min-height:100dvh; background:radial-gradient(circle at 82% -12%, rgba(94, 159, 139, .16), transparent 32rem), var(--loop-bg); color:var(--loop-ink); }
-  .loop-app-sidebar { position:relative; z-index:2; border-right:1px solid var(--loop-line); background:rgba(8,16,19,.84); padding:1.25rem .9rem 2rem; backdrop-filter:blur(18px); }
-  .loop-app-brand { display:flex; align-items:center; gap:.75rem; padding:.3rem .65rem 2.1rem; color:var(--loop-ink); text-decoration:none; letter-spacing:-.04em; }
-  .loop-app-brand > span:last-child { display:grid; gap:.08rem; font-size:1.2rem; line-height:1; }
+  .loop-app-shell { position:relative; z-index:1; display:grid; grid-template-columns:17.5rem minmax(0,1fr); min-height:100dvh; background:radial-gradient(circle at 82% -12%, rgba(94, 159, 139, .16), transparent 32rem), var(--loop-bg); color:var(--loop-ink); }
+  .loop-app-backdrop { display:none; }
+  .loop-app-sidebar { position:relative; z-index:2; border-right:1px solid var(--loop-line); background:rgba(8,16,19,.86); padding:1.15rem .8rem 2rem; backdrop-filter:blur(18px); }
+  .loop-app-brand { display:flex; align-items:center; gap:.75rem; padding:.3rem .55rem 1.9rem; color:var(--loop-ink); text-decoration:none; letter-spacing:-.04em; }
+  .loop-app-brand > span:last-child { display:grid; gap:.08rem; font-size:1.18rem; line-height:1; }
   .loop-app-brand strong { font-weight:700; }
   .loop-app-brand small { color:var(--loop-dim); font:500 .54rem/1 "JetBrains Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
-  .loop-app-mark { display:grid; place-items:center; width:2.35rem; height:2.35rem; border:1px solid #477c6c; border-radius:.72rem .35rem .72rem .35rem; background:#142a27; color:var(--loop-accent-bright); font-size:1.35rem; box-shadow:0 .5rem 1.5rem rgba(76,145,120,.12); }
+  .loop-app-mark { display:grid; place-items:center; width:2.35rem; height:2.35rem; border:1px solid #477c6c; border-radius:.72rem .35rem .72rem .35rem; background:#142a27; color:var(--loop-accent-bright); box-shadow:0 .5rem 1.5rem rgba(76,145,120,.12); }
+  .loop-app-mark .loop-nav-svg { display:block; }
   .loop-app-nav-group { margin-bottom:1.05rem; }
-  .loop-app-nav-label { display:block; margin:0 .7rem .42rem; color:var(--loop-dim); font:600 .58rem/1.2 "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
-  .loop-app-nav-link { position:relative; display:flex; align-items:center; gap:.7rem; padding:.66rem .72rem; border:1px solid transparent; border-radius:.45rem; color:var(--loop-muted); font-size:.9rem; text-decoration:none; transition:background .22s ease,border-color .22s ease,color .22s ease,transform .22s ease; }
+  .loop-app-nav-label { display:block; margin:0 .6rem .42rem; color:var(--loop-dim); font:600 .58rem/1.2 "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
+  .loop-app-nav-link { position:relative; display:flex; align-items:center; gap:.7rem; padding:.62rem .65rem; border:1px solid transparent; border-radius:.5rem; color:var(--loop-muted); font-size:.9rem; text-decoration:none; transition:background .22s ease,border-color .22s ease,color .22s ease,transform .22s ease; }
   .loop-app-nav-link:hover { transform:translateX(2px); border-color:var(--loop-line); background:#132124; color:var(--loop-ink); }
   .loop-app-nav-link.is-active { border-color:#385b53; background:#172c2b; color:var(--loop-accent-bright); box-shadow:inset 3px 0 var(--loop-accent); }
   .loop-app-nav-link.is-active i { width:.35rem; height:.35rem; margin-left:auto; border-radius:50%; background:var(--loop-accent); box-shadow:0 0 .7rem var(--loop-accent); }
-  .loop-app-nav-icon { width:1.1rem; color:var(--loop-dim); font-size:1rem; text-align:center; }
+  .loop-app-nav-icon { display:grid; place-items:center; width:1.15rem; color:var(--loop-dim); }
+  .loop-app-nav-icon .loop-nav-svg { display:block; }
   .loop-app-nav-link.is-active .loop-app-nav-icon { color:var(--loop-accent); }
   .loop-app-nav-children { margin:.35rem 0 .5rem 1.15rem; padding:.25rem 0 .2rem .92rem; border-left:1px solid var(--loop-line-soft); }
   .loop-app-nav-child { display:block; padding:.36rem .5rem; border-radius:.28rem; color:var(--loop-dim); font-size:.79rem; text-decoration:none; transition:background .2s ease,color .2s ease; }
   .loop-app-nav-child:hover,.loop-app-nav-child.is-active { background:#122321; color:var(--loop-accent-bright); }
   .loop-app-main { min-width:0; }
-  .loop-app-topbar { position:sticky; z-index:10; top:0; display:flex; align-items:center; justify-content:space-between; min-height:4.6rem; padding:0 clamp(1rem,4vw,3.8rem); border-bottom:1px solid var(--loop-line-soft); background:rgba(11,17,20,.78); color:var(--loop-muted); backdrop-filter:blur(18px); }
+  .loop-app-topbar { position:sticky; z-index:10; top:0; display:flex; align-items:center; justify-content:space-between; min-height:4.4rem; padding:0 clamp(1rem,4vw,3.8rem); border-bottom:1px solid var(--loop-line-soft); background:rgba(11,17,20,.78); color:var(--loop-muted); backdrop-filter:blur(18px); }
   .loop-app-context { display:flex; align-items:center; gap:.55rem; font:500 .62rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
   .loop-app-context span { color:#4f6464; }
   .loop-app-context__signal { width:.4rem; height:.4rem; border-radius:50%; background:var(--loop-accent); box-shadow:0 0 .6rem rgba(139,203,181,.7); }
   .loop-app-topbar__right { display:flex; align-items:center; gap:.8rem; }
   .loop-app-status { display:inline-flex; align-items:center; gap:.4rem; padding:.32rem .55rem; border:1px solid #31534d; color:var(--loop-accent-bright); font:600 .58rem "JetBrains Mono",monospace; letter-spacing:.04em; text-transform:uppercase; }
   .loop-app-status i { width:.3rem; height:.3rem; border-radius:50%; background:var(--loop-accent); }
-  .loop-app-profile { display:grid; place-items:center; width:2rem; height:2rem; border:1px solid var(--loop-line); border-radius:.48rem; background:var(--loop-panel); color:var(--loop-muted); font:600 .56rem "JetBrains Mono",monospace; text-decoration:none; transition:border-color .2s ease,color .2s ease,transform .2s ease; }
+  .loop-app-profile { display:grid; place-items:center; width:2.1rem; height:2.1rem; border:1px solid var(--loop-line); border-radius:.5rem; background:var(--loop-panel); color:var(--loop-muted); transition:border-color .2s ease,color .2s ease,transform .2s ease; }
   .loop-app-profile:hover { transform:translateY(-1px); border-color:var(--loop-accent); color:var(--loop-accent-bright); }
   .loop-app-content { width:min(82rem,100%); margin:0 auto; padding:clamp(1.6rem,4vw,3.8rem) clamp(1rem,4vw,3.8rem) 5rem; }
   .loop-app-breadcrumb { display:flex; flex-wrap:wrap; gap:.55rem; margin-bottom:2.7rem; color:var(--loop-dim); font:500 .62rem "JetBrains Mono",monospace; letter-spacing:.06em; text-transform:uppercase; }
@@ -145,8 +162,24 @@ const breadcrumbs = breadcrumbsFor(path, title);
   .loop-app-eyebrow { margin:0 0 .65rem; color:var(--loop-accent); font:600 .64rem "JetBrains Mono",monospace; letter-spacing:.14em; text-transform:uppercase; }
   h1 { max-width:48rem; margin:0; color:var(--loop-ink); font-size:clamp(2.5rem,6vw,5.7rem); font-weight:650; line-height:.94; letter-spacing:-.075em; text-wrap:balance; }
   .loop-app-lede { max-width:42rem; margin:1.35rem 0 0; color:var(--loop-muted); font-size:clamp(.98rem,1.4vw,1.12rem); line-height:1.65; text-wrap:pretty; }
-  .loop-app-menu-button { display:none; border:1px solid var(--loop-line); border-radius:.4rem; background:var(--loop-panel); color:var(--loop-ink); padding:.42rem .58rem; cursor:pointer; }
+  .loop-app-menu-button { display:none; place-items:center; width:2.2rem; height:2.2rem; border:1px solid var(--loop-line); border-radius:.45rem; background:var(--loop-panel); color:var(--loop-ink); cursor:pointer; }
   .loop-app-menu-button:active { transform:scale(.96); }
-  @media (max-width:800px) { .loop-app-shell { display:block; } .loop-app-sidebar { position:fixed; z-index:20; inset:0 auto 0 0; width:min(18rem,88vw); transform:translateX(-102%); transition:transform .25s ease; } .loop-app-shell[data-nav-open="true"] .loop-app-sidebar { transform:translateX(0); box-shadow:1.5rem 0 3rem var(--loop-shadow); } .loop-app-menu-button { display:inline-flex; } .loop-app-topbar { padding:0 1rem; } .loop-app-context { font-size:.54rem; } .loop-app-status { display:none; } .loop-app-content { padding:1.6rem 1rem 3.5rem; } }
+  .loop-app-menu-icon { width:1.05rem; height:1.05rem; grid-area:1/1; transition:opacity .18s ease,transform .2s ease; }
+  .loop-app-menu-icon--close { opacity:0; transform:rotate(-90deg); }
+  .loop-app-shell[data-nav-open="true"] .loop-app-menu-icon--open { opacity:0; transform:rotate(90deg); }
+  .loop-app-shell[data-nav-open="true"] .loop-app-menu-icon--close { opacity:1; transform:rotate(0); }
+  body.loop-nav-locked { overflow:hidden; }
+  @media (max-width:800px) {
+    .loop-app-shell { display:block; }
+    .loop-app-sidebar { position:fixed; z-index:30; inset:0 auto 0 0; width:min(17.5rem,88vw); transform:translateX(-102%); transition:transform .25s ease; }
+    .loop-app-shell[data-nav-open="true"] .loop-app-sidebar { transform:translateX(0); box-shadow:1.5rem 0 3rem var(--loop-shadow); }
+    .loop-app-backdrop { display:block; position:fixed; z-index:25; inset:0; background:rgba(3,8,10,.6); opacity:0; pointer-events:none; transition:opacity .25s ease; backdrop-filter:blur(2px); }
+    .loop-app-shell[data-nav-open="true"] .loop-app-backdrop { opacity:1; pointer-events:auto; }
+    .loop-app-menu-button { display:grid; }
+    .loop-app-topbar { padding:0 1rem; }
+    .loop-app-context { font-size:.54rem; }
+    .loop-app-status { display:none; }
+    .loop-app-content { padding:1.6rem 1rem 3.5rem; }
+  }
   @media (prefers-reduced-motion:reduce) { .loop-app-shell * { transition:none!important; } }
 </style>

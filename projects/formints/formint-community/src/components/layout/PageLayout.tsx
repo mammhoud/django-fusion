@@ -201,12 +201,27 @@ export default function PageLayout({
           /* Full TopBar: [Menu] [Back] [Logo + Title] [Profile] */
           <div className="relative z-30 flex items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-base-100/60 backdrop-blur-md border border-base-300/20 shadow-sm">
             <div className="flex items-center gap-2 shrink-0">
+              {/* Fluid-island hamburger — morphs into an X while the drawer is open */}
               <button
-                onClick={() => setIsNavOpen(true)}
-                className="btn btn-square btn-ghost btn-icon"
-                aria-label={t('common.openNavigation') || 'Open navigation'}
+                onClick={() => setIsNavOpen(o => !o)}
+                className="relative flex h-10 w-10 items-center justify-center rounded-full
+                  transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                  hover:bg-base-200/80 dark:hover:bg-white/10 active:scale-95"
+                aria-label={isNavOpen
+                  ? (t('common.closeNavigation') || 'Close navigation')
+                  : (t('common.openNavigation') || 'Open navigation')}
+                aria-expanded={isNavOpen}
               >
-                <span className="ri-menu-4-line ri-20px" />
+                <span
+                  className={`absolute h-[1.5px] w-4 rounded-full bg-base-content
+                    transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    ${isNavOpen ? 'rotate-45' : '-translate-y-[4.5px]'}`}
+                />
+                <span
+                  className={`absolute h-[1.5px] w-4 rounded-full bg-base-content
+                    transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    ${isNavOpen ? '-rotate-45' : 'translate-y-[4.5px]'}`}
+                />
               </button>
               <button
                 onClick={handleBackNavigation}
@@ -256,12 +271,27 @@ export default function PageLayout({
                   compact
                 />
               )}
+              {/* Fluid-island hamburger — morphs into an X while the drawer is open */}
               <button
-                onClick={() => setIsNavOpen(true)}
-                className="btn btn-square btn-ghost btn-icon shrink-0"
-                aria-label={t('common.openNavigation') || 'Open navigation'}
+                onClick={() => setIsNavOpen(o => !o)}
+                className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full
+                  transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                  hover:bg-base-200/80 dark:hover:bg-white/10 active:scale-95"
+                aria-label={isNavOpen
+                  ? (t('common.closeNavigation') || 'Close navigation')
+                  : (t('common.openNavigation') || 'Open navigation')}
+                aria-expanded={isNavOpen}
               >
-                <span className="ri-menu-4-line ri-20px" />
+                <span
+                  className={`absolute h-[1.5px] w-4 rounded-full bg-base-content
+                    transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    ${isNavOpen ? 'rotate-45' : '-translate-y-[4.5px]'}`}
+                />
+                <span
+                  className={`absolute h-[1.5px] w-4 rounded-full bg-base-content
+                    transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    ${isNavOpen ? '-rotate-45' : 'translate-y-[4.5px]'}`}
+                />
               </button>
             </div>
           </div>

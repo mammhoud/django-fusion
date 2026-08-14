@@ -1,16 +1,18 @@
 """Content-calendar pages and HTMX interactions."""
 from __future__ import annotations
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import OperationalError, ProgrammingError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.core.views import LoopPageView
 
 from .forms import PostComposerForm, PostLifecycleForm
-from .models import Post
+from .models import Post, SocialChannel
 
 
 def post_rows() -> list[Post]:
@@ -34,7 +36,27 @@ class ContentCalendarView(LoopPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"posts": post_rows(), "post_form": PostComposerForm()})
+        try:
+            workspace_id = self.request.user.profile.workspace_id
+        except Exception:  # noqa: BLE001 - a profile is optional for auth
+            workspace_id = None
+        channels = SocialChannel.objects.filter(workspace_id=workspace_id) if workspace_id else SocialChannel.objects.none()
+        for channel in channels:
+            if not channel.oauth_token:
+                channel.status = "disconnected"
+            elif channel.token_expires_at and channel.token_expires_at <= timezone.now():
+                channel.status = "expired"
+            else:
+                channel.status = "connected"
+        context.update(
+            {
+                "posts": post_rows(),
+                "post_form": PostComposerForm(),
+                "channels": channels,
+                "linkedin_configured": bool(settings.LINKEDIN_CLIENT_ID and settings.LINKEDIN_CLIENT_SECRET),
+                "x_configured": bool(settings.X_CLIENT_ID and settings.X_CLIENT_SECRET),
+            }
+        )
         return context
 
 

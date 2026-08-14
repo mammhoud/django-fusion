@@ -41,7 +41,8 @@ plugins:
 not_in_nav: |
   archives/
   plans/legacy/
-	extra:
+
+extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/mammhoud/structa.cloud

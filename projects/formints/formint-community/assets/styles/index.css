@@ -245,33 +245,70 @@
   --noise: 0;
 }
 
-/* ── Perplexity Dark — minimal & intelligent, dark counterpart ── */
+/* ── Perplexity — minimal & intelligent (verdigris default) ──────
+   Re-themed to the Formint register design language: warm cream
+   paper, deep verdigris primary, amber accent (the brand's arrow).
+   Mirrors formint-client daisyUI cupcake + shadcn tokens. */
+@plugin "flyonui/theme" {
+  name: "perplexity";
+  color-scheme: light;
+  --color-base-100: oklch(98.4% 0.006 90);
+  --color-base-200: oklch(94.5% 0.008 88);
+  --color-base-300: oklch(90% 0.009 85);
+  --color-base-content: oklch(25% 0.015 60);
+  --color-primary: oklch(47% 0.08 165);
+  --color-primary-content: oklch(98.4% 0.006 90);
+  --color-secondary: oklch(55% 0.05 165);
+  --color-secondary-content: oklch(98.4% 0.006 90);
+  --color-accent: oklch(83% 0.12 90);
+  --color-accent-content: oklch(30% 0.05 85);
+  --color-neutral: oklch(35% 0.02 60);
+  --color-neutral-content: oklch(95% 0.005 90);
+  --color-info: oklch(68% 0.1 230);
+  --color-info-content: oklch(98% 0.005 90);
+  --color-success: oklch(65% 0.13 162);
+  --color-success-content: oklch(98% 0.005 90);
+  --color-warning: oklch(82% 0.14 85);
+  --color-warning-content: oklch(30% 0.05 85);
+  --color-error: oklch(60% 0.19 25);
+  --color-error-content: oklch(98% 0.005 90);
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Perplexity Dark — warm near-black + light verdigris ──────── */
 @plugin "flyonui/theme" {
   name: "perplexity-dark";
   color-scheme: dark;
-  --color-base-100: oklch(22% 0.02 210);
-  --color-base-200: oklch(18% 0.018 210);
-  --color-base-300: oklch(35% 0.012 220);
-  --color-base-content: oklch(90% 0.015 210);
-  --color-primary: oklch(76% 0.12 210.36);
-  --color-primary-content: oklch(15% 0.03 210);
-  --color-secondary: oklch(70% 0.13 228.63);
-  --color-secondary-content: oklch(15% 0.03 228);
-  --color-accent: oklch(72% 0.18 276.935);
-  --color-accent-content: oklch(20% 0.08 281.288);
-  --color-neutral: oklch(88% 0.01 210);
-  --color-neutral-content: oklch(16% 0.02 210);
-  --color-info: oklch(72% 0.1 218.29);
-  --color-info-content: oklch(14% 0.03 218);
-  --color-success: oklch(78% 0.14 118.63);
-  --color-success-content: oklch(15% 0.04 118);
-  --color-warning: oklch(88% 0.15 72.74);
-  --color-warning-content: oklch(18% 0.03 72);
-  --color-error: oklch(72% 0.2 25.39);
-  --color-error-content: oklch(16% 0.04 25);
-  --radius-selector: 1rem;
-  --radius-field: 1rem;
-  --radius-box: 1rem;
+  --color-base-100: oklch(18% 0.012 70);
+  --color-base-200: oklch(15% 0.012 70);
+  --color-base-300: oklch(28% 0.014 75);
+  --color-base-content: oklch(90% 0.01 90);
+  --color-primary: oklch(78% 0.09 165);
+  --color-primary-content: oklch(18% 0.012 70);
+  --color-secondary: oklch(60% 0.06 165);
+  --color-secondary-content: oklch(90% 0.01 90);
+  --color-accent: oklch(80% 0.11 90);
+  --color-accent-content: oklch(25% 0.04 85);
+  --color-neutral: oklch(85% 0.01 90);
+  --color-neutral-content: oklch(20% 0.012 70);
+  --color-info: oklch(74% 0.09 230);
+  --color-info-content: oklch(15% 0.02 230);
+  --color-success: oklch(78% 0.12 162);
+  --color-success-content: oklch(15% 0.03 162);
+  --color-warning: oklch(85% 0.13 85);
+  --color-warning-content: oklch(20% 0.04 85);
+  --color-error: oklch(72% 0.18 25);
+  --color-error-content: oklch(16% 0.03 25);
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
@@ -485,6 +522,16 @@
     opacity: 1 !important;
     transform: none !important;
   }
+  .fu-marquee-track { animation: none !important; }
+  .fu-breath { animation: none !important; }
+  .fu-shimmer::after { animation: none !important; }
+  .bezel, .bezel-core, .btn-island, .eyebrow, .glass-pill {
+    transition: none !important;
+  }
+  .nav-mask {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ── RTL-aware utilities ── */
@@ -555,6 +602,162 @@
   background-size: 400px 400px;
   background-repeat: repeat;
   color: oklch(65% 0.04 70);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Formint design language — shared with the register client
+   (formint-client): warm cream paper, ink text, verdigris accent,
+   amber highlight, spring easing. Same class names as the register
+   so markup ports across editions unchanged.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --pos-ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --pos-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --pos-dur: 600ms;
+  --pos-ink: 40 6% 10%;
+  --pos-muted: 45 5% 44%;
+  --pos-line: 45 14% 88%;
+  --pos-verdigris: 158 42% 32%;
+  --pos-paper: 46 25% 98%;
+}
+
+[data-theme="perplexity-dark"],
+html.dark {
+  --pos-ink: 45 20% 93%;
+  --pos-muted: 45 5% 66%;
+  --pos-line: 45 6% 20%;
+  --pos-verdigris: 158 50% 62%;
+  --pos-paper: 45 6% 8%;
+}
+
+/* ── Double-bezel (Doppelrand) — nested machined enclosure ─────── */
+.bezel {
+  border-radius: 2rem;
+  border: 1px solid color-mix(in oklch, var(--color-base-300) 55%, transparent);
+  background: color-mix(in oklch, var(--color-base-content) 3%, transparent);
+  padding: 6px;
+  box-shadow: inset 0 1px 0 color-mix(in oklch, white 70%, transparent);
+}
+.bezel-core {
+  border-radius: calc(2rem - 6px);
+  background: var(--color-base-100);
+  box-shadow:
+    inset 0 1px 1px color-mix(in oklch, white 60%, transparent),
+    0 24px 48px -24px color-mix(in oklch, var(--color-base-content) 8%, transparent);
+}
+
+/* ── Button-in-button island ───────────────────────────────────── */
+.btn-island {
+  display: inline-flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in oklch, white 16%, transparent);
+  color: currentColor;
+  transition: transform var(--pos-dur) var(--pos-ease-spring);
+}
+.group:hover .btn-island {
+  transform: translateX(2px) scale(1.05);
+}
+
+/* ── Fluid-island glass pill (register TitleBar chrome) ──────────
+   Floating glass panel: hairline border, 24px backdrop blur, inset
+   top highlight and a tinted diffused shadow. Mirrors formint-client's
+   `.bezel`-family pill nav used by the TitleBar. */
+.glass-pill {
+  border: 1px solid color-mix(in oklch, var(--color-base-300) 55%, transparent);
+  background: color-mix(in oklch, var(--color-base-100) 82%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 60%, transparent),
+    0 24px 48px -24px color-mix(in oklch, var(--color-base-content) 18%, transparent);
+}
+
+/* ── Staggered mask reveal (Fluid Island drawer links) ────────────
+   Links rise out of a hidden box (translateY(100%)) once the panel
+   opens, with per-item transition delays set inline. Same class name
+   and easing as formint-client's `.nav-mask`. */
+.nav-mask {
+  transform: translateY(100%);
+  transition: transform 0.7s var(--pos-ease-spring);
+  will-change: transform;
+}
+.nav-mask.is-visible {
+  transform: translateY(0);
+}
+
+/* ── Eyebrow pill badge ────────────────────────────────────────── */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default);
+  padding: 0.25rem 0.75rem;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: var(--color-base-100);
+}
+
+/* ── Stat display value ────────────────────────────────────────── */
+.stat-value-display {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* ── Kinetic marquee band ──────────────────────────────────────── */
+.fu-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.fu-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: fu-marquee 32s linear infinite;
+  will-change: transform;
+}
+.fu-marquee-track:hover {
+  animation-play-state: paused;
+}
+@keyframes fu-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── Breathing status dot ──────────────────────────────────────── */
+.fu-breath {
+  animation: fu-breath 2.6s ease-in-out infinite;
+  will-change: opacity;
+}
+@keyframes fu-breath {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ── Skeleton shimmer sweep ────────────────────────────────────── */
+.fu-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in oklch, var(--color-base-content) 6%, transparent);
+}
+.fu-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in oklch, white 55%, transparent), transparent);
+  animation: fu-shimmer 1.8s infinite;
+}
+@keyframes fu-shimmer {
+  to { transform: translateX(100%); }
 }
 
 @theme inline {

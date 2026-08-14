@@ -59,8 +59,19 @@ class UnconfiguredConnector(SocialConnector):
         return {}
 
 
-def connector_for(platform: str) -> SocialConnector:
-    """Resolve a connector without leaking OAuth tokens or making network calls."""
+def connector_for(platform: str, channel: Any = None) -> SocialConnector:
+    """Resolve the adapter for a platform.
+
+    A real provider adapter (LinkedIn, X) is returned only when the channel
+    holds an OAuth token; otherwise the safe ``UnconfiguredConnector`` is
+    returned so nothing is ever marked published without provider I/O.
+    """
+    if channel is not None and getattr(channel, "oauth_token", ""):
+        from .connector_adapters import ADAPTERS
+
+        adapter = ADAPTERS.get(platform)
+        if adapter is not None:
+            return adapter(channel)
     return UnconfiguredConnector(platform)
 
 

@@ -60,6 +60,14 @@ test.describe('Loop CRM browser interactions', () => {
     await expect(page.locator('#post-form')).toBeVisible();
     await expect(page.locator('#id_workspace')).toContainText(workspaceLabel);
 
+    // The channel strip exposes the OAuth connect surface and honest token
+    // state: the seeded LinkedIn channel exists but carries no token, and the
+    // dev client credentials are unset, so the connect hint is shown.
+    const channels = page.locator('.loop-channels');
+    await expect(channels).toBeVisible();
+    await expect(channels).toContainText('LinkedIn');
+    await expect(channels).toContainText('LinkedIn needs client credentials');
+
     await page.locator('#id_workspace').selectOption({ label: workspaceLabel });
     await page.locator('#id_channel').selectOption({ label: 'LinkedIn — Playwright channel' });
     await page.locator('#id_content').fill(postContent);
@@ -74,5 +82,8 @@ test.describe('Loop CRM browser interactions', () => {
     await expect(post).toContainText('Approved');
     await post.getByRole('button', { name: 'Schedule' }).click();
     await expect(post).toContainText('Scheduled');
+    // A scheduled post exposes the real publish affordance; the actor resolves
+    // the connector from the channel token (or fails honestly without one).
+    await expect(post.getByRole('button', { name: 'Publish' })).toBeVisible();
   });
 });

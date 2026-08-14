@@ -12,8 +12,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: Outfit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: Outfit, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
 }
 
 body {
@@ -35,9 +35,8 @@ a {
 /* ── Arabic font stack ────────────────────────────────────────────── */
 [dir="rtl"] body,
 [dir="rtl"] html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Arabic',
-    'Tajawal', 'Cairo', 'Markazi Text', Roboto, Oxygen, Ubuntu, Cantarell,
-    sans-serif;
+  font-family: 'Noto Sans Arabic', 'Tajawal', 'Cairo', 'Markazi Text', Outfit,
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 /* ── Accessible focus ring ──────────────────────────────────────────── */

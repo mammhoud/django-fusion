@@ -19,7 +19,7 @@ const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
 /** Dev server port (default 4321). */
 const PORT = Number(envVal('PORT', 4321));
 /** Django ASGI backend origin for the dev proxy (default :8766). */
-const BACKEND = envVal('BACKEND_URL', BACKEND);
+const BACKEND = envVal('BACKEND_URL', 'http://localhost:8766');
 
 export default defineConfig({
   integrations: [alpine()],

@@ -1,35 +1,42 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import AppShell from '@/components/AppShell.astro';
-const pages = [
-  { path: '/', title: 'Revenue workspace', kicker: 'Loop CRM · operating system', description: 'One workspace for the relationship graph, multi-channel publishing, approval workflows, and the revenue each touchpoint influenced.', module: 'overview' },
-  { path: '/crm/', title: 'CRM', kicker: 'Sales', description: 'The relationship graph and pipeline operating system.', module: 'crm' },
-  { path: '/crm/companies/', title: 'Companies', kicker: 'CRM · companies', description: 'Accounts, ownership, firmographics, and custom attributes.', module: 'crm' },
-  { path: '/crm/contacts/', title: 'Contacts', kicker: 'CRM · contacts', description: 'People, roles, communication history, and account relationships.', module: 'crm' },
-  { path: '/crm/pipelines/', title: 'Pipelines', kicker: 'CRM · pipelines', description: 'Configurable stages, probabilities, and forecasting views.', module: 'crm' },
-  { path: '/crm/deals/', title: 'Deals', kicker: 'CRM · deals', description: 'Revenue opportunities connected to campaigns and touchpoints.', module: 'crm' },
-  { path: '/crm/activities/', title: 'Activities', kicker: 'CRM · activities', description: 'Calls, emails, meetings, notes, tasks, and social interactions.', module: 'crm' },
-  { path: '/marketing/', title: 'Marketing', kicker: 'Growth', description: 'Plan, approve, publish, and measure every channel from one calendar.', module: 'marketing' },
-  { path: '/marketing/calendar/', title: 'Content calendar', kicker: 'Marketing · calendar', description: 'A visual queue for drafts, approvals, scheduled posts, and retries.', module: 'marketing' },
-  { path: '/marketing/campaigns/', title: 'Campaigns', kicker: 'Marketing · campaigns', description: 'Group content, spend, performance, and influenced deals.', module: 'marketing' },
-  { path: '/marketing/channels/', title: 'Channels', kicker: 'Marketing · channels', description: 'Connect provider accounts and see their publish and analytics capabilities.', module: 'marketing' },
-  { path: '/marketing/media/', title: 'Media library', kicker: 'Marketing · media', description: 'Reusable image and video assets with alt text and post attachments.', module: 'marketing' },
-  { path: '/finance/', title: 'Finance', kicker: 'Finance · revenue control', description: 'Turn closed pipeline into invoices, payments, and recognized revenue without losing campaign context.', module: 'finance' },
-  { path: '/finance/invoices/', title: 'Invoices', kicker: 'Finance · invoices', description: 'Issue customer invoices from real companies and deals, then keep payment state current.', module: 'finance' },
-  { path: '/finance/payments/', title: 'Payments', kicker: 'Finance · payments', description: 'Record receipts against issued invoices and keep outstanding balances honest.', module: 'finance' },
-  { path: '/finance/revenue/', title: 'Recognized revenue', kicker: 'Finance · recognized revenue', description: 'Review revenue events created from won pipeline and trace them back to campaigns and invoices.', module: 'finance' },
-  { path: '/attribution/', title: 'Attribution', kicker: 'RevOps', description: 'See which content and conversations create pipeline revenue.', module: 'attribution' },
-  { path: '/attribution/touchpoints/', title: 'Touchpoints', kicker: 'Attribution · touchpoints', description: 'Every social interaction credited toward a deal.', module: 'attribution' },
-  { path: '/attribution/reports/', title: 'Revenue reports', kicker: 'Attribution · reports', description: 'First, last, linear, time-decay, and position-based revenue views.', module: 'attribution' },
-  { path: '/settings/', title: 'Workspace', kicker: 'Workspace', description: 'Configure people, automations, integrations, and audit history.', module: 'workspace' },
-  { path: '/settings/members/', title: 'Members & roles', kicker: 'Workspace · members', description: 'Seven role profiles keep sales, marketing, and RevOps permissions clear.', module: 'workspace' },
-  { path: '/settings/workflows/', title: 'Workflows', kicker: 'Workspace · workflows', description: 'Cross-module triggers and actions executed by Dramatiq.', module: 'workspace' },
-  { path: '/settings/integrations/', title: 'Integrations', kicker: 'Workspace · integrations', description: 'Provider-neutral OAuth and connector capabilities for publishing.', module: 'workspace' },
-  { path: '/settings/custom-fields/', title: 'Custom fields', kicker: 'Workspace · custom fields', description: 'Twenty-style extensibility for tenant-specific objects and revenue metadata.', module: 'workspace' },
-  { path: '/settings/audit/', title: 'Audit log', kicker: 'Workspace · audit', description: 'An append-only trail for revenue operations changes.', module: 'workspace' },
-];
+import PipelineBoard from '@/components/board/PipelineBoard';
+import RevOpsDashboard from '@/components/dashboard/RevOpsDashboard';
 
 export function getStaticPaths() {
+  // Declared inside getStaticPaths: Astro hoists this function above the
+  // frontmatter, so module-level constants are unreachable (and dropped)
+  // here. The route catalog must live in this scope (or an imported module).
+  // `/` is owned by the public marketing landing (src/pages/index.astro);
+  // the app shell covers every authenticated workspace surface.
+  const pages = [
+    { path: '/overview/', title: 'Overview', kicker: 'RevOps', description: 'Revenue, publishing, and attribution at a glance.', module: 'overview' },
+    { path: '/crm/', title: 'CRM', kicker: 'Sales', description: 'The relationship graph and pipeline operating system.', module: 'crm' },
+    { path: '/crm/companies/', title: 'Companies', kicker: 'CRM · companies', description: 'Accounts, ownership, firmographics, and custom attributes.', module: 'crm' },
+    { path: '/crm/contacts/', title: 'Contacts', kicker: 'CRM · contacts', description: 'People, roles, communication history, and account relationships.', module: 'crm' },
+    { path: '/crm/pipelines/', title: 'Pipelines', kicker: 'CRM · pipelines', description: 'Configurable stages, probabilities, and forecasting views.', module: 'crm' },
+    { path: '/crm/deals/', title: 'Deals', kicker: 'CRM · deals', description: 'Revenue opportunities connected to campaigns and touchpoints.', module: 'crm' },
+    { path: '/crm/activities/', title: 'Activities', kicker: 'CRM · activities', description: 'Calls, emails, meetings, notes, tasks, and social interactions.', module: 'crm' },
+    { path: '/marketing/', title: 'Marketing', kicker: 'Growth', description: 'Plan, approve, publish, and measure every channel from one calendar.', module: 'marketing' },
+    { path: '/marketing/calendar/', title: 'Content calendar', kicker: 'Marketing · calendar', description: 'A visual queue for drafts, approvals, scheduled posts, and retries.', module: 'marketing' },
+    { path: '/marketing/campaigns/', title: 'Campaigns', kicker: 'Marketing · campaigns', description: 'Group content, spend, performance, and influenced deals.', module: 'marketing' },
+    { path: '/marketing/channels/', title: 'Channels', kicker: 'Marketing · channels', description: 'Connect provider accounts and see their publish and analytics capabilities.', module: 'marketing' },
+    { path: '/marketing/media/', title: 'Media library', kicker: 'Marketing · media', description: 'Reusable image and video assets with alt text and post attachments.', module: 'marketing' },
+    { path: '/finance/', title: 'Finance', kicker: 'Finance · revenue control', description: 'Turn closed pipeline into invoices, payments, and recognized revenue without losing campaign context.', module: 'finance' },
+    { path: '/finance/invoices/', title: 'Invoices', kicker: 'Finance · invoices', description: 'Issue customer invoices from real companies and deals, then keep payment state current.', module: 'finance' },
+    { path: '/finance/payments/', title: 'Payments', kicker: 'Finance · payments', description: 'Record receipts against issued invoices and keep outstanding balances honest.', module: 'finance' },
+    { path: '/finance/revenue/', title: 'Recognized revenue', kicker: 'Finance · recognized revenue', description: 'Review revenue events created from won pipeline and trace them back to campaigns and invoices.', module: 'finance' },
+    { path: '/attribution/', title: 'Attribution', kicker: 'RevOps', description: 'See which content and conversations create pipeline revenue.', module: 'attribution' },
+    { path: '/attribution/touchpoints/', title: 'Touchpoints', kicker: 'Attribution · touchpoints', description: 'Every social interaction credited toward a deal.', module: 'attribution' },
+    { path: '/attribution/reports/', title: 'Revenue reports', kicker: 'Attribution · reports', description: 'First, last, linear, time-decay, and position-based revenue views.', module: 'attribution' },
+    { path: '/settings/', title: 'Workspace', kicker: 'Workspace', description: 'Configure people, automations, integrations, and audit history.', module: 'workspace' },
+    { path: '/settings/members/', title: 'Members & roles', kicker: 'Workspace · members', description: 'Seven role profiles keep sales, marketing, and RevOps permissions clear.', module: 'workspace' },
+    { path: '/settings/workflows/', title: 'Workflows', kicker: 'Workspace · workflows', description: 'Cross-module triggers and actions executed by Dramatiq.', module: 'workspace' },
+    { path: '/settings/integrations/', title: 'Integrations', kicker: 'Workspace · integrations', description: 'Provider-neutral OAuth and connector capabilities for publishing.', module: 'workspace' },
+    { path: '/settings/custom-fields/', title: 'Custom fields', kicker: 'Workspace · custom fields', description: 'Twenty-style extensibility for tenant-specific objects and revenue metadata.', module: 'workspace' },
+    { path: '/settings/audit/', title: 'Audit log', kicker: 'Workspace · audit', description: 'An append-only trail for revenue operations changes.', module: 'workspace' },
+  ];
   return pages.map((page) => ({
     params: { path: page.path === '/' ? undefined : page.path.replace(/^\//, '').replace(/\/$/, '') },
     props: page,
@@ -56,6 +63,9 @@ const cards = page.module === 'overview'
 ---
 <Layout title={`${page.title} — Loop CRM`}>
   <AppShell title={page.title} kicker={page.kicker} description={page.description} path={page.path}>
+    {page.path === '/overview/' && <RevOpsDashboard client:load />}
+    {page.path === '/crm/deals/' && <PipelineBoard client:load />}
+    {page.path !== '/overview/' && page.path !== '/crm/deals/' && (
     <section class="loop-page-cards" aria-label={`${page.title} highlights`}>
       {cards.map((card) => (
         <a class:list={['loop-page-card', cards.length === 1 && 'loop-page-card--wide']} href={card.href}>
@@ -63,6 +73,7 @@ const cards = page.module === 'overview'
         </a>
       ))}
     </section>
+    )}
     {page.module === 'overview' && <section class="loop-workflow-strip"><span>Workflow catalog</span><strong>Lead capture · content approval · publish & attribute · deal won</strong></section>}
   </AppShell>
 </Layout>
