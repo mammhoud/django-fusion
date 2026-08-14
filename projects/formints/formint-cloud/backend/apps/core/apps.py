@@ -21,7 +21,7 @@ class CoreConfig(AppConfig):
 
 
 def _patch_unfold_context_flatten():
-    """Work around unfold 0.90 + Django 5.0 ``context.flatten()`` crash.
+    """Work around unfold 0.90 ``context.flatten()`` crash.
 
     unfold's ``RenderComponentNode`` flattens the template context via
     ``Context.flatten()`` on Django >= 5.0, which raises
@@ -29,6 +29,9 @@ def _patch_unfold_context_flatten():
     ``Context``/``RequestContext`` sits in the dict stack (every admin
     ``*/add/`` page).  Replace it with unfold's own safe implementation
     (the one it uses for Django < 5) on all supported versions.
+
+    Retained defensively on Django 5.2+; it is a no-op replacement that
+    simply prefers the safe flatten path regardless of version.
     """
     import unfold.templatetags.unfold as unfold_tags
 

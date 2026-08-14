@@ -141,14 +141,18 @@ class TenantAwareAdapterTest(TestCase):
         self.assertTrue(adapter.is_open_for_signup(self._request()))
 
     def test_login_redirect_without_tenant(self):
-        from apps.core.auth_adapters import TenantAwareAccountAdapter
+        from apps.core.auth_adapters import DefaultAccountAdapter, TenantAwareAccountAdapter
 
         adapter = TenantAwareAccountAdapter()
         # No tenant → base fallback, never a tenant-scoped route.
-        self.assertEqual(
-            adapter.get_login_redirect_url(self._request()),
-            "/accounts/profile/",  # formint-cloud has no LOGIN_REDIRECT_URL override
-        )
+        redirect = adapter.get_login_redirect_url(self._request())
+        if DefaultAccountAdapter is object:
+            # django-allauth is not a formint-cloud dependency — the lazy
+            # import falls back to object and the adapter returns "/".
+            self.assertEqual(redirect, "/")
+        else:
+            # With allauth installed, the base returns LOGIN_REDIRECT_URL.
+            self.assertEqual(redirect, "/accounts/profile/")
 
 
 class TenantModelTest(TestCase):
