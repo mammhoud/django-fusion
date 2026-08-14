@@ -33,6 +33,7 @@ function Board() {
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [reduced, setReduced] = useState(false);
+  const [focusStageId, setFocusStageId] = useState<number | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
   const pipeline = useMemo(
@@ -50,6 +51,15 @@ function Board() {
         const payload = await res.json();
         if (cancelled) return;
         dispatch(setPipelines(payload.results ?? []));
+        // Deep-link support: /crm/deals/?pipeline=<id>&stage=<id> (used by the
+        // RevOps dashboard funnel) opens the board with that stage in focus.
+        const params = new URLSearchParams(window.location.search);
+        const pipelineParam = Number(params.get('pipeline'));
+        const stageParam = Number(params.get('stage'));
+        if (pipelineParam && (payload.results ?? []).some((item: { id: number }) => item.id === pipelineParam)) {
+          dispatch(setActivePipeline(pipelineParam));
+        }
+        if (stageParam) setFocusStageId(stageParam);
         setStatus('ready');
       } catch (err) {
         if (!cancelled) setStatus('error');
@@ -65,6 +75,18 @@ function Board() {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     setReduced(media.matches);
   }, []);
+
+  // Once the board renders, bring the focused stage column into view.
+  useEffect(() => {
+    if (status !== 'ready' || !focusStageId || !boardRef.current) return;
+    const col = boardRef.current.querySelector<HTMLElement>(`[data-stage-id="${focusStageId}"]`);
+    if (!col) {
+      // The stage is not in the active pipeline — clear the stale focus.
+      setFocusStageId(null);
+      return;
+    }
+    col.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
+  }, [status, focusStageId, pipeline?.id, reduced]);
 
   // Move a deal between stages; optimistic in the store, rolled back on error.
   const move = async (dealId: number, fromStageId: number, toStageId: number) => {
@@ -177,7 +199,7 @@ function Board() {
     columns.find((stage) => stage.id === stageId)?.deals.reduce((sum, deal) => sum + Number(deal.value), 0) ?? 0;
 
   return (
-    <section className="loop-board" ref={boardRef} aria-label={`${pipeline.name} kanban board`}>
+    <section className={focusStageId ? 'loop-board loop-board--focused' : 'loop-board'} ref={boardRef} aria-label={`${pipeline.name} kanban board`}>
       <div className="loop-board__rail">
         <span className="loop-board__kicker">Pipeline</span>
         {pipelines.length > 1 ? (
@@ -200,11 +222,20 @@ function Board() {
         )}
         {saving && <span className="loop-board__saving">saving…</span>}
         {errorMsg && <span className="loop-board__error-msg" role="alert">{errorMsg}</span>}
+        {focusStageId && (
+          <button type="button" className="loop-board__focus-chip" onClick={() => setFocusStageId(null)}>
+            Focused on {columns.find((stage) => stage.id === focusStageId)?.name ?? 'stage'} · clear
+          </button>
+        )}
       </div>
 
       <div className="loop-board__grid">
         {columns.map((stage) => (
-          <div className="loop-board__col" data-stage-id={stage.id} key={stage.id}>
+          <div
+            className={focusStageId === stage.id ? 'loop-board__col is-focused' : 'loop-board__col'}
+            data-stage-id={stage.id}
+            key={stage.id}
+          >
             <div className="loop-board__col-head">
               <span
                 className="loop-board__dot"

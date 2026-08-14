@@ -12,6 +12,8 @@ from typing import Any
 
 from django.conf import settings
 from django.db import OperationalError, ProgrammingError
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
 from django_fusion.plugins.apis import build_bolt_auth
 from django_fusion.plugins.apis.bolt import (
     build_bolt_api,
@@ -23,6 +25,7 @@ from apps.attribution.models import AttributionTouchpoint
 from apps.crm.custom_fields import custom_object_catalog
 from apps.crm.models import Company, Contact, Deal, Pipeline
 from apps.finance.models import Invoice, Payment, RevenueEvent
+from apps.finance.services import revenue_trend_results
 from apps.marketing.connectors import platform_catalog
 from apps.marketing.models import Campaign, Post, SocialChannel
 
@@ -72,11 +75,17 @@ async def _resource_rows(model: type[Any], fields: tuple[str, ...]) -> list[dict
     ]
 
 
-async def _dashboard() -> dict[str, Any]:
+def _workspace_id(user: Any) -> int | None:
+    profile = getattr(user, "profile", None)
+    return getattr(profile, "workspace_id", None)
+
+
+async def _dashboard(workspace_id: int | None = None) -> dict[str, Any]:
     counts: dict[str, int] = {}
     for key, (model, _fields) in RESOURCE_MODELS.items():
         try:
-            counts[key] = await model.objects.acount()
+            queryset = model.objects.filter(workspace_id=workspace_id) if workspace_id is not None else model.objects
+            counts[key] = await queryset.acount()
         except (OperationalError, ProgrammingError):
             counts[key] = 0
     return {
@@ -130,7 +139,7 @@ if bolt is not None:
 
     @bolt.get("/dashboard", **_protected)
     async def dashboard(request: Any) -> dict[str, Any]:
-        return await _dashboard()
+        return await _dashboard(workspace_id=_workspace_id(getattr(request, "user", None)))
 
     @bolt.get("/workflows", **_protected)
     async def workflows(request: Any) -> dict[str, Any]:
@@ -146,6 +155,27 @@ if bolt is not None:
     async def custom_fields(request: Any) -> dict[str, Any]:
         results = custom_object_catalog()
         return {"results": results, "count": len(results)}
+
+    @bolt.get("/revenue/trend", **_protected)
+    async def revenue_trend(request: Any) -> dict[str, Any]:
+        """Trailing-six-month recognized-revenue trend for the RevOps dashboard."""
+        workspace_id = _workspace_id(getattr(request, "user", None))
+        queryset = RevenueEvent.objects.all()
+        if workspace_id is not None:
+            queryset = queryset.filter(workspace_id=workspace_id)
+        rows: list[dict[str, Any]] = []
+        try:
+            queryset = (
+                queryset.annotate(month=TruncMonth("recognized_on"))
+                .values("month")
+                .annotate(total=Sum("amount"), events=Count("id"))
+                .order_by("month")
+            )
+            async for row in queryset:
+                rows.append(row)
+        except (OperationalError, ProgrammingError):
+            rows = []
+        return revenue_trend_results(rows)
 
     def _register_collection(
         resource: str,

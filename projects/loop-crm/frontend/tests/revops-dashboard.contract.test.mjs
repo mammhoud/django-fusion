@@ -23,6 +23,43 @@ test('RevOpsDashboard consumes the pipeline board for the deal-flow funnel', asy
   assert.match(island, /sort\(\(a, b\) => b\.stages\.length - a\.stages\.length\)/);
 });
 
+test('RevOpsDashboard funnel stages deep-link to the board filtered by stage', async () => {
+  const island = await read('src/components/dashboard/RevOpsDashboard.tsx');
+  assert.match(island, /\/crm\/deals\/\?pipeline=\$\{pipeline\?\.id\}&stage=\$\{stage\.id\}/);
+  assert.match(island, /loop-dash__stage--link/);
+  assert.match(island, /Open the deals board filtered to/);
+  assert.match(island, /loop-dash__stage-arrow/);
+});
+
+test('RevOpsDashboard trend card fetches the finance revenue-trend endpoint', async () => {
+  const island = await read('src/components/dashboard/RevOpsDashboard.tsx');
+  assert.match(island, /fetch\(`\$\{apiPrefix\}\/revenue\/trend\/`\)/);
+  assert.match(island, /Recognized revenue/);
+  assert.match(island, /grand_total/);
+  assert.match(island, /trailing six months/);
+});
+
+test('Dashboard counts are workspace-scoped on both API roads', async () => {
+  const compatApi = await read('../backend/apps/core/api.py');
+  assert.match(compatApi, /filter\(workspace_id=workspace_id\) if workspace_id is not None/);
+  const boltApi = await read('../backend/apps/core/bolt_api.py');
+  assert.match(boltApi, /_workspace_id\(getattr\(request, "user", None\)\)/);
+});
+
+test('Finance revenue-trend endpoint is mounted on the API road', async () => {
+  const financeUrls = await read('../backend/apps/finance/urls.py');
+  assert.match(financeUrls, /revenue\/trend\//);
+  assert.match(financeUrls, /revenue_trend_api/);
+});
+
+test('Revenue-trend aggregate is registered on the canonical bolt road', async () => {
+  const boltApi = await read('../backend/apps/core/bolt_api.py');
+  assert.match(boltApi, /@bolt\.get\("\/revenue\/trend", \*\*_protected\)/);
+  assert.match(boltApi, /from apps\.finance\.services import revenue_trend_results/);
+  assert.match(boltApi, /TruncMonth\("recognized_on"\)/);
+  assert.match(boltApi, /filter\(workspace_id=workspace_id\)/);
+});
+
 test('RevOpsDashboard uses shadcn components and the StoreProvider bridge', async () => {
   const island = await read('src/components/dashboard/RevOpsDashboard.tsx');
   for (const component of ['Card', 'Badge', 'Button', 'Separator', 'Skeleton', 'Tooltip']) {

@@ -1,10 +1,10 @@
 # Loop-CRM — Merge & Architecture Plan
 
-> **Status:** Foundation integrated; django-bolt API migration, token auth, navigation, workflow execution, finance ledger, and browser coverage shipped. Provider OAuth adapters remain credential-gated.
+> **Status:** Foundation integrated; django-bolt API migration, token auth, navigation, workflow execution, finance ledger, RevOps dashboard (revenue-trend card + funnel-to-board deep links), and browser coverage shipped. Provider OAuth adapters remain credential-gated.
 > **Source projects:** [twentyhq/twenty](https://github.com/twentyhq/twenty) (CRM) · [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) (social scheduling)
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **License:** AGPL-3.0
-> **Last reviewed:** 2026-08-13
+> **Last reviewed:** 2026-08-14
 
 Loop-CRM merges Twenty's CRM (custom objects, pipelines, workflows) with
 Postiz's social scheduling (30+ platforms, AI post generation) into one
@@ -162,7 +162,15 @@ Django compatibility road remains intentionally usable for local development.
 - **Phase 3b (implemented) — finance surface:** `/finance/`, invoices, payments,
   and recognized-revenue pages use real ModelForms, tenant-safe relationships,
   HTMX reset/list fragments, Bolt resources, and explicit empty/loading/error
-  states.
+  states. The RevOps dashboard adds a recognized-revenue trend card backed by
+  the read-only revenue-trend aggregate (trailing six months, zero-filled,
+  workspace-scoped, `grand_total` rollup) exposed on both the canonical
+  `/bolt/revenue/trend` road and the `/api/v1/revenue/trend` compatibility
+  road through a shared finance service, with backend and contract tests.
+  Funnel stages deep-link to the deals board via
+  `/crm/deals/?pipeline=<id>&stage=<id>`, which selects the pipeline, scrolls
+  the stage column into view, dims the other columns, and shows a clearable
+  focus chip that honors `prefers-reduced-motion`.
 - **Phase 4 — AI hub:** lead scoring, sales emails, and social post generation
   behind provider adapters, with explicit workspace consent and audit logging.
 - **Phase 5 — domain screens:** replace the navigation-ready module surfaces

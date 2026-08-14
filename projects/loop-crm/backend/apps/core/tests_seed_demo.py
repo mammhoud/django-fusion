@@ -96,3 +96,73 @@ class StartFreeSignupSignalTests(TestCase):
         user_signed_up.send(sender=None, request=None, user=user)
         user.profile.refresh_from_db()
         self.assertEqual(user.profile.workspace, first)
+
+
+class DashboardScopingTests(TestCase):
+    """The /api/v1/dashboard counts must be workspace-scoped so each account
+    sees only its own numbers (the RevOps KPI cards and funnel)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="revops2", email="revops2@example.com", password="Strong-pass-123")
+        self.workspace = Workspace.objects.create(name="Mine", slug="mine")
+        self.user.profile.workspace = self.workspace
+        self.user.profile.save()
+
+        self.other_workspace = Workspace.objects.create(name="Theirs", slug="theirs")
+        self.client.force_login(self.user)
+
+    def test_counts_reflect_only_the_callers_workspace(self):
+        # The caller's workspace owns two deals; the other workspace owns nine.
+        from apps.crm.models import Company, Contact
+
+        mine_pipeline = Pipeline.objects.create(workspace=self.workspace, name="Mine pipeline", is_default=True)
+        mine_company = Company.objects.create(workspace=self.workspace, name="Mine Co")
+        mine_contact = Contact.objects.create(
+            workspace=self.workspace, company=mine_company, first_name="Mine", last_name="User", email="mine@example.com"
+        )
+        for i in range(2):
+            Deal.objects.create(
+                workspace=self.workspace,
+                company=mine_company,
+                contact=mine_contact,
+                pipeline=mine_pipeline,
+                name=f"Mine deal {i}",
+                value="10000.00",
+                expected_close_date="2026-12-31",
+            )
+
+        theirs_pipeline = Pipeline.objects.create(workspace=self.other_workspace, name="Theirs pipeline", is_default=True)
+        theirs_company = Company.objects.create(workspace=self.other_workspace, name="Theirs Co")
+        theirs_contact = Contact.objects.create(
+            workspace=self.other_workspace,
+            company=theirs_company,
+            first_name="Theirs",
+            last_name="User",
+            email="theirs@example.com",
+        )
+        for i in range(9):
+            Deal.objects.create(
+                workspace=self.other_workspace,
+                company=theirs_company,
+                contact=theirs_contact,
+                pipeline=theirs_pipeline,
+                name=f"Theirs deal {i}",
+                value="5000.00",
+                expected_close_date="2026-12-31",
+            )
+
+        response = self.client.get("/api/v1/dashboard/")
+        self.assertEqual(response.status_code, 200)
+        counts = response.json()["data"]["counts"]
+
+        self.assertEqual(counts["deals"], 2)
+        self.assertEqual(counts["companies"], 1)
+        self.assertEqual(counts["contacts"], 1)
+        self.assertEqual(counts["pipelines"], 1)
+
+    def test_anonymous_requests_stay_unscoped(self):
+        self.client.logout()
+        response = self.client.get("/api/v1/dashboard/")
+        self.assertEqual(response.status_code, 200)
+        # Anonymous has no workspace to scope to, so the endpoint still answers.
+        self.assertIn("counts", response.json()["data"])

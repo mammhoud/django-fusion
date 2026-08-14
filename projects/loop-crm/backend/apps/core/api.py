@@ -49,13 +49,22 @@ def resource_api(request, resource: str):
     )
 
 
+def _dashboard_workspace_id(request):
+    try:
+        return request.user.profile.workspace_id
+    except Exception:  # noqa: BLE001 - anonymous or profile-less requests stay unscoped
+        return None
+
+
 def dashboard_api(request):
     if request.method != "GET":
         return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
+    workspace_id = _dashboard_workspace_id(request)
     counts = {}
     for key, (model, _fields) in RESOURCE_MODELS.items():
         try:
-            counts[key] = model.objects.count()
+            queryset = model.objects.filter(workspace_id=workspace_id) if workspace_id is not None else model.objects
+            counts[key] = queryset.count()
         except (OperationalError, ProgrammingError):
             counts[key] = 0
     return JsonResponse({"data": {"counts": counts, "workflow_count": len(persisted_workflow_catalog())}})

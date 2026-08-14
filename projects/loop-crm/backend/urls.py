@@ -10,8 +10,8 @@ from apps.core import views as core_views
 from apps.core.bolt_api import bolt
 from apps.core.fusion import loop_crm_module
 from apps.crm import views as crm_views
-from apps.marketing import views as marketing_views
 from apps.finance import views as finance_views
+from apps.marketing import views as marketing_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),

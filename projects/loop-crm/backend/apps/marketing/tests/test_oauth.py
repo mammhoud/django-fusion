@@ -8,12 +8,12 @@ from unittest import mock
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from plugins.workers.tasks import _ensure_fresh_channel
 
 from apps.core.models import Workspace
 from apps.marketing.connector_adapters import _Http
 from apps.marketing.models import SocialChannel
 from apps.marketing.oauth import _pkce_pair, linkedin_authorize_url, x_authorize_url
-from plugins.workers.tasks import _ensure_fresh_channel
 
 User = get_user_model()
 

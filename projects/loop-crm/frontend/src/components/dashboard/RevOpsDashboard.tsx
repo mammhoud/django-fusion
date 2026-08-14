@@ -58,6 +58,19 @@ interface PipelineRow {
   stages: StageRow[];
 }
 
+interface TrendPoint {
+  month: string;
+  label: string;
+  total: string;
+  events: number;
+}
+
+interface RevenueTrendPayload {
+  results: TrendPoint[];
+  count: number;
+  grand_total: string;
+}
+
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const num = (value: number) => new Intl.NumberFormat('en-US').format(value);
 
@@ -93,14 +106,16 @@ function Board() {
   const [counts, setCounts] = useState<DashboardCounts | null>(null);
   const [workflows, setWorkflows] = useState(0);
   const [pipeline, setPipeline] = useState<PipelineRow | null>(null);
+  const [trend, setTrend] = useState<RevenueTrendPayload | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [dashboardRes, boardRes] = await Promise.allSettled([
+        const [dashboardRes, boardRes, trendRes] = await Promise.allSettled([
           fetch(`${apiPrefix}/dashboard/`),
           fetch(`${apiPrefix}/board/`),
+          fetch(`${apiPrefix}/revenue/trend/`),
         ]);
         if (cancelled) return;
         if (dashboardRes.status === 'rejected') throw dashboardRes.reason;
@@ -111,6 +126,10 @@ function Board() {
           const board = (await (boardRes.value as Response).json()) as { results: PipelineRow[] };
           const candidates = (board.results ?? []).filter((item) => item.stages.length > 0);
           setPipeline(candidates.sort((a, b) => b.stages.length - a.stages.length)[0] ?? null);
+        }
+        if (trendRes.status === 'fulfilled' && (trendRes.value as Response).ok) {
+          const payload = (await (trendRes.value as Response).json()) as RevenueTrendPayload;
+          setTrend(payload.results?.length ? payload : null);
         }
         setStatus('ready');
       } catch (err) {
@@ -183,7 +202,12 @@ function Board() {
             <CardContent className="loop-dash__funnel-body">
               {funnel ? (
                 funnel.map(({ stage, total, width }) => (
-                  <div className="loop-dash__stage" key={stage.id}>
+                  <a
+                    className="loop-dash__stage loop-dash__stage--link"
+                    key={stage.id}
+                    href={`/crm/deals/?pipeline=${pipeline?.id}&stage=${stage.id}`}
+                    aria-label={`Open the deals board filtered to ${stage.name}`}
+                  >
                     <div className="loop-dash__stage-head">
                       <span className="loop-dash__stage-name" style={stage.color ? { color: stage.color } : undefined}>{stage.name}</span>
                       <Tooltip>
@@ -193,11 +217,12 @@ function Board() {
                         <TooltipContent>Winning probability {stage.probability}%</TooltipContent>
                       </Tooltip>
                       <span className="loop-dash__stage-total">{money.format(total)}</span>
+                      <span className="loop-dash__stage-arrow" aria-hidden="true">→</span>
                     </div>
                     <div className="loop-dash__track" aria-hidden="true">
                       <span className="loop-dash__fill" style={{ width: `${width}%`, background: stage.color || undefined }} />
                     </div>
-                  </div>
+                  </a>
                 ))
               ) : (
                 <p className="loop-dash__empty">Create a pipeline with stages and deals to see the funnel.</p>
@@ -235,6 +260,51 @@ function Board() {
             </Card>
           </div>
         </div>
+
+        <Card className="loop-dash__trend">
+          <CardHeader>
+            <CardTitle>Recognized revenue</CardTitle>
+            <CardDescription>Monthly totals, trailing six months</CardDescription>
+            <CardAction>
+              <Button asChild size="sm" variant="outline"><a href="/finance/revenue/">Revenue ledger</a></Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            {trend ? (
+              <>
+                <div className="loop-dash__trend-head">
+                  <span className="loop-dash__trend-total">{money.format(Number(trend.grand_total))}</span>
+                  <span className="loop-dash__trend-meta">{(() => { const n = trend.results.reduce((sum, point) => sum + point.events, 0); return `${num(n)} event${n === 1 ? '' : 's'} recognized`; })()}</span>
+                </div>
+                <div className="loop-dash__trend-bars" role="img" aria-label="Monthly recognized revenue, trailing six months">
+                  {(() => {
+                    const max = Math.max(1, ...trend.results.map((point) => Number(point.total)));
+                    return trend.results.map((point) => (
+                      <div className="loop-dash__trend-col" key={point.month}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="loop-dash__trend-bar-wrap" tabIndex={0}>
+                              <span
+                                className="loop-dash__trend-bar"
+                                style={{ height: `${Math.max(4, Math.round((Number(point.total) / max) * 100))}%` }}
+                              />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {point.label} · {money.format(Number(point.total))}{point.events ? ` · ${point.events} event${point.events === 1 ? '' : 's'}` : ''}
+                          </TooltipContent>
+                        </Tooltip>
+                        <span className="loop-dash__trend-label">{point.label}</span>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </>
+            ) : (
+              <p className="loop-dash__empty">No revenue events yet. Win a deal and recognize its revenue to see the trend.</p>
+            )}
+          </CardContent>
+        </Card>
 
         <div className="loop-dash__actions">
           <Button asChild variant="outline"><a href="/crm/deals/">Deals board</a></Button>

@@ -34,6 +34,18 @@ test('PipelineBoard uses GSAP Draggable and honors reduced motion', async () => 
   assert.match(board, /loop-board__stepper/);
 });
 
+test('PipelineBoard deep-links from the dashboard funnel via query params', async () => {
+  const board = await read('src/components/board/PipelineBoard.tsx');
+  assert.match(board, /URLSearchParams\(window\.location\.search\)/);
+  assert.match(board, /params\.get\('pipeline'\)/);
+  assert.match(board, /params\.get\('stage'\)/);
+  assert.match(board, /setActivePipeline\(pipelineParam\)/);
+  assert.match(board, /setFocusStageId\(stageParam\)/);
+  assert.match(board, /loop-board__focus-chip/);
+  assert.match(board, /is-focused/);
+  assert.match(board, /scrollIntoView/);
+});
+
 test('PipelineBoard wraps itself in the Redux StoreProvider bridge', async () => {
   const board = await read('src/components/board/PipelineBoard.tsx');
   assert.match(board, /StoreProvider/);

@@ -1,20 +1,18 @@
 """Render-first finance pages and tenant-scoped HTMX mutations."""
 from __future__ import annotations
 
-import datetime
-
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.core.views import LoopPageView
 
 from .forms import InvoiceForm, PaymentForm
 from .models import Invoice, Payment, RevenueEvent
+from .services import revenue_trend_results
 
 
 def _workspace_id(request: HttpRequest) -> int | None:
@@ -109,16 +107,6 @@ def payment_create(request: HttpRequest) -> HttpResponse:
     return render(request, "dashboard/partials/payment_success.html", _finance_context(request))
 
 
-def _month_first(date: datetime.date, months_ago: int) -> datetime.date:
-    year, month = date.year, date.month
-    for _ in range(months_ago):
-        month -= 1
-        if month == 0:
-            year -= 1
-            month = 12
-    return datetime.date(year, month, 1)
-
-
 def revenue_trend_api(request: HttpRequest) -> JsonResponse:
     """Monthly recognized-revenue totals for the RevOps dashboard trend card.
 
@@ -138,25 +126,4 @@ def revenue_trend_api(request: HttpRequest) -> JsonResponse:
         )
     except (OperationalError, ProgrammingError):
         rows = []
-
-    by_month = {row["month"]: row for row in rows}
-    today = timezone.localdate()
-    results = []
-    for months_ago in range(5, -1, -1):
-        first = _month_first(today, months_ago)
-        bucket = by_month.get(first)
-        results.append(
-            {
-                "month": first.strftime("%Y-%m"),
-                "label": first.strftime("%b %Y"),
-                "total": str(bucket["total"] if bucket else "0.00"),
-                "events": bucket["events"] if bucket else 0,
-            }
-        )
-    return JsonResponse(
-        {
-            "results": results,
-            "count": len(results),
-            "grand_total": str(sum(Decimal(row["total"]) for row in rows)),
-        }
-    )
+    return JsonResponse(revenue_trend_results(rows))

@@ -9,8 +9,9 @@ revenue operations.
 ## Status
 
 Foundation integrated. The domain models, django-fusion Site/Application
-registry, shared module/sidebar navigation, finance ledger, responsive Astro
-shell, canonical optional
+registry, shared module/sidebar navigation, finance ledger, RevOps dashboard
+(revenue-trend card + funnel-to-board deep links), responsive Astro shell,
+canonical optional
 django-bolt API, compatibility JSON API, workflow catalog, provider-neutral connector surface, cross-module workflow actions, and
 Dramatiq publishing boundary are in place. Provider OAuth credentials and
 concrete API adapters are intentionally the next integration boundary (see `docs/plans/loop-crm/merge-plan.md`).
@@ -119,7 +120,9 @@ polymorphic model dependency.
 
 The finance surface is available at `/finance/`, `/finance/invoices/`,
 `/finance/payments/`, and `/finance/revenue/`; the API exposes `invoices`,
-`payments`, and `revenue` on both Bolt and `/api/v1/`. The Task Center lives at
+`payments`, and `revenue` on both Bolt and `/api/v1/`, plus the read-only
+revenue-trend aggregate (on `/bolt/revenue/trend` and `/api/v1/revenue/trend`)
+that feeds the RevOps dashboard's recognized-revenue card. The Task Center lives at
 `/tasks/` (authenticated) and shows the merged shared + website-record job
 history. Playwright covers the CRM navigation shell, workflow mutations, and
 content lifecycle.
