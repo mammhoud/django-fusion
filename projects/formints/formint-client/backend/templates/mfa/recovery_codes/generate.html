@@ -1,0 +1,14 @@
+{% extends "mfa/base.html" %}
+{% load i18n %}
+
+{% block mfa_title %}{% trans "Generate new recovery codes" %}{% endblock %}
+{% block mfa_subtitle %}{% trans "New codes replace your old ones." %}{% endblock %}
+
+{% block auth_content %}
+  <form method="post" action="{% url 'mfa_generate_recovery_codes' %}">
+    {% csrf_token %}
+    <p class="muted" style="font-size:0.95rem;">{% trans "Generating new codes invalidates any codes you were issued before." %}</p>
+    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">{% trans "Generate codes" %}</button>
+  </form>
+  <p style="margin-top:1rem; text-align:center;"><a href="{% url 'mfa_index' %}" class="btn btn-ghost" style="width:100%;">{% trans "Cancel" %}</a></p>
+{% endblock %}

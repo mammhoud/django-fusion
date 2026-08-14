@@ -45,9 +45,25 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.headless",
     "allauth.mfa",
+    # Wagtail CMS
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail",
+    "modelcluster",
+    "taggit",
     # Shop + employee apps
     "shop",
     "employee",
+    "cms",  # Wagtail page models, blocks (badges/stars), and site settings
 ]
 
 MIDDLEWARE = [
@@ -62,6 +78,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
 ROOT_URLCONF = "urls"
@@ -78,6 +95,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "shop.context_processors.shop_branding",
+                "wagtail.contrib.settings.context_processors.settings",
             ],
             "libraries": {
                 "components": "django_fusion.comp.templatetags.components",
@@ -196,6 +214,14 @@ SHOP_ORDER_TYPES = [
     ("takeaway", "Takeaway"),
     ("delivery", "Delivery"),
 ]
+
+# ── Wagtail CMS ────────────────────────────────────────────────────────
+WAGTAIL_SITE_NAME = os.environ.get("WAGTAIL_SITE_NAME", "Formint Café")
+WAGTAILADMIN_BASE_URL = os.environ.get(
+    "WAGTAILADMIN_BASE_URL", "http://localhost:8075"
+)
+# The shop storefront owns the site root (/, /menu, /orders …); Wagtail pages
+# live at their own slugs under Wagtail routes (e.g. /about/).
 
 # ── i18n ───────────────────────────────────────────────────────────────
 LANGUAGE_CODE = "en"

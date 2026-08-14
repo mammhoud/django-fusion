@@ -16,6 +16,7 @@ from wagtail.search import index
 
 from apps.content.blocks import (
     ApplicationsSectionBlock,
+    BadgesSectionBlock,
     BlogSectionBlock,
     BrandPaletteBlock,
     ContactSectionBlock,
@@ -103,6 +104,16 @@ class SectionStackMixin(models.Model):
         blank=True,
         verbose_name=_("Testimonials"),
     )
+    badges = StreamField(
+        [("badges", BadgesSectionBlock())],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Badges & awards"),
+        help_text=_(
+            "A row of award/star/trust chips (stars, medals, seals, verified "
+            "checks) shown under the section heading — social proof band."
+        ),
+    )
     pricing = StreamField(
         [("pricing", PricingSectionBlock())],
         use_json_field=True,
@@ -123,6 +134,7 @@ class SectionStackMixin(models.Model):
         FieldPanel("stats", classname=SECTION_PANEL_CLASS),
         FieldPanel("features", classname=SECTION_PANEL_CLASS),
         FieldPanel("testimonials", classname=SECTION_PANEL_CLASS),
+        FieldPanel("badges", classname=SECTION_PANEL_CLASS),
         FieldPanel("pricing", classname=SECTION_PANEL_CLASS),
         FieldPanel("faq", classname=SECTION_PANEL_CLASS),
     ]

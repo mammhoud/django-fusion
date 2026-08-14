@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="auth-wrap" style="display:flex; justify-content:center; padding-top:2rem;">
+  <div class="card" style="width:100%; max-width:26rem;">
+    <div style="text-align:center; margin-bottom:1.25rem;">
+      <p class="kicker">{% block auth_kicker %}{% trans "Account" %}{% endblock %}</p>
+      <h1 class="h1" style="font-size:1.6rem; margin-bottom:0.35rem;">{% block auth_title %}{% endblock %}</h1>
+      <p class="muted" style="margin:0; font-size:0.9rem;">{% block auth_subtitle %}{% endblock %}</p>
+    </div>
+    {% block auth_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

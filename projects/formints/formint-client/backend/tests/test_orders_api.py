@@ -1,9 +1,12 @@
-"""Order JSON API — GET /api/orders/ (list) and GET /api/orders/<pk>/ (detail).
+"""Order JSON API — GET /api/orders/ (list), POST /api/orders/ (create),
+and GET /api/orders/<pk>/ (detail).
 
 The Vue POS client consumes these endpoints: the list drives the Orders and
 Dashboard views, the detail backs the expandable cards and the printable
-receipt. These tests pin the decimal-safe serialization contract (amounts
-serialized as strings, not floats) and the 404 behaviour for unknown ids.
+receipt, and the register submits the ticket via POST. These tests pin the
+decimal-safe serialization contract (amounts serialized as strings, not
+floats), the 404 behaviour for unknown ids, and the creation/validation
+rules for the register submission.
 """
 
 from datetime import datetime
@@ -11,9 +14,24 @@ from decimal import Decimal
 
 import pytest
 
-from shop.models import Order
+from shop.models import Order, Product
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def products():
+    """A couple of available catalog products with known prices."""
+    from shop.models import Category
+
+    category = Category.objects.create(name="Coffee", slug="coffee")
+    espresso = Product.objects.create(
+        category=category, name="Espresso", price=Decimal("3.50"), slug="espresso"
+    )
+    knot = Product.objects.create(
+        category=category, name="Cinnamon Knot", price=Decimal("5.50"), slug="cinnamon-knot"
+    )
+    return {"espresso": espresso, "knot": knot}
 
 
 @pytest.fixture
@@ -85,8 +103,100 @@ class TestOrderListApi:
         assert response.status_code == 200
         assert len(response.json()["orders"]) == 50
 
-    def test_post_is_not_allowed(self, client):
-        assert client.post("/api/orders/").status_code == 405
+
+
+class TestOrderCreateApi:
+    def test_create_returns_201_with_payload(self, client, products):
+        response = client.post(
+            "/api/orders/",
+            data={
+                "items": [
+                    {"product_id": products["espresso"].pk, "quantity": 2},
+                    {"product_id": products["knot"].pk, "quantity": 1},
+                ],
+                "order_type": "dine_in",
+                "customer_name": "Ada Lovelace",
+                "notes": "Window seat",
+            },
+            content_type="application/json",
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        assert payload["customer_name"] == "Ada Lovelace"
+        assert payload["order_type"] == "dine_in"
+        assert payload["notes"] == "Window seat"
+        assert payload["status"] == "pending"
+        # Totals recomputed server-side: 2 × 3.50 + 1 × 5.50 = 12.50,
+        # 10% tax = 1.25, total = 13.75 — all decimal-safe strings.
+        assert payload["subtotal"] == "12.50"
+        assert payload["tax"] == "1.25"
+        assert payload["total_amount"] == "13.75"
+        # The order actually persisted with line items.
+        order = Order.objects.get(pk=payload["id"])
+        assert order.item_count == 3
+        assert list(order.items.values_list("product_name", flat=True)) == [
+            "Espresso",
+            "Cinnamon Knot",
+        ]
+
+    def test_create_defaults_guest_takeaway(self, client, products):
+        response = client.post(
+            "/api/orders/",
+            data={"items": [{"product_id": products["espresso"].pk, "quantity": 1}]},
+            content_type="application/json",
+        )
+        assert response.status_code == 201
+        payload = response.json()
+        assert payload["customer_name"] == "Guest"
+        assert payload["order_type"] == "takeaway"
+        assert payload["total_amount"] == "3.85"  # 3.50 + 10%
+
+    def test_create_rejects_empty_items(self, client):
+        response = client.post(
+            "/api/orders/",
+            data={"items": []},
+            content_type="application/json",
+        )
+        assert response.status_code == 400
+        assert "items" in response.json()["error"]
+
+    def test_create_rejects_unknown_product(self, client):
+        response = client.post(
+            "/api/orders/",
+            data={"items": [{"product_id": 999999, "quantity": 1}]},
+            content_type="application/json",
+        )
+        assert response.status_code == 400
+        assert "999999" in response.json()["error"]
+
+    def test_create_rejects_zero_quantity(self, client, products):
+        response = client.post(
+            "/api/orders/",
+            data={"items": [{"product_id": products["espresso"].pk, "quantity": 0}]},
+            content_type="application/json",
+        )
+        assert response.status_code == 400
+
+    def test_create_rejects_bad_json(self, client):
+        response = client.post(
+            "/api/orders/",
+            data="not json",
+            content_type="application/json",
+        )
+        assert response.status_code == 400
+
+    def test_create_ignores_unavailable_product(self, client, products):
+        products["espresso"].is_available = False
+        products["espresso"].save(update_fields=["is_available"])
+        response = client.post(
+            "/api/orders/",
+            data={"items": [{"product_id": products["espresso"].pk, "quantity": 1}]},
+            content_type="application/json",
+        )
+        assert response.status_code == 400
+
+    def test_put_is_not_allowed(self, client):
+        assert client.put("/api/orders/").status_code == 405
 
 
 class TestOrderDetailApi:

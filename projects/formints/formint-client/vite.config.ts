@@ -8,10 +8,14 @@ import { readFileSync, existsSync } from "node:fs";
 // Shell env wins, then .env.local, then .env (see .env.example).
 const __env: Record<string, string> = {};
 for (const __f of [".env.local", ".env"]) {
-    if (!existsSync(__f)) continue;
+    if (!existsSync(__f)) {
+        continue;
+    }
     for (const __line of readFileSync(__f, "utf8").split("\n")) {
         const __m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(__line);
-        if (__m && !(__m[1] in __env)) __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, "");
+        if (__m && !(__m[1] in __env)) {
+            __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, "");
+        }
     }
 }
 // @ts-expect-error process is a nodejs global

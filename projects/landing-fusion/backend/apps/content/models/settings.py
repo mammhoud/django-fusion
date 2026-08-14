@@ -223,6 +223,24 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
     accent_color = models.CharField(max_length=7, blank=True, default="#FFE14D",
         help_text="Accent color for highlights (hex)")
 
+    # ── Theme (Wagtail-managed) ──
+    theme_mode = models.CharField(max_length=10, blank=True, default="system",
+        choices=[("system", "System"), ("light", "Light"), ("dark", "Dark")],
+        help_text="Default color scheme: follow the OS (system) or force light/dark")
+    theme_font = models.CharField(max_length=40, blank=True, default="",
+        choices=[("", "Default (Bricolage / Public Sans)"),
+                 ("outfit", "Outfit"), ("satoshi", "Satoshi"),
+                 ("cabinet", "Cabinet Grotesk")],
+        help_text="Display font family preference")
+    theme_radius = models.CharField(max_length=12, blank=True, default="large",
+        choices=[("small", "Small"), ("medium", "Medium"), ("large", "Large"), ("full", "Full (pill)")],
+        help_text="UI corner radius treatment")
+    theme_density = models.CharField(max_length=16, blank=True, default="comfortable",
+        choices=[("compact", "Compact"), ("comfortable", "Comfortable"), ("airy", "Airy")],
+        help_text="Vertical spacing density")
+    reduced_motion_default = models.BooleanField(default=False,
+        help_text="Default the site to reduced motion for visitors who haven't set a preference")
+
     # ── Chat / contact widget ──
     chat_enabled = models.BooleanField(default=False,
         help_text="Enable live chat / contact widget")
@@ -285,6 +303,13 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
             FieldPanel("accent_color"),
         ], heading=_("Brand Colors")),
         MultiFieldPanel([
+            FieldPanel("theme_mode"),
+            FieldPanel("theme_font"),
+            FieldPanel("theme_radius"),
+            FieldPanel("theme_density"),
+            FieldPanel("reduced_motion_default"),
+        ], heading=_("Theme")),
+        MultiFieldPanel([
             FieldPanel("chat_enabled"),
             FieldPanel("chat_provider"),
             FieldPanel("chat_widget_id"),
@@ -316,6 +341,23 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
             "provider": self.analytics_provider,
             "gtm_id": self.google_tag_manager_id,
             "ga4_id": self.google_analytics_id,
+        }
+
+    def get_theme_context(self) -> dict:
+        """Return theme fields as a frontend-consumable dict.
+
+        Powers the ``data-theme`` / font / radius / density attributes the
+        Astro layout applies site-wide. Empty values fall back to frontend
+        defaults, so the site renders identically before settings exist.
+        """
+        return {
+            "mode": self.theme_mode or "system",
+            "font": self.theme_font or "",
+            "radius": self.theme_radius or "large",
+            "density": self.theme_density or "comfortable",
+            "reduced_motion_default": self.reduced_motion_default,
+            "primary_color": self.primary_color,
+            "accent_color": self.accent_color,
         }
 
 # ═══════════════════════════════════════════════════════════════════

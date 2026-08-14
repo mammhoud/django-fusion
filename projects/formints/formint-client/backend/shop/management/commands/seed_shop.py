@@ -36,6 +36,7 @@ CATALOG = [
                 "unit": "cup",
                 "tags": ["single-origin", "floral"],
                 "description": "Ethiopian beans, 4:6 method, jasmine + bergamot.",
+                "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Cold Brew Tonic",
@@ -44,6 +45,7 @@ CATALOG = [
                 "unit": "glass",
                 "tags": ["refreshing", "sparkling"],
                 "description": "18-hour steep over soda water with an orange twist.",
+                "image_url": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Mocha",
@@ -52,6 +54,7 @@ CATALOG = [
                 "unit": "cup",
                 "tags": ["sweet", "classic"],
                 "description": "Double espresso, single-origin cocoa, steamed milk.",
+                "image_url": "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },
@@ -75,6 +78,7 @@ CATALOG = [
                 "unit": "each",
                 "tags": ["spiced"],
                 "description": "Knot of brioche, Saigon cinnamon, vanilla glaze.",
+                "image_url": "https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Cardamom Bun",
@@ -82,6 +86,7 @@ CATALOG = [
                 "unit": "each",
                 "tags": ["aromatic"],
                 "description": "Swedish-style with crushed cardamom in the dough.",
+                "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },
@@ -97,6 +102,7 @@ CATALOG = [
                 "unit": "plate",
                 "tags": ["hearty"],
                 "description": "Slow eggs in spiced tomato-pepper stew, sourdough.",
+                "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Shakshuka_%28Unsplash%29.jpg/960px-Shakshuka_%28Unsplash%29.jpg",
             },
             {
                 "name": "Avocado Smash",
@@ -104,6 +110,7 @@ CATALOG = [
                 "unit": "plate",
                 "tags": ["veggie"],
                 "description": "Pea-topped smashed avocado on seeded toast.",
+                "image_url": "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "French Toast Brioche",
@@ -111,6 +118,7 @@ CATALOG = [
                 "unit": "plate",
                 "tags": ["sweet"],
                 "description": "Brioche, crème anglaise, roasted plum compote.",
+                "image_url": "https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },
@@ -126,6 +134,7 @@ CATALOG = [
                 "unit": "bowl",
                 "tags": ["protein"],
                 "description": "Grilled harissa chicken, freekeh, pickled onion.",
+                "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Roasted Tomato Soup",
@@ -133,6 +142,7 @@ CATALOG = [
                 "unit": "bowl",
                 "tags": ["comfort"],
                 "description": "Charred tomatoes, basil oil, grilled cheese crouton.",
+                "image_url": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Halloumi Sourdough",
@@ -140,6 +150,7 @@ CATALOG = [
                 "unit": "plate",
                 "tags": ["veggie"],
                 "description": "Seared halloumi, chilli honey, rocket on sourdough.",
+                "image_url": "https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },
@@ -164,6 +175,7 @@ CATALOG = [
                 "unit": "cup",
                 "tags": ["classic", "bergamot"],
                 "description": "A bold Ceylon black scented with bergamot.",
+                "image_url": "https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Chai Latte",
@@ -171,6 +183,7 @@ CATALOG = [
                 "unit": "cup",
                 "tags": ["spiced", "creamy"],
                 "description": "Masala chai concentrate, steamed milk, honey.",
+                "image_url": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Jasmine Green",
@@ -178,6 +191,7 @@ CATALOG = [
                 "unit": "pot",
                 "tags": ["floral", "delicate"],
                 "description": "Jasmine-scented green buds, brewed to order.",
+                "image_url": "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },
@@ -193,7 +207,7 @@ CATALOG = [
                 "unit": "glass",
                 "tags": ["tropical", "vegan"],
                 "description": "Alphonso mango, passion fruit, coconut water.",
-                "image_url": "https://images.unsplash.com/photo-1502741224143-90386d7f8c39?auto=format&fit=crop&w=600&q=80",
+                "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Fresh-mango-smoothie_01.jpg/960px-Fresh-mango-smoothie_01.jpg",
             },
             {
                 "name": "Berry Blast",
@@ -201,6 +215,7 @@ CATALOG = [
                 "unit": "glass",
                 "tags": ["berry", "antioxidant"],
                 "description": "Strawberry, blueberry, blackberry, Greek yoghurt.",
+                "image_url": "https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Green Detox",
@@ -208,6 +223,7 @@ CATALOG = [
                 "unit": "glass",
                 "tags": ["green", "fresh"],
                 "description": "Spinach, green apple, cucumber, ginger, lime.",
+                "image_url": "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },
@@ -232,6 +248,7 @@ CATALOG = [
                 "unit": "pot",
                 "tags": ["coffee", "mascarpone"],
                 "description": "Espresso-soaked savoiardi, whipped mascarpone.",
+                "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=600&q=80",
             },
             {
                 "name": "Salted Brownie",
@@ -239,6 +256,7 @@ CATALOG = [
                 "unit": "each",
                 "tags": ["fudgy", "salty"],
                 "description": "Dark chocolate, caramel ripple, flaky salt.",
+                "image_url": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80",
             },
         ],
     },

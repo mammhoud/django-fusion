@@ -49,6 +49,7 @@ from .models import Category, Order, Product
 __all__ = [
     "catalog_api",
     "orders_api",
+    "order_create_api",
     "order_detail_api",
     "auth_status_api",
     "products_fragment",
@@ -151,18 +152,111 @@ def _order_payload(order: Order, *, detail: bool = False) -> dict:
     return payload
 
 
-@require_GET
+@csrf_exempt
 def orders_api(request: HttpRequest) -> JsonResponse:
-    """Recent orders as JSON — the POS client's Orders/Dashboard data source.
+    """GET /api/orders/ → recent orders JSON; POST /api/orders/ → create.
 
-    Mirrors ``catalog_api``: a plain data endpoint for the Vue POS client.
-    Returns the most recent 50 orders with line items; amounts are strings
-    (decimal-safe), matching the storefront catalog convention.
+    Method dispatch mirrors the ``session_mode`` contract: the same URL
+    serves the POS client's list (GET) and register submission (POST).
+    Amounts are strings (decimal-safe), matching the catalog convention.
+
+    ``@csrf_exempt`` must live on THIS URL-resolved view (same rule as
+    ``session_mode``) — the POS client posts cross-origin without a token.
     """
+    if request.method == "POST":
+        return order_create_api(request)
+    if request.method != "GET":
+        return JsonResponse({"error": "method not allowed"}, status=405)
     orders = Order.objects.prefetch_related("items").order_by("-created_at")[:50]
     return JsonResponse(
         {"orders": [_order_payload(o) for o in orders]}
     )
+
+
+@require_POST
+def order_create_api(request: HttpRequest) -> JsonResponse:
+    """POST /api/orders/ — create an order directly from the POS register.
+
+    JSON body:
+        {
+          "items": [{"product_id": 3, "quantity": 2}, ...],
+          "order_type": "dine_in" | "takeaway" | "delivery",
+          "customer_name": "...",
+          "customer_email": "...",
+          "customer_phone": "...",
+          "notes": "..."
+        }
+
+    Totals are recomputed server-side from current catalog prices (never
+    trusted from the client) with the same 10% tax as the session-cart
+    checkout, and serialized decimal-safe (strings) via ``_order_payload``.
+
+    CSRF is handled on the URL-resolved dispatcher (``orders_api``) — the
+    POS client posts cross-origin without a token, same trust boundary as
+    the storefront's authenticated cart.
+    """
+    import json
+
+    try:
+        body = json.loads(request.body or b"{}")
+    except ValueError:
+        return JsonResponse({"error": "invalid JSON body"}, status=400)
+
+    raw_items = body.get("items")
+    if not isinstance(raw_items, list) or not raw_items:
+        return JsonResponse({"error": "items must be a non-empty list"}, status=400)
+
+    # Resolve products once; reject unknown ids up front so nothing partial
+    # is persisted.
+    quantities: list[tuple[Product, int]] = []
+    for entry in raw_items:
+        if not isinstance(entry, dict):
+            return JsonResponse({"error": "each item must be an object"}, status=400)
+        product_id = entry.get("product_id")
+        quantity = entry.get("quantity", 1)
+        try:
+            quantity = int(quantity)
+        except (TypeError, ValueError):
+            return JsonResponse({"error": "quantity must be an integer"}, status=400)
+        if quantity < 1:
+            return JsonResponse({"error": "quantity must be at least 1"}, status=400)
+        product = (
+            Product.objects.filter(pk=product_id, is_available=True)
+            .select_related("category")
+            .first()
+        )
+        if product is None:
+            return JsonResponse(
+                {"error": f"unknown or unavailable product_id: {product_id}"}, status=400
+            )
+        quantities.append((product, quantity))
+
+    order_type = body.get("order_type", Order.OrderType.TAKEAWAY)
+    if order_type not in Order.OrderType.values:
+        order_type = Order.OrderType.TAKEAWAY
+
+    subtotal = sum(p.price * q for p, q in quantities)
+    tax = (subtotal * Decimal("0.10")).quantize(Decimal("0.01"))
+
+    order = Order.objects.create(
+        user=request.user if request.user.is_authenticated else None,
+        customer_name=str(body.get("customer_name", "")).strip() or "Guest",
+        customer_email=str(body.get("customer_email", "")).strip(),
+        customer_phone=str(body.get("customer_phone", "")).strip(),
+        order_type=order_type,
+        notes=str(body.get("notes", "")).strip(),
+        subtotal=subtotal,
+        tax=tax,
+        total=subtotal + tax,
+    )
+    for product, quantity in quantities:
+        order.items.create(
+            product=product,
+            product_name=product.name,
+            unit_price=product.price,
+            quantity=quantity,
+        )
+    return JsonResponse(_order_payload(order, detail=True), status=201)
 
 
 @require_GET

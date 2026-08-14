@@ -1,5 +1,5 @@
 {% if products %}
-<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+<div class="grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
   {% for p in products %}
   <article
     class="group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-fu-line/60 bg-fu-card transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1.5 hover:shadow-[0_28px_56px_-28px_hsl(var(--fu-shadow)/0.25)] active:scale-[0.99] dark:hover:shadow-[0_28px_56px_-28px_hsl(var(--fu-shadow)/0.5)]{% if forloop.first %} lg:col-span-2 lg:row-span-2{% endif %}"
@@ -9,7 +9,7 @@
       offer
     </span>
     {% endif %}
-    <div class="relative flex {% if forloop.first %}aspect-[16/10] lg:aspect-auto lg:flex-1{% else %}aspect-[4/3]{% endif %} items-center justify-center overflow-hidden bg-fu-line/25">
+    <div data-gsap-media class="relative flex {% if forloop.first %}aspect-[16/10] lg:aspect-auto lg:flex-1{% else %}aspect-[4/3]{% endif %} items-center justify-center overflow-hidden bg-fu-line/25">
       {% if p.image_url %}
       <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]" />
       {% else %}

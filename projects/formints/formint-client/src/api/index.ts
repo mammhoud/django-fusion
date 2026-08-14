@@ -163,6 +163,42 @@ export async function getSales(): Promise<Sale[]> {
   return data.orders.map(mapOrderToSale);
 }
 
+/** One line of a register ticket being submitted. */
+export interface OrderLineInput {
+  product_id: number;
+  quantity: number;
+}
+
+/** Create an order from the register ticket — POST /api/orders/. */
+export async function createOrder(input: {
+  items: OrderLineInput[];
+  order_type: string;
+  customer_name?: string;
+  customer_email?: string;
+  customer_phone?: string;
+  notes?: string;
+}): Promise<SaleDetail> {
+  const response = await fetch(`${getPortalUrl()}/api/orders/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => null);
+    throw new Error(detail?.error || `API error: ${response.status}`);
+  }
+  const data = await response.json();
+  return {
+    ...mapOrderToSale(data),
+    customer_name: data.customer_name,
+    customer_email: data.customer_email,
+    customer_phone: data.customer_phone,
+    notes: data.notes,
+    subtotal: Number(data.subtotal),
+    tax: Number(data.tax),
+  };
+}
+
 /** Fetch one order's full detail — GET /api/orders/<pk>/. */
 export async function getSale(id: number): Promise<SaleDetail> {
   const data = await apiGet<OrderDetailApi>(`/api/orders/${id}/`);

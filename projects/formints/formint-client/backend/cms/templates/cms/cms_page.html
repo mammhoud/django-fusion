@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+  <article>
+    <p class="kicker">CMS · {{ page.seo_title|default:page.title }}</p>
+    <h1 class="h1">{{ page.title }}</h1>
+    {% if page.first_published_at %}
+      <p class="muted" style="font-size:0.85rem;">{{ page.first_published_at|date:"F j, Y" }}</p>
+    {% endif %}
+    <div style="margin-top:1.5rem;">
+      {% include_block page.body %}
+    </div>
+  </article>
+{% endblock %}

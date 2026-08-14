@@ -279,4 +279,91 @@ html.dark {
         transform: none;
         transition: none;
     }
+    .fu-marquee-track {
+        animation: none !important;
+    }
+    .fu-breath {
+        animation: none !important;
+    }
+    .fu-shimmer::after {
+        animation: none !important;
+    }
+    /* Vue <Transition> — show/hide state changes instantly, no slide.
+       Custom enter/leave-active-class props replace Vue's default
+       .v-enter-active, so target the stable marker class instead. */
+    .pos-fade,
+    .pos-fade * {
+        transition: none !important;
+    }
+}
+
+/* ── Kinetic marquee band ─────────────────────────────────────────────── */
+.fu-marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.fu-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: fu-marquee 32s linear infinite;
+    will-change: transform;
+}
+.fu-marquee-track:hover {
+    animation-play-state: paused;
+}
+@keyframes fu-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+/* ── Breathing status dot ─────────────────────────────────────────────── */
+.fu-breath {
+    animation: fu-breath 2.6s ease-in-out infinite;
+    will-change: opacity;
+}
+@keyframes fu-breath {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+/* ── Skeleton shimmer sweep ───────────────────────────────────────────── */
+.fu-shimmer {
+    position: relative;
+    overflow: hidden;
+    background: hsl(var(--pos-ink) / 0.06);
+}
+.fu-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.55), transparent);
+    animation: fu-shimmer 1.8s infinite;
+}
+[data-theme="sunset"] .fu-shimmer::after {
+    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.08), transparent);
+}
+@keyframes fu-shimmer {
+    to { transform: translateX(100%); }
+}
+
+/* ── Card stacking section ────────────────────────────────────────────── */
+.fu-stack-card {
+    will-change: transform, opacity;
+}
+
+/* ── GSAP initial states (flash-of-unstyled guard, static under reduced motion) ── */
+[data-gsap-media] {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+    [data-gsap-media].fu-gsap-pending {
+        opacity: 0.35;
+        transform: scale(0.8);
+    }
+    [data-stack-card].fu-gsap-pending {
+        opacity: 0.4;
+    }
 }

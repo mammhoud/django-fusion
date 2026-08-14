@@ -326,6 +326,36 @@
   animation: marquee 32s linear infinite;
 }
 
+/* ── Horizontal accordion — grid-template-columns state machine. The
+   active panel (data-active) widens while the others collapse; the base
+   template is equal thirds so the section reads fine without JS. ──────── */
+.accordion-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  transition: grid-template-columns 700ms var(--fu-ease-spring);
+}
+@media (min-width: 768px) {
+  .accordion-grid {
+    grid-template-columns: 2.2fr 1fr 1fr;
+    grid-template-rows: 26rem;
+  }
+  .accordion-grid[data-active='1'] {
+    grid-template-columns: 1fr 2.2fr 1fr;
+  }
+  .accordion-grid[data-active='2'] {
+    grid-template-columns: 1fr 1fr 2.2fr;
+  }
+}
+
+/* ── Closing CTA — layered radial washes over the ink field. ──────────── */
+.cta-wash {
+  background:
+    radial-gradient(42rem 24rem at 78% 18%, hsl(var(--fu-link) / 0.28), transparent 62%),
+    radial-gradient(36rem 22rem at 12% 86%, hsl(var(--fu-mark) / 0.14), transparent 60%),
+    radial-gradient(30rem 20rem at 50% 50%, hsl(0 0% 100% / 0.05), transparent 70%);
+}
+
 /* ── HTMX indicator ────────────────────────────────────────────────────── */
 .htmx-indicator {
   opacity: 0;

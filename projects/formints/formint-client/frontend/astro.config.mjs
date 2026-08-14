@@ -7,10 +7,14 @@ import { readFileSync, existsSync } from 'node:fs';
 // Shell env wins, then .env.local, then .env (see frontend/.env.example).
 const __env = {};
 for (const __f of ['.env.local', '.env']) {
-  if (!existsSync(__f)) continue;
+  if (!existsSync(__f)) {
+    continue;
+  }
   for (const __line of readFileSync(__f, 'utf8').split('\n')) {
     const __m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(__line);
-    if (__m && !(__m[1] in __env)) __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, '');
+    if (__m && !(__m[1] in __env)) {
+      __env[__m[1]] = __m[2].replace(/^['"]|['"]$/g, '');
+    }
   }
 }
 const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
@@ -18,7 +22,7 @@ const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
 /** Dev server port (default 4322). */
 const PORT = Number(envVal('PORT', 4322));
 /** Django backend origin for the dev proxy (default :8075). */
-const BACKEND = envVal('BACKEND_URL', BACKEND);
+const BACKEND = envVal('BACKEND_URL', 'http://localhost:8075');
 /** Canonical site URL (SEO). */
 const SITE_URL = envVal('PUBLIC_SITE_URL', 'http://localhost:4322');
 

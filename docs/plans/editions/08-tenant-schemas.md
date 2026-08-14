@@ -277,6 +277,167 @@ def branch_settings(self) -> "BranchSettings":
 - **Rollback:** unset `DB_ENGINE` → SQLite row-level mode (all gated code off). No destructive commands run by this plan.
 - **Backups:** `pg_dump` per schema (`pg_dump -n tenant_a`), complementing the Cloud `BackupRun` monitoring from `04-cloud.md`.
 
+## Tenant 8 — Auth adapters, allauth-per-tenant and database-adapter-per-branch
+
+> The core tenancy plan (Tenant 1–7) covers **data isolation**. This section
+> covers the **identity** layer: how authentication adapters, django-allauth
+> and branch-scoped database adapters behave once schemas are live.
+
+### 8.1 Auth adapters per tenant
+
+**Principle:** the *adapter* (login strategy, signup rules, redirects) is
+**tenant-aware**, not per-schema. There is one shared `public` auth registry
+(Django auth tables live in `public`), so user records are global — but every
+adapter decision (allowed signup methods, email verification, session policy)
+reads the **current tenant** from the request to return tenant-specific
+behaviour.
+
+```python
+# formint-cloud/backend/apps/core/auth_adapters.py
+from django.conf import settings
+from django.utils.functional import cached_property
+from allauth.account.adapter import DefaultAccountAdapter
+
+class TenantAwareAccountAdapter(DefaultAccountAdapter):
+    """One adapter, tenant-aware behaviour via the active schema."""
+
+    @cached_property
+    def tenant(self):
+        # django-tenants sets ``connection.tenant`` in TenantMainMiddleware.
+        from django.db import connection
+        return getattr(connection, "tenant", None)
+
+    def is_open_for_signup(self, request):
+        # Per-tenant signup gate: allow per-branch setting.
+        if self.tenant is None:
+            return True  # public schema → admin/backoffice signup
+        return bool(self.tenant.settings.get("allow_signup", True))
+
+    def get_login_redirect_url(self, request):
+        # Branch-specific landing after login (POS desk vs backoffice).
+        if self.tenant is not None:
+            branch = self.tenant.default_branch
+            if branch is not None:
+                return branch.settings.get("login_redirect", "/dashboard/")
+        return super().get_login_redirect_url(request)
+```
+
+Wire in settings (allauth reads `ACCOUNT_ADAPTER`):
+
+```python
+ACCOUNT_ADAPTER = "apps.core.auth_adapters.TenantAwareAccountAdapter"
+```
+
+### 8.2 allauth-per-tenant
+
+**Decision: single allauth install, schema-scoped sessions.** Do **not** run
+one allauth app instance per schema. Because auth tables live in `public`
+(the shared schema), allauth runs once there; what changes per tenant is the
+**session scope** and the **tenant context processors**:
+
+1. `TenantMainMiddleware` (already in the plan) resolves the tenant from the
+   host **before** allauth's session middleware runs, so
+   `request.session` is already tenant-scoped.
+2. Add a tenant context processor so every template/API view can read
+   `current_tenant` and its `BranchSettings` without a second lookup:
+
+```python
+# formint-cloud/backend/apps/core/context_processors.py
+def tenant(request):
+    from django.db import connection
+    tenant = getattr(connection, "tenant", None)
+    return {
+        "current_tenant": tenant,
+        "branch_settings": tenant.branch_settings if tenant else None,
+    }
+```
+
+3. allauth templates/social providers stay shared; provider keys
+   (OAuth client id/secret) may be **per-tenant** via `Tenant.settings`
+   JSON, with the `public` value as fallback — see `8.4`.
+
+### 8.3 Database adapter per branch
+
+**Requirement:** each branch may point at a different Postgres target
+(regional replication, separate read replica, or a dedicated reporting DB).
+The **tenant schema** stays the source of truth; the per-branch adapter is an
+**optional read/export target**, never a second write path.
+
+```python
+# formint-cloud/backend/configs/databases.py
+from django.conf import settings
+
+def branch_database_aliases() -> dict[str, dict]:
+    """Extra DATABASES entries per branch, from BranchSettings.settings JSON.
+
+    BranchSettings.settings = {
+        "database_alias": "branch_downtown",  # key into DATABASES
+        ...
+    }
+    """
+    aliases = {}
+    for branch in Branch.objects.all():
+        alias = branch.branch_settings.settings.get("database_alias")
+        if alias and alias in settings.DATABASES:
+            aliases[branch.code] = alias
+    return aliases
+```
+
+```python
+# settings snippet — branch adapters are declared, then mapped by code
+DATABASES = {
+    "default": { ... django_tenants.postgresql_backend ... },
+    "branch_downtown": {"ENGINE": "django.db.backends.postgresql", "NAME": "reports_downtown", ...},
+}
+```
+
+Usage is **explicit and read-mostly** — a service uses `.using(alias)` for
+reporting/export jobs only:
+
+```python
+# example: nightly export to a branch's reporting DB
+rows = SalesRecord.objects.using("branch_downtown").filter(day=...)
+```
+
+### 8.4 Per-tenant provider settings (allauth + adapters)
+
+Extend `Tenant` with a JSON `settings` column (already used for feature flags
+on `BranchSettings`; mirror at tenant level):
+
+```python
+class Tenant(TenantMixin):
+    # ... existing fields ...
+    settings = models.JSONField(default=dict, blank=True)
+    # e.g. {"allow_signup": True, "social": {"google": {"key": ..., "secret": ...}}}
+```
+
+A small helper resolves per-tenant overrides with `public` fallback:
+
+```python
+def tenant_provider_settings(provider_id: str) -> dict:
+    tenant = getattr(connection, "tenant", None)
+    if tenant is not None:
+        overrides = tenant.settings.get("social", {}).get(provider_id, {})
+        if overrides:
+            return overrides
+    return getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(provider_id, {})
+```
+
+### 8.5 Checklist for this tenant step
+
+- [ ] Add `apps/core/auth_adapters.py` (`TenantAwareAccountAdapter`)
+- [ ] Set `ACCOUNT_ADAPTER = "apps.core.auth_adapters.TenantAwareAccountAdapter"`
+- [ ] Add `apps/core/context_processors.py` (tenant + branch_settings) and register in `TEMPLATES`
+- [ ] Add `Tenant.settings` JSON column + migration
+- [ ] Add `apps/core/services/tenant_providers.py` (per-tenant provider overrides)
+- [ ] Document `DATABASES` branch aliases + `.using(alias)` read-only convention
+- [ ] Tests (SQLite-safe): adapter falls back to defaults with no tenant; context processor returns `None` tenant; provider helper falls back to settings
+
+**Verification (SQLite, `TENANCY_ENABLED=False`):** all four pieces import,
+run and fall back gracefully — `connection.tenant` is `None`, the context
+processor returns empty tenant context, the provider helper returns global
+settings, and `BranchSettings.settings` round-trips JSON.
+
 ## Self-Review
 
 1. **Library:** `django-tenants` is the maintained successor of the deprecated `django-tenant-schemas`; this plan uses it everywhere. No use of the stale package.

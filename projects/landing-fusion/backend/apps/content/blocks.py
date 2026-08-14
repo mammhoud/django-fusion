@@ -3,7 +3,7 @@
 # the /apis/pages/<slug>/ endpoint.
 SECTION_STACK_FIELDS = [
     "stats", "features", "testimonials", "pricing", "faq", "projects",
-    "services", "process", "blog",
+    "services", "process", "blog", "badges",
     "tech", "editions", "snippets", "comparison", "team", "gallery",
     "applications", "variants",
 ]
@@ -984,3 +984,83 @@ class TeamSectionBlock(blocks.StructBlock):
         icon = "group"
         label = _("Team section")
         template = "content/blocks/team.html"
+
+
+BADGE_KIND_CHOICES = [
+    ("star", _("Star")),
+    ("badge", _("Badge / seal")),
+    ("award", _("Award / trophy")),
+    ("shield", _("Shield / trust")),
+    ("check", _("Check / verified")),
+    ("flame", _("Flame / hot")),
+    ("sparkle", _("Sparkle / new")),
+    ("icon", _("Custom icon")),
+]
+
+
+class BadgeBlock(blocks.StructBlock):
+    """A single badge/star — icon, label, optional sub-label and tone.
+
+    Renders a pill/medal chip (``content/blocks/badge.html``) that works both
+    as a trust indicator under a CTA and as a stats-style award row. Icons are
+    chosen from BADGE_KIND_CHOICES (SVG primitives on the frontend), or a
+    custom icon name/class when ``kind == "icon"``.
+    """
+
+    label = blocks.CharBlock(
+        max_length=120, label=_("Label"),
+        help_text=_("Badge text, e.g. 'Best POS 2026' or '5-star rated'."),
+    )
+    sublabel = blocks.CharBlock(
+        max_length=160, required=False, label=_("Sub-label"),
+        help_text=_("Optional second line, e.g. 'G2 · 4.9/5 from 1,200 reviews'."),
+    )
+    kind = blocks.ChoiceBlock(
+        choices=BADGE_KIND_CHOICES, default="star", label=_("Icon"),
+        help_text=_("Icon shown next to the label. 'Custom icon' lets you enter a name/class."),
+    )
+    icon = blocks.CharBlock(
+        max_length=80, required=False, label=_("Custom icon"),
+        help_text=_("Icon name/class when kind is 'Custom icon', e.g. 'ph-medal'."),
+    )
+    tone = blocks.ChoiceBlock(
+        choices=[
+            ("neutral", _("Neutral")),
+            ("primary", _("Primary")),
+            ("success", _("Success")),
+            ("warning", _("Warning")),
+            ("danger", _("Danger")),
+            ("gold", _("Gold / award")),
+        ],
+        default="gold",
+        label=_("Tone"),
+        help_text=_("Colour treatment of the badge chip."),
+    )
+    stars = blocks.IntegerBlock(
+        min_value=0, max_value=5, default=0, required=False, label=_("Stars"),
+        help_text=_("Render N filled stars instead of the icon (0 = icon only)."),
+    )
+
+    class Meta:
+        icon = "tag"
+        label = _("Badge")
+        template = "content/blocks/badge.html"
+
+
+class BadgesSectionBlock(blocks.StructBlock):
+    """Badges band — a row of award/star/trust chips under a heading.
+
+    Editors add as many badges as needed (stars, awards, seals, verified
+    checks); the frontend renders them as a wrap row. Attach to any page via
+    ``SectionStackMixin``-style field or a page's ``content_panels``.
+    """
+
+    eyebrow = blocks.CharBlock(max_length=80, required=False, label=_("Eyebrow"))
+    title = blocks.CharBlock(max_length=200, required=False, label=_("Title"))
+    description = blocks.TextBlock(required=False, label=_("Description"))
+    badges = blocks.ListBlock(BadgeBlock(), label=_("Badges"))
+
+    class Meta:
+        icon = "group"
+        label = _("Badges section")
+        template = "content/blocks/badges.html"
