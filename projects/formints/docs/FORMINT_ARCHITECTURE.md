@@ -39,8 +39,8 @@ formint-pos/
 ├── server/                     # merged Django boundary — no Wagtail
 │   ├── configs/                 # settings (Unfold + fusion render-mode), URLs
 │   ├── manage.py                # CLI + --ensure-superuser bootstrap
-│   ├── server.py                # Robyn server server (API + WebSocket, :8766)
-│   ├── bolt_api.py              # django-bolt REST API
+│   ├── server.py                # Django ASGI entry (daphne: HTTP + Channels WS, :8766)
+│   ├── bolt_api.py              # django-bolt REST API (mounted when django-bolt is installed)
 │   ├── models/                  # pos_full model layer (single source of truth)
 │   ├── formint/
 │   │   ├── models/              # re-exports pos_full models (unified layer)
@@ -287,8 +287,10 @@ toggle without touching HTTP or cookies:
 editions: Rust supervises the server process and exposes native
 capabilities; Django owns domain rules, persistence, permissions, audit, and
 fusion fragment rendering. The Django entry point is `server/manage.py`
-(`DJANGO_SETTINGS_MODULE=configs`); `server.py` runs the Robyn server
-(API + WebSocket on `:8766`) and `bolt_api.py` the django-bolt API layer.
+(`DJANGO_SETTINGS_MODULE=configs`); `server.py` runs the Django ASGI server
+(daphne — HTTP + Channels WebSocket on `:8766`) and `bolt_api.py` the
+django-bolt API layer (mounted conditionally when the real django-bolt runtime
+is installed; the former Robyn server was removed).
 
 ---
 
@@ -376,7 +378,7 @@ landing-fusion's root + backend split):
 | `make tauri` / `make tauri-dev` / `make tauri-build` | Tauri CLI / dev / build |
 
 **`formint-pos/server/Makefile`** — `install`, `migrate`, `dev` (:8767),
-`server` (Robyn, :8766), `check`, `test`, `seed`, `ensure-superuser`,
+`server` (Django ASGI/daphne, :8766), `check`, `test`, `seed`, `ensure-superuser`,
 `shell`, `collectstatic`, `clean`.
 
 **`formint-pos/frontend/Makefile`** — `install`, `dev` (:4321), `build`,

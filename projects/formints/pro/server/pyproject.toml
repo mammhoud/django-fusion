@@ -1,7 +1,7 @@
 [project]
 name = "formint-pos-server"
 dynamic = ["version"]
-description = "Formint POS (merged) — Robyn + Django ORM Cloud Master server"
+description = "Formint POS (merged) — Django + django-bolt + django-fusion Cloud Master server"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "AGPL-3.0" }
@@ -10,23 +10,26 @@ authors = [
 ]
 
 dependencies = [
-    "robyn>=0.50,<1.0",
-    "django>=4.2,<5.1",
+    "django>=5.2.8,<6.0",
     "django-bolt[pydantic]",
     "django-fusion",
-    "django-unfold>=0.50,<0.60",
+    "django-unfold>=0.80,<1.0",
     "asgiref>=3.8",
     "sqlparse>=0.4",        # Django management commands (migrate, makemigrations)
     "httpx>=0.27",
     "pydantic>=2.0",
-    "Jinja2>=3.1",          # Robyn template rendering
+    "Jinja2>=3.1",          # Django template/Jinja rendering
     "django-tables2>=2.7",   # Required by django_fusion.comp.generic.table
-    "wagtail>=6.0,<7.0",    # Compatible with Django>=4.2,<5.1 (wagtail 7.x requires Django>=5.2)
+    "wagtail>=7.0,<8.0",    # Django>=5.2 (wagtail 7.x)
     # Merged from backend/ (formint app): Ninja API layer + HTMX + tables
     "django-ninja>=1.0",
     "django-ninja-extra>=0.19",
+    "ninja-schema>=0.14",   # django-fusion model_schema/encoder base classes
     "django-htmx>=1.19",
     "qrcode>=7.4,<9.0",   # QR Menu: SVG QR generation (lazy-imported at runtime)
+    "daphne>=4.0",         # ASGI server (replaces Robyn)
+    "channels>=4.0",       # WebSocket support (replaces Robyn WS)
+    "PyJWT>=2.8",          # django-bolt JWT authentication (bolt_api.py)
 ]
 
 [project.optional-dependencies]

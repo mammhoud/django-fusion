@@ -22,8 +22,8 @@ metrics**.
 | Metrics | ✅ | `GET /kds/stats/` (counts by status + overdue + last-24h) |
 | Station routing | ✅ (this change) | `KitchenStation` model + `station` FK, category-keyword auto-routing with expedite fallback |
 
-**Station routing surface** (served by both the Robyn `routes/kds.py` and the
-Django `views_django.py`):
+**Station routing surface** (canonically the Django `views_django.py`; the
+legacy Robyn `routes/kds.py` mirror is deprecated and no longer registered):
 
 | Endpoint | Method | Purpose |
 |---|---|---|

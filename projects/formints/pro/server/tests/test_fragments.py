@@ -141,6 +141,8 @@ def test_all_fragments_have_nonempty_name():
 
 def test_dashboard_template_keys_exist_in_fragment():
     """The dashboard template only uses keys DashboardFragment provides."""
+    import pytest
+    pytest.importorskip("robyn", reason="Robyn removed — legacy routes/fusion_fragments is deprecated")
     from fragments.dashboard import DashboardFragment
     from routes.fusion_fragments import _DASHBOARD_FRAGMENT_TEMPLATE
 
@@ -158,6 +160,8 @@ def test_dashboard_template_keys_exist_in_fragment():
 
 
 def test_suppliers_template_keys_exist_in_fragment():
+    import pytest
+    pytest.importorskip("robyn", reason="Robyn removed — legacy routes/fusion_fragments is deprecated")
     from fragments.suppliers import SuppliersFragment
     from routes.fusion_fragments import _SUPPLIERS_FRAGMENT_TEMPLATE
 
@@ -171,6 +175,8 @@ def test_suppliers_template_keys_exist_in_fragment():
 
 
 def test_about_template_keys_exist_in_fragment():
+    import pytest
+    pytest.importorskip("robyn", reason="Robyn removed — legacy routes/fusion_fragments is deprecated")
     from fragments.about import AboutFragment
     from routes.fusion_fragments import _ABOUT_FRAGMENT_TEMPLATE
 

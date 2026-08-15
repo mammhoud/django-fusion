@@ -12,15 +12,16 @@
 | **Astro frontend** | ❌ | ✅ | ❌ | ❌ |
 | **Rust backend** | ✅ | ✅ (minimal shell) | ❌ | ✅ |
 | **Django Ninja backend** | ❌ | ✅ | ✅ | ❌ |
-| **Robyn server** | ❌ | ✅ | ❌ (full Django setup) | ❌ |
+| **Robyn server** | ❌ | ❌ (removed — Django ASGI) | ❌ (full Django setup) | ❌ |
 | **Unfold admin** | ❌ | ✅ | ✅ | ❌ |
 | **WebSocket streams** | ❌ | ✅ | ✅ (channels) | ❌ |
 | **Cloud sync** | ❌ (sync client target) | ✅ | ✅ (cloud master) | ❌ |
 | **Port** | 1420 | 8767 (backend) / 4321 (frontend) | 8767 (API) / 8082 (admin) | 1420 |
 
 > **Note**: The former `pos-full` and `pos-solo` products were merged into
-> `formint-pro/`; its Django server is canonical and its Robyn/django-bolt
-> runner is retained only for compatibility packaging. The legacy React UIs
+> `formint-pro/`; its Django server is canonical and the Robyn runner was
+> removed — Django ASGI (daphne, HTTP + Channels WebSocket) is now the single
+> server, with django-bolt mounted conditionally when installed. The legacy React UIs
 > were removed in favour of the Astro + Alpine + HTMX frontend. `formint-cloud/`
 > is a separate full-Django hosted master; Django serves its API, fusion
 > contract, and bolt analytics on the documented ports. `formint-community/`
@@ -125,8 +126,8 @@
 ### Pro — `formint-pro/` (merged formint-pos, recommended)
 
 > **Phase 2 status:** merge complete — `pos-full` + `pos-solo` consolidated.
-> Astro + Alpine + HTMX frontend · Django Ninja backend · optional legacy
-> Robyn/django-bolt compatibility runner · Unfold admin · Tauri v2 shell.
+> Astro + Alpine + HTMX frontend · Django Ninja backend · django-bolt (conditional)
+> + django-fusion · Unfold admin · Tauri v2 shell.
 
 #### Added components — backend (`server/`)
 
@@ -136,7 +137,7 @@
 | **HTMX fragments** | `components.py` (TableMixin tables + FormMixin forms), `handlers.py` (BranchSummaryHandler, TableFragmentHandler, FormFragmentHandler), `fusion_components.py` (FusionDualModeMixin + FragmentComponent) |
 | **Fusion render-mode** | `fusion.py` (encode_fragment_pointer, render-mode/nav/assets contract), `core.py` (FormintModule nav source of truth), `views.py` (/fusion/* endpoints) |
 | **Admin** | `admin.py` (canonical Unfold ModelAdmin superset), `dashboard.py` (10 KPI cards · 5 charts · 3 tables) |
-| **Compatibility routes** | `server/server.py`, `server/bolt_api.py`, and `server/routes/` — optional legacy Robyn/django-bolt packaging path |
+| **Server entry** | `server/server.py` (Django ASGI/daphne entry) + `server/bolt_api.py` (django-bolt API, mounted when installed); `server/routes/` is deprecated Robyn legacy kept only for reference |
 
 #### Added components — frontend (`frontend/`)
 
@@ -153,7 +154,7 @@
 - Django Ninja + ninja-extra typed REST API — **45 paginated resources** with fusion envelope `{ status, message, data }`
 - django-fusion **data components** — server-rendered tables + forms over HTMX (render-first / data-API dual mode)
 - **Unfold admin** — KPI dashboard, charts, loyalty & settings management, 2FA
-- **Optional legacy runner** — Robyn WebSocket/data-sync compatibility path (`:8766`); Django remains the primary server API
+- **Single Django server** — daphne ASGI on `:8766` (HTTP + Channels WebSocket); the former Robyn runner was removed and its routes migrated to Django views
 - **Standard parity** — currency/tax-profile models and admin, `/api/v1/currencies/`, `/api/v1/tax-profiles/`, and read-only CSV/JSON exports
 - **Cloud sync** — multi-terminal push to a cloud master; sync approval + conflict handling
 - **Cloud CRM** — companies, pipelines, stages, contacts, deals, activities, notes

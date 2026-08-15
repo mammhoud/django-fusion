@@ -1,14 +1,13 @@
 """
-POS Full Server - Route modules.
+POS Full Server - Route modules (DEPRECATED — Robyn legacy).
 
-Each module exports a `register_routes(app)` function that wires
-route handlers to a Robyn application instance.
+⚠️ DEPRECATED: these Robyn route handlers were superseded by the
+Django-native stack (``views_django.py`` + ``configs/urls.py``) when the
+server migrated to django-bolt + django-fusion. ``server.py`` no longer
+registers them. Kept only for reference and the django-fusion Robyn plugin.
 
-Usage:
-    from routes import register_all
-
-    app = Robyn(__file__)
-    register_all(app)
+Each module exports a ``register_routes(app)`` function that wires route
+handlers to a Robyn application instance (no longer called at startup).
 """
 
 def register_all(app):

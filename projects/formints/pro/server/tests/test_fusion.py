@@ -31,6 +31,13 @@ if str(_SERVER_DIR) not in sys.path:
 # Imports
 # ═══════════════════════════════════════════════════════════════════════
 
+import pytest
+
+# Robyn runtime removed — the Django ASGI stack is canonical. These tests
+# exercise the legacy Robyn fusion middleware, so they only run when robyn
+# is installed.
+pytest.importorskip("robyn", reason="Robyn removed — Django ASGI is canonical")
+
 from middleware.fusion import (
     RobynFusionChecker,
     fusion_health_checker,

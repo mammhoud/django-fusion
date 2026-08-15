@@ -25,6 +25,11 @@ from decimal import Decimal
 
 import pytest
 
+# Robyn runtime removed — the Django ASGI stack is canonical. These tests
+# exercise the legacy Robyn fusion fragment-rendering flow, so they only
+# run when robyn is installed.
+pytest.importorskip("robyn", reason="Robyn removed — Django ASGI is canonical")
+
 # ── Path bootstrap ──────────────────────────────────────────────────
 _SERVER_DIR = Path(__file__).resolve().parent.parent
 if str(_SERVER_DIR) not in sys.path:

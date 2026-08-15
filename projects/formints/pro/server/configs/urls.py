@@ -35,11 +35,19 @@ urlpatterns = [
     # Read-only CSV/JSON exports shared with Standard clients.
     path("export/<str:resource>.<str:file_format>", export_resource, name="formint-export"),
 
-    # ── django-bolt reverse-only URLs ──
+    # ── django-bolt (high-performance API) ──
 ]
-if importlib.util.find_spec("django_bolt"):
-    if importlib.util.find_spec("django_bolt.urls"):
-        urlpatterns.append(path("", include("django_bolt.urls")))
+# Mount the POS Full django-bolt API when the real django-bolt runtime is
+# installed. ``bolt_api`` raises ImportError on the stub package, so this
+# stays optional and never breaks the Django-only stack.
+try:
+    from bolt_api import bolt  # noqa: F401
+    if bolt is not None and getattr(bolt, "urls", None) is not None:
+        urlpatterns.append(path("bolt/", bolt.urls))
+except ImportError:
+    bolt = None
+if importlib.util.find_spec("django_bolt.urls"):
+    urlpatterns.append(path("", include("django_bolt.urls")))
 
 # ── All migrated Robyn routes → Django views ──
 from views_django import (

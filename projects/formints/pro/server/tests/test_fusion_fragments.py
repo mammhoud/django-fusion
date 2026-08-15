@@ -22,6 +22,13 @@ _SERVER_DIR = Path(__file__).resolve().parent.parent
 if str(_SERVER_DIR) not in sys.path:
     sys.path.insert(0, str(_SERVER_DIR))
 
+import pytest
+
+# Robyn runtime removed — the Django ASGI stack is canonical. These tests
+# exercise the legacy Robyn fusion-fragment routes, so they only run when
+# robyn is installed.
+pytest.importorskip("robyn", reason="Robyn removed — Django ASGI is canonical")
+
 from routes.fusion_fragments import (
     register_fusion_fragment_routes,
     _DASHBOARD_FRAGMENT_TEMPLATE,

@@ -1,8 +1,12 @@
 """
-POS Full Server — shared request handlers, serialization, CRUD factory, and sync client.
+POS Full Server — shared request handlers (DEPRECATED — Robyn legacy).
 
-Extracted from routes/state.py. All handler utilities are imported by routes/state.py
-which re-exports them for route modules.
+⚠️ DEPRECATED: these Robyn handler utilities were superseded by the
+Django-native stack (``views_django.py`` + ``configs/urls.py``) when the
+server migrated to django-bolt + django-fusion. Kept only for reference.
+
+Extracted from routes/state.py. All handler utilities are imported by
+routes/state.py which re-exports them for route modules.
 
 State references (models, paths, etc.) are accessed via routes.state globals,
 so handlers are decoupled from server.py imports.
