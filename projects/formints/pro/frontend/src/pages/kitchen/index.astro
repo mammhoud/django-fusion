@@ -62,6 +62,26 @@ import Icon from '../../components/ui/Icon.astro';
       </div>
     </div>
 
+    <!-- ── Station Routing Bar ── -->
+    <div x-show="stations.length > 0" class="flex flex-wrap items-center gap-1 mb-3">
+      <span class="text-[11px] uppercase tracking-wide opacity-40 mr-1">Stations</span>
+      <button
+        type="button"
+        @click="setStation('all')"
+        :class="'tag tag--sm cursor-pointer ' + (selectedStation === 'all' ? 'tag--primary' : 'tag--ghost')"
+      >All</button>
+      <template x-for="station in stations" :key="station.id">
+        <button
+          type="button"
+          @click="setStation(station.slug)"
+          :class="'tag tag--sm cursor-pointer ' + (selectedStation === station.slug ? 'tag--primary' : 'tag--ghost')"
+        >
+          <span x-text="station.name"></span>
+          <span class="opacity-50 ml-1" x-text="stationTicketCount(station.slug)"></span>
+        </button>
+      </template>
+    </div>
+
     <!-- ── Stats Row ── -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
       <div class="stat-card">
@@ -128,6 +148,10 @@ import Icon from '../../components/ui/Icon.astro';
           <div class="flex items-center justify-between gap-1 mb-1">
             <span class="tag tag--sm tag--primary" x-text="orderTypeLabel(ticket.priority)"></span>
             <span class="text-[11px] opacity-50" x-text="timeAgo(ticket.created_at)"></span>
+          </div>
+          <!-- Station chip -->
+          <div x-show="ticket.station" class="mb-1">
+            <span class="tag tag--sm tag--neutral" x-text="ticket.station ? ticket.station.name : ''"></span>
           </div>
           <!-- Notes -->
           <p
@@ -198,6 +222,11 @@ import Icon from '../../components/ui/Icon.astro';
           <div class="flex flex-wrap gap-2">
             <span class="badge" :class="selectedTicket ? statusBadgeClass(selectedTicket.status) : ''" x-text="selectedTicket?.status"></span>
             <span class="text-xs opacity-50" x-text="selectedTicket ? timeAgo(selectedTicket.created_at) + ' · Est. ' + selectedTicket.prepare_time_minutes + 'min' : ''"></span>
+            <span
+              x-show="selectedTicket?.station"
+              class="badge badge-neutral"
+              x-text="selectedTicket?.station ? selectedTicket.station.name : ''"
+            ></span>
           </div>
           <!-- Notes -->
           <div x-show="selectedTicket?.notes" class="flex items-start gap-1.5 rounded-lg p-2.5 text-xs opacity-70" style="background: var(--color-surface-raised)">
@@ -247,6 +276,8 @@ import Icon from '../../components/ui/Icon.astro';
   document.addEventListener('alpine:init', () => {
     Alpine.data('kitchenDisplay', () => ({
       tickets: [],
+      stations: [],
+      selectedStation: 'all',
       isLoading: true,
       search: '',
       selectedTicket: null,
@@ -265,6 +296,7 @@ import Icon from '../../components/ui/Icon.astro';
         const q = this.search.trim().toLowerCase();
         let filtered = this.tickets.filter(t => {
           if (this.$store.kds.filter !== 'all' && t.status !== this.$store.kds.filter) return false;
+          if (this.selectedStation !== 'all' && (t.station?.slug || '') !== this.selectedStation) return false;
           if (q && !String(t.sale_id).includes(q) && !(t.notes || '').toLowerCase().includes(q)) return false;
           return this.$store.kds.preferredPriorities.includes(t.priority);
         });
@@ -292,13 +324,29 @@ import Icon from '../../components/ui/Icon.astro';
 
       async loadTickets() {
         try {
-          const res = await fetch(`/kds/tickets/?status=${this.$store.kds.filter}`);
+          const params = new URLSearchParams({ status: this.$store.kds.filter });
+          if (this.selectedStation !== 'all') params.set('station', this.selectedStation);
+          const res = await fetch(`/kds/tickets/?${params.toString()}`);
           if (res.ok) this.tickets = await res.json();
         } catch (e) {
           console.error('KDS load error:', e);
         } finally {
           this.isLoading = false;
         }
+      },
+
+      async loadStations() {
+        try {
+          const res = await fetch('/kds/stations/');
+          if (res.ok) this.stations = await res.json();
+        } catch (e) {
+          console.error('KDS stations load error:', e);
+        }
+      },
+
+      setStation(slug) {
+        this.selectedStation = slug;
+        this.loadTickets();
       },
 
       async updateStatus(status: string) {
@@ -372,9 +420,15 @@ import Icon from '../../components/ui/Icon.astro';
         return 'var(--color-error)';
       },
 
+      stationTicketCount(slug) {
+        return this.tickets.filter(t => (t.station?.slug || '') === slug).length;
+      },
+
       init() {
         // Watch filter changes
         this.$watch('$store.kds.filter', () => this.loadTickets());
+        // Load stations once (ticket routing targets)
+        this.loadStations();
         // Poll every 10s for new tickets (real event channel when Tauri is wired)
         this.pollInterval = setInterval(() => this.loadTickets(), 10000);
       },

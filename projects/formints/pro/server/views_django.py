@@ -64,7 +64,7 @@ from models.loyalty import ClientCategory, LoyaltyTransaction, UserSettings
 from models.menu import Menu, MenuItem, MenuItemAssignment
 from models.node import Heartbeat, Node, NodeEvent
 from models.notes import Note
-from models.ops import KitchenTicket, SupportTicket
+from models.ops import KitchenStation, KitchenTicket, SupportTicket, route_station_for_sale
 from models.pos import (
     Category,
     Customer,
@@ -104,7 +104,7 @@ ALL_MODELS = [
     NodeEvent, SyncLog, DeviceConfig, MasterDevice, CloudLink,
     SyncApproval, DeviceToken, SignalEvent,
     Supplier, PurchaseOrder, PurchaseOrderItem,
-    KitchenTicket, SupportTicket, Payroll, EmployeeSchedule, TaxReport,
+    KitchenStation, KitchenTicket, SupportTicket, Payroll, EmployeeSchedule, TaxReport,
     Note, Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
     ClientCategory, LoyaltyTransaction, UserSettings, ApiKey,
     Coupon, DeliveryType, DeliveryZone, Shift,
@@ -228,71 +228,115 @@ def stats_endpoint(request: HttpRequest) -> JsonResponse:
 # KDS routes (was routes/kds.py)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _ser_ticket(ticket: KitchenTicket) -> dict:
+def _ser_station(station: KitchenStation | None) -> dict | None:
+    """Serialize a kitchen station (or None) for KDS payloads."""
+    if station is None:
+        return None
+    return {
+        "id": station.id,
+        "name": station.name,
+        "slug": station.slug,
+        "station_type": station.station_type,
+        "sort_order": station.sort_order,
+        "is_active": station.is_active,
+    }
+
+
+def _ser_kds_ticket(ticket: KitchenTicket) -> dict:
+    """Serialize a kitchen ticket with sale + station enrichment."""
     data = _ser_model(ticket)
     if "sale_id" not in data:
         data["sale_id"] = ticket.sale_id
+    sale = ticket.sale
+    data["order_type"] = getattr(sale, "order_type", "dine-in")
+    data["table_number"] = getattr(sale, "table_number", None)
+    data["delivery_address"] = getattr(sale, "delivery_address", None)
+    data["total_amount"] = (
+        float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
+    )
+    data["station"] = _ser_station(ticket.station)
     return data
 
 
 def kds_list_tickets(request: HttpRequest) -> JsonResponse:
     status_filter = request.GET.get("status", "").strip() or None
-    qs = KitchenTicket.objects.select_related("sale").all()
+    station_filter = request.GET.get("station", "").strip() or None
+    qs = KitchenTicket.objects.select_related("sale", "station").all()
     if status_filter and status_filter != "all":
         qs = qs.filter(status=status_filter)
+    if station_filter and station_filter != "all":
+        qs = qs.filter(station__slug=station_filter)
     qs = qs.order_by("-priority", "created_at")[:200]
-    tickets = []
-    for ticket in qs:
-        data = _ser_ticket(ticket)
-        sale = ticket.sale
-        data["sale_id"] = sale.id
-        data["order_type"] = getattr(sale, "order_type", "dine-in")
-        data["table_number"] = getattr(sale, "table_number", None)
-        data["delivery_address"] = getattr(sale, "delivery_address", None)
-        data["total_amount"] = float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
-        tickets.append(data)
-    return _json(tickets)
+    return _json([_ser_kds_ticket(t) for t in qs])
 
 
 def kds_get_ticket(request: HttpRequest, pk: int) -> JsonResponse:
     try:
-        ticket = KitchenTicket.objects.select_related("sale").get(id=pk)
+        ticket = KitchenTicket.objects.select_related("sale", "station").get(id=pk)
     except KitchenTicket.DoesNotExist:
         return _error(404, "Ticket not found")
-    data = _ser_ticket(ticket)
-    sale = ticket.sale
-    data["sale_id"] = sale.id
-    data["order_type"] = getattr(sale, "order_type", "dine-in")
-    data["table_number"] = getattr(sale, "table_number", None)
-    data["delivery_address"] = getattr(sale, "delivery_address", None)
-    data["total_amount"] = float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
-    return _json(data)
+    return _json(_ser_kds_ticket(ticket))
 
 
 def kds_update_ticket(request: HttpRequest, pk: int) -> JsonResponse:
     try:
-        ticket = KitchenTicket.objects.select_related("sale").get(id=pk)
+        ticket = KitchenTicket.objects.select_related("sale", "station").get(id=pk)
     except KitchenTicket.DoesNotExist:
         return _error(404, "Ticket not found")
     body = json.loads(request.body) if request.body else {}
+    now = datetime.now(timezone.utc)
     if "status" in body:
         ticket.status = body["status"]
+        if body["status"] == "preparing" and not ticket.started_at:
+            ticket.started_at = now
+        if body["status"] == "ready" and not ticket.ready_at:
+            ticket.ready_at = now
         if body["status"] == "delivered" and not ticket.completed_at:
-            ticket.completed_at = datetime.now(timezone.utc)
+            ticket.completed_at = now
     if "notes" in body:
         ticket.notes = body["notes"]
     if "priority" in body:
         ticket.priority = body["priority"]
     if "prepare_time_minutes" in body:
         ticket.prepare_time_minutes = body["prepare_time_minutes"]
+    if "station_id" in body or "station" in body:
+        station_id = body.get("station_id") or body.get("station")
+        if station_id is None:
+            ticket.station = None
+        else:
+            try:
+                ticket.station = KitchenStation.objects.get(id=int(station_id))
+            except (TypeError, ValueError, KitchenStation.DoesNotExist):
+                return _error(400, f"Unknown station id: {station_id}")
     ticket.save()
-    data = _ser_ticket(ticket)
-    sale = ticket.sale
-    data["sale_id"] = sale.id
-    data["order_type"] = getattr(sale, "order_type", "dine-in")
-    data["table_number"] = getattr(sale, "table_number", None)
-    data["total_amount"] = float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
-    return _json(data)
+    return _json(_ser_kds_ticket(ticket))
+
+
+def kds_list_stations(request: HttpRequest) -> JsonResponse:
+    qs = KitchenStation.objects.all().order_by("sort_order", "name")
+    return _json([_ser_station(s) for s in qs])
+
+
+def kds_create_station(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body) if request.body else {}
+    name = (body.get("name") or "").strip()
+    if not name:
+        return _error(400, "Station name is required")
+    slug = (body.get("slug") or "").strip()
+    if not slug:
+        from django.utils.text import slugify
+        slug = slugify(name)
+    if KitchenStation.objects.filter(slug=slug).exists():
+        return _error(409, f"Station slug '{slug}' already exists")
+    station = KitchenStation.objects.create(
+        name=name,
+        slug=slug,
+        station_type=body.get("station_type", "expedite"),
+        category_keywords=body.get("category_keywords", ""),
+        sort_order=body.get("sort_order", 0),
+        is_active=body.get("is_active", True),
+    )
+    return _json(_ser_station(station))
 
 
 def kds_get_sale_items(request: HttpRequest, sale_id: int) -> HttpResponse:
@@ -887,8 +931,20 @@ def sale_checkout(request: HttpRequest) -> JsonResponse:
         # Create KitchenTicket (when requested and there are items)
         kitchen_ticket = None
         if body.get("create_kitchen_ticket", True) and sale_items_out:
+            # Route to a station: explicit override wins, else category match,
+            # else the default expedite station.
+            station = None
+            if body.get("kitchen_station_id"):
+                try:
+                    station = KitchenStation.objects.get(id=int(body["kitchen_station_id"]))
+                except (TypeError, ValueError, KitchenStation.DoesNotExist):
+                    station = None
+            if station is None:
+                station = route_station_for_sale(sale)
+
             kitchen_ticket = KitchenTicket.objects.create(
                 sale=sale,
+                station=station,
                 status="pending",
                 priority=body.get("kitchen_priority", 0),
                 prepare_time_minutes=body.get("kitchen_prep_minutes", 15),

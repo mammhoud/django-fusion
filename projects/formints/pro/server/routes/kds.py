@@ -4,11 +4,12 @@ KDS (Kitchen Display System) route handlers.
 Provides enriched kitchen ticket endpoints that the Alpine.js KDS page
 at /kitchen/ consumes via fetch():
 
-  GET  /kds/tickets/               List tickets (filtered by ?status=)
+  GET  /kds/tickets/               List tickets (filtered by ?status= & ?station=)
   GET  /kds/tickets/<id>/          Single ticket detail
-  PATCH /kds/tickets/<id>/         Update ticket status
+  PATCH /kds/tickets/<id>/         Update ticket status / station
   GET  /kds/items/<sale_id>/       HTMX fragment: sale items for detail modal
   GET  /kds/stats/                 Quick stats (active, overdue counts)
+  GET/POST /kds/stations/          List / create kitchen stations
 """
 
 from __future__ import annotations
@@ -28,37 +29,26 @@ def register_kds_routes(app):
     # ── Ticket list with enrichment ──────────────────────────────────
     @app.get("/kds/tickets/")
     async def list_tickets(request):
-        """Return kitchen tickets enriched with sale data (order_type, table, etc.).
+        """Return kitchen tickets enriched with sale + station data.
 
         Query params:
             status  — filter by status (pending, preparing, ready, delivered)
+            station — filter by station slug
         """
         status_filter = request.query_params.get("status", "").strip() or None
+        station_filter = request.query_params.get("station", "").strip() or None
 
         @sync_to_async
         def _query():
             from models.ops import KitchenTicket
-            from models.pos import Sale
 
-            qs = KitchenTicket.objects.select_related("sale").all()
+            qs = KitchenTicket.objects.select_related("sale", "station").all()
             if status_filter and status_filter != "all":
                 qs = qs.filter(status=status_filter)
+            if station_filter and station_filter != "all":
+                qs = qs.filter(station__slug=station_filter)
             qs = qs.order_by("-priority", "created_at")
-
-            tickets = []
-            for ticket in qs[:200]:  # safety cap
-                data = _ser_ticket(ticket)
-                # Enrich with sale info
-                sale = ticket.sale
-                data["sale_id"] = sale.id
-                data["order_type"] = getattr(sale, "order_type", "dine-in")
-                data["table_number"] = getattr(sale, "table_number", None)
-                data["delivery_address"] = getattr(sale, "delivery_address", None)
-                data["total_amount"] = (
-                    float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
-                )
-                tickets.append(data)
-            return tickets
+            return [_enrich_ticket(_ser_ticket(t), t) for t in qs[:200]]  # safety cap
 
         return jsonify(await _query())
 
@@ -75,17 +65,8 @@ def register_kds_routes(app):
         def _query():
             from models.ops import KitchenTicket
             try:
-                ticket = KitchenTicket.objects.select_related("sale").get(id=ticket_id)
-                data = _ser_ticket(ticket)
-                sale = ticket.sale
-                data["sale_id"] = sale.id
-                data["order_type"] = getattr(sale, "order_type", "dine-in")
-                data["table_number"] = getattr(sale, "table_number", None)
-                data["delivery_address"] = getattr(sale, "delivery_address", None)
-                data["total_amount"] = (
-                    float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
-                )
-                return data
+                ticket = KitchenTicket.objects.select_related("sale", "station").get(id=ticket_id)
+                return _enrich_ticket(_ser_ticket(ticket), ticket)
             except KitchenTicket.DoesNotExist:
                 return None
 
@@ -110,38 +91,44 @@ def register_kds_routes(app):
 
         @sync_to_async
         def _update():
-            from models.ops import KitchenTicket
+            from models.ops import KitchenTicket, KitchenStation
             from datetime import timezone as tz
             try:
-                ticket = KitchenTicket.objects.select_related("sale").get(id=ticket_id)
+                ticket = KitchenTicket.objects.select_related("sale", "station").get(id=ticket_id)
+                now = datetime.now(tz.utc)
                 if "status" in body:
                     ticket.status = body["status"]
-                    # Auto-set completed_at when delivered
+                    if body["status"] == "preparing" and not ticket.started_at:
+                        ticket.started_at = now
+                    if body["status"] == "ready" and not ticket.ready_at:
+                        ticket.ready_at = now
                     if body["status"] == "delivered" and not ticket.completed_at:
-                        ticket.completed_at = datetime.now(tz.utc)
+                        ticket.completed_at = now
                 if "notes" in body:
                     ticket.notes = body["notes"]
                 if "priority" in body:
                     ticket.priority = body["priority"]
                 if "prepare_time_minutes" in body:
                     ticket.prepare_time_minutes = body["prepare_time_minutes"]
+                if "station_id" in body or "station" in body:
+                    station_id = body.get("station_id") or body.get("station")
+                    if station_id is None:
+                        ticket.station = None
+                    else:
+                        try:
+                            ticket.station = KitchenStation.objects.get(id=int(station_id))
+                        except (TypeError, ValueError, KitchenStation.DoesNotExist):
+                            return _error(400, f"Unknown station id: {station_id}")
                 ticket.save()
-
-                data = _ser_ticket(ticket)
-                sale = ticket.sale
-                data["sale_id"] = sale.id
-                data["order_type"] = getattr(sale, "order_type", "dine-in")
-                data["table_number"] = getattr(sale, "table_number", None)
-                data["total_amount"] = (
-                    float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
-                )
-                return data
+                return _enrich_ticket(_ser_ticket(ticket), ticket)
             except KitchenTicket.DoesNotExist:
                 return None
 
         result = await _update()
         if result is None:
             return _error(404, "Ticket not found")
+        if isinstance(result, Response):
+            return result
         return jsonify(result)
 
     # ── Sale items as HTMX fragment ──────────────────────────────────
@@ -246,8 +233,80 @@ def register_kds_routes(app):
 
         return jsonify(await _stats())
 
+    # ── Stations ───────────────────────────────────────────────────
+    @app.get("/kds/stations/")
+    async def list_stations(request):
+        """Return all kitchen stations."""
+        @sync_to_async
+        def _query():
+            from models.ops import KitchenStation
+            return [_ser_station(s) for s in KitchenStation.objects.all().order_by("sort_order", "name")]
+
+        return jsonify(await _query())
+
+    @app.post("/kds/stations/")
+    async def create_station(request):
+        """Create a kitchen station.
+
+        Body: {"name": "Grill", "station_type": "grill", "category_keywords": "burger,steak"}
+        """
+        body = request.json() or {}
+
+        @sync_to_async
+        def _create():
+            from models.ops import KitchenStation
+            from django.utils.text import slugify
+            name = (body.get("name") or "").strip()
+            if not name:
+                return _error(400, "Station name is required")
+            slug = (body.get("slug") or "").strip() or slugify(name)
+            if KitchenStation.objects.filter(slug=slug).exists():
+                return _error(409, f"Station slug '{slug}' already exists")
+            station = KitchenStation.objects.create(
+                name=name,
+                slug=slug,
+                station_type=body.get("station_type", "expedite"),
+                category_keywords=body.get("category_keywords", ""),
+                sort_order=body.get("sort_order", 0),
+                is_active=body.get("is_active", True),
+            )
+            return _ser_station(station)
+
+        result = await _create()
+        if isinstance(result, Response):
+            return result
+        return jsonify(result)
+
 
 # ── Helpers ────────────────────────────────────────────────────────────
+
+def _ser_station(station) -> dict | None:
+    """Serialize a kitchen station (or None) for KDS payloads."""
+    if station is None:
+        return None
+    return {
+        "id": station.id,
+        "name": station.name,
+        "slug": station.slug,
+        "station_type": station.station_type,
+        "sort_order": station.sort_order,
+        "is_active": station.is_active,
+    }
+
+
+def _enrich_ticket(data: dict, ticket) -> dict:
+    """Attach sale + station enrichment to a serialized ticket dict."""
+    sale = ticket.sale
+    data["sale_id"] = sale.id
+    data["order_type"] = getattr(sale, "order_type", "dine-in")
+    data["table_number"] = getattr(sale, "table_number", None)
+    data["delivery_address"] = getattr(sale, "delivery_address", None)
+    data["total_amount"] = (
+        float(sale.total_amount) if hasattr(sale, "total_amount") and sale.total_amount else None
+    )
+    data["station"] = _ser_station(ticket.station)
+    return data
+
 
 def _ser_ticket(ticket) -> dict:
     """Serialize a KitchenTicket to a plain dict with all fields."""

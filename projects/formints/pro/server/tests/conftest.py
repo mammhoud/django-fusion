@@ -620,3 +620,60 @@ def inventory_adjustment_factory(django_bootstrap) -> Callable[..., Any]:
         return InventoryAdjustment.objects.create(**defaults)
 
     return _create
+
+
+@pytest.fixture
+def station_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for KitchenStation model instances. Name/slug are unique so
+    each factory call uses a random suffix to avoid cross-test collisions.
+    """
+    import uuid as _uuid
+
+    def _create(**kwargs) -> Any:
+        from models.ops import KitchenStation
+        uid = _uuid.uuid4().hex[:6]
+        defaults = {
+            "name": kwargs.pop("name", f"Station-{uid}"),
+            "slug": kwargs.pop("slug", f"station-{uid}"),
+            "station_type": kwargs.pop("station_type", "expedite"),
+            "category_keywords": kwargs.pop("category_keywords", ""),
+            "is_active": kwargs.pop("is_active", True),
+            "sort_order": kwargs.pop("sort_order", 0),
+        }
+        defaults.update(kwargs)
+        return KitchenStation.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def kitchen_ticket_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for KitchenTicket model instances.
+
+    Requires a ``sale_factory`` or explicit ``sale=`` kwarg. ``station=`` is
+    optional and defaults to None.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.ops import KitchenTicket
+        from models.pos import Sale, Customer
+        if "sale" not in kwargs:
+            kwargs["sale"] = Sale.objects.create(
+                customer=Customer.objects.create(
+                    first_name=f"KTCust-{_counter[0]}", last_name="T",
+                    email=f"kt{_counter[0]}@t.com",
+                ),
+                subtotal=9.99, total=11.99, tax_amount=2.00,
+            )
+        defaults = {
+            "status": kwargs.pop("status", "pending"),
+            "priority": kwargs.pop("priority", 0),
+            "prepare_time_minutes": kwargs.pop("prepare_time_minutes", 15),
+            "notes": kwargs.pop("notes", ""),
+        }
+        defaults.update(kwargs)
+        return KitchenTicket.objects.create(**defaults)
+
+    return _create

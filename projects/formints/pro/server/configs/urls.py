@@ -46,6 +46,7 @@ from views_django import (
     index, health, stats_endpoint,
     kds_list_tickets, kds_get_ticket, kds_update_ticket,
     kds_get_sale_items, kds_stats,
+    kds_list_stations, kds_create_station,
     node_list, node_detail, node_register, node_heartbeat,
     node_update, node_delete,
     node_get_config, node_set_config, node_delete_config, node_history,
@@ -92,6 +93,8 @@ urlpatterns += [
     path("kds/tickets/<int:pk>/update", kds_update_ticket, name="kds-update"),
     path("kds/items/<int:sale_id>", kds_get_sale_items, name="kds-items"),
     path("kds/stats/", kds_stats, name="kds-stats"),
+    path("kds/stations/", kds_list_stations, name="kds-stations"),
+    path("kds/stations/create", kds_create_station, name="kds-station-create"),
 
     # HTMX fragments
     path("htmx/products/", htmx_products, name="htmx-products"),

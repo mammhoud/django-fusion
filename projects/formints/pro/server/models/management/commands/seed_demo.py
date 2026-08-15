@@ -34,6 +34,7 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
+from django.utils.text import slugify
 
 from models.crm import Company, Contact, Deal
 from models.extra import (
@@ -46,7 +47,7 @@ from models.loyalty import (
 )
 from models.menu import Menu, MenuItem, MenuItemAssignment
 from models.node import Node, NodeEvent
-from models.ops import KitchenTicket, SupportTicket
+from models.ops import KitchenStation, KitchenTicket, SupportTicket, route_station_for_sale
 from models.pos import Category, Customer, Employee, Product, Sale, SaleItem
 from models.sync import SyncLog
 
@@ -622,6 +623,29 @@ class Command(BaseCommand):
                 )
         self._count("  total", Company)
 
+    def seed_stations(self) -> None:
+        if not self._should_seed("stations"):
+            return
+        self.stdout.write("Kitchen stations:")
+        stations = [
+            ("Expedite", "expedite", "", 0),
+            ("Bar", "bar", "hot drinks, cold drinks, coffee, tea, beverage", 10),
+            ("Grill", "grill", "sandwich, burger, grill, wrap", 20),
+            ("Pantry", "pantry", "pastries, dessert, bakery", 30),
+            ("Prep", "prep", "salad, prep, cold", 40),
+        ]
+        for name, station_type, keywords, sort_order in stations:
+            self._create(
+                KitchenStation,
+                {"name": name},
+                slug=slugify(name),
+                station_type=station_type,
+                category_keywords=keywords,
+                sort_order=sort_order,
+                is_active=True,
+            )
+        self._count("  total", KitchenStation)
+
     def seed_ops(self) -> None:
         if not self._should_seed("ops"):
             return
@@ -629,7 +653,9 @@ class Command(BaseCommand):
         for s in Sale.objects.all()[:3]:
             self._create(
                 KitchenTicket,
-                {"sale": s, "status": "completed"},
+                {"sale": s},
+                station=route_station_for_sale(s),
+                status="pending",
                 priority=1,
                 notes="Standard prep",
             )
@@ -657,7 +683,7 @@ class Command(BaseCommand):
         if self.force and not self.dry_run:
             self.stdout.write(self.style.WARNING("--force: wiping existing demo data...\n"))
             for model in (
-                KitchenTicket, SupportTicket, SyncLog, NodeEvent, Node,
+                KitchenTicket, KitchenStation, SupportTicket, SyncLog, NodeEvent, Node,
                 SaleItem, Sale, LoyaltyTransaction, PurchaseOrderItem,
                 PurchaseOrder, Customer, Product, Category, Supplier,
                 Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
@@ -685,6 +711,7 @@ class Command(BaseCommand):
         self.seed_roles()
         self.seed_receipt_templates()
         self.seed_crm()
+        self.seed_stations()
         self.seed_ops()
         self.seed_settings()
 
