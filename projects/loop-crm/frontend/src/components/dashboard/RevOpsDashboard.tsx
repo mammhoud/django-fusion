@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import StoreProvider from '@/components/StoreProvider';
-import type { AppDispatch } from '@/store';
+import { useWorkspaceRealtime, type WorkspaceEvent } from '@/lib/useWorkspaceRealtime';
+import { useLiveSync } from '@/lib/useLiveSync';
 import type { RootState } from '@/store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,6 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 const useAppSelector = useSelector.withTypes<RootState>();
 
 // ── Payload contracts (compatibility road, mirrors backend views) ───────────
@@ -63,12 +63,16 @@ interface TrendPoint {
   label: string;
   total: string;
   events: number;
+  pos_total: string;
+  deal_total: string;
 }
 
 interface RevenueTrendPayload {
   results: TrendPoint[];
   count: number;
   grand_total: string;
+  pos_total: string;
+  deal_total: string;
 }
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
@@ -100,47 +104,59 @@ function StatCard({ label, value, hint, href }: { label: string; value: string; 
 }
 
 function Board() {
-  const dispatch = useAppDispatch();
   const apiPrefix = useAppSelector((state) => state.config.fallbackApiPrefix);
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
   const [counts, setCounts] = useState<DashboardCounts | null>(null);
   const [workflows, setWorkflows] = useState(0);
   const [pipeline, setPipeline] = useState<PipelineRow | null>(null);
   const [trend, setTrend] = useState<RevenueTrendPayload | null>(null);
+  const { synced, flash } = useLiveSync();
+
+  // Load counts + funnel + trend. ``silent`` refreshes keep the dashboard
+  // interactive (no skeleton flash) when a realtime mutation event arrives.
+  const loadDashboard = useCallback(async (silent = false) => {
+    try {
+      const [dashboardRes, boardRes, trendRes] = await Promise.allSettled([
+        fetch(`${apiPrefix}/dashboard/`),
+        fetch(`${apiPrefix}/board/`),
+        fetch(`${apiPrefix}/revenue/trend/`),
+      ]);
+      if (dashboardRes.status === 'rejected') throw dashboardRes.reason;
+      const dashboard = (await (dashboardRes.value as Response).json()) as DashboardPayload;
+      setCounts(dashboard.data.counts ?? null);
+      setWorkflows(dashboard.data.workflow_count ?? 0);
+      if (boardRes.status === 'fulfilled' && (boardRes.value as Response).ok) {
+        const board = (await (boardRes.value as Response).json()) as { results: PipelineRow[] };
+        const candidates = (board.results ?? []).filter((item) => item.stages.length > 0);
+        setPipeline(candidates.sort((a, b) => b.stages.length - a.stages.length)[0] ?? null);
+      }
+      if (trendRes.status === 'fulfilled' && (trendRes.value as Response).ok) {
+        const payload = (await (trendRes.value as Response).json()) as RevenueTrendPayload;
+        setTrend(payload.results?.length ? payload : null);
+      }
+      setStatus('ready');
+    } catch (err) {
+      if (!silent) setStatus('error');
+      console.error('RevOps dashboard load failed', err);
+    }
+  }, [apiPrefix]);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [dashboardRes, boardRes, trendRes] = await Promise.allSettled([
-          fetch(`${apiPrefix}/dashboard/`),
-          fetch(`${apiPrefix}/board/`),
-          fetch(`${apiPrefix}/revenue/trend/`),
-        ]);
-        if (cancelled) return;
-        if (dashboardRes.status === 'rejected') throw dashboardRes.reason;
-        const dashboard = (await (dashboardRes.value as Response).json()) as DashboardPayload;
-        setCounts(dashboard.data.counts ?? null);
-        setWorkflows(dashboard.data.workflow_count ?? 0);
-        if (boardRes.status === 'fulfilled' && (boardRes.value as Response).ok) {
-          const board = (await (boardRes.value as Response).json()) as { results: PipelineRow[] };
-          const candidates = (board.results ?? []).filter((item) => item.stages.length > 0);
-          setPipeline(candidates.sort((a, b) => b.stages.length - a.stages.length)[0] ?? null);
-        }
-        if (trendRes.status === 'fulfilled' && (trendRes.value as Response).ok) {
-          const payload = (await (trendRes.value as Response).json()) as RevenueTrendPayload;
-          setTrend(payload.results?.length ? payload : null);
-        }
-        setStatus('ready');
-      } catch (err) {
-        if (!cancelled) setStatus('error');
-        console.error('RevOps dashboard load failed', err);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [apiPrefix, dispatch]);
+    void loadDashboard();
+  }, [loadDashboard]);
+
+  // Live updates: every resource mutation and POS ingest changes at least one
+  // KPI/funnel/trend, so refresh the whole dashboard silently on any event.
+  useWorkspaceRealtime(
+    () => {
+      flash();
+      void loadDashboard(true);
+    },
+    {
+      filter: (event: WorkspaceEvent) =>
+        event.event.startsWith('resource.') || event.event === 'pos.sales.ingested',
+    },
+  );
 
   const funnel = useMemo(() => {
     if (!pipeline) return null;
@@ -182,6 +198,17 @@ function Board() {
   return (
     <TooltipProvider delayDuration={120}>
       <div className="loop-dash">
+        <div className="loop-dash__head">
+          <span
+            className="loop-live-sync"
+            data-synced={synced ? 'true' : 'false'}
+            role="status"
+            aria-live="polite"
+          >
+            <span className="loop-live-sync__dot" aria-hidden="true" />
+            <span className="loop-live-sync__label">{synced ? 'synced' : 'live'}</span>
+          </span>
+        </div>
         <div className="loop-dash__kpis">
           <StatCard label="Deals in pipeline" value={num(counts.deals)} hint={`${num(counts.pipelines)} configured pipelines`} href="/crm/deals/" />
           <StatCard label="Posts scheduled" value={num(counts.posts)} hint={`${num(counts.channels)} connected channels`} href="/marketing/calendar/" />
@@ -276,27 +303,33 @@ function Board() {
                   <span className="loop-dash__trend-total">{money.format(Number(trend.grand_total))}</span>
                   <span className="loop-dash__trend-meta">{(() => { const n = trend.results.reduce((sum, point) => sum + point.events, 0); return `${num(n)} event${n === 1 ? '' : 's'} recognized`; })()}</span>
                 </div>
-                <div className="loop-dash__trend-bars" role="img" aria-label="Monthly recognized revenue, trailing six months">
+                <div className="loop-dash__trend-split" aria-label="Recognized revenue split by source">
+                  <span className="loop-dash__trend-split-deal"><i aria-hidden="true" /> Deal <b>{money.format(Number(trend.deal_total))}</b></span>
+                  <span className="loop-dash__trend-split-pos"><i aria-hidden="true" /> POS <b>{money.format(Number(trend.pos_total))}</b></span>
+                </div>
+                <div className="loop-dash__trend-bars" role="img" aria-label="Monthly recognized revenue by source, trailing six months">
                   {(() => {
                     const max = Math.max(1, ...trend.results.map((point) => Number(point.total)));
-                    return trend.results.map((point) => (
-                      <div className="loop-dash__trend-col" key={point.month}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="loop-dash__trend-bar-wrap" tabIndex={0}>
-                              <span
-                                className="loop-dash__trend-bar"
-                                style={{ height: `${Math.max(4, Math.round((Number(point.total) / max) * 100))}%` }}
-                              />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {point.label} · {money.format(Number(point.total))}{point.events ? ` · ${point.events} event${point.events === 1 ? '' : 's'}` : ''}
-                          </TooltipContent>
-                        </Tooltip>
-                        <span className="loop-dash__trend-label">{point.label}</span>
-                      </div>
-                    ));
+                    return trend.results.map((point) => {
+                      const dealH = Math.round((Number(point.deal_total) / max) * 100);
+                      const posH = Math.round((Number(point.pos_total) / max) * 100);
+                      return (
+                        <div className="loop-dash__trend-col" key={point.month}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="loop-dash__trend-bar-wrap" tabIndex={0}>
+                                {dealH > 0 && <span className="loop-dash__trend-bar loop-dash__trend-bar--deal" style={{ height: `${dealH}%` }} />}
+                                {posH > 0 && <span className="loop-dash__trend-bar loop-dash__trend-bar--pos" style={{ height: `${posH}%` }} />}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {point.label} · {money.format(Number(point.total))} — Deal {money.format(Number(point.deal_total))} · POS {money.format(Number(point.pos_total))}
+                            </TooltipContent>
+                          </Tooltip>
+                          <span className="loop-dash__trend-label">{point.label}</span>
+                        </div>
+                      );
+                    });
                   })()}
                 </div>
               </>

@@ -1,9 +1,65 @@
 """Django-Dramatiq actors for the Loop-CRM background boundary."""
 from __future__ import annotations
 
+import json
+import socket
+import time
+from urllib.parse import urlparse
+
+from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
 from django_fusion.tasks import task
+
+#: How long a broker probe result is reused before re-probing (seconds).
+_BROKER_PROBE_TTL = 5.0
+
+_broker_reachable_cache: tuple[float, bool] | None = None
+
+
+def broker_reachable(timeout: float = 0.4) -> bool:
+    """Probe whether the Dramatiq broker answers, cached for a short window.
+
+    ``execute_workflow.send`` performs a Redis round-trip (and, with a down
+    broker, a connection error) on every call. Signal-driven tests create
+    hundreds of invoices/payments/contacts, so that per-trigger cost adds up.
+    This probes once and reuses the answer briefly so a down broker is skipped
+    immediately instead of re-attempted on each trigger.
+    """
+    global _broker_reachable_cache
+    now = time.monotonic()
+    if _broker_reachable_cache is not None and now - _broker_reachable_cache[0] < _BROKER_PROBE_TTL:
+        return _broker_reachable_cache[1]
+    reachable = False
+    try:
+        url = settings.DRAMATIQ_BROKER["OPTIONS"]["url"]
+        parsed = urlparse(url)
+        host = parsed.hostname or "127.0.0.1"
+        port = parsed.port or 6379
+        with socket.create_connection((host, port), timeout=timeout):
+            reachable = True
+    except (OSError, KeyError, TypeError, ValueError):
+        reachable = False
+    _broker_reachable_cache = (now, reachable)
+    return reachable
+
+
+def broker_gated_send(actor, *args, **kwargs) -> tuple[bool, str]:
+    """Best-effort enqueue for a plain actor, gated on broker reachability.
+
+    Returns ``(ok, error)``. A down broker returns ``(False, "broker
+    unreachable")`` without the ``.send()`` round-trip; a send failure returns
+    ``(False, f"{exc.__class__.__name__}")``; success returns ``(True, "")``.
+    Mirrors the gate in ``trigger_workflow``/``_enqueue_delivery`` so every
+    sync request path that enqueues an actor fails fast when Redis is down.
+    """
+    if not broker_reachable():
+        return False, "broker unreachable"
+    try:
+        actor.send(*args, **kwargs)
+        return True, ""
+    except Exception as exc:  # noqa: BLE001 - normalize any queue failure
+        return False, f"{exc.__class__.__name__}"
 
 
 def _ensure_fresh_channel(channel) -> bool:
@@ -55,6 +111,13 @@ def publish_post(post_id: int) -> None:
         "publish-and-attribute",
         post.workspace_id,
         {"post_id": post.pk, "source": "post.published"},
+    )
+    from apps.core.webhooks import dispatch_webhooks
+
+    dispatch_webhooks(
+        post.workspace_id,
+        "post_published",
+        {"post_id": post.pk, "channel_id": post.channel_id},
     )
 
 
@@ -127,6 +190,12 @@ def trigger_workflow(slug: str, workspace_id: int, payload: dict) -> None:
         workspace_id=workspace_id,
         trigger_payload=payload,
     )
+    if not broker_reachable():
+        run.status = "failed"
+        run.error = "Workflow queue unavailable: broker unreachable"
+        run.finished_at = timezone.now()
+        run.save(update_fields=["status", "error", "finished_at"])
+        return
     try:
         execute_workflow.send(run.pk)
     except Exception as exc:  # noqa: BLE001 - persist an honest queue failure
@@ -134,6 +203,41 @@ def trigger_workflow(slug: str, workspace_id: int, payload: dict) -> None:
         run.error = f"Workflow queue unavailable: {exc.__class__.__name__}"
         run.finished_at = timezone.now()
         run.save(update_fields=["status", "error", "finished_at"])
+
+
+@task(queue="crm")
+def deliver_webhook(delivery_id: int) -> None:
+    """Deliver one webhook: HMAC-signed POST with retry backoff + dead-letter."""
+    from apps.core.models import WebhookDelivery
+    from apps.core.webhooks import MAX_ATTEMPTS, post_json, sign_payload
+
+    delivery = WebhookDelivery.objects.select_related("webhook").get(pk=delivery_id)
+    if delivery.status not in {"queued", "failed"}:
+        return
+    delivery.attempt_count += 1
+    raw = json.dumps(delivery.payload, sort_keys=True).encode("utf-8")
+    headers: dict[str, str] = {
+        "X-Loop-Event": delivery.event,
+        "X-Delivery-Id": str(delivery.pk),
+    }
+    if delivery.webhook.secret:
+        headers["X-Loop-Signature"] = sign_payload(delivery.webhook.secret, raw)
+    status, body = post_json(delivery.webhook.url, delivery.payload, headers=headers)
+
+    if status in (200, 201, 202, 204):
+        delivery.status = "succeeded"
+        delivery.response_status = status
+        delivery.last_error = ""
+    else:
+        delivery.response_status = status or None
+        delivery.last_error = str(body.get("detail") or f"HTTP {status}")
+        delivery.status = "dead" if delivery.attempt_count >= MAX_ATTEMPTS else "failed"
+    delivery.save(update_fields=["status", "response_status", "last_error", "attempt_count", "updated_at"])
+
+    if delivery.status == "failed":
+        # Exponential backoff: 2s, then 4s before the final attempt.
+        delay_ms = (2 ** delivery.attempt_count) * 1000
+        deliver_webhook.send_with_options(args=(delivery.pk,), delay=delay_ms)
 
 
 @task(queue="crm")
@@ -166,6 +270,7 @@ def execute_workflow(run_id: int) -> None:
 
 __all__ = [
     "aggregate_post_analytics",
+    "deliver_webhook",
     "execute_workflow",
     "trigger_workflow",
     "publish_post",

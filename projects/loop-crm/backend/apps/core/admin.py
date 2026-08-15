@@ -1,8 +1,18 @@
 from django.contrib import admin
 
-from apps.crm.models import CustomFieldDefinition
+from apps.crm.models import CustomFieldDefinition, CustomObjectDefinition, CustomObjectRecord
 
-from .models import AuditLog, TaskExecution, UserProfile, WorkflowDefinition, WorkflowRun, Workspace
+from .models import (
+    AuditLog,
+    SavedView,
+    TaskExecution,
+    UserProfile,
+    Webhook,
+    WebhookDelivery,
+    WorkflowDefinition,
+    WorkflowRun,
+    Workspace,
+)
 
 
 @admin.register(Workspace)
@@ -33,6 +43,27 @@ class CustomFieldDefinitionAdmin(admin.ModelAdmin):
     ordering = ("workspace", "object_type", "position", "label")
 
 
+@admin.register(SavedView)
+class SavedViewAdmin(admin.ModelAdmin):
+    list_display = ("name", "resource", "view_type", "workspace", "user", "is_default")
+    list_filter = ("resource", "view_type", "workspace", "is_default")
+    search_fields = ("name", "resource", "user__email")
+
+
+@admin.register(CustomObjectDefinition)
+class CustomObjectDefinitionAdmin(admin.ModelAdmin):
+    list_display = ("name", "key", "workspace", "is_active", "created_at")
+    list_filter = ("workspace", "is_active")
+    search_fields = ("name", "key")
+
+
+@admin.register(CustomObjectRecord)
+class CustomObjectRecordAdmin(admin.ModelAdmin):
+    list_display = ("definition", "workspace", "updated_at")
+    list_filter = ("workspace", "definition")
+    search_fields = ("definition__name", "data")
+
+
 @admin.register(WorkflowDefinition)
 class WorkflowDefinitionAdmin(admin.ModelAdmin):
     list_display = ("name", "module", "trigger", "status", "workspace", "updated_at")
@@ -55,3 +86,19 @@ class TaskExecutionAdmin(admin.ModelAdmin):
     list_filter = ("status", "site_name", "queue_name")
     search_fields = ("task_name", "job_id", "error_message")
     readonly_fields = [f.name for f in TaskExecution._meta.fields]
+
+
+@admin.register(Webhook)
+class WebhookAdmin(admin.ModelAdmin):
+    list_display = ("url", "workspace", "is_active", "events", "created_at")
+    list_filter = ("workspace", "is_active")
+    search_fields = ("url",)
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(WebhookDelivery)
+class WebhookDeliveryAdmin(admin.ModelAdmin):
+    list_display = ("webhook", "event", "status", "attempt_count", "response_status", "created_at")
+    list_filter = ("status", "event")
+    search_fields = ("webhook__url", "last_error")
+    readonly_fields = [f.name for f in WebhookDelivery._meta.fields]

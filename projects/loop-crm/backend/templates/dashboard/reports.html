@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — Loop CRM{% endblock %}
+{% block content %}
+<nav class="loop-breadcrumb" aria-label="Breadcrumb">{% for crumb in breadcrumbs %}<span>{% if not forloop.first %}<span class="loop-breadcrumb__separator" aria-hidden="true">/</span> {% endif %}{% if forloop.last %}<span aria-current="page">{{ crumb.label }}</span>{% else %}<a href="{{ crumb.href }}">{{ crumb.label }}</a>{% endif %}</span>{% endfor %}</nav>
+<div class="loop-page-heading"><div><p class="loop-eyebrow">{{ page_kicker }}</p><h1>{{ page_title }}</h1><p class="loop-lede">{{ page_description }}</p></div><span class="loop-pill">{{ touchpoint_count }} touchpoints</span></div>
+<section class="loop-card loop-card--wide" aria-label="Campaign revenue">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Revenue</span><h2>By campaign</h2></div><span class="loop-pill">workspace-scoped</span></div>
+  {% if campaign_revenue %}
+  <div class="loop-table-wrap"><table class="loop-table"><thead><tr><th>Campaign</th><th>Revenue</th><th>Events</th></tr></thead><tbody>{% for row in campaign_revenue %}<tr><td>{{ row.campaign }}</td><td>{{ row.revenue }}</td><td>{{ row.events }}</td></tr>{% endfor %}</tbody></table></div>
+  {% else %}<div class="loop-empty-state"><strong>No recognized revenue yet.</strong><p>Revenue appears as deals close and POS sales are ingested.</p></div>{% endif %}
+</section>
+<section class="loop-card loop-card--wide" aria-label="Pipeline value">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Pipeline</span><h2>Value by stage</h2></div><span class="loop-pill">open + closed</span></div>
+  {% if pipeline_value %}
+  <div class="loop-table-wrap"><table class="loop-table"><thead><tr><th>Stage</th><th>Value</th><th>Deals</th></tr></thead><tbody>{% for row in pipeline_value %}<tr><td>{{ row.stage }}</td><td>{{ row.value }}</td><td>{{ row.deals }}</td></tr>{% endfor %}</tbody></table></div>
+  {% else %}<div class="loop-empty-state"><strong>No pipeline yet.</strong><p>Create deals to see stage-level value.</p></div>{% endif %}
+</section>
+{% endblock %}

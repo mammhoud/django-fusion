@@ -25,11 +25,14 @@ from decimal import Decimal
 from typing import Any
 
 from django.db import OperationalError, ProgrammingError, models
+from django.db.models import Q
 
 from apps.attribution.models import AttributionTouchpoint
-from apps.crm.models import Company, Contact, Deal, Pipeline
+from apps.crm.models import Activity, Company, Contact, Deal, Pipeline
 from apps.finance.models import Invoice, Payment, RevenueEvent
 from apps.marketing.models import Campaign, Post, SocialChannel
+
+from .models import Webhook
 
 
 @dataclass(frozen=True)
@@ -97,6 +100,21 @@ RESOURCES: dict[str, Resource] = {
         ),
         required_fields=("company_id", "name", "value", "expected_close_date"),
     ),
+    "activities": Resource(
+        model=Activity,
+        read_fields=("id", "subject", "activity_type", "status", "scheduled_at", "completed_at", "deal__name", "contact__email"),
+        write_fields=(
+            "deal_id",
+            "contact_id",
+            "activity_type",
+            "subject",
+            "description",
+            "scheduled_at",
+            "completed_at",
+            "status",
+        ),
+        required_fields=("deal_id", "activity_type", "subject"),
+    ),
     "pipelines": Resource(
         model=Pipeline,
         read_fields=("id", "name", "description", "is_default", "order"),
@@ -158,6 +176,13 @@ RESOURCES: dict[str, Resource] = {
         read_fields=("id", "deal__name", "campaign__name", "kind", "amount", "recognized_on"),
         write_fields=("deal_id", "campaign_id", "invoice_id", "kind", "amount", "recognized_on", "metadata"),
         required_fields=("deal_id", "amount"),
+    ),
+    # The webhook signing secret is writable but never projected back out.
+    "webhooks": Resource(
+        model=Webhook,
+        read_fields=("id", "url", "events", "is_active", "created_at"),
+        write_fields=("url", "secret", "events", "is_active"),
+        required_fields=("url",),
     ),
 }
 
@@ -245,16 +270,103 @@ def _apply_payload(resource: Resource, instance: models.Model, data: dict[str, A
     return instance, errors
 
 
-def list_rows(slug: str, workspace_id: int | None) -> list[dict[str, Any]]:
-    resource = RESOURCES[slug]
+def bounded_int(value: Any, default: int, minimum: int, maximum: int) -> int:
+    """Parse a query-param int and clamp it into ``[minimum, maximum]``."""
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return default
+    return max(minimum, min(maximum, parsed))
+
+
+def _searchable_fields(model: type[models.Model]) -> list[str]:
+    """Text-like concrete fields a ``search`` filter may query (safe allowlist)."""
+    fields: list[str] = []
+    for field in model._meta.concrete_fields:
+        if isinstance(
+            field,
+            (models.CharField, models.TextField, models.EmailField, models.URLField, models.SlugField),
+        ):
+            fields.append(field.name)
+    return fields
+
+
+def _scoped_queryset(resource: Resource, workspace_id: int | None, search: str):
+    """Workspace-scoped queryset, optionally narrowed by a text search."""
     queryset = resource.model.objects.all()
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
+    search = (search or "").strip()
+    if not search:
+        return queryset
+    query = Q()
+    for name in _searchable_fields(resource.model):
+        query |= Q(**{f"{name}__icontains": search})
+    return queryset.filter(query)
+
+
+def _concrete_field_names(model: type[models.Model]) -> set[str]:
+    return {field.name for field in model._meta.concrete_fields}
+
+
+def apply_view_config(queryset, model: type[models.Model], config: dict | None):
+    """Apply a saved view's safe ``sort``/``filters`` config to a queryset.
+
+    Only allowlisted concrete field names are honored; unknown sort or filter
+    keys are ignored so a malformed saved view can never raise or leak.
+    """
+    config = config or {}
+    sort = str(config.get("sort") or "").strip()
+    if sort:
+        direction = "-" if sort.startswith("-") else ""
+        field = sort.lstrip("-")
+        if field in _concrete_field_names(model):
+            queryset = queryset.order_by(f"{direction}{field}")
+    filters = config.get("filters") or {}
+    if isinstance(filters, dict):
+        searchable = set(_searchable_fields(model))
+        for field, value in filters.items():
+            if field in searchable and value not in (None, ""):
+                queryset = queryset.filter(**{f"{field}__icontains": str(value)})
+    return queryset
+
+
+def list_rows(
+    slug: str,
+    workspace_id: int | None,
+    *,
+    limit: int = 100,
+    offset: int = 0,
+    search: str = "",
+    view_config: dict | None = None,
+) -> list[dict[str, Any]]:
+    resource = RESOURCES[slug]
+    queryset = _scoped_queryset(resource, workspace_id, search)
+    if view_config is not None:
+        queryset = apply_view_config(queryset, resource.model, view_config)
     try:
-        rows = list(queryset.values(*resource.read_fields)[:100])
+        rows = list(queryset.values(*resource.read_fields)[offset : offset + limit])
     except (OperationalError, ProgrammingError):
         rows = []
     return [{key: _json_value(value) for key, value in row.items()} for row in rows]
+
+
+def count_rows(
+    slug: str,
+    workspace_id: int | None,
+    *,
+    search: str = "",
+    view_config: dict | None = None,
+) -> int:
+    """Total count for the same filter list_rows applies (for pagination)."""
+    resource = RESOURCES[slug]
+    queryset = _scoped_queryset(resource, workspace_id, search)
+    if view_config is not None:
+        queryset = apply_view_config(queryset, resource.model, view_config)
+    try:
+        return queryset.count()
+    except (OperationalError, ProgrammingError):
+        return 0
 
 
 def get_row(slug: str, pk: int, workspace_id: int | None) -> dict[str, Any] | None:

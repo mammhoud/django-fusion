@@ -3,17 +3,18 @@ from __future__ import annotations
 
 from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
-from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
+from apps.core.realtime import safe_publish_workspace_event
 from apps.core.views import LoopPageView
 
+from . import export
 from .forms import InvoiceForm, PaymentForm
 from .models import Invoice, Payment, RevenueEvent
-from .services import revenue_trend_results
+from .services import revenue_trend_results, trend_aggregates
 
 
 def _workspace_id(request: HttpRequest) -> int | None:
@@ -96,7 +97,10 @@ def invoice_create(request: HttpRequest) -> HttpResponse:
     form = InvoiceForm(request.POST, request=request)
     if not form.is_valid():
         return render(request, "dashboard/partials/invoice_form.html", {"invoice_form": form}, status=422)
-    form.save()
+    invoice = form.save()
+    safe_publish_workspace_event(
+        invoice.workspace_id, "resource.created", {"resource": "invoices", "pk": invoice.pk}
+    )
     return render(request, "dashboard/partials/invoice_success.html", _finance_context(request))
 
 
@@ -106,8 +110,36 @@ def payment_create(request: HttpRequest) -> HttpResponse:
     form = PaymentForm(request.POST, request=request)
     if not form.is_valid():
         return render(request, "dashboard/partials/payment_form.html", {"payment_form": form}, status=422)
-    form.save()
+    payment = form.save()
+    safe_publish_workspace_event(
+        payment.workspace_id, "resource.created", {"resource": "payments", "pk": payment.pk}
+    )
+    safe_publish_workspace_event(
+        payment.invoice.workspace_id, "resource.updated", {"resource": "invoices", "pk": payment.invoice_id}
+    )
     return render(request, "dashboard/partials/payment_success.html", _finance_context(request))
+
+
+@login_required
+def finance_export(request: HttpRequest) -> HttpResponse:
+    """Export the workspace's invoices, payments, or POS revenue as CSV/JSON.
+
+    ``?kind=invoices|payments|pos_revenue&format=csv|json``. Read-only and
+    workspace-scoped; the CSV download is attachment-served.
+    """
+    kind = request.GET.get("kind", "invoices")
+    fmt = request.GET.get("format", "csv")
+    if kind not in export.EXPORTERS:
+        return JsonResponse({"detail": "Unknown export kind."}, status=404)
+    if fmt not in {"csv", "json"}:
+        return JsonResponse({"detail": "Format must be csv or json."}, status=400)
+    workspace_id = _workspace_id(request)
+    rows = export.EXPORTERS[kind](workspace_id)
+    if fmt == "json":
+        return JsonResponse({"results": export.jsonable_rows(rows), "count": len(rows)})
+    response = HttpResponse(export.to_csv(rows), content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="loop-crm-{kind}.csv"'
+    return response
 
 
 @login_required
@@ -125,7 +157,7 @@ def revenue_trend_api(request: HttpRequest) -> JsonResponse:
             _scoped(RevenueEvent.objects.all(), request)
             .annotate(month=TruncMonth("recognized_on"))
             .values("month")
-            .annotate(total=Sum("amount"), events=Count("id"))
+            .annotate(**trend_aggregates())
             .order_by("month")
         )
     except (OperationalError, ProgrammingError):

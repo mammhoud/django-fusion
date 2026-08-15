@@ -1,0 +1,256 @@
+{% load static %}
+<section class="loop-card loop-card--wide" aria-label="Workflow canvas" id="workflow-dag-panel">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Canvas</span><h2>Node &amp; edge graph</h2></div><span class="loop-pill">DAG</span></div>
+  <div id="workflow-dag" data-workflows='{{ workflows_json }}' data-actions='{{ action_catalog_json }}' style="margin-top:1rem;">
+    {% if workflows %}
+    <div class="loop-channels" style="align-items:center;">
+      <label class="loop-form__field" style="margin:0;min-width:16rem;"><span>Workflow</span><select id="dag-workflow" aria-label="Workflow"></select></label>
+      <div class="loop-channels__actions" style="margin-left:auto;">
+        <button class="loop-button loop-button--quiet" type="button" id="dag-add">Add node</button>
+        <button class="loop-button loop-button--primary" type="button" id="dag-save"><span>Save</span><span aria-hidden="true">↗</span></button>
+        <span id="dag-status" class="loop-pill" role="status" style="display:none;"></span>
+      </div>
+    </div>
+    <div class="loop-dag-canvas" id="dag-canvas" style="position:relative;margin-top:1rem;height:22rem;overflow:auto;border:1px solid var(--line);border-radius:.8rem;background:radial-gradient(circle at 30% 20%,#10211f 0,transparent 26rem),#0d131b;">
+      <svg id="dag-edges" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" aria-hidden="true"></svg>
+      <div id="dag-nodes" style="position:absolute;inset:0;"></div>
+      <div class="loop-dag-empty" id="dag-empty" style="display:none;position:absolute;inset:0;place-items:center;">No nodes yet — add one to start the flow.</div>
+    </div>
+    {% else %}
+    <div class="loop-empty-state"><strong>No workflows to edit yet.</strong><p>Create one in the form to enable the canvas.</p></div>
+    {% endif %}
+  </div>
+</section>
+{% if workflows %}
+<style>
+  .loop-dag-node { position:absolute; width:11rem; padding:.7rem .9rem; border:1px solid var(--line); border-radius:.6rem; background:#131c26; box-shadow:0 .5rem 1.2rem rgba(3,17,19,.4); cursor:grab; user-select:none; touch-action:none; }
+  .loop-dag-node:active { cursor:grabbing; }
+  .loop-dag-node__label { display:block; color:var(--accent); font:700 .6rem ui-monospace,SFMono-Regular,monospace; letter-spacing:.09em; text-transform:uppercase; }
+  .loop-dag-node__value { display:block; margin-top:.3rem; color:var(--ink); font-size:.82rem; }
+  .loop-dag-node--trigger { border-color:#3c786f; background:#102421; }
+  .loop-dag-node__remove { position:absolute; top:-.55rem; right:-.55rem; width:1.15rem; height:1.15rem; border:1px solid #744444; border-radius:999px; background:#2a1717; color:#ffaaa1; font:700 .7rem/1 ui-monospace,monospace; cursor:pointer; }
+  .loop-dag-node .dag-node-select { width:100%; margin-top:.35rem; border:1px solid #334252; border-radius:.4rem; background:#0d141c; color:var(--ink); padding:.35rem .45rem; font:600 .72rem ui-monospace,SFMono-Regular,monospace; cursor:pointer; }
+  .loop-dag-empty { color:#718394; font-size:.8rem; display:grid; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('workflow-dag');
+  if (!root) return;
+  var workflows = JSON.parse(root.dataset.workflows || '[]');
+  var actions = JSON.parse(root.dataset.actions || '[]');
+  var workflowSel = document.getElementById('dag-workflow');
+  var canvas = document.getElementById('dag-canvas');
+  var edgesSvg = document.getElementById('dag-edges');
+  var nodesEl = document.getElementById('dag-nodes');
+  var emptyEl = document.getElementById('dag-empty');
+  var statusEl = document.getElementById('dag-status');
+
+  var NODE_W = 176, NODE_H = 92, GAP_X = 220, GAP_Y = 120;
+  var state = { id: null, steps: [], trigger: '', positions: {} };
+  var drag = null;
+
+  function csrf() {
+    var m = document.cookie.match(/csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+
+  function actionLabel(id) {
+    for (var i = 0; i < actions.length; i++) if (actions[i].id === id) return actions[i].label;
+    return id;
+  }
+
+  function current() {
+    var id = parseInt(workflowSel.value, 10);
+    for (var i = 0; i < workflows.length; i++) if (workflows[i].id === id) return workflows[i];
+    return workflows[0];
+  }
+
+  function nodeKey(index) { return index === 0 ? 'trigger' : 'step-' + (index - 1); }
+
+  function layoutPositions() {
+    var positions = {};
+    var total = 1 + state.steps.length;
+    for (var i = 0; i < total; i++) {
+      positions[nodeKey(i)] = { x: 24 + i * GAP_X, y: 24 };
+    }
+    return positions;
+  }
+
+  function edgePath(a, b) {
+    var x1 = a.x + NODE_W, y1 = a.y + NODE_H / 2;
+    var x2 = b.x, y2 = b.y + NODE_H / 2;
+    var dx = Math.max(24, (x2 - x1) / 2);
+    return 'M ' + x1 + ' ' + y1 + ' C ' + (x1 + dx) + ' ' + y1 + ', ' + (x2 - dx) + ' ' + y2 + ', ' + x2 + ' ' + y2;
+  }
+
+  function drawEdges() {
+    var html = '';
+    var total = 1 + state.steps.length;
+    for (var i = 0; i < total - 1; i++) {
+      var a = state.positions[nodeKey(i)];
+      var b = state.positions[nodeKey(i + 1)];
+      if (a && b) {
+        html += '<path d="' + edgePath(a, b) + '" fill="none" stroke="#3c786f" stroke-width="2" stroke-dasharray="1 6" marker-end="url(#dag-arrow)" />';
+      }
+    }
+    html += '<defs><marker id="dag-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="#73d1bb" /></marker></defs>';
+    edgesSvg.innerHTML = html;
+  }
+
+  function render() {
+    nodesEl.innerHTML = '';
+    state.positions = layoutPositions();
+    var triggerNode = makeNode('trigger', 'Trigger', current().trigger || '—', true, null);
+    nodesEl.appendChild(triggerNode);
+    state.steps.forEach(function (step, index) {
+      nodesEl.appendChild(makeNode('step-' + index, 'Action ' + (index + 1), actionLabel(step), false, index));
+    });
+    emptyEl.style.display = (state.steps.length === 0) ? 'grid' : 'none';
+    drawEdges();
+  }
+
+  function makeNode(key, label, value, isTrigger, stepIndex) {
+    var node = document.createElement('div');
+    node.className = 'loop-dag-node' + (isTrigger ? ' loop-dag-node--trigger' : '');
+    node.dataset.key = key;
+    var pos = state.positions[key];
+    node.style.left = pos.x + 'px';
+    node.style.top = pos.y + 'px';
+    var labelEl = document.createElement('span');
+    labelEl.className = 'loop-dag-node__label';
+    labelEl.textContent = label;
+    node.appendChild(labelEl);
+    if (isTrigger) {
+      var valueEl = document.createElement('span');
+      valueEl.className = 'loop-dag-node__value';
+      valueEl.textContent = value;
+      node.appendChild(valueEl);
+    } else {
+      var select = document.createElement('select');
+      select.className = 'dag-node-select';
+      select.setAttribute('aria-label', 'Action');
+      select.innerHTML = actionOptions(value);
+      select.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      select.addEventListener('change', function () { state.steps[stepIndex] = select.value; });
+      node.appendChild(select);
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'loop-dag-node__remove';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', 'Remove node');
+      remove.addEventListener('click', function (e) { e.stopPropagation(); removeStep(stepIndex); });
+      node.appendChild(remove);
+    }
+    node.addEventListener('pointerdown', function (e) { startDrag(e, node, key, stepIndex); });
+    return node;
+  }
+
+  function actionOptions(selected) {
+    var html = '';
+    for (var i = 0; i < actions.length; i++) {
+      html += '<option value="' + actions[i].id + '"' + (actions[i].id === selected ? ' selected' : '') + '>' + actions[i].label + '</option>';
+    }
+    return html;
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function startDrag(e, node, key, stepIndex) {
+    if (stepIndex === null) return; // trigger is fixed
+    e.preventDefault();
+    drag = { key: key, stepIndex: stepIndex, startX: e.clientX, startY: e.clientY, originX: state.positions[key].x, originY: state.positions[key].y };
+    node.setPointerCapture(e.pointerId);
+    node.addEventListener('pointermove', onDragMove);
+    node.addEventListener('pointerup', onDragEnd);
+  }
+
+  function onDragMove(e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.startX;
+    var dy = e.clientY - drag.startY;
+    state.positions[drag.key] = { x: drag.originX + dx, y: drag.originY + dy };
+    var node = nodesEl.querySelector('[data-key="' + drag.key + '"]');
+    if (node) { node.style.left = state.positions[drag.key].x + 'px'; node.style.top = state.positions[drag.key].y + 'px'; }
+    drawEdges();
+  }
+
+  function onDragEnd(e) {
+    var node = nodesEl.querySelector('[data-key="' + drag.key + '"]');
+    if (node) { node.removeEventListener('pointermove', onDragMove); node.removeEventListener('pointerup', onDragEnd); }
+    reorderFromPosition(drag.key, drag.stepIndex);
+    drag = null;
+    render();
+  }
+
+  function reorderFromPosition(key, oldIndex) {
+    var pos = state.positions[key];
+    var newIndex = 0;
+    for (var k in state.positions) {
+      if (k === key || k === 'trigger') continue;
+      if (state.positions[k].x < pos.x) newIndex++;
+    }
+    if (newIndex === oldIndex) return;
+    var step = state.steps.splice(oldIndex, 1)[0];
+    state.steps.splice(newIndex, 0, step);
+  }
+
+  function removeStep(index) {
+    state.steps.splice(index, 1);
+    render();
+  }
+
+  function addStep() {
+    state.steps.push(actions.length ? actions[0].id : '');
+    render();
+  }
+
+  function showStatus(text, ok) {
+    statusEl.textContent = text;
+    statusEl.style.display = 'inline-flex';
+    statusEl.style.color = ok ? 'var(--accent-2)' : '#ffaaa1';
+    setTimeout(function () { statusEl.style.display = 'none'; }, 3200);
+  }
+
+  function load() {
+    var wf = current();
+    if (!wf) return;
+    state = { id: wf.id, steps: (wf.actions || []).slice(), trigger: wf.trigger, positions: {} };
+    render();
+  }
+
+  for (var i = 0; i < workflows.length; i++) {
+    var opt = document.createElement('option');
+    opt.value = workflows[i].id; opt.textContent = workflows[i].name;
+    workflowSel.appendChild(opt);
+  }
+  workflowSel.addEventListener('change', load);
+  document.getElementById('dag-add').addEventListener('click', addStep);
+  document.getElementById('dag-save').addEventListener('click', function () {
+    var wf = current();
+    if (!wf) return;
+    fetch('/fragments/workflows/' + wf.id + '/steps/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() },
+      body: JSON.stringify({ trigger: wf.trigger, actions: state.steps })
+    }).then(function (resp) {
+      return resp.json().then(function (body) { return { ok: resp.ok, body: body }; });
+    }).then(function (result) {
+      if (result.ok) {
+        wf.trigger = result.body.trigger;
+        wf.actions = result.body.actions;
+        state.steps = (result.body.actions || []).slice();
+        showStatus('Saved', true);
+      } else {
+        showStatus((result.body.actions || result.body.trigger || 'Save failed'), false);
+      }
+    }).catch(function () { showStatus('Save failed', false); });
+  });
+
+  load();
+})();
+</script>
+{% endif %}

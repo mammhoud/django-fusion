@@ -9,6 +9,7 @@ urlpatterns = [
     path("contacts/", resource_api, {"resource": "contacts"}, name="contacts_api"),
     path("deals/", resource_api, {"resource": "deals"}, name="deals_api"),
     path("pipelines/", resource_api, {"resource": "pipelines"}, name="pipelines_api"),
+    path("activities/", resource_api, {"resource": "activities"}, name="activities_api"),
     path("board/", crm_views.pipeline_board_api, name="pipeline_board_api"),
     path("deals/<int:pk>/stage/", crm_views.deal_move_api, name="deal_move_api"),
 ]

@@ -1,6 +1,8 @@
 """Render-first pages and HTMX interactions for Loop-CRM."""
 from __future__ import annotations
 
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -14,10 +16,12 @@ from django.views.generic import TemplateView
 from django_fusion.tasks.views import TaskCenterView as FusionTaskCenterView
 
 from apps.crm.custom_fields import custom_object_catalog
+from apps.crm.models import CustomObjectDefinition
 from apps.marketing.connectors import platform_catalog
 
 from .forms import WorkflowDefinitionForm
-from .models import AuditLog, UserProfile, WorkflowDefinition, WorkflowRun
+from .importer import EXPECTED_COLUMNS, IMPORTABLE_OBJECTS, import_rows, parse_csv
+from .models import AuditLog, SavedView, UserProfile, WorkflowDefinition, WorkflowRun
 from .navigation import breadcrumbs_for, module_by_id, navigation_context
 from .permissions import (
     can_manage_deals,
@@ -27,9 +31,11 @@ from .permissions import (
     is_sales,
     role_of,
 )
+from .realtime import safe_publish_workspace_event
 from .resources import list_rows, resolve_resource
 from .tables import MemberTable
 from .tenancy import current_workspace_id
+from .workflows import WORKFLOW_ACTION_CATALOG, trigger_catalog, workflow_action_catalog
 
 
 def is_htmx_request(request: HttpRequest) -> bool:
@@ -72,6 +78,17 @@ def workflow_context(request: HttpRequest) -> dict:
         "recent_workflow_runs": list(runs.order_by("-queued_at")[:8])
         if definitions
         else [],
+        "action_catalog": workflow_action_catalog(),
+        "trigger_catalog": trigger_catalog(),
+        # Serialized for the visual editor's vanilla-JS state.
+        "action_catalog_json": json.dumps(workflow_action_catalog()),
+        "trigger_catalog_json": json.dumps(trigger_catalog()),
+        "workflows_json": json.dumps(
+            [
+                {"id": d.pk, "name": d.name, "trigger": d.trigger, "actions": list(d.actions or [])}
+                for d in definitions
+            ]
+        ),
     }
 
 
@@ -242,6 +259,9 @@ def workflow_create(request: HttpRequest) -> HttpResponse:
         profile = getattr(request.user, "profile", None)
         workflow.workspace = getattr(profile, "workspace", None)
     workflow.save()
+    safe_publish_workspace_event(
+        workflow.workspace_id, "resource.created", {"resource": "workflows", "pk": workflow.pk}
+    )
     response = render(
         request,
         "dashboard/partials/workflow_success.html",
@@ -253,11 +273,45 @@ def workflow_create(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @login_required
+def workflow_steps_update(request: HttpRequest, pk: int) -> JsonResponse:
+    """Update a workflow's trigger + ordered action steps from the visual editor.
+
+    Actions are validated against the product action catalog so a client can
+    never persist an executable step the executor does not know how to run.
+    """
+    workflow = get_object_or_404(_workflow_queryset(current_workspace_id(request)), pk=pk)
+    try:
+        payload = json.loads(request.body or b"{}")
+    except (TypeError, ValueError):
+        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+    trigger = str(payload.get("trigger") or "").strip()
+    actions = payload.get("actions")
+    allowed_actions = {item["id"] for item in WORKFLOW_ACTION_CATALOG}
+    if not trigger:
+        return JsonResponse({"trigger": "A trigger is required."}, status=400)
+    if not isinstance(actions, list) or not all(
+        isinstance(action, str) and action.strip() in allowed_actions for action in actions
+    ):
+        return JsonResponse({"actions": "Actions must be an array of known action ids."}, status=400)
+    workflow.trigger = trigger
+    workflow.actions = [action.strip() for action in actions]
+    workflow.save(update_fields=["trigger", "actions", "updated_at"])
+    safe_publish_workspace_event(
+        workflow.workspace_id, "resource.updated", {"resource": "workflows", "pk": workflow.pk}
+    )
+    return JsonResponse({"id": workflow.pk, "trigger": workflow.trigger, "actions": workflow.actions})
+
+
+@require_POST
+@login_required
 def workflow_toggle(request: HttpRequest, pk: int) -> HttpResponse:
     """Toggle a workflow between active and paused, preserving its run history."""
     workflow = get_object_or_404(_workflow_queryset(current_workspace_id(request)), pk=pk)
     workflow.status = "paused" if workflow.status == "active" else "active"
     workflow.save(update_fields=["status", "updated_at"])
+    safe_publish_workspace_event(
+        workflow.workspace_id, "resource.updated", {"resource": "workflows", "pk": workflow.pk}
+    )
     return render(
         request,
         "dashboard/partials/workflow_row.html",
@@ -299,10 +353,16 @@ def workflow_run(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 def navigation_fragment(request: HttpRequest) -> HttpResponse:
-    """Return the complete navigator; only active flags depend on the path."""
+    """Return the complete navigator; only active flags depend on the path.
+
+    Also carries ``workspace_id`` so the Astro shell (which is statically
+    built and cannot know the tenant at build time) can open the same
+    workspace-scoped SSE stream the render-first shell uses.
+    """
     context = {
         "navigation": navigation_context(request.GET.get("path", request.path)),
         "navigation_fragment": True,
+        "workspace_id": current_workspace_id(request),
     }
     template = (
         "dashboard/navigation_astro.html"
@@ -418,6 +478,188 @@ class IntegrationsView(LoopPageView):
         ]
         headers, table_rows = _table(["platform", "capabilities"], rows)
         context["table_headers"] = ["Platform", "Capabilities"]
+        context["table_rows"] = table_rows
+        context["table_empty"] = self.empty_message
+        return context
+
+
+class ReportsView(LoopPageView):
+    """Real attribution/finance report: campaign revenue + pipeline value."""
+
+    template_name = "dashboard/reports.html"
+    module_id = "attribution"
+    page_title = "Revenue reports"
+    page_kicker = "Attribution · reports"
+    page_description = "Campaign revenue, pipeline value, and attribution touchpoints — workspace-scoped."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workspace_id = current_workspace_id(self.request)
+        from django.db.models import Count, Sum
+
+        from apps.attribution.models import AttributionTouchpoint
+        from apps.crm.models import Deal
+        from apps.finance.models import RevenueEvent
+
+        revenue = RevenueEvent.objects.all()
+        deals = Deal.objects.all()
+        touchpoints = AttributionTouchpoint.objects.all()
+        if workspace_id is not None:
+            revenue = revenue.filter(workspace_id=workspace_id)
+            deals = deals.filter(workspace_id=workspace_id)
+            touchpoints = touchpoints.filter(workspace_id=workspace_id)
+
+        campaign_rows = []
+        for row in revenue.values("campaign__name").annotate(total=Sum("amount"), count=Count("id")).order_by("-total"):
+            campaign_rows.append(
+                {"campaign": row["campaign__name"] or "Unattributed", "revenue": str(row["total"] or "0"), "events": row["count"]}
+            )
+        stage_rows = []
+        for row in deals.values("stage__name").annotate(total=Sum("value"), count=Count("id")).order_by("stage__name"):
+            stage_rows.append(
+                {"stage": row["stage__name"] or "No stage", "value": str(row["total"] or "0"), "deals": row["count"]}
+            )
+        context["campaign_revenue"] = campaign_rows
+        context["pipeline_value"] = stage_rows
+        context["touchpoint_count"] = touchpoints.count()
+        return context
+
+
+class CustomObjectsView(LoopPageView):
+    """Workspace-defined object types (runtime schema, validated JSON rows)."""
+
+    template_name = "dashboard/resource_list.html"
+    module_id = "workspace"
+    page_title = "Custom objects"
+    page_kicker = "Workspace · data model"
+    page_description = "Add a new record type without a migration — declarative fields with validated JSON rows."
+    empty_message = "No custom objects are defined yet."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workspace_id = current_workspace_id(self.request)
+        definitions = CustomObjectDefinition.objects.filter(is_active=True)
+        if workspace_id is not None:
+            definitions = definitions.filter(workspace_id=workspace_id)
+        rows = []
+        for definition in definitions.order_by("name"):
+            rows.append(
+                {
+                    "name": definition.name,
+                    "key": definition.key,
+                    "fields": len(definition.fields or []),
+                    "records": definition.records.count(),
+                }
+            )
+        headers, table_rows = _table(["name", "key", "fields", "records"], rows)
+        context["table_headers"] = ["Name", "Key", "Fields", "Records"]
+        context["table_rows"] = table_rows
+        context["table_empty"] = self.empty_message
+        return context
+
+
+class CustomObjectRecordsView(LoopPageView):
+    """One custom object's rows, columns derived from the definition schema."""
+
+    template_name = "dashboard/resource_list.html"
+    module_id = "workspace"
+    page_title = "Custom object records"
+    page_kicker = "Workspace · data model"
+    page_description = "Workspace-scoped rows for a custom object type."
+    empty_message = "No records for this object yet."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workspace_id = current_workspace_id(self.request)
+        queryset = CustomObjectDefinition.objects.filter(is_active=True, key=self.kwargs["key"])
+        if workspace_id is not None:
+            queryset = queryset.filter(workspace_id=workspace_id)
+        definition = get_object_or_404(queryset)
+        field_keys = [field["key"] for field in (definition.fields or [])]
+        headers = ["id", *field_keys, "updated_at"]
+        rows = []
+        for record in definition.records.order_by("-updated_at")[:100]:
+            row = {"id": record.pk, **{key: record.data.get(key, "") for key in field_keys}}
+            row["updated_at"] = record.updated_at.isoformat() if record.updated_at else ""
+            rows.append(row)
+        labels, table_rows = _table(headers, rows)
+        context["table_headers"] = [_field_label(header) for header in labels]
+        context["table_rows"] = table_rows
+        context["table_empty"] = self.empty_message
+        return context
+
+
+class ImportView(LoopPageView):
+    """CSV upload → tenant-scoped records for companies/contacts/deals."""
+
+    template_name = "dashboard/import.html"
+    module_id = "workspace"
+    page_title = "Import"
+    page_kicker = "Workspace · data"
+    page_description = "Import companies, contacts, and deals from a CSV upload — validated and workspace-scoped."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("import_object_types", IMPORTABLE_OBJECTS)
+        context.setdefault("expected_columns", EXPECTED_COLUMNS)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        object_type = (request.POST.get("object_type") or "").strip()
+        csv_file = request.FILES.get("csv_file")
+        if object_type not in IMPORTABLE_OBJECTS:
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "Choose a valid object type."}]}
+            return render(request, self.template_name, context, status=422)
+        if csv_file is None:
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "Choose a CSV file to upload."}]}
+            return render(request, self.template_name, context, status=422)
+        try:
+            text = csv_file.read().decode("utf-8-sig")
+        except UnicodeDecodeError:
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "CSV must be UTF-8 encoded."}]}
+            return render(request, self.template_name, context, status=422)
+        try:
+            rows = parse_csv(text)
+        except Exception as exc:  # noqa: BLE001 - surface a parse failure honestly
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": f"Could not parse CSV: {exc}"}]}
+            return render(request, self.template_name, context, status=422)
+        if not rows:
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "The CSV has no data rows."}]}
+            return render(request, self.template_name, context, status=422)
+        result = import_rows(object_type, rows, current_workspace_id(request), request.user)
+        context["import_result"] = result
+        context["import_object_type"] = object_type
+        return render(request, self.template_name, context)
+
+
+class SavedViewsView(LoopPageView):
+    """A member's saved list/kanban view configurations across resources."""
+
+    template_name = "dashboard/resource_list.html"
+    module_id = "workspace"
+    page_title = "Saved views"
+    page_kicker = "Workspace · views"
+    page_description = "Your persisted list and kanban view configurations for every resource."
+    empty_message = "You have not saved any views yet."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workspace_id = current_workspace_id(self.request)
+        queryset = SavedView.objects.filter(user=self.request.user)
+        if workspace_id is not None:
+            queryset = queryset.filter(workspace_id=workspace_id)
+        rows = [
+            {
+                "resource": view.resource,
+                "name": view.name,
+                "type": view.view_type,
+                "default": "yes" if view.is_default else "",
+            }
+            for view in queryset.order_by("resource", "name")
+        ]
+        headers, table_rows = _table(["resource", "name", "type", "default"], rows)
+        context["table_headers"] = ["Resource", "Name", "Type", "Default"]
         context["table_rows"] = table_rows
         context["table_empty"] = self.empty_message
         return context

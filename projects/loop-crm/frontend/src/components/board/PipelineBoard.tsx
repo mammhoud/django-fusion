@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Draggable } from 'gsap/Draggable';
 import StoreProvider from '@/components/StoreProvider';
+import { useWorkspaceRealtime, type WorkspaceEvent } from '@/lib/useWorkspaceRealtime';
+import { useLiveSync } from '@/lib/useLiveSync';
 import { setActivePipeline, setPipelines, moveDeal, type Pipeline } from '@/store/slices/crmSlice';
 
 gsap.registerPlugin(Draggable);
@@ -44,6 +46,7 @@ function Board() {
   const [reduced, setReduced] = useState(false);
   const [focusStageId, setFocusStageId] = useState<number | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
+  const { synced, flash } = useLiveSync();
 
   const pipeline = useMemo(
     () => pipelines.find((item) => item.id === activePipelineId) ?? pipelines[0],
@@ -51,15 +54,15 @@ function Board() {
   );
 
   // Load the board from the compatibility API road (proxied by Astro).
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch(BOARD_URL);
-        if (!res.ok) throw new Error(`Board request failed (${res.status})`);
-        const payload = await res.json();
-        if (cancelled) return;
-        dispatch(setPipelines(payload.results ?? []));
+  // ``silent`` refreshes keep the board interactive (no skeleton flash) when
+  // a realtime mutation event arrives.
+  const loadBoard = useCallback(async (silent = false) => {
+    try {
+      const res = await fetch(BOARD_URL);
+      if (!res.ok) throw new Error(`Board request failed (${res.status})`);
+      const payload = await res.json();
+      dispatch(setPipelines(payload.results ?? []));
+      if (!silent) {
         // Deep-link support: /crm/deals/?pipeline=<id>&stage=<id> (used by the
         // RevOps dashboard funnel) opens the board with that stage in focus.
         const params = new URLSearchParams(window.location.search);
@@ -69,16 +72,31 @@ function Board() {
           dispatch(setActivePipeline(pipelineParam));
         }
         if (stageParam) setFocusStageId(stageParam);
-        setStatus('ready');
-      } catch (err) {
-        if (!cancelled) setStatus('error');
-        console.error('Pipeline board load failed', err);
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+      setStatus('ready');
+    } catch (err) {
+      if (!silent) setStatus('error');
+      console.error('Pipeline board load failed', err);
+    }
   }, [dispatch]);
+
+  useEffect(() => {
+    void loadBoard();
+  }, [loadBoard]);
+
+  // Live updates: refresh the board when a deal or pipeline mutates in this
+  // workspace (own drags are already optimistic; this keeps other sessions and
+  // API-road mutations in sync).
+  useWorkspaceRealtime(
+    () => {
+      flash();
+      void loadBoard(true);
+    },
+    {
+      filter: (event: WorkspaceEvent) =>
+        event.event.startsWith('resource.') && ['deals', 'pipelines'].includes(String(event.data?.resource)),
+    },
+  );
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -234,6 +252,15 @@ function Board() {
         )}
         {saving && <span className="loop-board__saving">saving…</span>}
         {errorMsg && <span className="loop-board__error-msg" role="alert">{errorMsg}</span>}
+        <span
+          className="loop-live-sync"
+          data-synced={synced ? 'true' : 'false'}
+          role="status"
+          aria-live="polite"
+        >
+          <span className="loop-live-sync__dot" aria-hidden="true" />
+          <span className="loop-live-sync__label">{synced ? 'synced' : 'live'}</span>
+        </span>
         {focusStageId && (
           <button type="button" className="loop-board__focus-chip" onClick={() => setFocusStageId(null)}>
             Focused on {columns.find((stage) => stage.id === focusStageId)?.name ?? 'stage'} · clear

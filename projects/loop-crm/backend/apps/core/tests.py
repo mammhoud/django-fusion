@@ -273,7 +273,9 @@ class NavigationContractTests(TestCase):
         self._login()
         for path in [
             "/crm/pipelines/",
+            "/crm/activities/",
             "/marketing/campaigns/",
+            "/marketing/media/",
             "/attribution/touchpoints/",
             "/attribution/reports/",
             "/settings/integrations/",
@@ -456,7 +458,9 @@ class NavigationContractTests(TestCase):
             stage=lead_stage,
             expected_close_date="2026-10-16",
         )
-        with patch("plugins.workers.tasks.execute_workflow.send") as send:
+        with patch("plugins.workers.tasks.execute_workflow.send") as send, patch(
+            "plugins.workers.tasks.broker_reachable", return_value=True
+        ):
             deal.transition_to_stage(won_stage)
         self.assertEqual(deal.actual_close_date, timezone.localdate())
         send.assert_called_once()

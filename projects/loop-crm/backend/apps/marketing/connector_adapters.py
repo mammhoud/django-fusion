@@ -1,10 +1,16 @@
-"""Real provider adapters for Loop-CRM social publishing.
+"""Provider adapters for Loop-CRM social publishing.
 
-LinkedIn and X (Twitter) implement the ``SocialConnector`` contract from
-``apps.marketing.connectors``. They run only when the channel holds an OAuth
-token; without credentials the dispatcher returns the safe
-``UnconfiguredConnector`` so a post is never marked published without
-provider I/O.
+Six platforms (LinkedIn, X/Twitter, Mastodon, Bluesky, Discord, Slack)
+implement the ``SocialConnector`` contract with real provider HTTP. Discord
+and Slack publish via incoming webhooks — no OAuth, the webhook URL stored on
+the channel is itself the credential. The remaining six catalog platforms
+(Instagram, Facebook, TikTok, YouTube, Reddit, WhatsApp) use
+``CatalogOnlyConnector``: they are discoverable and credential-gated, but
+honestly report that their publish API is not wired yet rather than marking a
+post published without provider I/O.
+
+A real adapter runs only when the channel holds a credential; otherwise the
+dispatcher returns the safe ``UnconfiguredConnector``.
 
 HTTP uses ``urllib.request`` (stdlib) so no extra dependency is needed.
 """
@@ -31,7 +37,14 @@ class _Http:
         try:
             with urllib.request.urlopen(request, timeout=20) as response:
                 body = response.read().decode("utf-8", errors="replace")
-                return response.status, json.loads(body) if body else {}
+                if not body:
+                    return response.status, {}
+                try:
+                    return response.status, json.loads(body)
+                except ValueError:
+                    # Some providers (e.g. Slack webhooks) ack with a plain-text
+                    # body rather than JSON; surface it under ``_raw``.
+                    return response.status, {"_raw": body}
         except urllib.error.HTTPError as exc:
             try:
                 body = json.loads(exc.read().decode("utf-8", errors="replace"))
@@ -63,6 +76,16 @@ class _Http:
         if token:
             headers["Authorization"] = f"Bearer {token}"
         return cls._request(url, method="POST", headers=headers, data=data)
+
+
+def _with_query(url: str, **params: str) -> str:
+    """Append query parameters to a URL, preserving any existing query."""
+    parts = urllib.parse.urlsplit(url)
+    query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+    query.extend((key, value) for key, value in params.items())
+    return urllib.parse.urlunsplit(
+        (parts.scheme, parts.netloc, parts.path, urllib.parse.urlencode(query), parts.fragment)
+    )
 
 
 def _error_message(status: int, body: dict, fallback: str) -> str:
@@ -300,9 +323,153 @@ class BlueskyConnector(SocialConnector):
         return {}
 
 
+class CatalogOnlyConnector(SocialConnector):
+    """Honest, credential-gated adapter for platforms in the catalog whose
+    publish API is not yet wired into Loop-CRM.
+
+    The connector is discoverable (it appears in the integrations/channels
+    surface) and gates on the channel credential, but publishing never
+    succeeds: without a token it asks the operator to connect, and with one it
+    honestly reports that the platform's API road is not implemented yet.
+    """
+
+    label = ""
+    credential_hint = "an access token"
+
+    def __init__(self, channel):
+        self.channel = channel
+
+    def publish(self, post) -> PublishResult:
+        if not getattr(self.channel, "oauth_token", ""):
+            return PublishResult(False, message=f"Connect {self.label} before publishing.")
+        return PublishResult(
+            False,
+            message=f"{self.label} is in the catalog, but its publish API is not wired into Loop-CRM yet.",
+        )
+
+    def fetch_analytics(self, post) -> dict[str, int]:
+        return {}
+
+
+class InstagramConnector(CatalogOnlyConnector):
+    platform = "instagram"
+    label = "Instagram"
+    credential_hint = "a Meta Graph API token"
+
+
+class FacebookConnector(CatalogOnlyConnector):
+    platform = "facebook"
+    label = "Facebook"
+    credential_hint = "a Meta Graph API token"
+
+
+class TikTokConnector(CatalogOnlyConnector):
+    platform = "tiktok"
+    label = "TikTok"
+    credential_hint = "a Content Posting API token"
+
+
+class YouTubeConnector(CatalogOnlyConnector):
+    platform = "youtube"
+    label = "YouTube"
+    credential_hint = "a Google OAuth token"
+
+
+class RedditConnector(CatalogOnlyConnector):
+    platform = "reddit"
+    label = "Reddit"
+    credential_hint = "an OAuth token"
+
+
+class DiscordConnector(SocialConnector):
+    """Discord incoming-webhook publisher (``POST /api/webhooks/{id}/{token}``).
+
+    Discord needs no OAuth — the incoming webhook URL is the credential and is
+    stored on the channel's ``oauth_token``. ``?wait=true`` asks Discord to
+    return the created message so Loop-CRM can store its id.
+    """
+
+    platform = "discord"
+
+    def __init__(self, channel):
+        self.channel = channel
+
+    def publish(self, post) -> PublishResult:
+        webhook_url = (getattr(self.channel, "oauth_token", "") or "").strip()
+        if not webhook_url:
+            return PublishResult(False, message="Connect Discord (add an incoming webhook URL) before publishing.")
+        status, body = _Http.post_json(
+            _with_query(webhook_url, wait="true"), None, {"content": post.content[:2000]}
+        )
+        if status not in (200, 204):
+            return PublishResult(False, message=_error_message(status, body, "Discord rejected the post"))
+        external_id = str(body.get("id") or "").strip()
+        return PublishResult(True, external_id=external_id, message="Published to Discord.")
+
+    def fetch_analytics(self, post) -> dict[str, int]:
+        # Webhook delivery has no per-message analytics endpoint; stay honest.
+        return {}
+
+
+class SlackConnector(SocialConnector):
+    """Slack incoming-webhook publisher (``POST hooks.slack.com/services/...``).
+
+    The webhook URL is the credential (stored on ``oauth_token``) — no OAuth.
+    Slack acks with a plain-text ``ok`` and returns no message id, so the
+    post's ``external_id`` stays empty.
+    """
+
+    platform = "slack"
+
+    def __init__(self, channel):
+        self.channel = channel
+
+    def publish(self, post) -> PublishResult:
+        webhook_url = (getattr(self.channel, "oauth_token", "") or "").strip()
+        if not webhook_url:
+            return PublishResult(False, message="Connect Slack (add an incoming webhook URL) before publishing.")
+        status, body = _Http.post_json(webhook_url, None, {"text": post.content[:40000]})
+        if status != 200:
+            return PublishResult(False, message=_error_message(status, body, "Slack rejected the post"))
+        return PublishResult(True, message="Published to Slack.")
+
+    def fetch_analytics(self, post) -> dict[str, int]:
+        # Incoming webhooks expose no per-message analytics; stay honest.
+        return {}
+
+
+class WhatsAppConnector(CatalogOnlyConnector):
+    platform = "whatsapp"
+    label = "WhatsApp"
+    credential_hint = "a Cloud API token"
+
+
 ADAPTERS: dict[str, type[SocialConnector]] = {
     "linkedin": LinkedInConnector,
     "twitter": XConnector,
     "mastodon": MastodonConnector,
     "bluesky": BlueskyConnector,
+    "instagram": InstagramConnector,
+    "facebook": FacebookConnector,
+    "tiktok": TikTokConnector,
+    "youtube": YouTubeConnector,
+    "reddit": RedditConnector,
+    "discord": DiscordConnector,
+    "slack": SlackConnector,
+    "whatsapp": WhatsAppConnector,
 }
+
+
+#: Catalog platforms an operator connects by pasting a credential directly (no
+#: redirect OAuth). The credential is stored on ``SocialChannel.oauth_token``
+#: and drives the manual-connect UI on the channels page.
+MANUAL_CONNECT: tuple[dict[str, str], ...] = (
+    {"platform": "instagram", "label": "Instagram", "hint": "Meta Graph API access token"},
+    {"platform": "facebook", "label": "Facebook", "hint": "Meta Graph API access token"},
+    {"platform": "tiktok", "label": "TikTok", "hint": "TikTok Content Posting API token"},
+    {"platform": "youtube", "label": "YouTube", "hint": "Google OAuth access token"},
+    {"platform": "reddit", "label": "Reddit", "hint": "Reddit OAuth access token"},
+    {"platform": "discord", "label": "Discord", "hint": "Incoming webhook URL"},
+    {"platform": "slack", "label": "Slack", "hint": "Incoming webhook URL"},
+    {"platform": "whatsapp", "label": "WhatsApp", "hint": "WhatsApp Cloud API token"},
+)

@@ -6,6 +6,7 @@ from django import forms
 from apps.core.models import Workspace
 from apps.core.tenancy import current_workspace_id
 
+from .connector_adapters import MANUAL_CONNECT
 from .models import Campaign, Post, SocialChannel
 
 
@@ -71,3 +72,27 @@ class PostLifecycleForm(forms.Form):
     ]
 
     action = forms.ChoiceField(choices=ACTIONS)
+
+
+class ChannelConnectForm(forms.Form):
+    """Store a catalog-platform credential without a redirect OAuth flow.
+
+    The credential (token or webhook URL) lands on ``oauth_token``; the
+    optional refresh token lands on ``oauth_refresh_token``. Nothing is ever
+    rendered back to the browser.
+    """
+
+    platform = forms.ChoiceField(choices=[(p["platform"], p["label"]) for p in MANUAL_CONNECT])
+    account_name = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={"placeholder": "e.g. @handle, #channel, page name"}),
+    )
+    credential = forms.CharField(
+        widget=forms.TextInput(
+            attrs={"autocomplete": "off", "spellcheck": "false", "placeholder": "Access token or webhook URL"}
+        )
+    )
+    refresh_token = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={"autocomplete": "off", "spellcheck": "false", "placeholder": "Optional refresh token"}),
+    )

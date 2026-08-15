@@ -85,6 +85,32 @@ class RevenueTrendApiTests(TestCase):
         self.assertEqual(current["events"], 2)
         self.assertEqual(payload["grand_total"], "16500.00")
 
+    def test_trend_splits_deal_and_pos_revenue(self):
+        today = timezone.localdate()
+        this_month = date(today.year, today.month, 1)
+        # Deal revenue.
+        self._event(self.workspace, "10000.00", this_month)
+        # POS revenue (bridged from the apps/pos ledger, no deal).
+        RevenueEvent.objects.create(
+            workspace=self.workspace,
+            deal=None,
+            kind="pos_sale",
+            amount=Decimal("2500.00"),
+            recognized_on=this_month,
+            external_ref="pos:sale-1",
+        )
+
+        response = self.client.get("/api/v1/revenue/trend/")
+        payload = response.json()
+
+        current = payload["results"][-1]
+        self.assertEqual(current["total"], "12500.00")
+        self.assertEqual(current["deal_total"], "10000.00")
+        self.assertEqual(current["pos_total"], "2500.00")
+        self.assertEqual(payload["grand_total"], "12500.00")
+        self.assertEqual(payload["deal_total"], "10000.00")
+        self.assertEqual(payload["pos_total"], "2500.00")
+
     def test_trend_is_workspace_scoped(self):
         today = timezone.localdate()
         this_month = date(today.year, today.month, 1)
@@ -114,4 +140,7 @@ class RevenueTrendApiTests(TestCase):
         self.assertEqual(last["month"], current.strftime("%Y-%m"))
         self.assertEqual(last["total"], "12000.00")
         self.assertEqual(last["events"], 3)
+        # Rows without an explicit split default to zeroed POS/Deal buckets.
+        self.assertEqual(last["pos_total"], "0.00")
+        self.assertEqual(last["deal_total"], "0.00")
         self.assertTrue(all(row["total"] == "0.00" for row in payload["results"][:-1]))

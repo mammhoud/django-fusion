@@ -13,9 +13,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.core.models import Workspace, WorkflowDefinition
-from apps.crm.models import Company, Contact, Deal, Pipeline, PipelineStage
-from apps.marketing.models import Campaign, Post, SocialChannel
+from apps.core.models import WorkflowDefinition, Workspace
+from apps.crm.models import Activity, Company, Contact, Deal, Pipeline, PipelineStage
+from apps.marketing.models import Campaign, Media, Post, SocialChannel
 
 
 class TenantIsolationTests(TestCase):
@@ -209,6 +209,44 @@ class TenantIsolationTests(TestCase):
         channel_a.refresh_from_db()
         self.assertFalse(channel_a.is_active)
         self.assertEqual(channel_a.oauth_token, "")
+
+    def test_activities_and_media_screens_and_api_are_workspace_scoped(self):
+        pipeline_a = Pipeline.objects.create(workspace=self.workspace_a, name="A pipeline")
+        stage_a = PipelineStage.objects.create(pipeline=pipeline_a, name="Lead", stage_type="lead")
+        deal_a = Deal.objects.create(
+            workspace=self.workspace_a,
+            company=self.company_a,
+            name="A deal",
+            value="500.00",
+            pipeline=pipeline_a,
+            stage=stage_a,
+            expected_close_date="2026-10-16",
+        )
+        Activity.objects.create(
+            workspace=self.workspace_a, deal=deal_a, activity_type="call", subject="Call Alpha"
+        )
+        Activity.objects.create(
+            workspace=self.workspace_b, deal=self.deal_b, activity_type="call", subject="Call Beta"
+        )
+        Media.objects.create(workspace=self.workspace_a, file="a/asset.png", alt_text="Alpha asset")
+        Media.objects.create(workspace=self.workspace_b, file="b/asset.png", alt_text="Beta asset")
+
+        self.client.force_login(self.user_a)
+
+        activities_page = self.client.get("/crm/activities/")
+        self.assertEqual(activities_page.status_code, 200)
+        self.assertContains(activities_page, "Call Alpha")
+        self.assertNotContains(activities_page, "Call Beta")
+
+        media_page = self.client.get("/marketing/media/")
+        self.assertEqual(media_page.status_code, 200)
+        self.assertContains(media_page, "a/asset.png")
+        self.assertNotContains(media_page, "b/asset.png")
+
+        activities_api = self.client.get("/api/v1/activities/")
+        self.assertEqual(activities_api.status_code, 200)
+        subjects = [row["subject"] for row in activities_api.json()["results"]]
+        self.assertEqual(subjects, ["Call Alpha"])
 
     def test_content_calendar_form_dropdowns_are_workspace_scoped(self):
         channel_a = SocialChannel.objects.create(

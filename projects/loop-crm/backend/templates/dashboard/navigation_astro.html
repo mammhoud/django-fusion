@@ -1,4 +1,9 @@
 {% load nav_icons %}
+{% if workspace_id %}
+<div id="loop-app-realtime" hx-ext="sse" sse-connect="/sse/workspace/{{ workspace_id }}/events/">
+  <div id="loop-app-realtime-refresh" hx-get="" hx-trigger="sse:resource.created, sse:resource.updated, sse:resource.deleted, sse:pos.sales.ingested" hx-target="#loop-app-content" hx-select="#loop-app-content" hx-swap="outerHTML" hx-indicator="#loop-app-loader"></div>
+</div>
+{% endif %}
 <a class="loop-app-brand" href="/" aria-label="Loop CRM overview"><span class="loop-app-mark">{% loop_icon 'loop' 20 %}</span><span><strong>Loop</strong><small>revenue workspace</small></span></a>
 <nav aria-label="Workspace modules">
   {% for item in navigation %}

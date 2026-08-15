@@ -16,7 +16,6 @@ from typing import Any
 from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.db import OperationalError, ProgrammingError
-from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
 from django_fusion.plugins.apis import (
     build_bolt_auth,
@@ -30,11 +29,14 @@ from django_fusion.plugins.apis.bolt import (
 
 from apps.crm.custom_fields import custom_object_catalog
 from apps.finance.models import RevenueEvent
-from apps.finance.services import revenue_trend_results
+from apps.finance.services import revenue_trend_results, trend_aggregates
 from apps.marketing.connectors import platform_catalog
 
+from .realtime import safe_apublish_workspace_event
 from .resources import (
     RESOURCES,
+    bounded_int,
+    count_rows,
     create_row,
     delete_row,
     get_row,
@@ -74,6 +76,21 @@ def _workspace(user: Any):
 
 async def _request_user(request: Any) -> Any:
     return getattr(request, "user", None) or getattr(request, "auth", None)
+
+
+def _request_query(request: Any) -> dict[str, Any]:
+    """Read Bolt query params tolerantly across versions (dict/QueryDict)."""
+    query = getattr(request, "query_params", None)
+    if query is None:
+        query = getattr(request, "GET", {})
+    try:
+        items = dict(query)
+    except Exception:  # noqa: BLE001 - a missing query object means defaults
+        return {}
+    return {
+        key: (value[0] if isinstance(value, (list, tuple)) else value)
+        for key, value in items.items()
+    }
 
 
 async def _request_body(request: Any) -> dict[str, Any]:
@@ -187,7 +204,7 @@ if bolt is not None:
             queryset = (
                 queryset.annotate(month=TruncMonth("recognized_on"))
                 .values("month")
-                .annotate(total=Sum("amount"), events=Count("id"))
+                .annotate(**trend_aggregates())
                 .order_by("month")
             )
             async for row in queryset:
@@ -218,17 +235,32 @@ if bolt is not None:
 
         @bolt.get(f"/{resource}", **list_options)
         async def list_resource(request: Any) -> dict[str, Any]:
-            results = list_rows(resource, _workspace_id(await _request_user(request)))
-            return {"results": results, "count": len(results), "next": None, "previous": None}
+            query = _request_query(request)
+            limit = bounded_int(query.get("limit"), 100, 1, 200)
+            offset = bounded_int(query.get("offset"), 0, 0, 10**9)
+            search = str(query.get("search") or "")
+            workspace_id = _workspace_id(await _request_user(request))
+            results = await sync_to_async(list_rows)(
+                resource, workspace_id, limit=limit, offset=offset, search=search
+            )
+            total = await sync_to_async(count_rows)(resource, workspace_id, search=search)
+            return {
+                "results": results,
+                "count": total,
+                "next": offset + limit if offset + limit < total else None,
+                "previous": offset - limit if offset > 0 else None,
+            }
 
         @bolt.post(f"/{resource}", **detail_options)
         async def create_resource(request: Any) -> Any:
             body = await _request_body(request)
-            row, errors, _status = await sync_to_async(create_row)(
-                resource, body, _workspace_id(await _request_user(request))
-            )
+            workspace_id = _workspace_id(await _request_user(request))
+            row, errors, _status = await sync_to_async(create_row)(resource, body, workspace_id)
             if errors:
                 return {"detail": "Validation failed.", "errors": errors}
+            await safe_apublish_workspace_event(
+                workspace_id, "resource.created", {"resource": resource, "row": row}
+            )
             return row
 
         @bolt.get(f"/{resource}/{{pk}}", **detail_options)
@@ -243,22 +275,26 @@ if bolt is not None:
         @bolt.patch(f"/{resource}/{{pk}}", **detail_options)
         async def update_resource(request: Any, pk: Any) -> Any:
             body = await _request_body(request)
-            row, errors, status = await sync_to_async(update_row)(
-                resource, pk, body, _workspace_id(await _request_user(request))
-            )
+            workspace_id = _workspace_id(await _request_user(request))
+            row, errors, status = await sync_to_async(update_row)(resource, pk, body, workspace_id)
             if status == 404:
                 return {"detail": "Not found."}
             if errors:
                 return {"detail": "Validation failed.", "errors": errors}
+            await safe_apublish_workspace_event(
+                workspace_id, "resource.updated", {"resource": resource, "pk": pk, "row": row}
+            )
             return row
 
         @bolt.delete(f"/{resource}/{{pk}}", status_code=204, auth=auth_backends, guards=_protected["guards"])
         async def delete_resource(request: Any, pk: Any) -> Any:
-            ok = await sync_to_async(delete_row)(
-                resource, pk, _workspace_id(await _request_user(request))
-            )
+            workspace_id = _workspace_id(await _request_user(request))
+            ok = await sync_to_async(delete_row)(resource, pk, workspace_id)
             if not ok:
                 return {"detail": "Not found."}
+            await safe_apublish_workspace_event(
+                workspace_id, "resource.deleted", {"resource": resource, "pk": pk}
+            )
             return None
 
     for _resource in RESOURCES:

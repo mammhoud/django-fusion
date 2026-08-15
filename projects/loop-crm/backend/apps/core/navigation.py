@@ -44,6 +44,7 @@ MODULES: tuple[dict[str, Any], ...] = (
             {"id": "campaigns", "label": "Campaigns", "href": "/marketing/campaigns/"},
             {"id": "channels", "label": "Channels", "href": "/marketing/channels/"},
             {"id": "media", "label": "Media library", "href": "/marketing/media/"},
+            {"id": "approvals", "label": "Approvals", "href": "/marketing/approvals/"},
         ),
     },
     {
@@ -88,6 +89,9 @@ MODULES: tuple[dict[str, Any], ...] = (
             {"id": "workflows", "label": "Workflows", "href": "/settings/workflows/"},
             {"id": "integrations", "label": "Integrations", "href": "/settings/integrations/"},
             {"id": "custom-fields", "label": "Custom fields", "href": "/settings/custom-fields/"},
+            {"id": "custom-objects", "label": "Custom objects", "href": "/settings/custom-objects/"},
+            {"id": "saved-views", "label": "Saved views", "href": "/settings/saved-views/"},
+            {"id": "import", "label": "Import", "href": "/settings/import/"},
             {"id": "audit", "label": "Audit log", "href": "/settings/audit/"},
         ),
     },

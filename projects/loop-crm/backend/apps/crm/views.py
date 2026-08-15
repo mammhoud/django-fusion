@@ -11,6 +11,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
+from apps.core.realtime import safe_publish_workspace_event
 from apps.core.tenancy import current_workspace_id
 from apps.core.views import LoopPageView
 
@@ -112,7 +113,10 @@ def company_create(request: HttpRequest) -> HttpResponse:
     form = CompanyForm(request.POST, request=request)
     if not form.is_valid():
         return render(request, "dashboard/partials/company_form.html", {"company_form": form}, status=422)
-    form.save()
+    company = form.save()
+    safe_publish_workspace_event(
+        company.workspace_id, "resource.created", {"resource": "companies", "pk": company.pk}
+    )
     return render(request, "dashboard/partials/company_success.html", _crm_context(request, "companies"))
 
 
@@ -122,7 +126,10 @@ def contact_create(request: HttpRequest) -> HttpResponse:
     form = ContactForm(request.POST, request=request)
     if not form.is_valid():
         return render(request, "dashboard/partials/contact_form.html", {"contact_form": form}, status=422)
-    form.save()
+    contact = form.save()
+    safe_publish_workspace_event(
+        contact.workspace_id, "resource.created", {"resource": "contacts", "pk": contact.pk}
+    )
     return render(request, "dashboard/partials/contact_success.html", _crm_context(request, "contacts"))
 
 
@@ -132,7 +139,10 @@ def deal_create(request: HttpRequest) -> HttpResponse:
     form = DealForm(request.POST, request=request)
     if not form.is_valid():
         return render(request, "dashboard/partials/deal_form.html", {"deal_form": form}, status=422)
-    form.save()
+    deal = form.save()
+    safe_publish_workspace_event(
+        deal.workspace_id, "resource.created", {"resource": "deals", "pk": deal.pk}
+    )
     return render(request, "dashboard/partials/deal_success.html", _crm_context(request, "deals"))
 
 
@@ -233,4 +243,7 @@ def deal_move_api(request: HttpRequest, pk: int) -> JsonResponse:
         deal.transition_to_stage(stage)
     except ValueError as exc:
         return JsonResponse({"detail": str(exc)}, status=400)
+    safe_publish_workspace_event(
+        deal.workspace_id, "resource.updated", {"resource": "deals", "pk": deal.pk, "stage_id": stage.pk}
+    )
     return JsonResponse({"ok": True, "deal": _deal_payload(deal), "stage_id": stage.pk})

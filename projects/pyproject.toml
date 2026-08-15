@@ -42,6 +42,10 @@ dependencies = [
     "django-redis",
     "dramatiq[redis]",
     "django-dramatiq",
+    # Realtime (Channels + ASGI) — SSE/WebSocket transport for Loop-CRM.
+    "channels>=4.0",
+    "channels-redis>=4.1",
+    "daphne>=4.0",
     # django-fusion task scheduler (APScheduler) — cron-registered @task(schedule=...)
     "apscheduler>=3.10",
     # Storage & media

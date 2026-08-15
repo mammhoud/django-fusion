@@ -6,8 +6,12 @@ from django.test import SimpleTestCase
 
 from apps.marketing.connector_adapters import (
     BlueskyConnector,
+    CatalogOnlyConnector,
+    DiscordConnector,
     LinkedInConnector,
     MastodonConnector,
+    SlackConnector,
+    WhatsAppConnector,
     XConnector,
 )
 from apps.marketing.connectors import UnconfiguredConnector, connector_for
@@ -30,8 +34,8 @@ class DispatcherTests(SimpleTestCase):
     def test_no_channel_returns_safe_connector(self):
         self.assertIsInstance(connector_for("twitter"), UnconfiguredConnector)
 
-    def test_unknown_platform_with_token_stays_safe(self):
-        connector = connector_for("slack", channel=_channel(token="x"))
+    def test_truly_unknown_platform_with_token_stays_safe(self):
+        connector = connector_for("pinterest", channel=_channel(token="x"))
         self.assertIsInstance(connector, UnconfiguredConnector)
 
     def test_configured_channel_returns_real_adapter(self):
@@ -39,6 +43,8 @@ class DispatcherTests(SimpleTestCase):
         self.assertIsInstance(connector_for("twitter", channel=_channel(platform="twitter")), XConnector)
         self.assertIsInstance(connector_for("mastodon", channel=_channel(platform="mastodon")), MastodonConnector)
         self.assertIsInstance(connector_for("bluesky", channel=_channel(platform="bluesky")), BlueskyConnector)
+        self.assertIsInstance(connector_for("discord", channel=_channel(platform="discord")), DiscordConnector)
+        self.assertIsInstance(connector_for("slack", channel=_channel(platform="slack")), SlackConnector)
 
 
 class LinkedInConnectorTests(SimpleTestCase):
@@ -124,6 +130,120 @@ class BlueskyConnectorTests(SimpleTestCase):
             result = connector.publish(_post())
         self.assertFalse(result.success)
         self.assertIn("login", result.message.lower())
+
+
+class CatalogOnlyConnectorTests(SimpleTestCase):
+    def test_every_catalog_platform_has_a_named_adapter(self):
+        from apps.marketing.connector_adapters import ADAPTERS
+        from apps.marketing.connectors import PLATFORM_CATALOG
+
+        catalog_ids = {platform["id"] for platform in PLATFORM_CATALOG}
+        self.assertEqual(catalog_ids, set(ADAPTERS))
+
+    def test_dispatch_returns_catalog_connector_when_credentialed(self):
+        for platform in ("instagram", "facebook", "tiktok", "youtube", "reddit", "whatsapp"):
+            connector = connector_for(platform, channel=_channel(platform=platform, token="x"))
+            self.assertIsInstance(connector, CatalogOnlyConnector, platform)
+            self.assertEqual(connector.platform, platform)
+
+    def test_publish_without_credential_is_gated(self):
+        connector = WhatsAppConnector(_channel(platform="whatsapp", token=""))
+        result = connector.publish(_post())
+        self.assertFalse(result.success)
+        self.assertIn("Connect WhatsApp", result.message)
+
+    def test_publish_with_credential_honestly_reports_not_wired(self):
+        connector = WhatsAppConnector(_channel(platform="whatsapp", token="x"))
+        result = connector.publish(_post())
+        self.assertFalse(result.success)
+        self.assertIn("not wired", result.message)
+
+    def test_catalog_analytics_stays_empty(self):
+        connector = WhatsAppConnector(_channel(platform="whatsapp", token="token"))
+        self.assertEqual(connector.fetch_analytics(_post()), {})
+
+
+class DiscordConnectorTests(SimpleTestCase):
+    def test_publish_success_extracts_message_id(self):
+        connector = DiscordConnector(
+            _channel(platform="discord", token="https://discord.com/api/webhooks/123/abc")
+        )
+        with patch("apps.marketing.connector_adapters._Http.post_json", return_value=(200, {"id": "msg-9"})) as call:
+            result = connector.publish(_post())
+        self.assertTrue(result.success)
+        self.assertEqual(result.external_id, "msg-9")
+        url = call.call_args[0][0]
+        self.assertTrue(url.startswith("https://discord.com/api/webhooks/123/abc"))
+        self.assertIn("wait=true", url)
+        self.assertEqual(call.call_args[0][2], {"content": "Hello from Loop CRM"})
+
+    def test_publish_204_no_body_still_succeeds(self):
+        connector = DiscordConnector(
+            _channel(platform="discord", token="https://discord.com/api/webhooks/123/abc")
+        )
+        with patch("apps.marketing.connector_adapters._Http.post_json", return_value=(204, {})):
+            result = connector.publish(_post())
+        self.assertTrue(result.success)
+        self.assertEqual(result.external_id, "")
+
+    def test_publish_without_webhook_url_is_gated(self):
+        connector = DiscordConnector(_channel(platform="discord", token=""))
+        with patch("apps.marketing.connector_adapters._Http.post_json") as call:
+            result = connector.publish(_post())
+        self.assertFalse(result.success)
+        self.assertIn("Connect Discord", result.message)
+        call.assert_not_called()
+
+    def test_publish_rejected_reports_provider_message(self):
+        connector = DiscordConnector(
+            _channel(platform="discord", token="https://discord.com/api/webhooks/123/abc")
+        )
+        with patch("apps.marketing.connector_adapters._Http.post_json", return_value=(404, {"message": "Unknown Webhook"})):
+            result = connector.publish(_post())
+        self.assertFalse(result.success)
+        self.assertIn("Unknown Webhook", result.message)
+
+    def test_analytics_stays_empty(self):
+        connector = DiscordConnector(
+            _channel(platform="discord", token="https://discord.com/api/webhooks/123/abc")
+        )
+        self.assertEqual(connector.fetch_analytics(_post()), {})
+
+
+class SlackConnectorTests(SimpleTestCase):
+    def test_publish_success_plain_text_ack(self):
+        connector = SlackConnector(
+            _channel(platform="slack", token="https://hooks.slack.com/services/T/B/X")
+        )
+        with patch("apps.marketing.connector_adapters._Http.post_json", return_value=(200, {"_raw": "ok"})) as call:
+            result = connector.publish(_post())
+        self.assertTrue(result.success)
+        self.assertEqual(result.external_id, "")
+        self.assertEqual(call.call_args[0][0], "https://hooks.slack.com/services/T/B/X")
+        self.assertEqual(call.call_args[0][2], {"text": "Hello from Loop CRM"})
+
+    def test_publish_without_webhook_url_is_gated(self):
+        connector = SlackConnector(_channel(platform="slack", token=""))
+        with patch("apps.marketing.connector_adapters._Http.post_json") as call:
+            result = connector.publish(_post())
+        self.assertFalse(result.success)
+        self.assertIn("Connect Slack", result.message)
+        call.assert_not_called()
+
+    def test_publish_rejected_reports_failure(self):
+        connector = SlackConnector(
+            _channel(platform="slack", token="https://hooks.slack.com/services/T/B/X")
+        )
+        with patch("apps.marketing.connector_adapters._Http.post_json", return_value=(404, {"_raw": "no_service"})):
+            result = connector.publish(_post())
+        self.assertFalse(result.success)
+        self.assertIn("Slack rejected", result.message)
+
+    def test_analytics_stays_empty(self):
+        connector = SlackConnector(
+            _channel(platform="slack", token="https://hooks.slack.com/services/T/B/X")
+        )
+        self.assertEqual(connector.fetch_analytics(_post()), {})
 
 
 class XConnectorTests(SimpleTestCase):

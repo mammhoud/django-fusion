@@ -19,6 +19,9 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
 
 INSTALLED_APPS = [
+    # daphne must precede django.contrib.staticfiles so ``runserver`` serves
+    # the Channels ASGI stack instead of Django's sync dev server.
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -26,6 +29,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Channels provides the channel layer + consumers backing the realtime
+    # SSE/WebSocket road (see apps.core.realtime).
+    "channels",
     # django-fusion is the shared component/routing/fragment layer — it
     # replaces django-cotton: components, ``{% comp %}``, fragments and the
     # dual render-first / data-API pipeline come from here.
@@ -47,6 +53,7 @@ INSTALLED_APPS = [
     "apps.marketing",
     "apps.attribution",
     "apps.finance",
+    "apps.pos",
     # Worker implementations live in plugins.workers; no legacy task app is
     # needed because TaskExecution belongs to core in Loop-CRM.
 ]
@@ -176,6 +183,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.core.context_processors.workspace_id",
             ],
             "builtins": [
                 "django_fusion.comp.tags.components",
@@ -187,54 +195,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "wsgi.application"
 ASGI_APPLICATION = "asgi.application"
 
-# Local dev defaults to SQLite (frictionless scaffold); set USE_POSTGRES=1 to
-# switch to the PostgreSQL cluster the merge plan targets for production.
-if os.environ.get("USE_POSTGRES", "0") == "1":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB", "loop_crm"),
-            "USER": os.environ.get("POSTGRES_USER", "loop_crm"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "loop_crm"),
-            "HOST": os.environ.get("POSTGRES_HOST", "127.0.0.1"),
-            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        }
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
 
-# NOTE: AUTH_USER_MODEL is intentionally NOT swapped — django-fusion's models
-# reference auth.User directly. Role/workspace live on core.UserProfile instead.
-
-# Optional django-bolt API runtime. The Django JSON compatibility road remains
-# available when the package is not installed. SECRET_KEY is only a local
-# fallback; production deployments should set a dedicated signing secret.
-FUSION_BOLT_ENABLED = os.environ.get("FUSION_BOLT_ENABLED", "1") == "1"
-# Development may reuse SECRET_KEY; production must provide a dedicated JWT
-# secret or Bolt will not expose a signing backend.
-FUSION_BOLT_JWT_SECRET = os.environ.get("FUSION_BOLT_JWT_SECRET", SECRET_KEY if DEBUG else "")
-FUSION_BOLT_JWT_ALGORITHM = os.environ.get("FUSION_BOLT_JWT_ALGORITHM", "HS256")
-FUSION_BOLT_TOKEN_TTL = int(os.environ.get("FUSION_BOLT_TOKEN_TTL", "3600"))
-FUSION_BOLT_REFRESH_TTL = int(os.environ.get("FUSION_BOLT_REFRESH_TTL", "2592000"))
-FUSION_BOLT_API_KEY = os.environ.get("FUSION_BOLT_API_KEY", "")
-FUSION_BOLT_API_KEY_HEADER = os.environ.get("FUSION_BOLT_API_KEY_HEADER", "X-API-Key")
-FUSION_BOLT_AUTH_HEADER = os.environ.get("FUSION_BOLT_AUTH_HEADER", "Authorization")
-FUSION_BOLT_JWT_ISSUER = os.environ.get("FUSION_BOLT_JWT_ISSUER", "loop-crm")
-FUSION_BOLT_JWT_AUDIENCE = os.environ.get("FUSION_BOLT_JWT_AUDIENCE", "")
-
-# Redis-backed cache + Dramatiq broker (defaults for local dev).
 def _redis_url(db: int = 0) -> str:
     """Build a Redis URL, honoring REDIS_URL and an optional REDIS_PASSWORD.
 
     Compose deployments run passwordless Redis and pass REDIS_URL directly.
     Local development may run a password-protected Redis; REDIS_HOST/PORT/
-    PASSWORD then compose the URL so allauth's login rate-limiter and the
-    Dramatiq broker can connect.
+    PASSWORD then compose the URL so allauth's login rate-limiter, the
+    Dramatiq broker, and the channel layer can connect.
     """
     url = os.environ.get("REDIS_URL")
     if url:
@@ -264,6 +232,86 @@ def _redis_reachable(timeout: float = 0.4) -> bool:
         return False
 
 
+# Realtime channel layer. Redis-backed in composed/prod environments; an
+# in-process layer keeps local dev + the test suite working without Redis.
+# ``_redis_url(2)`` keeps the channel layer off the cache (0) and Dramatiq (1)
+# database indexes.
+if os.environ.get("REDIS_URL") or os.environ.get("REDIS_HOST"):
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url(2)]},
+        }
+    }
+elif DEBUG and not _redis_reachable():
+    CHANNEL_LAYERS = {
+        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url(2)]},
+        }
+    }
+
+# Local dev defaults to SQLite (frictionless scaffold); set USE_POSTGRES=1 to
+# switch to the PostgreSQL cluster the merge plan targets for production.
+if os.environ.get("USE_POSTGRES", "0") == "1":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB", "loop_crm"),
+            "USER": os.environ.get("POSTGRES_USER", "loop_crm"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "loop_crm"),
+            "HOST": os.environ.get("POSTGRES_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
+    }
+else:
+    # SQLite tests default to an in-memory shared-cache database (fast, and the
+    # right choice for the unit suite). ``LOOP_TEST_DB_NAME`` opts into a
+    # file-backed test database so subprocess tests (the daphne SSE/WebSocket
+    # smoke tests) can share the same SQLite file across processes — the
+    # in-memory DB cannot cross a process boundary.
+    _test_db_name = os.environ.get("LOOP_TEST_DB_NAME", "").strip()
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+    if _test_db_name:
+        DATABASES["default"]["TEST"] = {"NAME": _test_db_name}
+
+# NOTE: AUTH_USER_MODEL is intentionally NOT swapped — django-fusion's models
+# reference auth.User directly. Role/workspace live on core.UserProfile instead.
+
+# Optional django-bolt API runtime. The Django JSON compatibility road remains
+# available when the package is not installed. SECRET_KEY is only a local
+# fallback; production deployments should set a dedicated signing secret.
+FUSION_BOLT_ENABLED = os.environ.get("FUSION_BOLT_ENABLED", "1") == "1"
+# Development may reuse SECRET_KEY; production must provide a dedicated JWT
+# secret or Bolt will not expose a signing backend.
+FUSION_BOLT_JWT_SECRET = os.environ.get("FUSION_BOLT_JWT_SECRET", SECRET_KEY if DEBUG else "")
+FUSION_BOLT_JWT_ALGORITHM = os.environ.get("FUSION_BOLT_JWT_ALGORITHM", "HS256")
+FUSION_BOLT_TOKEN_TTL = int(os.environ.get("FUSION_BOLT_TOKEN_TTL", "3600"))
+FUSION_BOLT_REFRESH_TTL = int(os.environ.get("FUSION_BOLT_REFRESH_TTL", "2592000"))
+FUSION_BOLT_API_KEY = os.environ.get("FUSION_BOLT_API_KEY", "")
+FUSION_BOLT_API_KEY_HEADER = os.environ.get("FUSION_BOLT_API_KEY_HEADER", "X-API-Key")
+
+# Machine-to-machine POS ingest key (Formint POS → Loop-CRM finance). Empty
+# disables the ingest road; production must set a shared secret with Formint.
+POS_INGEST_API_KEY = os.environ.get("POS_INGEST_API_KEY", "")
+
+# Optional Slack incoming-webhook URL for the ``send_slack`` workflow action.
+# Empty keeps the action honest (it reports ``deferred`` until configured).
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL", "")
+FUSION_BOLT_AUTH_HEADER = os.environ.get("FUSION_BOLT_AUTH_HEADER", "Authorization")
+FUSION_BOLT_JWT_ISSUER = os.environ.get("FUSION_BOLT_JWT_ISSUER", "loop-crm")
+FUSION_BOLT_JWT_AUDIENCE = os.environ.get("FUSION_BOLT_JWT_AUDIENCE", "")
+
+# Redis-backed cache + Dramatiq broker (defaults for local dev).
 if os.environ.get("REDIS_URL") or os.environ.get("REDIS_HOST"):
     # Explicit configuration: Redis is required (compose, prod, CI).
     CACHES = {

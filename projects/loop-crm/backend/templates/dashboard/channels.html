@@ -13,6 +13,18 @@
         {% if x_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'twitter' %}">Connect X</a>{% else %}<span class="loop-channels__hint" title="Set X_CLIENT_ID and X_CLIENT_SECRET in the backend .env">X needs client credentials</span>{% endif %}
       </div>
     </section>
-    {% include "dashboard/partials/channel_list.html" %}
+    {% include "dashboard/partials/channel_connect_panel.html" %}
   </div>
+  <section class="loop-card loop-card--wide" aria-label="Connector catalog" style="margin-top:1.5rem">
+    <div class="loop-section-heading"><div><span class="loop-card__label">Connector catalog</span><h2>{{ platform_catalog|length }} platforms</h2></div><span class="loop-pill">provider-neutral</span></div>
+    <p class="loop-card__copy">Capabilities are explicit per platform — publish, media, and analytics where the connector advertises them.</p>
+    <ul class="loop-list">
+      {% for platform in platform_catalog %}
+        <li class="loop-list__item" data-platform="{{ platform.id }}" data-capabilities="{{ platform.capabilities|join:',' }}">
+          <span>{{ platform.label }}</span>
+          <span class="loop-pill">{{ platform.capabilities|join:' · ' }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 {% endblock %}

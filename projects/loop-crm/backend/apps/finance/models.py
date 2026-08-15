@@ -106,22 +106,33 @@ class RevenueEvent(models.Model):
         ("expansion", "Expansion"),
         ("renewal", "Renewal"),
         ("refund", "Refund"),
+        ("pos_sale", "POS sale"),
+        ("pos_refund", "POS refund"),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="revenue_events")
-    deal = models.ForeignKey("crm.Deal", on_delete=models.PROTECT, related_name="revenue_events")
+    # A deal is required for deal-linked revenue (deal_won/expansion/renewal) but
+    # null for POS revenue, which is bridged from the ``apps.pos`` ledger.
+    deal = models.ForeignKey("crm.Deal", on_delete=models.SET_NULL, null=True, blank=True, related_name="revenue_events")
     campaign = models.ForeignKey("marketing.Campaign", on_delete=models.SET_NULL, null=True, blank=True, related_name="revenue_events")
     invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True, related_name="revenue_events")
     kind = models.CharField(max_length=20, choices=KIND_CHOICES, default="deal_won")
     amount = models.DecimalField(max_digits=15, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))])
     recognized_on = models.DateField(default=timezone.localdate)
     metadata = models.JSONField(default=dict, blank=True)
+    # External correlation for idempotent ingestion (e.g. ``pos:<external_id>``).
+    external_ref = models.CharField(max_length=120, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-recognized_on", "-created_at"]
         constraints = [
             models.UniqueConstraint(fields=["workspace", "deal", "kind"], name="uniq_revenue_event_deal_kind"),
+            models.UniqueConstraint(
+                fields=["workspace", "external_ref"],
+                condition=~models.Q(external_ref=""),
+                name="uniq_revenue_event_external_ref",
+            ),
         ]
         indexes = [
             models.Index(fields=["workspace", "recognized_on"]),
@@ -129,4 +140,6 @@ class RevenueEvent(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.deal.name} · {self.amount}"
+        if self.deal_id:
+            return f"{self.deal.name} · {self.amount}"
+        return f"{self.get_kind_display()} · {self.amount}"

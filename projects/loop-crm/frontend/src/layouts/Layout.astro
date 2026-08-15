@@ -23,8 +23,10 @@ import '../styles/globals.css';
     <slot />
     <script>
       // HTMX bundled by Vite (no raw /node_modules/ path that would 404 in a
-      // static build).
+      // static build). The SSE extension opens the workspace-scoped
+      // Server-Sent Events stream injected by the navigation fragment.
       import 'htmx.org';
+      import 'htmx-ext-sse';
     </script>
   </body>
 </html>

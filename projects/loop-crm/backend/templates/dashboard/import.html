@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — Loop CRM{% endblock %}
+{% block content %}
+<nav class="loop-breadcrumb" aria-label="Breadcrumb">{% for crumb in breadcrumbs %}<span>{% if not forloop.first %}<span class="loop-breadcrumb__separator" aria-hidden="true">/</span> {% endif %}{% if forloop.last %}<span aria-current="page">{{ crumb.label }}</span>{% else %}<a href="{{ crumb.href }}">{{ crumb.label }}</a>{% endif %}</span>{% endfor %}</nav>
+<div class="loop-page-heading"><div><p class="loop-eyebrow">{{ page_kicker }}</p><h1>{{ page_title }}</h1><p class="loop-lede">{{ page_description }}</p></div><span class="loop-pill">CSV</span></div>
+<section class="loop-card loop-card--wide" aria-label="Import data">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Upload</span><h2>Import a CSV</h2></div><span class="loop-pill">workspace-scoped</span></div>
+  <form class="loop-form" method="post" enctype="multipart/form-data" style="margin-top:1rem;">
+    {% csrf_token %}
+    <label class="loop-form__field">
+      <span>Object type</span>
+      <select name="object_type">
+        {% for object_type in import_object_types %}<option value="{{ object_type }}">{{ object_type|title }}</option>{% endfor %}
+      </select>
+      <small>Which record type the CSV describes.</small>
+    </label>
+    <label class="loop-form__field">
+      <span>CSV file</span>
+      <input type="file" name="csv_file" accept=".csv,text/csv" required />
+      <small>UTF-8, first row is the header. Expected columns: {% for object_type, columns in expected_columns.items %}<code>{{ object_type }}</code> → {{ columns|join:", " }}{% if not forloop.last %}; {% endif %}{% endfor %}</small>
+    </label>
+    <button class="loop-button loop-button--primary" type="submit" style="margin-top:1rem;"><span>Import</span><span aria-hidden="true">↗</span></button>
+  </form>
+</section>
+{% if import_result %}
+<section class="loop-card loop-card--wide" aria-label="Import result">
+  <div class="loop-section-heading"><div><span class="loop-card__label">Result</span><h2>{{ import_result.created }} record{{ import_result.created|pluralize }} created</h2></div><span class="loop-pill">{{ import_object_type|default:"" }}</span></div>
+  {% if import_result.errors %}
+  <div class="loop-table-wrap">
+    <table class="loop-table">
+      <thead><tr><th>Row</th><th>Problem</th></tr></thead>
+      <tbody>{% for error in import_result.errors %}<tr><td>{{ error.row }}</td><td>{{ error.message }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="loop-empty-state"><strong>Import succeeded</strong><p>Every row was created in this workspace.</p></div>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

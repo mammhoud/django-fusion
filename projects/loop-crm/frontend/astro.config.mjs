@@ -51,6 +51,7 @@ export default defineConfig({
         '/admin': { target: BACKEND_URL, changeOrigin: true },
         '/fragment': { target: BACKEND_URL, changeOrigin: true },
         '/fragments': { target: BACKEND_URL, changeOrigin: true },
+        '/ws': { target: BACKEND_URL, changeOrigin: true, ws: true },
       },
     },
   },

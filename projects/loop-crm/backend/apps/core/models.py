@@ -18,6 +18,10 @@ class Workspace(models.Model):
     slug = models.SlugField(unique=True)
     timezone = models.CharField(max_length=50, default="UTC")
     currency = models.CharField(max_length=3, default="USD")
+    # Machine-to-machine correlation: the Formint POS org/branch reference that
+    # maps to this workspace during ingest. Null for tenant-created workspaces.
+    external_ref = models.CharField(max_length=120, null=True, blank=True, unique=True)
+    source = models.JSONField(default=dict, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -245,3 +249,104 @@ class TaskExecution(models.Model):
 
     def __str__(self) -> str:
         return f"{self.task_name} [{self.status}]"
+
+
+class SavedView(models.Model):
+    """A member's persisted list/kanban view configuration for one resource.
+
+    ``config`` carries a safe, declarative shape: ``columns`` (read-field
+    projection), ``sort`` (one allowlisted ordering), ``filters`` (field →
+    substring), and ``group_by`` (kanban grouping field). Views are scoped to
+    the owning member AND workspace so one user's board never leaks to another.
+    """
+
+    VIEW_TYPES = [
+        ("list", "List"),
+        ("kanban", "Kanban"),
+    ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="saved_views")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_views")
+    resource = models.CharField(max_length=60)
+    name = models.CharField(max_length=120)
+    view_type = models.CharField(max_length=20, choices=VIEW_TYPES, default="list")
+    config = models.JSONField(default=dict, blank=True)
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["resource", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workspace", "user", "resource", "name"],
+                name="uniq_saved_view_member_name",
+            ),
+        ]
+        indexes = [models.Index(fields=["workspace", "user", "resource"])]
+
+    def __str__(self) -> str:
+        return f"{self.user} · {self.resource} · {self.name}"
+
+
+class Webhook(models.Model):
+    """Workspace-configured outbound webhook subscription.
+
+    Each webhook listens for one or more domain events (or all events when
+    ``events`` is empty) and is delivered HMAC-signed by the ``deliver_webhook``
+    Dramatiq actor with retry backoff and a dead-letter terminal state.
+    """
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="webhooks")
+    url = models.URLField()
+    # Shared signing secret; never returned by the API resource projection.
+    secret = models.CharField(max_length=255, blank=True)
+    events = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_webhooks",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["workspace", "is_active"])]
+
+    def __str__(self) -> str:
+        return f"{self.url} ({', '.join(self.events) or 'all'})"
+
+
+class WebhookDelivery(models.Model):
+    """One delivery attempt (or dead-letter terminal state) for a webhook."""
+
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("succeeded", "Succeeded"),
+        ("failed", "Failed"),
+        ("dead", "Dead letter"),
+    ]
+
+    webhook = models.ForeignKey(Webhook, on_delete=models.CASCADE, related_name="deliveries")
+    event = models.CharField(max_length=120)
+    payload = models.JSONField(default=dict)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="queued")
+    attempt_count = models.PositiveIntegerField(default=0)
+    response_status = models.PositiveIntegerField(null=True, blank=True)
+    last_error = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["webhook", "status"]),
+            models.Index(fields=["webhook", "event"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.webhook.url} · {self.event} · {self.status}"

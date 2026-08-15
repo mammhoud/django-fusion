@@ -1,10 +1,10 @@
 # Loop-CRM — Merge & Architecture Plan
 
-> **Status:** Open work — the 8 unimplemented social adapters + their connect flows, the AI hub (Phase 4), Twenty-style extensibility (custom objects, saved views, visual workflow editor), the remaining domain screens, and realtime/email-sync/webhooks/CSV + full Bolt OpenAPI. See §12 for the ordered roadmap.
+> **Status:** Most of the merge is shipped: realtime SSE/WebSocket, webhooks + email/Slack connectors, finance CSV export, pagination/filtering, Activities + Media screens, custom objects (runtime schema), saved views, approval/report queues, CSV import, and a no-code step workflow editor. Remaining open work: the 6 credential-blocked social publish adapters + their OAuth connect flows, the AI hub (Phase 4), a visual DAG (canvas) editor, email sync (Gmail/Outlook), and full per-resource Bolt OpenAPI. See §12 for the ordered roadmap.
 > **Source projects:** [twentyhq/twenty](https://github.com/twentyhq/twenty) (CRM) · [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) (social scheduling)
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **License:** AGPL-3.0
-> **Last reviewed:** 2026-08-14
+> **Last reviewed:** 2026-08-15
 
 Loop-CRM merges Twenty's CRM (custom objects, pipelines, workflows) with
 Postiz's social scheduling (30+ platforms, AI post generation) into one
@@ -127,9 +127,11 @@ Django compatibility road (`/api/v1/`) is session-authenticated
 
 - **Phase 4 — AI hub:** lead scoring, sales emails, and social post generation
   behind provider adapters, with explicit workspace consent and audit logging.
-- **Phase 5 — domain screens:** replace the navigation-ready module surfaces
-  with paginated HTMX/JSON screens for companies, deals, calendar, analytics,
-  approvals, and reports.
+- **Phase 5 — domain screens:** shipped — the approval queue
+  (`/marketing/approvals/`), real revenue reports (`/attribution/reports/`),
+  custom objects (`/settings/custom-objects/`), saved views
+  (`/settings/saved-views/`), and CSV import (`/settings/import/`) now replace
+  the navigation-ready module surfaces.
 
 ### Navigation contract
 
@@ -211,22 +213,23 @@ or deferred against each source.
 | Twenty capability | Loop-CRM status | Notes |
 |---|---|---|
 | Custom **fields** | ⚠️ partial | `CustomFieldDefinition` (9 types) validated into the JSON column |
-| Custom **objects** (arbitrary) | ❌ not added | fixed to company/contact/deal/campaign/post — no runtime object schema |
-| Saved views (list/kanban per user) | ❌ not added | one board + generic resource tables |
-| No-code workflow editor | ⚠️ partial | persisted JSON catalog + form; no visual DAG editor |
+| Custom **objects** (arbitrary) | ✅ added | `CustomObjectDefinition` + `CustomObjectRecord` (validated JSON rows, no migrations per object) |
+| Saved views (list/kanban per user) | ✅ added | member- + workspace-scoped `SavedView`; `?view=` applies safe sort/filter |
+| No-code workflow editor | ⚠️ partial | step editor (trigger + ordered actions) shipped; visual DAG (canvas) editor remains |
 | Email sync (Gmail/Outlook) | ❌ not added | |
 | Notes/tasks/favorites as first-class | ⚠️ partial | folded into `Activity` types only |
-| GraphQL / webhooks / CSV import | ❌ not added | REST only (`/bolt/` + `/api/v1/`) |
+| GraphQL / webhooks / CSV import | ⚠️ partial | webhooks + CSV import shipped; GraphQL not added (REST only) |
 | AI agents | ❌ not added | Phase 4 |
 
 ### Postiz (social scheduling) — partial & missing
 
 | Postiz capability | Loop-CRM status | Notes |
 |---|---|---|
-| Real publish adapters | ⚠️ 4 of 12 | LinkedIn, X, Mastodon, Bluesky |
+| Real publish adapters | ⚠️ 6 of 12 | LinkedIn, X, Mastodon, Bluesky, Discord, Slack publish for real (Discord/Slack via incoming webhooks — no OAuth) |
+| Catalog adapters | ⚠️ 6 of 12 | Instagram/Facebook/TikTok/YouTube/Reddit/WhatsApp — named, credential-gated `CatalogOnlyConnector`s that honestly report "not wired yet" |
 | Analytics | ⚠️ partial | X metrics real; others return `{}` honestly |
 | OAuth connect | ⚠️ 2 flows | LinkedIn + X redirect OAuth; Mastodon/Bluesky app-password pending |
-| 30+ channels | ❌ not added | 12 cataloged, 4 implemented |
+| 30+ channels | ❌ not added | 12 cataloged, 6 real publish implementations + 6 gated catalog adapters |
 | AI generation / copilot | ❌ not added | Phase 4 |
 | Canva editor / RSS / marketplace | ❌ not added | |
 
@@ -241,19 +244,23 @@ or deferred against each source.
 | `/crm/contacts/` | Contacts | list + create form, cross-workspace relationship rejection |
 | `/crm/pipelines/` | Pipelines | resource table (real data) |
 | `/crm/deals/` | Deals board island | GSAP drag, keyboard chevrons, optimistic move + rollback, CSRF echo, pipeline tabs, stage focus chip, deep-link scroll |
-| `/crm/activities/` | Activities | module card (deferred — not yet a real table) |
+| `/crm/activities/` | Activities | resource table (real, workspace-scoped) via the `activities` resource |
 | `/marketing/` | Marketing landing | module cards |
 | `/marketing/calendar/` | Content calendar | composer + lifecycle transitions (submit/approve/schedule/publish/retry), channel status chips |
 | `/marketing/channels/` | Channels | connect (OAuth), disconnect, refresh, capability/status display |
 | `/marketing/campaigns/` | Campaigns | resource table |
-| `/marketing/media/` | Media library | module card (deferred) |
+| `/marketing/media/` | Media library | real list table (workspace-scoped; upload stays a file/multipart concern) |
+| `/marketing/approvals/` | Approvals | pending-approval queue with approve/reject HTMX transitions |
 | `/finance/` + `/invoices/` + `/payments/` + `/revenue/` | Finance | ModelForms, HTMX reset/list fragments, revenue trend |
-| `/attribution/`, `/touchpoints/`, `/reports/` | Attribution | touchpoints table; reports view |
+| `/attribution/`, `/touchpoints/`, `/reports/` | Attribution | touchpoints table; real revenue report (campaign revenue + pipeline value) |
 | `/tasks/` | Task center | shared+local job history |
 | `/settings/members/` | Members | django-tables2 + role matrix |
 | `/settings/workflows/` | Workflows | create/toggle/queue-run fragments |
 | `/settings/integrations/` | Integrations | platform catalog table |
 | `/settings/custom-fields/` | Custom fields | field catalog table |
+| `/settings/custom-objects/` (+ `/records/`) | Custom objects | runtime object schema + validated JSON rows, columns derived from the definition |
+| `/settings/saved-views/` | Saved views | member's list/kanban view configs |
+| `/settings/import/` | Import | CSV upload → companies/contacts/deals (tenant-scoped, per-row errors) |
 | `/settings/audit/` | Audit log | append-only trail table |
 | `/account/*` | allauth | login/signup/logout, password reset/change, email, social connections, profile |
 
@@ -266,8 +273,8 @@ or deferred against each source.
   the board uses GSAP `x,y` and the dash uses CSS `transform` only.
 - Use `will-change` sparingly; add it only to the drag cards and the trend bars.
 - Scope `backdrop-filter` to the sidebar/topbar; never on scrolling containers.
-- `async for` + `acount()` on the Bolt road; `[:100]` + `values(*fields)` on the
-  compatibility road; keep `select_related` on the render-first row helpers.
+- `async for` + `acount()` on the Bolt road; `limit`/`offset` + `values(*fields)`
+  on the compatibility road; keep `select_related` on the render-first row helpers.
 - The dual road already shares `apps/core/resources.py` — do not fork it.
 
 ### Motion & accessibility
@@ -285,6 +292,9 @@ or deferred against each source.
 - Keep FK validation in `_resolve_relation`; never accept an unscoped FK.
 - New writes must set `workspace_id` from `current_workspace_id` and reject a
   null workspace rather than defaulting to unscoped.
+- Collection GETs honor `limit` (1–200, default 100), `offset`, and `search`
+  (case-insensitive across the resource's text fields, tenant-scoped); the
+  response `count` is the filtered total and `next`/`previous` are offsets.
 
 ### Testing
 - `apps/core/test_tenancy.py` owns cross-tenant isolation; add a read + a
@@ -297,23 +307,36 @@ or deferred against each source.
 
 Ordered by impact; each phase is independently shippable.
 
-1. **Remaining platform adapters** — Instagram/Facebook/TikTok/YouTube/Reddit/
-   Discord/Slack/WhatsApp + their connect flows (app-password for Bluesky,
-   instance OAuth for Mastodon). Keep the `SocialConnector` contract.
+1. **Real publish implementations for the 6 remaining catalog adapters** —
+   Instagram/Facebook/TikTok/YouTube/Reddit/WhatsApp currently use the
+   credential-gated `CatalogOnlyConnector` (honest "not wired yet"); promote
+   each to a real publisher as credentials + their connect flows land
+   (app-password for Bluesky, instance OAuth for Mastodon). Discord and Slack
+   are already real incoming-webhook publishers. Keep the `SocialConnector`
+   contract.
 2. **AI hub (Phase 4)** — post generation, sales-email drafting, lead scoring
    behind provider adapters with workspace consent + `AuditLog` writes; reuse
    the `workflow_actions` deferred-action pattern.
-3. **Twenty-style extensibility** — saved views per user, arbitrary custom
-   objects (a `CustomObjectDefinition` + generic JSON record table, not
-   polymorphic models), and a visual (no-code) workflow editor.
-4. **Domain screens (Phase 5)** — paginated HTMX/JSON screens for activities,
-   media library, and approval/report queues; convert the two remaining
-   module cards into real tables.
-5. **Realtime + integrations** — WebSocket pipeline/board sync (or re-use
-   django-fusion's task/monitor contracts), webhooks for deal-won/post-
-   published, email sync, CSV import/export.
-6. **Data/API surface** — finish per-resource OpenAPI docs on the Bolt road
-   and add pagination/filtering to `resource_api`.
+3. **Twenty-style extensibility** — ✅ saved views per user, ✅ arbitrary custom
+   objects (`CustomObjectDefinition` + generic JSON record table, not
+   polymorphic models), and ⚠️ a no-code **step** workflow editor. Remaining:
+   a visual DAG (canvas) editor.
+4. **Domain screens (Phase 5)** — ✅ paginated HTMX screens for the
+   approval queue (`/marketing/approvals/`) and real revenue reports
+   (`/attribution/reports/`). Activities + media are also real
+   workspace-scoped tables; resource-table pagination/filtering is shipped.
+5. **Realtime + integrations** — ✅ WebSocket pipeline/board sync, ✅ webhooks
+   for deal-won/post-published, ✅ CSV import. Remaining: email sync
+   (Gmail/Outlook) and CSV export of arbitrary resource tables.
+6. **Data/API surface** — finish per-resource OpenAPI docs on the Bolt road.
+   (Pagination/filtering shipped: both roads accept `limit`/`offset`/`search`
+   on collection GETs, `count` is the filtered total, and `next`/`previous`
+   are offsets.)
+
+> **Finance + workflows + integrations** are planned separately in
+> [`formint-integration-finance-workflows.md`](formint-integration-finance-workflows.md) —
+> Formint POS financial-data ingestion into the finance module, workflow
+> action/template expansion, and webhooks/email/Slack/social/export connectors.
 
 ---
 

@@ -1,0 +1,5 @@
+<div id="channels-panel" class="loop-stack">
+  {% if connected %}<div class="loop-flash"><p class="loop-flash__success">{{ connected_platform }} · {{ connected_account }} — {{ connected_verb }}.</p></div>{% endif %}
+  {% include "dashboard/partials/channel_connect_form.html" %}
+  {% include "dashboard/partials/channel_list.html" %}
+</div>

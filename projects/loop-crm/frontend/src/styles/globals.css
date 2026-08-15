@@ -82,6 +82,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   html { scroll-behavior: auto; }
 }
 
+/* ── Live-sync chip (shared by the board and dashboard islands) ───────────── */
+.loop-live-sync { display:inline-flex; gap:.42rem; align-items:center; padding:.28rem .66rem; border:1px solid var(--loop-line); border-radius:99px; background:rgba(17,27,30,.6); color:var(--loop-dim); font:600 .62rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; transition:border-color .25s ease,color .25s ease,background .25s ease; }
+.loop-live-sync__dot { width:.42rem; height:.42rem; border-radius:99px; background:var(--loop-dim); transition:background .25s ease; }
+.loop-live-sync[data-synced="true"] { border-color:color-mix(in oklab, var(--loop-accent) 55%, transparent); background:#162c2b; color:var(--loop-accent-bright); }
+.loop-live-sync[data-synced="true"] .loop-live-sync__dot { background:var(--loop-accent-bright); animation:loop-live-pulse 1.1s ease-in-out infinite; }
+@keyframes loop-live-pulse { 0% { box-shadow:0 0 0 0 color-mix(in oklab, var(--loop-accent-bright) 60%, transparent); } 70% { box-shadow:0 0 0 .4rem transparent; } 100% { box-shadow:0 0 0 0 transparent; } }
+@media (prefers-reduced-motion:reduce) { .loop-live-sync[data-synced="true"] .loop-live-sync__dot { animation:none; } }
+
 /* ── Kanban pipeline board (React island, unscoped so client DOM matches) ── */
 .loop-board { display:flex; flex-direction:column; gap:1.15rem; margin-top:2.6rem; }
 .loop-board__rail { display:flex; flex-wrap:wrap; gap:.6rem 1rem; align-items:center; min-height:2.2rem; }
@@ -137,6 +145,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 /* ── RevOps dashboard (React island, unscoped so client DOM matches) ───────── */
 .loop-dash { display:flex; flex-direction:column; gap:1.4rem; margin-top:2.6rem; }
+.loop-dash__head { display:flex; justify-content:flex-end; }
 .loop-dash__kpis { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:1rem; }
 .loop-dash__kpis .loop-dash__stat { grid-column:span 2; } .loop-dash__kpis .loop-dash__stat:first-child { grid-column:span 4; }
 .loop-dash__stat { position:relative; overflow:hidden; }
@@ -170,10 +179,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .loop-dash__trend-head { display:flex; flex-wrap:wrap; gap:.6rem 1.2rem; align-items:baseline; margin-bottom:1.1rem; }
 .loop-dash__trend-total { color:var(--loop-accent-bright); font:650 clamp(1.4rem,2.4vw,1.9rem)/1 "JetBrains Mono",monospace; letter-spacing:-.04em; }
 .loop-dash__trend-meta { color:var(--loop-muted); font:500 .7rem "JetBrains Mono",monospace; }
+.loop-dash__trend-split { display:flex; flex-wrap:wrap; gap:.5rem 1.2rem; margin:-.55rem 0 1rem; }
+.loop-dash__trend-split span { display:inline-flex; gap:.4rem; align-items:baseline; color:var(--loop-muted); font:500 .68rem "JetBrains Mono",monospace; letter-spacing:.04em; text-transform:uppercase; }
+.loop-dash__trend-split i { width:.5rem; height:.5rem; border-radius:2px; align-self:center; }
+.loop-dash__trend-split b { color:var(--loop-ink); font-weight:650; font-size:.85rem; letter-spacing:0; text-transform:none; }
+.loop-dash__trend-split-deal i { background:var(--loop-accent); }
+.loop-dash__trend-split-pos i { background:#d3a469; }
 .loop-dash__trend-bars { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.6rem; align-items:end; min-height:9.5rem; }
 .loop-dash__trend-col { display:flex; flex-direction:column; gap:.45rem; align-items:center; }
-.loop-dash__trend-bar-wrap { display:flex; align-items:flex-end; width:100%; height:8rem; border-radius:.35rem .14rem .35rem .14rem; background:color-mix(in oklab, var(--loop-line) 40%, transparent); overflow:hidden; cursor:help; }
-.loop-dash__trend-bar { display:block; width:100%; min-height:.3rem; border-radius:inherit; background:linear-gradient(180deg, var(--loop-accent-bright), var(--loop-accent)); box-shadow:0 0 .9rem color-mix(in oklab, var(--loop-accent) 40%, transparent); transition:height .7s cubic-bezier(.16,1,.3,1); }
+.loop-dash__trend-bar-wrap { display:flex; flex-direction:column; justify-content:flex-end; gap:1px; width:100%; height:8rem; border-radius:.35rem .14rem .35rem .14rem; background:color-mix(in oklab, var(--loop-line) 40%, transparent); overflow:hidden; cursor:help; }
+.loop-dash__trend-bar { display:block; width:100%; min-height:.3rem; border-radius:inherit; transition:height .7s cubic-bezier(.16,1,.3,1); }
+.loop-dash__trend-bar--deal { background:linear-gradient(180deg, var(--loop-accent-bright), var(--loop-accent)); box-shadow:0 0 .9rem color-mix(in oklab, var(--loop-accent) 40%, transparent); }
+.loop-dash__trend-bar--pos { background:linear-gradient(180deg, #e8c48a, #c99a5b); box-shadow:0 0 .9rem color-mix(in oklab, #c99a5b 40%, transparent); }
 .loop-dash__trend-bar-wrap:hover .loop-dash__trend-bar { filter:brightness(1.15); }
 .loop-dash__trend-label { color:var(--loop-dim); font:500 .62rem "JetBrains Mono",monospace; text-transform:uppercase; letter-spacing:.05em; }
 @media (max-width:760px) { .loop-dash__trend-bars { grid-template-columns:repeat(3,minmax(0,1fr)); min-height:8rem; } }

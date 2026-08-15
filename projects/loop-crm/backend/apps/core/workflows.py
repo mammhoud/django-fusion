@@ -24,6 +24,13 @@ WORKFLOW_ACTION_CATALOG: tuple[dict[str, str], ...] = (
     {"id": "recalculate_attribution", "label": "Recalculate attribution", "module": "attribution"},
     {"id": "update_campaign_roi", "label": "Update campaign revenue", "module": "finance"},
     {"id": "create_invoice", "label": "Create invoice from won deal", "module": "finance"},
+    {"id": "mark_invoice_overdue", "label": "Mark invoice overdue", "module": "finance"},
+    {"id": "record_payment", "label": "Record invoice payment", "module": "finance"},
+    {"id": "reconcile_pos_sale", "label": "Reconcile POS sale", "module": "pos"},
+    {"id": "create_follow_up_task", "label": "Create follow-up task", "module": "crm"},
+    {"id": "send_email", "label": "Send email notification", "module": "workspace"},
+    {"id": "send_slack", "label": "Send Slack notification", "module": "workspace"},
+    {"id": "call_webhook", "label": "Call outbound webhook", "module": "workspace"},
     {"id": "notify_revops", "label": "Notify RevOps", "module": "workspace"},
 )
 
@@ -61,7 +68,58 @@ WORKFLOW_CATALOG: tuple[dict[str, Any], ...] = (
         "actions": ["recalculate_attribution", "update_campaign_roi", "create_invoice", "notify_revops"],
         "status": "ready",
     },
+    {
+        "id": "invoice-dunning",
+        "name": "Chase an overdue invoice",
+        "module": "finance",
+        "trigger": "invoice.due_date_passed",
+        "actions": ["mark_invoice_overdue", "send_email", "create_follow_up_task"],
+        "status": "ready",
+    },
+    {
+        "id": "payment-received",
+        "name": "Attribute a received payment",
+        "module": "finance",
+        "trigger": "payment.created",
+        "actions": ["update_campaign_roi", "notify_revops"],
+        "status": "ready",
+    },
+    {
+        "id": "pos-revenue-reconciled",
+        "name": "Reconcile POS revenue",
+        "module": "pos",
+        "trigger": "pos_sale.ingested",
+        "actions": ["reconcile_pos_sale", "notify_revops"],
+        "status": "ready",
+    },
+    {
+        "id": "contact-nurture",
+        "name": "Welcome a new contact",
+        "module": "crm",
+        "trigger": "contact.created",
+        "actions": ["assign_owner", "send_email"],
+        "status": "ready",
+    },
 )
+
+
+TRIGGER_CATALOG: tuple[tuple[str, str], ...] = (
+    ("contact.created", "Contact created"),
+    ("deal.stage_changed:closed_won", "Deal closed won"),
+    ("deal.stage_changed:closed_lost", "Deal closed lost"),
+    ("post.submitted_for_review", "Post submitted for review"),
+    ("post.published", "Post published"),
+    ("invoice.created", "Invoice created"),
+    ("invoice.due_date_passed", "Invoice due date passed"),
+    ("payment.created", "Payment received"),
+    ("pos_sale.ingested", "POS sale ingested"),
+    ("campaign.created", "Campaign created"),
+)
+
+
+def trigger_catalog() -> list[dict[str, str]]:
+    """Return the editor's trigger options (value + human label)."""
+    return [{"id": value, "label": label} for value, label in TRIGGER_CATALOG]
 
 
 def workflow_action_catalog() -> list[dict[str, str]]:

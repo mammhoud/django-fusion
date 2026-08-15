@@ -163,6 +163,13 @@ class Deal(models.Model):
                     self.workspace_id,
                     {"deal_id": self.pk, "source": "deal.stage_changed:closed_won"},
                 )
+                from apps.core.webhooks import dispatch_webhooks
+
+                dispatch_webhooks(
+                    self.workspace_id,
+                    "deal_won",
+                    {"deal_id": self.pk, "value": str(self.value), "company_id": self.company_id},
+                )
 
     def __str__(self) -> str:
         return self.name
@@ -259,3 +266,63 @@ class CustomFieldDefinition(models.Model):
 
     def __str__(self) -> str:
         return f"{self.workspace} · {self.object_type} · {self.label}"
+
+
+class CustomObjectDefinition(models.Model):
+    """A workspace-defined object type (Twenty-style runtime schema).
+
+    Fields are declarative JSON (key/label/type/required/options) so a
+    workspace can add a new record type without a migration. Values live in
+    ``CustomObjectRecord.data`` and are validated against this schema at the
+    service boundary, never via polymorphic model inheritance.
+    """
+
+    FIELD_TYPE_CHOICES = [
+        ("text", "Text"),
+        ("textarea", "Long text"),
+        ("number", "Number"),
+        ("boolean", "Boolean"),
+        ("date", "Date"),
+        ("url", "URL"),
+        ("email", "Email"),
+        ("select", "Select"),
+        ("multi_select", "Multi-select"),
+    ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="custom_object_definitions")
+    key = models.SlugField(max_length=80)
+    name = models.CharField(max_length=120)
+    icon = models.CharField(max_length=40, blank=True, default="dataset")
+    fields = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="created_custom_objects")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(fields=["workspace", "key"], name="uniq_custom_object_workspace_key"),
+        ]
+        indexes = [models.Index(fields=["workspace", "is_active"])]
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.key})"
+
+
+class CustomObjectRecord(models.Model):
+    """A single row for a workspace-defined object type."""
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="custom_object_records")
+    definition = models.ForeignKey(CustomObjectDefinition, on_delete=models.CASCADE, related_name="records")
+    data = models.JSONField(default=dict, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="created_custom_object_records")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        indexes = [models.Index(fields=["workspace", "definition"])]
+
+    def __str__(self) -> str:
+        return f"{self.definition.name} #{self.pk}"
