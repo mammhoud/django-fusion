@@ -65,6 +65,7 @@ from views_django import (
     sync_status, sync_config, sync_log, sync_trigger,
     sync_changes, sync_ack,
     offline_queue_list, offline_queue_enqueue, offline_queue_flush, offline_queue_requeue,
+    barcode_resolve, barcode_label,
     cloud_push, receive_push,
     list_transactions, get_transaction_detail, get_analytics,
     approval_approve, approval_reject, approval_stats, approval_pending,
@@ -169,6 +170,11 @@ urlpatterns += [
     path("offline-queue/enqueue", offline_queue_enqueue, name="offline-queue-enqueue"),
     path("offline-queue/flush", offline_queue_flush, name="offline-queue-flush"),
     path("offline-queue/requeue", offline_queue_requeue, name="offline-queue-requeue"),
+
+    # Barcode Scanner
+    path("barcode/<str:value>/label", barcode_label, name="barcode-label"),
+    path("barcode/<str:value>", barcode_resolve, name="barcode-resolve"),
+
     path("cloud/push/<str:entity_type>", cloud_push, name="cloud-push"),
     path("api/sync/push/<str:entity_type>", receive_push, name="api-sync-push"),
 

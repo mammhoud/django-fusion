@@ -27,6 +27,7 @@ dependencies = [
     "ninja-schema>=0.14",   # django-fusion model_schema/encoder base classes
     "django-htmx>=1.19",
     "qrcode>=7.4,<9.0",   # QR Menu: SVG QR generation (lazy-imported at runtime)
+    "python-barcode>=0.15",# Barcode Scanner: Code128 label SVG (lazy-imported at runtime)
     "daphne>=4.0",         # ASGI server (replaces Robyn)
     "channels>=4.0",       # WebSocket support (replaces Robyn WS)
     "PyJWT>=2.8",          # django-bolt JWT authentication (bolt_api.py)

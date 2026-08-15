@@ -87,6 +87,7 @@ from models.token import DeviceToken
 from services.sync import ProductSyncEngine
 from services.sync_changes import SyncChangeCollector, entity_types
 from services.outbox import OfflineQueueService
+from services.barcode import barcode_label_svg, resolve_product
 
 logger = logging.getLogger("pos.views")
 
@@ -1394,6 +1395,35 @@ def offline_queue_requeue(request: HttpRequest) -> JsonResponse:
     svc = OfflineQueueService()
     count = svc.requeue_dead()
     return _json({"requeued": count})
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Barcode Scanner P1 — resolve a scanned code + render a label
+# ═══════════════════════════════════════════════════════════════════════════
+
+def barcode_resolve(request: HttpRequest, value: str) -> JsonResponse:
+    """GET /barcode/<value> — resolve a scanned barcode to a product.
+
+    Exact ``barcode`` match wins; falls back to ``sku`` for legacy labels
+    that stored the EAN/UPC in the SKU field. 404 when nothing matches.
+    """
+    product = resolve_product(value)
+    if product is None:
+        return _error(404, f"No product matches barcode '{value}'")
+    return _json(_ser_model(product))
+
+
+def barcode_label(request: HttpRequest, value: str) -> HttpResponse:
+    """GET /barcode/<value>/label — render a Code128 SVG label for a value.
+
+    Useful for printing shelf/item labels from the same value the scanner
+    will later read. Returns 501 when ``python-barcode`` is unavailable.
+    """
+    try:
+        svg = barcode_label_svg(value)
+    except ImportError:
+        return _error(501, "Barcode label rendering is unavailable (install 'python-barcode')")
+    return HttpResponse(svg, content_type="image/svg+xml")
 
 
 def cloud_push(request: HttpRequest, entity_type: str) -> JsonResponse:

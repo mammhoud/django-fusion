@@ -15,6 +15,9 @@
 - `Tenant.settings` JSON column + migration (per-tenant signup gate, social provider keys, login redirect).
 - `TenantAwareAccountAdapter`, `tenant` context processor, `tenant_provider_settings` helper, and `branch_database_aliases` — all SQLite-safe and tenant-inert without `DB_ENGINE=django_tenants`.
 
+### Added (Formint Pro)
+- **Barcode Scanner** — `/barcode/<value>` resolves a scanned code to a product (exact `barcode` match with `sku` fallback) and `/barcode/<value>/label` renders a Code128 SVG label; `python-barcode` is lazy-imported so the server runs without it.
+
 ### Changed (Formint Pro)
 - Canonical documentation now points to `formint-pro/server/` and describes Django as the primary API boundary.
 - Added Pro Standard-parity currency and tax-profile models, admin/API routes, and read-only CSV/JSON exports.

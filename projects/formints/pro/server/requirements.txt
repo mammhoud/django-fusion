@@ -24,6 +24,9 @@ django-htmx>=1.19
 # QR Menu
 qrcode>=7.4,<9.0
 
+# Barcode Scanner (Code128 label SVG)
+python-barcode>=0.15
+
 # ASGI server (replaces Robyn) + Channels WebSockets
 daphne>=4.0
 channels>=4.0

@@ -141,6 +141,21 @@ The service is `services.outbox.OfflineQueueService`; ``push_one`` POSTs to
 `CLOUD_CRM_URL`). Offline = empty URL → entries stay `failed` and retry with
 backoff `2**retry_count` (capped at 1h); `max_retries` dead-letters them.
 
+## Barcode Scanner (P1)
+
+A hardware/device scanner emits a barcode string; the POS resolves it to a
+product and can render a printable Code128 label for the same value.
+
+| Surface | Method | Purpose |
+|---|---|---|
+| `/barcode/<value>` | GET | Resolve a scanned code to a product (exact `barcode` match, then `sku` fallback) |
+| `/barcode/<value>/label` | GET | Render a Code128 SVG label (`image/svg+xml`) for shelf/item printing |
+
+The resolver is `services/barcode.resolve_product`; label rendering uses
+`services/barcode.barcode_label_svg` (``python-barcode`` is lazy-imported so
+the server boots without the optional dependency — a missing package returns
+501 instead of crashing).
+
 ## Remaining work
 
 - [ ] Pro `make check` — BLOCKED: `server/.venv/bin/python3` is absent in this checkout (validated here via the cloud backend venv).
