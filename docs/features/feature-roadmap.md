@@ -68,8 +68,8 @@
 | Kitchen Display System | P0 | ✅ | Station routing, ticket lifecycle, timers, metrics |
 | QR Menu | P0 | ✅ | Versioned localized menu, preview/publish, branch/table QR |
 | Loyalty System | P1 | ✅ | Immutable points ledger, rewards, consent, reversals |
-| API Access | P1 | 🟡 | Versioned schemas, scoped keys, rate limits, webhooks |
-| Mobile Waiter | P1 | 🟡 | Tableside orders, kitchen handoff, split/merge, offline retry |
+| API Access | P1 | ✅ | Versioned `/api/v1/` schemas, scoped keys, sliding-window rate limits, webhooks |
+| Mobile Waiter | P1 | ✅ | Tableside orders, kitchen handoff, split/merge (`SaleGroup`), offline retry |
 
 See the [Formint edition chain](../plans/editions/README.md) for the canonical business scope, architecture, migration gates, pricing hypotheses, and launch strategy.
 

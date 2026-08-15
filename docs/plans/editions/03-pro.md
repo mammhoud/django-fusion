@@ -5,9 +5,11 @@
 
 **Status:** Local work complete (Standard-parity `Currency`/`TaxProfile` models
 + migration + Ninja CRUD, read-only CSV/JSON export, regression tests, scoped
-API-key enforcement, the Kitchen Display System station-routing pillar, the
-QR Menu versioning/publish core, and the Loyalty reversal + consent fields).
-Only environment/operator-gated items remain.
+API-key enforcement + sliding-window rate limits, the Kitchen Display System
+station-routing pillar, the QR Menu versioning/publish core, the Loyalty
+reversal + consent fields, and the Mobile Waiter split/merge workflow). The
+server is Django-first (daphne ASGI + django-bolt + django-fusion; Robyn
+removed). Only environment/operator-gated items remain.
 
 ## Kitchen Display System (KDS)
 
@@ -74,9 +76,37 @@ server runs without it.
 | Consent | ✅ | `Customer.marketing_consent` + `consent_granted_at` (GDPR) |
 | Reversals | ✅ | `reversal` transaction type (negative `points_change`) |
 
+## API Access (P1)
+
+| Pillar | State | Implementation |
+|---|---|---|
+| Versioned schemas | ✅ | `/api/v1/` Ninja contract (django-fusion encoder/decoder) |
+| Scoped keys | ✅ | `ApiKey` (SHA-256 hash, `resource:action` scopes, revoke/rotate) |
+| Rate limits | ✅ | `ApiKey.rate_limit_per_minute` + `ApiKeyRateLimitMiddleware` (sliding window, Redis-ready) |
+| Webhooks | ✅ | `/webhooks/receive/<signal>` + stats |
+
+Rate limiting is enforced on `/api/v1/` and `/api-keys/` via the
+`X-API-Key` header; a key over budget receives `429` with `Retry-After` +
+`X-RateLimit-*` headers. The limiter is in-memory (single-node) behind a
+`SlidingWindowRateLimiter` interface that can be swapped for Redis.
+
+## Mobile Waiter (P1)
+
+| Pillar | State | Implementation |
+|---|---|---|
+| Tableside orders | ✅ | `sale_checkout` accepts `order_type` + `table_number` |
+| Kitchen handoff | ✅ | KDS `KitchenTicket` auto-creation on checkout |
+| Split / merge | ✅ | `SaleGroup` + `Sale.group`/`parent_sale`; `services.split_merge` (split/merge/merge-group) |
+| Offline retry | ✅ | existing sync/offline queue contract |
+
+Split/merge surface: `POST /sales/split`, `POST /sales/merge`,
+`GET /sale-groups/`, `GET /sale-groups/<group_key>/`. Splitting moves the
+selected `SaleItem`s into child sales under a new `SaleGroup` and recomputes
+totals; merging returns them to the parent and closes the group.
+
 ## Remaining work
 
-- [ ] Pro `make check` — BLOCKED: `server/.venv/bin/python3` is absent in this checkout.
+- [ ] Pro `make check` — BLOCKED: `server/.venv/bin/python3` is absent in this checkout (validated here via the cloud backend venv).
 - [ ] Pro `make test` — BLOCKED: same missing local Python environment.
 
 After the repository owner provisions the existing Pro environment, run:

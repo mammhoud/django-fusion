@@ -10,7 +10,7 @@ during Django's app initialization.
 """
 
 from models.pos import (  # noqa: F401 — discovered by Django
-    Category, Product, Customer, Sale, SaleItem,
+    Category, Product, Customer, Sale, SaleItem, SaleGroup,
     InventoryTransaction, Employee,
 )
 from models.menu import MenuItem, Menu, MenuItemAssignment, MenuVersion  # noqa: F401
@@ -31,6 +31,8 @@ from models.loyalty import ClientCategory, LoyaltyTransaction, UserSettings  # n
 from models.approval import SyncApproval  # noqa: F401
 from models.token import DeviceToken  # noqa: F401
 from models.audit import SignalEvent  # noqa: F401
+from models.apikey import ApiKey  # noqa: F401
+from models.forge_gaps import Coupon, DeliveryType, DeliveryZone, Shift  # noqa: F401
 from models.crm import (  # noqa: F401
     Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote,
 )

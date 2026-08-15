@@ -72,7 +72,14 @@ from models.pos import (
     InventoryTransaction,
     Product,
     Sale,
+    SaleGroup,
     SaleItem,
+)
+from services.split_merge import (
+    SplitMergeError,
+    merge_group,
+    merge_sale,
+    split_sale,
 )
 from models.sync import SyncLog
 from models.token import DeviceToken
@@ -1126,6 +1133,124 @@ def sale_checkout(request: HttpRequest) -> JsonResponse:
     })
 
     return _json(response, status=201)
+
+
+# ── Mobile Waiter P1 — split / merge bill ─────────────────────────────
+
+def _ser_group(group) -> dict:
+    return {
+        "id": group.id,
+        "group_key": group.group_key,
+        "name": group.name,
+        "table_number": group.table_number,
+        "order_type": group.order_type,
+        "status": group.status,
+        "total": float(group.total),
+        "created_at": group.created_at.isoformat() if group.created_at else None,
+        "closed_at": group.closed_at.isoformat() if group.closed_at else None,
+        "sale_ids": list(group.sales.values_list("id", flat=True)),
+    }
+
+
+def sale_split(request: HttpRequest) -> JsonResponse:
+    """POST /sales/split — split a sale's items into child sales under a group.
+
+    Body::
+
+        {
+            "sale_id": 10,
+            "name": "Table 7",
+            "table_number": "7",
+            "order_type": "dine-in",
+            "splits": [
+                {"item_ids": [1, 2], "customer_id": 5, "payment_method": "card"},
+                {"item_ids": [3], "payment_method": "cash"}
+            ]
+        }
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    sale_id = body.get("sale_id")
+    splits = body.get("splits")
+    if not sale_id or not isinstance(splits, list) or not splits:
+        return _error(400, "sale_id and a non-empty splits list are required")
+
+    try:
+        group, parent, children = split_sale(
+            sale_id=int(sale_id),
+            splits=splits,
+            name=body.get("name", ""),
+            table_number=str(body.get("table_number", "")),
+            order_type=body.get("order_type", "dine-in"),
+        )
+    except SplitMergeError as exc:
+        return _error(400, str(exc))
+    except Sale.DoesNotExist:
+        return _error(404, f"Sale {sale_id} not found")
+
+    return _json({
+        "group": _ser_group(group),
+        "parent_sale_id": parent.id,
+        "children": [{"sale_id": c.id, "total": float(c.total)} for c in children],
+    }, status=201)
+
+
+def sale_merge(request: HttpRequest) -> JsonResponse:
+    """POST /sales/merge — merge a split child back into its parent.
+
+    Body: ``{"sale_id": 42}`` or ``{"group_key": "split-10-..."}``.
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    try:
+        if body.get("group_key"):
+            group, parents = merge_group(str(body["group_key"]))
+            return _json({
+                "group": _ser_group(group),
+                "merged_sale_ids": [p.id for p in parents],
+            })
+        if body.get("sale_id"):
+            parent, group = merge_sale(int(body["sale_id"]))
+            return _json({
+                "parent_sale_id": parent.id,
+                "group": _ser_group(group) if group else None,
+            })
+    except SplitMergeError as exc:
+        return _error(400, str(exc))
+    except Sale.DoesNotExist:
+        return _error(404, "Sale not found")
+
+    return _error(400, "sale_id or group_key is required")
+
+
+def sale_group_list(request: HttpRequest) -> JsonResponse:
+    """GET /sale-groups/ — list split-bill groups (newest first)."""
+    groups = SaleGroup.objects.prefetch_related("sales").all()
+    return _json({"groups": [_ser_group(g) for g in groups], "count": groups.count()})
+
+
+def sale_group_detail(request: HttpRequest, group_key: str) -> JsonResponse:
+    """GET /sale-groups/<group_key>/ — one group with its sales."""
+    try:
+        group = SaleGroup.objects.prefetch_related("sales").get(group_key=group_key)
+    except SaleGroup.DoesNotExist:
+        return _error(404, f"Group {group_key} not found")
+    sales = [{
+        "sale_id": s.id,
+        "total": float(s.total),
+        "parent_sale_id": s.parent_sale_id,
+        "payment_method": s.payment_method,
+        "status": s.status,
+    } for s in group.sales.all()]
+    data = _ser_group(group)
+    data["sales"] = sales
+    return _json(data)
 
 
 def sync_trigger(request: HttpRequest) -> JsonResponse:

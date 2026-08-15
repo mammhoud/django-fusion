@@ -51,6 +51,15 @@ class ApiKey(models.Model):
                                        help_text="Key expires after this date (null = never)")
     last_used_at = models.DateTimeField(null=True, blank=True)
     use_count = models.PositiveIntegerField(default=0)
+
+    # ── Rate limiting ──
+    # Maximum requests per minute across all endpoints. ``None`` means
+    # unlimited. Enforced by ApiKeyRateLimitMiddleware on /api/v1/ and
+    # /api-keys/ (sliding window, in-memory for single-node; Redis-ready).
+    rate_limit_per_minute = models.PositiveIntegerField(
+        null=True, blank=True, default=None,
+        help_text="Max requests per minute (null = unlimited)",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
 
@@ -101,6 +110,7 @@ class ApiKey(models.Model):
         description: str = "",
         created_by: str = "",
         metadata: dict | None = None,
+        rate_limit_per_minute: int | None = None,
     ) -> "ApiKey":
         """Generate a new API key and return the model instance.
 
@@ -123,6 +133,7 @@ class ApiKey(models.Model):
             description=description,
             created_by=created_by,
             metadata=metadata or {},
+            rate_limit_per_minute=rate_limit_per_minute,
         )
         if expires_days:
             instance.expires_at = timezone.now() + timedelta(days=expires_days)

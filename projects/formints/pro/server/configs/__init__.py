@@ -76,6 +76,9 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Enforces per-key sliding-window rate limits on /api/v1/ + /api-keys/
+    # (reads X-API-Key directly; returns 429 before the view when over budget).
+    "formint.rate_limit.ApiKeyRateLimitMiddleware",
     # Seeds the session fusion render-mode from the operator's UserSettings
     # row (admin settings page) — see formint/middleware.py. Needs auth +
     # session middleware to have run first.

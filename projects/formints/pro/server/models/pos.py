@@ -146,6 +146,17 @@ class Sale(models.Model):
     notes = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # ── Split-bill support (Mobile Waiter P1) ──
+    # ``group`` links a sale to its table/session group; ``parent_sale`` marks
+    # a sale as a split child of the original (parent) sale.
+    group = models.ForeignKey(
+        "SaleGroup", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="sales",
+    )
+    parent_sale = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="children",
+    )
     # Sync tracking
     is_synced = models.BooleanField(default=False, db_index=True)
     synced_at = models.DateTimeField(null=True, blank=True)
@@ -182,6 +193,46 @@ class SaleItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.quantity}x {self.product_name}"
+
+
+class SaleGroup(models.Model):
+    """A table/session grouping of related sales for split-bill workflows.
+
+    Mobile Waiter P1: a waiter opens a group for a table, adds items, and
+    splits the bill into child sales (each payable separately). ``group_key``
+    is a stable idempotency/session key; child sales link back via
+    ``Sale.group`` / ``Sale.parent_sale``.
+    """
+
+    ORDER_TYPES = [
+        ("dine-in", "Dine In"),
+        ("takeaway", "Takeaway"),
+        ("delivery", "Delivery"),
+    ]
+    STATUS_CHOICES = [
+        ("open", "Open"),
+        ("closed", "Closed"),
+    ]
+
+    group_key = models.CharField(max_length=64, unique=True, db_index=True)
+    name = models.CharField(max_length=200, default="", blank=True)
+    table_number = models.CharField(max_length=50, default="", blank=True)
+    order_type = models.CharField(max_length=20, choices=ORDER_TYPES, default="dine-in")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open")
+    created_at = models.DateTimeField(auto_now_add=True)
+    closed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        app_label = "pos_full"
+        db_table = "full_sale_groups"
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.name or self.group_key} [{self.status}]"
+
+    @property
+    def total(self):
+        return sum((sale.total or 0) for sale in self.sales.all())
 
 
 class InventoryTransaction(models.Model):
