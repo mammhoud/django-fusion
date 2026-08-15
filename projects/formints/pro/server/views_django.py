@@ -85,6 +85,7 @@ from models.sync import SyncLog
 from models.token import DeviceToken
 
 from services.sync import ProductSyncEngine
+from services.sync_changes import SyncChangeCollector, entity_types
 
 logger = logging.getLogger("pos.views")
 
@@ -1253,9 +1254,62 @@ def sale_group_detail(request: HttpRequest, group_key: str) -> JsonResponse:
     return _json(data)
 
 
+def sync_changes(request: HttpRequest) -> JsonResponse:
+    """GET /sync/changes/ — pending (unsynced) rows across sync-tracked models.
+
+    Query params: ``entity_type`` (optional) filters to one entity;
+    ``types`` (optional, ``?types=1``) returns the tracked entity-type list.
+    """
+    if request.GET.get("types"):
+        return _json({"entity_types": entity_types()})
+
+    entity_type = request.GET.get("entity_type") or None
+    try:
+        limit = min(int(request.GET.get("limit", "1000")), 5000)
+    except ValueError:
+        return _error(400, "limit must be an integer")
+
+    collector = SyncChangeCollector()
+    return _json(collector.collect(entity_type=entity_type, limit=limit))
+
+
+def sync_ack(request: HttpRequest) -> JsonResponse:
+    """POST /sync/ack/ — mark rows as synced after a peer confirms receipt.
+
+    Body: ``{"entity_type": "product", "ids": [1, 2, 3]}``.
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    entity_type = body.get("entity_type")
+    ids = body.get("ids")
+    if not entity_type or not isinstance(ids, list):
+        return _error(400, "entity_type and an ids list are required")
+
+    collector = SyncChangeCollector()
+    result = collector.acknowledge(entity_type, [int(i) for i in ids])
+    if "error" in result:
+        return _error(400, result["error"])
+    return _json(result)
+
+
 def sync_trigger(request: HttpRequest) -> JsonResponse:
-    # Stub — full sync trigger needs async cloud client; returns status
-    return _json({"triggered": False, "note": "Sync trigger migrated; full async cloud client pending Channels integration"})
+    """POST /sync/trigger — broadcast a sync_request so connected terminals pull.
+
+    Real-time half of the multi-terminal contract: notifies every peer on the
+    entities channel to call ``GET /sync/changes/``. The request itself does
+    not transfer data (peers pull), so this is safe to call from any terminal.
+    """
+    from consumers import broadcast_entities
+
+    broadcast_entities({
+        "type": "sync_request",
+        "entity": "sync",
+        "action": "pull",
+    })
+    return _json({"triggered": True, "mechanism": "websocket", "channel": "pos_entities"})
 
 
 def cloud_push(request: HttpRequest, entity_type: str) -> JsonResponse:

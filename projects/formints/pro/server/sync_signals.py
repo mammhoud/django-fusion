@@ -16,14 +16,28 @@ def flag_for_sync(sender, instance, created, **kwargs):
         return
     if kwargs.get("raw", False):
         return
+    action = "created" if created else "updated"
     try:
         instance.__class__.objects.filter(pk=instance.pk).update(
             is_synced=False, sync_status="pending",
         )
-        logger.debug("Sync flagged (%s): %s#%s", "created" if created else "updated",
-                     sender.__name__, instance.pk)
+        logger.debug("Sync flagged (%s): %s#%s", action, sender.__name__, instance.pk)
     except Exception as exc:
         logger.warning("Sync flag failed for %s#%s: %s", sender.__name__, instance.pk, exc)
+
+    # Real-time multi-terminal broadcast — notify connected peers so they can
+    # pull the change via GET /sync/changes/ without polling.
+    try:
+        from consumers import broadcast_entities
+
+        broadcast_entities({
+            "type": "entity_change",
+            "entity": sender.__name__.lower(),
+            "id": instance.pk,
+            "action": action,
+        })
+    except Exception as exc:  # pragma: no cover — channel layer may not be ready
+        logger.debug("Sync broadcast skipped for %s#%s: %s", sender.__name__, instance.pk, exc)
 
 
 @receiver(post_delete)

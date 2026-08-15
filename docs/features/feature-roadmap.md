@@ -85,7 +85,6 @@ See the [Formint edition chain](../plans/editions/README.md) for the canonical b
 
 | Feature | Edition | Description |
 |---------|---------|-------------|
-| **Multi-terminal Sync** | Professional | Real-time sync between multiple POS terminals |
 | **Cloud Dashboard** | Professional/SaaS | Web-based dashboard for multi-branch management |
 | **Offline Queue** | Community+ | Queue transactions when offline, sync when back online |
 | **Barcode Scanner** | Professional | Native barcode scanning with camera/device scanner |
@@ -95,6 +94,7 @@ See the [Formint edition chain](../plans/editions/README.md) for the canonical b
 | Feature | Edition | Description |
 |---------|---------|-------------|
 | **WebSocket Sync Events** | ☁️ | Real-time sync event broadcasting via Django Channels to bolt dashboard + Unfold admin |
+| **Multi-terminal Sync** | Professional | Real-time WebSocket broadcast + pull changeset (`/sync/changes`, `/sync/ack`, `/sync/trigger`) across POS terminals |
 | **Bolt Analytics Dashboard** | ☁️ | Self-contained HTML dashboard at `/apis/data/` — 6 KPI cards, live WS updates, sync event log viewer |
 | **Sync Event Log Viewer** | ☁️ | Fixed-position panel (50-entry ring buffer, collapse, reconnect indicator) on bolt + admin dashboards |
 | **DataToken Sync Tagging** | 🔧 | django-fusion model for ordered sync row tagging with parent/child trees, progress tracking, auto-untag |

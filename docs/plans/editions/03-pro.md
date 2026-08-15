@@ -104,6 +104,25 @@ Split/merge surface: `POST /sales/split`, `POST /sales/merge`,
 selected `SaleItem`s into child sales under a new `SaleGroup` and recomputes
 totals; merging returns them to the parent and closes the group.
 
+## Multi-terminal Sync (P1)
+
+Real-time sync between POS terminals: every sync-tracked model (all models
+with an `is_synced` flag) is flagged `pending` on change by `sync_signals`,
+broadcast to connected terminals over the entities WebSocket, and pullable
+via a changeset endpoint.
+
+| Surface | Method | Purpose |
+|---|---|---|
+| `/sync/changes?entity_type=&limit=` | GET | Pull pending (unsynced) rows across all sync-tracked models |
+| `/sync/changes?types=1` | GET | List sync-tracked entity types |
+| `/sync/ack` | POST | Mark rows synced after a peer confirms (`{entity_type, ids}`) |
+| `/sync/trigger` | POST | Broadcast a `sync_request` over WS so peers pull now |
+| `/ws/entities` | WS | Real-time `entity_change` + `sync_request` events |
+
+The collector is `services/sync_changes.SyncChangeCollector` (canonical
+`(entity_type, model)` ordering parents-before-children so FKs resolve on
+apply). `POST /sync/trigger` is the push half; peers pull on demand.
+
 ## Remaining work
 
 - [ ] Pro `make check` — BLOCKED: `server/.venv/bin/python3` is absent in this checkout (validated here via the cloud backend venv).
