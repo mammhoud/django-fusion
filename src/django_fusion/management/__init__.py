@@ -1,5 +1,5 @@
 """
-Django Osoul management module.
+Django Fusion management module.
 
 This module provides base management command classes and utilities
 for creating custom Django management commands with structured logging

@@ -130,6 +130,50 @@ class DashboardViewset(Viewset):
 `route()` returns a `Route` instance; `menu_path()` is its menu-friendly
 variant (auto-registers with `Site.menu_items`).
 
+## `fusion_view` — dual-mode function views
+
+The fastest way to expose a small endpoint that answers as **either** a
+server-rendered component **or** a data API — no viewset, no mixin.
+Wrap a plain function view that returns a plain Python object (dict /
+list / ORM values) with `fusion_view`:
+
+```python
+from django_fusion.routes.rendering.decorators import fusion_view
+
+@fusion_view(template_name="components/products/list.html")
+def product_list(request):
+    return {"products": Product.objects.all(), "total": 42}
+```
+
+One function, two roads:
+
+| Request | Response |
+|---|---|
+| render-first (HTML client, `FUSION_RENDER_FIRST=True`, header/session override) | `HttpResponse` — template rendered with `{"data": …, "request": …}` in the context |
+| data-API (`X-Fusion-Render-First=false`, JSON client, `force_data_mode=True`) | `{status, message, data: {encoded, data, view_name}}` via `FusionCodec` |
+
+The mode is resolved by the canonical `resolve_render_first` chain
+(header override → session preference → per-view default → setting), so
+it stays consistent with `Application.respond`, `APISViewMixin`, and
+`FusionPageView`. If the wrapped view returns an `HttpResponse` itself
+(e.g. a redirect) it is passed through untouched.
+
+Options: `template_name`, `fusion_render_first` (per-view default),
+`force_data_mode`, `message` (JSON responses), `context_processors`
+(callables `(request) -> dict` merged into the render-first context).
+`dual_mode` is a backwards-friendly alias.
+
+**Product pattern** — formint-pro ships `fusion_dual_views.py`: read-only
+service payloads (forecast, customer display, kiosk, purchase orders, …)
+wrapped in `fusion_view` and mounted at `/fusion/views/*`. Mutating
+endpoints stay on their raw JSON views; only the advisory/reporting
+surfaces take the dual-mode road. The per-view `fusion_render_first=True`
+default makes the component the source of truth, with the data API one
+header away (`X-Fusion-Render-First: false`).
+
+`route()` returns a `Route` instance; `menu_path()` is its menu-friendly
+variant (auto-registers with `Site.menu_items`).
+
 ## `viewprop` — class-level URL descriptor
 
 ```python

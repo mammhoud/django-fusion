@@ -2,7 +2,7 @@
 
 ## Overview
 
-Django Osoul management module.
+Django Fusion management module.
 
 ## Directory
 

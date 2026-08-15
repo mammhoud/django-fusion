@@ -45,6 +45,13 @@ from django_fusion.plugins.apis.auth import (
     verify_token_user,
 )
 from django_fusion.plugins.apis.views import APIApplication, APISViewMixin
+from django_fusion.plugins.apis.viewsets import (
+    FusionApiViewset,
+    api_viewset_registry,
+    get_api_viewset,
+    mount_api_viewsets,
+    register_api_viewset,
+)
 
 from . import bolt  # noqa: F401 - expose the bolt bridge submodule
 from .bolt import (
@@ -66,6 +73,11 @@ __all__ = [
     "get_schema",
     "APIApplication",
     "APISViewMixin",
+    "FusionApiViewset",
+    "api_viewset_registry",
+    "get_api_viewset",
+    "mount_api_viewsets",
+    "register_api_viewset",
     "BoltTokenConfig",
     "FusionTokenError",
     "TokenUserError",

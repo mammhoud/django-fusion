@@ -74,7 +74,7 @@ component from Python code.
 ```python
 from django_fusion.web.rendering import TemplateRenderer
 
-renderer = TemplateRenderer.get_default()   # honours `OSOUL_TEMPLATE_RENDERER` setting
+renderer = TemplateRenderer.get_default()   # honours `COMPONENT_TEMPLATE_RENDERER` setting
 ```
 
 `TemplateRenderer` is a thin wrapper around `django.template.loader.render_to_string`

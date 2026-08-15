@@ -19,7 +19,7 @@ from django.template import engines
 _ASSETS_TEMPLATES = str(
     Path(__file__).resolve().parents[3] / "assets" / "templates"
 )
-_OSOUL_COMP_TEMPLATES = str(
+_COMPONENT_TEMPLATES = str(
     Path(__file__).resolve().parent.parent
     / "src"
     / "django_fusion"
@@ -65,7 +65,7 @@ def _inject_template_dirs():
         0,
     )
 
-    for d in (_ASSETS_TEMPLATES, _OSOUL_COMP_TEMPLATES):
+    for d in (_ASSETS_TEMPLATES, _COMPONENT_TEMPLATES):
         if d not in templates[target_idx].setdefault("DIRS", []):
             templates[target_idx]["DIRS"].append(d)
 

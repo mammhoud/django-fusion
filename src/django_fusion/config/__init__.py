@@ -2,7 +2,7 @@
 
 Modules
 -------
-config.conf                  App settings with defaults (OsoulConf dataclass).
+config.conf                  App settings with defaults (config.params dataclasses).
 config.conf_utils            Utility functions for reading conf values safely.
 config.constants             Package-wide constants (cache key prefixes, timeouts).
 config.logging               Structured logging configuration helpers.
@@ -21,7 +21,7 @@ Enhanced multi-environment configuration with:
 
 Usage::
 
-    from django_fusion.config import OsoulConf
+    from django_fusion.config.params import Params
     from django_fusion.config.constants import CACHE_KEY_PREFIX
     from django_fusion.config.loader import load_dynaconf_settings
     

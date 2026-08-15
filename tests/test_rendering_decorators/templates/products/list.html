@@ -1,0 +1,7 @@
+<h1>Products</h1>
+<ul>
+{% for product in data.products %}<li>{{ product }}</li>{% endfor %}
+</ul>
+<p class="total">{{ data.total }}</p>
+{% if site_name %}<span>{{ site_name }}</span>{% endif %}
+<em data-mode="{{ fusion_render_first }}">mode</em>

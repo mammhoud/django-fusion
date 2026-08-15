@@ -21,16 +21,23 @@
 
 ## Recognized settings
 
-Only `DJANGO_DEBUG_CONFTEST` is registered as an opt-in diagnostic
-at this version (see the comment block under `[tool.pytest.ini_options]`
-in `pyproject.toml`). All other configuration flows through
-`INSTALLED_APPS`, `MIDDLEWARE`, and the per-key overrides in
-`loader.py` — there is **no canonical `DJANGO_FUSION_*`
-settings table** at v0.2.0.
+The runtime settings are read from the Django settings module by name
+(no canonical `DJANGO_FUSION_*` namespace). The canonical names and
+their legacy fallbacks are:
 
-| Setting | Default | Purpose |
-|---------|---------|---------|
-| `DJANGO_DEBUG_CONFTEST` *(test only)* | unset, must be exactly `== "1"` | When set, conftest prints active Django `TEMPLATES` config + `DJANGO_SETTINGS_MODULE`. Enforced by `tests/test_conftest_debug_is_quiet.py`. |
+| Setting | Legacy alias | Purpose |
+|---------|--------------|---------|
+| `FUSION_RENDER_FIRST` | `FUSION_RENDER_FIRST_DEFAULT` / `COMPONENTS_FUSION_RENDER_FIRST_DEFAULT` | Global render-mode default (component HTML vs data API). |
+| `FUSION_PIPELINE` | `FUSION_ASSET_PIPELINE` | Asset-pipeline options (webpack, components, `render_first_gates_assets`). |
+| `FUSION_ASSETS` | — | Explicit top/bottom link configuration merged into the manifest. |
+| `FUSION_COMPONENTS` | `FUSION_COMPONENT_ASSETS` | `{"ENABLED": True}` gate for the `fusion_component_assets_json` tag. |
+| `FUSION_SKELETON` | — | App-skeleton options for `fusion_skeleton` rendering. |
+| `COMPONENTS_DIR_NAMES` | — | Component directory names (default `components`, `partials`, `tags`). |
+| `COMPONENTS_ENABLE_BLOCK_ATTRS` | — | Emit `data-block-*` attributes on components. |
+| `COMPONENTS_INCLUDE_PATH_ROOTS` | — | Template subdirs auto-registered as path-style components. |
+
+`DJANGO_DEBUG_CONFTEST` remains the only opt-in diagnostic (see the
+comment block under `[tool.pytest.ini_options]` in `pyproject.toml`).
 
 > Remark: if a future version introduces `DJANGO_FUSION_*` settings,
 > update this table from `src/django_fusion/config/constants.py` —

@@ -2,7 +2,7 @@
 
 > Part of **django-fusion** — Django foundation layer
 
-Django Osoul management module.
+Django Fusion management module.
 
 ## Contents
 

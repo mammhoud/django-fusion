@@ -17,7 +17,7 @@ TemplateRenderer
 
 Settings
 --------
-``OSOUL_TEMPLATE_RENDERER``
+``COMPONENT_TEMPLATE_RENDERER``
     Dotted import path to a custom :class:`TemplateRenderer` subclass.
 
 Usage::
@@ -188,7 +188,7 @@ class TemplateRenderer:
         """
         Return the default TemplateRenderer singleton.
 
-        Controlled by the ``OSOUL_TEMPLATE_RENDERER`` Django setting
+        Controlled by the ``COMPONENT_TEMPLATE_RENDERER`` Django setting
         (dotted import path). Falls back to the built-in class.
 
         Returns:
@@ -198,7 +198,7 @@ class TemplateRenderer:
         if _default_renderer is None:
             try:
                 from django.conf import settings
-                renderer_path = getattr(settings, "OSOUL_TEMPLATE_RENDERER", None)
+                renderer_path = getattr(settings, "COMPONENT_TEMPLATE_RENDERER", None)
                 if renderer_path:
                     from django.utils.module_loading import import_string
                     _default_renderer = import_string(renderer_path)()

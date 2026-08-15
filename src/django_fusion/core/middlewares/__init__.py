@@ -33,10 +33,12 @@ class PageHandlerMiddleware:
 
 from .errors import ErrorTrackerMiddleware  # noqa: E402
 from .access import RoleBasedAccessMiddleware  # noqa: E402
+from .setup import FusionSetupRedirectMiddleware  # noqa: E402
 
 __all__ = [
     "ErrorTrackerMiddleware",
     "RoleBasedAccessMiddleware",
+    "FusionSetupRedirectMiddleware",
     "FusionMiddleware",
     "PageHandlerMiddleware",
 ]

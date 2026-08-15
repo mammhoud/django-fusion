@@ -9,6 +9,15 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Added
 
+- **`fusion_view` dual-mode function decorator** — decorate a plain
+  function view that returns a Python object and it answers as either a
+  render-first component (`template_name`, `data` in context) or a data
+  API (`{status, message, data: {encoded, data, view_name}}` via
+  `FusionCodec`), resolved through the canonical `resolve_render_first`
+  chain. Options: `template_name`, `fusion_render_first` (per-view
+  default), `force_data_mode`, `message`, `context_processors`.
+  `dual_mode` provided as a backwards-friendly alias.
+
 - **Render-first aware asset loading** — `AssetPipelineOptions` now carries
   `fusion_render_first` (resolved from `FUSION_RENDER_FIRST`, legacy
   `FUSION_RENDER_FIRST_DEFAULT` / `COMPONENTS_FUSION_RENDER_FIRST_DEFAULT`
