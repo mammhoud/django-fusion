@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models import BaseDeviceToken
 
@@ -878,3 +879,51 @@ class BranchSettings(models.Model):
 
     def __str__(self):
         return f"Settings[{self.branch.code}] {self.currency_code}"
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Task Execution — website-local mirror of the shared task audit trail
+# ══════════════════════════════════════════════════════════════════════
+
+
+class TaskExecution(models.Model):
+    """Website-local mirror of the shared ``BackgroundTaskLog`` audit record.
+
+    The django-fusion task backend (``django_fusion.tasks.backends.dramatiq.
+    DramatiqBackend``) dual-writes every enqueued job to the shared
+    ``django_fusion.models.tasks.BackgroundTaskLog`` table and — when
+    ``FUSION_TASK_EXECUTION_MODEL`` is set — to this product-owned table so
+    each website can query its own task history without reaching the shared
+    infra database. Populated idempotently (on ``job_id``) by the backend's
+    ``_create_website_log`` / ``_touch_website_log`` helpers.
+    """
+
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("started", "Started"),
+        ("finished", "Finished"),
+        ("failed", "Failed"),
+        ("cancelled", "Cancelled"),
+        ("retrying", "Retrying"),
+    ]
+
+    job_id = models.CharField(max_length=255, db_index=True, blank=True, null=True)
+    task_name = models.CharField(max_length=255, db_index=True)
+    queue_name = models.CharField(max_length=100, default="default")
+    site_name = models.CharField(max_length=100, db_index=True, blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="queued")
+    result = models.JSONField(null=True, blank=True)
+    error_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["site_name", "-created_at"]),
+            models.Index(fields=["task_name", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.task_name} [{self.status}]"

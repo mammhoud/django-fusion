@@ -12,7 +12,11 @@ dependencies = [
     # on Python 3.14).
     "django>=5.2.8,<6.0",
     "channels>=4.0",
+    "channels-redis>=4.0",
     "daphne>=4.0",
+    # Dramatiq Redis broker for the django-fusion task registry (backup_db,
+    # process_sync_queue). The [redis] extra pulls redis-py.
+    "dramatiq[redis]>=2.0",
     "django-unfold>=0.40",
     "django-bolt>=0.1",
     "django-fusion",

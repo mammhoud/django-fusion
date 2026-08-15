@@ -4,7 +4,7 @@ import os
 import tempfile
 
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 from apps.core.models import BackupRun
 
@@ -15,7 +15,7 @@ class BackupRunModelTest(TestCase):
     def test_create_and_stringify(self):
         run = BackupRun.objects.create(filename="pos_cloud-20260809-120000.db")
         assert run.status == "running"
-        assert str(run) == f"BackupRun pos_cloud-20260809-120000.db (running)"
+        assert str(run) == "BackupRun pos_cloud-20260809-120000.db (running)"
 
     def test_fail_and_success_states(self):
         run = BackupRun.objects.create(filename="a.db")
@@ -37,8 +37,16 @@ class BackupRunModelTest(TestCase):
         assert run.error_message == "disk full"
 
 
-class BackupCommandTest(TestCase):
-    """Task C2 — backup_db management command writes a file and a BackupRun."""
+class BackupCommandTest(TransactionTestCase):
+    """Task C2 — backup_db management command writes a file and a BackupRun.
+
+    Uses ``TransactionTestCase`` (not ``TestCase``) because the online SQLite
+    backup requires the source connection to be in autocommit. ``TestCase``
+    wraps each test in ``atomic()``, which leaves an open write transaction on
+    the shared-cache in-memory test DB — ``sqlite3.Connection.backup()`` then
+    deadlocks (or reports ``database table is locked``). In production the
+    command always runs in autocommit, so this mirrors the real code path.
+    """
 
     def test_backup_db_creates_file_and_run(self):
         with tempfile.TemporaryDirectory() as dest:
@@ -68,7 +76,7 @@ class BackupCommandTest(TestCase):
             call_command("backup_db", name=os.path.basename(db_path))
 
 
-class ScheduledBackupTaskTest(TestCase):
+class ScheduledBackupTaskTest(TransactionTestCase):
     """Task C2 — the @task wrapper around backup_db."""
 
     def test_run_backup_task_executes_command(self):

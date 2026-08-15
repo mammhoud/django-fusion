@@ -136,12 +136,58 @@ TEMPLATES = [
 WSGI_APPLICATION = "configs.wsgi.application"
 ASGI_APPLICATION = "configs.asgi.application"
 
-# ── Channels layer (in-memory — no Redis required for dev) ──
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
+
+def _redis_url(db: int = 0) -> str:
+    """Build a Redis URL, honoring REDIS_URL and optional host/port/password.
+
+    Compose deployments pass REDIS_URL directly; local dev may run a
+    password-protected Redis, in which case REDIS_HOST/PORT/PASSWORD compose
+    the URL so the channel layer and the Dramatiq broker can connect.
+    """
+    url = os.environ.get("REDIS_URL")
+    if url:
+        return url
+    host = os.environ.get("REDIS_HOST", "127.0.0.1")
+    port = os.environ.get("REDIS_PORT", "6379")
+    password = os.environ.get("REDIS_PASSWORD", "")
+    auth = f":{password}@" if password else ""
+    return f"redis://{auth}{host}:{port}/{db}"
+
+
+def _redis_reachable(timeout: float = 0.4) -> bool:
+    """Dependency-free TCP probe for the configured Redis host/port.
+
+    Lets the suite detect a live broker without importing redis-py.
+    """
+    try:
+        import socket
+
+        host = os.environ.get("REDIS_HOST", "127.0.0.1")
+        port = int(os.environ.get("REDIS_PORT", "6379"))
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+# ── Channels layer (Redis-backed when configured; in-memory for dev/tests) ──
+# Explicit REDIS_URL/REDIS_HOST opts into the cross-process Redis layer;
+# otherwise the in-process layer keeps local dev and the unit suite working
+# without Redis. ``_redis_url(2)`` keeps the channel layer off the cache (0)
+# and Dramatiq (1) database indexes.
+if os.environ.get("REDIS_URL") or os.environ.get("REDIS_HOST"):
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url(2)]},
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
 
 # ── Database ──
 # Under SQLite (dev default) the ENGINE stays sqlite3; when DB_ENGINE is
@@ -314,6 +360,27 @@ COMPONENTS_INCLUDE_PATH_ROOTS = [
 FUSION_SITE_NAME = "formint_cloud"
 FUSION_SITE_TITLE = "POS Cloud Platform"
 FUSION_TASK_MODULES = ["plugins.workers.backup_tasks"]
+
+# Shared/website task-record contract. The django-fusion task backend
+# dual-writes the shared BackgroundTaskLog and mirrors it into
+# core.TaskExecution (the website-local record) filtered by this site name.
+FUSION_TASK_SITE_NAME = os.environ.get("FUSION_TASK_SITE_NAME", "formint_cloud")
+FUSION_TASK_EXECUTION_MODEL = os.environ.get(
+    "FUSION_TASK_EXECUTION_MODEL", "core.TaskExecution"
+)
+
+# Background tasks run on the django-fusion task registry → Dramatiq. The
+# broker URL is env-driven (REDIS_URL / REDIS_HOST / REDIS_PORT / REDIS_PASSWORD)
+# so the same code path serves compose/prod Redis and local dev. When Redis is
+# unreachable, ``backup_db``/``process_sync_queue`` remain invocable directly
+# (see the management commands); the @task decorator is the async road.
+FUSION_TASKS = {
+    "BACKEND": "django_fusion.tasks.backends.dramatiq.DramatiqBackend",
+    "BROKER_URL": _redis_url(1),
+    # Fail fast on a down/hung Redis instead of paying a per-enqueue socket
+    # timeout: the backend probes once (cached for 5s) and short-circuits.
+    "GATE_ON_BROKER_REACHABLE": True,
+}
 
 # ══════════════════════════════════════════════════════════════════════
 # django-bolt Configuration

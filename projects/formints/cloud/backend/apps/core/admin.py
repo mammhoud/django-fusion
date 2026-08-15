@@ -21,6 +21,7 @@ from .models import (
     Organization,
     SyncConflict,
     SyncQueueItem,
+    TaskExecution,
     Tenant,
 )
 
@@ -173,6 +174,16 @@ class BackupRunAdmin(ModelAdmin):
         ("Backup", {"fields": ("filename", "status", "size_bytes", "error_message")}),
         ("Timing", {"fields": ("started_at", "finished_at")}),
     )
+
+
+@admin.register(TaskExecution)
+class TaskExecutionAdmin(ModelAdmin):
+    """Admin for the website-local task audit record (background workers)."""
+
+    list_display = ["task_name", "queue_name", "site_name", "status", "created_at"]
+    list_filter = ["status", "site_name", "queue_name"]
+    search_fields = ["task_name", "job_id", "error_message"]
+    readonly_fields = [f.name for f in TaskExecution._meta.fields]
 
 
 @admin.register(BranchSettings)
