@@ -13,7 +13,8 @@ from models.pos import (  # noqa: F401 — discovered by Django
     Category, Product, Customer, Sale, SaleItem,
     InventoryTransaction, Employee,
 )
-from models.menu import MenuItem, Menu, MenuItemAssignment  # noqa: F401
+from models.menu import MenuItem, Menu, MenuItemAssignment, MenuVersion  # noqa: F401
+from models.menu import publish_menu_version  # noqa: F401
 from models.node import Node, Heartbeat, NodeEvent  # noqa: F401
 from models.config import DeviceConfig, MasterDevice, CloudLink  # noqa: F401
 from models.sync import SyncLog  # noqa: F401

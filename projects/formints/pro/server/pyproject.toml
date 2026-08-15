@@ -26,6 +26,7 @@ dependencies = [
     "django-ninja>=1.0",
     "django-ninja-extra>=0.19",
     "django-htmx>=1.19",
+    "qrcode>=7.4,<9.0",   # QR Menu: SVG QR generation (lazy-imported at runtime)
 ]
 
 [project.optional-dependencies]

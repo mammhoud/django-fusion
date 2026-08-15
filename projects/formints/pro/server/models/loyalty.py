@@ -94,6 +94,7 @@ class LoyaltyTransaction(models.Model):
         ("redeem", "Redeem"),
         ("adjust", "Adjustment"),
         ("expire", "Expiry"),
+        ("reversal", "Reversal"),
     ]
 
     customer = models.ForeignKey(

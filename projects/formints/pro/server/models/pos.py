@@ -91,6 +91,11 @@ class Customer(models.Model):
     )
     total_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     notes = models.TextField(blank=True, default="")
+    marketing_consent = models.BooleanField(
+        default=False,
+        help_text="Customer consented to marketing communications (GDPR).",
+    )
+    consent_granted_at = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

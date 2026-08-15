@@ -45,7 +45,7 @@ from models.inventory import PurchaseOrder, PurchaseOrderItem, Supplier
 from models.loyalty import (
     ClientCategory, LoyaltyTransaction, UserSettings,
 )
-from models.menu import Menu, MenuItem, MenuItemAssignment
+from models.menu import Menu, MenuItem, MenuItemAssignment, MenuVersion
 from models.node import Node, NodeEvent
 from models.ops import KitchenStation, KitchenTicket, SupportTicket, route_station_for_sale
 from models.pos import Category, Customer, Employee, Product, Sale, SaleItem
@@ -453,6 +453,14 @@ class Command(BaseCommand):
             )
             if item is not None and not self.dry_run:
                 MenuItemAssignment.objects.create(menu=menu, item=item, display_order=idx)
+        # Publish an initial version so the QR menu works out of the box.
+        if not self.dry_run:
+            self._create(
+                MenuVersion,
+                {"menu": menu, "version": 1, "locale": "en"},
+                status="published",
+                published_at=timezone.now(),
+            )
         self._count("  total", MenuItem)
 
     def seed_employees(self) -> None:
@@ -688,7 +696,7 @@ class Command(BaseCommand):
                 PurchaseOrder, Customer, Product, Category, Supplier,
                 Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
                 Employee, Payroll, TaxReport, MenuItem, Menu,
-                MenuItemAssignment, ClientCategory, UserSettings,
+                MenuItemAssignment, MenuVersion, ClientCategory, UserSettings,
                 Company, Contact, Deal,
             ):
                 model.objects.all().delete()

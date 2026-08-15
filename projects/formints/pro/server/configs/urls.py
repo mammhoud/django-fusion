@@ -47,6 +47,7 @@ from views_django import (
     kds_list_tickets, kds_get_ticket, kds_update_ticket,
     kds_get_sale_items, kds_stats,
     kds_list_stations, kds_create_station,
+    menu_list_published, menu_publish, menu_preview, menu_qr, menu_public,
     node_list, node_detail, node_register, node_heartbeat,
     node_update, node_delete,
     node_get_config, node_set_config, node_delete_config, node_history,
@@ -95,6 +96,13 @@ urlpatterns += [
     path("kds/stats/", kds_stats, name="kds-stats"),
     path("kds/stations/", kds_list_stations, name="kds-stations"),
     path("kds/stations/create", kds_create_station, name="kds-station-create"),
+
+    # QR Menu
+    path("menu/published/", menu_list_published, name="menu-published"),
+    path("menu/<int:menu_id>/publish", menu_publish, name="menu-publish"),
+    path("menu/<int:menu_id>/preview", menu_preview, name="menu-preview"),
+    path("menu/<slug:slug>/", menu_public, name="menu-public"),
+    path("menu/<slug:slug>/qr", menu_qr, name="menu-qr"),
 
     # HTMX fragments
     path("htmx/products/", htmx_products, name="htmx-products"),

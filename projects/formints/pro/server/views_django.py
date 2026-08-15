@@ -61,7 +61,7 @@ from models.forge_gaps import Coupon, DeliveryType, DeliveryZone, Shift
 from models.hr import EmployeeSchedule, Payroll, TaxReport
 from models.inventory import PurchaseOrder, PurchaseOrderItem, Supplier
 from models.loyalty import ClientCategory, LoyaltyTransaction, UserSettings
-from models.menu import Menu, MenuItem, MenuItemAssignment
+from models.menu import Menu, MenuItem, MenuItemAssignment, MenuVersion, publish_menu_version
 from models.node import Heartbeat, Node, NodeEvent
 from models.notes import Note
 from models.ops import KitchenStation, KitchenTicket, SupportTicket, route_station_for_sale
@@ -100,7 +100,7 @@ DB_PATH = Path(__file__).resolve().parent.parent / "restaurant.db"
 
 ALL_MODELS = [
     Category, Product, Customer, Sale, SaleItem, InventoryTransaction,
-    Employee, MenuItem, Menu, MenuItemAssignment, Node, Heartbeat,
+    Employee, MenuItem, Menu, MenuItemAssignment, MenuVersion, Node, Heartbeat,
     NodeEvent, SyncLog, DeviceConfig, MasterDevice, CloudLink,
     SyncApproval, DeviceToken, SignalEvent,
     Supplier, PurchaseOrder, PurchaseOrderItem,
@@ -396,6 +396,141 @@ def kds_stats(request: HttpRequest) -> JsonResponse:
         "ready": by_status.get("ready", 0),
         "delivered": by_status.get("delivered", 0),
     })
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# QR Menu routes — versioned, localized, publishable menus + QR
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _ser_menu_version(v: MenuVersion) -> dict:
+    return {
+        "id": v.id,
+        "menu_id": v.menu_id,
+        "menu_name": v.menu.name,
+        "menu_slug": v.menu.slug,
+        "version": v.version,
+        "locale": v.locale,
+        "status": v.status,
+        "published_at": v.published_at.isoformat() if v.published_at else None,
+        "preview_token": v.preview_token or None,
+    }
+
+
+def _ser_menu_with_items(menu: Menu) -> dict:
+    """Serialize a menu grouped by category for public display."""
+    categories: dict[str, list[dict]] = {}
+    assignments = menu.menuitemassignment_set.select_related("item__category").order_by(
+        "display_order", "item__display_order", "item__name"
+    )
+    for assignment in assignments:
+        item = assignment.item
+        if not item.is_available:
+            continue
+        cat = item.category.name if item.category else "Other"
+        categories.setdefault(cat, []).append({
+            "id": item.id,
+            "name": item.name,
+            "slug": item.slug,
+            "description": item.description,
+            "price": float(assignment.override_price or item.price),
+            "currency": item.currency,
+            "is_featured": item.is_featured,
+            "preparation_time": item.preparation_time,
+            "allergens": item.allergens,
+            "calories": item.calories,
+        })
+    return {
+        "id": menu.id,
+        "name": menu.name,
+        "slug": menu.slug,
+        "description": menu.description,
+        "categories": [{"name": k, "items": v} for k, v in categories.items()],
+    }
+
+
+def menu_list_published(request: HttpRequest) -> JsonResponse:
+    locale = request.GET.get("locale", "").strip() or None
+    versions = MenuVersion.objects.select_related("menu").filter(status="published")
+    if locale:
+        versions = versions.filter(locale=locale)
+    return _json([_ser_menu_version(v) for v in versions.order_by("-published_at")])
+
+
+def menu_publish(request: HttpRequest, menu_id: int) -> JsonResponse:
+    body = json.loads(request.body) if request.body else {}
+    locale = (body.get("locale") or "en").strip()
+    try:
+        menu = Menu.objects.get(id=menu_id)
+    except Menu.DoesNotExist:
+        return _error(404, "Menu not found")
+    version = publish_menu_version(menu, locale)
+    return _json(_ser_menu_version(version))
+
+
+def menu_preview(request: HttpRequest, menu_id: int) -> JsonResponse:
+    try:
+        menu = Menu.objects.get(id=menu_id)
+    except Menu.DoesNotExist:
+        return _error(404, "Menu not found")
+    locale = request.GET.get("locale", "en")
+    token = request.GET.get("token", "")
+    draft = MenuVersion.objects.filter(menu=menu, locale=locale, status="draft").order_by("-version").first()
+    if draft is not None:
+        if draft.preview_token and draft.preview_token != token:
+            return _error(403, "Invalid preview token")
+        return _json(_ser_menu_with_items(menu))
+    published = MenuVersion.objects.filter(menu=menu, locale=locale, status="published").order_by("-version").first()
+    if published is None:
+        return _error(404, "No menu version available")
+    return _json(_ser_menu_with_items(menu))
+
+
+def _get_menu_by_slug(slug: str) -> Menu | None:
+    try:
+        return Menu.objects.get(slug=slug)
+    except Menu.DoesNotExist:
+        return None
+
+
+def menu_public(request: HttpRequest, slug: str) -> JsonResponse:
+    """Public, slug-keyed menu for a scanned QR link."""
+    menu = _get_menu_by_slug(slug)
+    if menu is None:
+        return _error(404, "Menu not found")
+    locale = request.GET.get("locale", "en")
+    published = MenuVersion.objects.filter(
+        menu=menu, locale=locale, status="published",
+    ).order_by("-version").first()
+    if published is None:
+        return _error(404, "No published menu version for this locale")
+    data = _ser_menu_with_items(menu)
+    data["version"] = _ser_menu_version(published)
+    return _json(data)
+
+
+def menu_qr(request: HttpRequest, slug: str) -> HttpResponse:
+    """Return an SVG QR code pointing at a menu's public page."""
+    menu = _get_menu_by_slug(slug)
+    if menu is None:
+        return _error(404, "Menu not found")
+    branch = request.GET.get("branch", "").strip()
+    table = request.GET.get("table", "").strip()
+    locale = request.GET.get("locale", "en")
+    url = f"/menu/{menu.slug}/?locale={locale}"
+    if branch:
+        url += f"&branch={branch}"
+    if table:
+        url += f"&table={table}"
+    try:
+        import qrcode
+        import qrcode.image.svg
+    except ImportError:
+        return _error(501, "QR code generation is unavailable (install 'qrcode')")
+    img = qrcode.make(url, image_factory=qrcode.image.svg.SvgPathImage)
+    import io
+    buf = io.StringIO()
+    img.save(buf)
+    return HttpResponse(buf.getvalue(), content_type="image/svg+xml")
 
 
 # ═══════════════════════════════════════════════════════════════════════════

@@ -62,16 +62,16 @@
 
 ### Formint Professional launch scope
 
-| Feature | Priority | Release gate |
-|---------|:--------:|--------------|
-| Multi-branch management | P0 | Offline branch operation, idempotent sync, permissions, transfers |
-| Kitchen Display System | P0 | Station routing, ticket lifecycle, timers, metrics |
-| QR Menu | P0 | Versioned localized menu, preview/publish, branch/table QR |
-| Loyalty System | P1 | Immutable points ledger, rewards, consent, reversals |
-| API Access | P1 | Versioned schemas, scoped keys, rate limits, webhooks |
-| Mobile Waiter | P1 | Tableside orders, kitchen handoff, split/merge, offline retry |
+| Feature | Priority | Status | Release gate |
+|---------|:--------:|:------:|--------------|
+| Multi-branch management | P0 | ✅ | Offline branch operation, idempotent sync, permissions, transfers |
+| Kitchen Display System | P0 | ✅ | Station routing, ticket lifecycle, timers, metrics |
+| QR Menu | P0 | ✅ | Versioned localized menu, preview/publish, branch/table QR |
+| Loyalty System | P1 | ✅ | Immutable points ledger, rewards, consent, reversals |
+| API Access | P1 | 🟡 | Versioned schemas, scoped keys, rate limits, webhooks |
+| Mobile Waiter | P1 | 🟡 | Tableside orders, kitchen handoff, split/merge, offline retry |
 
-See the [Formint POS Professional Edition plan](../plans/pos/formint-pos-professional-plan.md) for the canonical business scope, architecture, migration gates, pricing hypotheses, and launch strategy.
+See the [Formint edition chain](../plans/editions/README.md) for the canonical business scope, architecture, migration gates, pricing hypotheses, and launch strategy.
 
 > Target stack: Tauri 2 + Rust desktop shell, Astro + Alpine.js + HTMX + Tailwind UI, Django + django-fusion backend, and SQLite/PostgreSQL data layers.
 
@@ -267,6 +267,5 @@ Q3 2026 (Jul-Sep)     Q4 2026 (Oct-Dec)     Q1 2027 (Jan-Mar)
 | Topic | Path |
 |-------|------|
 | Feature matrix | [`README.md`](README.md) |
-| Cypercloud platform plan | [`../plans/migrated/docs/projects/cypercloud/platform-plan.md`](../plans/migrated/docs/projects/cypercloud/platform-plan.md) |
 | Per-project features | [`../projects/`](../projects/) |
 | Feature matrix | [`README.md`](README.md) |
