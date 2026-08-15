@@ -1,18 +1,19 @@
 {
   "name": "pos-e2e",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Shared Playwright E2E test suite for all POS editions (full, solo, mini, client, cloud)",
+  "description": "Shared Playwright E2E suite for the canonical Formints editions (community, standard, pro, cloud, client) + cloud sync contract",
   "scripts": {
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:report": "npx playwright show-report",
-    "test:e2e:full": "npx playwright test --project=pos-full",
-    "test:e2e:solo": "npx playwright test --project=pos-solo",
-    "test:e2e:mini": "npx playwright test --project=pos-mini",
-    "test:e2e:client": "npx playwright test --project=pos-client",
-    "test:e2e:cloud": "npx playwright test --project=pos-cloud",
-    "test:api": "npx playwright test tests/api/",
+    "test:e2e:community": "npx playwright test --project=formint-community",
+    "test:e2e:standard": "npx playwright test --project=formint-standard",
+    "test:e2e:pro": "npx playwright test --project=formint-pro",
+    "test:e2e:cloud": "npx playwright test --project=formint-cloud",
+    "test:e2e:client": "npx playwright test --project=formint-client",
+    "test:sync": "npx playwright test --project=formint-cloud-sync",
+    "test:api": "npx playwright test tests/sync/",
     "test:all": "npx playwright test"
   },
   "devDependencies": {
