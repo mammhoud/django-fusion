@@ -1,0 +1,117 @@
+---
+// Formint POS - SectionHeading component.
+//
+// One component for every page header (hero h1 and section h2/h3), so the
+// eyebrow style, heading scale, and the one-eyebrow-per-page rule live in a
+// single place instead of being duplicated per page.
+//
+// Usage (hero):
+//   <SectionHeading level="h1" eyebrow="Restaurant operations" title="Tables & Floor" />
+//   <p class="intro">...</p>
+//
+// Usage (section with an action on the right):
+//   <SectionHeading title="All tables" id="tables-title">
+//     <button slot="actions" class="btn btn-primary btn-sm">Add table</button>
+//   </SectionHeading>
+//
+// Eyebrow cap: at most ONE eyebrow may render per page (the audit rule).
+// SectionHeading counts eyebrow renders per request; any eyebrow after the
+// first is dropped, with a console.warn in dev so the rule can't silently
+// regress. Heroes count too, so a section eyebrow on a page with a hero
+// eyebrow is the violation this guard catches.
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  id?: string;
+  level?: 'h1' | 'h2' | 'h3';
+  /** h2/h3: sm 1.05rem, md 1.15rem, lg 1.3rem. h1: hero or hero-xl. */
+  size?: 'sm' | 'md' | 'lg' | 'hero' | 'hero-xl';
+  /** 'divider' draws a border under the title row (segment headers). */
+  variant?: 'default' | 'divider';
+  class?: string;
+}
+
+const { title, eyebrow, id, level = 'h2', size = 'md', variant = 'default', class: cls = '' } = Astro.props;
+const Tag = level;
+
+// Per-request eyebrow counter (WeakMap keyed on the Request, so it resets
+// per page render and is garbage-collected with the request).
+const eyebrowCounts = new WeakMap<Request, number>();
+const renderEyebrow = ((): string | undefined => {
+  if (!eyebrow) return undefined;
+  const req = Astro.request as Request | undefined;
+  if (!req) return eyebrow;
+  const used = eyebrowCounts.get(req) ?? 0;
+  if (used >= 1) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[SectionHeading] eyebrow "${eyebrow}" dropped: only one eyebrow per page is allowed (${title}).`
+      );
+    }
+    return undefined;
+  }
+  eyebrowCounts.set(req, used + 1);
+  return eyebrow;
+})();
+
+const wrapperClass = level === 'h1' ? 'hero-heading' : `section-heading${variant === 'divider' ? ' section-heading--divider' : ''}`;
+const sizeClass = level === 'h1'
+  ? (size === 'hero-xl' ? 'hero-xl' : 'hero')
+  : size;
+---
+
+<div class={`${wrapperClass} ${cls}`.trim()}>
+  <div>
+    {renderEyebrow && <p class="eyebrow">{renderEyebrow}</p>}
+    <Tag class={sizeClass} id={id}>{title}</Tag>
+  </div>
+  {level !== 'h1' && <slot name="actions" />}
+</div>
+
+<style>
+  .section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--color-primary);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .section-heading--divider {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  h1, h2, h3 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-weight: 700;
+  }
+  h2, h3 { letter-spacing: -0.01em; }
+  h1.hero {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  h1.hero-xl {
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    letter-spacing: -0.06em;
+    line-height: 0.98;
+  }
+  h2.sm { font-size: 1.05rem; }
+  h2.md { font-size: 1.15rem; }
+  h2.lg { font-size: 1.3rem; }
+  h3.sm { font-size: 1rem; }
+  h3.md { font-size: 1.1rem; }
+  h3.lg { font-size: 1.2rem; }
+  @media (max-width: 700px) {
+    .section-heading { flex-direction: column; }
+  }
+</style>

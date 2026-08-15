@@ -1,0 +1,9 @@
+{# Fusion component — Kiosk stats #}
+<div class="fusion-kiosk-stats" hx-swap-oob="true" id="fusion-kiosk-stats">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="stat-card"><div class="stat-value">{{ data.open_sessions|default:"0" }}</div><div class="stat-label">Open</div></div>
+    <div class="stat-card"><div class="stat-value">{{ data.checked_out|default:"0" }}</div><div class="stat-label">Checked out</div></div>
+    <div class="stat-card"><div class="stat-value">{{ data.cancelled|default:"0" }}</div><div class="stat-label">Cancelled</div></div>
+    <div class="stat-card"><div class="stat-value">{{ data.total_sales|default:"0" }}</div><div class="stat-label">Total sales</div></div>
+  </div>
+</div>

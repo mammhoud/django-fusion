@@ -256,6 +256,40 @@ UNFOLD = {
     ],
 }
 
+# ── django-fusion asset pipeline (FUSION_PIPELINE) ────────────────────
+# The Astro frontend owns the SPA bundles; the Django road serves the admin,
+# fusion fragment HTML, and component manifests. ``webpack.enabled=False``
+# keeps the webpack-only manifest merge off (no webpack stats file here).
+FUSION_PIPELINE = {
+    "enabled": True,
+    "webpack": {"enabled": False},
+    "components": {"enabled": True},
+    "static_url": "/static/",
+    # When render-first, also gate the Django-road bundles so data-api mode
+    # trims skeleton/webpack links from manifests (see assets pipeline docs).
+    "render_first_gates_assets": False,
+}
+
+# Legacy alias — django-fusion reads ``FUSION_PIPELINE`` first, then
+# ``FUSION_ASSET_PIPELINE``. Keep the old name for older call sites.
+FUSION_ASSET_PIPELINE = FUSION_PIPELINE
+
+# ── Component assets manifest (fusion_component_assets_json tag) ────────
+# Enables ``{% fusion_component_assets_json %}`` so render-first pages can
+# lazy-load only the chunks for the components on screen.
+FUSION_COMPONENTS = {
+    "ENABLED": True,
+    "DIR_NAMES": COMPONENTS_DIR_NAMES,
+    "INCLUDE_PATH_ROOTS": COMPONENTS_INCLUDE_PATH_ROOTS,
+}
+
+# ── Static dirs ──
+# Frontend dist is added when a production build exists; the Astro dev
+# server proxies to the backend in development instead.
+_FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
+if _FRONTEND_DIST.exists():
+    STATICFILES_DIRS = [str(_FRONTEND_DIST)]
+
 # ── Server Config ──
 HOST = os.environ.get("POS_FULL_HOST", "0.0.0.0")
 PORT = int(os.environ.get("POS_FULL_PORT", "8766"))

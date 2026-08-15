@@ -170,7 +170,7 @@ import Icon from '../../../components/ui/Icon.astro';
           <div>
             <label class="text-xs font-medium opacity-70 mb-1 block">Category</label>
             <select x-model="form.category" class="input w-full">
-              <option value="">— None —</option>
+              <option value="">- None -</option>
               <template x-for="cat in categories" :key="cat.id">
                 <option :value="cat.id" x-text="cat.name"></option>
               </template>

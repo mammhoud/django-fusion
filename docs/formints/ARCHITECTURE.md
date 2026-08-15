@@ -563,5 +563,5 @@ projects/formints/
 - [`projects/formints/AGENTS.md`](/projects/formints/AGENTS.md) — Multi-edition agent instructions
 - [`docs/plans/editions/README.md`](/docs/plans/editions/README.md) — Editions plan index
 - [`docs/plans/editions/06-js-sdk.md`](/docs/plans/editions/06-js-sdk.md) — JS SDK plan
-- [`docs/plans/pos/formint-pos-professional-plan.md`](/docs/plans/pos/formint-pos-professional-plan.md) — Professional edition plan
+- [`docs/plans/editions/03-pro.md`](/docs/plans/editions/03-pro.md) — Professional edition plan
 - [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo MCP integration (Kilo server, designer/task tools)

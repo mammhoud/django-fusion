@@ -40,8 +40,19 @@ export type {
 export { dashboard } from './dashboard';
 export type {
   BranchHealth,
+  BranchHealthDetail,
+  BranchHealthDetailResponse,
   BranchesHealthResponse,
   QueueSummary,
+  QueueByBranch,
+  QueueByBranchResponse,
+  QueueItem,
+  QueueListResponse,
+  SyncConflict,
+  ConflictListResponse,
   ConflictStats,
+  ConflictResolution,
+  ActivityEntry,
+  ActivityResponse,
   DashboardResponse,
 } from './dashboard';

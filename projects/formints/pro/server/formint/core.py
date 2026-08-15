@@ -160,8 +160,59 @@ class OperationsApplication(Application):
             NavRoute("Delivery Types", "/ops/delivery-types/", "delivery_dining", show_in_nav=True),
             NavRoute("Delivery Zones", "/ops/delivery-zones/", "map", show_in_nav=True),
             NavRoute("Shifts", "/ops/shifts/", "schedule", show_in_nav=True),
-            NavRoute("Sync Center", "/ops/sync/", "sync", show_in_nav=True, badge="NEW"),
+            NavRoute("Sync Center", "/ops/sync/", "sync", show_in_nav=True),
             NavRoute("Nodes", "/ops/nodes/", "hub", show_in_nav=False),
+        ]
+
+
+class RestaurantsApplication(Application):
+    """Restaurant operations — tables, reservations, deliveries, gift cards."""
+
+    title = "Restaurants"
+    icon = "table_restaurant"
+    app_name = "restaurants"
+    primary_color = "#f97316"  # orange
+    menu_order = 65
+
+    def get_module_routes(self) -> list[NavRoute]:
+        return [
+            NavRoute("Tables & Floor", "/tables", "table_restaurant", show_in_nav=True),
+            NavRoute("Reservations", "/reservations", "event_available", show_in_nav=True),
+            NavRoute("Deliveries", "/deliveries", "delivery_dining", show_in_nav=True, badge="NEW"),
+            NavRoute("Gift Cards", "/gift-cards", "card_giftcard", show_in_nav=True),
+            NavRoute("Purchase Orders", "/purchase-orders", "shopping_cart", show_in_nav=True),
+        ]
+
+
+class IntelligenceApplication(Application):
+    """Forecasting & insights — advisory analytics, scheduling, kiosk display."""
+
+    title = "Intelligence"
+    icon = "query_stats"
+    app_name = "intelligence"
+    primary_color = "#0ea5e9"  # sky
+    menu_order = 70
+
+    def get_module_routes(self) -> list[NavRoute]:
+        return [
+            NavRoute("Forecast", "/forecast/report", "trending_up", show_in_nav=True, badge="NEW"),
+            NavRoute("Kiosk", "/kiosk/", "point_of_sale", show_in_nav=True, badge="NEW"),
+            NavRoute("Customer Display", "/customer-display/", "desktop_windows", show_in_nav=True, badge="NEW"),
+        ]
+
+
+class GamingApplication(Application):
+    """Gaming Center (POS-KO) — stations, tokens, sessions, queue."""
+
+    title = "Gaming Center"
+    icon = "sports_esports"
+    app_name = "gaming"
+    primary_color = "#8b5cf6"  # violet
+    menu_order = 75
+
+    def get_module_routes(self) -> list[NavRoute]:
+        return [
+            NavRoute("Gaming Center", "/gaming/", "sports_esports", show_in_nav=True, badge="NEW"),
         ]
 
 
@@ -206,6 +257,9 @@ class FormintModule(Module):
         CRMApplication,
         DataApplication,
         OperationsApplication,
+        RestaurantsApplication,
+        IntelligenceApplication,
+        GamingApplication,
         AdminApplication,
     ]
 

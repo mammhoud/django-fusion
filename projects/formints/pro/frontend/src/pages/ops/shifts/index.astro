@@ -19,7 +19,7 @@ import Icon from '../../../components/ui/Icon.astro';
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
       <div class="stat-card"><span class="stat-card__title">Total</span><span class="stat-card__value" x-text="total" style="color: var(--color-primary)">0</span></div>
       <div class="stat-card"><span class="stat-card__title">Open</span><span class="stat-card__value" x-text="items.filter(i=>i.status==='open').length" style="color: var(--color-warning)">0</span></div>
-      <div class="stat-card"><span class="stat-card__title">Closed Today</span><span class="stat-card__value text-xs opacity-50">—</span></div>
+      <div class="stat-card"><span class="stat-card__title">Closed Today</span><span class="stat-card__value text-xs opacity-50">-</span></div>
       <div class="stat-card"><span class="stat-card__title">Status</span><span class="stat-card__value text-xs" x-text="loading ? 'Loading…' : 'Ready'" style="color: var(--color-success)">Ready</span></div>
     </div>
 
@@ -61,7 +61,7 @@ import Icon from '../../../components/ui/Icon.astro';
       <div class="card w-full max-w-lg p-6 space-y-5 shadow-2xl" x-transition.scale.90.duration.200ms @click.stop>
         <div class="flex items-center justify-between"><h2 class="text-base font-bold" x-text="editingItem ? 'Edit Shift' : 'New Shift'"></h2><button @click="closeForm()" class="btn btn-ghost btn-sm" aria-label="Close"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg></button></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Employee</label><select x-model="form.employee_id" class="input w-full"><option value="">— Select —</option><template x-for="e in employeeList" :key="e.id"><option :value="e.id" x-text="e.first_name + ' ' + e.last_name + ' (' + (e.role||'') + ')'"></option></template></select></div>
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Employee</label><select x-model="form.employee_id" class="input w-full"><option value="">- Select -</option><template x-for="e in employeeList" :key="e.id"><option :value="e.id" x-text="e.first_name + ' ' + e.last_name + ' (' + (e.role||'') + ')'"></option></template></select></div>
           <div><label class="text-xs font-medium opacity-70 mb-1 block">Status</label><select x-model="form.status" class="input w-full"><option value="open">Open</option><option value="closed">Closed</option></select></div>
           <div><label class="text-xs font-medium opacity-70 mb-1 block">Opening Cash ($) *</label><input type="number" x-model="form.opening_cash" class="input w-full" step="0.01" min="0" placeholder="0.00" required /></div>
           <div><label class="text-xs font-medium opacity-70 mb-1 block">Closing Cash ($)</label><input type="number" x-model="form.closing_cash" class="input w-full" step="0.01" min="0" placeholder="0.00" /></div>

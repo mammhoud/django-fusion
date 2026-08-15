@@ -1,0 +1,148 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+---
+
+<Layout title="Gaming Center · Formint POS">
+  <div class="page-shell" x-data="gamingPage()" x-init="loadAll()">
+    <section class="hero">
+      <SectionHeading level="h1" eyebrow="POS-KO Gaming Center · token-based sessions" title="Gaming Center" />
+      <p class="intro">Stations, time tokens, and live sessions. Start, pause, resume, and bill by the minute.</p>
+    </section>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-1.5 mb-3" role="tablist" aria-label="Gaming views">
+      <template x-for="tab in tabs" :key="tab.key">
+        <button type="button" role="tab" @click="activeTab = tab.key"
+          :class="'tag tag--sm cursor-pointer ' + (activeTab === tab.key ? 'tag--primary' : 'tag--ghost')"
+          x-text="tab.label"></button>
+      </template>
+    </div>
+
+    <!-- Stations -->
+    <section class="card" x-show="activeTab === 'stations'" aria-labelledby="stations-title">
+      <SectionHeading title="Station status" id="stations-title">
+        <button slot="actions" class="btn btn-primary btn-sm gap-1" @click="openCreateStation()">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg>
+          Add station
+        </button>
+      </SectionHeading>
+      <div x-show="loading" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <template x-for="i in 4" :key="i"><div class="skeleton-shimmer h-24 rounded-xl" aria-hidden="true"></div></template>
+      </div>
+      <div x-show="!loading && stations.length === 0" class="text-center py-8 opacity-50 text-sm">No stations yet.</div>
+      <div x-show="!loading && stations.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <template x-for="s in stations" :key="s.id">
+          <div class="rounded-xl border p-4 flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold" x-text="s.name"></span>
+              <span class="badge badge-sm" :class="s.status === 'available' ? 'badge-success' : s.status === 'occupied' ? 'badge-warning' : 'badge-neutral'" x-text="s.status"></span>
+            </div>
+            <p class="text-xs opacity-50" x-text="'$' + (s.hourly_rate ?? 0).toFixed(2) + '/hr'"></p>
+            <div class="flex gap-1 mt-auto">
+              <button class="btn btn-ghost btn-xs" @click="startSession(s)" x-show="s.status === 'available'">Start</button>
+              <button class="btn btn-ghost btn-xs" @click="sessionAction('pause')" x-show="s.active_session && s.active_session.status === 'running'">Pause</button>
+              <button class="btn btn-ghost btn-xs" @click="sessionAction('resume')" x-show="s.active_session && s.active_session.status === 'paused'">Resume</button>
+              <button class="btn btn-ghost btn-xs" @click="sessionAction('stop')" x-show="s.active_session">Stop</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- Tokens -->
+    <section class="card" x-show="activeTab === 'tokens'">
+      <SectionHeading title="Time tokens">
+        <button slot="actions" class="btn btn-primary btn-sm" @click="openPurchaseToken()">Purchase</button>
+      </SectionHeading>
+      <div x-show="!loading && tokens.length === 0" class="text-center py-8 opacity-50 text-sm">No tokens yet.</div>
+      <div x-show="!loading && tokens.length > 0" class="overflow-x-auto">
+        <table class="fusion-table">
+          <thead><tr><th>Code</th><th>Minutes</th><th>Remaining</th><th>Status</th></tr></thead>
+          <tbody>
+            <template x-for="t in tokens" :key="t.id">
+              <tr>
+                <td x-text="t.code"></td>
+                <td x-text="t.minutes"></td>
+                <td x-text="t.remaining_minutes"></td>
+                <td><span class="badge badge-sm" :class="t.is_active ? 'badge-success' : 'badge-neutral'" x-text="t.is_active ? 'active' : 'used'"></span></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Sessions -->
+    <section class="card" x-show="activeTab === 'sessions'">
+      <SectionHeading title="Live + recent sessions" />
+      <div x-show="!loading && sessions.length === 0" class="text-center py-8 opacity-50 text-sm">No sessions yet.</div>
+      <div x-show="!loading && sessions.length > 0" class="overflow-x-auto">
+        <table class="fusion-table">
+          <thead><tr><th>Station</th><th>Status</th><th>Active</th><th>Cost</th></tr></thead>
+          <tbody>
+            <template x-for="s in sessions" :key="s.id">
+              <tr>
+                <td x-text="s.station_name || s.station || '-'"></td>
+                <td><span class="badge badge-sm" x-text="s.status"></span></td>
+                <td x-text="s.active_seconds ? Math.round(s.active_seconds / 60) + 'm' : '-'"></td>
+                <td x-text="s.cost ? '$' + s.cost.toFixed(2) : '-'"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p x-show="error" class="note mt-2" style="color: var(--color-error)" x-text="error"></p>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('gamingPage', () => ({
+      tabs: [{ key: 'stations', label: 'Stations' }, { key: 'tokens', label: 'Tokens' }, { key: 'sessions', label: 'Sessions' }],
+      activeTab: 'stations',
+      stations: [], tokens: [], sessions: [],
+      loading: true, error: '', activeSessionStation: null,
+
+      async loadStations() {
+        try { const res = await fetch('/gaming/stations'); if (res.ok) this.stations = await res.json(); } catch { this.error = 'Could not load stations'; }
+      },
+      async loadTokens() {
+        try { const res = await fetch('/gaming/tokens'); if (res.ok) this.tokens = await res.json(); } catch { /* optional */ }
+      },
+      async loadSessions() {
+        try { const res = await fetch('/gaming/sessions'); if (res.ok) this.sessions = await res.json(); } catch { /* optional */ }
+      },
+      async loadAll() {
+        this.loading = true;
+        await Promise.all([this.loadStations(), this.loadTokens(), this.loadSessions()]);
+        this.loading = false;
+      },
+      async openCreateStation() {
+        const name = prompt('Station name:');
+        if (!name) return;
+        const rate = parseFloat(prompt('Hourly rate ($):', '5')) || 5;
+        const res = await fetch('/gaming/stations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, hourly_rate: rate }) });
+        if (res.ok) await this.loadAll(); else this.error = 'Create failed';
+      },
+      async startSession(station) {
+        const res = await fetch('/gaming/sessions/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ station_id: station.id }) });
+        if (res.ok) await this.loadAll(); else { const err = await res.json().catch(() => ({})); this.error = err.error || 'Start failed (token required)'; }
+      },
+      async sessionAction(action) {
+        const res = await fetch(`/gaming/sessions/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+        if (res.ok) await this.loadAll(); else this.error = `${action} failed`;
+      },
+      async openPurchaseToken() {
+        const minutes = parseInt(prompt('Minutes:', '60'), 10) || 60;
+        const res = await fetch('/gaming/tokens', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ minutes }) });
+        if (res.ok) await this.loadAll(); else this.error = 'Purchase failed';
+      },
+    }));
+  });
+  Alpine.start();
+</script>

@@ -45,13 +45,11 @@ try:
     import django
     from django.conf import settings
 
-    # Shared database with Rust backend (pos-full/restaurant.db)
-    # Fall back to :memory: if the Rust backend DB doesn't exist.
-    DB_PATH = _SERVER.parent / "restaurant.db"
-    if not DB_PATH.exists():
-        DB_PATH_STR = ":memory:"
-    else:
-        DB_PATH_STR = str(DB_PATH)
+    # Isolated in-memory database for tests — never touch the Rust app's
+    # persistent restaurant.db (the cross-ORM ``rust_db`` fixture opens that
+    # file read-only via a separate connection). Using the on-disk file leaks
+    # test rows between runs and pollutes other test files' bootstrap.
+    DB_PATH_STR = ":memory:"
 
     if not settings.configured:
         settings.configure(
@@ -90,6 +88,9 @@ try:
             SECRET_KEY=os.environ.get(
                 "DJANGO_SECRET_KEY", "pos-full-server-dev-key"
             ),
+            # pos_full tables are created manually below; disable migrations
+            # so pytest-django's ``migrate`` never re-creates them.
+            MIGRATION_MODULES={"pos_full": None},
         )
     django.setup()
 

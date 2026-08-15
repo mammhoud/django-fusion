@@ -17,6 +17,12 @@ Managed models (app_label="pos_full"):
   token.py     — DeviceToken (django_fusion BaseDeviceToken subclass)
   audit.py     — SignalEvent
   crm.py       — Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote
+  gaming.py    — GamingStation, GamingToken, GamingSession, GamingQueueEntry
+  giftcard.py  — GiftCard, GiftCardTransaction
+  tables.py    — RestaurantTable, TableReservation
+  delivery.py  — DeliveryProvider, DeliveryOrder
+  timeclock.py — TimeClockEntry
+  kiosk.py     — KioskSession, KioskCartItem
 
 IMPORTANT: Do NOT import model sub-modules here. Django imports the app
 module (this package) during phase 1 of apps.populate() — before the app

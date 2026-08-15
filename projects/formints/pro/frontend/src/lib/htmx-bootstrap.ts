@@ -126,7 +126,7 @@ function forceDismiss(): void {
   clearTimers();
 
   const status = getStatus();
-  if (status) status.textContent = 'Request timed out — please retry the section.';
+  if (status) status.textContent = 'Request timed out; please retry the section.';
 }
 
 function clearTimers(): void {
@@ -175,5 +175,5 @@ document.addEventListener('htmx:responseError', (event) => {
 
 document.body.addEventListener('htmx:responseError', () => {
   const status = getStatus();
-  if (status) status.textContent = 'Something went wrong — please retry the section.';
+  if (status) status.textContent = 'Something went wrong; please retry the section.';
 });

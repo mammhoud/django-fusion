@@ -217,7 +217,7 @@ import Icon from '../../components/ui/Icon.astro';
           <div class="mt-4 pt-3 border-t" style="border-color: var(--color-border-subtle)">
             <div class="flex justify-between text-xs">
               <span class="opacity-50">Top category</span>
-              <span class="font-semibold" x-text="topCategory()" style="color: var(--color-text-primary)">—</span>
+              <span class="font-semibold" x-text="topCategory()" style="color: var(--color-text-primary)">-</span>
             </div>
           </div>
         </div>
@@ -388,7 +388,7 @@ import Icon from '../../components/ui/Icon.astro';
       },
       barTitle(i) {
         const d = this.daily[i];
-        let t = `${d.date} · $${this.money(d.revenue)} · ${d.orders} orders`;
+        let t = `${d.date}, $${this.money(d.revenue)}, ${d.orders} orders`;
         if (this.compare && this.previousDaily[i]) {
           t += `\nPrevious: $${this.money(this.prevRevenue(i))}`;
         }
@@ -496,7 +496,7 @@ import Icon from '../../components/ui/Icon.astro';
       },
       prevDelta(name, cur) {
         const prev = this.prevProductRevenue(name);
-        if (prev <= 0) return null;  // no prior sales — template shows '—'
+        if (prev <= 0) return null;  // no prior sales — label shows '' (blank)
         return Math.round(((Number(cur || 0) - prev) / prev) * 1000) / 10;
       },
       prevDeltaLabel(name, cur) {

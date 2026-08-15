@@ -77,7 +77,7 @@ export class FusionDecoder {
     const match = CODEC_PREFIX_RE.exec(encoded);
     if (!match) {
       throw new FusionDecodeError(
-        `Invalid codec prefix — expected "fusion_v<version>:<base64>"`,
+        `Invalid codec prefix; expected "fusion_v<version>:<base64>"`,
         encoded.slice(0, 30),
       );
     }

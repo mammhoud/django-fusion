@@ -67,10 +67,10 @@ import Icon from '../../../components/ui/Icon.astro';
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
               <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.first_name + ' ' + item.last_name"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.company_name || '—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.job_title || '—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.email || '—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.phone || item.mobile || '—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.company_name || '-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.job_title || '-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.email || '-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.phone || item.mobile || '-'"></span></td>
               <td class="px-3 py-2">
                 <span class="badge"
                   :class="item.is_active ? 'badge-soft-success' : 'badge-soft-error'"

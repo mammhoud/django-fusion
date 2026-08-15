@@ -1,0 +1,9 @@
+{# Fusion component — Delivery stats #}
+<div class="fusion-delivery-stats" hx-swap-oob="true" id="fusion-delivery-stats">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="stat-card"><div class="stat-value">{{ data.total|default:"0" }}</div><div class="stat-label">Deliveries</div></div>
+    <div class="stat-card"><div class="stat-value text-success">{{ data.delivered|default:"0" }}</div><div class="stat-label">Delivered</div></div>
+    <div class="stat-card"><div class="stat-value text-warning">{{ data.in_transit|default:"0" }}</div><div class="stat-label">In transit</div></div>
+    <div class="stat-card"><div class="stat-value text-error">{{ data.cancelled|default:"0" }}</div><div class="stat-label">Cancelled</div></div>
+  </div>
+</div>

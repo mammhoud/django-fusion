@@ -44,6 +44,18 @@ from formint.models import (
     SyncApproval, DeviceToken, SignalEvent,
     # CRM
     Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote,
+    # Gaming (POS-KO)
+    GamingStation, GamingToken, GamingSession, GamingQueueEntry,
+    # Gift cards
+    GiftCard, GiftCardTransaction,
+    # Table management
+    RestaurantTable, TableReservation,
+    # Delivery integration
+    DeliveryProvider, DeliveryOrder,
+    # Employee scheduling / time clock
+    TimeClockEntry,
+    # Self-checkout kiosk
+    KioskSession, KioskCartItem,
 )
 
 __all__ = [
@@ -354,9 +366,38 @@ class EmployeeScheduleAdmin(ModelAdmin):
     list_display = ["id", "employee", "day_of_week", "start_time", "end_time"]
 
 
+@admin.register(TimeClockEntry)
+class TimeClockEntryAdmin(ModelAdmin):
+    list_display = ["id", "employee", "clock_in", "clock_out", "break_minutes", "is_active"]
+    list_filter = ["employee"]
+    list_filter_submit = True
+    search_fields = ["employee__first_name", "employee__last_name"]
+    ordering = ["-clock_in"]
+    list_fullwidth = True
+
+
 @admin.register(TaxReport)
 class TaxReportAdmin(ModelAdmin):
     list_display = ["id", "report_type", "total_sales", "total_tax", "status"]
+
+
+@admin.register(KioskSession)
+class KioskSessionAdmin(ModelAdmin):
+    list_display = ["id", "session_key", "name", "status", "sale", "payment_method", "created_at"]
+    list_filter = ["status"]
+    list_filter_submit = True
+    search_fields = ["session_key", "name"]
+    ordering = ["-created_at"]
+    list_fullwidth = True
+
+
+@admin.register(KioskCartItem)
+class KioskCartItemAdmin(ModelAdmin):
+    list_display = ["id", "session", "product_name", "quantity", "unit_price"]
+    list_filter = ["session"]
+    list_filter_submit = True
+    search_fields = ["product_name", "session__session_key"]
+    ordering = ["-id"]
 
 
 # ── Extras ─────────────────────────────────────────────────────────────────
@@ -422,6 +463,111 @@ class DeviceTokenAdmin(ModelAdmin):
 class SignalEventAdmin(ModelAdmin):
     list_display = ["id", "signal_name", "created_at"]
     list_filter = ["signal_name"]
+
+
+# ── Gaming (POS-KO) ───────────────────────────────────────────────────────
+
+@admin.register(GamingStation)
+class GamingStationAdmin(ModelAdmin):
+    list_display = ["id", "name", "slug", "station_type", "status", "hourly_rate", "is_active"]
+    list_filter = ["status", "station_type", "is_active"]
+    list_filter_submit = True
+    search_fields = ["name", "slug"]
+    ordering = ["name"]
+    compressed_fields = True
+
+
+@admin.register(GamingToken)
+class GamingTokenAdmin(ModelAdmin):
+    list_display = ["id", "name", "minutes", "remaining_minutes", "price", "status", "sold_at"]
+    list_filter = ["status"]
+    list_filter_submit = True
+    search_fields = ["name"]
+    ordering = ["-sold_at"]
+
+
+@admin.register(GamingSession)
+class GamingSessionAdmin(ModelAdmin):
+    list_display = ["id", "station", "customer", "status", "active_seconds", "cost", "started_at"]
+    list_filter = ["status"]
+    list_filter_submit = True
+    search_fields = ["station__name", "customer__first_name", "customer__last_name"]
+    ordering = ["-started_at"]
+    list_fullwidth = True
+
+
+@admin.register(GamingQueueEntry)
+class GamingQueueEntryAdmin(ModelAdmin):
+    list_display = ["id", "customer_name", "requested_minutes", "status", "station", "created_at"]
+    list_filter = ["status"]
+    list_filter_submit = True
+    search_fields = ["customer_name"]
+    ordering = ["created_at"]
+
+
+# ── Gift Cards ─────────────────────────────────────────────────────────────
+
+@admin.register(GiftCard)
+class GiftCardAdmin(ModelAdmin):
+    list_display = ["id", "code", "balance", "initial_balance", "currency", "status", "issued_at"]
+    list_filter = ["status", "currency"]
+    list_filter_submit = True
+    search_fields = ["code", "recipient_name", "recipient_email"]
+    ordering = ["-issued_at"]
+    compressed_fields = True
+
+
+@admin.register(GiftCardTransaction)
+class GiftCardTransactionAdmin(ModelAdmin):
+    list_display = ["id", "gift_card", "transaction_type", "amount", "balance_after", "created_at"]
+    list_filter = ["transaction_type"]
+    list_filter_submit = True
+    ordering = ["-created_at"]
+    list_fullwidth = True
+
+
+# ── Table Management ───────────────────────────────────────────────────────
+
+@admin.register(RestaurantTable)
+class RestaurantTableAdmin(ModelAdmin):
+    list_display = ["id", "name", "section", "shape", "capacity", "status", "current_sale", "is_active"]
+    list_filter = ["status", "section", "shape", "is_active"]
+    list_filter_submit = True
+    search_fields = ["name", "section"]
+    ordering = ["section", "name"]
+    compressed_fields = True
+
+
+@admin.register(TableReservation)
+class TableReservationAdmin(ModelAdmin):
+    list_display = ["id", "table", "display_name", "party_size", "reservation_time", "status"]
+    list_filter = ["status"]
+    list_filter_submit = True
+    search_fields = ["customer_name", "customer__first_name", "customer__last_name", "table__name"]
+    ordering = ["reservation_time"]
+    list_fullwidth = True
+
+
+# ── Delivery Integration ───────────────────────────────────────────────────
+
+@admin.register(DeliveryProvider)
+class DeliveryProviderAdmin(ModelAdmin):
+    list_display = ["id", "name", "provider_type", "status", "commission_rate", "is_active"]
+    list_filter = ["provider_type", "status", "is_active"]
+    list_filter_submit = True
+    search_fields = ["name"]
+    ordering = ["provider_type", "name"]
+    compressed_fields = True
+
+
+@admin.register(DeliveryOrder)
+class DeliveryOrderAdmin(ModelAdmin):
+    list_display = ["id", "provider", "provider_order_id", "customer_name", "status", "delivery_fee", "total", "created_at"]
+    list_filter = ["status", "provider"]
+    list_filter_submit = True
+    search_fields = ["provider_order_id", "customer_name", "customer_phone", "delivery_address"]
+    ordering = ["-created_at"]
+    list_fullwidth = True
 
 
 # ── CRM ────────────────────────────────────────────────────────────────────

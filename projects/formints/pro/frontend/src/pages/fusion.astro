@@ -1,16 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Skeleton from '../components/ui/Skeleton.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
 ---
 
-<Layout title="Fusion — Formint POS">
+<Layout title="Fusion - Formint POS">
   <div class="page-shell">
     <section class="hero">
-      <p class="eyebrow">django-fusion · PageHandler · FusionDecoder</p>
-      <h1>Fusion render contract</h1>
+      <SectionHeading level="h1" eyebrow="django-fusion, PageHandler, FusionDecoder" title="Fusion render contract" />
       <p class="intro">
         Two sides of the same contract: the <strong>server-rendered page</strong>
-        (django-fusion <code>PageHandler</code> — full layout for browsers, lean
+        (django-fusion <code>PageHandler</code>; full layout for browsers, lean
         fragment for HTMX) and the <strong>encoded fragment pointer</strong>
         (<code>FusionCodec</code> on Django ↔ <code>FusionDecoder</code> in the
         browser).
@@ -19,12 +19,9 @@ import Skeleton from '../components/ui/Skeleton.astro';
 
     <!-- 1. PageHandler full page → HTMX fragment swap -->
     <section class="card" aria-labelledby="page-handler-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">/fusion/page/ · PageHandler</p>
-          <h2 id="page-handler-title">Server-rendered page</h2>
-        </div>
+      <SectionHeading title="Server-rendered page" id="page-handler-title" size="lg">
         <button
+          slot="actions"
           type="button"
           class="btn btn-primary btn-sm"
           id="reload-page"
@@ -33,7 +30,7 @@ import Skeleton from '../components/ui/Skeleton.astro';
           hx-target="#page-handler-content"
           hx-swap="innerHTML"
         >Reload fragment</button>
-      </div>
+      </SectionHeading>
 
       <div
         id="page-handler-content"
@@ -51,29 +48,25 @@ import Skeleton from '../components/ui/Skeleton.astro';
       <p class="note">
         The browser request sends <code>HX-Request</code>, so django-fusion
         resolves the fragment strategy and serves
-        <code>formint/fragments/page.html</code> — the same content an Astro
+        <code>formint/fragments/page.html</code>, the same content an Astro
         shell swaps in without ever leaving the SPA.
       </p>
     </section>
 
     <!-- 2. FusionDecoder pointer round-trip -->
     <section class="card" aria-labelledby="pointer-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">/fusion/pointer/ · FusionDecoder</p>
-          <h2 id="pointer-title">Encoded fragment pointer</h2>
-        </div>
-        <button type="button" class="btn btn-ghost btn-sm" id="toggle-mode">
+      <SectionHeading title="Encoded fragment pointer" id="pointer-title" size="lg">
+        <button slot="actions" type="button" class="btn btn-ghost btn-sm" id="toggle-mode">
           Toggle session mode
         </button>
-      </div>
+      </SectionHeading>
 
       <dl class="pointer-grid" id="pointer-grid">
-        <div><dt>Encoded</dt><dd class="mono" data-field="encoded">—</dd></div>
-        <div><dt>Decoded component</dt><dd class="mono" data-field="component">—</dd></div>
-        <div><dt>Pointer render-first</dt><dd data-field="pointer-mode">—</dd></div>
-        <div><dt>Session preference</dt><dd data-field="session">—</dd></div>
-        <div><dt>Effective strategy</dt><dd data-field="strategy">—</dd></div>
+        <div><dt>Encoded</dt><dd class="mono" data-field="encoded">-</dd></div>
+        <div><dt>Decoded component</dt><dd class="mono" data-field="component">-</dd></div>
+        <div><dt>Pointer render-first</dt><dd data-field="pointer-mode">-</dd></div>
+        <div><dt>Session preference</dt><dd data-field="session">-</dd></div>
+        <div><dt>Effective strategy</dt><dd data-field="strategy">-</dd></div>
       </dl>
       <div class="toggle-row">
         <label class="toggle" for="session-toggle">
@@ -87,7 +80,7 @@ import Skeleton from '../components/ui/Skeleton.astro';
         The toggle writes <code>fusion_render_first</code> into the Django
         session via <code>FusionSessionChecker</code>
         (<code>POST /fusion/session-mode/</code>, cleared with
-        <code>DELETE</code>) — the same value the Astro shell caches in
+        <code>DELETE</code>); the same value the Astro shell caches in
         <code>sessionStorage</code> so <code>FusionDecoder.decode()</code>
         and the server agree on the effective strategy
         (header → session → default precedence). Changes are also
@@ -95,7 +88,7 @@ import Skeleton from '../components/ui/Skeleton.astro';
         <code>BroadcastChannel</code> (+ <code>storage</code>-event
         fallback), so toggling here updates every open tab live. Saves of
         <code>UserSettings.fusion_render_mode</code> in the Unfold admin
-        propagate the same way — the page watches the DB-truth
+        propagate the same way. The page watches the DB-truth
         preference (<code>admin_preference</code> / <code>admin_version</code>
         on <code>GET /fusion/session-mode/</code>) and re-broadcasts it, so
         open tabs react to admin changes without a reload.
@@ -285,13 +278,9 @@ import Skeleton from '../components/ui/Skeleton.astro';
 <style>
   .page-shell { max-width: 72rem; margin: 0 auto; padding: 4rem 1.25rem; }
   .hero { max-width: 52rem; margin-bottom: 2rem; }
-  .eyebrow { margin: 0 0 0.5rem; color: var(--color-primary); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-  h1 { margin: 0; color: var(--color-text-primary); font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.05em; line-height: 1; }
-  h2 { margin: 0; color: var(--color-text-primary); font-size: 1.3rem; }
   .intro { max-width: 42rem; margin: 1rem 0 0; color: var(--color-text-secondary); font-size: 1.05rem; line-height: 1.6; }
   code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; background: color-mix(in oklab, var(--color-primary) 9%, transparent); border-radius: 0.3rem; padding: 0.1rem 0.35rem; }
   .card { padding: clamp(1rem, 3vw, 1.75rem); background: var(--color-surface-card); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-box); box-shadow: var(--shadow-lg); margin-bottom: 1.5rem; }
-  .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
   .page-handler-content { min-height: 10rem; }
   .note { margin: 1rem 0 0; color: var(--color-text-secondary); font-size: 0.85rem; line-height: 1.55; }
   .pointer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; margin: 0; }
@@ -328,6 +317,5 @@ import Skeleton from '../components/ui/Skeleton.astro';
   .toggle input:focus-visible + .toggle-track { outline: 2px solid var(--color-primary); outline-offset: 2px; }
   @media (max-width: 700px) {
     .page-shell { padding-top: 2.5rem; }
-    .section-heading { flex-direction: column; }
   }
 </style>

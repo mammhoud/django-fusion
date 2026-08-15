@@ -235,7 +235,7 @@ import Layout from '../../../layouts/Layout.astro';
         </button>
 
         <!-- Keyboard hint -->
-        <p class="text-center text-[9px] opacity-30 mt-2">1/2/3 order type · Enter to sell · Esc to clear</p>
+        <p class="text-center text-[9px] opacity-30 mt-2">1/2/3 order type, Enter to sell, Esc to clear</p>
       </div>
     </aside>
 
@@ -423,12 +423,47 @@ import Layout from '../../../layouts/Layout.astro';
       },
 
       quickAddByBarcode() {
-        const q = this.search.trim();
-        if (!q) return;
-        const product = this.products.find((p: any) => p.barcode === q || p.name.toLowerCase() === q.toLowerCase());
+        // Search-field Enter / scan → resolve and add.
+        this.scanBarcode(this.search);
+      },
+
+      async scanBarcode(code: string) {
+        const value = String(code || '').trim();
+        if (!value) return;
+
+        // 1. Resolve the code against the backend (exact barcode, then SKU
+        //    fallback) — authoritative even when the product isn't loaded
+        //    client-side or only matches by SKU.
+        try {
+          const res = await fetch('/barcode/' + encodeURIComponent(value));
+          if (res.ok) {
+            const p = await res.json();
+            this.addToCart({
+              id: p.id,
+              name: p.name,
+              price: Number(p.price || 0),
+              barcode: p.barcode || p.sku || '',
+              sku: p.sku || '',
+              unit: 'item',
+              product_type: 'product',
+              category_id: p.category ?? p.category_id ?? null,
+            });
+            this.search = '';
+            this.$store.ui.toast(`Scanned ${p.name}`, 'success');
+            return;
+          }
+        } catch { /* network error → fall through to client-side match */ }
+
+        // 2. Fall back to a local match (name / barcode / sku).
+        const product = this.products.find((p: any) =>
+          p.barcode === value || p.sku === value || p.name.toLowerCase() === value.toLowerCase()
+        );
         if (product) {
           this.addToCart(product);
           this.search = '';
+          this.$store.ui.toast(`Added ${product.name}`, 'success');
+        } else {
+          this.$store.ui.toast(`No product for code ${value}`, 'error');
         }
       },
 
@@ -464,7 +499,7 @@ import Layout from '../../../layouts/Layout.astro';
             this.$store.ui.toast('Checkout failed', 'error');
           }
         } catch(e) {
-          this.$store.ui.toast('Network error — retry', 'error');
+          this.$store.ui.toast('Network error, retry', 'error');
         }
       },
 
@@ -507,13 +542,17 @@ import Layout from '../../../layouts/Layout.astro';
   });
 
   // ── Keyboard shortcuts ──
+  function getSale() {
+    const el = document.querySelector('[x-data="salePage()"]') as any;
+    if (!el || !el._x_dataStack) return null;
+    return el._x_dataStack[0] || null;
+  }
+
   document.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
 
-    const el = document.querySelector('[x-data="salePage()"]') as any;
-    if (!el || !el._x_dataStack) return;
-    const sale = el._x_dataStack[0];
+    const sale = getSale();
     if (!sale) return;
 
     if (e.key === '1') { e.preventDefault(); sale.orderType = 'dine-in'; }
@@ -524,6 +563,44 @@ import Layout from '../../../layouts/Layout.astro';
       if (confirm('Clear cart?')) sale.clearCart();
     }
   });
+
+  // ── Barcode scanner (keyboard-wedge) ──
+  // USB/Bluetooth scanners act as keyboards: they emit the code as rapid
+  // keystrokes and finish with Enter, regardless of which element has focus.
+  // Buffer fast keystrokes (when not typing into a field) and resolve the
+  // code on Enter so a scan adds the item without touching the search box.
+  (() => {
+    let buffer = '';
+    let lastKeyTime = 0;
+    const SCAN_MAX_INTERVAL_MS = 60; // human typing is slower than this
+
+    document.addEventListener('keydown', (e) => {
+      const target = e.target;
+      const isTyping = target instanceof HTMLInputElement
+        || target instanceof HTMLTextAreaElement
+        || target instanceof HTMLSelectElement;
+      if (isTyping) { buffer = ''; return; }
+      if (e.metaKey || e.ctrlKey || e.altKey) { buffer = ''; return; }
+
+      if (e.key === 'Enter') {
+        if (buffer.trim()) {
+          e.preventDefault();
+          const code = buffer.trim();
+          buffer = '';
+          const sale = getSale();
+          if (sale) sale.scanBarcode(code);
+        }
+        return;
+      }
+
+      if (e.key && e.key.length === 1) {
+        const now = Date.now();
+        if (now - lastKeyTime > SCAN_MAX_INTERVAL_MS) buffer = '';
+        buffer += e.key;
+        lastKeyTime = now;
+      }
+    });
+  })();
 </script>
 
 <style>

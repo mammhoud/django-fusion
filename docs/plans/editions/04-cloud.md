@@ -1,6 +1,7 @@
 # Cloud Edition — Design, Architecture & Implementation Plan
 
-> **Status:** Backup/monitoring implementation complete and verified locally —
+> **Status:** Backup/monitoring + Cloud Dashboard implementation complete and
+> verified locally —
 > `BackupRun` model + migration, `backup_db` management command, `/monitor/status`
 > endpoint, docs/changelog sync, django-fusion monitor tile + `BackupRun` admin,
 > SDK monitor wiring in the telemetry page, and Playwright e2e + inheritance

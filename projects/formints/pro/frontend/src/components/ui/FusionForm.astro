@@ -95,7 +95,7 @@ const initialLayout = JSON.stringify(staticLayout || null);
             <template x-else-if="fieldType(name) === 'select'">
               <select :id="name" :name="name" class="input w-full"
                 x-model="form[name]" :required="isRequired(name)">
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <template x-for="opt in fieldChoices(name)" :key="opt.value">
                   <option :value="opt.value" x-text="opt.label"></option>
                 </template>

@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Skeleton from '../components/ui/Skeleton.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
 ---
 
 <Layout>
   <div class="page-shell">
     <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">Arabic-first · offline-capable · restaurant-focused</p>
-      <h1 id="page-title">Formint POS Professional</h1>
+      <SectionHeading level="h1" size="hero-xl" eyebrow="Arabic-first, offline-capable, restaurant-focused" title="Formint POS Professional" id="page-title" />
       <p class="intro">
         Phase 1 foundation for branch operations, orders, kitchen coordination, sync, and reports.
       </p>
@@ -25,13 +25,9 @@ import Skeleton from '../components/ui/Skeleton.astro';
       hx-target="#branch-summary-content"
       hx-swap="innerHTML"
     >
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Vertical slice</p>
-          <h2 id="branch-summary-title">Branch → order → KDS → sync → report</h2>
-        </div>
-        <span class="status-dot" aria-label="Phase 1 planned"></span>
-      </div>
+      <SectionHeading title="Branch → order → KDS → sync → report" id="branch-summary-title" size="lg">
+        <span slot="actions" class="status-dot" aria-label="Phase 1 planned"></span>
+      </SectionHeading>
 
       <div id="branch-summary-content">
         <Skeleton variant="branch-summary" count={3} />
@@ -51,12 +47,8 @@ import Skeleton from '../components/ui/Skeleton.astro';
 <style>
   .page-shell { max-width: 72rem; margin: 0 auto; padding: 4rem 1.25rem; }
   .hero { max-width: 48rem; margin-bottom: 2rem; }
-  .eyebrow { margin: 0 0 0.5rem; color: var(--color-primary); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-  h1 { margin: 0; color: var(--color-text-primary); font-size: clamp(2rem, 6vw, 4.5rem); letter-spacing: -0.06em; line-height: 0.98; }
-  h2 { margin: 0; color: var(--color-text-primary); font-size: clamp(1rem, 2vw, 1.45rem); }
   .intro { max-width: 38rem; margin: 1rem 0 0; color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.6; }
   .data-card { padding: clamp(1rem, 3vw, 2rem); background: var(--color-surface-card); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-box); box-shadow: var(--shadow-lg); }
-  .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
   .status-dot { width: 0.7rem; height: 0.7rem; margin-top: 0.35rem; border-radius: 50%; background: var(--color-warning); box-shadow: 0 0 0 0.3rem color-mix(in oklab, var(--color-warning) 30%, transparent); }
   .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
   .principles article { display: grid; gap: 0.35rem; padding: 1rem; color: var(--color-text-secondary); background: color-mix(in oklab, var(--color-primary) 9%, transparent); border-radius: 0.8rem; line-height: 1.45; }

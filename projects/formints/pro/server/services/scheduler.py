@@ -219,6 +219,50 @@ class BranchSyncScheduler:
             return True  # Default to enabled if state file unreadable
 
     # ------------------------------------------------------------------
+    # Offline outbox handoff — persist a failed push for retry
+    # ------------------------------------------------------------------
+
+    def _enqueue_failed_push_sync(self, entity_type: str, payload: dict) -> bool:
+        """Sync: persist a failed cloud push into the durable ``OutboxQueue``.
+
+        ``OfflineQueueService`` retries the entry (with exponential backoff and
+        dead-lettering) once the cloud master is reachable again, so a transient
+        sync failure is never lost.
+
+        Dedup guard: a periodic scheduler would otherwise pile up one entry per
+        cycle while the cloud is down, so at most one pending/failed entry is
+        kept per (node, entity_type). Returns True when a new entry was queued.
+        """
+        from models.outbox import OutboxQueue
+        from services.outbox import OfflineQueueService
+
+        try:
+            if OutboxQueue.objects.filter(
+                node_id=self.node_id,
+                entity_type=entity_type,
+                status__in=["pending", "failed"],
+            ).exists():
+                return False
+            OfflineQueueService().enqueue(
+                entity_type=entity_type,
+                entity_id="",
+                action="push",
+                payload=payload,
+                node_id=self.node_id,
+            )
+            return True
+        except Exception as exc:
+            logger.warning(
+                "Could not enqueue failed %s push into offline outbox: %s",
+                entity_type, exc,
+            )
+            return False
+
+    async def _enqueue_failed_push(self, entity_type: str, payload: dict) -> bool:
+        """Async wrapper for ``_enqueue_failed_push_sync`` (offloads DB I/O)."""
+        return await sync_to_async(self._enqueue_failed_push_sync)(entity_type, payload)
+
+    # ------------------------------------------------------------------
     # Sync cycle
     # ------------------------------------------------------------------
 
@@ -244,6 +288,8 @@ class BranchSyncScheduler:
             self._last_sync_at = datetime.now(timezone.utc)
             # ── Run cleanup after successful sync — purge old synced tokens and stale logs
             await self._run_cleanup()
+            # ── Best-effort Loop-CRM POS ingest push (Formint ↔ Loop-CRM) ──
+            await self._push_loop_ingest()
             return results
         except ImportError:
             logger.debug("django-fusion not available — falling back to table scans")
@@ -272,11 +318,9 @@ class BranchSyncScheduler:
 
         # ── Push products ──
         if products:
+            payload = {"node_id": self.node_id, "products": products}
             try:
-                r = await cloud._push("products", {
-                    "node_id": self.node_id,
-                    "products": products,
-                })
+                r = await cloud._push("products", payload)
                 results["products"] = len(products)
                 await _log_sync(
                     self.node_id, "products_branch", "auto-scheduled",
@@ -284,14 +328,15 @@ class BranchSyncScheduler:
                 )
             except Exception as exc:
                 logger.warning("Failed to push products to cloud: %s", exc)
+                r = {"status": "failed", "error": str(exc)}
+            if r.get("status") == "failed":
+                await self._enqueue_failed_push("products", payload)
 
         # ── Push sales ──
         if sales:
+            payload = {"node_id": self.node_id, "sales": sales}
             try:
-                r = await cloud._push("sales", {
-                    "node_id": self.node_id,
-                    "sales": sales,
-                })
+                r = await cloud._push("sales", payload)
                 results["sales"] = len(sales)
                 await _log_sync(
                     self.node_id, "sales_branch", "auto-scheduled",
@@ -299,14 +344,15 @@ class BranchSyncScheduler:
                 )
             except Exception as exc:
                 logger.warning("Failed to push sales to cloud: %s", exc)
+                r = {"status": "failed", "error": str(exc)}
+            if r.get("status") == "failed":
+                await self._enqueue_failed_push("sales", payload)
 
         # ── Push inventory ──
         if inventory:
+            payload = {"node_id": self.node_id, "transactions": inventory}
             try:
-                r = await cloud._push("inventory", {
-                    "node_id": self.node_id,
-                    "transactions": inventory,
-                })
+                r = await cloud._push("inventory", payload)
                 results["inventory"] = len(inventory)
                 await _log_sync(
                     self.node_id, "inventory_branch", "auto-scheduled",
@@ -314,6 +360,9 @@ class BranchSyncScheduler:
                 )
             except Exception as exc:
                 logger.warning("Failed to push inventory to cloud: %s", exc)
+                r = {"status": "failed", "error": str(exc)}
+            if r.get("status") == "failed":
+                await self._enqueue_failed_push("inventory", payload)
 
         # ── Heartbeat ──
         try:
@@ -334,7 +383,28 @@ class BranchSyncScheduler:
         )
         # ── Run cleanup after fallback sync too — purge old tokens and stale logs
         await self._run_cleanup()
+        # ── Best-effort Loop-CRM POS ingest push (Formint ↔ Loop-CRM) ──
+        await self._push_loop_ingest()
         return results
+
+    async def _push_loop_ingest(self) -> None:
+        """Push completed/refunded sales to Loop-CRM (best-effort).
+
+        Runs alongside the existing POS Cloud sync; an unconfigured Loop-CRM
+        link (no ``LOOP_CRM_URL``/``LOOP_CRM_INGEST_API_KEY``) is a no-op so a
+        terminal without the CRM integration never fails its sync cycle.
+        """
+        try:
+            from services.pos_ingest import push_pending_sales
+
+            result = await sync_to_async(push_pending_sales)(limit=500)
+            if result.get("status") != "skipped":
+                logger.info(
+                    "Loop-CRM ingest: status=%s count=%s",
+                    result.get("status"), result.get("count"),
+                )
+        except Exception as exc:  # noqa: BLE001 - never break the sync cycle
+            logger.debug("Loop-CRM ingest push skipped: %s", exc)
 
     async def _sync_via_datatoken(self, cloud, _log_sync) -> dict:
         """Sync using DataToken indexed batches (fast path).
@@ -406,11 +476,9 @@ class BranchSyncScheduler:
             payloads, tids = grouped[ct_model]
             if not payloads:
                 continue
+            payload = {"node_id": self.node_id, payload_key: payloads}
             try:
-                r = await cloud._push(push_endpoint, {
-                    "node_id": self.node_id,
-                    payload_key: payloads,
-                })
+                r = await cloud._push(push_endpoint, payload)
                 results_key = {
                     "products": "products",
                     "sales": "sales",
@@ -425,6 +493,9 @@ class BranchSyncScheduler:
                     synced_token_ids.extend(tids)
             except Exception as exc:
                 logger.warning("Failed to push %s batch via DataToken: %s", ct_model, exc)
+                r = {"status": "failed", "error": str(exc)}
+            if r.get("status") == "failed":
+                await self._enqueue_failed_push(push_endpoint, payload)
 
         # ── Bulk-mark synced tokens ──
         if synced_token_ids:
@@ -471,8 +542,9 @@ class BranchSyncScheduler:
         log_retention = int(os.environ.get("POS_FULL_SYNC_LOG_RETENTION_DAYS", "30"))
 
         try:
-            from django_fusion.core.models import DataToken
             from datetime import timedelta
+
+            from django_fusion.core.models import DataToken
 
             cutoff = datetime.now(timezone.utc) - timedelta(days=token_retention)
 
@@ -495,8 +567,9 @@ class BranchSyncScheduler:
 
         # ── Purge stale sync logs ──
         try:
-            from routes.state import SyncLog
             from datetime import timedelta
+
+            from routes.state import SyncLog
 
             log_cutoff = datetime.now(timezone.utc) - timedelta(days=log_retention)
 
@@ -540,8 +613,9 @@ class BranchSyncScheduler:
         """Query recent sales from the local Django ORM (last 24h)."""
         @sync_to_async
         def _q():
-            from models.pos import Sale
             from datetime import timedelta
+
+            from models.pos import Sale
             cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
             return [
                 {
@@ -561,8 +635,9 @@ class BranchSyncScheduler:
         """Query recent inventory transactions from the local Django ORM (last 24h)."""
         @sync_to_async
         def _q():
-            from models.pos import InventoryTransaction
             from datetime import timedelta
+
+            from models.pos import InventoryTransaction
             cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
             return [
                 {

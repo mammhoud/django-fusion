@@ -1,0 +1,22 @@
+{# Fusion component — Purchase order reorder alerts #}
+<div class="fusion-purchase-alerts" hx-swap-oob="true" id="fusion-purchase-alerts">
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+    <div class="stat-card"><div class="stat-value text-warning">{{ data.reorder_count|default:"0" }}</div><div class="stat-label">Needs reorder</div></div>
+    <div class="stat-card"><div class="stat-value">{{ data.open_drafts|default:"0" }}</div><div class="stat-label">Open drafts</div></div>
+  </div>
+  <table class="table table-sm">
+    <thead><tr><th>Product</th><th>Stock</th><th>Reorder point</th><th>Suggested</th></tr></thead>
+    <tbody>
+      {% for r in data.reorders %}
+      <tr class="hover">
+        <td class="px-3 py-2 text-sm font-medium">{{ r.product_name }}</td>
+        <td class="px-3 py-2 text-xs">{{ r.current_stock }}</td>
+        <td class="px-3 py-2 text-xs">{{ r.reorder_point }}</td>
+        <td class="px-3 py-2 text-xs font-bold">{{ r.suggested_order_quantity|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="text-center opacity-50 py-4">No reorder alerts — stock is healthy</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

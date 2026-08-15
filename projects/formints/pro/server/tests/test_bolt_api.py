@@ -38,9 +38,15 @@ if not settings.configured:
             "django.contrib.contenttypes",
             "django.contrib.auth",
             "django_bolt",
+            # POS Full app — keeps reverse relations wired for cascade deletes
+            # when this module configures Django before the canonical bootstrap.
+            "models.PosFullConfig",
         ],
         USE_TZ=True,
         DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
+        # pos_full tables are created manually by the conftest bootstrap;
+        # disable migrations so pytest-django's ``migrate`` doesn't re-create.
+        MIGRATION_MODULES={"pos_full": None},
     )
     import django
     django.setup()

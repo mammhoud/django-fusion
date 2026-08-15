@@ -37,3 +37,11 @@ from models.forge_gaps import Coupon, DeliveryType, DeliveryZone, Shift  # noqa:
 from models.crm import (  # noqa: F401
     Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote,
 )
+from models.gaming import (  # noqa: F401
+    GamingStation, GamingToken, GamingSession, GamingQueueEntry,
+)
+from models.giftcard import GiftCard, GiftCardTransaction  # noqa: F401
+from models.tables import RestaurantTable, TableReservation  # noqa: F401
+from models.delivery import DeliveryProvider, DeliveryOrder  # noqa: F401
+from models.timeclock import TimeClockEntry  # noqa: F401
+from models.kiosk import KioskSession, KioskCartItem  # noqa: F401

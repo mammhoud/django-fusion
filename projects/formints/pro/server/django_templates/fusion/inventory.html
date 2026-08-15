@@ -1,0 +1,27 @@
+{# Fusion component — Inventory plan (reorder points, safety stock, stock-out dates) #}
+{# inventory_plan → data.products rows + data.summary                       #}
+<div class="fusion-inventory" hx-swap-oob="true" id="fusion-inventory">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+    <div class="stat-card"><div class="stat-value">{{ data.summary.products_planned }}</div><div class="stat-label">Planned</div></div>
+    <div class="stat-card"><div class="stat-value text-warning">{{ data.summary.needs_reorder }}</div><div class="stat-label">Needs reorder</div></div>
+    <div class="stat-card"><div class="stat-value text-error">{{ data.summary.projected_stock_out }}</div><div class="stat-label">Stock-out</div></div>
+    <div class="stat-card"><div class="stat-value">{{ data.summary.suggested_order_value|default:"0" }}</div><div class="stat-label">Suggested order value</div></div>
+  </div>
+  <table class="table table-sm">
+    <thead><tr><th>Product</th><th>Stock</th><th>Reorder point</th><th>Suggested</th><th>Stock-out</th><th>Reason</th></tr></thead>
+    <tbody>
+      {% for r in data.products %}
+      <tr class="hover">
+        <td class="px-3 py-2 text-sm font-medium">{{ r.product_name }}</td>
+        <td class="px-3 py-2 text-xs">{{ r.current_stock }}</td>
+        <td class="px-3 py-2 text-xs">{{ r.reorder_point }}</td>
+        <td class="px-3 py-2 text-xs font-bold">{{ r.suggested_order_quantity|default:"—" }}</td>
+        <td class="px-3 py-2 text-xs">{{ r.stock_out_date|default:"—" }}</td>
+        <td class="px-3 py-2 text-xs opacity-60">{{ r.reason|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center opacity-50 py-4">Inventory plan is empty — stock is healthy</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

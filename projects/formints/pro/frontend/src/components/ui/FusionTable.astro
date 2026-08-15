@@ -125,7 +125,7 @@ const initialCols = JSON.stringify(colDefs);
             <template x-for="col in cols" :key="col.key">
               <td class="px-3 py-2 text-xs">
                 <!-- Booleans get a controlled badge; everything else is
-                     plain text (x-text escapes — never inject raw HTML). -->
+                     plain text (x-text escapes; never inject raw HTML). -->
                 <template x-if="typeof row[col.key] === 'boolean'">
                   <span class="badge" :class="row[col.key] ? 'badge-soft-success' : 'badge-soft-error'" x-text="row[col.key] ? 'Yes' : 'No'"></span>
                 </template>
@@ -224,7 +224,7 @@ const initialCols = JSON.stringify(colDefs);
 
       cellText(row: any, key: string) {
         const value = row[key];
-        if (value === null || value === undefined || value === '') return '—';
+        if (value === null || value === undefined || value === '') return '-';
         if (typeof value === 'number') return String(value);
         return String(value);
       },

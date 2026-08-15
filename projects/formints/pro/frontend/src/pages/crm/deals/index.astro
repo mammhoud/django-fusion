@@ -67,7 +67,7 @@ import Icon from '../../../components/ui/Icon.astro';
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
               <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.title"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name || '—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name || '-'"></span></td>
               <td class="px-3 py-2">
                 <span class="badge" :class="{ 'badge-soft-success': item.is_won, 'badge-soft-error': item.is_closed && !item.is_won, 'badge-soft-info': !!item.stage_name && !item.is_won && !item.is_closed, 'badge-soft-neutral': !item.stage_name && !item.is_won && !item.is_closed }" x-text="item.stage_name || (item.is_won ? 'Won' : item.is_closed ? 'Lost' : 'New')"></span>
               </td>
@@ -80,7 +80,7 @@ import Icon from '../../../components/ui/Icon.astro';
                   <span class="text-xs tabular-nums" x-text="(item.probability||0) + '%'"></span>
                 </div>
               </td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.expected_close_date || '—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.expected_close_date || '-'"></span></td>
               <td class="px-3 py-2">
                 <div class="flex gap-1">
                   <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button>

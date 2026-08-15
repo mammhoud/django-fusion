@@ -480,6 +480,21 @@
     "noneRecorded": "NONE / NOT RECORDED",
     "queueDepth": "QUEUE DEPTH"
   },
+  "cloudDashboard": {
+    "title": "Cloud Dashboard",
+    "syncQueue": "SYNC QUEUE",
+    "conflicts": "CONFLICTS",
+    "activity": "RECENT ACTIVITY",
+    "items": "ITEMS",
+    "pending": "PENDING",
+    "retryQueued": "Item queued for retry",
+    "cancelled": "Item cancelled",
+    "resolved": "Conflict resolved",
+    "dismissed": "Conflict dismissed",
+    "noQueue": "NO PENDING ITEMS",
+    "noConflicts": "NO PENDING CONFLICTS",
+    "noActivity": "NO ACTIVITY"
+  },
   "nav": {
     "about": "About",
     "aboutDesc": "App information",
@@ -487,6 +502,8 @@
     "analyticsDesc": "View sales insights",
     "branchOverview": "Branch Overview",
     "branchOverviewDesc": "Live sync telemetry roster",
+    "cloudDashboard": "Cloud Dashboard",
+    "cloudDashboardDesc": "Manage queue & conflicts",
     "categoryProducts": "Inventory & Products",
     "categoryReports": "Reports & Analytics",
     "categorySales": "Sales & Operations",

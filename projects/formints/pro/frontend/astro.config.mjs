@@ -85,6 +85,8 @@ export default defineConfig({
         '/inventory/': BACKEND,
         '/employees/': BACKEND,
         '/categories/': BACKEND,
+        // Barcode scanner resolution (GET /barcode/<value> → product JSON)
+        '/barcode/': BACKEND,
         // ── WebSocket → Django Channels (ASGI server) ──
         '/ws': {
           target: BACKEND.replace(/^http/, 'ws'),

@@ -35,10 +35,17 @@ if not settings.configured:
         INSTALLED_APPS=[
             "django.contrib.contenttypes",
             "django.contrib.auth",
+            # POS Full app — required so pos_full models participate in the
+            # relation graph (reverse FKs, cascade deletes). Omitting it here
+            # poisons later tests with broken reverse relations / FK errors.
+            "models.PosFullConfig",
         ],
         DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
         USE_TZ=True,
         SECRET_KEY=os.environ.get("DJANGO_SECRET_KEY", "test-key-fragments"),
+        # pos_full tables are created manually by the conftest bootstrap;
+        # disable migrations so pytest-django's ``migrate`` doesn't re-create.
+        MIGRATION_MODULES={"pos_full": None},
     )
     django.setup()
 

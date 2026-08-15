@@ -1,0 +1,78 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+---
+
+<Layout title="Gift Cards · Formint POS">
+  <div class="page-shell" x-data="giftCardsPage()" x-init="load()">
+    <section class="hero">
+      <SectionHeading level="h1" eyebrow="Professional+ · digital gift cards" title="Gift Cards" />
+      <p class="intro">Issue cards, check balances, reload, and disable. A full ledger sits behind every card.</p>
+    </section>
+
+    <section class="card">
+      <SectionHeading title="All gift cards">
+        <button slot="actions" class="btn btn-primary btn-sm gap-1" @click="openIssue()">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus" /></svg>
+          Issue card
+        </button>
+      </SectionHeading>
+      <div x-show="loading" class="space-y-2">
+        <template x-for="i in 3" :key="i"><div class="skeleton-shimmer h-10 rounded-lg" aria-hidden="true"></div></template>
+      </div>
+      <div x-show="!loading && cards.length === 0" class="text-center py-10 opacity-50 text-sm">No gift cards yet.</div>
+      <div x-show="!loading && cards.length > 0" class="overflow-x-auto">
+        <table class="fusion-table">
+          <thead><tr><th>Code</th><th>Balance</th><th>Status</th><th>Expires</th><th></th></tr></thead>
+          <tbody>
+            <template x-for="c in cards" :key="c.id">
+              <tr>
+                <td x-text="c.code"></td>
+                <td x-text="'$' + (c.balance ?? 0).toFixed(2)"></td>
+                <td><span class="badge badge-sm" :class="c.disabled ? 'badge-neutral' : 'badge-success'" x-text="c.disabled ? 'disabled' : 'active'"></span></td>
+                <td x-text="shortDate(c.expires_at)"></td>
+                <td class="flex gap-1">
+                  <button class="btn btn-ghost btn-xs" @click="openReload(c)">Reload</button>
+                  <button class="btn btn-ghost btn-xs" @click="disable(c)" x-show="!c.disabled">Disable</button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <p x-show="error" class="note mt-2" style="color: var(--color-error)" x-text="error"></p>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('giftCardsPage', () => ({
+      cards: [], loading: true, error: '',
+      shortDate(iso) { if (!iso) return '-'; return new Date(iso).toLocaleDateString(); },
+      async load() {
+        this.loading = true;
+        try { const res = await fetch('/gift-cards'); if (res.ok) this.cards = await res.json(); } catch { this.error = 'Could not load gift cards'; }
+        this.loading = false;
+      },
+      async openIssue() {
+        const amount = parseFloat(prompt('Initial balance ($):', '25')) || 25;
+        const res = await fetch('/gift-cards', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ initial_balance: amount }) });
+        if (res.ok) await this.load(); else this.error = 'Issue failed';
+      },
+      async openReload(c) {
+        const amount = parseFloat(prompt('Reload amount ($):', '25')) || 0;
+        if (amount <= 0) return;
+        const res = await fetch('/gift-cards/reload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: c.code, amount }) });
+        if (res.ok) await this.load(); else this.error = 'Reload failed';
+      },
+      async disable(c) {
+        const res = await fetch('/gift-cards/disable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: c.code }) });
+        if (res.ok) await this.load(); else this.error = 'Disable failed';
+      },
+    }));
+  });
+  Alpine.start();
+</script>

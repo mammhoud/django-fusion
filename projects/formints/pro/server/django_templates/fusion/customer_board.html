@@ -1,0 +1,27 @@
+{# Fusion component — Customer display board (active orders) #}
+<div class="fusion-customer-board" hx-swap-oob="true" id="fusion-customer-board">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+    {% for status, count in data.summary.items %}
+    <div class="stat-card"><div class="stat-value">{{ count }}</div><div class="stat-label">{{ status }}</div></div>
+    {% endfor %}
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+    {% for order in data.orders %}
+    <div class="rounded-2xl border p-4">
+      <div class="flex items-center justify-between">
+        <span class="font-bold">Order #{{ order.id }}</span>
+        <span class="badge">{{ order.ticket_status }}</span>
+      </div>
+      <p class="text-xs opacity-60 mt-1">Table {{ order.table|default:"—" }}</p>
+      <div class="mt-2 space-y-1">
+        {% for item in order.items %}
+        <div class="flex justify-between text-sm"><span>{{ item.quantity }}× {{ item.name }}</span><span>{{ item.line_total }}</span></div>
+        {% endfor %}
+      </div>
+      <div class="mt-2 border-t pt-2 flex justify-between font-bold"><span>Total</span><span>{{ order.total }}</span></div>
+    </div>
+    {% empty %}
+    <p class="opacity-60 text-sm py-4">No active orders.</p>
+    {% endfor %}
+  </div>
+</div>

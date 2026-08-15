@@ -14,7 +14,7 @@ const { title = 'Formint POS Professional' } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Formint POS Professional — Multi-module restaurant operations: POS, Kitchen, HR, CRM, Analytics" />
+    <meta name="description" content="Formint POS Professional. Multi-module restaurant operations: POS, Kitchen, HR, CRM, Analytics" />
     <title>{title}</title>
     <script is:inline>
       (() => {
@@ -305,6 +305,21 @@ const { title = 'Formint POS Professional' } = Astro.props;
                 { label: 'Shifts', href: '/ops/shifts/', active: false },
                 { label: 'Sync Center', href: '/ops/sync/', active: false, badge: 'NEW' },
               ]},
+              { id: 'restaurants', label: 'Restaurants', icon: 'table_restaurant', color: '#f97316', active: false, routes: [
+                { label: 'Tables & Floor', href: '/tables', active: false },
+                { label: 'Reservations', href: '/reservations', active: false },
+                { label: 'Deliveries', href: '/deliveries', active: false, badge: 'NEW' },
+                { label: 'Gift Cards', href: '/gift-cards', active: false },
+                { label: 'Purchase Orders', href: '/purchase-orders', active: false },
+              ]},
+              { id: 'intelligence', label: 'Intelligence', icon: 'query_stats', color: '#0ea5e9', active: false, routes: [
+                { label: 'Forecast', href: '/forecast/report', active: false, badge: 'NEW' },
+                { label: 'Kiosk', href: '/kiosk/', active: false, badge: 'NEW' },
+                { label: 'Customer Display', href: '/customer-display/', active: false, badge: 'NEW' },
+              ]},
+              { id: 'gaming', label: 'Gaming Center', icon: 'sports_esports', color: '#8b5cf6', active: false, routes: [
+                { label: 'Gaming Center', href: '/gaming/', active: false, badge: 'NEW' },
+              ]},
               { id: 'admin', label: 'Administration', icon: 'admin_panel_settings', color: '#64748b', active: false, routes: [
                 { label: 'Settings', href: '/admin/settings/', active: false },
                 { label: 'Notes', href: '/admin/notes/', active: false },
@@ -334,6 +349,9 @@ const { title = 'Formint POS Professional' } = Astro.props;
               shopping_cart: 'cart', restaurant: 'chef-hat', people: 'users',
               contact_page: 'id-badge', analytics: 'chart-line',
               settings_applications: 'settings', admin_panel_settings: 'shield-check',
+              table_restaurant: 'building-store', query_stats: 'chart-line',
+              sports_esports: 'gamepad', desktop_windows: 'device-desktop',
+              point_of_sale: 'cart',
             };
             return map[icon] || 'layout-dashboard';
           },

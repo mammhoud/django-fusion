@@ -25,6 +25,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.db import connection
 from django.utils import timezone
 
 from apps.core.models import BackupRun
@@ -63,13 +64,20 @@ class Command(BaseCommand):
                 "SQLite backup.  Got: {!r}".format(db_path)
             )
         db_path = str(db_path)
+        # Django's SQLite test runner points NAME at an in-memory URI
+        # (``file:memorydb_default?mode=memory&cache=shared``). It is not a
+        # real file — the live database lives behind ``django.db.connection``.
+        is_in_memory = ":memory:" in db_path or "mode=memory" in db_path
 
         # ── Resolve destination directory ──
         dest_dir = options["dest"]
         if dest_dir is None:
-            dest_dir = os.path.join(
-                os.path.dirname(os.path.abspath(db_path)), "backups"
-            )
+            if is_in_memory:
+                dest_dir = os.path.join(str(settings.BASE_DIR), "backups")
+            else:
+                dest_dir = os.path.join(
+                    os.path.dirname(os.path.abspath(db_path)), "backups"
+                )
         os.makedirs(dest_dir, exist_ok=True)
 
         # ── Resolve filename ──
@@ -79,8 +87,8 @@ class Command(BaseCommand):
             filename = f"pos_cloud-{timestamp}.db"
         dest = os.path.join(dest_dir, filename)
 
-        # Avoid accidental self-backup.
-        if os.path.abspath(dest) == os.path.abspath(db_path):
+        # Avoid accidental self-backup (only meaningful for a real file).
+        if not is_in_memory and os.path.abspath(dest) == os.path.abspath(db_path):
             raise CommandError(
                 "Backup destination must differ from the source database."
             )
@@ -97,7 +105,10 @@ class Command(BaseCommand):
         )
 
         try:
-            _sqlite_backup(db_path, dest)
+            # Back up the *live* connection's database. In tests that is the
+            # in-memory test DB (with the migrated schema); in production it
+            # is the on-disk ``formint_cloud.db``.
+            _sqlite_backup(connection.connection, dest)
 
             # Record size.
             size = os.path.getsize(dest)
@@ -132,17 +143,19 @@ class Command(BaseCommand):
 # ── Helpers ──────────────────────────────────────────────────────
 
 
-def _sqlite_backup(source_path: str, dest_path: str) -> None:
-    """Copy the source SQLite database to dest using the online backup API."""
-    source = sqlite3.connect(source_path)
+def _sqlite_backup(source_connection, dest_path: str) -> None:
+    """Copy the live SQLite connection's database to dest.
+
+    ``source_connection`` is the raw ``sqlite3.Connection`` behind Django's
+    ``django.db.connection``. Using the live connection (rather than re-opening
+    ``DATABASES['default']['NAME']``) makes the command correct for both the
+    on-disk production database and the in-memory test database.
+    """
+    dest = sqlite3.connect(dest_path)
     try:
-        dest = sqlite3.connect(dest_path)
-        try:
-            source.backup(dest)
-        finally:
-            dest.close()
+        source_connection.backup(dest)
     finally:
-        source.close()
+        dest.close()
 
 
 def _fmt_bytes(size: int) -> str:

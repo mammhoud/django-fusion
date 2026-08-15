@@ -39,14 +39,14 @@ import Icon from '../../../components/ui/Icon.astro';
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]">
               <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
               <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.title || 'Untitled'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.reference_type || '—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.reference_id || '—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.reference_type || '-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.reference_id || '-'"></span></td>
               <td class="px-3 py-2">
                 <span class="badge"
                   :class="{ 'badge-soft-warning': item.status==='draft', 'badge-soft-success': item.status==='saved', 'badge-soft-neutral': item.status==='archived' }"
                   x-text="item.status"></span>
               </td>
-              <td class="px-3 py-2"><span class="text-xs opacity-50" x-text="item.updated_at?.slice(0,10) || '—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs opacity-50" x-text="item.updated_at?.slice(0,10) || '-'"></span></td>
               <td class="px-3 py-2"><div class="flex gap-1">
                 <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button>
                 <button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button>

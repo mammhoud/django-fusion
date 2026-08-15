@@ -354,10 +354,6 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 
 ### 8. Related
 
-- `docs/plans/migrated/projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
-- `docs/plans/cms-fusion/migration-plan.md`
-- `docs/plans/migrated/projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
-- `docs/plans/lms-fusion/migration-plan.md`
-- `docs/plans/migration-cleanup-master.md`
+- `docs/plans/repository/migration-cleanup-master.md`
 - `libs/django-fusion/AGENTS.md`
 - `projects/assets/templates/AGENTS.md`

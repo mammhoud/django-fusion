@@ -46,9 +46,9 @@ import Icon from '../../../components/ui/Icon.astro';
                 :class="{'badge-soft-info':item.activity_type==='call','badge-soft-accent':item.activity_type==='meeting','badge-soft-warning':item.activity_type==='email','badge-soft-success':item.activity_type==='task','badge-soft-neutral':item.activity_type==='note'}"
                 x-text="(item.activity_type||'').charAt(0).toUpperCase()+(item.activity_type||'').slice(1)"></span></td>
               <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.subject"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name||'—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.deal_title||'—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" :class="item.due_date && new Date(item.due_date)<new Date() && !item.is_completed ? 'text-[var(--color-error-strong)] font-medium' : ''" x-text="item.due_date||'—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name||'-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.deal_title||'-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" :class="item.due_date && new Date(item.due_date)<new Date() && !item.is_completed ? 'text-[var(--color-error-strong)] font-medium' : ''" x-text="item.due_date||'-'"></span></td>
               <td class="px-3 py-2"><span class="badge" :class="item.is_completed?'badge-soft-success':'badge-soft-warning'" x-text="item.is_completed?'Done':'Open'"></span></td>
               <td class="px-3 py-2"><div class="flex gap-1"><button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button><button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button></div></td>
             </tr>

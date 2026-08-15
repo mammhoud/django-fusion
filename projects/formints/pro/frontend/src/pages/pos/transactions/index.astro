@@ -85,14 +85,14 @@ import Icon from '../../../components/ui/Icon.astro';
           <template x-for="item in pagedItems()" :key="item.id">
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span x-text="item.id" class="text-xs tabular-nums"></span></td>
-              <td class="px-3 py-2"><span x-text="item.sale_date || item.date || '—'" class="text-xs"></span></td>
+              <td class="px-3 py-2"><span x-text="item.sale_date || item.date || '-'" class="text-xs"></span></td>
               <td class="px-3 py-2"><span x-text="item.customer_name || item.customer || 'Walk-in'" class="text-xs font-medium"></span></td>
               <td class="px-3 py-2"><span x-text="'$' + Number(item.total||0).toFixed(2)" class="text-xs tabular-nums font-medium"></span></td>
               <td class="px-3 py-2"><span x-text="(item.payment_method||'').charAt(0).toUpperCase() + (item.payment_method||'').slice(1)" class="text-xs"></span></td>
               <td class="px-3 py-2">
                 <span class="badge" :class="{ 'badge-soft-success': item.status==='completed', 'badge-soft-warning': item.status==='pending', 'badge-soft-info': item.status==='refunded', 'badge-soft-error': item.status==='cancelled' }" x-text="(item.status||'').charAt(0).toUpperCase() + (item.status||'').slice(1)"></span>
               </td>
-              <td class="px-3 py-2"><span x-text="item.item_count || '—'" class="text-xs tabular-nums"></span></td>
+              <td class="px-3 py-2"><span x-text="item.item_count || '-'" class="text-xs tabular-nums"></span></td>
               <td class="px-3 py-2">
                 <div class="flex gap-1">
                   <button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs" title="Edit" aria-label="Edit">
@@ -159,7 +159,7 @@ import Icon from '../../../components/ui/Icon.astro';
           <div class="sm:col-span-2">
             <label class="text-xs font-medium opacity-70 mb-1 block">Customer</label>
             <select x-model="form.customer_id" class="input w-full">
-              <option value="">— Walk-in —</option>
+              <option value="">- Walk-in -</option>
               <template x-for="c in customerList" :key="c.id">
                 <option :value="c.id" x-text="(c.first_name||'') + ' ' + (c.last_name||'') + (c.phone ? ' · ' + c.phone : '')"></option>
               </template>

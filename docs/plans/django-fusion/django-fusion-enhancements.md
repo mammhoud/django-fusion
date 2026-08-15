@@ -540,9 +540,9 @@ These items were completed ahead of the original Phase 1–5 plan:
 |---|---|
 | django-fusion Tasks & MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
 | Worker Consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
-| Formint POS Professional | [`../pos/formint-pos-professional-plan.md`](../pos/formint-pos-professional-plan.md) |
-| Formint Cloud | [`../pos/cloud-plan.md`](../pos/cloud-plan.md) |
-| Tauri Plugin Migration | [`../pos/tauri-plugins-enhancement-plan.md`](../pos/tauri-plugins-enhancement-plan.md) |
+| Formint POS Professional | [`../editions/03-pro.md`](../editions/03-pro.md) |
+| Formint Cloud | [`../editions/04-cloud.md`](../editions/04-cloud.md) |
+| Tauri Plugin Migration | [`../editions/02-standard.md`](../editions/02-standard.md) |
 | Codebase Audit & Migration | [`../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md`](../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md) |
 | Canonical Plan Registry | [`../README.md`](../README.md) |
 

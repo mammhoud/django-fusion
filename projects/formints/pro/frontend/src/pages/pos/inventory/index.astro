@@ -153,7 +153,7 @@ import Icon from '../../../components/ui/Icon.astro';
           <div class="sm:col-span-2">
             <label class="text-xs font-medium opacity-70 mb-1 block">Product *</label>
             <select x-model="form.product_id" class="input w-full" required>
-              <option value="">— Select product —</option>
+              <option value="">- Select product -</option>
               <template x-for="p in productList" :key="p.id">
                 <option :value="p.id" x-text="p.name + ' (' + (p.stock_quantity??0) + ' in stock)'"></option>
               </template>

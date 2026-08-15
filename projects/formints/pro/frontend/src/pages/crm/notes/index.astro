@@ -42,11 +42,11 @@ import Icon from '../../../components/ui/Icon.astro';
           <template x-for="item in pagedItems()" :key="item.id">
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
-              <td class="px-3 py-2"><span x-show="item.is_pinned" class="inline-flex text-[var(--color-warning)]"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pin" /></svg></span><span x-show="!item.is_pinned" class="text-sm opacity-20">—</span></td>
+              <td class="px-3 py-2"><span x-show="item.is_pinned" class="inline-flex text-[var(--color-warning)]"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pin" /></svg></span><span x-show="!item.is_pinned" class="text-sm opacity-20">-</span></td>
               <td class="px-3 py-2"><span class="text-xs max-w-xs truncate block" x-text="item.content"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name||'—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.deal_title||'—'"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.created_at||'—'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name||'-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.deal_title||'-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="item.created_at||'-'"></span></td>
               <td class="px-3 py-2"><div class="flex gap-1"><button @click.stop="openEdit(item)" class="btn btn-ghost btn-xs px-1.5" title="Edit" aria-label="Edit"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pencil" /></svg></button><button @click.stop="confirmDelete(item)" class="btn btn-ghost btn-xs px-1.5" title="Delete" aria-label="Delete"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash" /></svg></button></div></td>
             </tr>
           </template>

@@ -1,0 +1,8 @@
+{# Fusion component — Purchase order stats #}
+<div class="fusion-purchase-stats" hx-swap-oob="true" id="fusion-purchase-stats">
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+    {% for key, label in data.items %}
+    <div class="stat-card"><div class="stat-value">{{ key }}</div><div class="stat-label">{{ label }}</div></div>
+    {% endfor %}
+  </div>
+</div>

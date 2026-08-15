@@ -1,66 +1,61 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Skeleton from '../../components/ui/Skeleton.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
 ---
 
 <Layout title="Vertical Slice · Formint POS">
   <div class="page-shell">
     <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">Phase 1 · HTMX data-only</p>
-      <h1 id="page-title">Vertical slice</h1>
+      <SectionHeading level="h1" size="hero-xl" eyebrow="HTMX data-only walkthrough" title="Vertical slice" id="page-title" />
       <p class="intro">
-        Branch summary → orders → KDS → sync → report — each section loads
+        Branch summary → orders → KDS → sync → report. Each section loads
         independently via HTMX returning <em>only</em> the data fragment.
       </p>
     </section>
 
     <section id="vs-branch" class="vs-segment" aria-labelledby="vs-branch-title" aria-live="polite"
       hx-get="/htmx/branches/summary/" hx-trigger="load" hx-target="#vs-branch-target" hx-swap="innerHTML">
-      <div class="vs-segment__head">
-        <h2 id="vs-branch-title">1 · Branch</h2>
-        <button type="button" class="vs-refresh-btn" aria-label="Refresh branch"
+      <SectionHeading title="Branch" id="vs-branch-title" size="sm" variant="divider">
+        <button slot="actions" type="button" class="vs-refresh-btn" aria-label="Refresh branch"
           hx-get="/htmx/branches/summary/" hx-target="#vs-branch-target" hx-swap="innerHTML">Refresh</button>
-      </div>
+      </SectionHeading>
       <div id="vs-branch-target"><Skeleton variant="branch-summary" count={3} /></div>
     </section>
 
     <section id="vs-orders" class="vs-segment" aria-labelledby="vs-orders-title" aria-live="polite"
       hx-get="/htmx/vertical-slice/orders/" hx-trigger="load" hx-target="#vs-orders-target" hx-swap="innerHTML">
-      <div class="vs-segment__head">
-        <h2 id="vs-orders-title">2 · Orders</h2>
-        <button type="button" class="vs-refresh-btn" aria-label="Refresh orders"
+      <SectionHeading title="Orders" id="vs-orders-title" size="sm" variant="divider">
+        <button slot="actions" type="button" class="vs-refresh-btn" aria-label="Refresh orders"
           hx-get="/htmx/vertical-slice/orders/" hx-target="#vs-orders-target" hx-swap="innerHTML">Refresh</button>
-      </div>
+      </SectionHeading>
       <div id="vs-orders-target"><Skeleton variant="data-table" count={4} /></div>
     </section>
 
     <section id="vs-kds" class="vs-segment" aria-labelledby="vs-kds-title" aria-live="polite"
       hx-get="/htmx/vertical-slice/kds/" hx-trigger="load" hx-target="#vs-kds-target" hx-swap="innerHTML">
-      <div class="vs-segment__head">
-        <h2 id="vs-kds-title">3 · Kitchen Display</h2>
-        <button type="button" class="vs-refresh-btn" aria-label="Refresh KDS"
+      <SectionHeading title="Kitchen Display" id="vs-kds-title" size="sm" variant="divider">
+        <button slot="actions" type="button" class="vs-refresh-btn" aria-label="Refresh KDS"
           hx-get="/htmx/vertical-slice/kds/" hx-target="#vs-kds-target" hx-swap="innerHTML">Refresh</button>
-      </div>
+      </SectionHeading>
       <div id="vs-kds-target"><Skeleton variant="kpi-grid" count={4} /></div>
     </section>
 
     <section id="vs-sync" class="vs-segment" aria-labelledby="vs-sync-title" aria-live="polite"
       hx-get="/htmx/vertical-slice/sync/" hx-trigger="load" hx-target="#vs-sync-target" hx-swap="innerHTML">
-      <div class="vs-segment__head">
-        <h2 id="vs-sync-title">4 · Sync</h2>
-        <button type="button" class="vs-refresh-btn" aria-label="Refresh sync"
+      <SectionHeading title="Sync" id="vs-sync-title" size="sm" variant="divider">
+        <button slot="actions" type="button" class="vs-refresh-btn" aria-label="Refresh sync"
           hx-get="/htmx/vertical-slice/sync/" hx-target="#vs-sync-target" hx-swap="innerHTML">Refresh</button>
-      </div>
+      </SectionHeading>
       <div id="vs-sync-target"><Skeleton variant="card" /></div>
     </section>
 
     <section id="vs-report" class="vs-segment" aria-labelledby="vs-report-title" aria-live="polite"
       hx-get="/htmx/vertical-slice/report/" hx-trigger="load" hx-target="#vs-report-target" hx-swap="innerHTML">
-      <div class="vs-segment__head">
-        <h2 id="vs-report-title">5 · Report</h2>
-        <button type="button" class="vs-refresh-btn" aria-label="Refresh report"
+      <SectionHeading title="Report" id="vs-report-title" size="sm" variant="divider">
+        <button slot="actions" type="button" class="vs-refresh-btn" aria-label="Refresh report"
           hx-get="/htmx/vertical-slice/report/" hx-target="#vs-report-target" hx-swap="innerHTML">Refresh</button>
-      </div>
+      </SectionHeading>
       <div id="vs-report-target"><Skeleton variant="kpi-grid" count={4} /></div>
     </section>
   </div>
@@ -69,14 +64,10 @@ import Skeleton from '../../components/ui/Skeleton.astro';
 <style>
   .page-shell { max-width: 72rem; margin: 0 auto; padding: 4rem 1.25rem; }
   .hero { max-width: 48rem; margin-bottom: 2.5rem; }
-  .eyebrow { margin: 0 0 0.5rem; color: var(--color-primary); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-  h1 { margin: 0; color: var(--color-text-primary); font-size: clamp(2rem, 6vw, 4.5rem); letter-spacing: -0.06em; line-height: 0.98; }
-  h2 { margin: 0; color: var(--color-text-primary); font-size: clamp(0.95rem, 1.5vw, 1.15rem); font-weight: 700; }
   .intro { max-width: 38rem; margin: 1rem 0 0; color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.6; }
   .intro em { font-style: italic; color: var(--color-text-primary); }
   .vs-segment { padding: clamp(1rem, 2vw, 1.5rem); margin-bottom: 1rem; background: var(--color-surface-card); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-box); box-shadow: var(--shadow-sm); transition: box-shadow 0.2s ease; }
   .vs-segment:hover { box-shadow: var(--shadow-md); }
-  .vs-segment__head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--color-border-subtle); }
   .vs-refresh-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 4px 10px; border: 1px solid var(--color-border-subtle); border-radius: 0.5rem; background: var(--color-surface-raised); color: var(--color-text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.15s ease; }
   .vs-refresh-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: color-mix(in oklab, var(--color-primary) 8%, transparent); }
   :global(.vs-kpi-row) { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
@@ -87,7 +78,7 @@ import Skeleton from '../../components/ui/Skeleton.astro';
   :global(.vs-table th) { text-align: left; padding: 6px 8px; font-size: 0.65rem; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--color-border-subtle); }
   :global(.vs-table td) { padding: 6px 8px; border-bottom: 1px solid var(--color-border-subtle); }
   :global(.vs-table tbody tr:hover td) { background: var(--color-surface-raised); }
-  :global(.vs-mono) { font-family: var(--pos-font-mono); font-variant-numeric: tabular-nums; }
+  :global(.vs-mono) { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
   :global(.vs-muted) { color: var(--color-text-secondary); font-size: 0.72rem; }
   :global(.vs-badge) { display: inline-block; padding: 1px 7px; border-radius: 99px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
   :global(.vs-badge--completed), :global(.vs-badge--ready) { background: color-mix(in oklab, var(--color-success) 15%, transparent); color: var(--color-success); }

@@ -88,6 +88,45 @@ from services.sync import ProductSyncEngine
 from services.sync_changes import SyncChangeCollector, entity_types
 from services.outbox import OfflineQueueService
 from services.barcode import barcode_label_svg, resolve_product
+from services.gaming import (
+    GamingError,
+    _elapsed_seconds,
+    assign_next,
+    cancel_queue_entry,
+    enqueue,
+    estimated_wait_minutes,
+    pause_session,
+    resume_session,
+    start_session,
+    stop_session,
+)
+from models.gaming import (
+    GamingQueueEntry,
+    GamingSession,
+    GamingStation,
+    GamingToken,
+)
+from models.giftcard import GiftCard, GiftCardTransaction
+from services.giftcard import (
+    GiftCardError,
+    disable as giftcard_disable,
+    get_card as giftcard_get,
+    issue as giftcard_issue,
+    redeem as giftcard_redeem,
+    reload as giftcard_reload,
+)
+from models.tables import RestaurantTable, TableReservation
+from services import tables as tables_svc
+from models.delivery import DeliveryOrder, DeliveryProvider
+from services import delivery as delivery_svc
+from services import forecast as forecast_svc
+from models.hr import EmployeeSchedule
+from models.timeclock import TimeClockEntry
+from services import scheduling as sched_svc
+from services import customer_display as cd_svc
+from services import kiosk as kiosk_svc
+from models.kiosk import KioskSession
+from services import purchase_orders as po_svc
 
 logger = logging.getLogger("pos.views")
 
@@ -118,6 +157,8 @@ ALL_MODELS = [
     Note, Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
     ClientCategory, LoyaltyTransaction, UserSettings, ApiKey,
     Coupon, DeliveryType, DeliveryZone, Shift,
+    GamingStation, GamingToken, GamingSession, GamingQueueEntry,
+    GiftCard, GiftCardTransaction,
 ]
 
 PYDANTIC_READY = False
@@ -1426,6 +1467,519 @@ def barcode_label(request: HttpRequest, value: str) -> HttpResponse:
     return HttpResponse(svg, content_type="image/svg+xml")
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# POS-KO Gaming Center P0 — stations, tokens, sessions, queue
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _ser_gaming_session(session: GamingSession) -> dict:
+    """Serialize a gaming session, reporting live elapsed seconds."""
+    data = _ser_model(session)
+    data["active_seconds"] = _elapsed_seconds(session)
+    return data
+
+
+def _ser_queue_entry(entry: GamingQueueEntry) -> dict:
+    """Serialize a queue entry with its waitlist position + estimate."""
+    data = _ser_model(entry)
+    data["estimated_wait_minutes"] = estimated_wait_minutes(entry)
+    return data
+
+
+def gaming_stations(request: HttpRequest) -> JsonResponse:
+    """GET /gaming/stations — list stations. POST — create a station."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+
+        name = (body.get("name") or "").strip()
+        if not name:
+            return _error(400, "Station name is required")
+
+        from django.utils.text import slugify
+        slug = body.get("slug") or slugify(name)
+        if not slug:
+            return _error(400, "Could not derive a slug from the station name")
+        if GamingStation.objects.filter(slug=slug).exists():
+            return _error(409, f"Station slug '{slug}' already exists")
+
+        station = GamingStation.objects.create(
+            name=name,
+            slug=slug,
+            station_type=body.get("station_type", "pc"),
+            hourly_rate=body.get("hourly_rate", 0),
+        )
+        return _json(_ser_model(station), status=201)
+
+    stations = GamingStation.objects.filter(is_active=True).order_by("name")
+    return _json({"stations": [_ser_model(s) for s in stations]})
+
+
+def gaming_station_detail(request: HttpRequest, pk: int) -> JsonResponse:
+    """GET /gaming/stations/<pk> — station detail + active session."""
+    try:
+        station = GamingStation.objects.get(id=pk)
+    except GamingStation.DoesNotExist:
+        return _error(404, f"Station {pk} not found")
+    data = _ser_model(station)
+    active = station.sessions.filter(status="active").first()
+    data["active_session"] = _ser_gaming_session(active) if active else None
+    return _json(data)
+
+
+def gaming_tokens(request: HttpRequest) -> JsonResponse:
+    """GET /gaming/tokens — list tokens. POST — purchase a time token."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+
+        name = (body.get("name") or "").strip()
+        if not name:
+            return _error(400, "Token name is required")
+        try:
+            minutes = int(body.get("minutes", 0))
+        except (TypeError, ValueError):
+            return _error(400, "minutes must be an integer")
+        if minutes <= 0:
+            return _error(400, "minutes must be positive")
+
+        token = GamingToken.objects.create(
+            name=name,
+            minutes=minutes,
+            remaining_minutes=minutes,
+            price=body.get("price", 0),
+        )
+        return _json(_ser_model(token), status=201)
+
+    tokens = GamingToken.objects.all().order_by("-sold_at")
+    return _json({"tokens": [_ser_model(t) for t in tokens]})
+
+
+def gaming_sessions(request: HttpRequest) -> JsonResponse:
+    """GET /gaming/sessions — list sessions (optionally filtered by status)."""
+    status_filter = request.GET.get("status", "").strip()
+    qs = GamingSession.objects.select_related("station", "token").order_by("-started_at")
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+    return _json({"sessions": [_ser_gaming_session(s) for s in qs[:200]]})
+
+
+def gaming_session_start(request: HttpRequest) -> JsonResponse:
+    """POST /gaming/sessions/start — begin a session on a station.
+
+    Body: ``{"station_id": 1, "token_id": 5, "customer_id": 9}``
+    (``token_id`` / ``customer_id`` optional).
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    station_id = body.get("station_id")
+    if not station_id:
+        return _error(400, "station_id is required")
+    try:
+        session = start_session(
+            station_id=int(station_id),
+            token_id=body.get("token_id") or None,
+            customer_id=body.get("customer_id") or None,
+        )
+    except GamingError as exc:
+        return _error(400, str(exc))
+    return _json({"session": _ser_gaming_session(session)}, status=201)
+
+
+def gaming_session_pause(request: HttpRequest) -> JsonResponse:
+    """POST /gaming/sessions/pause — body: ``{"session_id": 1}``."""
+    return _gaming_session_action(request, pause_session, "session_id")
+
+
+def gaming_session_resume(request: HttpRequest) -> JsonResponse:
+    """POST /gaming/sessions/resume — body: ``{"session_id": 1}``."""
+    return _gaming_session_action(request, resume_session, "session_id")
+
+
+def gaming_session_stop(request: HttpRequest) -> JsonResponse:
+    """POST /gaming/sessions/stop — body: ``{"session_id": 1, "cancelled": false}``."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    session_id = body.get("session_id")
+    if not session_id:
+        return _error(400, "session_id is required")
+    try:
+        session = stop_session(int(session_id), cancelled=bool(body.get("cancelled")))
+    except GamingError as exc:
+        return _error(400, str(exc))
+    return _json({"session": _ser_gaming_session(session)})
+
+
+def _gaming_session_action(request: HttpRequest, fn, key: str) -> JsonResponse:
+    """Shared handler for pause/resume (id-keyed session mutations)."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    session_id = body.get(key)
+    if not session_id:
+        return _error(400, f"{key} is required")
+    try:
+        session = fn(int(session_id))
+    except GamingError as exc:
+        return _error(400, str(exc))
+    return _json({"session": _ser_gaming_session(session)})
+
+
+def gaming_queue(request: HttpRequest) -> JsonResponse:
+    """GET /gaming/queue — list waitlist. POST — enqueue a customer."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+
+        customer_name = body.get("customer_name") or ""
+        try:
+            entry = enqueue(
+                customer_name,
+                requested_minutes=int(body.get("requested_minutes", 60)),
+            )
+        except GamingError as exc:
+            return _error(400, str(exc))
+        except (TypeError, ValueError):
+            return _error(400, "requested_minutes must be an integer")
+        return _json({"entry": _ser_queue_entry(entry)}, status=201)
+
+    entries = GamingQueueEntry.objects.order_by("created_at")
+    return _json({"queue": [_ser_queue_entry(e) for e in entries]})
+
+
+def gaming_queue_assign(request: HttpRequest) -> JsonResponse:
+    """POST /gaming/queue/assign — assign the next entry (optionally to a station).
+
+    Body: ``{"station_id": 2}`` (optional — defaults to the first free station).
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    station = None
+    if body.get("station_id"):
+        try:
+            station = GamingStation.objects.get(id=int(body["station_id"]))
+        except (GamingStation.DoesNotExist, TypeError, ValueError):
+            return _error(404, f"Station {body.get('station_id')} not found")
+    entry = assign_next(station)
+    if entry is None:
+        return _json({"assigned": None, "note": "No waiting entry or free station"})
+    return _json({"assigned": _ser_queue_entry(entry)})
+
+
+def gaming_queue_cancel(request: HttpRequest) -> JsonResponse:
+    """POST /gaming/queue/cancel — body: ``{"entry_id": 1}``."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    entry_id = body.get("entry_id")
+    if not entry_id:
+        return _error(400, "entry_id is required")
+    try:
+        entry = cancel_queue_entry(int(entry_id))
+    except GamingError as exc:
+        return _error(400, str(exc))
+    return _json({"entry": _ser_queue_entry(entry)})
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Gift Cards P2 — issue / balance / redeem / reload / disable
+# ═══════════════════════════════════════════════════════════════════════════
+
+def gift_cards(request: HttpRequest) -> JsonResponse:
+    """GET /gift-cards — list cards. POST — issue a new card."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+
+        if not body.get("initial_balance"):
+            return _error(400, "initial_balance is required")
+        try:
+            card = giftcard_issue(
+                initial_balance=body["initial_balance"],
+                currency=body.get("currency", "USD"),
+                recipient_name=body.get("recipient_name", ""),
+                recipient_email=body.get("recipient_email", ""),
+                notes=body.get("notes", ""),
+            )
+        except GiftCardError as exc:
+            return _error(400, str(exc))
+        return _json(_ser_model(card), status=201)
+
+    cards = GiftCard.objects.all().order_by("-issued_at")
+    return _json({"gift_cards": [_ser_model(c) for c in cards]})
+
+
+def gift_card_detail(request: HttpRequest, code: str) -> JsonResponse:
+    """GET /gift-cards/<code> — card detail + balance."""
+    card = giftcard_get(code)
+    if card is None:
+        return _error(404, f"Gift card '{code}' not found")
+    return _json(_ser_model(card))
+
+
+def gift_card_transactions(request: HttpRequest, code: str) -> JsonResponse:
+    """GET /gift-cards/<code>/transactions — the card's ledger."""
+    card = giftcard_get(code)
+    if card is None:
+        return _error(404, f"Gift card '{code}' not found")
+    txs = GiftCardTransaction.objects.filter(gift_card=card).order_by("-created_at")
+    return _json({"transactions": [_ser_model(t) for t in txs]})
+
+
+def gift_card_redeem(request: HttpRequest) -> JsonResponse:
+    """POST /gift-cards/redeem — body: ``{"code": "GC-…", "amount": 10, "sale_id": 9}``."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    code = body.get("code")
+    if not code or not body.get("amount"):
+        return _error(400, "code and amount are required")
+    try:
+        card = giftcard_redeem(code, body["amount"], sale_id=body.get("sale_id"))
+    except GiftCardError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_model(card))
+
+
+def gift_card_reload(request: HttpRequest) -> JsonResponse:
+    """POST /gift-cards/reload — body: ``{"code": "GC-…", "amount": 20}``."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    code = body.get("code")
+    if not code or not body.get("amount"):
+        return _error(400, "code and amount are required")
+    try:
+        card = giftcard_reload(code, body["amount"])
+    except GiftCardError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_model(card))
+
+
+def gift_card_disable(request: HttpRequest) -> JsonResponse:
+    """POST /gift-cards/disable — body: ``{"code": "GC-…"}``."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    code = body.get("code")
+    if not code:
+        return _error(400, "code is required")
+    try:
+        card = giftcard_disable(code)
+    except GiftCardError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_model(card))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Table Management P2 — floor layouts + order tracking + reservations
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _ser_table(table: RestaurantTable) -> dict:
+    data = _ser_model(table)
+    if table.current_sale_id:
+        data["current_sale_total"] = float(table.current_sale.total or 0)
+    return data
+
+
+def _ser_reservation(reservation: TableReservation) -> dict:
+    data = _ser_model(reservation)
+    data["display_name"] = reservation.display_name
+    return data
+
+
+def tables(request: HttpRequest) -> JsonResponse:
+    """GET /tables — list the floor plan. POST — create a table."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+        try:
+            table = tables_svc.create_table(
+                name=body.get("name", ""),
+                section=body.get("section", "main"),
+                capacity=int(body.get("capacity", 2)),
+                shape=body.get("shape", "rect"),
+                pos_x=int(body.get("pos_x", 0)),
+                pos_y=int(body.get("pos_y", 0)),
+                width=int(body.get("width", 1)),
+                height=int(body.get("height", 1)),
+                notes=body.get("notes", ""),
+            )
+        except tables_svc.TableError as exc:
+            return _error(400, str(exc))
+        return _json(_ser_table(table), status=201)
+
+    tables = RestaurantTable.objects.all()
+    return _json({"tables": [_ser_table(t) for t in tables]})
+
+
+def table_detail(request: HttpRequest, pk: int) -> JsonResponse:
+    """GET /tables/<pk> — a single table + its reservations."""
+    table = tables_svc.get_table(pk)
+    if table is None:
+        return _error(404, f"Table #{pk} not found")
+    data = _ser_table(table)
+    data["reservations"] = [
+        _ser_reservation(r) for r in table.reservations.all()[:10]
+    ]
+    return _json(data)
+
+
+def table_status(request: HttpRequest, pk: int) -> JsonResponse:
+    """POST /tables/<pk>/status — body: ``{"status": "free|cleaning|closed"}``."""
+    table = tables_svc.get_table(pk)
+    if table is None:
+        return _error(404, f"Table #{pk} not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    try:
+        table = tables_svc.update_status(table, body.get("status", ""))
+    except tables_svc.TableError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_table(table))
+
+
+def table_occupy(request: HttpRequest, pk: int) -> JsonResponse:
+    """POST /tables/<pk>/occupy — body: ``{"sale_id": 42}``."""
+    table = tables_svc.get_table(pk)
+    if table is None:
+        return _error(404, f"Table #{pk} not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    sale = Sale.objects.filter(pk=body.get("sale_id")).first()
+    if sale is None:
+        return _error(404, "sale not found")
+    try:
+        table = tables_svc.occupy_table(table, sale)
+    except tables_svc.TableError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_table(table))
+
+
+def table_clear(request: HttpRequest, pk: int) -> JsonResponse:
+    """POST /tables/<pk>/clear — body: ``{"close_sale": true}``."""
+    table = tables_svc.get_table(pk)
+    if table is None:
+        return _error(404, f"Table #{pk} not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        body = {}
+    try:
+        table = tables_svc.clear_table(table, close_sale=bool(body.get("close_sale")))
+    except tables_svc.TableError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_table(table))
+
+
+def tables_floor(request: HttpRequest) -> JsonResponse:
+    """GET /tables/floor — occupancy summary across the floor plan."""
+    return _json(tables_svc.floor_summary())
+
+
+def reservations(request: HttpRequest) -> JsonResponse:
+    """GET /reservations — list bookings (filter ?status=). POST — create one."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+
+        table = tables_svc.get_table(body.get("table_id"))
+        if table is None:
+            return _error(404, "table not found")
+        try:
+            from django.utils.dateparse import parse_datetime
+            reservation_time = body.get("reservation_time")
+            parsed = parse_datetime(reservation_time) if reservation_time else None
+            if parsed is None and reservation_time:
+                return _error(400, "reservation_time must be ISO 8601")
+            reservation = tables_svc.create_reservation(
+                table=table,
+                reservation_time=parsed or dj_timezone.now(),
+                party_size=int(body.get("party_size", 1)),
+                customer=Customer.objects.filter(
+                    pk=body.get("customer_id")
+                ).first() if body.get("customer_id") else None,
+                customer_name=body.get("customer_name", ""),
+                notes=body.get("notes", ""),
+            )
+        except tables_svc.TableError as exc:
+            return _error(400, str(exc))
+        except (TypeError, ValueError) as exc:
+            return _error(400, f"invalid party_size: {exc}")
+        return _json(_ser_reservation(reservation), status=201)
+
+    qs = TableReservation.objects.all()
+    status = request.GET.get("status")
+    if status:
+        qs = qs.filter(status=status)
+    return _json({"reservations": [_ser_reservation(r) for r in qs]})
+
+
+def reservation_action(request: HttpRequest, pk: int, action: str) -> JsonResponse:
+    """POST /reservations/<pk>/<action> — cancel | seat | complete | no-show."""
+    reservation = tables_svc.get_reservation(pk)
+    if reservation is None:
+        return _error(404, f"Reservation #{pk} not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        body = {}
+
+    try:
+        if action == "cancel":
+            reservation = tables_svc.cancel_reservation(reservation)
+        elif action == "seat":
+            sale = None
+            if body.get("sale_id"):
+                sale = Sale.objects.filter(pk=body["sale_id"]).first()
+                if sale is None:
+                    return _error(404, "sale not found")
+            reservation = tables_svc.seat_reservation(reservation, sale=sale)
+        elif action == "complete":
+            reservation = tables_svc.complete_reservation(reservation)
+        elif action == "no-show":
+            reservation = tables_svc.no_show_reservation(reservation)
+        else:
+            return _error(404, f"unknown action '{action}'")
+    except tables_svc.TableError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_reservation(reservation))
+
+
 def cloud_push(request: HttpRequest, entity_type: str) -> JsonResponse:
     valid = {"nodes", "heartbeats", "events", "products", "sales", "customers", "inventory"}
     if entity_type not in valid:
@@ -1960,3 +2514,624 @@ def list_delivery_zones(request: HttpRequest) -> JsonResponse:
 
 def list_shifts(request: HttpRequest) -> JsonResponse:
     return _json([_ser_model(s) for s in Shift.objects.all().order_by("-opened_at")])
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Delivery Integration P2 — providers + delivery orders + webhooks
+# ═══════════════════════════════════════════════════════════════════════════
+
+def delivery_providers(request: HttpRequest) -> JsonResponse:
+    """GET /deliveries/providers — list connectors. POST — register one."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+        try:
+            provider = delivery_svc.create_provider(
+                name=body.get("name", ""),
+                provider_type=body.get("provider_type", "manual"),
+                base_url=body.get("base_url", ""),
+                api_key=body.get("api_key", ""),
+                commission_rate=body.get("commission_rate", 0),
+                is_active=bool(body.get("is_active", True)),
+            )
+        except delivery_svc.DeliveryError as exc:
+            return _error(400, str(exc))
+        return _json(_ser_model(provider), status=201)
+    return _json({"providers": [_ser_model(p) for p in delivery_svc.list_providers()]})
+
+
+def deliveries(request: HttpRequest) -> JsonResponse:
+    """GET /deliveries — list orders (filter ?status=). POST — dispatch one."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+
+        sale = None
+        if body.get("sale_id"):
+            sale = Sale.objects.filter(pk=body["sale_id"]).first()
+            if sale is None:
+                return _error(404, "sale not found")
+        provider = None
+        if body.get("provider_id"):
+            provider = delivery_svc.get_provider(body["provider_id"])
+            if provider is None:
+                return _error(404, "provider not found")
+        zone = None
+        if body.get("delivery_zone_id"):
+            zone = DeliveryZone.objects.filter(pk=body["delivery_zone_id"]).first()
+            if zone is None:
+                return _error(404, "delivery zone not found")
+        delivery_type = None
+        if body.get("delivery_type_id"):
+            delivery_type = DeliveryType.objects.filter(pk=body["delivery_type_id"]).first()
+
+        try:
+            order = delivery_svc.create_delivery_order(
+                sale=sale,
+                provider=provider,
+                customer_name=body.get("customer_name", ""),
+                customer_phone=body.get("customer_phone", ""),
+                delivery_address=body.get("delivery_address", ""),
+                distance_km=body.get("distance_km", 0),
+                delivery_zone=zone,
+                delivery_type=delivery_type,
+                subtotal=body.get("subtotal"),
+                total=body.get("total"),
+                notes=body.get("notes", ""),
+            )
+        except delivery_svc.DeliveryError as exc:
+            return _error(400, str(exc))
+        return _json(_ser_model(order), status=201)
+
+    qs = DeliveryOrder.objects.all()
+    status = request.GET.get("status")
+    if status:
+        qs = qs.filter(status=status)
+    return _json({"deliveries": [_ser_model(o) for o in qs]})
+
+
+def delivery_detail(request: HttpRequest, pk: int) -> JsonResponse:
+    """GET /deliveries/<pk> — a single delivery order."""
+    order = delivery_svc.get_delivery_order(pk)
+    if order is None:
+        return _error(404, f"Delivery order #{pk} not found")
+    return _json(_ser_model(order))
+
+
+def delivery_status(request: HttpRequest, pk: int) -> JsonResponse:
+    """POST /deliveries/<pk>/status — body: ``{"status": "accepted"}``."""
+    order = delivery_svc.get_delivery_order(pk)
+    if order is None:
+        return _error(404, f"Delivery order #{pk} not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    try:
+        order = delivery_svc.update_status(order, body.get("status", ""))
+    except delivery_svc.DeliveryError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_model(order))
+
+
+def delivery_cancel(request: HttpRequest, pk: int) -> JsonResponse:
+    """POST /deliveries/<pk>/cancel — cancel a delivery order."""
+    order = delivery_svc.get_delivery_order(pk)
+    if order is None:
+        return _error(404, f"Delivery order #{pk} not found")
+    try:
+        order = delivery_svc.cancel_order(order)
+    except delivery_svc.DeliveryError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_model(order))
+
+
+def delivery_stats(request: HttpRequest) -> JsonResponse:
+    """GET /deliveries/stats — delivery KPIs."""
+    return _json(delivery_svc.delivery_stats())
+
+
+def delivery_webhook(request: HttpRequest, provider: str) -> JsonResponse:
+    """POST /deliveries/webhook/<provider> — provider status callback.
+
+    Body: ``{"order_id": "DLV-…", "status": "accepted"}``. The provider
+    slug in the URL is informational; matching is on ``order_id``.
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    order_id = body.get("order_id")
+    if not order_id or not body.get("status"):
+        return _error(400, "order_id and status are required")
+    order = delivery_svc.ingest_provider_webhook(order_id, body["status"])
+    if order is None:
+        return _error(404, f"no delivery order with id '{order_id}'")
+    return _json({"status": "ok", "order": _ser_model(order)})
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# AI Forecasting P2 — advisory demand / stock / waste / insights (read-only)
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _qs_int(request: HttpRequest, key: str, default: int) -> int:
+    try:
+        return int(request.GET.get(key, default))
+    except (ValueError, TypeError):
+        return default
+
+
+def forecast_demand(request: HttpRequest) -> JsonResponse:
+    """GET /forecast/demand — per-product demand projection.
+
+    Query params: ``days`` (horizon, default 14), ``lookback`` (default 28).
+    """
+    return _json(forecast_svc.demand_forecast(
+        days=_qs_int(request, "days", 14),
+        lookback=_qs_int(request, "lookback", 28),
+    ))
+
+
+def forecast_stock(request: HttpRequest) -> JsonResponse:
+    """GET /forecast/stock — reorder recommendations.
+
+    Query params: ``days`` (default 14), ``lead_time_days`` (default 3).
+    """
+    return _json(forecast_svc.stock_advisory(
+        days=_qs_int(request, "days", 14),
+        lead_time_days=_qs_int(request, "lead_time_days", 3),
+    ))
+
+
+def forecast_waste(request: HttpRequest) -> JsonResponse:
+    """GET /forecast/waste — waste/disposal aggregation (``?days=30``)."""
+    return _json(forecast_svc.waste_analysis(
+        days=_qs_int(request, "days", 30),
+    ))
+
+
+def forecast_insights(request: HttpRequest) -> JsonResponse:
+    """GET /forecast/insights — movers, growth, recommendations (``?days=30``)."""
+    return _json(forecast_svc.sales_insights(
+        days=_qs_int(request, "days", 30),
+    ))
+
+
+def forecast_report(request: HttpRequest) -> JsonResponse:
+    """GET /forecast/report — combined advisory envelope (``?days=14``)."""
+    return _json(forecast_svc.full_report(
+        days=_qs_int(request, "days", 14),
+    ))
+
+
+def forecast_inventory(request: HttpRequest) -> JsonResponse:
+    """GET /forecast/inventory — reorder-point / safety-stock / stock-out plan.
+
+    Superset of ``/forecast/stock``. Query params: ``days`` (14),
+    ``lead_time_days`` (3), ``safety_factor`` (0.5). Advisory/read-only.
+    """
+    return _json(forecast_svc.inventory_plan(
+        days=_qs_int(request, "days", 14),
+        lead_time_days=_qs_int(request, "lead_time_days", 3),
+        safety_factor=float(request.GET.get("safety_factor", 0.5)),
+    ))
+
+
+def forecast_reorder_orders(request: HttpRequest) -> JsonResponse:
+    """POST /forecast/inventory/reorder — create draft purchase orders.
+
+    Operator action: materializes the advisory plan into ``PurchaseOrder``
+    drafts (no stock movement until ordered/received). Body options:
+    ``supplier_id``, ``days``, ``lead_time_days``, ``safety_factor``.
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    try:
+        result = forecast_svc.generate_reorder_orders(
+            days=_qs_int(request, "days", 14) or int(body.get("days", 14)),
+            lead_time_days=_qs_int(request, "lead_time_days", 3)
+            or int(body.get("lead_time_days", 3)),
+            safety_factor=float(request.GET.get("safety_factor", body.get("safety_factor", 0.5))),
+            supplier_id=body.get("supplier_id") or None,
+        )
+    except ValueError as exc:
+        return _error(400, str(exc))
+    return _json(result, status=201)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Employee Scheduling P3 — shift planning + time clock
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _get_employee(request, body) -> tuple | JsonResponse:
+    emp_id = body.get("employee_id")
+    if not emp_id:
+        return None, _error(400, "employee_id is required")
+    employee = Employee.objects.filter(pk=emp_id).first()
+    if employee is None:
+        return None, _error(404, "employee not found")
+    return employee, None
+
+
+def scheduling_shifts(request: HttpRequest) -> JsonResponse:
+    """GET /scheduling/shifts — list shifts. POST — create/update one.
+
+    POST body: ``{"employee_id", "day_of_week", "start_time": "09:00",
+    "end_time": "17:00", "status"?, "notes"?}``.
+    """
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+        employee, err = _get_employee(request, body)
+        if err is not None:
+            return err
+        from django.utils.dateparse import parse_time
+        start = parse_time(body.get("start_time", ""))
+        end = parse_time(body.get("end_time", ""))
+        try:
+            shift = sched_svc.upsert_shift(
+                employee=employee,
+                day_of_week=body.get("day_of_week", ""),
+                start_time=start,
+                end_time=end,
+                status=body.get("status", "scheduled"),
+                notes=body.get("notes", ""),
+            )
+        except sched_svc.SchedulingError as exc:
+            return _error(400, str(exc))
+        return _json(_ser_model(shift), status=201)
+
+    shifts = sched_svc.list_shifts(
+        employee_id=request.GET.get("employee_id"),
+        day_of_week=request.GET.get("day_of_week"),
+    )
+    return _json({"shifts": [_ser_model(s) for s in shifts]})
+
+
+def scheduling_week(request: HttpRequest) -> JsonResponse:
+    """GET /scheduling/week?week_start=YYYY-MM-DD — concrete week roster."""
+    from django.utils.dateparse import parse_date
+    week_start = parse_date(request.GET.get("week_start", "")) or dj_timezone.localdate()
+    return _json(sched_svc.week_schedule(week_start))
+
+
+def scheduling_coverage(request: HttpRequest) -> JsonResponse:
+    """GET /scheduling/coverage?day_of_week=monday — staffing coverage."""
+    try:
+        return _json(sched_svc.coverage(request.GET.get("day_of_week")))
+    except sched_svc.SchedulingError as exc:
+        return _error(400, str(exc))
+
+
+def scheduling_timeclock(request: HttpRequest) -> JsonResponse:
+    """GET /scheduling/timeclock — recent punches + active staff.
+    POST — clock in: body ``{"employee_id", "note"?}``.
+    """
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+        employee, err = _get_employee(request, body)
+        if err is not None:
+            return err
+        try:
+            entry = sched_svc.clock_in(employee, note=body.get("note", ""))
+        except sched_svc.SchedulingError as exc:
+            return _error(400, str(exc))
+        return _json(_ser_model(entry), status=201)
+
+    return _json(sched_svc.timeclock_summary(
+        days=_qs_int(request, "days", 7),
+    ))
+
+
+def scheduling_timeclock_action(request: HttpRequest, action: str) -> JsonResponse:
+    """POST /scheduling/timeclock/<action> — out | break.
+
+    Body: ``{"employee_id"}``. ``break`` toggles start/end on the active
+    punch; ``out`` closes it.
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    employee, err = _get_employee(request, body)
+    if err is not None:
+        return err
+    try:
+        if action == "out":
+            entry = sched_svc.clock_out(employee)
+        elif action == "break":
+            entry = sched_svc.toggle_break(employee)
+        else:
+            return _error(404, f"unknown action '{action}'")
+    except sched_svc.SchedulingError as exc:
+        return _error(400, str(exc))
+    return _json(_ser_model(entry))
+
+
+def scheduling_hours(request: HttpRequest) -> JsonResponse:
+    """GET /scheduling/hours?employee_id=&start=YYYY-MM-DD&end=YYYY-MM-DD
+    — worked hours, overtime, and pay estimate.
+    """
+    emp_id = request.GET.get("employee_id")
+    if not emp_id:
+        return _error(400, "employee_id is required")
+    employee = Employee.objects.filter(pk=emp_id).first()
+    if employee is None:
+        return _error(404, "employee not found")
+    from django.utils.dateparse import parse_date
+    start = parse_date(request.GET.get("start", ""))
+    end = parse_date(request.GET.get("end", ""))
+    if start is None or end is None:
+        return _error(400, "start and end dates are required (YYYY-MM-DD)")
+    if start > end:
+        return _error(400, "start must be before end")
+    return _json(sched_svc.worked_hours(employee, start, end))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Customer Display (P3) — read-only order-confirmation screen
+# ═══════════════════════════════════════════════════════════════════════════
+
+def customer_display_order(request: HttpRequest, sale_id: int) -> JsonResponse:
+    """GET /customer-display/<sale_id>
+    — display envelope for one order (order confirmation screen).
+    """
+    display = cd_svc.order_display(sale_id)
+    if display is None:
+        return _error(404, "Sale not found")
+    return _json(display)
+
+
+def customer_display_board(request: HttpRequest) -> JsonResponse:
+    """GET /customer-display/board
+    — active orders feed for a wall/cycle display.
+    """
+    limit = request.GET.get("limit", 20)
+    try:
+        limit = max(1, min(int(limit), 50))
+    except (TypeError, ValueError):
+        limit = 20
+    return _json(cd_svc.active_board(limit=limit))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Self-checkout Kiosk (P3) — self-service kiosk mode
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _kiosk_session(session_key: str) -> KioskSession | None:
+    return kiosk_svc.get_session(session_key)
+
+
+def kiosk_catalog(request: HttpRequest) -> JsonResponse:
+    """GET /kiosk/catalog?category=<slug>
+    — active products grouped by category for the touchscreen.
+    """
+    return _json(kiosk_svc.catalog(category_slug=request.GET.get("category", "")))
+
+
+def kiosk_sessions(request: HttpRequest) -> JsonResponse:
+    """GET/POST /kiosk/sessions — list sessions / start a new one."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+        session = kiosk_svc.start_session(
+            session_key=body.get("session_key", ""),
+            name=body.get("name", ""),
+        )
+        return _json({
+            "session_key": session.session_key,
+            "name": session.name,
+            "status": session.status,
+            "created_at": session.created_at.isoformat() if session.created_at else None,
+        }, status=201)
+    qs = KioskSession.objects.order_by("-created_at")[:50]
+    return _json([{
+        "session_key": s.session_key,
+        "name": s.name,
+        "status": s.status,
+        "sale_id": s.sale_id,
+        "payment_method": s.payment_method,
+        "created_at": s.created_at.isoformat() if s.created_at else None,
+        "closed_at": s.closed_at.isoformat() if s.closed_at else None,
+        "item_count": sum(
+            i.quantity for i in s.cart_items.all()
+        ) if s.status == "open" else 0,
+    } for s in qs])
+
+
+def kiosk_session_detail(request: HttpRequest, session_key: str) -> JsonResponse:
+    """GET /kiosk/sessions/<session_key> — session + cart summary."""
+    session = _kiosk_session(session_key)
+    if session is None:
+        return _error(404, "Session not found")
+    summary = kiosk_svc.cart_summary(session)
+    summary["name"] = session.name
+    summary["status"] = session.status
+    summary["sale_id"] = session.sale_id
+    summary["payment_method"] = session.payment_method
+    return _json(summary)
+
+
+def kiosk_cart(request: HttpRequest, session_key: str) -> JsonResponse:
+    """POST /kiosk/sessions/<session_key>/cart — add a product."""
+    session = _kiosk_session(session_key)
+    if session is None:
+        return _error(404, "Session not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    try:
+        product_id = int(body.get("product_id", 0))
+    except (TypeError, ValueError):
+        return _error(400, "product_id is required")
+    try:
+        quantity = int(body.get("quantity", 1))
+    except (TypeError, ValueError):
+        return _error(400, "quantity must be an integer")
+    try:
+        item = kiosk_svc.add_item(session, product_id, quantity)
+    except kiosk_svc.KioskError as exc:
+        return _error(400, str(exc))
+    return _json({
+        "product_id": item.product_id,
+        "product_name": item.product_name,
+        "quantity": item.quantity,
+        "unit_price": float(item.unit_price),
+        "line_total": round(float(item.unit_price) * item.quantity, 2),
+        "cart": kiosk_svc.cart_summary(session),
+    }, status=201)
+
+
+def kiosk_cart_line(request: HttpRequest, session_key: str, product_id: int) -> JsonResponse:
+    """PATCH/DELETE /kiosk/sessions/<session_key>/cart/<product_id>
+    — set quantity (0 removes) / remove the line.
+    """
+    session = _kiosk_session(session_key)
+    if session is None:
+        return _error(404, "Session not found")
+    if request.method == "DELETE":
+        kiosk_svc.remove_item(session, product_id)
+        return _json({"removed": product_id, "cart": kiosk_svc.cart_summary(session)})
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+    try:
+        quantity = int(body.get("quantity", 0))
+    except (TypeError, ValueError):
+        return _error(400, "quantity must be an integer")
+    try:
+        item = kiosk_svc.set_quantity(session, product_id, quantity)
+    except kiosk_svc.KioskError as exc:
+        return _error(400, str(exc))
+    return _json({
+        "product_id": item.product_id,
+        "quantity": item.quantity,
+        "cart": kiosk_svc.cart_summary(session),
+    })
+
+
+def kiosk_cart_clear(request: HttpRequest, session_key: str) -> JsonResponse:
+    """POST /kiosk/sessions/<session_key>/cart/clear — empty the cart."""
+    session = _kiosk_session(session_key)
+    if session is None:
+        return _error(404, "Session not found")
+    kiosk_svc.clear_cart(session)
+    return _json({"cleared": True, "cart": kiosk_svc.cart_summary(session)})
+
+
+def kiosk_checkout(request: HttpRequest, session_key: str) -> JsonResponse:
+    """POST /kiosk/sessions/<session_key>/checkout — check the cart out."""
+    session = _kiosk_session(session_key)
+    if session is None:
+        return _error(404, "Session not found")
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        body = {}
+    try:
+        result = kiosk_svc.checkout(
+            session, payment_method=body.get("payment_method", "card")
+        )
+    except kiosk_svc.KioskError as exc:
+        return _error(400, str(exc))
+    return _json(result, status=201)
+
+
+def kiosk_session_cancel(request: HttpRequest, session_key: str) -> JsonResponse:
+    """POST /kiosk/sessions/<session_key>/cancel — abandon the session."""
+    session = _kiosk_session(session_key)
+    if session is None:
+        return _error(404, "Session not found")
+    try:
+        kiosk_svc.cancel_session(session)
+    except kiosk_svc.KioskError as exc:
+        return _error(400, str(exc))
+    return _json({"session_key": session_key, "status": "cancelled"})
+
+
+def kiosk_stats(request: HttpRequest) -> JsonResponse:
+    """GET /kiosk/stats — session/checkout stats."""
+    return _json(kiosk_svc.kiosk_stats())
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Purchase Order workflow (Reorder Workflow follow-up)
+# ═══════════════════════════════════════════════════════════════════════════
+
+def purchase_orders(request: HttpRequest) -> JsonResponse:
+    """GET/POST /purchase-orders — list (filter ?status=) / create a draft."""
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            return _error(400, "Invalid JSON")
+        try:
+            po = po_svc.create_purchase_order(
+                supplier_id=body.get("supplier_id"),
+                items=body.get("items") or [],
+                expected_date=body.get("expected_date"),
+                notes=body.get("notes", ""),
+            )
+        except po_svc.PurchaseOrderError as exc:
+            return _error(400, str(exc))
+        return _json(po_svc.purchase_order_detail(po.id), status=201)
+    return _json(po_svc.list_purchase_orders(status=request.GET.get("status", "")))
+
+
+def purchase_order_detail(request: HttpRequest, pk: int) -> JsonResponse:
+    """GET /purchase-orders/<pk> — PO detail with line items."""
+    detail = po_svc.purchase_order_detail(pk)
+    if detail is None:
+        return _error(404, "Purchase order not found")
+    return _json(detail)
+
+
+def purchase_order_action(request: HttpRequest, pk: int, action: str) -> JsonResponse:
+    """POST /purchase-orders/<pk>/<action> — order · receive · cancel."""
+    try:
+        if action == "order":
+            po = po_svc.mark_ordered(pk)
+            return _json(po_svc.purchase_order_detail(po.id))
+        if action == "receive":
+            try:
+                body = json.loads(request.body) if request.body else {}
+            except json.JSONDecodeError:
+                body = {}
+            quantities = body.get("quantities") if isinstance(body.get("quantities"), dict) else None
+            return _json(po_svc.receive_purchase_order(pk, quantities=quantities))
+        if action == "cancel":
+            po = po_svc.cancel_purchase_order(pk)
+            return _json(po_svc.purchase_order_detail(po.id))
+        return _error(404, f"unknown action '{action}'")
+    except po_svc.PurchaseOrderError as exc:
+        return _error(400, str(exc))
+
+
+def purchase_order_alerts(request: HttpRequest) -> JsonResponse:
+    """GET /purchase-orders/alerts — reorder alerts + open drafts."""
+    lead = _qs_int(request, "lead_time_days", 3)
+    try:
+        safety = float(request.GET.get("safety_factor", 0.5))
+    except (TypeError, ValueError):
+        safety = 0.5
+    return _json(po_svc.reorder_alerts(lead_time_days=lead, safety_factor=safety))
+
+
+def purchase_order_stats(request: HttpRequest) -> JsonResponse:
+    """GET /purchase-orders/stats — counts by status + outstanding value."""
+    return _json(po_svc.purchase_order_stats())

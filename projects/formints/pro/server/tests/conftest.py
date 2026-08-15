@@ -39,11 +39,8 @@ pytest_plugins = ["tests.fixtures"]
 # ══════════════════════════════════════════════════════════════════════════
 
 @pytest.fixture(scope="session")
-def django_bootstrap(request: pytest.FixtureRequest) -> None:
-    """Configure Django and create tables once per test session.
-
-    Required by all factory fixtures and model-dependent tests.
-    """
+def _django_configured(request: pytest.FixtureRequest) -> None:
+    """Configure Django and create tables once per test session (idempotent)."""
     from django.conf import settings
     if not settings.configured:
         settings.configure(
@@ -64,7 +61,11 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
             TEMPLATES=[
                 {
                     "BACKEND": "django.template.backends.django.DjangoTemplates",
-                    "DIRS": [],
+                    # ``django_templates/`` holds the Django-only template tree
+                    # (admin overrides + fusion component templates) — the
+                    # sibling ``templates/`` dir is the Robyn/Jinja2 tree and
+                    # must NOT be exposed to Django.
+                    "DIRS": [os.path.join(os.path.dirname(__file__), "..", "django_templates")],
                     "APP_DIRS": True,
                     "OPTIONS": {
                         "context_processors": [
@@ -77,6 +78,12 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
             DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
             USE_TZ=True,
             SECRET_KEY="test-key-conftest",
+            # pos_full tables are created manually below (schema_editor), so
+            # disable migrations for the app. Otherwise pytest-django's
+            # ``migrate`` (triggered by django.test.TestCase elsewhere in the
+            # suite) tries to re-create the tables and fails with
+            # "table already exists".
+            MIGRATION_MODULES={"pos_full": None},
         )
         import django
         django.setup()
@@ -123,13 +130,26 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
             models_to_create.append(model)
             seen.add(model._meta.db_table)
 
+    # Create tables idempotently. Skip any table that already exists (another
+    # bootstrap — e.g. tests/django_setup.py — may have configured Django and
+    # created the tables first). Blindly calling create_model() on an existing
+    # table raises inside the schema editor's atomic block and leaves the
+    # connection with ``needs_rollback=True``, which then poisons every
+    # subsequent test with TransactionManagementError.
+    try:
+        existing_tables = set(connection.introspection.table_names())
+    except Exception:
+        existing_tables = set()
     try:
         with connection.schema_editor() as schema_editor:
             for model in models_to_create:
+                if model._meta.db_table in existing_tables:
+                    continue
                 try:
                     schema_editor.create_model(model)
+                    existing_tables.add(model._meta.db_table)
                 except Exception:
-                    pass  # table may already exist
+                    pass  # table may already exist (e.g. a race)
     except Exception:
         pass  # DB may already be set up
 
@@ -146,6 +166,25 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
             pass
 
     request.addfinalizer(_cleanup)
+
+
+@pytest.fixture
+def django_bootstrap(_django_configured):
+    """Per-test DB isolation on top of the session bootstrap.
+
+    ``_django_configured`` configures Django and creates tables once per
+    session. This function-scoped wrapper then runs each test inside a
+    transaction that is rolled back afterward, so rows written by one test
+    never leak into another and a caught ``IntegrityError`` cannot poison the
+    shared connection (TestCase-style isolation without pytest-django).
+    """
+    from django.db import transaction
+
+    with transaction.atomic():
+        yield
+        # Force rollback instead of commit so every test starts from a clean
+        # state regardless of pass/fail.
+        transaction.set_rollback(True)
 
 
 # ══════════════════════════════════════════════════════════════════════════

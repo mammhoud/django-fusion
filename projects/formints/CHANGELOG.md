@@ -4,6 +4,15 @@
 
 ## Unreleased — edition completion
 
+### Frontend (Formint Pro — Astro)
+- **`SectionHeading` component** (`src/components/ui/SectionHeading.astro`)
+  replaces the per-page eyebrow + `h1`/`h2` + `.section-heading` markup and
+  styles across all 11 pages (heroes and section headers, actions via the
+  `actions` slot). Centralizes the eyebrow style, the heading size scale
+  (`sm`/`md`/`lg`, `hero`/`hero-xl`), and the `divider` variant, and enforces
+  the one-eyebrow-per-page audit rule at render time: any eyebrow after the
+  first per request is dropped with a dev-only `console.warn`.
+
 ### Community version (formint-community)
 - Bundle generator + rename contract (Formints Community, `com.mammhoud.formint-community`) and landing seed sync (offline-first badge, refund flow) are complete; GitHub publish remains an external operator action.
 
@@ -15,8 +24,46 @@
 - `Tenant.settings` JSON column + migration (per-tenant signup gate, social provider keys, login redirect).
 - `TenantAwareAccountAdapter`, `tenant` context processor, `tenant_provider_settings` helper, and `branch_database_aliases` — all SQLite-safe and tenant-inert without `DB_ENGINE=django_tenants`.
 
+### Added (Formint Pro — fusion dual-mode views + settings)
+- **`/fusion/views/*` dual-mode endpoints** — `fusion_dual_views.py`
+  reuses the read-only services (forecast, customer display, kiosk,
+  purchase orders, tables floor, delivery stats, gift cards) behind
+  django-fusion's `fusion_view` decorator: the same endpoint answers as a
+  **render-first component** (`django_templates/fusion/*.html`) or a
+  **codec-encoded data API** (`X-Fusion-Render-First: false`), per the
+  canonical fusion contract. Existing raw JSON views are untouched.
+- **Fusion asset-pipeline settings** — `FUSION_PIPELINE` (webpack off,
+  components on), `FUSION_ASSET_PIPELINE` legacy alias,
+  `FUSION_COMPONENTS` enable flag, and `STATICFILES_DIRS` that picks up
+  the Astro `frontend/dist` build when present.
+
+### Added (Formint Pro — navigation + frontend coverage)
+- **Navigation modules for all shipped features** — the `fusionNavigation`
+  contract in `formint/core.py` (and the `Layout.astro` offline fallback)
+  now exposes every completed module: Restaurants (tables,
+  reservations, deliveries), Gift Cards, Gaming Center, Forecast,
+  Purchase Orders, Kiosk, Customer Display, plus the existing ops,
+  menu, sales, loyalty, and profile entries.
+- **Frontend pages for every nav route** — new Alpine-driven pages for
+  `/tables`, `/reservations`, `/deliveries`, `/gift-cards`,
+  `/purchase-orders`, `/forecast/report`, and `/gaming` (stations /
+  tokens / sessions tabs), all calling the existing JSON endpoints.
+
 ### Added (Formint Pro)
 - **Barcode Scanner** — `/barcode/<value>` resolves a scanned code to a product (exact `barcode` match with `sku` fallback) and `/barcode/<value>/label` renders a Code128 SVG label; `python-barcode` is lazy-imported so the server runs without it.
+- **POS-KO Gaming Center** — `/gaming/*` token-based sessions: `GamingStation`/`GamingToken`/`GamingSession`/`GamingQueueEntry` models + service (start/pause/resume/stop with duration × hourly-rate billing, per-started-minute token decrement, and a waitlist queue with estimated wait).
+- **Gift Cards** — `/gift-cards*` digital gift cards: `GiftCard`/`GiftCardTransaction` models + service (issue, case-insensitive balance lookup, atomic redeem with `used`/expiry/disabled guards, reload, disable) and an immutable signed-amount ledger.
+- **Table Management** — `/tables*` + `/reservations*` floor layouts and order tracking: `RestaurantTable` (section/capacity/shape, floor-plan position, status lifecycle) and `TableReservation` models + service (`occupy_table`/`clear_table` seat the live sale and sync the sale's `SaleGroup.table_number`; reservations create → seat → complete with cancel/no-show branches; `floor_summary` occupancy stats).
+- **Delivery Integration** — `/deliveries*` platform connectors: `DeliveryProvider` (Talabat/HungerStation/Careem/manual registry) and `DeliveryOrder` models + service (zone-based fee computation, full status lifecycle with transition guards, provider webhook ingestion on `order_id`, delivery KPIs).
+- **AI Forecasting** — `/forecast*` read-only advisory analytics (`services/forecast.py`): per-product demand projection (moving average + clamped trend factor), stock/reorder recommendations over lead time, waste aggregation with estimated cost, and sales movers/growth insights with plain-language recommendations. Purely advisory — never mutates POS data (per the django-fusion LLM/MCP plan).
+- **Employee Scheduling** — `/scheduling*` shift planning + time clock: weekly shift upsert + concrete week roster from `EmployeeSchedule`, staffing coverage, and the new `TimeClockEntry` model + service (`services/scheduling.py`) with clock in/out/break, single-active-punch guard, and worked-hours/overtime/pay estimate.
+- **Customer Display** — `/customer-display*` read-only order-confirmation screens (`services/customer_display.py`): per-sale display envelope (order #, table, order type, item rows, totals, kitchen-ticket status + elapsed/remaining/overdue ETA) and an active-orders board feed with per-status summary; plus a polling wall-screen page (`frontend/src/pages/customer-display/index.astro`, `?sale=<id>` focuses one confirmation). Purely read-only — no new models or migration.
+- **Self-checkout Kiosk** — `/kiosk*` self-service kiosk mode: `KioskSession` + `KioskCartItem` models + service (`services/kiosk.py`) with a catalog feed, session lifecycle, stock-guarded cart ops, and totals (subtotal + 8% tax). Checkout reuses the canonical `sale_checkout` surface (atomic Sale/SaleItem/KitchenTicket + stock deduction) by forwarding the exact `POST /sales/` payload, then links the sale and closes the session. Touchscreen UI at `frontend/src/pages/kiosk/index.astro` (`?kiosk=` labels the device). Migration `0016`.
+- **Inventory Forecasting** — `/forecast/inventory*` reorder-point planning (`services/forecast.py`): per-product safety stock, reorder point (lead demand + safety), projected stock-out date, needs-reorder flags with reasons, and suggested order quantities — the roadmap's final P3 item, superseding the AI Forecasting stock advisory. `POST /forecast/inventory/reorder` is the explicit operator action that materializes the plan into `PurchaseOrder` drafts (`RF-YYYYMMDD-###`, cost from product, no stock movement until ordered/received); no new models or migration.
+- **Purchase Order Workflow** — `/purchase-orders*` procurement lifecycle (`services/purchase_orders.py`): create draft POs (`PO-YYYYMMDD-###`), mark ordered, receive with `in` `InventoryTransaction` stock-in (product stock + `received_quantity` bump, partial receipt defaults to remaining balance, over-receipt rejected), and cancel with transition guards. `GET /purchase-orders/alerts` reuses the forecast plan to surface at/below-reorder-point products plus open drafts; `GET /purchase-orders/stats` reports status counts + outstanding value. No new models or migration.
+
+### Added (Formint Cloud)
+- **Cloud Dashboard** — `/cloud-dashboard` multi-branch management page over the full `/api/dashboard/*` contract: sync-queue retry/cancel, conflict resolve (local/remote/merge) + dismiss, and the recent-activity feed. `api/dashboard.ts` now types every dashboard endpoint (health, queue, conflicts, activity) with retry/cancel/resolve/dismiss mutations.
 
 ### Changed (Formint Pro)
 - Canonical documentation now points to `formint-pro/server/` and describes Django as the primary API boundary.
