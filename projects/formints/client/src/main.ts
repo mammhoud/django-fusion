@@ -7,9 +7,9 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
 import App from "./App.vue";
-import router from "./router";
-import { useSettingsStore } from "./utils/settings";
-import { useTheme } from "./utils/theme";
+import router from "./router/index.ts";
+import { useSettingsStore } from "./utils/settings.ts";
+import { useTheme } from "./utils/theme.ts";
 
 import zhCN from "./locales/zh-CN.ts";
 import enUS from "./locales/en-US.ts";

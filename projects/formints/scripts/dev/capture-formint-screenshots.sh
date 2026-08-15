@@ -27,8 +27,8 @@ set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-RELATED_DIR="${ROOT}/../precis/landi/backend/assets/static/related/formints"
-MIRROR_DIR="${ROOT}/../precis/landi/frontend/public/static/related/formints"
+RELATED_DIR="${ROOT}/../precis/lnd-structa/backend/assets/static/related/formints"
+MIRROR_DIR="${ROOT}/../precis/lnd-structa/frontend/public/static/related/formints"
 CAPTURES_DIR="${ROOT}/.tmp-screenshot-captures"
 FE_BASE="http://127.0.0.1:4321"
 ADMIN_BASE="http://127.0.0.1:8767"

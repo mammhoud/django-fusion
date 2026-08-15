@@ -135,7 +135,7 @@ envelope. Resource names use hyphens; template files use underscores
 ### 3.5 Fusion render-mode contract (landing-fusion parity)
 
 The backend mirrors landing-fusion's dual-mode content delivery — the same
-contract as `projects/precis/landi/backend/apps/pages/api.py`:
+contract as `projects/precis/lnd-structa/backend/apps/pages/api.py`:
 
 | Endpoint | Description |
 |---|---|

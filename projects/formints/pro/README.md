@@ -185,10 +185,10 @@ Validation: `make check` (astro check) and `make build`.
 - `frontend`: `pnpm check` and `pnpm build`
 - `backend`: `python manage.py check` and `python manage.py test`
 - migration: inspect `migration/compatibility-manifest.json`
-- backup: follow [`../../../docs/plans/pos/formint-backup-20260804.md`](../../../docs/plans/pos/formint-backup-20260804.md)
+- backup: see the Cloud edition plan (`../../../docs/plans/editions/04-cloud.md`)
 
 ## Related
 
-- [`../../../docs/plans/pos/formint-pos-professional-plan.md`](../../../docs/plans/pos/formint-pos-professional-plan.md)
+- [`../../../docs/plans/editions/03-pro.md`](../../../docs/plans/editions/03-pro.md)
 - [`../README.md`](../README.md)
 - [`migration/compatibility-manifest.json`](migration/compatibility-manifest.json)

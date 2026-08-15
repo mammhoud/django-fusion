@@ -107,5 +107,5 @@ make status           # Tmux sessions + endpoint health
 - [`../AGENTS.md`](../AGENTS.md) — Formint multi-edition overview
 - [`README.md`](README.md) — Full product README with API reference
 - [`../../docs/pos/`](../../docs/pos/) — POS documentation
-- [`../../docs/plans/pos/formint-pos-professional-plan.md`](../../docs/plans/pos/formint-pos-professional-plan.md)
+- [`../../../docs/plans/editions/03-pro.md`](../../../docs/plans/editions/03-pro.md) — Professional plan
 - [`server/ARCHITECTURE.md`](server/ARCHITECTURE.md) — Server architecture
