@@ -81,6 +81,9 @@ def _configure_from_settings():
         or os.getenv("REDIS_URL")
         or "redis://localhost:6379/1"
     )
+    gate_on_broker_reachable = bool(
+        fusion_tasks.get("GATE_ON_BROKER_REACHABLE", False)
+    )
 
     try:
         module_name, class_name = backend_path.rsplit(".", 1)
@@ -94,7 +97,10 @@ def _configure_from_settings():
         if "InProcess" in class_name:
             backend = backend_cls()
         else:
-            backend = backend_cls(broker_url=broker_url)
+            backend = backend_cls(
+                broker_url=broker_url,
+                gate_on_broker_reachable=gate_on_broker_reachable,
+            )
         task_registry.configure(backend)
     except Exception:
         task_registry.configure(InProcessBackend())

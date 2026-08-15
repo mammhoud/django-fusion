@@ -4,12 +4,18 @@ from __future__ import annotations
 
 import json
 import logging
+import socket
+import time
 import traceback
 import uuid
+from urllib.parse import urlparse
 
 from django_fusion.tasks.backends.base import AbstractTaskBackend
 
 logger = logging.getLogger(__name__)
+
+#: How long a broker probe result is reused before re-probing (seconds).
+_BROKER_PROBE_TTL = 5.0
 
 
 class DramatiqBackend(AbstractTaskBackend):
@@ -27,8 +33,20 @@ class DramatiqBackend(AbstractTaskBackend):
     the website record, so each product can filter its own task history.
     """
 
-    def __init__(self, broker_url: str = "redis://localhost:6379/1"):
+    #: Fail fast on a down broker before ``enqueue`` performs its Redis
+    #: round-trip. Off by default; products opt in via ``FUSION_TASKS``
+    #: (``GATE_ON_BROKER_REACHABLE: true``). Class-level so ``__new__``
+    #: bypass instances (used by unit tests) default safely to off.
+    gate_on_broker_reachable: bool = False
+
+    def __init__(
+        self,
+        broker_url: str = "redis://localhost:6379/1",
+        gate_on_broker_reachable: bool = False,
+    ):
         self.broker_url = broker_url
+        self.gate_on_broker_reachable = gate_on_broker_reachable
+        self._broker_reachable_cache: tuple[float, bool] | None = None
         self._actors = {}
         self.broker = None
         try:
@@ -44,6 +62,32 @@ class DramatiqBackend(AbstractTaskBackend):
             # Keep imports/test collection usable when the optional broker
             # dependency is absent; enqueue will surface the real error.
             logger.debug("Dramatiq Redis broker unavailable", exc_info=True)
+
+    def broker_reachable(self, timeout: float = 0.4) -> bool:
+        """Probe whether the configured broker answers, cached briefly.
+
+        ``enqueue`` otherwise pays a Redis round-trip (and, with a down
+        broker, a connection error) on every call. This probes once and
+        reuses the answer for ``_BROKER_PROBE_TTL`` seconds so a down broker
+        is skipped immediately instead of re-attempted per enqueue.
+        """
+        now = time.monotonic()
+        if self._broker_reachable_cache is not None and now - self._broker_reachable_cache[0] < _BROKER_PROBE_TTL:
+            return self._broker_reachable_cache[1]
+        reachable = self._probe_broker(timeout)
+        self._broker_reachable_cache = (now, reachable)
+        return reachable
+
+    def _probe_broker(self, timeout: float) -> bool:
+        """Dependency-free TCP probe of the broker host/port."""
+        try:
+            parsed = urlparse(self.broker_url)
+            host = parsed.hostname or "127.0.0.1"
+            port = parsed.port or 6379
+            with socket.create_connection((host, port), timeout=timeout):
+                return True
+        except (OSError, TypeError, ValueError):
+            return False
 
     def register_tasks(self, registry) -> None:
         """Declare every discovered fusion task as a Dramatiq actor.
@@ -65,6 +109,16 @@ class DramatiqBackend(AbstractTaskBackend):
             job_id=job_id,
             status="queued",
         )
+        if self.gate_on_broker_reachable and not self.broker_reachable():
+            error = "Queue publish failed: broker unreachable"
+            self._update_log(
+                log_entry,
+                status="failed",
+                error_message=error,
+                error_traceback="broker unreachable",
+            )
+            self._touch_website_log(job_id, status="failed", error_message=error)
+            raise ConnectionError(error)
         try:
             broker_options = dict(options or {})
             if broker_options:
