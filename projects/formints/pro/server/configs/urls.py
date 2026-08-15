@@ -64,6 +64,7 @@ from views_django import (
     sale_split, sale_merge, sale_group_list, sale_group_detail,
     sync_status, sync_config, sync_log, sync_trigger,
     sync_changes, sync_ack,
+    offline_queue_list, offline_queue_enqueue, offline_queue_flush, offline_queue_requeue,
     cloud_push, receive_push,
     list_transactions, get_transaction_detail, get_analytics,
     approval_approve, approval_reject, approval_stats, approval_pending,
@@ -164,6 +165,10 @@ urlpatterns += [
     path("sync/changes", sync_changes, name="sync-changes"),
     path("sync/ack", sync_ack, name="sync-ack"),
     path("sync/trigger", sync_trigger, name="sync-trigger"),
+    path("offline-queue/", offline_queue_list, name="offline-queue-list"),
+    path("offline-queue/enqueue", offline_queue_enqueue, name="offline-queue-enqueue"),
+    path("offline-queue/flush", offline_queue_flush, name="offline-queue-flush"),
+    path("offline-queue/requeue", offline_queue_requeue, name="offline-queue-requeue"),
     path("cloud/push/<str:entity_type>", cloud_push, name="cloud-push"),
     path("api/sync/push/<str:entity_type>", receive_push, name="api-sync-push"),
 

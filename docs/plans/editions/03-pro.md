@@ -123,6 +123,24 @@ The collector is `services/sync_changes.SyncChangeCollector` (canonical
 `(entity_type, model)` ordering parents-before-children so FKs resolve on
 apply). `POST /sync/trigger` is the push half; peers pull on demand.
 
+## Offline Queue (P1)
+
+Transactions recorded while the cloud master is unreachable are durably
+queued in the `OutboxQueue` and flushed (with exponential backoff and
+dead-lettering) once connectivity returns.
+
+| Surface | Method | Purpose |
+|---|---|---|
+| `/offline-queue/` | GET | Queue health (`pending/failed/dead/…`) + recent entries |
+| `/offline-queue/enqueue` | POST | Queue an outbound op (`{entity_type, entity_id, action, payload, node_id}`) |
+| `/offline-queue/flush` | POST | Attempt to push due entries now (backoff/dead-letter on failure) |
+| `/offline-queue/requeue` | POST | Re-arm dead-lettered entries |
+
+The service is `services.outbox.OfflineQueueService`; ``push_one`` POSTs to
+`{cloud_url}/api/sync/push/<entity_type>` (URL from `sync_state.json` then
+`CLOUD_CRM_URL`). Offline = empty URL → entries stay `failed` and retry with
+backoff `2**retry_count` (capped at 1h); `max_retries` dead-letters them.
+
 ## Remaining work
 
 - [ ] Pro `make check` — BLOCKED: `server/.venv/bin/python3` is absent in this checkout (validated here via the cloud backend venv).

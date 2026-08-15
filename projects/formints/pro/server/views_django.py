@@ -86,6 +86,7 @@ from models.token import DeviceToken
 
 from services.sync import ProductSyncEngine
 from services.sync_changes import SyncChangeCollector, entity_types
+from services.outbox import OfflineQueueService
 
 logger = logging.getLogger("pos.views")
 
@@ -1310,6 +1311,89 @@ def sync_trigger(request: HttpRequest) -> JsonResponse:
         "action": "pull",
     })
     return _json({"triggered": True, "mechanism": "websocket", "channel": "pos_entities"})
+
+
+# ── Offline Queue (P1) — queue transactions offline, flush when back online ──
+
+def _ser_outbox(item) -> dict:
+    return {
+        "id": item.id,
+        "node_id": item.node_id,
+        "entity_type": item.entity_type,
+        "entity_id": item.entity_id,
+        "action": item.action,
+        "status": item.status,
+        "retry_count": item.retry_count,
+        "max_retries": item.max_retries,
+        "last_error": item.last_error,
+        "available_at": item.available_at.isoformat() if item.available_at else None,
+        "last_attempt_at": item.last_attempt_at.isoformat() if item.last_attempt_at else None,
+        "created_at": item.created_at.isoformat() if item.created_at else None,
+    }
+
+
+def offline_queue_list(request: HttpRequest) -> JsonResponse:
+    """GET /offline-queue/ — queue health + recent pending/failed entries."""
+    from models.outbox import OutboxQueue
+
+    svc = OfflineQueueService()
+    recent = list(
+        OutboxQueue.objects.filter(status__in=["pending", "failed", "dead"])
+        .order_by("-created_at")[:50]
+    )
+    data = svc.stats()
+    data["entries"] = [_ser_outbox(i) for i in recent]
+    return _json(data)
+
+
+def offline_queue_enqueue(request: HttpRequest) -> JsonResponse:
+    """POST /offline-queue/enqueue — queue an outbound operation.
+
+    Body: ``{"entity_type": "sale", "entity_id": "42", "action": "push",
+    "payload": {...}, "node_id": "till-1"}``.
+    """
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    entity_type = body.get("entity_type")
+    if not entity_type:
+        return _error(400, "entity_type is required")
+
+    svc = OfflineQueueService()
+    item = svc.enqueue(
+        entity_type=entity_type,
+        entity_id=str(body.get("entity_id", "")),
+        action=body.get("action", "push"),
+        payload=body.get("payload") or {},
+        node_id=body.get("node_id", ""),
+        max_retries=int(body.get("max_retries", 10)),
+    )
+    return _json({"queued": _ser_outbox(item)}, status=201)
+
+
+def offline_queue_flush(request: HttpRequest) -> JsonResponse:
+    """POST /offline-queue/flush — attempt to push due entries now."""
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return _error(400, "Invalid JSON")
+
+    svc = OfflineQueueService()
+    result = svc.flush(
+        limit=int(body.get("limit", 100)),
+        node_id=body.get("node_id") or None,
+    )
+    result["stats"] = svc.stats()
+    return _json(result)
+
+
+def offline_queue_requeue(request: HttpRequest) -> JsonResponse:
+    """POST /offline-queue/requeue — re-arm dead-lettered entries."""
+    svc = OfflineQueueService()
+    count = svc.requeue_dead()
+    return _json({"requeued": count})
 
 
 def cloud_push(request: HttpRequest, entity_type: str) -> JsonResponse:

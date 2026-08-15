@@ -32,6 +32,7 @@ from models.approval import SyncApproval  # noqa: F401
 from models.token import DeviceToken  # noqa: F401
 from models.audit import SignalEvent  # noqa: F401
 from models.apikey import ApiKey  # noqa: F401
+from models.outbox import OutboxQueue  # noqa: F401
 from models.forge_gaps import Coupon, DeliveryType, DeliveryZone, Shift  # noqa: F401
 from models.crm import (  # noqa: F401
     Company, Pipeline, Stage, Contact, Deal, Activity, CRMNote,
