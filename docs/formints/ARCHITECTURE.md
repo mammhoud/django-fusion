@@ -264,7 +264,7 @@ with full multi-terminal operation.
 - CRM (leads, contacts, deals, pipeline)
 - HR (staff scheduling, shifts, payroll)
 - Unfold admin (modern Django admin theme)
-- Fusion render-mode (landing-fusion parity — `X-Fusion-Render-First` header)
+- Fusion render-mode (precis-landing parity — `X-Fusion-Render-First` header)
 - Channels WebSocket (real-time multi-terminal sync)
 - 48 Django models
 

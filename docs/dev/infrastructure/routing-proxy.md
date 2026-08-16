@@ -29,7 +29,7 @@ CF_API_KEY=<key>
 ## Rollout stages
 
 1. **Stage 1**: LE staging CA for `vresume.structa.cloud`.
-2. **Stage 2**: LE production CA for ctc-research, structa-cloud, media, dashboard.
+2. **Stage 2**: LE production CA for precis-ctc, structa-cloud, media, dashboard.
 3. **Stage 3**: Delete `applications/proxy/traefik/dynamic/certs.yml`.
 
 ## Shared media

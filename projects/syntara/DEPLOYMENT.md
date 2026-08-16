@@ -665,7 +665,7 @@ python manage.py shell
 >>> settings.CUSTOMIZER_APPS
 
 # Verify paths exist
-ls -la projects/ctc-research/templates/
+ls -la projects/precis-ctc/templates/
 ls -la projects/lms/templates/
 ls -la projects/portfolio/www/pages/templates/
 

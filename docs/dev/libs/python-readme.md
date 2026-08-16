@@ -5,7 +5,7 @@ Django monorepo with multiple site projects, shared libraries, and a component f
 ## Use Cases
 
 ### 1. Django Site Management (`projects/<site>/`)
-- **Purpose:** Run and maintain multiple Django sites (ctc-research, lms, VResume) from a shared monorepo — each with its own templates, plugins, Django apps, and settings
+- **Purpose:** Run and maintain multiple Django sites (precis-ctc, lms, VResume) from a shared monorepo — each with its own templates, plugins, Django apps, and settings
 - **Key traits:** Single `make` command with `WEBSITE=...` dispatches checks, tests, migrations; per-site logical databases in shared PostgreSQL
 
 ### 2. Component Framework (`django-fusion`)
@@ -42,7 +42,7 @@ projects/
 │   ├── django-fusion/           # 🔴 Component system + routing framework
 │   └── ceptor-ai/               # 🟢 AI assistant + MCP server
 │
-├── ctc-research/                # 🌐 CTC Research site
+├── precis-ctc/                # 🌐 CTC Research site
 │   ├── templates/               # Site-specific templates
 │   ├── plugins/                 # Site plugins (accounts, blog, components)
 │   │   ├── accounts/            # Auth adapters, MFA
@@ -134,9 +134,9 @@ class ProductViewset(ModelViewset):
 
 ```bash
 cd projects
-make check WEBSITE=ctc-research     # Django checks for a site
-make test WEBSITE=ctc-research      # Run tests for a site
-make migrate WEBSITE=ctc-research   # Run migrations for a site
+make check WEBSITE=precis-ctc     # Django checks for a site
+make test WEBSITE=precis-ctc      # Run tests for a site
+make migrate WEBSITE=precis-ctc   # Run migrations for a site
 ```
 
 ## Key Conventions

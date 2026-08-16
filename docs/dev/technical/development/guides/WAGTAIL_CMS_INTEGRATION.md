@@ -16,7 +16,7 @@ Phase 8 integrates payment management and enrollment systems into Wagtail CMS ad
 
 ### 1. Payment ViewSets ✅
 
-**File:** `ctc-research/plugins/lms/snippets/payments.py` (400+ lines)
+**File:** `precis-ctc/plugins/lms/snippets/payments.py` (400+ lines)
 
 **Three ViewSets Created:**
 
@@ -68,7 +68,7 @@ Phase 8 integrates payment management and enrollment systems into Wagtail CMS ad
 
 ### 2. Wagtail Menu Organization ✅
 
-**File:** `ctc-research/plugins/lms/wagtail_hooks.py` (updated)
+**File:** `precis-ctc/plugins/lms/wagtail_hooks.py` (updated)
 
 **New Menu Structure:**
 
@@ -571,12 +571,12 @@ class AmountRangeFilter(SimpleListFilter):
 - ✅ Complete documentation
 
 **Files Created:**
-- `ctc-research/plugins/lms/snippets/payments.py` (400+ lines)
+- `precis-ctc/plugins/lms/snippets/payments.py` (400+ lines)
 - `docs/WAGTAIL_CMS_INTEGRATION.md` (this file)
 
 **Files Updated:**
-- `ctc-research/plugins/lms/snippets/__init__.py` (payments import)
-- `ctc-research/plugins/lms/wagtail_hooks.py` (payment registration)
+- `precis-ctc/plugins/lms/snippets/__init__.py` (payments import)
+- `precis-ctc/plugins/lms/wagtail_hooks.py` (payment registration)
 
 **Admin Features:**
 - Payment transaction management

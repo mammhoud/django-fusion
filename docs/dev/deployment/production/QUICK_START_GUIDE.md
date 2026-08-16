@@ -87,13 +87,13 @@ curl http://localhost/health/
 
 ```bash
 # Start all three websites
-docker compose up -d ctc-research-website lms-website vresume-website
+docker compose up -d precis-ctc-website lms-website vresume-website
 
 # Wait for them to initialize
 sleep 15
 
 # Verify all containers are running
-docker ps | grep -E 'ctc-research|lms|vresume'
+docker ps | grep -E 'precis-ctc|lms|vresume'
 ```
 
 ---
@@ -155,7 +155,7 @@ curl -kI https://vresume.structa.cloud/admin/
 
 ```bash
 # Option A: Create pages via management command
-docker exec web-ctc-research python manage.py populate_content \
+docker exec web-precis-ctc python manage.py populate_content \
   --content-file /path/to/content.md
 
 # Option B: Create pages manually via admin panel
@@ -169,7 +169,7 @@ docker exec web-ctc-research python manage.py populate_content \
 
 ```bash
 # Load locales and essential data
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-precis-ctc python manage.py loaddata \
   /path/to/essential-data.json
 
 docker exec lms-website python manage.py loaddata \
@@ -201,7 +201,7 @@ make tests-website WEBSITE=vresume
 
 ```bash
 # If any issues, check logs
-docker logs web-ctc-research
+docker logs web-precis-ctc
 docker logs lms-website
 docker logs vresume-website
 docker logs traefik
@@ -239,10 +239,10 @@ media.vresume.structa.cloud A  <your-server-ip>
 docker ps -a
 
 # Check specific service
-docker ps | grep ctc-research
+docker ps | grep precis-ctc
 
 # View container logs
-docker logs -f web-ctc-research
+docker logs -f web-precis-ctc
 ```
 
 ### Service Health
@@ -270,7 +270,7 @@ docker exec redis redis-cli ping
 
 ```bash
 # Django application logs
-docker logs web-ctc-research
+docker logs web-precis-ctc
 
 # Reverse proxy logs
 docker logs traefik
@@ -294,8 +294,8 @@ docker logs redis
 **Cause**: Django app not responding  
 **Solution**:
 ```bash
-docker logs web-ctc-research  # Check Django logs
-docker restart web-ctc-research  # Restart the app
+docker logs web-precis-ctc  # Check Django logs
+docker restart web-precis-ctc  # Restart the app
 ```
 
 ### SSL Certificate not issued
@@ -320,7 +320,7 @@ docker exec traefik traefik validate --configfile=/etc/traefik/traefik.yml
 **Solution**:
 ```bash
 # Collect static files
-docker exec web-ctc-research python manage.py collectstatic --noinput
+docker exec web-precis-ctc python manage.py collectstatic --noinput
 
 # Restart media server
 docker restart shared-proxy
@@ -353,7 +353,7 @@ docker exec postgres pg_isready -U structa
 docker stats
 
 # Restart services if needed
-docker restart web-ctc-research
+docker restart web-precis-ctc
 docker restart lms-website
 docker restart vresume-website
 
@@ -374,14 +374,14 @@ docker compose down
 ### Stop specific service
 
 ```bash
-docker compose stop web-ctc-research
+docker compose stop web-precis-ctc
 docker compose stop shared-proxy
 ```
 
 ### Restart specific service
 
 ```bash
-docker compose restart web-ctc-research
+docker compose restart web-precis-ctc
 ```
 
 ### View resource usage

@@ -2,6 +2,21 @@ import { test, expect } from '@playwright/test';
 
 const workspaceLabel = 'Playwright workspace';
 
+// Matches apps.core seed_playwright (same credentials as task-center.spec.mjs).
+// The browser suite signs in before every test because the domain pages are
+// login-gated; anonymous navigation redirects to /accounts/login/.
+const EMAIL = 'playwright@loop.dev';
+const PASSWORD = 'playwright-pass-123';
+
+async function signIn(page) {
+  await page.goto('/accounts/login/');
+  await expect(page.locator('#id_login')).toBeVisible();
+  await page.locator('#id_login').fill(EMAIL);
+  await page.locator('#id_password').fill(PASSWORD);
+  await page.locator('button[type="submit"]').click();
+  await expect(page).toHaveURL((url) => url.pathname === '/', { timeout: 15_000 });
+}
+
 async function waitForNavigationRefresh(page, href) {
   await page.goto(href);
   await expect(page).toHaveURL(new RegExp(`${href.replaceAll('/', '\\/')}$`));
@@ -10,6 +25,10 @@ async function waitForNavigationRefresh(page, href) {
 }
 
 test.describe('Loop CRM browser interactions', () => {
+  test.beforeEach(async ({ page }) => {
+    await signIn(page);
+  });
+
   test('reloads the complete navigation shell with the correct active state', async ({ page }) => {
     await page.goto('/crm/companies/');
     const shell = page.locator('.loop-shell');

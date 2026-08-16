@@ -76,6 +76,6 @@ For LMS course data in tests, use the shared fixtures in `tests/fixtures/lms/`:
 
 ## Notes
 
-- lms shares the same application code as ctc-research (symlinked plugins/components).
+- lms shares the same application code as precis-ctc (symlinked plugins/components).
 - The `site_dummy.json` sets the domain to `structa.cloud` (port 5071 in dev).
 - Database: `db_structa` (production) / `lms_demo` (dev warehouses).

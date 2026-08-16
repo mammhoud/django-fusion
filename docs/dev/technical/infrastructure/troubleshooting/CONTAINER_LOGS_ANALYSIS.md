@@ -1,12 +1,12 @@
 # Container Logs Analysis Report
 **Generated:** June 2, 2026 20:30 UTC  
-**Container:** web-ctc-research  
+**Container:** web-precis-ctc  
 **Status:** ✅ OPERATIONAL
 
 ---
 
 ## Summary
-The ctc-research website container is **healthy and operational**. All critical systems are functioning. HTTP requests are being processed successfully with HTTP 200 responses.
+The precis-ctc website container is **healthy and operational**. All critical systems are functioning. HTTP requests are being processed successfully with HTTP 200 responses.
 
 ---
 
@@ -47,7 +47,7 @@ The ctc-research website container is **healthy and operational**. All critical 
   - Environment: 🚀 production
   - Runtime: 🐳 docker
   - Module: 📦 LMS
-  - Website: ctc-research
+  - Website: precis-ctc
   - Domain: ctc-research.com
   - Port: 5070
   - Debug Mode: ✅ Disabled
@@ -247,10 +247,10 @@ To resolve modelsearch ContentType errors:
 
 ```bash
 # Option 1: Rebuild search index
-docker exec web-ctc-research python manage.py --site=ctc-research rebuild_modelsearch_index
+docker exec web-precis-ctc python manage.py --site=precis-ctc rebuild_modelsearch_index
 
 # Option 2: Clean orphaned content types
-docker exec web-ctc-research python manage.py --site=ctc-research contenttypes_cleanup
+docker exec web-precis-ctc python manage.py --site=precis-ctc contenttypes_cleanup
 ```
 
 ### Monitoring
@@ -262,12 +262,12 @@ docker exec web-ctc-research python manage.py --site=ctc-research contenttypes_c
 
 ## Conclusion
 
-The ctc-research website container is **healthy, operational, and serving traffic successfully**. All HTTP requests return 200 status codes. Background task errors related to modelsearch indexing are non-critical and do not impact user-facing functionality.
+The precis-ctc website container is **healthy, operational, and serving traffic successfully**. All HTTP requests return 200 status codes. Background task errors related to modelsearch indexing are non-critical and do not impact user-facing functionality.
 
 **Overall Status: ✅ DEPLOYMENT SUCCESSFUL**
 
 ---
 
 *Report Generated: 2026-06-02 20:30 UTC*  
-*Container: web-ctc-research*  
+*Container: web-precis-ctc*  
 *Analysis Method: Direct log file inspection via docker exec*

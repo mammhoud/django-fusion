@@ -32,7 +32,7 @@ if str(_PRECIS_BACKEND) not in sys.path:
 # Path is set up by conftest.py; kept here for direct execution.
 
 
-def _fresh_settings(*, server_env: str = "development", website: str = "lms-fusion"):
+def _fresh_settings(*, server_env: str = "development", website: str = "precis-lms"):
     """Return a fresh MainSettings instance for the given env/site combo.
 
     Isolated from the module-level ``settings`` singleton so each test can
@@ -134,33 +134,33 @@ class TestPerProjectSiteYml:
     """Values loaded from <project>/Env/_site.yml (loaded last, highest priority)."""
 
     def test_lms_branding_from_site_yml(self):
-        """lms-fusion/Env/_site.yml → default.FUSION_SITE_NAME: Fusion LMS"""
-        s = _fresh_settings(website="lms-fusion")
+        """precis-lms/Env/_site.yml → default.FUSION_SITE_NAME: Fusion LMS"""
+        s = _fresh_settings(website="precis-lms")
         assert s.get("FUSION_SITE_NAME") == "Fusion LMS", (
-            "FUSION_SITE_NAME should be 'Fusion LMS' from lms-fusion/Env/_site.yml"
+            "FUSION_SITE_NAME should be 'Fusion LMS' from precis-lms/Env/_site.yml"
         )
 
     def test_lms_primary_color_from_site_yml(self):
-        """lms-fusion/Env/_site.yml → default.FUSION_PRIMARY_COLOR: #00a1b3 (teal)"""
-        s = _fresh_settings(website="lms-fusion")
+        """precis-lms/Env/_site.yml → default.FUSION_PRIMARY_COLOR: #00a1b3 (teal)"""
+        s = _fresh_settings(website="precis-lms")
         assert s.get("FUSION_PRIMARY_COLOR") == "#00a1b3", (
-            "FUSION_PRIMARY_COLOR should be '#00a1b3' (teal) from lms-fusion/Env/_site.yml"
+            "FUSION_PRIMARY_COLOR should be '#00a1b3' (teal) from precis-lms/Env/_site.yml"
         )
 
     def test_lms_render_first_from_site_yml(self):
-        """lms-fusion/Env/_site.yml → default.FUSION_RENDER_FIRST_DEFAULT: false"""
-        s = _fresh_settings(website="lms-fusion")
+        """precis-lms/Env/_site.yml → default.FUSION_RENDER_FIRST_DEFAULT: false"""
+        s = _fresh_settings(website="precis-lms")
         assert s.get("FUSION_RENDER_FIRST_DEFAULT") is False, (
-            "FUSION_RENDER_FIRST_DEFAULT should be False from lms-fusion/Env/_site.yml"
+            "FUSION_RENDER_FIRST_DEFAULT should be False from precis-lms/Env/_site.yml"
         )
 
     def test_lms_cors_origins_from_site_yml(self):
-        """lms-fusion/Env/_site.yml → default.CORS_ORIGINS includes :3458"""
-        s = _fresh_settings(website="lms-fusion")
+        """precis-lms/Env/_site.yml → default.CORS_ORIGINS includes :3458"""
+        s = _fresh_settings(website="precis-lms")
         origins = s.get("CORS_ORIGINS")
         assert isinstance(origins, list), "CORS_ORIGINS should be a list"
         assert "http://localhost:3458" in origins, (
-            "CORS_ORIGINS should include localhost:3458 from lms-fusion/Env/_site.yml"
+            "CORS_ORIGINS should include localhost:3458 from precis-lms/Env/_site.yml"
         )
 
     def test_cms_branding_from_site_yml(self):
@@ -200,7 +200,7 @@ class TestPerProjectSiteYml:
     def test_per_project_override_is_different_between_sites(self):
         pytest.skip("Cross-project comparison belongs in project-specific suites")
         """LMS and CMS resolve different FUSION_PRIMARY_COLOR from their own _site.yml."""
-        lms = _fresh_settings(website="lms-fusion")
+        lms = _fresh_settings(website="precis-lms")
         cms = _fresh_settings(website="cms-fusion")
         assert lms.get("FUSION_PRIMARY_COLOR") != cms.get("FUSION_PRIMARY_COLOR"), (
             "LMS and CMS should resolve different FUSION_PRIMARY_COLOR values"

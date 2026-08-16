@@ -10,7 +10,7 @@ from django.http import HttpResponse
 def test_trigger_notification_sets_htmx_header():
     module_path = (
         Path(__file__).resolve().parents[2]
-        / "ctc-research"
+        / "precis-ctc"
         / "plugins"
         / "accounts"
         / "services"

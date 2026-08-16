@@ -14,7 +14,7 @@ COPY projects/loop-crm /app/projects/loop-crm
 
 RUN pip install --no-cache-dir uv \
     && cd /app/projects \
-    && uv sync --frozen --no-install-project
+    && uv sync --no-install-project
 
 ENV PYTHONPATH=/app/projects/loop-crm/backend:/app/projects/loop-crm/backend/apps
 

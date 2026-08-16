@@ -34,7 +34,7 @@ class TestSSLCertificates:
     """Validate SSL certificate existence, expiry, and key matching."""
 
     DOMAINS = [
-        ("ctc-research", "ctc-research.com"),
+        ("precis-ctc", "ctc-research.com"),
         ("structa-cloud", "structa.cloud"),
         ("vresume", "vresume.structa.cloud"),
     ]
@@ -131,7 +131,7 @@ class TestTraefikConfiguration:
         required = [
             "ctc-research.yml",
             "structa-cloud.yml",
-            "lms-fusion.yml",
+            "precis-lms.yml",
             "space.yml",
             "middlewares.yml",
             "certs.yml",

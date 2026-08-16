@@ -64,7 +64,7 @@ structa.cloud/
 │   ├── lms/               # LMS Demo (structa.cloud)
 │   ├── portfolio/         # Portfolio/VResume (vresume.structa.cloud)
 │   ├── cypercloud/        # AI Chat Platform
-│   ├── ctc-research/      # CTC Research (ctc-research.com)
+│   ├── precis-ctc/      # CTC Research (ctc-research.com)
 │   └── pos/               # Desktop POS (Tauri 2 + Rust)
 ├── libs/                  # Reusable Python packages (submodules)
 │   ├── django-fusion/     # Component system + routing framework

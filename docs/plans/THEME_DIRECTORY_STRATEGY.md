@@ -4,7 +4,7 @@ Repo-wide plan to give every website/app/project a consistent, organized
 `theme/` directory for styling (CSS/SCSS), each carrying its own **named design
 variation** (a unique point-name identifier stamped into every SCSS file), with
 a single documented contract, per-project migration steps, and verification.
-The gold standard already exists: **landing-fusion** (`fu-paper-ink`) — every
+The gold standard already exists: **precis-landing** (`fu-paper-ink`) — every
 other project converges onto that layout under its own variation id.
 
 ---
@@ -13,7 +13,7 @@ other project converges onto that layout under its own variation id.
 
 | Project | Framework / surface | Styling packages | Styles today | Theme dir? |
 |---|---|---|---|---|
-| **landing-fusion** | Astro + Django/Wagtail (dual-render) | tailwind v4 (`@tailwindcss/vite`, `@tailwindcss/cli`), sass, postcss, webpack | `frontend/src/styles/globals.css` (single source, `--fu-*` tokens, `@source` for backend) + `assets/styles/` SCSS: `base/_tokens.scss`, `theme/_light.scss`, `theme/_dark.scss`, `layout/` (5), `components/` (14), `pages/` (6), `vendors/` | ✅ **yes — the model** |
+| **precis-landing** | Astro + Django/Wagtail (dual-render) | tailwind v4 (`@tailwindcss/vite`, `@tailwindcss/cli`), sass, postcss, webpack | `frontend/src/styles/globals.css` (single source, `--fu-*` tokens, `@source` for backend) + `assets/styles/` SCSS: `base/_tokens.scss`, `theme/_light.scss`, `theme/_dark.scss`, `layout/` (5), `components/` (14), `pages/` (6), `vendors/` | ✅ **yes — the model** |
 | **precis** | Django/Wagtail LMS + webpack frontend | sass, postcss, webpack, css-loader/mini-css-extract | `assets/styles/_index.scss`, `fusion-theme.scss`, `vendors/`; **duplicated** `assets/static/styles/fusion-theme.scss` + committed build `assets/static/css/fusion-theme-compiled.css`; `frontend/src/styles/` `_variables.scss`, `_typography.scss`, `_buttons.scss`, `fusion.scss`, `globals.css` | ⚠️ partial — tokens in `_variables.scss`, no `theme/` |
 | **syntara** | Django (dynaconf), no JS framework | sass (npm build in Makefile) | `assets/static/styles/main.scss` + 13 flat partials (`_variables`, `_reset`, `_layout`, `_navigation`, `_sidebar`, `_chat`, `_editor`, `_input`, `_enhancements`, `_animations`, `_responsive`, `_bootstrap-bem`) | ❌ flat, no `theme/` |
 | **loop-crm** | Astro + React | tailwind v4 (`@tailwindcss/vite`), fontsource | `frontend/src/styles/globals.css` only, `--loop-*` tokens inline | ❌ single file |
@@ -23,19 +23,19 @@ other project converges onto that layout under its own variation id.
 | **formint-pro** | Astro + Django backend | tailwind v4 (`@tailwindcss/vite`), @tabler/icons | `frontend/src/styles/tokens.css` (semantic oklch tokens) + `global.css` | ⚠️ partial — `tokens.css` exists, no `theme/` |
 | **formint-cloud** | React frontend | tailwind v4, geist, lucide-react, tw-animate | `frontend/assets/styles/index.css` only | ❌ single file |
 | **formint / formintA / formintB / formintC** | legacy aliases | — | no styles (aliases/empty) | n/a |
-| **www, pos, cms-fusion, lms, lms-fusion** | legacy/retired boundaries | — | no styles | n/a |
+| **www, pos, cms-fusion, lms, precis-lms** | legacy/retired boundaries | — | no styles | n/a |
 | **projects/assets/static** | shared assets | — | nearly empty (`.gitkeep`) | n/a — shared sink |
 | **projects/webpack**, **configs** | shared build/settings | — | shared webpack configs, Django settings | n/a |
 
 ### Cross-cutting observations
 
 1. **Three styling dialects coexist:**
-   - **SCSS partials** compiled by webpack (landing-fusion, precis) or npm/sass (syntara)
+   - **SCSS partials** compiled by webpack (precis-landing, precis) or npm/sass (syntara)
    - **Tailwind v4 single globals.css** (loop-crm, formint-pro, formint-cloud, both Astro storefronts) — tokens in `:root` / `@theme`
    - **Tailwind v4 + layered CSS** (formint-community/standard `assets/styles/*.css`)
 2. **Duplicated sources:** precis has `fusion-theme.scss` in two places + a committed compiled artifact.
-3. **Naming drift:** `--fu-*` (landing-fusion/storefronts), `--pos-*` (POS), `--loop-*` (CRM), `oklch` semantic tokens (pro), FlyonUI data-theme vars (community/standard).
-4. **No `theme/` directory anywhere except landing-fusion.** Tokens live in `base/_variables.*` or inline in globals.css.
+3. **Naming drift:** `--fu-*` (precis-landing/storefronts), `--pos-*` (POS), `--loop-*` (CRM), `oklch` semantic tokens (pro), FlyonUI data-theme vars (community/standard).
+4. **No `theme/` directory anywhere except precis-landing.** Tokens live in `base/_variables.*` or inline in globals.css.
 
 ---
 
@@ -44,7 +44,7 @@ other project converges onto that layout under its own variation id.
 Two shapes, one philosophy. The **contract** is: tokens → palettes (light/dark)
 → components, always behind a `theme/` entry, never inline hex in components.
 
-### Shape A — SCSS (landing-fusion, precis, syntara)
+### Shape A — SCSS (precis-landing, precis, syntara)
 
 ```text
 <project>/assets/styles/
@@ -115,7 +115,7 @@ bezel*, *verdigris semantic*).
 ```text
 {product-prefix}-{design-dna}          # lowercase, kebab-case
 # examples
-fu-paper-ink        # landing-fusion — “the page as its own document”
+fu-paper-ink        # precis-landing — “the page as its own document”
 precis-atelier      # precis LMS — academy/learning on the shared fusion layer
 syntara-chat        # syntara — AI chat terminal, dark, bootstrap-BEM
 loop-crm            # loop-crm — dark CRM ops console
@@ -133,7 +133,7 @@ Every theme file must carry the identifier in **all four surfaces**:
 // ═══════════════════════════════════════════════════════════════════
 // Variation: fu-paper-ink — “the page as its own document”
 //   paper + ink, hairline rules, hypermedia-blue links, mono labels.
-//   Theme dir: landing-fusion/assets/styles/theme/
+//   Theme dir: precis-landing/assets/styles/theme/
 // ═══════════════════════════════════════════════════════════════════
 $theme-variation: "fu-paper-ink" !default;   // 1. SCSS identity var
 
@@ -165,19 +165,19 @@ $theme-variation: "fu-paper-ink" !default;   // 1. SCSS identity var
    FlyonUI `data-theme` variants) map onto this: the variation id *is* the
    FlyonUI theme name where FlyonUI is used.
 4. **`$theme-variation` is the seam for composition** — a consumer project can
-   `@use 'landing-fusion/theme' as fu` and read `fu.$theme-variation`; it
+   `@use 'precis-landing/theme' as fu` and read `fu.$theme-variation`; it
    never re-declares another project's tokens.
 
 ### 3.3 Variation inventory (from the Phase-1 survey)
 
 | Project | Variation id | Unique point name | Token prefix | Notes |
 |---|---|---|---|---|
-| landing-fusion | `fu-paper-ink` | paper + ink, hairline rules, hypermedia-blue | `--fu-*` | the gold standard; `theme/_light` + `_dark` already exist |
+| precis-landing | `fu-paper-ink` | paper + ink, hairline rules, hypermedia-blue | `--fu-*` | the gold standard; `theme/_light` + `_dark` already exist |
 | precis | `precis-atelier` | LMS academy on the shared fusion layer | `--pc-*` (new) over `--fu-*` shared | keeps fu tokens for fusion/CMS pages, adds pc tokens for LMS surfaces |
 | syntara | `syntara-chat` | AI chat terminal, dark, bootstrap-BEM | `--sy-*` | 13 flat partials to reorganize under `theme/` |
 | loop-crm | `loop-crm` | dark CRM ops console | `--loop-*` | single-file globals.css today |
 | formint-client POS | `formint-bezel` | machined bezel register | `--pos-*` | pos-theme.css → theme/tokens.css |
-| formint-client storefront | `fu-paper-ink` (shared) | same DNA as landing-fusion | `--fu-*` | reuses the fu variation; no separate id |
+| formint-client storefront | `fu-paper-ink` (shared) | same DNA as precis-landing | `--fu-*` | reuses the fu variation; no separate id |
 | formint-community | `formint-flyon` | FlyonUI POS, warm paper surfaces | FlyonUI `data-theme` | same layout as standard |
 | formint-standard | `formint-flyon` | FlyonUI POS (identical shape) | FlyonUI `data-theme` | do together with community |
 | formint-pro | `formint-verdigris` | oklch semantic verdigris | `--color-*` semantic | tokens.css already exists |
@@ -186,7 +186,7 @@ $theme-variation: "fu-paper-ink" !default;   // 1. SCSS identity var
 ### 3.4 Composition (integration) rules
 
 - **A variation may inherit another** — formint-client storefront is `fu-paper-ink`
-  by identity; it does not fork tokens, it `@use`s the landing-fusion theme.
+  by identity; it does not fork tokens, it `@use`s the precis-landing theme.
 - **No cross-project token reads** without `@use … as <prefix>` + the
   `$theme-variation` check (assert at build: `@if $theme-variation != 'x' { @error }`).
 - **Shared `projects/assets/static/`** may hold a *neutral* `fusion-tokens.css`
@@ -279,7 +279,7 @@ module.exports = createConfig({
 
 | Project | workspace.js location | Theme entry (unified dir) | ts/tsx | html | .astro | Output |
 |---|---|---|---|---|---|---|
-| landing-fusion | `webpack/workspace.js` (rename of `landing-fusion.config.js`) | `assets/styles/theme/_index.scss` | ✓ | ✓ | Astro own build | `backend/assets/static/bundles` |
+| precis-landing | `webpack/workspace.js` (rename of `precis-landing.config.js`) | `assets/styles/theme/_index.scss` | ✓ | ✓ | Astro own build | `backend/assets/static/bundles` |
 | precis | `webpack/workspace.js` (rename of `precis.config.js`) | `assets/styles/theme/_index.scss` | ✓ | ✓ | n/a | `assets/bundles` |
 | syntara | `workspace.js` (flat app) | `assets/static/styles/theme/_index.scss` | ✓ | ✓ | n/a | `assets/static/bundles` |
 | loop-crm | `frontend/workspace.js` | `src/styles/globals.css` (bannered theme section) | ✓ tsx | ✓ | Astro own build | `frontend/dist` |
@@ -315,18 +315,18 @@ rules) and `theme.*.js` has `drop_console` applied.
 
 1. **Document the contract** — this file becomes `docs/design/theme-contract.md` with both shapes, naming rules (`--{product}-{role}-{state}`), and the rule "components reference tokens, never hex".
 2. **De-duplicate precis** — decide the canonical `fusion-theme.scss` location; remove the copy and the committed `fusion-theme-compiled.css` (gitignore the build output).
-3. **Shared tokens parity check** — landing-fusion `theme/_light.scss` ↔ storefront `globals.css` `:root` are already mirrors; keep a note that the Astro `:root` and the Django SCSS theme must stay in sync (same values, two dialects).
+3. **Shared tokens parity check** — precis-landing `theme/_light.scss` ↔ storefront `globals.css` `:root` are already mirrors; keep a note that the Astro `:root` and the Django SCSS theme must stay in sync (same values, two dialects).
 4. **Ship the `workspace.js` template** — copy Section 4.1 into `projects/webpack/workspace.template.js` (a documented scaffold, not a required module) so every phase can drop it into the project, fill the entries, and extend `base.config.js`.
 5. **Add `extraRules` + `extraPlugins` support to `base.config.js`** if not already accepted (the factory currently takes entries/aliases/scssIncludes — extend the opts so `workspace.js` can register ts/tsx/html rules + HtmlWebpackPlugin cleanly).
 
-### Phase 1 — landing-fusion (already done — verify + pin)
+### Phase 1 — precis-landing (already done — verify + pin)
 
 **Variation: `fu-paper-ink`** — the banner + token namespace already exist; this phase only pins them.
 
 - [ ] Confirm every `assets/styles/**` file starts with the `// Variation: fu-paper-ink — “the page as its own document”` banner.
 - [ ] Confirm `assets/styles/_index.scss` imports `theme` first and `theme/_index.scss` imports tokens → light → dark.
 - [ ] Confirm `<html data-theme="fu-paper-ink">` is the runtime selector (and `data-mode` for light/dark).
-- [ ] Rename `webpack/landing-fusion.config.js` → `webpack/workspace.js` (entry `theme: ['assets/styles/theme/_index.scss']` + `app` TS entry) — keep the same output path so `{% render_bundle %}` names don't change.
+- [ ] Rename `webpack/precis-landing.config.js` → `webpack/workspace.js` (entry `theme: ['assets/styles/theme/_index.scss']` + `app` TS entry) — keep the same output path so `{% render_bundle %}` names don't change.
 - [ ] Add a CI/check step: `make check` asserts `globals.css :root` equals `theme/_light.scss` values (a tiny script or test), plus the 4.5 minification probe.
 
 ### Phase 2 — precis (SCSS Shape A)
@@ -431,7 +431,7 @@ files.
 | Phase 5 community + standard | `formint-flyon` | M | L | Nearly identical — do together |
 | Phase 4 formint-client | `formint-bezel` + `fu-paper-ink` | M | M | Two surfaces; POS is the active dev target |
 | Phases 6–8 (pro, cloud, loop-crm) | `formint-verdigris` / `formint-cloud` / `loop-crm` | S–M | L | Single-file banner passes — fast wins |
-| Phase 1 landing-fusion verify + pin | `fu-paper-ink` | S | L | Already correct; just add the sync check |
+| Phase 1 precis-landing verify + pin | `fu-paper-ink` | S | L | Already correct; just add the sync check |
 
 **Total:** ~9 focused PRs (or 4-5 if batched per product family), each with the
 project's existing `make check`/`make build` + `manage.py check` as the gate,

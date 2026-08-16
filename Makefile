@@ -93,7 +93,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
-.PHONY: ctc-research structa vresume proxy services databases lms-fusion cms-fusion domain-drift
+.PHONY: precis-ctc structa vresume proxy services databases precis-lms cms-fusion domain-drift
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 .PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
@@ -319,7 +319,7 @@ help:
 	@echo "  make cert-check        - Check certificate expiry status"
 	@echo ""
 	@echo "Per-app shortcuts (delegate to component Makefiles):"
-	@echo "  make ctc-research      - Delegate to projects/Makefile with WEBSITE=ctc-research"
+	@echo "  make precis-ctc      - Delegate to projects/Makefile with WEBSITE=precis-ctc"
 	@echo "  make structa           - Delegate to projects/Makefile with WEBSITE=structa"
 	@echo "  make vresume           - Delegate to projects/Makefile with WEBSITE=vresume"
 	@echo "  make cypercloud        - Delegate to projects/cypercloud/Makefile (AI chat customizer)"
@@ -328,13 +328,13 @@ help:
 	@echo '  make pro-*             - Formint Pro edition (check/test/env/clean)'
 	@echo '  make cloud-*           - Formint Cloud edition (check/test/dev-backend)'
 	@echo '  make client-*          - Formint pos-client edition (build/lint/test)'
-	@echo "  make lms-fusion        - Delegate to projects/Makefile with WEBSITE=lms-fusion"
-	@echo "  make lms-fusion check  - Django system checks for Fusion LMS"
-	@echo "  make lms-fusion migrate - Run migrations for Fusion LMS"
+	@echo "  make precis-lms        - Delegate to projects/Makefile with WEBSITE=precis-lms"
+	@echo "  make precis-lms check  - Django system checks for Fusion LMS"
+	@echo "  make precis-lms migrate - Run migrations for Fusion LMS"
 	@echo "  make cms-fusion        - Delegate to projects/Makefile with WEBSITE=cms-fusion"
 	@echo "  make cms-fusion check  - Django system checks for Fusion CMS"
 	@echo "  make cms-fusion migrate - Run migrations for Fusion CMS"
-	@echo "  make test-fusion      - Run cms-fusion + lms-fusion tests sequentially"
+	@echo "  make test-fusion      - Run cms-fusion + precis-lms tests sequentially"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -548,7 +548,7 @@ logs-tasks:
 #   - loop-crm-backend:8074:/  — Loop-CRM Django render-first root
 #   - loop-crm-frontend:3000:/__health__ — Astro/Nginx frontend health
 # -----------------------------------------------------------------
-PROBE_HEALTH_SITES := ctc-research-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-proxy:80:/health/
+PROBE_HEALTH_SITES := precis-ctc-website:5070 vresume-web:5072 loop-crm-backend:8074:/ loop-crm-frontend:3000:/__health__ docus:3000:/docs/en/ shared-proxy:80:/health/
 
 probe-health:
 	@echo "📡 Probing each site's health endpoint from inside the 'common' network..."
@@ -950,7 +950,7 @@ logs:
 	@docker logs default-proxy --tail 50 2>/dev/null || echo "  (Proxy container not found)"
 	@echo ""
 	@echo "Application Logs:"
-	@docker logs ctc-research-website --tail 20 2>/dev/null || echo "  (ctc-research-website not found)"
+	@docker logs precis-ctc-website --tail 20 2>/dev/null || echo "  (precis-ctc-website not found)"
 	@docker logs lms-website --tail 20 2>/dev/null || echo "  (lms-website not found)"
 	@docker logs vresume-website --tail 20 2>/dev/null || echo "  (vresume-website not found)"
 	@echo ""
@@ -1164,7 +1164,7 @@ help-all:
 	@echo "Individual Component Help:"
 	@echo "  make -C $(CORE_DIR) help    - Application service commands"
 	@echo "  make pos            - POS desktop app (projects/formints/Makefile)"
-	@echo "  make lms-fusion     - Fusion LMS site (projects/Makefile)"
+	@echo "  make precis-lms     - Fusion LMS site (projects/Makefile)"
 	@echo "  make cms-fusion     - Fusion CMS site (projects/Makefile)"
 	@echo "  make {community,standard,pro,cloud,client}-*"
 	@echo "                      - Formint edition Makefiles"
@@ -1216,8 +1216,8 @@ compose-merged-down:
 # -----------------------------------------------------------------
 # Per-app shortcuts (forward to individual component Makefiles)
 # -----------------------------------------------------------------
-ctc-research:
-	@$(MAKE) -C $(CORE_DIR) WEBSITE=ctc-research
+precis-ctc:
+	@$(MAKE) -C $(CORE_DIR) WEBSITE=precis-ctc
 
 structa:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=structa
@@ -1233,13 +1233,13 @@ pos:
 	@echo "📋 POS targets:"
 	@$(MAKE) -C $(POS_DIR) help
 
-lms-fusion:
-	@$(MAKE) -C $(CORE_DIR) WEBSITE=lms-fusion
+precis-lms:
+	@$(MAKE) -C $(CORE_DIR) WEBSITE=precis-lms
 
 cms-fusion:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=cms-fusion
 
-# Domain drift check — verifies cms-fusion and lms-fusion domain code is in sync
+# Domain drift check — verifies cms-fusion and precis-lms domain code is in sync
 domain-drift:
 	@bash applications/scripts/dev/check_domain_drift.sh
 
@@ -1289,7 +1289,7 @@ venv-info:           ## Show venv status and paths
 	@echo "🐍 Python Venv Info"
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "   Python version: $$(cat .python-version 2>/dev/null || echo 'not set')"
-	@echo "   Docker Python:  python:3.11-slim (see projects/precis/main/compose/Dockerfile.backend)"
+	@echo "   Docker Python:  python:3.11-slim (see projects/precis/precis-lms/compose/Dockerfile.backend)"
 	@echo "   Venv location:  $(WORKSPACE_ROOT)/.venv"
 	@if [ -d "$(WORKSPACE_ROOT)/.venv" ]; then \
 		echo "   Venv exists:    ✅"; \

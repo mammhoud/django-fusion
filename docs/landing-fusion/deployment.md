@@ -8,10 +8,10 @@
 
 ```
 Browser → Traefik Proxy (:443, SSL)
-    ├── structa.cloud → landing-fusion-frontend (Astro, :3000)
-    ├── /apis/* → landing-fusion-backend (Django, :8074)
-    ├── /accounts/* → landing-fusion-backend
-    ├── /learning/* → landing-fusion-backend
+    ├── structa.cloud → precis-landing-frontend (Astro, :3000)
+    ├── /apis/* → precis-landing-backend (Django, :8074)
+    ├── /accounts/* → precis-landing-backend
+    ├── /learning/* → precis-landing-backend
     └── /static/* → shared-proxy (Nginx)
 ```
 
@@ -20,11 +20,11 @@ Browser → Traefik Proxy (:443, SSL)
 ## Docker Compose
 
 ```yaml
-# projects/precis/landi/docker-compose.yml
+# projects/precis/precis-landing/docker-compose.yml
 services:
   backend:
     build: ../..  # Monorepo root
-    context: projects/precis/landi/backend
+    context: projects/precis/precis-landing/backend
     port: 8074
     env:
       DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud
@@ -33,7 +33,7 @@ services:
 
   frontend:
     build:
-      context: projects/precis/landi/frontend
+      context: projects/precis/precis-landing/frontend
     port: 3000
 ```
 
@@ -43,19 +43,19 @@ services:
 
 ```bash
 # Build images
-docker compose -f projects/precis/landi/docker-compose.yml build
+docker compose -f projects/precis/precis-landing/docker-compose.yml build
 
 # Start services
-docker compose -f projects/precis/landi/docker-compose.yml up -d
+docker compose -f projects/precis/precis-landing/docker-compose.yml up -d
 
 # View logs
-docker compose -f projects/precis/landi/docker-compose.yml logs -f
+docker compose -f projects/precis/precis-landing/docker-compose.yml logs -f
 
 # Restart
-docker compose -f projects/precis/landi/docker-compose.yml restart
+docker compose -f projects/precis/precis-landing/docker-compose.yml restart
 
 # Stop
-docker compose -f projects/precis/landi/docker-compose.yml down
+docker compose -f projects/precis/precis-landing/docker-compose.yml down
 ```
 
 ---
@@ -65,16 +65,16 @@ docker compose -f projects/precis/landi/docker-compose.yml down
 The Traefik dynamic config routes by Host and PathPrefix:
 
 ```yaml
-# applications/proxy/traefik/dynamic/landing-fusion.yml
+# applications/proxy/traefik/dynamic/precis-landing.yml
 http:
   routers:
-    landing-fusion-www:
+    precis-landing-www:
       rule: "Host(`structa.cloud`) || Host(`www.structa.cloud`)"
-      service: landing-fusion-frontend
+      service: precis-landing-frontend
 
-    landing-fusion-api:
+    precis-landing-api:
       rule: "Host(`structa.cloud`) && (PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`))"
-      service: landing-fusion-backend
+      service: precis-landing-backend
 ```
 
 ---

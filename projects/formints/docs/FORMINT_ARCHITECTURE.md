@@ -7,11 +7,11 @@
 | | |
 |---|---|
 | **Location** | [`../formint-pos/`](../formint-pos/) |
-| **Status** | Phase 2 — merge complete + landing-fusion render-mode parity |
+| **Status** | Phase 2 — merge complete + precis-landing render-mode parity |
 | **API** | Django Ninja + ninja-extra (fusion encoder/decoder) |
 | **Admin** | Django Unfold dashboard (loyalty/settings focus) |
 | **Data components** | django-fusion tables + forms (HTMX) |
-| **Render mode** | Dual-mode contract (render-first / data-API), mirroring landing-fusion |
+| **Render mode** | Dual-mode contract (render-first / data-API), mirroring precis-landing |
 | **Frontend** | Astro + Alpine.js + HTMX |
 | **Desktop** | Tauri v2 shell |
 | **Manifest** | [`../formint-pos/migration/compatibility-manifest.json`](../formint-pos/migration/compatibility-manifest.json) |
@@ -132,10 +132,10 @@ All fragments support the fusion **render-first** contract when
 envelope. Resource names use hyphens; template files use underscores
 (`client-categories` → `client_categories.html`).
 
-### 3.5 Fusion render-mode contract (landing-fusion parity)
+### 3.5 Fusion render-mode contract (precis-landing parity)
 
-The backend mirrors landing-fusion's dual-mode content delivery — the same
-contract as `projects/precis/lnd-structa/backend/apps/pages/api.py`:
+The backend mirrors precis-landing's dual-mode content delivery — the same
+contract as `projects/precis/precis-landing/backend/apps/pages/api.py`:
 
 | Endpoint | Description |
 |---|---|
@@ -159,11 +159,11 @@ contract as `projects/precis/lnd-structa/backend/apps/pages/api.py`:
   The header still wins per-request; the session preference (set/cached by
   `FusionSessionChecker`) sits above the configured default.
 * **`formint/core.py`** — `FormintModule(Module)` from `django_fusion.routes.core.sites`
-  with `NAV_ITEMS` (Home / Data / Admin) — mirrors landing-fusion's
+  with `NAV_ITEMS` (Home / Data / Admin) — mirrors precis-landing's
   `apps/core/site.py`.
 * **`formint/handlers.py`** — class-based HTMX fragment handlers
   (`BranchSummaryHandler`, `TableFragmentHandler`, `FormFragmentHandler`)
-  mirroring landing-fusion's `apps/handlers/views.py` organization;
+  mirroring precis-landing's `apps/handlers/views.py` organization;
   `views.py` stays a thin URL-facing delegation layer so routes never break.
 
 Settings (`server/configs/`):
@@ -242,7 +242,7 @@ toggle without touching HTTP or cookies:
   retry, and empty/error states.
 - `astro.config.mjs` proxies `/api`, `/htmx` and `/fusion` to the server at `:8767`.
 - `src/pages/index.astro` + `src/pages/data.astro` showcase the API + HTMX
-  table/form components with landing-fusion skeleton loading
+  table/form components with precis-landing skeleton loading
   (`src/components/ui/Skeleton.astro`, `src/lib/htmx-bootstrap.ts`, global
   indicator in `src/layouts/Layout.astro`).
 - **`src/pages/fusion.astro`** (`/fusion/`) consumes the §12 enhancement
@@ -359,7 +359,7 @@ make stop           # stop the tmux env
 ## 9. Make commands
 
 The package ships three Makefiles with full delegation (mirrors
-landing-fusion's root + backend split):
+precis-landing's root + backend split):
 
 **`formint-pos/Makefile`** (root orchestrator)
 
@@ -469,7 +469,7 @@ into Formint (see `configs/__init__.py`, `formint/apps.py`, `formint/fusion.py`,
 5. **`PageHandler` full-page pipeline** — `FormintPageView(PageHandler)`
    renders `formint/page.html` for full requests and
    `formint/fragments/page.html` for HTMX (same layout/flags contract as
-   landing-fusion's `LandingPageView`); exposed at `/fusion/page/`.
+   precis-landing's `LandingPageView`); exposed at `/fusion/page/`.
 6. **`{% comp %}` tags + component registry** — `{% load components %}`
    (registered via the TEMPLATES `libraries` option) and self-closing
    `{% comp "formint/branch_summary.html" /%}` reuse the registered

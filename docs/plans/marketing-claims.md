@@ -69,6 +69,5 @@ Avoid selling a technology list. Tauri, Django, Astro, HTMX, and cloud transport
 ## Related
 
 - → `document-lifecycle.md` — Lifecycle and deletion policy
-- → `pos/formint-pos-professional-plan.md` — Product contract
-- → `pos/README.md` — POS plans index
-- → `../Anytype/plans/pos-market-research.md` — Market hypotheses
+- → `editions/README.md` — Formint editions index
+- → `editions/03-pro.md` — Professional product contract

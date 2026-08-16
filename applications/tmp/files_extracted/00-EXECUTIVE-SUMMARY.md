@@ -65,7 +65,7 @@ This package contains **complete, phased execution plans** for two separate but 
         ├── Phase 2: Docs Deduplication & Consolidation
         ├── Phase 3: Docs Restructuring & Numbering (CA-0NN)
         ├── Phase 4: Asset Pipeline Diagnostics & Fixes
-        │   └── (Diagnoses why ctc-research/auth/register/ & vresume/blog/list/ have no assets)
+        │   └── (Diagnoses why precis-ctc/auth/register/ & vresume/blog/list/ have no assets)
         ├── Phase 5: Component Tag Setup ({% comp %} global)
         ├── Phase 6: Library Updates & Push (make push, push-libs)
         ├── Phase 7: Deployment & Validation
@@ -121,11 +121,11 @@ These documents are designed to be used as **system prompts for Claude or other 
 
 | Before | After |
 |--------|-------|
-| 22 MB docs/ with duplicates (5 copies of "ctc-research", 3 copies of "deployment", etc.) | ~15 MB docs/ with canonical paths, no duplication |
+| 22 MB docs/ with duplicates (5 copies of "precis-ctc", 3 copies of "deployment", etc.) | ~15 MB docs/ with canonical paths, no duplication |
 | 14.7 MB of PNG diagrams in git history | Diagrams converted to Mermaid (in code, not binary) |
 | Asset pipeline broken on production (`/static/` URLs return 404) | Diagnostics pinpoint root cause; fixes applied and tested locally |
 | No organized doc structure (scattered across multiple dirs) | Numbered structure (CA-001–CA-017) with stable IDs for cross-references |
-| Unclear which app owns which documentation | Per-app section in docs/08-applications/ (ctc-research, lms, vresume, crm, cypercloud) |
+| Unclear which app owns which documentation | Per-app section in docs/08-applications/ (precis-ctc, lms, vresume, crm, cypercloud) |
 | `{% comp %}` requires `{% load %}` in every template | Global availability; {% include %} → {% comp %} migration complete |
 | Make push/push-libs unclear to new developers | Makefile targets documented; dry-run validation in Phase 6 |
 
@@ -150,7 +150,7 @@ These documents are designed to be used as **system prompts for Claude or other 
 
 1. **Phase 0 (15–30 min):** Baseline diagnostics (assets, templates, tags, URLs)
    - Outputs: Reports on static file pipeline, template resolution, django-fusion/osoul availability
-   - **Critical finding:** Asset loading diagnostics for broken URLs (ctc-research/auth/register/, vresume/blog/list/)
+   - **Critical finding:** Asset loading diagnostics for broken URLs (precis-ctc/auth/register/, vresume/blog/list/)
 
 2. **Phase 1 (30–45 min):** Local dev setup, webpack, collectstatic
    - Confirms asset pipeline works locally before touching production
@@ -172,7 +172,7 @@ These documents are designed to be used as **system prompts for Claude or other 
    - Includes `make push` / `make push-libs` with token validation
 
 8. **Phase 7 (30–60 min):** Deploy to production and validate live URLs
-   - Re-test ctc-research/auth/register/ and vresume/blog/list/ after asset fix
+   - Re-test precis-ctc/auth/register/ and vresume/blog/list/ after asset fix
 
 **Total sequential time:** 10–25 hours (most phases independent, can parallelize)
 
@@ -230,9 +230,9 @@ Phase 0 (diagnostics)
 
 ### structa.cloud ✅
 
-- [ ] Docs deduplication complete (no 5 copies of ctc-research anymore)
+- [ ] Docs deduplication complete (no 5 copies of precis-ctc anymore)
 - [ ] Numbered structure (CA-000, CA-001, etc.) in place
-- [ ] Asset loading works: ctc-research/auth/register/ and vresume/blog/list/ show CSS/JS
+- [ ] Asset loading works: precis-ctc/auth/register/ and vresume/blog/list/ show CSS/JS
 - [ ] {% comp %} tag available globally in templates
 - [ ] Both submodules (django-fusion, ceptor-ai) on generic branch and pushed
 - [ ] Live URLs tested and working post-deployment

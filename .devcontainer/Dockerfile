@@ -68,7 +68,7 @@ RUN set -eux; \
 # Node toolchain — global CLIs used across the monorepo
 # ---------------------------------------------------------------------------
 # npm 11 matches the root package.json packageManager. pnpm/tsx/astro/bun/
-# yarn/nodemon are the CLIs referenced by landing-fusion, precis, formints,
+# yarn/nodemon are the CLIs referenced by precis-landing, precis, formints,
 # and repo scripts.
 RUN npm install -g npm@11 pnpm@latest tsx astro@latest bun yarn nodemon \
     && npm cache clean --force

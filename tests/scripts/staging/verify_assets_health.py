@@ -29,11 +29,11 @@ RESET = '\033[0m'
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 SITES = {
-    'ctc-research': {
+    'precis-ctc': {
         'port': 5070,
         'name': 'CTC Research',
-        'static_dir': PROJECT_ROOT / 'ctc-research' / 'assets' / 'staticfiles',
-        'bundles_dir': PROJECT_ROOT / 'ctc-research' / 'assets' / 'bundles',
+        'static_dir': PROJECT_ROOT / 'precis-ctc' / 'assets' / 'staticfiles',
+        'bundles_dir': PROJECT_ROOT / 'precis-ctc' / 'assets' / 'bundles',
     },
     'lms': {
         'port': 5071,

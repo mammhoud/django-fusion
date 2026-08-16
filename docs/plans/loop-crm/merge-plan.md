@@ -1,6 +1,6 @@
 # Loop-CRM — Merge & Architecture Plan
 
-> **Status:** Most of the merge is shipped: realtime SSE/WebSocket, webhooks + email/Slack connectors, finance CSV export, pagination/filtering, Activities + Media screens, custom objects (runtime schema), saved views, approval/report queues, CSV import, and a no-code step workflow editor. Remaining open work: the 6 credential-blocked social publish adapters + their OAuth connect flows, the AI hub (Phase 4), a visual DAG (canvas) editor, email sync (Gmail/Outlook), and full per-resource Bolt OpenAPI. See §12 for the ordered roadmap.
+> **Status:** Most of the merge is shipped: realtime SSE/WebSocket, webhooks + email/Slack connectors, finance CSV export, pagination/filtering, Activities + Media screens, custom objects (runtime schema), saved views, approval/report queues, CSV import, and a no-code step workflow editor. Remaining open work: the 6 credential-blocked social publish adapters + their OAuth connect flows, the AI hub (Phase 4) and full per-resource Bolt OpenAPI. See §12 for the ordered roadmap.
 > **Source projects:** [twentyhq/twenty](https://github.com/twentyhq/twenty) (CRM) · [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) (social scheduling)
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **License:** AGPL-3.0
@@ -47,7 +47,7 @@ User browser
       ├── django-bolt API — /bolt/companies|deals|posts|dashboard (canonical)
       ├── Django fallback — /api/v1/* (compatibility when Bolt is absent)
       ├── Django views   — HTMX responses (/dashboard/, /deals/, /posts/)
-      ├── Django ORM     — core | crm | marketing | attribution
+      ├── Django ORM     — core | crm | marketing | attribution | finance | pos
       └── Django admin   — internal management
   → Dramatiq task queue (publishing, OAuth refresh, analytics, attribution)
   → PostgreSQL (unified DB) + Redis (cache/queue)
@@ -66,15 +66,17 @@ projects/loop-crm/
 ├── backend/
 │   ├── settings.py          # SQLite (dev) / PostgreSQL (prod via USE_POSTGRES)
 │   ├── urls.py              # admin + browser + /bolt/ + /api/v1/* mounts
+│   ├── plugins/
+│   │   └── workers/         # Dramatiq actors (publish, refresh, analytics, webhooks)
 │   └── apps/
 │       ├── core/            # Workspace (tenancy), User (RBAC), AuditLog, permissions
 │       ├── crm/             # Company, Contact, Pipeline, PipelineStage, Deal, Activity
 │       ├── marketing/       # Campaign, SocialChannel, Post, Media, PostAnalytics
 │       ├── attribution/     # AttributionModel, AttributionTouchpoint + engines/
 │       ├── finance/         # Invoice, Payment, RevenueEvent + HTMX screens
-│       └── tasks/           # Dramatiq actors (publish, refresh, aggregate, attribute)
+│       └── pos/             # PosSale, PosSaleItem, PosPayment (Formint ingest ledger)
 ├── frontend/                # Astro 5 + Tailwind 4 + HTMX + Alpine + Redux + GSAP
-├── docker-compose.yml       # Django + Postgres + Redis + Dramatiq worker
+├── docker-compose.yml       # Django + Postgres + Redis + Dramatiq worker + scheduler
 └── Makefile                 # dev | build | check | backend-*
 ```
 
@@ -216,7 +218,7 @@ or deferred against each source.
 | Custom **objects** (arbitrary) | ✅ added | `CustomObjectDefinition` + `CustomObjectRecord` (validated JSON rows, no migrations per object) |
 | Saved views (list/kanban per user) | ✅ added | member- + workspace-scoped `SavedView`; `?view=` applies safe sort/filter |
 | No-code workflow editor | ⚠️ partial | step editor (trigger + ordered actions) shipped; visual DAG (canvas) editor remains |
-| Email sync (Gmail/Outlook) | ❌ not added | |
+| Email sync (Gmail/Outlook) | ✅ added | OAuth connect (authorize + callback) + incremental sync matched to contacts/deals |
 | Notes/tasks/favorites as first-class | ⚠️ partial | folded into `Activity` types only |
 | GraphQL / webhooks / CSV import | ⚠️ partial | webhooks + CSV import shipped; GraphQL not added (REST only) |
 | AI agents | ❌ not added | Phase 4 |
@@ -257,6 +259,7 @@ or deferred against each source.
 | `/settings/members/` | Members | django-tables2 + role matrix |
 | `/settings/workflows/` | Workflows | create/toggle/queue-run fragments |
 | `/settings/integrations/` | Integrations | platform catalog table |
+| `/settings/email/` | Email inbox | connect (Gmail/Outlook OAuth), list connected mailboxes + synced messages with contact/deal deep-links |
 | `/settings/custom-fields/` | Custom fields | field catalog table |
 | `/settings/custom-objects/` (+ `/records/`) | Custom objects | runtime object schema + validated JSON rows, columns derived from the definition |
 | `/settings/saved-views/` | Saved views | member's list/kanban view configs |
@@ -319,19 +322,35 @@ Ordered by impact; each phase is independently shippable.
    the `workflow_actions` deferred-action pattern.
 3. **Twenty-style extensibility** — ✅ saved views per user, ✅ arbitrary custom
    objects (`CustomObjectDefinition` + generic JSON record table, not
-   polymorphic models), and ⚠️ a no-code **step** workflow editor. Remaining:
-   a visual DAG (canvas) editor.
+   polymorphic models), ✅ a no-code **step** workflow editor, and ✅ a visual
+   **DAG (canvas)** editor: trigger-rooted node/edge graph with drag, port-to-
+   port branching/merging, cycle + orphan rejection, and a topological
+   ``actions`` order persisted alongside the ``graph`` JSON column.
 4. **Domain screens (Phase 5)** — ✅ paginated HTMX screens for the
    approval queue (`/marketing/approvals/`) and real revenue reports
    (`/attribution/reports/`). Activities + media are also real
    workspace-scoped tables; resource-table pagination/filtering is shipped.
 5. **Realtime + integrations** — ✅ WebSocket pipeline/board sync, ✅ webhooks
-   for deal-won/post-published, ✅ CSV import. Remaining: email sync
-   (Gmail/Outlook) and CSV export of arbitrary resource tables.
-6. **Data/API surface** — finish per-resource OpenAPI docs on the Bolt road.
-   (Pagination/filtering shipped: both roads accept `limit`/`offset`/`search`
-   on collection GETs, `count` is the filtered total, and `next`/`previous`
-   are offsets.)
+   for deal-won/post-published, ✅ CSV import, ✅ CSV/JSON export of arbitrary
+   resource tables (``GET /api/v1/export/?resource=<slug>&format=csv|json``,
+   workspace-scoped), and ✅ email sync (Gmail/Outlook): ``EmailAccount`` +
+   ``EmailMessage`` models, stdlib-HTTP Gmail/Outlook adapters with honest
+   unconfigured degradation + token refresh, an idempotent contact/deal-
+   matching ``sync_account`` service, a Dramatiq actor + ``sync_email``
+   command, ``/api/v1/email/`` routes that never project OAuth tokens, and a
+   Gmail/Outlook OAuth connect flow (``/connect/email/<provider>/`` authorize
+   + callback) that upserts the ``EmailAccount`` with server-side tokens —
+   mirroring the social channel flows. ``email_accounts``/``email_messages``
+   are also registered Bolt CRUD resources with per-resource OpenAPI tags
+   (``label``/``singular``/``description``); OAuth tokens and the sync cursor
+   are excluded from both the read and write projections.
+6. **Data/API surface** — ✅ per-resource OpenAPI docs on the Bolt road: each
+   registered resource carries a ``label``/``singular``/``description`` in the
+   ``RESOURCES`` registry, every CRUD route is tagged + summarized under that
+   resource (``List/Create/Retrieve/Update/Delete``), and the top-level config
+   declares the per-resource tags. Pagination/filtering shipped: both roads
+   accept ``limit``/``offset``/``search`` on collection GETs, ``count`` is the
+   filtered total, and ``next``/``previous`` are offsets.
 
 > **Finance + workflows + integrations** are planned separately in
 > [`formint-integration-finance-workflows.md`](formint-integration-finance-workflows.md) —

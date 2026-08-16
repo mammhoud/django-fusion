@@ -314,9 +314,9 @@ CEPTOR_AI_MODELS_FILE = "../../applications/kilo/models.yml"
 # ============================================================
 CUSTOMIZER_APPS = [
     {
-        "slug": "ctc-research",
+        "slug": "precis-ctc",
         "name": "CTC Research",
-        "template_root": _WORKSPACE_DIR / "ctc-research" / "templates",
+        "template_root": _WORKSPACE_DIR / "precis-ctc" / "templates",
     },
     {
         "slug": "lms",

@@ -10,7 +10,7 @@
     "bash": "deny"
   },
   "website": "lms",
-  "canonical_project": "projects/precis/main/",
+  "canonical_project": "projects/precis/precis-lms/",
   "template_root": "projects/lms/templates",
-  "template_root_status": "legacy compatibility path; use projects/precis/main/ assets and templates for new work"
+  "template_root_status": "legacy compatibility path; use projects/precis/precis-lms/ assets and templates for new work"
 }

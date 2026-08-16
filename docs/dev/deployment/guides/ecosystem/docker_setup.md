@@ -96,12 +96,12 @@ services:
       retries: 3
 
   # CTC Research Application
-  ctc-research:
+  precis-ctc:
     build:
       context: ./ctc-research.com
       dockerfile: compose/Dockerfile
       target: production
-    container_name: ctc-research
+    container_name: precis-ctc
     restart: unless-stopped
     environment:
       - DEBUG=False
@@ -179,12 +179,12 @@ services:
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
 
   # Background Task Worker (CTC Research)
-  ctc-worker:
+  precis-ctc-worker:
     build:
       context: ./ctc-research.com
       dockerfile: compose/Dockerfile
       target: production
-    container_name: ctc-worker
+    container_name: precis-ctc-worker
     restart: unless-stopped
     command: celery -A configs worker -l info
     environment:
@@ -194,11 +194,11 @@ services:
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
       - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@redis:6379/2
     volumes:
-      - ./logs/ctc-worker:/app/logs
+      - ./logs/precis-ctc-worker:/app/logs
     depends_on:
       - postgres
       - redis
-      - ctc-research
+      - precis-ctc
     networks:
       - traefik-net
 
@@ -253,7 +253,7 @@ networks:
 version: '3.8'
 
 services:
-  ctc-research:
+  precis-ctc:
     build:
       target: development
     environment:
@@ -529,8 +529,8 @@ DEFAULT_FILE_STORAGE=storages.backends.s3boto3.MediaS3Boto3Storage
 ### Initial Setup
 ```bash
 # Clone repository
-git clone https://github.com/your-org/ctc-research-ecosystem.git
-cd ctc-research-ecosystem
+git clone https://github.com/your-org/precis-ctc-ecosystem.git
+cd precis-ctc-ecosystem
 
 # Copy environment file
 cp .env.example .env
@@ -541,15 +541,15 @@ docker compose build
 docker compose up -d
 
 # Run database migrations
-docker compose exec ctc-research python manage.py migrate
+docker compose exec precis-ctc python manage.py migrate
 docker compose exec structa-cloud python manage.py migrate
 
 # Create superuser accounts
-docker compose exec ctc-research python manage.py createsuperuser
+docker compose exec precis-ctc python manage.py createsuperuser
 docker compose exec structa-cloud python manage.py createsuperuser
 
 # Collect static files
-docker compose exec ctc-research python manage.py collectstatic --noinput
+docker compose exec precis-ctc python manage.py collectstatic --noinput
 docker compose exec structa-cloud python manage.py collectstatic --noinput
 ```
 
@@ -559,15 +559,15 @@ docker compose exec structa-cloud python manage.py collectstatic --noinput
 docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
 # View logs
-docker compose logs -f ctc-research
+docker compose logs -f precis-ctc
 docker compose logs -f structa-cloud
 
 # Run tests
-docker compose exec ctc-research pytest tests/
+docker compose exec precis-ctc pytest tests/
 docker compose exec structa-cloud pytest tests/
 
 # Access shell
-docker compose exec ctc-research python manage.py shell
+docker compose exec precis-ctc python manage.py shell
 docker compose exec postgres psql -U postgres -d ctc_ecosystem
 ```
 
@@ -611,7 +611,7 @@ docker compose exec redis redis-cli ping
 docker compose logs
 
 # Follow specific service logs
-docker compose logs -f ctc-research
+docker compose logs -f precis-ctc
 docker compose logs -f postgres
 
 # View logs with timestamps
@@ -778,7 +778,7 @@ docker compose exec postgres psql -U postgres -c "SELECT version();"
 
 # Reset database
 docker compose down
-docker volume rm ctc-research-ecosystem_postgres_data
+docker volume rm precis-ctc-ecosystem_postgres_data
 docker compose up -d postgres
 ```
 
@@ -808,15 +808,15 @@ docker compose exec traefik traefik --certificatesresolvers.letsencrypt.acme.ema
 ### Debugging Commands
 ```bash
 # Enter container shell
-docker compose exec ctc-research bash
+docker compose exec precis-ctc bash
 docker compose exec postgres psql -U postgres
 
 # Check environment variables
-docker compose exec ctc-research env
+docker compose exec precis-ctc env
 
 # Test network connectivity
-docker compose exec ctc-research ping postgres
-docker compose exec ctc-research curl -I http://redis:6379
+docker compose exec precis-ctc ping postgres
+docker compose exec precis-ctc curl -I http://redis:6379
 
 # View container processes
 docker compose top

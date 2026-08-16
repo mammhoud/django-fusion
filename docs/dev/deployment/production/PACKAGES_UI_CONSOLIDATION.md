@@ -10,7 +10,7 @@ Date: June 7, 2026
 
 The `packages/ui/` directory contains **reusable shared UI components** that are:
 - ✅ Already properly organized
-- ✅ Ready for use across all sites (ctc-research, lms, VResume)
+- ✅ Ready for use across all sites (precis-ctc, lms, VResume)
 - ✅ Following best practices (BEM naming, semantic HTML)
 - ✅ NOT duplicated elsewhere (no old implementations need merging)
 - ✅ Should be kept as-is for shared patterns
@@ -136,24 +136,24 @@ tables/
 ### Already Implemented (Do NOT duplicate)
 
 #### 1. Forms
-- ✅ `ctc-research/www/core/templates/registration/fragments/login_form.html`
-- ✅ `ctc-research/plugins/accounts/templates/auth/partials/register_form.html`
-- ✅ `ctc-research/plugins/blog/templates/blog/tags/tag_form.html`
-- ✅ `ctc-research/plugins/blog/templates/blog/profile/post_form.html`
+- ✅ `precis-ctc/www/core/templates/registration/fragments/login_form.html`
+- ✅ `precis-ctc/plugins/accounts/templates/auth/partials/register_form.html`
+- ✅ `precis-ctc/plugins/blog/templates/blog/tags/tag_form.html`
+- ✅ `precis-ctc/plugins/blog/templates/blog/profile/post_form.html`
 
 **Decision:** Keep site-specific forms for auth. Use `packages/ui/forms/htmx_form.html` for generic forms.
 
 #### 2. Modals
-- ✅ `ctc-research/plugins/accounts/templates/auth/privacy_modal.html`
-- ✅ `ctc-research/plugins/templates/learning/_course_enrollment_modal.html`
-- ✅ `ctc-research/plugins/templates/profile/partials/modals/profile_*.html`
+- ✅ `precis-ctc/plugins/accounts/templates/auth/privacy_modal.html`
+- ✅ `precis-ctc/plugins/templates/learning/_course_enrollment_modal.html`
+- ✅ `precis-ctc/plugins/templates/profile/partials/modals/profile_*.html`
 
 **Decision:** Keep these. Refactor to use `packages/ui/modals/base_modal.html` as parent.
 
 #### 3. Search
-- ✅ `ctc-research/plugins/templates/courses/search.html`
-- ✅ `ctc-research/plugins/templates/courses/sections/search.html`
-- ✅ `ctc-research/plugins/blog/templates/blog/components/search_results.html`
+- ✅ `precis-ctc/plugins/templates/courses/search.html`
+- ✅ `precis-ctc/plugins/templates/courses/sections/search.html`
+- ✅ `precis-ctc/plugins/blog/templates/blog/components/search_results.html`
 
 **Decision:** Use `packages/ui/search/search_bar.html` for consistency.
 
@@ -179,7 +179,7 @@ The following are properly organized and should remain as-is:
 #### Action 1: Reference packages/ui in settings
 Ensure all sites can access packages/ui templates:
 
-**File:** `ctc-research/settings.py`
+**File:** `precis-ctc/settings.py`
 ```python
 TEMPLATES = [
     {

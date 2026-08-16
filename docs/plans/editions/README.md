@@ -8,18 +8,18 @@
 
 > **Recent:** Cross-referenced with the [django-fusion Tasks & MCP plan](../django-fusion/django-fusion-tasks-mcp-plan.md) (2026-08-10) — background task infrastructure, Celery→Dramatiq replacement, and MCP task tooling now govern all async work across Django editions.
 >
-> **Architecture update (14 Aug 2026):** All editions now live under canonical `projects/formints/` paths (`formint-community`, `formint-standard`, `formint-pro`, `formint-cloud`, `formint-client`). Standard is **Rust/Diesel-first with an optional Django sidecar**; Pro (merged `pos-full` + `pos-solo`) is the first edition with a required Django backend; Cloud is the schema-per-tenant master. The retired `projects/pos/` plans are superseded by this chain (deleted 2026-08-14).
+> **Architecture update (16 Aug 2026):** All editions now live under canonical `projects/formints/` paths with **short directory names** — `community`, `standard`, `pro`, `cloud`, `client` (renamed from `formint-community`, `formint-standard`, `formint-pro`, `formint-cloud`, `formint-client` in `de5ff0821`). Standard is **Rust/Diesel-first with an optional Django sidecar**; Pro (merged `pos-full` + `pos-solo`) is the first edition with a required Django backend; Cloud is the schema-per-tenant master. The retired `projects/pos/` plans are superseded by this chain (deleted 2026-08-14).
 
 ## The extension chain
 
 ```
-Community (formint-community/)       pos-client (formint-client/)   ← separate branch
+Community (community/)               pos-client (client/)           ← separate branch
   Frontend: Astro 5 + React 19      Frontend: Vue 3
   Backend:  Rust/Diesel + SQLite    Backend:  Django shop
   No sidecar · offline-first        (employee, shop apps)
         │                                   │
         ▼                                   │
-Standard (formint-standard/)                │
+Standard (standard/)                        │
   Frontend: Astro 5 + React 19 + Alpine     │
   Backend:  Rust/Diesel + SQLite (primary)  │
   Sidecar:  Django (optional — sync/cloud)  │
@@ -29,7 +29,7 @@ Standard (formint-standard/)                │
   offline sync queue                        │
         │                                   │
         ▼                                   │
-Pro (formint-pro/ — merged pos-full+pos-solo)│
+Pro (pro/ — merged pos-full+pos-solo)        │
   Frontend: Astro 5 + Alpine + HTMX         │
   Backend:  Django (required) + django-fusion│
             + django-bolt + Unfold admin    │
@@ -37,7 +37,7 @@ Pro (formint-pro/ — merged pos-full+pos-solo)│
   full multi-terminal operation             │
         │
         ▼
-Cloud (formint-cloud/)
+Cloud (cloud/)
   Frontend: Astro 5 + Alpine
   Backend:  Django (multi-tenant, Channels)
   hosted master: Organization → Branch
@@ -49,12 +49,12 @@ Cloud (formint-cloud/)
 
 | Edition | Directory | Frontend | Backend (primary) | Sidecar |
 |---------|-----------|----------|-------------------|---------|
-| **Community** | `formint-community/` | Astro 5 + React 19 | Rust/Diesel + SQLite | None |
-| **Standard** | `formint-standard/` | Astro 5 + React 19 + Alpine | Rust/Diesel + SQLite | Django (optional) |
-| **Pro** | `formint-pro/` | Astro 5 + Alpine + HTMX | Django + django-fusion + django-bolt + Unfold | Required |
-| **Cloud** | `formint-cloud/` | Astro 5 + Alpine | Django (multi-tenant, Channels) | Required |
-| **pos-client** | `formint-client/` | Vue 3 | Django shop | Required |
-| **Community version** | (bundled from `formint-community/`) | Rust/Diesel + SQLite | None | None |
+| **Community** | `community/` | Astro 5 + React 19 | Rust/Diesel + SQLite | None |
+| **Standard** | `standard/` | Astro 5 + React 19 + Alpine | Rust/Diesel + SQLite | Django (optional) |
+| **Pro** | `pro/` | Astro 5 + Alpine + HTMX | Django + django-fusion + django-bolt + Unfold | Required |
+| **Cloud** | `cloud/` | Astro 5 + Alpine | Django (multi-tenant, Channels) | Required |
+| **pos-client** | `client/` | Vue 3 | Django shop | Required |
+| **Community version** | (bundled from `community/`) | Rust/Diesel + SQLite | None | None |
 
 ## Data model at each extension
 
@@ -66,7 +66,7 @@ Cloud (formint-cloud/)
 | Cloud | Django `pos_cloud.db` | `Organization`, `Branch`, `Lead`, `Contact`, `Deal`, `InventoryReport`, `BranchReport`, `BranchSyncLog`, `BranchProduct`, `BranchSale`, `BranchInventory`, `DeviceToken`, `SyncConflict`, `SyncQueueItem`, `BackupRun`, **+ `Tenant`/`Domain` (schema registry), `BranchSettings` (new — see [08](08-tenant-schemas.md))** | [`04-cloud.md`](04-cloud.md) |
 | Tenant schemas | PostgreSQL schemas (`django-tenants`) | `Tenant` (schema-per-Organization), `Domain` (host mapping), `BranchSettings` (complete per-branch config); flips on via `DB_ENGINE=django_tenants.postgresql_backend` | [`08-tenant-schemas.md`](08-tenant-schemas.md) |
 | pos-client | Rust/Diesel + Django shop | Vue client tables + `Category`, `Product`, `Cart`, `CartItem`, `Order`, `OrderItem`, `Employee` | [`05-pos-client.md`](05-pos-client.md) |
-| Community version | (generated from `formintA/`) | standalone `formint-community/` repo bundle — Formints Community rename + publish checklist | [`07-community-version.md`](07-community-version.md) |
+| Community version | (generated from `community/`) | standalone `formint-community` repo bundle — Formints Community rename + publish checklist | [`07-community-version.md`](07-community-version.md) |
 
 ## Execution order & dependencies
 

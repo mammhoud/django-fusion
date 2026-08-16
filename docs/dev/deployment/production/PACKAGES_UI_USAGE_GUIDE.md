@@ -2,7 +2,7 @@
 
 ## Quick Reference
 
-All components in `packages/ui/` are **shared across all sites** (ctc-research, lms, VResume).
+All components in `packages/ui/` are **shared across all sites** (precis-ctc, lms, VResume).
 
 ### Available Components
 

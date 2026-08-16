@@ -21,15 +21,15 @@ import cli  # noqa: E402
 class TestResolve:
     def test_canonical_name_passes_through(self):
         assert cli._resolve("lms") == "lms"
-        assert cli._resolve("ctc-research") == "ctc-research"
+        assert cli._resolve("precis-ctc") == "precis-ctc"
         assert cli._resolve("vresume") == "vresume"
 
     @pytest.mark.parametrize(
         "alias,expected",
         [
-            ("ctc", "ctc-research"),
-            ("ctc-website", "ctc-research"),
-            ("ctc-research.com", "ctc-research"),
+            ("ctc", "precis-ctc"),
+            ("ctc-website", "precis-ctc"),
+            ("ctc-research.com", "precis-ctc"),
             ("structa", "lms"),
             ("structa.cloud", "lms"),
             ("lms", "lms"),
@@ -54,7 +54,7 @@ class TestResolve:
 
 class TestWebsiteEnv:
     def test_ctc_research_env(self):
-        env = cli._website_env("ctc-research")
+        env = cli._website_env("precis-ctc")
         assert env["DJANGO_SETTINGS_MODULE"] == "settings"
         assert env["RUNNING_ENV"] == "docker"
         assert env["SERVER_ENV"] == "production"

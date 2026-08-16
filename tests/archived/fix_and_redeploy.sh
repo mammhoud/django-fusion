@@ -13,7 +13,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 LOG_DIR="/root/site/websites/logs"
-WEBSITES=("ctc-research" "lms" "VResume")
+WEBSITES=("precis-ctc" "lms" "VResume")
 
 # Function to log messages
 log_info() {
@@ -169,7 +169,7 @@ echo "REDEPLOYMENT PHASE"
 echo "==================================================================="
 echo ""
 
-log_info "Rebuilding ctc-research website..."
+log_info "Rebuilding precis-ctc website..."
 cd "/root/site/websites" || exit 1
 
 # Clean up containers
@@ -214,7 +214,7 @@ echo ""
 log_info "✓ Cleared Python cache files"
 log_info "✓ Backed up and cleared old log files"
 log_info "✓ Verified Django configuration"
-log_info "✓ Rebuilt and redeployed ctc-research website"
+log_info "✓ Rebuilt and redeployed precis-ctc website"
 echo ""
 log_info "New container is now running!"
 log_info "Log files: ${LOG_DIR}/"

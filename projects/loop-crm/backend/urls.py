@@ -24,6 +24,7 @@ urlpatterns = [
     path("fragments/workflows/<int:pk>/toggle/", core_views.workflow_toggle, name="workflow_toggle"),
     path("fragments/workflows/<int:pk>/run/", core_views.workflow_run, name="workflow_run"),
     path("fragments/workflows/<int:pk>/steps/", core_views.workflow_steps_update, name="workflow_steps_update"),
+    path("fragments/workflows/<int:pk>/graph/", core_views.workflow_graph_update, name="workflow_graph_update"),
     path("fragments/posts/create/", marketing_views.post_create, name="post_create"),
     path("fragments/crm/companies/create/", crm_views.company_create, name="company_create"),
     path("fragments/crm/contacts/create/", crm_views.contact_create, name="contact_create"),
@@ -45,6 +46,7 @@ urlpatterns = [
     # specific routes (``deals/<pk>/stage/``, ``revenue/trend/``) win first.
     path("api/v1/<str:resource>/<int:pk>/", resource_api, name="resource_detail_api"),
     path("account/profile/", core_views.profile_view, name="profile"),
+    path("connect/email/", include("apps.core.email_oauth_urls")),
     path("connect/", include("apps.marketing.oauth_urls")),
     path(
         "sse/workspace/<int:workspace_id>/events/",

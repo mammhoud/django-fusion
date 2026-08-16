@@ -7,8 +7,8 @@ echo "║  CTC-Research Website - All Issues Resolved               ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
-WEBSITE="ctc-research"
-CONTAINER_NAME="web-ctc-research"
+WEBSITE="precis-ctc"
+CONTAINER_NAME="web-precis-ctc"
 LOG_DIR="/root/site/websites/logs"
 
 # Colors
@@ -57,7 +57,7 @@ log_success "Cache cleared"
 
 log_step "Backing up current logs..."
 mkdir -p "$LOG_DIR/backups"
-for logfile in /root/site/websites/ctc-research/logs/*.log; do
+for logfile in /root/site/websites/precis-ctc/logs/*.log; do
     if [ -f "$logfile" ]; then
         cp "$logfile" "$LOG_DIR/backups/$(basename "$logfile").$(date +%s).bak" || true
     fi
@@ -259,7 +259,7 @@ echo "📝 Next Steps:"
 echo "   1. Access admin at: http://localhost:5070/admin/"
 echo "   2. Login with: admin / mk_pAssWord123"
 echo "   3. Configure home page content in Wagtail"
-echo "   4. Monitor logs: docker logs web-ctc-research -f"
+echo "   4. Monitor logs: docker logs web-precis-ctc -f"
 echo ""
 
 log_success "BUILD COMPLETE - All systems operational"

@@ -80,7 +80,7 @@ async def list_products(request: Request) -> list[ProductResponse]:
 ```python
 from django_bolt import BoltAPI
 
-bolt = BoltAPI(prefix="/apis", namespace="ctc-research-bolt")
+bolt = BoltAPI(prefix="/apis", namespace="precis-ctc-bolt")
 
 @bolt.get("/courses")
 def list_courses(request):
@@ -237,7 +237,7 @@ class HomePage(RoutableComponent):
 
 ### 5.5 Changeable Settings per Fusion Project
 
-Each Fusion project (lms-fusion, cms-fusion) should have its own bolt configuration:
+Each Fusion project (precis-lms, cms-fusion) should have its own bolt configuration:
 
 ```python
 # settings.py — per-project overrides
@@ -438,7 +438,7 @@ const data = await response.json();
 
 ### 9.1 Historical immediate recommendations
 
-1. ✅ **Build out lms-fusion and cms-fusion frontends** with full Next.js + Fusion types + bolt API client
+1. ✅ **Build out precis-lms and cms-fusion frontends** with full Next.js + Fusion types + bolt API client
 2. ✅ **Add real BoltAPI endpoints** to both fusion backends via `apis.py`
 3. ✅ **Create shared frontend lib** (`fusion-types.ts`, `fusion-decoder.ts`, `api-client.ts`)
 4. ✅ **Add per-project bolt settings** (`FUSION_BOLT` dict in settings.py)
@@ -464,7 +464,7 @@ These recommendations are closed and must not be implemented in django-fusion:
 
 ## 10. Migration Checklist
 
-| # | Item | lms-fusion | cms-fusion |
+| # | Item | precis-lms | cms-fusion |
 |---|------|:----------:|:----------:|
 | 1 | `django_fusion` in `INSTALLED_APPS` | ✅ | ✅ |
 | 2 | Fusion branding context processor | ✅ | ✅ |

@@ -32,7 +32,7 @@ The Course Management System is a comprehensive learning management module integ
 - **Admin Interface**: Wagtail-based course management
 
 ### Key Statistics
-- **Location**: `/root/site/websites/ctc-research/plugins/lms/`
+- **Location**: `/root/site/websites/precis-ctc/plugins/lms/`
 - **URL Prefix**: `/learning/` (configurable in plugins/urls.py)
 - **Models**: 10+ including Course, Module, Lesson, Enrollment, Tags
 - **Views**: 15+ (Class-based and function-based)
@@ -96,7 +96,7 @@ The Course Management System is a comprehensive learning management module integ
 ### Directory Structure
 
 ```
-ctc-research/
+precis-ctc/
 ├── plugins/lms/                          # LMS Plugin Root
 │   ├── models/
 │   │   └── courses/

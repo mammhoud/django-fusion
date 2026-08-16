@@ -379,7 +379,7 @@ See `README.md` and `DEPLOYMENT.md` for more scenarios.
 - `ceptor-ai` – AI orchestration
 
 **Multi-Site Support:**
-- CTC Research (`projects/ctc-research/templates/`)
+- CTC Research (`projects/precis-ctc/templates/`)
 - LMS Demo (`projects/lms/templates/`)
 - VResume (`projects/portfolio/www/pages/templates/`)
 

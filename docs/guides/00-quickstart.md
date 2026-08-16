@@ -57,8 +57,8 @@ make deploy-proxy
 ## 5. Build and start a site
 
 ```bash
-make ctc-research
-# Inside the ctc-research Makefile context:
+make precis-ctc
+# Inside the precis-ctc Makefile context:
 make docker-up
 ```
 
@@ -66,14 +66,14 @@ Or directly:
 
 ```bash
 cd projects
-make docker-up WEBSITE=ctc-research
+make docker-up WEBSITE=precis-ctc
 ```
 
 ## 6. Run checks
 
 ```bash
 cd projects
-make check WEBSITE=ctc-research
+make check WEBSITE=precis-ctc
 ```
 
 ## Common issues
@@ -103,14 +103,14 @@ docker exec postgres psql -U structa_user -d ctc_research_db -c "SELECT 1"
 ```bash
 docker ps | grep shared-proxy
 docker logs shared-proxy
-docker exec ctc-research-website python manage.py collectstatic --noinput
+docker exec precis-ctc-website python manage.py collectstatic --noinput
 ```
 
 ### Import errors
 
 ```bash
 # Verify django-fusion is installed
-docker exec ctc-research-website python -c "import django_fusion; print('OK')"
+docker exec precis-ctc-website python -c "import django_fusion; print('OK')"
 
 # Reinstall local packages
 uv pip install -e libs/django-fusion/

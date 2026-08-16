@@ -88,6 +88,7 @@ MODULES: tuple[dict[str, Any], ...] = (
             {"id": "members", "label": "Members & roles", "href": "/settings/members/"},
             {"id": "workflows", "label": "Workflows", "href": "/settings/workflows/"},
             {"id": "integrations", "label": "Integrations", "href": "/settings/integrations/"},
+            {"id": "email", "label": "Email inbox", "href": "/settings/email/"},
             {"id": "custom-fields", "label": "Custom fields", "href": "/settings/custom-fields/"},
             {"id": "custom-objects", "label": "Custom objects", "href": "/settings/custom-objects/"},
             {"id": "saved-views", "label": "Saved views", "href": "/settings/saved-views/"},

@@ -38,7 +38,7 @@ node --version  # Should be 16.0.0 or higher
 npm --version   # Should be 7.0.0 or higher
 ```
 
-## Python Setup (for ctc-research)
+## Python Setup (for precis-ctc)
 
 ### Installation
 
@@ -68,7 +68,7 @@ venv\Scripts\activate     # Windows
 
 ## Database Setup
 
-### PostgreSQL (for ctc-research)
+### PostgreSQL (for precis-ctc)
 
 **macOS**
 ```bash
@@ -92,7 +92,7 @@ docker run --name postgres -e POSTGRES_PASSWORD=password -d postgres
 Create `.env` file in project root:
 
 ```bash
-# ctc-research
+# precis-ctc
 DEBUG=True
 SECRET_KEY=your-secret-key-here
 DATABASE_URL=postgresql://user:password@localhost:5432/dbname

@@ -1,7 +1,7 @@
 # Fixture Loading Pipeline Diagram
 
 > This document describes the fixture loading pipeline for Django/Wagtail projects
-> across cms-fusion, lms-fusion, and the shared test suite.
+> across cms-fusion, precis-lms, and the shared test suite.
 
 ---
 
@@ -17,8 +17,8 @@ graph TB
     subgraph "Duplicated Copies"
         CMS_COPY["📁 projects/cms-fusion/assets/fixtures/"]
         CMS_BACKEND["📁 projects/cms-fusion/backend/assets/fixtures/"]
-        LMS_COPY["📁 projects/lms-fusion/assets/fixtures/"]
-        LMS_BACKEND["📁 projects/lms-fusion/backend/assets/fixtures/"]
+        LMS_COPY["📁 projects/precis-lms/assets/fixtures/"]
+        LMS_BACKEND["📁 projects/precis-lms/backend/assets/fixtures/"]
     end
 
     subgraph "Loading Methods"
@@ -276,7 +276,7 @@ flowchart LR
         37 files (subset)"]
     end
 
-    subgraph "lms-fusion copies"
+    subgraph "precis-lms copies"
         direction TB
         LMS_FIX1["📁 assets/fixtures/
         37 files (subset)"]

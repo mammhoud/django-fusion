@@ -192,7 +192,7 @@ def workspace_root():
 
 @pytest.fixture(scope="session")
 def ctc_research_root(workspace_root):
-    return workspace_root / "ctc-research"
+    return workspace_root / "precis-ctc"
 
 
 @pytest.fixture(scope="session")

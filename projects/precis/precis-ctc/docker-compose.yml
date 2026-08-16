@@ -1,0 +1,256 @@
+# ============================================================
+# precis-ctc — standalone stack (backend + frontend + worker)
+# ============================================================
+
+services:
+  backend:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-ctc
+        PROJECT_PATH: precis-ctc
+    image: precis-ctc-backend:latest
+    container_name: precis-ctc-website
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-ctc
+      DJANGO_SITE: precis-ctc
+      PROJECT_PATH: precis-ctc
+      # Runtime container path matches the host registry path (`precis-ctc`).
+      WEBSITE_DIR: /app/precis-ctc
+      DJANGO_WEBSITE_DIR: /app/precis-ctc
+      PORT: "5070"
+      HOST: "0.0.0.0"
+      SERVER_TYPE: uvicorn
+      WORKERS: "4"
+      LOG_LEVEL: info
+      DEBUG: "false"
+      APP_MODULE: server:asgi_application
+      DJANGO_SERVER_TYPE: asgi
+      RUN_SETUP: "true"
+      # Frontend assets are built in the dedicated Astro image; do not attempt
+      # a webpack build from the backend container during production startup.
+      BUILD_ASSETS_ON_START: "false"
+      # Production startup runs migrations and safe fixture detection against
+      # the shared PostgreSQL container. Destructive fixture replacement is
+      # opt-in through FORCE_LOAD_DUMPS=true and the load_data --replace flag.
+      LOAD_DATA_ON_START: ${LOAD_DATA_ON_START:-false}
+      FORCE_LOAD_DUMPS: ${FORCE_LOAD_DUMPS:-false}
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CTC:-db_ctc}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for CTC Research production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+      SITE_DOMAIN: ctc-research.com
+      SITE_PORT: "443"
+      WAGTAILADMIN_BASE_URL: https://ctc-research.com
+      MEDIA_ROOT: /app/media
+      ALLOWED_HOSTS: localhost,127.0.0.1,ctc-research.localhost,ctc-research.com,www.ctc-research.com,arch.ctc-research.com,precis-ctc-website
+      CSRF_TRUSTED_ORIGINS: http://localhost:5070,http://ctc-research.localhost,https://ctc-research.com,https://www.ctc-research.com,https://arch.ctc-research.com
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5070/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - "5070:5070"
+    volumes:
+      # The backend is mounted at the runtime site root because the shared
+      # entrypoint and SiteCLI expect manage.py/settings.py there.
+      - ./backend:/app/precis-ctc:rw
+      # Canonical shared settings (moved to projects/precis/configs).
+      - ../configs:/app/precis-ctc/configs:ro
+      # Asset/template source lives beside the backend in ./assets.
+      - ./assets:/app/assets:ro
+      - ../../../libs:/app/libs:rw
+      - ../../../logs:/app/logs:z
+      # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
+      - precis-ctc-static:/app/precis-ctc/assets/staticfiles:rw
+      - precis-ctc-media:/app/media:rw
+      - ./Env:/app/precis-ctc/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.precis-ctc-api-docker.rule=(Host(`ctc-research.localhost`) || Host(`ctc-research.com`) || Host(`www.ctc-research.com`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.precis-ctc-api-docker.entrypoints=web,web-secure"
+      - "traefik.http.routers.precis-ctc-api-docker.tls=true"
+      - "traefik.http.services.precis-ctc-api-docker.loadbalancer.server.port=5070"
+      - "traefik.http.services.precis-ctc-api-docker.loadbalancer.healthcheck.path=/health/"
+
+  worker:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-ctc
+        PROJECT_PATH: precis-ctc
+    image: precis-ctc-backend:latest
+    container_name: precis-ctc-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-ctc
+      DJANGO_SITE: precis-ctc
+      PROJECT_PATH: precis-ctc
+      WEBSITE_DIR: /app/precis-ctc
+      DJANGO_WEBSITE_DIR: /app/precis-ctc
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CTC:-db_ctc}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for CTC Research production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,courses,system,default
+    volumes:
+      - ./backend:/app/precis-ctc:rw
+      # Canonical shared settings (moved to projects/precis/configs).
+      - ../configs:/app/precis-ctc/configs:ro
+      - ./assets:/app/assets:ro
+      - ../../../libs:/app/libs:rw
+      - ../../../logs:/app/logs:z
+      - precis-ctc-media:/app/media:rw
+      - ./Env:/app/precis-ctc/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  scheduler:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-ctc
+        PROJECT_PATH: precis-ctc
+    image: precis-ctc-backend:latest
+    container_name: precis-ctc-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-ctc
+      DJANGO_SITE: precis-ctc
+      PROJECT_PATH: precis-ctc
+      WEBSITE_DIR: /app/precis-ctc
+      DJANGO_WEBSITE_DIR: /app/precis-ctc
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CTC:-db_ctc}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for CTC Research production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    depends_on:
+      backend:
+        condition: service_healthy
+    command: python -m django_fusion.tasks.scheduler
+    volumes:
+      - ./backend:/app/precis-ctc:rw
+      # Canonical shared settings (moved to projects/precis/configs).
+      - ../configs:/app/precis-ctc/configs:ro
+      - ./assets:/app/assets:ro
+      - ../../../libs:/app/libs:rw
+      - ../../../logs:/app/logs:z
+      - precis-ctc-media:/app/media:rw
+      - ./Env:/app/precis-ctc/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  frontend:
+    build:
+      context: .
+      # The Astro static build calls the live backend API (PUBLIC_BUILD_API_URL)
+      # during `npm run build` (getStaticPaths for /courses/[slug] etc.). All
+      # build-time fetches are fail-soft (try/catch + seeded fallback slugs), so
+      # `docker compose up -d --build` works in one phase even when the backend
+      # is not yet healthy — the frontend then renders with fallback content.
+      # The Astro build resolves @fusion/* imports against
+      # /libs/django-fusion/js/fusion-js/src (see frontend/astro.config.mjs), so
+      # that source dir must be available inside the builder stage. The frontend
+      # build context (projects/precis/precis-ctc) cannot COPY above itself, so it
+      # arrives as an additional context (narrowed to the fusion-js source only).
+      additional_contexts:
+        fusionjs: ../../../libs/django-fusion/js/fusion-js/src
+      dockerfile: compose/Dockerfile.frontend
+      args:
+        PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-}
+        PUBLIC_BUILD_API_URL: ${PUBLIC_BUILD_API_URL:-https://ctc-research.com}
+        PUBLIC_ENABLE_BACKEND: ${PUBLIC_ENABLE_BACKEND:-true}
+        PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://ctc-research.com}
+    image: precis-ctc-frontend:latest
+    container_name: precis-ctc-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "3002"
+      PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-}
+      PUBLIC_BUILD_API_URL: ${PUBLIC_BUILD_API_URL:-https://ctc-research.com}
+      PUBLIC_ENABLE_BACKEND: ${PUBLIC_ENABLE_BACKEND:-true}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://ctc-research.com}
+    ports:
+      - "3003:3002"
+    networks:
+      - common
+      - traefik-net
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  precis-ctc-static:
+    name: precis-ctc-static
+    external: true
+  precis-ctc-media:
+    name: precis-ctc-media
+    external: true

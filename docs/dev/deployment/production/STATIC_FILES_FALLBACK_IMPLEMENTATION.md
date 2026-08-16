@@ -18,7 +18,7 @@ Static files requested at `https://ctc-research.com/static/wagtailadmin/js/vendo
 
 1. The URL path `/static/wagtailadmin/js/vendor.js` was routed through Traefik to the nginx media server
 2. The nginx media server was only configured to serve from `/var/www/static/` 
-3. The actual CTC-Research static files were mounted at `/var/www/sites/ctc-research/static/`
+3. The actual CTC-Research static files were mounted at `/var/www/sites/precis-ctc/static/`
 4. There was no fallback mechanism to serve files from the Django application server
 
 ### Root Cause Analysis
@@ -43,9 +43,9 @@ The routing configuration had these issues:
 - Added X-Served-By headers for debugging
 
 ```nginx
-# Serves from ctc-research static files first
+# Serves from precis-ctc static files first
 location /static/ {
-    alias /var/www/sites/ctc-research/static/;
+    alias /var/www/sites/precis-ctc/static/;
     expires 1y;
     add_header Cache-Control "public, immutable";
     add_header X-Served-By "nginx-ctc-static";
@@ -97,7 +97,7 @@ Traefik Router (priority 100)
     ↓
 Nginx Media Server
     ↓
-Serves from /var/www/sites/ctc-research/static/
+Serves from /var/www/sites/precis-ctc/static/
     ↓
 Returns 200 OK + Content
 ```
@@ -114,7 +114,7 @@ File not found → 404
     ↓
 Error page triggers django_static fallback
     ↓
-Proxy to Django @ web-ctc-research:5070/static/...
+Proxy to Django @ web-precis-ctc:5070/static/...
     ↓
 Django serves the file (or returns 404)
     ↓
@@ -143,7 +143,7 @@ Header: X-Frame-Options: DENY (Django response)
 
 ### Test 3: File Exists in Site Directory
 ```bash
-docker exec shared-proxy ls -lh /var/www/sites/ctc-research/static/wagtailadmin/js/vendor.js
+docker exec shared-proxy ls -lh /var/www/sites/precis-ctc/static/wagtailadmin/js/vendor.js
 
 Result: ✅ -rw-r-- 361965 Jun  2 00:07
 ```
@@ -179,7 +179,7 @@ Result: ✅ -rw-r-- 361965 Jun  2 00:07
 | Source | Container Dest | Purpose |
 |--------|----------------|---------|
 | `compose/media/nginx.conf` | `/etc/nginx/conf.d/nginx.conf` | Nginx configuration |
-| `ctc-research/assets/staticfiles` | `/var/www/sites/ctc-research/static` | CTC-Research static files |
+| `precis-ctc/assets/staticfiles` | `/var/www/sites/precis-ctc/static` | CTC-Research static files |
 | `assets/media` | `/var/www/media` | Shared media files |
 
 ---
@@ -258,10 +258,10 @@ docker exec shared-proxy nginx -T | grep -A20 "/static"
 
 ```bash
 # Check if file exists in nginx
-docker exec shared-proxy ls /var/www/sites/ctc-research/static/...
+docker exec shared-proxy ls /var/www/sites/precis-ctc/static/...
 
 # Check if Django has the file
-docker exec web-ctc-research ls /app/ctc-research/assets/staticfiles/...
+docker exec web-precis-ctc ls /app/precis-ctc/assets/staticfiles/...
 ```
 
 ---
@@ -274,8 +274,8 @@ If needed, nginx can be enhanced to serve different sites' static files:
 ```nginx
 location /static/ {
     # Route by Host header to different site directories
-    if ($http_host ~* "ctc-research\.com") {
-        alias /var/www/sites/ctc-research/static/;
+    if ($http_host ~* "precis-ctc\.com") {
+        alias /var/www/sites/precis-ctc/static/;
     }
     if ($http_host ~* "lms\.com") {
         alias /var/www/sites/lms/static/;

@@ -9,15 +9,15 @@ repository root `AGENTS.md` first.
 ```text
 projects/
 ├── precis/             # Product grouping: LMS, research, and marketing sites
-│   ├── main/           # Current LMS / learning platform (lms-fusion runtime)
-│   ├── ctc-research/   # Medical research center site
-│   └── landi/          # Astro + Django/Wagtail public landing/catalog site (landing-fusion runtime)
+│   ├── main/           # Current LMS / learning platform (precis-lms runtime)
+│   ├── precis-ctc/   # Medical research center site
+│   └── landi/          # Astro + Django/Wagtail public landing/catalog site (precis-landing runtime)
 ├── syntara/            # Cypercloud AI chat/customizer runtime
 ├── formints/           # POS editions and their shared test suites
 ├── loop-crm/           # Unified CRM + social scheduling (Twenty + Postiz merge)
 ├── configs/            # Shared settings, middleware, workers, env config
 ├── assets/             # Monorepo-level shared assets
-├── lms-fusion/         # Retired compatibility boundary; no new code
+├── precis-lms/         # Retired compatibility boundary; no new code
 ├── scripts/            # Project automation
 ├── webpack/            # Shared/legacy asset configuration
 ├── Makefile            # Website dispatcher and delegated workflows
@@ -36,11 +36,11 @@ Important mappings include:
 
 | `WEBSITE` value | Current code | Meaning |
 |---|---|---|
-| `lms-fusion` | `projects/precis/main/` | Current LMS runtime identity after migration |
-| `landing-fusion` | `projects/precis/landi/` | Landing-Fusion frontend/backend pair |
+| `precis-lms` | `projects/precis/precis-lms/` | Current LMS runtime identity after migration |
+| `precis-landing` | `projects/precis/precis-landing/` | Landing-Fusion frontend/backend pair |
 | `loop-crm` | `projects/loop-crm/` | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | `cypercloud` (where supported) | `projects/syntara/` | Historical product name |
-| `ctc`, `ctc-research` | `projects/precis/ctc-research/` | Standalone medical research center site |
+| `ctc`, `precis-ctc` | `projects/precis/precis-ctc/` | Standalone medical research center site |
 | `structa`, `lms` | checkout-dependent LMS alias | Historical public-site aliases |
 | `vresume`, `portfolio` | checkout-dependent portfolio alias | Historical portfolio aliases |
 
@@ -51,19 +51,19 @@ its documentation together when a product boundary actually changes.
 
 ```bash
 cd projects
-make show-config WEBSITE=lms-fusion
-make check WEBSITE=lms-fusion
-make test WEBSITE=lms-fusion
-make run-dev WEBSITE=landing-fusion
-make check WEBSITE=landing-fusion
+make show-config WEBSITE=precis-lms
+make check WEBSITE=precis-lms
+make test WEBSITE=precis-lms
+make run-dev WEBSITE=precis-landing
+make check WEBSITE=precis-landing
 ```
 
 For Docker, use the dispatcher rather than inventing a project name:
 
 ```bash
-make validate-config WEBSITE=landing-fusion
-make docker-build WEBSITE=lms-fusion
-make docker-up WEBSITE=lms-fusion
+make validate-config WEBSITE=precis-landing
+make docker-build WEBSITE=precis-lms
+make docker-up WEBSITE=precis-lms
 ```
 
 These commands may touch databases, containers, logs, or static output. Read
@@ -82,12 +82,12 @@ Avoid importing one product's settings into another product.
 
 ## Product guidance
 
-- Precis: `precis/main/backend/AGENTS.md`; backend app code is under
-  `precis/main/backend/apps/`, with product assets beside `backend/` and the Astro
-  frontend under `precis/main/frontend/`.
+- Precis: `precis/precis-lms/backend/AGENTS.md`; backend app code is under
+  `precis/precis-lms/backend/apps/`, with product assets beside `backend/` and the Astro
+  frontend under `precis/precis-lms/frontend/`.
 - Landing-Fusion: `precis/landi/AGENTS.md`; keep the Astro frontend and
   Django/Wagtail backend contracts synchronized.
-- CTC Research: `precis/ctc-research/AGENTS.md`; standalone medical research
+- CTC Research: `precis/precis-ctc/AGENTS.md`; standalone medical research
   center site, separated from the Precis LMS runtime.
 - Syntara: `syntara/AGENTS.md`; keep AI providers, template discovery, and SSE
   behavior behind the `chat/` application boundaries.
@@ -96,7 +96,7 @@ Avoid importing one product's settings into another product.
 - Loop-CRM: `loop-crm/README.md`; keep the CRM/marketing/attribution app
   boundaries separate, use `django_fusion.*` components (no django-cotton), and
   treat `apps/tasks/` (Dramatiq) as the sole background-worker runtime.
-- Retired `lms-fusion/`: use only for migration history and compatibility
+- Retired `precis-lms/`: use only for migration history and compatibility
   documentation. New learning features belong in Precis or Landing-Fusion.
 
 ## Project-level conventions

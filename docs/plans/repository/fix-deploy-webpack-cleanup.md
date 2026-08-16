@@ -9,15 +9,15 @@
 
 ### Error 1: `ModuleNotFoundError: No module named 'fido2'` ✅ FIXED
 - **Root cause**: `allauth.mfa` imports `fido2.features` for WebAuthn support. The `fido2` package was listed in `projects/pyproject.toml` but was not installed in the Docker containers.
-- **Fix**: Installed `fido2==2.2.1` via `pip install fido2` inside both `cms-fusion-backend` and `lms-fusion-backend` containers.
+- **Fix**: Installed `fido2==2.2.1` via `pip install fido2` inside both `cms-fusion-backend` and `precis-lms-backend` containers.
 - **Verification**: ✅ 0 occurrences of `fido2` error in logs after fix. Health endpoints return HTTP 200.
 
 ### Error 2: `NotImplementedError: FusionContentPageView must set model_class` ✅ FIXED
 - **Root cause**: `_render_wagtail_html()` in three `api.py` files created `FusionContentPageView` instances without setting `model_class`. When `get_context_data()` called `_get_page()`, it tried `self.model_class.objects.live().get(slug=slug)` which failed because `model_class` was `None`.
 - **Fix**: Added `view_instance.model_class = page.__class__` in three files:
   - `projects/cms-fusion/backend/apps/pages/pages/api.py`
-  - `projects/lms-fusion/backend/apps/pages/pages/api.py`
-  - `projects/lms-fusion/backend/apps/core/api/pages.py`
+  - `projects/precis-lms/backend/apps/pages/pages/api.py`
+  - `projects/precis-lms/backend/apps/core/api/pages.py`
 - **Verification**: ✅ All previously failing endpoints (`/api/pages/about/data/`, etc.) return HTTP 200 with proper content.
 
 ### Verification Results
@@ -48,12 +48,12 @@ Both sites use a priority system: **Wagtail model-backed pages first**, falling 
 
 ### Fixtures Available
 ```
-/app/ctc-research/assets/fixtures/dump-data.json          — Main data dump
-/app/ctc-research/assets/fixtures/cleaned/essential-data.json
-/app/ctc-research/assets/fixtures/cleaned/filtered-dump-data.json
-/app/ctc-research/assets/fixtures/production/cleaned-dump-data.json
-/app/ctc-research/assets/fixtures/auth/group_dummy.json
-/app/ctc-research/assets/fixtures/auth/user_dummy.json
+/app/precis-ctc/assets/fixtures/dump-data.json          — Main data dump
+/app/precis-ctc/assets/fixtures/cleaned/essential-data.json
+/app/precis-ctc/assets/fixtures/cleaned/filtered-dump-data.json
+/app/precis-ctc/assets/fixtures/production/cleaned-dump-data.json
+/app/precis-ctc/assets/fixtures/auth/group_dummy.json
+/app/precis-ctc/assets/fixtures/auth/user_dummy.json
 ```
 
 ### Fixture & Table Fix ✅

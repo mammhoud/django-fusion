@@ -8,7 +8,7 @@
 
 ## Overview
 
-The root `Makefile` provides unified command interface for all development, build, and deployment tasks. It supports multiple websites (ctc-research, lms-demo, vresume) and delegates to sub-Makefiles for specialized tasks.
+The root `Makefile` provides unified command interface for all development, build, and deployment tasks. It supports multiple websites (precis-ctc, lms-demo, vresume) and delegates to sub-Makefiles for specialized tasks.
 
 ---
 
@@ -48,7 +48,7 @@ make run-dev WEBSITE=structa           # LMS Demo
 make run-dev WEBSITE=vresume           # VResume
 
 # Aliases supported
-make run-dev WEBSITE=ctc-research      # Same as WEBSITE=ctc
+make run-dev WEBSITE=precis-ctc      # Same as WEBSITE=ctc
 make run-dev WEBSITE=lms-demo          # Same as WEBSITE=structa
 make run-dev WEBSITE=VResume           # Same as WEBSITE=vresume
 ```
@@ -71,11 +71,11 @@ make run-dev WEBSITE=VResume           # Same as WEBSITE=vresume
 
 | Variable | Purpose | Example |
 |----------|---------|---------|
-| `SITE` | Internal site directory name | ctc-research, lms-demo, vresume |
+| `SITE` | Internal site directory name | precis-ctc, lms-demo, vresume |
 | `TEST_WEBSITE` | Pytest website target | ctc, structa, vresume, all |
-| `DOCKER_SERVICE` | Docker service name | ctc-research-website, etc. |
-| `DOCKER_PROJECT_PATH` | Project directory path | ctc-research, lms-demo, VResume |
-| `MANAGE` | Django manage.py command | uv run ctc-research |
+| `DOCKER_SERVICE` | Docker service name | precis-ctc-website, etc. |
+| `DOCKER_PROJECT_PATH` | Project directory path | precis-ctc, lms-demo, VResume |
+| `MANAGE` | Django manage.py command | uv run precis-ctc |
 
 ---
 
@@ -142,7 +142,7 @@ make migrate WEBSITE=ctc
 Start Django development server with auto-reload.
 
 ```bash
-make run-dev                  # Run ctc-research dev server
+make run-dev                  # Run precis-ctc dev server
 make run-dev WEBSITE=structa  # Run lms-demo dev server
 ```
 
@@ -328,7 +328,7 @@ make tests-website WEBSITE=all      # Test all
 Build Docker image for selected website.
 
 ```bash
-make docker-build              # Build ctc-research image
+make docker-build              # Build precis-ctc image
 make docker-build WEBSITE=lms-demo  # Build lms-demo image
 ```
 
@@ -483,7 +483,7 @@ make docker-deploy-websites
 ```
 
 **Sequence:**
-1. Build ctc-research
+1. Build precis-ctc
 2. Build lms-demo
 3. Build vresume
 
@@ -613,7 +613,7 @@ make scripts <target>
 **Alias:** `make script`
 
 ### `make website-ctc`
-Delegate to ctc-research/Makefile.
+Delegate to precis-ctc/Makefile.
 
 ```bash
 make website-ctc <target>
@@ -785,7 +785,7 @@ make full-site-check WEBSITE=ctc
 ### Issue: Unknown website WEBSITE=xyz
 
 **Solution:** Use valid website names:
-- `ctc` or `ctc-research`
+- `ctc` or `precis-ctc`
 - `structa` or `lms-demo`
 - `vresume` or `VResume`
 
@@ -870,7 +870,7 @@ eval "$(make -C scripts/completion bash-completion)"
 - `applications/compose/Makefile` - Docker Compose targets
 - `assets/Makefile` - Frontend build targets
 - `tests/Makefile` - Testing targets
-- `ctc-research/Makefile` - CTC targets
+- `precis-ctc/Makefile` - CTC targets
 - `lms-demo/Makefile` - LMS Demo targets
 - `VResume/Makefile` - VResume targets
 

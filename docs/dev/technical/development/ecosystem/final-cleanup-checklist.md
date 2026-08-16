@@ -36,11 +36,11 @@ This document is the result of a final duplication scan performed after all cons
 
 | # | File | Difference Summary | Lines Diff |
 |---|------|--------------------|------------|
-| 1 | `apps/handlers/site/cart.py` | ctc-research uses Course model; structa uses generic product fields | ~50 lines |
-| 2 | `apps/handlers/site/dashboard.py` | ctc-research has LMS-specific analytics; structa has generic version | ~150 lines |
-| 3 | `apps/handlers/site/settings.py` | ctc-research has LMS notification fields; structa has generic version | ~20 lines |
-| 4 | `apps/handlers/services/__init__.py` | ctc-research exports FormSubmissionService/notes; structa exports notifications | ~3 lines |
-| 5 | `apps/handlers/registration/adapter.py` | ctc-research has rate limiting; structa has URL fallback | ~15 lines |
+| 1 | `apps/handlers/site/cart.py` | precis-ctc uses Course model; structa uses generic product fields | ~50 lines |
+| 2 | `apps/handlers/site/dashboard.py` | precis-ctc has LMS-specific analytics; structa has generic version | ~150 lines |
+| 3 | `apps/handlers/site/settings.py` | precis-ctc has LMS notification fields; structa has generic version | ~20 lines |
+| 4 | `apps/handlers/services/__init__.py` | precis-ctc exports FormSubmissionService/notes; structa exports notifications | ~3 lines |
+| 5 | `apps/handlers/registration/adapter.py` | precis-ctc has rate limiting; structa has URL fallback | ~15 lines |
 
 ### 1.3 Already Consolidated (No Action Needed) ✅
 
@@ -172,8 +172,8 @@ This document is the result of a final duplication scan performed after all cons
   - `ctc-research.com/apps/handlers/site/cart.py`
   - `structa.cloud/apps/handlers/site/cart.py`
 - **Decision:** KEEP with justification — site-specific business logic
-- **Difference:** ctc-research integrates with `Course` model (LMS); structa uses generic product fields
-- **Justification:** The cart logic is fundamentally different between sites. ctc-research is LMS-focused; structa is generic e-commerce. Merging would require complex abstraction.
+- **Difference:** precis-ctc integrates with `Course` model (LMS); structa uses generic product fields
+- **Justification:** The cart logic is fundamentally different between sites. precis-ctc is LMS-focused; structa is generic e-commerce. Merging would require complex abstraction.
 - **Effort:** High (if merged)
 - **Priority:** Low
 - **Recommendation:** Keep separate. Document the shared base pattern in django-fusion as an abstract `BaseCartMixin`.
@@ -185,8 +185,8 @@ This document is the result of a final duplication scan performed after all cons
   - `ctc-research.com/apps/handlers/site/dashboard.py`
   - `structa.cloud/apps/handlers/site/dashboard.py`
 - **Decision:** KEEP with justification — site-specific analytics
-- **Difference:** ctc-research has 150+ lines of LMS-specific enrollment analytics, learning streaks, course recommendations. structa has a generic placeholder.
-- **Justification:** The LMS analytics are ctc-research specific. The generic version in structa is intentionally minimal.
+- **Difference:** precis-ctc has 150+ lines of LMS-specific enrollment analytics, learning streaks, course recommendations. structa has a generic placeholder.
+- **Justification:** The LMS analytics are precis-ctc specific. The generic version in structa is intentionally minimal.
 - **Effort:** High (if merged)
 - **Priority:** Low
 - **Recommendation:** Keep separate. The shared base `get_context_data` pattern is already in `ProfileContextMixin` in `mixins.py`.
@@ -202,7 +202,7 @@ This document is the result of a final duplication scan performed after all cons
 | C3 | `apps/handlers/managers/peoples.py` | Only import path differs (`core` vs `alliance`). Site-specific module structure. |
 | C4 | `apps/handlers/renderers.py` | Only logger import differs (`core` vs `alliance`). Site-specific. |
 | C5 | `apps/handlers/site/notes.py` | Only logger import differs. Site-specific. |
-| C6 | `apps/handlers/registration/adapter.py` | ctc-research has rate limiting; structa has URL fallback. Intentionally different. |
+| C6 | `apps/handlers/registration/adapter.py` | precis-ctc has rate limiting; structa has URL fallback. Intentionally different. |
 | C7 | `apps/handlers/models/snippets.py` | structa has `AuthEmailTemplate` model not in ctc-research. Site-specific feature. |
 
 ---

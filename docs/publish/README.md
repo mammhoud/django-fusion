@@ -88,7 +88,7 @@ push to generic
 
 | Image | Dockerfile | Registry |
 |-------|-----------|----------|
-| ctc-research-website | `projects/compose/Dockerfile` | Local build |
+| precis-ctc-website | `projects/compose/Dockerfile` | Local build |
 | lms-website | `projects/compose/Dockerfile` | Local build |
 | vresume-website | `projects/compose/Dockerfile` | Local build |
 | shared-proxy | `applications/proxy/Dockerfile.nginx` | Local build |

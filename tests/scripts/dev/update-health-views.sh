@@ -5,7 +5,7 @@ set -euo pipefail
 # Prefer rebuilding images for normal deployments; this helper is for local debugging.
 
 containers_to_restart=()
-for container in ctc-research-website lms-website vresume-website; do
+for container in precis-ctc-website lms-website vresume-website; do
     if docker ps --format '{{.Names}}' | grep -q "^${container}$"; then
         echo "→ Updating ${container}..."
         docker cp libs/django-fusion/src/django_fusion/health/views.py "${container}:/opt/venv/lib/python3.12/site-packages/django_fusion/health/views.py"

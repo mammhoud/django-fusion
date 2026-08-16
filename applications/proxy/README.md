@@ -13,6 +13,10 @@ and AFFiNE. AFFiNE is independent of Coder workspaces and uses the external
 | `coder.structa.cloud/` | Coder control plane |
 | `code.structa.cloud/` | Secure redirect to Coder |
 | `blinko.structa.cloud` | Legacy redirect to `space.structa.cloud` |
+| `crm.structa.cloud/` | Loop-CRM (frontend shell + backend path fallback) |
+| `lms.structa.cloud/` | Precis LMS (`precis-lms` frontend + backend) |
+| `ctc-research.com/` | CTC Research (`precis-ctc` frontend + backend) |
+| `structa.cloud/`, `www.structa.cloud/` | Landing-Fusion (frontend + backend path fallback) |
 
 `affine.pro` and FileGator hosts have no router or certificate request. The DNS
 provider must point active public hosts at this proxy; Traefik requests public

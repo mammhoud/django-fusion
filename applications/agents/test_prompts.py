@@ -47,12 +47,12 @@ def test_skill_and_project_prompts_have_complete_contracts():
 
 def test_listing_is_concise_and_detail_is_complete():
     listing = list_prompt_metadata()
-    detail = get_prompt("project.landing-fusion")
+    detail = get_prompt("project.precis-landing")
 
     assert listing["count"] >= 10
     assert all(set(item) >= {"id", "title", "description", "kind"} for item in listing["prompts"])
     assert detail is not None
-    assert detail["path"] == "projects/precis/landi/"
+    assert detail["path"] == "projects/precis/precis-landing/"
     assert detail["checks"]
     assert get_prompt("does-not-exist") is None
 
@@ -73,9 +73,9 @@ def test_mcp_prompt_endpoints_list_detail_and_not_found():
     assert listing.json()["ok"] is True
     assert listing.json()["count"] >= 10
 
-    detail = client.get("/prompts/project.landing-fusion")
+    detail = client.get("/prompts/project.precis-landing")
     assert detail.status_code == 200
-    assert detail.json()["prompt"]["path"] == "projects/precis/landi/"
+    assert detail.json()["prompt"]["path"] == "projects/precis/precis-landing/"
 
     missing = client.get("/prompts/does-not-exist")
     assert missing.status_code == 404

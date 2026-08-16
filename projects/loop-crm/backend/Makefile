@@ -1,5 +1,5 @@
 # loop-crm backend — Django + django-fusion (unified sales + marketing)
-# Mirrors the landing-fusion backend Makefile verb set so `make -C backend`
+# Mirrors the precis-landing backend Makefile verb set so `make -C backend`
 # behaves identically across the workspace.
 .PHONY: help dev server worker scheduler install migrate static collectstatic superuser shell check test format lint fix
 

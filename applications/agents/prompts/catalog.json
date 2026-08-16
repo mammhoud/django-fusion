@@ -33,7 +33,7 @@
         "image-to-code"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint",
         "syntara"
@@ -73,7 +73,7 @@
       ],
       "projects": [
         "django-fusion",
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint"
       ],
@@ -111,7 +111,7 @@
         "documentation"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint"
       ],
@@ -151,7 +151,7 @@
       ],
       "projects": [
         "django-fusion",
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint",
         "syntara"
@@ -210,7 +210,7 @@
         "redesign-existing-projects"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint",
         "syntara"
@@ -248,7 +248,7 @@
         "deployment-documentation"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint",
         "syntara"
@@ -288,7 +288,7 @@
       ],
       "projects": [
         "django-fusion",
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint"
       ],
@@ -325,7 +325,7 @@
             "params": {
               "name": "designer.website_audit",
               "arguments": {
-                "project": "landing-fusion",
+                "project": "precis-landing",
                 "sections": [
                   {
                     "name": "hero",
@@ -376,7 +376,7 @@
         "mcp-builder"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis"
       ],
       "inputs": [
@@ -438,7 +438,7 @@
       ],
       "projects": [
         "django-fusion",
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint"
       ],
@@ -553,7 +553,7 @@
       ],
       "projects": [
         "django-fusion",
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint"
       ],
@@ -621,7 +621,7 @@
             "params": {
               "name": "designer.website_audit",
               "arguments": {
-                "project": "landing-fusion",
+                "project": "precis-landing",
                 "sections": [
                   {
                     "name": "hero",
@@ -633,7 +633,7 @@
               }
             }
           },
-          "response": "{\"jsonrpc\": \"2.0\", \"id\": 1, \"result\": {\"project\": \"landing-fusion\", \"scores\": {\"overall\": 78, \"finding_count\": 4}}}"
+          "response": "{\"jsonrpc\": \"2.0\", \"id\": 1, \"result\": {\"project\": \"precis-landing\", \"scores\": {\"overall\": 78, \"finding_count\": 4}}}"
         },
         {
           "title": "Validate a design draft",
@@ -679,7 +679,7 @@
         "high-end-visual-design"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis"
       ],
       "inputs": [
@@ -742,7 +742,7 @@
         "deployment-documentation"
       ],
       "projects": [
-        "landing-fusion",
+        "precis-landing",
         "precis",
         "formint"
       ],
@@ -894,9 +894,9 @@
   ],
   "projects": [
     {
-      "id": "project.landing-fusion",
+      "id": "project.precis-landing",
       "name": "Landing-Fusion",
-      "path": "projects/precis/landi/",
+      "path": "projects/precis/precis-landing/",
       "description": "Public marketing and catalog product combining an Astro 5 frontend with a Django 5.2/Wagtail 7.4 backend and django-fusion rendering.",
       "stack": [
         "Astro 5",
@@ -917,12 +917,12 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Landing-Fusion as one dual-road product. Read projects/precis/landi/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
+      "prompt": "Enhance Landing-Fusion as one dual-road product. Read projects/precis/precis-landing/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
       "checks": [
-        "cd projects/precis/landi && make check",
-        "cd projects/precis/landi && make build",
-        "cd projects/precis/landi/backend && make check",
-        "cd projects/precis/landi/backend && make test"
+        "cd projects/precis/precis-landing && make check",
+        "cd projects/precis/precis-landing && make build",
+        "cd projects/precis/precis-landing/backend && make check",
+        "cd projects/precis/precis-landing/backend && make test"
       ],
       "related_skills": [
         "skill.website-redesign-audit",
@@ -937,7 +937,7 @@
     {
       "id": "project.precis",
       "name": "Precis LMS",
-      "path": "projects/precis/main/",
+      "path": "projects/precis/precis-lms/",
       "description": "The production learning platform for courses, enrollment, payments, progress, certificates, profiles, and multilingual Wagtail content.",
       "stack": [
         "Django 5.2",
@@ -957,12 +957,12 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired lms-fusion paths. Read projects/precis/main/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
+      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired precis-lms paths. Read projects/precis/precis-lms/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
       "checks": [
-        "cd projects/precis/main/backend && make check",
-        "cd projects/precis/main/backend && make test",
-        "cd projects/precis/main/frontend && npm run check",
-        "cd projects/precis/main/frontend && npm run build"
+        "cd projects/precis/precis-lms/backend && make check",
+        "cd projects/precis/precis-lms/backend && make test",
+        "cd projects/precis/precis-lms/frontend && npm run check",
+        "cd projects/precis/precis-lms/frontend && npm run build"
       ],
       "related_skills": [
         "skill.website-redesign-audit",

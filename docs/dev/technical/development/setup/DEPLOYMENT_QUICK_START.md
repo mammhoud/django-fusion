@@ -42,7 +42,7 @@ Admin Panels:
 ## Create Admin Users
 
 ```bash
-docker exec -it web-ctc-research python manage.py createsuperuser
+docker exec -it web-precis-ctc python manage.py createsuperuser
 docker exec -it web-lms-demo python manage.py createsuperuser
 docker exec -it web-vresume python manage.py createsuperuser
 ```
@@ -54,20 +54,20 @@ docker exec -it web-vresume python manage.py createsuperuser
 ### View Status
 ```bash
 docker compose ps                    # All containers
-docker logs web-ctc-research         # View logs
+docker logs web-precis-ctc         # View logs
 docker compose logs -f               # Stream all logs
 ```
 
 ### Troubleshoot
 ```bash
-docker compose logs web-ctc-research | tail -50
-docker exec web-ctc-research python manage.py check --deploy
+docker compose logs web-precis-ctc | tail -50
+docker exec web-precis-ctc python manage.py check --deploy
 ```
 
 ### Restart Services
 ```bash
 docker compose restart               # Restart all
-docker compose restart web-ctc-research  # Restart one
+docker compose restart web-precis-ctc  # Restart one
 ```
 
 ### Run Tests
@@ -100,7 +100,7 @@ docker logs [container-name] | tail -20
 
 **Assets not loading?**
 ```bash
-docker exec web-ctc-research python manage.py collectstatic --noinput
+docker exec web-precis-ctc python manage.py collectstatic --noinput
 ```
 
 **Database connection error?**

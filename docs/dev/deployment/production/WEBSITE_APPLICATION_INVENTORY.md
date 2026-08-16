@@ -2,7 +2,7 @@
 
 This inventory records the Django application packages present under each website so documentation stays aligned with the runnable workspace.
 
-## ctc-research
+## precis-ctc
 
 - `.`
 - `plugins/accounts`

@@ -3,7 +3,7 @@
 > **Status:** Active
 > **Owner:** django-fusion core team
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/webpack/`, `projects/precis/landi/`, `projects/precis/main/`
+> **Scope:** `libs/django-fusion/webpack/`, `projects/precis/landi/`, `projects/precis/precis-lms/`
 > **Depends on:** Existing webpack.config.js, workspace system, django-fusion-webpack-integration-plan.md
 
 ---
@@ -39,11 +39,11 @@ This plan enhances the system so **projects can define their own webpack entries
 
 | Gap | Impact |
 |-----|--------|
-| **No project-level SCSS/JS entry points** | Projects (landing-fusion, precis) must fork `webpack.config.js` to add their own entries. |
+| **No project-level SCSS/JS entry points** | Projects (precis-landing, precis) must fork `webpack.config.js` to add their own entries. |
 | **No `FUSION_WEBPACK` Django setting** | Projects cannot configure webpack from `settings.py` — must use env vars or workspace files. |
 | **Workspace files must live in `libs/django-fusion/webpack/workspaces/`** | Or use `FUSION_WEBPACK_WORKSPACE_PATH` which is undocumented. No convention for project-owned workspace files. |
-| **No `.env.example` for landing-fusion** | Missing from `projects/precis/landi/` — no reference for webpack/fusion config. |
-| **Precis `.env.example` is stale (ctc-research)** | References ctc-research domain, DB, and settings — not Precis-specific. |
+| **No `.env.example` for precis-landing** | Missing from `projects/precis/landi/` — no reference for webpack/fusion config. |
+| **Precis `.env.example` is stale (precis-ctc)** | References precis-ctc domain, DB, and settings — not Precis-specific. |
 | **No multi-project build command** | Each project must run its own `npm run build` in the django-fusion directory. |
 
 ---
@@ -91,10 +91,10 @@ projects/precis/landi/
 ├── .env.example               ← NEW: webpack + fusion + project settings
 ├── backend/settings.py        ← defines FUSION_WEBPACK dict
 └── webpack/                   ← Project-owned webpack
-    ├── landing-fusion.config.js  ← NEW: extends projects/webpack/base.config.js
-    └── landing.js                ← DEPRECATED (use landing-fusion.config.js)
+    ├── precis-landing.config.js  ← NEW: extends projects/webpack/base.config.js
+    └── landing.js                ← DEPRECATED (use precis-landing.config.js)
 
-projects/precis/main/
+projects/precis/precis-lms/
 ├── backend/.env.example       ← UPDATED: precis-specific settings
 ├── backend/settings.py        ← defines FUSION_WEBPACK dict
 └── webpack/                   ← Project-owned webpack
@@ -105,11 +105,11 @@ projects/precis/main/
 ### 3.2 How Projects Extend the Shared Base
 
 ```javascript
-// projects/precis/landi/webpack/landing-fusion.config.js
+// projects/precis/landi/webpack/precis-landing.config.js
 const createConfig = require('../../webpack/base.config');
 
 module.exports = createConfig({
-  name: 'landing-fusion',
+  name: 'precis-landing',
   projectRoot: __dirname + '/..',
   entries: {
     landing: ['assets/static/styles/main.scss', 'assets/static/js/app.js'],
@@ -126,10 +126,10 @@ Build commands:
 ```bash
 # Landing-Fusion
 cd projects/precis/landi
-npx webpack --config webpack/landing-fusion.config.js --mode=production
+npx webpack --config webpack/precis-landing.config.js --mode=production
 
 # Precis LMS
-cd projects/precis/main
+cd projects/precis/precis-lms
 npx webpack --config webpack/precis.config.js --mode=production
 ```
 
@@ -167,15 +167,15 @@ FUSION_WEBPACK = {
 # django-fusion webpack (fusion component library):
 cd libs/django-fusion
 FUSION_WEBPACK_WORKSPACE=landing \
-  FUSION_WEBPACK_WORKSPACE_PATH=../../projects/precis/landi/webpack/landing-fusion.config.js \
+  FUSION_WEBPACK_WORKSPACE_PATH=../../projects/precis/landi/webpack/precis-landing.config.js \
   FUSION_PROJECT_ROOT=../../projects/precis/landi \
   npx webpack --config webpack.config.js --mode production
 
 # Project webpack (project-specific assets):
 cd projects/precis/landi
-npx webpack --config webpack/landing-fusion.config.js --mode=production
+npx webpack --config webpack/precis-landing.config.js --mode=production
 
-cd projects/precis/main
+cd projects/precis/precis-lms
 npx webpack --config webpack/precis.config.js --mode=production
 
 # Or via the Django management command (fusion webpack only):
@@ -285,7 +285,7 @@ Create `projects/precis/landi/.env.example` with all relevant settings.
 
 ### 4.4 Precis `.env.example` — Update
 
-Replace the ctc-research-specific `.env.example` with Precis-specific settings.
+Replace the precis-ctc-specific `.env.example` with Precis-specific settings.
 
 ---
 

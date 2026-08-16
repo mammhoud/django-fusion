@@ -6,7 +6,7 @@ Understanding the workspace and project organization.
 
 ```
 workspace/
-├── ctc-research/          # Django + React research platform
+├── precis-ctc/          # Django + React research platform
 ├── structa/               # Vite + React data visualization
 ├── blinko/                # Full-stack note-taking app
 ├── compose/               # Docker Compose configurations
@@ -14,10 +14,10 @@ workspace/
 └── README.md              # Workspace overview
 ```
 
-## ctc-research Structure
+## precis-ctc Structure
 
 ```
-ctc-research/
+precis-ctc/
 ├── backend/               # Django application
 │   ├── manage.py
 │   ├── requirements.txt

@@ -1,8 +1,8 @@
 # =============================================================================
 # Landing-Fusion — Traefik router config  [ACTIVE]
 # =============================================================================
-# Containers: landing-fusion-backend (Django/Wagtail, port 8074)
-#             landing-fusion-frontend (Astro static, port 3000)
+# Containers: precis-landing-backend (Django/Wagtail, port 8074)
+#             precis-landing-frontend (Astro static, port 3000)
 # Domain: structa.cloud / www.structa.cloud
 # Backend paths (/accounts, /apis, /admin, /static, /media, /fragment, /learning)
 #   are routed to the backend with priority 200.
@@ -12,48 +12,48 @@
 
 http:
   routers:
-    landing-fusion-backend-http:
+    precis-landing-backend-http:
       rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
-      service: landing-fusion-backend
+      service: precis-landing-backend
       priority: 200
-    landing-fusion-backend-https:
+    precis-landing-backend-https:
       rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
-      service: landing-fusion-backend
+      service: precis-landing-backend
       priority: 200
       tls:
         certResolver: letsencrypt-http
-    landing-fusion-site-http:
+    precis-landing-site-http:
       rule: 'Host(`structa.cloud`) || Host(`www.structa.cloud`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
-      service: landing-fusion-frontend
+      service: precis-landing-frontend
       priority: 100
-    landing-fusion-site-https:
+    precis-landing-site-https:
       rule: 'Host(`structa.cloud`) || Host(`www.structa.cloud`)'
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
-      service: landing-fusion-frontend
+      service: precis-landing-frontend
       priority: 100
       tls:
         certResolver: letsencrypt-http
 
   services:
-    landing-fusion-backend:
+    precis-landing-backend:
       loadBalancer:
         servers:
-          - url: 'http://landing-fusion-backend:8074'
+          - url: 'http://precis-landing-backend:8074'
         healthCheck:
           path: /apis/pages/
           interval: 15s
           timeout: 10s
-    landing-fusion-frontend:
+    precis-landing-frontend:
       loadBalancer:
         servers:
-          - url: 'http://landing-fusion-frontend:3000'
+          - url: 'http://precis-landing-frontend:3000'
         healthCheck:
           path: /
           interval: 15s

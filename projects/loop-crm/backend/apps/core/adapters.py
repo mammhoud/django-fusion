@@ -1,6 +1,6 @@
 """Loop-CRM allauth adapters — thin wrappers over allauth defaults.
 
-Mirrors landing-fusion's ``apps.auth.adapters`` so the auth behavior stays
+Mirrors precis-landing's ``apps.auth.adapters`` so the auth behavior stays
 consistent across workspace products: logout returns to the landing root and
 social signup (GitHub/Google) follows the same open-registration policy as
 email signup.

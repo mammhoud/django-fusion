@@ -42,6 +42,9 @@ Every deletion must have a recorded replacement, archive, evidence scan, hold de
 | DOC-0018 | Public `affine.pro` host (Traefik router + cert + nginx server_name) | delete | All workspace services consolidated under `space.structa.cloud` (root = AFFiNE); affine.pro removed entirely | `applications/proxy/traefik/dynamic/space.yml` + nginx template | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
 | DOC-0019 | Workspace code-server + FileGator services (containers, Coder apps, `filegator.structa.cloud` route, `applications/proxy/filegator/`) | delete | Bundled services removed from the devcontainer; the IDE runs inside the devcontainer and no file manager is shipped | `.devcontainer/docker-compose.yml` (AFFiNE only) + nginx `space.structa.cloud` root | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
 | DOC-0020 | `applications/templates/devcontainer/` (Docker-in-Docker template) | merge | Templates merged into ONE: the `devcontainer` template's features (devcontainer auto-start, VS Code Web, display_apps) folded into `workspace`; the merged template binds the host checkout instead of cloning | `applications/templates/workspace/` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
+| DOC-0021 | `docs/plans/CODEBASE_AUDIT_AND_MIGRATION_PLAN.md` | delete | Audited `projects/precis-lms/` + `projects/cms-fusion/` apps no longer exist; superseded by Precis/Landing-Fusion | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
+| DOC-0022 | `docs/plans/FUSION_LMS_CMS_DESIGN.md` | delete | Design doc for retired `precis-lms`/`cms-fusion` product lines | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
+| DOC-0023 | `docs/plans/ASSETS_MIGRATION_INVENTORY.md` | delete | Inventory for retired `precis-lms`/`cms-fusion` backends | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
 
 ## Deletion gate
 
@@ -80,4 +83,26 @@ code-server public routes are replaced by AFFiNE (affine.pro) and internal
 Coder apps. No production database, Docker volume, or unrelated product
 source is deleted by this pass.
 
-No POS or Anytype document is approved for permanent deletion in this pass. The safe action is to update indexes, label historical sources, create verified archives, and delete only after the manifest rows are completed.
+## 2026-08-14 deletion (owner-approved)
+
+The retired plan directories `docs/plans/pos/`, `docs/plans/migrated/`,
+`docs/plans/cms-fusion/`, and `docs/plans/precis-lms/` were permanently removed
+(47 files). Each had a verified replacement — the Formints `editions/` chain
+(`03-pro.md` → `formint-pro`, `04-cloud.md` → `formint-cloud`) for the retired
+`projects/pos/` scope, and Precis/Landing-Fusion for the CMS/LMS migration
+plans. The pre-migration originals under `migrated/` were duplicates of the
+superseded copies and are recoverable from git history. Indexes
+(`README.md`, `document-lifecycle.md`, `editions/README.md`, `mkdocs.yml`,
+`docs/_sidebar.md`, `docs/recommendations.md`) were updated in the same pass.
+
+## 2026-08-16 deletion (owner-approved)
+
+The entire `docs/plans/legacy/` directory was permanently removed — completed
+phase reports, retired `pos/` plans, and the retired `precis-lms`/`cms-fusion`
+migration/design/inventory docs (DOC-0021, DOC-0022, DOC-0023). Every file is
+recoverable from git history, and the deletion gate's replacement test is
+satisfied by the canonical `docs/plans/README.md` index. This supersedes the
+`docs/plans/legacy/pos/*` rows (DOC-0006, DOC-0007, DOC-0008), the earlier
+`docs/plans/pos/*` rows (DOC-0001 … DOC-0005, removed 2026-08-14), and the
+`docs/Anytype/*` rows (DOC-0009, DOC-0010). `DJANGO_BOLT_FUSION_CASE_STUDY.md`
+is retained as the historical case study.

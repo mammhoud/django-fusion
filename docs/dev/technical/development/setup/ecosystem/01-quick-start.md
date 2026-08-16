@@ -2,7 +2,7 @@
 
 Get any project in the workspace running in minutes.
 
-## For ctc-research (Django + React)
+## For precis-ctc (Django + React)
 
 ### Prerequisites
 - Python 3.8+
@@ -14,7 +14,7 @@ Get any project in the workspace running in minutes.
 ```bash
 # Clone and navigate
 git clone <repository>
-cd ctc-research
+cd precis-ctc
 
 # Backend setup
 python -m venv venv

@@ -10,7 +10,7 @@ def test_runtime_configures_ctc_research_settings():
     repo_root = Path(__file__).resolve().parents[3]
     code = """
 from plugins.workers.runtime import configure_django_for_website
-selected = configure_django_for_website('ctc-research')
+selected = configure_django_for_website('precis-ctc')
 from django.conf import settings
 print(selected)
 print(settings.STATIC_ROOT)
@@ -26,8 +26,8 @@ print(settings.STATIC_ROOT)
         check=True,
     )
 
-    assert "ctc-research" in result.stdout
-    assert "ctc-research/assets/staticfiles" in result.stdout
+    assert "precis-ctc" in result.stdout
+    assert "precis-ctc/assets/staticfiles" in result.stdout
 
 
 def test_task_imports_are_available():

@@ -16,7 +16,7 @@ The `www/` directory (merged from former `projects/shared/` and `projects/www/`)
 1. **Sentinel site** for the shared-task worker stack (`shared-worker` + `shared-scheduler`)
 2. **Shared library** of task modules, CI utilities, and runtime helpers consumed by all tenant sites
 
-Unlike per-site Django projects (ctc-research, lms, VResume), `www/` has no tenant-specific overrides — it's a site-agnostic configuration that can route tasks to **any** site's queue.
+Unlike per-site Django projects (precis-ctc, lms, VResume), `www/` has no tenant-specific overrides — it's a site-agnostic configuration that can route tasks to **any** site's queue.
 
 ---
 

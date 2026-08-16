@@ -13,7 +13,7 @@ Internet
 Traefik Proxy (default-proxy)
   │  SSL via Let's Encrypt (Cloudflare DNS-01)
   │
-  ├── ctc-research.com ──────→ ctc-research-website:5070
+  ├── ctc-research.com ──────→ precis-ctc-website:5070
   ├── structa.cloud ─────────→ lms-web:5071
   ├── vresume.structa.cloud ─→ vresume-web:5072
   ├── media.structa.cloud ───→ shared-proxy:80

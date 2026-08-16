@@ -60,7 +60,7 @@ Run all targets from `projects/` directory: `cd projects && make <target>`
 ### Per-Site Operations
 | Command | Description |
 |---------|-------------|
-| `make ctc-research-up` | Start CTC Research stack |
+| `make precis-ctc-up` | Start CTC Research stack |
 | `make structa-up` | Start LMS/Structa stack |
 | `make vresume-up` | Start VResume stack |
 | `make collectstatic-site WEBSITE=<site>` | Collect static files for a site |

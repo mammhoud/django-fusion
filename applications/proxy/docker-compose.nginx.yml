@@ -35,15 +35,15 @@ services:
       - "traefik.http.routers.shared-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
       - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
     volumes:
-      - ../projects/precis/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../projects/precis/main/assets/staticfiles:/var/www/sites/lms/static:ro
+      - ../projects/precis/precis-ctc/assets/staticfiles:/var/www/sites/precis-ctc/static:ro
+      - ../projects/precis/precis-lms/assets/staticfiles:/var/www/sites/lms/static:ro
       - ../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
-      - lms-fusion-static:/var/www/sites/lms-fusion/static:ro
+      - precis-lms-static:/var/www/sites/precis-lms/static:ro
       - ../projects/assets/static:/var/www/static:ro
-      - ../projects/precis/ctc-research/assets/media:/var/www/media/ctc-research:ro
-      - ../projects/precis/main/assets/media:/var/www/media/lms:ro
+      - ../projects/precis/precis-ctc/assets/media:/var/www/media/precis-ctc:ro
+      - ../projects/precis/precis-lms/assets/media:/var/www/media/lms:ro
       - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
-      - lms-fusion-media:/var/www/media/lms-fusion:ro
+      - precis-lms-media:/var/www/media/precis-lms:ro
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./nginx/www:/var/www/html:ro
     networks:
@@ -127,6 +127,12 @@ services:
       AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL:-https://space.structa.cloud}
       AFFINE_SERVER_PORT: "3010"
       AFFINE_INDEXER_ENABLED: "false"
+      # Email notifications/invites (Gmail SMTP via an app password).
+      MAILER_HOST: ${MAILER_HOST:-smtp.gmail.com}
+      MAILER_PORT: ${MAILER_PORT:-587}
+      MAILER_USER: ${MAILER_USER:-}
+      MAILER_PASSWORD: ${MAILER_PASSWORD:-}
+      MAILER_SENDER: ${MAILER_SENDER:-structa.cloud@gmail.com}
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3010/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
       interval: 15s
@@ -139,9 +145,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  lms-fusion-static:
-    name: lms-fusion-static
+  precis-lms-static:
+    name: precis-lms-static
     external: true
-  lms-fusion-media:
-    name: lms-fusion-media
+  precis-lms-media:
+    name: precis-lms-media
     external: true

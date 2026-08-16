@@ -10,7 +10,7 @@ contracts. The detailed library reference is
   views and URL patterns.
 - `libs/django-fusion/src/django_fusion/core/health/` — application, database,
   media, and webpack asset checks.
-- `projects/cms-fusion/backend/` and `projects/lms-fusion/backend/` — site
+- `projects/cms-fusion/backend/` and `projects/precis-lms/backend/` — site
   settings, URL mounts, and compatibility adapters.
 - `applications/proxy/` — Traefik and the read-only `shared-proxy` Nginx
   service.

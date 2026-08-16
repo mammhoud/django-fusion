@@ -17,7 +17,7 @@ def configure(site: str) -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 def fix_homepage():
-    site_name = os.getenv("DJANGO_SITE") or "ctc-research"
+    site_name = os.getenv("DJANGO_SITE") or "precis-ctc"
     configure(site_name)
     
     import django

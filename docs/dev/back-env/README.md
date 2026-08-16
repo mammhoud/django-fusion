@@ -49,7 +49,7 @@ OLLAMA_HOST=http://ollama:11434
 OPENAI_API_KEY=sk-...
 ```
 
-### CTC Research (`projects/ctc-research/`)
+### CTC Research (`projects/precis-ctc/`)
 
 ```bash
 DB_NAME_CTC=db_ctc

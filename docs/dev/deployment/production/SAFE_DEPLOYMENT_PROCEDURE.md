@@ -49,7 +49,7 @@ ls -la /root/site/websites/docs/ | head -10
 ### Step 1.1: Create Docker Network
 ```bash
 docker network create traefik-net 2>/dev/null || true
-docker network create ctc-research-network 2>/dev/null || true
+docker network create precis-ctc-network 2>/dev/null || true
 ```
 
 **Expected Output:**
@@ -146,27 +146,27 @@ cd /root/site/websites
 # Step 1: Core authentication (safe to load, no dependencies)
 echo "Step 1/6: Loading authentication data..."
 docker compose run --rm web python manage.py loaddata \
-  /app/ctc-research/assets/fixtures/auth/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Auth data loaded"
+  /app/precis-ctc/assets/fixtures/auth/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Auth data loaded"
 
 # Step 2: Wagtail core (locales, sites - no dependencies except content types)
 echo "Step 2/6: Loading Wagtail core (locales, sites)..."
 docker compose run --rm web python manage.py loaddata \
-  /app/ctc-research/assets/fixtures/wagtail/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Wagtail core loaded"
+  /app/precis-ctc/assets/fixtures/wagtail/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Wagtail core loaded"
 
 # Step 3: Base pages (depends on site existing)
 echo "Step 3/6: Loading base pages..."
 docker compose run --rm web python manage.py loaddata \
-  /app/ctc-research/assets/fixtures/pages/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Pages loaded"
+  /app/precis-ctc/assets/fixtures/pages/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Pages loaded"
 
 # Step 4: Images and media (safe to load anytime)
 echo "Step 4/6: Loading images..."
 docker compose run --rm web python manage.py loaddata \
-  /app/ctc-research/assets/fixtures/media/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Images loaded"
+  /app/precis-ctc/assets/fixtures/media/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Images loaded"
 
 # Step 5: Content pages (depends on pages existing)
 echo "Step 5/6: Loading content pages..."
 docker compose run --rm web python manage.py loaddata \
-  /app/ctc-research/assets/fixtures/content/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Content loaded"
+  /app/precis-ctc/assets/fixtures/content/*.json 2>&1 | grep -E "(Installed|Problem)" || echo "✅ Content loaded"
 
 # Re-enable search
 unset WAGTAIL_SEARCH_DISABLED
@@ -246,7 +246,7 @@ docker compose build traefik
 
 ### Step 5.2: Start All Services
 ```bash
-docker compose up -d traefik postgres redis ctc-research-website lms-website vresume-website
+docker compose up -d traefik postgres redis precis-ctc-website lms-website vresume-website
 ```
 
 **Wait for health checks:**
@@ -352,7 +352,7 @@ Verify:
 
 ### Task 2: Check Application Logs
 ```bash
-docker logs ctc-research-website | tail -50
+docker logs precis-ctc-website | tail -50
 docker logs lms-website | tail -50
 docker logs vresume-website | tail -50
 ```
@@ -473,7 +473,7 @@ docker compose up -d
 ### Step 4: Verify
 ```bash
 docker logs traefik | tail -20
-docker logs ctc-research-website | tail -20
+docker logs precis-ctc-website | tail -20
 ```
 
 ---

@@ -42,7 +42,7 @@ Successfully migrated away from the centralized `assets/static/js/theme` directo
   - Also updated documentation comment
 
 #### Website Entry Points
-- **File**: `ctc-research/assets/static/js/app.js`
+- **File**: `precis-ctc/assets/static/js/app.js`
   - Changed: `import { initAllUsecases } from '@theme'`
   - To: `import { initAllUsecases } from '../../../../assets/static/js/modules/index.js'`
 
@@ -117,7 +117,7 @@ assets/static/js/
 │   └── ...
 └── registry.js
 
-ctc-research/assets/static/js/
+precis-ctc/assets/static/js/
 ├── app.js                       ← Updated to import from ../../../../assets/static/js/modules/
 
 lms/assets/static/js/
@@ -157,7 +157,7 @@ If needed, the following can be reverted:
 
 ### Testing
 1. ✅ Build verification - PASSED
-2. Test each website (ctc-research, lms, VResume) in dev environment
+2. Test each website (precis-ctc, lms, VResume) in dev environment
 3. Verify usecases initialize properly
 4. Check vendor packages load correctly
 
@@ -182,7 +182,7 @@ If needed, the following can be reverted:
 | `assets/static/js/utility/mixins.js` | Import path updated | ✅ |
 | `assets/static/js/modules/index.js` | Exports added | ✅ |
 | `assets/static/js/modules/usecases/index.js` | **NEW FILE** | ✅ |
-| `ctc-research/assets/static/js/app.js` | Import path updated | ✅ |
+| `precis-ctc/assets/static/js/app.js` | Import path updated | ✅ |
 | `lms/assets/static/js/app.js` | Import path updated | ✅ |
 | `VResume/assets/static/js/app.js` | Import path updated | ✅ |
 | `assets/static/js/theme/` | **DELETED** | ✅ |

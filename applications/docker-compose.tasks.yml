@@ -28,9 +28,9 @@ x-shared-tasks-base: &shared-tasks-base
     # This file sits one level deep (applications/), unlike projects/<site>/
     # which is two deep, so all host paths below use `..` (repo root).
     context: ..
-    dockerfile: projects/precis/main/compose/Dockerfile.backend
+    dockerfile: projects/precis/precis-lms/compose/Dockerfile.backend
     args:
-      SOURCE_PATH: precis/main
+      SOURCE_PATH: precis/precis-lms
       # The generic backend image supplies Django's shared management/settings
       # bootstrap. Product task packages are mounted separately below; no LMS
       # task package is included in the shared worker.
@@ -76,7 +76,7 @@ x-shared-tasks-base: &shared-tasks-base
     # Comma-separated project/backend paths are resolved by
     # django_fusion.tasks.TaskRegistry via importlib. Keep this list explicit
     # so the shared worker cannot accidentally import Precis/LMS tasks.
-    FUSION_TASK_PROJECT_PATHS: ${FUSION_TASK_PROJECT_PATHS:-/app/task-projects/landing-fusion/backend,/app/task-projects/loop-crm/backend,/app/task-projects/formint-cloud/backend}
+    FUSION_TASK_PROJECT_PATHS: ${FUSION_TASK_PROJECT_PATHS:-/app/task-projects/precis-landing/backend,/app/task-projects/loop-crm/backend,/app/task-projects/formint-cloud/backend}
   networks:
     - common
 
@@ -94,8 +94,8 @@ services:
       # Shared task/config code is hot-reloadable without rebuilding the image.
       # The management/settings bootstrap is shared infrastructure; this
       # mount does not expose Precis application tasks to discovery.
-      - ../projects/precis/main/backend/configs:/app/shared/configs:z
-      - ../projects/precis/landi/backend:/app/task-projects/landing-fusion/backend:ro
+      - ../projects/precis/precis-lms/backend/configs:/app/shared/configs:z
+      - ../projects/precis/precis-landing/backend:/app/task-projects/precis-landing/backend:ro
       - ../projects/loop-crm/backend:/app/task-projects/loop-crm/backend:ro
       - ../projects/formints/formint-cloud/backend:/app/task-projects/formint-cloud/backend:ro
     command: >
@@ -114,8 +114,8 @@ services:
       - ../projects/assets:/app/assets:z
       - ../libs:/app/libs:z
       - ../projects/logs:/app/logs:z
-      - ../projects/precis/main/backend/configs:/app/shared/configs:z
-      - ../projects/precis/landi/backend:/app/task-projects/landing-fusion/backend:ro
+      - ../projects/precis/precis-lms/backend/configs:/app/shared/configs:z
+      - ../projects/precis/precis-landing/backend:/app/task-projects/precis-landing/backend:ro
       - ../projects/loop-crm/backend:/app/task-projects/loop-crm/backend:ro
       - ../projects/formints/formint-cloud/backend:/app/task-projects/formint-cloud/backend:ro
     command: >

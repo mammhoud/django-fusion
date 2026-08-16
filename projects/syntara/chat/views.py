@@ -91,7 +91,7 @@ class ChatView(DetailView):
         conversation = self.object
         model_id = self.request.GET.get("model_id", "gemma3-4b")
         apps = customizer_apps()
-        default_website_slug = apps[0]["slug"] if apps else "ctc-research"
+        default_website_slug = apps[0]["slug"] if apps else "precis-ctc"
         
         # Process messages for display
         messages_with_content = []
@@ -359,7 +359,7 @@ class TemplateSidebarFragmentView(View):
         from .site_data import pages_for_website
 
         apps = customizer_apps()
-        default_website_slug = apps[0]["slug"] if apps else "ctc-research"
+        default_website_slug = apps[0]["slug"] if apps else "precis-ctc"
         model_id = request.GET.get("model_id", "gemma3-4b")
 
         data = pages_for_website(website_slug)

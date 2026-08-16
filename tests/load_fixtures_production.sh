@@ -12,8 +12,8 @@ echo "========================================"
 echo ""
 
 # Configuration
-CONTAINER="web-ctc-research"
-FIXTURES_DIR="/app/ctc-research/assets/fixtures/by-model"
+CONTAINER="web-precis-ctc"
+FIXTURES_DIR="/app/precis-ctc/assets/fixtures/by-model"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 LOG_FILE="fixture_loading_${TIMESTAMP}.log"
 

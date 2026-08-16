@@ -54,7 +54,7 @@
 | Service | Container | Port | Status | Purpose |
 |---------|-----------|------|--------|---------|
 | Traefik Proxy | `default-proxy` | 80, 443, 8080 | ✅ Healthy | HTTPS reverse proxy, SSL termination |
-| CTC Research | `ctc-research-website` | 5070 | ✅ Healthy | Django app (gunicorn) |
+| CTC Research | `precis-ctc-website` | 5070 | ✅ Healthy | Django app (gunicorn) |
 | VResume | `vresume-web` | 5072 | ✅ Healthy | Django app (gunicorn) |
 | LMS Demo | `lms-web` | 5071 | ✅ Healthy | Django app (gunicorn) |
 | PostgreSQL | `postgres` | 5432 | ✅ Healthy | Primary database |
@@ -104,7 +104,7 @@
 ├── tasks/                         # Shared task runners
 ├── webpack/                       # Webpack build configuration
 │
-├── ctc-research/                  # CTC Research site
+├── precis-ctc/                  # CTC Research site
 │   ├── Makefile                   # Site-specific tasks
 │   ├── www/                       # Django apps
 │   ├── plugins/                   # Site plugins (blog, lms, accounts, etc.)
@@ -170,9 +170,9 @@
 ```bash
 cd /home/structa.cloud
 docker build \
-  --build-arg PROJECT_PATH=ctc-research \
+  --build-arg PROJECT_PATH=precis-ctc \
   -f core/compose/Dockerfile \
-  -t structa-ctc-research:latest \
+  -t structa-precis-ctc:latest \
   .
 ```
 
@@ -183,10 +183,10 @@ docker build \
 docker-compose up -d
 
 # Start specific service
-docker-compose up -d ctc-research-website
+docker-compose up -d precis-ctc-website
 
 # View logs
-docker-compose logs -f ctc-research-website
+docker-compose logs -f precis-ctc-website
 
 # Stop services
 docker-compose down
@@ -196,9 +196,9 @@ docker-compose down
 
 | Variable | Example | Purpose |
 |----------|---------|---------|
-| `PROJECT_PATH` | `ctc-research` | Site subdirectory in core/ |
-| `WEBSITE` | `ctc-research` | Site identifier for Django |
-| `DJANGO_SITE` | `ctc-research` | Django site name (used in settings) |
+| `PROJECT_PATH` | `precis-ctc` | Site subdirectory in core/ |
+| `WEBSITE` | `precis-ctc` | Site identifier for Django |
+| `DJANGO_SITE` | `precis-ctc` | Django site name (used in settings) |
 | `DATABASE_URL` | `postgresql://user:pass@postgres:5432/ctc_research_db` | Database connection |
 | `REDIS_URL` | `redis://default-redis:6379/0` | Redis connection |
 | `DEBUG` | `False` | Django debug mode (always False in production) |
@@ -333,10 +333,10 @@ tls:
 
 ```bash
 # Run migrations
-docker exec ctc-research-website python manage.py migrate
+docker exec precis-ctc-website python manage.py migrate
 
 # Create superuser
-docker exec ctc-research-website python manage.py createsuperuser
+docker exec precis-ctc-website python manage.py createsuperuser
 # Username: admin
 # Password: (set securely)
 # Email: admin@ctc-research.com
@@ -357,7 +357,7 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 #### Create HomePage
 
 ```bash
-docker exec ctc-research-website python manage.py shell <<EOF
+docker exec precis-ctc-website python manage.py shell <<EOF
 from www.core.content.models.pages.home import HomePage
 from wagtail.models import Site, Locale
 
@@ -398,13 +398,13 @@ Password: (your password)
 docker ps -a
 
 # View container logs
-docker logs ctc-research-website --tail 50 -f
+docker logs precis-ctc-website --tail 50 -f
 
 # Execute command in container
-docker exec ctc-research-website python manage.py check
+docker exec precis-ctc-website python manage.py check
 
 # Restart container
-docker restart ctc-research-website
+docker restart precis-ctc-website
 
 # Stop & remove containers
 docker-compose down
@@ -417,22 +417,22 @@ docker-compose down -v
 
 ```bash
 # Check configuration
-docker exec ctc-research-website python manage.py check
+docker exec precis-ctc-website python manage.py check
 
 # Run migrations
-docker exec ctc-research-website python manage.py migrate
+docker exec precis-ctc-website python manage.py migrate
 
 # Create superuser
-docker exec ctc-research-website python manage.py createsuperuser
+docker exec precis-ctc-website python manage.py createsuperuser
 
 # Load fixtures
-docker exec ctc-research-website python manage.py loaddata fixture.json
+docker exec precis-ctc-website python manage.py loaddata fixture.json
 
 # Django shell
-docker exec -it ctc-research-website python manage.py shell
+docker exec -it precis-ctc-website python manage.py shell
 
 # Collect static files
-docker exec ctc-research-website python manage.py collectstatic --noinput
+docker exec precis-ctc-website python manage.py collectstatic --noinput
 ```
 
 ### Make (Recommended)
@@ -467,7 +467,7 @@ make help
 echo | openssl s_client -connect ctc-research.com:443 -servername ctc-research.com 2>/dev/null | openssl x509 -noout -dates
 
 # Check Let's Encrypt store
-cat /home/structa.cloud/applications/proxy/acme/acme.json | python3 -m json.tool | grep -A 10 'ctc-research'
+cat /home/structa.cloud/applications/proxy/acme/acme.json | python3 -m json.tool | grep -A 10 'precis-ctc'
 
 # Restart proxy to reload configs
 docker restart default-proxy
@@ -523,10 +523,10 @@ curl -v http://ctc-research.com/
 **Solution:**
 ```bash
 # Verify django-fusion is installed
-docker exec ctc-research-website python -c "import django_fusion; print('✅ Installed')"
+docker exec precis-ctc-website python -c "import django_fusion; print('✅ Installed')"
 
 # If missing, install it
-docker exec ctc-research-website uv pip install -e /app/libs/django-fusion
+docker exec precis-ctc-website uv pip install -e /app/libs/django-fusion
 
 # Verify HomePage has content in admin
 https://ctc-research.com/admin/pages/
@@ -539,13 +539,13 @@ https://ctc-research.com/admin/pages/
 **Solution:**
 ```bash
 # Check logs
-docker logs ctc-research-website | tail -100
+docker logs precis-ctc-website | tail -100
 
 # Check container resource usage
-docker stats ctc-research-website
+docker stats precis-ctc-website
 
 # Restart container
-docker restart ctc-research-website
+docker restart precis-ctc-website
 
 # If persistent, increase memory in docker-compose.yml:
 # deploy:
@@ -567,7 +567,7 @@ docker ps | grep postgres
 docker logs postgres | tail -50
 
 # Verify credentials in settings
-docker exec ctc-research-website python manage.py check
+docker exec precis-ctc-website python manage.py check
 
 # Test connection
 docker exec postgres psql -U structa_user -d ctc_research_db -c "SELECT 1"
@@ -586,10 +586,10 @@ docker ps | grep shared-proxy
 docker logs shared-proxy
 
 # Verify static files collected
-docker exec ctc-research-website python manage.py collectstatic --dry-run
+docker exec precis-ctc-website python manage.py collectstatic --dry-run
 
 # Collect if missing
-docker exec ctc-research-website python manage.py collectstatic --noinput
+docker exec precis-ctc-website python manage.py collectstatic --noinput
 ```
 
 ### Let's Encrypt Rate Limit Hit

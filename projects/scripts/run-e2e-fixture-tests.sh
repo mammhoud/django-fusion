@@ -21,7 +21,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 CMS_FRONTEND="$PROJECT_DIR/projects/cms-fusion/frontend"
-LMS_FRONTEND="$PROJECT_DIR/projects/lms-fusion/frontend"
+LMS_FRONTEND="$PROJECT_DIR/projects/precis-lms/frontend"
 
 # Colors for output
 RED='\033[0;31m'
@@ -163,7 +163,7 @@ echo ""
 echo -e "To run the tests with backend servers running:"
 echo -e "  1. Start Django backend:"
 echo -e "     ${CYAN}cd projects/cms-fusion/backend && make dev PORT=5075${NC}"
-echo -e "     ${CYAN}cd projects/lms-fusion/backend && make dev PORT=5074${NC}"
+echo -e "     ${CYAN}cd projects/precis-lms/backend && make dev PORT=5074${NC}"
 echo -e "  2. Run tests: ${CYAN}./projects/scripts/run-e2e-fixture-tests.sh${NC}"
 echo ""
 echo -e "The tests gracefully handle unavailable backends. Backend-API tests"

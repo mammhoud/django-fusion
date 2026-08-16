@@ -292,6 +292,104 @@ class WorkflowStepEditorTests(TestCase):
         self.assertContains(response, "dag-canvas")
 
 
+class WorkflowGraphEditorTests(TestCase):
+    """The visual DAG canvas persists a validated acyclic node/edge graph."""
+
+    def setUp(self):
+        self.workspace = Workspace.objects.create(name="Graph", slug="graph")
+        self.user = _member(self.workspace, "graph-user", "graph@example.com")
+        self.client.force_login(self.user)
+        self.workflow = WorkflowDefinition.objects.create(
+            workspace=self.workspace,
+            slug="branch-flow",
+            name="Branch flow",
+            trigger="contact.created",
+            actions=["assign_owner"],
+            status="draft",
+        )
+
+    def _branch_payload(self):
+        # trigger → assign_owner → (notify_sales, send_email) — a real fork.
+        return {
+            "trigger": "contact.created",
+            "nodes": [
+                {"id": "trigger", "action": None, "x": 32, "y": 48},
+                {"id": "step-1", "action": "assign_owner", "x": 232, "y": 48},
+                {"id": "step-2", "action": "notify_sales", "x": 432, "y": 20},
+                {"id": "step-3", "action": "send_email", "x": 432, "y": 96},
+            ],
+            "edges": [
+                {"from": "trigger", "to": "step-1"},
+                {"from": "step-1", "to": "step-2"},
+                {"from": "step-1", "to": "step-3"},
+            ],
+        }
+
+    def _update(self, payload):
+        return self.client.post(
+            f"/fragments/workflows/{self.workflow.pk}/graph/",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+    def test_save_persists_graph_and_topological_actions(self):
+        response = self._update(self._branch_payload())
+        self.assertEqual(response.status_code, 200)
+        self.workflow.refresh_from_db()
+        self.assertEqual(self.workflow.graph["trigger"], "contact.created")
+        self.assertEqual(len(self.workflow.graph["nodes"]), 4)
+        self.assertEqual(len(self.workflow.graph["edges"]), 3)
+        # Topological order: assign_owner precedes its two children; the two
+        # children follow in stable edge order.
+        self.assertEqual(self.workflow.actions[0], "assign_owner")
+        self.assertEqual(set(self.workflow.actions[1:]), {"notify_sales", "send_email"})
+
+    def test_rejects_cycle(self):
+        payload = self._branch_payload()
+        payload["edges"].append({"from": "step-3", "to": "step-1"})
+        response = self._update(payload)
+        self.assertEqual(response.status_code, 400)
+        self.workflow.refresh_from_db()
+        self.assertEqual(self.workflow.actions, ["assign_owner"])
+
+    def test_rejects_orphan_node(self):
+        payload = self._branch_payload()
+        payload["nodes"].append({"id": "step-4", "action": "notify_revops", "x": 632, "y": 96})
+        response = self._update(payload)
+        self.assertEqual(response.status_code, 400)
+        self.workflow.refresh_from_db()
+        self.assertEqual(self.workflow.actions, ["assign_owner"])
+
+    def test_rejects_unknown_action(self):
+        payload = self._branch_payload()
+        payload["nodes"][1]["action"] = "run_arbitrary_code"
+        response = self._update(payload)
+        self.assertEqual(response.status_code, 400)
+
+    def test_rejects_missing_or_duplicate_trigger(self):
+        payload = self._branch_payload()
+        payload["nodes"] = [n for n in payload["nodes"] if n["id"] != "trigger"]
+        self.assertEqual(self._update(payload).status_code, 400)
+        payload = self._branch_payload()
+        payload["nodes"].append({"id": "trigger-2", "action": None, "x": 0, "y": 0})
+        self.assertEqual(self._update(payload).status_code, 400)
+
+    def test_step_editor_keeps_linear_graph_in_sync(self):
+        response = self.client.post(
+            f"/fragments/workflows/{self.workflow.pk}/steps/",
+            data=json.dumps({"trigger": "contact.created", "actions": ["assign_owner", "send_email"]}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.workflow.refresh_from_db()
+        self.assertEqual(self.workflow.actions, ["assign_owner", "send_email"])
+        self.assertEqual(len(self.workflow.graph["nodes"]), 3)
+        self.assertEqual(
+            [e["from"] for e in self.workflow.graph["edges"]],
+            ["trigger", "step-1"],
+        )
+
+
 def _csv_to_string(rows: list[dict]) -> str:
     """Small helper (kept for future row generators)."""
     buffer = io.StringIO()

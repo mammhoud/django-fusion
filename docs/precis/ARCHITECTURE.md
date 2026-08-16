@@ -4,7 +4,7 @@
 > **Product:** Precis LMS / learning platform
 > **Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + Astro 5 + HTMX + Alpine.js
 > **Updated:** 10 August 2026
-> **Path:** `projects/precis/main/`
+> **Path:** `projects/precis/precis-lms/`
 
 ---
 
@@ -28,7 +28,7 @@ pipeline for reusable UI.
 - **Skeleton loading.** Build-time skeleton manifest → Astro bridge → RUM
   metrics for perceived performance.
 - **Per-project isolation.** Templates, assets, and static files are scoped to
-  `projects/precis/main/`, never shared with landing-fusion or formints.
+  `projects/precis/precis-lms/`, never shared with precis-landing or formints.
 
 ---
 
@@ -128,7 +128,7 @@ production workloads via Redis.
 - Eliminates Celery dependency — simpler deploy, fewer moving parts.
 - `InProcessBackend` runs synchronously in tests, eliminating `CELERY_ALWAYS_EAGER`
   configuration.
-- Shared worker pool with landing-fusion (single Dramatiq worker per host)
+- Shared worker pool with precis-landing (single Dramatiq worker per host)
   reduces resource cost.
 
 ### ADR-5: Astro frontend with django-fusion bridge
@@ -143,8 +143,8 @@ for base64-encoded payloads.
 - Island architecture: interactive widgets (course player, progress charts)
   hydrate independently.
 - Same `LiveFragment.astro` / `SkeletonBridge.astro` components as
-  landing-fusion — shared django-fusion frontend contract.
-- `FusionDecoder` + `Site` class in `src/lib/site.ts` mirror the landing-fusion
+  precis-landing — shared django-fusion frontend contract.
+- `FusionDecoder` + `Site` class in `src/lib/site.ts` mirror the precis-landing
   frontend pattern, reducing training cost.
 
 **Key Astro pages:**
@@ -187,7 +187,7 @@ make build-assets
 ### ADR-7: Webpack-based asset pipeline
 
 **Decision:** Precis uses webpack (via `projects/webpack/base.config.js`) with
-project-specific config at `projects/precis/main/webpack/precis.config.js`.
+project-specific config at `projects/precis/precis-lms/webpack/precis.config.js`.
 Per-project webpack aliases (`@precis`, `@precis-styles`, `@precis-js`) keep
 imports scoped.
 
@@ -203,7 +203,7 @@ imports scoped.
 - Three entrypoints enable code splitting — most pages only load `main` +
   one additional bundle.
 - `django-webpack-loader` → `{% render_bundle 'main' %}` in Django templates.
-- Same webpack base config as landing-fusion, reducing drift.
+- Same webpack base config as precis-landing, reducing drift.
 
 ---
 
@@ -328,9 +328,9 @@ make build
 ## Template Resolution Order
 
 ```
-1. projects/precis/main/backend/templates/          # Site-root shells, errors
-2. projects/precis/main/backend/apps/*/templates/   # App-owned templates
-3. projects/precis/main/assets/templates/           # Shared asset templates
+1. projects/precis/precis-lms/backend/templates/          # Site-root shells, errors
+2. projects/precis/precis-lms/backend/apps/*/templates/   # App-owned templates
+3. projects/precis/precis-lms/assets/templates/           # Shared asset templates
 4. libs/django-fusion/src/django_fusion/templates/  # Framework fallback
 ```
 
@@ -339,7 +339,7 @@ make build
 ## Frontend Architecture
 
 ```
-projects/precis/main/frontend/
+projects/precis/precis-lms/frontend/
 ├── src/
 │   ├── pages/                     # Astro pages (SSG + SSR)
 │   │   ├── index.astro            # Homepage
@@ -390,7 +390,7 @@ from django_fusion.tasks import task
 ### Testing
 
 ```bash
-cd projects/precis/main/backend
+cd projects/precis/precis-lms/backend
 make check          # ruff + django check
 make test           # pytest (167 tests)
 make migrate        # Apply migrations (SQLite in dev)
@@ -402,7 +402,7 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/learning/tests/ -v
 ### Commands reference
 
 ```bash
-cd projects/precis/main
+cd projects/precis/precis-lms
 
 # Asset build
 make install-assets     # npm install
@@ -422,7 +422,7 @@ make frontend-dev       # Astro dev server
 - Do not import `apps/learning/` from `apps/pages/` (or vice versa) — use
   Wagtail hooks and signals.
 - Do not put Precis-specific templates in `libs/django-fusion/`.
-- Do not share static assets with landing-fusion or formints.
+- Do not share static assets with precis-landing or formints.
 - Do not reference "Next.js" in new code or docs — the frontend is Astro.
   (The README stack line may be stale; trust the source code.)
 - Do not use the old `django_fusion.comp.templatetags` import path — use
@@ -434,8 +434,8 @@ make frontend-dev       # Astro dev server
 ## Related
 
 - [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo-wide architecture
-- [`projects/precis/main/backend/AGENTS.md`](/projects/precis/main/backend/AGENTS.md) — Backend agent instructions
-- [`projects/precis/main/README.md`](/projects/precis/main/README.md) — Project README (note: stack line references Next.js; source is Astro)
+- [`projects/precis/precis-lms/backend/AGENTS.md`](/projects/precis/precis-lms/backend/AGENTS.md) — Backend agent instructions
+- [`projects/precis/precis-lms/README.md`](/projects/precis/precis-lms/README.md) — Project README (note: stack line references Next.js; source is Astro)
 - [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo MCP integration (Kilo server, designer/task tools)
 - [`docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md`](/docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md) — Tasks & MCP plan
 - [`docs/plans/django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](/docs/plans/django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) — Skeleton pipeline plan

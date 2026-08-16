@@ -32,17 +32,25 @@ from apps.crm.models import Activity, Company, Contact, Deal, Pipeline
 from apps.finance.models import Invoice, Payment, RevenueEvent
 from apps.marketing.models import Campaign, Post, SocialChannel
 
-from .models import Webhook
+from .models import EmailAccount, EmailMessage, Webhook
 
 
 @dataclass(frozen=True)
 class Resource:
-    """The contract for one API resource."""
+    """The contract for one API resource.
+
+    ``label`` is the human-readable plural name surfaced as the OpenAPI tag and
+    in operation summaries on the Bolt road; ``description`` is the one-line
+    resource summary shown in the OpenAPI docs.
+    """
 
     model: type[models.Model]
     read_fields: tuple[str, ...]
     write_fields: tuple[str, ...]
     required_fields: tuple[str, ...] = ()
+    label: str = ""
+    singular: str = ""
+    description: str = ""
 
 
 # Read fields preserve the historical projections already exposed on both
@@ -66,6 +74,9 @@ RESOURCES: dict[str, Resource] = {
             "owner_id",
         ),
         required_fields=("name",),
+        label="Companies",
+        singular="company",
+        description="Organizations in the CRM, with industry, website, and owner.",
     ),
     "contacts": Resource(
         model=Contact,
@@ -82,6 +93,9 @@ RESOURCES: dict[str, Resource] = {
             "owner_id",
         ),
         required_fields=("first_name", "last_name", "email", "company_id"),
+        label="Contacts",
+        singular="contact",
+        description="People associated with companies, with title and contact details.",
     ),
     "deals": Resource(
         model=Deal,
@@ -99,6 +113,9 @@ RESOURCES: dict[str, Resource] = {
             "custom_attributes",
         ),
         required_fields=("company_id", "name", "value", "expected_close_date"),
+        label="Deals",
+        singular="deal",
+        description="Pipeline opportunities with value, stage, and expected close date.",
     ),
     "activities": Resource(
         model=Activity,
@@ -114,18 +131,27 @@ RESOURCES: dict[str, Resource] = {
             "status",
         ),
         required_fields=("deal_id", "activity_type", "subject"),
+        label="Activities",
+        singular="activity",
+        description="Calls, emails, meetings, notes, and tasks tied to deals and contacts.",
     ),
     "pipelines": Resource(
         model=Pipeline,
         read_fields=("id", "name", "description", "is_default", "order"),
         write_fields=("name", "description", "is_default", "order"),
         required_fields=("name",),
+        label="Pipelines",
+        singular="pipeline",
+        description="Sales pipelines with configurable stages and a default designation.",
     ),
     "campaigns": Resource(
         model=Campaign,
         read_fields=("id", "name", "description", "budget", "start_date", "end_date"),
         write_fields=("name", "description", "start_date", "end_date", "budget", "owner_id"),
         required_fields=("name",),
+        label="Campaigns",
+        singular="campaign",
+        description="Marketing campaigns with budget and date range.",
     ),
     "channels": Resource(
         model=SocialChannel,
@@ -134,18 +160,27 @@ RESOURCES: dict[str, Resource] = {
         # set only by the provider OAuth callback flow.
         write_fields=("platform", "account_name", "is_active"),
         required_fields=("platform", "account_name"),
+        label="Channels",
+        singular="channel",
+        description="Connected social publishing channels (OAuth tokens set only via callback).",
     ),
     "posts": Resource(
         model=Post,
         read_fields=("id", "content", "scheduled_at", "status", "channel_id", "campaign_id"),
         write_fields=("campaign_id", "channel_id", "content", "scheduled_at"),
         required_fields=("channel_id", "content", "scheduled_at"),
+        label="Posts",
+        singular="post",
+        description="Scheduled social posts on a channel.",
     ),
     "touchpoints": Resource(
         model=AttributionTouchpoint,
         read_fields=("id", "source", "occurred_at", "weight", "deal_id", "post_id", "campaign_id"),
         write_fields=("deal_id", "post_id", "campaign_id", "source", "occurred_at", "weight"),
         required_fields=("deal_id", "occurred_at"),
+        label="Touchpoints",
+        singular="touchpoint",
+        description="Attribution touchpoints crediting content toward deals.",
     ),
     "invoices": Resource(
         model=Invoice,
@@ -164,18 +199,27 @@ RESOURCES: dict[str, Resource] = {
             "notes",
         ),
         required_fields=("number", "company_id", "due_on"),
+        label="Invoices",
+        singular="invoice",
+        description="Customer invoices with totals, status, and due dates.",
     ),
     "payments": Resource(
         model=Payment,
         read_fields=("id", "invoice__number", "amount", "paid_on", "method"),
         write_fields=("invoice_id", "amount", "paid_on", "method", "reference"),
         required_fields=("invoice_id", "amount"),
+        label="Payments",
+        singular="payment",
+        description="Payments applied to invoices.",
     ),
     "revenue": Resource(
         model=RevenueEvent,
         read_fields=("id", "deal__name", "campaign__name", "kind", "amount", "recognized_on"),
         write_fields=("deal_id", "campaign_id", "invoice_id", "kind", "amount", "recognized_on", "metadata"),
         required_fields=("deal_id", "amount"),
+        label="Revenue",
+        singular="revenue event",
+        description="Recognized revenue events linked to deals and campaigns.",
     ),
     # The webhook signing secret is writable but never projected back out.
     "webhooks": Resource(
@@ -183,6 +227,55 @@ RESOURCES: dict[str, Resource] = {
         read_fields=("id", "url", "events", "is_active", "created_at"),
         write_fields=("url", "secret", "events", "is_active"),
         required_fields=("url",),
+        label="Webhooks",
+        singular="webhook",
+        description="Outbound webhook subscriptions with a writable (never returned) signing secret.",
+    ),
+    # OAuth tokens/sync cursors are never accepted or projected through the
+    # resource road; they are set only by the provider OAuth callback flow and
+    # advanced by the sync service.
+    "email_accounts": Resource(
+        model=EmailAccount,
+        read_fields=("id", "provider", "email", "last_synced_at", "is_active", "created_at"),
+        write_fields=("provider", "email", "is_active"),
+        required_fields=("provider", "email"),
+        label="Email accounts",
+        singular="email account",
+        description="Connected Gmail/Outlook mailboxes synced into the CRM timeline.",
+    ),
+    "email_messages": Resource(
+        model=EmailMessage,
+        read_fields=(
+            "id",
+            "account_id",
+            "contact_id",
+            "deal_id",
+            "external_id",
+            "thread_id",
+            "subject",
+            "snippet",
+            "sender_email",
+            "sender_name",
+            "direction",
+            "received_at",
+        ),
+        write_fields=(
+            "account_id",
+            "contact_id",
+            "deal_id",
+            "external_id",
+            "thread_id",
+            "subject",
+            "snippet",
+            "sender_email",
+            "sender_name",
+            "direction",
+            "received_at",
+        ),
+        required_fields=("account_id", "external_id"),
+        label="Email messages",
+        singular="email message",
+        description="Synced email messages matched to contacts and deals.",
     ),
 }
 

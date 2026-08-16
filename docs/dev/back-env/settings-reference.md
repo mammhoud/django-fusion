@@ -278,7 +278,7 @@ default:
   GEMINI_API_KEY: "@env GEMINI_API_KEY"
 ```
 
-### CTC Research (`projects/ctc-research/configs/settings.yml`)
+### CTC Research (`projects/precis-ctc/configs/settings.yml`)
 
 ```yaml
 default:
@@ -335,7 +335,7 @@ github=ghp_...   # or GITHUB_TOKEN=...
 
 | ID | Site | Container | Port |
 |----|------|-----------|------|
-| 1 | CTC Research | ctc-research-website | 5070 |
+| 1 | CTC Research | precis-ctc-website | 5070 |
 | 2 | LMS | lms-website | 5071 |
 | 3 | Portfolio | vresume-website | 5072 |
 | 4 | Cypercloud | cypercloud-website | 5073 |

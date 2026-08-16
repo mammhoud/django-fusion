@@ -9,7 +9,7 @@ It is intentionally written against the repository layout used here, not a gener
 - `core/assets/` — shared frontend assets, shared templates, static files, scripts, and locale files.
 - `core/configs/` — shared Django settings and test settings.
 - `core/www/` — shared/core Django code used by the application stack.
-- `core/ctc-research/` — CTC Research site.
+- `core/precis-ctc/` — CTC Research site.
 - `core/lms-demo/` — Structa/LMS demo site.
 - `core/VResume/` — VResume site; keep the directory capitalized.
 - `core/Makefile` — canonical dispatcher for site checks, tests, migrations, assets, and `WEBSITE=...` selection.
@@ -28,7 +28,7 @@ A typical site tree looks like this:
 4. Viewsets expose full-page routes, fragment-only routes, form endpoints, or model-backed routes.
 5. Site URL configuration includes the site routes under a prefix such as `/components/` or `/tinker/`.
 
-Keep reusable framework behavior in `libs/django-fusion/`. Keep site-specific registration in the relevant site path such as `core/ctc-research/`, `core/lms-demo/`, or `core/VResume/`.
+Keep reusable framework behavior in `libs/django-fusion/`. Keep site-specific registration in the relevant site path such as `core/precis-ctc/`, `core/lms-demo/`, or `core/VResume/`.
 
 ### 2. Component tags
 
@@ -144,7 +144,7 @@ flowchart TD
     H --> I[Return CustomizerPageData objects]
 
     B -. canonical path .-> B1[core/assets/]
-    C -. canonical paths .-> C1[core/ctc-research/]
+    C -. canonical paths .-> C1[core/precis-ctc/]
     C -. canonical paths .-> C2[core/lms-demo/]
     C -. canonical paths .-> C3[core/VResume/]
 ```
@@ -155,7 +155,7 @@ The examples below are illustrative and should be adapted to the exact classes a
 
 ### `site.py` viewset registration
 
-Place site-specific registration in a site module such as `core/ctc-research/www/core/site.py` or equivalent. The exact import path can vary by site.
+Place site-specific registration in a site module such as `core/precis-ctc/www/core/site.py` or equivalent. The exact import path can vary by site.
 
 ```python
 from __future__ import annotations
@@ -179,9 +179,9 @@ class CustomizerApp(Application):
         )
 
         return [
-            CustomizerPageViewSet(site_key="ctc-research"),
-            SectionNavigatorFragment(site_key="ctc-research"),
-            MessageFormFragment(site_key="ctc-research"),
+            CustomizerPageViewSet(site_key="precis-ctc"),
+            SectionNavigatorFragment(site_key="precis-ctc"),
+            MessageFormFragment(site_key="precis-ctc"),
         ]
 
     def has_view_permission(self, user, obj=None) -> bool:
@@ -434,7 +434,7 @@ A customizer/django-fusion integration typically adds:
 - A site-level `Site` registration that mounts customizer page, section, and form viewsets.
 - A small set of django-fusion viewsets for full-page shell rendering and HTMX fragments.
 - Shared customizer component templates under `core/assets/templates/` when reusable across sites.
-- Site-specific templates under `core/ctc-research/`, `core/lms-demo/`, or `core/VResume/` only when necessary.
+- Site-specific templates under `core/precis-ctc/`, `core/lms-demo/`, or `core/VResume/` only when necessary.
 - A page/section discovery service that returns normalized data for templates and viewsets.
 - HTMX targets for section navigation, editor panels, form responses, and status messages.
 - Tests or checks run through `core/Makefile` with the appropriate `WEBSITE=...` value when implementation code is added.

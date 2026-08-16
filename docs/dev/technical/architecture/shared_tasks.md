@@ -8,7 +8,7 @@ worker consumes only explicitly configured active product task packages.
 
 | Layer | Location | Responsibility |
 |---|---|---|
-| Product servers | `projects/precis/landi/`, `projects/loop-crm/`, `projects/formints/` | HTTP, settings, product models, task producers |
+| Product servers | `projects/precis/precis-landing/`, `projects/loop-crm/`, `projects/formints/` | HTTP, settings, product models, task producers |
 | Task API | `libs/django-fusion/src/django_fusion/tasks/` | `@task`, registry, audit logging, backend abstraction |
 | Product workers | `<product>/backend/plugins/workers/` | Dramatiq actors owned by each product |
 | Shared worker | `applications/docker-compose.tasks.yml` | Loads configured product paths and executes actors |

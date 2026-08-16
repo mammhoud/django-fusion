@@ -8,8 +8,8 @@
 
 | Product | Canonical Path | Main Responsibility | Domain |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/main/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
-| **Landing-Fusion** | `projects/precis/landi/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
+| **Precis LMS** | `projects/precis/precis-lms/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
+| **Landing-Fusion** | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
 | **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
 | **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |
 | **django-fusion** | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables | submodule |
@@ -24,7 +24,6 @@
 | Engineering plans and implementation tasks | [`plans/`](plans/README.md) |
 | Product decisions and knowledge-graph objects | `Anytype/` when present |
 | Current project, architecture, development, and deployment references | The topic/project sections below |
-| Historical plan evidence | [`plans/legacy/`](plans/legacy/) |
 
 All new plans must be added under `docs/plans/<scope>/` and linked from the canonical plan registry. The old `docs/dev/plans/`, `docs/plans/migrated/`, and project-local `docs/superpowers/plans/` locations are no longer active authoring paths.
 
@@ -38,7 +37,7 @@ structa.cloud/
 │   │   │   ├── backend/              # Django + Wagtail backend
 │   │   │   ├── assets/               # Templates, static, SCSS, media
 │   │   │   └── frontend/             # Astro frontend shell
-│   │   ├── ctc-research/             # Medical research center site
+│   │   ├── precis-ctc/             # Medical research center site
 │   │   └── landi/                    # Astro marketing site + Django/Wagtail CMS
 │   │       ├── backend/              # Django + Wagtail backend
 │   │       ├── frontend/             # Astro frontend
@@ -104,7 +103,7 @@ structa.cloud/
 | Product | Directory | Key Docs |
 |---|---|---|
 | **Precis LMS** | [`precis/`](precis/) | Configuration, Courses, Deployment |
-| **Landing-Fusion** | [`landing-fusion/`](landing-fusion/) | Frontend, Backend API, Deployment |
+| **Landing-Fusion** | [`precis-landing/`](precis-landing/) | Frontend, Backend API, Deployment |
 | **Syntara/Cypercloud** | [`cypercloud/`](cypercloud/) | Infrastructure, Configuration, Features |
 | **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar (Django), Cloud |
 | **django-fusion** | [`libs/`](libs/) | Component guide, Viewsets, Templates |

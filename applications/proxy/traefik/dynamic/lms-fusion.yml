@@ -1,64 +1,103 @@
 # =============================================================================
-# lms-fusion — Traefik router config  [DORMANT / LOCAL DEV ONLY]
+# precis-lms (Precis LMS) — Traefik router config
 # =============================================================================
-# Containers "lms-fusion-frontend" and "lms-fusion-backend" NOT currently running.
-# Public lms-fusion.com / www.lms-fusion.com routers were removed because those
-# domains no longer resolve, and their certResolver kept triggering failed
-# Let's Encrypt attempts.
-# Local development host: lms-fusion.localhost
-# To activate: deploy the LMS-Fusion compose stack.
+# Containers: precis-lms-backend  (Django + django-fusion, port 5074)
+#             precis-lms-frontend (Astro shell, port 3002)
+# Public domain: lms.structa.cloud
+# Backend paths (/admin, /api, /apis/, /fragment/, /accounts/, /learning/,
+#   /profile/*) route to the backend; static/media/sites assets route to
+#   shared-proxy; everything else is served from the frontend.
+# Local development host: precis-lms.localhost (mkcert, no ACME).
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http) for the public host.
 # =============================================================================
 
 http:
   routers:
-    lms-fusion-site-http:
-      rule: 'Host(`lms-fusion.localhost`)'
+    # ---- Public: lms.structa.cloud ----------------------------------------
+    precis-lms-backend-http:
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
-      service: lms-fusion-frontend-service
-      priority: 10
-
-    lms-fusion-site-localhost-https:
-      rule: 'Host(`lms-fusion.localhost`)'
+      service: precis-lms-backend-service
+      priority: 200
+    precis-lms-backend-https:
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
-      service: lms-fusion-frontend-service
-      priority: 10
-
-    lms-fusion-api-localhost:
-      rule: '(Host(`lms-fusion.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
-      entryPoints: [web, web-secure]
-      middlewares: [compress, csrf-headers, security-headers]
-      service: lms-fusion-backend-service
-      priority: 100
-
-    lms-fusion-media:
-      rule: '(Host(`lms-fusion.localhost`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      service: precis-lms-backend-service
+      priority: 200
+      tls:
+        certResolver: letsencrypt-http
+    precis-lms-media-public:
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, security-headers]
-      service: lms-fusion-media-service
+      service: precis-lms-media-service
+      priority: 210
+    precis-lms-site-http:
+      rule: 'Host(`lms.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-lms-frontend-service
+      priority: 100
+    precis-lms-site-https:
+      rule: 'Host(`lms.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: precis-lms-frontend-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt-http
+
+    # ---- Local dev: precis-lms.localhost (mkcert, no ACME) -----------------
+    precis-lms-site-local-http:
+      rule: 'Host(`precis-lms.localhost`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-lms-frontend-service
+      priority: 10
+
+    precis-lms-site-localhost-https:
+      rule: 'Host(`precis-lms.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: precis-lms-frontend-service
+      priority: 10
+
+    precis-lms-api-localhost:
+      rule: '(Host(`precis-lms.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: precis-lms-backend-service
+      priority: 100
+
+    precis-lms-media-local:
+      rule: '(Host(`precis-lms.localhost`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, security-headers]
+      service: precis-lms-media-service
       priority: 110
 
   services:
-    lms-fusion-frontend-service:
+    precis-lms-frontend-service:
       loadBalancer:
         servers:
-          - url: 'http://lms-fusion-frontend:3002'
+          - url: 'http://precis-lms-frontend:3002'
         healthCheck:
           path: /
           interval: 30s
           timeout: 10s
 
-    lms-fusion-backend-service:
+    precis-lms-backend-service:
       loadBalancer:
         servers:
-          - url: 'http://lms-fusion-backend:5074'
+          - url: 'http://precis-lms-backend:5074'
         healthCheck:
           path: /health/
           interval: 30s
           timeout: 10s
 
-    lms-fusion-media-service:
+    precis-lms-media-service:
       loadBalancer:
         servers:
           - url: 'http://shared-proxy:80'

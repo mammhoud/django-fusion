@@ -3,7 +3,7 @@ cd /home/structa.cloud
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 
 echo '════════ precis seed (setup_wagtail_home) ════════'
-cd projects/precis/main/backend
+cd projects/precis/precis-lms/backend
 timeout 400 "$UV_BIN" --project .. run --frozen python manage.py setup_wagtail_home 2>&1 \
   | grep -iE 'error|traceback|failed|validation|Seeded' | grep -v treebeard | head -14
 

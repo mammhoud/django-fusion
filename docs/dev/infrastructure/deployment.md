@@ -32,7 +32,7 @@
 | Service | Container | Port | Purpose |
 |---------|-----------|------|---------|
 | Traefik Proxy | `default-proxy` | 80, 443, 8080 | HTTPS reverse proxy |
-| CTC Research | `ctc-research-website` | 5070 | Django app |
+| CTC Research | `precis-ctc-website` | 5070 | Django app |
 | LMS Demo | `lms-website` | 5071 | Django app |
 | VResume | `vresume-website` | 5072 | Django app |
 | PostgreSQL | `postgres` | 5432 | Primary database |
@@ -44,7 +44,7 @@
 ```
 /home/structa.cloud/
 ├── projects/                       # Django monorepo
-│   ├── ctc-research/
+│   ├── precis-ctc/
 │   ├── lms/
 │   ├── VResume/
 │   ├── libs/django-fusion/
@@ -64,9 +64,9 @@
 
 ```bash
 docker build \
-  --build-arg PROJECT_PATH=ctc-research \
+  --build-arg PROJECT_PATH=precis-ctc \
   -f projects/compose/Dockerfile \
-  -t structa-ctc-research:latest \
+  -t structa-precis-ctc:latest \
   .
 ```
 
@@ -81,15 +81,15 @@ Or manually:
 ```bash
 docker compose -f applications/databases/docker-compose.yml up -d
 docker compose -f applications/proxy/docker-compose.yml up -d
-cd projects && make docker-up WEBSITE=ctc-research
+cd projects && make docker-up WEBSITE=precis-ctc
 ```
 
 ## Environment variables
 
 | Variable | Example | Purpose |
 |----------|---------|---------|
-| `PROJECT_PATH` | `ctc-research` | Site subdirectory in `projects/` |
-| `WEBSITE` | `ctc-research` | Site identifier |
+| `PROJECT_PATH` | `precis-ctc` | Site subdirectory in `projects/` |
+| `WEBSITE` | `precis-ctc` | Site identifier |
 | `DATABASE_URL` | `postgresql://user:pass@postgres:5432/dbname` | Database connection |
 | `REDIS_URL` | `redis://default-redis:6379/0` | Redis connection |
 | `DEBUG` | `False` | Django debug mode |
@@ -99,10 +99,10 @@ cd projects && make docker-up WEBSITE=ctc-research
 
 ```bash
 # Run migrations
-docker exec ctc-research-website python manage.py migrate
+docker exec precis-ctc-website python manage.py migrate
 
 # Create superuser
-docker exec ctc-research-website python manage.py createsuperuser
+docker exec precis-ctc-website python manage.py createsuperuser
 
 # Backup
 docker exec postgres pg_dump -U structa_user ctc_research_db > backup.sql
@@ -118,16 +118,16 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 docker ps -a
 
 # View logs
-docker logs ctc-research-website --tail 50 -f
+docker logs precis-ctc-website --tail 50 -f
 
 # Restart a container
-docker restart ctc-research-website
+docker restart precis-ctc-website
 
 # Django check
-docker exec ctc-research-website python manage.py check
+docker exec precis-ctc-website python manage.py check
 
 # Collect static
-docker exec ctc-research-website python manage.py collectstatic --noinput
+docker exec precis-ctc-website python manage.py collectstatic --noinput
 ```
 
 ## Troubleshooting
@@ -149,8 +149,8 @@ echo | openssl s_client -connect ctc-research.com:443 -servername ctc-research.c
 ### 502 Bad Gateway
 
 ```bash
-docker logs ctc-research-website | tail -100
-docker stats ctc-research-website
+docker logs precis-ctc-website | tail -100
+docker stats precis-ctc-website
 ```
 
 ### Static files not loading
@@ -158,5 +158,5 @@ docker stats ctc-research-website
 ```bash
 docker ps | grep shared-proxy
 docker logs shared-proxy
-docker exec ctc-research-website python manage.py collectstatic --noinput
+docker exec precis-ctc-website python manage.py collectstatic --noinput
 ```

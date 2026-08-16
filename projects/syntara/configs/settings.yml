@@ -110,9 +110,9 @@ CEPTOR_AI:
 
 CUSTOMIZER:
   apps:
-    - slug: "ctc-research"
+    - slug: "precis-ctc"
       name: "CTC Research"
-      template_root: "{{ env 'CYPERCLOUD_CTC_TEMPLATES' or '../ctc-research/templates' }}"
+      template_root: "{{ env 'CYPERCLOUD_CTC_TEMPLATES' or '../precis-ctc/templates' }}"
     - slug: "lms"
       name: "Structa LMS Demo"
       template_root: "{{ env 'CYPERCLOUD_LMS_TEMPLATES' or '../lms/templates' }}"

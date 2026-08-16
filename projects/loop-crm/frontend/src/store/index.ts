@@ -1,7 +1,7 @@
 // Loop-CRM Redux store — the single source of truth for client data on the
 // data-API road. RTK slices for config (renderMode), CRM (deals/pipeline) and
 // marketing (posts/campaigns) replace ad-hoc Alpine/x-data state for data-heavy
-// islands (mirrors the landing-fusion Redux decision to shrink Alpine).
+// islands (mirrors the precis-landing Redux decision to shrink Alpine).
 import { configureStore } from '@reduxjs/toolkit';
 import configReducer from './slices/configSlice';
 import crmReducer from './slices/crmSlice';

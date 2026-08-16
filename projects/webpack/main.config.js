@@ -2,7 +2,7 @@
  * ╔══════════════════════════════════════════════════════════════════════╗
  * ║  DEPRECATED — Use per-project webpack configs instead.             ║
  * ║                                                                    ║
- * ║  landing-fusion → webpack/landing-fusion.config.js                 ║
+ * ║  precis-landing → webpack/precis-landing.config.js                 ║
  * ║  precis         → webpack/precis.config.js                         ║
  * ║                                                                    ║
  * ║  These extend projects/webpack/base.config.js which provides       ║
@@ -13,7 +13,7 @@
  * Unified entry point for all 3 workspace sites.
  *
  * Site entry files are all named app.js:
- *   ctc-research/assets/static/js/app.js
+ *   precis-ctc/assets/static/js/app.js
  *   lms/assets/static/js/app.js
  *   VResume/assets/static/js/app.js
  *
@@ -41,9 +41,9 @@ const commonConfig = require('./common.config.js');
 // Site directory map  (alias key → real directory name)
 // ─────────────────────────────────────────────────────────────────────────────
 const SITE_DIR_MAP = {
-  'ctc-research': 'ctc-research',
-  ctc: 'ctc-research',
-  'ctc-research.com': 'ctc-research',
+  'precis-ctc': 'precis-ctc',
+  ctc: 'precis-ctc',
+  'ctc-research.com': 'precis-ctc',
   'lms': 'lms',
   lms: 'lms',
   structa: 'lms',
@@ -59,7 +59,7 @@ const SITE_DIR_MAP = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 module.exports = (env = {}, argv = {}) => {
-  const site = process.env.PROJECT_PATH || process.env.DJANGO_SITE || env.site || 'ctc-research';
+  const site = process.env.PROJECT_PATH || process.env.DJANGO_SITE || env.site || 'precis-ctc';
   const siteDir = SITE_DIR_MAP[site] || site;
   const mode = argv.mode || process.env.NODE_ENV || 'production';
   const isDev = mode === 'development';
@@ -75,7 +75,7 @@ module.exports = (env = {}, argv = {}) => {
   // Templates reference it via:  {% render_bundle 'static' 'css' %}
   //                               {% render_bundle 'static' 'js' %}
   const SITE_ENTRIES = {
-    'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/app.js'),
+    'precis-ctc': path.resolve(workspaceRoot, 'precis-ctc/assets/static/js/app.js'),
     'lms': path.resolve(workspaceRoot, 'lms/assets/static/js/app.js'),
     'VResume': path.resolve(workspaceRoot, 'VResume/assets/static/js/app.js'),
     'crm': path.resolve(workspaceRoot, 'crm/assets/static/js/app.js'),
@@ -83,7 +83,7 @@ module.exports = (env = {}, argv = {}) => {
 
   // Static (CSS + vendor) entry — each site provides its own static.js
   const STATIC_ENTRIES = {
-    'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/static.js'),
+    'precis-ctc': path.resolve(workspaceRoot, 'precis-ctc/assets/static/js/static.js'),
     'lms': path.resolve(workspaceRoot, 'lms/assets/static/js/static.js'),
     'VResume': path.resolve(workspaceRoot, 'VResume/assets/static/js/static.js'),
     'crm': path.resolve(workspaceRoot, 'crm/assets/static/js/static.js'),
@@ -108,7 +108,7 @@ module.exports = (env = {}, argv = {}) => {
 
   // ── Output path ────────────────────────────────────────────────────────────
   // Site-specific bundles land in:
-  //   ctc-research/assets/bundles/ctc-research/
+  //   precis-ctc/assets/bundles/precis-ctc/
   //   lms/assets/bundles/lms/
   //   VResume/assets/bundles/vresume/
   const outputDir = siteDir === 'VResume'
@@ -155,7 +155,7 @@ module.exports = (env = {}, argv = {}) => {
         '@core': path.resolve(workspaceRoot, 'assets/static/js/core'),
         '@htmx': path.resolve(workspaceRoot, 'assets/static/js/core/htmx-bridge'),
         // Per-site shortcuts (override shared modules with site-level files)
-        '@ctc': path.resolve(workspaceRoot, 'ctc-research/assets/static/js'),
+        '@ctc': path.resolve(workspaceRoot, 'precis-ctc/assets/static/js'),
         '@lms': path.resolve(workspaceRoot, 'lms/assets/static/js'),
         '@vresume': path.resolve(workspaceRoot, 'VResume/assets/static/js'),
         '@crm': path.resolve(workspaceRoot, 'crm/assets/static/js'),

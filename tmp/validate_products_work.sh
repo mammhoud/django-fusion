@@ -3,11 +3,11 @@ set -e
 cd /home/structa.cloud
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 
-echo '════════ landing-fusion: seed products ════════'
+echo '════════ precis-landing: seed products ════════'
 cd projects/precis/landi/backend
 "$UV_BIN" --project .. run --frozen python manage.py seed_pages 2>&1 | grep -iE 'product|error|failed' | tail -10
 
-echo '════════ landing-fusion: /apis/products/ API ════════'
+echo '════════ precis-landing: /apis/products/ API ════════'
 "$UV_BIN" --project .. run --frozen python manage.py shell -c "
 from django.test import Client
 c = Client()
@@ -20,11 +20,11 @@ for p in data.get('products', [])[:4]:
     print(' -', p.get('slug'), '| lang:', p.get('language'), '| price:', p.get('price'), p.get('currency'), '| href:', p.get('href'))
 " 2>&1 | tail -10
 
-echo '════════ landing-fusion: seed products rerun (idempotent) ════════'
+echo '════════ precis-landing: seed products rerun (idempotent) ════════'
 "$UV_BIN" --project .. run --frozen python manage.py seed_pages 2>&1 | grep -iE 'product|error|failed' | tail -4
 
 echo '════════ precis: seed products ════════'
-cd /home/structa.cloud/projects/precis/main/backend
+cd /home/structa.cloud/projects/precis/precis-lms/backend
 "$UV_BIN" --project .. run --frozen python manage.py setup_wagtail_home 2>&1 | grep -iE 'product|error|failed' | tail -8
 
 echo '════════ precis: /api/products/ API ════════'

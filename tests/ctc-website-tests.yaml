@@ -1,6 +1,6 @@
 site: ctc-website
-canonical_site: ctc-research
-aliases: [ctc, ctc-research, ctc-research.com]
+canonical_site: precis-ctc
+aliases: [ctc, precis-ctc, ctc-research.com]
 base_url: http://ctc-website.local
 port: 5070
 commands:

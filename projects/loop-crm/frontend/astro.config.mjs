@@ -6,7 +6,7 @@ import react from '@astrojs/react';
 import { fileURLToPath } from 'node:url';
 import { readFileSync, existsSync } from 'node:fs';
 
-// ── Dependency-free .env loader (mirrors landing-fusion) ────────────────────
+// ── Dependency-free .env loader (mirrors precis-landing) ────────────────────
 const __env = {};
 for (const __f of ['.env.local', '.env']) {
   if (!existsSync(__f)) continue;

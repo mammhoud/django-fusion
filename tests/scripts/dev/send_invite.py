@@ -64,11 +64,11 @@ def main() -> int:
     args = parser.parse_args()
 
     bootstrap_workspace()
-    # Ensure the ctc-research project path is on PYTHONPATH
+    # Ensure the precis-ctc project path is on PYTHONPATH
     import sys
     from pathlib import Path
     repo_root = Path(__file__).resolve().parents[4]
-    ctc_path = repo_root / "websites" / "ctc-research"
+    ctc_path = repo_root / "websites" / "precis-ctc"
     if str(ctc_path) not in sys.path:
         sys.path.insert(0, str(ctc_path))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")

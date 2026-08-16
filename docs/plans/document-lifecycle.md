@@ -3,7 +3,7 @@
 > **Status:** Active
 > **Updated:** 2026-08-04
 > **Owner:** Documentation and Product team
-> **Scope:** `docs/`, especially `docs/plans/` and `docs/Anytype/`
+> **Scope:** `docs/`, especially `docs/plans/`
 
 ## Purpose
 
@@ -20,33 +20,27 @@ A document is never considered dead solely because it is old. It is dead when it
 
 ## Canonical ownership
 
-| Content | Canonical location | Anytype role |
+| Content | Canonical location | Role |
 |---|---|---|
 | Engineering implementation, migrations, tests, dependencies, deployment | `docs/plans/` | Concise object with methods and use cases |
-| Product scope, edition boundaries, market research, decisions | `docs/Anytype/` | Knowledge-graph object and relations |
+| Product scope, edition boundaries, market research, decisions | `docs/plans/editions/` | Knowledge-graph object and relations |
 | Product source code | Project directories | Evidence linked from plans |
-| Historical implementation and completed work | `docs/plans/legacy/` or an approved archive | Read-only evidence; never current scope |
+| Historical implementation and completed work | git history (deleted after supersession) | Recoverable evidence; never current scope |
 | Marketing claims | `docs/plans/marketing-claims.md` | Approved claim summary only |
 
-The detailed repository plan remains authoritative for implementation. Anytype copies must not silently invent completion or duplicate source code.
+The detailed repository plan remains authoritative for implementation. Plan copies must not silently invent completion or duplicate source code.
 
 ## Current POS truth
 
 | Document | Status | Decision |
 |---|---|---|
 | `docs/plans/editions/README.md` | Current (canonical) | Formints edition chain 01–08 — the main, latest product + engineering plans |
-| `docs/plans/pos/formint-pos-professional-plan.md` | Superseded → editions | Retired `projects/pos/` scope; canonical scope is now `editions/03-pro.md` + `04-cloud.md` |
-| `docs/plans/pos/README.md` | Archived / superseded | Points at `editions/README.md`; retained as migration evidence |
-| `docs/plans/pos/forge-pos-plan.md` | Historical / migration source | Keep until every transfer gate passes; never market as a product |
-| `docs/plans/pos/pos-solo-enhancement.md` | Historical / removed working file | Do not recreate unless a migration reference is recovered; use Formints/Forge plans |
-| `docs/plans/pos/tauri-plugins-enhancement-plan.md` | Historical migration plan | Select plugins through capability and platform gates; Formints owns the desktop contract |
-| `docs/plans/pos/cloud-plan.md` | Superseded → `editions/04-cloud.md` | Cloud master is now `formint-cloud`; django-bolt transport is Cloud-only |
-| `docs/Anytype/architecture/editions.md` | Current | Community, Formint Professional, POS Cloud |
-| `docs/Anytype/plans/formint-pos-professional-plan.md` | Current summary | Product/use-case copy of the repository plan |
-| `docs/Anytype/plans/forge-migration.md` | Current migration summary | Parity and deletion gates |
-| `docs/Anytype/plans/pos-market-research.md` | Current hypothesis | Evidence and validation questions, not verified market claims |
 
-`pos-solo`, `pos-full`, and Forge are migration labels. They are not additional customer-facing editions.
+The former `docs/Anytype/` knowledge-graph docs were removed in the monorepo
+consolidation; product scope and market research now live alongside the
+canonical plans in `docs/plans/editions/`.
+
+The retired `docs/plans/pos/`, `docs/plans/migrated/`, `docs/plans/cms-fusion/`, and `docs/plans/precis-lms/` plan directories were deleted on 2026-08-14 (superseded by `editions/` and Precis/Landing-Fusion); see the deletion manifest.
 
 ## Status evidence rules
 
@@ -85,7 +79,7 @@ Move or copy the candidate to a versioned archive outside the active index. Add 
 > **Rollback:** See `docs/plans/deletion-manifest.md` entry `<ID>`.
 ```
 
-For a first pass, prefer `docs/plans/legacy/` or a separately backed-up archive. Do not remove files in place as the first action.
+For a first pass, prefer git history or a separately backed-up archive. Do not remove files in place as the first action.
 
 ### 3. Validate
 
@@ -154,7 +148,5 @@ Every objective marketing claim belongs in `docs/plans/marketing-claims.md` with
 ## Related
 
 - → `README.md` — Repository plan index
-- → `pos/README.md` — POS plan index
 - → `marketing-claims.md` — Claims register
-- → `legacy/legacy-cleanup.md` — Legacy code cleanup procedure
-- → `../Anytype/README.md` — Anytype documentation hub
+- → `deletion-manifest.md` — Removal register

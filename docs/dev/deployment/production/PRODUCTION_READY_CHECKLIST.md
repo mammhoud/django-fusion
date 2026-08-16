@@ -10,7 +10,7 @@
 ### Infrastructure Status
 ```
 ✅ traefik           UP 28 minutes (healthy)
-✅ web-ctc-research  UP 2 minutes (healthy)
+✅ web-precis-ctc  UP 2 minutes (healthy)
 ✅ shared-proxy      UP 28 minutes (healthy)
 ✅ postgres          UP 2 hours (healthy)
 ✅ redis             UP 2 hours (healthy)
@@ -168,7 +168,7 @@ docker ps -a
 curl http://localhost:5070/health/
 
 # View logs
-docker logs web-ctc-research
+docker logs web-precis-ctc
 ```
 
 ### Phase 2: Content Loading (Optional)
@@ -177,10 +177,10 @@ docker logs web-ctc-research
 bash /root/site/websites/load_fixtures_correct.sh
 
 # Create admin user
-docker exec web-ctc-research python manage.py createsuperuser
+docker exec web-precis-ctc python manage.py createsuperuser
 
 # Verify pages loaded
-docker exec web-ctc-research python manage.py shell_plus
+docker exec web-precis-ctc python manage.py shell_plus
 ```
 
 ### Phase 3: DNS & Certificates
@@ -228,7 +228,7 @@ curl http://localhost:5070/health/
 docker ps
 
 # View specific logs
-docker logs web-ctc-research
+docker logs web-precis-ctc
 docker logs traefik
 docker logs postgres
 ```
@@ -242,31 +242,31 @@ docker exec postgres psql -U structa -d db_ctc
 docker exec postgres psql -U structa -d db_ctc -c "SELECT COUNT(*) FROM wagtailcore_page"
 
 # Run migrations
-docker exec web-ctc-research python manage.py migrate
+docker exec web-precis-ctc python manage.py migrate
 ```
 
 ### Content Management
 ```bash
 # Load fixtures
-docker exec web-ctc-research python manage.py loaddata <fixture-name>
+docker exec web-precis-ctc python manage.py loaddata <fixture-name>
 
 # Create admin user
-docker exec web-ctc-research python manage.py createsuperuser
+docker exec web-precis-ctc python manage.py createsuperuser
 
 # Django shell
-docker exec -it web-ctc-research python manage.py shell_plus
+docker exec -it web-precis-ctc python manage.py shell_plus
 ```
 
 ### Service Management
 ```bash
 # Restart web service
-docker restart web-ctc-research
+docker restart web-precis-ctc
 
 # Restart all services
 docker-compose -f compose/docker-compose.traefik.yml \
                 -f compose/docker-compose.warehouse.yml \
                 -f compose/docker-compose.nginx.yml \
-                -f ctc-research/docker-compose.yml \
+                -f precis-ctc/docker-compose.yml \
                 restart
 
 # View service status
@@ -303,19 +303,19 @@ docker exec postgres psql -U postgres -c "\l"
 **Q: Static files not loading**
 ```bash
 # Recollect static files
-docker exec web-ctc-research python manage.py collectstatic --no-input
+docker exec web-precis-ctc python manage.py collectstatic --no-input
 
 # Verify directory
-docker exec web-ctc-research ls /app/ctc-research/assets/staticfiles/
+docker exec web-precis-ctc ls /app/precis-ctc/assets/staticfiles/
 ```
 
 **Q: Admin won't load**
 ```bash
 # Create superuser
-docker exec web-ctc-research python manage.py createsuperuser
+docker exec web-precis-ctc python manage.py createsuperuser
 
 # Check permissions
-docker exec web-ctc-research python manage.py check
+docker exec web-precis-ctc python manage.py check
 ```
 
 ---
@@ -356,7 +356,7 @@ docker exec web-ctc-research python manage.py check
 ├── verify_production_complete.sh       ← Verification script
 ├── compose/
 │   └── docker-compose.*.yml            ← Service definitions
-└── ctc-research/
+└── precis-ctc/
     ├── www/urls.py                     ← URLs (health endpoint)
     └── assets/fixtures/by-model/       ← Content fixtures
 ```

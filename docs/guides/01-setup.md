@@ -32,7 +32,7 @@ The root `Makefile` is a thin entrypoint that delegates site work to `projects/M
 ```bash
 # Run a target for a specific site
 cd projects
-make check WEBSITE=ctc-research
+make check WEBSITE=precis-ctc
 make docker-up WEBSITE=lms
 make test WEBSITE=vresume
 ```

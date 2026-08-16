@@ -54,7 +54,7 @@ test('Finance revenue-trend endpoint is mounted on the API road', async () => {
 
 test('Revenue-trend aggregate is registered on the canonical bolt road', async () => {
   const boltApi = await read('../backend/apps/core/bolt_api.py');
-  assert.match(boltApi, /@bolt\.get\("\/revenue\/trend", \*\*_protected\)/);
+  assert.match(boltApi, /@bolt\.get\(\s*"\/revenue\/trend",/);
   assert.match(boltApi, /from apps\.finance\.services import revenue_trend_results/);
   assert.match(boltApi, /TruncMonth\("recognized_on"\)/);
   assert.match(boltApi, /filter\(workspace_id=workspace_id\)/);

@@ -31,7 +31,7 @@ sites:
 ```python
 # settings.py — CUSTOMIZER_APPS
 CUSTOMIZER_APPS = [
-    {"slug": "ctc-research", "name": "CTC Research", "template_root": "..."},
+    {"slug": "precis-ctc", "name": "CTC Research", "template_root": "..."},
     {"slug": "lms", "name": "LMS", "template_root": "..."},
     {"slug": "vresume", "name": "VResume", "template_root": "..."},
 ]

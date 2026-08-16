@@ -10,15 +10,15 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-SITE="${SITE:-ctc-research}"
+SITE="${SITE:-precis-ctc}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 BUILD_ASSETS="${BUILD_ASSETS:-auto}"
 INSTALL_ASSETS="${INSTALL_ASSETS:-false}"
 
 case "$SITE" in
-    ctc|ctc-research|ctc-website|ctc-research.com)
-        DJANGO_SITE="ctc-research"
-        SERVICE="ctc-research-website"
+    ctc|precis-ctc|ctc-website|ctc-research.com)
+        DJANGO_SITE="precis-ctc"
+        SERVICE="precis-ctc-website"
         ;;
     structa|structa.cloud|lms|lms)
         DJANGO_SITE="lms"
@@ -30,7 +30,7 @@ case "$SITE" in
         ;;
     all)
         DJANGO_SITE="all"
-        SERVICE="ctc-research-website lms-website vresume-website shared-proxy"
+        SERVICE="precis-ctc-website lms-website vresume-website shared-proxy"
         ;;
     *)
         DJANGO_SITE="$SITE"

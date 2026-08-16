@@ -58,7 +58,7 @@ echo "═" | tee -a "$REPORT"
 echo "1️⃣ CONTAINER HEALTH CHECKS" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-CONTAINERS=("traefik" "web-ctc-research" "shared-proxy" "postgres" "redis")
+CONTAINERS=("traefik" "web-precis-ctc" "shared-proxy" "postgres" "redis")
 
 for container in "${CONTAINERS[@]}"; do
     if docker ps --filter "name=$container" --filter "status=running" --quiet | grep -q .; then
@@ -142,7 +142,7 @@ echo "═" | tee -a "$REPORT"
 echo "4️⃣ DJANGO SYSTEM CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-if docker exec web-ctc-research python manage.py check 2>&1 | grep -q "System check identified no issues"; then
+if docker exec web-precis-ctc python manage.py check 2>&1 | grep -q "System check identified no issues"; then
     test_pass "Django system check passed (0 issues)"
 else
     test_warn "Django system check may have warnings (see logs)"
@@ -157,7 +157,7 @@ echo "═" | tee -a "$REPORT"
 echo "5️⃣ STATIC FILES CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-STATIC_COUNT=$(docker exec web-ctc-research find /app/ctc-research/assets/staticfiles -type f 2>/dev/null | wc -l)
+STATIC_COUNT=$(docker exec web-precis-ctc find /app/precis-ctc/assets/staticfiles -type f 2>/dev/null | wc -l)
 if [ "$STATIC_COUNT" -gt 100 ]; then
     test_pass "Static files collected: $STATIC_COUNT files"
 else
@@ -173,8 +173,8 @@ echo "═" | tee -a "$REPORT"
 echo "6️⃣ FIXTURE DATA CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-FIXTURE_SIZE=$(du -sh /root/site/websites/ctc-research/assets/fixtures/by-model 2>/dev/null | cut -f1)
-FIXTURE_COUNT=$(find /root/site/websites/ctc-research/assets/fixtures/by-model -name "*.json" -type f 2>/dev/null | wc -l)
+FIXTURE_SIZE=$(du -sh /root/site/websites/precis-ctc/assets/fixtures/by-model 2>/dev/null | cut -f1)
+FIXTURE_COUNT=$(find /root/site/websites/precis-ctc/assets/fixtures/by-model -name "*.json" -type f 2>/dev/null | wc -l)
 
 if [ -n "$FIXTURE_SIZE" ] && [ "$FIXTURE_COUNT" -gt 0 ]; then
     test_pass "Fixture data available: $FIXTURE_COUNT files, $FIXTURE_SIZE"
@@ -223,7 +223,7 @@ CONFIG_FILES=(
     "/root/site/websites/applications/proxy/docker-compose.traefik.yml"
     "/root/site/websites/applications/proxy/docker-compose.warehouse.yml"
     "/root/site/websites/applications/proxy/docker-compose.nginx.yml"
-    "/root/site/websites/ctc-research/www/urls.py"
+    "/root/site/websites/precis-ctc/www/urls.py"
 )
 
 for file in "${CONFIG_FILES[@]}"; do
@@ -305,7 +305,7 @@ cat << EOF | tee -a "$REPORT"
 2. Configure DNS records to point to production
 
 3. Create superuser account:
-   docker exec web-ctc-research python manage.py createsuperuser
+   docker exec web-precis-ctc python manage.py createsuperuser
 
 4. Visit https://ctc-research.com to view the site
 

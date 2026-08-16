@@ -11,7 +11,7 @@ Companion audit: [`dead-code-audit-cms-lms.md`](./dead-code-audit-cms-lms.md)
 ### 1.1 `django_fusion/contrib/api.py` (NEW)
 
 The three tiny REST views that were copy-pasted into **both** `cms-fusion` and
-`lms-fusion` now live in django-fusion:
+`precis-lms` now live in django-fusion:
 
 | Project copy (deleted) | django-fusion replacement |
 |---|---|

@@ -1,20 +1,22 @@
 {% load static %}
 <section class="loop-card loop-card--wide" aria-label="Workflow canvas" id="workflow-dag-panel">
   <div class="loop-section-heading"><div><span class="loop-card__label">Canvas</span><h2>Node &amp; edge graph</h2></div><span class="loop-pill">DAG</span></div>
-  <div id="workflow-dag" data-workflows='{{ workflows_json }}' data-actions='{{ action_catalog_json }}' style="margin-top:1rem;">
+  <div id="workflow-dag" data-workflows='{{ workflows_json }}' data-actions='{{ action_catalog_json }}' data-triggers='{{ trigger_catalog_json }}' style="margin-top:1rem;">
     {% if workflows %}
     <div class="loop-channels" style="align-items:center;">
       <label class="loop-form__field" style="margin:0;min-width:16rem;"><span>Workflow</span><select id="dag-workflow" aria-label="Workflow"></select></label>
+      <label class="loop-form__field" style="margin:0;min-width:16rem;"><span>Trigger</span><select id="dag-trigger" aria-label="Trigger"></select></label>
       <div class="loop-channels__actions" style="margin-left:auto;">
         <button class="loop-button loop-button--quiet" type="button" id="dag-add">Add node</button>
         <button class="loop-button loop-button--primary" type="button" id="dag-save"><span>Save</span><span aria-hidden="true">↗</span></button>
         <span id="dag-status" class="loop-pill" role="status" style="display:none;"></span>
       </div>
     </div>
-    <div class="loop-dag-canvas" id="dag-canvas" style="position:relative;margin-top:1rem;height:22rem;overflow:auto;border:1px solid var(--line);border-radius:.8rem;background:radial-gradient(circle at 30% 20%,#10211f 0,transparent 26rem),#0d131b;">
-      <svg id="dag-edges" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" aria-hidden="true"></svg>
+    <p class="loop-hint" style="margin:.35rem 0 0;">Drag a node to move it. Drag from a node's right port to another's left port to connect them. Click an edge to remove it.</p>
+    <div class="loop-dag-canvas" id="dag-canvas" style="position:relative;margin-top:1rem;height:26rem;overflow:auto;border:1px solid var(--line);border-radius:.8rem;background:radial-gradient(circle at 30% 20%,#10211f 0,transparent 26rem),#0d131b;">
+      <svg id="dag-edges" style="position:absolute;inset:0;width:100%;height:100%;" aria-hidden="true"></svg>
       <div id="dag-nodes" style="position:absolute;inset:0;"></div>
-      <div class="loop-dag-empty" id="dag-empty" style="display:none;position:absolute;inset:0;place-items:center;">No nodes yet — add one to start the flow.</div>
+      <div class="loop-dag-empty" id="dag-empty" style="display:none;position:absolute;inset:0;place-items:center;">Add a node to start building the flow.</div>
     </div>
     {% else %}
     <div class="loop-empty-state"><strong>No workflows to edit yet.</strong><p>Create one in the form to enable the canvas.</p></div>
@@ -23,14 +25,23 @@
 </section>
 {% if workflows %}
 <style>
-  .loop-dag-node { position:absolute; width:11rem; padding:.7rem .9rem; border:1px solid var(--line); border-radius:.6rem; background:#131c26; box-shadow:0 .5rem 1.2rem rgba(3,17,19,.4); cursor:grab; user-select:none; touch-action:none; }
+  .loop-dag-canvas { --node-w: 11rem; --node-h: 5.75rem; }
+  .loop-dag-node { position:absolute; width:var(--node-w); min-height:var(--node-h); padding:.6rem .75rem .6rem 1rem; border:1px solid var(--line); border-radius:.6rem; background:#131c26; box-shadow:0 .5rem 1.2rem rgba(3,17,19,.4); cursor:grab; user-select:none; touch-action:none; }
   .loop-dag-node:active { cursor:grabbing; }
   .loop-dag-node__label { display:block; color:var(--accent); font:700 .6rem ui-monospace,SFMono-Regular,monospace; letter-spacing:.09em; text-transform:uppercase; }
   .loop-dag-node__value { display:block; margin-top:.3rem; color:var(--ink); font-size:.82rem; }
   .loop-dag-node--trigger { border-color:#3c786f; background:#102421; }
   .loop-dag-node__remove { position:absolute; top:-.55rem; right:-.55rem; width:1.15rem; height:1.15rem; border:1px solid #744444; border-radius:999px; background:#2a1717; color:#ffaaa1; font:700 .7rem/1 ui-monospace,monospace; cursor:pointer; }
   .loop-dag-node .dag-node-select { width:100%; margin-top:.35rem; border:1px solid #334252; border-radius:.4rem; background:#0d141c; color:var(--ink); padding:.35rem .45rem; font:600 .72rem ui-monospace,SFMono-Regular,monospace; cursor:pointer; }
+  .loop-dag-port { position:absolute; top:50%; width:.8rem; height:.8rem; border-radius:999px; background:#0d141c; border:2px solid #73d1bb; transform:translateY(-50%); cursor:crosshair; z-index:2; }
+  .loop-dag-port--out { right:-.45rem; }
+  .loop-dag-port--in { left:-.45rem; }
+  .loop-dag-port:hover { background:#73d1bb; }
+  .loop-dag-edge { fill:none; stroke:#3c786f; stroke-width:2; stroke-dasharray:1 6; cursor:pointer; }
+  .loop-dag-edge--hit { fill:none; stroke:transparent; stroke-width:14; cursor:pointer; }
+  .loop-dag-edge--temp { fill:none; stroke:#73d1bb; stroke-width:2; stroke-dasharray:4 4; pointer-events:none; }
   .loop-dag-empty { color:#718394; font-size:.8rem; display:grid; }
+  .loop-hint { color:#718394; font-size:.72rem; }
 </style>
 <script>
 (function () {
@@ -38,25 +49,23 @@
   if (!root) return;
   var workflows = JSON.parse(root.dataset.workflows || '[]');
   var actions = JSON.parse(root.dataset.actions || '[]');
+  var triggers = JSON.parse(root.dataset.triggers || '[]');
   var workflowSel = document.getElementById('dag-workflow');
+  var triggerSel = document.getElementById('dag-trigger');
   var canvas = document.getElementById('dag-canvas');
   var edgesSvg = document.getElementById('dag-edges');
   var nodesEl = document.getElementById('dag-nodes');
   var emptyEl = document.getElementById('dag-empty');
   var statusEl = document.getElementById('dag-status');
 
-  var NODE_W = 176, NODE_H = 92, GAP_X = 220, GAP_Y = 120;
-  var state = { id: null, steps: [], trigger: '', positions: {} };
-  var drag = null;
+  var NODE_W = 176, NODE_H = 92;
+  var state = { id: null, trigger: '', nodes: [], edges: [], counter: 1 };
+  var drag = null;      // node drag state
+  var connect = null;   // edge-creation state
 
   function csrf() {
     var m = document.cookie.match(/csrftoken=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
-  }
-
-  function actionLabel(id) {
-    for (var i = 0; i < actions.length; i++) if (actions[i].id === id) return actions[i].label;
-    return id;
   }
 
   function current() {
@@ -65,92 +74,14 @@
     return workflows[0];
   }
 
-  function nodeKey(index) { return index === 0 ? 'trigger' : 'step-' + (index - 1); }
-
-  function layoutPositions() {
-    var positions = {};
-    var total = 1 + state.steps.length;
-    for (var i = 0; i < total; i++) {
-      positions[nodeKey(i)] = { x: 24 + i * GAP_X, y: 24 };
-    }
-    return positions;
+  function actionLabel(id) {
+    for (var i = 0; i < actions.length; i++) if (actions[i].id === id) return actions[i].label;
+    return id;
   }
 
-  function edgePath(a, b) {
-    var x1 = a.x + NODE_W, y1 = a.y + NODE_H / 2;
-    var x2 = b.x, y2 = b.y + NODE_H / 2;
-    var dx = Math.max(24, (x2 - x1) / 2);
-    return 'M ' + x1 + ' ' + y1 + ' C ' + (x1 + dx) + ' ' + y1 + ', ' + (x2 - dx) + ' ' + y2 + ', ' + x2 + ' ' + y2;
-  }
-
-  function drawEdges() {
-    var html = '';
-    var total = 1 + state.steps.length;
-    for (var i = 0; i < total - 1; i++) {
-      var a = state.positions[nodeKey(i)];
-      var b = state.positions[nodeKey(i + 1)];
-      if (a && b) {
-        html += '<path d="' + edgePath(a, b) + '" fill="none" stroke="#3c786f" stroke-width="2" stroke-dasharray="1 6" marker-end="url(#dag-arrow)" />';
-      }
-    }
-    html += '<defs><marker id="dag-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="#73d1bb" /></marker></defs>';
-    edgesSvg.innerHTML = html;
-  }
-
-  function render() {
-    nodesEl.innerHTML = '';
-    state.positions = layoutPositions();
-    var triggerNode = makeNode('trigger', 'Trigger', current().trigger || '—', true, null);
-    nodesEl.appendChild(triggerNode);
-    state.steps.forEach(function (step, index) {
-      nodesEl.appendChild(makeNode('step-' + index, 'Action ' + (index + 1), actionLabel(step), false, index));
-    });
-    emptyEl.style.display = (state.steps.length === 0) ? 'grid' : 'none';
-    drawEdges();
-  }
-
-  function makeNode(key, label, value, isTrigger, stepIndex) {
-    var node = document.createElement('div');
-    node.className = 'loop-dag-node' + (isTrigger ? ' loop-dag-node--trigger' : '');
-    node.dataset.key = key;
-    var pos = state.positions[key];
-    node.style.left = pos.x + 'px';
-    node.style.top = pos.y + 'px';
-    var labelEl = document.createElement('span');
-    labelEl.className = 'loop-dag-node__label';
-    labelEl.textContent = label;
-    node.appendChild(labelEl);
-    if (isTrigger) {
-      var valueEl = document.createElement('span');
-      valueEl.className = 'loop-dag-node__value';
-      valueEl.textContent = value;
-      node.appendChild(valueEl);
-    } else {
-      var select = document.createElement('select');
-      select.className = 'dag-node-select';
-      select.setAttribute('aria-label', 'Action');
-      select.innerHTML = actionOptions(value);
-      select.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-      select.addEventListener('change', function () { state.steps[stepIndex] = select.value; });
-      node.appendChild(select);
-      var remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'loop-dag-node__remove';
-      remove.textContent = '×';
-      remove.setAttribute('aria-label', 'Remove node');
-      remove.addEventListener('click', function (e) { e.stopPropagation(); removeStep(stepIndex); });
-      node.appendChild(remove);
-    }
-    node.addEventListener('pointerdown', function (e) { startDrag(e, node, key, stepIndex); });
-    return node;
-  }
-
-  function actionOptions(selected) {
-    var html = '';
-    for (var i = 0; i < actions.length; i++) {
-      html += '<option value="' + actions[i].id + '"' + (actions[i].id === selected ? ' selected' : '') + '>' + actions[i].label + '</option>';
-    }
-    return html;
+  function triggerLabel(id) {
+    for (var i = 0; i < triggers.length; i++) if (triggers[i].id === id) return triggers[i].label;
+    return id;
   }
 
   function escapeHtml(text) {
@@ -159,52 +90,233 @@
     });
   }
 
-  function startDrag(e, node, key, stepIndex) {
-    if (stepIndex === null) return; // trigger is fixed
-    e.preventDefault();
-    drag = { key: key, stepIndex: stepIndex, startX: e.clientX, startY: e.clientY, originX: state.positions[key].x, originY: state.positions[key].y };
-    node.setPointerCapture(e.pointerId);
-    node.addEventListener('pointermove', onDragMove);
-    node.addEventListener('pointerup', onDragEnd);
+  function freshId() {
+    while (state.nodes.some(function (n) { return n.id === 'step-' + state.counter; })) state.counter++;
+    return 'step-' + state.counter++;
+  }
+
+  function portCenter(nodeId, side) {
+    var node = state.nodes.filter(function (n) { return n.id === nodeId; })[0];
+    if (!node) return { x: 0, y: 0 };
+    var x = node.x + (side === 'out' ? NODE_W : 0);
+    return { x: x, y: node.y + NODE_H / 2 };
+  }
+
+  function edgePath(a, b) {
+    var dx = Math.max(24, (b.x - a.x) / 2);
+    return 'M ' + a.x + ' ' + a.y + ' C ' + (a.x + dx) + ' ' + a.y + ', ' + (b.x - dx) + ' ' + b.y + ', ' + b.x + ' ' + b.y;
+  }
+
+  function wouldCycle(fromId, toId) {
+    // A new from→to edge is a cycle if `to` already reaches `from`.
+    if (fromId === toId) return true;
+    var stack = [toId];
+    var seen = {};
+    while (stack.length) {
+      var cur = stack.pop();
+      if (cur === fromId) return true;
+      if (seen[cur]) continue;
+      seen[cur] = true;
+      state.edges.forEach(function (e) { if (e.from === cur) stack.push(e.to); });
+    }
+    return false;
+  }
+
+  function drawEdges() {
+    edgesSvg.innerHTML = '';
+    var defs = '<defs><marker id="dag-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z" fill="#73d1bb" /></marker></defs>';
+    edgesSvg.innerHTML = defs;
+    state.edges.forEach(function (edge, index) {
+      var a = portCenter(edge.from, 'out');
+      var b = portCenter(edge.to, 'in');
+      var path = edgePath(a, b);
+      var visible = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      visible.setAttribute('d', path);
+      visible.setAttribute('class', 'loop-dag-edge');
+      visible.setAttribute('marker-end', 'url(#dag-arrow)');
+      edgesSvg.appendChild(visible);
+      var hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      hit.setAttribute('d', path);
+      hit.setAttribute('class', 'loop-dag-edge--hit');
+      hit.setAttribute('data-index', index);
+      hit.addEventListener('click', function () { removeEdge(index); });
+      edgesSvg.appendChild(hit);
+    });
+    if (connect) {
+      var temp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      temp.setAttribute('d', edgePath(connect.origin, connect.cursor));
+      temp.setAttribute('class', 'loop-dag-edge--temp');
+      edgesSvg.appendChild(temp);
+    }
+  }
+
+  function render() {
+    nodesEl.innerHTML = '';
+    emptyEl.style.display = (state.nodes.length <= 1) ? 'grid' : 'none';
+    state.nodes.forEach(function (node) {
+      nodesEl.appendChild(makeNode(node));
+    });
+    drawEdges();
+  }
+
+  function makeNode(node) {
+    var el = document.createElement('div');
+    el.className = 'loop-dag-node' + (node.id === 'trigger' ? ' loop-dag-node--trigger' : '');
+    el.dataset.key = node.id;
+    el.style.left = node.x + 'px';
+    el.style.top = node.y + 'px';
+    var label = document.createElement('span');
+    label.className = 'loop-dag-node__label';
+    label.textContent = node.id === 'trigger' ? 'Trigger' : 'Action';
+    el.appendChild(label);
+    if (node.id === 'trigger') {
+      var value = document.createElement('span');
+      value.className = 'loop-dag-node__value';
+      value.textContent = triggerLabel(state.trigger) || '—';
+      el.appendChild(value);
+    } else {
+      var select = document.createElement('select');
+      select.className = 'dag-node-select';
+      select.setAttribute('aria-label', 'Action');
+      select.innerHTML = actionOptions(node.action);
+      select.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      select.addEventListener('change', function () { node.action = select.value; });
+      el.appendChild(select);
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'loop-dag-node__remove';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', 'Remove node');
+      remove.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      remove.addEventListener('click', function () { removeNode(node.id); });
+      el.appendChild(remove);
+      el.appendChild(makePort(node.id, 'in'));
+    }
+    el.appendChild(makePort(node.id, 'out'));
+    el.addEventListener('pointerdown', function (e) { startDrag(e, node.id); });
+    return el;
+  }
+
+  function makePort(nodeId, side) {
+    var port = document.createElement('span');
+    port.className = 'loop-dag-port loop-dag-port--' + side;
+    port.dataset.node = nodeId;
+    port.dataset.side = side;
+    port.setAttribute('role', 'button');
+    port.setAttribute('aria-label', side === 'out' ? 'Connect from this node' : 'Connect to this node');
+    port.addEventListener('pointerdown', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      startConnect(e, nodeId, side);
+    });
+    return port;
+  }
+
+  function actionOptions(selected) {
+    var html = '';
+    for (var i = 0; i < actions.length; i++) {
+      html += '<option value="' + actions[i].id + '"' + (actions[i].id === selected ? ' selected' : '') + '>' + escapeHtml(actions[i].label) + '</option>';
+    }
+    return html;
+  }
+
+  // ── Node dragging ──
+  function startDrag(e, nodeId) {
+    if (nodeId === 'trigger') return;
+    var node = state.nodes.filter(function (n) { return n.id === nodeId; })[0];
+    drag = { nodeId: nodeId, startX: e.clientX, startY: e.clientY, originX: node.x, originY: node.y };
+    canvas.setPointerCapture(e.pointerId);
+    canvas.addEventListener('pointermove', onDragMove);
+    canvas.addEventListener('pointerup', onDragEnd);
   }
 
   function onDragMove(e) {
     if (!drag) return;
-    var dx = e.clientX - drag.startX;
-    var dy = e.clientY - drag.startY;
-    state.positions[drag.key] = { x: drag.originX + dx, y: drag.originY + dy };
-    var node = nodesEl.querySelector('[data-key="' + drag.key + '"]');
-    if (node) { node.style.left = state.positions[drag.key].x + 'px'; node.style.top = state.positions[drag.key].y + 'px'; }
+    var node = state.nodes.filter(function (n) { return n.id === drag.nodeId; })[0];
+    node.x = drag.originX + e.clientX - drag.startX;
+    node.y = drag.originY + e.clientY - drag.startY;
+    var el = nodesEl.querySelector('[data-key="' + drag.nodeId + '"]');
+    if (el) { el.style.left = node.x + 'px'; el.style.top = node.y + 'px'; }
     drawEdges();
   }
 
-  function onDragEnd(e) {
-    var node = nodesEl.querySelector('[data-key="' + drag.key + '"]');
-    if (node) { node.removeEventListener('pointermove', onDragMove); node.removeEventListener('pointerup', onDragEnd); }
-    reorderFromPosition(drag.key, drag.stepIndex);
+  function onDragEnd() {
+    canvas.removeEventListener('pointermove', onDragMove);
+    canvas.removeEventListener('pointerup', onDragEnd);
     drag = null;
-    render();
   }
 
-  function reorderFromPosition(key, oldIndex) {
-    var pos = state.positions[key];
-    var newIndex = 0;
-    for (var k in state.positions) {
-      if (k === key || k === 'trigger') continue;
-      if (state.positions[k].x < pos.x) newIndex++;
+  // ── Edge creation (drag port → port) ──
+  function startConnect(e, nodeId, side) {
+    // Only allow starting from an output port and ending on an input port.
+    connect = {
+      from: side === 'out' ? nodeId : null,
+      to: side === 'in' ? nodeId : null,
+      origin: portCenter(nodeId, side),
+      cursor: { x: e.clientX - canvas.getBoundingClientRect().left + canvas.scrollLeft, y: e.clientY - canvas.getBoundingClientRect().top + canvas.scrollTop }
+    };
+    canvas.setPointerCapture(e.pointerId);
+    canvas.addEventListener('pointermove', onConnectMove);
+    canvas.addEventListener('pointerup', onConnectEnd);
+    drawEdges();
+  }
+
+  function canvasPoint(e) {
+    var rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left + canvas.scrollLeft, y: e.clientY - rect.top + canvas.scrollTop };
+  }
+
+  function onConnectMove(e) {
+    if (!connect) return;
+    connect.cursor = canvasPoint(e);
+    drawEdges();
+  }
+
+  function onConnectEnd(e) {
+    canvas.removeEventListener('pointermove', onConnectMove);
+    canvas.removeEventListener('pointerup', onConnectEnd);
+    if (!connect) return;
+    var target = e.target;
+    var targetPort = target.closest ? target.closest('.loop-dag-port') : null;
+    var pending = connect;
+    connect = null;
+    drawEdges();
+    if (targetPort && pending.from && targetPort.dataset.side === 'in' && targetPort.dataset.node !== pending.from) {
+      addEdge(pending.from, targetPort.dataset.node);
+    } else if (targetPort && pending.to && targetPort.dataset.side === 'out' && targetPort.dataset.node !== pending.to) {
+      addEdge(targetPort.dataset.node, pending.to);
     }
-    if (newIndex === oldIndex) return;
-    var step = state.steps.splice(oldIndex, 1)[0];
-    state.steps.splice(newIndex, 0, step);
   }
 
-  function removeStep(index) {
-    state.steps.splice(index, 1);
+  function addEdge(fromId, toId) {
+    if (wouldCycle(fromId, toId)) {
+      showStatus('That connection would create a cycle', false);
+      return;
+    }
+    var exists = state.edges.some(function (e) { return e.from === fromId && e.to === toId; });
+    if (exists) { showStatus('Already connected', false); return; }
+    state.edges.push({ from: fromId, to: toId });
+    drawEdges();
+  }
+
+  function removeEdge(index) {
+    state.edges.splice(index, 1);
+    drawEdges();
+  }
+
+  function removeNode(nodeId) {
+    state.nodes = state.nodes.filter(function (n) { return n.id !== nodeId; });
+    state.edges = state.edges.filter(function (e) { return e.from !== nodeId && e.to !== nodeId; });
     render();
   }
 
-  function addStep() {
-    state.steps.push(actions.length ? actions[0].id : '');
+  function addNode() {
+    if (!actions.length) return;
+    // Place the new node to the right of the rightmost node, vertically offset.
+    var maxX = 0;
+    state.nodes.forEach(function (n) { if (n.x > maxX) maxX = n.x; });
+    var id = freshId();
+    state.nodes.push({ id: id, action: actions[0].id, x: maxX + 210, y: 24 + (state.nodes.length % 4) * 90 });
     render();
   }
 
@@ -212,13 +324,20 @@
     statusEl.textContent = text;
     statusEl.style.display = 'inline-flex';
     statusEl.style.color = ok ? 'var(--accent-2)' : '#ffaaa1';
-    setTimeout(function () { statusEl.style.display = 'none'; }, 3200);
+    clearTimeout(showStatus._t);
+    showStatus._t = setTimeout(function () { statusEl.style.display = 'none'; }, 3400);
   }
 
   function load() {
     var wf = current();
     if (!wf) return;
-    state = { id: wf.id, steps: (wf.actions || []).slice(), trigger: wf.trigger, positions: {} };
+    var graph = wf.graph || { nodes: [], edges: [] };
+    var nodes = (graph.nodes || []).map(function (n) { return { id: n.id, action: n.action, x: n.x, y: n.y }; });
+    if (!nodes.some(function (n) { return n.id === 'trigger'; })) {
+      nodes.unshift({ id: 'trigger', action: null, x: 32, y: 48 });
+    }
+    state = { id: wf.id, trigger: wf.trigger, nodes: nodes, edges: (graph.edges || []).map(function (e) { return { from: e.from, to: e.to }; }), counter: 1 };
+    triggerSel.value = wf.trigger;
     render();
   }
 
@@ -227,25 +346,33 @@
     opt.value = workflows[i].id; opt.textContent = workflows[i].name;
     workflowSel.appendChild(opt);
   }
+  for (var j = 0; j < triggers.length; j++) {
+    var t = document.createElement('option');
+    t.value = triggers[j].id; t.textContent = triggers[j].label;
+    triggerSel.appendChild(t);
+  }
   workflowSel.addEventListener('change', load);
-  document.getElementById('dag-add').addEventListener('click', addStep);
+  triggerSel.addEventListener('change', function () { state.trigger = triggerSel.value; render(); });
+  document.getElementById('dag-add').addEventListener('click', addNode);
   document.getElementById('dag-save').addEventListener('click', function () {
     var wf = current();
     if (!wf) return;
-    fetch('/fragments/workflows/' + wf.id + '/steps/', {
+    var nodes = state.nodes.map(function (n) { return { id: n.id, action: n.action, x: Math.round(n.x), y: Math.round(n.y) }; });
+    var edges = state.edges.map(function (e) { return { from: e.from, to: e.to }; });
+    fetch('/fragments/workflows/' + wf.id + '/graph/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() },
-      body: JSON.stringify({ trigger: wf.trigger, actions: state.steps })
+      body: JSON.stringify({ trigger: state.trigger, nodes: nodes, edges: edges })
     }).then(function (resp) {
       return resp.json().then(function (body) { return { ok: resp.ok, body: body }; });
     }).then(function (result) {
       if (result.ok) {
         wf.trigger = result.body.trigger;
         wf.actions = result.body.actions;
-        state.steps = (result.body.actions || []).slice();
+        wf.graph = result.body.graph;
         showStatus('Saved', true);
       } else {
-        showStatus((result.body.actions || result.body.trigger || 'Save failed'), false);
+        showStatus(result.body.graph || result.body.detail || 'Save failed', false);
       }
     }).catch(function () { showStatus('Save failed', false); });
   });

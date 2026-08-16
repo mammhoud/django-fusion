@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd /home/structa.cloud/projects/precis/main/backend
+cd /home/structa.cloud/projects/precis/precis-lms/backend
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 timeout 700 "$UV_BIN" --project .. run --frozen python manage.py test \
   tests.test_landing_api.BlogCommentsApiTests.test_authenticated_post_requires_csrf_token \

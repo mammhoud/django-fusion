@@ -1,7 +1,7 @@
-# Dead Code & Unused Code Audit — cms-fusion / lms-fusion
+# Dead Code & Unused Code Audit — cms-fusion / precis-lms
 
 **Audit date:** July 31, 2026
-**Scope:** `projects/cms-fusion/` and `projects/lms-fusion/` (Django backends + Next.js/RTK Query frontends)
+**Scope:** `projects/cms-fusion/` and `projects/precis-lms/` (Django backends + Next.js/RTK Query frontends)
 **Method:** automated scans (ruff F401/F841, vulture, repo typo/dead-code script) + cross-reference grep + git state review
 
 ---
@@ -23,7 +23,7 @@ Both fusion projects carry a **large volume of "zombie" code** left over from th
 
 ### 2.1 Domain migrations target models that are never created
 
-**Location:** `lms-fusion/backend/apps/domain/migrations/0001_initial.py` (label `shared`) — same in cms-fusion.
+**Location:** `precis-lms/backend/apps/domain/migrations/0001_initial.py` (label `shared`) — same in cms-fusion.
 
 **What's wrong:** The migration file **creates 13 models** (`CertificationTemplate`, `Contact`, `ContactEmail`, `ContactPhone`, `Corporate`, `Coupon`, `CouponUsage`, `EmailSettings`, `GlobalSettings`, `NewsletterSubscription`, `Organization`, `Service`, `TemplateVariable`) but then applies `AddIndex`/`AddConstraint`/`AddField` operations against **8 models that never get a `CreateModel`** in the file:
 
@@ -38,7 +38,7 @@ Django's migration executor resolves each `model_name` in the app-state and rais
 **How to use it (fix):**
 ```bash
 # 1. Regenerate a clean initial migration from the live domain models:
-cd projects/lms-fusion/backend
+cd projects/precis-lms/backend
 rm apps/domain/migrations/0001_initial.py
 python manage.py makemigrations domain          # recreates only real models
 python manage.py migrate domain
@@ -53,13 +53,13 @@ python manage.py migrate domain
 
 ### 2.2 `load_course_fixtures` command references non-existent fixture paths
 
-**Location:** `lms-fusion/backend/apps/pages/lms/management/commands/load_course_fixtures.py` (same in cms-fusion).
+**Location:** `precis-lms/backend/apps/pages/lms/management/commands/load_course_fixtures.py` (same in cms-fusion).
 
 **What's wrong:** The command calls `loaddata 'assets/fixtures/lms/specializations.json'`, `'assets/fixtures/lms/course_tags.json'`, `'assets/fixtures/lms/courses.json'` — but those directories/files **do not exist**. The real fixtures live at:
 
 ```
-lms-fusion/backend/apps/pages/lms/fixtures/{specializations,course_tags,courses,events}.json
-lms-fusion/backend/assets/fixtures/dump-data.json   # main site fixture
+precis-lms/backend/apps/pages/lms/fixtures/{specializations,course_tags,courses,events}.json
+precis-lms/backend/assets/fixtures/dump-data.json   # main site fixture
 ```
 
 **Why it is unused:** Running the command prints success lines but silently loads nothing (Django ignores missing fixture paths), so it has no effect and nobody relies on it.
@@ -98,7 +98,7 @@ populate_content.py
 **How to use / fix:**
 ```bash
 # Determine which copy is canonical (first app in INSTALLED_APPS wins):
-cd projects/lms-fusion/backend
+cd projects/precis-lms/backend
 python manage.py help | grep -E 'send_bulk_emails|verify_content|populate_content'
 # Then delete the shadowed copies in handlers/ and pages/accounts/,
 # keeping only the winning one (or move all to a single apps/shared app).
@@ -146,7 +146,7 @@ EventPage, HomePage, ServicesPage, TeamPage
 
 ---
 
-## 4. Frontend Dead Code (lms-fusion frontend; cms-fusion frontend is a copy)
+## 4. Frontend Dead Code (precis-lms frontend; cms-fusion frontend is a copy)
 
 ### 4.1 RTK Query hooks exported but never used by any component
 
@@ -210,10 +210,10 @@ Used hooks reference ~20 backend endpoint groups. The unused hooks above imply *
 
 ```bash
 # 0. Commit the refactor deletions (668 files already deleted in working tree):
-cd projects && git add -A cms-fusion/backend lms-fusion/backend && git commit -m "refactor: commit content/domain model refactor deletions"
+cd projects && git add -A cms-fusion/backend precis-lms/backend && git commit -m "refactor: commit content/domain model refactor deletions"
 
 # 1. Fix the blocking migration (fresh-DB safe path):
-cd lms-fusion/backend
+cd precis-lms/backend
 rm apps/domain/migrations/0001_initial.py
 python manage.py makemigrations domain && python manage.py migrate
 # repeat for cms-fusion/backend
@@ -221,7 +221,7 @@ python manage.py makemigrations domain && python manage.py migrate
 # 2. Fix load_course_fixtures paths (see §2.2)
 
 # 3. Auto-clean unused imports/vars:
-cd projects && uv run ruff check cms-fusion/backend/apps lms-fusion/backend/apps \
+cd projects && uv run ruff check cms-fusion/backend/apps precis-lms/backend/apps \
   --select F401,F841 --fix && uv run ruff format
 
 # 4. Delete dead models + legacy pages package (see §3.2/3.3), then makemigrations
@@ -231,9 +231,9 @@ cd projects && uv run ruff check cms-fusion/backend/apps lms-fusion/backend/apps
 # 6. Frontend: delete unused hooks/components OR wire them (see §4), add ts-unused-exports
 
 # 7. Validate:
-cd projects && uv run python -m pytest lms-fusion/backend/tests/ cms-fusion/backend/tests/ -q
-cd lms-fusion/frontend && npx tsc --noEmit && npx vitest run
-cd projects && make check WEBSITE=lms && make check WEBSITE=ctc-research
+cd projects && uv run python -m pytest precis-lms/backend/tests/ cms-fusion/backend/tests/ -q
+cd precis-lms/frontend && npx tsc --noEmit && npx vitest run
+cd projects && make check WEBSITE=lms && make check WEBSITE=precis-ctc
 ```
 
 ---

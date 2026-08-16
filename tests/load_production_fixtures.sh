@@ -6,7 +6,7 @@
 
 set -e
 
-SITE="${1:-ctc-research}"
+SITE="${1:-precis-ctc}"
 FIXTURES_DIR="/root/site/websites/${SITE}/assets/fixtures/by-model"
 VENV="/root/site/websites/.venv/bin"
 
@@ -87,12 +87,12 @@ echo ""
 
 # Verify site configuration
 echo "Verifying configuration..."
-docker exec web-ctc-research $VENV/python manage.py check --site="$SITE" 2>&1 | grep -E "System check|Error|✓" || true
+docker exec web-precis-ctc $VENV/python manage.py check --site="$SITE" 2>&1 | grep -E "System check|Error|✓" || true
 
 # Check if homepage is accessible
 echo ""
 echo "Checking homepage availability..."
-docker exec web-ctc-research $VENV/python -c "
+docker exec web-precis-ctc $VENV/python -c "
 from wagtail.models import Page, Site
 try:
     site = Site.objects.filter(is_default_site=True).first() or Site.objects.first()
@@ -112,7 +112,7 @@ echo ""
 echo "Next steps:"
 echo "1. Verify homepage is displayed at http://ctc-research.com/"
 echo "2. Check assets are loading from https://ctc-research.com/static/"
-echo "3. Verify database data with: docker exec web-ctc-research python manage.py dbshell"
+echo "3. Verify database data with: docker exec web-precis-ctc python manage.py dbshell"
 
 EOF
 chmod +x /root/site/websites/load_production_fixtures.sh

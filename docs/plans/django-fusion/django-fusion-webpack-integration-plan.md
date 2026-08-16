@@ -23,7 +23,7 @@
 
 ### 1.2 Architecture Status
 
-| Aspect | CMS (cms-fusion) | LMS (lms-fusion) |
+| Aspect | CMS (cms-fusion) | LMS (precis-lms) |
 |--------|-----------------|-----------------|
 | Render-First Default | `True` (component render) | `False` (API-first) |
 | Pages Loaded | 38 (multi-language) | 38 (shared data) |
@@ -35,7 +35,7 @@
 
 | # | Issue | Severity | Area | Status |
 |---|-------|----------|------|--------|
-| I1 | `ctc-research` has no running Docker container | 🔴 High | Infrastructure | ❌ Open |
+| I1 | `precis-ctc` has no running Docker container | 🔴 High | Infrastructure | ❌ Open |
 | I2 | `FUSION_ASSETS` endpoint returns 404 (`/apis/fusion/assets/`) | 🔴 High | django-fusion | ✅ **Fixed** — `/api/fusion/assets/` mount added |
 | I3 | `webpack_loader` not in django-fusion dependencies | 🟡 Medium | django-fusion | ✅ **Fixed** — added to pyproject.toml |
 | I4 | No unified webpack bundle config in django-fusion | 🟡 Medium | django-fusion | ✅ **Fixed** — webpack.config.js + package.json created |
@@ -230,7 +230,7 @@ Add a `webpack-dev-server` mode:
 
 ---
 
-## 6. ctc-research Status
+## 6. precis-ctc Status
 
 | Check | Status |
 |-------|--------|
@@ -240,7 +240,7 @@ Add a `webpack-dev-server` mode:
 | Proxy config exists | ✅ `ctc-site-service` in Traefik config |
 
 **Action needed:** Either:
-- Restore `ctc-research` Docker stack and load fixtures
+- Restore `precis-ctc` Docker stack and load fixtures
 - Or remove stale Traefik config for `ctc-site-service` to clean up logs
 
 ---
@@ -276,7 +276,7 @@ curl http://localhost:5074/api/pages/ → {"pages": [...], "total": 38}
 
 # Proxy SSL
 curl -k https://cms-fusion.localhost/ → 200
-curl -k https://lms-fusion.localhost/ → 200
+curl -k https://precis-lms.localhost/ → 200
 
 # Webpack stats (generated after first build)
 cd libs/django-fusion && npm install && npm run build

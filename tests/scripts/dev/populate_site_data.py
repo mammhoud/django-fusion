@@ -23,9 +23,9 @@ import sys
 from pathlib import Path
 
 SITE_ALIASES = {
-    "ctc": "ctc-research",
-    "ctc-research": "ctc-research",
-    "ctc-research.com": "ctc-research",
+    "ctc": "precis-ctc",
+    "precis-ctc": "precis-ctc",
+    "ctc-research.com": "precis-ctc",
     "structa": "lms",
     "lms": "lms",
     "lms": "lms",
@@ -35,7 +35,7 @@ SITE_ALIASES = {
     "resume": "vresume",
 }
 SITE_DIRS = {
-    "ctc-research": "ctc-research",
+    "precis-ctc": "precis-ctc",
     "lms": "lms",
     "vresume": "VResume",
 }
@@ -109,7 +109,7 @@ def fixture_candidates(root: Path, site: str, include_shared: bool, include_dump
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--site", default=os.getenv("DJANGO_SITE") or "ctc-research")
+    parser.add_argument("--site", default=os.getenv("DJANGO_SITE") or "precis-ctc")
     parser.add_argument("--skip-migrate", action="store_true", help="Do not run migrations before loading fixtures.")
     parser.add_argument("--skip-json", action="store_true", help="Do not load JSON fixtures.")
     parser.add_argument("--include-shared", action="store_true", help="Also load shared tests/fixtures JSON files.")

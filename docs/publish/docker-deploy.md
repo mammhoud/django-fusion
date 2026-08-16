@@ -18,7 +18,7 @@ root Makefile (make deploy)
     │   └── Media files:  /var/www/sites/<site>/media/
     │
     ├── make deploy-app          → applications/compose/
-    │   ├── ctc-research:5070
+    │   ├── precis-ctc:5070
     │   ├── lms:5071
     │   ├── portfolio:5072
     │   └── cypercloud:5073
@@ -38,7 +38,7 @@ root Makefile (make deploy)
 
 | Project | Compose File | Container | Port |
 |---------|-------------|-----------|------|
-| CTC Research | `projects/ctc-research/docker-compose.yml` | `ctc-research-website` | 5070 |
+| CTC Research | `projects/precis-ctc/docker-compose.yml` | `precis-ctc-website` | 5070 |
 | LMS | `projects/lms/docker-compose.yml` | `lms-web` | 5071 |
 | Portfolio | `projects/portfolio/docker-compose.yml` | `vresume-web` | 5072 |
 | Cypercloud | `projects/cypercloud/docker-compose.yml` | `cypercloud-web` | 5073 |

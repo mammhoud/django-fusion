@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Loop-CRM backend management entry point (mirrors landing-fusion conventions)."""
+"""Loop-CRM backend management entry point (mirrors precis-landing conventions)."""
 from __future__ import annotations
 
 import os

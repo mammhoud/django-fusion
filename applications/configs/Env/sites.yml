@@ -2,10 +2,10 @@ default:
   default: lms
   websites:
     lms:
-      # Runtime identity remains lms-fusion; the active project directory is
+      # Runtime identity remains precis-lms; the active project directory is
       # Precis after the LMS migration.
-      path: precis/main
-      aliases: [structa, core, demo, structa.cloud, lms-fusion]
+      path: precis/precis-lms
+      aliases: [structa, core, demo, structa.cloud, precis-lms]
       domain: structa.cloud
       port: 5071
       module: LMS
@@ -13,9 +13,9 @@ default:
       allowed_hosts: [.structa.cloud, structa.cloud, www.structa.cloud, core.structa.cloud, localhost, 127.0.0.1]
       csrf_trusted_origins: [http://structa.cloud, https://structa.cloud, http://www.structa.cloud, https://www.structa.cloud, http://core.structa.cloud, https://core.structa.cloud]
       cors_allowed_origins: [http://structa.cloud, https://structa.cloud, http://www.structa.cloud, https://www.structa.cloud, http://core.structa.cloud, https://core.structa.cloud]
-    ctc-research:
+    precis-ctc:
       path: cms-fusion
-      aliases: [ctc, ctc-research, ctc-research.com, cms-fusion, cms]
+      aliases: [ctc, precis-ctc, ctc-research.com, cms-fusion, cms]
       domain: ctc-research.com
       port: 5070
       module: CMS
@@ -58,7 +58,7 @@ default:
     # Merged `www` sentinel site (from merge of projects/shared/ and
     # projects/www/) — referenced by `applications/docker-compose.tasks.yml`
     # so shared-worker + shared-scheduler can boot site-agnostically. The
-    # tasks compose previously defaulted WEBSITE / DJANGO_SITE to `ctc-research`
+    # tasks compose previously defaulted WEBSITE / DJANGO_SITE to `precis-ctc`
     # as the only registered site that would survive the runtime site-tracker
     # check in `projects/configs/site.py:active_website_name()`. With this entry,
     # the tasks stack can declare `WEBSITE=www` (or via alias `WEBSITE=shared`)

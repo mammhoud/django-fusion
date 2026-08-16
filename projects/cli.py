@@ -26,10 +26,10 @@ REPO_ROOT = Path(__file__).resolve().parent
 ROOT_COMPOSE = REPO_ROOT / "docker-compose.yml"
 
 SITES = {
-    "ctc-research": {
-        "path": "ctc-research",
-        "project_path": "ctc-research",
-        "service": "ctc-research-website",
+    "precis-ctc": {
+        "path": "precis-ctc",
+        "project_path": "precis-ctc",
+        "service": "precis-ctc-website",
         "port": 5070,
         "db_name": "db_ctc",
     },
@@ -61,10 +61,10 @@ SITES = {
         "port": 5075,
         "db_name": "db_cms_fusion",
     },
-    "lms-fusion": {
-        "path": "lms-fusion",
-        "project_path": "lms-fusion",
-        "service": "lms-fusion-website",
+    "precis-lms": {
+        "path": "precis-lms",
+        "project_path": "precis-lms",
+        "service": "precis-lms-website",
         "port": 5076,
         "db_name": "db_lms_fusion",
     },
@@ -87,10 +87,10 @@ SITES = {
 }
 
 SITE_ALIASES = {
-    "ctc": "ctc-research",
-    "ctc-research": "ctc-research",
-    "ctc-research.com": "ctc-research",
-    "ctc-website": "ctc-research",
+    "ctc": "precis-ctc",
+    "precis-ctc": "precis-ctc",
+    "ctc-research.com": "precis-ctc",
+    "ctc-website": "precis-ctc",
     "structa": "lms",
     "structa.cloud": "lms",
     "core": "lms",
@@ -112,9 +112,9 @@ SITE_ALIASES = {
     "cms-fusion": "cms-fusion",
     "cmsfusion": "cms-fusion",
     "cms_fusion": "cms-fusion",
-    "lms-fusion": "lms-fusion",
-    "lmsfusion": "lms-fusion",
-    "lms_fusion": "lms-fusion",
+    "precis-lms": "precis-lms",
+    "lmsfusion": "precis-lms",
+    "lms_fusion": "precis-lms",
 }
 
 LIBS = {
@@ -181,7 +181,7 @@ class SiteCLI:
             or os.environ.get("DJANGO_WEBSITE")
             or os.environ.get("WEBSITE")
             or os.environ.get("SITE")
-            or "ctc-research"
+            or "precis-ctc"
         )
         resolved = SITE_ALIASES.get(requested.lower(), requested)
         if resolved not in SITES:
@@ -715,7 +715,7 @@ class SiteCLI:
         elif parsed.site:
             sites_to_check = [parsed.site]
         else:
-            sites_to_check = ["ctc-research"]
+            sites_to_check = ["precis-ctc"]
 
         for site_name in sites_to_check:
             try:

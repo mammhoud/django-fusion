@@ -9,8 +9,8 @@ echo "This script fixes the background task errors related to orphaned"
 echo "ContentType entries that are causing modelsearch indexing failures."
 echo ""
 
-WEBSITE="ctc-research"
-CONTAINER_NAME="web-ctc-research"
+WEBSITE="precis-ctc"
+CONTAINER_NAME="web-precis-ctc"
 
 # Check if container is running
 if ! docker ps | grep -q "$CONTAINER_NAME"; then

@@ -6,8 +6,8 @@
 | Task | Files | Status |
 |------|-------|--------|
 | **Traefik SSL Certs** | `applications/proxy/traefik/dynamic/certs.yml`, `Makefile`, `scripts/validate-traefik-config.py` | ✅ |
-| **LMS Traefik Port Fix** | `applications/proxy/traefik/dynamic/lms-fusion.yml` (3001→3002) | ✅ |
-| **Dead Admin Modules** | `projects/cms-fusion/backend/apps/core/admin/__init__.py`, `projects/lms-fusion/backend/apps/core/admin/__init__.py` | ✅ Deleted |
+| **LMS Traefik Port Fix** | `applications/proxy/traefik/dynamic/precis-lms.yml` (3001→3002) | ✅ |
+| **Dead Admin Modules** | `projects/cms-fusion/backend/apps/core/admin/__init__.py`, `projects/precis-lms/backend/apps/core/admin/__init__.py` | ✅ Deleted |
 | **Empty Dir Cleanup** | ~36 empty dirs across CMS + LMS | ✅ Deleted |
 | **FusionAssets Component** | `FusionAssets.tsx`, `FusionAssets.test.tsx`, `fusion-theme.scss` | ✅ |
 | **Playwright Config** | Docker URL support, health check fix | ✅ |
@@ -16,7 +16,7 @@
 
 ### Docker Verification (All Healthy)
 - `cms-fusion-backend`: ✅ 0 errors, 38 pages loaded
-- `lms-fusion-backend`: ✅ 0 errors, 38 pages loaded  
+- `precis-lms-backend`: ✅ 0 errors, 38 pages loaded  
 - `default-proxy` (Traefik): ✅ Both CMS & LMS return 200 over HTTPS
 - Render-First: CMS=`True`, LMS=`False` — correct configuration
 

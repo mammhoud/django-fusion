@@ -48,7 +48,7 @@ open http://cypercloud.localhost:5073
 - Show sections/blocks within each template
 
 **Configured Sites:**
-- CTC Research (`projects/ctc-research/templates/`)
+- CTC Research (`projects/precis-ctc/templates/`)
 - LMS Demo (`projects/lms/templates/`)
 - VResume (`projects/portfolio/www/pages/templates/`)
 
@@ -142,7 +142,7 @@ LOCAL_APPS = ["chat.apps.ChatConfig"]
 
 # Configured sites for template discovery
 CUSTOMIZER_APPS = [
-    {"slug": "ctc-research", "name": "CTC Research", "template_root": "..."},
+    {"slug": "precis-ctc", "name": "CTC Research", "template_root": "..."},
     {"slug": "lms", "name": "LMS Demo", "template_root": "..."},
     {"slug": "VResume", "name": "VResume", "template_root": "..."},
 ]

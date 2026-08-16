@@ -1,24 +1,48 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "!{projectRoot}/node_modules/**", "!{projectRoot}/dist/**", "!{projectRoot}/.astro/**"],
-    "production": ["default", "!{projectRoot}/**/*.test.*", "!{projectRoot}/tests/**"],
-    "sharedGlobals": ["package.json", "nx.json"]
+    "default": [
+      "{projectRoot}/**/*",
+      "!{projectRoot}/node_modules/**",
+      "!{projectRoot}/dist/**",
+      "!{projectRoot}/.astro/**"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.test.*",
+      "!{projectRoot}/tests/**"
+    ],
+    "sharedGlobals": [
+      "package.json",
+      "nx.json"
+    ]
   },
   "targetDefaults": {
     "build": {
-      "inputs": ["production", "^production"],
+      "inputs": [
+        "production",
+        "^production"
+      ],
       "cache": true,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "check": {
-      "inputs": ["default", "^production"],
+      "inputs": [
+        "default",
+        "^production"
+      ],
       "cache": true
     },
     "test": {
-      "inputs": ["default", "^production"],
+      "inputs": [
+        "default",
+        "^production"
+      ],
       "cache": true
     }
   },
-  "defaultBase": "generic"
+  "defaultBase": "generic",
+  "analytics": false
 }

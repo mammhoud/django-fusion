@@ -17,10 +17,10 @@ of LMS-specific fixtures also available in this shared `tests/fixtures/` directo
 ### Django management command
 ```bash
 # Load a single fixture
-python manage.py --site=ctc-research loaddata ctc-research/assets/fixtures/auth/user_dummy.json
+python manage.py --site=precis-ctc loaddata precis-ctc/assets/fixtures/auth/user_dummy.json
 
 # Load from tests/fixtures
-python manage.py --site=ctc-research loaddata tests/fixtures/lms/courses.json
+python manage.py --site=precis-ctc loaddata tests/fixtures/lms/courses.json
 ```
 
 ### Using the workspace CLI
@@ -30,7 +30,7 @@ npm --prefix assets run load-dumps -- --site ctc
 npm --prefix assets run load-dumps -- --site all
 
 # Or via workspace.mjs directly
-node assets/scripts/workspace.mjs load-dumps --site ctc-research
+node assets/scripts/workspace.mjs load-dumps --site precis-ctc
 ```
 
 ### Via Make
@@ -41,8 +41,8 @@ make populate-data-all
 
 ### Shell loop (all fixtures in a directory)
 ```bash
-for fixture in ctc-research/assets/fixtures/**/*.json; do
-  python manage.py --site=ctc-research loaddata "$fixture"
+for fixture in precis-ctc/assets/fixtures/**/*.json; do
+  python manage.py --site=precis-ctc loaddata "$fixture"
 done
 ```
 
@@ -50,9 +50,9 @@ done
 
 ## Fixtures by Site
 
-### ctc-research (LMS)
+### precis-ctc (LMS)
 
-**Location:** `ctc-research/assets/fixtures/`
+**Location:** `precis-ctc/assets/fixtures/`
 
 | Directory | Files | Purpose |
 |-----------|-------|---------|
@@ -66,15 +66,15 @@ done
 | `by-model/handlers/` | `handlers-organization.json` | Organization data |
 | `by-model/modules/` | Activity types, status choices, derived status | LMS module config |
 | `cleaned/` | `essential-data.json`, `filtered-dump-data.json` | Cleaned production snapshots |
-| `original/` | `ctc-research-data.json`, `wagtail_pages_dump.json` | Raw database dumps |
+| `original/` | `precis-ctc-data.json`, `wagtail_pages_dump.json` | Raw database dumps |
 
 Recommended load order for a fresh test database:
 ```bash
-python manage.py --site=ctc-research loaddata ctc-research/assets/fixtures/auth/user_dummy.json
-python manage.py --site=ctc-research loaddata ctc-research/assets/fixtures/sites/site_dummy.json
-python manage.py --site=ctc-research loaddata ctc-research/assets/fixtures/test/locales.json
-python manage.py --site=ctc-research loaddata ctc-research/assets/fixtures/test/core-data.json
-python manage.py --site=ctc-research loaddata tests/fixtures/lms/courses.json
+python manage.py --site=precis-ctc loaddata precis-ctc/assets/fixtures/auth/user_dummy.json
+python manage.py --site=precis-ctc loaddata precis-ctc/assets/fixtures/sites/site_dummy.json
+python manage.py --site=precis-ctc loaddata precis-ctc/assets/fixtures/test/locales.json
+python manage.py --site=precis-ctc loaddata precis-ctc/assets/fixtures/test/core-data.json
+python manage.py --site=precis-ctc loaddata tests/fixtures/lms/courses.json
 ```
 
 ---
@@ -109,7 +109,7 @@ See `tests/fixtures/vresume/README.md` for details.
 
 ## Shared LMS Fixtures
 
-`tests/fixtures/lms/` contains copies of ctc-research LMS fixtures for use in
+`tests/fixtures/lms/` contains copies of precis-ctc LMS fixtures for use in
 cross-site integration tests and the shared test suite.
 
 | File | Records | Description |
@@ -133,15 +133,15 @@ class CourseTest(TestCase):
 Export from a running Django site:
 ```bash
 # Export a specific model
-python manage.py --site=ctc-research dumpdata lms.Course --indent 2 > tests/fixtures/lms/courses.json
+python manage.py --site=precis-ctc dumpdata lms.Course --indent 2 > tests/fixtures/lms/courses.json
 
 # Export auth data
-python manage.py --site=ctc-research dumpdata auth.User auth.Group --indent 2 \
-    > ctc-research/assets/fixtures/auth/user_dummy.json
+python manage.py --site=precis-ctc dumpdata auth.User auth.Group --indent 2 \
+    > precis-ctc/assets/fixtures/auth/user_dummy.json
 
 # Export full database (large — use for production snapshots)
-python manage.py --site=ctc-research dumpdata --indent 2 --natural-foreign --natural-primary \
-    > ctc-research/assets/fixtures/dump-data.json
+python manage.py --site=precis-ctc dumpdata --indent 2 --natural-foreign --natural-primary \
+    > precis-ctc/assets/fixtures/dump-data.json
 ```
 
 ---
@@ -155,7 +155,7 @@ from django_fusion.tests.base import BaseTestCase
 
 class CourseListTest(BaseTestCase):
     fixtures = [
-        'ctc-research/assets/fixtures/auth/user_dummy.json',
+        'precis-ctc/assets/fixtures/auth/user_dummy.json',
         'tests/fixtures/lms/courses.json',
     ]
 

@@ -2,7 +2,7 @@
  * ╔══════════════════════════════════════════════════════════════════════╗
  * ║  DEPRECATED — Use per-project webpack configs instead.             ║
  * ║                                                                    ║
- * ║  landing-fusion → webpack/landing-fusion.config.js                 ║
+ * ║  precis-landing → webpack/precis-landing.config.js                 ║
  * ║  precis         → webpack/precis.config.js                         ║
  * ║                                                                    ║
  * ║  These extend projects/webpack/base.config.js with the shared      ║

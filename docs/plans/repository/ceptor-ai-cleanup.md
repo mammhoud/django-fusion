@@ -28,19 +28,19 @@ Only **minimal references** remain in fusion projects:
 | File | Issue | Action |
 |------|-------|--------|
 | `cms-fusion/tools/worker/modules.py` | Imports ceptor_ai Celery tasks | Remove ceptor_ai lines |
-| `lms-fusion/tools/worker/modules.py` | Imports ceptor_ai Celery tasks | Remove ceptor_ai lines |
+| `precis-lms/tools/worker/modules.py` | Imports ceptor_ai Celery tasks | Remove ceptor_ai lines |
 | `cms-fusion/configs/base/auth.py` | Comment about ceptor_ai | Update comment |
-| `lms-fusion/configs/base/auth.py` | Comment about ceptor_ai | Update comment |
+| `precis-lms/configs/base/auth.py` | Comment about ceptor_ai | Update comment |
 | `cms-fusion/configs/settings/CD/core.py` | Commented-out ceptor_ai import | Remove line |
-| `lms-fusion/configs/settings/CD/core.py` | Commented-out ceptor_ai import | Remove line |
+| `precis-lms/configs/settings/CD/core.py` | Commented-out ceptor_ai import | Remove line |
 | `management/scaffold_fusion.py` | Adds ceptor_ai to scaffold INSTALLED_APPS | Remove ceptor_ai line |
 | `management/workers/modules.py` | Worker task module discovery | Remove ceptor_ai lines |
 | `cms-fusion/backend/settings.py` | Comment mentioning ceptor-ai | Update comment |
-| `lms-fusion/backend/settings.py` | Comment mentioning ceptor-ai | Update comment |
+| `precis-lms/backend/settings.py` | Comment mentioning ceptor-ai | Update comment |
 | `cli.py` | Path mapping for ceptor-ai | Remove mapping |
 
 ### ⚠️ CTC Research (Out of Scope)
-`projects/precis/ctc-research/` has ~80 files importing from ceptor_ai. This legacy project needs its own migration plan. Not in scope for fusion cleanup.
+`projects/precis/precis-ctc/` has ~80 files importing from ceptor_ai. This legacy project needs its own migration plan. Not in scope for fusion cleanup.
 
 ### ⚠️ Cypercloud (Separate Concern)
 `projects/cypercloud/` intentionally uses ceptor-ai for AI chat/MCP. Separate treatment needed.

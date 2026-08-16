@@ -71,7 +71,7 @@ def load_fixture_data():
     print("\n📦 Loading fixture data...")
     
     # Read dump-data.json and filter only wagtail models
-    fixture_file = Path('/app/ctc-research/assets/fixtures/dump-data.json')
+    fixture_file = Path('/app/precis-ctc/assets/fixtures/dump-data.json')
     
     if not fixture_file.exists():
         print(f"❌ Fixture file not found: {fixture_file}")
@@ -99,7 +99,7 @@ def load_fixture_data():
     print(f"  📋 Found {len(filtered_data)} relevant objects from {len(all_data)} total")
     
     # Save filtered fixture
-    filtered_fixture = Path('/app/ctc-research/assets/fixtures/wagtail-only.json')
+    filtered_fixture = Path('/app/precis-ctc/assets/fixtures/wagtail-only.json')
     with open(filtered_fixture, 'w') as f:
         json.dump(filtered_data, f, indent=2)
     print(f"  ✓ Created filtered fixture: {filtered_fixture.name}")

@@ -92,7 +92,7 @@ done
 
 ```bash
 # Manual verification
-for site in ctc-research lms-demo VResume; do
+for site in precis-ctc lms-demo VResume; do
   echo "$site:"
   find $site/assets/staticfiles -type f | wc -l
 done
@@ -105,7 +105,7 @@ done
 
 ```bash
 # Manual verification
-for site in ctc-research lms-demo VResume; do
+for site in precis-ctc lms-demo VResume; do
   echo "$site:"
   ls -1 $site/assets/bundles/*.{js,css} 2>/dev/null | wc -l
 done
@@ -140,7 +140,7 @@ done
 
 ```bash
 # Manual django-fusion style verification
-for site in ctc-research lms-demo VResume; do
+for site in precis-ctc lms-demo VResume; do
   echo "$site:"
   grep -r "{% static" $site/assets/templates | wc -l
   grep -r "/media/" $site/assets/templates | wc -l
@@ -208,7 +208,7 @@ Django Request for Asset
 │   └─ looks in STATIC_ROOT (collected files)
 │
 ├─ 3. File System Search
-│   └─ finds in ctc-research/assets/staticfiles/css/main.css
+│   └─ finds in precis-ctc/assets/staticfiles/css/main.css
 │
 ├─ 4. HTTP Response
 │   └─ serves file with proper headers
@@ -277,10 +277,10 @@ WHITENOISE_MAX_AGE = 31536000  # 1 year
 npm --prefix assets run build:all
 
 # 2. Collect static
-docker exec web-ctc-research python manage.py collectstatic --noinput
+docker exec web-precis-ctc python manage.py collectstatic --noinput
 
 # 3. Restart web server
-docker compose restart web-ctc-research
+docker compose restart web-precis-ctc
 
 # 4. Verify
 python tests/scripts/verify_assets_health.py
@@ -308,7 +308,7 @@ curl http://localhost/media/
 **Solution**:
 ```bash
 # 1. Check static tag usage
-grep -r "{% static" ctc-research/assets/templates
+grep -r "{% static" precis-ctc/assets/templates
 
 # 2. Load static in template
 # At top of template: {% load static %}
@@ -319,7 +319,7 @@ grep -r "{% static" ctc-research/assets/templates
 
 # 4. Rebuild and collect
 npm --prefix assets run build:all
-docker exec web-ctc-research python manage.py collectstatic --noinput
+docker exec web-precis-ctc python manage.py collectstatic --noinput
 ```
 
 ### Issue: Source maps missing (dev)
@@ -327,7 +327,7 @@ docker exec web-ctc-research python manage.py collectstatic --noinput
 **Solution**:
 ```bash
 # Source maps are in bundles directory
-ls -la ctc-research/assets/bundles/*.map
+ls -la precis-ctc/assets/bundles/*.map
 
 # Rebuild with source maps
 npm --prefix assets run build
@@ -418,7 +418,7 @@ python tests/scripts/verify_assets_health.py
 python tests/scripts/verify_assets_health.py -v
 
 # Run specific site only
-python tests/scripts/verify_assets_health.py --site ctc-research
+python tests/scripts/verify_assets_health.py --site precis-ctc
 ```
 
 ### Integration with CI/CD
@@ -447,18 +447,18 @@ echo "All asset checks passed! ✓"
 ```bash
 # Complete asset rebuild & verification
 make build-assets WEBSITE=ctc && \
-docker exec web-ctc-research python manage.py collectstatic --noinput && \
+docker exec web-precis-ctc python manage.py collectstatic --noinput && \
 python tests/scripts/verify_assets_health.py
 
 # Check specific asset
 curl -v http://localhost:5070/static/css/main.css
 
 # Verify templates
-grep -r "{% static" ctc-research/assets/templates | wc -l
+grep -r "{% static" precis-ctc/assets/templates | wc -l
 
 # Check file sizes
-du -sh ctc-research/assets/bundles/
-du -sh ctc-research/assets/staticfiles/
+du -sh precis-ctc/assets/bundles/
+du -sh precis-ctc/assets/staticfiles/
 
 # Monitor in real-time
 watch -n 2 'curl -s http://localhost:5070/assets/health/ | jq .'

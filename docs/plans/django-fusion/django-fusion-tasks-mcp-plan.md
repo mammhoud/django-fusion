@@ -3,7 +3,7 @@
 > **Status:** Dramatiq migration implemented; MCP and production hardening remain
 > **Owner:** django-fusion core team
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/`, `projects/precis/main/`, `projects/precis/landi/`, `projects/formints/`
+> **Scope:** `libs/django-fusion/`, `projects/precis/precis-lms/`, `projects/precis/landi/`, `projects/formints/`
 > **Depends on:** django-fusion enhancement roadmap, worker consolidation, ceptor-ai MCP server
 > **Companion plan:** [`django-fusion-llm-mcp-enhancement-plan.md`](django-fusion-llm-mcp-enhancement-plan.md) adds provider-neutral LLM routing, AI component workflows, caching, streaming, and governance on top of this task layer.
 >
@@ -121,7 +121,7 @@ registry/backend/scheduler API.
 Each project defines task modules that django-fusion discovers automatically:
 
 ```
-projects/precis/main/backend/
+projects/precis/precis-lms/backend/
 ├── apps/
 │   ├── tasks/                    # ← Project task package
 │   │   ├── __init__.py           # from django_fusion.tasks import registry
@@ -154,7 +154,7 @@ django-fusion's `TaskRegistry` scans `INSTALLED_APPS` for `tasks` subpackages an
 | 1.2 | **Migrate Celery tasks to Dramatiq actors** — rewrite `heartbeat`, `cleanup`, and any per-site Celery tasks as `@dramatiq.actor` entries | `projects/configs/tools/worker/tasks.py` |
 | 1.3 | **Replace Celery Beat with APScheduler** — port the schedule table (hourly heartbeat, daily cleanup, 6h sync_metrics) to APScheduler running inside the Dramatiq worker process | New: `projects/configs/worker/scheduler.py` |
 | 1.4 | **Remove Celery from django-fusion** — delete the optional `sentry_sdk.integrations.celery` import, remove `CELERY_` settings references | `libs/django-fusion/src/django_fusion/plugins/debug_tools/sentry.py`, `projects/configs/Env/celery.yml` |
-| 1.5 | **Remove per-site worker services** — comment out `lms-worker`, `ctc-worker`, `vresume-worker` from per-site `docker-compose.yml` files (Phase 4 of worker-consolidation) | Per-site compose files |
+| 1.5 | **Remove per-site worker services** — comment out `lms-worker`, `precis-ctc-worker`, `vresume-worker` from per-site `docker-compose.yml` files (Phase 4 of worker-consolidation) | Per-site compose files |
 | 1.6 | **Consolidate worker code** — keep `projects/configs/tools/worker/` as the single source (already the active worker). Delete `projects/configs/management/workers/` (duplicate). Archive `projects/www/worker/` (legacy, superseded). Do NOT create a new path. | Worker packages |
 | 1.7 | **Update `docker-compose.tasks.yml`** — single `shared-worker` (Dramatiq) + `shared-scheduler` (APScheduler) services | `applications/compose/docker-compose.tasks.yml` |
 | 1.8 | **Update CI and deployment targets** — replace `celery -A` commands with `dramatiq` equivalents | Makefiles, CI workflows |
@@ -891,10 +891,10 @@ urlpatterns = [
 
 ## 7. Phase 4 — Project-Level Integration
 
-### 7.1 Precis LMS (`projects/precis/main/backend/`)
+### 7.1 Precis LMS (`projects/precis/precis-lms/backend/`)
 
 > **Note:** Import paths below are illustrative. During implementation, validate
-> against the actual app structure at `projects/precis/main/backend/apps/` (e.g., LMS
+> against the actual app structure at `projects/precis/precis-lms/backend/apps/` (e.g., LMS
 > models may be at `apps.pages.lms.models`, `apps.plugins.lms`, or similar).
 
 ```python
@@ -1180,7 +1180,7 @@ FUSION_EMAIL_MAX_RETRIES = 5
 ### 9.2 Per-Project Overrides
 
 ```python
-# projects/precis/main/backend/settings.py
+# projects/precis/precis-lms/backend/settings.py
 FUSION_TASKS["DEFAULT_MAX_RETRIES"] = 5       # Courses are important
 FUSION_TASKS["LOG_RETENTION_DAYS"] = 90        # Keep course history longer
 
@@ -1292,7 +1292,7 @@ Agent:  "Retry those failed email tasks."
 |---|---|---|
 | 1. **Add `django_fusion.tasks` without removing Celery** | django-fusion package only | None — new code, no consumers |
 | 2. **Add MCP tools** | django-fusion + ceptor-ai | None — read-only tools |
-| 3. **Wire Precis LMS tasks** | `projects/precis/main/` | Low — no existing tasks to break |
+| 3. **Wire Precis LMS tasks** | `projects/precis/precis-lms/` | Low — no existing tasks to break |
 | 4. **Wire Landing-Fusion tasks** | `projects/precis/landi/` | Low — no existing tasks to break |
 | 5. **Wire Formint tasks** | `projects/formints/` | Medium — existing sync tasks need migration |
 | 6. **Migrate shared worker tasks** | `projects/configs/` | Medium — existing Celery tasks → Dramatiq |
@@ -1373,7 +1373,7 @@ class TestMCPHandlers:
 ### 12.2 Project-Level Tests
 
 ```python
-# projects/precis/main/backend/apps/tasks/tests/test_email_tasks.py
+# projects/precis/precis-lms/backend/apps/tasks/tests/test_email_tasks.py
 
 class TestEmailTasks:
     def test_send_enrollment_confirmation_enqueued(self):
@@ -1473,7 +1473,6 @@ class BackgroundTaskLogAdmin(admin.ModelAdmin):
 | Worker Consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
 | django-fusion POS Enhancements | [`django-fusion-enhancements.md`](django-fusion-enhancements.md) |
 | Fusion Assets & Templates Cleanup | [`fusion-assets-templates-cleanup.md`](fusion-assets-templates-cleanup.md) |
-| Codebase Audit & Migration | [`../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md`](../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md) |
 | Feature Roadmap | [`../../features/feature-roadmap.md`](../../features/feature-roadmap.md) |
 | Document Lifecycle | [`../document-lifecycle.md`](../document-lifecycle.md) |
 | Canonical Plan Registry | [`../README.md`](../README.md) |

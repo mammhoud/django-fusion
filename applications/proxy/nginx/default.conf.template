@@ -18,9 +18,11 @@ map $host $static_root {
     cms-fusion.localhost /var/www/sites/cms-fusion/static;
     cms-fusion.com /var/www/sites/cms-fusion/static;
     www.cms-fusion.com /var/www/sites/cms-fusion/static;
-    lms-fusion.localhost /var/www/sites/lms-fusion/static;
-    lms-fusion.com /var/www/sites/lms-fusion/static;
-    www.lms-fusion.com /var/www/sites/lms-fusion/static;
+    precis-lms.localhost /var/www/sites/precis-lms/static;
+    lms-fusion.com /var/www/sites/precis-lms/static;
+    www.lms-fusion.com /var/www/sites/precis-lms/static;
+    lms.structa.cloud /var/www/sites/precis-lms/static;
+    www.lms.structa.cloud /var/www/sites/precis-lms/static;
     ctc-research.com /var/www/sites/ctc-research/static;
     www.ctc-research.com /var/www/sites/ctc-research/static;
     arch.ctc-research.com /var/www/sites/ctc-research/static;
@@ -31,9 +33,11 @@ map $host $media_root {
     cms-fusion.localhost /var/www/media/cms-fusion;
     cms-fusion.com /var/www/media/cms-fusion;
     www.cms-fusion.com /var/www/media/cms-fusion;
-    lms-fusion.localhost /var/www/media/lms-fusion;
-    lms-fusion.com /var/www/media/lms-fusion;
-    www.lms-fusion.com /var/www/media/lms-fusion;
+    precis-lms.localhost /var/www/media/precis-lms;
+    lms-fusion.com /var/www/media/precis-lms;
+    www.lms-fusion.com /var/www/media/precis-lms;
+    lms.structa.cloud /var/www/media/precis-lms;
+    www.lms.structa.cloud /var/www/media/precis-lms;
     ctc-research.com /var/www/media/ctc-research;
     www.ctc-research.com /var/www/media/ctc-research;
     arch.ctc-research.com /var/www/media/ctc-research;
@@ -106,8 +110,8 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    location /static/bundles/lms-fusion/ {
-        alias /var/www/sites/lms-fusion/static/bundles/lms-fusion/;
+    location /static/bundles/precis-lms/ {
+        alias /var/www/sites/precis-lms/static/bundles/precis-lms/;
         expires 1y;
         add_header Cache-Control "public, immutable";
         add_header X-Content-Type-Options "nosniff";
@@ -152,8 +156,8 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    location /sites/lms-fusion/static/ {
-        alias /var/www/sites/lms-fusion/static/;
+    location /sites/precis-lms/static/ {
+        alias /var/www/sites/precis-lms/static/;
         expires 1y;
         add_header Cache-Control "public, immutable";
         add_header X-Content-Type-Options "nosniff";

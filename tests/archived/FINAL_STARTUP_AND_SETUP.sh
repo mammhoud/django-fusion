@@ -7,9 +7,9 @@ echo "║           CTC-Research Website Full Initialization         ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
-WEBSITE="ctc-research"
+WEBSITE="precis-ctc"
 DB_PASSWORD="mk_pAssWord123"
-NETWORK="ctc-research-network"
+NETWORK="precis-ctc-network"
 
 # Colors
 GREEN='\033[0;32m'
@@ -36,8 +36,8 @@ echo "════════════════════════�
 log_step "CLEANUP: Stopping existing containers..."
 echo "═══════════════════════════════════════════════════════════"
 
-docker stop postgres web-ctc-research web-ctc-research-rebuild 2>/dev/null || true
-docker rm postgres web-ctc-research web-ctc-research-rebuild 2>/dev/null || true
+docker stop postgres web-precis-ctc web-precis-ctc-rebuild 2>/dev/null || true
+docker rm postgres web-precis-ctc web-precis-ctc-rebuild 2>/dev/null || true
 log_success "Cleanup complete"
 
 # Create network
@@ -73,13 +73,13 @@ log_step "Starting web application..."
 echo "═══════════════════════════════════════════════════════════"
 
 docker run -d \
-  --name web-ctc-research \
+  --name web-precis-ctc \
   --network $NETWORK \
   -e DJANGO_WEBSITE=$WEBSITE \
   -e WEBSITE=$WEBSITE \
   -e DB_HOST=postgres \
   -e DB_PASSWORD=$DB_PASSWORD \
-  websites-ctc-research-website:latest server
+  websites-precis-ctc-website:latest server
 
 sleep 20
 log_success "Web application started"
@@ -92,27 +92,27 @@ echo "════════════════════════�
 
 # Migrations
 log_step "Applying database migrations..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE migrate --noinput 2>&1 | tail -3
+docker exec web-precis-ctc python manage.py --site=$WEBSITE migrate --noinput 2>&1 | tail -3
 log_success "Migrations applied"
 
 # Static files
 log_step "Collecting static files..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE collectstatic --noinput --clear 2>&1 | tail -2
+docker exec web-precis-ctc python manage.py --site=$WEBSITE collectstatic --noinput --clear 2>&1 | tail -2
 log_success "Static files collected"
 
 # Superuser
 log_step "Creating superuser..."
-docker exec web-ctc-research python -m ceptor_ai.scripts.superuser 2>&1 | tail -3
+docker exec web-precis-ctc python -m ceptor_ai.scripts.superuser 2>&1 | tail -3
 log_success "Superuser created"
 
 # Wagtail home
 log_step "Setting up Wagtail home page..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE setup_wagtail_home 2>&1 | tail -2
+docker exec web-precis-ctc python manage.py --site=$WEBSITE setup_wagtail_home 2>&1 | tail -2
 log_success "Wagtail home configured"
 
 # Translations
 log_step "Compiling translations..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE compilemessages 2>&1 | tail -2 || log_step "Translations optional"
+docker exec web-precis-ctc python manage.py --site=$WEBSITE compilemessages 2>&1 | tail -2 || log_step "Translations optional"
 log_success "Translations compiled"
 
 # Verification
@@ -124,7 +124,7 @@ echo "════════════════════════�
 sleep 10
 
 log_step "Testing homepage..."
-HOMEPAGE=$(docker exec web-ctc-research curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/ 2>/dev/null || echo "000")
+HOMEPAGE=$(docker exec web-precis-ctc curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/ 2>/dev/null || echo "000")
 if [ "$HOMEPAGE" = "200" ]; then
     log_success "Homepage: HTTP 200 ✅"
 else
@@ -132,7 +132,7 @@ else
 fi
 
 log_step "Testing health endpoint..."
-HEALTH=$(docker exec web-ctc-research curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/health/ 2>/dev/null || echo "000")
+HEALTH=$(docker exec web-precis-ctc curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/health/ 2>/dev/null || echo "000")
 if [ "$HEALTH" = "200" ]; then
     log_success "Health: HTTP 200 ✅"
 else
@@ -140,7 +140,7 @@ else
 fi
 
 log_step "Verifying superuser..."
-SUPERUSER=$(docker exec web-ctc-research python manage.py --site=$WEBSITE shell -c "
+SUPERUSER=$(docker exec web-precis-ctc python manage.py --site=$WEBSITE shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
 count = User.objects.filter(is_superuser=True).count()
@@ -188,7 +188,7 @@ echo "│   Password:  mk_pAssWord123                                ║"
 echo "│                                                            ║"
 echo "├────────────────────────────────────────────────────────────┤"
 echo "│ Docker Monitoring:                                         ║"
-echo "│   Web logs:   docker logs web-ctc-research -f              ║"
+echo "│   Web logs:   docker logs web-precis-ctc -f              ║"
 echo "│   DB logs:    docker logs postgres -f                      ║"
 echo "│   Container:  docker ps                                    ║"
 echo "│                                                            ║"

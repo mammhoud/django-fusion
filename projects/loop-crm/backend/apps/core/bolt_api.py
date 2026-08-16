@@ -137,6 +137,22 @@ if _bolt_enabled():
         version="1.0.0",
         openapi_path="/bolt/docs",
     )
+    if bolt is not None:
+        from django_bolt.openapi.spec import Tag
+
+        bolt.openapi_config.description = (
+            "Canonical tenant-scoped JSON API for Loop-CRM. Every resource "
+            "road is workspace-scoped to the authenticated user and accepts "
+            "``limit``/``offset``/``search`` on collection GETs; ``count`` is "
+            "the filtered total and ``next``/``previous`` are offsets."
+        )
+        bolt.openapi_config.tags = [
+            Tag(
+                name=resource.label or slug.replace("_", " ").title(),
+                description=resource.description or None,
+            )
+            for slug, resource in RESOURCES.items()
+        ]
 
 
 if bolt is not None:
@@ -160,7 +176,7 @@ if bolt is not None:
 
     if AllowAny is not None:
 
-        @bolt.get("/health", **_public)
+        @bolt.get("/health", tags=["System"], summary="Health check", **_public)
         async def health(request: Any) -> dict[str, str]:
             """Public liveness endpoint for the Bolt API."""
             return {"status": "ok", "service": "loop-crm-bolt"}
@@ -171,30 +187,59 @@ if bolt is not None:
     mount_token_endpoint(bolt, config=token_config, user_required=True)
     mount_refresh_endpoint(bolt, config=token_config)
 
-    @bolt.get("/dashboard", **_protected)
+    @bolt.get(
+        "/dashboard",
+        tags=["System"],
+        summary="Workspace dashboard",
+        description="Row counts for every resource plus the persisted workflow total.",
+        **_protected,
+    )
     async def dashboard(request: Any) -> dict[str, Any]:
         return await _dashboard(workspace_id=_workspace_id(await _request_user(request)))
 
-    @bolt.get("/workflows", **_protected)
+    @bolt.get(
+        "/workflows",
+        tags=["Automation"],
+        summary="List workflows",
+        description="Persisted no-code workflow catalog for the caller's workspace.",
+        **_protected,
+    )
     async def workflows(request: Any) -> dict[str, Any]:
         results = persisted_workflow_catalog(
             workspace_id=_workspace_id(await _request_user(request))
         )
         return {"results": results, "count": len(results)}
 
-    @bolt.get("/integrations", **_protected)
+    @bolt.get(
+        "/integrations",
+        tags=["Automation"],
+        summary="List social platform connectors",
+        description="Catalog of publish adapters and their OAuth/connect capabilities.",
+        **_protected,
+    )
     async def integrations(request: Any) -> dict[str, Any]:
         results = platform_catalog()
         return {"results": results, "count": len(results)}
 
-    @bolt.get("/custom-fields", **_protected)
+    @bolt.get(
+        "/custom-fields",
+        tags=["Automation"],
+        summary="List custom object definitions",
+        description="Workspace-scoped runtime schema catalog for custom objects.",
+        **_protected,
+    )
     async def custom_fields(request: Any) -> dict[str, Any]:
         results = custom_object_catalog(_workspace(await _request_user(request)))
         return {"results": results, "count": len(results)}
 
-    @bolt.get("/revenue/trend", **_protected)
+    @bolt.get(
+        "/revenue/trend",
+        tags=["Revenue"],
+        summary="Revenue trend",
+        description="Trailing-six-month recognized-revenue trend for the RevOps dashboard.",
+        **_protected,
+    )
     async def revenue_trend(request: Any) -> dict[str, Any]:
-        """Trailing-six-month recognized-revenue trend for the RevOps dashboard."""
         workspace_id = _workspace_id(await _request_user(request))
         queryset = RevenueEvent.objects.all()
         if workspace_id is not None:
@@ -217,6 +262,9 @@ if bolt is not None:
         """Register full tenant-scoped CRUD for one resource on the Bolt road."""
         config = RESOURCES[resource]
         model = config.model
+        tag = config.label or resource.replace("_", " ").title()
+        singular = config.singular or tag.rstrip("s").lower()
+        description = config.description or f"{tag} resource."
 
         # Typed request/response bodies via msgspec; optional so the road still
         # works if the schema dependency is unavailable.
@@ -233,7 +281,16 @@ if bolt is not None:
             list_options["response_model"] = list[struct]
             detail_options["response_model"] = struct
 
-        @bolt.get(f"/{resource}", **list_options)
+        @bolt.get(
+            f"/{resource}",
+            tags=[tag],
+            summary=f"List {tag.lower()}",
+            description=(
+                f"{description} Supports ``limit``/``offset``/``search``; "
+                "``count`` is the filtered total and ``next``/``previous`` are offsets."
+            ),
+            **list_options,
+        )
         async def list_resource(request: Any) -> dict[str, Any]:
             query = _request_query(request)
             limit = bounded_int(query.get("limit"), 100, 1, 200)
@@ -251,7 +308,13 @@ if bolt is not None:
                 "previous": offset - limit if offset > 0 else None,
             }
 
-        @bolt.post(f"/{resource}", **detail_options)
+        @bolt.post(
+            f"/{resource}",
+            tags=[tag],
+            summary=f"Create {singular}",
+            description=f"{description} Required fields: {', '.join(config.required_fields) or 'none'}.",
+            **detail_options,
+        )
         async def create_resource(request: Any) -> Any:
             body = await _request_body(request)
             workspace_id = _workspace_id(await _request_user(request))
@@ -263,7 +326,13 @@ if bolt is not None:
             )
             return row
 
-        @bolt.get(f"/{resource}/{{pk}}", **detail_options)
+        @bolt.get(
+            f"/{resource}/{{pk}}",
+            tags=[tag],
+            summary=f"Retrieve {singular}",
+            description=f"{description} Scoped to the caller's workspace.",
+            **detail_options,
+        )
         async def retrieve_resource(request: Any, pk: Any) -> Any:
             row = await sync_to_async(get_row)(
                 resource, pk, _workspace_id(await _request_user(request))
@@ -272,7 +341,13 @@ if bolt is not None:
                 return {"detail": "Not found."}
             return row
 
-        @bolt.patch(f"/{resource}/{{pk}}", **detail_options)
+        @bolt.patch(
+            f"/{resource}/{{pk}}",
+            tags=[tag],
+            summary=f"Update {singular}",
+            description=f"{description} Partial update scoped to the caller's workspace.",
+            **detail_options,
+        )
         async def update_resource(request: Any, pk: Any) -> Any:
             body = await _request_body(request)
             workspace_id = _workspace_id(await _request_user(request))
@@ -286,7 +361,15 @@ if bolt is not None:
             )
             return row
 
-        @bolt.delete(f"/{resource}/{{pk}}", status_code=204, auth=auth_backends, guards=_protected["guards"])
+        @bolt.delete(
+            f"/{resource}/{{pk}}",
+            tags=[tag],
+            summary=f"Delete {singular}",
+            description=f"{description} Scoped to the caller's workspace.",
+            status_code=204,
+            auth=auth_backends,
+            guards=_protected["guards"],
+        )
         async def delete_resource(request: Any, pk: Any) -> Any:
             workspace_id = _workspace_id(await _request_user(request))
             ok = await sync_to_async(delete_row)(resource, pk, workspace_id)

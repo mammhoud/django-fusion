@@ -1,8 +1,12 @@
 # =============================================================================
-# CTC Research — Precis dual-host routing
+# CTC Research — Precis standalone stack routing
 # =============================================================================
-# Precis remains available on its local lms-fusion ports/hostnames while this
-# file exposes the same frontend and backend for ctc-research.com.
+# Containers: precis-ctc-website   (Django + django-fusion, port 5070)
+#             precis-ctc-frontend  (Astro shell, port 3002)
+# Domain: ctc-research.com / www.ctc-research.com / arch.ctc-research.com
+# Backend paths (/admin, /api, /apis/, /fragment/) route to the backend; static
+# /media/sites assets route to shared-proxy; everything else is the frontend.
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
 # =============================================================================
 
 http:
@@ -38,7 +42,7 @@ http:
     ctc-frontend-service:
       loadBalancer:
         servers:
-          - url: 'http://lms-fusion-frontend:3002'
+          - url: 'http://precis-ctc-frontend:3002'
         healthCheck:
           path: /
           interval: 30s
@@ -46,7 +50,7 @@ http:
     ctc-backend-service:
       loadBalancer:
         servers:
-          - url: 'http://lms-fusion-backend:5074'
+          - url: 'http://precis-ctc-website:5070'
         healthCheck:
           path: /health/
           interval: 30s

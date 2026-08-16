@@ -13,7 +13,7 @@
 ## 1. ✅ Shopping Cart Implementation
 
 ### Model Structure
-**Location**: `/root/site/ctc-research/core/CI/models/cart.py`
+**Location**: `/root/site/precis-ctc/core/CI/models/cart.py`
 
 #### Cart Model
 ```python
@@ -40,7 +40,7 @@ class CartItem(models.Model):
 ```
 
 ### Service Layer
-**Location**: `/root/site/ctc-research/core/CI/services/cart_service.py`
+**Location**: `/root/site/precis-ctc/core/CI/services/cart_service.py`
 
 #### CartService Methods
 | Method | Description | Status |
@@ -62,7 +62,7 @@ class CartItem(models.Model):
 ## 2. ✅ Email Implementation with Background Tasks
 
 ### Email Functions (Synchronous)
-**Location**: `/root/site/ctc-research/core/CI/workflows/email.py`
+**Location**: `/root/site/precis-ctc/core/CI/workflows/email.py`
 
 ```python
 def send_email(subject, email, message):
@@ -79,7 +79,7 @@ def send_password_reset_email(email, token):
 **Backend**: Django `EmailMessage` with configured SMTP
 
 ### Temporal Activities (Async Background Tasks)
-**Location**: `/root/site/ctc-research/core/CI/workflows/activities.py`
+**Location**: `/root/site/precis-ctc/core/CI/workflows/activities.py`
 
 #### EmailPayload
 ```python
@@ -130,7 +130,7 @@ email_result = await workflow.execute_activity(
 ## 3. ✅ Unified Modal System
 
 ### Base Modal Template
-**Location**: `/root/site/ctc-research/core/templates/base_modal.html`
+**Location**: `/root/site/precis-ctc/core/templates/base_modal.html`
 
 #### Features
 ```django
@@ -170,9 +170,9 @@ email_result = await workflow.execute_activity(
 
 ### Modal Variants
 **Locations**:
-- `/root/site/ctc-research/core/templates/base_modal.html` - Base template
-- `/root/site/ctc-research/components/common/modals/cart_modal.html` - Cart-specific modal
-- `/root/site/ctc-research/components/profile/partials/modals/base_modal.html` - Profile modal variant
+- `/root/site/precis-ctc/core/templates/base_modal.html` - Base template
+- `/root/site/precis-ctc/components/common/modals/cart_modal.html` - Cart-specific modal
+- `/root/site/precis-ctc/components/profile/partials/modals/base_modal.html` - Profile modal variant
 
 ---
 
@@ -250,7 +250,7 @@ django.template.exceptions.TemplateDoesNotExist: colorfield/color.html
 - Template loader couldn't find colorfield templates
 
 ### Fix Applied
-**File**: `/root/site/ctc-research/configs/base/apps.py`
+**File**: `/root/site/precis-ctc/configs/base/apps.py`
 
 ```python
 THIRD_PARTY_APPS = [
@@ -328,7 +328,7 @@ def clear_cart(cart):
 ### 2. Email Template System
 Create reusable email templates:
 ```
-ctc-research/
+precis-ctc/
 └── core/
     └── templates/
         └── email/

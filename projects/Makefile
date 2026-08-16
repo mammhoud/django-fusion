@@ -12,19 +12,19 @@ SERVER_TYPE ?= gunicorn
 
 # Website aliases. Use `make run-dev WEBSITE=structa` or `make docker-up WEBSITE=ctc`.
 ifeq ($(WEBSITE),ctc)
-  SITE := ctc-research
+  SITE := precis-ctc
   TEST_WEBSITE := ctc
   COMPOSE_FILE ?= docker-compose.yml
-else ifeq ($(WEBSITE),ctc-research)
-  SITE := ctc-research
+else ifeq ($(WEBSITE),precis-ctc)
+  SITE := precis-ctc
   TEST_WEBSITE := ctc
   COMPOSE_FILE ?= docker-compose.yml
 else ifeq ($(WEBSITE),ctc-website)
-  SITE := ctc-research
+  SITE := precis-ctc
   TEST_WEBSITE := ctc
   COMPOSE_FILE ?= docker-compose.yml
 else ifeq ($(WEBSITE),ctc-research.com)
-  SITE := ctc-research
+  SITE := precis-ctc
   TEST_WEBSITE := ctc
   COMPOSE_FILE ?= docker-compose.yml
 else ifeq ($(WEBSITE),cms-full)
@@ -96,23 +96,23 @@ else ifeq ($(WEBSITE),cms-fusion)
   MANAGE := uv run python $(SITE)/backend/__main__.py
   PYTHON := uv run python
 
-else ifeq ($(WEBSITE),lms-fusion)
-  # lms-fusion is the runtime/site identity; Precis is its current
+else ifeq ($(WEBSITE),precis-lms)
+  # precis-lms is the runtime/site identity; Precis is its current
   # filesystem location after the project migration.
-  SITE := lms-fusion
-  PROJECT_DIR := precis/main
-  TEST_WEBSITE := lms-fusion
-  COMPOSE_FILE ?= precis/main/docker-compose.yml
+  SITE := precis-lms
+  PROJECT_DIR := precis/precis-lms
+  TEST_WEBSITE := precis-lms
+  COMPOSE_FILE ?= precis/precis-lms/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
-else ifeq ($(WEBSITE),landing-fusion)
-  # landing-fusion is the runtime/site identity; its filesystem location is
-  # projects/precis/landi after the monorepo regrouping.
-  SITE := landing-fusion
-  PROJECT_DIR := precis/landi
-  TEST_WEBSITE := landing-fusion
-  COMPOSE_FILE ?= precis/landi/docker-compose.yml
+else ifeq ($(WEBSITE),precis-landing)
+  # precis-landing is the runtime/site identity; its filesystem location is
+  # projects/precis/precis-landing after the monorepo regrouping.
+  SITE := precis-landing
+  PROJECT_DIR := precis/precis-landing
+  TEST_WEBSITE := precis-landing
+  COMPOSE_FILE ?= precis/precis-landing/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
@@ -135,20 +135,20 @@ MANAGE ?= uv run $(RUN_MODULE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),portfolio,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
-DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),lms-fusion loop-crm),backend,$(SITE)))))
+DOCKER_SERVICE := $(if $(filter $(SITE),precis-ctc),precis-ctc-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),precis-lms loop-crm),backend,$(SITE)))))
 # Internal health-check port for the selected website container.
-DOCKER_HEALTH_PORT := $(if $(filter $(SITE),ctc-research),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),lms-fusion loop-crm),8074,8000))))
+DOCKER_HEALTH_PORT := $(if $(filter $(SITE),precis-ctc),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),precis-lms loop-crm),8074,8000))))
 # Per-site worker service name, resolved from the per-site Compose file.
 # The shared Dramatiq worker owns cross-product background execution. Precis/LMS
 # is deliberately mapped to a non-existent worker name so explicit LMS web
 # maintenance cannot silently start an LMS background service.
-DOCKER_WORKER ?= $(if $(filter $(SITE),ctc-research),ctc-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms lms-fusion),lms-background-disabled,$(SITE)-worker)))
+DOCKER_WORKER ?= $(if $(filter $(SITE),precis-ctc),precis-ctc-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms precis-lms),lms-background-disabled,$(SITE)-worker)))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -178,7 +178,7 @@ help:
 		'Delegation:' \
 		'  assets         - Delegate to assets/Makefile' \
 		'  scripts        - Delegate to tests/scripts/Makefile' \
-		'  website-ctc    - Delegate to ctc-research/Makefile' \
+		'  website-ctc    - Delegate to precis-ctc/Makefile' \
 		'  website-structa- Delegate to lms/Makefile' \
 		'  website-vresume- Delegate to portfolio/Makefile' \
 		'  website-formints- Delegate to formints/Makefile (POS editions dispatcher)' \
@@ -188,7 +188,7 @@ help:
 		'  run-dev        - Run Django dev server for selected website' \
 		'  run-local      - Alias for run-dev for local machine use' \
 		'  check-all      - Run active product checks (LMS excluded)' \
-		'  test-fusion    - Run lms-fusion tests' \
+		'  test-fusion    - Run precis-lms tests' \
 		'  test-local     - Run local pytest via uv' \
 		'  server         - Start the ASGI server (container default)' \
 		'  migrations     - Create Django migrations for selected website' \
@@ -213,12 +213,12 @@ scripts script:
 	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
 
 website-ctc:
-	$(MAKE) -C precis/ctc-research $(filter-out $@,$(MAKECMDGOALS))
+	$(MAKE) -C precis/precis-ctc $(filter-out $@,$(MAKECMDGOALS))
 
 website-precis:
-	$(MAKE) -C precis/main $(filter-out $@,$(MAKECMDGOALS))
+	$(MAKE) -C precis/precis-lms $(filter-out $@,$(MAKECMDGOALS))
 
-website-lms-fusion: website-precis  ## Alias — Precis is the current lms-fusion runtime
+website-precis-lms: website-precis  ## Alias — Precis is the current precis-lms runtime
 
 website-structa:
 	$(MAKE) -C lms $(filter-out $@,$(MAKECMDGOALS))
@@ -232,10 +232,10 @@ website-formints:
 website-pos: website-formints  ## Alias — POS editions dispatcher (projects/formints/Makefile)
 
 # Aggregate project commands intentionally exclude the Precis/LMS product.
-# Precis remains available through WEBSITE=lms-fusion for explicit maintenance,
+# Precis remains available through WEBSITE=precis-lms for explicit maintenance,
 # but it is not part of repository-wide install/check/deploy workflows.
 projects:
-	@for project in precis/landi loop-crm syntara formints; do \
+	@for project in precis/precis-landing loop-crm syntara formints; do \
 		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
@@ -244,14 +244,14 @@ check:
 	$(MANAGE) check
 
 check-all:
-	@echo "==> check WEBSITE=landing-fusion"
-	@$(MAKE) -C precis/landi check
+	@echo "==> check WEBSITE=precis-landing"
+	@$(MAKE) -C precis/precis-landing check
 	@echo "==> check WEBSITE=loop-crm"
 	@$(MAKE) -C loop-crm check
 	@echo "==> check Formint editions"
 	@$(MAKE) -C formints check-all
 
-# Domain drift check — verifies cms-fusion and lms-fusion domain code is in sync
+# Domain drift check — verifies cms-fusion and precis-lms domain code is in sync
 domain-drift:
 	@bash ../applications/scripts/dev/check_domain_drift.sh
 
@@ -262,7 +262,7 @@ validate-config:
 validate-compose-env:
 	@printf '%s\n' 'Compose infrastructure wiring (secret values are not printed):'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'site-service' 'db-service' 'redis-service' 'db-name-env' 'db-credential-envs' 'redis-secret-env'
-	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'ctc-research-website' 'postgres' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'precis-ctc-website' 'postgres' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'postgres' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'postgres' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%s\n' ''
@@ -282,10 +282,10 @@ test-local tests-local:
 	uv run pytest
 
 test-fusion:
-	@echo '🚀 Running lms-fusion tests...'
-	@uv run python -m pytest precis/main/backend/tests/ -q --tb=short
+	@echo '🚀 Running precis-lms tests...'
+	@uv run python -m pytest precis/precis-lms/backend/tests/ -q --tb=short
 	@echo ''
-	@echo '✅ lms-fusion tests complete'
+	@echo '✅ precis-lms tests complete'
 
 run-dev:
 	$(MANAGE) runserver
@@ -314,7 +314,7 @@ docker-build:
 docker-build-server: docker-build
 
 docker-build-ctc:
-	@$(MAKE) docker-build WEBSITE=ctc-research
+	@$(MAKE) docker-build WEBSITE=precis-ctc
 
 docker-build-lms:
 	@$(MAKE) docker-build WEBSITE=lms
@@ -353,9 +353,9 @@ docker-redeploy docker-deploy deploy redeploy:
 #
 # Usage:
 #   make docker-redeploy-with-worker WEBSITE=lms  # web-only; LMS worker disabled
-#   make docker-redeploy-with-worker WEBSITE=ctc-research
+#   make docker-redeploy-with-worker WEBSITE=precis-ctc
 #   make docker-redeploy-with-worker WEBSITE=vresume
-#   make docker-redeploy-with-worker WEBSITE=ctc-research DOCKER_WORKER=ctc-worker-beat
+#   make docker-redeploy-with-worker WEBSITE=precis-ctc DOCKER_WORKER=precis-ctc-worker-beat
 #
 # Log: logs/deploy/deploy-with-worker-$(SITE)-$(timestamp).log
 # -----------------------------------------------------------------
@@ -401,8 +401,8 @@ docker-prune-containers:
 # -----------------------------------------------------------------
 # Site‑specific shortcuts – invoke docker‑up with the appropriate WEBSITE
 # -----------------------------------------------------------------
-ctc-research-up:
-	@$(MAKE) docker-up WEBSITE=ctc-research
+precis-ctc-up:
+	@$(MAKE) docker-up WEBSITE=precis-ctc
 
 loop-crm-up:
 	@docker network create common 2>/dev/null || true
@@ -449,7 +449,7 @@ populate-data-site:
 
 populate-data-all:
 	mkdir -p $(LOG_DIR)
-	@for site in landing-fusion loop-crm; do \
+	@for site in precis-landing loop-crm; do \
 		$(PYTHON) ../tests/scripts/utilities/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
@@ -459,7 +459,7 @@ verify-runtime-site:
 
 full-site-check:
 	@if [[ "$(TEST_WEBSITE)" == "all" ]]; then \
-		for website in landing-fusion loop-crm; do \
+		for website in precis-landing loop-crm; do \
 			echo "==> full-site-check WEBSITE=$$website"; \
 			$(MAKE) full-site-check WEBSITE=$$website; \
 		done; \
@@ -550,8 +550,8 @@ docker-deploy-websites:
 	 echo "[deploy-all] writing to $(LOG_DEPLOY_DIR)/deploy-all-$$timestamp.log"; \
 	 { \
 		 echo "Deploying active websites (LMS excluded)..."; \
-		 echo "Building landing-fusion..."; \
-		 $(MAKE) -C precis/landi docker-up; \
+		 echo "Building precis-landing..."; \
+		 $(MAKE) -C precis/precis-landing docker-up; \
 		 echo "Building loop-crm..."; \
 		 $(MAKE) -C loop-crm docker-up; \
 		 echo "Active websites deployed (LMS excluded)."; \
@@ -603,7 +603,7 @@ docker-health-check:
 # Probe health for all three website containers by wrapping docker-health-check per site.
 probe-health:
 	@echo "Probing health for active sites..."
-	@$(MAKE) docker-health-check WEBSITE=landing-fusion
+	@$(MAKE) docker-health-check WEBSITE=precis-landing
 	@$(MAKE) docker-health-check WEBSITE=loop-crm
 
 # Restart all services
@@ -633,13 +633,13 @@ docker-start-all:
 # Lint/typecheck active Python products. Precis/LMS remains explicit via its
 # own backend Makefile and is not part of aggregate checks.
 lint:
-	$(PYTHON) -m pylint precis/landi loop-crm syntara formints tests 2>/dev/null || echo "Linting completed with warnings"
+	$(PYTHON) -m pylint precis/precis-landing loop-crm syntara formints tests 2>/dev/null || echo "Linting completed with warnings"
 
 format:
-	$(PYTHON) -m black precis/landi loop-crm syntara formints tests/
+	$(PYTHON) -m black precis/precis-landing loop-crm syntara formints tests/
 
 typecheck:
-	$(PYTHON) -m mypy precis/landi loop-crm syntara formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
+	$(PYTHON) -m mypy precis/precis-landing loop-crm syntara formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
 
 # Run all checks: lint, format, typecheck
 lint-all: lint typecheck

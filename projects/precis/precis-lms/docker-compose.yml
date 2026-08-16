@@ -1,0 +1,277 @@
+# ============================================================
+# precis-lms — Full project stack (backend + frontend + worker)
+# ============================================================
+
+services:
+  backend:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-lms/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-lms
+        PROJECT_PATH: precis-lms
+    image: precis-lms-backend:latest
+    container_name: precis-lms-backend
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-lms
+      DJANGO_SITE: precis-lms
+      PROJECT_PATH: precis-lms
+      # Runtime container path differs from the host registry path (`precis`).
+      WEBSITE_DIR: /app/precis-lms
+      DJANGO_WEBSITE_DIR: /app/precis-lms
+      PORT: "5074"
+      HOST: "0.0.0.0"
+      SERVER_TYPE: uvicorn
+      WORKERS: "4"
+      LOG_LEVEL: info
+      DEBUG: "false"
+      APP_MODULE: server:asgi_application
+      DJANGO_SERVER_TYPE: asgi
+      RUN_SETUP: "true"
+      # Frontend assets are built in the dedicated Astro image; do not attempt
+      # a webpack build from the backend container during production startup.
+      BUILD_ASSETS_ON_START: "false"
+      # Production startup runs migrations and safe fixture detection against
+      # the shared PostgreSQL container. Destructive fixture replacement is
+      # opt-in through FORCE_LOAD_DUMPS=true and the load_data --replace flag.
+      LOAD_DATA_ON_START: ${LOAD_DATA_ON_START:-false}
+      FORCE_LOAD_DUMPS: ${FORCE_LOAD_DUMPS:-false}
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+      SITE_DOMAIN: lms.structa.cloud
+      SITE_PORT: "443"
+      WAGTAILADMIN_BASE_URL: https://lms.structa.cloud
+      MEDIA_ROOT: /app/media
+      ALLOWED_HOSTS: localhost,127.0.0.1,precis-lms.localhost,lms.structa.cloud,www.lms.structa.cloud,precis-lms-backend
+      CSRF_TRUSTED_ORIGINS: http://localhost:5074,http://precis-lms.localhost,https://lms.structa.cloud,https://www.lms.structa.cloud
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5074/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - "5074:5074"
+    volumes:
+      # The backend is mounted at the runtime site root because the shared
+      # entrypoint and SiteCLI expect manage.py/settings.py there.
+      - ./backend:/app/precis-lms:rw
+      # Canonical shared settings (moved to projects/precis/configs).
+      - ../configs:/app/precis-lms/configs:ro
+      # Precis asset/template source lives beside the backend in ./assets.
+      # settings.py resolves the workspace asset root as /app/assets inside
+      # the image, so keep the mount on that canonical shared path.
+      - ./assets:/app/assets:ro
+      - ../../../libs:/app/libs:rw
+      - ../../../logs:/app/logs:z
+      # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
+      - precis-lms-static:/app/precis-lms/assets/staticfiles:rw
+      # settings.py resolves MEDIA_ROOT to the shared workspace assets path.
+      - precis-lms-media:/app/media:rw
+      - ./Env:/app/precis-lms/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.precis-lms-api-docker.rule=(Host(`precis-lms.localhost`) || Host(`precis-lms.com`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.precis-lms-api-docker.entrypoints=web,web-secure"
+      - "traefik.http.routers.precis-lms-api-docker.tls=true"
+      - "traefik.http.services.precis-lms-api-docker.loadbalancer.server.port=5074"
+      - "traefik.http.services.precis-lms-api-docker.loadbalancer.healthcheck.path=/health/"
+
+  worker:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-lms/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-lms
+        PROJECT_PATH: precis-lms
+    image: precis-lms-backend:latest
+    container_name: precis-lms-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-lms
+      DJANGO_SITE: precis-lms
+      PROJECT_PATH: precis-lms
+      WEBSITE_DIR: /app/precis-lms
+      DJANGO_WEBSITE_DIR: /app/precis-lms
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,courses,system,default
+    volumes:
+      # The backend is mounted at the runtime site root because the shared
+      # entrypoint and SiteCLI expect manage.py/settings.py there.
+      - ./backend:/app/precis-lms:rw
+      # Canonical shared settings (moved to projects/precis/configs).
+      - ../configs:/app/precis-lms/configs:ro
+      # Precis asset/template source lives beside the backend in ./assets.
+      # settings.py resolves the workspace asset root as /app/assets inside
+      # the image, so keep the mount on that canonical shared path.
+      - ./assets:/app/assets:ro
+      # Live libs mirror: the worker must see the same django-fusion source the
+      # backend does, otherwise it imports the image-baked (potentially stale)
+      # copy and crashes on new modules (e.g. django_fusion.models.certificate).
+      # :rw required — django-fusion's editable install touches egg-info at import.
+      - ../../../libs:/app/libs:rw
+      - ../../../logs:/app/logs:z
+      - precis-lms-media:/app/media:rw
+      - ./Env:/app/precis-lms/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  scheduler:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-lms/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-lms
+        PROJECT_PATH: precis-lms
+    image: precis-lms-backend:latest
+    container_name: precis-lms-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-lms
+      DJANGO_SITE: precis-lms
+      PROJECT_PATH: precis-lms
+      WEBSITE_DIR: /app/precis-lms
+      DJANGO_WEBSITE_DIR: /app/precis-lms
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/1
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    # The backend (RUN_SETUP=true) applies migrations before serving, so
+    # waiting on its healthcheck guarantees the TaskExecution table exists
+    # before sync_task_history fires.
+    depends_on:
+      backend:
+        condition: service_healthy
+    command: python -m django_fusion.tasks.scheduler
+    volumes:
+      # The backend is mounted at the runtime site root because the shared
+      # entrypoint and SiteCLI expect manage.py/settings.py there.
+      - ./backend:/app/precis-lms:rw
+      # Canonical shared settings (moved to projects/precis/configs).
+      - ../configs:/app/precis-lms/configs:ro
+      - ./assets:/app/assets:ro
+      # Live libs mirror: the scheduler must see the same django-fusion source
+      # the backend does (incl. tasks/scheduler.py + tasks/sync.py).
+      - ../../../libs:/app/libs:rw
+      - ../../../logs:/app/logs:z
+      - precis-lms-media:/app/media:rw
+      - ./Env:/app/precis-lms/Env:ro
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  frontend:
+    build:
+      context: .
+      # The Astro static build calls the live backend API (PUBLIC_BUILD_API_URL)
+      # during `npm run build` (getStaticPaths for /courses/[slug] etc.). All
+      # build-time fetches are fail-soft (try/catch + seeded fallback slugs), so
+      # `docker compose up -d --build` works in one phase even when the backend
+      # is not yet healthy — the frontend then renders with fallback content.
+      # Rebuilding after the backend is up regenerates the catalog with live data.
+      # The Astro build resolves @fusion/* imports against
+      # /libs/django-fusion/js/fusion-js/src (see frontend/astro.config.mjs), so
+      # that source dir must be available inside the builder stage. The frontend
+      # build context (projects/precis/precis-lms) cannot COPY above itself, so it arrives
+      # as an additional context (narrowed to the fusion-js source only).
+      additional_contexts:
+        fusionjs: ../../../libs/django-fusion/js/fusion-js/src
+      dockerfile: compose/Dockerfile.frontend
+      args:
+        PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-}
+        PUBLIC_BUILD_API_URL: ${PUBLIC_BUILD_API_URL:-https://lms.structa.cloud}
+        PUBLIC_ENABLE_BACKEND: ${PUBLIC_ENABLE_BACKEND:-true}
+        PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://lms.structa.cloud}
+    image: precis-lms-frontend:latest
+    container_name: precis-lms-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      # Astro serves the consolidated LMS/CMS document shell.
+      HOST: "0.0.0.0"
+      PORT: "3002"
+      PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-}
+      PUBLIC_BUILD_API_URL: ${PUBLIC_BUILD_API_URL:-https://lms.structa.cloud}
+      PUBLIC_ENABLE_BACKEND: ${PUBLIC_ENABLE_BACKEND:-true}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://lms.structa.cloud}
+    ports:
+      - "3001:3002"
+    networks:
+      - common
+      - traefik-net
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  precis-lms-static:
+    name: precis-lms-static
+    external: true
+  precis-lms-media:
+    name: precis-lms-media
+    external: true

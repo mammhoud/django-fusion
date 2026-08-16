@@ -1,7 +1,7 @@
 # Branch Strategy Update Summary
 
 ## Overview
-This document summarizes the changes made to simplify the branching strategy across both **ctc-research** and **xellent-site** projects.
+This document summarizes the changes made to simplify the branching strategy across both **precis-ctc** and **xellent-site** projects.
 
 ## Changes Made
 
@@ -22,7 +22,7 @@ MAIN_BRANCH: str = Field(default="main", description="Main branch name")
 ```
 
 **Files Modified:**
-- `/root/site/ctc-research/configs/settings/conf.py` (line 80)
+- `/root/site/precis-ctc/configs/settings/conf.py` (line 80)
 - `/root/site/xellent-site/configs/settings/conf.py` (line 80)
 
 ### 3. ✅ Documentation Updates
@@ -39,7 +39,7 @@ The repository uses a simplified two-branch workflow:
 ```
 
 **Files Modified:**
-- `/root/site/ctc-research/REPOSITORIES.md`
+- `/root/site/precis-ctc/REPOSITORIES.md`
 - `/root/site/xellent-site/REPOSITORIES.md`
 
 ### 4. ✅ Deploy Commands Fixed
@@ -59,7 +59,7 @@ sync-demo:
 ```
 
 **Files Modified:**
-- `/root/site/ctc-research/makefile`
+- `/root/site/precis-ctc/makefile`
 - `/root/site/xellent-site/makefile`
 
 ## Branch Mapping
@@ -131,7 +131,7 @@ git checkout -b dev origin/dev
 
 ### Test Sync to Demo
 ```bash
-cd /root/site/ctc-research
+cd /root/site/precis-ctc
 make sync-demo
 ```
 
@@ -139,7 +139,7 @@ This will sync your changes to the `dev` branch.
 
 ### Test Sync to Production
 ```bash
-cd /root/site/ctc-research
+cd /root/site/precis-ctc
 make sync-main
 ```
 
@@ -147,7 +147,7 @@ This will sync your changes to the `main` branch.
 
 ## Summary of Files Changed
 
-### Both Projects (ctc-research & xellent-site)
+### Both Projects (precis-ctc & xellent-site)
 1. `configs/settings/conf.py` - Updated DEMO_BRANCH configuration
 2. `makefile` - Fixed deploy and sync commands
 3. `REPOSITORIES.md` - Updated documentation

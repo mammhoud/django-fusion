@@ -24,7 +24,7 @@
       "performance-optimizer": "allow",
       "data-engineer": "allow",
       "template-cypercloud": "allow",
-      "ctc-research-agent": "allow",
+      "precis-ctc-agent": "allow",
       "lms-agent": "allow",
       "vresume-agent": "allow"
     }

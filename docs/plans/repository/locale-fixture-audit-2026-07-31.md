@@ -1,7 +1,7 @@
 # Locale Fixture Content Audit Report
 
 > Date: 2026-07-31
-> Source: `projects/lms-fusion/backend/assets/fixtures/dump-data.json`
+> Source: `projects/precis-lms/backend/assets/fixtures/dump-data.json`
 > Coverage: 6 locales × 7 page types = 42 pages
 
 ---

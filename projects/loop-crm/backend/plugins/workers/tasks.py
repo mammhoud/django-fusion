@@ -241,6 +241,20 @@ def deliver_webhook(delivery_id: int) -> None:
 
 
 @task(queue="crm")
+def sync_email_account(account_id: int) -> None:
+    """Sync one connected mailbox (Gmail/Outlook) into the CRM timeline.
+
+    Runs the provider connector through ``apps.core.email_sync.sync_account``;
+    an unconfigured account returns an honest summary without raising.
+    """
+    from apps.core.email_sync import sync_account
+    from apps.core.models import EmailAccount
+
+    account = EmailAccount.objects.select_related("workspace").get(pk=account_id)
+    sync_account(account)
+
+
+@task(queue="crm")
 def execute_workflow(run_id: int) -> None:
     """Execute a declarative workflow and persist every action decision.
 
@@ -272,6 +286,7 @@ __all__ = [
     "aggregate_post_analytics",
     "deliver_webhook",
     "execute_workflow",
+    "sync_email_account",
     "trigger_workflow",
     "publish_post",
     "recalculate_attribution",

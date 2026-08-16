@@ -141,7 +141,7 @@ curl http://localhost:5072/  # VResume
 
 ```bash
 # CTC-Research
-docker exec -it web-ctc-research python manage.py createsuperuser
+docker exec -it web-precis-ctc python manage.py createsuperuser
 
 # LMS-Demo  
 docker exec -it web-lms-demo python manage.py createsuperuser
@@ -159,7 +159,7 @@ docker exec -it web-vresume python manage.py createsuperuser
 ```bash
 # View logs
 docker-compose logs -f                    # All services
-docker-compose logs -f web-ctc-research   # Specific container
+docker-compose logs -f web-precis-ctc   # Specific container
 
 # Check status
 docker-compose ps
@@ -192,7 +192,7 @@ docker-compose config
 
 ```bash
 # Container shell
-docker exec -it web-ctc-research bash
+docker exec -it web-precis-ctc bash
 
 # Database shell
 docker exec -it db psql -U postgres
@@ -201,8 +201,8 @@ docker exec -it db psql -U postgres
 docker exec -it cache redis-cli
 
 # View container logs
-docker logs web-ctc-research
-docker logs web-ctc-research -f  # Follow logs
+docker logs web-precis-ctc
+docker logs web-precis-ctc -f  # Follow logs
 ```
 
 ---

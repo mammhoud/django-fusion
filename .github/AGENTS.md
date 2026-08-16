@@ -10,13 +10,13 @@ monorepo paths and project aliases in `projects/Makefile`.
 
 | Area | Current paths | Typical validation |
 |---|---|---|
-| Workspace Python | `tests/`, `projects/precis/main/`, `libs/django-fusion/` | `uv run pytest`, Django checks |
-| Landing-Fusion | `projects/precis/landi/` | backend tests, Astro check/build, Playwright |
+| Workspace Python | `tests/`, `projects/precis/precis-lms/`, `libs/django-fusion/` | `uv run pytest`, Django checks |
+| Landing-Fusion | `projects/precis/precis-landing/` | backend tests, Astro check/build, Playwright |
 | Syntara/Cypercloud | `projects/syntara/` | Django checks/tests, asset build |
 | Formints POS | `projects/formints/` | pytest, Vitest, TypeScript, Rust, Playwright |
 | Infrastructure | `applications/`, root Makefile | Compose/YAML/proxy/deploy preflight |
 
-Some workflows and docs retain `lms-fusion`, `cms-fusion`, `lms`, `pos`, or
+Some workflows and docs retain `precis-lms`, `cms-fusion`, `lms`, `pos`, or
 `cypercloud` as compatibility names. Before changing a path filter, inspect the
 actual checkout and `projects/Makefile`; update aliases and filters together.
 Do not silently add a filter for a nonexistent directory.
@@ -47,8 +47,8 @@ Use the checked-in Python workspace configuration and the current project path:
 - run: uv run pytest
 ```
 
-Set `working-directory` explicitly for `projects/precis/main/backend`,
-`projects/precis/landi/backend`, or a POS sidecar/backend job. Avoid assuming
+Set `working-directory` explicitly for `projects/precis/precis-lms/backend`,
+`projects/precis/precis-landing/backend`, or a POS sidecar/backend job. Avoid assuming
 that every Django project uses the same settings module.
 
 ## JavaScript, TypeScript, and Rust jobs

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""Check Django installed apps - must run via manage.py in ctc-research context."""
+"""Check Django installed apps - must run via manage.py in precis-ctc context."""
 import sys, traceback
-sys.path.insert(0, '/app/ctc-research')
-sys.path.insert(0, '/app/ctc-research/www')
+sys.path.insert(0, '/app/precis-ctc')
+sys.path.insert(0, '/app/precis-ctc/www')
 
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'

@@ -28,7 +28,7 @@ traefik                 → structa-proxy
 
 **Old Name → New Name**
 ```
-web-ctc-research        → ctc-web
+web-precis-ctc        → ctc-web
 web-lms            → lms-web
 web-vresume             → vresume-web
 ```
@@ -37,8 +37,8 @@ web-vresume             → vresume-web
 
 **Old Name → New Name**
 ```
-ctc-research-tasks-worker   → ctc-worker
-ctc-research-worker         → (removed, use ctc-worker)
+precis-ctc-tasks-worker   → precis-ctc-worker
+precis-precis-ctc-worker         → (removed, use precis-ctc-worker)
 lms-tasks-worker       → lms-worker
 worker-lms             → (removed, use lms-worker)
 vresume-tasks-worker        → vresume-worker
@@ -49,7 +49,7 @@ shared-tasks-worker         → shared-worker
 
 **Old Name → New Name**
 ```
-ctc-research-tasks-beat     → ctc-scheduler
+precis-ctc-tasks-beat     → ctc-scheduler
 lms-tasks-beat         → lms-scheduler
 vresume-tasks-beat          → vresume-scheduler
 shared-tasks-beat           → shared-scheduler
@@ -60,7 +60,7 @@ shared-tasks-beat           → shared-scheduler
 **Old Name → New Name**
 ```
 shared-media                → media-server
-media-ctc-research          → ctc-media
+media-precis-ctc          → ctc-media
 ```
 
 ### Utilities (Unchanged)
@@ -89,10 +89,10 @@ vresume-docs                → vresume-docs (no change)
 
 ### 2. Website Services
 
-**File:** `/root/site/websites/ctc-research/docker-compose.yml`
-- ✅ web-ctc-research → ctc-web
-- ✅ worker-ctc-research → ctc-worker
-- ✅ ctc-research-media → ctc-media
+**File:** `/root/site/websites/precis-ctc/docker-compose.yml`
+- ✅ web-precis-ctc → ctc-web
+- ✅ worker-precis-ctc → precis-ctc-worker
+- ✅ precis-ctc-media → ctc-media
 - ✅ Updated dependencies and environment vars
 
 **File:** `/root/site/websites/lms/docker-compose.yml`
@@ -107,8 +107,8 @@ vresume-docs                → vresume-docs (no change)
 ### 3. Task Services
 
 **File:** `/root/site/websites/compose/docker-compose.tasks.yml`
-- ✅ ctc-research-tasks-worker → ctc-worker
-- ✅ ctc-research-tasks-beat → ctc-scheduler
+- ✅ precis-ctc-tasks-worker → precis-ctc-worker
+- ✅ precis-ctc-tasks-beat → ctc-scheduler
 - ✅ lms-tasks-worker → lms-worker
 - ✅ lms-tasks-beat → lms-scheduler
 - ✅ vresume-tasks-worker → vresume-worker
@@ -166,7 +166,7 @@ Website Services (3):
   ✓ vresume-web
 
 Task Workers (4):
-  ✓ ctc-worker
+  ✓ precis-ctc-worker
   ✓ lms-worker
   ✓ vresume-worker
   ✓ shared-worker
@@ -291,7 +291,7 @@ docker compose up -d
 2. ✅ `/root/site/websites/compose/docker-compose.warehouse.yml`
 3. ✅ `/root/site/websites/compose/docker-compose.nginx.yml`
 4. ✅ `/root/site/websites/compose/docker-compose.tasks.yml`
-5. ✅ `/root/site/websites/ctc-research/docker-compose.yml`
+5. ✅ `/root/site/websites/precis-ctc/docker-compose.yml`
 6. ✅ `/root/site/websites/lms/docker-compose.yml`
 7. ✅ `/root/site/websites/VResume/docker-compose.yml`
 8. ✅ (Other compose files referenced but minimal changes)
@@ -329,10 +329,10 @@ All routing and networking logic remains compatible. Services communicate via:
 ### Before
 ```
 Confusing, verbose names:
-  web-ctc-research
-  ctc-research-tasks-worker
-  ctc-research-tasks-beat
-  media-ctc-research
+  web-precis-ctc
+  precis-ctc-tasks-worker
+  precis-ctc-tasks-beat
+  media-precis-ctc
   shared-media
   structa-traefik-proxy
 ```
@@ -341,7 +341,7 @@ Confusing, verbose names:
 ```
 Clean, unique names:
   ctc-web
-  ctc-worker
+  precis-ctc-worker
   ctc-scheduler
   ctc-media
   media-server
@@ -389,9 +389,9 @@ After redeploy:
 ### Issue: Task workers not processing jobs
 
 **Solution:**
-- Verify Redis connection: `docker exec ctc-worker redis-cli -h structa-cache ping`
-- Check worker logs: `docker compose logs ctc-worker`
-- Verify database connection: `docker exec ctc-worker python manage.py dbshell`
+- Verify Redis connection: `docker exec precis-ctc-worker redis-cli -h structa-cache ping`
+- Check worker logs: `docker compose logs precis-ctc-worker`
+- Verify database connection: `docker exec precis-ctc-worker python manage.py dbshell`
 
 ---
 

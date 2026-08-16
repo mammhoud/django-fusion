@@ -3,7 +3,7 @@
 > **Status:** Planned — architecture and delivery gates defined; runtime provider integrations are not yet claimed complete.
 > **Owner:** django-fusion core team with project owners
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/`, `projects/precis/main/`, `projects/precis/landi/`, `projects/formints/`
+> **Scope:** `libs/django-fusion/`, `projects/precis/precis-lms/`, `projects/precis/landi/`, `projects/formints/`
 > **Parent plan:** [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md)
 
 ## 1. Purpose
@@ -414,7 +414,7 @@ do not assume that a generic JSON-RPC POST accepts a generator response.
 
 ### 9.1 Precis LMS
 
-Owner: `projects/precis/main/backend/`.
+Owner: `projects/precis/precis-lms/backend/`.
 
 Candidate task modules:
 
@@ -624,8 +624,8 @@ labels.
 | django-fusion enhancements | [`django-fusion-enhancements.md`](django-fusion-enhancements.md) |
 | Worker consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
 | Landing-Fusion plan | [`../precis/landi/README.md`](../precis/landi/README.md) |
-| Precis product handoff | [`../../../projects/precis/main/README.md`](../../../projects/precis/main/README.md) |
-| Precis backend guidance | [`../../../projects/precis/main/backend/AGENTS.md`](../../../projects/precis/main/backend/AGENTS.md) |
+| Precis product handoff | [`../../../projects/precis/precis-lms/README.md`](../../../projects/precis/precis-lms/README.md) |
+| Precis backend guidance | [`../../../projects/precis/precis-lms/backend/AGENTS.md`](../../../projects/precis/precis-lms/backend/AGENTS.md) |
 | Formint Professional plan | [`../editions/03-pro.md`](../editions/03-pro.md) |
 | POS editions index | [`../editions/README.md`](../editions/README.md) |
 | Plan registry | [`../README.md`](../README.md) |

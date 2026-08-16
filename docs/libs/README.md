@@ -47,7 +47,7 @@ High-performance Rust-backed API framework. 60k+ RPS throughput.
 
 | Topic | Link |
 |-------|------|
-| Landing Fusion | [`../precis/landi/README.md`](../precis/landi/README.md) |
+| Landing Fusion | [`../precis/precis-landing/README.md`](../precis/precis-landing/README.md) |
 | Precis LMS | [`../precis/README.md`](../precis/README.md) |
 | Formints POS | [`../pos/README.md`](../pos/README.md) |
 | Infrastructure | [`../../infrastructure/`](../../infrastructure/) |

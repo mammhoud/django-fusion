@@ -102,7 +102,7 @@ This means:
 
 #### 1a. Add mobile hamburger to LMS Header
 ```
-File: projects/lms-fusion/frontend/src/components/Header.tsx
+File: projects/precis-lms/frontend/src/components/Header.tsx
 Action: Add `button[aria-label="Toggle menu"]` hamburger + mobile nav panel
 to match CMS Header's mobile pattern.
 Reason: e2e tests expect this locator on mobile viewport.

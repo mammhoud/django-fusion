@@ -30,7 +30,7 @@ _ceptor_tests = _workspace_root / "libs" / "ceptor-ai" / "tests"
 _repo_root = _websites_dir
 
 # Map old site names to their new paths under projects/:
-# - "ctc-research" and "lms" (old core/) → projects/lms/cms/
+# - "precis-ctc" and "lms" (old core/) → projects/lms/cms/
 # - "VResume" (old core/)               → projects/cms/portfolio/
 # - lms-full                             → projects/cms/lms-full/
 _ctc_path = _lms_path

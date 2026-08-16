@@ -8,7 +8,7 @@ the extended utility commands (deploy, logs, push, etc.).
 Examples:
   python manage.py --site=lms migrate
   python manage.py sites
-  python manage.py deploy ctc-research --no-cache
+  python manage.py deploy precis-ctc --no-cache
   python manage.py validate-commands
   python manage.py make-check --all
 """

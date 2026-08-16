@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Loop-CRM frontend — Astro 5 + Tailwind 4 + HTMX + Alpine.js + Redux + GSAP, mirroring the landing-fusion AHA-stack architecture.",
+  "description": "Loop-CRM frontend — Astro 5 + Tailwind 4 + HTMX + Alpine.js + Redux + GSAP, mirroring the precis-landing AHA-stack architecture.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

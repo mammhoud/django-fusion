@@ -104,7 +104,7 @@ class FixtureManager:
             "models": ["wagtailcore.page"],
             "objects": "unknown",
         },
-        "ctc-research-data.json": {
+        "precis-ctc-data.json": {
             "type": FixtureType.ORIGINAL,
             "description": "Original CTC-Research data dump",
             "models": ["*"],

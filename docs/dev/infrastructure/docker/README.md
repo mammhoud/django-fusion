@@ -14,7 +14,7 @@
 | `shared-proxy` | Nginx (static/media) | 80 | `common` |
 | `shared-worker` | Dramatiq worker | — | `common` |
 | `shared-scheduler` | Celery Beat | — | `common` |
-| `ctc-research-website` | Django/Gunicorn | 5070 | `common` |
+| `precis-ctc-website` | Django/Gunicorn | 5070 | `common` |
 | `lms-web` | Django/Gunicorn | 5071 | `common` |
 | `vresume-web` | Django/Gunicorn | 5072 | `common` |
 | `cypercloud` | Django/Gunicorn | 5073 | `common` |
@@ -85,7 +85,7 @@ All Django sites use a single shared Dockerfile at `projects/compose/Dockerfile`
 ```dockerfile
 # Build-time: PROJECT_PATH arg selects the site
 FROM python:3.11-slim AS app-base
-ARG PROJECT_PATH=ctc-research
+ARG PROJECT_PATH=precis-ctc
 
 # Multi-stage: builds webpack bundles in node:24-slim,
 # then copies them into the python:3.11-slim app image.

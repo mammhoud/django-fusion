@@ -99,7 +99,7 @@ APScheduler. This replaces the old database-backed Celery Beat process.
 ## Product-specific workers
 
 Precis/LMS has its own explicit worker and scheduler services in
-`projects/precis/main/docker-compose.yml` and discovers its local modules, including
+`projects/precis/precis-lms/docker-compose.yml` and discovers its local modules, including
 `plugins.workers.campaign_tasks`. The old Temporal campaign management command
 and `apps/domain/workflows/temporal/` package were removed; campaign onboarding
 and batch processing are now regular Dramatiq actors.
@@ -107,7 +107,7 @@ and batch processing are now regular Dramatiq actors.
 To run the Precis worker locally:
 
 ```bash
-cd projects/precis/main
+cd projects/precis/precis-lms
 python backend/manage.py rundramatiq \
   --processes 2 --threads 4 --queues email,content,courses,campaigns,system,default
 python backend/manage.py shell -c \

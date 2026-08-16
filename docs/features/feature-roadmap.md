@@ -75,18 +75,6 @@ See the [Formint edition chain](../plans/editions/README.md) for the canonical b
 
 > Target stack: Tauri 2 + Rust desktop shell, Astro + Alpine.js + HTMX + Tailwind UI, Django + django-fusion backend, and SQLite/PostgreSQL data layers.
 
-### P0 🔴 — In Development
-
-| Feature | Edition | Description |
-|---------|---------|-------------|
-| **POS-KO Gaming Center** | Full | Token-based gaming sessions with time tracking (committed) |
-
-### P1 🟡 — Next Up
-
-| Feature | Edition | Description |
-|---------|---------|-------------|
-| **Cloud Dashboard** | Professional/SaaS | Web-based dashboard for multi-branch management |
-
 ### ✅ Done — Shipped
 
 | Feature | Edition | Description |
@@ -95,6 +83,16 @@ See the [Formint edition chain](../plans/editions/README.md) for the canonical b
 | **Multi-terminal Sync** | Professional | Real-time WebSocket broadcast + pull changeset (`/sync/changes`, `/sync/ack`, `/sync/trigger`) across POS terminals |
 | **Offline Queue** | Community+ | Durable `OutboxQueue` + retry/backoff/dead-letter flush (`/offline-queue/*`) — queue transactions offline, sync when back online |
 | **Barcode Scanner** | Professional | Resolve scanned codes to products (`/barcode/<value>`, SKU fallback) + Code128 label SVG (`/barcode/<value>/label`) |
+| **POS-KO Gaming Center** | Full | Token-based gaming sessions (`/gaming/*`) — stations, time tokens, start/pause/resume/stop with duration×rate billing, and a waitlist queue |
+| **Gift Cards** | Professional+ | Digital gift cards (`/gift-cards*`) — issue, balance check, redeem with `GiftCardTransaction` ledger, reload, disable |
+| **Table Management** | Professional+ | Restaurant floor layouts + order tracking (`/tables*`, `/reservations*`) — table CRUD, status lifecycle, occupy/clear with live sale link, floor summary, reservation booking/lifecycle |
+| **Delivery Integration** | Professional+ | Delivery platform connectors (`/deliveries*`) — Talabat/HungerStation provider registry, outbound order dispatch with zone-based fee, status lifecycle + provider webhook ingestion, delivery KPIs |
+| **AI Forecasting** | Professional/SaaS | Read-only advisory analytics (`/forecast*`) — per-product demand projection (moving average + trend), stock/reorder recommendations, waste aggregation with cost, sales movers/growth insights with recommendation strings |
+| **Employee Scheduling** | Professional | Shift planning + time clock (`/scheduling*`) — weekly shift upsert + concrete week roster, staffing coverage, clock in/out/break with worked-hours + overtime + pay estimate from `EmployeeSchedule`/`TimeClockEntry` |
+| **Customer Display** | Professional | Read-only customer-facing order confirmation (`/customer-display*`) — per-order display envelope (items, totals, table, kitchen-ticket status + ETA) and an active-orders board feed, with a polling wall-screen page |
+| **Self-checkout Kiosk** | Professional/SaaS | Self-service kiosk mode (`/kiosk*`) — `KioskSession` + cart, catalog feed, touchscreen UI; checkout reuses the canonical `sale_checkout` surface (Sale/SaleItem/KitchenTicket + stock deduction) |
+| **Inventory Forecasting** | Professional/SaaS | Reorder-point planning + auto-reorder (`/forecast/inventory*`) — per-product safety stock, reorder point, projected stock-out date and suggested order quantity; `POST /forecast/inventory/reorder` materializes the advisory into `PurchaseOrder` drafts |
+| **Cloud Dashboard** | Professional/SaaS | Web-based multi-branch management dashboard (`/cloud-dashboard`) — sync queue retry/cancel, conflict resolve/dismiss, activity feed over `/api/dashboard/*` |
 | **Bolt Analytics Dashboard** | ☁️ | Self-contained HTML dashboard at `/apis/data/` — 6 KPI cards, live WS updates, sync event log viewer |
 | **Sync Event Log Viewer** | ☁️ | Fixed-position panel (50-entry ring buffer, collapse, reconnect indicator) on bolt + admin dashboards |
 | **DataToken Sync Tagging** | 🔧 | django-fusion model for ordered sync row tagging with parent/child trees, progress tracking, auto-untag |
@@ -109,19 +107,6 @@ See the [Formint edition chain](../plans/editions/README.md) for the canonical b
 
 | Feature | Edition | Description |
 |---------|---------|-------------|
-| **Gift Cards** | Professional+ | Digital gift card system |
-| **Table Management** | Professional+ | Restaurant table layouts and order tracking |
-| **Delivery Integration** | Professional+ | Integrate with delivery platforms (Talabat, HungerStation) |
-| **AI Forecasting** | Professional/SaaS | Advisory demand, stock, waste, and sales recommendations |
-
-### P3 ⚪ — Backlog
-
-| Feature | Edition | Description |
-|---------|---------|-------------|
-| **Inventory Forecasting** | Professional/SaaS | Advisory demand prediction and auto-reorder recommendations |
-| **Employee Scheduling** | Professional | Shift planning and time tracking |
-| **Customer Display** | Professional | Customer-facing display for order confirmation |
-| **Self-checkout Kiosk** | Professional/SaaS | Self-service kiosk mode |
 
 ---
 

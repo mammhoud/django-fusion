@@ -97,7 +97,7 @@ hx-get="/pages/about/"
 Create a file with the same relative path in the site templates directory:
 
 ```
-projects/ctc-research/templates/base.html  # overrides projects/assets/templates/base.html
+projects/precis-ctc/templates/base.html  # overrides projects/assets/templates/base.html
 ```
 
 ### Add a new fragment

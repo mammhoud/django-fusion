@@ -6,10 +6,10 @@
 
 ## Current Snapshot
 
-- ✅ `lms-fusion` core migration — complete
+- ✅ `precis-lms` core migration — complete
 - ✅ `cms-fusion` core migration — complete
 - ✅ `DJANGO_BOLT_FUSION_CASE_STUDY.md` — historical reference retained; Bolt integration is project-owned
-- ⬜ [`legacy/legacy-cleanup.md`](legacy/legacy-cleanup.md) — not started
+- ✅ `legacy/legacy-cleanup.md` — completed; the retired `docs/plans/legacy/` tree was removed 2026-08-16
 
 > **Case Study:** [`../DJANGO_BOLT_FUSION_CASE_STUDY.md`](../DJANGO_BOLT_FUSION_CASE_STUDY.md) — comprehensive analysis of django-bolt patterns across projects and integration recommendations.
 
@@ -19,10 +19,10 @@
 
 | # | Plan | Scope | Status | Progress |
 |---|------|-------|:------:|:--------:|
-| 1 | [`lms-fusion/migration-plan.md`](lms-fusion/migration-plan.md) | LMS Fusion — django-fusion + project-owned API + Next.js frontend | ✅ Complete | 100% |
+| 1 | [`precis-lms/migration-plan.md`](precis-lms/migration-plan.md) | LMS Fusion — django-fusion + project-owned API + Next.js frontend | ✅ Complete | 100% |
 | 2 | [`cms-fusion/migration-plan.md`](cms-fusion/migration-plan.md) | CMS Fusion — django-fusion + project-owned API + Next.js frontend + fallbacks | ✅ Complete | 100% |
 | 3 | [`../DJANGO_BOLT_FUSION_CASE_STUDY.md`](../DJANGO_BOLT_FUSION_CASE_STUDY.md) | django-bolt usage analysis + fusion integration recommendations | ✅ Complete | 100% |
-| 4 | [`legacy/legacy-cleanup.md`](legacy/legacy-cleanup.md) | Audit, archive, and remove old/duplicate project directories | ⬜ Not Started | 0% |
+| 4 | `legacy/legacy-cleanup.md` (removed) | Audit, archive, and remove old/duplicate project directories | ✅ Complete | 100% |
 
 ---
 
@@ -34,15 +34,15 @@ Run migrations in this order to respect shared-library and site dependencies:
    - `libs/django-fusion/`
    - `libs/ceptor-ai/`
 2. **Existing reference sites**
-   - `projects/cms/ctc-research/`
+   - `projects/cms/precis-ctc/`
    - `projects/lms/cms/` (legacy)
    - `projects/cms/lms-full/` (legacy)
    - `projects/cms/portfolio/`
    - `projects/cypercloud/`
 3. **New Fusion sites**
-   - `projects/lms-fusion/backend/` — django-fusion + project-owned API (`bolt_apis.py`) ✅
+   - `projects/precis-lms/backend/` — django-fusion + project-owned API (`bolt_apis.py`) ✅
    - `projects/cms-fusion/backend/` — django-fusion + project-owned API (`bolt_apis.py`) ✅
-   - `projects/lms-fusion/frontend/` — Next.js 14 + fusion types/decoder/store/client ✅
+   - `projects/precis-lms/frontend/` — Next.js 14 + fusion types/decoder/store/client ✅
    - `projects/cms-fusion/frontend/` — Next.js 14 + fusion types/decoder/store/client + fallbacks ✅
 
 ---

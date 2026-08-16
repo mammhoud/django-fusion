@@ -6,7 +6,7 @@ How to load Wagtail page content and seed data into the fusion site databases.
 
 ## Overview
 
-Fusion sites (`cms-fusion`, `lms-fusion`) ship with JSON fixture files that
+Fusion sites (`cms-fusion`, `precis-lms`) ship with JSON fixture files that
 populate the Wagtail database with pages, locales, users, and homepage
 content blocks. Fixtures are loaded via the `load_fusion_fixtures` management
 command, which wraps Django's `loaddata` with dependency ordering.
@@ -39,7 +39,7 @@ projects/cms-fusion/assets/fixtures/
 > **Dependency order matters.** Locales load first, then users, then content
 > types, then pages. The management command handles this automatically.
 >
-> **Fixtures are synced** between `cms-fusion` and `lms-fusion` — both projects
+> **Fixtures are synced** between `cms-fusion` and `precis-lms` — both projects
 > share identical fixture files under `assets/fixtures/`.
 
 ## Quick Start

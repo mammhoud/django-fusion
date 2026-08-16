@@ -13,38 +13,36 @@ This page is the decision layer for Structa Cloud documentation. Read it before 
 All engineering plans now belong under [`docs/plans/`](plans/README.md), organized by scope:
 
 - `plans/repository/` — cross-repository architecture, cleanup, and delivery work;
-- `plans/pos/` — Formint/POS product and edition plans;
 - `plans/editions/` — Formint edition execution chain;
-- `plans/landing-fusion/` — Landing site architecture and content work;
-- `plans/django-fusion/` — shared framework work (tasks, MCP, sync, POS enhancements);
-- `plans/legacy/` — read-only historical evidence only.
+- `plans/precis-landing/` — Landing site architecture and content work;
+- `plans/django-fusion/` — shared framework work (tasks, MCP, sync, POS enhancements).
 
 Do not create new plans under `docs/dev/plans/`, `projects/*/docs/`, or `docs/plans/migrated/`.
 
 ### 2. Finish the current product vertical slices before starting broad cleanup
 
-1. **Formint POS Professional Edition** — continue from the canonical [Professional plan](plans/pos/formint-pos-professional-plan.md).
-2. **Formint Cloud (formint-cloud)** — continue Channels/WebSocket sync + Bolt dashboard work.
-3. **Landing-Fusion** — keep the content rendering contract covered by focused tests before adding new blocks.
-4. **Precis LMS** — close remaining frontend and deployment tasks with owned verification commands.
+1. **Formint edition chain** — continue from the canonical [editions index](plans/editions/README.md).
+2. **Formint Cloud (`cloud` edition)** — continue Channels/WebSocket sync + Bolt dashboard work.
+3. **Landing-Fusion** (`projects/precis/precis-landing/`) — keep the content rendering contract covered by focused tests before adding new blocks.
+4. **Precis LMS** (`projects/precis/precis-lms/`) — close remaining frontend and deployment tasks with owned verification commands.
 
 ### 3. Treat migration and legacy material as evidence, not scope
 
-Completed phase reports are archived under `plans/legacy/` and must not be presented as active work. See [`document-lifecycle.md`](plans/document-lifecycle.md) for policy.
+Completed phase reports are deleted once superseded and must not be presented as active work. See [`document-lifecycle.md`](plans/document-lifecycle.md) for policy.
 
 ### 4. Keep product knowledge separate from engineering execution
 
 - Engineering plans: [`docs/plans/`](plans/README.md)
-- Product decisions: `docs/Anytype/` (separate knowledge graph)
-- Current architecture: topic/project section in [`docs/README.md`](README.md)
+- Product scope & editions: [`docs/plans/editions/README.md`](plans/editions/README.md)
+- Current architecture: [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) + [`docs/project-structure.md`](project-structure.md)
 
 ## Current next actions
 
 | Priority | Action | Source of truth | Verification |
 |:--:|---|---|---|
 | P0 | Formint edition extension chain — next executable task | [`plans/editions/README.md`](plans/editions/README.md) | Edition-specific tests |
-| P0 | Landing-Fusion content work — preserve rendering contract | [`plans/landing-fusion/`](plans/landing-fusion/) | Backend tests + `npm run check` |
-| P1 | Precis LMS — close frontend/deployment gates | `projects/precis/main/backend/` | Site checks, tests, builds |
+| P0 | Landing-Fusion content work — preserve rendering contract | [`plans/precis-landing/`](plans/precis-landing/) | Backend tests + `npm run check` |
+| P1 | Precis LMS — close frontend/deployment gates | `projects/precis/precis-lms/backend/` | Site checks, tests, builds |
 | P1 | Repository cleanup — don't delete compatibility sources prematurely | [`plans/repository/migration-cleanup-master.md`](plans/repository/migration-cleanup-master.md) | Reference scan |
 | P2 | django-fusion tasks & MCP — unified bg task API, Celery removal, MCP tooling | [`plans/django-fusion/django-fusion-tasks-mcp-plan.md`](plans/django-fusion/django-fusion-tasks-mcp-plan.md) | `uv run pytest libs/django-fusion/` |
 | P2 | Docs maintenance — link validation, stale ref removal | [`plans/document-lifecycle.md`](plans/document-lifecycle.md) | Link checker |
@@ -55,14 +53,16 @@ Completed phase reports are archived under `plans/legacy/` and must not be prese
 2. Put in `docs/plans/<scope>/`.
 3. Add to [`docs/plans/README.md`](plans/README.md).
 4. Link to source code — don't duplicate.
-5. Mark superseded plans; move evidence to `plans/legacy/`.
+5. Mark superseded plans; delete them and record the removal in the deletion manifest.
 
 ## Recent name migrations
 
 | Old → New | When |
 |---|---|
-| `formintB` / `pos-cloud` → `formint-cloud` | 2026-08-09 |
-| `lms-fusion` → Precis LMS (`projects/precis/main/`) | Active |
+| `formintA` → `community`, `formint` → `pro`, `formint-cloud` → `cloud`, `formintC` → `client`, `formint-standard` → `standard` | 2026-08-16 |
+| `formintB` / `pos-cloud` → `formint-cloud` (now `cloud`) | 2026-08-09 |
+| `precis-landing` → `projects/precis/precis-landing/`, `precis-ctc` → `projects/precis/precis-ctc/` | 2026-08-16 |
+| `precis-lms` → Precis LMS (`projects/precis/precis-lms/`) | Active |
 | `cypercloud` → Syntara (`projects/syntara/`) | Active |
 | `core/` → `projects/` | 2026 |
 

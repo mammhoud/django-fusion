@@ -39,7 +39,7 @@ A prompt is assembled from four layers, in this order:
 Example composition for a Landing-Fusion Wagtail block:
 
 ```text
-project.landing-fusion
+project.precis-landing
 + skill.wagtail-content-model
 + skill.django-fusion-component
 + user task: add a featured-course block to the home page
@@ -117,7 +117,7 @@ The lightweight Kilo service exposes repository-specific, read-only REST catalog
 
 ```bash
 curl http://127.0.0.1:8100/prompts
-curl http://127.0.0.1:8100/prompts/project.landing-fusion
+curl http://127.0.0.1:8100/prompts/project.precis-landing
 curl http://127.0.0.1:8100/prompts/skill.website-redesign-audit
 ```
 

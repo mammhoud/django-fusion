@@ -1,37 +1,19 @@
-# Loop-CRM — Django render-first backend + Astro frontend + Postgres + Redis.
-# The backend owns CRM/marketing/finance/account routes; the frontend serves
-# the Astro overview shell. Traefik routes crm.structa.cloud to both services.
+# Loop-CRM — Django render-first backend + Astro frontend.
+#
+# Like the Precis stacks (projects/precis/*/docker-compose.yml), this project
+# depends on the SHARED infrastructure from applications/databases rather than
+# running its own Postgres/Redis:
+#   - PostgreSQL  → container `postgres`, database `db_crm` (DB_NAME_CRM)
+#   - Redis       → container `default-redis`, password REDIS_PASSWORD
+# Both live on the `common` + `warehouse-net` networks (created by
+# applications/databases), so every Loop-CRM service joins those networks and
+# addresses the shared containers by their stable container_name. The backend
+# applies migrations at startup; `restart: unless-stopped` retries until the
+# shared database is reachable, which is the "depend on the database" ordering.
+# Compose project name (matches the container_name prefix loop-crm-*).
+name: loop-crm
+
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: loop-crm-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: loop_crm
-      POSTGRES_USER: loop_crm
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
-    volumes:
-      - loop-crm-postgres:/var/lib/postgresql/data
-    networks:
-      - common
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U loop_crm -d loop_crm"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-
-  redis:
-    image: redis:7-alpine
-    container_name: loop-crm-redis
-    restart: unless-stopped
-    networks:
-      - common
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-
   backend:
     build:
       context: ../..
@@ -48,30 +30,42 @@ services:
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
       DJANGO_ALLOWED_HOSTS: crm.structa.cloud,www.crm.structa.cloud,loop-crm-backend,localhost,127.0.0.1
       CSRF_TRUSTED_ORIGINS: https://crm.structa.cloud,https://www.crm.structa.cloud
+      # Shared PostgreSQL cluster (applications/databases) — project-scoped DB.
       USE_POSTGRES: "1"
-      POSTGRES_DB: loop_crm
-      POSTGRES_USER: loop_crm
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+      POSTGRES_DB: "${DB_NAME_CRM:-db_crm}"
+      POSTGRES_USER: "${POSTGRES_USER:-admin}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in projects/loop-crm/.env}"
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
-      REDIS_URL: redis://redis:6379/0
+      # Shared Redis broker (default-redis). REDIS_DB shifts Loop-CRM's
+      # relative indexes (cache=0, dramatiq=1, channels=2) to a private block
+      # (8/9/10) so queues/sessions never collide with other projects.
+      REDIS_HOST: default-redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?Set REDIS_PASSWORD (shared) in projects/loop-crm/.env}"
+      # Loop-CRM owns a private Redis index block (cache=8, dramatiq=9,
+      # channels=10). Keep DRAMATIQ_BROKER_URL below in sync (= REDIS_DB + 1).
+      REDIS_DB: "8"
+      # django-fusion's DramatiqBackend reads DRAMATIQ_BROKER_URL (not the
+      # DRAMATIQ_BROKER Django setting) and owns dramatiq.set_broker().
+      DRAMATIQ_BROKER_URL: "redis://:${REDIS_PASSWORD}@default-redis:6379/9"
       FUSION_BOLT_ENABLED: "1"
       FUSION_BOLT_JWT_SECRET: "${FUSION_BOLT_JWT_SECRET:?Set FUSION_BOLT_JWT_SECRET in projects/loop-crm/.env}"
       FUSION_BOLT_JWT_ISSUER: loop-crm
       SECURE_SSL_REDIRECT: "0"
       DEFAULT_FROM_EMAIL: Loop CRM <noreply@structa.cloud>
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - common
+      - warehouse-net
       - traefik-net
-    command: >-
-      sh -c "python manage.py migrate --noinput
-      && python manage.py collectstatic --noinput
-      && exec gunicorn wsgi:application --bind 0.0.0.0:8074 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
+    # Preview port-forward: expose gunicorn directly on the host so the API
+    # can be inspected without going through Traefik.
+    ports:
+      - "8074:8074"
+    # The backend applies migrations at startup; the entrypoint first waits
+    # for the shared Postgres container (cold-boot ordering), then migrates,
+    # collects static, and finally execs gunicorn.
+    command: sh /app/projects/loop-crm/backend/entrypoint.sh
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8074/\", timeout=5)'" ]
       interval: 15s
@@ -94,24 +88,30 @@ services:
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
       USE_POSTGRES: "1"
-      POSTGRES_DB: loop_crm
-      POSTGRES_USER: loop_crm
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+      POSTGRES_DB: "${DB_NAME_CRM:-db_crm}"
+      POSTGRES_USER: "${POSTGRES_USER:-admin}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in projects/loop-crm/.env}"
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
-      REDIS_URL: redis://redis:6379/0
+      REDIS_HOST: default-redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?Set REDIS_PASSWORD (shared) in projects/loop-crm/.env}"
+      # Loop-CRM owns a private Redis index block (cache=8, dramatiq=9,
+      # channels=10). Keep DRAMATIQ_BROKER_URL below in sync (= REDIS_DB + 1).
+      REDIS_DB: "8"
+      # django-fusion's DramatiqBackend reads DRAMATIQ_BROKER_URL (not the
+      # DRAMATIQ_BROKER Django setting) and owns dramatiq.set_broker().
+      DRAMATIQ_BROKER_URL: "redis://:${REDIS_PASSWORD}@default-redis:6379/9"
       FUSION_BOLT_ENABLED: "1"
       FUSION_BOLT_JWT_SECRET: "${FUSION_BOLT_JWT_SECRET:?Set FUSION_BOLT_JWT_SECRET in projects/loop-crm/.env}"
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
+      backend:
         condition: service_healthy
     networks:
       - common
+      - warehouse-net
     command: >-
-      sh -c "python manage.py migrate --noinput
-      && exec python manage.py rundramatiq --processes 2 --threads 4"
+      sh -c "exec python manage.py rundramatiq --processes 2 --threads 4"
 
   # APScheduler cron runner for django-fusion @task(schedule=...) jobs
   # (e.g. sync_task_history, which keeps the website TaskExecution record
@@ -131,24 +131,30 @@ services:
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
       USE_POSTGRES: "1"
-      POSTGRES_DB: loop_crm
-      POSTGRES_USER: loop_crm
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in projects/loop-crm/.env}"
+      POSTGRES_DB: "${DB_NAME_CRM:-db_crm}"
+      POSTGRES_USER: "${POSTGRES_USER:-admin}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in projects/loop-crm/.env}"
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
-      REDIS_URL: redis://redis:6379/0
+      REDIS_HOST: default-redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?Set REDIS_PASSWORD (shared) in projects/loop-crm/.env}"
+      # Loop-CRM owns a private Redis index block (cache=8, dramatiq=9,
+      # channels=10). Keep DRAMATIQ_BROKER_URL below in sync (= REDIS_DB + 1).
+      REDIS_DB: "8"
+      # django-fusion's DramatiqBackend reads DRAMATIQ_BROKER_URL (not the
+      # DRAMATIQ_BROKER Django setting) and owns dramatiq.set_broker().
+      DRAMATIQ_BROKER_URL: "redis://:${REDIS_PASSWORD}@default-redis:6379/9"
       FUSION_BOLT_ENABLED: "1"
       FUSION_BOLT_JWT_SECRET: "${FUSION_BOLT_JWT_SECRET:?Set FUSION_BOLT_JWT_SECRET in projects/loop-crm/.env}"
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
+      backend:
         condition: service_healthy
     networks:
       - common
+      - warehouse-net
     command: >-
-      sh -c "python manage.py migrate --noinput
-      && exec python -m django_fusion.tasks.scheduler"
+      sh -c "exec python -m django_fusion.tasks.scheduler"
 
   frontend:
     build:
@@ -164,6 +170,9 @@ services:
         condition: service_healthy
     networks:
       - traefik-net
+    # Preview port-forward: serve the Astro shell on the host for a quick look.
+    ports:
+      - "3000:3000"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/__health__"]
       interval: 15s
@@ -174,9 +183,7 @@ services:
 networks:
   common:
     external: true
+  warehouse-net:
+    external: true
   traefik-net:
     external: true
-
-volumes:
-  loop-crm-postgres:
-    name: loop-crm-postgres

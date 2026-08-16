@@ -299,11 +299,11 @@ under `backend/plugins/workers/`; the table above is a migration mapping only.
 
 ```
 projects/
-├── landing-fusion/backend/apps/tasks/
+├── precis-landing/backend/apps/tasks/
 │   ├── email_tasks.py      # send_newsletter, send_contact_form_notification
 │   └── content_tasks.py    # warm_page_cache, generate_blog_preview_images
 │
-├── precis/main/backend/apps/tasks/
+├── precis/precis-lms/backend/apps/tasks/
 │   ├── email_tasks.py      # send_enrollment_confirmation, send_certificate
 │   ├── course_tasks.py     # sync_course_completion_rates, send_weekly_digest
 │   └── content_tasks.py    # process_uploaded_video, generate_ai_description
@@ -415,10 +415,10 @@ projects/webpack/
 │   ├─ @<project>-styles → project/assets/static/styles/
 │   └─ @<project>-js → project/assets/static/js/
 │
-projects/precis/landi/webpack/
-└── landing-fusion.config.js # Extends base, per-project entries/output
+projects/precis/precis-landing/webpack/
+└── precis-landing.config.js # Extends base, per-project entries/output
 │
-projects/precis/main/webpack/
+projects/precis/precis-lms/webpack/
 └── precis.config.js         # Extends base, per-project entries/output
 ```
 
@@ -613,7 +613,7 @@ structa.cloud/
 │   └── plans/                # Plan registry (editions, pos, django-fusion, ...)
 ├── projects/                 # All product code
 │   ├── precis/               # LMS — courses, enrollment, progress
-│   ├── landing-fusion/       # Marketing site — Astro + Wagtail
+│   ├── precis-landing/       # Marketing site — Astro + Wagtail
 │   ├── syntara/              # AI Chat — Ollama, streaming
 │   ├── formints/             # POS — 5 editions (Community → Cloud)
 │   ├── configs/              # Shared Django settings

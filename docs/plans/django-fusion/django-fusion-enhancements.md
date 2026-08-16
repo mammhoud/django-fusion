@@ -543,7 +543,6 @@ These items were completed ahead of the original Phase 1–5 plan:
 | Formint POS Professional | [`../editions/03-pro.md`](../editions/03-pro.md) |
 | Formint Cloud | [`../editions/04-cloud.md`](../editions/04-cloud.md) |
 | Tauri Plugin Migration | [`../editions/02-standard.md`](../editions/02-standard.md) |
-| Codebase Audit & Migration | [`../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md`](../CODEBASE_AUDIT_AND_MIGRATION_PLAN.md) |
 | Canonical Plan Registry | [`../README.md`](../README.md) |
 
 ---

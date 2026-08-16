@@ -7,7 +7,7 @@ echo "║    CTC-Research Website - All Issues Resolved              ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
-WEBSITE="ctc-research"
+WEBSITE="precis-ctc"
 LOG_DIR="/root/site/websites/logs"
 COMPOSE_FILE="/root/site/websites/docker-compose.yml"
 
@@ -50,7 +50,7 @@ log_success "Cache cleared"
 
 log_step "Backing up current logs..."
 mkdir -p "$LOG_DIR/backups"
-for logfile in /root/site/websites/ctc-research/logs/*.log; do
+for logfile in /root/site/websites/precis-ctc/logs/*.log; do
     if [ -f "$logfile" ] 2>/dev/null; then
         cp "$logfile" "$LOG_DIR/backups/$(basename "$logfile").$(date +%s).bak" 2>/dev/null || true
     fi
@@ -82,11 +82,11 @@ log_step "PHASE 3: STATIC FILES & ASSETS"
 echo "═══════════════════════════════════════════════════════════"
 
 log_step "Collecting static files..."
-if docker ps -a | grep -q web-ctc-research; then
-    docker exec web-ctc-research python manage.py --site=$WEBSITE collectstatic --noinput --clear 2>&1 | tail -3
+if docker ps -a | grep -q web-precis-ctc; then
+    docker exec web-precis-ctc python manage.py --site=$WEBSITE collectstatic --noinput --clear 2>&1 | tail -3
     log_success "Static files collected"
 else
-    log_warn "web-ctc-research container not running, skipping static collection"
+    log_warn "web-precis-ctc container not running, skipping static collection"
 fi
 
 # =================================================================
@@ -97,9 +97,9 @@ echo "════════════════════════�
 log_step "PHASE 4: SUPERUSER SETUP"
 echo "═══════════════════════════════════════════════════════════"
 
-if docker ps -a | grep -q web-ctc-research; then
+if docker ps -a | grep -q web-precis-ctc; then
     log_step "Checking for existing superusers..."
-    SUPERUSER_COUNT=$(docker exec web-ctc-research python manage.py --site=$WEBSITE shell -c "
+    SUPERUSER_COUNT=$(docker exec web-precis-ctc python manage.py --site=$WEBSITE shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
 print(User.objects.filter(is_superuser=True).count())
@@ -107,7 +107,7 @@ print(User.objects.filter(is_superuser=True).count())
 
     if [ "$SUPERUSER_COUNT" -gt 0 ]; then
         log_success "Superuser already exists ($SUPERUSER_COUNT found)"
-        docker exec web-ctc-research python manage.py --site=$WEBSITE shell -c "
+        docker exec web-precis-ctc python manage.py --site=$WEBSITE shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
 for u in User.objects.filter(is_superuser=True):
@@ -116,11 +116,11 @@ for u in User.objects.filter(is_superuser=True):
 " 2>/dev/null | tail -5
     else
         log_step "Creating superuser..."
-        docker exec web-ctc-research python -m ceptor_ai.scripts.superuser 2>&1 | tail -3
+        docker exec web-precis-ctc python -m ceptor_ai.scripts.superuser 2>&1 | tail -3
         log_success "Superuser created"
     fi
 else
-    log_warn "web-ctc-research container not found"
+    log_warn "web-precis-ctc container not found"
 fi
 
 # =================================================================
@@ -131,12 +131,12 @@ echo "════════════════════════�
 log_step "PHASE 5: WAGTAIL HOME PAGE SETUP"
 echo "═══════════════════════════════════════════════════════════"
 
-if docker ps -a | grep -q web-ctc-research; then
+if docker ps -a | grep -q web-precis-ctc; then
     log_step "Setting up Wagtail home page..."
-    docker exec web-ctc-research python manage.py --site=$WEBSITE setup_wagtail_home 2>&1 | tail -3
+    docker exec web-precis-ctc python manage.py --site=$WEBSITE setup_wagtail_home 2>&1 | tail -3
     log_success "Wagtail home page configured"
 else
-    log_warn "web-ctc-research container not found, skipping Wagtail setup"
+    log_warn "web-precis-ctc container not found, skipping Wagtail setup"
 fi
 
 # =================================================================
@@ -147,9 +147,9 @@ echo "════════════════════════�
 log_step "PHASE 6: TRANSLATIONS"
 echo "═══════════════════════════════════════════════════════════"
 
-if docker ps -a | grep -q web-ctc-research; then
+if docker ps -a | grep -q web-precis-ctc; then
     log_step "Compiling translation messages..."
-    docker exec web-ctc-research python manage.py --site=$WEBSITE compilemessages 2>&1 | tail -2 || log_warn "Translation compilation optional"
+    docker exec web-precis-ctc python manage.py --site=$WEBSITE compilemessages 2>&1 | tail -2 || log_warn "Translation compilation optional"
     log_success "Translations compiled"
 fi
 
@@ -163,11 +163,11 @@ echo "════════════════════════�
 
 sleep 10
 
-if docker ps -a | grep -q web-ctc-research; then
+if docker ps -a | grep -q web-precis-ctc; then
     log_step "Testing HTTP endpoints..."
     
-    HOMEPAGE=$(docker exec web-ctc-research curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/ 2>/dev/null || echo "000")
-    HEALTH=$(docker exec web-ctc-research curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/health/ 2>/dev/null || echo "000")
+    HOMEPAGE=$(docker exec web-precis-ctc curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/ 2>/dev/null || echo "000")
+    HEALTH=$(docker exec web-precis-ctc curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/health/ 2>/dev/null || echo "000")
     
     if [ "$HOMEPAGE" = "200" ]; then
         log_success "Homepage: HTTP $HOMEPAGE ✅"
@@ -182,7 +182,7 @@ if docker ps -a | grep -q web-ctc-research; then
     fi
     
     log_step "Verifying database..."
-    docker exec web-ctc-research python manage.py --site=$WEBSITE check --database default 2>&1 | grep -i "ok\|system" || log_warn "Database check returned non-standard output"
+    docker exec web-precis-ctc python manage.py --site=$WEBSITE check --database default 2>&1 | grep -i "ok\|system" || log_warn "Database check returned non-standard output"
     
     log_success "Database verification complete"
 else
@@ -220,8 +220,8 @@ echo "│   Password:  mk_pAssWord123                                ║"
 echo "│                                                            ║"
 echo "├────────────────────────────────────────────────────────────┤"
 echo "│ Useful Commands:                                           ║"
-echo "│   View logs:      docker logs web-ctc-research -f          ║"
-echo "│   Access shell:   docker exec -it web-ctc-research bash   ║"
+echo "│   View logs:      docker logs web-precis-ctc -f          ║"
+echo "│   Access shell:   docker exec -it web-precis-ctc bash   ║"
 echo "│   Test website:   curl http://localhost:5070/             ║"
 echo "│                                                            ║"
 echo "╚════════════════════════════════════════════════════════════╝"

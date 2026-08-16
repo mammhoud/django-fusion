@@ -10,7 +10,7 @@ from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django_fusion.plugins.apis.auth import (
     FusionTokenError,
     TokenUserError,
@@ -23,6 +23,7 @@ from apps.crm.custom_fields import custom_object_catalog
 from apps.marketing.connectors import platform_catalog
 
 from .bolt_api import RESOURCE_MODELS
+from .export import resource_export_rows, to_csv
 from .realtime import safe_publish_workspace_event
 from .resources import (
     bounded_int,
@@ -223,6 +224,160 @@ def refresh_token_api(request):
     except (TypeError, ValueError, FusionTokenError) as exc:
         return JsonResponse({"detail": str(exc)}, status=401)
     return JsonResponse(result)
+
+
+@login_required
+def resource_export(request):
+    """Export any registered resource table as CSV or JSON, workspace-scoped.
+
+    ``?resource=<slug>&format=csv|json[&search=<term>]``. The resource must be
+    registered in ``apps.core.resources.RESOURCES``; the read projection is the
+    same allowlist both API roads already expose, so no field is exported that
+    the resource contract does not already project.
+    """
+    slug = (request.GET.get("resource") or "").strip()
+    fmt = (request.GET.get("format") or "csv").strip().lower()
+    if resolve_resource(slug) is None:
+        return JsonResponse({"detail": "Unknown resource."}, status=404)
+    if fmt not in {"csv", "json"}:
+        return JsonResponse({"detail": "Format must be csv or json."}, status=400)
+    workspace_id = current_workspace_id(request)
+    search = request.GET.get("search", "")
+    rows = resource_export_rows(slug, workspace_id, search=search)
+    if fmt == "json":
+        return JsonResponse({"results": rows, "count": len(rows)})
+    response = HttpResponse(to_csv(rows), content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="loop-crm-{slug}.csv"'
+    return response
+
+
+@login_required
+def email_accounts_api(request):
+    """List/create connected Gmail/Outlook sync accounts.
+
+    OAuth tokens are writable on create but never projected back out, so the
+    sync road is the only place a credential lives.
+    """
+    from .email_sync import provider_catalog, sync_account
+    from .models import EmailAccount
+
+    workspace_id = current_workspace_id(request)
+    if request.method == "GET":
+        queryset = EmailAccount.objects.filter(is_active=True)
+        if workspace_id is not None:
+            queryset = queryset.filter(workspace_id=workspace_id)
+        results = [
+            {
+                "id": account.pk,
+                "provider": account.provider,
+                "email": account.email,
+                "last_synced_at": account.last_synced_at.isoformat() if account.last_synced_at else None,
+                "message_count": account.messages.count(),
+            }
+            for account in queryset.select_related("workspace")
+        ]
+        return JsonResponse({"results": results, "count": len(results), "providers": provider_catalog()})
+    if request.method == "POST":
+        if workspace_id is None:
+            return JsonResponse({"detail": "A workspace is required."}, status=403)
+        payload = _body_json(request)
+        if payload is None:
+            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+        provider = str(payload.get("provider") or "").strip().lower()
+        email = str(payload.get("email") or "").strip().lower()
+        if provider not in {"gmail", "outlook"}:
+            return JsonResponse({"provider": "provider must be gmail or outlook."}, status=400)
+        if not email:
+            return JsonResponse({"email": "An account email is required."}, status=400)
+        account, created = EmailAccount.objects.update_or_create(
+            workspace_id=workspace_id,
+            provider=provider,
+            email=email,
+            defaults={
+                "oauth_token": str(payload.get("oauth_token") or ""),
+                "oauth_refresh_token": str(payload.get("oauth_refresh_token") or ""),
+                "is_active": True,
+                "created_by": request.user,
+            },
+        )
+        # Run an immediate sync when a token was supplied so the connect flow
+        # gives instant feedback; an unconfigured account degrades honestly.
+        summary = sync_account(account) if account.oauth_token else None
+        safe_publish_workspace_event(
+            workspace_id,
+            "resource.created" if created else "resource.updated",
+            {"resource": "email_accounts", "pk": account.pk},
+        )
+        return JsonResponse(
+            {
+                "id": account.pk,
+                "provider": account.provider,
+                "email": account.email,
+                "sync": (
+                    {"status": summary.status, "synced": summary.synced, "matched": summary.matched}
+                    if summary
+                    else None
+                ),
+            },
+            status=201 if created else 200,
+        )
+    return JsonResponse({"detail": f"This endpoint does not accept {request.method}."}, status=405)
+
+
+@login_required
+def email_account_sync_api(request, pk: int):
+    """Trigger an on-demand sync for one connected mailbox."""
+    from .email_sync import sync_account
+    from .models import EmailAccount
+
+    if request.method != "POST":
+        return JsonResponse({"detail": "This endpoint accepts POST only."}, status=405)
+    workspace_id = current_workspace_id(request)
+    queryset = EmailAccount.objects.filter(pk=pk)
+    if workspace_id is not None:
+        queryset = queryset.filter(workspace_id=workspace_id)
+    account = queryset.first()
+    if account is None:
+        return JsonResponse({"detail": "Not found."}, status=404)
+    result = sync_account(account)
+    status = 200 if result.status == "synced" else (400 if result.status == "error" else 409)
+    return JsonResponse(
+        {"status": result.status, "synced": result.synced, "matched": result.matched, "detail": result.detail},
+        status=status,
+    )
+
+
+@login_required
+def email_messages_api(request):
+    """List synced email messages, workspace-scoped, newest first."""
+    from .models import EmailMessage
+
+    if request.method != "GET":
+        return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
+    workspace_id = current_workspace_id(request)
+    queryset = EmailMessage.objects.select_related("account", "contact", "deal")
+    if workspace_id is not None:
+        queryset = queryset.filter(workspace_id=workspace_id)
+    limit = bounded_int(request.GET.get("limit"), 100, 1, 200)
+    offset = bounded_int(request.GET.get("offset"), 0, 0, 10**9)
+    total = queryset.count()
+    results = [
+        {
+            "id": message.pk,
+            "provider": message.account.provider,
+            "subject": message.subject,
+            "snippet": message.snippet,
+            "sender_email": message.sender_email,
+            "sender_name": message.sender_name,
+            "received_at": message.received_at.isoformat() if message.received_at else None,
+            "contact_id": message.contact_id,
+            "deal_id": message.deal_id,
+        }
+        for message in queryset.order_by("-received_at")[offset : offset + limit]
+    ]
+    return JsonResponse(
+        {"results": results, "count": total, "next": offset + limit if offset + limit < total else None}
+    )
 
 
 @login_required

@@ -6,7 +6,7 @@
 
 ## Decision record
 
-- Precis remains an active product at `projects/precis/main/`.
+- Precis remains an active product at `projects/precis/precis-lms/`.
 - Precis/LMS is **not** a shared-worker tenant: its background queues,
   scheduler, and task package are excluded from shared task discovery.
 - A single infrastructure-owned `shared-worker` consumes Dramatiq actors and a
@@ -47,7 +47,7 @@
 - `projects/Makefile` aggregate checks, project iteration, population, health,
   and full-site loops no longer include LMS.
 - `docker-deploy-websites` deploys active Landing-Fusion and Loop-CRM only.
-- Explicit `WEBSITE=lms-fusion` maintenance commands remain available.
+- Explicit `WEBSITE=precis-lms` maintenance commands remain available.
 
 ### Nx baseline
 
@@ -115,7 +115,7 @@ Passed in this change:
 
 ```bash
 npx nx show projects                 # 17 JavaScript projects discovered
-npx nx run landing-fusion:check
+npx nx run precis-landing:check
 npx nx run loop-crm:check
 npx nx run fusion-js:check
 uv run pytest libs/django-fusion/tests/test_tasks.py tests/websites/test_shared_tasks.py -q

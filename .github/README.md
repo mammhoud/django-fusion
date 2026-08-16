@@ -12,7 +12,7 @@
 | `js-test.yml` | JS Tests (vitest + Playwright E2E) | PR, push, manual | 5 | ✅ Active |
 | `pytest-core.yml` | pytest-core | PR, push, manual | 1 | ✅ Active |
 | `check-extras.yml` | check-extras | PR, push, manual | 1 | ✅ Active |
-| `fusion-ci.yml` | Fusion CI (lms-fusion) | PR, push, manual | 5 | ✅ Active |
+| `fusion-ci.yml` | Fusion CI (precis-lms) | PR, push, manual | 5 | ✅ Active |
 | `deploy-ci.yml` | deploy-ci (preflight + docs validation) | PR, push, manual | 2 | ✅ Active |
 | `lint-quality.yml` | lint-quality (typo + dead-code check) | PR, push, manual | 1 | ✅ Active |
 
@@ -55,23 +55,23 @@
 
 ---
 
-## `fusion-ci.yml` — Fusion CI (lms-fusion)
+## `fusion-ci.yml` — Fusion CI (precis-lms)
 
-**Triggers:** PR + push on `projects/lms-fusion/**`, lib submodules, and this workflow file.
+**Triggers:** PR + push on `projects/precis-lms/**`, lib submodules, and this workflow file.
 
 ### Jobs (8 total, mostly parallel)
 
 | Job | Runs | Timeout |
 |-----|------|:------:|
-| `lms-fusion-backend` | Django checks + tests | 15m |
-| `lms-fusion-frontend` | Astro build + unit tests | 10m |
-| `lms-fusion-e2e` | Astro + Django smoke test | 15m |
+| `precis-lms-backend` | Django checks + tests | 15m |
+| `precis-lms-frontend` | Astro build + unit tests | 10m |
+| `precis-lms-e2e` | Astro + Django smoke test | 15m |
 | `domain-drift-check` | Domain code drift check | 2m |
 | `deploy-staging` | Manual `workflow_dispatch` deploy + smoke checks | 30m |
 
 ### E2E Backend Startup
 
-The `lms-fusion-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for fast CI) before running Astro smoke tests. The backend is started via `docker compose up -d backend` and health-checked via `curl /health/`.
+The `precis-lms-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for fast CI) before running Astro smoke tests. The backend is started via `docker compose up -d backend` and health-checked via `curl /health/`.
 
 ---
 

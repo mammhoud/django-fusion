@@ -4,18 +4,18 @@ Everyday operations and workflows for development.
 
 ## Running Development Servers
 
-### ctc-research
+### precis-ctc
 
 **Terminal 1: Django Backend**
 ```bash
-cd ctc-research
+cd precis-ctc
 source venv/bin/activate
 python manage.py runserver
 ```
 
 **Terminal 2: React Frontend**
 ```bash
-cd ctc-research
+cd precis-ctc
 npm run dev
 ```
 
@@ -35,7 +35,7 @@ npm run dev
 
 ## Running Tests
 
-### ctc-research
+### precis-ctc
 
 ```bash
 # Backend tests
@@ -62,7 +62,7 @@ npm run test
 
 ## Building for Production
 
-### ctc-research
+### precis-ctc
 
 ```bash
 # Backend
@@ -116,7 +116,7 @@ npm run type-check
 python -m mypy .
 ```
 
-## Database Operations (ctc-research)
+## Database Operations (precis-ctc)
 
 ### Migrations
 
@@ -156,7 +156,7 @@ python manage.py loaddata data.json
 3. Use Network tab to inspect API calls
 4. Use Elements tab to inspect DOM
 
-### Django Debug Toolbar (ctc-research)
+### Django Debug Toolbar (precis-ctc)
 
 ```bash
 # Already configured in development
@@ -210,7 +210,7 @@ git push origin feature/feature-name
 # npm
 npm install package-name
 
-# pip (ctc-research)
+# pip (precis-ctc)
 pip install package-name
 pip freeze > requirements.txt
 ```

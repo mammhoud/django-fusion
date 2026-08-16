@@ -7,7 +7,7 @@ shared-scheduler). The sentinel site is named `www` in the CLI config
 and the Docker image path for the baked worker is `/app/www/` regardless
 of the source directory name.
 
-Mirrors the per-site settings.py pattern (see `projects/precis/main/backend/settings.py`)
+Mirrors the per-site settings.py pattern (see `projects/precis/precis-lms/backend/settings.py`)
 but with two differences:
 
 1. No `_SITE_APP_DIR = _SITE_DIR / "www"`. The shared stack runs the
@@ -33,13 +33,13 @@ set. With either path resolvable, the Dramatiq scheduler and shared-worker's
 historical `Unknown site 'shared'` rejection.
 
 DEV-TIME ONLY:
-Production workers run with PROJECT_PATH=lms-fusion baked at build time
-in `projects/precis/main/compose/Dockerfile.backend` (override-able via the
+Production workers run with PROJECT_PATH=precis-lms baked at build time
+in `projects/precis/precis-lms/compose/Dockerfile.backend` (override-able via the
 `TASKS_PROJECT_PATH=tools` build arg passed from
 `applications/docker-compose.tasks.yml`). Under the default
-PROJECT_PATH=lms-fusion, `python manage.py rundramatiq` is invoked with
+PROJECT_PATH=precis-lms, `python manage.py rundramatiq` is invoked with
 DJANGO_SETTINGS_MODULE=settings resolving to
-`projects/precis/main/backend/settings.py` (bind-mounted at runtime) — NOT this module.
+`projects/precis/precis-lms/backend/settings.py` (bind-mounted at runtime) — NOT this module.
 
 Setting TASKS_PROJECT_PATH=tools IS the runtime wiring: the
 Dockerfile's `COPY projects/${PROJECT_PATH}` step bakes tools/ contents

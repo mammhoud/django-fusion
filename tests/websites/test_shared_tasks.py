@@ -22,7 +22,7 @@ def test_shared_tasks_compose_uses_dramatiq_and_excludes_lms():
     assert "python manage.py rundramatiq" in content
     assert "django_fusion.tasks.scheduler" in content
     assert "FUSION_TASK_PROJECT_PATHS" in content
-    assert "lms-fusion/manage.py" not in content
+    assert "precis-lms/manage.py" not in content
     assert "celery -A" not in content
     assert "--queues shared,email,content,system,crm,marketing,finance,default" in content
     assert "temporalio" not in content
@@ -44,7 +44,7 @@ def test_temporal_campaign_worker_is_migrated_to_dramatiq_plugins():
 def test_full_project_make_targets_exclude_lms_from_aggregates():
     makefile = (ROOT / "projects" / "Makefile").read_text()
 
-    assert "check WEBSITE=landing-fusion" in makefile
+    assert "check WEBSITE=precis-landing" in makefile
     assert "check WEBSITE=loop-crm" in makefile
     assert "Building lms" not in makefile
-    assert "for website in landing-fusion loop-crm" in makefile
+    assert "for website in precis-landing loop-crm" in makefile

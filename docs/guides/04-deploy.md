@@ -19,7 +19,7 @@ Internet
 └──────┬──────────┬──────────┬─────────────────┘
        │          │          │
        ▼          ▼          ▼
-   ctc-research  lms   VResume
+   precis-ctc  lms   VResume
    (Django)      (Django)   (Django)
        │          │          │
        └──────────┼──────────┘
@@ -89,7 +89,7 @@ make deploy
 
 # Specific site
 cd projects
-make docker-up WEBSITE=ctc-research
+make docker-up WEBSITE=precis-ctc
 ```
 
 ### Health Checks
@@ -105,7 +105,7 @@ docker exec postgres pg_isready
 docker exec default-redis redis-cli ping
 
 # Django site
-docker exec ctc-research-website python manage.py check
+docker exec precis-ctc-website python manage.py check
 ```
 
 ---
@@ -133,7 +133,7 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup_ctc.sql
 
 ```bash
 cd projects
-make migrate WEBSITE=ctc-research
+make migrate WEBSITE=precis-ctc
 ```
 
 ---
@@ -144,11 +144,11 @@ make migrate WEBSITE=ctc-research
 
 ```bash
 # Check if Django is running
-docker ps | grep ctc-research
-docker logs ctc-research-website --tail 50
+docker ps | grep precis-ctc
+docker logs precis-ctc-website --tail 50
 
 # Check Django
-docker exec ctc-research-website python manage.py check
+docker exec precis-ctc-website python manage.py check
 ```
 
 ### SSL Certificate Error
@@ -169,7 +169,7 @@ docker ps | grep shared-proxy
 docker logs shared-proxy
 
 # Recollect
-docker exec ctc-research-website python manage.py collectstatic --noinput
+docker exec precis-ctc-website python manage.py collectstatic --noinput
 ```
 
 ### Database Connection Refused

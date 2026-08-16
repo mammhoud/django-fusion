@@ -107,7 +107,7 @@ Callers send ``curl -H "X-API-Key: secret" http://host:8100/designer/tools``.
       "params": {
         "name": "designer.website_audit",
         "arguments": {
-          "project": "landing-fusion",
+          "project": "precis-landing",
           "sections": [{"name": "hero", "kind": "hero", "has_visual": true}]
         }
       }
@@ -128,7 +128,7 @@ uvicorn --app-dir applications/agents mcp_server:app --host 127.0.0.1 --port 810
 curl http://127.0.0.1:8100/readyz
 curl http://127.0.0.1:8100/health
 curl http://127.0.0.1:8100/prompts
-curl http://127.0.0.1:8100/prompts/project.landing-fusion
+curl http://127.0.0.1:8100/prompts/project.precis-landing
 ```
 
 Use a local/isolated Docker context for Docker status probes. Never expose

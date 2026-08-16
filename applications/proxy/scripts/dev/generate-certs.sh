@@ -25,7 +25,7 @@ ENVIRONMENT="${1:-production}"
 
 # Domain configurations
 declare -A DOMAINS=(
-  ["ctc-research"]="ctc-research.com www.ctc-research.com arch.ctc-research.com"
+  ["precis-ctc"]="ctc-research.com www.ctc-research.com arch.ctc-research.com"
   ["structa-cloud"]="structa.cloud www.structa.cloud core.structa.cloud"
   ["vresume"]="vresume.structa.cloud www.vresume.structa.cloud"
 )

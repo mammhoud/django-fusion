@@ -3,7 +3,7 @@
 
 echo "🏠 Creating initial homepage structure for CTC-Research..."
 
-docker exec web-ctc-research python manage.py shell << 'PYEOF'
+docker exec web-precis-ctc python manage.py shell << 'PYEOF'
 import sys
 from django.db import transaction
 from wagtailcore.models import Page

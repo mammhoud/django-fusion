@@ -168,7 +168,7 @@ def _website_endpoints() -> dict[str, Any]:
     return {"ok": True, "endpoints": {
         "structa_cloud": {"host": "structa.cloud", "port": 5071, "service": "lms-web"},
         "vresume": {"host": "vresume.structa.cloud", "port": 5072, "service": "vresume-web"},
-        "ctc_research": {"host": "ctc-research.com", "port": 5070, "service": "ctc-research-website"},
+        "ctc_research": {"host": "ctc-research.com", "port": 5070, "service": "precis-ctc-website"},
     }}
 
 

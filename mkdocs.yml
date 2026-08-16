@@ -40,7 +40,6 @@ plugins:
 
 not_in_nav: |
   archives/
-  plans/legacy/
 
 extra:
   social:
@@ -106,12 +105,12 @@ nav:
   - Projects:
     - Overview: projects/README.md
     - Landing Fusion:
-        - Overview: projects/precis/landi/README.md
-        - Backend API: projects/precis/landi/backend-api.md
-        - Frontend: projects/precis/landi/frontend.md
+        - Overview: projects/precis/precis-landing/README.md
+        - Backend API: projects/precis/precis-landing/backend-api.md
+        - Frontend: projects/precis/precis-landing/frontend.md
     - Precis LMS:
-        - Overview: projects/precis/main/README.md
-        - Courses: projects/precis/main/courses.md
+        - Overview: projects/precis/precis-lms/README.md
+        - Courses: projects/precis/precis-lms/courses.md
     - LMS (Legacy): projects/lms/README.md
     - Portfolio: projects/portfolio/README.md
     - Syntara (Cypercloud): projects/cypercloud/README.md
@@ -139,15 +138,12 @@ nav:
   - Testing: tests/README.md
   - Plans:
     - Canonical index: plans/README.md
-    - Formint POS Professional Edition: plans/pos/formint-pos-professional-plan.md
     - Formint edition chain: plans/editions/README.md
     - Community edition: plans/editions/01-community.md
     - Standard edition: plans/editions/02-standard.md
     - Pro edition: plans/editions/03-pro.md
     - Cloud edition: plans/editions/04-cloud.md
-    - Landing Fusion: plans/landing-fusion/README.md
-    - CMS Fusion: plans/cms-fusion/migration-plan.md
-    - LMS Fusion: plans/lms-fusion/migration-plan.md
+    - Landing Fusion: plans/precis-landing/README.md
     - Lifecycle policy: plans/document-lifecycle.md
     - Deletion manifest: plans/deletion-manifest.md
   - Features:

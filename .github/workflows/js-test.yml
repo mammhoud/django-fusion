@@ -4,7 +4,7 @@ name: JS Tests (frontend builds + smoke tests)
 on:
   pull_request:
     paths:
-      - 'projects/precis/main/frontend/**'
+      - 'projects/precis/precis-lms/frontend/**'
       - 'projects/cms-fusion/frontend/**'
       - 'projects/formints/tests/pos-e2e/**'
       - 'projects/formints/**'
@@ -12,7 +12,7 @@ on:
   push:
     branches: ['**']
     paths:
-      - 'projects/precis/main/frontend/**'
+      - 'projects/precis/precis-lms/frontend/**'
       - 'projects/cms-fusion/frontend/**'
       - 'projects/formints/tests/pos-e2e/**'
       - 'projects/formints/**'
@@ -30,14 +30,14 @@ jobs:
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: projects/precis/main/frontend
+        working-directory: projects/precis/precis-lms/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/precis/main/frontend/package-lock.json
+          cache-dependency-path: projects/precis/precis-lms/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Check Astro types

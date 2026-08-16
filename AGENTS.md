@@ -13,14 +13,14 @@ compatibility aliases.
 structa.cloud/
 ├── projects/                 # Product code, shared Django config, and assets
 │   ├── precis/               # Product grouping: LMS, research, and marketing sites
-│   │   ├── main/             # Current LMS / learning platform (lms-fusion runtime)
-│   │   ├── ctc-research/     # Medical research center site
-│   │   └── landi/            # Astro marketing site + Django/Wagtail CMS (landing-fusion runtime)
+│   │   ├── main/             # Current LMS / learning platform (precis-lms runtime)
+│   │   ├── precis-ctc/     # Medical research center site
+│   │   └── landi/            # Astro marketing site + Django/Wagtail CMS (precis-landing runtime)
 │   ├── syntara/              # Cypercloud AI chat/customizer runtime
 │   ├── formints/             # POS editions, cloud backend, and shared tests
 │   ├── configs/              # Shared Django settings and workers
 │   ├── assets/               # Monorepo-level shared assets
-│   ├── lms-fusion/           # Retired compatibility project; merged elsewhere
+│   ├── precis-lms/           # Retired compatibility project; merged elsewhere
 │   ├── scripts/              # Project-local automation
 │   ├── webpack/              # Shared/legacy asset configuration
 │   ├── Makefile              # Canonical project dispatcher
@@ -38,8 +38,8 @@ structa.cloud/
 
 | Product | Canonical path | Main responsibility | Local guidance |
 |---|---|---|---|
-| Precis LMS | `projects/precis/main/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/main/AGENTS.md` |
-| Landing-Fusion | `projects/precis/landi/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/landi/AGENTS.md` |
+| Precis LMS | `projects/precis/precis-lms/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/precis-lms/AGENTS.md` |
+| Landing-Fusion | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/precis-landing/AGENTS.md` |
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
 | django-fusion | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables, and assets | `libs/django-fusion/AGENTS.md` |
@@ -48,15 +48,15 @@ structa.cloud/
 
 ### Name and migration rules
 
-- `precis/main` is the current filesystem location for the LMS product. The
-  dispatcher still accepts `WEBSITE=lms-fusion`; that alias maps to
-  `projects/precis/main/`.
+- `precis/precis-lms` is the current filesystem location for the LMS product. The
+  dispatcher still accepts `WEBSITE=precis-lms`; that alias maps to
+  `projects/precis/precis-lms/`.
 - `precis/landi` is the current filesystem location for the Landing-Fusion
-  marketing site; `landing-fusion` remains its runtime/site identity and maps
-  to `projects/precis/landi/`.
-- `precis/ctc-research` is the standalone medical research center site, mapped
-  from `WEBSITE=ctc` / `ctc-research` to `projects/precis/ctc-research/`.
-- `lms-fusion/` is a retired compatibility/documentation boundary. Do not add
+  marketing site; `precis-landing` remains its runtime/site identity and maps
+  to `projects/precis/precis-landing/`.
+- `precis/precis-ctc` is the standalone medical research center site, mapped
+  from `WEBSITE=ctc` / `precis-ctc` to `projects/precis/precis-ctc/`.
+- `precis-lms/` is a retired compatibility/documentation boundary. Do not add
   new product code there; update Precis or Landing-Fusion instead.
 - `syntara` is the current filesystem location for the product historically
   called Cypercloud. Use `projects/syntara/` in new paths. Preserve the
@@ -80,9 +80,9 @@ root safety and repository rules remain in force.
 ```text
 /AGENTS.md
 ├── projects/AGENTS.md
-│   ├── projects/precis/main/AGENTS.md
-│   │   └── projects/precis/main/backend/AGENTS.md
-│   ├── projects/precis/landi/AGENTS.md
+│   ├── projects/precis/precis-lms/AGENTS.md
+│   │   └── projects/precis/precis-lms/backend/AGENTS.md
+│   ├── projects/precis/precis-landing/AGENTS.md
 │   ├── projects/syntara/AGENTS.md
 │   └── projects/formints/AGENTS.md
 │       ├── projects/formints/formint-pro/AGENTS.md
@@ -147,13 +147,15 @@ commands against a shared environment without explicit user direction.
 ### Python/Django
 
 - Product code belongs in the product under `projects/<product>/`.
-- Shared Django settings belong in `projects/configs/` only when multiple
-  products genuinely consume the same behavior.
+- Shared Django settings belong in `projects/precis/configs/` only when
+  multiple products genuinely consume the same behavior.
 - Shared framework behavior belongs in `libs/django-fusion/`.
 - Prefer existing app boundaries (`models`, `services`, `handlers`, `api`,
   `components`, `management`) over new catch-all modules.
-- Use canonical `django_fusion.*` imports. Do not add re-export shims or alias
-  modules.
+- Use canonical `django_fusion.*` imports. Do not add re-export shims, alias
+  modules, or forwarding `__init__.py` re-exports — import the real symbol from
+  its owning module. Delete empty/forwarding-only modules and empty directories
+  rather than leaving placeholder `__init__.py` files behind.
 
 ### Templates and components
 
@@ -184,7 +186,7 @@ home. Never edit generated output instead of its source.
 - Shared POS E2E tests belong in `projects/formints/tests/pos-e2e/`.
 - Do not introduce a Python sidecar into `formint-community`; it is the direct
   Rust/SQLite edition. Do not assume the cloud master still has a Robyn sidecar;
-  current formint-cloud serves its API from Django.
+  current `formint-cloud` serves its API from Django.
 
 ## 5. Commands and validation
 
@@ -198,15 +200,15 @@ uv run pytest
 
 # Project dispatcher examples
 cd projects
-make check WEBSITE=lms-fusion       # maps to Precis
-make test WEBSITE=lms-fusion
-make run-dev WEBSITE=landing-fusion
-make check WEBSITE=landing-fusion
-make test WEBSITE=landing-fusion   # workspace pytest target; use the project backend test below for focused coverage
-make run-dev WEBSITE=ctc-research   # legacy site alias if present in checkout
+make check WEBSITE=precis-lms       # maps to Precis
+make test WEBSITE=precis-lms
+make run-dev WEBSITE=precis-landing
+make check WEBSITE=precis-landing
+make test WEBSITE=precis-landing   # workspace pytest target; use the project backend test below for focused coverage
+make run-dev WEBSITE=precis-ctc   # legacy site alias if present in checkout
 
 # Landing-Fusion direct workflows
-cd projects/precis/landi
+cd projects/precis/precis-landing
 make install
 make check
 make build
@@ -215,7 +217,7 @@ make backend-check
 make backend-test
 
 # Precis backend
-cd projects/precis/main/backend
+cd projects/precis/precis-lms/backend
 make check
 make test
 make migrate

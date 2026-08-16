@@ -1,6 +1,6 @@
 # Pro Edition — Local Completion Record
 
-**Canonical product:** `projects/formints/pro/`
+**Canonical product:** `projects/formints/formint-pro/`
 **Legacy aliases:** `pos-full`, `pos-solo`, and `formint/` are compatibility names only.
 
 **Status:** Local work complete (Standard-parity `Currency`/`TaxProfile` models
@@ -454,7 +454,7 @@ same Django service + `/…/*` surface + migration + test pattern above:
 After the repository owner provisions the existing Pro environment, run:
 
 ```bash
-cd projects/formints/pro
+cd projects/formints/formint-pro
 make check
 make test
 ```

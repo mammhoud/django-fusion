@@ -134,6 +134,10 @@ class WorkflowDefinition(models.Model):
     trigger = models.CharField(max_length=120)
     trigger_config = models.JSONField(default=dict, blank=True)
     actions = models.JSONField(default=list)
+    # Canvas topology for the visual DAG editor: ``{"nodes": [{"id", "action",
+    # "x", "y"}], "edges": [{"from", "to"}]}``. ``actions`` stays the derived
+    # topological execution order so the executor + step editor keep working.
+    graph = models.JSONField(default=dict, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -319,6 +323,100 @@ class Webhook(models.Model):
 
     def __str__(self) -> str:
         return f"{self.url} ({', '.join(self.events) or 'all'})"
+
+
+class EmailAccount(models.Model):
+    """A connected Gmail/Outlook mailbox synced into the CRM timeline.
+
+    ``oauth_token``/``oauth_refresh_token`` are stored server-side (never
+    projected by the API); ``sync_cursor`` records the provider pagination
+    cursor or last-synced watermark so each sync is incremental.
+    """
+
+    PROVIDER_CHOICES = [
+        ("gmail", "Gmail"),
+        ("outlook", "Outlook"),
+    ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="email_accounts")
+    provider = models.CharField(max_length=20, choices=PROVIDER_CHOICES)
+    email = models.EmailField()
+    oauth_token = models.TextField(blank=True)
+    oauth_refresh_token = models.TextField(blank=True)
+    token_expires_at = models.DateTimeField(null=True, blank=True)
+    sync_cursor = models.JSONField(default=dict, blank=True)
+    last_synced_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_email_accounts",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["provider", "email"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workspace", "provider", "email"],
+                name="uniq_email_account_workspace_provider_email",
+            ),
+        ]
+        indexes = [models.Index(fields=["workspace", "is_active"])]
+
+    def __str__(self) -> str:
+        return f"{self.get_provider_display()} — {self.email}"
+
+
+class EmailMessage(models.Model):
+    """A synced email thread message, linked to a contact/deal when the
+    sender or recipients match a workspace contact.
+
+    ``external_id`` is the provider message id and is unique per account, so
+    re-running a sync is idempotent.
+    """
+
+    DIRECTIONS = [
+        ("inbound", "Inbound"),
+        ("outbound", "Outbound"),
+    ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="email_messages")
+    account = models.ForeignKey(EmailAccount, on_delete=models.CASCADE, related_name="messages")
+    contact = models.ForeignKey(
+        "crm.Contact", on_delete=models.SET_NULL, null=True, blank=True, related_name="email_messages"
+    )
+    deal = models.ForeignKey(
+        "crm.Deal", on_delete=models.SET_NULL, null=True, blank=True, related_name="email_messages"
+    )
+    external_id = models.CharField(max_length=255)
+    thread_id = models.CharField(max_length=255, blank=True)
+    subject = models.CharField(max_length=255, blank=True)
+    snippet = models.TextField(blank=True)
+    sender_email = models.EmailField(blank=True)
+    sender_name = models.CharField(max_length=255, blank=True)
+    direction = models.CharField(max_length=10, choices=DIRECTIONS, default="inbound")
+    received_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-received_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["account", "external_id"],
+                name="uniq_email_message_account_external",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["workspace", "received_at"]),
+            models.Index(fields=["workspace", "contact"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.subject or '(no subject)'} · {self.sender_email}"
 
 
 class WebhookDelivery(models.Model):

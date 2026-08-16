@@ -7,7 +7,7 @@ echo "║    CTC-Research Website - All Systems Initialization       ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
-WEBSITE="ctc-research"
+WEBSITE="precis-ctc"
 
 # Colors
 GREEN='\033[0;32m'
@@ -54,11 +54,11 @@ echo "════════════════════════�
 log_step "Starting web application..."
 echo "═══════════════════════════════════════════════════════════"
 
-docker run -d --name web-ctc-research --network host \
+docker run -d --name web-precis-ctc --network host \
   -e DJANGO_WEBSITE=$WEBSITE \
   -e WEBSITE=$WEBSITE \
   -e RUN_SETUP=false \
-  websites-ctc-research-website:latest server 2>/dev/null || true
+  websites-precis-ctc-website:latest server 2>/dev/null || true
 
 sleep 15
 log_success "Web application started"
@@ -77,22 +77,22 @@ echo "════════════════════════�
 
 # Collect static files
 log_step "Collecting static files..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE collectstatic --noinput --clear 2>&1 | tail -2
+docker exec web-precis-ctc python manage.py --site=$WEBSITE collectstatic --noinput --clear 2>&1 | tail -2
 log_success "Static files collected"
 
 # Create/verify superuser
 log_step "Setting up superuser..."
-docker exec web-ctc-research python -m ceptor_ai.scripts.superuser 2>&1 | grep -i "✅\|successfully\|created" || echo "✅ Superuser created"
+docker exec web-precis-ctc python -m ceptor_ai.scripts.superuser 2>&1 | grep -i "✅\|successfully\|created" || echo "✅ Superuser created"
 log_success "Superuser ready"
 
 # Setup Wagtail home
 log_step "Configuring Wagtail home..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE setup_wagtail_home 2>&1 | tail -2
+docker exec web-precis-ctc python manage.py --site=$WEBSITE setup_wagtail_home 2>&1 | tail -2
 log_success "Wagtail home configured"
 
 # Compile translations
 log_step "Compiling translations..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE compilemessages 2>&1 | tail -1 || log_warn "Translation compilation optional"
+docker exec web-precis-ctc python manage.py --site=$WEBSITE compilemessages 2>&1 | tail -1 || log_warn "Translation compilation optional"
 log_success "Translations compiled"
 
 # Verification
@@ -104,7 +104,7 @@ echo "════════════════════════�
 sleep 5
 
 log_step "Testing homepage..."
-HOMEPAGE=$(docker exec web-ctc-research curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/ 2>/dev/null || echo "000")
+HOMEPAGE=$(docker exec web-precis-ctc curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/ 2>/dev/null || echo "000")
 if [ "$HOMEPAGE" = "200" ]; then
     log_success "Homepage: HTTP 200 ✅"
 else
@@ -112,7 +112,7 @@ else
 fi
 
 log_step "Testing health endpoint..."
-HEALTH=$(docker exec web-ctc-research curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/health/ 2>/dev/null || echo "000")
+HEALTH=$(docker exec web-precis-ctc curl -s -o /dev/null -w "%{http_code}" http://localhost:5070/health/ 2>/dev/null || echo "000")
 if [ "$HEALTH" = "200" ]; then
     log_success "Health: HTTP 200 ✅"
 else
@@ -120,7 +120,7 @@ else
 fi
 
 log_step "Verifying superuser..."
-docker exec web-ctc-research python manage.py --site=$WEBSITE shell -c "
+docker exec web-precis-ctc python manage.py --site=$WEBSITE shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
 admin_users = User.objects.filter(is_superuser=True)
@@ -160,7 +160,7 @@ echo "│   Health:    http://localhost:5070/health/                 ║"
 echo "│                                                            ║"
 echo "├────────────────────────────────────────────────────────────┤"
 echo "│ Monitoring:                                                ║"
-echo "│   docker logs web-ctc-research -f                          ║"
+echo "│   docker logs web-precis-ctc -f                          ║"
 echo "│   docker logs postgres -f                                  ║"
 echo "│                                                            ║"
 echo "╚════════════════════════════════════════════════════════════╝"

@@ -2,7 +2,7 @@
 
 > **Status:** Planned
 > **Created:** 2026-08-10
-> **Scope:** `libs/django-fusion/src/django_fusion/fragments/analyzer/`, `libs/django-fusion/src/django_fusion/config/assets.py`, `projects/precis/landi/`, `projects/precis/main/`
+> **Scope:** `libs/django-fusion/src/django_fusion/fragments/analyzer/`, `libs/django-fusion/src/django_fusion/config/assets.py`, `projects/precis/landi/`, `projects/precis/precis-lms/`
 > **Depends on:** django-fusion-webpack-enhancement-plan.md (Webpack 5 base), django-fusion-tasks-mcp-plan.md (Dramatiq/MCP), django-fusion-enhancements.md (POS/sync)
 
 ---
@@ -50,7 +50,7 @@ All features are **disabled by default** and enabled explicitly via Django setti
 |-------|------|----------|
 | **Django skeleton template** | `libs/django-fusion/.../templates/fusion/skeletons/default.html` | Full-page first-paint skeleton (nav, hero, stats, features, testimonial, footer) |
 | **Django partial** | `projects/precis/landi/backend/.../templates/pages/partials/skeleton.html` | Identical pattern, inline CSS, JS hide-on-DOM-ready |
-| **Astro component** | `Skeleton.astro` (both landing-fusion & precis) | 16 variants: `hero-section`, `stats-row`, `features-grid`, `testimonial`, `testimonials-carousel`, `pricing-grid`, `pricing-folded`, `faq-list`, `cta-banner`, `contact-form`, `section-header`, `hero`, `timeline`, `team-grid`, `blog-grid`, `card`, `line` |
+| **Astro component** | `Skeleton.astro` (both precis-landing & precis) | 16 variants: `hero-section`, `stats-row`, `features-grid`, `testimonial`, `testimonials-carousel`, `pricing-grid`, `pricing-folded`, `faq-list`, `cta-banner`, `contact-form`, `section-header`, `hero`, `timeline`, `team-grid`, `blog-grid`, `card`, `line` |
 | **CSS** | `globals.css` | `fusion-skeleton__*` BEM classes with shimmer animation |
 | **LiveFragment** | `LiveFragment.astro` | Accepts `skeletonVariant` prop for HTMX in-flight placeholders |
 
@@ -844,7 +844,7 @@ A CI check that ensures every CSS/JS chunk referenced in `FUSION_ASSETS` actuall
 - `projects/precis/landi/frontend/src/components/ui/Skeleton.astro` — Astro skeleton component
 - `projects/precis/landi/frontend/src/components/ui/LiveFragment.astro` — HTMX fragment with skeletonVariant
 - `projects/precis/landi/frontend/src/styles/globals.css` — Skeleton CSS (`.fusion-skeleton__*`)
-- `projects/precis/main/frontend/src/components/ui/Skeleton.astro` — Mirrored copy
+- `projects/precis/precis-lms/frontend/src/components/ui/Skeleton.astro` — Mirrored copy
 
 ### Backend
 - `projects/precis/landi/backend/apps/pages/templates/pages/partials/skeleton.html` — Backend skeleton partial
@@ -853,7 +853,7 @@ A CI check that ensures every CSS/JS chunk referenced in `FUSION_ASSETS` actuall
 
 ### Webpack
 - `projects/webpack/base.config.js` — Webpack base factory
-- `projects/precis/landi/webpack/landing-fusion.config.js` — Project webpack config
+- `projects/precis/landi/webpack/precis-landing.config.js` — Project webpack config
 
 ---
 

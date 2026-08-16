@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -21,7 +22,15 @@ from apps.marketing.connectors import platform_catalog
 
 from .forms import WorkflowDefinitionForm
 from .importer import EXPECTED_COLUMNS, IMPORTABLE_OBJECTS, import_rows, parse_csv
-from .models import AuditLog, SavedView, UserProfile, WorkflowDefinition, WorkflowRun
+from .models import (
+    AuditLog,
+    EmailAccount,
+    EmailMessage,
+    SavedView,
+    UserProfile,
+    WorkflowDefinition,
+    WorkflowRun,
+)
 from .navigation import breadcrumbs_for, module_by_id, navigation_context
 from .permissions import (
     can_manage_deals,
@@ -35,7 +44,13 @@ from .realtime import safe_publish_workspace_event
 from .resources import list_rows, resolve_resource
 from .tables import MemberTable
 from .tenancy import current_workspace_id
-from .workflows import WORKFLOW_ACTION_CATALOG, trigger_catalog, workflow_action_catalog
+from .workflows import (
+    WORKFLOW_ACTION_CATALOG,
+    graph_from_actions,
+    normalize_workflow_graph,
+    trigger_catalog,
+    workflow_action_catalog,
+)
 
 
 def is_htmx_request(request: HttpRequest) -> bool:
@@ -85,7 +100,14 @@ def workflow_context(request: HttpRequest) -> dict:
         "trigger_catalog_json": json.dumps(trigger_catalog()),
         "workflows_json": json.dumps(
             [
-                {"id": d.pk, "name": d.name, "trigger": d.trigger, "actions": list(d.actions or [])}
+                {
+                    "id": d.pk,
+                    "name": d.name,
+                    "trigger": d.trigger,
+                    "actions": list(d.actions or []),
+                    "graph": d.graph
+                    or graph_from_actions(d.trigger, list(d.actions or [])),
+                }
                 for d in definitions
             ]
         ),
@@ -295,11 +317,44 @@ def workflow_steps_update(request: HttpRequest, pk: int) -> JsonResponse:
         return JsonResponse({"actions": "Actions must be an array of known action ids."}, status=400)
     workflow.trigger = trigger
     workflow.actions = [action.strip() for action in actions]
-    workflow.save(update_fields=["trigger", "actions", "updated_at"])
+    # Keep the canvas topology in sync with the flat order so the two editors
+    # never disagree (the step editor is the linear special case of the DAG).
+    workflow.graph = graph_from_actions(trigger, workflow.actions)
+    workflow.save(update_fields=["trigger", "actions", "graph", "updated_at"])
     safe_publish_workspace_event(
         workflow.workspace_id, "resource.updated", {"resource": "workflows", "pk": workflow.pk}
     )
     return JsonResponse({"id": workflow.pk, "trigger": workflow.trigger, "actions": workflow.actions})
+
+
+@require_POST
+@login_required
+def workflow_graph_update(request: HttpRequest, pk: int) -> JsonResponse:
+    """Persist the visual DAG (nodes + edges) for a workflow.
+
+    The graph is validated as acyclic, trigger-rooted, and action-safe; the
+    flat ``actions`` list is re-derived as the topological execution order so
+    the executor, the step editor, and the Bolt road stay in lockstep.
+    """
+    workflow = get_object_or_404(_workflow_queryset(current_workspace_id(request)), pk=pk)
+    try:
+        payload = json.loads(request.body or b"{}")
+    except (TypeError, ValueError):
+        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+    trigger = str(payload.get("trigger") or "").strip() or workflow.trigger
+    allowed_actions = {item["id"] for item in WORKFLOW_ACTION_CATALOG}
+    try:
+        graph, actions = normalize_workflow_graph(payload, allowed_actions, trigger=trigger)
+    except ValueError as exc:
+        return JsonResponse({"graph": str(exc)}, status=400)
+    workflow.trigger = trigger
+    workflow.actions = actions
+    workflow.graph = graph
+    workflow.save(update_fields=["trigger", "actions", "graph", "updated_at"])
+    safe_publish_workspace_event(
+        workflow.workspace_id, "resource.updated", {"resource": "workflows", "pk": workflow.pk}
+    )
+    return JsonResponse({"id": workflow.pk, "trigger": trigger, "actions": actions, "graph": graph})
 
 
 @require_POST
@@ -480,6 +535,32 @@ class IntegrationsView(LoopPageView):
         context["table_headers"] = ["Platform", "Capabilities"]
         context["table_rows"] = table_rows
         context["table_empty"] = self.empty_message
+        return context
+
+
+class EmailInboxView(LoopPageView):
+    """Manage connected Gmail/Outlook mailboxes and start an OAuth connect."""
+
+    template_name = "dashboard/email_inbox.html"
+    module_id = "workspace"
+    page_title = "Email inbox"
+    page_kicker = "Workspace · email"
+    page_description = "Connect Gmail or Outlook to sync inbound messages into the CRM timeline, matched to contacts and deals."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workspace_id = current_workspace_id(self.request)
+        accounts = EmailAccount.objects.all()
+        if workspace_id is not None:
+            accounts = accounts.filter(workspace_id=workspace_id)
+        context["email_accounts"] = list(accounts.select_related("workspace").order_by("-created_at"))
+
+        messages = EmailMessage.objects.select_related("account", "contact", "deal")
+        if workspace_id is not None:
+            messages = messages.filter(workspace_id=workspace_id)
+        context["email_messages"] = list(messages.order_by("-received_at")[:50])
+        context["gmail_configured"] = bool(settings.GMAIL_CLIENT_ID and settings.GMAIL_CLIENT_SECRET)
+        context["outlook_configured"] = bool(settings.OUTLOOK_CLIENT_ID and settings.OUTLOOK_CLIENT_SECRET)
         return context
 
 

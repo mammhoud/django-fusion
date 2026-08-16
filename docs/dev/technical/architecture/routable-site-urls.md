@@ -1,6 +1,6 @@
 # Routable Site URLs
 
-The `lms-fusion` (Precis main) and `ctc-research` websites mount the shared routable
+The `precis-lms` (Precis main) and `precis-ctc` websites mount the shared routable
 component site from `apps.core.routes` at the `/components/` prefix:
 
 ```python

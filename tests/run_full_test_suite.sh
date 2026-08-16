@@ -91,17 +91,17 @@ sleep 30
 log "Checking container status..."
 docker compose -f docker-compose.yml ps 2>&1 | tee -a "$LOG_FILE"
 
-# Check if ctc-research is healthy
+# Check if precis-ctc is healthy
 ATTEMPTS=0
 MAX_ATTEMPTS=10
 while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
-  HEALTH=$(docker compose -f docker-compose.yml ps web-ctc-research 2>/dev/null | grep -o "healthy\|unhealthy" | head -1 || echo "unknown")
+  HEALTH=$(docker compose -f docker-compose.yml ps web-precis-ctc 2>/dev/null | grep -o "healthy\|unhealthy" | head -1 || echo "unknown")
   if [ "$HEALTH" = "healthy" ]; then
     success "CTC Research container is HEALTHY"
     break
   elif [ "$ATTEMPTS" -eq $((MAX_ATTEMPTS - 1)) ]; then
     warning "CTC Research container still not healthy after ${MAX_ATTEMPTS} attempts. Proceeding anyway..."
-    docker compose -f docker-compose.yml logs web-ctc-research --tail 30 | tee -a "$LOG_FILE"
+    docker compose -f docker-compose.yml logs web-precis-ctc --tail 30 | tee -a "$LOG_FILE"
   fi
   ATTEMPTS=$((ATTEMPTS + 1))
   sleep 5
@@ -120,7 +120,7 @@ npm --prefix assets install --legacy-peer-deps --no-audit --no-fund 2>&1 | tail 
 success "Dependencies installed"
 
 log "Building assets for CTC Research..."
-PROJECT_PATH=ctc-research npm --prefix assets run build 2>&1 | grep -E "✓|✗|error|warning|built in" | tee -a "$LOG_FILE"
+PROJECT_PATH=precis-ctc npm --prefix assets run build 2>&1 | grep -E "✓|✗|error|warning|built in" | tee -a "$LOG_FILE"
 success "CTC Research assets built"
 
 log "Building assets for LMS Demo..."
@@ -140,7 +140,7 @@ log "PHASE 3: Collecting Static Files"
 echo ""
 
 log "Collecting static files for CTC Research..."
-docker exec web-ctc-research python manage.py collectstatic --noinput --site ctc-research 2>&1 | tail -10 | tee -a "$LOG_FILE"
+docker exec web-precis-ctc python manage.py collectstatic --noinput --site precis-ctc 2>&1 | tail -10 | tee -a "$LOG_FILE"
 success "CTC Research static files collected"
 
 log "Collecting static files for LMS Demo..."
@@ -157,7 +157,7 @@ echo ""
 log "PHASE 4: Verifying Asset Output"
 echo ""
 
-for site in ctc-research lms VResume; do
+for site in precis-ctc lms VResume; do
   if [ -d "${site}/assets/bundles" ]; then
     count=$(find "${site}/assets/bundles" -type f | wc -l)
     size=$(du -sh "${site}/assets/bundles" 2>/dev/null | cut -f1)
@@ -185,7 +185,7 @@ log "PHASE 5: Verifying Database & Locales"
 echo ""
 
 log "Checking locales in database..."
-docker exec web-ctc-research python manage.py shell <<EOF 2>&1 | tee -a "$LOG_FILE"
+docker exec web-precis-ctc python manage.py shell <<EOF 2>&1 | tee -a "$LOG_FILE"
 from wagtail_localize.models import Locale
 locales = Locale.objects.all().order_by('language_code')
 print(f"✓ Found {locales.count()} locales:")
@@ -287,7 +287,7 @@ echo "================================================"
 log "Next steps:"
 log "1. Check log file: $LOG_FILE"
 log "2. Verify all containers: docker compose ps"
-log "3. Create admin user: docker exec web-ctc-research python manage.py createsuperuser"
+log "3. Create admin user: docker exec web-precis-ctc python manage.py createsuperuser"
 log "4. Access admin: http://localhost:5070/admin/"
 log "5. Run more detailed tests: make tests-website WEBSITE=ctc"
 

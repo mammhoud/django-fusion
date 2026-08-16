@@ -12,7 +12,7 @@ Audits the ctc-research.com frontend asset pipeline for consistency across:
 Usage:
     python applications/scripts/verify_ctc_assets.py
     python applications/scripts/verify_ctc_assets.py --strict
-    python applications/scripts/verify_ctc_assets.py --site ctc-research
+    python applications/scripts/verify_ctc_assets.py --site precis-ctc
 
 Exit codes:
     0 = all checks passed
@@ -35,23 +35,25 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 APPLICATIONS_ROOT = REPOSITORY_ROOT / "applications"
 PROJECTS_ROOT = REPOSITORY_ROOT / "projects"
 PROXY = APPLICATIONS_ROOT / "proxy"
-CTC = PROJECTS_ROOT / "precis" / "ctc-research"
+CTC = PROJECTS_ROOT / "precis" / "lms-ctc"
 MAIN = PROJECTS_ROOT / "precis" / "main"
 
 
 def site_root(site: str) -> Path:
     """Resolve product source from the current repository layout."""
-    if site in {"lms", "lms-fusion", "structa", "structa.cloud"}:
+    if site in {"lms", "precis-lms", "structa", "structa.cloud"}:
         return MAIN
-    if site == "ctc-research":
+    if site == "precis-ctc":
         return CTC
     return PROJECTS_ROOT / site
 
 
 def site_rel(site: str) -> str:
     """Relative product path under projects/ for compose mount assertions."""
-    if site in {"lms", "lms-fusion", "structa", "structa.cloud"}:
-        return "precis/main"
+    if site in {"lms", "precis-lms", "structa", "structa.cloud"}:
+        return "precis/precis-lms"
+    if site == "precis-ctc":
+        return "precis/precis-ctc"
     return f"precis/{site}"
 
 
@@ -270,7 +272,7 @@ def check_bundles_json(site: str, strict: bool) -> CheckResult:
 # ---------------------------------------------------------------------------
 def get_domain(site: str) -> str:
     mapping = {
-        "ctc-research": "ctc-research.com",
+        "precis-ctc": "ctc-research.com",
         "lms": "lms.com",
         "vresume": "vresume.structa.cloud",
     }
@@ -279,7 +281,7 @@ def get_domain(site: str) -> str:
 
 def site_alias(site: str) -> str:
     mapping = {
-        "ctc-research": "ctc",
+        "precis-ctc": "ctc",
         "lms": "structa",
         "VResume": "vresume",
     }
@@ -295,8 +297,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--site",
-        default="ctc-research",
-        help="Site slug to verify (default: ctc-research)",
+        default="precis-ctc",
+        help="Site slug to verify (default: precis-ctc)",
     )
     parser.add_argument(
         "--strict",

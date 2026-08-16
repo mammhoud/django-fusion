@@ -15,7 +15,7 @@
     "test": "nx run-many --target=test --all --parallel=3",
     "format": "nx format:check",
     "install:projects": "npm run install:frontends && npm run install:formints",
-    "install:frontends": "npm --prefix projects/precis/landi/frontend install && npm --prefix projects/loop-crm/frontend install && npm --prefix projects/precis/main/frontend install",
+    "install:frontends": "npm --prefix projects/precis/precis-landing/frontend install && npm --prefix projects/loop-crm/frontend install && npm --prefix projects/precis/precis-lms/frontend install",
     "install:formints": "npm --prefix projects/formints/formint-cloud/frontend install && npm --prefix projects/formints/formint-standard install",
     "ci": "npm run check && npm run test"
   },

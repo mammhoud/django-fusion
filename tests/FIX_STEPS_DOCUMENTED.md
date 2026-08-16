@@ -15,7 +15,7 @@ This document summarizes all errors found during deployment and the fixes applie
 **Fix Applied:**
 - Created `_shared/plugins/components/` directory structure
 - Reorganized `form.html` to nested folder: `_shared/plugins/components/contact/sections/form/form.html`
-- Created symlinks for both ctc-research and lms pointing to shared directory
+- Created symlinks for both precis-ctc and lms pointing to shared directory
 - Updated Dockerfile to include `_shared` directory in COPY command
 
 **Files Modified:**
@@ -29,15 +29,15 @@ This document summarizes all errors found during deployment and the fixes applie
 
 **Fix Applied:**
 - Removed `ceptor_ai` from INSTALLED_APPS in `configs/base/apps.py`
-- Added `RuntimeError` exception handling in payment URL imports in `ctc-research/plugins/lms/urls.py` and `lms/plugins/lms/urls.py`
+- Added `RuntimeError` exception handling in payment URL imports in `precis-ctc/plugins/lms/urls.py` and `lms/plugins/lms/urls.py`
 
 **Files Modified:**
 - `configs/base/apps.py` - Removed ceptor_ai from LOCAL_APPS
-- `ctc-research/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
+- `precis-ctc/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
 - `lms/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
 
 ### 3. Person Model Import Missing
-**Error:** `NameError: name 'Person' is not defined` in `ctc-research/plugins/profile/views/settings.py` line 199
+**Error:** `NameError: name 'Person' is not defined` in `precis-ctc/plugins/profile/views/settings.py` line 199
 
 **Root Cause:** The Person model was used in type annotations but not imported at module level.
 
@@ -45,7 +45,7 @@ This document summarizes all errors found during deployment and the fixes applie
 - Added import: `from ceptor_ai.models import Person` at top of settings.py file
 
 **Files Modified:**
-- `ctc-research/plugins/profile/views/settings.py` - Added Person import
+- `precis-ctc/plugins/profile/views/settings.py` - Added Person import
 
 ---
 
@@ -104,8 +104,8 @@ _shared/
 ```
 
 **Symlinks:**
-- `ctc-research/plugins/components` → `../../_shared/plugins/components`
-- `ctc-research/plugins/products` → `../../_shared/plugins/products`
+- `precis-ctc/plugins/components` → `../../_shared/plugins/components`
+- `precis-ctc/plugins/products` → `../../_shared/plugins/products`
 - `lms/plugins/components` → `../../_shared/plugins/components`
 - `lms/plugins/products` → `../../_shared/plugins/products`
 
@@ -128,7 +128,7 @@ This ensures shared plugins are available in both website containers.
 - [x] Person model imports corrected
 - [x] Shared components directory created
 - [x] Dockerfile updated for build context
-- [x] Both ctc-research and lms using same components
+- [x] Both precis-ctc and lms using same components
 
 ### ⏳ Pending
 - [ ] allauth URL routing configured
@@ -154,8 +154,8 @@ docker compose ps
 
 ### View Error Logs
 ```bash
-# ctc-research
-docker exec ctc-research-website tail -50 /app/logs/error.log
+# precis-ctc
+docker exec precis-ctc-website tail -50 /app/logs/error.log
 
 # lms
 docker exec lms-website tail -50 /app/logs/error.log
@@ -191,8 +191,8 @@ All changes have been committed:
 ### Modified Files
 - `compose/Dockerfile`
 - `configs/base/apps.py`
-- `ctc-research/plugins/profile/views/settings.py`
-- `ctc-research/plugins/lms/urls.py`
+- `precis-ctc/plugins/profile/views/settings.py`
+- `precis-ctc/plugins/lms/urls.py`
 - `lms/plugins/lms/urls.py`
 
 ### New Files/Directories
@@ -201,8 +201,8 @@ All changes have been committed:
 - `_shared/plugins/products/` (copied structure)
 
 ### Symlinks Created
-- `ctc-research/plugins/components`
-- `ctc-research/plugins/products`
+- `precis-ctc/plugins/components`
+- `precis-ctc/plugins/products`
 - `lms/plugins/components`
 - `lms/plugins/products`
 

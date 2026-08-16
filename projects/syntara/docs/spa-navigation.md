@@ -6,10 +6,10 @@ stable container with `hx-target`, and choose the replacement strategy with
 `hx-swap`.
 
 ```html
-<button hx-get="/cypercloud/fragments/page-card-grid/ctc-research/"
+<button hx-get="/cypercloud/fragments/page-card-grid/precis-ctc/"
         hx-target="#customizer-page-grid"
         hx-swap="innerHTML"
-        hx-push-url="/cypercloud/websites/ctc-research/pages/">
+        hx-push-url="/cypercloud/websites/precis-ctc/pages/">
   CTC Research
 </button>
 ```

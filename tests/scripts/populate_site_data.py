@@ -15,7 +15,7 @@ def selected_sites(site: str) -> list[str]:
     """Return the list of sites to populate for the given site alias."""
     value = (site or "").strip()
     if value == "all" or value.lower() == "all":
-        return ["ctc-research", "lms", "vresume"]
+        return ["precis-ctc", "lms", "vresume"]
     return [value]
 
 

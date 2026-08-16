@@ -52,14 +52,14 @@ SITES: dict[str, SiteConfig] = {
         "label": "LMS Fusion",
         "fixture_path": REPO_ROOT
         / "projects"
-        / "lms-fusion"
+        / "precis-lms"
         / "backend"
         / "assets"
         / "fixtures"
         / "dump-data.json",
         "test_path": REPO_ROOT
         / "projects"
-        / "lms-fusion"
+        / "precis-lms"
         / "frontend"
         / "tests"
         / "e2e"

@@ -1,0 +1,151 @@
+---
+/**
+ * Skeleton — per-component content-on-the-way placeholders (precis-landing port).
+ *
+ * Each variant matches the real POS component's dimensions so the page never
+ * jumps when HTMX swaps the live content in.
+ *
+ * Variants:
+ *   - 'kpi-grid'      KPI stat cards (Today's sales, revenue, orders…)
+ *   - 'data-table'    POS data table (products, customers, sales)
+ *   - 'form'          CRUD form shell (fields + submit button)
+ *   - 'branch-summary' Branch → order → KDS → sync summary strip
+ *   - 'nav-bar'       Top navigation skeleton
+ *   - 'page-loader'   Full-page branded loader (used as #page-loader)
+ *   - 'card' | 'line' Generic building blocks
+ */
+interface Props {
+  variant?: 'kpi-grid' | 'data-table' | 'form' | 'branch-summary'
+    | 'nav-bar' | 'page-loader' | 'wizard-step' | 'card' | 'line';
+  count?: number;
+  class?: string;
+}
+
+const { variant = 'line', count, class: className = '' } = Astro.props;
+---
+
+{
+  variant === 'kpi-grid' && (
+    <div class={`fusion-skeleton fusion-skeleton--kpi ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--kpi__grid">
+        {Array.from({ length: count || 4 }).map(() => (
+          <span class="fusion-skeleton__kpi-card">
+            <span class="fusion-skeleton__line--tag" style="width:5rem" />
+            <span class="fusion-skeleton__line--stat-value" />
+            <span class="fusion-skeleton__line" style="width:65%" />
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'data-table' && (
+    <div class={`fusion-skeleton fusion-skeleton--table ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton__table-toolbar">
+        <span class="fusion-skeleton__line--btn" style="width:7rem" />
+        <span class="fusion-skeleton__line" style="width:12rem;height:2.25rem" />
+      </div>
+      <span class="fusion-skeleton__table-row" />
+      <span class="fusion-skeleton__table-row" />
+      <span class="fusion-skeleton__table-row" />
+      <span class="fusion-skeleton__table-row" />
+      <span class="fusion-skeleton__table-row" style="width:94%" />
+      <div class="fusion-skeleton__table-pager">
+        <span class="fusion-skeleton__line--btn" style="width:5rem;height:1.9rem" />
+        <span class="fusion-skeleton__line" style="width:6rem;height:1.9rem" />
+        <span class="fusion-skeleton__line--btn" style="width:5rem;height:1.9rem" />
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'form' && (
+    <div class={`fusion-skeleton fusion-skeleton--form ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--form__grid">
+        {Array.from({ length: count || 4 }).map(() => (
+          <span class="fusion-skeleton__field">
+            <span class="fusion-skeleton__line" style="width:40%;height:0.8rem" />
+            <span class="fusion-skeleton__line" style="height:2.4rem" />
+          </span>
+        ))}
+      </div>
+      <span class="fusion-skeleton__line--btn" style="width:9rem;height:2.5rem;margin-top:1.25rem" />
+    </div>
+  )
+}
+{
+  variant === 'branch-summary' && (
+    <div class={`fusion-skeleton fusion-skeleton--branch ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <span class="fusion-skeleton__line--tag" style="width:8rem" />
+      <span class="fusion-skeleton__line--title" style="width:55%" />
+      <div class="fusion-skeleton--branch__stats">
+        {Array.from({ length: count || 4 }).map(() => (
+          <span class="fusion-skeleton__stat">
+            <span class="fusion-skeleton__line--stat-value" />
+            <span class="fusion-skeleton__line" style="width:60%" />
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'nav-bar' && (
+    <div class={`fusion-skeleton fusion-skeleton--nav ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--nav__inner">
+        <span class="fusion-skeleton__line fusion-skeleton--nav__brand" />
+        <div class="fusion-skeleton--nav__links">
+          {Array.from({ length: count || 4 }).map(() => <span class="fusion-skeleton__line fusion-skeleton--nav__link" />)}
+        </div>
+        <span class="fusion-skeleton__line--btn fusion-skeleton--nav__cta" />
+      </div>
+    </div>
+  )
+}
+{
+  variant === 'page-loader' && (
+    <div id="page-loader" class={`fusion-skeleton fusion-skeleton--page-loader ${className}`.trim()} aria-label="Loading" role="status" data-skeleton>
+      <div class="fusion-skeleton--page-loader__logo">
+        <span class="fusion-skeleton__line--btn" style="width:3rem;height:3rem;border-radius:0.8rem" />
+      </div>
+      <div class="fusion-skeleton--page-loader__dots">
+        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
+        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
+        <span class="fusion-skeleton--page-loader__dot" aria-hidden="true" />
+      </div>
+      <p class="fusion-skeleton--page-loader__label">{'Loading…'}</p>
+    </div>
+  )
+}
+{
+  variant === 'wizard-step' && (
+    <div class={`fusion-skeleton fusion-skeleton--wizard ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <div class="fusion-skeleton--wizard__rail">
+        {Array.from({ length: count || 3 }).map(() => (
+          <span class="fusion-skeleton--wizard__step">
+            <span class="fusion-skeleton__line--btn" style="width:2rem;height:2rem;border-radius:50%" />
+            <span class="fusion-skeleton__line" style="width:70%;height:0.8rem" />
+          </span>
+        ))}
+      </div>
+      <span class="fusion-skeleton__line" style="width:100%;height:0.25rem;border-radius:999px;margin:0.5rem 0 1.25rem" />
+      <div class="fusion-skeleton--form__grid">
+        {Array.from({ length: count || 4 }).map(() => (
+          <span class="fusion-skeleton__field">
+            <span class="fusion-skeleton__line" style="width:40%;height:0.8rem" />
+            <span class="fusion-skeleton__line" style="height:2.4rem" />
+          </span>
+        ))}
+      </div>
+      <span class="fusion-skeleton__line--btn" style="width:8rem;height:2.5rem;margin-top:1.25rem" />
+    </div>
+  )
+}
+{
+  (variant === 'card' || variant === 'line') && (
+    <span class={`fusion-skeleton ${className}`.trim()} aria-hidden="true" data-skeleton>
+      <span class="fusion-skeleton__line" />
+    </span>
+  )
+}

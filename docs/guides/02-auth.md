@@ -64,7 +64,7 @@ Users receive confirmation codes via email.
 
 ---
 
-## Django Sites Auth (ctc-research, lms, VResume)
+## Django Sites Auth (precis-ctc, lms, VResume)
 
 ### Framework
 

@@ -167,7 +167,7 @@ per-row `{external_id, status: created|skipped|error}` so the POS can mark its
 - [x] **Step 4 — Triggers.** `Invoice.post_save` (dunning, loop-guarded),
   `Payment.post_save`, `Contact.post_save` via `apps/core/signals.py`, and
   `PosSale` ingest in `apps/pos/services.py`.
-- [x] **Step 5 — Tests.** `apps/core/test_workflow_actions.py` — 20 tests over
+- [x] **Step 5 — Tests.** `apps/core/test_workflow_actions.py` — 29 tests over
   each action's completed/skipped/deferred paths, cross-tenant isolation, and
   the post-save triggers.
 

@@ -1,0 +1,48 @@
+# ───────────────────────────────────────────────────────────────────
+# precis-lms — site-specific environment overrides
+# ───────────────────────────────────────────────────────────────────
+# Merged by Dynaconf on top of explicitly named YAML files from
+# configs/Env/default/ (env profiles) + configs/Env/ (infrastructure).
+# This file is loaded last, giving site-specific values highest priority.
+# Consumed by the ``cfg()`` helper in configs.default:
+#   env var → Dynaconf YAML → Python fallback in settings.py
+# ───────────────────────────────────────────────────────────────────
+
+default:
+  # ── Site Identity ──
+  WAGTAIL_SITE_NAME: "Fusion LMS"
+  WAGTAILADMIN_BASE_URL: "http://localhost:5070"
+
+  # ── Branding (teal theme) ──
+  FUSION_SITE_NAME: "Fusion LMS"
+  FUSION_COMPANY_NAME: "Fusion Inc."
+  FUSION_CREATOR_NAME: "Fusion Team"
+  FUSION_PRIMARY_COLOR: "#00a1b3"
+  FUSION_SECONDARY_COLOR: "#008080"
+
+  # ── Feature Flags ──
+  FUSION_RENDER_FIRST_DEFAULT: false
+
+  # ── CORS Origins (consumed as CORS_ALLOWED_ORIGINS) ──
+  CORS_ORIGINS:
+    - "http://localhost:3001"
+    - "http://localhost:3002"
+    - "http://127.0.0.1:3001"
+    - "http://127.0.0.1:3002"
+    - "http://localhost:3458"
+    - "http://127.0.0.1:3458"
+
+  # ── Branding context processor (django-fusion built-in) ──
+  FUSION_BRANDING_BACKEND: "django_fusion.contrib.branding.context_processors.fusion_branding_context"
+
+development:
+  DEBUG: true
+
+demo:
+  FUSION_SITE_NAME: "Fusion LMS (Demo)"
+
+production:
+  DEBUG: false
+  CORS_ORIGINS:
+    - "https://structa.cloud"
+    - "https://www.structa.cloud"

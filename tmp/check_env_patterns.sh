@@ -8,7 +8,7 @@ echo
 echo "=== 2. Makefile env loading + ports (landing/precis/formint-pro/cloud/community/standard/client) ==="
 for f in \
   projects/precis/landi/Makefile \
-  projects/precis/main/Makefile \
+  projects/precis/precis-lms/Makefile \
   projects/formints/formint-pro/Makefile \
   projects/formints/formint-cloud/Makefile \
   projects/formints/formint-community/Makefile \
@@ -39,7 +39,7 @@ echo
 echo "=== 5. next-legacy scripts ==="
 python3 -c "
 import json
-d = json.load(open('projects/precis/main/frontend-next-legacy/package.json'))
+d = json.load(open('projects/precis/precis-lms/frontend-next-legacy/package.json'))
 print(json.dumps(d.get('scripts', {}), indent=1))
 " 2>/dev/null
 

@@ -15,7 +15,7 @@
 
 ### Settings Inlining — Per-Site Architecture
 
-- **Inlined `LMS_LOCAL_APPS`** from `configs/base/lms.py` into `ctc-research/settings.py` and `lms/settings.py`
+- **Inlined `LMS_LOCAL_APPS`** from `configs/base/lms.py` into `precis-ctc/settings.py` and `lms/settings.py`
   - Deleted `configs/base/lms.py`
   - Removed `from configs.base.lms import *` from `configs/base/__init__.py`
   - Cleaned up stale `# LMS_LOCAL_APPS has been moved to configs.base.lms` comment from `configs/base/apps.py`

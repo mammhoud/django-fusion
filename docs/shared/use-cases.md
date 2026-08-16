@@ -29,7 +29,7 @@ The `www/` directory at `projects/www/` is the **shared Django core** — code u
 │          shared-scheduler (Celery Beat)          │
 │                                                  │
 │  Routes tasks per site via queue routing:        │
-│    ctc-research queue  → ctc-research DB         │
+│    precis-ctc queue  → precis-ctc DB         │
 │    lms queue           → lms DB                  │
 │    portfolio queue     → portfolio DB            │
 │    cypercloud queue    → cypercloud DB           │

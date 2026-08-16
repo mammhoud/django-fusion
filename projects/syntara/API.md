@@ -288,7 +288,7 @@ Accept: application/json
 ```
 
 **URL Parameters:**
-- `website_slug` (required) – One of: `ctc-research`, `lms`, `VResume`
+- `website_slug` (required) – One of: `precis-ctc`, `lms`, `VResume`
 
 **Response (HTML):**
 ```html
@@ -305,7 +305,7 @@ Content-Type: application/json
 
 {
   "website": {
-    "slug": "ctc-research",
+    "slug": "precis-ctc",
     "name": "CTC Research",
     "template_root": "/path/to/templates"
   },

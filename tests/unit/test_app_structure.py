@@ -66,7 +66,7 @@ def test_registration_app_location(site_root, expected_name, expected_label):
     "site_root,forbidden_term",
     [
         *([(CTC_ROOT, "structa")] if CTC_ROOT in SITE_ROOTS else []),
-        *([(STRUCTA_ROOT, "ctc-research"), (STRUCTA_ROOT, "ctc_research")] if STRUCTA_ROOT in SITE_ROOTS else []),
+        *([(STRUCTA_ROOT, "precis-ctc"), (STRUCTA_ROOT, "ctc_research")] if STRUCTA_ROOT in SITE_ROOTS else []),
     ],
     ids=lambda row: f"{row[0].name}:{row[1]}",
 )
@@ -75,7 +75,7 @@ def test_no_cross_site_branding_in_templates(site_root, forbidden_term):
     Feature: allauth-htmx-auth-pages, Test 15.3: No cross-site branding in templates.
 
     Assert no .html file in ctc-research.com/templates contains "structa".
-    Assert no .html file in structa.cloud/templates contains "ctc-research".
+    Assert no .html file in structa.cloud/templates contains "precis-ctc".
     Validates: Task 10 (branding audit)
     """
     site_name = site_root.name

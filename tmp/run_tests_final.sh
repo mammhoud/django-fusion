@@ -2,11 +2,11 @@
 set -e
 cd /home/structa.cloud
 
-echo '════════ landing-fusion frontend unit tests ════════'
+echo '════════ precis-landing frontend unit tests ════════'
 cd projects/precis/landi/frontend
 npm test 2>&1 | tail -12
 
-echo '════════ landing-fusion backend targeted tests (products/api/seed) ════════'
+echo '════════ precis-landing backend targeted tests (products/api/seed) ════════'
 cd /home/structa.cloud/projects/precis/landi/backend
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 timeout 700 "$UV_BIN" --project .. run --frozen python manage.py test \
@@ -14,7 +14,7 @@ timeout 700 "$UV_BIN" --project .. run --frozen python manage.py test \
 ls apps/pages/tests/ 2>/dev/null | head -20
 
 echo '════════ precis backend targeted tests (products api) ════════'
-cd /home/structa.cloud/projects/precis/main/backend
+cd /home/structa.cloud/projects/precis/precis-lms/backend
 timeout 700 "$UV_BIN" --project .. run --frozen python manage.py test \
   apps.pages.tests.test_products_api --keepdb 2>&1 | grep -E '^(OK|FAILED|Ran|ERROR|FAIL)' -A 4 | head -20 || echo '(no dedicated products test file — skipping)'
 ls apps/pages/tests/ 2>/dev/null | head

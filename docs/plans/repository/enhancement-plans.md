@@ -18,7 +18,7 @@ localized copies under individual project `plan/` directories.
 
 ### 1. Objective
 
-Make the `cms-fusion` and `lms-fusion` projects self-contained for templates and
+Make the `cms-fusion` and `precis-lms` projects self-contained for templates and
 static assets, while preserving a controlled shared layer. Remove duplicate
 content from the legacy `cms-full`, `lms-full`, `lms/cms`, and `lms/lms` trees
 after verifying the fusion projects no longer need it. Verify that
@@ -38,7 +38,7 @@ after verifying the fusion projects no longer need it. Verify that
 
 - **Out of scope (unless requested later)**
   - Deleting entire legacy directories (only confirmed duplicates).
-  - Modifying non-fusion sites (`ctc-research`, `lms`, `vresume`, `cypercloud`).
+  - Modifying non-fusion sites (`precis-ctc`, `lms`, `vresume`, `cypercloud`).
   - Business-logic rewrites or database migrations.
 
 ### 3. Design Decisions
@@ -126,7 +126,7 @@ after verifying the fusion projects no longer need it. Verify that
      (Next.js SSR).
    - Each project uses a unique backend port to avoid collisions.
    - The existing `backend/docker-compose.yml` files are stale copies of the old
-     `ctc-research` config and must be rewritten.
+     `precis-ctc` config and must be rewritten.
 
 8. **Shared assets server**
    - *Source design assets* (`<project>/assets/`) are copied or symlinked into
@@ -139,7 +139,7 @@ after verifying the fusion projects no longer need it. Verify that
 9. **Proxy integration**
    - Each fusion project gets an explicit Traefik dynamic router config:
      `applications/proxy/traefik/dynamic/cms-fusion.yml` and
-     `applications/proxy/traefik/dynamic/lms-fusion.yml`.
+     `applications/proxy/traefik/dynamic/precis-lms.yml`.
    - Routers route host/path matches to the correct backend and frontend
      containers.
    - TLS is handled by the existing `letsencrypt-http` resolver.
@@ -147,9 +147,9 @@ after verifying the fusion projects no longer need it. Verify that
 ### 4. Implementation Steps
 
 #### Phase 0 — Preparation
-- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
-- [x] Finalize the repo-wide docs scan for `projects/assets/` references. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
-- [ ] Generate a file matrix: `cms-fusion/backend` vs `cms/cms-full`, `lms-fusion/backend` vs `cms/lms-full` and `lms/cms`.
+- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `precis-lms/backend`.
+- [x] Finalize the repo-wide docs scan for `projects/assets/` references.
+- [ ] Generate a file matrix: `cms-fusion/backend` vs `cms/cms-full`, `precis-lms/backend` vs `cms/lms-full` and `lms/cms`.
 - [ ] Identify exact duplicates, near-duplicates, and diverged files.
 - [ ] Back up or tag any data-only files before deletion.
 
@@ -177,7 +177,7 @@ after verifying the fusion projects no longer need it. Verify that
 ##### Template Reorganization Report (old path → new path)
 
 Applied to both `projects/cms-fusion/backend/templates/` and
-`projects/lms-fusion/backend/templates/`.
+`projects/precis-lms/backend/templates/`.
 
 | Old directory | New directory |
 |---------------|---------------|
@@ -223,17 +223,17 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
   > **Note:** `django-fusion` itself does not yet consume `FUSION_LAYOUTS`, `FUSION_FEATURES`, or `FUSION_DEFAULT_LAYOUT` at the library level. These settings are forward-looking configuration in the project settings. The component registry override mechanism is described in `libs/django-fusion/AGENTS.md`.
 
 #### Phase 5 — Validation
-- [x] Fix workspace entry points for `cms-fusion`/`lms-fusion`:
-  - Register `cms-fusion` and `lms-fusion` in `projects/cli.py`
+- [x] Fix workspace entry points for `cms-fusion`/`precis-lms`:
+  - Register `cms-fusion` and `precis-lms` in `projects/cli.py`
     `SITES`/`SITE_ALIASES`.
-  - Add `cms-fusion`/`lms-fusion` aliases in `projects/Makefile`.
+  - Add `cms-fusion`/`precis-lms` aliases in `projects/Makefile`.
   - Fix per-project `backend/manage.py` wrappers (currently hardcoded
-    `ctc-research` and a non-existent `manage.py` path).
+    `precis-ctc` and a non-existent `manage.py` path).
   - Resolve the `www.worker` import shadowing issue by removing `www.worker`
     from fusion `INSTALLED_APPS` (temporary bridge; see _Remaining issues_
     below).
-- [x] Run `make check WEBSITE=cms-fusion` and `make check WEBSITE=lms-fusion`.
-- [x] Run site tests: `make test WEBSITE=cms-fusion` and `make test WEBSITE=lms-fusion`.
+- [x] Run `make check WEBSITE=cms-fusion` and `make check WEBSITE=precis-lms`.
+- [x] Run site tests: `make test WEBSITE=cms-fusion` and `make test WEBSITE=precis-lms`.
 - [x] Fix `plugins/pages` migrations after the `pages → fusion_pages` label change.
   - Migration `0001_initial.py` regenerated with correct `fusion_pages` label. `make migrations --check` returns "No changes detected" for both fusion projects.
 - [x] Run a project-wide import audit to confirm no remaining broken imports.
@@ -242,7 +242,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
   - 50 passed, 5 skipped (July 26, 2026).
 - [x] Run frontend builds for both Next.js apps.
   - **cms-fusion**: ✅ Compiled successfully, 7 static pages.
-  - **lms-fusion**: ✅ Compiled successfully, 4 static pages.
+  - **precis-lms**: ✅ Compiled successfully, 4 static pages.
 - [x] Run a template-resolution audit to ensure no unintended fallbacks to
   `projects/assets/`.
 - [x] Run smoke tests on both fusion frontends.
@@ -252,7 +252,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 
 > **Validation note:** All validation tasks are passing.
 > - `make check WEBSITE=cms-fusion` ✅ (exit 0, 12 non-blocking treebeard warnings)
-> - `make check WEBSITE=lms-fusion` ✅ (exit 0, 12 non-blocking treebeard warnings)
+> - `make check WEBSITE=precis-lms` ✅ (exit 0, 12 non-blocking treebeard warnings)
 > - Site tests: 135 passed, 11 skipped each
 > - Frontend builds: both compiled successfully
 > - Workspace tests: 50 passed, 5 skipped
@@ -265,7 +265,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 - [x] Decide whether Django needs custom admin assets.
   > **Decision:** Django uses the compiled `fusion.css` from the SCSS build. No custom admin webpack config is needed — Wagtail admin uses its own built-in assets. If custom Django admin theming is needed later, a minimal webpack config can be added under `<project>/backend/webpack.config.js`.
 - [x] Import `<project>/assets/styles/fusion-theme.scss` from the Next.js root
-  layout (cms-fusion and lms-fusion).
+  layout (cms-fusion and precis-lms).
 - [x] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
 - [x] Add a Makefile or CI step to compile SCSS to
   `backend/assets/static/css/fusion.css`.
@@ -278,10 +278,10 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
   build successfully. Verified above.
 
 #### Phase 7 — Docker-Compose & Proxy
-- [x] Rewrite `cms-fusion/docker-compose.yml` and `lms-fusion/docker-compose.yml`
+- [x] Rewrite `cms-fusion/docker-compose.yml` and `precis-lms/docker-compose.yml`
   with `backend`, `frontend`, and optional `worker` services.
 - [x] Remove or archive stale `backend/docker-compose.yml` files that still
-  reference `ctc-research`.
+  reference `precis-ctc`.
 - [x] Add per-project Traefik dynamic configs under
   `applications/proxy/traefik/dynamic/`.
 - [x] Define unique backend/frontend ports and Traefik service names per project.
@@ -313,7 +313,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 
 ### 6. Success Criteria
 
-- [x] `cms-fusion` and `lms-fusion` no longer reference `projects/assets/` for
+- [x] `cms-fusion` and `precis-lms` no longer reference `projects/assets/` for
   project-specific templates or static files.
   > The shared `configs/` layer still references `projects/assets/` as a fallback for non-fusion sites. The fusion projects resolve their own local templates first and do not depend on `projects/assets/` for their own functionality.
 - [x] App-specific templates live in `plugins/<app>/templates/` or
@@ -339,7 +339,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 4. **System-check warnings** — ✅ **Known, non-blocking.** 12 treebeard compatibility warnings remain (`treebeard.E001` — Wagtail model managers not subclassing `MP_NodeManager`). These are Wagtail compatibility warnings that will be resolved in a future treebeard upgrade. Not actionable in this project.
 5. **Missing `django_fusion.web.adapters` / `.backends`** — ✅ **Non-blocking.** The `django_fusion.web/` directory exists with `__init__.py` and `views.py`. No fusion project code imports from `web.adapters` or `web.backends`. These are forward-looking promises in the package docstring.
 6. **Health URL routing** — ✅ **Resolved.** The duplicate `health_admin/` route inclusion was removed from both fusion `www/urls.py` files. Top-level health routes (`/health/`, `/assets/health/`, `/health/database/`) provide the canonical health check URLs. The `try/except Exception: pass` block was also eliminated, removing silent error swallowing.
-7. **Shared media serving (Phase 8)** — ✅ **Configured in Traefik.** Both fusion projects' Traefik configs (`cms-fusion.yml`, `lms-fusion.yml`) route `/static/` and `/media/` paths to the existing `shared-proxy:80` Nginx container. Media volumes are defined in docker-compose. The routing documentation is a production deployment concern.
+7. **Shared media serving (Phase 8)** — ✅ **Configured in Traefik.** Both fusion projects' Traefik configs (`cms-fusion.yml`, `precis-lms.yml`) route `/static/` and `/media/` paths to the existing `shared-proxy:80` Nginx container. Media volumes are defined in docker-compose. The routing documentation is a production deployment concern.
 
 ### 8. Notes
 
@@ -353,10 +353,6 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 
 ### 8. Related
 
-- `docs/plans/migrated/projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
-- `docs/plans/cms-fusion/migration-plan.md`
-- `docs/plans/migrated/projects/lms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`
-- `docs/plans/lms-fusion/migration-plan.md`
 - `projects/docs/MIGRATION_AND_CLEANUP_MASTER_PLAN.md`
 - `libs/django-fusion/AGENTS.md`
 - `projects/assets/templates/AGENTS.md`

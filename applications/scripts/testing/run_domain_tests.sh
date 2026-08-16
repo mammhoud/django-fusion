@@ -62,7 +62,7 @@ section() {
 test_container_health() {
   section "TEST 1: Container Health Status"
 
-  local containers=("ctc-research-website" "lms-web" "vresume-web" "default-proxy" "postgres" "default-redis")
+  local containers=("precis-ctc-website" "lms-web" "vresume-web" "default-proxy" "postgres" "default-redis")
   if [ "$CRM_DEPLOYED" = true ]; then
     containers=("crm-website" "${containers[@]}")
   fi
@@ -94,7 +94,7 @@ test_direct_endpoints() {
   # ALLOWED_HOSTS, but not the internal container names.
   local endpoints=(
     "http://localhost:5070/health/|CTC Research|"
-    "http://ctc-research-website:5070/health/|CTC Research (internal)|shared-worker"
+    "http://precis-ctc-website:5070/health/|CTC Research (internal)|shared-worker"
     "http://lms-web:5071/health/|LMS Demo|shared-worker"
     "http://vresume-web:5072/health/|VResume|shared-worker"
   )
@@ -239,7 +239,7 @@ test_site_registration() {
   cd /home/structa.cloud/core
 
   # Test each site
-  local sites=("ctc-research" "lms" "vresume")
+  local sites=("precis-ctc" "lms" "vresume")
   if [ "$CRM_DEPLOYED" = true ]; then
     sites=("crm" "${sites[@]}")
   fi
@@ -361,7 +361,7 @@ test_network_connectivity() {
 test_django_checks() {
   section "TEST 11: Django System Checks"
 
-  local sites=("ctc-research" "lms" "vresume")
+  local sites=("precis-ctc" "lms" "vresume")
   if [ "$CRM_DEPLOYED" = true ]; then
     sites=("crm" "${sites[@]}")
   fi
@@ -369,7 +369,7 @@ test_django_checks() {
   for site in "${sites[@]}"; do
     local container
     case "$site" in
-      ctc-research) container="ctc-research-website" ;;
+      precis-ctc) container="precis-ctc-website" ;;
       lms) container="lms-web" ;;
       vresume) container="vresume-web" ;;
       crm) container="crm-website" ;;

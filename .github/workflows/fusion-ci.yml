@@ -1,16 +1,16 @@
 # fusion-ci: Runs Django checks + tests, Astro builds + unit tests, and
-# Django checks + tests, Astro builds + unit tests for lms-fusion.
+# Django checks + tests, Astro builds + unit tests for precis-lms.
 # Failures are isolated per job.
 #
 # Triggered on changes to fusion project files, lib submodules, or this
 # workflow file.
 
-name: Fusion CI (lms-fusion)
+name: Fusion CI (precis-lms)
 
 on:
   pull_request:
     paths:
-      - 'projects/precis/main/**'
+      - 'projects/precis/precis-lms/**'
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
@@ -19,7 +19,7 @@ on:
   push:
     branches: ['**']
     paths:
-      - 'projects/precis/main/**'
+      - 'projects/precis/precis-lms/**'
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
@@ -36,7 +36,7 @@ jobs:
 
   # ── LMS-Fusion Backend (Python/Django) ───────────────────────────────
 
-  lms-fusion-backend:
+  precis-lms-backend:
     name: LMS-Fusion — Django Checks + Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -63,34 +63,34 @@ jobs:
         run: uv sync
 
       - name: Run Django system checks
-        run: make check WEBSITE=lms-fusion
+        run: make check WEBSITE=precis-lms
 
       - name: Verify root Makefile convenience target
         working-directory: ${{ github.workspace }}
-        run: make lms-fusion check
+        run: make precis-lms check
 
       - name: Run migrations
         working-directory: ${{ github.workspace }}
-        run: make lms-fusion migrate
+        run: make precis-lms migrate
 
       - name: Validate fixture files
-        run: uv run python precis/main/backend/manage.py load_fusion_fixtures --full --dry-run
+        run: uv run python precis/precis-lms/backend/manage.py load_fusion_fixtures --full --dry-run
 
       - name: Run fixture content tests
-        run: uv run python -m pytest precis/main/backend/tests/test_fixture_content.py -v --tb=short
+        run: uv run python -m pytest precis/precis-lms/backend/tests/test_fixture_content.py -v --tb=short
 
       - name: Run remaining tests
-        run: uv run python -m pytest precis/main/backend/tests/ --ignore=precis/main/backend/tests/test_fixture_content.py -q
+        run: uv run python -m pytest precis/precis-lms/backend/tests/ --ignore=precis/precis-lms/backend/tests/test_fixture_content.py -q
 
   # ── LMS-Fusion Frontend (Astro) ─────────────────────────────────────
 
-  lms-fusion-frontend:
+  precis-lms-frontend:
     name: LMS-Fusion — Build & Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: projects/precis/main/frontend
+        working-directory: projects/precis/precis-lms/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -99,7 +99,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/precis/main/frontend/package-lock.json
+          cache-dependency-path: projects/precis/precis-lms/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -112,7 +112,7 @@ jobs:
 
   # ── LMS-Fusion integration smoke (Astro + Django) ────────────────
 
-  lms-fusion-e2e:
+  precis-lms-e2e:
     name: LMS-Fusion — Astro + Django Smoke
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -121,7 +121,7 @@ jobs:
       REDIS_PASSWORD: ci-redis-password
     defaults:
       run:
-        working-directory: projects/precis/main/frontend
+        working-directory: projects/precis/precis-lms/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -130,7 +130,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/precis/main/frontend/package-lock.json
+          cache-dependency-path: projects/precis/precis-lms/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -152,17 +152,17 @@ jobs:
             docker network inspect $net >/dev/null 2>&1 || docker network create $net
           done
 
-      - name: Build lms-fusion backend image
+      - name: Build precis-lms backend image
         run: |
-          docker compose -f projects/precis/main/docker-compose.yml build \
-            --build-arg PROJECT_PATH=lms-fusion --build-arg SOURCE_PATH=precis/main backend
+          docker compose -f projects/precis/precis-lms/docker-compose.yml build \
+            --build-arg PROJECT_PATH=precis-lms --build-arg SOURCE_PATH=precis/precis-lms backend
 
-      - name: Start lms-fusion backend (SQLite for CI E2E)
+      - name: Start precis-lms backend (SQLite for CI E2E)
         run: |
           DB_TYPE=sqlite DB_HOST=127.0.0.1 \
-            docker compose -f projects/precis/main/docker-compose.yml up -d --remove-orphans backend
+            docker compose -f projects/precis/precis-lms/docker-compose.yml up -d --remove-orphans backend
 
-      - name: Wait for lms-fusion backend health
+      - name: Wait for precis-lms backend health
         run: |
           for i in $(seq 1 24); do
             if curl -sf http://127.0.0.1:5074/health/ >/dev/null 2>&1; then
@@ -173,7 +173,7 @@ jobs:
             sleep 10
           done
           echo "✗ LMS-Fusion backend did not become healthy"
-          docker compose -f projects/precis/main/docker-compose.yml logs --tail=50 backend
+          docker compose -f projects/precis/precis-lms/docker-compose.yml logs --tail=50 backend
           exit 1
 
       # AI tests fetch homepage data from this URL. The fallback in
@@ -184,8 +184,8 @@ jobs:
 
       - name: Start Astro preview server
         run: |
-          nohup npm run preview -- --host 127.0.0.1 --port 3001 > /tmp/lms-fusion-astro-preview.log 2>&1 &
-          echo $! > /tmp/lms-fusion-astro-preview.pid
+          nohup npm run preview -- --host 127.0.0.1 --port 3001 > /tmp/precis-lms-astro-preview.log 2>&1 &
+          echo $! > /tmp/precis-lms-astro-preview.pid
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:3001/ >/dev/null; then
               echo "✓ LMS-Fusion frontend healthy"
@@ -195,7 +195,7 @@ jobs:
             sleep 2
           done
           echo "✗ LMS-Fusion frontend did not become healthy"
-          cat /tmp/lms-fusion-astro-preview.log
+          cat /tmp/precis-lms-astro-preview.log
           exit 1
 
       - name: Run LMS-Fusion Compose E2E tests
@@ -208,7 +208,7 @@ jobs:
   # ── Domain Drift Check ─────────────────────────────────────────────
 
   domain-drift-check:
-    name: Domain Drift — lms-fusion
+    name: Domain Drift — precis-lms
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -228,9 +228,9 @@ jobs:
       POSTGRES_PASSWORD: ci-postgres-password
       REDIS_PASSWORD: ci-redis-password
     needs:
-      - lms-fusion-backend
-      - lms-fusion-frontend
-      - lms-fusion-e2e
+      - precis-lms-backend
+      - precis-lms-frontend
+      - precis-lms-e2e
       - domain-drift-check
     steps:
       - uses: actions/checkout@v4
@@ -248,21 +248,21 @@ jobs:
 
       # ── Build & deploy LMS-Fusion ───────────────────────────────────
 
-      - name: Build lms-fusion backend image
+      - name: Build precis-lms backend image
         run: |
-          docker compose -f projects/precis/main/docker-compose.yml build \
-            --build-arg PROJECT_PATH=lms-fusion --build-arg SOURCE_PATH=precis/main backend
+          docker compose -f projects/precis/precis-lms/docker-compose.yml build \
+            --build-arg PROJECT_PATH=precis-lms --build-arg SOURCE_PATH=precis/precis-lms backend
 
-      - name: Build lms-fusion frontend image
+      - name: Build precis-lms frontend image
         run: |
-          docker compose -f projects/precis/main/docker-compose.yml build frontend
+          docker compose -f projects/precis/precis-lms/docker-compose.yml build frontend
 
-      - name: Start lms-fusion services (SQLite for staging)
+      - name: Start precis-lms services (SQLite for staging)
         run: |
           DB_TYPE=sqlite DB_HOST=127.0.0.1 \
-            docker compose -f projects/precis/main/docker-compose.yml up -d --remove-orphans backend frontend
+            docker compose -f projects/precis/precis-lms/docker-compose.yml up -d --remove-orphans backend frontend
 
-      - name: Wait for lms-fusion backend health
+      - name: Wait for precis-lms backend health
         run: |
           for i in $$(seq 1 12); do
             if curl -sf http://127.0.0.1:5074/health/ >/dev/null 2>&1; then
@@ -274,14 +274,14 @@ jobs:
           done
           echo "✗ LMS-Fusion backend did not become healthy"
           echo "=== LMS-Fusion backend logs ==="
-          docker compose -f projects/precis/main/docker-compose.yml logs --tail=50 backend
+          docker compose -f projects/precis/precis-lms/docker-compose.yml logs --tail=50 backend
           exit 1
 
       - name: Show deployment status
         run: |
           echo "=== Docker Services Status ==="
           echo ""
-          docker compose -f projects/precis/main/docker-compose.yml ps
+          docker compose -f projects/precis/precis-lms/docker-compose.yml ps
           echo ""
           echo "=== Health Checks ==="
           curl -s http://127.0.0.1:5074/health/ && echo " — LMS-Fusion"

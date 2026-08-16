@@ -10,13 +10,13 @@ infrastructure used across all Structa Cloud sites:
 
 Registered in `projects/cli.py:SITES` so shared-worker / shared-scheduler can
 declare `WEBSITE=shared` (resolved via aliases) and boot without impersonating
-any per-site tenant (ctc-research / lms / VResume / lms-fusion / cms-fusion).
+any per-site tenant (precis-ctc / lms / VResume / precis-lms / cms-fusion).
 The actual Django settings live at `projects/tools/settings.py`.
 
 DEV-TIME ONLY:
-Production workers run with PROJECT_PATH=ctc-research baked at build time
+Production workers run with PROJECT_PATH=precis-ctc baked at build time
 (override-able via `TASKS_PROJECT_PATH=tools` build arg). Under the default
-PROJECT_PATH=ctc-research, `projects/tools/settings.py` is only loaded by
+PROJECT_PATH=precis-ctc, `projects/tools/settings.py` is only loaded by
 ad-hoc CLI runs (`python projects/tools/__main__.py check`, unit tests,
 dev tooling). Setting TASKS_PROJECT_PATH=tools bakes tools/ contents into
 /app/www/ (the Docker image path is `/app/www/` regardless of source dir).

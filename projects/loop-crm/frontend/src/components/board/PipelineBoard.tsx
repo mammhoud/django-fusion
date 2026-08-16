@@ -20,7 +20,7 @@ const MOVE_URL = (dealId: number) => `/api/v1/deals/${dealId}/stage/`;
 
 // Django's csrftoken cookie is readable from JS (CSRF_COOKIE_HTTPONLY=False),
 // so the kanban can echo it back on the move mutation. Mirrors the
-// landing-fusion proxied-Django convention.
+// precis-landing proxied-Django convention.
 function readCsrfToken(): string {
   if (typeof document === 'undefined') return '';
   const match = document.cookie.match(/(?:^|; )csrftoken=([^;]*)/);

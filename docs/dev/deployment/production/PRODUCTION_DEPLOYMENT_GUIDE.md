@@ -72,7 +72,7 @@ echo "✅ All images built successfully"
 
 # 2. Verify images created
 echo "[3.2] Verifying images..."
-docker images | grep -E "(ctc-research|lms|vresume|traefik|postgres|redis|shared-proxy)"
+docker images | grep -E "(precis-ctc|lms|vresume|traefik|postgres|redis|shared-proxy)"
 ```
 
 ### Phase 4: Start Infrastructure Services
@@ -109,7 +109,7 @@ curl -s http://localhost/health 2>/dev/null && echo "    ✅ Media server health
 ```bash
 # 1. Start all website services
 echo "[5.1] Starting website services..."
-docker compose -f docker-compose.yml up -d web-ctc-research web-lms web-vresume
+docker compose -f docker-compose.yml up -d web-precis-ctc web-lms web-vresume
 
 # 2. Wait for containers to initialize
 echo "[5.2] Waiting for website initialization (120s)..."
@@ -149,13 +149,13 @@ docker exec postgres psql -U structa -d vresume -c "SELECT 'vresume ready' as st
 # 2. Run migrations for each site
 echo "[6.2] Running migrations..."
 
-docker exec web-ctc-research python manage.py migrate --noinput 2>&1 | tail -5
+docker exec web-precis-ctc python manage.py migrate --noinput 2>&1 | tail -5
 docker exec web-lms python manage.py migrate --noinput 2>&1 | tail -5
 docker exec web-vresume python manage.py migrate --noinput 2>&1 | tail -5
 
 # 3. Collect static files
 echo "[6.3] Collecting static files..."
-docker exec web-ctc-research python manage.py collectstatic --noinput 2>&1 | tail -3
+docker exec web-precis-ctc python manage.py collectstatic --noinput 2>&1 | tail -3
 docker exec web-lms python manage.py collectstatic --noinput 2>&1 | tail -3
 docker exec web-vresume python manage.py collectstatic --noinput 2>&1 | tail -3
 ```
@@ -169,12 +169,12 @@ find . -name "*.json" -path "*/fixtures/*" | head -10
 
 # 2. Load fixtures (if available)
 echo "[7.2] Loading production data..."
-docker exec web-ctc-research python manage.py loaddata fixtures/initial_data.json 2>/dev/null || echo "No initial_data.json found"
+docker exec web-precis-ctc python manage.py loaddata fixtures/initial_data.json 2>/dev/null || echo "No initial_data.json found"
 docker exec web-lms python manage.py loaddata fixtures/initial_data.json 2>/dev/null || echo "No initial_data.json found"
 
 # 3. Create admin users
 echo "[7.3] Creating admin users..."
-echo "  - CTC Research: Run: docker exec web-ctc-research python manage.py createsuperuser"
+echo "  - CTC Research: Run: docker exec web-precis-ctc python manage.py createsuperuser"
 echo "  - LMS Demo: Run: docker exec web-lms python manage.py createsuperuser"
 echo "  - VResume: Run: docker exec web-vresume python manage.py createsuperuser"
 ```
@@ -206,7 +206,7 @@ bash run_full_test_suite.sh 2>&1 | tee logs/full_deployment_check_$(date +%Y%m%d
 
 # 2. Check application logs for errors
 echo "[9.2] Checking application logs..."
-docker compose -f docker-compose.yml logs --tail 50 web-ctc-research | grep -i error || echo "No errors in CTC logs"
+docker compose -f docker-compose.yml logs --tail 50 web-precis-ctc | grep -i error || echo "No errors in CTC logs"
 docker compose -f docker-compose.yml logs --tail 50 web-lms | grep -i error || echo "No errors in LMS logs"
 docker compose -f docker-compose.yml logs --tail 50 web-vresume | grep -i error || echo "No errors in VResume logs"
 
@@ -288,18 +288,18 @@ sleep 60
 
 # Phase 5: Start Websites
 echo "🌍 Phase 5: Starting Websites..." | tee -a $LOG_FILE
-docker compose -f docker-compose.yml up -d web-ctc-research web-lms web-vresume
+docker compose -f docker-compose.yml up -d web-precis-ctc web-lms web-vresume
 sleep 120
 
 # Phase 6: Run Migrations
 echo "🗄️  Phase 6: Running Migrations..." | tee -a $LOG_FILE
-docker exec web-ctc-research python manage.py migrate --noinput >> $LOG_FILE 2>&1
+docker exec web-precis-ctc python manage.py migrate --noinput >> $LOG_FILE 2>&1
 docker exec web-lms python manage.py migrate --noinput >> $LOG_FILE 2>&1
 docker exec web-vresume python manage.py migrate --noinput >> $LOG_FILE 2>&1
 
 # Phase 7: Collect Static Files
 echo "📦 Phase 7: Collecting Static Files..." | tee -a $LOG_FILE
-docker exec web-ctc-research python manage.py collectstatic --noinput >> $LOG_FILE 2>&1
+docker exec web-precis-ctc python manage.py collectstatic --noinput >> $LOG_FILE 2>&1
 docker exec web-lms python manage.py collectstatic --noinput >> $LOG_FILE 2>&1
 docker exec web-vresume python manage.py collectstatic --noinput >> $LOG_FILE 2>&1
 
@@ -369,17 +369,17 @@ docker compose up -d
 sleep 120
 
 # Step 5: Run migrations
-docker compose exec web-ctc-research python manage.py migrate --noinput
+docker compose exec web-precis-ctc python manage.py migrate --noinput
 docker compose exec web-lms python manage.py migrate --noinput
 docker compose exec web-vresume python manage.py migrate --noinput
 
 # Step 6: Collect static files
-docker compose exec web-ctc-research python manage.py collectstatic --noinput
+docker compose exec web-precis-ctc python manage.py collectstatic --noinput
 docker compose exec web-lms python manage.py collectstatic --noinput
 docker compose exec web-vresume python manage.py collectstatic --noinput
 
 # Step 7: Create admin users
-docker exec -it web-ctc-research python manage.py createsuperuser
+docker exec -it web-precis-ctc python manage.py createsuperuser
 docker exec -it web-lms python manage.py createsuperuser
 docker exec -it web-vresume python manage.py createsuperuser
 
@@ -410,7 +410,7 @@ docker compose ps
 # postgres                  Up (healthy)
 # redis                     Up (healthy)
 # shared-proxy              Up (healthy)
-# web-ctc-research          Up (healthy)
+# web-precis-ctc          Up (healthy)
 # web-lms              Up (healthy)
 # web-vresume               Up (healthy)
 ```
@@ -439,7 +439,7 @@ curl -s http://localhost:5070/ | grep -o "href=\|src=" | wc -l
 
 ```bash
 # Test database connections
-docker exec web-ctc-research python manage.py dbshell -c "SELECT 1;"
+docker exec web-precis-ctc python manage.py dbshell -c "SELECT 1;"
 docker exec web-lms python manage.py dbshell -c "SELECT 1;"
 docker exec web-vresume python manage.py dbshell -c "SELECT 1;"
 
@@ -465,7 +465,7 @@ curl -I http://localhost:5072/admin/
 
 ```bash
 # Check logs
-docker compose logs web-ctc-research | tail -50
+docker compose logs web-precis-ctc | tail -50
 
 # Common issues:
 # - Port already in use: Change ports in docker-compose.yml
@@ -492,10 +492,10 @@ docker exec postgres psql -U structa -c "CREATE DATABASE vresume;"
 
 ```bash
 # Rebuild and collect assets
-docker compose exec web-ctc-research python manage.py collectstatic --noinput
+docker compose exec web-precis-ctc python manage.py collectstatic --noinput
 
 # Verify assets directory
-docker exec web-ctc-research ls -la /app/ctc-research/assets/staticfiles/ | head -20
+docker exec web-precis-ctc ls -la /app/precis-ctc/assets/staticfiles/ | head -20
 
 # Check webpack output
 ls -lh /root/site/websites/assets/bundles/
@@ -508,7 +508,7 @@ ls -lh /root/site/websites/assets/bundles/
 docker exec traefik cat /traefik/traefik.yml
 
 # Verify containers are labeled correctly
-docker inspect web-ctc-research | grep -A 10 "Labels"
+docker inspect web-precis-ctc | grep -A 10 "Labels"
 
 # Check traefik logs
 docker logs traefik | tail -50

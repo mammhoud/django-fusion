@@ -15,12 +15,12 @@ implemented.
 
 | Product | Canonical path | Former boundary | Closeout status |
 |---|---|---|---|
-| Precis LMS | `projects/precis/main/` | `projects/lms-fusion/` | Active and deployed |
+| Precis LMS | `projects/precis/precis-lms/` | `projects/precis-lms/` | Active and deployed |
 | Landing-Fusion | `projects/precis/landi/` | CMS-Fusion landing slice | Active |
-| CTC Research | `projects/precis/ctc-research/` | `projects/ctc-research/` | Active (standalone research site) |
+| CTC Research | `projects/precis/precis-ctc/` | `projects/precis-ctc/` | Active (standalone research site) |
 | Syntara | `projects/syntara/` | Cypercloud | Active |
 | Formints | `projects/formints/` | POS edition workspace | Active |
-| Forge POS | `projects/formints/formint-community/` (was `projects/pos/forge-pos/`) | POS desktop edition | Migrated/removed |
+| Forge POS | `projects/formints/formint-community/` (was `projects/pos/forge-pos/`, then `formint-community/`) | POS desktop edition | Migrated/removed |
 | django-fusion | `libs/django-fusion/` | Shared Fusion framework | Active |
 
 Retired names remain in migration evidence and compatibility documentation.
@@ -30,8 +30,8 @@ New code and new plans must use the canonical paths above.
 
 ### Precis LMS deployment
 
-- Backend and frontend images built successfully from `projects/precis/main/`.
-- `lms-fusion-backend` became healthy with zero restarts.
+- Backend and frontend images built successfully from `projects/precis/precis-lms/`.
+- `precis-lms-backend` became healthy with zero restarts.
 - PostgreSQL, Redis, worker, and Traefik services were running.
 - Direct and Traefik-routed responses returned HTTP 200 for:
   - `/api/fusion/health`
@@ -107,14 +107,14 @@ The following remain planned or require separate product approval:
 
 ```bash
 # Precis backend
-cd projects/precis/main
+cd projects/precis/precis-lms
 uv run python backend/manage.py check
 uv run pytest backend/tests/test_api_smoke.py \
   backend/tests/test_fixture_content.py \
   backend/tests/test_fixture_data.py -q --tb=short
 
 # Precis frontend
-cd projects/precis/main/frontend
+cd projects/precis/precis-lms/frontend
 npm run check
 npm run build
 
@@ -132,6 +132,6 @@ python applications/scripts/check_markdown_links.py
 - [`../README.md`](../README.md)
 - [`../document-lifecycle.md`](../document-lifecycle.md)
 - [`../deletion-manifest.md`](../deletion-manifest.md)
-- [`../../../projects/precis/main/README.md`](../../../projects/precis/main/README.md)
+- [`../../../projects/precis/precis-lms/README.md`](../../../projects/precis/precis-lms/README.md)
 - [`../../../projects/precis/landi/README.md`](../../../projects/precis/landi/README.md)
 - [`../../../libs/django-fusion/CHANGELOG.md`](../../../libs/django-fusion/CHANGELOG.md)

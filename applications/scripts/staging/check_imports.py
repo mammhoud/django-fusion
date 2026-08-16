@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Import reachability check for ctc-research and lms plugins."""
+"""Import reachability check for precis-ctc and lms plugins."""
 import ast
 import sys
 from pathlib import Path
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent
-SITES = ["ctc-research", "lms"]
+SITES = ["precis-ctc", "lms"]
 ERRORS = []
 
 def check_file(filepath: Path, site_root: Path) -> None:

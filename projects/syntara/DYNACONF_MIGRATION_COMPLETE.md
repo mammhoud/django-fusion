@@ -383,7 +383,7 @@ All existing make commands continue to work (docker, webpack, database, testing,
    ```
 
 4. **Expand to Other Sites**
-   - Copy Dynaconf structure to ctc-research, lms, VResume
+   - Copy Dynaconf structure to precis-ctc, lms, VResume
    - Use same django-fusion module
    - Each site has own configs/ directory
 

@@ -26,27 +26,27 @@ The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Ast
 
 ```bash
 cd projects
-make check WEBSITE=lms-fusion         # Checks Precis LMS
-make test WEBSITE=lms-fusion          # Tests Precis LMS
-make run-dev WEBSITE=landing-fusion   # Landing-Fusion dev server
-make check WEBSITE=landing-fusion
-make test WEBSITE=landing-fusion
+make check WEBSITE=precis-lms         # Checks Precis LMS
+make test WEBSITE=precis-lms          # Tests Precis LMS
+make run-dev WEBSITE=precis-landing   # Landing-Fusion dev server
+make check WEBSITE=precis-landing
+make test WEBSITE=precis-landing
 ```
 
 ### Per-Product Commands
 
 ```bash
 # Precis LMS
-cd projects/precis/main/backend
+cd projects/precis/precis-lms/backend
 make check && make test && make migrate
 
 # Landing-Fusion
-cd projects/precis/landi
+cd projects/precis/precis-landing
 make install && make check && make build
 make backend-migrate && make backend-check && make backend-test
 
 # Formint Professional
-cd projects/formints/formint
+cd projects/formints/formint-pro
 make install && make check && make test
 
 # Formint Cloud
@@ -54,7 +54,7 @@ cd projects/formints/formint-cloud
 make install && make check && make test
 
 # Formint Community
-cd projects/formints/formintA
+cd projects/formints/formint-community
 pnpm install && pnpm tauri dev
 
 # django-fusion library
@@ -79,13 +79,16 @@ make logs              # Tail all service logs
 
 | Project | Dir | Type | Port | Stack |
 |---------|-----|------|------|-------|
-| **Precis LMS** | `projects/precis/main/` | Django Site | — | Wagtail + django-fusion |
-| **Landing-Fusion** | `projects/precis/landi/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
+| **Precis LMS** | `projects/precis/precis-lms/` | Django Site | — | Wagtail + django-fusion |
+| **Landing-Fusion** | `projects/precis/precis-landing/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
+| **CTC Research** | `projects/precis/precis-ctc/` | Django Site | — | Wagtail + django-fusion |
 | **Syntara** | `projects/syntara/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
-| **Formint Community** | `projects/formints/formintA/` | Tauri Desktop | — | Rust + React 19 + SQLite |
-| **Formint Professional** | `projects/formints/formint/` | Tauri + Django | — | Astro + Django Ninja + Unfold |
+| **Loop-CRM** | `projects/loop-crm/` | Django + Astro | 8000 | django-fusion + React islands |
+| **Formint Community** | `projects/formints/formint-community/` | Tauri Desktop | — | Rust + React 19 + SQLite |
+| **Formint Standard** | `projects/formints/formint-standard/` | Tauri + Astro | — | Tauri + FlyonUI |
+| **Formint Professional** | `projects/formints/formint-pro/` | Tauri + Django | — | Astro + Django + Unfold |
 | **Formint Cloud** | `projects/formints/formint-cloud/` | Django Server | 8767 | Django + Channels + Unfold |
-| **Formint Client** | `projects/formints/formintC/` | Tauri Desktop | — | Tauri + Vue 3 + TypeScript |
+| **Formint Client** | `projects/formints/formint-client/` | Tauri Desktop | — | Tauri + Vue 3 + TypeScript |
 | **django-fusion** | `libs/django-fusion/` | Python Package | — | Shared components (submodule) |
 
 ### Formint Edition Comparison
@@ -152,12 +155,15 @@ This monorepo is designed to **build, deploy, and publish multiple independent p
 structa.cloud/
 ├── projects/              # All Django + desktop projects
 │   ├── Makefile           # Canonical dispatcher (WEBSITE= selection)
-│   ├── configs/           # Shared Django settings
 │   ├── assets/            # Shared static/templates/locale
-│   ├── precis/            # Precis LMS
-│   ├── landing-fusion/    # Landing-Fusion marketing site
-│   ├── syntara/           # Cypercloud AI chat platform
-│   └── formints/          # Multi-edition POS platform
+│   ├── precis/            # Precis group (main, lnd-structa, lms-ctc, configs)
+│   │   ├── main/          #   Precis LMS
+│   │   ├── lnd-structa/   #   Landing-Fusion marketing site
+│   │   ├── lms-ctc/       #   CTC Research
+│   │   └── configs/       #   Shared Django settings
+│   ├── syntara/           # Syntara AI chat platform
+│   ├── loop-crm/          # Loop-CRM unified CRM
+│   └── formints/          # Multi-edition POS (community/standard/pro/cloud/client)
 ├── libs/                  # Reusable Python packages (git submodules)
 │   └── django-fusion/     # Component system + routing
 ├── applications/          # Infrastructure + tooling
@@ -185,17 +191,20 @@ The codebase has been through several renames. See this guide for mapping old na
 
 | Legacy Name | Current Name | Current Path |
 |---|---|---|
-| `ctc-research` | **Precis LMS** | `projects/precis/main/` |
-| `lms-fusion` | **Precis LMS** (alias) | `projects/precis/main/` |
+| `precis-ctc` / `ctc` | **CTC Research** | `projects/precis/precis-ctc/` |
+| `precis-lms` / `lms` | **Precis LMS** (alias) | `projects/precis/precis-lms/` |
+| `precis-landing` | **Landing-Fusion** | `projects/precis/precis-landing/` |
 | `cms-fusion` | Merged into Precis + Landing-Fusion | — |
 | `cypercloud` | **Syntara** (runtime alias preserved) | `projects/syntara/` |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/main/` |
-| `pos-mini` / `forge-pos` | **Formint Community** | `projects/formints/formintA/` |
-| `pos-solo` / `pos-full` | **Formint Professional** (merged) | `projects/formints/formint/` |
-| `pos-cloud` / `formintB` | **Formint Cloud** | `projects/formints/formint-cloud/` |
-| `pos-client` / `formintC` | **Formint Client** | `projects/formints/formintC/` |
+| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-lms/` |
+| `pos-mini` / `forge-pos` / `formintA` / `formint-community` | **Formint Community** | `projects/formints/formint-community/` |
+| `formint-standard` | **Formint Standard** | `projects/formints/formint-standard/` |
+| `pos-solo` / `pos-full` / `formint` / `formint-pro` | **Formint Professional** (merged) | `projects/formints/formint-pro/` |
+| `pos-cloud` / `formintB` / `formint-cloud` | **Formint Cloud** | `projects/formints/formint-cloud/` |
+| `pos-client` / `formintC` / `formint-client` | **Formint Client** | `projects/formints/formint-client/` |
 | `core/` | `projects/` | `projects/` |
 | `core/libs/` | `libs/` | `libs/` |
+| `core/configs/` | Shared Django settings | `projects/precis/configs/` |
 
 > ⚠️ **Use current names in new code.** Legacy names may appear in migration docs or compatibility manifests but should not be used for new source paths.
 

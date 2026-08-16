@@ -16,9 +16,9 @@ COMPOSE_ROOT = REPO_ROOT / "applications" / "compose"
 # Docker image build files live under projects/compose/.
 CORE_COMPOSE_ROOT = ROOT / "compose"
 PROXY_ROOT = REPO_ROOT / "applications" / "proxy"
-# Sites were restructured: old core/{ctc-research,lms} → projects/lms/cms/,
+# Sites were restructured: old core/{precis-ctc,lms} → projects/lms/cms/,
 # old core/VResume → projects/cms/portfolio/.
-WEBSITE_DIRS = {"ctc-research": "lms/cms", "lms": "lms/cms", "vresume": "cms/portfolio"}
+WEBSITE_DIRS = {"precis-ctc": "lms/cms", "lms": "lms/cms", "vresume": "cms/portfolio"}
 WEBSITES = tuple(WEBSITE_DIRS)
 PROJECTS = tuple(WEBSITE_DIRS.values())
 
@@ -54,21 +54,21 @@ class WebsiteLayoutTests(SimpleTestCase):
 
 class RegistrationIntegrationTests(SimpleTestCase):
     def test_registration_compat_modules_exist_for_auth_login_invite_flows(self):
-        # ctc-research keeps registration helpers under plugins/accounts/{tokens,forms/registration,views/registration}
+        # precis-ctc keeps registration helpers under plugins/accounts/{tokens,forms/registration,views/registration}
         # lms keeps them under plugins/accounts/registration/{tokens,forms,views}
         registration_roots = {
-            "ctc-research": ROOT / "lms" / "cms" / "plugins" / "accounts",
+            "precis-ctc": ROOT / "lms" / "cms" / "plugins" / "accounts",
             "lms": ROOT / "lms" / "cms" / "plugins" / "accounts",
         }
         forms_paths = {
-            "ctc-research": registration_roots["ctc-research"] / "forms" / "registration.py",
+            "precis-ctc": registration_roots["precis-ctc"] / "forms" / "registration.py",
             "lms": registration_roots["lms"] / "forms" / "registration.py",
         }
         views_paths = {
-            "ctc-research": registration_roots["ctc-research"] / "views" / "registration.py",
+            "precis-ctc": registration_roots["precis-ctc"] / "views" / "registration.py",
             "lms": registration_roots["lms"] / "views" / "registration.py",
         }
-        for project in ("ctc-research", "lms"):
+        for project in ("precis-ctc", "lms"):
             registration_root = registration_roots[project]
             with self.subTest(project=project):
                 assert (registration_root / "tokens.py").exists()
@@ -79,7 +79,7 @@ class RegistrationIntegrationTests(SimpleTestCase):
                 assert "assign_default_group" in views_paths[project].read_text()
 
     def test_registration_views_use_parent_account_modules(self):
-        for project in ("ctc-research", "lms"):
+        for project in ("precis-ctc", "lms"):
             source = (ROOT / "lms" / "cms" / "plugins" / "accounts" / "views" / "registration.py").read_text()
             with self.subTest(project=project):
                 assert "from ..tokens import registration_token_generator" in source
@@ -139,7 +139,7 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         # Per-site compose files now live under projects/<site>/; legacy duplicate
         # files at the old root locations should not exist.
         duplicate_compose_files = [
-            REPO_ROOT / "ctc-research" / "docker-compose.yml",
+            REPO_ROOT / "precis-ctc" / "docker-compose.yml",
             REPO_ROOT / "lms" / "docker-compose.yml",
             REPO_ROOT / "lms" / "docker-compose.proxy.yml",
             REPO_ROOT / "lms" / "docker-compose.warehouse.yml",
@@ -182,7 +182,7 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         assert ".docker-image-data" not in makefile
         assert ".docker-image-data" not in compose_makefile
         assert 'COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"' in runner
-        assert 'SERVICE="ctc-research-website"' in runner
+        assert 'SERVICE="precis-ctc-website"' in runner
 
     def test_root_makefile_exposes_shared_build_targets_and_log_dirs(self):
         makefile = (ROOT / "Makefile").read_text()
@@ -208,15 +208,15 @@ class SiteConfigTests(SimpleTestCase):
         assert spec.loader is not None
         spec.loader.exec_module(site_module)
 
-        assert site_module._normalise_website("ctc") == "ctc-research"
+        assert site_module._normalise_website("ctc") == "precis-ctc"
         assert site_module.site_config("ctc")["module"] == "LMS"
         assert "ctc-research.com" in site_module.site_security_defaults("ctc")["ALLOWED_HOSTS"]
 
     def test_workspace_ports_are_unique_for_all_websites(self):
         # Ports are declared per-site under projects/<site>/docker-compose.yml.
-        # ctc-research and lms now share projects/lms/cms/docker-compose.yml,
+        # precis-ctc and lms now share projects/lms/cms/docker-compose.yml,
         # so deduplicate by compose file path and verify unique ports.
-        expected_ports = {"ctc-research": "5070", "lms": "5070", "vresume": "5072"}
+        expected_ports = {"precis-ctc": "5070", "lms": "5070", "vresume": "5072"}
         seen_compose = set()
         seen_ports = set()
         for site, port in expected_ports.items():
@@ -232,9 +232,9 @@ class SiteConfigTests(SimpleTestCase):
 
     def test_django_compose_mounts_specific_website_sources(self):
         # Per-site compose files live under projects/<site>/docker-compose.yml.
-        # ctc-research and lms share the same compose file; deduplicate by
+        # precis-ctc and lms share the same compose file; deduplicate by
         # checking each unique file only once.
-        _mount_dirs = {"ctc-research": "ctc-research", "vresume": "VResume"}
+        _mount_dirs = {"precis-ctc": "precis-ctc", "vresume": "VResume"}
         _seen = set()
         for site, directory in WEBSITE_DIRS.items():
             compose_path = ROOT / directory / "docker-compose.yml"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-cd /home/structa.cloud/projects/precis/main/backend
+cd /home/structa.cloud/projects/precis/precis-lms/backend
 UV_BIN=$(command -v uv || echo /root/.local/bin/uv)
 
 echo '=== running teaser tests ==='

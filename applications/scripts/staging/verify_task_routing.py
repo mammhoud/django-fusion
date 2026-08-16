@@ -2,10 +2,10 @@
 """Verify shared-worker processes tasks from each configured Dramatiq queue.
 
 This script enqueues one Dramatiq message per queue
-(default, shared, email, ctc-research, lms, vresume) using the same
+(default, shared, email, precis-ctc, lms, vresume) using the same
 broker the running shared-worker consumes from. It bypasses loading the full
 Django settings stack, which currently has a pre-existing import issue in
-ctc-research/settings.py.
+precis-ctc/settings.py.
 
 The worker must already know the actor (`shared.content.users_count`) from
 its startup imports; we only need to enqueue a valid message with that
@@ -28,7 +28,7 @@ QUEUES = [
     "default",
     "shared",
     "email",
-    "ctc-research",
+    "precis-ctc",
     "lms",
     "vresume",
 ]
@@ -47,7 +47,7 @@ def main() -> int:
                 queue_name=queue,
                 actor_name="shared.content.users_count",
                 args=[],
-                kwargs={"website": "ctc-research"},
+                kwargs={"website": "precis-ctc"},
                 options={},
                 message_id=str(uuid.uuid4()),
                 message_timestamp=int(time.time() * 1000),

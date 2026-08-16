@@ -1,7 +1,7 @@
 # Deployment Fix Progress & Summary (Session: 2026-06-09)
 
 ## Overview
-Working on fixing Django configuration, template loading, and model registry conflicts in a multi-site wagtail deployment (ctc-research, lms, vresume).
+Working on fixing Django configuration, template loading, and model registry conflicts in a multi-site wagtail deployment (precis-ctc, lms, vresume).
 
 ## Critical Issues Fixed
 
@@ -76,20 +76,20 @@ plugins/urls.py
 1. `/root/site/websites/configs/base/templates.py`
    - Added plugin template directories to `TEMPLATES_DIRS`
 
-2. `/root/site/websites/ctc-research/plugins/urls.py`
+2. `/root/site/websites/precis-ctc/plugins/urls.py`
    - Re-enabled all URL includes (had temporarily disabled LMS)
 
-3. `/root/site/websites/ctc-research/plugins/profile/views/settings.py`
+3. `/root/site/websites/precis-ctc/plugins/profile/views/settings.py`
    - Added lazy base class resolution
    - Changed Person imports to lazy loading
    - Changed Person type hints to forward references
 
-4. `/root/site/websites/ctc-research/plugins/lms/urls.py`
+4. `/root/site/websites/precis-ctc/plugins/lms/urls.py`
    - Removed star import from views
    - Split into targeted imports
    - Added lazy payment URLs function
 
-5. `/root/site/websites/ctc-research/plugins/lms/views/cart.py`
+5. `/root/site/websites/precis-ctc/plugins/lms/views/cart.py`
    - Added lazy payment mixin loading
    - Removed eager ceptor_ai.site.payments import
 
@@ -156,13 +156,13 @@ make: *** [Makefile:165: server] Error 3 (occasionally Error 1)
 ```bash
 # Option 1: Check the error log file directly
 cd /root/site/websites
-docker compose exec -T ctc-research-website cat /app/logs/gunicorn-error.log
+docker compose exec -T precis-ctc-website cat /app/logs/gunicorn-error.log
 
 # Option 2: Try importing the problematic modules directly
-docker compose exec -T ctc-research-website python -c "from plugins.lms.urls import urlpatterns; print(urlpatterns[:3])"
+docker compose exec -T precis-ctc-website python -c "from plugins.lms.urls import urlpatterns; print(urlpatterns[:3])"
 
 # Option 3: Check for import errors in profile views
-docker compose exec -T ctc-research-website python -c "from plugins.profile.urls import urlpatterns; print(len(urlpatterns))"
+docker compose exec -T precis-ctc-website python -c "from plugins.profile.urls import urlpatterns; print(len(urlpatterns))"
 ```
 
 ### Most Likely Issues
@@ -193,11 +193,11 @@ docker compose exec -T ctc-research-website python -c "from plugins.profile.urls
 ### Files That Need Verification
 
 Check these for import errors or missing exports:
-- [ ] `/root/site/websites/ctc-research/plugins/lms/views/lessons.py` - has `LessonNavigationView`?
-- [ ] `/root/site/websites/ctc-research/plugins/lms/views/courses.py` - has all imported items?
-- [ ] `/root/site/websites/ctc-research/plugins/lms/views/enrollment.py` - complete?
-- [ ] `/root/site/websites/ctc-research/plugins/lms/views/payments.py` - has `PaymentHistoryView`?
-- [ ] `/root/site/websites/ctc-research/plugins/lms/views/wishlist.py` - missing? (see import in urls.py)
+- [ ] `/root/site/websites/precis-ctc/plugins/lms/views/lessons.py` - has `LessonNavigationView`?
+- [ ] `/root/site/websites/precis-ctc/plugins/lms/views/courses.py` - has all imported items?
+- [ ] `/root/site/websites/precis-ctc/plugins/lms/views/enrollment.py` - complete?
+- [ ] `/root/site/websites/precis-ctc/plugins/lms/views/payments.py` - has `PaymentHistoryView`?
+- [ ] `/root/site/websites/precis-ctc/plugins/lms/views/wishlist.py` - missing? (see import in urls.py)
 
 ### Deployment Health Checks
 
@@ -216,7 +216,7 @@ curl -k https://127.0.0.1/django-admin/ -H "Host: ctc-research.local" | head -20
 ### Documentation Reference
 
 The lazy loading pattern implemented:
-- See `/root/site/websites/ctc-research/plugins/profile/views/profile.py` for reference
+- See `/root/site/websites/precis-ctc/plugins/profile/views/profile.py` for reference
 - All problematic views should follow this pattern
 - The `dispatch` method rebinds base classes at request-time, AFTER django.setup()
 
@@ -234,7 +234,7 @@ These issues should be addressed in future sessions:
 
 ### Final Status: DEPLOYMENT WORKING
 
-The ctc-research site is now:
+The precis-ctc site is now:
 - ✅ Running healthy
 - ✅ Health endpoint responding: `GET /health/` → 200
 - ✅ Gunicorn serving on port 5070
@@ -244,7 +244,7 @@ The ctc-research site is now:
 1. **Added ceptor_ai to INSTALLED_APPS** (`/root/site/websites/configs/base/apps.py`)
    - Required because lms imports from `ceptor_ai.models.default.DefaultBase`
 
-2. **Fixed lms/urls.py imports** (`/root/site/websites/ctc-research/plugins/lms/urls.py`)
+2. **Fixed lms/urls.py imports** (`/root/site/websites/precis-ctc/plugins/lms/urls.py`)
    - Moved imports from star import to specific module-based imports
    - Fixed incorrect module assignments for views:
      - `CourseWatchView`, `CourseContinueView`, `LessonNavigationView` → from lessons.py (not courses.py)
@@ -282,9 +282,9 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 |------|---------|
 | `/root/site/websites/configs/base/templates.py` | Added plugin template directories |
 | `/root/site/websites/configs/base/apps.py` | Added ceptor_ai to INSTALLED_APPS |
-| `/root/site/websites/ctc-research/plugins/urls.py` | Re-enabled LMS URLs |
-| `/root/site/websites/ctc-research/plugins/lms/urls.py` | Fixed view imports, added lazy payment URLs |
-| `/root/site/websites/ctc-research/plugins/profile/views/settings.py` | Added lazy mixin loading pattern |
+| `/root/site/websites/precis-ctc/plugins/urls.py` | Re-enabled LMS URLs |
+| `/root/site/websites/precis-ctc/plugins/lms/urls.py` | Fixed view imports, added lazy payment URLs |
+| `/root/site/websites/precis-ctc/plugins/profile/views/settings.py` | Added lazy mixin loading pattern |
 
 ### Next Steps
 
@@ -299,7 +299,7 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 ### System State: STABLE AND OPERATIONAL
 
 **Deployment Status**: 
-- ctc-research: ✅ Running and healthy
+- precis-ctc: ✅ Running and healthy
 - lms: ⏳ Not deployed in this session (same fixes apply)
 - VResume: ⏳ Not deployed in this session (same fixes apply)
 
@@ -324,7 +324,7 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 
 ### To Deploy Same Fixes to Other Sites
 
-The fixes made to ctc-research can be applied identically to lms and VResume:
+The fixes made to precis-ctc can be applied identically to lms and VResume:
 
 ```bash
 # On lms
@@ -342,8 +342,8 @@ make docker-deploy-websites
 # Check all services
 cd /root/site/websites && docker compose ps
 
-# Check ctc-research logs
-cd /root/site/websites && docker compose logs -f ctc-research-website
+# Check precis-ctc logs
+cd /root/site/websites && docker compose logs -f precis-ctc-website
 
 # Test health endpoint
 curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/health/
@@ -358,9 +358,9 @@ All changes are in `/root/site/websites/`:
 
 - `configs/base/templates.py` - Template directory configuration
 - `configs/base/apps.py` - INSTALLED_APPS configuration
-- `ctc-research/plugins/urls.py` - URL includes
-- `ctc-research/plugins/lms/urls.py` - View imports and lazy URLs
-- `ctc-research/plugins/profile/views/settings.py` - Lazy mixin loading
+- `precis-ctc/plugins/urls.py` - URL includes
+- `precis-ctc/plugins/lms/urls.py` - View imports and lazy URLs
+- `precis-ctc/plugins/profile/views/settings.py` - Lazy mixin loading
 
 ### Documentation
 

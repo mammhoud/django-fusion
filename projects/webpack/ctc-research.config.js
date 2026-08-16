@@ -1,5 +1,5 @@
 /**
- * Per-project webpack config — CTC Research (`projects/precis/ctc-research`).
+ * Per-project webpack config — CTC Research (`projects/precis/precis-ctc`).
  *
  * Extends `projects/webpack/base.config.js` (the `createConfig` factory) so the
  * CTC Research site builds its own bundles instead of relying on the deprecated
@@ -9,11 +9,11 @@
  *   - assets/static/styles/main.scss  → `main` bundle (CSS)
  *   - assets/static/js/app.js         → `app` bundle (JS)
  *
- * Output lands in `projects/precis/ctc-research/assets/bundles/ctc-research/`
- * and is published under `/static/bundles/ctc-research/`, matching the per-site
- * `BUNDLE_DIR_NAME` in `projects/precis/ctc-research/backend/configs/base/assets.py`.
+ * Output lands in `projects/precis/precis-ctc/assets/bundles/precis-ctc/`
+ * and is published under `/static/bundles/precis-ctc/`, matching the per-site
+ * `BUNDLE_DIR_NAME` in `projects/precis/precis-ctc/backend/configs/base/assets.py`.
  *
- * Usage (from `projects/precis/ctc-research/assets/`):
+ * Usage (from `projects/precis/precis-ctc/assets/`):
  *   npm ci --include=dev --legacy-peer-deps
  *   npx webpack --config ../../webpack/ctc-research.config.js --mode production
  */
@@ -24,10 +24,10 @@ const path = require('path');
 const createConfig = require('./base.config');
 
 module.exports = createConfig({
-  name: 'ctc-research',
-  projectRoot: path.resolve(__dirname, '..', 'precis', 'ctc-research'),
-  outputPath: 'assets/bundles/ctc-research',
-  outputPublic: '/static/bundles/ctc-research/',
+  name: 'precis-ctc',
+  projectRoot: path.resolve(__dirname, '..', 'precis', 'lms-ctc'),
+  outputPath: 'assets/bundles/precis-ctc',
+  outputPublic: '/static/bundles/precis-ctc/',
   aliases: {
     '@ctc': 'assets/static/js',
   },

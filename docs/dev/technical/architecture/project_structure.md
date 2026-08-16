@@ -7,7 +7,7 @@ The repository is organized as a shared Django/Wagtail workspace with two deploy
 | Path | Description |
 |---|---|
 | `manage.py` | Root site selector. Accepts `--site`, `DJANGO_SITE`, or `SITE` and maps legacy aliases to real site directories. |
-| `pyproject.toml` | Workspace dependency definition for the real members `ctc-research` and `lms-demo`. |
+| `pyproject.toml` | Workspace dependency definition for the real members `precis-ctc` and `lms-demo`. |
 | `Makefile` | Root command interface for checks, tests, assets, Docker, and per-site runtime operations. |
 | `configs/` | Shared settings fragments, YAML environment files, base Django settings modules, and config tests. |
 | `tasks/` | Shared Celery/runtime task entrypoints that can serve more than one website. |
@@ -17,7 +17,7 @@ The repository is organized as a shared Django/Wagtail workspace with two deploy
 | `scripts/` | Runtime utilities such as dumped-data loading and deployment verification. |
 | `tests/` | Unit, integration, website, Docker, HTTP, Selenium, and fixture tests. |
 | `docs/` | Documentation source, architecture notes, deployment flow, and reports. |
-| `ctc-research/` | CTC Research site package. |
+| `precis-ctc/` | CTC Research site package. |
 | `lms-demo/` | Structa/LMS demo site package. |
 
 ## Site directory pattern
@@ -39,11 +39,11 @@ site-name/
 
 ## Site aliases
 
-The root `manage.py` supports aliases for compatibility, but the real directories are `ctc-research` and `lms-demo`.
+The root `manage.py` supports aliases for compatibility, but the real directories are `precis-ctc` and `lms-demo`.
 
 | Alias | Real directory |
 |---|---|
-| `ctc`, `ctc-research`, `ctc-research.com` | `ctc-research` |
+| `ctc`, `precis-ctc`, `ctc-research.com` | `precis-ctc` |
 | `structa`, `structa.cloud`, `core`, `lms`, `lms-demo` | `lms-demo` |
 
 ## Docker structure

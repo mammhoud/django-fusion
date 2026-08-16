@@ -324,7 +324,7 @@ NEXT STEPS (OPTIONAL)
 ================================================================================
 
 1. Copy to Other Sites
-   - Use the same Dynaconf system for ctc-research, lms, VResume
+   - Use the same Dynaconf system for precis-ctc, lms, VResume
    - Each site gets its own configs/ directory
    - All use shared django-fusion module
 

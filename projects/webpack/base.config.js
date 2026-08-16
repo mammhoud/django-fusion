@@ -1,7 +1,7 @@
 /**
  * Webpack Base Config Factory
  *
- * Shared foundation for all project webpack configs (landing-fusion, precis, etc.).
+ * Shared foundation for all project webpack configs (precis-landing, precis, etc.).
  * Replaces the legacy env-var-based main.config.js site dispatcher with explicit
  * per-project configuration.
  *
@@ -12,7 +12,7 @@
  * Usage in each project:
  *   const createConfig = require('../../webpack/base.config');
  *   module.exports = createConfig({
- *     name: 'landing-fusion',
+ *     name: 'precis-landing',
  *     projectRoot: __dirname + '/..',
  *     entries: { landing: './assets/static/js/app.js' },
  *     aliases: { '@landing': './assets/static' },

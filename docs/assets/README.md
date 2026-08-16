@@ -39,8 +39,8 @@ docs/assets/
 |---|---|---|
 | Formint admin screenshots | `projects/formints/docs/screenshots/admin/` | Original captures |
 | Formint frontend screenshots | `projects/formints/docs/screenshots/frontend/` | Original captures |
-| Formint product previews | `projects/precis/landi/backend/assets/static/previews/formints/` | Used on landing site |
-| Landing-Fusion related images | `projects/precis/landi/backend/assets/static/related/formints/` | Product feature images |
+| Formint product previews | `projects/precis/precis-landing/backend/assets/static/previews/formints/` | Used on landing site |
+| Landing-Fusion related images | `projects/precis/precis-landing/backend/assets/static/related/formints/` | Product feature images |
 
 ## Adding New Assets
 
@@ -53,4 +53,4 @@ docs/assets/
 ## Related
 
 - [Previews naming convention](https://github.com/mammhoud/structa.cloud/blob/generic/docs/README.md)
-- [Landing-Fusion preview assets](../../projects/precis/landi/backend/assets/static/previews/)
+- [Landing-Fusion preview assets](../../projects/precis/precis-landing/backend/assets/static/previews/)

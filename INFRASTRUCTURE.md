@@ -76,12 +76,12 @@
 
 ---
 
-### ctc-research-website (Django/Gunicorn)
+### precis-ctc-website (Django/Gunicorn)
 
 | Property | Value |
 |----------|-------|
 | **Image** | Built from `projects/compose/Dockerfile` |
-| **Container Name** | `ctc-research-website` |
+| **Container Name** | `precis-ctc-website` |
 | **Port** | 5070 (internal, not exposed) |
 | **Status** | ✅ Healthy |
 | **Health Check** | `curl -f http://localhost:5070/health/` |
@@ -102,8 +102,8 @@
 
 **Configuration:**
 ```
-WEBSITE=ctc-research
-DJANGO_SITE=ctc-research
+WEBSITE=precis-ctc
+DJANGO_SITE=precis-ctc
 DATABASE_URL=postgresql://user:pass@postgres:5432/ctc_research_db
 REDIS_URL=redis://default-redis:6379/0
 DEBUG=False
@@ -166,7 +166,7 @@ ALLOWED_HOSTS=ctc-research.com,www.ctc-research.com
 | **Port** | 80 (internal, proxied via Traefik) |
 | **Status** | ✅ Healthy |
 | **Log Driver** | `json-file` |
-| **Volumes** | `/var/www/sites/{ctc-research,vresume,lms}` |
+| **Volumes** | `/var/www/sites/{precis-ctc,vresume,lms}` |
 
 **Purpose:**
 - Serve static files (CSS, JS, images)
@@ -322,7 +322,7 @@ default-proxy:
         cpus: '0.5'
         memory: 256M
 
-ctc-research-website:
+precis-ctc-website:
   deploy:
     resources:
       limits:
@@ -340,16 +340,16 @@ ctc-research-website:
 docker stats
 
 # Per-container usage
-docker stats ctc-research-website --no-stream
+docker stats precis-ctc-website --no-stream
 
 # Memory usage over time
-watch -n 1 'docker stats --no-stream | grep ctc-research'
+watch -n 1 'docker stats --no-stream | grep precis-ctc'
 
 # Disk usage
 docker system df
 
 # Top processes in container
-docker exec ctc-research-website top -b -n 1
+docker exec precis-ctc-website top -b -n 1
 ```
 
 ### Optimization Tips
@@ -431,7 +431,7 @@ cat .gitignore
 ```bash
 # Restore from backup
 docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
-docker restart ctc-research-website
+docker restart precis-ctc-website
 ```
 
 **Let's Encrypt cert issues:**
@@ -444,14 +444,14 @@ docker restart default-proxy
 **Container crashes:**
 ```bash
 # Check logs
-docker logs ctc-research-website | tail -100
+docker logs precis-ctc-website | tail -100
 
 # Restart
-docker restart ctc-research-website
+docker restart precis-ctc-website
 
 # If persistent, rebuild
 docker-compose down
-docker-compose up -d ctc-research-website
+docker-compose up -d precis-ctc-website
 ```
 
 **Full server failure:**

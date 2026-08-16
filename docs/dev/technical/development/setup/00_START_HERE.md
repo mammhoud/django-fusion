@@ -95,7 +95,7 @@ This document will guide you through what's been built and how to use it.
 │       ├── plugins/                   ← Plugin system
 │       └── utility/                   ← Shared code
 │
-├── ctc-research/                      # 🌐 Website 1
+├── precis-ctc/                      # 🌐 Website 1
 ├── lms-demo/                          # 🌐 Website 2
 ├── VResume/                           # 🌐 Website 3
 │
@@ -226,7 +226,7 @@ docker-compose ps
 bash run_full_test_suite.sh
 
 # Create admin user
-docker exec -it web-ctc-research python manage.py createsuperuser
+docker exec -it web-precis-ctc python manage.py createsuperuser
 ```
 
 ### Documentation Quick Links
