@@ -49,7 +49,6 @@
   --brand-formints: 158 42% 32%;   /* verdigris — merchant seal      */
   --brand-precis: 238 55% 44%;     /* indigo — learning, focus      */
   --brand-loop: 24 55% 40%;        /* terracotta — blocks, craft    */
-  --brand-syntara: 264 58% 48%;    /* iris — AI signal              */
   --brand-vresume: 346 52% 44%;    /* madder rose — career, growth  */
   --brand-precis-ctc: 183 53% 34%; /* teal — evidence, continuity */
 }
@@ -77,7 +76,6 @@
   --brand-formints: 158 55% 62%;
   --brand-precis: 231 70% 74%;
   --brand-loop: 27 72% 66%;
-  --brand-syntara: 264 68% 78%;
   --brand-vresume: 346 66% 72%;
   --brand-precis-ctc: 183 62% 66%;
 }
@@ -689,7 +687,6 @@
   .product-logo[data-brand="formints"] { color: hsl(var(--brand-formints)); border-color: hsl(var(--brand-formints) / 0.35); background: hsl(var(--brand-formints) / 0.06); }
   .product-logo[data-brand="precis"]   { color: hsl(var(--brand-precis));   border-color: hsl(var(--brand-precis) / 0.35);   background: hsl(var(--brand-precis) / 0.06); }
   .product-logo[data-brand="loop"]     { color: hsl(var(--brand-loop));     border-color: hsl(var(--brand-loop) / 0.35);     background: hsl(var(--brand-loop) / 0.06); }
-  .product-logo[data-brand="syntara"]  { color: hsl(var(--brand-syntara));  border-color: hsl(var(--brand-syntara) / 0.35);  background: hsl(var(--brand-syntara) / 0.06); }
   .product-logo[data-brand="vresume"]  { color: hsl(var(--brand-vresume));  border-color: hsl(var(--brand-vresume) / 0.35);  background: hsl(var(--brand-vresume) / 0.06); }
   .product-logo[data-brand="precis-ctc"] { color: hsl(var(--brand-precis-ctc)); border-color: hsl(var(--brand-precis-ctc) / 0.35); background: hsl(var(--brand-precis-ctc) / 0.06); }
   a:hover .product-logo {

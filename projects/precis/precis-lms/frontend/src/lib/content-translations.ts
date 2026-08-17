@@ -185,17 +185,17 @@ const CONTENT: Record<string, Partial<PageData>> = {
   products: {
     slug: 'products', title: 'Products', type: 'ProductsPage', show_in_nav: true,
     seo_title: 'Products · Precis',
-    search_description: 'Structa Cloud products — django-fusion, ceptor-ai, django-bolt, vResume, Forge POS, and Cypercloud.',
+    search_description: 'Structa Cloud products — django-fusion, ceptor-ai, django-bolt, vResume, and Forge POS.',
     hero: {
       badge: 'products · the full product line',
       title: 'Everything we build, shipped as',
       accent: 'open source',
-      subtitle: 'Six products from one monorepo — three open-source libraries, two cloud platforms, and a desktop POS.',
+      subtitle: 'Five products from one monorepo — three open-source libraries, one cloud platform, and a desktop POS.',
       primary_cta: { label: 'View on GitHub', href: 'https://github.com/mammhoud' },
       secondary_cta: { label: 'See projects', href: '/projects/' },
     },
     stats: [
-      { label: 'Products', value: 6, suffix: '' },
+      { label: 'Products', value: 5, suffix: '' },
       { label: 'Open source', value: 100, suffix: '%' },
       { label: 'Languages', value: 7, suffix: '' },
     ],
@@ -203,7 +203,6 @@ const CONTENT: Record<string, Partial<PageData>> = {
       { title: 'Forge POS', slug: 'forge-pos', tagline: 'Desktop point-of-sale in three editions — Minimal, Solo, and Full.', href: '/products/forge-pos/' },
       { title: 'Precis LMS', slug: 'lms', tagline: 'Courses, enrollments, and a learning experience your team can own.', href: '/products/lms/' },
       { title: 'Loop', slug: 'cms', tagline: 'Build content-driven websites from Wagtail blocks.', href: '/products/cms/' },
-      { title: 'Syntara', slug: 'cypercloud', tagline: 'AI chat customizer with an embeddable, branded experience.', href: '/products/cypercloud/' },
     ],
     faq: [
       { question: 'Which products are open source?', answer: 'The core libraries — django-fusion, ceptor-ai, django-bolt — are fully public, and every product ships a community edition.' },
@@ -406,30 +405,6 @@ const PRODUCT_DETAILS: Record<string, Partial<PageData>> = {
       { icon: 'M3 3v18h18M7 15l4-4 3 3 5-6', title: 'Bilingual by default', description: 'Arabic + English editorial overlays with a stable API contract.' },
     ],
     cta: { title: 'Ship content as documents', subtitle: 'Community is free; Business is quoted per project.', primary_cta: { label: 'View on GitHub', href: 'https://github.com/mammhoud' } },
-  },
-  cypercloud: {
-    slug: 'cypercloud', title: 'Syntara', type: 'ProductPage', show_in_nav: false,
-    seo_title: 'Syntara · Precis',
-    search_description: 'AI chat customizer with an embeddable, branded experience.',
-    hero: {
-      badge: 'product · AI chat',
-      title: 'Syntara',
-      accent: 'embeddable AI chat',
-      subtitle: 'AI chat customizer with an embeddable, branded experience — powered by ceptor-ai and its MCP server.',
-      primary_cta: { label: 'See pricing', href: '/pricing/' },
-      secondary_cta: { label: 'View on GitHub', href: 'https://github.com/mammhoud' },
-    },
-    tech: ['Python', 'Django', 'ceptor-ai', 'MCP'],
-    editions: [
-      { name: 'Community', price: '$0', period: '/open source', tagline: 'Self-hosted chat client with multi-model support.', features: ['ceptor-ai chat client', 'MCP server', 'Multi-model support'], featured: false, cta_label: 'Self-host', cta_href: 'https://github.com/mammhoud' },
-      { name: 'Business', price: '$39', period: '/per month', tagline: 'Managed chat with branding, rules, and analytics.', features: ['Everything in Community', 'Branded widget', 'Behavior rules', 'Analytics'], featured: true, cta_label: 'Get started', cta_href: '/contact/' },
-    ],
-    features: [
-      { icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z', title: 'Embeddable widget', description: 'A branded chat experience drops into any site.' },
-      { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'MCP server', description: 'Agents talk to your systems through the Model Context Protocol.' },
-      { icon: 'M3 3v18h18M7 15l4-4 3 3 5-6', title: 'Multi-model', description: 'Route between providers with behavior rules per workspace.' },
-    ],
-    cta: { title: 'Embed chat your customers trust', subtitle: 'Community is free; Business is $39/month.', primary_cta: { label: 'View on GitHub', href: 'https://github.com/mammhoud' } },
   },
 };
 

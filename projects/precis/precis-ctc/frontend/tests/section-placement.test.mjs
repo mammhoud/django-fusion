@@ -9,7 +9,7 @@
  *   - `/`        (Home)    — slim hero + CTA entry; no section stack, no error cards
  *   - `/about`   (About)   — full document: stats, features, testimonials, faq, cta
  *   - `/features`          — capabilities + testimonials + faq
- *   - `/products`          — stats + the six product lines
+ *   - `/products`          — stats + the five product lines
  *   - `/projects`          — the repo project grid (editions + shared/own flags)
  *   - `/contact`, `/faq`, `/privacy` — seeded contact methods / FAQ items / body
  *
@@ -134,7 +134,7 @@ test('features is a full document like about', () => {
   assert.match(features, /Built open-source, shipped as HTML/);
 });
 
-test('products is a full document with the six product lines', () => {
+test('products is a full document with the five product lines', () => {
   // Seeded hero: "Everything we build, shipped as" + accent "open source".
   assert.match(products, /Everything we build, shipped as/);
   assert.match(products, /open source/);
@@ -142,7 +142,7 @@ test('products is a full document with the six product lines', () => {
   assert.ok(products.includes('Open-source repos'), 'products should contain seeded stat label');
   // Product lines (frontend design).
   assert.match(products, /From libraries to platforms/);
-  for (const name of ['django-fusion', 'ceptor-ai', 'django-bolt', 'vResume', 'Forge POS', 'Cypercloud']) {
+  for (const name of ['django-fusion', 'ceptor-ai', 'django-bolt', 'vResume', 'Forge POS']) {
     assert.ok(products.includes(name), `products should contain product line: ${name}`);
   }
   // Seeded CTA (full-document pages close with the about-style CTA).
@@ -161,7 +161,6 @@ test('projects is a full document with the seeded repo grid', () => {
     ['Forge POS', 'Minimal · Solo · Full', 'desktop point-of-sale'],
     ['django-fusion', 'library · generic', 'component system'],
     ['ceptor-ai', 'library · generic', 'MCP server'],
-    ['Cypercloud', 'AI platform', 'chat customizer'],
   ];
   for (const [name, edition, descriptionSnippet] of seededProjects) {
     assert.ok(projects.includes(name), `projects should contain: ${name}`);

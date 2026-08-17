@@ -10,7 +10,7 @@
  *     catalog page is the single course destination) and no framework demo
  *   - `/about`   (About)   — full document: stats, features, testimonials, faq, cta
  *   - `/features`          — capabilities + testimonials + faq
- *   - `/products`          — stats + the six product lines
+ *   - `/products`          — stats + the five product lines
  *   - `/projects`          — the repo project grid (editions + shared/own flags)
  *   - `/contact`, `/faq`, `/privacy` — seeded contact methods / FAQ items / body
  *
@@ -173,7 +173,7 @@ test('products is the merged catalog: renamed product cards with logos, status, 
   assert.match(products, /Projects in this repo/);
   assert.match(products, /Browse the monorepo on GitHub/);
   // Data-driven catalog — renamed products, no removed/hidden ones.
-  for (const name of ['Formints', 'Precis LMS', 'Loop', 'Syntara', 'vResume']) {
+  for (const name of ['Formints', 'Precis LMS', 'Loop', 'vResume']) {
     assert.ok(products.includes(name), `products should contain product: ${name}`);
   }
   // Removed/hidden products get no card and no link (prose mentions in the
@@ -196,7 +196,7 @@ test('products is the merged catalog: renamed product cards with logos, status, 
   assert.match(products, /product-logo/);
   assert.match(products, /edition-chip/);
   // Each product renders its own brand-identity chip (no shared generic mark).
-  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"', 'data-brand="precis-ctc"']) {
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="vresume"', 'data-brand="precis-ctc"']) {
     assert.ok(products.includes(chip), `products should render mark chip: ${chip}`);
   }
   // Seeded CTA (full-document pages close with the about-style CTA).
@@ -231,7 +231,6 @@ test('contact shows seeded contact methods + topic choices', () => {
   assert.match(contact, /Formints POS/);
   assert.match(contact, /Precis LMS/);
   assert.match(contact, /Loop CMS/);
-  assert.match(contact, /Syntara/);
 });
 
 test('faq page shows seeded FAQ items', () => {
@@ -263,15 +262,13 @@ test('blog page shows the seeded post grid', () => {
 
 test('pricing page shows per-product tabs + faq', () => {
   assert.match(pricing, /Pick a product, see its editions/);
-  for (const product of ['Formints', 'Precis LMS', 'Loop', 'Syntara', 'vResume']) {
+  for (const product of ['Formints', 'Precis LMS', 'Loop', 'vResume']) {
     assert.ok(pricing.includes(product), `pricing should contain product tab: ${product}`);
   }
   // The default tab shows Formints' four editions incl. the new pricing.
   for (const marker of ['Community', 'Standard', 'Pro', 'Cloud', '$119', '$79']) {
     assert.ok(pricing.includes(marker), `pricing should contain: ${marker}`);
   }
-  // Syntara's development caution badge renders in its tab.
-  assert.match(pricing, /under development/);
   // Hidden products are not tabbed.
   assert.ok(!pricing.includes('/products/ceptor-ai/'), 'pricing should not link to hidden products');
   assert.ok(pricing.includes('/products/vresume/'), 'pricing should link to catalog-only vResume');
@@ -292,12 +289,12 @@ test('services page shows the three service lines + build-as-you-go process', ()
 });
 
 test('brand page renders the identity system: one board per product with its constructed mark', () => {
-  assert.match(brand, /One family, six marks/);
+  assert.match(brand, /One family, five marks/);
   // Each brand's essence line + its own data-brand mark chip.
-  for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'From impression to deal.', 'Chat, routed around your brand.', 'Your career, on the record.', 'Evidence, carried forward.']) {
+  for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'From impression to deal.', 'Your career, on the record.', 'Evidence, carried forward.']) {
     assert.ok(brand.includes(essence), `brand should contain essence: ${essence}`);
   }
-  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="syntara"', 'data-brand="vresume"', 'data-brand="precis-ctc"']) {
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="vresume"', 'data-brand="precis-ctc"']) {
     assert.ok(brand.includes(chip), `brand should render mark chip: ${chip}`);
   }
   // Brand story labels + construction notes are present.

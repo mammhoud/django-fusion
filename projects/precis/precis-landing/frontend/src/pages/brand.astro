@@ -56,7 +56,7 @@ function swatchVar(token: string): string {
 
 <Layout
   title="Brand kit"
-  description="The structa.cloud brand system — six constructed marks, one family: Formints, Precis LMS, Loop CRM, Syntara, vResume, and CTC Research."
+  description="The structa.cloud brand system — five constructed marks, one family: Formints, Precis LMS, Loop CRM, vResume, and CTC Research."
 
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
@@ -65,9 +65,9 @@ function swatchVar(token: string): string {
 >
   <Hero
     eyebrow={pageHero?.badge || 'brand · identity'}
-    heading={pageHero?.title || 'One family, six marks'}
-    accent='six marks'
-    intro={pageHero?.subtitle || 'Every product carries its own constructed mark, a symbol built from what it does, not a generic glyph. Same system, six distinct identities.'}
+    heading={pageHero?.title || 'One family, five marks'}
+    accent='five marks'
+    intro={pageHero?.subtitle || 'Every product carries its own constructed mark, a symbol built from what it does, not a generic glyph. Same system, five distinct identities.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See the products', href: '/products' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Pricing', href: '/pricing' }}
     status="200 OK · text/html · the identity system, in one response"
@@ -135,7 +135,7 @@ function swatchVar(token: string): string {
   ) : <ContentError label="Brand data unavailable" />}
 
   <CTA
-    heading={pageCta?.title || 'One family, six marks'}
+    heading={pageCta?.title || 'One family, five marks'}
     intro={pageCta?.subtitle || 'Community editions of every product are open source. Explore the code, open issues, or contribute.'}
     ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
     ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}

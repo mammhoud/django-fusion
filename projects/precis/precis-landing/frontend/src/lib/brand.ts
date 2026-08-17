@@ -64,26 +64,12 @@ export const BRAND_SPEC: Record<string, BrandSpec> = {
     voice: 'JetBrains Mono accent — a revenue-ops product, labelled like a dashboard.',
     palette: ['loop', 'paper', 'ink', 'line', 'mark'],
   },
-  cypercloud: {
-    slug: 'cypercloud',
-    brand: 'syntara',
-    mark: 'orbit',
-    name: 'Syntara',
-    role: 'AI chat customizer · ceptor-ai powered · MCP · 2 editions · under development',
-    essence: 'Chat, routed around your brand.',
-    metaphor:
-      'A signal core with crossing conversation orbits — every chat routed around your model, your data.',
-    construction:
-      'A core node (the model) + two elliptical orbits (conversation paths) + a satellite: customization in motion.',
-    voice: 'JetBrains Mono accent — an API product, labelled like one.',
-    palette: ['syntara', 'paper', 'ink', 'line', 'link'],
-  },
   vresume: {
     slug: 'vresume',
     brand: 'vresume',
     mark: 'ascent',
     name: 'vResume',
-    role: 'Portfolio & resume platform · Syntara-powered summaries · cloud hosted',
+    role: 'Portfolio & resume platform · AI-powered summaries · cloud hosted',
     essence: 'Your career, on the record.',
     metaphor: 'A staircase — work shown step by step, a check at the summit.',
     construction:

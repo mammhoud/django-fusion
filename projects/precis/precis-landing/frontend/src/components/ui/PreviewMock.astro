@@ -121,25 +121,7 @@ const editionName = edition || 'preview';
       </div>
     )}
 
-    {slug === 'cypercloud' && (
-      <div style='max-width:22rem;margin:0 auto;border:1px solid hsl(var(--fu-line));border-radius:1rem;background:hsl(var(--fu-card));overflow:hidden;'>
-        <div style='display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;border-bottom:1px solid hsl(var(--fu-line));'>
-          <span style='width:.5rem;height:.5rem;border-radius:999px;background:hsl(var(--fu-live));'></span>
-          <span style='font-size:.72rem;font-weight:600;color:hsl(var(--fu-ink));'>Syntara</span>
-          <span style='margin-left:auto;font-size:.6rem;color:hsl(var(--fu-muted));'>ceptor-ai · MCP</span>
-        </div>
-        <div style='padding:.8rem;display:flex;flex-direction:column;gap:.45rem;background:hsl(var(--fu-surface));'>
-          <span style='align-self:flex-start;max-width:78%;font-size:.68rem;padding:.4rem .6rem;border-radius:.6rem;border:1px solid hsl(var(--fu-line));background:hsl(var(--fu-paper));color:hsl(var(--fu-text) / .8);'>Summarize my latest sales?</span>
-          <span style='align-self:flex-end;max-width:78%;font-size:.68rem;padding:.4rem .6rem;border-radius:.6rem;background:hsl(var(--fu-link));color:hsl(var(--fu-paper));'>Revenue is up 12% this week.</span>
-          <div style='display:flex;gap:.35rem;margin-top:.25rem;'>
-            <span style='flex:1;height:1.3rem;border-radius:999px;border:1px solid hsl(var(--fu-line));background:hsl(var(--fu-card));'></span>
-            <span style='width:2rem;height:1.3rem;border-radius:999px;background:hsl(var(--fu-link) / .85);'></span>
-          </div>
-        </div>
-      </div>
-    )}
-
-    {!['formint-pos', 'vresume', 'cms', 'lms', 'cypercloud'].includes(slug) && (
+    {!['formint-pos', 'vresume', 'cms', 'lms'].includes(slug) && (
       <div style='max-width:24rem;margin:0 auto;border:1px solid hsl(var(--fu-line));border-radius:.75rem;background:hsl(var(--fu-paper));padding:1.25rem;'>
         <p class='tag-marker' style='margin-bottom:.5rem;'>{slug} · {editionName}</p>
         <div style='display:flex;align-items:baseline;gap:.4rem;margin-bottom:1rem;'>
