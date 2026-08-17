@@ -118,7 +118,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .loop-board__col-body { display:flex; flex-direction:column; gap:.6rem; padding:.7rem; min-height:9rem; }
 .loop-board__drop-hint { margin:auto; padding:1rem .5rem; text-align:center; color:var(--loop-dim); font:500 .66rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; border:1px dashed var(--loop-line); border-radius:.5rem .2rem .5rem .2rem; }
 .loop-board__card { position:relative; display:flex; flex-direction:column; gap:.3rem; padding:.8rem .9rem; border:1px solid var(--loop-line); border-radius:.56rem .22rem .56rem .22rem; background:linear-gradient(160deg,#162326,#111b1e); box-shadow:inset 0 1px 0 rgba(182,227,209,.05); cursor:grab; touch-action:none; user-select:none; }
-.loop-board__card.is-dragging { z-index:40; border-color:var(--loop-accent); background:#1a2e2c; box-shadow:0 1.6rem 3rem rgba(3,17,19,.6); cursor:grabbing; }
+.loop-board__card.is-dragging { z-index:40; border-color:var(--loop-accent); background:#1a2e2c; box-shadow:0 1.6rem 3rem rgba(3,17,19,.6); cursor:grabbing; user-select:none; -webkit-user-select:none; }
 .loop-board__card-top { display:flex; justify-content:space-between; gap:.6rem; align-items:baseline; }
 .loop-board__company { overflow:hidden; color:var(--loop-accent); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.09em; text-transform:uppercase; text-overflow:ellipsis; white-space:nowrap; }
 .loop-board__value { color:var(--loop-ink); font:600 .82rem "JetBrains Mono",monospace; }

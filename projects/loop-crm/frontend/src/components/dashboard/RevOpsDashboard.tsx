@@ -307,7 +307,7 @@ function Board() {
                   <span className="loop-dash__trend-split-deal"><i aria-hidden="true" /> Deal <b>{money.format(Number(trend.deal_total))}</b></span>
                   <span className="loop-dash__trend-split-pos"><i aria-hidden="true" /> POS <b>{money.format(Number(trend.pos_total))}</b></span>
                 </div>
-                <div className="loop-dash__trend-bars" role="img" aria-label="Monthly recognized revenue by source, trailing six months">
+                <div className="loop-dash__trend-bars" role="group" aria-label="Monthly recognized revenue by source, trailing six months">
                   {(() => {
                     const max = Math.max(1, ...trend.results.map((point) => Number(point.total)));
                     return trend.results.map((point) => {
@@ -323,7 +323,7 @@ function Board() {
                               </span>
                             </TooltipTrigger>
                             <TooltipContent>
-                              {point.label} · {money.format(Number(point.total))} — Deal {money.format(Number(point.deal_total))} · POS {money.format(Number(point.pos_total))}
+                              {point.label} · {money.format(Number(point.total))} ({money.format(Number(point.deal_total))} deal, {money.format(Number(point.pos_total))} POS)
                             </TooltipContent>
                           </Tooltip>
                           <span className="loop-dash__trend-label">{point.label}</span>

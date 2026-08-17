@@ -134,7 +134,7 @@ function Board() {
       if (!res.ok) throw new Error(`Move rejected (${res.status})`);
     } catch (err) {
       dispatch(setPipelines(snapshot));
-      setErrorMsg('Move failed — the deal snapped back. Try again.');
+      setErrorMsg('Move failed: the deal snapped back. Try again.');
       console.error('Deal move failed', err);
     } finally {
       setSaving(false);

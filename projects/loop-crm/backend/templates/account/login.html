@@ -8,7 +8,7 @@
 {% if demo_mode %}
 <div class="loop-demo-panel" data-loop-demo>
   <p class="loop-demo-panel__kicker">Demo workspace</p>
-  <p class="loop-demo-panel__copy">Preview the full product trail — pipeline, publishing, finance, and attribution — with the seeded demo account.</p>
+  <p class="loop-demo-panel__copy">Preview the full product trail: pipeline, publishing, finance, and attribution, with the seeded demo account.</p>
   <dl class="loop-demo-panel__creds">
     <div><dt>Email</dt><dd><code>{{ demo_email }}</code></dd></div>
     <div><dt>Password</dt><dd><code>{{ demo_password }}</code></dd></div>
@@ -34,7 +34,7 @@
   {% csrf_token %}
   {% for field in form %}{% if field.is_hidden %}{{ field }}{% else %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}{% for error in field.errors %}<span class="helptext" style="color:#ffaaa1">{{ error }}</span>{% endfor %}</p>{% endif %}{% endfor %}
   {% if redirect_field %}{{ redirect_field }}{% endif %}
-  <div class="loop-auth-card__actions"><button class="loop-button loop-button--primary" type="submit">Continue</button><a class="loop-auth-card__link" href="{% url 'account_reset_password' %}">Forgot password?</a></div>
+  <div class="loop-auth-card__actions"><button class="loop-button loop-button--primary" type="submit">Sign in</button><a class="loop-auth-card__link" href="{% url 'account_reset_password' %}">Forgot password?</a></div>
 </form>
 <p class="loop-auth-card__link">New to Loop CRM? <a href="{% url 'account_signup' %}">Create an account</a></p>
 {% endblock %}

@@ -37,11 +37,11 @@ export function getStaticPaths() {
     { path: '/settings/integrations/', title: 'Integrations', kicker: 'Workspace · integrations', description: 'Provider-neutral OAuth and connector capabilities for publishing.', module: 'workspace' },
     { path: '/settings/custom-fields/', title: 'Custom fields', kicker: 'Workspace · custom fields', description: 'Twenty-style extensibility for tenant-specific objects and revenue metadata.', module: 'workspace' },
     { path: '/settings/audit/', title: 'Audit log', kicker: 'Workspace · audit', description: 'An append-only trail for revenue operations changes.', module: 'workspace' },
-    { path: '/tasks/', title: 'Tasks', kicker: 'Operations · background jobs', description: 'Workflow, attribution, publishing, and finance jobs — the shared audit trail.', module: 'tasks' },
+    { path: '/tasks/', title: 'Tasks', kicker: 'Operations · background jobs', description: 'Workflow, attribution, publishing, and finance jobs, from the shared audit trail.', module: 'tasks' },
     { path: '/settings/email/', title: 'Email inbox', kicker: 'Workspace · email', description: 'Connect Gmail or Outlook to sync inbound messages into the CRM timeline.', module: 'workspace' },
-    { path: '/settings/custom-objects/', title: 'Custom objects', kicker: 'Workspace · data model', description: 'Add a new record type without a migration — declarative fields with validated JSON rows.', module: 'workspace' },
+    { path: '/settings/custom-objects/', title: 'Custom objects', kicker: 'Workspace · data model', description: 'Add a new record type without a migration, using declarative fields with validated JSON rows.', module: 'workspace' },
     { path: '/settings/saved-views/', title: 'Saved views', kicker: 'Workspace · views', description: 'Your persisted list and kanban view configurations for every resource.', module: 'workspace' },
-    { path: '/settings/import/', title: 'Import', kicker: 'Workspace · data', description: 'Import companies, contacts, and deals from a CSV upload — validated and workspace-scoped.', module: 'workspace' },
+    { path: '/settings/import/', title: 'Import', kicker: 'Workspace · data', description: 'Import companies, contacts, and deals from a CSV upload, validated and workspace-scoped.', module: 'workspace' },
   ];
   return pages.map((page) => ({
     params: { path: page.path === '/' ? undefined : page.path.replace(/^\//, '').replace(/\/$/, '') },
@@ -67,7 +67,7 @@ const cards = page.module === 'overview'
         ? [{ label: 'Revenue control', value: 'Invoice → payment → recognized revenue', copy: 'Closed-won deals can create an invoice and a campaign-linked revenue event without losing the sales trail.', href: '/finance/invoices/' }, { label: 'API surface', value: 'Three finance resources', copy: 'Invoices, payments, and revenue events are exposed through the same Bolt and compatibility contracts.', href: `${API_PREFIX}/invoices` }]
         : [{ label: 'Data surface', value: 'Ready for the API road', copy: 'Each domain screen can ship independently behind the canonical Bolt endpoints.', href: page.module === 'crm' ? `${API_PREFIX}/companies` : page.module === 'attribution' ? `${API_PREFIX}/touchpoints` : `${API_PREFIX}/dashboard` }];
 ---
-<Layout title={`${page.title} — Loop CRM`}>
+<Layout title={`${page.title} · Loop CRM`}>
   <AppShell title={page.title} kicker={page.kicker} description={page.description} path={page.path}>
     {page.path === '/overview/' && <RevOpsDashboard client:load />}
     {page.path === '/crm/deals/' && <PipelineBoard client:load />}
