@@ -61,7 +61,7 @@ class TemplateResolverMixin:
         Get the current site name from the resolver match or request.
 
         Returns:
-            Site name (e.g., "lms", "ctc-research") or None
+            Site name (e.g., "lms", "precis-ctc") or None
         """
         # Try to get from resolver_match if available
         if hasattr(self, "request") and self.request:

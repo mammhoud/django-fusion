@@ -16,7 +16,7 @@ structa.cloud/
 ├── projects/cms-fusion/backend/
 │   ├── apps/                                # CMS models, routes, adapters
 │   └── www/urls.py                          # CMS URL mounts
-├── projects/lms-fusion/backend/
+├── projects/precis-lms/backend/
 │   ├── apps/                                # LMS models, routes, adapters
 │   └── www/urls.py                          # LMS URL mounts
 └── applications/proxy/
@@ -51,8 +51,8 @@ folder and stats file:
 ```python
 WEBPACK_LOADER = {
     "DEFAULT": {
-        "BUNDLE_DIR_NAME": "bundles/lms-fusion/",
-        "STATS_FILE": BASE_DIR / "assets" / "staticfiles" / "bundles" / "lms-fusion" / "webpack-stats.json",
+        "BUNDLE_DIR_NAME": "bundles/precis-lms/",
+        "STATS_FILE": BASE_DIR / "assets" / "staticfiles" / "bundles" / "precis-lms" / "webpack-stats.json",
     }
 }
 ```

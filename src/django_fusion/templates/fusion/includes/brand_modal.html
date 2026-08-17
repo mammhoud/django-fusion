@@ -3,7 +3,7 @@ fusion/includes/brand_modal.html — the brandkit story modal, ONE source of
 truth for both render roads so they can never drift.
 
   * Django road — included from a project base template
-    (landing-fusion pages/base.html); the template engine emits it verbatim.
+    (precis-landing pages/base.html); the template engine emits it verbatim.
   * Astro road  — imported as raw HTML (Vite ?raw, @fusion-templates alias)
     by components/ui/BrandModal.astro and injected with set:html. Because
     the content is never compiled by Astro, the backslash-quote escapes in

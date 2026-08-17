@@ -15,7 +15,7 @@ Accepts a bounded description of a page or app surface and returns:
 - overall score and high-priority count;
 - categorized findings for content, composition, responsive behavior,
   accessibility, motion, theme, assets, conversion, and product journeys;
-- project guidance for `landing-fusion`, `precis`, or `formint`;
+- project guidance for `precis-landing`, `precis`, or `formint`;
 - actionable next steps.
 
 The tool does not crawl a URL, fetch external pages, read arbitrary files, or

@@ -10,7 +10,7 @@ defaults).  All of those paths now delegate here:
 
 * ``FusionDualModeMixin.get_effective_render_first`` — component/fragment road.
 * ``APISViewMixin.get_effective_render_first`` — the ``apis`` plugin road.
-* landing-fusion / precis / formint-pro / formint-client — the ``/apis/…``
+* precis-landing / precis / formint-pro / formint-client — the ``/apis/…``
   and ``/fusion/…`` render-mode reporting helpers.
 
 Priority order (first match wins):

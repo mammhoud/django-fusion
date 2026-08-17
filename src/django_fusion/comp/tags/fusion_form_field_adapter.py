@@ -3,7 +3,7 @@ fusion_form_field_adapter
 =========================
 
 Synthesizes a Wagtail-block-shaped context from a flat per-field render
-context so legacy plugin templates (lms / ctc-research form_field
+context so legacy plugin templates (lms / precis-ctc form_field
 partials) can include the canonical
 ``applications/assets/templates/components/form/form_field.html``.
 

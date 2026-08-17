@@ -2,7 +2,7 @@
 django-fusion — shared REST API views (health, branding, layouts).
 
 These small, dependency-light endpoint views were previously duplicated in
-every consumer site (cms-fusion, lms-fusion, ...).  They live here so that
+every consumer site (cms-fusion, precis-lms, ...).  They live here so that
 projects only need to wire them into their URL configuration::
 
     # urls.py

@@ -36,7 +36,7 @@ SECTIONS = [
 
 def test_website_audit_returns_structured_findings_and_score():
     result = designer_website_audit(
-        "landing-fusion",
+        "precis-landing",
         SECTIONS,
         accessibility_reviewed=True,
         real_assets_available=True,
@@ -44,7 +44,7 @@ def test_website_audit_returns_structured_findings_and_score():
     )
 
     assert 0 <= result["scores"]["overall"] <= 100
-    assert result["project"] == "landing-fusion"
+    assert result["project"] == "precis-landing"
     assert isinstance(result["findings"], list)
     assert result["guidance"]["surface"]
 
@@ -65,12 +65,12 @@ def test_website_audit_catches_accessibility_and_mobile_gaps():
 def test_website_audit_rejects_malformed_section_metadata():
     with pytest.raises(ValueError, match="interactive_states"):
         designer_website_audit(
-            "landing-fusion",
+            "precis-landing",
             [{"name": "Hero", "interactive_states": "loading"}],
         )
     with pytest.raises(ValueError, match="text_words"):
         designer_website_audit(
-            "landing-fusion",
+            "precis-landing",
             [{"name": "Hero", "text_words": -1}],
         )
 

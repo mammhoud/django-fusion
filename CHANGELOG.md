@@ -75,7 +75,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
   All handlers, tools, views, and URLs were copied to the new location with
   forward-import shims left in the old package. No public API breakage.
 - **Designer is project-generic.** Hardcoded project enums
-  (`["landing-fusion", "precis", "formint"]`) were removed from `tools.py` and
+  (`["precis-landing", "precis", "formint"]`) were removed from `tools.py` and
   `website.py`. The `project` field is now `{"type": "string", "minLength": 1}`
   — the designer works with any project. Projects customize audit guidance
   via `FUSION_AUDIT_GUIDANCE` in their Django settings.

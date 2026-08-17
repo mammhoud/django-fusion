@@ -51,12 +51,12 @@ libs/django-fusion/
 Current active consumers include:
 
 - `projects/precis/` — LMS/backend and Fusion application patterns
-- `projects/landing-fusion/` — standalone Django/Wagtail landing backend
+- `projects/precis-landing/` — standalone Django/Wagtail landing backend
 - `projects/formints/formint/` and `formint-cloud/` — APIs, fragments, render-mode,
   viewsets, and data components
 - `projects/syntara/` — may use shared component conventions and integrations
 
-The retired `lms-fusion`/`cms-fusion` names remain in migration plans and
+The retired `precis-lms`/`cms-fusion` names remain in migration plans and
 compatibility aliases. Do not create new framework examples using nonexistent
 paths; use the current consumers above.
 
