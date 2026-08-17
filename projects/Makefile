@@ -235,7 +235,7 @@ website-pos: website-formints  ## Alias — POS editions dispatcher (projects/fo
 # Precis remains available through WEBSITE=precis-lms for explicit maintenance,
 # but it is not part of repository-wide install/check/deploy workflows.
 projects:
-	@for project in precis/precis-landing loop-crm syntara formints; do \
+	@for project in precis/precis-landing loop-crm formints; do \
 		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
@@ -633,13 +633,13 @@ docker-start-all:
 # Lint/typecheck active Python products. Precis/LMS remains explicit via its
 # own backend Makefile and is not part of aggregate checks.
 lint:
-	$(PYTHON) -m pylint precis/precis-landing loop-crm syntara formints tests 2>/dev/null || echo "Linting completed with warnings"
+	$(PYTHON) -m pylint precis/precis-landing loop-crm formints tests 2>/dev/null || echo "Linting completed with warnings"
 
 format:
-	$(PYTHON) -m black precis/precis-landing loop-crm syntara formints tests/
+	$(PYTHON) -m black precis/precis-landing loop-crm formints tests/
 
 typecheck:
-	$(PYTHON) -m mypy precis/precis-landing loop-crm syntara formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
+	$(PYTHON) -m mypy precis/precis-landing loop-crm formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
 
 # Run all checks: lint, format, typecheck
 lint-all: lint typecheck

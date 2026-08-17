@@ -1,0 +1,42 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import AssistantPanel from '@/components/blocks/AssistantPanel.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { SiteSettings, NavigationData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try {
+  [siteSettings, navData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(),
+  ]);
+} catch { /* use fallbacks */ }
+---
+
+<Layout
+  title="Precis Assistant"
+  description="Ask the Precis assistant for help with courses, content, and learning."
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageSlug="assistant"
+>
+  <section class="section-hero reg-marks overflow-hidden py-16">
+    <div class="container-fusion">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="tag-marker mb-5">assistant</p>
+        <h1 class="mb-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
+          Precis Assistant
+        </h1>
+        <p class="text-lg text-fu-muted">
+          Ask about courses, content, or anything else on the platform. Replies
+          stream live from the Precis assistant.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <AssistantPanel />
+
+  <HtmxBootstrap />
+</Layout>

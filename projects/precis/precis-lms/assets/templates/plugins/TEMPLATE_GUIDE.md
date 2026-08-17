@@ -79,8 +79,6 @@ assets/templates/
 │   ├── certification/
 │   │   └── certificate.html         Printable certificate (standalone HTML)
 │   │
-│   └── chat/
-│       └── bubble.html              Floating chat widget (ceptor × nawaai)
 │
 ├── plugins/                         ── Plugin / integration templates ──
 │   ├── emails/                      Transactional email templates
@@ -211,7 +209,7 @@ assets/templates/
 
 ```django
 {% include "modules/courses/filters.html" %}
-{% include "modules/chat/bubble.html" with chat_config=config %}
+{% comp "components/assistant/widget.html" / %}   {# Precis Assistant floating widget #}
 ```
 
 ### plugins/
@@ -281,7 +279,7 @@ assets/templates/
 | `generic/newsletter/*.html` | `modules/newsletter/*.html` |
 | `generic/privacy/*.html` | `modules/privacy/*.html` |
 | `generic/certification/cert_fallback.html` | `modules/certification/certificate.html` |
-| `generic/chat/bubble.html` | `modules/chat/bubble.html` |
+| `generic/chat/bubble.html` | `components/assistant/widget.html` |
 | `generic/emails/*.html` | `plugins/emails/*.html` |
 | `generic/mfa/**` | `plugins/mfa/**` |
 | `generic/COMPONENTS_USAGE_GUIDE.md` | `ui/TEMPLATE_GUIDE.md` (this file) |

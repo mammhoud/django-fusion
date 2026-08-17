@@ -13,7 +13,6 @@ CORE_DIR          := projects
 PROXY_DIR         := applications/proxy
 SERVICES_DIR      := services
 DATABASES_DIR     := applications/databases
-CYPERCLOUD_DIR    := projects/cypercloud
 POS_DIR           := projects/formints
 SOURCE_DIR        := source
 
@@ -83,7 +82,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # PHONY targets – always run
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
-.PHONY: deploy-databases deploy-coder deploy-cypercloud build-cypercloud clean-cypercloud
+.PHONY: deploy-databases deploy-coder
 .PHONY: deploy-utilities deploy-ollama deploy-mailpit
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
@@ -274,7 +273,6 @@ help:
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
-	@echo "  make deploy-cypercloud - Build, collectstatic, and migrate the cypercloud site"
 	@echo "  make create-networks   - Create all required Docker networks (idempotent)"
 	@echo "  make deploy-all        - Deploy all services (alias for deploy)"
 	@echo ""
@@ -322,7 +320,6 @@ help:
 	@echo "  make precis-ctc      - Delegate to projects/Makefile with WEBSITE=precis-ctc"
 	@echo "  make structa           - Delegate to projects/Makefile with WEBSITE=structa"
 	@echo "  make vresume           - Delegate to projects/Makefile with WEBSITE=vresume"
-	@echo "  make cypercloud        - Delegate to projects/cypercloud/Makefile (AI chat customizer)"
 	@echo '  make pos               - Show POS targets from projects/formints/Makefile'
 	@echo '  make community-*       - Formint Community edition (check/test/dev/clean)'
 	@echo '  make pro-*             - Formint Pro edition (check/test/env/clean)'
@@ -424,7 +421,6 @@ deploy-all: preflight-network deploy-preflight
 		$(MAKE) --no-print-directory deploy-docs; \
 		$(MAKE) --no-print-directory deploy-proxy; \
 	fi
-	@$(MAKE) --no-print-directory deploy-cypercloud
 	@$(MAKE) --no-print-directory deploy-anytype
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
@@ -598,21 +594,6 @@ deploy-coder:
 	@echo "🚀 Deploying Coder platform..."
 	@docker compose -f applications/docker-compose.yml up -d coder
 	@echo "✅ Coder platform deployed"
-
-deploy-cypercloud:
-	@echo "🚀 Deploying cypercloud (build → collectstatic → migrate)..."
-	@$(MAKE) -C $(CYPERCLOUD_DIR) deploy
-	@echo "✅ Cypercloud deployed"
-
-build-cypercloud:
-	@echo "🔨 Building cypercloud webpack bundles..."
-	@$(MAKE) -C $(CYPERCLOUD_DIR) build
-	@echo "✅ Cypercloud built"
-
-clean-cypercloud:
-	@echo "🧹 Cleaning cypercloud bundles..."
-	@$(MAKE) -C $(CYPERCLOUD_DIR) clean
-	@echo "✅ Cypercloud cleaned"
 
 # -----------------------------------------------------------------
 # Aspirational deploy targets — component directories not in repo yet.
@@ -1224,10 +1205,6 @@ structa:
 
 vresume:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=vresume
-
-cypercloud:
-	@echo "📋 Cypercloud targets:"
-	@$(MAKE) -C $(CYPERCLOUD_DIR) help
 
 pos:
 	@echo "📋 POS targets:"

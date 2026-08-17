@@ -19,6 +19,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | **Formint** (canonical) | [`editions/README.md`](editions/README.md) | Community → Standard → Pro → Cloud → Client → SDK execution chain — the main, latest product + edition plans |
 | Landing-Fusion | [`precis-landing/`](precis-landing/) | Landing site architecture, content, and frontend work |
 | Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
+| Precis LMS + Syntara merge | [`repository/precis-syntara-merge.md`](repository/precis-syntara-merge.md) | Fold Syntara (Cypercloud AI chat) into the Precis LMS main site as Precis Assistant |
 | Loop-CRM finance + workflows + integrations | [`loop-crm/formint-integration-finance-workflows.md`](loop-crm/formint-integration-finance-workflows.md) | Formint POS financial data → Loop-CRM finance module; workflow + connector expansion |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Lifecycle | [`document-lifecycle.md`](document-lifecycle.md) | Status, ownership, archive, deletion, and rollback policy |
@@ -43,6 +44,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Formint edition chain (canonical, latest) | Active | [`editions/README.md`](editions/README.md) |
 | Landing-Fusion | Active | [`precis-landing/`](precis-landing/) |
 | Loop-CRM merge | Foundation + tenancy/auth + tenant-scoped CRUD + channels + allauth + real screens shipped; AI hub & remaining adapters next | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
+| Precis LMS + Syntara merge | Planned | [`repository/precis-syntara-merge.md`](repository/precis-syntara-merge.md) |
 | Active project closeout | Audit complete | [`repository/active-project-closeout-2026-08-11.md`](repository/active-project-closeout-2026-08-11.md) |
 | Repository migration cleanup | Partial / gate-based | [`repository/migration-cleanup-master.md`](repository/migration-cleanup-master.md) |
 | django-fusion Tasks & MCP | Baseline implemented; MCP/production hardening remaining | [`django-fusion/django-fusion-tasks-mcp-plan.md`](django-fusion/django-fusion-tasks-mcp-plan.md) |
@@ -88,7 +90,7 @@ See [`document-lifecycle.md`](document-lifecycle.md) for the full policy. Record
 docs/plans/
 ├── README.md                 # This canonical registry
 ├── ../recommendations.md     # Recommended priorities
-├── repository/               # Cross-repository plans
+├── repository/               # Cross-repository plans (incl. Precis LMS + Syntara merge)
 ├── editions/                 # Formint edition execution chain
 ├── precis-landing/           # Landing-Fusion plans
 ├── loop-crm/                 # Loop-CRM merge plan (Twenty + Postiz)
