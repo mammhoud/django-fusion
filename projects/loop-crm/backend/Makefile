@@ -1,7 +1,7 @@
 # loop-crm backend — Django + django-fusion (unified sales + marketing)
 # Mirrors the precis-landing backend Makefile verb set so `make -C backend`
 # behaves identically across the workspace.
-.PHONY: help dev server worker scheduler install migrate static collectstatic superuser shell check test format lint fix
+.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed-demo shell check test format lint fix
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -44,6 +44,9 @@ collectstatic: ## Collect static files
 
 superuser: ## Create superuser (interactive)
 	@$(MANAGE) createsuperuser
+
+seed-demo: ## Seed the demo workspace + demo accounts (idempotent, superuser)
+	@$(MANAGE) seed_demo --superuser
 
 shell: ## Django shell
 	@$(MANAGE) shell

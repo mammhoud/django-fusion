@@ -54,6 +54,9 @@ services:
       FUSION_BOLT_JWT_ISSUER: loop-crm
       SECURE_SSL_REDIRECT: "0"
       DEFAULT_FROM_EMAIL: Loop CRM <noreply@structa.cloud>
+      # Demo state: when 1 the entrypoint seeds the demo workspace and the
+      # login page surfaces the demo account. Never enable with real data.
+      DEMO_MODE: "${DEMO_MODE:-0}"
     networks:
       - common
       - warehouse-net

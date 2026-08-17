@@ -5,6 +5,17 @@
 {% block auth_heading %}Sign in{% endblock %}
 {% block auth_inner %}
 <p class="loop-lede">Use your Loop CRM account to access the workspace and its role-scoped data.</p>
+{% if demo_mode %}
+<div class="loop-demo-panel" data-loop-demo>
+  <p class="loop-demo-panel__kicker">Demo workspace</p>
+  <p class="loop-demo-panel__copy">Preview the full product trail — pipeline, publishing, finance, and attribution — with the seeded demo account.</p>
+  <dl class="loop-demo-panel__creds">
+    <div><dt>Email</dt><dd><code>{{ demo_email }}</code></dd></div>
+    <div><dt>Password</dt><dd><code>{{ demo_password }}</code></dd></div>
+  </dl>
+  <button class="loop-button loop-button--primary" type="button" data-loop-demo-fill>Use demo account</button>
+</div>
+{% endif %}
 {% if SOCIALACCOUNT_ENABLED %}
 <div class="loop-auth-card__social">
   <a class="loop-button loop-button--quiet" href="{% provider_login_url 'github' %}">
@@ -26,4 +37,20 @@
   <div class="loop-auth-card__actions"><button class="loop-button loop-button--primary" type="submit">Continue</button><a class="loop-auth-card__link" href="{% url 'account_reset_password' %}">Forgot password?</a></div>
 </form>
 <p class="loop-auth-card__link">New to Loop CRM? <a href="{% url 'account_signup' %}">Create an account</a></p>
+{% endblock %}
+{% block auth_scripts %}
+{% if demo_mode %}
+<script>
+  (function () {
+    var button = document.querySelector('[data-loop-demo-fill]');
+    if (!button) return;
+    button.addEventListener('click', function () {
+      var email = document.querySelector('#id_login');
+      var password = document.querySelector('#id_password');
+      if (email) email.value = '{{ demo_email }}';
+      if (password) password.value = '{{ demo_password }}';
+    });
+  })();
+</script>
+{% endif %}
 {% endblock %}

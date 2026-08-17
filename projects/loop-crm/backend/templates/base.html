@@ -53,6 +53,7 @@
     .loop-grid > *:nth-child(5) { animation-delay:240ms; }
     .loop-channel__dot--connected { animation:loop-breathe 2.6s ease-in-out infinite; }
     .loop-card:active, .loop-crm-row:active { transform:translateY(1px) scale(.995); }
+    .loop-entrance { display:grid; place-items:start center; min-height:100dvh; }
     @media (max-width: 800px) { .loop-shell { display:block; } .loop-sidebar { position:fixed; z-index:20; inset:0 auto 0 0; width:16.5rem; transform:translateX(-100%); transition:transform .25s ease; } body[data-nav-open="true"] .loop-sidebar { transform:translateX(0); box-shadow:20px 0 50px rgba(3,17,19,.6); } .loop-mobile-toggle { display:inline-flex; border:1px solid var(--line); border-radius:.45rem; background:var(--panel); color:var(--ink); padding:.35rem .55rem; cursor:pointer; } .loop-topbar { padding:0 1rem; } .loop-content { padding:1.5rem 1rem 3rem; } .loop-card,.loop-card--wide,.loop-card:nth-child(1),.loop-card:nth-child(3) { grid-column:span 12; margin-top:0; } .loop-crm-row { align-items:flex-start; flex-direction:column; } .loop-crm-row__aside { justify-items:start; text-align:left; } .loop-workflow-layout,.loop-finance-layout { grid-template-columns:1fr; } .loop-form { position:static; } }
     @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
   </style>
@@ -65,6 +66,7 @@
     <div id="loop-realtime-refresh" hx-get="" hx-trigger="sse:resource.created, sse:resource.updated, sse:resource.deleted, sse:pos.sales.ingested" hx-target="#loop-content" hx-select="#loop-content" hx-swap="outerHTML" hx-indicator="#loop-page-loader"></div>
   </div>
   {% endif %}
+  {% if request.user.is_authenticated %}
   <div class="loop-shell">
     {% include "dashboard/sidebar.html" %}
     <div class="loop-main">
@@ -73,9 +75,12 @@
         <span class="loop-topbar__meta">Revenue operations / unified workspace</span>
         <span class="loop-topbar__account">{% if request.user.is_authenticated %}<a href="/account/profile/">{{ request.user.email|default:request.user.username }}</a><a href="{% url 'account_logout' %}">Sign out</a>{% else %}<a href="{% url 'account_login' %}">Sign in</a>{% endif %}</span>
       </header>
-      <main id="loop-content" class="loop-content">{% block content %}{% endblock %}</main>
+  {% endif %}
+  <main id="loop-content" class="loop-content{% if not request.user.is_authenticated %} loop-entrance{% endif %}">{% block content %}{% endblock %}</main>
+  {% if request.user.is_authenticated %}
     </div>
   </div>
+  {% endif %}
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <script src="https://unpkg.com/htmx-ext-sse@2.2.4/dist/sse.js"></script>
   <script>

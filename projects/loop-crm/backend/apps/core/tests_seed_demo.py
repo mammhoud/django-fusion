@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 
+from apps.core.demo import DEMO_PASSWORD
 from apps.core.models import Workspace
 from apps.crm.models import Deal, Pipeline, PipelineStage
 from apps.finance.models import Invoice, Payment, RevenueEvent
@@ -96,6 +97,65 @@ class StartFreeSignupSignalTests(TestCase):
         user_signed_up.send(sender=None, request=None, user=user)
         user.profile.refresh_from_db()
         self.assertEqual(user.profile.workspace, first)
+
+
+class SeedDemoDeterministicTests(TestCase):
+    """Demo state must be deterministic: re-seeding restores the known
+    credentials and the --superuser flag promotes the demo admin."""
+
+    def test_demo_password_is_restored_on_reseed(self):
+        call_command("seed_demo")
+        admin = User.objects.get(username="demo")
+        admin.set_password("some-other-password")
+        admin.save()
+        call_command("seed_demo")
+        admin.refresh_from_db()
+        self.assertTrue(admin.check_password(DEMO_PASSWORD))
+
+    def test_superuser_flag_promotes_demo_admin(self):
+        call_command("seed_demo", "--superuser")
+        admin = User.objects.get(username="demo")
+        self.assertTrue(admin.is_staff)
+        self.assertTrue(admin.is_superuser)
+
+    def test_demo_credentials_come_from_the_shared_contract(self):
+        from apps.core.demo import DEMO_EMAIL
+
+        self.assertEqual(DEMO_EMAIL, "demo@loop.dev")
+        self.assertEqual(DEMO_PASSWORD, "demo-pass-123")
+
+    def test_member_passwords_are_deterministic_too(self):
+        call_command("seed_demo")
+        member = User.objects.get(username="sales")
+        member.set_password("stale-password")
+        member.save()
+        call_command("seed_demo")
+        member.refresh_from_db()
+        self.assertTrue(member.check_password(DEMO_PASSWORD))
+
+
+class DemoStateContextProcessorTests(TestCase):
+    """The demo_state processor never leaks credentials unless DEMO_MODE is on."""
+
+    def test_demo_state_is_empty_when_disabled(self):
+        with self.settings(DEMO_MODE=False):
+            from apps.core.context_processors import demo_state
+
+            context = demo_state(object())
+            self.assertFalse(context["demo_mode"])
+            self.assertEqual(context["demo_email"], "")
+            self.assertEqual(context["demo_password"], "")
+
+    def test_demo_state_exposes_credentials_when_enabled(self):
+        with self.settings(DEMO_MODE=True):
+            from apps.core.context_processors import demo_state
+
+            from apps.core.demo import DEMO_EMAIL
+
+            context = demo_state(object())
+            self.assertTrue(context["demo_mode"])
+            self.assertEqual(context["demo_email"], DEMO_EMAIL)
+            self.assertEqual(context["demo_password"], DEMO_PASSWORD)
 
 
 class DashboardScopingTests(TestCase):

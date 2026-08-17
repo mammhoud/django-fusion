@@ -41,6 +41,13 @@ python manage.py migrate --noinput
 echo "[STARTUP] Collecting static files..."
 python manage.py collectstatic --noinput
 
+if [ "${DEMO_MODE:-0}" = "1" ]; then
+    echo "[STARTUP] DEMO_MODE enabled — seeding the demo workspace (idempotent)..."
+    python manage.py seed_demo --superuser
+else
+    echo "[STARTUP] DEMO_MODE disabled — skipping demo seed"
+fi
+
 echo "[STARTUP] Starting gunicorn..."
 exec gunicorn wsgi:application \
     --bind 0.0.0.0:8074 \

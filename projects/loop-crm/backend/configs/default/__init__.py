@@ -24,6 +24,12 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "loop-crm-dev-secret-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
 
+# Demo state — when enabled, the login page surfaces the seeded demo
+# credentials and the container entrypoint seeds the demo workspace on boot.
+# NEVER enable on a production deployment with real data: the demo password
+# is intentionally public.
+DEMO_MODE = os.environ.get("DEMO_MODE", "0") == "1"
+
 INSTALLED_APPS = [
     # daphne must precede django.contrib.staticfiles so ``runserver`` serves
     # the Channels ASGI stack instead of Django's sync dev server.
@@ -84,7 +90,9 @@ ROOT_URLCONF = "urls"
 
 SITE_ID = int(os.environ.get("SITE_ID", "1"))
 LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/"
+# After sign-in the user belongs inside the workspace, not on the marketing
+# landing (which still shows "Sign in" / "Start free").
+LOGIN_REDIRECT_URL = "/overview/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
@@ -190,6 +198,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.core.context_processors.workspace_id",
+                "apps.core.context_processors.demo_state",
             ],
             "builtins": [
                 "django_fusion.comp.tags.components",

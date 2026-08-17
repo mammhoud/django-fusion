@@ -11,18 +11,15 @@ from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 
-from apps.core.demo import ensure_user_workspace, seed_workspace
+from apps.core.demo import (
+    DEMO_EMAIL,
+    DEMO_MEMBERS,
+    DEMO_PASSWORD,
+    DEMO_WORKSPACE_SLUG,
+    ensure_user_workspace,
+    seed_workspace,
+)
 from apps.core.models import UserProfile, Workspace
-
-DEMO_WORKSPACE_SLUG = "demo-workspace"
-DEMO_EMAIL = "demo@loop.dev"
-DEMO_PASSWORD = "demo-pass-123"
-
-DEMO_MEMBERS = [
-    ("sales", "Sales Manager", "sales_manager"),
-    ("marketing", "Marketing Manager", "marketing_manager"),
-    ("revops", "RevOps Manager", "revops_manager"),
-]
 
 
 class Command(BaseCommand):
@@ -32,6 +29,11 @@ class Command(BaseCommand):
         parser.add_argument(
             "--user",
             help="Seed the personal workspace of an existing user (the Start free flow) instead of the demo workspace.",
+        )
+        parser.add_argument(
+            "--superuser",
+            action="store_true",
+            help="Promote the demo admin to a Django superuser (admin access). Intended for demo deployments only.",
         )
 
     def handle(self, *args, **options):
@@ -55,12 +57,21 @@ class Command(BaseCommand):
 
         admin, created = User.objects.get_or_create(
             username="demo",
-            defaults={"email": DEMO_EMAIL, "is_staff": True, "first_name": "Demo", "last_name": "Admin"},
+            defaults={
+                "email": DEMO_EMAIL,
+                "is_staff": True,
+                "is_superuser": options["superuser"],
+                "first_name": "Demo",
+                "last_name": "Admin",
+            },
         )
         admin.email = DEMO_EMAIL
         admin.is_staff = True
-        if created:
-            admin.set_password(DEMO_PASSWORD)
+        if options["superuser"]:
+            admin.is_superuser = True
+        # Demo credentials are deterministic: re-seeding always restores the
+        # known password so the demo state cannot drift from a stale hash.
+        admin.set_password(DEMO_PASSWORD)
         admin.save()
         profile, _ = UserProfile.objects.get_or_create(user=admin)
         profile.workspace = workspace
@@ -75,8 +86,7 @@ class Command(BaseCommand):
             member, member_created = User.objects.get_or_create(
                 username=key, defaults={"email": f"{key}@loop.dev", "first_name": label.split()[0], "last_name": label.split()[-1]}
             )
-            if member_created:
-                member.set_password(DEMO_PASSWORD)
+            member.set_password(DEMO_PASSWORD)
             member.save()
             member_profile, _ = UserProfile.objects.get_or_create(user=member)
             member_profile.workspace = workspace

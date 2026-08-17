@@ -23,6 +23,7 @@ export function getStaticPaths() {
     { path: '/marketing/campaigns/', title: 'Campaigns', kicker: 'Marketing · campaigns', description: 'Group content, spend, performance, and influenced deals.', module: 'marketing' },
     { path: '/marketing/channels/', title: 'Channels', kicker: 'Marketing · channels', description: 'Connect provider accounts and see their publish and analytics capabilities.', module: 'marketing' },
     { path: '/marketing/media/', title: 'Media library', kicker: 'Marketing · media', description: 'Reusable image and video assets with alt text and post attachments.', module: 'marketing' },
+    { path: '/marketing/approvals/', title: 'Approvals', kicker: 'Marketing · approvals', description: 'Review pending post approvals with the full moderation trail.', module: 'marketing' },
     { path: '/finance/', title: 'Finance', kicker: 'Finance · revenue control', description: 'Turn closed pipeline into invoices, payments, and recognized revenue without losing campaign context.', module: 'finance' },
     { path: '/finance/invoices/', title: 'Invoices', kicker: 'Finance · invoices', description: 'Issue customer invoices from real companies and deals, then keep payment state current.', module: 'finance' },
     { path: '/finance/payments/', title: 'Payments', kicker: 'Finance · payments', description: 'Record receipts against issued invoices and keep outstanding balances honest.', module: 'finance' },
@@ -36,6 +37,11 @@ export function getStaticPaths() {
     { path: '/settings/integrations/', title: 'Integrations', kicker: 'Workspace · integrations', description: 'Provider-neutral OAuth and connector capabilities for publishing.', module: 'workspace' },
     { path: '/settings/custom-fields/', title: 'Custom fields', kicker: 'Workspace · custom fields', description: 'Twenty-style extensibility for tenant-specific objects and revenue metadata.', module: 'workspace' },
     { path: '/settings/audit/', title: 'Audit log', kicker: 'Workspace · audit', description: 'An append-only trail for revenue operations changes.', module: 'workspace' },
+    { path: '/tasks/', title: 'Tasks', kicker: 'Operations · background jobs', description: 'Workflow, attribution, publishing, and finance jobs — the shared audit trail.', module: 'tasks' },
+    { path: '/settings/email/', title: 'Email inbox', kicker: 'Workspace · email', description: 'Connect Gmail or Outlook to sync inbound messages into the CRM timeline.', module: 'workspace' },
+    { path: '/settings/custom-objects/', title: 'Custom objects', kicker: 'Workspace · data model', description: 'Add a new record type without a migration — declarative fields with validated JSON rows.', module: 'workspace' },
+    { path: '/settings/saved-views/', title: 'Saved views', kicker: 'Workspace · views', description: 'Your persisted list and kanban view configurations for every resource.', module: 'workspace' },
+    { path: '/settings/import/', title: 'Import', kicker: 'Workspace · data', description: 'Import companies, contacts, and deals from a CSV upload — validated and workspace-scoped.', module: 'workspace' },
   ];
   return pages.map((page) => ({
     params: { path: page.path === '/' ? undefined : page.path.replace(/^\//, '').replace(/\/$/, '') },

@@ -235,6 +235,19 @@ def seed_workspace(workspace: Workspace, owner) -> dict[str, int]:
     return counts
 
 
+# Demo account contract — single source of truth shared by seed_demo, the
+# login-page demo panel, and the container entrypoint.
+DEMO_WORKSPACE_SLUG = "demo-workspace"
+DEMO_EMAIL = "demo@loop.dev"
+DEMO_PASSWORD = "demo-pass-123"
+
+DEMO_MEMBERS = [
+    ("sales", "Sales Manager", "sales_manager"),
+    ("marketing", "Marketing Manager", "marketing_manager"),
+    ("revops", "RevOps Manager", "revops_manager"),
+]
+
+
 def ensure_user_workspace(user) -> Workspace:
     """Give a user a personal workspace and seed it with the demo dataset.
 
