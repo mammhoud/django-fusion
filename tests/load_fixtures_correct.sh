@@ -114,7 +114,7 @@ log "Verifying fixture load..."
 echo "" | tee -a "$LOG_FILE"
 
 # Check page count
-PAGE_COUNT=$(docker exec postgres psql -U structa -d db_ctc -c "SELECT COUNT(*) FROM wagtailcore_page;" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
+PAGE_COUNT=$(docker exec postgres psql -U structa -d db_precis_ctc -c "SELECT COUNT(*) FROM wagtailcore_page;" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
 
 if [ -n "$PAGE_COUNT" ] && [ "$PAGE_COUNT" -gt "2" ]; then
     success "Total pages in database: $PAGE_COUNT"
@@ -123,7 +123,7 @@ else
 fi
 
 # Check locales
-LOCALE_COUNT=$(docker exec postgres psql -U structa -d db_ctc -c "SELECT COUNT(*) FROM wagtail_localize_locale;" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
+LOCALE_COUNT=$(docker exec postgres psql -U structa -d db_precis_ctc -c "SELECT COUNT(*) FROM wagtail_localize_locale;" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
 
 if [ -n "$LOCALE_COUNT" ] && [ "$LOCALE_COUNT" -gt "0" ]; then
     success "Total locales configured: $LOCALE_COUNT"

@@ -50,6 +50,15 @@ docs/assets/
 4. For large files (>1MB), consider compressing with `optipng` or `jpegoptim`
 5. Update this README to include the new asset in the inventory
 
+## Shared Load Assets
+
+`projects/assets/load-assets/` is the canonical shared location for loadable
+content consumed across products (JSON dump fixtures for `load-dumps`, shared
+seeds, content images). Product-specific loadable assets go under a
+product-named subdirectory there. The path is exported by
+`projects/webpack/paths.js` as `loadAssetsDir`; see
+`load-assets/README.md` for the layout and naming conventions.
+
 ## Related
 
 - [Previews naming convention](https://github.com/mammhoud/structa.cloud/blob/generic/docs/README.md)

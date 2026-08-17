@@ -47,7 +47,7 @@ services:
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_NAME: ${DB_NAME_PRECIS_LMS:-db_precis_lms}
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
       REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
@@ -126,7 +126,7 @@ services:
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_NAME: ${DB_NAME_PRECIS_LMS:-db_precis_lms}
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
       REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0
@@ -187,7 +187,7 @@ services:
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME_LMS_FUSION:-db_lms_fusion}
+      DB_NAME: ${DB_NAME_PRECIS_LMS:-db_precis_lms}
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for LMS production}
       REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for LMS production}@default-redis:6379/0

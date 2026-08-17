@@ -13,7 +13,7 @@ set -eu
 DB_READY_ATTEMPTS="${DB_READY_ATTEMPTS:-30}"
 DB_READY_DELAY="${DB_READY_DELAY:-2}"
 
-echo "[STARTUP] Waiting for the database (${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-db_crm})..."
+echo "[STARTUP] Waiting for the database (${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-db_loop_crm})..."
 
 ready=0
 attempt=1

@@ -68,7 +68,7 @@ server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var
 	@$(MAKE) webpack-validate
 	@echo -e "$(BLUE)Populating initial data before server start...$(NC)"; \
 	$(MAKE) populate-data || true
-	@DB_NAME=$${DB_NAME_CTC:-db_ctc}; \ 
+	@DB_NAME=$${DB_NAME_PRECIS_LMS:-db_precis_lms}; \ 
 	HOST=$${HOST:-0.0.0.0}; \
 	PORT=$${PORT:-$(DEFAULT_PORT)}; \
 	WORKERS=$${WORKERS:-4}; \

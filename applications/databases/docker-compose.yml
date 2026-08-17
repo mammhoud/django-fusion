@@ -49,7 +49,7 @@ services:
       # Multiple databases – comma-separated list: db:owner:password.
       # AFFiNE is a permanent shared proxy service and uses the `affine`
       # database. Its role password is required; it has no repository default.
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:CTCreSearch0x@,db_structa:structa:CTCreSearch0x@,vresume:structa:CTCreSearch0x@,coder:coder:CTCreSearch0x@,db_crm:structa:CTCreSearch0x@,db_landing:structa:CTCreSearch0x@,affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_lms:structa:CTCreSearch0x@,db_precis_ctc:structa:CTCreSearch0x@,db_vresume:structa:CTCreSearch0x@,coder:coder:CTCreSearch0x@,db_loop_crm:structa:CTCreSearch0x@,db_precis_landing:structa:CTCreSearch0x@,affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
 
       # ---- NEW: Force re‑initialization on every start ----
       # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again

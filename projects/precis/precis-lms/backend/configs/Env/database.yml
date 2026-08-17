@@ -50,7 +50,7 @@ production:
       ENGINE: "django.db.backends.postgresql"
       HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
       PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
-      NAME: "@jinja {{ env.get('DB_NAME', 'db_structa') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_precis_lms') }}"
       USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
       PASSWORD: "@jinja {{ env.get('DB_PASSWORD', '') }}"
       CONN_MAX_AGE: 600

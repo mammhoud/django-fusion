@@ -3,7 +3,7 @@
 # Like the Precis stacks (projects/precis/*/docker-compose.yml), this project
 # depends on the SHARED infrastructure from applications/databases rather than
 # running its own Postgres/Redis:
-#   - PostgreSQL  → container `postgres`, database `db_crm` (DB_NAME_CRM)
+#   - PostgreSQL  → container `postgres`, database `db_loop_crm` (DB_NAME_CRM)
 #   - Redis       → container `default-redis`, password REDIS_PASSWORD
 # Both live on the `common` + `warehouse-net` networks (created by
 # applications/databases), so every Loop-CRM service joins those networks and
@@ -32,7 +32,7 @@ services:
       CSRF_TRUSTED_ORIGINS: https://crm.structa.cloud,https://www.crm.structa.cloud
       # Shared PostgreSQL cluster (applications/databases) — project-scoped DB.
       USE_POSTGRES: "1"
-      POSTGRES_DB: "${DB_NAME_CRM:-db_crm}"
+      POSTGRES_DB: "${DB_NAME_CRM:-db_loop_crm}"
       POSTGRES_USER: "${POSTGRES_USER:-admin}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in projects/loop-crm/.env}"
       POSTGRES_HOST: postgres
@@ -88,7 +88,7 @@ services:
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
       USE_POSTGRES: "1"
-      POSTGRES_DB: "${DB_NAME_CRM:-db_crm}"
+      POSTGRES_DB: "${DB_NAME_CRM:-db_loop_crm}"
       POSTGRES_USER: "${POSTGRES_USER:-admin}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in projects/loop-crm/.env}"
       POSTGRES_HOST: postgres
@@ -131,7 +131,7 @@ services:
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
       USE_POSTGRES: "1"
-      POSTGRES_DB: "${DB_NAME_CRM:-db_crm}"
+      POSTGRES_DB: "${DB_NAME_CRM:-db_loop_crm}"
       POSTGRES_USER: "${POSTGRES_USER:-admin}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in projects/loop-crm/.env}"
       POSTGRES_HOST: postgres

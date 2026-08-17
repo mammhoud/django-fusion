@@ -21,9 +21,9 @@ set -euo pipefail
 
 # Map backup filenames to target database names
 declare -A DB_MAP=(
-    ["ctc_db.sql"]="db_ctc"
-    ["lms_db.sql"]="db_structa"
-    ["vresume_db.sql"]="vresume"
+    ["ctc_db.sql"]="db_precis_ctc"
+    ["lms_db.sql"]="db_precis_lms"
+    ["vresume_db.sql"]="db_vresume"
 )
 
 # PostgreSQL container and credentials
@@ -52,9 +52,9 @@ OPTIONS:
   -h, --help    Show this help message
 
 DATABASE MAPPING:
-  ctc_db.sql      → db_ctc       (CTC Research)
-  lms_db.sql      → db_structa   (LMS Demo / Structa)
-  vresume_db.sql  → vresume      (VResume)
+  ctc_db.sql      → db_precis_ctc      (CTC Research)
+  lms_db.sql      → db_precis_lms      (LMS Demo / Structa)
+  vresume_db.sql  → db_vresume         (VResume)
 
 ENVIRONMENT:
   PG_CONTAINER    PostgreSQL container name (default: postgres)

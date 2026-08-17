@@ -208,7 +208,7 @@ def docker_compose_file(workspace_root):
 
 @pytest.fixture(scope="session")
 def test_databases():
-    return {"ctc_research": "db_ctc_test", "structa_cloud": "db_structa_test", "vresume": "vresume_test"}
+    return {"precis_ctc": "db_precis_ctc_test", "precis_lms": "db_precis_lms_test", "vresume": "db_vresume_test"}
 
 
 @pytest.fixture

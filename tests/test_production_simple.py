@@ -31,7 +31,7 @@ def load_env_file(env_file=".env.production"):
 def run_sql_query(query, description):
     """Run a SQL query and return the result."""
     try:
-        db_name = os.environ.get('DB_NAME', 'db_ctc')
+        db_name = os.environ.get('DB_NAME', 'db_precis_ctc')
         result = subprocess.run([
             'docker', 'exec', 'postgres', 'psql', '-U', 'postgres',
             '-d', db_name, '-c', query

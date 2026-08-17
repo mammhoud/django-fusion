@@ -3,7 +3,7 @@ pytest configuration for ctc-research.com CI test suite.
 
 Handles:
 - Django setup
-- Test database cleanup (drops stale test_db_ctc before each session)
+- Test database cleanup (drops stale test_db_precis_ctc before each session)
 - Shared fixtures
 - Custom markers
 """
@@ -39,7 +39,7 @@ def pytest_sessionstart(session):
     try:
         subprocess.run(
             ["psql", "-h", "postgres", "-U", "postgres",
-             "-c", "DROP DATABASE IF EXISTS test_db_ctc;"],
+             "-c", "DROP DATABASE IF EXISTS test_db_precis_ctc;"],
             capture_output=True, timeout=10,
         )
     except Exception:

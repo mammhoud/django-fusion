@@ -161,7 +161,7 @@ class TestCTCResearchPerformance:
         # This would be implemented with actual database queries
         # For now, we'll test that the database responds quickly
         result = subprocess.run([
-            'docker', 'exec', 'postgres', 'psql', '-U', 'postgres', '-d', 'db_ctc',
+            'docker', 'exec', 'postgres', 'psql', '-U', 'postgres', '-d', 'db_precis_ctc',
             '-c', 'SELECT COUNT(*) FROM django_migrations;'
         ], capture_output=True, text=True, timeout=10)
 

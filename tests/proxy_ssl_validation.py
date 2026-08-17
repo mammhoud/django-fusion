@@ -130,8 +130,7 @@ class TestTraefikConfiguration:
         """All site router configs must exist."""
         required = [
             "ctc-research.yml",
-            "structa-cloud.yml",
-            "precis-lms.yml",
+            "lms-fusion.yml",
             "space.yml",
             "middlewares.yml",
             "certs.yml",

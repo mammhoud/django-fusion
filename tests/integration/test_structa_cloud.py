@@ -45,7 +45,7 @@ class TestStructaCloudIntegration:
         # Create Structa database if it doesn't exist
         subprocess.run([
             'docker', 'exec', 'postgres', 'psql', '-U', 'postgres',
-            '-c', 'CREATE DATABASE IF NOT EXISTS db_structa;'
+            '-c', 'CREATE DATABASE IF NOT EXISTS db_precis_lms;'
         ])
 
         # Run migrations

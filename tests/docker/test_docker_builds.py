@@ -298,12 +298,12 @@ class TestDockerEnvironmentComprehensive:
         # Test database creation
         run_test_command([
             'docker', 'exec', 'postgres', 'psql', '-U', 'postgres', '-c',
-            'CREATE DATABASE IF NOT EXISTS db_ctc;'
+            'CREATE DATABASE IF NOT EXISTS db_precis_ctc;'
         ], "CTC Database Creation")
 
         run_test_command([
             'docker', 'exec', 'postgres', 'psql', '-U', 'postgres', '-c',
-            'CREATE DATABASE IF NOT EXISTS db_structa;'
+            'CREATE DATABASE IF NOT EXISTS db_precis_lms;'
         ], "Structa Database Creation")
 
         # Test CTC Docker build

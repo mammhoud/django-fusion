@@ -159,12 +159,12 @@ APPEND_SLASH = False
 # Local dev defaults to SQLite. Set DJANGO_DB_ENGINE=django.db.backends.postgresql
 # (or USE_POSTGRES=1) to connect to the shared ``postgres`` container
 # (applications/databases) with this site's own database (DB_NAME_LANDING →
-# db_landing), matching the other Precis/Fusion sites on the shared cluster.
+# db_precis_landing), matching the other Precis/Fusion sites on the shared cluster.
 if os.environ.get("DJANGO_DB_ENGINE", "") == "django.db.backends.postgresql" or os.environ.get("USE_POSTGRES", "0") == "1":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DJANGO_DB_NAME", "db_landing"),
+            "NAME": os.environ.get("DJANGO_DB_NAME", "db_precis_landing"),
             "USER": os.environ.get("DJANGO_DB_USER", "admin"),
             "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD", ""),
             "HOST": os.environ.get("DJANGO_DB_HOST", "postgres"),

@@ -58,21 +58,21 @@ class TestWebsiteEnv:
         assert env["DJANGO_SETTINGS_MODULE"] == "settings"
         assert env["RUNNING_ENV"] == "docker"
         assert env["SERVER_ENV"] == "production"
-        assert env["DB_NAME"] == "db_ctc"
+        assert env["DB_NAME"] == "db_precis_ctc"
         assert env["ALLOWED_HOSTS"] == "*"
         assert "DJANGO_SECRET_KEY" not in env
 
     def test_lms_demo_env(self):
         env = cli._website_env("lms")
-        assert env["DB_NAME"] == "db_structa"
+        assert env["DB_NAME"] == "db_precis_lms"
 
     def test_vresume_env(self):
         env = cli._website_env("vresume")
-        assert env["DB_NAME"] == "vresume"
+        assert env["DB_NAME"] == "db_vresume"
 
     def test_unknown_website_gets_default_db(self):
         env = cli._website_env("unknown")
-        assert env["DB_NAME"] == "db_ctc"
+        assert env["DB_NAME"] == "db_precis_ctc"
 
     def test_existing_env_vars_preserved(self):
         with patch.dict(os.environ, {"DB_HOST": "custom-host", "REDIS_URL": "redis://custom:6379"}):

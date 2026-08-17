@@ -15,7 +15,7 @@
 #   docker compose -f applications/databases/docker-compose.yml up -d postgres default-redis
 #
 # Start:
-#   DB_NAME=db_structa docker compose -f applications/docker-compose.tasks.yml up -d
+#   DB_NAME=db_precis_lms docker compose -f applications/docker-compose.tasks.yml up -d
 # ============================================================
 
 networks:
@@ -60,7 +60,7 @@ x-shared-tasks-base: &shared-tasks-base
     # Shared task audit records have one explicit persistence database. This
     # is configurable per deployment and never silently falls back to an LMS
     # queue or site identity.
-    DB_NAME: ${DB_NAME:-db_structa}
+    DB_NAME: ${DB_NAME:-db_precis_lms}
     DB_USER: ${POSTGRES_USER:-admin}
     DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     # Redis requires auth (default-redis runs `--requirepass`); the bare

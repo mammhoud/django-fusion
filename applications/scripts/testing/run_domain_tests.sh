@@ -174,9 +174,9 @@ test_database_health() {
 
   # AppFlowy belongs to the Coder workspace and is initialized from the
   # shared PostgreSQL bootstrap.
-  local databases=("app_db" "db_ctc" "db_structa" "db_lms_fusion" "vresume" "coder" "affine")
+  local databases=("app_db" "db_precis_ctc" "db_precis_lms" "db_precis_landing" "db_vresume" "coder" "affine")
   if [ "$CRM_DEPLOYED" = true ]; then
-    databases=("${databases[@]}" "db_crm")
+    databases=("${databases[@]}" "db_loop_crm")
   fi
 
   for db in "${databases[@]}"; do
@@ -190,7 +190,7 @@ test_database_health() {
 
   # Check CRM tables specifically
   if [ "$CRM_DEPLOYED" = true ]; then
-    table_count=$(docker exec postgres psql -U admin -d db_crm -c "SELECT count(*) as cnt FROM information_schema.tables WHERE table_schema = 'public';" 2>&1 | grep -E "[0-9]+" -o | head -1)
+    table_count=$(docker exec postgres psql -U admin -d db_loop_crm -c "SELECT count(*) as cnt FROM information_schema.tables WHERE table_schema = 'public';" 2>&1 | grep -E "[0-9]+" -o | head -1)
     if [ -n "$table_count" ] && [ "$table_count" -gt 50 ]; then
       log_success "CRM database initialized: $table_count tables"
     else

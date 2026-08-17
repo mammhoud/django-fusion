@@ -255,7 +255,7 @@ class SiteConfigTests(SimpleTestCase):
         # Legacy bootstrap SQL moved during monorepo restructuring; verify the
         # same databases are declared in the canonical databases compose file.
         compose = (REPO_ROOT / "applications" / "databases" / "docker-compose.yml").read_text()
-        for database in ("db_ctc", "db_structa", "vresume"):
+        for database in ("db_precis_ctc", "db_precis_lms", "db_vresume"):
             with self.subTest(database=database):
                 assert database in compose
 

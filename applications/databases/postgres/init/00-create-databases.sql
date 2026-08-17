@@ -25,18 +25,24 @@ END $$;
 --    credentials come from 00.initdb-multiple-databases.sh via the
 --    INITDB_MULTIPLE_DATABASES env var, so we leave it for that script to own.
 -- -----------------------------------------------------------------------------
-SELECT 'CREATE DATABASE ctc_research'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ctc_research')\gexec
-SELECT 'CREATE DATABASE lms_demo'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'lms_demo')\gexec
-SELECT 'CREATE DATABASE vresume'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'vresume')\gexec
-SELECT 'CREATE DATABASE db_ctc'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_ctc')\gexec
-SELECT 'CREATE DATABASE db_structa'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_structa')\gexec
-SELECT 'CREATE DATABASE db_lms_fusion'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_lms_fusion')\gexec
+-- Databases follow the project-tree naming convention (db_<tree>):
+--   db_precis_lms      → projects/precis/precis-lms
+--   db_precis_ctc      → projects/precis/precis-ctc
+--   db_precis_landing  → projects/precis/precis-landing
+--   db_loop_crm        → projects/loop-crm
+--   db_vresume         → projects/portfolio (VResume legacy)
+-- The coder/affine databases are created by
+-- 00.initdb-multiple-databases.sh from INITDB_MULTIPLE_DATABASES.
+SELECT 'CREATE DATABASE db_precis_lms'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_precis_lms')\gexec
+SELECT 'CREATE DATABASE db_precis_ctc'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_precis_ctc')\gexec
+SELECT 'CREATE DATABASE db_precis_landing'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_precis_landing')\gexec
+SELECT 'CREATE DATABASE db_loop_crm'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_loop_crm')\gexec
+SELECT 'CREATE DATABASE db_vresume'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_vresume')\gexec
 
 -- The `affine` database/user is created by
 -- 00.initdb-multiple-databases.sh from INITDB_MULTIPLE_DATABASES so the
@@ -54,7 +60,7 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'db_lms_fusion')\gexec
 -- -----------------------------------------------------------------------------
 DO $$
 DECLARE
-   db_names text[] := ARRAY['ctc_research', 'lms_demo', 'vresume', 'db_ctc', 'db_structa', 'db_lms_fusion'];
+   db_names text[] := ARRAY['db_precis_lms', 'db_precis_ctc', 'db_precis_landing', 'db_loop_crm', 'db_vresume'];
    db_name text;
 BEGIN
    FOREACH db_name IN ARRAY db_names LOOP
@@ -70,7 +76,7 @@ END $$;
 
 -- Now connect to each database and grant schema-level privileges,
 -- create extensions, and set default privileges.
-\c ctc_research
+\c db_precis_lms
 GRANT ALL PRIVILEGES ON SCHEMA public TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
@@ -78,7 +84,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-\c lms_demo
+\c db_precis_ctc
 GRANT ALL PRIVILEGES ON SCHEMA public TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
@@ -86,7 +92,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-\c vresume
+\c db_precis_landing
 GRANT ALL PRIVILEGES ON SCHEMA public TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
@@ -94,27 +100,19 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-\c db_ctc
+\c db_loop_crm
 GRANT ALL PRIVILEGES ON SCHEMA public TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
 
-\c db_structa
+\c db_vresume
 GRANT ALL PRIVILEGES ON SCHEMA public TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
 ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "hstore";
-
-\c db_lms_fusion
-GRANT ALL PRIVILEGES ON SCHEMA public TO django;
-ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON TABLES TO django;
-ALTER DEFAULT PRIVILEGES FOR USER admin IN SCHEMA public GRANT ALL ON SEQUENCES TO django;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "hstore";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- -----------------------------------------------------------------------------
 -- 4. Done

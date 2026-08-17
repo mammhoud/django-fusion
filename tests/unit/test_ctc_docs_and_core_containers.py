@@ -116,7 +116,7 @@ def test_container_name_matches_traefik_url(_):
 def test_redis_db_index_and_db_name_uniqueness(_):
     """
     All Django services must use distinct Redis DB indices.
-    ctc-core DB_NAME (db_structa) must differ from ctc-django-main DB_NAME (db_ctc).
+    ctc-core DB_NAME (db_precis_lms) must differ from ctc-django-main DB_NAME (db_precis_ctc).
     """
     compose = load_compose()
     services = compose["services"]
@@ -141,8 +141,8 @@ def test_redis_db_index_and_db_name_uniqueness(_):
 
     core_env = get_env_dict(services["ctc-core"])
     main_env = get_env_dict(services["ctc-django-main"])
-    assert core_env["DB_NAME"] == "db_structa"
-    assert main_env["DB_NAME"] == "db_ctc"
+    assert core_env["DB_NAME"] == "db_precis_lms"
+    assert main_env["DB_NAME"] == "db_precis_ctc"
     assert core_env["DB_NAME"] != main_env["DB_NAME"]
 
 
@@ -156,7 +156,7 @@ def test_redis_db_index_and_db_name_uniqueness(_):
 def test_service_config_completeness(_):
     """
     docs service: image=nginx:alpine, container_name=docs, traefik-net network.
-    ctc-core service: PORT=5080, DB_NAME=db_structa, REDIS_URL ending in /5.
+    ctc-core service: PORT=5080, DB_NAME=db_precis_lms, REDIS_URL ending in /5.
     """
     compose = load_compose()
     services = compose["services"]
@@ -176,7 +176,7 @@ def test_service_config_completeness(_):
     assert core["container_name"] == "ctc-core"
     core_env = get_env_dict(core)
     assert core_env["PORT"] == "5080"
-    assert core_env["DB_NAME"] == "db_structa"
+    assert core_env["DB_NAME"] == "db_precis_lms"
     assert core_env["REDIS_URL"].endswith("/5")
     assert core_env["RUN_SETUP"] == "true"
     assert core_env["APP_MODULE"] == "core.asgi:application"

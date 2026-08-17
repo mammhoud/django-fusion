@@ -37,8 +37,8 @@ TASKS_PROJECT_NAME := compose
 # Default persistence DB for shared task audit/scheduler records. This is
 # infrastructure storage, not an LMS worker identity. Website-specific task
 # payloads carry their own site key.
-# Override with make deploy-tasks TASKS_DB_NAME=db_ctc when required.
-TASKS_DB_NAME ?= db_structa
+# Override with make deploy-tasks TASKS_DB_NAME=db_precis_ctc when required.
+TASKS_DB_NAME ?= db_precis_lms
 
 # -----------------------------------------------------------------
 # Deploy-order selector — CI/release scripts should set this explicitly:

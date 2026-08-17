@@ -108,14 +108,14 @@ echo "3️⃣ DATABASE CHECKS" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
 # Check database exists
-if docker exec postgres psql -U structa -d db_ctc -c "SELECT 1" 2>/dev/null | grep -q 1; then
-    test_pass "Database 'db_ctc' exists and is accessible"
+if docker exec postgres psql -U structa -d db_precis_ctc -c "SELECT 1" 2>/dev/null | grep -q 1; then
+    test_pass "Database 'db_precis_ctc' exists and is accessible"
 else
-    test_fail "Cannot connect to database 'db_ctc'"
+    test_fail "Cannot connect to database 'db_precis_ctc'"
 fi
 
 # Check page count
-PAGE_COUNT=$(docker exec postgres psql -U structa -d db_ctc -c "SELECT COUNT(*) FROM wagtailcore_page" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
+PAGE_COUNT=$(docker exec postgres psql -U structa -d db_precis_ctc -c "SELECT COUNT(*) FROM wagtailcore_page" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
 if [ -n "$PAGE_COUNT" ]; then
     test_info "Pages in database: $PAGE_COUNT"
     if [ "$PAGE_COUNT" -ge 2 ]; then
@@ -126,7 +126,7 @@ else
 fi
 
 # Check locales
-LOCALE_COUNT=$(docker exec postgres psql -U structa -d db_ctc -c "SELECT COUNT(*) FROM wagtail_localize_locale" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
+LOCALE_COUNT=$(docker exec postgres psql -U structa -d db_precis_ctc -c "SELECT COUNT(*) FROM wagtail_localize_locale" 2>/dev/null | grep -E "^[[:space:]]*[0-9]+" | tr -d ' ')
 if [ -n "$LOCALE_COUNT" ] && [ "$LOCALE_COUNT" -gt 0 ]; then
     test_pass "Locales configured: $LOCALE_COUNT"
 else

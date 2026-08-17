@@ -52,9 +52,19 @@ function resolvePaths(projectRoot) {
   };
 }
 
+// Monorepo-shared asset directories (projects/assets/*). Products that load
+// or generate content consumed by more than one product keep those assets in
+// the shared tree (see projects/assets/load-assets/README.md) instead of
+// forking per-product copies.
+const sharedAssetsDir = path.resolve(__dirname, '..', 'assets');
+
 module.exports = {
   resolvePaths,
   // Backward compat — these always resolve relative to the caller's project root.
   // Prefer resolvePaths(projectRoot) for explicit path resolution.
   WORKSPACE_ROOT: path.resolve(__dirname, '..'),
+  // Shared (monorepo-level) assets — projects/assets/
+  sharedAssetsDir,
+  // Shared loadable content (dumps/seeds/images) — projects/assets/load-assets/
+  loadAssetsDir: path.join(sharedAssetsDir, 'load-assets'),
 };

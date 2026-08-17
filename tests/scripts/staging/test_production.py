@@ -76,7 +76,7 @@ class ProductionTester:
 
     def test_database_connection(self):
         """Test PostgreSQL database connection."""
-        db_name = os.environ.get('DB_NAME', 'db_ctc')
+        db_name = os.environ.get('DB_NAME', 'db_precis_ctc')
         return self.run_command([
             'docker', 'exec', 'postgres', 'psql', '-U', 'postgres',
             '-d', db_name, '-c', 'SELECT version();'
