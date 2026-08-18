@@ -16,7 +16,7 @@ structa.cloud/
 ├── projects/cms-fusion/backend/
 │   ├── apps/                                # CMS models, routes, adapters
 │   └── www/urls.py                          # CMS URL mounts
-├── projects/precis-lms/backend/
+├── projects/precis/precis-main/backend/
 │   ├── apps/                                # LMS models, routes, adapters
 │   └── www/urls.py                          # LMS URL mounts
 └── applications/proxy/
