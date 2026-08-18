@@ -1,6 +1,6 @@
 /**
  * Product card/grid markup — the ONE source of truth for how a product card
- * renders in precis-landing.
+ * renders in precis-main.
  *
  * Imported by both sides of the render contract:
  *   - `<ProductGrid />` (Astro frontmatter, build/SSR time) renders the grid

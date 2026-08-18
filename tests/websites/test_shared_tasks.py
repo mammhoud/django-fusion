@@ -44,7 +44,7 @@ def test_temporal_campaign_worker_is_migrated_to_dramatiq_plugins():
 def test_full_project_make_targets_exclude_lms_from_aggregates():
     makefile = (ROOT / "projects" / "Makefile").read_text()
 
-    assert "check WEBSITE=precis-landing" in makefile
+    assert "check WEBSITE=precis-main" in makefile
     assert "check WEBSITE=loop-crm" in makefile
     assert "Building lms" not in makefile
-    assert "for website in precis-landing loop-crm" in makefile
+    assert "for website in precis-main loop-crm" in makefile

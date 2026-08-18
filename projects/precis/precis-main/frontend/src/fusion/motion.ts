@@ -1,5 +1,5 @@
 /**
- * Fusion motion module — lazy GSAP + ScrollTrigger for the precis-landing
+ * Fusion motion module — lazy GSAP + ScrollTrigger for the precis-main
  * frontend.
  *
  * GSAP is deliberately NOT part of the main bundle: it is only fetched (via

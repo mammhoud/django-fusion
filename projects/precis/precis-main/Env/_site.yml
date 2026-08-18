@@ -1,15 +1,15 @@
 # ───────────────────────────────────────────────────────────────────
-# precis-landing — site-specific environment overrides
+# precis-main — site-specific environment overrides
 # ───────────────────────────────────────────────────────────────────
-# Documented source of truth for the Landing-Fusion website identity.
-# Landing-Fusion resolves settings through os.environ (standalone
+# Documented source of truth for the unified Precis website identity.
+# Precis resolves settings through os.environ (standalone
 # backend/settings.py); this file documents the site-level contract and
 # keeps the Env layout in parity with the other Precis sites.
 # ───────────────────────────────────────────────────────────────────
 
 default:
   # ── Site Identity ──
-  SITE_NAME: "precis-landing"
+  SITE_NAME: "precis-main"
   SITE_DOMAIN: "structa.cloud"
   WAGTAIL_SITE_NAME: "StructAI Softwares"
   WAGTAILADMIN_BASE_URL: "https://structa.cloud"

@@ -95,7 +95,7 @@ urlpatterns = [
     # ── Task Center — authenticated background-job history ────────────
     path(
         "tasks/",
-        TaskCenterView.as_view(site_name="precis-landing", template_name="tasks/task_center.html"),
+        TaskCenterView.as_view(site_name="precis-main", template_name="tasks/task_center.html"),
         name="tasks",
     ),
 

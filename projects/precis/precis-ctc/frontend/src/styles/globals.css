@@ -21,24 +21,27 @@
    labels, subtle film grain, double-bezel cards, spring cubic-bezier motion.
    ──────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Clinical ink & warm paper (brand kit §palette) */
-  --fu-paper: 162 25% 98%;       /* #F5F2EB — warm paper sheet       */
-  --fu-ink: 163 21% 7%;          /* #0C1210 — clinical ink           */
-  --fu-muted: 165 7% 40%;        /* muted protocol grey              */
-  --fu-line: 160 12% 86%;        /* hairline rules (warm)            */
-  --fu-card: 45 33% 99%;         /* #FCFAF6 — card / overlay sheet   */
+  /* Swiss Industrial Print — matte documentation paper + carbon ink.
+     One substrate, one accent. Aviation red is the ONLY accent colour;
+     all teal/amber/green legacy aliases resolve to it so nothing can
+     reintroduce a second hue. No gradients, no translucency, no radius. */
+  --fu-paper: 60 17% 95%;        /* #F4F4F0 — matte paper sheet      */
+  --fu-ink: 0 0% 4%;             /* #0A0A0A — carbon ink             */
+  --fu-muted: 45 5% 38%;         /* protocol grey (secondary text)   */
+  --fu-line: 42 8% 62%;          /* visible structural rule          */
+  --fu-card: 55 13% 91%;         /* #EAE8E3 — ruled sheet / panel    */
 
-  /* Brand accents — teal = learning, amber = certification/conclusion */
-  --fu-link: 166 63% 33%;        /* #1F8A70 — clinical teal          */
-  --fu-link-dark: 167 66% 27%;   /* hover state                      */
-  --fu-mark: 38 62% 48%;         /* #C9962E — evidence amber         */
-  --fu-live: 144 68% 37%;        /* server "OK" green                */
+  /* Aviation / hazard red — the only accent. */
+  --fu-link: 0 82% 50%;          /* #E61919                          */
+  --fu-link-dark: 0 86% 42%;     /* pressed ink red                  */
+  --fu-mark: 0 82% 50%;          /* same red — no second hue         */
+  --fu-live: 0 82% 50%;          /* status = red, not green          */
 
-  /* Brand-kit extras */
-  --fu-teal: 166 63% 33%;        /* #1F8A70                          */
-  --fu-teal-bright: 162 63% 44%; /* #2FB392                          */
-  --fu-amber: 38 62% 48%;        /* #C9962E                          */
-  --fu-fog: 150 5% 52%;          /* #7E8A82 — neutral                */
+  /* Legacy aliases — all mapped to the single red accent. */
+  --fu-teal: 0 82% 50%;
+  --fu-teal-bright: 0 84% 46%;
+  --fu-amber: 0 82% 50%;
+  --fu-fog: 45 5% 42%;
 
   /* Legacy aliases (kept so existing fu-* utilities keep working) */
   --fu-bg: var(--fu-paper);
@@ -46,32 +49,35 @@
   --fu-border: var(--fu-line);
   --fu-primary: var(--fu-link);
   --fu-primary-dark: var(--fu-link-dark);
-  --fu-accent: var(--fu-mark);
+  --fu-accent: var(--fu-link);
 }
 
+/* Swiss Industrial Print commits to the light substrate — the dark block is
+   intentionally inert (same values) so the theme toggle can never switch the
+   interface into a second, mixed substrate. */
 .dark {
-  --fu-paper: 163 21% 7%;       /* #0C1210 — clinical ink canvas    */
-  --fu-ink: 45 27% 94%;         /* #F5F2EB — warm paper text         */
-  --fu-muted: 152 5% 62%;       /* secondary text                    */
-  --fu-line: 160 10% 16%;       /* hairline rules (dark)             */
-  --fu-card: 163 18% 10%;       /* #101815 — raised panel            */
+  --fu-paper: 60 17% 95%;
+  --fu-ink: 0 0% 4%;
+  --fu-muted: 45 5% 38%;
+  --fu-line: 42 8% 62%;
+  --fu-card: 55 13% 91%;
 
-  --fu-link: 162 63% 44%;       /* #2FB392 — glowing teal            */
-  --fu-link-dark: 166 63% 50%;
-  --fu-mark: 38 64% 55%;        /* #D3A43C — glowing amber           */
-  --fu-live: 145 64% 52%;
+  --fu-link: 0 82% 50%;
+  --fu-link-dark: 0 86% 42%;
+  --fu-mark: 0 82% 50%;
+  --fu-live: 0 82% 50%;
 
-  --fu-teal: 162 63% 44%;
-  --fu-teal-bright: 160 70% 52%;
-  --fu-amber: 38 64% 55%;
-  --fu-fog: 150 6% 55%;
+  --fu-teal: 0 82% 50%;
+  --fu-teal-bright: 0 84% 46%;
+  --fu-amber: 0 82% 50%;
+  --fu-fog: 45 5% 42%;
 
   --fu-bg: var(--fu-paper);
   --fu-text: var(--fu-ink);
   --fu-border: var(--fu-line);
   --fu-primary: var(--fu-link);
   --fu-primary-dark: var(--fu-link-dark);
-  --fu-accent: var(--fu-mark);
+  --fu-accent: var(--fu-link);
 }
 
 @theme inline {
@@ -97,9 +103,10 @@
   --color-fu-primary-dark: hsl(var(--fu-primary-dark));
   --color-fu-accent: hsl(var(--fu-accent));
 
-  /* Typography — the brand voice (brand kit §04) */
+  /* Typography — Swiss Industrial Print: heavy neo-grotesque display,
+     Inter UI body, IBM Plex Mono for all telemetry/metadata. */
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-display: "Archivo Black", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Premium motion — spring-like, no linear, no ease-in-out */
@@ -143,25 +150,34 @@
   body {
     @apply bg-fu-paper text-fu-ink antialiased;
     font-feature-settings: "cv11", "ss01";
-    /* Smooth theme switch (§5.1). Applied pre-paint, so no flash on load. */
-    transition: background-color 0.45s var(--ease-premium), color 0.45s var(--ease-premium);
   }
   ::selection {
-    @apply bg-fu-teal text-fu-paper;
+    @apply bg-fu-ink text-fu-paper;
   }
   :focus-visible {
-    outline: 2px solid hsl(var(--fu-teal));
+    outline: 2px solid hsl(var(--fu-ink));
     outline-offset: 2px;
   }
 
-  /* ── Editorial Luxury film grain (§3A) — fixed, pointer-events-none ── */
+  /* ── Industrial Brutalism: absolute rejection of border-radius ──
+     Every corner must be exactly 90°. Includes Tailwind's rounded-*
+     utilities and any component-level radius. */
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+  }
+
+  /* ── Mechanical noise — a global, low-opacity static grain ────────
+     Fixed, pointer-events-none, applied to the DOM root to unify the
+     physical paper substrate (Swiss print §7). */
   body::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 50;
     pointer-events: none;
-    opacity: 0.045;
+    opacity: 0.05;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -172,16 +188,16 @@
 @layer components {
   /* ── Document primitives ─────────────────────────────────────────── */
 
-  /* Mono tag marker, e.g. `<features>` — structural labels, not decoration. */
+  /* Mono tag marker, e.g. `[ FEATURES ]` — ASCII-framed structural label. */
   .tag-marker {
-    @apply font-mono text-[0.72rem] uppercase tracking-[0.18em] text-fu-muted;
+    @apply font-mono text-[0.72rem] uppercase tracking-[0.18em] text-fu-ink;
   }
-  .tag-marker::before { content: "‹"; opacity: 0.55; }
-  .tag-marker::after  { content: "›"; opacity: 0.55; }
+  .tag-marker::before { content: "[ "; opacity: 0.7; }
+  .tag-marker::after  { content: " ]"; opacity: 0.7; }
 
-  /* Section sheet — a page of the document, separated by a hairline. */
+  /* Section sheet — a page of the document, separated by a 2px carbon rule. */
   .doc-sheet {
-    @apply relative border-t border-fu-line;
+    @apply relative border-t-2 border-fu-ink;
   }
   .doc-sheet:last-of-type {
     border-bottom: 0;
@@ -208,21 +224,20 @@
     border-right: 1px solid;
   }
 
-  /* Status line — reads like a server response line. */
+  /* Status line — reads like a telemetry response line (mono, uppercase). */
   .status-line {
-    @apply inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-fu-muted;
+    @apply inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-fu-ink;
   }
   .status-line .dot {
-    @apply inline-block h-1.5 w-1.5 rounded-full bg-fu-live animate-fusion-pulse;
+    @apply inline-block h-1.5 w-1.5 bg-fu-live animate-fusion-pulse;
   }
 
   /* Source panel — the hero's own markup, set like a typeset code block.
-     Fixed ink surface in BOTH themes (like an editor), so the syntax
-     colours stay legible and the panel reads as “the code” regardless. */
+     Carbon ink plate with paper phosphor: a single inverted industrial
+     panel that reads as “the code” regardless of theme. */
   .source-panel {
-    @apply rounded-md;
-    background: #1a1917;
-    color: #f0eee8;
+    background: #0A0A0A;
+    color: #F4F4F0;
     font-family: var(--font-mono);
     font-size: 0.8rem;
     line-height: 1.75;
@@ -231,95 +246,86 @@
   .source-panel code {
     @apply block overflow-x-auto p-5 md:p-6;
   }
-  .source-panel .tok-tag  { color: #7cb3ff; }
-  .source-panel .tok-attr { color: #ffe14d; }
-  .source-panel .tok-str  { color: #b0aba0; }
-  .source-panel .tok-com  { color: #b0aba0; font-style: italic; }
+  .source-panel .tok-tag  { color: #E61919; }
+  .source-panel .tok-attr { color: #F4F4F0; }
+  .source-panel .tok-str  { color: #9C9C92; }
+  .source-panel .tok-com  { color: #6E6E64; font-style: italic; }
 
-  /* ── Buttons — pill architecture, button-in-button icon (§4B) ───── */
+  /* ── Buttons — rigid 90° plates. Uppercase mono labels, carbon frame,
+     hard offset press (no soft shadows, no translucency). ─────────── */
   .btn {
-    border-radius: 9999px;
-    transition: transform 0.5s var(--ease-spring), background-color 0.35s var(--ease-premium),
-      border-color 0.35s var(--ease-premium), color 0.35s var(--ease-premium),
-      box-shadow 0.35s var(--ease-premium);
+    @apply font-mono uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    transition: background-color 0.15s ease, color 0.15s ease,
+      border-color 0.15s ease, transform 0.15s ease;
   }
-  .btn:active { transform: scale(0.98); }
+  .btn:active { transform: translate(2px, 2px); }
   .btn-primary {
-    @apply btn bg-fu-link text-white
+    @apply btn bg-fu-link text-fu-paper
            hover:bg-fu-link-dark;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 24px -12px hsl(var(--fu-teal) / 0.55);
+    border: 2px solid var(--fu-ink);
+    box-shadow: 4px 4px 0 0 var(--fu-ink);
   }
   .btn-primary:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 14px 34px -14px hsl(var(--fu-teal) / 0.7);
+    box-shadow: 2px 2px 0 0 var(--fu-ink);
   }
   .btn-secondary {
-    @apply btn bg-transparent text-fu-ink border border-fu-line
-           hover:border-fu-link hover:text-fu-link;
+    @apply btn bg-fu-paper text-fu-ink border-2 border-fu-ink
+           hover:bg-fu-ink hover:text-fu-paper;
+    box-shadow: 4px 4px 0 0 var(--fu-ink);
   }
   .btn-outline {
-    @apply btn border border-fu-link text-fu-link
-           hover:bg-fu-link/5;
+    @apply btn bg-transparent text-fu-ink border-2 border-fu-ink
+           hover:bg-fu-ink hover:text-fu-paper;
   }
   .btn-white {
-    @apply btn bg-fu-paper text-fu-link border border-fu-line
-           hover:border-fu-link;
+    @apply btn bg-fu-paper text-fu-ink border-2 border-fu-ink
+           hover:bg-fu-ink hover:text-fu-paper;
   }
 
-  /* ── Cards — double-bezel nested architecture (§4A) ─────────────── */
+  /* ── Cards — square plates on the ruled sheet, 1px carbon frame ─── */
   .card {
-    @apply bg-fu-card rounded-2xl border border-fu-line
-           transition-all duration-500;
-    transition-timing-function: var(--ease-premium);
-    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.08);
+    @apply bg-fu-card border-2 border-fu-ink transition-colors duration-200;
   }
   .card:hover {
-    border-color: hsl(var(--fu-teal) / 0.45);
-    transform: translateY(-3px);
-    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.1),
-      0 18px 44px -18px rgb(0 0 0 / 0.25);
+    background: hsl(var(--fu-paper));
+    box-shadow: 4px 4px 0 0 var(--fu-ink);
   }
   .card-gradient {
-    @apply bg-fu-ink text-fu-paper rounded-2xl border border-fu-line;
+    @apply bg-fu-ink text-fu-paper border-2 border-fu-ink;
   }
 
-  /* ── Double-bezel shell — outer bezel + inner core (Doppelrand) ─── */
+  /* ── Bezel — rigid plate frame, no radius, no translucency ──────── */
   .bezel {
-    border-radius: 2.25rem;
     padding: 0.625rem;
-    background: hsl(var(--fu-line) / 0.5);
-    border: 1px solid hsl(var(--fu-line));
+    background: hsl(var(--fu-line));
+    border: 2px solid var(--fu-ink);
   }
   .bezel__core {
-    border-radius: calc(2.25rem - 0.625rem);
     background: hsl(var(--fu-card));
-    border: 1px solid hsl(var(--fu-line));
-    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.1);
+    border: 1px solid var(--fu-ink);
     overflow: hidden;
   }
 
-  /* ── Eyebrow badge (§4C) — microscopic pill before headings ─────── */
+  /* ── Eyebrow badge — square ASCII tag before headings ───────────── */
   .eyebrow-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 9999px;
     padding: 0.3rem 0.85rem;
     font-family: var(--font-mono);
     font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 0.22em;
     font-weight: 500;
-    color: hsl(var(--fu-teal));
-    border: 1px solid hsl(var(--fu-teal) / 0.3);
-    background: hsl(var(--fu-teal) / 0.06);
+    color: hsl(var(--fu-ink));
+    border: 1px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
   }
   .eyebrow-pill::before {
-    content: "";
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 50%;
-    background: hsl(var(--fu-teal));
-    box-shadow: 0 0 0 3px hsl(var(--fu-teal) / 0.18);
+    content: "+ ";
+    color: hsl(var(--fu-link));
   }
 
   /* ── Spring scroll reveal (replaces flat 14px ease-out) ─────────── */
@@ -342,24 +348,25 @@
     @apply bg-fu-paper text-fu-ink;
   }
 
-  /* ── Forms ──────────────────────────────────────────────────────── */
+  /* ── Forms — hard carbon frames, no radius, no ring translucency ── */
   .input-field {
-    @apply w-full rounded-md border border-fu-line bg-fu-card px-4 py-2.5 text-sm
-           text-fu-ink placeholder:text-fu-muted/50
-           focus:border-fu-link focus:ring-2 focus:ring-fu-link/20
-           outline-none transition-all duration-200;
+    @apply w-full border-2 border-fu-ink bg-fu-card px-4 py-2.5 text-sm
+           text-fu-ink placeholder:text-fu-muted
+           focus:border-fu-link
+           outline-none transition-colors duration-150;
   }
   .form-label {
-    @apply block text-sm font-medium text-fu-ink mb-1.5;
+    @apply block font-mono text-xs uppercase tracking-[0.14em] text-fu-ink mb-1.5;
   }
 
-  /* ── Badges ─────────────────────────────────────────────────────── */
+  /* ── Badges — ASCII tags, carbon frame, red accent ──────────────── */
   .badge-primary {
     @apply badge font-mono text-[0.7rem] uppercase tracking-[0.14em]
-           border border-fu-line bg-fu-card text-fu-link;
+           border-2 border-fu-ink bg-fu-paper text-fu-link;
   }
   .badge-success {
-    @apply badge bg-fu-live/10 text-fu-live border border-fu-live/30;
+    @apply badge font-mono text-[0.7rem] uppercase tracking-[0.14em]
+           border-2 border-fu-ink bg-fu-ink text-fu-paper;
   }
 
   /* ── Backend shell (Django render) ─────────────────────────────── */
@@ -370,19 +377,21 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    border-bottom: 1px solid hsl(var(--fu-line));
-    background: hsl(var(--fu-paper) / 0.92);
-    backdrop-filter: blur(8px);
+    border-bottom: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
   }
   .site-nav a {
-    font-size: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     color: hsl(var(--fu-muted));
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.15s;
   }
-  .site-nav a:hover { color: hsl(var(--fu-ink)); }
+  .site-nav a:hover { color: hsl(var(--fu-link)); }
   .site-footer {
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     color: hsl(var(--fu-muted));
   }
@@ -392,9 +401,9 @@
   }
   .site-footer a:hover { color: hsl(var(--fu-link)); }
   .badge-white {
-    border: 1px solid rgb(240 238 232 / 0.35);
-    background: rgb(240 238 232 / 0.12);
-    color: #f0eee8;
+    border: 2px solid #F4F4F0;
+    background: transparent;
+    color: #F4F4F0;
   }
 
   /* Backend HTMX in-flight indicator (#htmx-indicator, toggled by the
@@ -485,63 +494,57 @@
   @media (min-width: 1024px) { .hero__content { text-align: left; } }
   .hero__eyebrow {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
     margin-bottom: 1.5rem;
     font-family: var(--font-mono);
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: hsl(var(--fu-teal));
+    color: hsl(var(--fu-link));
   }
-  .hero__eyebrow::before { content: "‹"; opacity: 0.55; }
-  .hero__eyebrow::after  { content: "›"; opacity: 0.55; }
-  .hero__eyebrow.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .hero__eyebrow::before { content: "[ "; opacity: 0.7; }
+  .hero__eyebrow::after  { content: " ]"; opacity: 0.7; }
+  .hero__eyebrow.reveal-visible { opacity: 1; transform: translateY(0); }
   .hero__heading {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
     margin-bottom: 1.5rem;
     font-family: var(--font-display);
-    font-weight: 300;
-    font-size: 2.4rem;
-    line-height: 1.06;
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    font-size: clamp(2.6rem, 8vw, 6.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    text-wrap: balance;
   }
-  .hero__heading.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  @media (min-width: 640px) { .hero__heading { font-size: 3.2rem; } }
-  @media (min-width: 1024px) { .hero__heading { font-size: 4rem; } }
+  .hero__heading.reveal-visible { opacity: 1; transform: translateY(0); }
   .hero__accent {
     position: relative;
     display: inline-block;
     white-space: nowrap;
-    font-style: italic;
   }
   .hero__accent-mark {
     position: absolute;
     inset-inline: -0.08em;
-    bottom: 0.08em;
+    bottom: 0.06em;
     z-index: 0;
-    height: 0.3em;
-    border-radius: 0.125rem;
-    background: hsl(var(--fu-amber) / 0.3);
-    transform: skewX(-8deg);
+    height: 0.28em;
+    background: hsl(var(--fu-link) / 0.85);
     pointer-events: none;
   }
   .hero__intro {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
     margin-bottom: 2.25rem;
     max-width: 34rem;
     font-size: 1rem;
     line-height: 1.7;
     color: hsl(var(--fu-muted));
   }
-  .hero__intro.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .hero__intro.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .hero__intro { font-size: 1.1rem; } }
   @media (min-width: 1024px) { .hero__intro { margin-inline: 0; } }
   .hero__actions {
@@ -591,7 +594,7 @@
   /* ── Stats BEM block ────────────────────────────────────────────── */
   .stats {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 3rem;
     padding-bottom: 3rem;
@@ -613,7 +616,7 @@
   /* ── Features BEM block ─────────────────────────────────────────── */
   .features {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -628,26 +631,25 @@
   }
   .features__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
-    border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
+    border: 2px solid hsl(var(--fu-ink));
+    transition: all 0.15s;
     opacity: 0;
     transform: translateY(14px);
     position: relative;
     padding: 1.5rem 1.25rem 1.25rem;
   }
-  .features__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .features__card:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
   .features__card.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .features__card { padding: 1.75rem 1.5rem 1.5rem; } }
   .features__card-index {
-    @apply absolute right-3 sm:right-4 top-3 font-mono text-[0.6rem] sm:text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70;
+    @apply absolute right-3 sm:right-4 top-3 font-mono text-[0.6rem] sm:text-[0.65rem] uppercase tracking-[0.14em] text-fu-link;
     pointer-events: none;
   }
   .features__icon {
-    @apply mb-4 sm:mb-5 inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link;
+    @apply mb-4 sm:mb-5 inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center border-2 border-fu-ink bg-fu-paper text-fu-link transition-colors duration-150;
   }
   .features__title {
-    @apply mb-2 font-display text-[0.95rem] sm:text-[1.05rem] font-semibold text-fu-ink;
+    @apply mb-2 font-display text-[0.95rem] sm:text-[1.05rem] font-semibold uppercase tracking-tight text-fu-ink;
   }
   .features__text {
     @apply text-xs sm:text-sm leading-relaxed text-fu-muted;
@@ -670,11 +672,10 @@
   }
   @media (min-width: 640px) { .cta__inner { padding-inline: 1.75rem; } }
   @media (min-width: 1024px) { .cta__inner { padding-inline: 2.5rem; } }
-  .bezel--ink { background: hsl(var(--fu-ink)); border-color: hsl(var(--fu-ink) / 0.6); }
+  .bezel--ink { background: hsl(var(--fu-ink)); border-color: hsl(var(--fu-ink)); }
   .bezel__core--ink {
-    background: #0c1210;
-    border-color: rgb(245 242 235 / 0.14);
-    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.06);
+    background: #0A0A0A;
+    border-color: rgb(244 244 240 / 0.35);
   }
   .cta__content {
     @apply mx-auto max-w-3xl text-center;
@@ -687,18 +688,20 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: hsl(var(--fu-teal-bright));
+    color: hsl(var(--fu-link));
   }
-  .cta__eyebrow::before { content: "‹"; opacity: 0.55; }
-  .cta__eyebrow::after  { content: "›"; opacity: 0.55; }
+  .cta__eyebrow::before { content: "[ "; opacity: 0.7; }
+  .cta__eyebrow::after  { content: " ]"; opacity: 0.7; }
   @media (min-width: 640px) { .cta__eyebrow { margin-bottom: 1.25rem; } }
   .cta__heading {
-    @apply mb-3 sm:mb-4 font-display text-3xl font-light tracking-tight sm:text-4xl md:text-5xl;
-    color: #f5f2eb;
+    @apply mb-3 sm:mb-4 font-display uppercase tracking-tight sm:text-4xl md:text-5xl;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 0.95;
+    color: #F4F4F0;
   }
   .cta__intro {
     @apply mx-auto mb-7 sm:mb-9 max-w-xl text-base leading-relaxed sm:text-lg;
-    color: #b0aba0;
+    color: #A9A9A0;
   }
   .cta__actions {
     @apply flex flex-col justify-center gap-3 sm:flex-row;
@@ -710,7 +713,7 @@
   /* ── Testimonials BEM block ──────────────────────────────────────── */
   .testimonials {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -725,26 +728,25 @@
   }
   .testimonials__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
-    border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
+    border: 2px solid hsl(var(--fu-ink));
+    transition: all 0.15s;
     position: relative;
     padding: 1.5rem;
   }
-  .testimonials__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+  .testimonials__card:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
   @media (min-width: 640px) { .testimonials__card { padding: 2rem; } }
   @media (min-width: 768px) { .testimonials__card { padding: 2.5rem; } }
   .testimonials__rating {
     @apply mb-4 sm:mb-5 flex items-center gap-2 font-mono text-[0.68rem] sm:text-[0.72rem] uppercase tracking-[0.16em] text-fu-link;
   }
   .testimonials__quote {
-    @apply mb-5 sm:mb-6 font-display text-base leading-relaxed text-fu-ink/85 sm:text-lg;
+    @apply mb-5 sm:mb-6 font-display text-base leading-relaxed text-fu-ink sm:text-lg;
   }
   .testimonials__author {
-    @apply flex items-center gap-3 sm:gap-4 border-t border-fu-line pt-4 sm:pt-5;
+    @apply flex items-center gap-3 sm:gap-4 border-t-2 border-fu-ink pt-4 sm:pt-5;
   }
   .testimonials__avatar {
-    @apply flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-fu-line bg-fu-paper font-mono text-sm font-semibold text-fu-link;
+    @apply flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center border-2 border-fu-ink bg-fu-paper font-mono text-sm font-semibold text-fu-link;
   }
   .testimonials__controls {
     @apply mt-6 sm:mt-7 flex items-center justify-center gap-3 sm:gap-4;
@@ -753,7 +755,7 @@
   /* ── FAQ BEM block ──────────────────────────────────────────────── */
   .faq {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -773,7 +775,7 @@
   /* ── Pricing BEM block ──────────────────────────────────────────── */
   .pricing {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -788,22 +790,22 @@
   }
   .pricing__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
-    border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
+    border: 2px solid hsl(var(--fu-ink));
+    transition: all 0.15s;
     position: relative;
     padding: 1.25rem;
   }
-  .pricing__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .pricing__card:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
   @media (min-width: 640px) { .pricing__card { padding: 1.5rem; } }
   .pricing__card--highlighted {
-    @apply border-fu-link shadow-lg md:-translate-y-2;
+    @apply border-fu-link;
+    box-shadow: 4px 4px 0 0 var(--fu-link);
   }
 
   /* ── Blog Preview BEM block ──────────────────────────────────────── */
   .blog-preview {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -818,14 +820,12 @@
   }
   .blog-preview__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
-    border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
+    border: 2px solid hsl(var(--fu-ink));
+    transition: all 0.15s;
     opacity: 0;
     transform: translateY(14px);
-    overflow: hidden;
   }
-  .blog-preview__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-4px); }
+  .blog-preview__card:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
   .blog-preview__card.reveal-visible { opacity: 1; transform: translateY(0); }
   .blog-preview__image {
     @apply h-40 sm:h-48 overflow-hidden bg-fu-card;
@@ -849,7 +849,7 @@
   /* ── Team BEM block ──────────────────────────────────────────────── */
   .team {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-surface, 48 33% 100%));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -865,22 +865,21 @@
   }
   .team__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
-    border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
+    border: 2px solid hsl(var(--fu-ink));
+    transition: all 0.15s;
     opacity: 0;
     transform: translateY(14px);
     padding: 1.25rem;
     text-align: center;
   }
-  .team__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-4px); }
+  .team__card:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
   .team__card.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .team__card { padding: 1.5rem; } }
   .team__avatar {
-    @apply mx-auto mb-3 sm:mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full border-2 border-fu-line bg-fu-card text-fu-link transition-colors group-hover:border-fu-link;
+    @apply mx-auto mb-3 sm:mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center border-2 border-fu-ink bg-fu-paper text-fu-link transition-colors;
   }
   .team__name {
-    @apply font-display text-[0.95rem] sm:text-[1.05rem] font-semibold text-fu-ink;
+    @apply font-display text-[0.95rem] sm:text-[1.05rem] font-semibold uppercase tracking-tight text-fu-ink;
   }
   .team__role {
     @apply mt-0.5 text-xs sm:text-sm text-fu-link;
@@ -895,7 +894,7 @@
   /* ── Timeline BEM block ──────────────────────────────────────────── */
   .timeline {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -919,29 +918,27 @@
     @apply relative flex flex-col gap-3 sm:gap-4 md:flex-row md:gap-8;
   }
   .timeline__dot {
-    @apply absolute left-3 sm:left-4 top-5 sm:top-6 z-10 h-2.5 w-2.5 sm:h-3 sm:w-3 -translate-x-1/2 rounded-full border-2 md:left-1/2;
+    @apply absolute left-3 sm:left-4 top-5 sm:top-6 z-10 h-2.5 w-2.5 sm:h-3 sm:w-3 -translate-x-1/2 border-2 md:left-1/2;
     pointer-events: none;
   }
   .timeline__dot--highlighted {
     @apply border-fu-link bg-fu-link;
-    box-shadow: 0 0 0 4px rgba(11, 87, 208, 0.15);
   }
   .timeline__dot--default {
-    @apply border-fu-line bg-fu-paper;
+    @apply border-fu-ink bg-fu-paper;
   }
   .timeline__content {
     @apply ml-8 sm:ml-10 md:ml-0 md:w-1/2;
   }
   .timeline__card {
     background: hsl(var(--fu-card));
-    border-radius: 0.375rem;
-    border: 1px solid hsl(var(--fu-line));
-    transition: all 0.3s;
+    border: 2px solid hsl(var(--fu-ink));
+    transition: all 0.15s;
     opacity: 0;
     transform: translateY(14px);
     padding: 1rem;
   }
-  .timeline__card:hover { border-color: hsl(var(--fu-muted)); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .timeline__card:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
   .timeline__card.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .timeline__card { padding: 1.25rem; } }
   .timeline__date {
@@ -961,7 +958,7 @@
   /* ── Newsletter BEM block ────────────────────────────────────────── */
   .newsletter {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-card));
     padding-top: 3.5rem;
     padding-bottom: 3.5rem;
@@ -989,7 +986,7 @@
     @apply flex flex-col gap-3 sm:flex-row;
   }
   .newsletter__input {
-    @apply flex-1 rounded-lg border border-fu-line bg-fu-paper px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-fu-ink placeholder:text-fu-muted/60 focus:border-fu-link focus:outline-none focus:ring-1 focus:ring-fu-link;
+    @apply flex-1 border-2 border-fu-ink bg-fu-paper px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-fu-ink placeholder:text-fu-muted focus:outline-none;
   }
   .newsletter__feedback {
     @apply mt-3 sm:mt-4 min-h-[1.5rem];
@@ -1001,7 +998,7 @@
   /* ── Contact Form BEM block ──────────────────────────────────────── */
   .contact-form {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -1024,7 +1021,7 @@
   /* ── Live Fragment BEM block ─────────────────────────────────────── */
   .live-fragment {
     position: relative;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
     background: hsl(var(--fu-paper));
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -1042,7 +1039,7 @@
     @apply relative p-6;
   }
   .capability__icon {
-    @apply mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link;
+    @apply mb-4 inline-flex h-10 w-10 items-center justify-center border-2 border-fu-ink bg-fu-paper text-fu-link;
   }
   .capability__title {
     @apply mb-2 font-display text-[1.05rem] font-semibold text-fu-ink;
@@ -1059,10 +1056,10 @@
     @apply relative p-6;
   }
   .product__tag {
-    @apply mb-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-muted;
+    @apply mb-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-fu-link;
   }
   .product__name {
-    @apply mb-2 font-display text-[1.05rem] font-semibold text-fu-ink;
+    @apply mb-2 font-display text-[1.05rem] font-semibold uppercase tracking-tight text-fu-ink;
   }
   .product__text {
     @apply text-sm leading-relaxed text-fu-muted;
@@ -1090,7 +1087,7 @@
     @apply mb-0.5;
   }
   .project__path {
-    @apply mb-3 truncate;
+    @apply mb-3 truncate font-mono text-xs;
   }
   .project__text {
     @apply mb-4;
@@ -1462,7 +1459,7 @@
     align-items: center;
     gap: 0.4rem;
     padding: 1rem 0.5rem;
-    border-top: 1px solid hsl(var(--fu-line));
+    border-top: 2px solid hsl(var(--fu-ink));
   }
 
   /* Card grid skeleton */
