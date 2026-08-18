@@ -104,9 +104,11 @@ structa.cloud/
 | Product | Directory | Key Docs |
 |---|---|---|
 | **Precis LMS** | [`precis/`](precis/) | Configuration, Courses, Deployment |
-| **Landing-Fusion** | [`precis-landing/`](precis-landing/) | Frontend, Backend API, Deployment |
-| **Syntara/Cypercloud** | [`cypercloud/`](cypercloud/) | Infrastructure, Configuration, Features |
-| **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar (Django), Cloud |
+| **Landing-Fusion** | [`landing-fusion/`](landing-fusion/) | Frontend, Backend API, Deployment |
+| **CTC Research** | [`precis-ctc/`](precis-ctc/) | Content strategy, Publishing & production, Environment |
+| **Syntara** (Cypercloud) | [`syntara/`](syntara/) | Configuration, Features, Infrastructure |
+| **Loop-CRM** | [`loop-crm/`](loop-crm/) | Design system, Setup & build |
+| **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar, Cloud |
 | **django-fusion** | [`libs/`](libs/) | Component guide, Viewsets, Templates |
 | **Shared Config** | [`dev/back-env/`](dev/back-env/) | Settings reference, Environment variables |
 

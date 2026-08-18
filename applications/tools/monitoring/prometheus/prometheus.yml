@@ -1,0 +1,23 @@
+# Prometheus scrape configuration for the Structa Cloud monitoring stack.
+# Add product targets (Django /metrics endpoints via django-prometheus) under
+# the `django-sites` job as they are exposed.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: grafana
+    static_configs:
+      - targets: ['grafana:3000']
+
+  # Django product metrics (django-prometheus). Uncomment and add the
+  # container names of each site backend once it exposes /metrics.
+  # - job_name: django-sites
+  #   static_configs:
+  #     - targets:
+  #         - 'precis-ctc-website:5070'
+  #         - 'precis-landing-backend:8000'

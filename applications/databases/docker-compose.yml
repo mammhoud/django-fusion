@@ -41,15 +41,16 @@ services:
     env_file:
       - ../../.env
     environment:
-      # Core PostgreSQL settings
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: app_db
+      # Core PostgreSQL settings (all sourced from the repo-root .env).
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-app_db}
       PGDATA: /var/lib/postgresql/data/pgdata
       # Multiple databases – comma-separated list: db:owner:password.
-      # AFFiNE is a permanent shared proxy service and uses the `affine`
-      # database. Its role password is required; it has no repository default.
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_lms:structa:CTCreSearch0x@,db_precis_ctc:structa:CTCreSearch0x@,db_vresume:structa:CTCreSearch0x@,coder:coder:CTCreSearch0x@,db_loop_crm:structa:CTCreSearch0x@,db_precis_landing:structa:CTCreSearch0x@,affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
+      # Set POSTGRES_DATABASES in the repo-root .env to override. The fallback
+      # reuses the same per-role credentials the site compose files read
+      # (POSTGRES_PASSWORD) so no secrets are hardcoded here.
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_lms:structa:${POSTGRES_PASSWORD:-postgres},db_precis_ctc:structa:${POSTGRES_PASSWORD:-postgres},db_vresume:structa:${POSTGRES_PASSWORD:-postgres},coder:coder:${CODER_DB_PASSWORD:-postgres},db_loop_crm:structa:${POSTGRES_PASSWORD:-postgres},db_precis_landing:structa:${POSTGRES_PASSWORD:-postgres},affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
 
       # ---- NEW: Force re‑initialization on every start ----
       # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again

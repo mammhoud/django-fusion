@@ -1,4 +1,40 @@
-# Precis LMS changelog
+# Precis CTC Research changelog
+
+## 2026-08-18 — Research publications, OpenAPI & django-fusion filtering
+
+### Added
+
+- **Publication content** — `apps.content.models.publication.Publication` /
+  `PublicationCategory` (Wagtail-registered, migration `0008_publication`).
+- **Research library API** — `/apis/research/publications/` (localized, with
+  `?category=`, `?q=`, `?ordering=`, and `?limit=`/`?page=`/`?offset=`).
+- **OpenAPI docs** — `/apis/openapi.json` + `/apis/docs/` (Swagger UI), built from
+  `apps.core.openapi` (17 paths, 5 tags).
+- **Research library page** — frontend `/documents/` (per-language library).
+- **Docs** — `docs/LEARNING_CASES.md` (technique recipes) + `docs/CONTENTS.md`
+  cross-links.
+
+### Changed
+
+- `landing_api.py` — `auth_status_api` mirrors precis-landing (session + learner
+  summary); `content_languages_api` serves the 7-language catalog.
+- `apps/urls.py` — mounted OpenAPI JSON/UI and the publications route.
+
+### Library (django-fusion, consumed here)
+
+- `FusionApiViewset` filtering/search/ordering/pagination + Django-native OpenAPI
+  builder (`docs/19-openapi-and-filtering.md`).
+
+### Verification
+
+- Backend suite: **192 passed, 6 subtests**.
+- Frontend suites green: smoke 1/1, e2e 11/11, section-placement 11/11.
+  Updated stale content assertions (courses, products, about, services) to
+  match the redesigned pages.
+- Loaded the research-publication seed (8 objects → 1 doc per language, 7
+  languages) into the running database; cleared the stale cache middleware TTL.
+- Rebuilt + redeployed the Astro frontend so `/documents/`, `/about/research/`,
+  and `/about/education/` serve (were 404 on the stale image).
 
 ## 2026-08-11 - Active deployment and plan closeout
 

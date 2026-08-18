@@ -1,3 +1,0 @@
-# The active documentation site is Docus (Nuxt Content) and is installed from
-# docs/docus/package.json. This file is retained for environments that expect a
-# Python requirements file; it intentionally has no MkDocs dependencies.

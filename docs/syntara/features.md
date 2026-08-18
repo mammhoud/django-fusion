@@ -1,6 +1,6 @@
-# 🎯 Cypercloud — Features
+# 🎯 Syntara — Features
 
-> Feature set specific to the Cypercloud AI platform.
+> Feature set specific to the Syntara AI platform.
 
 ---
 
@@ -46,6 +46,6 @@
 | Topic | Path |
 |-------|------|
 | Platform plan | [`platform-plan.md`](platform-plan.md) |
-| Cypercloud config | [`configuration.md`](configuration.md) |
-| Cypercloud use cases | [`use-cases.md`](use-cases.md) |
+| Syntara config | [`configuration.md`](configuration.md) |
+| Syntara use cases | [`use-cases.md`](use-cases.md) |
 | Feature matrix | [`../../features/`](../../features/) |

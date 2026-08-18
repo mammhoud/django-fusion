@@ -16,10 +16,10 @@ shared-proxy Nginx
   └─ / → proxy-affine:3010
 ```
 
-The Coder workspace page separately exposes VS Code Web and the web terminal.
-`coder.structa.cloud` routes to the Coder control plane, while
-`code.structa.cloud` redirects to it. No workspace application port is
-published on the host.
+The Coder workspace page separately exposes VS Code Web, a web-based File
+Browser, and the web terminal. `coder.structa.cloud` routes to the Coder control
+plane, while `code.structa.cloud` redirects to it. No workspace application
+port is published on the host.
 
 ## Ownership boundaries
 

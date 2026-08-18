@@ -11,4 +11,4 @@ FROM nginx:1.27-alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY applications/proxy/nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY applications/proxy/configs/nginx/default.conf.template /etc/nginx/templates/default.conf.template

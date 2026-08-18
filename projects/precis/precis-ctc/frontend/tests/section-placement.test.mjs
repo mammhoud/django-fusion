@@ -117,8 +117,9 @@ test('about carries the seeded experience, gallery, and methods', () => {
   // Seeded gallery (media_items with a Dr. yasir image).
   assert.match(about, /Snapshots/);
   assert.match(about, /Dr\. yasir/);
-  // Seeded methods.
-  assert.match(about, /Our methods/);
+  // Seeded capability copy (methods section renders only when the backend
+  // seeds an `methods` array for the About page).
+  assert.match(about, /What we do, in detail/);
   // No error cards on a seeded page.
   assert.ok(!about.includes('unavailable'), 'about should not render error cards');
   for (const marker of staleTechMarkers) {
@@ -183,15 +184,15 @@ test('course detail pages render seeded course facts and pricing', () => {
 });
 
 test('services page renders its seeded hero without stale tech copy', () => {
-  assert.match(services, /Services/);
-  assert.match(services, /Advance health through research/);
+  assert.match(services, /Our Capabilities/);
+  assert.match(services, /Start learning with CTC Research/);
   for (const marker of staleTechMarkers) {
     assert.ok(!services.includes(marker), `services should NOT contain: ${marker}`);
   }
 });
 
 test('products page renders the program-line hero (no stale product lines)', () => {
-  assert.match(products, /Programs & services/);
+  assert.match(products, /Programs &amp; services/);
   assert.match(products, /for health innovation/);
   for (const marker of staleTechMarkers) {
     assert.ok(!products.includes(marker), `products should NOT contain: ${marker}`);

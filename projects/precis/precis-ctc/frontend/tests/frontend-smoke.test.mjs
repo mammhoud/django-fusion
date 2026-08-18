@@ -26,7 +26,7 @@ test('Astro frontend exposes the consolidated LMS contract', async () => {
 
   const catalog = await text('src/pages/courses/index.astro');
   assert.match(catalog, /fetchCourseList/);
-  assert.match(catalog, /medical research/i);
+  assert.match(catalog, /medical learning|clinical research/i);
 
   const detail = await text('src/pages/courses/[slug].astro');
   assert.match(detail, /fetchCourseDetail/);

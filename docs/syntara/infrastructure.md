@@ -1,6 +1,6 @@
-# 🔧 Cypercloud — Infrastructure
+# 🔧 Syntara — Infrastructure
 
-> Infrastructure specifics for the Cypercloud AI platform.
+> Infrastructure specifics for the Syntara AI platform.
 
 ---
 
@@ -24,7 +24,7 @@ cd projects && make dev WEBSITE=cypercloud   # Local dev server
 
 ```
 ┌──────────────────────┐
-│   Cypercloud Web     │
+│   Syntara Web     │
 │   :5073              │
 └──────────┬───────────┘
            │
@@ -40,7 +40,7 @@ cd projects && make dev WEBSITE=cypercloud   # Local dev server
 ### Model Configuration
 
 ```yaml
-# projects/cypercloud/configs/settings.yml
+# projects/syntara/configs/settings.yml
 ai:
   backends:
     ollama:
@@ -68,6 +68,6 @@ See [`platform-plan.md`](platform-plan.md) for the multi-system subscription pla
 | Topic | Path |
 |-------|------|
 | Platform plan | [`platform-plan.md`](platform-plan.md) |
-| Cypercloud config | [`configuration.md`](configuration.md) |
-| Cypercloud use cases | [`use-cases.md`](use-cases.md) |
+| Syntara config | [`configuration.md`](configuration.md) |
+| Syntara use cases | [`use-cases.md`](use-cases.md) |
 | Main infrastructure | [`../../infrastructure/`](../../infrastructure/) |

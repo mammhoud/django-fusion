@@ -1,9 +1,9 @@
-# Cypercloud — AI Chat Customizer
+# Syntara — AI Chat Customizer
 
 > **Related Names:** `cypercloud.localhost`, `AI chat`, `template customizer`, `ceptor-ai`, `Ollama`, `OpenAI`, `Claude`, `Gemini`
 > **Tags:** #site #cypercloud #ai #chat #customizer
 
-**Canonical path:** `projects/cypercloud/`  
+**Canonical path:** `projects/syntara/`  
 **Domain:** localhost (default: cypercloud.localhost)  
 **Port:** 5073  
 **Stack:** Django 4.2+ · Webpack + SCSS · HTMX · Monaco Editor
@@ -12,7 +12,7 @@
 
 ## Overview
 
-Cypercloud (formerly Tinker/Customizer) is an AI-powered chat and template customization tool. It provides a chat interface backed by multiple AI models (Ollama, OpenAI, Claude, Gemini) with multi-site template discovery for CTC Research, LMS, and VResume.
+Syntara (formerly Tinker/Customizer) is an AI-powered chat and template customization tool. It provides a chat interface backed by multiple AI models (Ollama, OpenAI, Claude, Gemini) with multi-site template discovery for CTC Research, LMS, and VResume.
 
 ---
 
@@ -21,7 +21,7 @@ Cypercloud (formerly Tinker/Customizer) is an AI-powered chat and template custo
 ### Development
 
 ```bash
-cd projects/cypercloud
+cd projects/syntara
 
 # Dev server
 make run                    # Django dev server on :5073
@@ -95,7 +95,7 @@ make deploy                 # Full: build → collectstatic → migrate
 
 | Resource | Path |
 |----------|------|
-| Cypercloud config | [`configuration.md`](configuration.md) |
+| Syntara config | [`configuration.md`](configuration.md) |
 | Backend environment | [`../../back-env/`](../../back-env/) |
 | Ceptor-AI library | [`../libs/README.md`](../libs/README.md) |
 | AI & Agents | [`../../ai/`](../../ai/) |

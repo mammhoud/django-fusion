@@ -41,7 +41,7 @@ root Makefile (make deploy)
 | CTC Research | `projects/precis-ctc/docker-compose.yml` | `precis-ctc-website` | 5070 |
 | LMS | `projects/lms/docker-compose.yml` | `lms-web` | 5071 |
 | Portfolio | `projects/portfolio/docker-compose.yml` | `vresume-web` | 5072 |
-| Cypercloud | `projects/cypercloud/docker-compose.yml` | `cypercloud-web` | 5073 |
+| Syntara | `projects/syntara/docker-compose.yml` | `cypercloud-web` | 5073 |
 
 All built from `projects/compose/Dockerfile` (Python 3.11-slim, uv-installed deps, Gunicorn).
 
@@ -59,7 +59,7 @@ make deploy-media         # Nginx static/media server
 make deploy-app           # All Django apps
 make deploy-proxy         # Traefik reverse proxy
 make deploy-tasks         # Background workers
-make deploy-cypercloud    # Cypercloud (build + migrate)
+make deploy-cypercloud    # Syntara (build + migrate)
 
 # Status & logs
 make status               # All container statuses

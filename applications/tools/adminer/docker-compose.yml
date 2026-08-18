@@ -1,0 +1,32 @@
+# =============================================================================
+# Adminer — lightweight database administration UI
+# =============================================================================
+# Replaces the commented-out service that used to live in
+# applications/databases/docker-compose.yml. Routed by Traefik at
+# admin.structa.cloud (applications/proxy/configs/traefik/dynamic/adminer.yml);
+# no host port is published. Connects to `postgres:5432` on the `common` network.
+# =============================================================================
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+services:
+  adminer:
+    image: adminer:${ADMINER_VERSION:-latest}
+    container_name: adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: ${ADMINER_DESIGN:-hydra}
+    networks:
+      - common
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

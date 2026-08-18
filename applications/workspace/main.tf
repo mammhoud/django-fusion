@@ -121,6 +121,49 @@ resource "coder_agent" "main" {
     interval     = 3600
     timeout      = 3
   }
+  metadata {
+    key          = "toolchain"
+    display_name = "Toolchain"
+    script       = "sh -c 'git --version; make --version | head -1; node --version; nx --version'"
+    interval     = 3600
+    timeout      = 5
+  }
+}
+
+# ============================================================
+# Toolchain install script (runs on every start)
+# ============================================================
+# Folded in from the former `toolchain` template: the agent-host container
+# always gets git + make + Node + Nx (and the Freebuff client) installed
+# idempotently, in addition to the repo devcontainer below.
+resource "coder_script" "toolchain" {
+  agent_id     = coder_agent.main.id
+  display_name = "Install toolchain (git + make + Node + Nx)"
+  run_on_start = true
+
+  script = <<-EOT
+    set -eux
+
+    export DEBIAN_FRONTEND=noninteractive
+
+    # 1. Base toolchain: git client + make. The enterprise-node image already
+    #    ships most of this; apt is idempotent so re-running is safe.
+    if command -v apt-get >/dev/null 2>&1; then
+      apt-get update -y
+      apt-get install -y --no-install-recommends git make ca-certificates curl
+    fi
+
+    # 2. Node.js runtime for Nx (guarded for minimal images that omit it).
+    if ! command -v node >/dev/null 2>&1; then
+      apt-get install -y --no-install-recommends nodejs npm
+    fi
+
+    # 3. Nx CLI globally — the requested `npm i -g nx`.
+    npm install -g nx freebuff
+
+    # 4. Report the resolved toolchain versions.
+    echo "toolchain: git $(git --version) | make $(make --version | head -1) | node $(node --version) | npm $(npm --version) | nx $(nx --version) | freebuff $(freebuff --version)"
+  EOT
 }
 
 # ============================================================
@@ -153,6 +196,18 @@ module "code-server" {
   display_name = "VS Code Web"
   slug         = "code-server"
   order        = 2
+}
+
+# File browser: web-based file manager over the mounted workspace folder.
+# It serves the same files as code-server and the devcontainer, so it is a
+# lightweight way to browse/edit the checkout from the Coder dashboard.
+module "filebrowser" {
+  count    = data.coder_workspace.me.start_count
+  source   = "registry.coder.com/coder/filebrowser/coder"
+  version  = "1.1.5"
+  agent_id = coder_agent.main.id
+  folder   = local.workspace_folder
+  order    = 3
 }
 
 resource "coder_devcontainer" "repo" {

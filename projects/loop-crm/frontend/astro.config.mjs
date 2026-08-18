@@ -64,5 +64,11 @@ export default defineConfig({
       },
     },
   },
-  server: { port: PORT, host: true },
+  server: {
+    port: PORT,
+    host: true,
+    // Allow ephemeral tunnel hosts (trycloudflare/ngrok/localtunnel) so the
+    // static preview can be reached through a public tunnel for review.
+    allowedHosts: ['.trycloudflare.com', '.ngrok.io', '.ngrok-free.app', '.loca.lt'],
+  },
 });

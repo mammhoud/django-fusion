@@ -1,20 +1,25 @@
-# Shared-proxy Nginx, documentation, and AFFiNE services.
-#
-# AFFiNE is shared infrastructure and is intentionally not part of a Coder
-# workspace or the repository devcontainer.
+# =============================================================================
+# Shared-proxy Nginx — static/media server + reverse proxy for Docus and AFFiNE
+# =============================================================================
+# Docus and AFFiNE now live under applications/tools/ (see tools/docus and
+# tools/affine). This file owns only the shared-proxy Nginx server, which:
+#   - serves per-site static/media volumes;
+#   - proxies /docs/ and docs.structa.cloud to `docus:3000`;
+#   - proxies space.structa.cloud to `proxy-affine:3010`.
+# Both upstreams resolve by container_name on the external `common` network, so
+# they can be started/stopped independently of the proxy.
+# =============================================================================
 
 networks:
   traefik-net:
     external: true
   common:
     external: true
-  warehouse-net:
-    external: true
 
 x-media-base: &media-base
   build:
     context: ../..
-    dockerfile: applications/proxy/nginx/Dockerfile
+    dockerfile: applications/proxy/configs/nginx/Dockerfile
   restart: unless-stopped
   networks:
     - traefik-net
@@ -44,8 +49,8 @@ services:
       - ../../projects/precis/precis-main/assets/media:/var/www/media/lms:ro
       - ../../projects/portfolio/assets/media:/var/www/media/vresume:ro
       - precis-lms-media:/var/www/media/precis-lms:ro
-      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ./nginx/www:/var/www/html:ro
+      - ./configs/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./configs/nginx/www:/var/www/html:ro
     networks:
       - traefik-net
       - common
@@ -57,92 +62,6 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
-
-  docus:
-    build:
-      context: ../..
-      dockerfile: docs/Dockerfile
-    image: structa-docus:latest
-    container_name: docus
-    restart: unless-stopped
-    environment:
-      NUXT_APP_BASE_URL: /docs/
-      NUXT_SITE_URL: https://docs.structa.cloud
-      NUXT_HOST: 0.0.0.0
-      NUXT_PORT: 3000
-    networks:
-      - traefik-net
-      - common
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/docs/en/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-
-  affine-migration:
-    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
-    container_name: proxy-affine-migration
-    command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
-    volumes:
-      - ./affine-data/storage:/root/.affine/storage
-      - ./affine-data/config:/root/.affine/config
-    environment:
-      # This value is inserted into a PostgreSQL URI; percent-encode reserved
-      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
-      DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
-      REDIS_SERVER_HOST: default-redis
-      REDIS_SERVER_PORT: "6379"
-      REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
-      AFFINE_INDEXER_ENABLED: "false"
-    networks:
-      - common
-      - warehouse-net
-    restart: "no"
-
-  affine:
-    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
-    container_name: proxy-affine
-    depends_on:
-      affine-migration:
-        condition: service_completed_successfully
-    volumes:
-      - ./affine-data/storage:/root/.affine/storage
-      - ./affine-data/config:/root/.affine/config
-    environment:
-      # This value is inserted into a PostgreSQL URI; percent-encode reserved
-      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
-      DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
-      REDIS_SERVER_HOST: default-redis
-      REDIS_SERVER_PORT: "6379"
-      REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
-      AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL:-https://space.structa.cloud}
-      AFFINE_SERVER_PORT: "3010"
-      AFFINE_INDEXER_ENABLED: "false"
-      # Email notifications/invites (Gmail SMTP via an app password).
-      MAILER_HOST: ${MAILER_HOST:-smtp.gmail.com}
-      MAILER_PORT: ${MAILER_PORT:-587}
-      MAILER_USER: ${MAILER_USER:-}
-      MAILER_PASSWORD: ${MAILER_PASSWORD:-}
-      MAILER_SENDER: ${MAILER_SENDER:-structa.cloud@gmail.com}
-    healthcheck:
-      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3010/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
-      interval: 15s
-      timeout: 10s
-      retries: 8
-      start_period: 60s
-    networks:
-      - common
-      - warehouse-net
-    restart: unless-stopped
 
 volumes:
   precis-lms-static:

@@ -1,4 +1,4 @@
-# Cypercloud — Use Cases
+# Syntara — Use Cases
 
 ## 1. AI-Powered Code Assistant (`code-assistant`)
 
@@ -28,6 +28,6 @@
 
 | Resource | Path |
 |----------|------|
-| Cypercloud README | [`README.md`](README.md) |
+| Syntara README | [`README.md`](README.md) |
 | Configuration | [`configuration.md`](configuration.md) |
 | AI & Agents | [`../../ai/`](../../ai/) |

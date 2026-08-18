@@ -1,4 +1,4 @@
-# Cypercloud — Configuration Reference
+# Syntara — Configuration Reference
 
 > **Port:** 5073 | **DB:** SQLite | **Stack:** Django + Ceptor-AI + Monaco Editor
 
@@ -39,12 +39,12 @@ CUSTOMIZER_APPS = [
 
 ## Shared WWW Worker
 
-See [`projects/lms/shared-integration.md`](../lms/shared-integration.md) — Cypercloud has no background task dependency but shares the common Django settings infrastructure.
+See [`projects/lms/shared-integration.md`](../lms/shared-integration.md) — Syntara has no background task dependency but shares the common Django settings infrastructure.
 
 ## Related
 
 | Resource | Path |
 |----------|------|
-| Cypercloud README | [`README.md`](README.md) |
+| Syntara README | [`README.md`](README.md) |
 | AI & Agents | [`../../ai/`](../../ai/) |
 | Backend environment | [`../../back-env/`](../../back-env/) |
