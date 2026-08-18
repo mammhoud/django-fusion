@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import AppShell from '@/components/AppShell.astro';
 import PipelineBoard from '@/components/board/PipelineBoard';
 import RevOpsDashboard from '@/components/dashboard/RevOpsDashboard';
+import ResourceTable from '@/components/dashboard/ResourceTable';
 
 export function getStaticPaths() {
   // Declared inside getStaticPaths: Astro hoists this function above the
@@ -53,6 +54,23 @@ const page = Astro.props;
 // Bolt is the canonical API road. Set PUBLIC_API_PREFIX=/api/v1 when the
 // optional django-bolt runtime is intentionally not installed.
 const API_PREFIX = import.meta.env.PUBLIC_API_PREFIX ?? '/bolt';
+// Page → Bolt resource table map. Pages with a registered resource render a
+// live schema-aware fusion table below the highlight cards.
+const RESOURCE_BY_PATH: Record<string, { resource: string; kicker: string }> = {
+  '/crm/companies/': { resource: 'companies', kicker: 'Account directory' },
+  '/crm/contacts/': { resource: 'contacts', kicker: 'People directory' },
+  '/crm/deals/': { resource: 'deals', kicker: 'Pipeline board' },
+  '/crm/pipelines/': { resource: 'pipelines', kicker: 'Pipeline configuration' },
+  '/crm/activities/': { resource: 'activities', kicker: 'Activity stream' },
+  '/marketing/campaigns/': { resource: 'campaigns', kicker: 'Campaign ledger' },
+  '/marketing/channels/': { resource: 'channels', kicker: 'Connected channels' },
+  '/marketing/calendar/': { resource: 'posts', kicker: 'Scheduled posts' },
+  '/attribution/touchpoints/': { resource: 'touchpoints', kicker: 'Touchpoint ledger' },
+  '/finance/invoices/': { resource: 'invoices', kicker: 'Receivable ledger' },
+  '/finance/payments/': { resource: 'payments', kicker: 'Receipt ledger' },
+  '/finance/revenue/': { resource: 'revenue', kicker: 'Recognized revenue' },
+};
+const tableSpec = RESOURCE_BY_PATH[page.path];
 const cards = page.module === 'overview'
   ? [
       { label: 'Twenty DNA · CRM', value: 'Relationship graph → pipeline', copy: 'Companies, contacts, activities, configurable stages, ownership, and deals.', href: '/crm/' },
@@ -81,6 +99,14 @@ const cards = page.module === 'overview'
     </section>
     )}
     {page.module === 'overview' && <section class="loop-workflow-strip"><span>Workflow catalog</span><strong>Lead capture · content approval · publish & attribute · deal won</strong></section>}
+    {tableSpec && (
+      <ResourceTable
+        resource={tableSpec.resource}
+        kicker={tableSpec.kicker}
+        title={`${page.title} table`}
+        client:load
+      />
+    )}
   </AppShell>
 </Layout>
 <style>

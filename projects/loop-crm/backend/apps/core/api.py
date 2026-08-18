@@ -3,6 +3,7 @@
 The canonical API is ``apps.core.bolt_api`` when django-bolt is installed.
 These views keep the same resource contract available to older Django clients.
 """
+
 from __future__ import annotations
 
 import json
@@ -25,7 +26,9 @@ from apps.marketing.connectors import platform_catalog
 from .bolt_api import RESOURCE_MODELS
 from .export import resource_export_rows, to_csv
 from .realtime import safe_publish_workspace_event
+from .resource_tables import resource_table
 from .resources import (
+    RESOURCES,
     bounded_int,
     count_rows,
     create_row,
@@ -78,6 +81,23 @@ def _saved_view_config(request, resource: str) -> dict | None:
 
 
 @login_required
+def tables_api(request, resource: str):
+    """Schema-aware fusion table projection for one API resource.
+
+    Mirrors the canonical ``/bolt/tables/{resource}`` contract on the
+    compatibility road: headers carry type metadata (text/money/date/pill/
+    link) and rows are formatted cell lists aligned to the headers.
+    """
+    if resolve_resource(resource) is None:
+        return JsonResponse({"detail": "Unknown resource."}, status=404)
+    workspace_id = current_workspace_id(request)
+    queryset = RESOURCES[resource].model.objects.all()
+    if workspace_id is not None:
+        queryset = queryset.filter(workspace_id=workspace_id)
+    return JsonResponse(resource_table(queryset, resource))
+
+
+@login_required
 def resource_api(request, resource: str, pk: int | None = None):
     """Full tenant-scoped CRUD for a registered resource.
 
@@ -97,7 +117,12 @@ def resource_api(request, resource: str, pk: int | None = None):
             search = request.GET.get("search", "")
             view_config = _saved_view_config(request, resource)
             rows = list_rows(
-                resource, workspace_id, limit=limit, offset=offset, search=search, view_config=view_config
+                resource,
+                workspace_id,
+                limit=limit,
+                offset=offset,
+                search=search,
+                view_config=view_config,
             )
             total = count_rows(resource, workspace_id, search=search, view_config=view_config)
             return JsonResponse(
@@ -164,11 +189,22 @@ def dashboard_api(request):
     counts = {}
     for key, (model, _fields) in RESOURCE_MODELS.items():
         try:
-            queryset = model.objects.filter(workspace_id=workspace_id) if workspace_id is not None else model.objects
+            queryset = (
+                model.objects.filter(workspace_id=workspace_id)
+                if workspace_id is not None
+                else model.objects
+            )
             counts[key] = queryset.count()
         except (OperationalError, ProgrammingError):
             counts[key] = 0
-    return JsonResponse({"data": {"counts": counts, "workflow_count": len(persisted_workflow_catalog(workspace_id=workspace_id))}})
+    return JsonResponse(
+        {
+            "data": {
+                "counts": counts,
+                "workflow_count": len(persisted_workflow_catalog(workspace_id=workspace_id)),
+            }
+        }
+    )
 
 
 def token_api(request):
@@ -184,7 +220,9 @@ def token_api(request):
         return JsonResponse({"detail": "Sign in is required to issue a user token."}, status=401)
     requested_subject = str(payload.get("subject") or "").strip()
     if requested_subject and requested_subject != str(request.user.pk):
-        return JsonResponse({"detail": "A token can only be issued for the current user."}, status=403)
+        return JsonResponse(
+            {"detail": "A token can only be issued for the current user."}, status=403
+        )
     try:
         ttl = min(max(int(payload.get("ttl") or 3600), 60), 86_400)
         result = user_token_payload(request.user, ttl_seconds=ttl)
@@ -271,12 +309,16 @@ def email_accounts_api(request):
                 "id": account.pk,
                 "provider": account.provider,
                 "email": account.email,
-                "last_synced_at": account.last_synced_at.isoformat() if account.last_synced_at else None,
+                "last_synced_at": account.last_synced_at.isoformat()
+                if account.last_synced_at
+                else None,
                 "message_count": account.messages.count(),
             }
             for account in queryset.select_related("workspace")
         ]
-        return JsonResponse({"results": results, "count": len(results), "providers": provider_catalog()})
+        return JsonResponse(
+            {"results": results, "count": len(results), "providers": provider_catalog()}
+        )
     if request.method == "POST":
         if workspace_id is None:
             return JsonResponse({"detail": "A workspace is required."}, status=403)
@@ -342,7 +384,12 @@ def email_account_sync_api(request, pk: int):
     result = sync_account(account)
     status = 200 if result.status == "synced" else (400 if result.status == "error" else 409)
     return JsonResponse(
-        {"status": result.status, "synced": result.synced, "matched": result.matched, "detail": result.detail},
+        {
+            "status": result.status,
+            "synced": result.synced,
+            "matched": result.matched,
+            "detail": result.detail,
+        },
         status=status,
     )
 
@@ -376,7 +423,11 @@ def email_messages_api(request):
         for message in queryset.order_by("-received_at")[offset : offset + limit]
     ]
     return JsonResponse(
-        {"results": results, "count": total, "next": offset + limit if offset + limit < total else None}
+        {
+            "results": results,
+            "count": total,
+            "next": offset + limit if offset + limit < total else None,
+        }
     )
 
 
@@ -495,7 +546,9 @@ def custom_object_records_api(request, key: str):
         if workspace_id is not None:
             records = records.filter(workspace_id=workspace_id)
         rows = list(
-            records.order_by("-updated_at").values("id", "data", "updated_at", "created_by__username")
+            records.order_by("-updated_at").values(
+                "id", "data", "updated_at", "created_by__username"
+            )
         )
         for row in rows:
             if row["updated_at"]:
@@ -508,7 +561,10 @@ def custom_object_records_api(request, key: str):
         try:
             data = validate_record_data(definition, payload.get("data"))
         except ValidationError as exc:
-            return JsonResponse(exc.message_dict if hasattr(exc, "message_dict") else {"data": exc.messages}, status=400)
+            return JsonResponse(
+                exc.message_dict if hasattr(exc, "message_dict") else {"data": exc.messages},
+                status=400,
+            )
         record = CustomObjectRecord.objects.create(
             workspace_id=workspace_id,
             definition=definition,
@@ -548,7 +604,10 @@ def custom_object_record_detail_api(request, key: str, pk: int):
         try:
             record.data = validate_record_data(definition, merged)
         except ValidationError as exc:
-            return JsonResponse(exc.message_dict if hasattr(exc, "message_dict") else {"data": exc.messages}, status=400)
+            return JsonResponse(
+                exc.message_dict if hasattr(exc, "message_dict") else {"data": exc.messages},
+                status=400,
+            )
         record.save(update_fields=["data", "updated_at"])
         safe_publish_workspace_event(
             workspace_id, "resource.updated", {"resource": "custom_object_records", "pk": record.pk}
@@ -599,7 +658,9 @@ def saved_views_api(request):
         if resolve_resource(resource) is None:
             return JsonResponse({"detail": "Unknown resource."}, status=404)
         config = payload.get("config") if isinstance(payload.get("config"), dict) else {}
-        view_type = payload.get("view_type") if payload.get("view_type") in {"list", "kanban"} else "list"
+        view_type = (
+            payload.get("view_type") if payload.get("view_type") in {"list", "kanban"} else "list"
+        )
         view, created = SavedView.objects.update_or_create(
             workspace_id=workspace_id,
             user=request.user,

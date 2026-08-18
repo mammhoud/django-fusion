@@ -21,6 +21,7 @@ urlpatterns = [
     ),
     path("saved-views/", api.saved_views_api, name="saved_views_api"),
     path("saved-views/<int:pk>/", api.saved_view_detail_api, name="saved_view_detail_api"),
+    path("tables/<str:resource>/", api.tables_api, name="tables_api"),
     path("webhooks/", api.resource_api, {"resource": "webhooks"}, name="webhooks_api"),
     path("email/accounts/", api.email_accounts_api, name="email_accounts_api"),
     path("email/accounts/<int:pk>/sync/", api.email_account_sync_api, name="email_account_sync_api"),
