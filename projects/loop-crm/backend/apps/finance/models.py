@@ -12,18 +12,19 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import Workspace
 
 
 class Invoice(models.Model):
     STATUS_CHOICES = [
-        ("draft", "Draft"),
-        ("issued", "Issued"),
-        ("partially_paid", "Partially paid"),
-        ("paid", "Paid"),
-        ("overdue", "Overdue"),
-        ("void", "Void"),
+        ("draft", _("Draft")),
+        ("issued", _("Issued")),
+        ("partially_paid", _("Partially paid")),
+        ("paid", _("Paid")),
+        ("overdue", _("Overdue")),
+        ("void", _("Void")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="invoices")
@@ -48,6 +49,8 @@ class Invoice(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["workspace", "number"], name="uniq_invoice_workspace_number"),
         ]
+        verbose_name = _("invoice")
+        verbose_name_plural = _("invoices")
         indexes = [
             models.Index(fields=["workspace", "status"]),
             models.Index(fields=["workspace", "due_on"]),
@@ -77,10 +80,10 @@ class Invoice(models.Model):
 
 class Payment(models.Model):
     METHOD_CHOICES = [
-        ("bank_transfer", "Bank transfer"),
-        ("card", "Card"),
-        ("cash", "Cash"),
-        ("other", "Other"),
+        ("bank_transfer", _("Bank transfer")),
+        ("card", _("Card")),
+        ("cash", _("Cash")),
+        ("other", _("Other")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="payments")
@@ -95,6 +98,8 @@ class Payment(models.Model):
     class Meta:
         ordering = ["-paid_on", "-created_at"]
         indexes = [models.Index(fields=["workspace", "paid_on"])]
+        verbose_name = _("payment")
+        verbose_name_plural = _("payments")
 
     def __str__(self) -> str:
         return f"{self.invoice.number} · {self.amount}"
@@ -102,12 +107,12 @@ class Payment(models.Model):
 
 class RevenueEvent(models.Model):
     KIND_CHOICES = [
-        ("deal_won", "Deal won"),
-        ("expansion", "Expansion"),
-        ("renewal", "Renewal"),
-        ("refund", "Refund"),
-        ("pos_sale", "POS sale"),
-        ("pos_refund", "POS refund"),
+        ("deal_won", _("Deal won")),
+        ("expansion", _("Expansion")),
+        ("renewal", _("Renewal")),
+        ("refund", _("Refund")),
+        ("pos_sale", _("POS sale")),
+        ("pos_refund", _("POS refund")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="revenue_events")
@@ -138,6 +143,8 @@ class RevenueEvent(models.Model):
             models.Index(fields=["workspace", "recognized_on"]),
             models.Index(fields=["workspace", "campaign"]),
         ]
+        verbose_name = _("revenue event")
+        verbose_name_plural = _("revenue events")
 
     def __str__(self) -> str:
         if self.deal_id:

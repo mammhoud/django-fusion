@@ -8,6 +8,7 @@ install the Rust-backed runtime.
 Both roads consume ``apps.core.resources`` so the resource contract, write
 allowlist, FK validation, tenant scoping, and serialization are identical.
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -33,6 +34,7 @@ from apps.finance.services import revenue_trend_results, trend_aggregates
 from apps.marketing.connectors import platform_catalog
 
 from .realtime import safe_apublish_workspace_event
+from .resource_tables import resource_table
 from .resources import (
     RESOURCES,
     bounded_int,
@@ -186,6 +188,26 @@ if bolt is not None:
     # subject/device tokens are intentionally not available on Loop-CRM.
     mount_token_endpoint(bolt, config=token_config, user_required=True)
     mount_refresh_endpoint(bolt, config=token_config)
+
+    @bolt.get(
+        "/tables/{resource}",
+        tags=["System"],
+        summary="Resource table",
+        description=(
+            "Schema-aware fusion table projection for one resource: headers "
+            "carry type metadata (text/money/date/pill/link) and rows are "
+            "formatted cell lists aligned to the headers. Workspace-scoped."
+        ),
+        **_protected,
+    )
+    async def resource_table_view(request: Any, resource: str) -> dict[str, Any] | Any:
+        if resource not in RESOURCES:
+            return {"detail": "Unknown resource."}
+        queryset = RESOURCES[resource].model.objects.all()
+        workspace_id = _workspace_id(await _request_user(request))
+        if workspace_id is not None:
+            queryset = queryset.filter(workspace_id=workspace_id)
+        return await sync_to_async(resource_table)(queryset, resource)
 
     @bolt.get(
         "/dashboard",

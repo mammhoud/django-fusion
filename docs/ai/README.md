@@ -161,6 +161,8 @@ See [mcp-integration.md](mcp-integration.md) for full details.
 | Agent instructions (detail) | [`agents.md`](agents.md) |
 | Prompt engineering (detail) | [`prompts.md`](prompts.md) |
 | Stable prompt catalog | [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md) |
+| Installed skills catalog | [`skills-catalog.md`](skills-catalog.md) |
+| Templates & request flows | [`templates-and-request-flows.md`](templates-and-request-flows.md) |
 | MCP integration (detail) | [`mcp-integration.md`](mcp-integration.md) |
 | Syntara AI chat | [`../../projects/syntara/`](../../projects/syntara/) |
 | Ceptor-AI library | [`libs/ceptor-ai/`](../../libs/ceptor-ai/) |

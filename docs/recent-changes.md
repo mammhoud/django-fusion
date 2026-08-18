@@ -7,6 +7,22 @@ Documentation for features and changes added in the most recent development sess
 
 ---
 
+## Session 2026-08-18 — Loop-CRM redesign, fusion tables, Redis-free login, Nx/configs wiring
+
+See the [full session changelog](changelogs/session-2026-08-18.md) for the complete
+work log, files touched, and commits (`f48c5945f`, `9306ac96c`). Highlights:
+
+- **Industrial-brutalist design system** — tactical telemetry palette across the Loop-CRM frontend shell and Django screens (`DESIGN_SYSTEM.md`).
+- **django-fusion tables + forms** — schema-aware `RowGenerator` projections wired into companies/contacts/deals/invoices/payments/revenue screens.
+- **Schema-aware API tables** — `GET /bolt/tables/{resource}` + `GET /api/v1/tables/{resource}/` returning header/row JSON contracts; `ResourceTable.tsx` island renders them.
+- **Redis-free login** — RESP PING probe replaces the bare TCP check; DEBUG falls back to LocMem cache + in-memory channel layer so login works without Redis.
+- **Nx↔Make wiring** — `project.json` Nx targets drive the project Makefiles and `make nx-*` delegates back; backend Makefile gains `i18n`/`makemessages`/`compilemessages`.
+- **Env configs package** — dependency-free `projects/loop-crm/configs/` catalog (56 vars) + `make validate-env`.
+- **Backend i18n start** — LocaleMiddleware, LANGUAGES (en/ar), LOCALE_PATHS; crm/finance/marketing models use `gettext_lazy`.
+- **Docs added** — skills catalog, templates & request flows, Loop-CRM index, pointer pages.
+
+---
+
 ## django-fusion — DataToken Sync-Tagging System (v2 — Abstract Base)
 
 ### What Changed

@@ -82,6 +82,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -251,44 +252,56 @@ def _redis_url(db: int = 0) -> str:
 
 
 def _redis_reachable(timeout: float = 0.4) -> bool:
-    """Probe whether a Redis server answers on the configured dev defaults.
+    """Probe whether a real Redis server answers on the configured defaults.
 
     Dependency-free socket check so ``make dev`` and the browser suite work
-    without a Redis process. Explicit REDIS_URL/REDIS_HOST configuration
-    always requires a real server (production behavior unchanged).
+    without a Redis process. The probe performs an actual RESP ``PING``
+    exchange against the configured host/port (honoring REDIS_URL) rather
+    than a bare TCP connect: any listener that opens a socket but does not
+    speak Redis (e.g. another app squatting on the port) falls through to
+    the in-process fallbacks instead of configuring a cache/channel layer
+    that 500s at first use.
     """
     try:
         import socket
+        from urllib.parse import urlparse
 
-        host = os.environ.get("REDIS_HOST", "127.0.0.1")
-        port = int(os.environ.get("REDIS_PORT", "6379"))
-        with socket.create_connection((host, port), timeout=timeout):
-            return True
-    except OSError:
+        url = os.environ.get("REDIS_URL")
+        if url:
+            parsed = urlparse(url)
+            host = parsed.hostname or "127.0.0.1"
+            port = parsed.port or 6379
+        else:
+            host = os.environ.get("REDIS_HOST", "127.0.0.1")
+            port = int(os.environ.get("REDIS_PORT", "6379"))
+        with socket.create_connection((host, port), timeout=timeout) as conn:
+            conn.settimeout(timeout)
+            # RESP: array(1) -> bulk string "PING"
+            conn.sendall(b"*1\r\n$4\r\nPING\r\n")
+            reply = conn.recv(16)
+            return reply.startswith(b"+PONG")
+    except (OSError, ValueError):
         return False
 
 
-# Realtime channel layer. Redis-backed in composed/prod environments; an
-# in-process layer keeps local dev + the test suite working without Redis.
-# ``_redis_url(2)`` keeps the channel layer off the cache (0) and Dramatiq (1)
-# relative indexes (all shifted by REDIS_DB).
-if os.environ.get("REDIS_URL") or os.environ.get("REDIS_HOST"):
+# Redis backs the realtime channel layer, the cache, and the Dramatiq broker
+# in composed/prod environments. In DEBUG a real server is validated by the
+# RESP probe above; when Redis is missing, unreachable, or another app
+# squats on the port, the in-process fallbacks (LocMem cache + in-memory
+# channel layer) keep login, sessions, and the browser demo working without
+# Redis. Production (DEBUG off) always requires the configured Redis.
+_use_redis = not DEBUG or _redis_reachable()
+
+if _use_redis:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {"hosts": [_redis_url(2)]},
         }
-    }
-elif DEBUG and not _redis_reachable():
-    CHANNEL_LAYERS = {
-        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
     }
 else:
     CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {"hosts": [_redis_url(2)]},
-        }
+        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
     }
 
 # Local dev defaults to SQLite (frictionless scaffold); set USE_POSTGRES=1 to
@@ -358,29 +371,23 @@ FUSION_BOLT_AUTH_HEADER = os.environ.get("FUSION_BOLT_AUTH_HEADER", "Authorizati
 FUSION_BOLT_JWT_ISSUER = os.environ.get("FUSION_BOLT_JWT_ISSUER", "loop-crm")
 FUSION_BOLT_JWT_AUDIENCE = os.environ.get("FUSION_BOLT_JWT_AUDIENCE", "")
 
-# Redis-backed cache + Dramatiq broker (defaults for local dev).
-if os.environ.get("REDIS_URL") or os.environ.get("REDIS_HOST"):
-    # Explicit configuration: Redis is required (compose, prod, CI).
+# Redis-backed cache + Dramatiq broker (defaults for local dev). In DEBUG
+# the RESP-validated ``_use_redis`` above decides between Redis and LocMem;
+# production always uses Redis.
+if _use_redis:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.redis.RedisCache",
             "LOCATION": _redis_url(0),
         }
     }
-elif DEBUG and not _redis_reachable():
-    # Unconfigured local dev with no Redis running: fall back to an in-process
-    # cache so allauth's login rate-limiter and session flows never 500.
+else:
+    # Dev fallback: in-process cache so allauth's login rate-limiter and
+    # session flows never 500 when Redis is unavailable.
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
             "LOCATION": "loop-crm-dev",
-        }
-    }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.redis.RedisCache",
-            "LOCATION": _redis_url(0),
         }
     }
 
@@ -402,10 +409,21 @@ DRAMATIQ_BROKER = {
     ],
 }
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en-us")
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+#: Languages with compiled catalogs under ``backend/locale/``. ``en`` is the
+#: source language; add a language here once its catalog is compiled with
+#: ``make i18n`` (backend Makefile) so the locale switcher can offer it.
+LANGUAGES = [
+    ("en", "English"),
+    ("ar", "العربية"),
+]
+
+#: Compiled gettext catalogs (``locale/<lang>/LC_MESSAGES/django.mo``).
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static"
