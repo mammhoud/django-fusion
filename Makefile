@@ -92,7 +92,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
-.PHONY: precis-ctc structa vresume proxy services databases precis-lms cms-fusion domain-drift
+.PHONY: precis-ctc structa vresume proxy services databases precis-main cms-fusion domain-drift
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 .PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
@@ -325,13 +325,13 @@ help:
 	@echo '  make pro-*             - Formint Pro edition (check/test/env/clean)'
 	@echo '  make cloud-*           - Formint Cloud edition (check/test/dev-backend)'
 	@echo '  make client-*          - Formint pos-client edition (build/lint/test)'
-	@echo "  make precis-lms        - Delegate to projects/Makefile with WEBSITE=precis-lms"
-	@echo "  make precis-lms check  - Django system checks for Fusion LMS"
-	@echo "  make precis-lms migrate - Run migrations for Fusion LMS"
+	@echo "  make precis-main       - Delegate to projects/Makefile with WEBSITE=precis-main"
+	@echo "  make precis-main check - Django system checks for Precis (merged landing + LMS)"
+	@echo "  make precis-main migrate - Run migrations for Precis"
 	@echo "  make cms-fusion        - Delegate to projects/Makefile with WEBSITE=cms-fusion"
 	@echo "  make cms-fusion check  - Django system checks for Fusion CMS"
 	@echo "  make cms-fusion migrate - Run migrations for Fusion CMS"
-	@echo "  make test-fusion      - Run cms-fusion + precis-lms tests sequentially"
+	@echo "  make test-fusion      - Run cms-fusion + precis-main tests sequentially"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -1145,7 +1145,7 @@ help-all:
 	@echo "Individual Component Help:"
 	@echo "  make -C $(CORE_DIR) help    - Application service commands"
 	@echo "  make pos            - POS desktop app (projects/formints/Makefile)"
-	@echo "  make precis-lms     - Fusion LMS site (projects/Makefile)"
+	@echo "  make precis-main     - Precis unified site (projects/Makefile)"
 	@echo "  make cms-fusion     - Fusion CMS site (projects/Makefile)"
 	@echo "  make {community,standard,pro,cloud,client}-*"
 	@echo "                      - Formint edition Makefiles"
@@ -1210,13 +1210,15 @@ pos:
 	@echo "📋 POS targets:"
 	@$(MAKE) -C $(POS_DIR) help
 
-precis-lms:
-	@$(MAKE) -C $(CORE_DIR) WEBSITE=precis-lms
+precis-main:
+	@$(MAKE) -C $(CORE_DIR) WEBSITE=precis-main
+
+precis-lms: precis-main  ## Legacy alias — precis-lms merged into precis-main
 
 cms-fusion:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=cms-fusion
 
-# Domain drift check — verifies cms-fusion and precis-lms domain code is in sync
+# Domain drift check — verifies cms-fusion and precis domain code is in sync
 domain-drift:
 	@bash applications/scripts/dev/check_domain_drift.sh
 
@@ -1266,7 +1268,7 @@ venv-info:           ## Show venv status and paths
 	@echo "🐍 Python Venv Info"
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "   Python version: $$(cat .python-version 2>/dev/null || echo 'not set')"
-	@echo "   Docker Python:  python:3.11-slim (see projects/precis/precis-lms/compose/Dockerfile.backend)"
+	@echo "   Docker Python:  python:3.11-slim (see projects/precis/precis-main/backend/Dockerfile)"
 	@echo "   Venv location:  $(WORKSPACE_ROOT)/.venv"
 	@if [ -d "$(WORKSPACE_ROOT)/.venv" ]; then \
 		echo "   Venv exists:    ✅"; \

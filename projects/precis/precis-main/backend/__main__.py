@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Entry point for the precis-landing backend.
+"""Entry point for the precis-main backend.
 
 Allows execution via the canonical dispatcher, e.g.:
-    cd projects && make check WEBSITE=precis-landing
-    cd projects && uv run python precis/precis-landing/backend/__main__.py runserver
+    cd projects && make check WEBSITE=precis-main
+    cd projects && uv run python precis/precis-main/backend/__main__.py runserver
 """
 from __future__ import annotations
 
@@ -16,11 +16,11 @@ def main() -> None:
     base_dir = Path(__file__).resolve().parent
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
-    os.environ.setdefault("DJANGO_SITE", "precis-landing")
-    os.environ.setdefault("DJANGO_WEBSITE", "precis-landing")
-    os.environ.setdefault("WEBSITE", "precis-landing")
-    os.environ.setdefault("WEBSITE_NAME", "precis-landing")
-    os.environ.setdefault("PROJECT_PATH", "precis-landing")
+    os.environ.setdefault("DJANGO_SITE", "precis-main")
+    os.environ.setdefault("DJANGO_WEBSITE", "precis-main")
+    os.environ.setdefault("WEBSITE", "precis-main")
+    os.environ.setdefault("WEBSITE_NAME", "precis-main")
+    os.environ.setdefault("PROJECT_PATH", "precis-main")
 
     # Ensure the backend root and the apps/ package are importable.
     for path in (str(base_dir), str(base_dir / "apps")):

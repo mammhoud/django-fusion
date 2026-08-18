@@ -13,12 +13,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "precis-landing-dev-key")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "precis-main-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 # Default to backend + localhost only (secure fallback). Production
 # docker-compose.yml sets DJANGO_ALLOWED_HOSTS explicitly with the public
 # domains appended, so this default never tightens a deployed site.
-ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,precis-landing-backend,precis-landing-frontend").split(",") if host.strip()]
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,precis-main-backend,precis-main-frontend").split(",") if host.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -488,7 +488,7 @@ FUSION_RENDER_FIRST = os.environ.get("FUSION_RENDER_FIRST", "0") == "1"
 # ── Task Center (website-record contract) ──────────────────────────
 # The shared worker writes django_fusion's BackgroundTaskLog; the authenticated
 # /tasks/ page mirrors it into apps.tasks.TaskExecution filtered by this site.
-FUSION_TASK_SITE_NAME = os.environ.get("FUSION_TASK_SITE_NAME", "precis-landing")
+FUSION_TASK_SITE_NAME = os.environ.get("FUSION_TASK_SITE_NAME", "precis-main")
 FUSION_TASK_EXECUTION_MODEL = os.environ.get("FUSION_TASK_EXECUTION_MODEL", "tasks.TaskExecution")
 FUSION_TASK_MODULES = [
     "plugins.workers.email_tasks",

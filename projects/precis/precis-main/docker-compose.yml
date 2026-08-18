@@ -2,18 +2,18 @@ services:
   backend:
     build:
       context: ../../..
-      dockerfile: projects/precis/precis-landing/backend/Dockerfile
-    image: precis-landing-backend:latest
-    container_name: precis-landing-backend
+      dockerfile: projects/precis/precis-main/backend/Dockerfile
+    image: precis-main-backend:latest
+    container_name: precis-main-backend
     restart: unless-stopped
     env_file:
       - path: ../../../.env
         required: false
     environment:
       DJANGO_SETTINGS_MODULE: settings
-      DJANGO_SECRET_KEY: ${LANDING_DJANGO_SECRET_KEY:-precis-landing-change-me}
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-precis-main-change-me}
       DJANGO_DEBUG: "0"
-      DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud,localhost,127.0.0.1,precis-landing-backend,precis-landing-frontend
+      DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud,localhost,127.0.0.1,precis-main-backend,precis-main-frontend
       CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
       CORS_ALLOWED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
       # Shared PostgreSQL cluster (applications/databases) — site-owned DB.
@@ -41,10 +41,10 @@ services:
       # Aligned with MEDIA_ROOT / STATIC_ROOT in backend/settings.py
       # (backend/assets/media + backend/assets/staticfiles) so the startup
       # collectstatic populates the named volumes and whitenoise serves them.
-      - precis-landing-media:/app/precis-landing/backend/assets/media
-      - precis-landing-static:/app/precis-landing/backend/assets/staticfiles
+      - precis-main-media:/app/precis-main/backend/assets/media
+      - precis-main-static:/app/precis-main/backend/assets/staticfiles
       # Site-level Env overrides (kept in parity with the other Precis sites).
-      - ./Env:/app/precis-landing/Env:ro
+      - ./Env:/app/precis-main/Env:ro
     networks:
       - common
       - traefik-net
@@ -64,18 +64,18 @@ services:
   scheduler:
     build:
       context: ../../..
-      dockerfile: projects/precis/precis-landing/backend/Dockerfile
-    image: precis-landing-backend:latest
-    container_name: precis-landing-scheduler
+      dockerfile: projects/precis/precis-main/backend/Dockerfile
+    image: precis-main-backend:latest
+    container_name: precis-main-scheduler
     restart: unless-stopped
     env_file:
       - path: ../../../.env
         required: false
     environment:
       DJANGO_SETTINGS_MODULE: settings
-      DJANGO_SECRET_KEY: ${LANDING_DJANGO_SECRET_KEY:-precis-landing-change-me}
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-precis-main-change-me}
       DJANGO_DEBUG: "0"
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-landing-backend
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-main-backend
       DJANGO_DB_ENGINE: django.db.backends.postgresql
       DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
       DJANGO_DB_USER: ${POSTGRES_USER:-admin}
@@ -95,7 +95,7 @@ services:
       # Shares the same Postgres DB (db_precis_landing) as the backend so the
       # scheduler's sync_task_history job mirrors into the same TaskExecution
       # table.
-      - ./Env:/app/precis-landing/Env:ro
+      - ./Env:/app/precis-main/Env:ro
     # The backend applies migrations at startup, so wait for it to be healthy.
     depends_on:
       backend:
@@ -110,14 +110,14 @@ services:
       # build resolves the @fusion alias to libs/django-fusion/js/fusion-js
       # (copied into the image by frontend/Dockerfile).
       context: ../../..
-      dockerfile: projects/precis/precis-landing/frontend/Dockerfile
-    image: precis-landing-frontend:latest
-    container_name: precis-landing-frontend
+      dockerfile: projects/precis/precis-main/frontend/Dockerfile
+    image: precis-main-frontend:latest
+    container_name: precis-main-frontend
     restart: unless-stopped
     environment:
       HOST: 0.0.0.0
       PORT: "3000"
-      PUBLIC_FUSION_API_URL: http://precis-landing-backend:8074
+      PUBLIC_FUSION_API_URL: http://precis-main-backend:8074
     depends_on:
       backend:
         condition: service_healthy
@@ -138,7 +138,7 @@ networks:
     external: true
 
 volumes:
-  precis-landing-media:
-    name: precis-landing-media
-  precis-landing-static:
-    name: precis-landing-static
+  precis-main-media:
+    name: precis-main-media
+  precis-main-static:
+    name: precis-main-static

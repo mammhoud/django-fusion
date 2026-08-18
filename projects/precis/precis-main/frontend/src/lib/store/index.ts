@@ -1,4 +1,4 @@
-/** Redux store — centralized state for the precis-landing frontend.
+/** Redux store — centralized state for the precis-main frontend.
  *
  *  Replaces scattered Alpine stores and module-level caches with
  *  a single Redux Toolkit store.  Slices:

@@ -8,7 +8,7 @@ WORKDIR /app
 # Build context is the repository root (docker-compose.yml, context: ../..) so
 # the local-library sources below are in scope — same pattern as the backend
 # image, which COPYs libs /app/libs for django_fusion.
-COPY projects/precis/precis-landing/frontend/package.json projects/precis/precis-landing/frontend/pnpm-lock.yaml ./
+COPY projects/precis/precis-main/frontend/package.json projects/precis/precis-main/frontend/pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild esbuild sharp
 
 # fusion-js (the shared TS modules behind the `@fusion` alias in
@@ -20,7 +20,7 @@ COPY libs/django-fusion/js/fusion-js /libs/django-fusion/js/fusion-js
 # single source of truth for cross-road partials imported `?raw` by
 # BrandModal.astro etc.). Same /libs/... mirror as fusion-js above.
 COPY libs/django-fusion/src/django_fusion/templates /libs/django-fusion/src/django_fusion/templates
-COPY projects/precis/precis-landing/frontend/. .
+COPY projects/precis/precis-main/frontend/. .
 
 ENV HOST=0.0.0.0 \
     PORT=3000

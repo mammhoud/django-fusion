@@ -62,7 +62,7 @@ SITE_SPECS = (
     SiteSmokeSpec(
         key="structa",
         label="Structa Cloud",
-        root=APPS_ROOT / "precis-landing" / "backend",
+        root=APPS_ROOT / "precis" / "precis-main" / "backend",
         public_templates=(
             "apps/pages/templates/pages/home.html",
             "apps/pages/templates/pages/about.html",

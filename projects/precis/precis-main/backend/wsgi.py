@@ -1,4 +1,4 @@
-"""WSGI entry point for the precis-landing backend."""
+"""WSGI entry point for the precis-main backend."""
 import os
 
 from django.core.wsgi import get_wsgi_application
