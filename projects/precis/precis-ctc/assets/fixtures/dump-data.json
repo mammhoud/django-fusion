@@ -135,8 +135,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Contact Us",
-      "draft_title": "Contact Us",
+      "title": "Contact",
+      "draft_title": "Contact",
       "slug": "contact",
       "content_type": [
         "pages",
@@ -213,8 +213,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "AI for Scientific & Medical Writing Courses",
-      "draft_title": "AI for Scientific & Medical Writing Courses",
+      "title": "Courses",
+      "draft_title": "Courses",
       "slug": "all-courses",
       "content_type": [
         "lms",
@@ -3051,7 +3051,7 @@
       "form_button_color": "#0d6efd",
       "form_button_text_color": "#ffffff",
       "contact_form": "[{\"id\": \"828d1e05-3a72-42e7-b280-8e3d26cb9407\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}, {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}, {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}], \"form_id\": \"contact-form\"}}]",
-      "form_title": "<p data-block-key=\"nzsd7\">Contact Us</p>",
+      "form_title": "<p data-block-key=\"nzsd7\">Contact</p>",
       "form_intro": "",
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"cbf7v\">✨ <b>Your message has wings!</b></p><p data-block-key=\"g7cgf\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
@@ -3230,7 +3230,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3274,7 +3274,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3296,7 +3296,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3318,7 +3318,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3340,7 +3340,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3542,7 +3542,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3556,7 +3556,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3570,7 +3570,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3584,7 +3584,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3598,7 +3598,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }

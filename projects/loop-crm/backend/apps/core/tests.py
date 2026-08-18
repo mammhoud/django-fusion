@@ -285,6 +285,8 @@ class NavigationContractTests(TestCase):
             response = self.client.get(path)
             self.assertEqual(response.status_code, 200, path)
             self.assertContains(response, "workspace-scoped")
+            if path == "/crm/pipelines/":
+                self.assertContains(response, 'data-column-type="text"')
 
     def test_allauth_password_email_and_social_pages_render(self):
         reset = self.client.get("/accounts/password/reset/")

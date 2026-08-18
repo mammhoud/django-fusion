@@ -13,12 +13,12 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from apps.core.realtime import safe_publish_workspace_event
+from apps.core.resource_tables import resource_table
 from apps.core.tenancy import current_workspace_id
 from apps.core.views import LoopPageView
 
 from .forms import CompanyForm, ContactForm, DealForm
 from .models import Company, Contact, Deal, Pipeline, PipelineStage
-from .tables import company_table, contact_table, deal_table
 
 
 def _member_workspace_id(request: HttpRequest) -> int | None:
@@ -73,11 +73,12 @@ class CompanyListView(LoopPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        rows = company_rows(self.request)
         context.update(
             {
-                "companies": company_rows(self.request),
+                "companies": rows,
                 "company_form": CompanyForm(request=self.request),
-                "company_table": company_table(company_rows(self.request)),
+                "company_table": resource_table(rows, "companies"),
             }
         )
         return context
@@ -94,11 +95,12 @@ class ContactListView(LoopPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        rows = contact_rows(self.request)
         context.update(
             {
-                "contacts": contact_rows(self.request),
+                "contacts": rows,
                 "contact_form": ContactForm(request=self.request),
-                "contact_table": contact_table(contact_rows(self.request)),
+                "contact_table": resource_table(rows, "contacts"),
             }
         )
         return context
@@ -113,11 +115,12 @@ class DealListView(LoopPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        rows = deal_rows(self.request)
         context.update(
             {
-                "deals": deal_rows(self.request),
+                "deals": rows,
                 "deal_form": DealForm(request=self.request),
-                "deal_table": deal_table(deal_rows(self.request)),
+                "deal_table": resource_table(rows, "deals"),
             }
         )
         return context
@@ -129,17 +132,17 @@ def _crm_context(request: HttpRequest, kind: str) -> dict:
         return {
             "companies": rows,
             "company_form": CompanyForm(request=request),
-            "company_table": company_table(rows),
+            "company_table": resource_table(rows, "companies"),
         }
     if kind == "contacts":
         rows = contact_rows(request)
         return {
             "contacts": rows,
             "contact_form": ContactForm(request=request),
-            "contact_table": contact_table(rows),
+            "contact_table": resource_table(rows, "contacts"),
         }
     rows = deal_rows(request)
-    return {"deals": rows, "deal_form": DealForm(request=request), "deal_table": deal_table(rows)}
+    return {"deals": rows, "deal_form": DealForm(request=request), "deal_table": resource_table(rows, "deals")}
 
 
 @require_POST

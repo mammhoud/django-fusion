@@ -285,7 +285,12 @@ def check_bundles_json(site: str, strict: bool) -> CheckResult:
         bundles_json = site_root(site) / "assets" / "bundles" / site / "bundles.json"
 
     if not bundles_json.exists():
-        msg = f"{bundles_json} not found. Run: npm --prefix projects/assets run build:{site_alias(site)}"
+        build_command = (
+            "make -C projects/precis/precis-ctc build-assets"
+            if site == "precis-ctc"
+            else f"npm --prefix projects/assets run build:{site_alias(site)}"
+        )
+        msg = f"{bundles_json} not found. Run: {build_command}"
         if strict:
             result.add_error(msg)
         else:

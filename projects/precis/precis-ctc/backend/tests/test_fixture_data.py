@@ -88,9 +88,9 @@ EN_CHILD_SLUGS = ["about", "contact", "team", "all-courses", "events", "services
 EXPECTED_TITLES = {
     "home": "Home Page",
     "about": "About CTC Research",
-    "contact": "Contact Us",
+    "contact": "Contact",
     "team": "Our Team",
-    "all-courses": "AI for Scientific & Medical Writing Courses",
+    "all-courses": "Courses",
     "events": "Upcoming Events",
     "services": "Our Capabilities",
 }
@@ -111,6 +111,7 @@ LMS_FIXTURES = [
     "course_tags.json",
     "courses.json",
     "medical_research_catalog.json",
+    "medical_research_curriculum.json",
     "events.json",
 ]
 LMS_FIXTURE_DIR = (
@@ -414,6 +415,14 @@ class TestFixtureData(TestCase):
 
     # ── API — page data ────────────────────────────────────────────
 
+    def test_navigation_uses_short_page_labels(self):
+        """Editorial page titles must not make the public header verbose."""
+        response = self.client.get("/apis/navigation/")
+        assert response.status_code == 200
+        labels = {item["href"]: item["label"] for item in response.json()["nav_items"]}
+        assert labels["/contact/"] == "Contact"
+        assert labels["/courses/"] == "Courses"
+
     def test_home_page_data(self):
         response = self.client.get("/api/pages/home/data/")
         assert response.status_code == 200
@@ -593,6 +602,22 @@ class TestFixtureData(TestCase):
             assert course.requirements
             assert course.target_audience
             assert course.duration > 0
+
+    def test_medical_curriculum_has_rich_text_without_code_blocks(self):
+        """Every seeded medical course has two modules and four rich-text lessons."""
+        from apps.learning.models import Course
+
+        courses = Course.objects.filter(slug__in=EXPECTED_MEDICAL_COURSE_SLUGS)
+        assert courses.count() == len(EXPECTED_MEDICAL_COURSE_SLUGS)
+        for course in courses:
+            modules = list(course.modules.all())
+            assert len(modules) == 2, course.slug
+            lessons = [lesson for module in modules for lesson in module.lessons.all()]
+            assert len(lessons) == 4, course.slug
+            for lesson in lessons:
+                block_types = {block.block_type for block in lesson.content}
+                assert "rich_text" in block_types, lesson.slug
+                assert "code" not in block_types, lesson.slug
 
     def test_medical_course_detail_api_returns_all_learning_content(self):
         """Course detail API exposes all seeded medical learning fields."""

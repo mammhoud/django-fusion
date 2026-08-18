@@ -46,6 +46,14 @@ npx nx run loop-crm:backend-test
   the Astro shell proxies `/fragments`, `/api`, `/bolt`, `/accounts`.
 - **API roads:** `/bolt/tables/{resource}` (canonical, JWT, needs django_bolt)
   and `/api/v1/tables/{resource}/` (compat, session cookie).
+- **Fusion table contract:** render-first resource pages and both API roads use
+  `apps.core.resource_tables.resource_table`, backed by
+  `django_fusion.fragments.tables.RowGenerator`. Column keys, labels, types,
+  and formatted cells therefore stay aligned without changing Bolt handlers.
+- **Route ownership:** `apps.core.fusion` owns browser routes and menu entries;
+  `apps.core.navigation` owns the shared navigation JSON/HTMX tree; domain
+  `apps.*.urls` owns versioned APIs. Do not add API behavior to Fusion menu
+  routes or expose Bolt-only auth through the session compatibility road.
 - **Redis-free dev:** a RESP PING probe decides; DEBUG falls back to LocMem
   cache + in-memory channel layer when Redis is missing or another app squats
   the port.

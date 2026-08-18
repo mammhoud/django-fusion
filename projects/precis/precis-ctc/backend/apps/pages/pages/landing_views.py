@@ -179,7 +179,7 @@ class ContactPageView(FusionLandingView):
     fragment_template_name = "contact/fragment.html"
     page_slug = "contact"
     fragment_name = "pages.contact"
-    title = "Contact Us"
+    title = "Contact"
 
 
 class TeamPageView(FusionLandingView):

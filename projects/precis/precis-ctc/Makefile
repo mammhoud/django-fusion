@@ -3,6 +3,13 @@
 
 PROJECT := precis-ctc
 
+# Root .env carries POSTGRES_PASSWORD, REDIS_PASSWORD, and per-site DB names.
+# Docker Compose auto-loads a .env from the CWD (this directory), but the
+# shared secrets live three levels up. Pass it explicitly so interpolation of
+# ${VAR:?...} required-variable syntax in docker-compose.yml doesn't abort.
+ROOT_ENV := ../../../.env
+DC := docker compose --env-file $(ROOT_ENV)
+
 # Colors
 CYAN := \033[0;36m
 GREEN := \033[0;32m
@@ -12,13 +19,14 @@ NC := \033[0m
         frontend-dev frontend-build frontend-check \
         build up down logs restart front-logs back-logs worker-logs status \
         clean-docker rebuild-backend rebuild-frontend clean \
-        install-assets build-assets build-assets-dev skeleton-manifest
+        install-assets build-assets build-assets-dev skeleton-manifest redeploy
 
 help:
 	@echo "$(PROJECT) — Django/Wagtail + Astro medical research center"
 	@echo "  Checks:  make check | test"
 	@echo "  Dev:     make run-dev | frontend-dev"
 	@echo "  Docker:  make build | up | down | logs | restart | status"
+	@echo "  Redeploy: make redeploy   (front + back + worker + scheduler)"
 	@echo "  Assets:  make install-assets | build-assets | build-assets-dev"
 	@echo "  Skeleton: make skeleton-manifest"
 	@echo "  Clean:   make clean | clean-docker"
@@ -70,38 +78,52 @@ skeleton-manifest:
 
 # ── Docker targets ────────────────────────────────────────────────────
 build: install-assets build-assets
-	docker compose build
+	$(DC) build
 
 up:
-	docker compose up -d
+	$(DC) up -d
 
 down:
-	docker compose down
+	$(DC) down
 
 logs:
-	docker compose logs -f
+	$(DC) logs -f
 
 restart:
-	docker compose restart
+	$(DC) restart
 
 front-logs:
-	docker compose logs -f frontend
+	$(DC) logs -f frontend
 
 back-logs:
-	docker compose logs -f backend
+	$(DC) logs -f backend
 
 worker-logs:
-	docker compose logs -f worker
+	$(DC) logs -f worker
 
 status:
-	docker compose ps
+	$(DC) ps
 
 # ── Rebuild targets ────────────────────────────────────────────────────
 rebuild-backend:
-	docker compose build --no-cache backend worker
+	$(DC) build --no-cache backend worker
 
 rebuild-frontend:
-	docker compose build --no-cache frontend
+	$(DC) build --no-cache frontend
+
+# ── Redeploy (front + back + attached containers) ──────────────────────
+# Single command to pick up the latest changes: runs the same checks the
+# dispatcher uses (make check / make frontend-check), rebuilds the images,
+# then recreates the whole stack (backend, worker, scheduler, frontend).
+# Invoke via the Precis dispatcher with:
+#   cd projects && make website-ctc redeploy
+#   cd projects && make redeploy-with-stack WEBSITE=precis-ctc  (alias below)
+redeploy: check frontend-check
+	@echo "$(CYAN)🔄 Redeploying $(PROJECT) — backend + worker + scheduler + frontend...$(NC)"
+	$(DC) build backend worker scheduler frontend
+	$(DC) up -d --force-recreate backend worker scheduler frontend
+	@echo "$(GREEN)✅ Redeploy complete — stack status:$(NC)"
+	docker compose ps
 
 # ── Clean Docker resources ─────────────────────────────────────────────
 clean:

@@ -43,30 +43,32 @@ The audit is complete. The site surface is:
 - **Backend (Django 5.2 + Wagtail 7.4):** `apps/pages/pages/landing_api.py`
   serves the Astro contract; `apps/learning` owns the catalog/LMS; fixtures
   seed pages (6 locales) + courses + events + tags + specializations.
-- **Frontend check:** `npm run check` → 0 errors, 9 hints (unused vars in
-  `BackToTop`, `Modal`, `ShareButtons`, `LoginModal` `__FUSION_AUTH` typing,
-  unused `Features` import in `services.astro`).
+- **Frontend check:** `npm run check` → 0 errors, 0 warnings, 0 hints after fixing Alpine interpolation, endpoint injection, and the `__FUSION_AUTH` window type.
 
-**Enhancement candidates identified (not yet executed):**
-- Clear the 9 frontend check hints (unused declarations/imports).
+**Enhancement candidates identified (some now executed):**
 - Unify the two dump copies (`backend/assets/fixtures/dump-data.json` vs
   `assets/fixtures/dump-data.json` — same object count, different hashes).
-- `products/[slug].astro` still renders a raw `<pre><code>` snippets section
-  (see §3).
+- Enrich the LMS fixture with medical rich-text descriptions, modules, and lessons; review course-copy translations separately from UI catalogs.
+- Complete human review of generated locale fallbacks.
+- Add the proposed 16-workflow Dramatiq actors.
 
 ---
 
-## 2. Documentation (partial — complete per §A)
+## 2. Documentation (complete)
 
-Existing project docs: `docs/COMPONENTS.md`, `docs/SETUP_AND_BUILD.md`,
-`docs/TEMPLATES.md`. Repo docs: `docs/precis/{ARCHITECTURE,configuration,courses,deployment}.md`
-(target `precis-main`, not ctc). **To write:**
-- `projects/precis/precis-ctc/docs/CONTENTS.md` — page-by-page content map
-  (sections, data sources, fallbacks).
-- `projects/precis/precis-ctc/docs/ENHANCEMENTS.md` — the audit findings +
-  enhancement list (this session's §1 + §3 + §7 + §9).
-- Repo `docs/precis-ctc/` index (architecture, content, media/proxy, deploy)
-  linked from `docs/_sidebar.md` and `docs/plans/README.md`.
+The CTC-specific documentation set is now written and linked from the plans
+registry and docs sidebar:
+
+- `projects/precis/precis-ctc/docs/CONTENTS.md` — page-by-page content map,
+  data sources, fallbacks, and medical-content rules.
+- `projects/precis/precis-ctc/docs/ENHANCEMENTS.md` — completed changes,
+  publish blockers, and P1/P2 improvements.
+- `projects/precis/precis-ctc/docs/ENVIRONMENT.md` — requirements, environment
+  names, shared assets, redeploy, and rollback notes.
+- `docs/precis-ctc/README.md` — repository entry point for architecture,
+  content, media/proxy, and deployment guides.
+- `docs/plans/repository/precis-ctc-workflows.md` — the 16-workflow Dramatiq
+  execution plan.
 
 ---
 
@@ -83,9 +85,7 @@ content. Confirmed scope (from search):
 | `RenderModeSwitch.astro` / `LiveFragment.astro` / `LiveFragmentTarget.astro` | Inline `<code>` in fallback notes | Plain styled text (keep semantics, drop `<code>`) |
 | `assets/templates/examples/*`, error/admin templates | `<pre><code>` | Leave (developer/admin surfaces) unless user requests removal |
 
-**Approach:** add a reusable `MediaGallery.astro` (grid + lightbox + captions,
-reusing the about-page gallery mapping already in `about.astro`), wire it into
-`Hero.astro` as the right-hand panel, and replace the products snippets section.
+**Implemented:** added reusable `MediaGallery.astro` (grid + lightbox + captions), wired it into `Hero.astro` as the right-hand panel, and replaced the products snippets section. Public code panels and the unused `CodeBlock.astro` were removed; developer/admin/example templates remain out of scope.
 
 ---
 
@@ -99,11 +99,13 @@ reusing the about-page gallery mapping already in `about.astro`), wire it into
   `manage.py load_data` (prerequisite contenttypes, admin user, Collections,
   optional `--replace`, sequence reset, LMS app fixtures, default Site).
 - `apps/learning/fixtures/medical_research_catalog.json` — 19 objects: 6
-  courses (en only, no rich_description/modules/lessons yet), 8 tags, 5
-  specializations. **Gap:** courses have no modules/lessons — enrich before
-  publish.
+  medical courses, 8 tags, and 5 specializations.
+- `apps/learning/fixtures/medical_research_curriculum.json` — 36 objects:
+  12 modules and 24 rich-text lessons attached to the six medical courses;
+  the fixture contains no `code` stream items.
 - `events.json`, `courses.json`, `specializations.json`, `course_tags.json` —
-  supporting LMS fixtures (loaded via `load_course_fixtures`).
+  supporting LMS fixtures (loaded via `load_course_fixtures`, which now also
+  loads the medical curriculum).
 - Two dump copies exist (`backend/assets/fixtures` + `assets/fixtures`) with
   different hashes — reconcile to one canonical file.
 
@@ -111,20 +113,23 @@ reusing the about-page gallery mapping already in `about.astro`), wire it into
 
 ## 5. Translations — complete es/sv/pt-br catalogs
 
-**State:** fr/de/ar catalogs under `assets/locale/<lang>/LC_MESSAGES/django.po`
-are complete (3,433 entries, ~96% translated). **es/sv/pt-br are stubs (4
-strings each).** User chose **full catalogs (all ~3,400 strings).**
+**State:** the French reference contains 3,438 non-header entries and the
+reference set includes multiline/plural messages. The generated `es`, `sv`,
+and `pt_BR` catalogs now contain the complete message set and compiled `.mo`
+files. This is catalog completeness, not a claim that every fallback has
+received human editorial translation.
 
-- Generator scaffolded: `projects/precis/precis-ctc/scripts/generate_locales.py`
-  rebuilds es/sv/pt-br from the fr reference (preserves comments/order,
-  substitutes translations, safe English fallback).
-- **To do:** author `scripts/data/{es,sv,pt_BR}.py` translation dicts for the
-  full msgid set (3,433), run the generator, then `compilemessages` so `.mo`
-  files exist for runtime. Verify with `msgattrib`/`msgfmt` and a Django
-  `activate('es')` smoke test.
-- Also surface site-facing strings currently missing from the catalog (809
-  `{% trans %}` strings used by templates but not in the fr set) — decide
-  whether to add them to the catalog or leave untranslated.
+- `scripts/data/{es,sv,pt_BR}.py` provide exact dictionaries and recurring
+  regex-pattern translations for common UI, LMS, research, and validation
+  strings.
+- `scripts/generate_locales.py` preserves multiline/plural PO structure,
+  reports exact/pattern/fallback coverage, and compiles `.mo` files through the
+  Python standard library when `msgfmt` is unavailable.
+- Current generated coverage is reported by the command; English fallback
+  entries remain an explicit human-review queue rather than being presented as
+  fully translated editorial content.
+- Site-facing strings not present in the reference catalog must be added via
+  the normal extraction workflow before they can be translated.
 
 ---
 
@@ -150,50 +155,31 @@ backend, frontend, and the shared proxy serve one tree.
 
 | Item | Current | Target |
 |------|---------|--------|
-| Media | `projects/precis/precis-ctc/assets/media/{images,original_images}` (23 files) | Move to `projects/assets/media/ctcResearch/` (dir exists, empty); keep project-named subdir for easy mapping |
-| Bundles | `projects/precis/precis-ctc/assets/bundles/` (webpack output) | Move beside media → `projects/assets/bundles/precis-ctc/` |
-| Webpack | `webpack/precis.config.js` → `assets/bundles/` | Emit to shared `projects/assets/bundles/precis-ctc/` |
-| Collected statics | per-project `collectstatic` | Serve from shared static tree so backend + frontend agree |
-| Proxy | `applications/proxy/` (nginx/traefik/caddy) | Add routes so `/media/`, `/bundles/`, `/static/` are served by `shared-proxy`; restrict to filegator / website servers matching the site name |
-| Naming | `ctcResearch` (camelCase) | Prefer lowercase `ctc-research` for consistent mapping (align with `precisLanding` decision) |
+| Media | `projects/precis/precis-ctc/assets/media/{images,original_images}` (23 runtime files) | Moved to `projects/assets/media/ctc-research/` |
+| Bundles | project-local/generated output | Shared `projects/assets/bundles/ctc-research/` |
+| Webpack | `webpack/precis.config.js` | Emits to the shared CTC bundle namespace |
+| Collected statics | per-project `collectstatic` | CTC static volume is mounted at the proxy’s `ctc-research` site root |
+| Proxy | `applications/proxy/` (nginx/traefik) | `/media/`, `/static/bundles/`, and `/sites/` route to shared-proxy |
+| Naming | mixed `ctcResearch`/`precis-ctc`/`precis` names | Public asset identity is consistently `ctc-research` |
 
-**Note:** `projects/assets/media/{precisLanding,filegator,ctcResearch}` already
-exist — this is the intended shared layout. Update `MEDIA_ROOT` / `STATIC_ROOT`
-in ctc `settings.py` to point at the shared tree, and wire nginx location
-blocks in `applications/proxy/nginx/`.
+**Implemented:** `MEDIA_ROOT` points to the shared tree by default, Compose
+binds that tree into `/app/media`, and shared-proxy mounts it read-only. The
+asset verifier and both relevant Compose configs pass validation.
 
 ---
 
 ## 8. `make redeploy` + environment docs + Nx
 
-- **Add `redeploy` target** to `projects/precis/precis-ctc/Makefile` that:
-  1. runs the backend checks/tests,
-  2. rebuilds + restarts backend, worker, frontend (and other attached
-     containers) via `docker compose build/up -d --force-recreate`,
-  3. delegates to the correct precis command (respect `WEBSITE=` dispatch;
-     `make check/test/run-dev` already delegate to `backend/` Makefile).
-- **Environment docs:** write `docs/SETUP_AND_BUILD.md` "Environment" section
-  (or a new `docs/ENVIRONMENT.md`) with every env var + requirement remarks,
-  `.env.example` names only (no secrets).
-- **Nx:** precis-ctc has `project.json` (build target only). Consider adding
-  `check`/`test`/`dev`/`redeploy` Nx targets mirroring the Loop-CRM wiring
-  (`nx run precis-ctc:<target>` ←→ `make <target>`), then root `npm install`
-  to enable `npx nx` at the monorepo root.
+- **Implemented `redeploy`:** `projects/precis/precis-ctc/Makefile` runs backend/frontend checks, builds backend/worker/frontend, and recreates backend, worker, scheduler, and frontend.
+- **Implemented dispatcher alias:** `cd projects && make redeploy-with-stack WEBSITE=precis-ctc` delegates to the project target. The existing `make redeploy WEBSITE=precis-ctc` remains the dispatcher’s web-only path.
+- **Environment docs:** `projects/precis/precis-ctc/docs/ENVIRONMENT.md` records requirements, variable names, asset mounts, safety, and rollback remarks without secrets.
+- **Nx:** remains a P2 follow-up; do not add a second package-manager install until the root Nx workspace ownership and target conventions are accepted.
 
 ---
 
 ## 9. Cross-module automation (16 workflows, Dramatiq boundary)
 
-Add a plan section/companion doc for cross-module automation:
-- **16 ready workflow definitions** covering publishing, refresh, analytics,
-  and attribution across modules.
-- **Dramatiq as the single execution boundary** for publishing, refresh,
-  analytics, and attribution (align with the shared Dramatiq baseline in
-  `repository/active-monorepo-consolidation-2026-08-14.md`).
-- Message-replacement semantics: workflows replace direct in-process calls with
-  a queue boundary so modules publish/refresh/attribute through one pipeline.
-- **To do:** draft `docs/plans/repository/precis-ctc-workflows.md` with the 16
-  definitions, triggers, and Dramatiq actor list; register in the plans README.
+The companion plan [`precis-ctc-workflows.md`](precis-ctc-workflows.md) defines 16 workflows covering publishing, refresh, email, analytics, and attribution. It makes Dramatiq the single execution boundary and documents the message-replacement semantics, actor contract, rollout, and verification gates.
 
 ---
 
@@ -203,33 +189,56 @@ Add a plan section/companion doc for cross-module automation:
 
 | # | Task | Priority | Status |
 |---|------|:---:|:---:|
-| A1 | Complete es/sv/pt-br catalogs (author `scripts/data/*.py`, run generator, compilemessages) | P0 | ⬜ |
-| A2 | Replace Hero view-source panel with media gallery; remove `<pre><code>` from products snippets; drop unused CodeBlock | P0 | ⬜ |
+| A1 | Complete es/sv/pt-br catalogs (author `scripts/data/*.py`, run generator, compilemessages) | P0 | ✅ Complete message-set PO/MO generation; human review of fallback entries remains |
+| A2 | Replace Hero view-source panel with media gallery; remove `<pre><code>` from products snippets; drop unused CodeBlock | P0 | ✅ |
 | A3 | Add/verify email config (Gmail) + send test to `mahmoud.ezzat.moustafa@gmail.com` | P0 | ⬜ |
-| A4 | Move ctc media + bundles to `projects/assets/media/ctcResearch` + `projects/assets/bundles/precis-ctc`; point settings at shared tree | P0 | ⬜ |
-| A5 | Wire nginx/shared-proxy routes for `/media/`, `/bundles/`, `/static/` (filegator + site servers) | P0 | ⬜ |
-| A6 | Add `make redeploy` (front + back + attached containers) with precis delegation | P1 | ⬜ |
-| A7 | Enrich LMS course fixtures (rich_description, modules, lessons) + reconcile the two dump-data copies | P1 | ⬜ |
-| A8 | Write `docs/CONTENTS.md`, `docs/ENHANCEMENTS.md`, repo `docs/precis-ctc/` + sidebar + plans registry links | P1 | ⬜ |
-| A9 | Environment docs with requirements remarks + `.env.example` names | P1 | ⬜ |
+| A4 | Move ctc media + bundles to `projects/assets/media/ctc-research` + `projects/assets/bundles/ctc-research`; point settings at shared tree | P0 | ✅ |
+| A5 | Wire nginx/shared-proxy routes for `/media/`, `/bundles/`, `/static/` (filegator + site servers) | P0 | ✅; compose and asset verifier pass |
+| A6 | Add `make redeploy` (front + back + attached containers) with precis delegation | P1 | ✅; `make redeploy-with-stack WEBSITE=precis-ctc` delegates to the full stack |
+| A7 | Enrich LMS course fixtures (rich_description, modules, lessons) + reconcile the two dump-data copies | P1 | ◐ Seeded 12 modules/24 lessons; dump-copy reconciliation and editorial review remain |
+| A8 | Write `docs/CONTENTS.md`, `docs/ENHANCEMENTS.md`, repo `docs/precis-ctc/` + sidebar + plans registry links | P1 | ✅ |
+| A9 | Environment docs with requirements remarks + `.env.example` names | P1 | ✅; `projects/precis/precis-ctc/docs/ENVIRONMENT.md` |
 | A10 | Nx targets for precis-ctc (check/test/dev/redeploy) + root npm install | P2 | ⬜ |
-| A11 | Cross-module automation plan (16 workflows, Dramatiq boundary) | P2 | ⬜ |
-| A12 | Clear the 9 frontend check hints | P2 | ⬜ |
+| A11 | Cross-module automation plan (16 workflows, Dramatiq boundary) | P2 | ✅ Proposed plan in `docs/plans/repository/precis-ctc-workflows.md` |
+| A12 | Clear the 9 frontend check hints | P2 | ✅ 0 hints |
 | A13 | Decide on the 809 template strings missing from the fr catalog | P2 | ⬜ |
 
 ---
 
 ## B. Verification gates
 
-- [ ] `cd projects/precis/precis-ctc/frontend && npm run check` → 0 errors
-- [ ] `cd projects/precis/precis-ctc/backend && make check` (needs working uv/venv)
-- [ ] `uv run pytest` (workspace) — targeted ctc tests pass
-- [ ] `compilemessages` succeeds; `activate('es'/'sv'/'pt-br')` smoke test renders
-- [ ] Test email delivered to `mahmoud.ezzat.moustafa@gmail.com`
-- [ ] `make redeploy WEBSITE=precis-ctc` brings backend/worker/frontend back healthy
-- [ ] `/media/`, `/bundles/`, `/static/` respond through the shared proxy
+- [x] `cd projects/precis/precis-ctc/frontend && npm run check` → 0 errors, 0 warnings, 0 hints
+- [ ] `cd projects/precis/precis-ctc/backend && make check` (blocked here by unavailable/stale uv environment)
+- [ ] `uv run pytest` (workspace) — targeted CTC tests pass
+- [x] Pure-Python locale generation and `.mo` compilation succeed; gettext smoke test loads all three catalogs
+- [ ] Test email delivered to `mahmoud.ezzat.moustafa@gmail.com` (requires explicit authorized SMTP execution)
+- [ ] `cd projects/precis/precis-ctc && make redeploy` brings backend/worker/scheduler/frontend back healthy (not run; effectful)
+- [x] Nginx/Traefik/Compose asset mappings verify; live `/media/`, `/bundles/`, `/static/` check remains deployment-gated
 
 ---
+
+## C. Interrupted session handoff TODOs
+
+These items were not completed in this chat because the required environment,
+credentials, editorial approval, or live-service authorization was unavailable.
+They are intentionally recorded here rather than being represented as passed:
+
+- [ ] Restore the approved workspace `uv` environment and run CTC backend
+  `make check` plus the targeted fixture/API tests.
+- [ ] Run the workspace pytest suite and verify the new curriculum/navigation
+  regression tests against a disposable test database.
+- [ ] Obtain explicit SMTP authorization, verify the configured sender/app
+  password through the approved secret store, and send the requested test email
+  to `mahmoud.ezzat.moustafa@gmail.com`.
+- [ ] Build the Django-side CTC bundles in the dependency-enabled environment,
+  run `collectstatic`, and verify the live `/media/`, `/bundles/`, and `/static/`
+  responses through shared-proxy.
+- [ ] Execute the effectful CTC full-stack redeploy and verify backend, worker,
+  scheduler, frontend, health, and logs; do not load or replace database data.
+- [ ] Decide whether Nx should own CTC `check`, `test`, `dev`, and `redeploy`
+  targets before adding a second package-manager workflow.
+- [ ] Complete qualified medical, legal, image-rights, and human translation
+  review before public publication; generated locale fallbacks are not approval.
 
 ## Related
 

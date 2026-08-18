@@ -141,7 +141,7 @@ def _page_data(page) -> dict:
     data = {
         "id": page.pk,
         "slug": page.slug or "home",
-        "title": page.title,
+        "title": _PAGE_TITLE_OVERRIDES.get(page.slug, page.title),
         "type": specific.__class__.__name__,
         "show_in_nav": bool(getattr(specific, "show_in_nav", True)),
         "seo_title": getattr(page, "seo_title", "") or page.title,
@@ -419,6 +419,21 @@ _FRONTEND_ROUTES = {
     "events": "/events/",
 }
 
+# Navigation labels are intentionally shorter than editorial SEO/page titles.
+# Stable slugs and the full page content remain unchanged; this map keeps the
+# header, API navigation, and Astro shell aligned even before a fresh fixture
+# load updates existing Wagtail rows.
+_SHORT_PAGE_LABELS = {
+    "home": "Home",
+    "all-courses": "Courses",
+    "about": "About",
+    "contact": "Contact",
+    "services": "Services",
+    "team": "Team",
+    "events": "Events",
+}
+_PAGE_TITLE_OVERRIDES = {"contact": "Contact", "all-courses": "Courses"}
+
 
 def navigation_api(request: HttpRequest) -> JsonResponse:
     language = _requested_language(request)
@@ -446,7 +461,7 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
             if not (getattr(specific, "show_in_nav", True) or getattr(specific, "show_in_menus", True)):
                 continue
             items.append({
-                "label": child.title,
+                "label": _SHORT_PAGE_LABELS.get(child.slug, child.title),
                 "href": route,
                 "active": request.path == route.rstrip("/") or request.path.startswith(route),
             })
@@ -502,7 +517,7 @@ def contact_api(request: HttpRequest) -> JsonResponse:
 
     if page is not None:
         specific = page.specific
-        title = page.title or title
+        title = _PAGE_TITLE_OVERRIDES.get(page.slug, page.title or title)
 
         # Seeded form fields (contact_form → contact_form → fields).
         for block in getattr(specific, "contact_form", []) or []:

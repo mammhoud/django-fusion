@@ -19,12 +19,12 @@ try {
 const methods = contactData?.methods;
 ---
 
-<Layout title={contactData?.title || 'Contact Us'} description={contactData?.description || 'Get in touch — we reply within one business day.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageSlug="contact">
+<Layout title={contactData?.title || 'Contact'} description={contactData?.description || 'Get in touch — we reply within one business day.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageSlug="contact">
   <section class='section-hero reg-marks overflow-hidden py-16'>
     <div class='container-fusion'>
       <div class='mx-auto max-w-2xl text-center'>
         <p class='tag-marker mb-5'>contact</p>
-        <h1 class='mb-4 font-display text-4xl font-bold tracking-tight md:text-5xl'>{contactData?.title || 'Contact Us'}</h1>
+        <h1 class='mb-4 font-display text-4xl font-bold tracking-tight md:text-5xl'>{contactData?.title || 'Contact'}</h1>
         <p class='text-lg text-fu-muted'>{contactData?.description || "We'd love to hear from you. Send a message and we'll get back to you soon."}</p>
       </div>
     </div>
