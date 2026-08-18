@@ -35,6 +35,8 @@ Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
 
 ## 🚀 Quick Start
 
+> 📖 Full step-by-step setup & build for every edition: [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md)
+
 ### Mini Edition (no server)
 ```bash
 cd forge-pos
@@ -162,6 +164,7 @@ formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 ## 📚 Documentation
 
 | Document | Description |
+| [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | **Setup & build guide** — step-by-step startup/build for every edition |
 |----------|-------------|
 | [`SERVER_V2.md`](docs/SERVER_V2.md) | **Server v2 reference** — Robyn + Django ORM, 70+ APIs, WS streams, signals, approval, sync, cloud plan |
 | [`CHANGELOG.md`](CHANGELOG.md) | Full version history |

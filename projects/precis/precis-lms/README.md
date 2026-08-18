@@ -48,6 +48,8 @@ projects/precis/precis-lms/
 
 ## Quick Start
 
+> 📖 Full step-by-step setup & build: [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md)
+
 ### Backend
 
 ```bash
@@ -97,6 +99,7 @@ npm run dev
 
 | Resource | Link |
 |----------|------|
+| **Setup & Build guide** | [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md) — full step-by-step startup/build instructions |
 | Landing-Fusion docs | [`../precis/precis-landing/README.md`](../precis/precis-landing/README.md) |
 | django-fusion | [`../../libs/django-fusion/README.md`](../../libs/django-fusion/README.md) |
 | Docs sidebar | [`../../docs/_sidebar.md`](../../docs/_sidebar.md) |

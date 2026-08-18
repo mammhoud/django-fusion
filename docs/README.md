@@ -85,6 +85,7 @@ structa.cloud/
 ## Quick Links
 
 - [⭐ Recommendations first](recommendations.md)
+- [🛠️ Project Setup & Build Guides](setup-guides.md) — per-project setup/build indexes
 - [📚 Guides](guides/) — step-by-step tutorials
 - [🗺️ Canonical plans](plans/README.md) — all active plans and historical evidence
 - [🔄 Recent Changes](recent-changes.md)

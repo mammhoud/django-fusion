@@ -1,6 +1,8 @@
 # Cypercloud – AI Chat Customizer
 
 > **Port:** 5073 | **Stack:** Django + Ceptor-AI + Monaco Editor + HTMX
+>
+> **📖 Full setup & build instructions:** [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md) — prerequisites, step-by-step startup, production build, Docker, and troubleshooting.
 
 <p align="center">
   <a href="../../docs/sites/cypercloud.md"><img src="https://img.shields.io/badge/docs-site-green" alt="Documentation"/></a>
@@ -11,6 +13,8 @@
 A Django-based AI chat and customization tool with code editing, template discovery, and Ceptor-AI backend support for multi-site template modification.
 
 ## Quick Start
+
+> 📖 Full step-by-step setup & build: [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md)
 
 ### Local Development
 

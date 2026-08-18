@@ -39,6 +39,8 @@ loop-crm/
 
 ## Quick start
 
+> 📖 Full step-by-step setup & build: [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md)
+
 ```bash
 # Backend (SQLite by default; USE_POSTGRES=1 for the cluster)
 cd backend
@@ -160,5 +162,8 @@ curl -fsS -H 'Host: crm.structa.cloud' http://127.0.0.1/
 Do not use the example secret values in a public deployment. DNS for
 `crm.structa.cloud` and `www.crm.structa.cloud` must point at the Traefik host.
 
-See the merge plan for the full 18-week roadmap and the Twenty/Postiz
-feature-merging matrix.
+## Documentation
+
+- [**docs/SETUP_AND_BUILD.md**](docs/SETUP_AND_BUILD.md) — full step-by-step setup & build guide
+- See the merge plan for the full 18-week roadmap and the Twenty/Postiz
+  feature-merging matrix.

@@ -1,5 +1,6 @@
 - [🏠 Home](./)
 - [⭐ Recommendations first](recommendations.md)
+- [🛠️ Project Setup & Build Guides](setup-guides.md)
 - [📸 Assets](assets/)
 - [📚 Guides](guides/)
   - [00 — Quickstart](guides/00-quickstart.md)
