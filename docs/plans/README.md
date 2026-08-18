@@ -46,6 +46,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Landing-Fusion | Active | [`precis-landing/`](precis-landing/) |
 | Loop-CRM merge | Foundation + tenancy/auth + tenant-scoped CRUD + channels + allauth + real screens shipped; AI hub & remaining adapters next | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
 | Precis LMS + Syntara merge | Planned | [`repository/precis-syntara-merge.md`](repository/precis-syntara-merge.md) |
+| CTC Research publish | Active | [`repository/ctc-research-publish-2026-08-18.md`](repository/ctc-research-publish-2026-08-18.md) |
 | Active project closeout | Audit complete | [`repository/active-project-closeout-2026-08-11.md`](repository/active-project-closeout-2026-08-11.md) |
 | Repository migration cleanup | Partial / gate-based | [`repository/migration-cleanup-master.md`](repository/migration-cleanup-master.md) |
 | django-fusion Tasks & MCP | Baseline implemented; MCP/production hardening remaining | [`django-fusion/django-fusion-tasks-mcp-plan.md`](django-fusion/django-fusion-tasks-mcp-plan.md) |
@@ -72,6 +73,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 
 | Analyzer + Skeleton + Asset APIs plan created | 2026-08-10 | Dynamic skeleton loading, per-page ordered components, component-level asset APIs, Astro minimal JS bridge |
 | Loop-CRM Wagtail landing + billing + shared locale plan | 2026-08-18 | Proposed — Wagtail landing (precis-landing pattern), Stripe billing, sidenav/guided UX, employees/reports, `projects/assets/locale` consolidation |
+| CTC Research publish plan | 2026-08-18 | Active — full content/component audit, es/sv/pt-br catalogs, media/bundles proxy, email parity + test, `make redeploy`, Nx, cross-module workflows |
 | Loop-CRM tenancy + auth gating | 2026-08-14 | Workspace-scoped reads/mutations, login-gated pages/APIs, CSRF-protected kanban move, tenant-isolation tests |
 | Loop-CRM CRUD + channels + allauth + real screens | 2026-08-14 | Tenant-scoped REST CRUD + msgspec schemas on both roads, Channels manager + Mastodon/Bluesky adapters, complete allauth flows, data-backed module tables, motion/design pass |
 | Loop-CRM finance + workflows + integrations plan | 2026-08-14 | Formint↔Loop-CRM integration audit; POS financial-data ingestion into the finance module; workflow action/template expansion; webhooks/email/Slack/social/export connectors |

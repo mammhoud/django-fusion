@@ -25,6 +25,8 @@
     - [Configuration](precis/configuration.md)
     - [Courses & Learning](precis/courses.md)
     - [Deployment](precis/deployment.md)
+  - [CTC Research](precis-ctc/)
+    - [Publish Plan](plans/repository/ctc-research-publish-2026-08-18.md)
   - [Syntara / Cypercloud](cypercloud/)
     - [Configuration](cypercloud/configuration.md)
     - [Use Cases](cypercloud/use-cases.md)
