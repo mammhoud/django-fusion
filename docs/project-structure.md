@@ -69,7 +69,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   ├── manage.py                           #   Shared Django CLI entry
 │   │
 │   ├── precis/                             # 📘 Precis group — LMS, marketing, research
-│   │   ├── main/                           #     Precis LMS (WEBSITE=precis-lms)
+│   │   ├── main/                           #     Precis LMS (WEBSITE=precis-main)
 │   │   │   ├── backend/                    #       Django + Wagtail backend
 │   │   │   ├── assets/                     #       Templates, static, media
 │   │   │   └── frontend/                   #       Astro frontend shell
@@ -153,7 +153,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 
 | Product | Path | Stack | Key AGENTS.md |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/precis-lms/` | Django + Wagtail + django-fusion | `projects/precis/precis-lms/backend/AGENTS.md` |
+| **Precis LMS** | `projects/precis/precis-main/` | Django + Wagtail + django-fusion | `projects/precis/precis-main/backend/AGENTS.md` |
 | **Landing-Fusion** | `projects/precis/precis-landing/` | Astro 5 + Django + Wagtail | `projects/precis/precis-landing/AGENTS.md` |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django + Wagtail | `projects/precis/precis-ctc/AGENTS.md` |
 | **Syntara** | `projects/syntara/` | Django + CeptorAI + Ollama | `projects/syntara/AGENTS.md` |
@@ -195,7 +195,7 @@ uv sync
 
 ```bash
 # Precis LMS
-cd projects/precis/precis-lms/backend
+cd projects/precis/precis-main/backend
 make check && make migrate && make seed
 
 # Landing-Fusion
@@ -245,7 +245,7 @@ make dev-frontend
 
 ```bash
 # Per-product
-cd projects/precis/precis-lms/backend && make test
+cd projects/precis/precis-main/backend && make test
 cd projects/precis/precis-landing && make backend-test
 cd projects/loop-crm/backend && make test
 cd projects/formints/formint-cloud && make test
@@ -255,7 +255,7 @@ cd libs/django-fusion && uv run pytest
 
 # Workspace dispatcher
 cd projects && make test WEBSITE=loop-crm
-cd projects && make check WEBSITE=precis-lms   # maps to projects/precis/precis-lms
+cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis-main
 ```
 
 ---
@@ -264,11 +264,11 @@ cd projects && make check WEBSITE=precis-lms   # maps to projects/precis/precis-
 
 | Legacy Name | Current Name | Current Path | Notes |
 |---|---|---|---|
-| `precis-lms` / `lms` | Precis LMS (alias) | `projects/precis/precis-lms/` | `WEBSITE=precis-lms` dispatcher alias |
+| `precis-lms` / `lms` | Precis LMS (alias) | `projects/precis/precis-main/` | `WEBSITE=precis-main` dispatcher alias |
 | `precis-landing` | Landing-Fusion | `projects/precis/precis-landing/` | `WEBSITE=precis-landing` |
 | `precis-ctc` / `ctc` | CTC Research | `projects/precis/precis-ctc/` | `WEBSITE=precis-ctc` |
 | `cms-fusion` | Merged | — | Split into Precis + Landing-Fusion |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-lms/` | Resume builder merged |
+| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-main/` | Resume builder merged |
 | `cypercloud` | Syntara | `projects/syntara/` | Runtime alias preserved |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | Formint Community | `projects/formints/formint-community/` | Offline-first edition |
 | `formint-standard` | Formint Standard | `projects/formints/formint-standard/` | |
@@ -291,7 +291,7 @@ cd projects && make check WEBSITE=precis-lms   # maps to projects/precis/precis-
 - **LMS/marketing/research are one group:** `projects/precis/` holds
   `main/` (Precis LMS), `lnd-structa/` (Landing-Fusion) and `lms-ctc/`
   (CTC Research). Their shared Django settings live in `projects/precis/configs/`.
-  The **runtime identity is unchanged** — use `WEBSITE=precis-lms`,
+  The **runtime identity is unchanged** — use `WEBSITE=precis-main`,
   `WEBSITE=precis-landing`, or `WEBSITE=precis-ctc` and let
   `projects/Makefile` resolve the filesystem path.
 - **POS editions use short names:** `community/`, `standard/`, `pro/`,

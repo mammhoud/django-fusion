@@ -9,5 +9,5 @@
 # ============================================================
 
 include:
-  - path: ./precis/precis-lms/docker-compose.yml
+  - path: ./precis/precis-main/docker-compose.yml
   - path: ./precis/precis-landing/docker-compose.yml

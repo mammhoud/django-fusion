@@ -51,7 +51,7 @@ def site_root(site: str) -> Path:
 def site_rel(site: str) -> str:
     """Relative product path under projects/ for compose mount assertions."""
     if site in {"lms", "precis-lms", "structa", "structa.cloud"}:
-        return "precis/precis-lms"
+        return "precis/precis-main"
     if site == "precis-ctc":
         return "precis/precis-ctc"
     return f"precis/{site}"

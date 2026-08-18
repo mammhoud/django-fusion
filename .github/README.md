@@ -57,7 +57,7 @@
 
 ## `fusion-ci.yml` — Fusion CI (precis-lms)
 
-**Triggers:** PR + push on `projects/precis-lms/**`, lib submodules, and this workflow file.
+**Triggers:** PR + push on `projects/precis/precis-main/**`, lib submodules, and this workflow file.
 
 ### Jobs (8 total, mostly parallel)
 

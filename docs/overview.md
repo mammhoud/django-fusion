@@ -26,8 +26,8 @@ The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Ast
 
 ```bash
 cd projects
-make check WEBSITE=precis-lms         # Checks Precis LMS
-make test WEBSITE=precis-lms          # Tests Precis LMS
+make check WEBSITE=precis-main         # Checks Precis LMS
+make test WEBSITE=precis-main          # Tests Precis LMS
 make run-dev WEBSITE=precis-landing   # Landing-Fusion dev server
 make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing
@@ -37,7 +37,7 @@ make test WEBSITE=precis-landing
 
 ```bash
 # Precis LMS
-cd projects/precis/precis-lms/backend
+cd projects/precis/precis-main/backend
 make check && make test && make migrate
 
 # Landing-Fusion
@@ -79,7 +79,7 @@ make logs              # Tail all service logs
 
 | Project | Dir | Type | Port | Stack |
 |---------|-----|------|------|-------|
-| **Precis LMS** | `projects/precis/precis-lms/` | Django Site | — | Wagtail + django-fusion |
+| **Precis LMS** | `projects/precis/precis-main/` | Django Site | — | Wagtail + django-fusion |
 | **Landing-Fusion** | `projects/precis/precis-landing/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django Site | — | Wagtail + django-fusion |
 | **Syntara** | `projects/syntara/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
@@ -192,11 +192,11 @@ The codebase has been through several renames. See this guide for mapping old na
 | Legacy Name | Current Name | Current Path |
 |---|---|---|
 | `precis-ctc` / `ctc` | **CTC Research** | `projects/precis/precis-ctc/` |
-| `precis-lms` / `lms` | **Precis LMS** (alias) | `projects/precis/precis-lms/` |
+| `precis-lms` / `lms` | **Precis LMS** (alias) | `projects/precis/precis-main/` |
 | `precis-landing` | **Landing-Fusion** | `projects/precis/precis-landing/` |
 | `cms-fusion` | Merged into Precis + Landing-Fusion | — |
 | `cypercloud` | **Syntara** (runtime alias preserved) | `projects/syntara/` |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-lms/` |
+| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-main/` |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | **Formint Community** | `projects/formints/formint-community/` |
 | `formint-standard` | **Formint Standard** | `projects/formints/formint-standard/` |
 | `pos-solo` / `pos-full` / `formint` / `formint-pro` | **Formint Professional** (merged) | `projects/formints/formint-pro/` |

@@ -97,3 +97,11 @@ models:
     base_url: "{{ env 'DEEPSEEK_API_URL' or 'https://api.deepseek.com/v1' }}"
     api_key_env: DEEPSEEK_API_KEY
     timeout: 90
+
+  - id: gemini-2.5-flash
+    name: Gemini 2.5 Flash
+    provider: openai_compatible
+    model: gemini-2.5-flash
+    base_url: "{{ env 'GEMINI_API_URL' or 'https://generativelanguage.googleapis.com/v1beta' }}"
+    api_key_env: GEMINI_API_KEY
+    timeout: 90

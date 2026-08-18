@@ -172,7 +172,7 @@ def site_dir_for(website: str) -> Path:
     )
     if runtime_site_dir and requested_site == website:
         # In the container the backend is mounted at /app/precis-lms, while
-        # the host registry path is projects/precis/precis-lms. Prefer the explicit
+        # the host registry path is projects/precis/precis-main. Prefer the explicit
         # runtime directory so local config remains portable across both.
         return Path(runtime_site_dir).expanduser().resolve()
     if configured_path:

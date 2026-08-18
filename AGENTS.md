@@ -12,15 +12,14 @@ compatibility aliases.
 ```text
 structa.cloud/
 ├── projects/                 # Product code, shared Django config, and assets
-│   ├── precis/               # Product grouping: LMS, research, and marketing sites
-│   │   ├── main/             # Current LMS / learning platform (precis-lms runtime)
-│   │   ├── precis-ctc/     # Medical research center site
-│   │   └── landi/            # Astro marketing site + Django/Wagtail CMS (precis-landing runtime)
+│   ├── precis/               # Product grouping: unified Precis, landing, and research sites
+│   │   ├── precis-main/      # Unified Precis product (merged precis-landing + precis-lms)
+│   │   ├── precis-landing/   # Legacy Landing-Fusion copy (kept; dispatcher routes to precis-main)
+│   │   └── precis-ctc/       # Medical research center site
 │   ├── syntara/              # Cypercloud AI chat/customizer runtime
 │   ├── formints/             # POS editions, cloud backend, and shared tests
 │   ├── configs/              # Shared Django settings and workers
 │   ├── assets/               # Monorepo-level shared assets
-│   ├── precis-lms/           # Retired compatibility project; merged elsewhere
 │   ├── scripts/              # Project-local automation
 │   ├── webpack/              # Shared/legacy asset configuration
 │   ├── Makefile              # Canonical project dispatcher
@@ -38,7 +37,7 @@ structa.cloud/
 
 | Product | Canonical path | Main responsibility | Local guidance |
 |---|---|---|---|
-| Precis LMS | `projects/precis/precis-lms/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | `projects/precis/precis-lms/AGENTS.md` |
+| Precis (unified) | `projects/precis/precis-main/` | Merged product: LMS courses/enrollment/progress/profile + landing marketing/catalog shell | `projects/precis/precis-main/AGENTS.md` |
 | Landing-Fusion | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/precis-landing/AGENTS.md` |
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
@@ -48,16 +47,17 @@ structa.cloud/
 
 ### Name and migration rules
 
-- `precis/precis-lms` is the current filesystem location for the LMS product. The
-  dispatcher still accepts `WEBSITE=precis-lms`; that alias maps to
-  `projects/precis/precis-lms/`.
-- `precis/landi` is the current filesystem location for the Landing-Fusion
-  marketing site; `precis-landing` remains its runtime/site identity and maps
-  to `projects/precis/precis-landing/`.
+- `precis/precis-main` is the current filesystem location for the unified Precis
+  product (LMS courses/learning/profile merged with the landing marketing/catalog
+  shell). The dispatcher accepts `WEBSITE=precis-main`; `WEBSITE=precis-lms` and
+  `WEBSITE=precis-landing` are legacy aliases that both map to
+  `projects/precis/precis-main/`.
+- `precis/precis-landing` is a kept legacy copy of the Landing-Fusion marketing
+  site; `precis-landing` remains its runtime/site identity.
 - `precis/precis-ctc` is the standalone medical research center site, mapped
   from `WEBSITE=ctc` / `precis-ctc` to `projects/precis/precis-ctc/`.
-- `precis-lms/` is a retired compatibility/documentation boundary. Do not add
-  new product code there; update Precis or Landing-Fusion instead.
+- `precis-lms/` was merged into `precis/precis-main` and removed; git history is
+  the archive. Do not add new product code under any `precis-lms` path.
 - `syntara` is the current filesystem location for the product historically
   called Cypercloud. Use `projects/syntara/` in new paths. Preserve the
   `cypercloud` name only where a runtime alias or external contract requires it.
@@ -80,8 +80,8 @@ root safety and repository rules remain in force.
 ```text
 /AGENTS.md
 ├── projects/AGENTS.md
-│   ├── projects/precis/precis-lms/AGENTS.md
-│   │   └── projects/precis/precis-lms/backend/AGENTS.md
+│   ├── projects/precis/precis-main/AGENTS.md
+│   │   └── projects/precis/precis-main/backend/AGENTS.md
 │   ├── projects/precis/precis-landing/AGENTS.md
 │   ├── projects/syntara/AGENTS.md
 │   └── projects/formints/AGENTS.md
@@ -200,8 +200,8 @@ uv run pytest
 
 # Project dispatcher examples
 cd projects
-make check WEBSITE=precis-lms       # maps to Precis
-make test WEBSITE=precis-lms
+make check WEBSITE=precis-main       # maps to Precis
+make test WEBSITE=precis-main
 make run-dev WEBSITE=precis-landing
 make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing   # workspace pytest target; use the project backend test below for focused coverage
@@ -217,7 +217,7 @@ make backend-check
 make backend-test
 
 # Precis backend
-cd projects/precis/precis-lms/backend
+cd projects/precis/precis-main/backend
 make check
 make test
 make migrate

@@ -60,8 +60,8 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | `formintB` → `formint-cloud` → `cloud` | 2026-08-09 | Cloud master directory renamed twice; canonical is now `projects/formints/formint-cloud/` |
 | `pos-cloud` → `formint-cloud` → `cloud` | 2026-08-09 | Package name in editions.md, AGENTS.md, docs |
 | `formintA`→`community`, `formint`→`pro`, `formintC`→`client`, `formint-standard`→`standard` | 2026-08-16 | POS editions renamed to short names under `projects/formints/` |
-| `precis-lms` alias → Precis | Active | Compatibility alias preserved; canonical is `projects/precis/precis-lms/` |
-| `precis` → `precis/precis-lms`, `precis-landing` → `precis/precis-landing`, `precis-ctc` → `precis/precis-ctc` | 2026-08-14 | LMS, marketing, and research sites regrouped under `projects/precis/`; runtime identities (`precis-lms`, `precis-landing`, `precis-ctc`) preserved |
+| `precis-lms` alias → Precis | Active | Compatibility alias preserved; canonical is `projects/precis/precis-main/` |
+| `precis` → `precis/precis-main`, `precis-landing` → `precis/precis-landing`, `precis-ctc` → `precis/precis-ctc` | 2026-08-14 | LMS, marketing, and research sites regrouped under `projects/precis/`; runtime identities (`precis-lms`, `precis-landing`, `precis-ctc`) preserved |
 | `osoul` → `components`, `rseal` → `site` | 2026-08-14 | Routable-component URL prefix `/osoul/` → `/components/`; `OSOUL_TEMPLATE_RENDERER` → `COMPONENT_TEMPLATE_RENDERER`; `django-rseal`/`rseal` app references → `domain.site` |
 | Deleted retired plan dirs | 2026-08-14 | `pos/`, `migrated/`, `cms-fusion/`, `precis-lms/` removed — superseded by `editions/` and Precis/Landing-Fusion
 | `cypercloud` → `syntara` | Active | Runtime alias preserved for external contracts |

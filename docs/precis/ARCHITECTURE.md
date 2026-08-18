@@ -4,7 +4,7 @@
 > **Product:** Precis LMS / learning platform
 > **Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + Astro 5 + HTMX + Alpine.js
 > **Updated:** 10 August 2026
-> **Path:** `projects/precis/precis-lms/`
+> **Path:** `projects/precis/precis-main/`
 
 ---
 
@@ -28,7 +28,7 @@ pipeline for reusable UI.
 - **Skeleton loading.** Build-time skeleton manifest → Astro bridge → RUM
   metrics for perceived performance.
 - **Per-project isolation.** Templates, assets, and static files are scoped to
-  `projects/precis/precis-lms/`, never shared with precis-landing or formints.
+  `projects/precis/precis-main/`, never shared with precis-landing or formints.
 
 ---
 
@@ -187,7 +187,7 @@ make build-assets
 ### ADR-7: Webpack-based asset pipeline
 
 **Decision:** Precis uses webpack (via `projects/webpack/base.config.js`) with
-project-specific config at `projects/precis/precis-lms/webpack/precis.config.js`.
+project-specific config at `projects/precis/precis-main/webpack/precis.config.js`.
 Per-project webpack aliases (`@precis`, `@precis-styles`, `@precis-js`) keep
 imports scoped.
 
@@ -328,9 +328,9 @@ make build
 ## Template Resolution Order
 
 ```
-1. projects/precis/precis-lms/backend/templates/          # Site-root shells, errors
-2. projects/precis/precis-lms/backend/apps/*/templates/   # App-owned templates
-3. projects/precis/precis-lms/assets/templates/           # Shared asset templates
+1. projects/precis/precis-main/backend/templates/          # Site-root shells, errors
+2. projects/precis/precis-main/backend/apps/*/templates/   # App-owned templates
+3. projects/precis/precis-main/assets/templates/           # Shared asset templates
 4. libs/django-fusion/src/django_fusion/templates/  # Framework fallback
 ```
 
@@ -339,7 +339,7 @@ make build
 ## Frontend Architecture
 
 ```
-projects/precis/precis-lms/frontend/
+projects/precis/precis-main/frontend/
 ├── src/
 │   ├── pages/                     # Astro pages (SSG + SSR)
 │   │   ├── index.astro            # Homepage
@@ -390,7 +390,7 @@ from django_fusion.tasks import task
 ### Testing
 
 ```bash
-cd projects/precis/precis-lms/backend
+cd projects/precis/precis-main/backend
 make check          # ruff + django check
 make test           # pytest (167 tests)
 make migrate        # Apply migrations (SQLite in dev)
@@ -402,7 +402,7 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/learning/tests/ -v
 ### Commands reference
 
 ```bash
-cd projects/precis/precis-lms
+cd projects/precis/precis-main
 
 # Asset build
 make install-assets     # npm install
@@ -434,8 +434,8 @@ make frontend-dev       # Astro dev server
 ## Related
 
 - [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo-wide architecture
-- [`projects/precis/precis-lms/backend/AGENTS.md`](/projects/precis/precis-lms/backend/AGENTS.md) — Backend agent instructions
-- [`projects/precis/precis-lms/README.md`](/projects/precis/precis-lms/README.md) — Project README (note: stack line references Next.js; source is Astro)
+- [`projects/precis/precis-main/backend/AGENTS.md`](/projects/precis/precis-main/backend/AGENTS.md) — Backend agent instructions
+- [`projects/precis/precis-main/README.md`](/projects/precis/precis-main/README.md) — Project README (note: stack line references Next.js; source is Astro)
 - [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo MCP integration (Kilo server, designer/task tools)
 - [`docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md`](/docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md) — Tasks & MCP plan
 - [`docs/plans/django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](/docs/plans/django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) — Skeleton pipeline plan

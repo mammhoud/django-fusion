@@ -8,16 +8,15 @@ repository root `AGENTS.md` first.
 
 ```text
 projects/
-├── precis/             # Product grouping: LMS, research, and marketing sites
-│   ├── main/           # Current LMS / learning platform (precis-lms runtime)
-│   ├── precis-ctc/   # Medical research center site
-│   └── landi/          # Astro + Django/Wagtail public landing/catalog site (precis-landing runtime)
+├── precis/             # Product grouping: unified Precis, landing, and research sites
+│   ├── precis-main/    # Unified Precis product (merged precis-landing + precis-lms)
+│   ├── precis-ctc/     # Medical research center site
+│   └── precis-landing/ # Legacy Landing-Fusion copy (kept; dispatcher routes to precis-main)
 ├── syntara/            # Cypercloud AI chat/customizer runtime
 ├── formints/           # POS editions and their shared test suites
 ├── loop-crm/           # Unified CRM + social scheduling (Twenty + Postiz merge)
 ├── configs/            # Shared settings, middleware, workers, env config
 ├── assets/             # Monorepo-level shared assets
-├── precis-lms/         # Retired compatibility boundary; no new code
 ├── scripts/            # Project automation
 ├── webpack/            # Shared/legacy asset configuration
 ├── Makefile            # Website dispatcher and delegated workflows
@@ -36,8 +35,8 @@ Important mappings include:
 
 | `WEBSITE` value | Current code | Meaning |
 |---|---|---|
-| `precis-lms` | `projects/precis/precis-lms/` | Current LMS runtime identity after migration |
-| `precis-landing` | `projects/precis/precis-landing/` | Landing-Fusion frontend/backend pair |
+| `precis-lms` | `projects/precis/precis-main/` | Legacy alias — merged into precis-main |
+| `precis-landing` | `projects/precis/precis-main/` | Legacy alias — merged into precis-main (dir kept) |
 | `loop-crm` | `projects/loop-crm/` | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | `cypercloud` (where supported) | `projects/syntara/` | Historical product name |
 | `ctc`, `precis-ctc` | `projects/precis/precis-ctc/` | Standalone medical research center site |
@@ -51,9 +50,9 @@ its documentation together when a product boundary actually changes.
 
 ```bash
 cd projects
-make show-config WEBSITE=precis-lms
-make check WEBSITE=precis-lms
-make test WEBSITE=precis-lms
+make show-config WEBSITE=precis-main
+make check WEBSITE=precis-main
+make test WEBSITE=precis-main
 make run-dev WEBSITE=precis-landing
 make check WEBSITE=precis-landing
 ```
@@ -62,8 +61,8 @@ For Docker, use the dispatcher rather than inventing a project name:
 
 ```bash
 make validate-config WEBSITE=precis-landing
-make docker-build WEBSITE=precis-lms
-make docker-up WEBSITE=precis-lms
+make docker-build WEBSITE=precis-main
+make docker-up WEBSITE=precis-main
 ```
 
 These commands may touch databases, containers, logs, or static output. Read
@@ -82,10 +81,10 @@ Avoid importing one product's settings into another product.
 
 ## Product guidance
 
-- Precis: `precis/precis-lms/backend/AGENTS.md`; backend app code is under
-  `precis/precis-lms/backend/apps/`, with product assets beside `backend/` and the Astro
-  frontend under `precis/precis-lms/frontend/`.
-- Landing-Fusion: `precis/landi/AGENTS.md`; keep the Astro frontend and
+- Precis: `precis/precis-main/backend/AGENTS.md`; backend app code is under
+  `precis/precis-main/backend/apps/`, with product assets beside `backend/` and the Astro
+  frontend under `precis/precis-main/frontend/`.
+- Landing-Fusion: `precis/precis-landing/AGENTS.md`; keep the Astro frontend and
   Django/Wagtail backend contracts synchronized.
 - CTC Research: `precis/precis-ctc/AGENTS.md`; standalone medical research
   center site, separated from the Precis LMS runtime.
@@ -96,8 +95,8 @@ Avoid importing one product's settings into another product.
 - Loop-CRM: `loop-crm/README.md`; keep the CRM/marketing/attribution app
   boundaries separate, use `django_fusion.*` components (no django-cotton), and
   treat `apps/tasks/` (Dramatiq) as the sole background-worker runtime.
-- Retired `precis-lms/`: use only for migration history and compatibility
-  documentation. New learning features belong in Precis or Landing-Fusion.
+- `precis-lms/` was merged into `precis/precis-main` and removed; git history is
+  the archive. New learning features belong in `precis-main`.
 
 ## Project-level conventions
 

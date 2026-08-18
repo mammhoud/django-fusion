@@ -36,12 +36,12 @@ services:
       - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
     volumes:
       - ../projects/precis/precis-ctc/assets/staticfiles:/var/www/sites/precis-ctc/static:ro
-      - ../projects/precis/precis-lms/assets/staticfiles:/var/www/sites/lms/static:ro
+      - ../projects/precis/precis-main/assets/staticfiles:/var/www/sites/lms/static:ro
       - ../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
       - precis-lms-static:/var/www/sites/precis-lms/static:ro
       - ../projects/assets/static:/var/www/static:ro
       - ../projects/precis/precis-ctc/assets/media:/var/www/media/precis-ctc:ro
-      - ../projects/precis/precis-lms/assets/media:/var/www/media/lms:ro
+      - ../projects/precis/precis-main/assets/media:/var/www/media/lms:ro
       - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
       - precis-lms-media:/var/www/media/precis-lms:ro
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro

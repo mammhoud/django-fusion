@@ -1,7 +1,7 @@
 # Shared configuration tools
 
 The background worker implementation was moved to the canonical
-`projects/precis/precis-lms/backend/plugins/workers/` package. It is Dramatiq-only and
+`projects/precis/precis-main/backend/plugins/workers/` package. It is Dramatiq-only and
 uses django-fusion's `@task` registry.
 
 ```bash

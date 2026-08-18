@@ -290,5 +290,5 @@ it via `libraries` (not builtins) — so templates need `{% load components %}`.
 | `libs/django-fusion/src/django_fusion/comp/registry.py` | `register_include_path`, `discover_under_root`, auto-discovery |
 | `libs/django-fusion/src/django_fusion/comp/apps.py` | `CoreExtAppConfig.ready()` — kicks off registration |
 | `libs/django-fusion/src/django_fusion/comp/templatetags/components/__init__.py` | Template tag library — `comp`, `slot`, `prop`, `var`, `block` |
-| `projects/precis/precis-lms/assets/templates/` | Primary comp user — all layout skeletons + components |
+| `projects/precis/precis-main/assets/templates/` | Primary comp user — all layout skeletons + components |
 | `projects/configs/base/templates.py` | Template config that registers `components` as builtin |

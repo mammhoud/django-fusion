@@ -1,9 +1,9 @@
 #!/bin/bash
 # =============================================================================
-# Domain Drift Check — Ensures cms-fusion and precis-lms domain code stays in sync
+# Domain Drift Check — Ensures cms-fusion and precis-main domain code stays in sync
 #
 # The `apps/core/domain/` directory is intentionally duplicated between
-# cms-fusion and precis-lms. This script verifies they are identical
+# cms-fusion and precis-main. This script verifies they are identical
 # and fails the build if any drift is detected.
 #
 # Usage:
@@ -14,8 +14,8 @@
 set -euo pipefail
 
 WORKSPACE="$(cd "$(dirname "$0")/../../.." && pwd)"
-CMS_DOMAIN="$WORKSPACE/projects/cms-fusion/backend/apps/core/domain"
-LMS_DOMAIN="$WORKSPACE/projects/precis-lms/backend/apps/core/domain"
+CMS_DOMAIN="$WORKSPACE/projects/cms-fusion/backend/apps/domain"
+LMS_DOMAIN="$WORKSPACE/projects/precis-main/backend/apps/domain"
 
 QUIET=false
 SHOW_DIFF=false
@@ -33,7 +33,7 @@ if [ ! -d "$CMS_DOMAIN" ]; then
     exit 2
 fi
 if [ ! -d "$LMS_DOMAIN" ]; then
-    echo "❌ ERROR: precis-lms domain directory not found: $LMS_DOMAIN"
+    echo "❌ ERROR: precis-main domain directory not found: $LMS_DOMAIN"
     exit 2
 fi
 
@@ -45,7 +45,7 @@ while IFS= read -r file; do
     lms_file="$LMS_DOMAIN/$file"
     if [ ! -f "$lms_file" ]; then
         DRIFT_FOUND=true
-        ISSUES+=("MISSING in precis-lms: $file")
+        ISSUES+=("MISSING in precis-main: $file")
     fi
 done < <(cd "$CMS_DOMAIN" && find . -name '*.py' -not -path '*__pycache__*' | sort)
 
@@ -72,7 +72,7 @@ if [ "$DRIFT_FOUND" = true ]; then
     echo ""
     echo "╔══════════════════════════════════════════════════════════════════╗"
     echo "║  ❌ DOMAIN DRIFT DETECTED                                        ║"
-    echo "║  cms-fusion and precis-lms domain code has diverged!             ║"
+    echo "║  cms-fusion and precis-main domain code has diverged!             ║"
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo ""
     echo "  Affected files (${#ISSUES[@]}):"
@@ -81,12 +81,12 @@ if [ "$DRIFT_FOUND" = true ]; then
     done
     echo ""
     echo "  ⚠️  apps/core/domain/ must stay identical between cms-fusion and"
-    echo "  precis-lms. When modifying domain code, apply changes to BOTH"
+    echo "  precis-main. When modifying domain code, apply changes to BOTH"
     echo "  projects before committing."
     echo ""
     echo "  To see exact differences, run:"
-    echo "    diff -r projects/cms-fusion/backend/apps/core/domain \\"
-    echo "         projects/precis-lms/backend/apps/core/domain \\"
+    echo "    diff -r projects/cms-fusion/backend/apps/domain \\"
+    echo "         projects/precis-main/backend/apps/domain \\"
     echo "         -x '__pycache__' -x '*.pyc'"
     echo ""
 
@@ -104,6 +104,6 @@ fi
 
 # ── Success ──────────────────────────────────────────────────────────────────
 if [ "$QUIET" = false ]; then
-    echo "  ✅ Domain drift check passed — cms-fusion and precis-lms are in sync"
+    echo "  ✅ Domain drift check passed — cms-fusion and precis-main are in sync"
 fi
 exit 0

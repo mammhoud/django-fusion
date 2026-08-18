@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "api-documentation-generator": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/api-documentation-generator/SKILL.md",
+      "computedHash": "4774a8d0eaf0040906b2709fab3235618dd8fe757371697a2f02ba1e26839083"
+    },
     "content-creator": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -54,6 +60,18 @@
       "sourceType": "github",
       "skillPath": "engineering/skills/documentation/SKILL.md",
       "computedHash": "c24a1672a7edad51225859d6549d9a61892f704a4527a65ce3cddd913ca04550"
+    },
+    "documentation-and-adrs": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-and-adrs/SKILL.md",
+      "computedHash": "7464fd2950b99fb00bbf65cab27653e0a049eef00c98927713ffdfe232a9daa9"
+    },
+    "documentation-writer": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-writer/SKILL.md",
+      "computedHash": "ee53d65b163cd7eb953a930c95841cfe398cc2c0bd24c06508bbaa07c432be35"
     },
     "explore-data": {
       "source": "anthropics/knowledge-work-plugins",
